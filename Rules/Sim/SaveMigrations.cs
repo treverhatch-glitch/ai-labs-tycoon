@@ -191,7 +191,7 @@ namespace AiLabs.Rules.Sim
             JsonPatch.AddIfMissing(root, "playerLabId", JsonValue.Of(playerId));
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                if (JsonPatch.IntOr(lab, "bankrupt", 0) != 0 && JsonPatch.StrOr(lab, "controller", "") == "Player")
+                if (JsonPatch.BoolOr(lab, "bankrupt", false) && JsonPatch.StrOr(lab, "controller", "") == "Player")
                 {
                     JsonValue record = JsonValue.Object();
                     record.Set("tick", JsonValue.Of(JsonPatch.IntOr(root, "tick", 0)));

@@ -40,25 +40,7 @@ namespace AiLabs.Rules.Sim
 
             if (mode == "found-again")
             {
-                PlayerStartConfig start = c.PlayerStart;
-                var fresh = new LabState();
-                fresh.Id = state.TakeId();
-                fresh.Name = soldName;
-                fresh.Leader = lab.Leader;
-                fresh.FamilyName = lab.FamilyName;
-                fresh.Controller = LabController.Player;
-                fresh.PlanStartTick = state.Tick;
-                fresh.RivalId = "";
-                fresh.Cash = price;
-                fresh.Ledger.StartCash = 0;
-                Finance.Earn(fresh, LedgerLine.CapitalIn, price);
-                fresh.Reputation = start.Reputation;
-                fresh.GrantPerWeek = start.GrantWeeks > 0 ? start.GrantPerWeek : 0;
-                fresh.GrantEndsTick = start.GrantWeeks > 0 ? state.Tick + start.GrantWeeks : -1;
-                fresh.HomeBlocId = start.HomeBlocId;
-                fresh.LotId = start.LotId;
-                fresh.TrainingSharePermille = start.TrainingSharePermille;
-                for (int k = 0; k < c.World.Blocs.Count; k++) fresh.Blocs.Add(WorldSetup.NewStanding(c.World.Blocs[k].Id));
+                LabState fresh = WorldSetup.FoundAgain(c, state, soldName, lab.Leader, lab.FamilyName, price);
                 state.Labs.Insert(0, fresh);
                 state.PlayerLabId = fresh.Id;
             }

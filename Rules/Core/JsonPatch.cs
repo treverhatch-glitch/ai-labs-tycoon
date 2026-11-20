@@ -69,5 +69,12 @@ namespace AiLabs.Rules.Core
             JsonValue v = obj == null ? null : obj.Get(key);
             return v != null && v.Kind == JsonKind.String ? v.Str : fallback;
         }
+
+        /// <summary>The flag under a key, or <paramref name="fallback"/> when it is missing or not a boolean.</summary>
+        public static bool BoolOr(JsonValue obj, string key, bool fallback)
+        {
+            JsonValue v = obj == null ? null : obj.Get(key);
+            return v != null && v.Kind == JsonKind.Bool ? v.Bool : fallback;
+        }
     }
 }

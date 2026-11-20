@@ -151,5 +151,36 @@ namespace AiLabs.Rules.Sim
         }
 
         static string Or(string value, string fallback) { return string.IsNullOrEmpty(value) ? fallback : value; }
+
+        /// <summary>A new player lab after selling the old one: garage start, era techs, vendor standing, sale cash on the ledger.</summary>
+        public static LabState FoundAgain(GameConfig c, GameState state, string name, string leader, string family, long price)
+        {
+            PlayerStartConfig start = c.PlayerStart;
+            EraConfig era = EraSystem.AtTick(c, state.Tick);
+            var fresh = new LabState();
+            fresh.Id = state.TakeId();
+            fresh.Name = name;
+            fresh.Leader = leader;
+            fresh.FamilyName = family;
+            fresh.Controller = LabController.Player;
+            fresh.PlanStartTick = state.Tick;
+            fresh.RivalId = "";
+            fresh.Cash = 0;
+            fresh.Ledger.StartCash = 0;
+            Finance.Earn(fresh, LedgerLine.CapitalIn, price);
+            fresh.Reputation = start.Reputation;
+            fresh.GrantPerWeek = start.GrantWeeks > 0 ? MathI.MulPermille(start.GrantPerWeek, era.StartGrantPermille) : 0;
+            fresh.GrantEndsTick = start.GrantWeeks > 0 ? state.Tick + start.GrantWeeks : -1;
+            fresh.HomeBlocId = start.HomeBlocId;
+            fresh.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
+            fresh.Techs.AddRange(RivalSystem.CatchUpTechs(c, era));
+            fresh.Techs.AddRange(era.StartTechs);
+            fresh.TrainingSharePermille = start.TrainingSharePermille;
+            fresh.PlanPausedUntilTick = -1;
+            fresh.ChipAmbushUntilTick = -1;
+            for (int k = 0; k < c.World.Blocs.Count; k++) fresh.Blocs.Add(NewStanding(c.World.Blocs[k].Id));
+            VendorSystem.EnsureStanding(c, state, fresh.Id);
+            return fresh;
+        }
     }
 }

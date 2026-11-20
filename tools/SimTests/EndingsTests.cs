@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
@@ -59,16 +60,57 @@ public class EndingsTests
     }
 
     [Fact]
-    public void SellLab_spectate_refuses_player_commands()
+    public void SellLab_spectate_refuses_player_commands_but_rivals_keep_planning()
     {
-        var g = Game.Solo(seed: 8);
-        int playerId = g.Me.Id;
+        var g = Game.New(seed: 8);
+        int playerId = g.Id;
         g.Me.Ledger.ThisMonth.Revenue = 3_000_000;
         g.Me.Cash = 50_000;
         g.Do(Command.SellLab(playerId, "spectate"));
         Assert.Equal(-1, g.State.PlayerLabId);
         g.Refused(Command.Hire(playerId, "researcher", 1), CommandError.Spectating);
-        g.Weeks(48 * 10);
+        LabState rival = g.Rival("openaye");
+        int before = rival.Log.Count;
+        for (int m = 0; m < 12 && rival.Log.Count <= before; m++)
+        {
+            if (GameDate.IsMonthStart(g.C.Calendar, g.Tick)) g.Sim.RunPlan(rival.Id, g.C.Rival("openaye").Plan);
+            g.Weeks(1);
+        }
+        Assert.True(rival.Log.Count > before);
+    }
+
+    [Fact]
+    public void Bankrupt_spectate_saves_cleanly()
+    {
+        var g = Game.Solo(seed: 11);
+        g.Me.GrantPerWeek = 0;
+        g.Me.Cash = -50_000;
+        g.Me.WeeksInDebt = g.C.Finance.BankruptcyGraceWeeks - 1;
+        g.Weeks(1);
+        Assert.Single(g.State.Endings, e => e.EndingId == "bankrupt");
+        int idx = g.State.Endings.FindIndex(e => e.EndingId == "bankrupt");
+        g.Do(Command.ContinueAfterEnding(g.Me.Id, idx, "spectate"));
+        Assert.Equal(-1, g.State.PlayerLabId);
+        Assert.Empty(SaveGame.Problems(g.C, g.State));
+        g.Weeks(20);
+    }
+
+    [Fact]
+    public void SellLab_found_again_keeps_the_ledger_in_balance()
+    {
+        var g = Game.Solo(seed: 5, tweak: c => c.Endings.ExitRevenueYears = 1);
+        g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2010);
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Me.Cash = 100_000;
+        long price = EndingSystem.SellPrice(g.C, g.State, g.Me);
+        g.Do(Command.SellLab(g.Id, "found-again"));
+        LabState fresh = g.Me;
+        Assert.Equal(price, fresh.Ledger.Lifetime.CapitalIn);
+        Assert.Equal(price, fresh.Cash);
+        Assert.Equal(0, fresh.Ledger.StartCash);
+        Assert.Equal(fresh.Cash, fresh.Ledger.StartCash + fresh.Ledger.Lifetime.Net);
+        Assert.NotEmpty(fresh.Techs);
+        Assert.NotNull(g.State.Vendor.Standing(fresh.Id));
     }
 
     [Fact]
@@ -81,11 +123,49 @@ public class EndingsTests
         g.Me.ResearchPoints = 9_999_999;
         foreach (TechConfig tech in g.C.Research.Techs)
             if (EraSystem.TechOpen(g.C, tech, g.Tick) && !g.Me.Techs.Contains(tech.Id)) g.Research(tech.Id);
+        int techBefore = LabQueries.TechBonus(g.C, g.Me, TechEffectKind.CapabilityPermille);
         g.Do(Command.ResearchFrontier(g.Id));
         Assert.Equal(1, g.Me.FrontierLevel);
         long c1 = EndingSystem.FrontierCost(g.C, g.Me);
         Assert.Equal(MathI.MulPermille(c0, 1400), c1);
-        Assert.Equal(50, g.Me.FrontierLevel * g.C.Endings.Frontier.CapabilityPermillePerLevel);
+        Assert.Equal(techBefore + 50, LabQueries.TechBonus(g.C, g.Me, TechEffectKind.CapabilityPermille));
+    }
+
+    [Fact]
+    public void Monopoly_fires_when_the_player_dominates_and_not_twice_within_ten_years()
+    {
+        var g = Game.Solo(seed: 40, tweak: c =>
+        {
+            c.Endings.MonopolyRevenuePpm = 400_000;
+            c.Endings.MonopolyComputePpm = 400_000;
+        });
+        for (int y = 0; y < 3; y++)
+        {
+            g.State.Gauntlets.Add(new GauntletRecord { Year = 1995 + y, CrownLabId = g.Id });
+            g.Me.Ledger.History.Add(new MonthRecord
+            {
+                Year = 1995 + y,
+                Month = 12,
+                Totals = { Revenue = 9_000_000 },
+            });
+            for (int i = 0; i < g.State.Labs.Count; i++)
+                g.State.Labs[i].LastWeek.Compute = i == 0 ? 9000 : 100;
+        }
+        g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 1998) + g.C.Calendar.WeeksPerYear - 1;
+        EndingSystem.TryMonopoly(g.C, g.State);
+        Assert.Contains(g.State.Endings, e => e.EndingId == "monopoly");
+        int att = g.Me.Bloc(g.Me.HomeBlocId).Attention;
+        EndingSystem.TryMonopoly(g.C, g.State);
+        Assert.Equal(att, g.Me.Bloc(g.Me.HomeBlocId).Attention);
+    }
+
+    [Fact]
+    public void Schema_five_bankrupt_save_gets_a_bankrupt_ending_record()
+    {
+        string json = System.IO.File.ReadAllText(System.IO.Path.Combine(TestData.RepoRoot(), "tools", "SimTests", "Fixtures", "schema5-bankrupt-save.json"));
+        var sim = Simulation.Load(TestData.Config(), json);
+        Assert.Single(sim.State.Endings, e => e.EndingId == "bankrupt" && e.Choice == "");
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
     }
 
     [Fact]
@@ -116,6 +196,6 @@ public class EndingsTests
         }
         Assert.Equal(60 * 48, g.Tick - start);
         Assert.True(cap < 5_000_000, "save grew to " + cap);
-        Assert.Contains(g.State.Labs, l => l.Models.Count > 0);
+        Assert.Contains(g.Me.Models, m => m.Status == ModelStatus.Released || m.Status == ModelStatus.Trained);
     }
 }

@@ -77,7 +77,7 @@ namespace AiLabs.Rules.Sim
                     return true;
                 case ShadySpecial.SmuggleChips:
                     if (lab.Batch(cmd.Y) == null) { message = "Name a hardware batch to move."; return false; }
-                    if (cmd.Ids == null || cmd.Ids.Count == 0 || lab.Holding(int.Parse(cmd.Ids[0])) == null)
+                    if (cmd.Ids == null || cmd.Ids.Count == 0 || !int.TryParse(cmd.Ids[0], out int dest) || lab.Holding(dest) == null)
                     { message = "Name a destination holding."; return false; }
                     return true;
                 default:

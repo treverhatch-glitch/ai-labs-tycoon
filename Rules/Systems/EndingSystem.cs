@@ -23,7 +23,6 @@ namespace AiLabs.Rules.Systems
 
         public static void RecordHandcuffs(GameConfig c, GameState state, LabState lab)
         {
-            if (HasOpen(state, HandcuffsId)) return;
             EndingsConfig e = c.Endings;
             long fine = MathI.MulPermille(lab.Cash, e.HandcuffsFinePermille);
             if (fine > 0) Finance.Spend(lab, LedgerLine.Fines, fine);
@@ -33,7 +32,9 @@ namespace AiLabs.Rules.Systems
             lab.Leader = e.HandcuffsSuccessor;
             BlocStanding home = lab.Bloc(lab.HomeBlocId);
             if (home != null) home.Attention = (int)MathI.Min(MathI.Permille, home.Attention + 200);
-            Add(state, lab.Id, HandcuffsId);
+            EndingRecord record = Add(state, lab.Id, HandcuffsId);
+            record.Choice = "done";
+            record.ChoiceTick = state.Tick;
             Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, HandcuffsId);
         }
 
@@ -52,7 +53,7 @@ namespace AiLabs.Rules.Systems
             int year = GameDate.Year(c.Calendar, state.Tick);
             if (RecentEnding(c, state, MonopolyId, year, cfg.MonopolyCooldownYears)) return;
             if (!CrownStreak(state, player.Id, cfg.MonopolyCrownYears)) return;
-            if (GovernmentSystem.RevenueSharePpm(state, player) < cfg.MonopolyRevenuePpm) return;
+            if (GovernmentSystem.RevenueShareLastClosedMonth(state, player) < cfg.MonopolyRevenuePpm) return;
             if (ComputeSharePpm(state, player) < cfg.MonopolyComputePpm) return;
 
             BlocStanding home = player.Bloc(player.HomeBlocId);
@@ -101,7 +102,7 @@ namespace AiLabs.Rules.Systems
             return false;
         }
 
-        static void Add(GameState state, int labId, string endingId)
+        static EndingRecord Add(GameState state, int labId, string endingId)
         {
             var r = new EndingRecord();
             r.Tick = state.Tick;
@@ -110,6 +111,7 @@ namespace AiLabs.Rules.Systems
             r.Choice = "";
             r.ChoiceTick = -1;
             state.Endings.Add(r);
+            return r;
         }
 
         public static long RevenueLast12Months(LabState lab)

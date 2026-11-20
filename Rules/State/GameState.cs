@@ -41,8 +41,7 @@ namespace AiLabs.Rules.State
             get
             {
                 if (PlayerLabId < 0) return null;
-                LabState lab = Lab(PlayerLabId);
-                return lab ?? (Labs.Count > 0 ? Labs[0] : null);
+                return Lab(PlayerLabId);
             }
         }
 
@@ -149,7 +148,7 @@ namespace AiLabs.Rules.State
         public int Heat;
         public long Stash;
         public int ShadyLockedUntilTick;
-        public int CaseEndsTick;
+        public int CaseEndsTick = -1;
         public List<ShadyOp> ShadyOps = new List<ShadyOp>();
 
         public LedgerState Ledger = new LedgerState();

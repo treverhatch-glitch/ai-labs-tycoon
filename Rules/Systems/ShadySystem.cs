@@ -37,11 +37,12 @@ namespace AiLabs.Rules.Systems
                 if (rival == null || rival.Plan.ShadyAppetite <= 0) return;
             }
             int tick = state.Tick;
-            if (ShadyQueries.CaseOpen(lab, tick))
+            if (lab.CaseEndsTick >= 0 && tick >= lab.CaseEndsTick)
             {
-                if (tick >= lab.CaseEndsTick) CloseCase(c, state, lab);
+                CloseCase(c, state, lab);
                 return;
             }
+            if (ShadyQueries.CaseOpen(lab, tick)) return;
             if (lab.Heat < c.Shady.InvestigationThreshold) return;
             int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
             if (state.Rng.Shady.Chance(permille))
@@ -54,8 +55,16 @@ namespace AiLabs.Rules.Systems
         public static void OnAuditOpen(GameConfig c, GameState state, LabState lab)
         {
             if (ShadyQueries.CaseOpen(lab, state.Tick)) return;
+            TryOpenCase(c, state, lab, "audit");
+        }
+
+        static void TryOpenCase(GameConfig c, GameState state, LabState lab, string tag)
+        {
+            if (lab.Heat < c.Shady.InvestigationThreshold) return;
+            int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
+            if (!state.Rng.Shady.Chance(permille)) return;
             lab.CaseEndsTick = state.Tick + c.Shady.CaseWeeks;
-            Events.Add(state, EventKind.ShadyInvestigation, lab.Id, -1, lab.Heat, "audit");
+            Events.Add(state, EventKind.ShadyInvestigation, lab.Id, -1, lab.Heat, tag);
         }
 
         static void CloseCase(GameConfig c, GameState state, LabState lab)
@@ -142,12 +151,14 @@ namespace AiLabs.Rules.Systems
             if (home != null) home.Attention = (int)MathI.Min(MathI.Permille, home.Attention + 100);
             if (card.Special == ShadySpecial.SabotageRun)
             {
+                VendorSystem.Change(c, state, lab.Id, -200, true);
                 for (int i = 0; i < state.Labs.Count; i++)
                     if (state.Labs[i].Controller == LabController.Plan) RivalSystem.Feel(c, state.Labs[i], c.Rivalry.Feelings.SabotageAllPermille);
             }
             else if (card.Special == ShadySpecial.CopyModel && target != null)
             {
-                ModelLineConfig line = BestReleasedOfLine(c, target, model.LineId) != null ? c.Line(model.LineId) : c.Line(LabQueries.BestReleased(target).LineId);
+                ModelState src = target.Model(op.AuxId);
+                ModelLineConfig line = src != null ? c.Line(src.LineId) : null;
                 if (line != null)
                 {
                     long fine = 2L * EraSystem.RunPrepCost(c, line, state.Tick);
@@ -155,7 +166,6 @@ namespace AiLabs.Rules.Systems
                 }
                 RivalSystem.Feel(c, target, c.Rivalry.Feelings.TracedShadyPermille);
             }
-            if (card.Id == "borrow-weights" && target != null) { }
         }
 
         static long GreyPayout(GameConfig c, GameState state, LabState lab, int holdingId)
@@ -186,7 +196,10 @@ namespace AiLabs.Rules.Systems
             m.Capability = m.CapBase + m.CapTech + m.CapCarryover;
             m.Alignment = (int)MathI.MulPermille(src.Alignment, cfg.CopyAlignmentPermille);
             m.Corruption = cfg.CopyCorruption;
+            m.StartedTick = -1;
             m.TrainedTick = state.Tick;
+            m.ReleasedTick = -1;
+            m.LastIncidentTick = -1;
             lab.Models.Add(m);
         }
 
@@ -229,10 +242,8 @@ namespace AiLabs.Rules.Systems
         static void Smuggle(GameConfig c, GameState state, LabState lab, ShadyOp op)
         {
             HardwareBatch batch = lab.Batch(op.AuxId);
-            if (batch == null) return;
-            int dest = -1;
-            if (!string.IsNullOrEmpty(op.TargetRef) && int.TryParse(op.TargetRef, out int h)) dest = h;
-            if (dest < 0) return;
+            if (batch == null || batch.ChipDesignId < 0) return;
+            if (!int.TryParse(op.TargetRef, out int dest) || lab.Holding(dest) == null) return;
             batch.HoldingId = dest;
         }
 
