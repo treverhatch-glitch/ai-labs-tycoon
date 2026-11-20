@@ -48,6 +48,8 @@ namespace AiLabs.Rules.Sim
             player.Techs.AddRange(era.StartTechs);
             player.TrainingSharePermille = start.TrainingSharePermille;
             state.Labs.Add(player);
+            state.PlayerLabId = player.Id;
+            state.Endings = new List<EndingRecord>();
 
             int startYear = GameDate.Year(c.Calendar, startTick);
             for (int i = 0; i < c.Rivals.Count; i++)

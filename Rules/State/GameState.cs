@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 5;
+        public const int CurrentSchema = 7;
 
         public int Schema;
         public string ConfigVersion;
@@ -32,8 +32,19 @@ namespace AiLabs.Rules.State
         public List<string> PendingRivals = new List<string>();
         /// <summary>The foundry's booked months, from the current month on.</summary>
         public List<FoundryMonth> Foundry = new List<FoundryMonth>();
+        /// <summary>The lab the player controls, or -1 when spectating.</summary>
+        public int PlayerLabId;
+        public List<EndingRecord> Endings = new List<EndingRecord>();
 
-        public LabState Player { get { return Labs[0]; } }
+        public LabState Player
+        {
+            get
+            {
+                if (PlayerLabId < 0) return null;
+                LabState lab = Lab(PlayerLabId);
+                return lab ?? (Labs.Count > 0 ? Labs[0] : null);
+            }
+        }
 
         public LabState Lab(int id)
         {
@@ -71,6 +82,8 @@ namespace AiLabs.Rules.State
             s.Obj("vendor", ref Vendor);
             s.StrList("pendingRivals", ref PendingRivals);
             s.ObjList("foundry", ref Foundry);
+            s.Int("playerLabId", ref PlayerLabId);
+            s.ObjList("endings", ref Endings);
         }
     }
 
@@ -132,6 +145,12 @@ namespace AiLabs.Rules.State
         public long ResearchPoints;
         public List<string> Techs = new List<string>();
         public List<ModelState> Models = new List<ModelState>();
+        public int FrontierLevel;
+        public int Heat;
+        public long Stash;
+        public int ShadyLockedUntilTick;
+        public int CaseEndsTick;
+        public List<ShadyOp> ShadyOps = new List<ShadyOp>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -214,6 +233,12 @@ namespace AiLabs.Rules.State
             s.Long("researchPoints", ref ResearchPoints);
             s.StrList("techs", ref Techs);
             s.ObjList("models", ref Models);
+            s.Int("frontierLevel", ref FrontierLevel);
+            s.Int("heat", ref Heat);
+            s.Long("stash", ref Stash);
+            s.Int("shadyLockedUntilTick", ref ShadyLockedUntilTick);
+            s.Int("caseEndsTick", ref CaseEndsTick);
+            s.ObjList("shadyOps", ref ShadyOps);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }
@@ -258,7 +283,7 @@ namespace AiLabs.Rules.State
     public enum ModelStatus { Training, Trained, Released, Retired }
 
     /// <summary>How a model's creature looks right now. Derived from the state, never stored.</summary>
-    public enum ModelMood { Healthy, Overworked, Glitching }
+    public enum ModelMood { Healthy, Overworked, Glitching, Corrupted }
 
     public sealed class ModelState : ISync
     {
@@ -288,6 +313,7 @@ namespace AiLabs.Rules.State
         public int ReleasedTick;
         public int LastIncidentTick;
         public int Incidents;
+        public int Corruption;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -313,6 +339,7 @@ namespace AiLabs.Rules.State
             s.Int("releasedTick", ref ReleasedTick);
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
+            s.Int("corruption", ref Corruption);
             s.StrList("sectors", ref Sectors);
         }
     }

@@ -121,6 +121,9 @@ namespace AiLabs.Rules.Systems
             model.Capability = f.Total + model.CapLuck;
 
             model.Alignment = AlignmentFor(c, model.RequiredCompute, model.AlignmentCompute);
+            ModelState previous = LabQueries.LatestOfLine(lab, model.LineId);
+            if (previous != null && previous.Id != model.Id)
+                model.Corruption = (int)MathI.MulPermille(previous.Corruption, c.Shady.CarryCorruptionPermille);
             model.ProgressCompute = model.RequiredCompute;
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;

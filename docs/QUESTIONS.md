@@ -416,6 +416,46 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, with pending orders counted when deciding what to buy but rent covering the physical gap. 
 - Why: an own chip is worth several GPUs, so the lab ends up with less hardware by count and more by compute; the 45-year soak shows no lab failing and own-chip shares of 8% to 15%, below the courting line, so courting is exercised by a test, not yet by the cast.
 
+### Q68. Endings and `PlayerLabId`? DECIDED: schema 6, spectate at -1
+
+- Recommendation and choice: **(b)** from systems design section 5: `GameState.PlayerLabId`, bailouts via `ContinueAfterEnding`, `SellLab` with `found-again` or `spectate`; save problems accept spectating without a player lab.
+- Why: phases E/F implementation on schema 6 then 7 for shady.
+
+### Q69. Frontier research? DECIDED: research points, 1400‰ growth, cap 60
+
+- Recommendation and choice: **(b)**. `ResearchFrontier` after all open techs; `FrontierLevel` adds capability via `LabQueries.TechBonus`; rivals buy in `LabPlanner` after techs.
+- Why: endless content once the tree is done.
+
+### Q70. Model museum? DECIDED: six retired per line, oldest out weekly
+
+- Recommendation and choice: **(b)**. `MuseumSystem.RunWeek` prunes beyond `endings.museum.perLine`.
+- Why: long saves stay bounded.
+
+### Q71. Shady stash vs cash? DECIDED: stash off-books, `Laundered` ledger line
+
+- Recommendation and choice: **(b)**. Stash never touches cash except `Launder` at 700‰ keep; Heat from laundering and ops.
+- Why: cash invariant and section 6.
+
+### Q72. Rivals and shady? DECIDED: `shadyAppetite` 0, validator enforces
+
+- Recommendation and choice: **(b)**. Only the player's lab (and future player autopilot when appetite > 0) may `StartShadyOp`.
+- Why: parody guardrails.
+
+### Q73. Investigations? DECIDED: month-end on player lab, conviction → handcuffs ending
+
+- Recommendation and choice: **(b)**. `ShadySystem.RunMonth`, Audit level adds an extra roll; conviction uses Heat and policy staff.
+- Why: section 6.5 wired to section 5 handcuffs.
+
+### Q74. Corruption? DECIDED: incidents, quality trust, mood, carry-over, side jobs
+
+- Recommendation and choice: **(b)**. Weights in `shady` config; `ModelMood.Corrupted` at 600+; training finish carry-over 500‰.
+- Why: section 6.6.
+
+### Q75. Golden digest after endings and shady? DECIDED: re-recorded
+
+- Recommendation and choice: **(b)**. New digest `59cd8b60…` — weekly shady resolution, museum prune and frontier planner hooks change the autopilot year.
+- Why: firm rule on golden moves.
+
 ## Open
 
 None.

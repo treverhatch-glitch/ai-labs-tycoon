@@ -20,6 +20,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 3) MigrateTo3(c, root);
             if (fromSchema < 4) MigrateTo4(c, root);
             if (fromSchema < 5) MigrateTo5(root);
+            if (fromSchema < 6) MigrateTo6(c, root);
+            if (fromSchema < 7) MigrateTo7(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -176,6 +178,43 @@ namespace AiLabs.Rules.Sim
             });
             JsonPatch.AddIfMissing(root, "foundry", JsonValue.Array());
             JsonPatch.ForEach(root, "vendor.standings", s => JsonPatch.AddIfMissing(s, "listingSeen", JsonValue.Of(false)));
+        }
+
+        static void MigrateTo6(GameConfig c, JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "endings", JsonValue.Array());
+            long playerId = 0;
+            JsonValue labs = root.Get("labs");
+            if (labs != null && labs.Kind == JsonKind.Array && labs.Items.Count > 0)
+                playerId = JsonPatch.IntOr(labs.Items[0], "id", 0);
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "frontierLevel", JsonValue.Of(0L)));
+            JsonPatch.AddIfMissing(root, "playerLabId", JsonValue.Of(playerId));
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                if (JsonPatch.IntOr(lab, "bankrupt", 0) != 0 && JsonPatch.StrOr(lab, "controller", "") == "Player")
+                {
+                    JsonValue record = JsonValue.Object();
+                    record.Set("tick", JsonValue.Of(JsonPatch.IntOr(root, "tick", 0)));
+                    record.Set("endingId", JsonValue.Of("bankrupt"));
+                    record.Set("labId", JsonValue.Of(JsonPatch.IntOr(lab, "id", 0)));
+                    record.Set("choice", JsonValue.Of(""));
+                    record.Set("choiceTick", JsonValue.Of(-1L));
+                    root.Get("endings").Add(record);
+                }
+            });
+        }
+
+        static void MigrateTo7(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "heat", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "stash", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "shadyLockedUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "caseEndsTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "shadyOps", JsonValue.Array());
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "corruption", JsonValue.Of(0L)));
+            });
         }
 
         static JsonValue StreamAt(long state)

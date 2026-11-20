@@ -49,7 +49,11 @@ namespace AiLabs.Rules.Systems
             {
                 lab.WeeksInDebt++;
                 if (lab.WeeksInDebt == 1) Events.Add(state, EventKind.InDebt, lab.Id, -1, lab.Cash, "");
-                if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks) GoBankrupt(state, lab);
+                if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks)
+                {
+                    GoBankrupt(state, lab);
+                    if (lab.Id == state.PlayerLabId) EndingSystem.RecordBankrupt(c, state, lab);
+                }
             }
             else
             {

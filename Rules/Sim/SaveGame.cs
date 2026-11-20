@@ -64,7 +64,19 @@ namespace AiLabs.Rules.Sim
         {
             var p = new List<string>();
             if (state.Labs.Count == 0) { p.Add("there are no labs"); return p; }
-            if (state.Labs[0].Controller != LabController.Player) p.Add("the first lab is not the player's");
+            if (state.PlayerLabId < 0)
+            {
+                bool spectate = true;
+                for (int i = 0; i < state.Labs.Count; i++)
+                    if (state.Labs[i].Controller == LabController.Player) spectate = false;
+                if (!spectate) p.Add("playerLabId is -1 but a player lab still exists");
+            }
+            else
+            {
+                LabState player = state.Player;
+                if (player == null) p.Add("playerLabId " + state.PlayerLabId + " does not match any lab");
+                else if (player.Controller != LabController.Player) p.Add("the player's lab is not under player control");
+            }
 
             for (int i = 0; i < state.Labs.Count; i++)
             {

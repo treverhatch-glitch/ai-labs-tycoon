@@ -257,6 +257,8 @@ namespace AiLabs.Rules.Systems
                 for (int k = 0; k < tech.Effects.Count; k++)
                     if (tech.Effects[k].Kind == kind) total += tech.Effects[k].Amount;
             }
+            if (kind == TechEffectKind.CapabilityPermille)
+                total += lab.FrontierLevel * c.Endings.Frontier.CapabilityPermillePerLevel;
             return total;
         }
 
@@ -362,6 +364,7 @@ namespace AiLabs.Rules.Systems
         {
             if (model.Status != ModelStatus.Released) return ModelMood.Healthy;
             if (IsGlitching(c, model, tick)) return ModelMood.Glitching;
+            if (model.Corruption >= c.Shady.CorruptedMood) return ModelMood.Corrupted;
             if (lab.LastWeek.ServingDemand > 0 && lab.LastWeek.ServedPermille < MathI.Permille) return ModelMood.Overworked;
             return ModelMood.Healthy;
         }
@@ -372,7 +375,7 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            long weight = sector.CapabilityWeightPermille + MathI.MulPermille(sector.SafetyWeightPermille, model.Alignment);
+            long weight = sector.CapabilityWeightPermille + MathI.MulPermille(sector.SafetyWeightPermille, SafetySystem.EffectiveAlignment(c, model));
             long quality = MathI.MulPermille(model.Capability, weight);
             if (IsGlitching(c, model, tick)) quality = MathI.MulPermille(quality, c.Safety.GlitchQualityPermille);
             return quality;

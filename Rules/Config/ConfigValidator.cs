@@ -167,9 +167,37 @@ namespace AiLabs.Rules.Config
             RivalryProblems(p, c);
             VendorProblems(p, c);
             ChipsProblems(p, c);
+            EndingsProblems(p, c);
+            ShadyProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
+        }
+
+        static void EndingsProblems(List<string> p, GameConfig c)
+        {
+            if (c.Endings == null) { p.Add("endings is missing"); return; }
+            UniqueIds(p, "endings.endings", c.Endings.Endings);
+            if (c.Endings.BailoutCash < 0) p.Add("endings.bailoutCash is negative");
+            Permille(p, "endings.exitFleetPermille", c.Endings.ExitFleetPermille);
+            Permille(p, "endings.handcuffsFinePermille", c.Endings.HandcuffsFinePermille);
+            if (c.Endings.Frontier.BaseCost < 1) p.Add("endings.frontier.baseCost must be at least 1");
+            if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
+            if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
+        }
+
+        static void ShadyProblems(List<string> p, GameConfig c)
+        {
+            if (c.Shady == null) { p.Add("shady is missing"); return; }
+            UniqueIds(p, "shady.cards", c.Shady.Cards);
+            foreach (ShadyCardConfig card in c.Shady.Cards)
+            {
+                Permille(p, "shady card " + card.Id + " successPermille", card.SuccessPermille);
+                Permille(p, "shady card " + card.Id + " tracePermille", card.TracePermille);
+                if (card.Weeks < 1) p.Add("shady card " + card.Id + " needs at least one week");
+            }
+            Permille(p, "shady.launderKeepPermille", c.Shady.LaunderKeepPermille);
+            if (c.Shady.LaunderHeatPer < 1) p.Add("shady.launderHeatPer must be at least 1");
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)
@@ -494,6 +522,8 @@ namespace AiLabs.Rules.Config
             if (plan.ListsChipsMarkupPermille < 0) p.Add(who + " has a negative listsChipsMarkupPermille");
             foreach (string bloc in plan.SiteBlocs)
                 if (c.World.Bloc(bloc) == null) p.Add(who + " plans to build in the unknown bloc \"" + bloc + "\"");
+            if (who.StartsWith("rival ") && plan.ShadyAppetite != 0)
+                p.Add(who + " must have shadyAppetite 0 (parody labs never run shady jobs)");
         }
 
         static void Permille(List<string> p, string what, int value)

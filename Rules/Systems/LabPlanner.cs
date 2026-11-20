@@ -414,6 +414,11 @@ namespace AiLabs.Rules.Systems
                             Reason.Of(ReasonCode.CultureAlignmentPermille, x.Plan.AlignmentSharePermille));
                 }
             }
+            if (EndingSystem.AllOpenTechsDone(c, lab, x.State.Tick))
+            {
+                long cost = EndingSystem.FrontierCost(c, lab);
+                if (cost > 0 && lab.ResearchPoints >= cost) x.Apply(Command.ResearchFrontier(lab.Id));
+            }
         }
 
         /// <summary>

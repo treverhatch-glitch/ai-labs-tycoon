@@ -36,7 +36,9 @@ namespace AiLabs.Rules.State
         /// <summary>A delivery lost most of its chips to a yield crash. Amount is the chips that survived.</summary>
         ChipYieldCrash,
         /// <summary>Chips were bought from another lab's list. LabId is the buyer, Subject the seller's lab, Amount the count.</summary>
-        ChipsBought
+        ChipsBought,
+        EndingReached,
+        ShadyOpStarted, ShadyOpResolved, ShadyTraced, ShadyInvestigation, ShadyConvicted, ShadyAcquitted, ShadySideJob, ShadyTemptation
     }
 
     /// <summary>

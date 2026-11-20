@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2009 to 2035: rooms, sta
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips. 296 tests pass, including 40-year headless runs and a schema 1, 2, 3 and 4 save that migrate. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 310 tests pass, including 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -25,13 +25,13 @@ Known limits of the slice, so nobody is surprised:
   functions; a room is built for what it seats or holds.
 - **The cast is five labs.** OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak
   (2023) as arrivals; Macrosoft, Metta and Palantear (item 12 below) are not in.
-- **Retired models stay in the lab's model list** for the whole game. Fine for decades of play (a 40-year test keeps
-  the save in bounds), and worth an archive once the model museum is designed.
+- **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
 - **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
   AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
   use every command; the host UI is the missing half.
 - **Staff are head counts**, not people.
-- **One incident kind.** The six-rung ladder, the alignment gap and endings are not in yet.
+- **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); the six-rung ladder and alignment gap are not in yet.
+- **The shady path is in** for the player (cards, launder, investigations); parody labs never take shady jobs (`shadyAppetite` 0).
 - **Money is cash and a grant.** No investors, shares, debt or bubble.
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
   the player's side.

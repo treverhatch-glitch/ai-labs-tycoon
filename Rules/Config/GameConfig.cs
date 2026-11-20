@@ -49,6 +49,8 @@ namespace AiLabs.Rules.Config
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
         public ChipsConfig Chips;
+        public EndingsConfig Endings;
+        public ShadyConfig Shady;
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -76,6 +78,8 @@ namespace AiLabs.Rules.Config
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);
             s.Obj("chips", ref Chips);
+            s.Obj("endings", ref Endings);
+            s.Obj("shady", ref Shady);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);
@@ -715,6 +719,8 @@ namespace AiLabs.Rules.Config
         public bool BuysListedChips;
         /// <summary>When above 0 the lab puts its own chips on sale at this mark-up over what they cost to make, in permille.</summary>
         public int ListsChipsMarkupPermille;
+        /// <summary>How eagerly a plan-run lab takes shady jobs. Rival configs must be 0.</summary>
+        public int ShadyAppetite;
 
         public void Sync(Syncer s)
         {
@@ -740,6 +746,7 @@ namespace AiLabs.Rules.Config
             s.Int("chipProgramYear", ref ChipProgramYear);
             s.Bool("buysListedChips", ref BuysListedChips);
             s.Int("listsChipsMarkupPermille", ref ListsChipsMarkupPermille);
+            s.Int("shadyAppetite", ref ShadyAppetite);
         }
     }
 

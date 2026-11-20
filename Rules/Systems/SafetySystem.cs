@@ -13,7 +13,14 @@ namespace AiLabs.Rules.Systems
         /// <summary>The weekly chance, in permille, that a released model has an incident.</summary>
         public static int IncidentChancePermille(GameConfig c, ModelState model)
         {
-            return (int)MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
+            long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
+            return (int)MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+        }
+
+        public static int EffectiveAlignment(GameConfig c, ModelState model)
+        {
+            int trust = model.Alignment - (int)MathI.MulPermille(model.Corruption, c.Shady.CorruptionTrustWeight);
+            return (int)MathI.Max(0, trust);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

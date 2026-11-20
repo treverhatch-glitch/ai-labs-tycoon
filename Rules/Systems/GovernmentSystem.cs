@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Systems
             {
                 amount = lab.LastWeek.Revenue * a.AuditFineRevenueWeeks;
                 Finance.Spend(lab, LedgerLine.Fines, amount);
+                if (lab.Id == state.PlayerLabId) ShadySystem.OnAuditOpen(c, state, lab);
             }
             Events.Add(state, EventKind.AttentionRose, lab.Id, standing.Level, amount, standing.BlocId);
         }

@@ -132,7 +132,14 @@ namespace AiLabs.Rules.Sim
             MarketSystem.RunWeek(c, state);
 
             for (int i = 0; i < state.Labs.Count; i++)
-                if (!state.Labs[i].Bankrupt) SafetySystem.RunWeek(c, state, state.Labs[i]);
+            {
+                if (!state.Labs[i].Bankrupt)
+                {
+                    SafetySystem.RunWeek(c, state, state.Labs[i]);
+                    ShadySystem.RunWeek(c, state, state.Labs[i]);
+                    MuseumSystem.RunWeek(c, state.Labs[i]);
+                }
+            }
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
@@ -144,6 +151,8 @@ namespace AiLabs.Rules.Sim
             {
                 for (int i = 0; i < state.Labs.Count; i++)
                     if (!state.Labs[i].Bankrupt) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
+                LabState player = state.Player;
+                if (player != null && !player.Bankrupt) ShadySystem.RunMonth(c, state, player);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);
             }
 
@@ -151,6 +160,7 @@ namespace AiLabs.Rules.Sim
             {
                 GauntletSystem.RunYear(c, state);
                 MarketSystem.GrowYear(c, state);
+                EndingSystem.TryMonopoly(c, state);
             }
 
             state.Tick = tick + 1;

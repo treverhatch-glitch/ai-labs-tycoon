@@ -11,7 +11,8 @@ namespace AiLabs.Rules.Sim
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
         ResearchTech, StartTraining, ReleaseModel,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
-        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips
+        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
+        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder
     }
 
     /// <summary>
@@ -267,6 +268,46 @@ namespace AiLabs.Rules.Sim
             c.Ids.AddRange(sectorIds);
             return c;
         }
+
+        public static Command ResearchFrontier(int labId)
+        {
+            return Make(CommandKind.ResearchFrontier, labId);
+        }
+
+        /// <summary><paramref name="id"/> is <c>found-again</c> or <c>spectate</c>.</summary>
+        public static Command SellLab(int labId, string mode)
+        {
+            Command c = Make(CommandKind.SellLab, labId);
+            c.Id = mode;
+            return c;
+        }
+
+        /// <summary><paramref name="id"/> is the continue mode; <paramref name="targetId"/> is the index in <see cref="GameState.Endings"/>.</summary>
+        public static Command ContinueAfterEnding(int labId, int endingIndex, string mode)
+        {
+            Command c = Make(CommandKind.ContinueAfterEnding, labId);
+            c.Id = mode;
+            c.TargetId = endingIndex;
+            return c;
+        }
+
+        public static Command StartShadyOp(int labId, string cardId, int modelId, int targetLabId, int auxId, string extraRef)
+        {
+            Command c = Make(CommandKind.StartShadyOp, labId);
+            c.Id = cardId;
+            c.TargetId = modelId;
+            c.X = targetLabId;
+            c.Y = auxId;
+            if (!string.IsNullOrEmpty(extraRef)) c.Ids.Add(extraRef);
+            return c;
+        }
+
+        public static Command Launder(int labId, int amount)
+        {
+            Command c = Make(CommandKind.Launder, labId);
+            c.Count = amount;
+            return c;
+        }
     }
 
     public enum CommandError
@@ -280,7 +321,9 @@ namespace AiLabs.Rules.Sim
         EraLocked,
         SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty,
         AllocationExhausted,
-        DesignNotReady, FoundryFull
+        DesignNotReady, FoundryFull,
+        ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
+        EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable
     }
 
     public struct CommandResult

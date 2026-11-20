@@ -29,7 +29,10 @@ namespace AiLabs.Rules.Sim
                 case EventKind.GpusRented: return who + " now rents " + e.Amount + " GPUs.";
                 case EventKind.GpusBought: return who + " bought " + e.Amount + " GPUs from " + c.Compute.VendorName + ".";
                 case EventKind.GpusSold: return who + " sold " + e.Amount + " GPUs.";
-                case EventKind.TechResearched: return who + " researched " + c.Tech(e.Ref).Name + ".";
+                case EventKind.TechResearched:
+                    if (e.Ref == "frontier") return who + " pushed the research frontier.";
+                    TechConfig tech = c.Tech(e.Ref);
+                    return who + " researched " + (tech == null ? e.Ref : tech.Name) + ".";
                 case EventKind.TrainingStarted: return who + " started training " + e.Ref + ".";
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
@@ -70,6 +73,19 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ChipYieldCrash: return "Yield crash. " + who + "'s delivery of " + e.Ref + " came in at " + e.Amount + " working chips. The money is gone.";
                 case EventKind.ChipsBought:
                     { LabState seller = state.Lab((int)e.SubjectId); return who + " bought " + e.Amount + " " + e.Ref + " chips from " + (seller == null ? "another lab" : seller.Name) + "."; }
+                case EventKind.EndingReached:
+                    {
+                        EndingDefConfig def = c.Endings.Def(e.Ref);
+                        return who + " reached an ending: " + (def == null ? e.Ref : def.Name) + ".";
+                    }
+                case EventKind.ShadyOpStarted: return who + " started " + c.Shady.Card(e.Ref).Name + " (" + e.Amount + " weeks).";
+                case EventKind.ShadyOpResolved: return who + "'s shady job " + (e.Amount == 1 ? "succeeded" : "failed") + ".";
+                case EventKind.ShadyTraced: return who + " was traced running " + c.Shady.Card(e.Ref).Name + ".";
+                case EventKind.ShadyInvestigation: return who + " is under investigation.";
+                case EventKind.ShadyConvicted: return who + " was convicted.";
+                case EventKind.ShadyAcquitted: return who + " was acquitted.";
+                case EventKind.ShadySideJob: return e.Ref + " did a little job on the side. It left you a tip.";
+                case EventKind.ShadyTemptation: return "Runway is short. " + c.Shady.Card(e.Ref).Name + " is on the table.";
                 default: return who + ": " + e.Kind + ".";
             }
         }

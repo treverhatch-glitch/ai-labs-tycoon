@@ -18,9 +18,16 @@ namespace AiLabs.Rules.Sim
         public static CommandResult Apply(GameConfig c, GameState state, Command cmd)
         {
             if (cmd == null) return Fail(CommandError.InvalidArgument, "There is no command.");
+            if (state.PlayerLabId < 0 && cmd.Kind != CommandKind.ContinueAfterEnding)
+                return Fail(CommandError.Spectating, "The player is spectating.");
             LabState lab = state.Lab(cmd.LabId);
             if (lab == null) return Fail(CommandError.UnknownLab, "There is no lab " + cmd.LabId + ".");
-            if (lab.Bankrupt) return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (cmd.LabId >= 0 && lab.Bankrupt && cmd.Kind != CommandKind.ContinueAfterEnding)
+                return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (state.PlayerLabId < 0 && cmd.LabId == state.PlayerLabId)
+                return Fail(CommandError.Spectating, "The player is spectating.");
+            if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
+                return Fail(CommandError.UnknownLab, "That is not the player's lab.");
 
             switch (cmd.Kind)
             {
@@ -48,6 +55,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.OrderChips: return OrderChips(c, state, lab, cmd);
                 case CommandKind.SetChipListing: return SetChipListing(c, state, lab, cmd);
                 case CommandKind.BuyListedChips: return BuyListedChips(c, state, lab, cmd);
+                case CommandKind.ResearchFrontier: return ResearchFrontier(c, state, lab, cmd);
+                case CommandKind.SellLab: return SellLab(c, state, lab, cmd);
+                case CommandKind.ContinueAfterEnding: return ContinueAfterEnding(c, state, lab, cmd);
+                case CommandKind.StartShadyOp: return StartShadyOp(c, state, lab, cmd);
+                case CommandKind.Launder: return Launder(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
