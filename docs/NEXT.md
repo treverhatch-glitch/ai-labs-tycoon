@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 396 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). SimTests pass in the hundreds, including balance soaks and saves through schema 11. The Unity project lives under `unity/` (garage grid, HUD, week button in code); GameCI runs on PRs that touch `unity/**`; full editor verification is on the PC.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -102,9 +102,8 @@ and says why in the commit message.
 
 Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
-1. Create the Unity 6 project in `unity/` with `Rules/` as a local package. No rules in Unity scripts: Unity sends
-   `Command`s and draws `GameState`.
-2. A first scene built in code: the garage lot as a grid, rooms as coloured blocks, a week button, cash and date.
+1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
+2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3.
 3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
 4. The model mascots and their three states; the glow.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
