@@ -480,6 +480,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Schema 9 copies displayed from true on migrate; rung 3 closes the gap. Golden digest `463eb18f…`.
 - Why: NEXT item 8 and DESIGN.md ladder fiction; item 8's sandbagging needed item 3's breakdown first (Q77).
 
+### Q81. Alignment and staff test depth? DECIDED: integration facts for gap, poach, stars
+
+- Options: (a) keep three smoke tests per feature; (b) add sandbag scandal gap-close, star research permille, feud poach, and migration count checks on the existing schema-2 fixture.
+- Recommendation and choice: **(b)**. No new golden for test-only commit unless a soak moves.
+- Why: user review expected deeper coverage before the branch ships.
+
 ### Q80. Staff pools or people? DECIDED: `StaffMember`, traits, morale drift, feud poaching
 
 - Options: (a) keep role counts; (b) one save row per person with trait and morale, hire/fire by individual, stars poached when a rival is in a feud.

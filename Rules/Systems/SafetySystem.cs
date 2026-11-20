@@ -34,7 +34,7 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Max(0, DisplayedAlignment(model) - trueReading);
         }
 
-        static int PickRung(GameConfig c, ModelState model)
+        public static int PickIncidentRung(GameConfig c, ModelState model)
         {
             if (AlignmentGap(c, model) >= c.Safety.SandbagGapPermille) return 3;
             if (model.Alignment < c.Safety.Rung2BelowAlignment) return 2;
@@ -58,7 +58,7 @@ namespace AiLabs.Rules.Systems
 
         static void Incident(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            int rung = PickRung(c, model);
+            int rung = PickIncidentRung(c, model);
             IncidentRungConfig def = c.Safety.IncidentRung(rung);
             if (def == null) def = c.Safety.IncidentRungs.Count > 0 ? c.Safety.IncidentRungs[0] : null;
 

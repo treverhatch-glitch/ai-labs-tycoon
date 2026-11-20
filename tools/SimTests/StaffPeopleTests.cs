@@ -37,12 +37,48 @@ public class StaffPeopleTests
     }
 
     [Fact]
-    public void Schema_9_staff_pools_become_named_people()
+    public void Stars_earn_more_research_points_per_week_than_steady_hires()
+    {
+        var steady = Game.Solo();
+        steady.Build("research-lab", 4, 4);
+        steady.Hire("researcher", 3);
+        foreach (StaffMember p in steady.Me.Staff) p.TraitId = "steady";
+
+        var stars = Game.Solo(seed: steady.State.Seed);
+        stars.Build("research-lab", 4, 4);
+        stars.Hire("researcher", 3);
+        foreach (StaffMember p in stars.Me.Staff) p.TraitId = "star";
+
+        steady.Weeks(4);
+        stars.Weeks(4);
+        Assert.True(stars.Me.ResearchPoints > steady.Me.ResearchPoints);
+    }
+
+    [Fact]
+    public void A_feuding_rival_can_poach_a_star_from_the_player()
+    {
+        var g = Game.New(seed: 77);
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        g.Me.Staff[0].TraitId = "star";
+        int before = g.Me.Staff.Count;
+        LabState rival = g.Rival("openaye");
+        rival.FeelingToPlayer = g.C.Rivalry.Feelings.FeudBelow - 100;
+        g.C.StaffPeople.PoachChancePermille = 1000;
+        g.Until(() => g.State.Events.Any(e => e.Kind == EventKind.StaffPoached), 60, "a poach");
+        Assert.True(g.Me.Staff.Count < before);
+        Assert.DoesNotContain(g.Me.Staff, p => p.TraitId == "star");
+    }
+
+    [Fact]
+    public void Schema_10_migration_splits_role_pools_into_people()
     {
         Simulation sim = Simulation.Load(TestData.Config(), MigrationTests.Schema2Save());
-        Assert.Equal(10, sim.State.Schema);
-        int people = sim.Player.Staff.Count;
-        Assert.True(people > 0);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
+        int researchers = LabQueries.StaffCount(sim.Player, "researcher");
+        int headCount = sim.Player.Staff.Count;
+        Assert.True(headCount >= researchers);
+        Assert.Equal(researchers, sim.Player.Staff.Count(p => p.RoleId == "researcher"));
         Assert.All(sim.Player.Staff, p => Assert.False(string.IsNullOrEmpty(p.TraitId)));
     }
 }
