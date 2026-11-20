@@ -44,7 +44,9 @@ namespace AiLabs.Unity.Bootstrap
             _grid.Bind(_host.Simulation);
 
             var hud = HqHudView.Create(transform, _host);
-            RoomBuildPanel buildPanel = RoomBuildPanel.Create(hud.transform.parent, _host);
+            Transform canvas = hud.transform.parent;
+            RoomBuildPanel buildPanel = RoomBuildPanel.Create(canvas, _host);
+            StaffGpuPanel.Create(canvas, _host);
             _roomBuild = hq.AddComponent<RoomBuildController>();
             _roomBuild.Bind(_host, buildPanel);
         }

@@ -50,6 +50,7 @@ You do not need to create it from a template unless the folder is missing.
 | Packages window | `com.hatchtag.ailabs.rules` resolves to `Rules/` |
 | Play (any empty scene) | `GameBootstrap` auto-starts: **14×10 garage grid**, HUD with cash, date, era name, **Advance week** |
 | Build panel (left) | Lists era-open room types; **drag on the lot** (not over UI) places a room via `BuildRoom` |
+| Staff/GPU panel (right) | Hire/fire roles and rent/buy GPUs; refusals show in the panel status line |
 | Advance week | Date/tick move; cash changes when the sim bills the lab |
 | Test Runner > Edit Mode | All tests in `Assets/Editor/Tests` pass |
 
