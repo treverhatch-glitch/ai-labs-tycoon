@@ -12,7 +12,7 @@
       "tagline": "Cosy, slow and broke. AI is a dirty word and the internet is booming.",
       "modelsCanDo": "Rules engines, game bots and spam filters.",
       "unlocks": [ "Game AI and chess bots", "Expert systems", "Spam filtering and search", "Translation and ad targeting", "The dot-com bubble and crash" ],
-      "trainingCostPermille": 1000, "researchPermille": 1000, "startCashPermille": 1000, "startGrantPermille": 1000, "startLotId": "garage",
+      "trainingCostPermille": 1500, "researchPermille": 1000, "startCashPermille": 1000, "startGrantPermille": 1000, "startLotId": "garage",
       "startTechs": [  ],
       "incidentHeadlines": [
         "{model} taught every guard in the game to walk into the same wall.",
@@ -1176,7 +1176,7 @@
           { "roleId": "roboticist", "count": 1, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 300,
-        "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
+        "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 75, "ownGpus": false,
         "trainingSharePermille": 750, "alignmentSharePermille": 50,
         "reserveWeeks": 8, "maxRunWeeks": 40, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1201,7 +1201,7 @@
           { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 250,
-        "gpus": 7, "gpuGrowthPermillePerYear": 350, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
+        "gpus": 7, "gpuGrowthPermillePerYear": 350, "wealthGrowthPermillePerMillion": 75, "ownGpus": false,
         "trainingSharePermille": 700, "alignmentSharePermille": 250,
         "reserveWeeks": 12, "maxRunWeeks": 60, "minGainPermille": 50,
         "sectors": [ "expert-systems", "spam-search", "game-bots", "game-ai", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "coding-agents", "enterprise-knowledge", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1226,7 +1226,7 @@
           { "roleId": "infra", "count": 6, "fromYear": 2008 }
         ],
         "staffGrowthPermillePerYear": 300,
-        "gpus": 12, "gpuGrowthPermillePerYear": 500, "wealthGrowthPermillePerMillion": 150, "ownGpus": true,
+        "gpus": 12, "gpuGrowthPermillePerYear": 500, "wealthGrowthPermillePerMillion": 75, "ownGpus": true,
         "trainingSharePermille": 800, "alignmentSharePermille": 80,
         "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "cybersecurity", "finance-trading", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1248,7 +1248,7 @@
           { "roleId": "infra", "count": 2, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 250,
-        "gpus": 24, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 100, "ownGpus": true,
+        "gpus": 24, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 70, "ownGpus": true,
         "trainingSharePermille": 750, "alignmentSharePermille": 150,
         "reserveWeeks": 10, "maxRunWeeks": 80, "minGainPermille": 150,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1269,7 +1269,7 @@
           { "roleId": "infra", "count": 2, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 300,
-        "gpus": 30, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 100, "ownGpus": true,
+        "gpus": 30, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 70, "ownGpus": true,
         "trainingSharePermille": 800, "alignmentSharePermille": 60,
         "reserveWeeks": 6, "maxRunWeeks": 30, "minGainPermille": 30,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1298,7 +1298,7 @@
           { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 300,
-        "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
+        "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 75, "ownGpus": false,
         "trainingSharePermille": 700, "alignmentSharePermille": 200,
         "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
@@ -1325,7 +1325,7 @@
       { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
     ],
     "staffGrowthPermillePerYear": 300,
-    "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
+    "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 75, "ownGpus": false,
     "trainingSharePermille": 700, "alignmentSharePermille": 200,
     "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
     "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],

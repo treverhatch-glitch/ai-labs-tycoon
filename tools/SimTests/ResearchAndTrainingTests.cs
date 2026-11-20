@@ -56,7 +56,7 @@ public class ResearchAndTrainingTests
         long cash = g.Me.Cash;
 
         ModelState model = g.Train("mini", 200);
-        Assert.Equal(cash - g.C.Line("mini").PrepCost, g.Me.Cash);
+        Assert.Equal(cash - EraSystem.RunPrepCost(g.C, g.C.Line("mini"), g.Tick), g.Me.Cash);
         Assert.Equal(ModelStatus.Training, model.Status);
         Assert.Equal(0, model.Capability);
 

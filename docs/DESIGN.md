@@ -249,5 +249,5 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Gap to incidents: the incident rate rises as the safety meter falls | Tested |
 | Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
 | Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
-| Bot balance over 200 games and 3 presets | A 40-world autopilot soak for now |
+| Bot balance over 200 games and 3 presets | `BalanceSoak` + `BalanceTests` (CI default 24/preset; `BALANCE_SOAK_FULL` for 200) |
 | Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |

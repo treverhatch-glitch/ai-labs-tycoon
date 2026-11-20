@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Globalization;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
@@ -56,44 +57,36 @@ public static class Program
     /// <summary>Plays many seeds and prints how the labs fared: a quick look at balance.</summary>
     static int Soak(string[] args, int years, long firstSeed, bool autopilot)
     {
-        int games = int.Parse(Option(args, "--games", "50"), CultureInfo.InvariantCulture);
+        int gamesPerPreset = int.Parse(Option(args, "--games", "50"), CultureInfo.InvariantCulture);
+        string presetId = Option(args, "--preset", "");
         GameConfig config = GameConfig.FromJson(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Data", "default-config.json")));
-        int labs = 1;
-        foreach (RivalConfig rival in config.Rivals) if (rival.JoinsYear < RivalConfig.NeverJoins) labs++;
-        var alive = new int[labs];
-        var crowns = new int[labs];
-        var cash = new List<long>[labs];
-        var names = new string[labs];
-        for (int i = 0; i < labs; i++) cash[i] = new List<long>();
-
-        for (int g = 0; g < games; g++)
+        BalanceSoak.Preset[] presets = BalanceSoak.DefaultPresets(config);
+        if (presetId != "")
         {
-            Simulation sim = Simulation.NewGame(config, NewGame(args, firstSeed + g));
-            for (int week = 0; week < years * config.Calendar.WeeksPerYear; week++)
-            {
-                if (autopilot && GameDate.IsMonthStart(config.Calendar, sim.Tick)) sim.RunPlan(sim.Player.Id, config.Autopilot);
-                sim.Step();
-            }
-            List<GauntletEntry> crown = GauntletSystem.Latest(sim.State, GauntletSystem.CrownBracket);
-            for (int i = 0; i < labs && i < sim.State.Labs.Count; i++)
-            {
-                LabState lab = sim.State.Labs[i];
-                names[i] = lab.Name;
-                if (!lab.Bankrupt) alive[i]++;
-                cash[i].Add(lab.Cash);
-                if (crown.Count > 0 && crown[0].LabId == lab.Id) crowns[i]++;
-            }
+            presets = new[] { PickPreset(presets, presetId) ?? presets[0] };
+            gamesPerPreset = int.Parse(Option(args, "--games", "200"), CultureInfo.InvariantCulture);
+        }
+        if (!autopilot)
+        {
+            Console.Error.WriteLine("soak ignores --player idle; rival plans still run on their own.");
         }
 
-        Console.WriteLine($"{games} games of {years} years, seeds {firstSeed} to {firstSeed + games - 1}");
-        Console.WriteLine($"{"lab",-14}{"alive",8}{"crowns",8}{"median cash",14}{"worst cash",14}");
-        for (int i = 0; i < labs; i++)
+        BalanceSoak.Result result = BalanceSoak.Run(config, gamesPerPreset, years, firstSeed, presets);
+        int total = result.TotalGames;
+        Console.WriteLine($"{total} games of {years} years across {result.Presets.Count} preset(s), seeds from {firstSeed}");
+        foreach (BalanceSoak.PresetResult row in result.Presets)
         {
-            if (cash[i].Count == 0) continue;
-            cash[i].Sort();
-            Console.WriteLine($"{names[i],-14}{alive[i],8}{crowns[i],8}{cash[i][cash[i].Count / 2],14}{cash[i][0],14}");
+            Console.WriteLine($"  preset {row.PresetId}: rival survived {row.RivalSurvivedGames}/{row.Games}, money pressure {row.MoneyMattersGames}/{row.Games}, max crown {(BalanceSoak.MaxCrownSharePermille(row) / 10.0):F1}%");
+            foreach (KeyValuePair<string, int> crown in row.Crowns.OrderByDescending(e => e.Value))
+                Console.WriteLine($"    {crown.Key,-14}{crown.Value}");
         }
         return 0;
+    }
+
+    static BalanceSoak.Preset PickPreset(BalanceSoak.Preset[] presets, string id)
+    {
+        for (int i = 0; i < presets.Length; i++) if (presets[i].Id == id) return presets[i];
+        return null;
     }
 
     static NewGameOptions NewGame(string[] args, long seed)

@@ -6,21 +6,21 @@ time.
 
 ## Where things stand
 
-The rules core plays a whole game headless from 1995 or 2009 to 2035: rooms, staff, GPUs, research, training,
+The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs, research, training,
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 310 tests pass, including 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 325 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
 - **Eras 2 to 8 are first-pass content.** Every era has techs, sectors, rooms, headlines and events, and the
   autopilot reaches the end of the tree by 2034. Names, blurbs and the numbers are tuned to keep a whole life
-  solvent, not yet to be fun at each step: the bot-balance item below is how that gets checked. The content tables are in
+  solvent, not yet to be fun at each step; the eight-year balance soak is the first check. The content tables are in
   [content/](content/eras.md); [QUESTIONS.md](QUESTIONS.md) lists the choices taken.
 - **Training cost per era is retuned for GPU generations.** Hardware generations landed, so the era multipliers were
-  scaled down by the compute-per-dollar they add (Q35). Late-game cash is much higher than it was; the bot-balance
-  item below is how that gets checked.
+  scaled down by the compute-per-dollar they add (Q35). Late-game cash is still higher than at launch; Q76 retuned
+  dial-up costs and wealth growth for the eight-year soak.
 - **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
   functions; a room is built for what it seats or holds.
 - **The cast is five labs.** OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak
@@ -74,8 +74,10 @@ and says why in the commit message.
    corrupts displayed readings, so it lands after item 3.
 9. **Staff as people.** Traits, morale, poaching by rivals. Changes how `StaffPool` is stored, so it needs a save
    migration (the `SaveGame.Migrate` hook is there for it).
-10. **Bot balance at scale.** `simcli soak` over 200 games and 3 player presets as a test: no preset wins more than
-    60%, a rival survives in 95% of games, money still matters in year 8.
+10. ~~**Bot balance at scale.**~~ Done: `BalanceSoak` in `Rules/Sim`, `simcli soak` with three presets, `BalanceTests`
+    (default 24 games per preset; set `BALANCE_SOAK_FULL=1` for 200 each; optional `BALANCE_SOAK_GAMES_PER_PRESET`).
+    Dial-up `trainingCostPermille` raised to 1500 and plan `wealthGrowthPermillePerMillion` cut (Q72); Envydia
+    courting still waits on cast chip share (Q67).
 11. **Endings that continue.** Bankrupt, Ousted and Exit as recorded moments after which play goes on. Planned as
     phase F of the systems design (an Exit keeps the lab as a plan-run rival, Q24).
 
