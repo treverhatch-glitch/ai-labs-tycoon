@@ -1,0 +1,14 @@
+* text=auto eol=lf
+
+*.cs      text diff=csharp
+*.csproj  text
+*.props   text
+*.sln     text
+*.json    text
+*.asmdef  text linguist-language=json
+*.md      text
+*.yml     text
+
+*.pdf     binary
+*.png     binary
+*.jpg     binary

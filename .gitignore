@@ -1,0 +1,50 @@
+# .NET build output (Directory.Build.props sends everything to .build/, so Unity never sees bin/ or obj/ in Rules/)
+.build/
+bin/
+obj/
+TestResults/
+*.user
+*.suo
+.vs/
+.idea/
+.vscode/
+
+# Secrets, licences and keys never go in this repo (it is public). Unity credentials live in GitHub Actions secrets.
+.env
+.env.*
+!.env.example
+*.ulf
+*.alf
+Unity_lic*.xml
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa*
+id_ed25519*
+
+# Unity-generated folders, only under unity/ (the root .sln and tools/*.csproj are ours and stay tracked)
+/unity/[Ll]ibrary/
+/unity/[Tt]emp/
+/unity/[Oo]bj/
+/unity/[Bb]uild/
+/unity/[Bb]uilds/
+/unity/[Ll]ogs/
+/unity/[Uu]ser[Ss]ettings/
+/unity/[Mm]emoryCaptures/
+/unity/*.csproj
+/unity/*.sln
+/unity/*.pidb
+/unity/*.booproj
+
+# Unity writes .meta files beside the rules sources when it imports Rules/ as a package. They are the same on every
+# machine once made, so they are tracked when the Unity project first imports the package (docs/SETUP-PC.md).
+
+# The studio harness's local state, if a studio is ever run from inside this folder
+.studio/
+.lanes/
+
+# OS
+.DS_Store
+Thumbs.db
