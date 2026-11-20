@@ -26,6 +26,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 9) MigrateTo9(root);
             if (fromSchema < 10) MigrateTo10(c, root);
             if (fromSchema < 11) MigrateTo11(root);
+            if (fromSchema < 12) MigrateTo12(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -251,6 +252,11 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(s, "queuedGpus", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(s, "queueHoldingId", JsonValue.Of((long)HardwareBatch.Hq));
             });
+        }
+
+        static void MigrateTo12(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "bubblePermille", JsonValue.Of(0L));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

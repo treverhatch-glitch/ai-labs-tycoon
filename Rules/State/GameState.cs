@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 11;
+        public const int CurrentSchema = 12;
 
         public int Schema;
         public string ConfigVersion;
@@ -34,6 +34,8 @@ namespace AiLabs.Rules.State
         public List<FoundryMonth> Foundry = new List<FoundryMonth>();
         /// <summary>The lab the player controls, or -1 when spectating.</summary>
         public int PlayerLabId;
+        /// <summary>Circular-financing bubble pressure shared by the whole economy (0–1000).</summary>
+        public int BubblePermille;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -82,6 +84,7 @@ namespace AiLabs.Rules.State
             s.StrList("pendingRivals", ref PendingRivals);
             s.ObjList("foundry", ref Foundry);
             s.Int("playerLabId", ref PlayerLabId);
+            s.Int("bubblePermille", ref BubblePermille);
             s.ObjList("endings", ref Endings);
         }
     }

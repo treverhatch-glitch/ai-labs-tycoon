@@ -166,6 +166,7 @@ namespace AiLabs.Rules.Sim
                 LabState player = state.Player;
                 if (player != null && !player.Bankrupt) ShadySystem.RunMonth(c, state, player);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);
+                BubbleSystem.RunMonth(c, state);
             }
 
             if (GameDate.IsYearEnd(c.Calendar, tick))

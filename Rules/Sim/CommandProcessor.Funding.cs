@@ -20,6 +20,8 @@ namespace AiLabs.Rules.Sim
         return Fail(CommandError.EraLocked, round.Name + " opens in " + round.OpensYear + ".");
       if (lab.Reputation < round.MinReputation)
         return Fail(CommandError.InvalidArgument, round.Name + " needs reputation " + round.MinReputation + " or better.");
+      if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+        return FrozenIn(c, lab, lab.HomeBlocId);
       FundingSystem.ApplyRaise(c, state, lab, round);
       return CommandResult.Done(-1);
     }

@@ -534,6 +534,24 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `ShadyPathLaterTests.cs` at 12 facts; grey compute pays via `GreyCompute` special only (no double cash line); `SignReservedCompute` respects home freeze (Q42).
 - Why: NEXT shady path; pairs with alignment corruption trust (Q74).
 
+### Q89. Freeze permits and audit investigation floor? DECIDED: block growth commands; `OnAuditOpen` uses audit permille
+
+- Options: (a) only reserved compute; (b) refuse funding, GPU queue, and site growth in frozen blocs; audit uses `auditInvestigationPermille` on escalation.
+- Recommendation and choice: **(b)**. `FreezeAuditLaterTests.cs` at 12 facts; audit fines use `LabState.LastWeek.Revenue`.
+- Why: systems design §2 Freeze command list and shady audit hook (Q45 tail).
+
+### Q90. Bubble meter? DECIDED: schema 12 `bubblePermille`, config-driven boosts and decay
+
+- Options: (a) defer until shares; (b) monthly meter with funding, listings, and event hooks from config.
+- Recommendation and choice: **(b)**. `BubbleMeterTests.cs` at 12 facts; `MigrateTo12` defaults meter to 0.
+- Why: systems design bubble hook on `BuyListedChips` and circular financing lead-in.
+
+### Q91. Incident rungs 4–6? DECIDED: corruption mins 250/450/700, six rungs in config
+
+- Options: (a) rung 3 only; (b) corruption thresholds for rungs 4–6 before sandbag/alignment picks; validator allows optional upper rungs.
+- Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
+- Why: bible safety ladder; pairs with corruption incident weight (Q74).
+
 ## Open
 
 None.

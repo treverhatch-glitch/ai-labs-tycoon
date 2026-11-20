@@ -46,6 +46,7 @@ namespace AiLabs.Rules.Config
         public MarketConfig Market;
         public FinanceConfig Finance;
         public FundingConfig Funding;
+        public BubbleConfig Bubble;
         public StaffPeopleConfig StaffPeople;
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
@@ -77,6 +78,7 @@ namespace AiLabs.Rules.Config
             s.Obj("market", ref Market);
             s.Obj("finance", ref Finance);
             s.Obj("funding", ref Funding);
+            s.Obj("bubble", ref Bubble);
             s.Obj("staffPeople", ref StaffPeople);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
@@ -542,6 +544,9 @@ namespace AiLabs.Rules.Config
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
         public int SandbagGapPermille;
+        public int Rung4CorruptionMin;
+        public int Rung5CorruptionMin;
+        public int Rung6CorruptionMin;
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -565,6 +570,9 @@ namespace AiLabs.Rules.Config
             s.ObjList("incidentRungs", ref IncidentRungs);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
+            s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);
+            s.Int("rung5CorruptionMin", ref Rung5CorruptionMin);
+            s.Int("rung6CorruptionMin", ref Rung6CorruptionMin);
         }
     }
 

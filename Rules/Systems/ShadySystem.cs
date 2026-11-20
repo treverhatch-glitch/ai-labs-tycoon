@@ -55,7 +55,13 @@ namespace AiLabs.Rules.Systems
         public static void OnAuditOpen(GameConfig c, GameState state, LabState lab)
         {
             if (ShadyQueries.CaseOpen(lab, state.Tick)) return;
-            TryOpenCase(c, state, lab, "audit");
+            int permille = c.Shady.AuditInvestigationPermille;
+            if (lab.Heat > c.Shady.InvestigationThreshold)
+                permille = (int)MathI.Max(permille, (MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor));
+            permille = (int)MathI.Clamp(permille, 0, 950);
+            if (!state.Rng.Shady.Chance(permille)) return;
+            lab.CaseEndsTick = state.Tick + c.Shady.CaseWeeks;
+            Events.Add(state, EventKind.ShadyInvestigation, lab.Id, -1, lab.Heat, "audit");
         }
 
         static void TryOpenCase(GameConfig c, GameState state, LabState lab, string tag)

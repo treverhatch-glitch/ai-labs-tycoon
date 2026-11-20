@@ -38,6 +38,8 @@ namespace AiLabs.Rules.Config
     public int MinReputation;
     /// <summary>Investor board seats added when the round closes.</summary>
     public int BoardSeats;
+    /// <summary>How much this round inflates the economy-wide bubble meter.</summary>
+    public int BubbleBoostPermille;
 
     public string Id { get { return IdValue; } }
 
@@ -50,6 +52,7 @@ namespace AiLabs.Rules.Config
       s.Int("dilutionPermille", ref DilutionPermille);
       s.Int("minReputation", ref MinReputation);
       s.Int("boardSeats", ref BoardSeats);
+      s.Int("bubbleBoostPermille", ref BubbleBoostPermille);
     }
   }
 }

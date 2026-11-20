@@ -31,6 +31,7 @@ namespace AiLabs.Rules.Systems
     {
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, round.Cash);
+      BubbleSystem.OnFundingRaise(c, state, round);
       lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - round.DilutionPermille);
       lab.BoardInvestorSeats += round.BoardSeats;
       TryOust(c, state, lab);

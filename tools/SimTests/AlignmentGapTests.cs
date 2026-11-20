@@ -107,7 +107,7 @@ public class AlignmentGapTests
     public void Honest_corruption_does_not_trigger_sandbag_rung_three()
     {
         var g = Game.Solo();
-        var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 400, Status = ModelStatus.Released };
+        var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 200, Status = ModelStatus.Released };
         Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > 0);
         Assert.Equal(0, SafetySystem.AlignmentGap(g.C, model));
         Assert.Equal(1, SafetySystem.PickIncidentRung(g.C, model));

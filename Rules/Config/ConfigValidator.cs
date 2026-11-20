@@ -122,19 +122,25 @@ namespace AiLabs.Rules.Config
             Permille(p, "safety.reputationBaseline", c.Safety.ReputationBaseline);
             Permille(p, "safety.sandbagGapPermille", c.Safety.SandbagGapPermille);
             Permille(p, "safety.rung2BelowAlignment", c.Safety.Rung2BelowAlignment);
-            if (c.Safety.IncidentRungs.Count != 3) p.Add("safety.incidentRungs must have exactly three rungs");
+            if (c.Safety.IncidentRungs.Count < 3) p.Add("safety.incidentRungs needs at least three rungs");
             UniqueIds(p, "safety.incidentRungs", c.Safety.IncidentRungs);
-            var rungSeen = new bool[4];
+            var rungSeen = new bool[7];
             for (int i = 0; i < c.Safety.IncidentRungs.Count; i++)
             {
                 IncidentRungConfig r = c.Safety.IncidentRungs[i];
-                if (r.Rung < 1 || r.Rung > 3) p.Add("incident rung " + r.Id + " must be from 1 to 3");
+                if (r.Rung < 1 || r.Rung > 6) p.Add("incident rung " + r.Id + " must be from 1 to 6");
                 else if (rungSeen[r.Rung]) p.Add("safety.incidentRungs has more than one entry for rung " + r.Rung);
                 else rungSeen[r.Rung] = true;
                 if (r.FinePermille < 0) p.Add("incident rung " + r.Id + " has negative finePermille");
                 if (r.ReputationLoss < 0) p.Add("incident rung " + r.Id + " has negative reputationLoss");
             }
             if (!rungSeen[1] || !rungSeen[2] || !rungSeen[3]) p.Add("safety.incidentRungs must name rungs 1, 2 and 3 exactly once each");
+            if (rungSeen[4] || rungSeen[5] || rungSeen[6])
+            {
+                if (c.Safety.Rung4CorruptionMin < 1 || c.Safety.Rung5CorruptionMin <= c.Safety.Rung4CorruptionMin
+                    || c.Safety.Rung6CorruptionMin <= c.Safety.Rung5CorruptionMin)
+                    p.Add("safety rung4/5/6 corruption thresholds must rise from 1");
+            }
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
@@ -186,6 +192,7 @@ namespace AiLabs.Rules.Config
             ChipsProblems(p, c);
             EndingsProblems(p, c);
             ShadyProblems(p, c);
+            BubbleProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
@@ -215,6 +222,21 @@ namespace AiLabs.Rules.Config
             }
             Permille(p, "shady.launderKeepPermille", c.Shady.LaunderKeepPermille);
             if (c.Shady.LaunderHeatPer < 1) p.Add("shady.launderHeatPer must be at least 1");
+            Permille(p, "shady.auditInvestigationPermille", c.Shady.AuditInvestigationPermille);
+        }
+
+        static void BubbleProblems(List<string> p, GameConfig c)
+        {
+            BubbleConfig b = c.Bubble;
+            if (b == null) { p.Add("bubble is missing"); return; }
+            Permille(p, "bubble.decayPermillePerMonth", b.DecayPermillePerMonth);
+            Permille(p, "bubble.popAtPermille", b.PopAtPermille);
+            Permille(p, "bubble.listedChipBoostPermille", b.ListedChipBoostPermille);
+            Permille(p, "bubble.defaultFundingBoostPermille", b.DefaultFundingBoostPermille);
+            Permille(p, "bubble.weakCashHaircutPermille", b.WeakCashHaircutPermille);
+            if (b.SurvivorRevenuePpm < 0) p.Add("bubble.survivorRevenuePpm is negative");
+            if (!string.IsNullOrEmpty(b.PopWorldEventId) && c.WorldEvent(b.PopWorldEventId) == null)
+                p.Add("bubble.popWorldEventId names unknown world event \"" + b.PopWorldEventId + "\"");
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)

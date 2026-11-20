@@ -35,6 +35,9 @@ namespace AiLabs.Rules.Systems
 
         public static int PickIncidentRung(GameConfig c, ModelState model)
         {
+            if (c.Safety.IncidentRung(6) != null && model.Corruption >= c.Safety.Rung6CorruptionMin) return 6;
+            if (c.Safety.IncidentRung(5) != null && model.Corruption >= c.Safety.Rung5CorruptionMin) return 5;
+            if (c.Safety.IncidentRung(4) != null && model.Corruption >= c.Safety.Rung4CorruptionMin) return 4;
             if (AlignmentGap(c, model) >= c.Safety.SandbagGapPermille) return 3;
             if (model.Alignment < c.Safety.Rung2BelowAlignment) return 2;
             return 1;
