@@ -47,6 +47,8 @@ namespace AiLabs.Rules.Config
         public FinanceConfig Finance;
         public FundingConfig Funding;
         public BubbleConfig Bubble;
+        public SharesConfig Shares;
+        public RegulatorsConfig Regulators;
         public StaffPeopleConfig StaffPeople;
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
@@ -79,6 +81,8 @@ namespace AiLabs.Rules.Config
             s.Obj("finance", ref Finance);
             s.Obj("funding", ref Funding);
             s.Obj("bubble", ref Bubble);
+            s.Obj("shares", ref Shares);
+            s.Obj("regulators", ref Regulators);
             s.Obj("staffPeople", ref StaffPeople);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);

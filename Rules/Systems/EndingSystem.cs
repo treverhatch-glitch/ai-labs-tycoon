@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Systems
                 BlocStanding s = player.Bloc(bloc);
                 if (s != null) s.Attention = (int)MathI.Min(MathI.Permille, s.Attention + cfg.MonopolyAttention);
             }
+            RegulatorSystem.OnMonopoly(c, state, player);
             Add(state, player.Id, MonopolyId);
             Events.Add(state, EventKind.EndingReached, player.Id, -1, 0, MonopolyId);
         }

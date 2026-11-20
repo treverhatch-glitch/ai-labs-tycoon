@@ -552,6 +552,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
 - Why: bible safety ladder; pairs with corruption incident weight (Q74).
 
+### Q92. Rival shares and regulators vs monopoly? DECIDED: public float, IPO loop, scrutiny
+
+- Options: (a) defer until funding shares UI; (b) plan-run `publicFloatPpm`, monthly IPO when bubble hot, regulator attention on dominance and monopoly.
+- Recommendation and choice: **(b)**. Schema 13; `SharesRegulatorsLaterTests.cs` at 12 facts; golden digest re-recorded for share/regulator month hooks.
+- Why: systems design circular financing and monopoly antitrust (§5).
+
 ## Open
 
 None.

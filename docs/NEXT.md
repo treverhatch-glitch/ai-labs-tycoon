@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), and safety incident rungs 1–6. 464 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 12. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13). 476 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 12. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -92,7 +92,7 @@ and says why in the commit message.
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.
 - ~~**Incident rungs 4–6 (Q91).**~~ Done: corruption thresholds, six rungs in data, relaxed validator; `IncidentRungsLaterTests`.
-- Circular financing and **shares** in rivals; **monopoly** endings vs **regulators** (systems design §5).
+- ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
 - **Shady path** depth: per-job corruption on models; **China** bloc deals and export-rule interplay.
 - **Containment** rooms and **superintelligence** ending gates.
 - **Specialist** model lines, data sources, **open weights**, sector pricing.

@@ -193,6 +193,8 @@ namespace AiLabs.Rules.Config
             EndingsProblems(p, c);
             ShadyProblems(p, c);
             BubbleProblems(p, c);
+            SharesProblems(p, c);
+            RegulatorsProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
@@ -237,6 +239,27 @@ namespace AiLabs.Rules.Config
             if (b.SurvivorRevenuePpm < 0) p.Add("bubble.survivorRevenuePpm is negative");
             if (!string.IsNullOrEmpty(b.PopWorldEventId) && c.WorldEvent(b.PopWorldEventId) == null)
                 p.Add("bubble.popWorldEventId names unknown world event \"" + b.PopWorldEventId + "\"");
+        }
+
+        static void SharesProblems(List<string> p, GameConfig c)
+        {
+            SharesConfig s = c.Shares;
+            if (s == null) return;
+            if (s.RivalStartPublicFloatPpm < 0 || s.RivalMaxPublicFloatPpm < s.RivalStartPublicFloatPpm)
+                p.Add("shares rival public float bounds are out of order");
+            Permille(p, "shares.ipoWhenBubbleAtPermille", s.IpoWhenBubbleAtPermille);
+            if (s.IpoStepPpm < 0) p.Add("shares.ipoStepPpm is negative");
+            Permille(p, "shares.ipoBubbleBoostPermille", s.IpoBubbleBoostPermille);
+        }
+
+        static void RegulatorsProblems(List<string> p, GameConfig c)
+        {
+            RegulatorsConfig r = c.Regulators;
+            if (r == null) return;
+            Permille(p, "regulators.bubbleScrutinyAtPermille", r.BubbleScrutinyAtPermille);
+            if (r.ScrutinyRevenuePpm < 0) p.Add("regulators.scrutinyRevenuePpm is negative");
+            if (r.ScrutinyAttentionPerMonth < 0) p.Add("regulators.scrutinyAttentionPerMonth is negative");
+            if (r.MonopolyRegulatorAttention < 0) p.Add("regulators.monopolyRegulatorAttention is negative");
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)

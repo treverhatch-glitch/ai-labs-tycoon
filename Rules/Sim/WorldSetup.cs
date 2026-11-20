@@ -104,6 +104,7 @@ namespace AiLabs.Rules.Sim
             lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
             lab.FounderSharePermille = c.Funding.FounderStartPermille;
             lab.BoardInvestorSeats = 0;
+            if (c.Shares != null) lab.PublicFloatPpm = c.Shares.RivalStartPublicFloatPpm;
             lab.PlanPausedUntilTick = -1;
             lab.ChipAmbushUntilTick = -1;
             state.Labs.Add(lab);

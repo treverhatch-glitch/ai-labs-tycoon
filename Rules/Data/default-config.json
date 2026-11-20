@@ -5951,5 +5951,18 @@
     "defaultFundingBoostPermille": 120,
     "survivorRevenuePpm": 80000,
     "weakCashHaircutPermille": 200
+  },
+  "shares": {
+    "rivalStartPublicFloatPpm": 120000,
+    "rivalMaxPublicFloatPpm": 600000,
+    "ipoWhenBubbleAtPermille": 350,
+    "ipoStepPpm": 40000,
+    "ipoBubbleBoostPermille": 12
+  },
+  "regulators": {
+    "bubbleScrutinyAtPermille": 500,
+    "scrutinyRevenuePpm": 200000,
+    "scrutinyAttentionPerMonth": 25,
+    "monopolyRegulatorAttention": 150
   }
 }
