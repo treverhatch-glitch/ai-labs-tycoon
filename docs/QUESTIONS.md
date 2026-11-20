@@ -486,6 +486,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. No new golden for test-only commit unless a soak moves.
 - Why: user review expected deeper coverage before the branch ships.
 
+### Q83. Test depth for alignment, staff, and compute? DECIDED: paths, edges, migration, cross-system
+
+- Options: (a) ~3 smoke tests per feature; (b) a dozen-ish facts each covering main paths, zero/max/bankrupt edges, prior-schema load, save round-trip, and one cross-system tie (endings, feud feelings, GPU generations).
+- Recommendation and choice: **(b)**. `SaveSchemaPretend` rewinds saves for isolated migrations; 372 suite total after the three expansions (13 alignment, 12 staff, 14 compute in dedicated files).
+- Why: owner quality bar before further NEXT items; behaviour assertions only, not config parroting.
+
 ### Q82. Reserved compute and the Envydia queue? DECIDED: contracts, deposit, queue at month start
 
 - Options: (a) keep instant rent and spot buys only; (b) multi-year reserved contracts at `reservedRentPermille` with an upfront `reservedDepositWeeks` block, general compute while the contract runs; (c) when allocation is gone, queue units and buy them when the next month opens.
