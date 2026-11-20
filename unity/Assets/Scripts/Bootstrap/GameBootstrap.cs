@@ -23,7 +23,7 @@ namespace AiLabs.Unity.Bootstrap
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void AutoStart()
         {
-            if (FindObjectOfType<GameBootstrap>() != null) return;
+            if (Object.FindFirstObjectByType<GameBootstrap>() != null) return;
 
             var root = new GameObject("GameBootstrap");
             DontDestroyOnLoad(root);
@@ -78,7 +78,7 @@ namespace AiLabs.Unity.Bootstrap
                 cam.backgroundColor = new Color(0.55f, 0.65f, 0.72f);
             }
 
-            if (FindObjectOfType<Light>() == null)
+            if (Object.FindFirstObjectByType<Light>() == null)
             {
                 var lightGo = new GameObject("Directional Light");
                 var light = lightGo.AddComponent<Light>();
@@ -87,7 +87,7 @@ namespace AiLabs.Unity.Bootstrap
                 light.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
             }
 
-            if (FindObjectOfType<EventSystem>() == null)
+            if (Object.FindFirstObjectByType<EventSystem>() == null)
             {
                 var es = new GameObject("EventSystem");
                 es.AddComponent<EventSystem>();

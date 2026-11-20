@@ -20,7 +20,7 @@ PlayerSettings:
   m_SplashScreenLogoAnimationZoom: 1
   m_SplashScreenBackgroundLandscapeAspect: 1
   m_SplashScreenBackgroundPortraitAspect: 1
-  activeInputHandler: 2
+  activeInputHandler: 0
   editorOnly: 0
   cloudServicesEnabled: {}
   mipStripping: 0
