@@ -17,6 +17,7 @@ namespace AiLabs.Unity.Bootstrap
 
         SimulationHost _host;
         HqGridView _grid;
+        RoomBuildController _roomBuild;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void AutoStart()
@@ -42,7 +43,10 @@ namespace AiLabs.Unity.Bootstrap
             _grid = hq.AddComponent<HqGridView>();
             _grid.Bind(_host.Simulation);
 
-            HqHudView.Create(transform, _host);
+            var hud = HqHudView.Create(transform, _host);
+            RoomBuildPanel buildPanel = RoomBuildPanel.Create(hud.transform.parent, _host);
+            _roomBuild = hq.AddComponent<RoomBuildController>();
+            _roomBuild.Bind(_host, buildPanel);
         }
 
         void OnStateChanged()
