@@ -36,3 +36,8 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Fuzzer: 12 seeds × 160 commands covering every `CommandKind`, ~25% biased toward valid args; refusals must match pre-command digest; spectate keeps fuzzing rival labs.
 - Endless: default **6 years × 2 seeds** every run; **`BALANCE_SOAK_FULL=1`** runs **50 years × 3 seeds** with auto `bailout` / `found-again` on pending player endings, monthly invariants, and final save/load.
+
+### Q7. Bodies and Upward expansion slice? DECIDED: room + sector appeal kits
+
+- NEXT later item: expansion eras get `expansions.bodies` / `expansions.upward` kits (room type + sector ids + appeal bonus permille) applied in `DisplayQueries.AppealParts` once `EraSystem.Open` is true.
+- Why: self-contained from rivals (no shady/endings); data and rooms already shipped; avoids new commands or save fields.
