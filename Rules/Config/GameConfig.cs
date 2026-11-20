@@ -42,6 +42,8 @@ namespace AiLabs.Rules.Config
         public MarketConfig Market;
         public FinanceConfig Finance;
         public GauntletConfig Gauntlet;
+        public RivalryConfig Rivalry;
+        public VendorConfig Vendor;
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -66,6 +68,8 @@ namespace AiLabs.Rules.Config
             s.Obj("market", ref Market);
             s.Obj("finance", ref Finance);
             s.Obj("gauntlet", ref Gauntlet);
+            s.Obj("rivalry", ref Rivalry);
+            s.Obj("vendor", ref Vendor);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);
@@ -635,7 +639,12 @@ namespace AiLabs.Rules.Config
         /// <summary>Money from backers every week, for as long as the lab lives.</summary>
         public long BackerPerWeek;
         public string HomeBlocId;
+        /// <summary>The year the lab appears in the world. A lab with an earlier year than the game's start is there from the first week. <see cref="NeverJoins"/> is a lab kept in the data that never appears.</summary>
+        public int JoinsYear;
         public PlanConfig Plan;
+
+        /// <summary>A joinsYear that is never reached: a rival kept in the config as a spare, such as the successor that takes over when a lab fails.</summary>
+        public const int NeverJoins = 9999;
 
         public string Id { get { return IdValue; } }
 
@@ -651,6 +660,7 @@ namespace AiLabs.Rules.Config
             s.Int("reputation", ref Reputation);
             s.Long("backerPerWeek", ref BackerPerWeek);
             s.Str("homeBlocId", ref HomeBlocId);
+            s.Int("joinsYear", ref JoinsYear);
             s.Obj("plan", ref Plan);
         }
     }
@@ -684,6 +694,18 @@ namespace AiLabs.Rules.Config
         public int SiteAppetitePermille;
         /// <summary>The blocs the lab will build in.</summary>
         public List<string> SiteBlocs;
+        /// <summary>A trained model with less alignment than this is held back instead of released (0 releases everything).</summary>
+        public int MinReleaseAlignment;
+        /// <summary>The lab publishes its safety research: every other lab pays less for a safety tech the lab already has.</summary>
+        public bool PublishesSafetyResearch;
+        /// <summary>The chance, per year, that the board throws a fit and the plan stops for a few weeks.</summary>
+        public int DramaPermillePerYear;
+        /// <summary>The first year the lab designs its own chips (0 never).</summary>
+        public int ChipProgramYear;
+        /// <summary>The lab buys other labs' listed chips when they are cheaper per compute than the vendor's.</summary>
+        public bool BuysListedChips;
+        /// <summary>When above 0 the lab puts its own chips on sale at this mark-up over what they cost to make, in permille.</summary>
+        public int ListsChipsMarkupPermille;
 
         public void Sync(Syncer s)
         {
@@ -703,6 +725,12 @@ namespace AiLabs.Rules.Config
             s.StrList("sectors", ref Sectors);
             s.Int("siteAppetitePermille", ref SiteAppetitePermille);
             s.StrList("siteBlocs", ref SiteBlocs);
+            s.Int("minReleaseAlignment", ref MinReleaseAlignment);
+            s.Bool("publishesSafetyResearch", ref PublishesSafetyResearch);
+            s.Int("dramaPermillePerYear", ref DramaPermillePerYear);
+            s.Int("chipProgramYear", ref ChipProgramYear);
+            s.Bool("buysListedChips", ref BuysListedChips);
+            s.Int("listsChipsMarkupPermille", ref ListsChipsMarkupPermille);
         }
     }
 
@@ -710,11 +738,14 @@ namespace AiLabs.Rules.Config
     {
         public string RoleId;
         public int Count;
+        /// <summary>The first calendar year the plan hires this role (0 from the start), so a late team does not sink a young lab.</summary>
+        public int FromYear;
 
         public void Sync(Syncer s)
         {
             s.Str("roleId", ref RoleId);
             s.Int("count", ref Count);
+            s.Int("fromYear", ref FromYear);
         }
     }
 }

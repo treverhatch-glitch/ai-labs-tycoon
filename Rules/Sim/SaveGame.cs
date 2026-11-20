@@ -55,6 +55,7 @@ namespace AiLabs.Rules.Sim
             for (int i = 0; i < state.Labs.Count; i++)
                 for (int k = 0; k < c.World.Blocs.Count; k++)
                     if (state.Labs[i].Bloc(c.World.Blocs[k].Id) == null) state.Labs[i].Blocs.Add(WorldSetup.NewStanding(c.World.Blocs[k].Id));
+            for (int i = 0; i < state.Labs.Count; i++) VendorSystem.EnsureStanding(c, state, state.Labs[i].Id);
             state.ConfigVersion = c.Version;
         }
 
@@ -93,6 +94,10 @@ namespace AiLabs.Rules.Sim
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }
             }
+
+            foreach (VendorStanding standing in state.Vendor.Standings)
+                if (state.Lab(standing.LabId) == null) p.Add("the vendor holds a standing for lab " + standing.LabId + ", which does not exist");
+            foreach (string id in state.PendingRivals) if (c.Rival(id) == null) p.Add("the unknown rival \"" + id + "\" is due to join");
 
             foreach (SiteState site in state.Sites) if (c.World.Site(site.SiteId) == null) p.Add("the unknown site \"" + site.SiteId + "\"");
 

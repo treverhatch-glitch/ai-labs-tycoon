@@ -18,6 +18,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 1) throw new SaveException("Save schema " + fromSchema + " is not known.");
             if (fromSchema < 2) MigrateTo2(c, root);
             if (fromSchema < 3) MigrateTo3(c, root);
+            if (fromSchema < 4) MigrateTo4(c, root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -108,6 +109,58 @@ namespace AiLabs.Rules.Sim
                 }
                 JsonPatch.AddIfMissing(lab, "blocs", blocs);
             });
+        }
+
+        /// <summary>
+        /// Schema 4: rival depth. Every lab gets an empty decision log, no feeling about the player and no board fit or ambush. Every
+        /// hold gets a build start time of -1. The vendor appears with every lab at the starting standing and the month's supply split
+        /// evenly. A save that had rivals gets the later-joining rivals of the config as pending; a game with none (a solo game) stays empty.
+        /// </summary>
+        static void MigrateTo4(GameConfig c, JsonValue root)
+        {
+            long tick = JsonPatch.IntOr(root, "tick", 0);
+            int year = GameDate.Year(c.Calendar, (int)tick);
+            int supply = c.Vendor.SupplyInYear(year);
+            int labCount = 0;
+            bool hasRivals = false;
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                labCount++;
+                if (JsonPatch.StrOr(lab, "controller", "") == "Plan") hasRivals = true;
+            });
+
+            var standings = JsonValue.Array();
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "log", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "feelingToPlayer", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "planPausedUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "chipAmbushUntilTick", JsonValue.Of(-1L));
+                JsonPatch.ForEach(lab, "holdings", holding => JsonPatch.AddIfMissing(holding, "hallStartTick", JsonValue.Of(-1L)));
+
+                JsonValue s = JsonValue.Object();
+                s.Set("labId", JsonValue.Of(JsonPatch.IntOr(lab, "id", 0)));
+                s.Set("standing", JsonValue.Of((long)c.Vendor.StandingStart));
+                s.Set("boughtThisMonth", JsonValue.Of(0L));
+                s.Set("allocationThisMonth", JsonValue.Of((long)(supply / labCount)));
+                s.Set("sharePermille", JsonValue.Of(0L));
+                s.Set("fromBuying", JsonValue.Of(0L));
+                s.Set("fromChips", JsonValue.Of(0L));
+                s.Set("trainingChipSeen", JsonValue.Of(false));
+                standings.Add(s);
+            });
+
+            JsonValue vendor = JsonValue.Object();
+            vendor.Set("supplyThisMonth", JsonValue.Of((long)supply));
+            vendor.Set("standings", standings);
+            vendor.Set("log", JsonValue.Array());
+            JsonPatch.AddIfMissing(root, "vendor", vendor);
+
+            var pending = JsonValue.Array();
+            if (hasRivals)
+                foreach (RivalConfig rival in c.Rivals)
+                    if (rival.JoinsYear > year && rival.JoinsYear < RivalConfig.NeverJoins) pending.Add(JsonValue.Of(rival.Id));
+            JsonPatch.AddIfMissing(root, "pendingRivals", pending);
         }
 
         static JsonValue StreamAt(long state)

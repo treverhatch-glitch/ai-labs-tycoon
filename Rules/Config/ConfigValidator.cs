@@ -156,11 +156,14 @@ namespace AiLabs.Rules.Config
             {
                 if (c.Lot(rival.LotId) == null) p.Add("rival " + rival.Id + " starts on the unknown lot \"" + rival.LotId + "\"");
                 Permille(p, "rival " + rival.Id + " reputation", rival.Reputation);
+                if (rival.JoinsYear < 0) p.Add("rival " + rival.Id + " has a negative joinsYear");
                 PlanProblems(p, c, "rival " + rival.Id, rival.Plan);
             }
 
             PlanProblems(p, c, "autopilot", c.Autopilot);
 
+            RivalryProblems(p, c);
+            VendorProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
@@ -320,6 +323,59 @@ namespace AiLabs.Rules.Config
                 if (w.Bloc(rival.HomeBlocId) == null) p.Add("rival " + rival.Id + " has the unknown home bloc \"" + rival.HomeBlocId + "\"");
         }
 
+        static void RivalryProblems(List<string> p, GameConfig c)
+        {
+            RivalryConfig r = c.Rivalry;
+            if (r.LogMax < 1) p.Add("rivalry.logMax must be at least 1");
+            if (r.MinLoggedUnits < 1) p.Add("rivalry.minLoggedUnits must be at least 1");
+            Permille(p, "rivalry.rentLogPermille", r.RentLogPermille);
+            Permille(p, "rivalry.publishedDiscountPermille", r.PublishedDiscountPermille);
+            Permille(p, "rivalry.gateBoostPermille", r.GateBoostPermille);
+            if (r.BoardDramaWeeks < 1) p.Add("rivalry.boardDramaWeeks must be at least 1");
+            if (r.FastBuildWeeks < 1) p.Add("rivalry.fastBuildWeeks must be at least 1");
+            if (r.ReplaceTierGap < 1) p.Add("rivalry.replaceTierGap must be at least 1");
+
+            FeelingsConfig f = r.Feelings;
+            if (f.DriftPerMonth < 0) p.Add("rivalry.feelings.driftPerMonth is negative");
+            if (f.FeudBelow >= 0 || f.FeudBelow < -MathI.Permille) p.Add("rivalry.feelings.feudBelow must be from -1000 to -1");
+            if (f.FriendlyAbove <= 0 || f.FriendlyAbove > MathI.Permille) p.Add("rivalry.feelings.friendlyAbove must be from 1 to 1000");
+            if (f.FeudAttentionPerMonth < 0) p.Add("rivalry.feelings.feudAttentionPerMonth is negative");
+            Permille(p, "rivalry.feelings.listedBuyLimitPermille", f.ListedBuyLimitPermille);
+            Permille(p, "rivalry.feelings.friendlyBuyLimitPermille", f.FriendlyBuyLimitPermille);
+            if (f.FriendlyBuyLimitPermille < f.ListedBuyLimitPermille) p.Add("rivalry.feelings: a friendly rival must pay at least what a neutral one does");
+
+            foreach (string name in Enum.GetNames(typeof(AiLabs.Rules.State.DecisionAction)))
+                if (r.ActionTemplate(name) == null) p.Add("rivalry.actionTemplates has no sentence for the action " + name);
+            foreach (string name in Enum.GetNames(typeof(AiLabs.Rules.State.ReasonCode)))
+                if (r.ReasonTemplate(name) == null) p.Add("rivalry.reasonTemplates has no phrase for the reason " + name);
+            UniqueIds(p, "rivalry.actionTemplates", r.ActionTemplates);
+            UniqueIds(p, "rivalry.reasonTemplates", r.ReasonTemplates);
+        }
+
+        static void VendorProblems(List<string> p, GameConfig c)
+        {
+            VendorConfig v = c.Vendor;
+            if (v.SupplyByYear.Count == 0) { p.Add("vendor.supplyByYear is empty"); return; }
+            if (v.SupplyByYear[0].Year > c.Calendar.StartYear) p.Add("vendor.supplyByYear starts after the game does");
+            for (int i = 0; i < v.SupplyByYear.Count; i++)
+            {
+                if (v.SupplyByYear[i].Amount < 1) p.Add("vendor.supplyByYear has a month's supply below 1");
+                if (i > 0 && v.SupplyByYear[i].Year <= v.SupplyByYear[i - 1].Year) p.Add("vendor.supplyByYear must go up in years");
+            }
+            if (v.AllocationBase < 1) p.Add("vendor.allocationBase must be at least 1");
+            if (v.StandingMax < 1 || v.StandingStart < 0 || v.StandingStart > v.StandingMax) p.Add("vendor.standingStart must be from 0 to standingMax");
+            if (v.GpusPerStanding < 1) p.Add("vendor.gpusPerStanding must be at least 1");
+            if (v.TrainingTapeOutDrop < 0 || v.DeliveryDrop < 0 || v.ListingDrop < 0 || v.DriftPerMonth < 0) p.Add("vendor has a negative standing change");
+            if (v.KeynoteMonth < 1 || v.KeynoteMonth > c.Calendar.MonthsPerYear) p.Add("vendor.keynoteMonth must be from 1 to " + c.Calendar.MonthsPerYear);
+            Permille(p, "vendor.keynoteSupplyPermille", v.KeynoteSupplyPermille);
+            if (v.AmbushLookbackWeeks < 0 || v.AmbushWeeks < 0) p.Add("vendor has a negative ambush time");
+            Permille(p, "vendor.courtingSharePermille", v.CourtingSharePermille);
+            Permille(p, "vendor.shareLogPermille", v.ShareLogPermille);
+            if (v.LogMax < 1) p.Add("vendor.logMax must be at least 1");
+            if (v.LowStandingMarkupPermille < 0 || v.OwnChipsMarkupPermille < 0 || v.HighStandingDiscountPermille < 0 || v.HighStandingDiscountPermille >= MathI.Permille)
+                p.Add("vendor has an impossible price change");
+        }
+
         static void WorldEventProblems(List<string> p, GameConfig c)
         {
             for (int i = 0; i < c.WorldEvents.Count; i++)
@@ -355,6 +411,7 @@ namespace AiLabs.Rules.Config
             {
                 if (c.Role(st.RoleId) == null) p.Add(who + " plans to hire the unknown role \"" + st.RoleId + "\"");
                 if (st.Count < 0) p.Add(who + " plans a negative head count");
+                if (st.FromYear < 0) p.Add(who + " plans to hire " + st.RoleId + " from a negative year");
             }
             foreach (string sector in plan.Sectors)
                 if (c.Sector(sector) == null) p.Add(who + " plans to sell into the unknown sector \"" + sector + "\"");
@@ -366,6 +423,10 @@ namespace AiLabs.Rules.Config
             if (plan.ReserveWeeks < 0) p.Add(who + " has a negative reserveWeeks");
             if (plan.MaxRunWeeks < 1) p.Add(who + " needs maxRunWeeks of at least 1");
             Permille(p, who + " siteAppetitePermille", plan.SiteAppetitePermille);
+            Permille(p, who + " minReleaseAlignment", plan.MinReleaseAlignment);
+            Permille(p, who + " dramaPermillePerYear", plan.DramaPermillePerYear);
+            if (plan.ChipProgramYear < 0) p.Add(who + " has a negative chipProgramYear");
+            if (plan.ListsChipsMarkupPermille < 0) p.Add(who + " has a negative listsChipsMarkupPermille");
             foreach (string bloc in plan.SiteBlocs)
                 if (c.World.Bloc(bloc) == null) p.Add(who + " plans to build in the unknown bloc \"" + bloc + "\"");
         }

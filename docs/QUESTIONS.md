@@ -191,7 +191,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q30. New rivals mid-game? DECIDED: data-driven arrivals by year
 
 - Options: (a) data-driven arrivals by year (Goggle DeepMined 2010, DeepSneak 2023); (b) all labs from day one.
-- Recommendation and choice: **(a)**; not built yet (phase C).
+- Recommendation and choice: **(a)**; built (phase C): `RivalConfig.joinsYear`, `GameState.PendingRivals`, `RivalSystem.RunArrivals`.
 - Why: the bible says more labs arrive with the eras; a 1995 start with Goggle DeepMined would break the era fiction.
 
 ### Q31. Local politics and weather in v1? DECIDED: heatwaves and the town vote only
@@ -215,7 +215,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q34. Cast names for the arrivals? DECIDED: the bible's parody near-misses
 
 - Options: (a) the bible's suggested parodies (Goggle DeepMined / Sunder Pitchai / Gemeny; DeepSneak with no named boss); (b) fully invented names.
-- Recommendation and choice: **(a)**; not built yet (phase C), where the real-name test grows to keep the guardrail.
+- Recommendation and choice: **(a)**; built (phase C): the real-name test grew to keep the guardrail.
 - Why: Hatch chose parody near-miss names.
 
 ### Q35. Training costs after hardware generations? DECIDED: era `trainingCostPermille` retuned down
@@ -276,7 +276,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - Options: (a) every plan builds; (b) a plan field `siteAppetitePermille` (with the allowed blocs) and the owned-fleet switch.
 - Recommendation and choice: **(b)**: xAy builds (appetite 1000, `us`), AntHopticsAI 300 and OpenAye 400 but both rent, the autopilot never. Hardware goes into the hall with most free power first; otherwise land at the cheapest open site (power price times cooling) in the plan's blocs, then a hall sized by appetite. The HQ keeps only `plan.gpus` for an appetite plan.
-- Why: it uses the same commands as the player so refusals stop it the same way; it is easy to turn off (appetite 0, test `A_lab_with_no_site_appetite_never_buys_land`). Replacing obsolete hardware is not planned yet.
+- Why: it uses the same commands as the player so refusals stop it the same way; it is easy to turn off (appetite 0, test `A_lab_with_no_site_appetite_never_buys_land`). Replacing obsolete hardware was added in phase C (Q52).
 
 ### Q45. Audit consequences? DECIDED: a fine of two weeks of revenue now; investigations wait for the shady path
 
@@ -295,6 +295,60 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Options: (a) one world event per site; (b) one event for every lab with a holding there.
 - Recommendation and choice: **(b)**, in config site order, with the roll made once per site.
 - Why: the event feed is a per-lab log; the roll stays one die per site so sharing a site does not change the dice.
+
+### Q48. Does the player's own lab keep a decision log? DECIDED: no, only plan-run labs do
+
+- Options: (a) the player's autopilot writes to the player's log (systems design 3.1); (b) only labs whose controller is a plan write a log.
+- Recommendation and choice: **(b)**. `DecisionLog.Add` returns at once for any lab that is not plan-run, so `LabState.Log` of the player stays empty.
+- Why: a replay re-applies only the journaled commands, not the planner that issued them, so a log written by an outside bot could never be rebuilt and the replay digest would drift (`A_recorded_game_replays_to_the_same_state_from_its_orders_alone` caught it). The host can keep its own player-side log.
+
+### Q49. How small is too small to log? DECIDED: under three units, and renting also needs a quarter move
+
+- Options: (a) only the 25% rule for renting; (b) the 25% rule and at least `rivalry.minLoggedUnits` (3) units.
+- Recommendation and choice: **(b)**. Hires, GPU buys and swaps below 3 units are not logged; `RentedGpus` needs both.
+- Why: a small lab that rents 0, 1, 0, 1 GPUs on alternate months would fill sixty lines with noise (seen in the xAy log) and push real decisions out.
+
+### Q50. How does the release gate boost the next run? DECIDED: derived from the models, not a stored number
+
+- Options: (a) a field `GateBoostPermille` on the lab; (b) count the trained, unreleased models below the gate, newest first (`LabPlanner.RunAlignmentShare`).
+- Recommendation and choice: **(b)**: +100 per model in a row that is waiting below the gate, capped by the 900 share limit; a model that passes (or any released model) ends the streak.
+- Why: no new state to sync or migrate and it cannot drift from the models it describes.
+
+### Q51. When does xAy's infra team start? DECIDED: 2008, not week 0
+
+- Options: (a) from the first week (systems design 3.4); (b) a plan staff entry with `fromYear` (new `PlanStaffConfig.FromYear`), set to 2008.
+- Recommendation and choice: **(b)**. Six infrastructure engineers grown like other staff from 1995 made xAy bankrupt in several seeds (and the 40-year survival test failed on seed 3); by 2008 it has the revenue and the halls to need them. Its site appetite (1000, `us`) and its 4-week hall floor are unchanged.
+- Why: "builds fast" is a trait of a lab that already builds halls; a start-up with a payroll of 12 and no revenue is just a lab that fails. The event text still fires whenever a hall opens within `fastBuildWeeks` (8).
+
+### Q52. How do plans replace obsolete hardware? DECIDED: a monthly Refresh for owning plans
+
+- Options: (a) never; (b) once a month the oldest batch that is `rivalry.replaceTierGap` (2) generations behind the current one is sold at resale and the same number is bought again, in the same place.
+- Recommendation and choice: **(b)**, only for plans with `ownGpus`, and only when the lab is not overstretched. The count is the smallest of the batch, the vendor's allocation left, the free racks or kilowatts after the sale, and what the cash allows above the reserve. Export rules and permit freezes are checked first so nothing is sold that cannot be bought back. Only the buy is logged (`Replaced`, reason `GenerationsBehind`).
+- Why: it closes the Q44 gap (fleets stuck on 1995 hardware in 2012) with the player's own commands. `Rules/Systems/LabPlanner.Refresh`; `Old_hardware_is_swapped_for_the_current_generation_and_only_the_buying_is_logged`.
+
+### Q53. Board drama: how often and what does it do? DECIDED: one twelfth of the yearly chance a month, a 4-week pause, an event
+
+- Options: (a) narration only; (b) a pause of `rivalry.boardDramaWeeks` (4) with an event and a `Paused` log line.
+- Recommendation and choice: **(b)**. Each month a plan-run lab rolls `dramaPermillePerYear / 12` on the `Rivals` stream (OpenAye 80, xAy 40, others 0); the plan returns without commands until `PlanPausedUntilTick`. Event `BoardDrama`: "OpenAye's board fired its boss on Friday. The boss was back on Tuesday." (no gendered pronoun, no quotes).
+- Why: it is the one signature behaviour that costs a lab something real, so a parody has a price.
+
+### Q54. Vendor allocation edge cases? DECIDED: bankrupt labs get 0 and drop out of the sum; the remainder goes to the top standing
+
+- Options: (a) bankrupt labs keep a share; (b) they get 0.
+- Recommendation and choice: **(b)**. Standing starts at 500, drifts 5 a month, rises 1 per 2 GPUs bought; the rounding remainder goes to the highest standing (ties to the lower lab id). A share that moves 10% or more month to month writes a `ShiftedAllocation` line in the vendor's log with the standing, share and buying causes.
+- Why: the shares must sum to the supply exactly (`Allocation_adds_up_to_the_supply_and_a_lab_past_its_share_is_refused`); a dead lab holding a share would waste chips.
+
+### Q55. How does a late rival enter? DECIDED: at the first month start of its year, with era catch-up
+
+- Options: (a) at the first week of the year only; (b) at the first month start whose year is its `joinsYear` or later (the first week of January in a normal game, the next month start in an old save).
+- Recommendation and choice: **(b)**. It gets its full `startCash`, the era's start lot, every tech of the eras before the current one (and what those need), its blocs, a vendor standing of 500, an event `RivalJoined`, and appends to `Labs` so the player stays first. `successor` has `joinsYear` 9999 and never spawns. A new game with no rivals picked gets no pending rivals; an old save gets `pendingRivals` filled from the config.
+- Why: Goggle DeepMined arrives in 2010 with $5M, "a sleeping giant" that is slow to ship; DeepSneak in 2023, home `china`, short runs, under the export rules.
+
+### Q56. Feelings: exact causes? DECIDED: as the design table, bracket loss counts per bracket
+
+- Options: (a) one penalty per Gauntlet; (b) the table: crown -30 for every non-bankrupt rival and -60 for the runner-up, -10 per bracket the player wins that the rival also entered.
+- Recommendation and choice: **(b)**, drift toward 0 by 5 a month, clamped to -1000..1000. A player who keeps winning ends every rival in a Feud (below -500), so rivals lobby the player's home bloc +15 attention a month (a `Lobbied` log line each time). Chips and shady causes arrive with their phases.
+- Why: it is what the design table says; it makes dominance cost something. If the 40-year runs show attention smothering a strong player, `feelings.feudAttentionPerMonth` is the knob.
 
 ## Open
 

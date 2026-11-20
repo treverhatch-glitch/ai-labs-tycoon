@@ -7,10 +7,10 @@ time.
 ## Where things stand
 
 The rules core plays a whole game headless from 1995 or 2009 to 2035: rooms, staff, GPUs, research, training,
-releases into 34 sectors, three parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
+releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
-world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention). 233 tests
-pass, including 40-year headless runs and a schema 1 and a schema 2 save that migrate. There is no Unity project yet.
+world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention). 259 tests
+pass, including 40-year headless runs and a schema 1, 2 and 3 save that migrate. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -23,17 +23,18 @@ Known limits of the slice, so nobody is surprised:
   item below is how that gets checked.
 - **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
   functions; a room is built for what it seats or holds.
-- **Rivals are still the three parody labs** across all nine eras; the wider cast (item 12 below) is not in.
+- **The cast is five labs.** OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak
+  (2023) as arrivals; Macrosoft, Metta and Palantear (item 12 below) are not in.
 - **Retired models stay in the lab's model list** for the whole game. Fine for decades of play (a 40-year test keeps
   the save in bounds), and worth an archive once the model museum is designed.
-- **The world map is in, the plans barely use it.** Only xAy builds data centres (OpenAye and AntHopticsAI rent), and no
-  plan replaces obsolete hardware, so a rival's fleet stops growing once its halls fill with old generations (Q44).
-  The player can use every command; the host UI is the missing half.
+- **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
+  AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
+  use every command; the host UI is the missing half.
 - **Staff are head counts**, not people.
 - **One incident kind.** The six-rung ladder, the alignment gap and endings are not in yet.
 - **Money is cash and a grant.** No investors, shares, debt or bubble.
-- **Rivals follow plans, they do not explain themselves.** The plan runs through the same commands as the player, so
-  a decision log is an addition to `LabPlanner`, not a rewrite.
+- **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
+  the player's side.
 
 ## Who works where
 
@@ -57,11 +58,11 @@ and says why in the commit message.
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
 3. **Explain every number.** A breakdown for each displayed value (appeal, quality, revenue, incident odds) whose
    parts sum to the value, with a test per breakdown. New read-only query classes; no state change.
-4. **Rival decision logs.** `LabPlanner` records why it did each thing; the log is bounded and saved. Planned as
-   phase C of the systems design, with Envydia's standing and the feelings rivals have toward the player.
-5. **Reserved compute and the Envydia queue.** Reduced to reserved contracts and allocation by standing with Envydia:
-   the hardware generations it needed (item 6) are in, so what remains is the contract and the queue. Touches
-   `ComputeConfig`, lab state, `Finance`.
+4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
+   bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
+   signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
+5. **Reserved compute and the Envydia queue.** Allocation by standing is in (item 4); what remains is reserved
+   contracts. Touches `ComputeConfig`, lab state, `Finance`.
 6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
    seven Envydia generations as data, resale that falls a generation at a time, `BuyGpus`/`SellGpus`/`MoveHardware`
    to a holding, the fleet migration (schema 2).
@@ -76,8 +77,8 @@ and says why in the commit message.
 11. **Endings that continue.** Bankrupt, Ousted and Exit as recorded moments after which play goes on. Planned as
     phase F of the systems design (an Exit keeps the lab as a plan-run rival, Q24).
 
-12. **The wider cast.** The other labs and companies named in the bible (Goggle DeepMined, Macrosoft, Metta,
-    DeepSneak, Palantear) as rival plans that enter in later eras, plus a start-era picker screen that shows each
+12. **The wider cast.** The other labs and companies named in the bible (Macrosoft, Metta, Palantear; Goggle
+    DeepMined and DeepSneak are in) as rival plans that enter in later eras, plus a start-era picker screen that shows each
     era's tagline and kit. Data and plans; no new systems.
 13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
     "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.

@@ -186,6 +186,30 @@ namespace AiLabs.Rules.Systems
             return total;
         }
 
+        /// <summary>A tech that makes the lab's alignment work count for more.</summary>
+        public static bool IsSafetyTech(TechConfig tech)
+        {
+            for (int i = 0; i < tech.Effects.Count; i++) if (tech.Effects[i].Kind == TechEffectKind.AlignmentPermille) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// What a tech costs this lab in research points. A safety tech that a lab publishing its safety research already has
+        /// costs everybody else less.
+        /// </summary>
+        public static long TechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
+        {
+            if (!IsSafetyTech(tech)) return tech.Cost;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState other = state.Labs[i];
+                if (other.Id == lab.Id || other.Controller != LabController.Plan || !HasTech(other, tech.Id)) continue;
+                RivalConfig rival = c.Rival(other.RivalId);
+                if (rival != null && rival.Plan.PublishesSafetyResearch) return MathI.MulPermille(tech.Cost, MathI.Permille - c.Rivalry.PublishedDiscountPermille);
+            }
+            return tech.Cost;
+        }
+
         public static bool LineUnlocked(GameConfig c, LabState lab, string lineId)
         {
             ModelLineConfig line = c.Line(lineId);

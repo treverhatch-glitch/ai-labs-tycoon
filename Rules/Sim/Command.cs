@@ -222,7 +222,8 @@ namespace AiLabs.Rules.Sim
         AlreadyResearched, MissingPrerequisite, NotEnoughResearch,
         LineLocked, TooManyRuns, WrongModelStatus, SectorClosed, BelowSectorBar,
         EraLocked,
-        SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty
+        SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty,
+        AllocationExhausted
     }
 
     public struct CommandResult

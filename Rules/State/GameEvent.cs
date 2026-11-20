@@ -16,7 +16,15 @@ namespace AiLabs.Rules.State
         LandBought, LandSold, ColoLeased, ColoEnded,
         HallStarted, HallBuilt, TownVoteDelayed, PowerDealStarted, PowerDealReady,
         HardwareMoved, Heatwave,
-        AttentionRose, AttentionFell
+        AttentionRose, AttentionFell,
+        /// <summary>The vendor's yearly keynote. Ref is the generation, Amount the month's supply after it.</summary>
+        Keynote,
+        /// <summary>A lab joined the race. Ref is the rival's config id, Amount its starting cash.</summary>
+        RivalJoined,
+        /// <summary>A hall opened within a few weeks of its start.</summary>
+        FastBuild,
+        /// <summary>A plan-run lab's board had a fit and its plan pauses. Amount is the weeks.</summary>
+        BoardDrama
     }
 
     /// <summary>

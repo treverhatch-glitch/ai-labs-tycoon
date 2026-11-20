@@ -143,10 +143,20 @@ Parody labs, each built on an archetype with its own plan, strengths and blind s
 | OpenAye | Jam Saltmen | First-to-market showman. Ships everything, burns cash, safety scandals. | ChatGBT |
 | AntHopticsAI | Durian Amodayo | Careful sniper. Trusted, publishes safety research, slow to ship. | Clause |
 | xAy | Elton Husk | Rocket billionaire. Limitless cash, builds a data centre in a weekend. | Grokk |
-| Envydia | Jensun Hwang | The chip baron in the leather jacket. | sells the GPUs |
+| Goggle DeepMined | Sunder Pitchai | The sleeping giant (joins 2010). Researcher-heavy, slow to ship, first to its own chips. | Gemeny |
+| DeepSneak | The Quiet Committee | The lean lab (joins 2023, home `china`). Engineer-heavy, short runs, lives under export rules. | Sneak |
+| Envydia | Jensun Hwang | The chip baron in the leather jacket. A vendor, not a lab: it rations the GPUs by standing. | sells the GPUs |
 
-More arrive with the eras (Goggle DeepMined, Macrosoft, Metta, DeepSneak, Palantear and others; see the bible,
-chapter 11).
+More arrive with the eras (Macrosoft, Metta, Palantear and others; see the bible, chapter 11). Rival detail is in
+[content/rivals.md](content/rivals.md).
+
+**Rivals explain themselves.** Each plan-run lab keeps a bounded log (60 lines) of what it did and the numbers behind it
+(`DecisionText` builds the sentence from config templates); decisions *not* to act (skipping a run, holding a model
+back) are logged once a quarter per line. Rivals have a feeling toward the player (-1000 to 1000) that falls when the
+player wins and drifts back; below -500 they lobby the player's home government a little each month. Each has a few
+signature behaviours as plan data (a release gate, published safety research, board drama, building halls fast).
+Envydia hands out GPUs by standing, charges by standing, holds a keynote each March a generation opens (that month's
+supply halves) and writes its own log. Rivals that own GPUs swap batches two generations old for the current one.
 
 **Parody guardrails.** Near-miss names only, never a real name. Original character designs, no real logos. A parody
 boss never commits a crime and no text puts invented words in a real person's mouth. A test keeps real names out of
@@ -221,9 +231,9 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Market | Customers move gradually toward the better, safer, better-sold model; serving customers needs compute | Pricing, open weights, trust |
 | Safety | Incidents by the safety meter: reputation loss, a fine, a glitching model | The six-rung ladder, the alignment gap, endings |
 | Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
-| Rivals | OpenAye, AntHopticsAI and xAy with their own plans (xAy builds data centres); Envydia sells the GPUs | The full cast with decision logs |
+| Rivals | OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak (2023) as arrivals; decision logs with reason codes, feelings toward the player, signature behaviours as plan data; Envydia as a vendor with monthly allocation by standing, a keynote and its own log | The rest of the cast, rivals that react to your chips (phase D) |
 | Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
-| Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 3 with migrations from 1 and 2 (fixtures in `tools/SimTests/Fixtures`) | The same |
+| Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 4 with migrations from 1, 2 and 3 (fixtures in `tools/SimTests/Fixtures`) | The same |
 
 ### The bible's first-playable checks
 

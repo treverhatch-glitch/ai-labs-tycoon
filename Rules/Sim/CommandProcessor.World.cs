@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Sim
             holding.SiteId = siteId;
             holding.Kind = kind;
             holding.HallDoneTick = -1;
+            holding.HallStartTick = -1;
             holding.DealId = "";
             holding.DealDoneTick = -1;
             return holding;
@@ -123,6 +124,7 @@ namespace AiLabs.Rules.Sim
 
             holding.HallBuildingKw = cmd.Count;
             holding.HallDoneTick = state.Tick + weeks;
+            holding.HallStartTick = state.Tick;
             Finance.Spend(lab, LedgerLine.SiteBuild, cost);
             Events.Add(state, EventKind.HallStarted, lab.Id, holding.Id, cmd.Count, site.Id);
             if (voted) Events.Add(state, EventKind.TownVoteDelayed, lab.Id, holding.Id, hall.TownVoteDelayWeeks, site.Id);

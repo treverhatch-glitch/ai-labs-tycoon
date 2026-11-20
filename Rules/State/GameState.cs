@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 3;
+        public const int CurrentSchema = 4;
 
         public int Schema;
         public string ConfigVersion;
@@ -26,6 +26,10 @@ namespace AiLabs.Rules.State
         public List<GauntletRecord> Gauntlets;
         /// <summary>The newest events, oldest first, capped at the config's eventLogMax.</summary>
         public List<GameEvent> Events;
+        /// <summary>The GPU vendor's supply, its standing for every lab and its log.</summary>
+        public VendorState Vendor;
+        /// <summary>Rivals that have not joined yet, by config id. They arrive when their year does.</summary>
+        public List<string> PendingRivals = new List<string>();
 
         public LabState Player { get { return Labs[0]; } }
 
@@ -62,6 +66,8 @@ namespace AiLabs.Rules.State
             s.ObjList("sites", ref Sites);
             s.ObjList("gauntlets", ref Gauntlets);
             s.ObjList("events", ref Events);
+            s.Obj("vendor", ref Vendor);
+            s.StrList("pendingRivals", ref PendingRivals);
         }
     }
 
@@ -104,6 +110,15 @@ namespace AiLabs.Rules.State
         public int IncidentsThisMonth;
         /// <summary>The share of compute that goes to training while a run is active. The rest serves customers.</summary>
         public int TrainingSharePermille;
+
+        /// <summary>What a rival thinks of the player, -1000 (feud) to 1000 (fan). Always 0 for the player's own lab.</summary>
+        public int FeelingToPlayer;
+        /// <summary>The first tick the plan acts again after a board fit, or -1.</summary>
+        public int PlanPausedUntilTick;
+        /// <summary>Until this tick the vendor's keynote has upstaged the lab's new chip and it will not buy lists, or -1.</summary>
+        public int ChipAmbushUntilTick;
+        /// <summary>Why the lab did what it did, newest last, capped at the config's rivalry.logMax.</summary>
+        public List<DecisionEntry> Log = new List<DecisionEntry>();
 
         public long ResearchPoints;
         public List<string> Techs = new List<string>();
@@ -167,6 +182,10 @@ namespace AiLabs.Rules.State
             s.ObjList("blocs", ref Blocs);
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
+            s.Int("feelingToPlayer", ref FeelingToPlayer);
+            s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
+            s.Int("chipAmbushUntilTick", ref ChipAmbushUntilTick);
+            s.ObjList("log", ref Log);
             s.Long("researchPoints", ref ResearchPoints);
             s.StrList("techs", ref Techs);
             s.ObjList("models", ref Models);

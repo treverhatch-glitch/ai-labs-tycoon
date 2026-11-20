@@ -53,6 +53,17 @@ public class ContentDocsTests
     }
 
     [Fact]
+    public void The_rivals_page_lists_every_rival_and_the_vendor_supply_years()
+    {
+        GameConfig c = TestData.Config();
+        AssertListsEvery("rivals.md", "rival", c.Rivals.Select(r => r.Id).ToArray());
+        string text = Page("rivals.md");
+        foreach (RivalConfig r in c.Rivals) Assert.Contains(r.Name, text);
+        foreach (YearAmountConfig y in c.Vendor.SupplyByYear)
+            Assert.Contains(y.Year + " " + y.Amount.ToString("N0", System.Globalization.CultureInfo.InvariantCulture), text);
+    }
+
+    [Fact]
     public void The_events_page_carries_every_incident_headline_and_world_headline()
     {
         GameConfig c = TestData.Config();

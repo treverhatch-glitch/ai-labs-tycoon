@@ -58,7 +58,8 @@ public static class Program
     {
         int games = int.Parse(Option(args, "--games", "50"), CultureInfo.InvariantCulture);
         GameConfig config = GameConfig.FromJson(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Data", "default-config.json")));
-        int labs = config.Rivals.Count + 1;
+        int labs = 1;
+        foreach (RivalConfig rival in config.Rivals) if (rival.JoinsYear < RivalConfig.NeverJoins) labs++;
         var alive = new int[labs];
         var crowns = new int[labs];
         var cash = new List<long>[labs];
@@ -74,7 +75,7 @@ public static class Program
                 sim.Step();
             }
             List<GauntletEntry> crown = GauntletSystem.Latest(sim.State, GauntletSystem.CrownBracket);
-            for (int i = 0; i < labs; i++)
+            for (int i = 0; i < labs && i < sim.State.Labs.Count; i++)
             {
                 LabState lab = sim.State.Labs[i];
                 names[i] = lab.Name;
@@ -88,8 +89,9 @@ public static class Program
         Console.WriteLine($"{"lab",-14}{"alive",8}{"crowns",8}{"median cash",14}{"worst cash",14}");
         for (int i = 0; i < labs; i++)
         {
+            if (cash[i].Count == 0) continue;
             cash[i].Sort();
-            Console.WriteLine($"{names[i],-14}{alive[i],8}{crowns[i],8}{cash[i][games / 2],14}{cash[i][0],14}");
+            Console.WriteLine($"{names[i],-14}{alive[i],8}{crowns[i],8}{cash[i][cash[i].Count / 2],14}{cash[i][0],14}");
         }
         return 0;
     }

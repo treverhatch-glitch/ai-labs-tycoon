@@ -89,7 +89,10 @@ public class ConfigTests
     public void The_rivals_are_the_parody_cast()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy" }, c.Rivals.Select(r => r.Name).ToArray());
+        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy", "Goggle DeepMined", "DeepSneak", "Second Wind Labs" }, c.Rivals.Select(r => r.Name).ToArray());
+        Assert.Equal(new[] { 0, 0, 0, 2010, 2023, RivalConfig.NeverJoins }, c.Rivals.Select(r => r.JoinsYear).ToArray());
+        Assert.Equal("Sunder Pitchai", c.Rival("goggle").Leader);
+        Assert.Equal("The Quiet Committee", c.Rival("deepsneak").Leader);
         Assert.Equal("Jam Saltmen", c.Rival("openaye").Leader);
         Assert.Equal("Durian Amodayo", c.Rival("anthoptics").Leader);
         Assert.Equal("Elton Husk", c.Rival("xay").Leader);
@@ -164,5 +167,9 @@ public class ConfigTests
         string json = TestData.ConfigJson();
         foreach (string real in new[] { "OpenAI", "Anthropic", "Altman", "Amodei", "Musk", "Nvidia", "ChatGPT", "Claude\"", "Grok\"", "Huang" })
             Assert.DoesNotContain(real, json);
+
+        // The arrivals and the chip designer add more names to keep out. Whole words, so "Voltage" is not "Volta".
+        foreach (string real in new[] { "Google", "DeepMind", "Gemini", "Pichai", "Hassabis", "DeepSeek", "Liang", "TSMC", "CUDA", "Blackwell", "Hopper", "Volta", "Kepler", "GeForce", "Voodoo" })
+            Assert.False(System.Text.RegularExpressions.Regex.IsMatch(json, "\\b" + real + "\\b"), "the config names " + real);
     }
 }

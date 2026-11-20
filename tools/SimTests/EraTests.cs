@@ -328,7 +328,8 @@ public class EraTests
             Assert.All(era.StartTechs, t => Assert.Contains(t, lab.Techs));
             Assert.True(lab.PlanStartTick >= sim.Tick, lab.Name + " must not act on a plan that started before the game did");
         }
-        Assert.Equal(c.Rivals.Count + 1, sim.State.Labs.Count);
+        int startYear = GameDate.Year(c.Calendar, sim.Tick);
+        Assert.Equal(c.Rivals.Count(r => r.JoinsYear <= startYear) + 1, sim.State.Labs.Count);
     }
 
     [Fact]

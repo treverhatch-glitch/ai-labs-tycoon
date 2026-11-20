@@ -175,11 +175,15 @@ namespace AiLabs.Rules.Sim
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             CommandResult place = CheckPlaceForHardware(c, state, lab, holdingId, gen, cmd.Count);
             if (!place.Ok) return place;
-            long cost = gen.BuyPrice * cmd.Count;
+            int allocation = VendorSystem.AllocationLeft(state, lab);
+            if (cmd.Count > allocation)
+                return Fail(CommandError.AllocationExhausted, c.Compute.VendorName + " has " + allocation + " GPUs left to sell " + lab.Name + " this month.");
+            long cost = VendorSystem.PricePerGpu(c, state, lab, gen) * cmd.Count;
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             Fleet.AddGpus(state, lab, holdingId, gen.Id, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hardware, cost);
+            VendorSystem.OnBought(c, state, lab, cmd.Count);
             Events.Add(state, EventKind.GpusBought, lab.Id, holdingId, cmd.Count, gen.Id);
             return CommandResult.Done(-1);
         }
@@ -259,12 +263,13 @@ namespace AiLabs.Rules.Sim
             for (int i = 0; i < tech.Requires.Count; i++)
                 if (!LabQueries.HasTech(lab, tech.Requires[i]))
                     return Fail(CommandError.MissingPrerequisite, tech.Name + " needs " + c.Tech(tech.Requires[i]).Name + " first.");
-            if (lab.ResearchPoints < tech.Cost)
-                return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + tech.Cost + " research points and the lab has " + lab.ResearchPoints + ".");
+            long cost = LabQueries.TechCost(c, state, lab, tech);
+            if (lab.ResearchPoints < cost)
+                return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + cost + " research points and the lab has " + lab.ResearchPoints + ".");
 
-            lab.ResearchPoints -= tech.Cost;
+            lab.ResearchPoints -= cost;
             lab.Techs.Add(tech.Id);
-            Events.Add(state, EventKind.TechResearched, lab.Id, -1, tech.Cost, tech.Id);
+            Events.Add(state, EventKind.TechResearched, lab.Id, -1, cost, tech.Id);
             return CommandResult.Done(-1);
         }
 

@@ -988,101 +988,249 @@
     "bracketWinnerAppealPermille": 150,
     "historyYears": 100
   },
+  "rivalry": {
+    "logMax": 60, "minLoggedUnits": 3, "rentLogPermille": 250, "publishedDiscountPermille": 300,
+    "boardDramaWeeks": 4, "fastBuildWeeks": 8, "gateBoostPermille": 100, "replaceTierGap": 2,
+    "feelings": {
+      "crownPermille": -30, "secondPlacePermille": -60, "bracketPermille": -10, "chipOrderPermille": 20,
+      "tracedShadyPermille": -400, "sabotageAllPermille": -300, "driftPerMonth": 5,
+      "feudBelow": -500, "friendlyAbove": 300, "feudAttentionPerMonth": 15,
+      "listedBuyLimitPermille": 900, "friendlyBuyLimitPermille": 950
+    },
+    "actionTemplates": [
+      { "id": "StartedRun", "text": "{lab} started training {ref}, a {amount}-week run." },
+      { "id": "SkippedRun", "text": "{lab} held off training {ref}." },
+      { "id": "Released", "text": "{lab} released {ref} into {amount} sectors." },
+      { "id": "HeldBack", "text": "{lab} held back {ref}: it is not safe enough to sell." },
+      { "id": "Hired", "text": "{lab} hired {amount} x {ref}." },
+      { "id": "Built", "text": "{lab} built {ref} for ${amount}." },
+      { "id": "BoughtLand", "text": "{lab} bought land at {ref} for ${amount}." },
+      { "id": "BuiltHall", "text": "{lab} started a {amount} kW data centre at {ref}." },
+      { "id": "BoughtGpus", "text": "{lab} bought {amount} {ref} GPUs." },
+      { "id": "RentedGpus", "text": "{lab} now rents {amount} GPUs." },
+      { "id": "Tightened", "text": "{lab} tightened its belt: {amount} fewer." },
+      { "id": "StartedChip", "text": "{lab} started designing a chip: {ref}." },
+      { "id": "OrderedChips", "text": "{lab} booked {amount} chips at the foundry for {ref}." },
+      { "id": "BoughtChips", "text": "{lab} bought {amount} chips from another lab." },
+      { "id": "Published", "text": "{lab} published its research on {ref}." },
+      { "id": "Paused", "text": "{lab}'s board held an emergency meeting. Nothing happened for {amount} weeks." },
+      { "id": "Lobbied", "text": "{lab} lobbied the government of {ref} about you." },
+      { "id": "ShiftedAllocation", "text": "{lab} changed {ref}'s allocation to {amount} GPUs this month." },
+      { "id": "Courted", "text": "{lab} sweetened its offer to everyone but {ref}." },
+      { "id": "Replaced", "text": "{lab} swapped {amount} old GPUs for the new {ref}." },
+      { "id": "TapedOut", "text": "{lab} taped out {ref}." },
+      { "id": "ListedChips", "text": "{lab} put its {ref} chips up for sale." }
+    ],
+    "reasonTemplates": [
+      { "id": "RunwayWeeks", "text": "runway {value} weeks" },
+      { "id": "ForecastGainPermille", "text": "forecast gain {pct}%" },
+      { "id": "MaxRunWeeks", "text": "it will not start a run over {value} weeks" },
+      { "id": "RivalBestCapability", "text": "the best rival model scores {value}" },
+      { "id": "RivalWonBracket", "text": "a rival holds {value} of those sectors" },
+      { "id": "CultureAlignmentPermille", "text": "its culture spends {pct}% of a run on safety" },
+      { "id": "AlignmentBelowGate", "text": "safety score {value}" },
+      { "id": "InDebt", "text": "in debt {value} weeks" },
+      { "id": "AllocationLeft", "text": "{value} GPUs left in this month's allocation" },
+      { "id": "CheapestSite", "text": "power and cooling cost {value} per kW a week" },
+      { "id": "PowerPrice", "text": "power at ${value} per kW a week" },
+      { "id": "GpuTargetGap", "text": "{value} short of its GPU target" },
+      { "id": "ChipProgramYear", "text": "chip programme from {value}" },
+      { "id": "PriceVsEnvydiaPermille", "text": "the vendor charges {pct}% of list" },
+      { "id": "BoardDrama", "text": "board drama for {value} weeks" },
+      { "id": "FeelingTowardPlayer", "text": "it feels {value} about you" },
+      { "id": "ReleaseGate", "text": "the bar is {value}" },
+      { "id": "GenerationsBehind", "text": "{value} generations behind" },
+      { "id": "StandingNow", "text": "standing {value}" },
+      { "id": "ShareNowPermille", "text": "now {pct}% of the supply" },
+      { "id": "SharePreviousPermille", "text": "was {pct}%" },
+      { "id": "StandingFromBuying", "text": "{value} from buying" },
+      { "id": "StandingFromChips", "text": "{value} from its own chips" },
+      { "id": "ChipArchitects", "text": "{value} chip architects" },
+      { "id": "YieldPermille", "text": "yield {pct}%" },
+      { "id": "DesignPoints", "text": "{value} design points done" },
+      { "id": "DesignPointsNeeded", "text": "of {value} needed" },
+      { "id": "FoundryMonth", "text": "foundry month {value}" },
+      { "id": "PricePerComputePermille", "text": "its price per compute is {pct}% of the vendor's" },
+      { "id": "ChipsOwnedSharePermille", "text": "{pct}% of its compute is its own chips" }
+    ]
+  },
+  "vendor": {
+    "supplyByYear": [
+      { "year": 1995, "amount": 400 }, { "year": 2003, "amount": 1500 }, { "year": 2009, "amount": 4000 }, { "year": 2012, "amount": 10000 },
+      { "year": 2017, "amount": 40000 }, { "year": 2020, "amount": 30000 }, { "year": 2022, "amount": 60000 }, { "year": 2026, "amount": 150000 }
+    ],
+    "allocationBase": 200, "standingStart": 500, "standingMax": 1000, "gpusPerStanding": 2,
+    "trainingTapeOutDrop": 150, "deliveryDrop": 50, "listingDrop": 100, "driftPerMonth": 5,
+    "lowStandingBelow": 300, "lowStandingMarkupPermille": 100, "ownChipsMarkupPermille": 100,
+    "highStandingAbove": 800, "highStandingDiscountPermille": 50,
+    "keynoteMonth": 3, "keynoteSupplyPermille": 500, "ambushLookbackWeeks": 8, "ambushWeeks": 12,
+    "courtingSharePermille": 300, "courtingStandingBoost": 20, "shareLogPermille": 100, "logMax": 60
+  },
   "rivals": [
     {
       "id": "openaye", "name": "OpenAye", "leader": "Jam Saltmen", "familyName": "ChatGBT", "archetype": "ships first, apologises later",
-      "startCash": 250000, "lotId": "garage", "reputation": 500, "backerPerWeek": 4000, "homeBlocId": "us",
+      "startCash": 250000, "lotId": "garage", "reputation": 500, "backerPerWeek": 4000, "homeBlocId": "us", "joinsYear": 0,
       "plan": {
         "startDelayWeeks": 4, "startJitterWeeks": 6,
         "staff": [
-          { "roleId": "researcher", "count": 3 },
-          { "roleId": "engineer", "count": 3 },
-          { "roleId": "sales", "count": 2 },
-          { "roleId": "data-engineer", "count": 1 },
-          { "roleId": "product-lead", "count": 1 },
-          { "roleId": "agent-wrangler", "count": 1 },
-          { "roleId": "harness-operator", "count": 1 },
-          { "roleId": "roboticist", "count": 1 }
+          { "roleId": "researcher", "count": 3, "fromYear": 0 },
+          { "roleId": "engineer", "count": 3, "fromYear": 0 },
+          { "roleId": "sales", "count": 2, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 1, "fromYear": 0 },
+          { "roleId": "product-lead", "count": 1, "fromYear": 0 },
+          { "roleId": "agent-wrangler", "count": 1, "fromYear": 0 },
+          { "roleId": "harness-operator", "count": 1, "fromYear": 0 },
+          { "roleId": "roboticist", "count": 1, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 300,
         "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
         "trainingSharePermille": 750, "alignmentSharePermille": 50,
         "reserveWeeks": 8, "maxRunWeeks": 40, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 400, "siteBlocs": [ "us" ]
+        "siteAppetitePermille": 400, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 80, "chipProgramYear": 2024, "buysListedChips": true, "listsChipsMarkupPermille": 0
       }
     },
     {
       "id": "anthoptics", "name": "AntHopticsAI", "leader": "Durian Amodayo", "familyName": "Clause", "archetype": "careful sniper",
-      "startCash": 300000, "lotId": "garage", "reputation": 500, "backerPerWeek": 5000, "homeBlocId": "us",
+      "startCash": 300000, "lotId": "garage", "reputation": 500, "backerPerWeek": 5000, "homeBlocId": "us", "joinsYear": 0,
       "plan": {
         "startDelayWeeks": 8, "startJitterWeeks": 8,
         "staff": [
-          { "roleId": "researcher", "count": 4 },
-          { "roleId": "safety", "count": 2 },
-          { "roleId": "engineer", "count": 2 },
-          { "roleId": "sales", "count": 1 },
-          { "roleId": "data-engineer", "count": 1 },
-          { "roleId": "red-teamer", "count": 1 },
-          { "roleId": "alignment-fellow", "count": 1 },
-          { "roleId": "agent-wrangler", "count": 1 },
-          { "roleId": "mission-controller", "count": 1 }
+          { "roleId": "researcher", "count": 4, "fromYear": 0 },
+          { "roleId": "safety", "count": 2, "fromYear": 0 },
+          { "roleId": "engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "sales", "count": 1, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 1, "fromYear": 0 },
+          { "roleId": "red-teamer", "count": 1, "fromYear": 0 },
+          { "roleId": "alignment-fellow", "count": 1, "fromYear": 0 },
+          { "roleId": "agent-wrangler", "count": 1, "fromYear": 0 },
+          { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
         ],
         "staffGrowthPermillePerYear": 250,
         "gpus": 7, "gpuGrowthPermillePerYear": 350, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
         "trainingSharePermille": 700, "alignmentSharePermille": 250,
         "reserveWeeks": 12, "maxRunWeeks": 60, "minGainPermille": 50,
         "sectors": [ "expert-systems", "spam-search", "game-bots", "game-ai", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "coding-agents", "enterprise-knowledge", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 300, "siteBlocs": [ "us", "eu" ]
+        "siteAppetitePermille": 300, "siteBlocs": [ "us", "eu" ], "minReleaseAlignment": 550, "publishesSafetyResearch": true, "dramaPermillePerYear": 0, "chipProgramYear": 2025, "buysListedChips": true, "listsChipsMarkupPermille": 0
       }
     },
     {
       "id": "xay", "name": "xAy", "leader": "Elton Husk", "familyName": "Grokk", "archetype": "builder who owns the metal",
-      "startCash": 600000, "lotId": "garage", "reputation": 500, "backerPerWeek": 6000, "homeBlocId": "us",
+      "startCash": 600000, "lotId": "garage", "reputation": 500, "backerPerWeek": 6000, "homeBlocId": "us", "joinsYear": 0,
       "plan": {
         "startDelayWeeks": 24, "startJitterWeeks": 12,
         "staff": [
-          { "roleId": "engineer", "count": 4 },
-          { "roleId": "researcher", "count": 3 },
-          { "roleId": "sales", "count": 1 },
-          { "roleId": "data-engineer", "count": 1 },
-          { "roleId": "agent-wrangler", "count": 1 },
-          { "roleId": "data-gardener", "count": 1 },
-          { "roleId": "roboticist", "count": 1 },
-          { "roleId": "mission-controller", "count": 1 }
+          { "roleId": "engineer", "count": 4, "fromYear": 0 },
+          { "roleId": "researcher", "count": 3, "fromYear": 0 },
+          { "roleId": "sales", "count": 1, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 1, "fromYear": 0 },
+          { "roleId": "agent-wrangler", "count": 1, "fromYear": 0 },
+          { "roleId": "data-gardener", "count": 1, "fromYear": 0 },
+          { "roleId": "roboticist", "count": 1, "fromYear": 0 },
+          { "roleId": "mission-controller", "count": 1, "fromYear": 0 },
+          { "roleId": "infra", "count": 6, "fromYear": 2008 }
         ],
         "staffGrowthPermillePerYear": 300,
         "gpus": 12, "gpuGrowthPermillePerYear": 500, "wealthGrowthPermillePerMillion": 150, "ownGpus": true,
         "trainingSharePermille": 800, "alignmentSharePermille": 80,
         "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "cybersecurity", "finance-trading", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 1000, "siteBlocs": [ "us" ]
+        "siteAppetitePermille": 1000, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 40, "chipProgramYear": 2020, "buysListedChips": false, "listsChipsMarkupPermille": 0
+      }
+    },
+    {
+      "id": "goggle", "name": "Goggle DeepMined", "leader": "Sunder Pitchai", "familyName": "Gemeny", "archetype": "the incumbent with a research bench the size of a village",
+      "startCash": 5000000, "lotId": "garage", "reputation": 600, "backerPerWeek": 20000, "homeBlocId": "us", "joinsYear": 2010,
+      "plan": {
+        "startDelayWeeks": 4, "startJitterWeeks": 8,
+        "staff": [
+          { "roleId": "researcher", "count": 8, "fromYear": 0 },
+          { "roleId": "engineer", "count": 3, "fromYear": 0 },
+          { "roleId": "sales", "count": 2, "fromYear": 0 },
+          { "roleId": "safety", "count": 1, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "infra", "count": 2, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 250,
+        "gpus": 24, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 100, "ownGpus": true,
+        "trainingSharePermille": 750, "alignmentSharePermille": 150,
+        "reserveWeeks": 10, "maxRunWeeks": 80, "minGainPermille": 150,
+        "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
+        "siteAppetitePermille": 800, "siteBlocs": [ "us", "eu", "nordics" ], "minReleaseAlignment": 300, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2014, "buysListedChips": false, "listsChipsMarkupPermille": 250
+      }
+    },
+    {
+      "id": "deepsneak", "name": "DeepSneak", "leader": "The Quiet Committee", "familyName": "Sneak", "archetype": "efficient, unbothered, and suspiciously cheap",
+      "startCash": 60000000, "lotId": "garage", "reputation": 450, "backerPerWeek": 80000, "homeBlocId": "china", "joinsYear": 2023,
+      "plan": {
+        "startDelayWeeks": 4, "startJitterWeeks": 8,
+        "staff": [
+          { "roleId": "engineer", "count": 8, "fromYear": 0 },
+          { "roleId": "researcher", "count": 4, "fromYear": 0 },
+          { "roleId": "sales", "count": 2, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 3, "fromYear": 0 },
+          { "roleId": "infra", "count": 2, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 300,
+        "gpus": 30, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 100, "ownGpus": true,
+        "trainingSharePermille": 800, "alignmentSharePermille": 60,
+        "reserveWeeks": 6, "maxRunWeeks": 30, "minGainPermille": 30,
+        "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
+        "siteAppetitePermille": 700, "siteBlocs": [ "china" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2023, "buysListedChips": true, "listsChipsMarkupPermille": 0
+      }
+    },
+    {
+      "id": "successor", "name": "Second Wind Labs", "leader": "A Very Patient Investor", "familyName": "Second", "archetype": "what rises from the ashes of a failed lab",
+      "startCash": 1000000, "lotId": "garage", "reputation": 300, "backerPerWeek": 4000, "homeBlocId": "us", "joinsYear": 9999,
+      "plan": {
+        "startDelayWeeks": 0, "startJitterWeeks": 0,
+        "staff": [
+          { "roleId": "researcher", "count": 3, "fromYear": 0 },
+          { "roleId": "engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "sales", "count": 1, "fromYear": 0 },
+          { "roleId": "safety", "count": 1, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 1, "fromYear": 0 },
+          { "roleId": "red-teamer", "count": 1, "fromYear": 0 },
+          { "roleId": "product-lead", "count": 1, "fromYear": 0 },
+          { "roleId": "alignment-fellow", "count": 1, "fromYear": 0 },
+          { "roleId": "agent-wrangler", "count": 1, "fromYear": 0 },
+          { "roleId": "harness-operator", "count": 1, "fromYear": 0 },
+          { "roleId": "data-gardener", "count": 1, "fromYear": 0 },
+          { "roleId": "roboticist", "count": 1, "fromYear": 0 },
+          { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 300,
+        "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
+        "trainingSharePermille": 700, "alignmentSharePermille": 200,
+        "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
+        "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
+        "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "listsChipsMarkupPermille": 0
       }
     }
   ],
   "autopilot": {
     "startDelayWeeks": 0, "startJitterWeeks": 0,
     "staff": [
-      { "roleId": "researcher", "count": 3 },
-      { "roleId": "engineer", "count": 2 },
-      { "roleId": "sales", "count": 1 },
-      { "roleId": "safety", "count": 1 },
-      { "roleId": "data-engineer", "count": 1 },
-      { "roleId": "red-teamer", "count": 1 },
-      { "roleId": "product-lead", "count": 1 },
-      { "roleId": "alignment-fellow", "count": 1 },
-      { "roleId": "agent-wrangler", "count": 1 },
-      { "roleId": "harness-operator", "count": 1 },
-      { "roleId": "data-gardener", "count": 1 },
-      { "roleId": "roboticist", "count": 1 },
-      { "roleId": "mission-controller", "count": 1 }
+      { "roleId": "researcher", "count": 3, "fromYear": 0 },
+      { "roleId": "engineer", "count": 2, "fromYear": 0 },
+      { "roleId": "sales", "count": 1, "fromYear": 0 },
+      { "roleId": "safety", "count": 1, "fromYear": 0 },
+      { "roleId": "data-engineer", "count": 1, "fromYear": 0 },
+      { "roleId": "red-teamer", "count": 1, "fromYear": 0 },
+      { "roleId": "product-lead", "count": 1, "fromYear": 0 },
+      { "roleId": "alignment-fellow", "count": 1, "fromYear": 0 },
+      { "roleId": "agent-wrangler", "count": 1, "fromYear": 0 },
+      { "roleId": "harness-operator", "count": 1, "fromYear": 0 },
+      { "roleId": "data-gardener", "count": 1, "fromYear": 0 },
+      { "roleId": "roboticist", "count": 1, "fromYear": 0 },
+      { "roleId": "mission-controller", "count": 1, "fromYear": 0 }
     ],
     "staffGrowthPermillePerYear": 300,
     "gpus": 8, "gpuGrowthPermillePerYear": 400, "wealthGrowthPermillePerMillion": 150, "ownGpus": false,
     "trainingSharePermille": 700, "alignmentSharePermille": 200,
     "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
     "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-    "siteAppetitePermille": 0, "siteBlocs": [ ]
+    "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "listsChipsMarkupPermille": 0
   },
   "worldEvents": [
     { "id": "first-ipo-spree", "year": 1995, "month": 9, "headline": "A rules-engine startup goes public. The prospectus says 'synergy' 41 times and 'AI' not once.", "sectorId": "", "poolPermille": 1000 },

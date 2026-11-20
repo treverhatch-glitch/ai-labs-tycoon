@@ -56,6 +56,10 @@ namespace AiLabs.Rules.Sim
                 case EventKind.Heatwave: return "A heatwave throttles " + who + "'s data centre at " + c.World.Site(e.Ref).Name + " for " + e.Amount + " weeks. During launch week, naturally.";
                 case EventKind.AttentionRose: return AttentionLine(c, e, who);
                 case EventKind.AttentionFell: return who + " is under less scrutiny from " + c.World.Bloc(e.Ref).Agency + ".";
+                case EventKind.Keynote: return c.Compute.VendorName + " unveils the " + c.Compute.Generation(e.Ref).Name + ". It was sold out before the presenter walked on stage. This month's supply: " + e.Amount + " units.";
+                case EventKind.RivalJoined: return who + " has entered the race with $" + e.Amount + " and a plan.";
+                case EventKind.BoardDrama: return who + "'s board fired its boss on Friday. The boss was back on Tuesday.";
+                case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";
                 default: return who + ": " + e.Kind + ".";
             }
         }
