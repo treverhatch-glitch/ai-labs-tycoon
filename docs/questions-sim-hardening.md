@@ -41,3 +41,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - NEXT later item: expansion eras get `expansions.bodies` / `expansions.upward` kits (room type + sector ids + appeal bonus permille) applied in `DisplayQueries.AppealParts` once `EraSystem.Open` is true.
 - Why: self-contained from rivals (no shady/endings); data and rooms already shipped; avoids new commands or save fields.
+
+### Q8. Specialist / open weights / sector pricing slice? OPEN
+
+- NEXT later item bundles four systems with no shipped rules yet. Proposed split:
+  - **(a) Sector pricing only:** per-`SectorEntry` `pricePermille` (default 1000), command to set, scales `LastRevenue` after share split; appeal unchanged (compete on quality, not price).
+  - **(b) Open weights:** release flag on model reduces revenue permille sector-wide but boosts appeal permille (configurable).
+  - **(c) Specialist lines:** new `training.lines` entries with `sectorIds` and capability ceiling; quality bonus in matching sectors only.
+  - **(d) Data sources:** separate track (training prep); defer until (a)–(c) land.
+- Default recommendation: implement **(a)** first (schema 12, migration test), then **(c)** one pilot line (e.g. code), then **(b)**; need owner pick before rules code on `cursor/rules-side-items`.
