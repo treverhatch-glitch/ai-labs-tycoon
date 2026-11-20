@@ -116,7 +116,8 @@ namespace AiLabs.Rules.Systems
             long payout = card.BasePayout;
             if (card.MinCap > 0 && card.BasePayout > 0) payout = MathI.MulPermille(card.BasePayout, model.Capability * MathI.Permille / 100);
             if (card.PayoutTo == ShadyPayout.Stash) lab.Stash += payout;
-            else if (card.PayoutTo == ShadyPayout.Cash) Finance.Earn(lab, LedgerLine.GreyRevenue, payout);
+            else if (card.PayoutTo == ShadyPayout.Cash && card.Special != ShadySpecial.GreyCompute)
+                Finance.Earn(lab, LedgerLine.GreyRevenue, payout);
             if (card.Id == "crypto-heist")
             {
                 for (int i = 0; i < lab.Blocs.Count; i++) lab.Blocs[i].Attention = (int)MathI.Min(MathI.Permille, lab.Blocs[i].Attention + 80);

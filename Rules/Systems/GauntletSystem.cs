@@ -39,7 +39,7 @@ namespace AiLabs.Rules.Systems
                 if (bracket.Count > 0)
                 {
                     Events.Add(state, EventKind.GauntletBracket, bracket[0].LabId, bracket[0].ModelId, bracket[0].Score, sector.Id);
-                    if (bracket[0].LabId == state.Player.Id)
+                    if (state.PlayerLabId >= 0 && bracket[0].LabId == state.PlayerLabId)
                         for (int i = 1; i < bracket.Count; i++) RivalSystem.Feel(c, state.Lab(bracket[i].LabId), c.Rivalry.Feelings.BracketPermille);
                 }
             }
@@ -67,7 +67,7 @@ namespace AiLabs.Rules.Systems
                 record.CrownModelId = crown[0].ModelId;
                 AddReputation(state.Lab(record.CrownLabId), c.Gauntlet.CrownReputation);
                 Events.Add(state, EventKind.GauntletCrown, record.CrownLabId, record.CrownModelId, crown[0].Score, crown[0].ModelName);
-                if (record.CrownLabId == state.Player.Id)
+                if (state.PlayerLabId >= 0 && record.CrownLabId == state.PlayerLabId)
                 {
                     int runnerUp = crown.Count > 1 ? crown[1].LabId : -1;
                     for (int i = 0; i < state.Labs.Count; i++)

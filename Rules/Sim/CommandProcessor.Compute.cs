@@ -8,6 +8,8 @@ namespace AiLabs.Rules.Sim
     {
         static CommandResult SignReservedCompute(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return FrozenIn(c, lab, lab.HomeBlocId);
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Reserve at least one GPU.");
             long deposit = ComputeContractSystem.Deposit(c, state, lab, cmd.Count);
             if (lab.Cash < deposit) return NeedCash(lab, deposit);
