@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 325 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). 396 tests pass, including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 7. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -23,8 +23,8 @@ Known limits of the slice, so nobody is surprised:
   dial-up costs and wealth growth for the eight-year soak.
 - **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
   functions; a room is built for what it seats or holds.
-- **The cast is five labs.** OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak
-  (2023) as arrivals; Macrosoft, Metta and Palantear (item 12 below) are not in.
+- **The cast is eight labs.** OpenAye, AntHopticsAI and xAy from the start; Metta (2007), Macrosoft (2012), Palantear
+  (2017), Goggle DeepMined (2010) and DeepSneak (2023) as arrivals. The start-era picker (item 12) is still UI-only.
 - **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
 - **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
   AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
@@ -82,15 +82,14 @@ and says why in the commit message.
 11. **Endings that continue.** Bankrupt, Ousted and Exit as recorded moments after which play goes on. Planned as
     phase F of the systems design (an Exit keeps the lab as a plan-run rival, Q24).
 
-12. **The wider cast.** The other labs and companies named in the bible (Macrosoft, Metta, Palantear; Goggle
-    DeepMined and DeepSneak are in) as rival plans that enter in later eras, plus a start-era picker screen that shows each
-    era's tagline and kit. Data and plans; no new systems.
+12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
+    a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
 13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
     "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
 
 ## Rules: later
 
-- The wider cast, endings and the
+- Endings and the
   shady path from the systems design (phases E to G). The first PRs landed the world map (schema 3), rival depth (C) and own chips (D). What is left of
   the world map: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
 - The Bubble meter and circular financing; shares in rivals; monopoly and regulators.

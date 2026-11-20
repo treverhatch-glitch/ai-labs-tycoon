@@ -1268,6 +1268,71 @@
       }
     },
     {
+      "id": "metta", "name": "Metta", "leader": "Marka Zuckerg", "familyName": "Facehook", "archetype": "the social graph that learned to train",
+      "startCash": 25000000, "lotId": "garage", "reputation": 520, "backerPerWeek": 65000, "homeBlocId": "us", "joinsYear": 2007,
+      "plan": {
+        "shadyAppetite": 0,
+        "startDelayWeeks": 4, "startJitterWeeks": 6,
+        "staff": [
+          { "roleId": "researcher", "count": 2, "fromYear": 0 },
+          { "roleId": "engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "sales", "count": 1, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 1, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 180,
+        "gpus": 5, "gpuGrowthPermillePerYear": 260, "wealthGrowthPermillePerMillion": 62, "ownGpus": false,
+        "trainingSharePermille": 680, "alignmentSharePermille": 80,
+        "reserveWeeks": 12, "maxRunWeeks": 35, "minGainPermille": 50,
+        "sectors": [ "spam-search", "web-ads", "image-recognition", "voice-assistants", "consumer-assistant", "image-design", "customer-support", "writing-tools", "music-audio", "video-film", "companionship", "devices", "coding-agents", "enterprise-knowledge", "government-services", "cybersecurity", "agent-workforce", "ai-research-services" ],
+        "siteAppetitePermille": 200, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
+      }
+    },
+    {
+      "id": "macrosoft", "name": "Macrosoft", "leader": "Taya Nadeva", "familyName": "DeskPilot", "archetype": "the landlord that also trains",
+      "startCash": 3500000, "lotId": "garage", "reputation": 580, "backerPerWeek": 12000, "homeBlocId": "us", "joinsYear": 2012,
+      "plan": {
+        "shadyAppetite": 0,
+        "startDelayWeeks": 4, "startJitterWeeks": 8,
+        "staff": [
+          { "roleId": "researcher", "count": 5, "fromYear": 0 },
+          { "roleId": "engineer", "count": 4, "fromYear": 0 },
+          { "roleId": "sales", "count": 2, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "infra", "count": 2, "fromYear": 0 },
+          { "roleId": "product-lead", "count": 1, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 280,
+        "gpus": 18, "gpuGrowthPermillePerYear": 420, "wealthGrowthPermillePerMillion": 70, "ownGpus": true,
+        "trainingSharePermille": 700, "alignmentSharePermille": 120,
+        "reserveWeeks": 10, "maxRunWeeks": 70, "minGainPermille": 80,
+        "sectors": [ "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "voice-assistants", "code-completion", "writing-tools", "consumer-assistant", "customer-support", "legal-research", "coding-agents", "enterprise-knowledge", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services" ],
+        "siteAppetitePermille": 900, "siteBlocs": [ "us", "eu" ], "minReleaseAlignment": 200, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": true, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
+      }
+    },
+    {
+      "id": "palantear", "name": "Palantear", "leader": "K. Palant", "familyName": "Gotham", "archetype": "government dashboards with a conscience clause",
+      "startCash": 55000000, "lotId": "garage", "reputation": 540, "backerPerWeek": 85000, "homeBlocId": "us", "joinsYear": 2017,
+      "plan": {
+        "shadyAppetite": 0,
+        "startDelayWeeks": 4, "startJitterWeeks": 6,
+        "staff": [
+          { "roleId": "researcher", "count": 4, "fromYear": 0 },
+          { "roleId": "engineer", "count": 3, "fromYear": 0 },
+          { "roleId": "sales", "count": 2, "fromYear": 0 },
+          { "roleId": "safety", "count": 2, "fromYear": 0 },
+          { "roleId": "data-engineer", "count": 2, "fromYear": 0 },
+          { "roleId": "red-teamer", "count": 1, "fromYear": 0 },
+          { "roleId": "alignment-fellow", "count": 1, "fromYear": 0 }
+        ],
+        "staffGrowthPermillePerYear": 260,
+        "gpus": 10, "gpuGrowthPermillePerYear": 280, "wealthGrowthPermillePerMillion": 60, "ownGpus": true,
+        "trainingSharePermille": 620, "alignmentSharePermille": 320,
+        "reserveWeeks": 14, "maxRunWeeks": 90, "minGainPermille": 120,
+        "sectors": [ "fraud-detection", "doc-reading", "legal-research", "government-services", "cybersecurity", "finance-trading", "science-medicine", "enterprise-knowledge", "agri-logistics", "space-compute", "machine-science" ],
+        "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 280, "publishesSafetyResearch": true, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
+      }
+    },
+    {
       "id": "goggle", "name": "Goggle DeepMined", "leader": "Sunder Pitchai", "familyName": "Gemeny", "archetype": "the incumbent with a research bench the size of a village",
       "startCash": 5000000, "lotId": "garage", "reputation": 600, "backerPerWeek": 20000, "homeBlocId": "us", "joinsYear": 2010,
       "plan": {

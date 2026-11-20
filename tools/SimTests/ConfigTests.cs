@@ -89,8 +89,11 @@ public class ConfigTests
     public void The_rivals_are_the_parody_cast()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy", "Goggle DeepMined", "DeepSneak", "Second Wind Labs" }, c.Rivals.Select(r => r.Name).ToArray());
-        Assert.Equal(new[] { 0, 0, 0, 2010, 2023, RivalConfig.NeverJoins }, c.Rivals.Select(r => r.JoinsYear).ToArray());
+        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy", "Metta", "Macrosoft", "Palantear", "Goggle DeepMined", "DeepSneak", "Second Wind Labs" }, c.Rivals.Select(r => r.Name).ToArray());
+        Assert.Equal(new[] { 0, 0, 0, 2007, 2012, 2017, 2010, 2023, RivalConfig.NeverJoins }, c.Rivals.Select(r => r.JoinsYear).ToArray());
+        Assert.Equal("Marka Zuckerg", c.Rival("metta").Leader);
+        Assert.Equal("Taya Nadeva", c.Rival("macrosoft").Leader);
+        Assert.Equal("K. Palant", c.Rival("palantear").Leader);
         Assert.Equal("Sunder Pitchai", c.Rival("goggle").Leader);
         Assert.Equal("The Quiet Committee", c.Rival("deepsneak").Leader);
         Assert.Equal("Jam Saltmen", c.Rival("openaye").Leader);

@@ -11,6 +11,9 @@ ids and the years. All names are parody near-misses; no real names or logos (the
 | `openaye` | OpenAye | Jam Saltmen | ChatGBT | start | us | $250,000 |
 | `anthoptics` | AntHopticsAI | Durian Amodayo | Clause | start | us | $300,000 |
 | `xay` | xAy | Elton Husk | Grokk | start | us | $600,000 |
+| `metta` | Metta | Marka Zuckerg | Facehook | 2007 | us | $25,000,000 |
+| `macrosoft` | Macrosoft | Taya Nadeva | DeskPilot | 2012 | us | $3,500,000 |
+| `palantear` | Palantear | K. Palant | Gotham | 2017 | us | $55,000,000 |
 | `goggle` | Goggle DeepMined | Sunder Pitchai | Gemeny | 2010 | us | $5,000,000 |
 | `deepsneak` | DeepSneak | The Quiet Committee | Sneak | 2023 | china | $60,000,000 |
 | `successor` | Second Wind Labs | A Very Patient Investor | Second | never (9999) | us | $1,000,000 |
@@ -25,6 +28,9 @@ one, and a standing of 500 with Envydia. `successor` is the plan for a lab the p
 | `openaye` | none | no | 8% | 400 | us | 2024 | yes | n/a |
 | `anthoptics` | 550 | yes | 0 | 300 | us, eu | 2025 | yes | n/a |
 | `xay` | none | no | 4% | 1000 | us | 2020 | no | n/a |
+| `metta` | none | no | 6% | 200 | us | n/a | no | n/a |
+| `macrosoft` | 200 | no | 0 | 900 | us, eu | n/a | yes | n/a |
+| `palantear` | 280 | yes | 0 | 0 | (none) | n/a | no | n/a |
 | `goggle` | 300 | no | 0 | 800 | us, eu, nordics | 2014 | no | +25% |
 | `deepsneak` | none | no | 0 | 700 | china | 2023 | yes | n/a |
 

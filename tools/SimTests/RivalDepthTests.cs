@@ -326,7 +326,7 @@ public class RivalDepthTests
     {
         Game g = Game.New();
         GameConfig c = g.C;
-        Assert.Equal(new[] { "goggle", "deepsneak" }, g.State.PendingRivals.ToArray());
+        Assert.Equal(new[] { "metta", "macrosoft", "palantear", "goggle", "deepsneak" }, g.State.PendingRivals.ToArray());
         Assert.DoesNotContain(g.State.Labs, l => l.RivalId == "goggle");
 
         int firstWeek2010 = (2010 - c.Calendar.StartYear) * c.Calendar.WeeksPerYear;
@@ -341,7 +341,7 @@ public class RivalDepthTests
         Assert.Equal(c.Rival("goggle").StartCash, goggle.Ledger.StartCash);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.RivalJoined && e.Ref == "goggle" && e.Tick == firstWeek2010);
         Assert.NotNull(g.State.Vendor.Standing(goggle.Id));
-        Assert.Equal(new[] { "deepsneak" }, g.State.PendingRivals.ToArray());
+        Assert.Equal(new[] { "macrosoft", "palantear", "deepsneak" }, g.State.PendingRivals.ToArray());
         Assert.Equal(g.Me, g.State.Labs[0]);
 
         g.Sim.StepMany((2023 - 2010) * c.Calendar.WeeksPerYear);
@@ -516,7 +516,7 @@ public class RivalDepthTests
         Assert.Equal(89, sim.Tick);
         Assert.Equal(550058, sim.Player.Cash);
         Assert.Empty(SaveGame.Problems(c, sim.State));
-        Assert.Equal(new[] { "goggle", "deepsneak" }, sim.State.PendingRivals.ToArray());
+        Assert.Equal(new[] { "metta", "macrosoft", "palantear", "goggle", "deepsneak" }, sim.State.PendingRivals.ToArray());
         Assert.Equal(4, sim.State.Vendor.Standings.Count);
         Assert.Equal(sim.State.Vendor.SupplyThisMonth, sim.State.Vendor.Standings.Sum(s => s.AllocationThisMonth));
         Assert.All(sim.State.Labs, lab =>
@@ -528,8 +528,10 @@ public class RivalDepthTests
         });
 
         sim.StepMany((2010 - 1995) * c.Calendar.WeeksPerYear - sim.Tick);
-        Assert.Equal(4, sim.State.Labs.Count);
+        Assert.Equal(5, sim.State.Labs.Count);
+        Assert.Equal("metta", sim.State.Labs.Last().RivalId);
         sim.Step();
+        Assert.Equal(6, sim.State.Labs.Count);
         Assert.Equal("goggle", sim.State.Labs.Last().RivalId);
         Assert.Equal(sim.Save(), Simulation.Load(c, sim.Save()).Save());
         foreach (LabState lab in sim.State.Labs) Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
