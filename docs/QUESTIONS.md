@@ -534,6 +534,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `ShadyPathLaterTests.cs` at 12 facts; grey compute pays via `GreyCompute` special only (no double cash line); `SignReservedCompute` respects home freeze (Q42).
 - Why: NEXT shady path; pairs with alignment corruption trust (Q74).
 
+### Q89. Unity CI while the owner's PC is offline? DECIDED: path-filtered pull_request on unity.yml
+
+- Options: (a) keep unity workflow manual-only until Hatch opens the editor; (b) add `pull_request` on `unity/**` and the workflow file as a GameCI compile gate; (c) run Unity on every PR regardless of paths.
+- Recommendation and choice: **(b)** — `pull_request` with paths `unity/**` and `.github/workflows/unity.yml`, keep `workflow_dispatch` and `cancel-in-progress`, no `push` or `schedule`, drop the main-only job guard so PRs run Edit Mode tests; secrets only on the test-runner step.
+- Why: owner's assistant decision (2026-11-20): Hatch cannot verify compiles daily during batched pushes (~once per day); GameCI Edit Mode is the gate before more Unity screens land.
+
 ## Open
 
 None.

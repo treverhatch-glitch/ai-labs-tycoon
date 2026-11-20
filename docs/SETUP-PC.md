@@ -80,10 +80,11 @@ builds.
 
 ### The Unity workflow on GitHub
 
-`.github/workflows/unity.yml` runs GameCI (Edit Mode and Play Mode tests, and a Windows build when asked). It is
-manual: Actions > unity > Run workflow, on `main`. It uses the repository secrets `UNITY_LICENSE`, `UNITY_EMAIL` and
-`UNITY_PASSWORD`, which are already set. While `unity/` holds no project it prints a notice and passes without
-starting Unity.
+`.github/workflows/unity.yml` runs GameCI **Edit Mode** tests for `unity/`. It triggers on **pull requests** that touch
+`unity/**` or the workflow file, and on **workflow_dispatch** (Actions > unity > Run workflow). It does not run on
+`push` or a schedule. Concurrency cancels an in-flight run when a newer one starts. Secrets `UNITY_LICENSE`,
+`UNITY_EMAIL` and `UNITY_PASSWORD` are passed only to the `game-ci/unity-test-runner` step. If
+`ProjectSettings/ProjectVersion.txt` is missing it logs a notice and skips Unity without failing.
 
 ## 3. The studio
 
