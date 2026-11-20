@@ -145,6 +145,7 @@ namespace AiLabs.Rules.Config
 
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
+            FundingProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
             if (c.Gauntlet.HistoryYears < 1) p.Add("gauntlet.historyYears must be at least 1");
@@ -524,6 +525,27 @@ namespace AiLabs.Rules.Config
                 if (c.World.Bloc(bloc) == null) p.Add(who + " plans to build in the unknown bloc \"" + bloc + "\"");
             if (who.StartsWith("rival ") && plan.ShadyAppetite != 0)
                 p.Add(who + " must have shadyAppetite 0 (parody labs never run shady jobs)");
+        }
+
+        static void FundingProblems(List<string> p, GameConfig c)
+        {
+            FundingConfig f = c.Funding;
+            if (f == null) { p.Add("funding is missing"); return; }
+            Permille(p, "funding.founderStartPermille", f.FounderStartPermille);
+            Permille(p, "funding.controlPermille", f.ControlPermille);
+            if (string.IsNullOrEmpty(f.OustedSuccessor)) p.Add("funding.oustedSuccessor is empty");
+            if (f.Rounds.Count == 0) p.Add("funding.rounds is empty");
+            UniqueIds(p, "funding.rounds", f.Rounds);
+            for (int i = 0; i < f.Rounds.Count; i++)
+            {
+                FundingRoundConfig r = f.Rounds[i];
+                string who = "funding.rounds[" + r.Id + "]";
+                if (r.Cash < 1) p.Add(who + " cash must be positive");
+                Permille(p, who + " dilutionPermille", r.DilutionPermille);
+                if (r.DilutionPermille < 1) p.Add(who + " dilutionPermille must be at least 1");
+                Permille(p, who + " minReputation", r.MinReputation);
+                if (r.BoardSeats < 0) p.Add(who + " boardSeats is negative");
+            }
         }
 
         static void Permille(List<string> p, string what, int value)

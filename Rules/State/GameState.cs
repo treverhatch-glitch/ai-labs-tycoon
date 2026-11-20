@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 7;
+        public const int CurrentSchema = 8;
 
         public int Schema;
         public string ConfigVersion;
@@ -125,6 +125,12 @@ namespace AiLabs.Rules.State
         public int IncidentsThisMonth;
         /// <summary>The share of compute that goes to training while a run is active. The rest serves customers.</summary>
         public int TrainingSharePermille;
+        /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
+        public int FounderSharePermille;
+        /// <summary>Investor seats on the board after venture rounds.</summary>
+        public int BoardInvestorSeats;
+        /// <summary>Funding round ids this lab has closed, oldest first.</summary>
+        public List<string> FundingRounds = new List<string>();
 
         /// <summary>What a rival thinks of the player, -1000 (feud) to 1000 (fan). Always 0 for the player's own lab.</summary>
         public int FeelingToPlayer;
@@ -221,6 +227,9 @@ namespace AiLabs.Rules.State
             s.ObjList("blocs", ref Blocs);
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
+            s.Int("founderSharePermille", ref FounderSharePermille);
+            s.Int("boardInvestorSeats", ref BoardInvestorSeats);
+            s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
             s.Int("chipAmbushUntilTick", ref ChipAmbushUntilTick);

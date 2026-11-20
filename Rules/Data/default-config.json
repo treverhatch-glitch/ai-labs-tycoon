@@ -1036,6 +1036,16 @@
     "bankruptcyGraceWeeks": 12,
     "historyMonths": 120
   },
+  "funding": {
+    "founderStartPermille": 1000,
+    "controlPermille": 450,
+    "oustedSuccessor": "The Board's Choice",
+    "rounds": [
+      { "id": "angel", "name": "Angels", "opensYear": 2009, "cash": 500000, "dilutionPermille": 180, "minReputation": 350, "boardSeats": 0 },
+      { "id": "series-a", "name": "Series A", "opensYear": 2012, "cash": 5000000, "dilutionPermille": 280, "minReputation": 450, "boardSeats": 2 },
+      { "id": "series-b", "name": "Series B", "opensYear": 2017, "cash": 40000000, "dilutionPermille": 220, "minReputation": 550, "boardSeats": 1 }
+    ]
+  },
   "gauntlet": {
     "name": "The Gauntlet",
     "jitterPermille": 50,

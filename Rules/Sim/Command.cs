@@ -12,7 +12,7 @@ namespace AiLabs.Rules.Sim
         ResearchTech, StartTraining, ReleaseModel,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
-        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder
+        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding
     }
 
     /// <summary>
@@ -306,6 +306,13 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.Launder, labId);
             c.Count = amount;
+            return c;
+        }
+
+        public static Command RaiseFunding(int labId, string roundId)
+        {
+            Command c = Make(CommandKind.RaiseFunding, labId);
+            c.Id = roundId;
             return c;
         }
     }

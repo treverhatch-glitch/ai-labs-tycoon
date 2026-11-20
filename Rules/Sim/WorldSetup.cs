@@ -47,6 +47,8 @@ namespace AiLabs.Rules.Sim
             player.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
             player.Techs.AddRange(era.StartTechs);
             player.TrainingSharePermille = start.TrainingSharePermille;
+            player.FounderSharePermille = c.Funding.FounderStartPermille;
+            player.BoardInvestorSeats = 0;
             state.Labs.Add(player);
             state.PlayerLabId = player.Id;
             state.Endings = new List<EndingRecord>();
@@ -100,6 +102,8 @@ namespace AiLabs.Rules.Sim
             lab.LotId = !arrival && IsFirst(c, era) ? rival.LotId : era.StartLotId;
             lab.Techs.AddRange(arrival ? RivalSystem.CatchUpTechs(c, era) : era.StartTechs);
             lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
+            lab.FounderSharePermille = c.Funding.FounderStartPermille;
+            lab.BoardInvestorSeats = 0;
             lab.PlanPausedUntilTick = -1;
             lab.ChipAmbushUntilTick = -1;
             state.Labs.Add(lab);
@@ -176,6 +180,9 @@ namespace AiLabs.Rules.Sim
             fresh.Techs.AddRange(RivalSystem.CatchUpTechs(c, era));
             fresh.Techs.AddRange(era.StartTechs);
             fresh.TrainingSharePermille = start.TrainingSharePermille;
+            fresh.FounderSharePermille = c.Funding.FounderStartPermille;
+            fresh.BoardInvestorSeats = 0;
+            fresh.FundingRounds = new List<string>();
             fresh.PlanPausedUntilTick = -1;
             fresh.ChipAmbushUntilTick = -1;
             for (int k = 0; k < c.World.Blocs.Count; k++) fresh.Blocs.Add(NewStanding(c.World.Blocs[k].Id));

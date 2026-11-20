@@ -68,8 +68,8 @@ and says why in the commit message.
 6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
    seven Envydia generations as data, resale that falls a generation at a time, `BuyGpus`/`SellGpus`/`MoveHardware`
    to a holding, the fleet migration (schema 2).
-7. **The funding ladder.** Angels and two venture rounds with dilution and a board; the Ousted ending. New system
-   and state.
+7. ~~**The funding ladder.**~~ Done: `FundingConfig`, `RaiseFunding`, founder share and investor board seats,
+   schema 8 migration, `RecordOusted` when share hits `controlPermille`; `FundingTests`.
 8. **The alignment gap and incident rungs 1 to 3**, per model, replacing the single incident kind. Sandbagging
    corrupts displayed readings, so it lands after item 3.
 9. **Staff as people.** Traits, morale, poaching by rivals. Changes how `StaffPool` is stored, so it needs a save

@@ -22,6 +22,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 5) MigrateTo5(root);
             if (fromSchema < 6) MigrateTo6(c, root);
             if (fromSchema < 7) MigrateTo7(root);
+            if (fromSchema < 8) MigrateTo8(c, root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -214,6 +215,17 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "caseEndsTick", JsonValue.Of(-1L));
                 JsonPatch.AddIfMissing(lab, "shadyOps", JsonValue.Array());
                 JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "corruption", JsonValue.Of(0L)));
+            });
+        }
+
+        static void MigrateTo8(GameConfig c, JsonValue root)
+        {
+            int start = c.Funding.FounderStartPermille;
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "founderSharePermille", JsonValue.Of((long)start));
+                JsonPatch.AddIfMissing(lab, "boardInvestorSeats", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "fundingRounds", JsonValue.Array());
             });
         }
 

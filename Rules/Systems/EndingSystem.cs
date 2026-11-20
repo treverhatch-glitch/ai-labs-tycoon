@@ -12,6 +12,7 @@ namespace AiLabs.Rules.Systems
         public const string HandcuffsId = "handcuffs";
         public const string ExitId = "exit";
         public const string MonopolyId = "monopoly";
+        public const string OustedId = "ousted";
 
         public static void RecordBankrupt(GameConfig c, GameState state, LabState lab)
         {
@@ -19,6 +20,18 @@ namespace AiLabs.Rules.Systems
             if (HasOpen(state, BankruptId)) return;
             Add(state, lab.Id, BankruptId);
             Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, BankruptId);
+        }
+
+        public static void RecordOusted(GameConfig c, GameState state, LabState lab)
+        {
+            if (lab.Id != state.PlayerLabId) return;
+            if (HasOpen(state, OustedId)) return;
+            string successor = c.Funding.OustedSuccessor;
+            if (!string.IsNullOrEmpty(successor)) lab.Leader = successor;
+            EndingRecord record = Add(state, lab.Id, OustedId);
+            record.Choice = "done";
+            record.ChoiceTick = state.Tick;
+            Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, OustedId);
         }
 
         public static void RecordHandcuffs(GameConfig c, GameState state, LabState lab)
