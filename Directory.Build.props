@@ -1,0 +1,16 @@
+<Project>
+  <!--
+    Build output goes to .build/ at the repo root, never next to the sources.
+    Rules/ is also a Unity package (see Rules/package.json): a bin/ or obj/ folder inside it
+    would be imported by Unity and break the editor's compile.
+  -->
+  <PropertyGroup>
+    <BuildRoot>$(MSBuildThisFileDirectory).build/</BuildRoot>
+    <BaseIntermediateOutputPath>$(BuildRoot)obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BuildRoot)bin/$(MSBuildProjectName)/</BaseOutputPath>
+    <Deterministic>true</Deterministic>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>disable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+</Project>

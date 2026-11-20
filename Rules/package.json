@@ -1,0 +1,7 @@
+{
+  "name": "com.hatchtag.ailabs.rules",
+  "version": "0.1.0",
+  "displayName": "AI Labs Tycoon Rules",
+  "description": "The game rules of AI Labs Tycoon: deterministic, tick-based, integer-only C# with no engine references. Tested with dotnet test tools/SimTests; Unity only draws it.",
+  "unity": "6000.0"
+}

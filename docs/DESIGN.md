@@ -1,0 +1,240 @@
+# AI Labs Tycoon: design
+
+Mad Games Tycoon 2, but you run an AI lab. The product is an artificial mind, the factory is a data centre, and
+shipping too well can end the world. Funny, goofy, cute and alive.
+
+This file is the short version every agent and person reads first. It has three parts:
+
+1. [What wins when sources disagree](#1-what-wins-when-sources-disagree)
+2. [The game](#2-the-game): the bible's essentials with the owner's decisions applied
+3. [The rules core](#3-the-rules-core): how the C# rules are built and what the first slice models
+
+The roadmap is [NEXT.md](NEXT.md). What needs the owner's PC is [SETUP-PC.md](SETUP-PC.md).
+
+## 1. What wins when sources disagree
+
+| Order | Source | Where |
+| --- | --- | --- |
+| 1 | The owner's decisions | [reference/ai_labs_decisions.md](reference/ai_labs_decisions.md), plus the later decisions listed below |
+| 2 | Game Bible v0.2 | [reference/AI-Labs-Tycoon-Game-Bible-v0.2.pdf](reference/AI-Labs-Tycoon-Game-Bible-v0.2.pdf) |
+| 3 | Game Bible v0.1 | not in the repo; v0.2 contains it and marks what it added |
+
+### The owner's decisions
+
+- **Engine.** Game rules are plain C# with no Unity types (netstandard2.1), tested with `dotnet test`, no editor
+  needed. Unity is for scenes and visuals only. Not browser-first.
+- **Building.** Mad Games Tycoon 2 style top-down cutaway rooms, each with a purpose. Buy more land and buildings to
+  expand. Two scales: the HQ where you build rooms, and a world map of data-centre sites. Rooms evolve with the eras,
+  and the AI visibly glows through the building.
+- **Several models per lab**, in lines (like small, mid and flagship tiers), each with its own visible growth, state
+  and safety meter.
+- **Rivals are parodies** with near-miss names: OpenAye (Jam Saltmen, "ChatGBT"), AntHopticsAI ("Clause"), xAy (Elton
+  Husk, "Grokk"), Envydia with its leather-jacket boss Jensun Hwang, and more. Original character designs, no real
+  logos.
+- **Start year.** A start-era picker. **The default is 1995, "Dial-up Days" (confirmed).** 2009 is a quick start;
+  a 1956 prologue is a later unlock.
+- **The first products are game AI (confirmed).** In 1995 a lab sells enemy and sidekick AI to video game studios,
+  chess and puzzle bots, and simple expert systems. The lab climbs from there through the eras.
+- **Endless.** Endings do not end the game. The player can keep playing.
+- **Hardware.** The "console" of this game is designing your own GPUs and AI accelerators, which feed back into
+  training. Consumer devices (glasses, robots) are side lines; brain-implant chips are very late game.
+- **In version 1:** a real shady path (hacking, stealing, copying rivals), circular financing and a bubble that can
+  crash the economy, government and China deals, the yearly model tournament, sectors to sell into, shares and
+  monopoly.
+
+## 2. The game
+
+### Pillars
+
+| Pillar | In play |
+| --- | --- |
+| Capability versus control | Every point of model power must be matched by safety work, or risk compounds quietly. This decides the endings. |
+| Compute is the map | Territory is GPUs, power and data centres. Renting is flexible and expensive; owning is cheap per hour and slow. Rivals bid for the same supply. |
+| Sniper or shotgun | A narrow lab that is the best at one thing and a broad lab that is adequate at everything are both viable and play differently. |
+| Rivals with their own plans | Rivals decide from their own cash, culture and the live market, and the player can read their reasons. They should beat a careless player. |
+| Funny because it is true | Jokes come from the systems behaving like the real industry. |
+
+Promises to the player: no solved formula (each era changes what works); every number is explainable (tap it and
+see its parts; the one exception is a deceptive model corrupting its own readings); low clicks, big decisions; the
+building tells the truth first; play as long as you like.
+
+### The loop
+
+Compute, data and talent become a model. The model becomes customers and hype. Those become money. Money buys more
+compute, data and talent. Control has to grow as fast as capability.
+
+- **Every week:** split compute between training, serving customers and research; watch runs and incidents.
+- **Every few months:** design the next training run and how much safety work it gets; choose what to ship and
+  where; hire, fire, buy chips.
+- **Every year:** the Gauntlet, the televised model tournament; funding; research direction.
+- **Every era:** the rules shift. A new technique, a new market, a new law, a new class of risk.
+
+### Eras
+
+| Era | From | What a model can do | What opens |
+| --- | --- | --- | --- |
+| 0 Dial-up Days (default start) | 1995 | Rules engines, game bots, spam filters. AI is a dirty word. | Game AI, chess bots, expert systems, then search and spam contracts; the dot-com bubble and crash |
+| 1 The Punchline | 2009 | Recognises digits. Sometimes. | Grants, neural nets on gaming GPUs, first GPU racks and cloud rental |
+| 2 It Sees | 2012 | Images, speech, board games | First real funding, the talent war, the chip team (inference chip Gen 1) |
+| 3 It Writes | 2017 | Fluent text, code completion | Transformers, pretraining at scale, API customers, safety evals, chip Gen 2 |
+| 4 The Chat Boom | 2022 | Conversation, images, early video | Consumer apps, chip shortages, the first serious rules |
+| 5 Agents | 2024 | Multi-step work with tools | Enterprise seats, coding as a huge market, containment wing |
+| 6 Harnesses | 2026 | Teams of agents running for days | Selling work instead of software; AI doing AI research; chip Gen 4 |
+| 7 Bodies (expansion) | 2029 | Robots | Hardware lines, manufacturing |
+| 8 Upward (expansion) | 2033 | Science at machine speed | Orbital compute, the superintelligence endings |
+
+Version 1 covers eras 0 to 6; Bodies and Upward ship in the data flagged `expansion`. The era table is data
+(`eras` in the config; the full content is in [content/](content/eras.md)). An era is a floor, not a window: a tech or
+room opens when its era begins and stays open. Each era scales what a training run costs and how fast a researcher
+works (x1 up to x60). Hardware generations now do the work the bible gives to "ten times per era": the cost
+multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Two eras can
+be chosen at the start: 1995 and 2009 (the quick start, with its own money, lot and researched techs).
+
+### Models
+
+A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.
+
+| Line | Role |
+| --- | --- |
+| Mini | Small, cheap, fast. Low ceiling. The workhorse of revenue. |
+| Mid | The all-rounder. Most customers, most sectors. |
+| Flagship | Wins the Gauntlet and sets the lab's reputation. Huge training bill, most risk. |
+| Specialists (later) | Image, video, code, security. Can outscore the flagship in their sector. |
+
+Every model has its own safety meter and one of three visible states: **Healthy** (curious, waves at staff),
+**Overworked** (serving load too high), **Glitching** (a recent incident). A training run is a handful of choices
+(size, data, compute budget, objective, alignment budget), a long wait, and a result with some luck in it.
+
+### Compute, data and people
+
+- **Compute:** rent by the hour (instant, dearest), reserve for years (cheaper, committed), buy chips and lease
+  space (queue, cheap per hour, breaks even against renting after about 18 months of full use), build data centres
+  (slow, cheapest), and finally your own chips. Chips come in generations; each new one makes the old fleet worth
+  less. One supplier, Envydia, sells the chips everyone needs and decides who gets them.
+- **Data:** scrape (free now, lawsuits later), license, pay experts, synthetic, your own users, distilling a rival.
+- **People:** researchers (techniques), engineers (training speed, serving cost), safety researchers (control),
+  infrastructure, product and sales. Stars matter and get poached.
+
+### Markets and the Gauntlet
+
+Models compete sector by sector. Each sector has buyers, a size, growth, weights for what wins, and its own way of
+going wrong. Once a year every lab enters the Gauntlet: one bracket per sector plus an overall crown.
+
+### Money and the bubble
+
+Grants, angels, venture rounds, strategic investors (the chip baron pays you to buy her chips), sovereign funds,
+debt, going public. Every round dilutes the founder; lose control and the board can fire you. Circular financing is
+the cheapest money in the game and feeds a shared Bubble meter; when it pops, labs with real revenue buy the
+wreckage. The lesson carried over from the owner's earlier game: money must keep mattering in the late game.
+
+### Safety and the endings
+
+Capability earns money. Control keeps the game going. The gap between them is the dice. The incident ladder runs
+from an embarrassing screenshot (1) through jailbreak scandals (2), sandbagging (3), unauthorised action (4) and an
+escape attempt (5) to takeoff (6). Low rungs are frequent, survivable and often funny. Endings are big moments, and
+the game continues after them.
+
+### Rivals
+
+Parody labs, each built on an archetype with its own plan, strengths and blind spots.
+
+| Lab | Boss | Archetype | Model |
+| --- | --- | --- | --- |
+| OpenAye | Jam Saltmen | First-to-market showman. Ships everything, burns cash, safety scandals. | ChatGBT |
+| AntHopticsAI | Durian Amodayo | Careful sniper. Trusted, publishes safety research, slow to ship. | Clause |
+| xAy | Elton Husk | Rocket billionaire. Limitless cash, builds a data centre in a weekend. | Grokk |
+| Envydia | Jensun Hwang | The chip baron in the leather jacket. | sells the GPUs |
+
+More arrive with the eras (Goggle DeepMined, Macrosoft, Metta, DeepSneak, Palantear and others; see the bible,
+chapter 11).
+
+**Parody guardrails.** Near-miss names only, never a real name. Original character designs, no real logos. A parody
+boss never commits a crime and no text puts invented words in a real person's mouth. A test keeps real names out of
+the config text. This is a design rule, not legal advice.
+
+### Tone
+
+Funny, goofy, cute and alive. The lab, the mascots and the glow show what is happening before the dashboards do.
+
+## 3. The rules core
+
+### Layout
+
+| Path | What |
+| --- | --- |
+| `Rules/` | The rules: plain C# (netstandard2.1, C# 9), no Unity, no packages. Also a Unity package (`package.json`, `AiLabs.Rules.asmdef` with `noEngineReferences`), so Unity compiles the same sources. |
+| `Rules/Data/default-config.json` | Every tunable number and every name: eras, lots, roles, rooms, GPUs, techs, model lines, sectors, world events, rivals. |
+| `docs/content/` | The content tables (eras, techs, sectors, rooms, events, the world map) for planning. A test keeps them in step with the data. |
+| `tools/SimTests/` | The tests (net8, xunit). `dotnet test tools/SimTests`. |
+| `tools/SimCli/` | A headless console game for balance work: `dotnet run --project tools/SimCli -- run --years 8`. |
+| `unity/` | The Unity project. Scenes and visuals only. |
+| `studio/` | The studio harness wiring ([studio/README.md](../studio/README.md)). |
+
+### Rules for the rules
+
+Tests in `tools/SimTests/ArchitectureTests.cs` hold each of these.
+
+1. **No engine.** `Rules/` references nothing but the standard library.
+2. **Deterministic.** The same seed and the same orders give the same state on every machine, to the last bit. So:
+   whole-number maths only (money in dollars, rates in permille, shares in parts per million), no `float`,
+   `double` or `decimal`; no clock, threads, disk or `System.Random`; no mutable statics; every sort has a
+   tie-breaker.
+3. **Seeded dice, one stream per system.** `Rng` is SplitMix64. Training, safety, the Gauntlet, rivals, the world
+   (heatwaves, town votes), chips and the shady path each have their own stream, saved with the game, so adding a
+   roll in one system never shifts another. A new stream's state comes from the seed, so an old save gets it on load.
+4. **All state is one saved object.** `GameState` holds everything. Each saved class lists its fields once in
+   `Sync(Syncer)`, and that one list is the save, the load and the digest. A test fails when a field is missing
+   from its list.
+5. **The only way to change the game is a `Command`.** New kinds and refusal codes are only ever appended. `Simulation.Apply(command)` checks it completely before
+   changing anything, so a refused order changes nothing. Accepted orders are journaled, so a game replays from its
+   orders alone.
+6. **Rivals play by the player's rules.** A rival is a plan (`PlanConfig`) that issues the same commands as the
+   player through the same checks. The player's autopilot is the same planner.
+7. **Numbers live in data.** Code holds mechanics; `default-config.json` holds numbers and names. The file is
+   validated when it loads, and every problem is reported at once.
+8. **Every number can be explained.** A model's capability is stored with its parts (base, tech, carry-over, luck).
+   Cash is always the founding cash plus every ledger line.
+
+### One week
+
+A tick is one week: 4 weeks a month, 12 months a year, 48 ticks a year, starting in 1995.
+
+`Simulation.Step()` runs, in order: the era banner and any dated world event for this week → heatwave rolls (first
+week of a month, June to August) → rival plans (first week of a month) → `SiteSystem` (heatwaves end, halls and power
+deals finish) → research and training for each lab → the market (shares move, revenue is paid) → safety (reputation
+heals, incidents roll) → the bills (rent, salaries, rooms, GPU upkeep, the power bill) → month close (`GovernmentSystem`
+moves every bloc's attention for every lab, then the books close) → at year end the Gauntlet and market growth.
+
+### What the first slice models
+
+| Area | In the slice | The bible's fuller version (see [NEXT.md](NEXT.md)) |
+| --- | --- | --- |
+| Time | Weekly ticks from 1995 (or 2009), endless; nine eras as data (1995 to 2033) | Rules that shift per era, not just costs |
+| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 24 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, press, device workshop) |
+| People | Role pools (17 roles across six functions: research, engineering, safety, sales, infrastructure, policy), each needing a desk in its own room | Named staff with traits, morale and poaching |
+| Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue, own chips |
+| World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze) | Chip-shortage events, protests, the Heat meter and investigations |
+| Research | Research points from researchers; 81 techs across nine eras, each opening with its era, with prerequisites | Branching trees, dead ends, patents |
+| Models | Mini, Mid and Flagship lines; versions; capability with visible parts; a safety meter per model; Healthy, Overworked, Glitching | Capability domains, qualities, disposition, specialists |
+| Training | A run needs compute over weeks; the share spent on alignment fills the safety meter and slows the run | Recipes, data mix, failed runs |
+| Sectors | 34 sectors from Game AI Licensing and Chess & Puzzle Bots (1995) to Space Compute (2034); a pool grows only after it opens and slows every year | Trust, sector-specific incidents, specialist lines |
+| Market | Customers move gradually toward the better, safer, better-sold model; serving customers needs compute | Pricing, open weights, trust |
+| Safety | Incidents by the safety meter: reputation loss, a fine, a glitching model | The six-rung ladder, the alignment gap, endings |
+| Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
+| Rivals | OpenAye, AntHopticsAI and xAy with their own plans (xAy builds data centres); Envydia sells the GPUs | The full cast with decision logs |
+| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
+| Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 3 with migrations from 1 and 2 (fixtures in `tools/SimTests/Fixtures`) | The same |
+
+### The bible's first-playable checks
+
+| Check (bible v0.2, chapter 15) | State |
+| --- | --- |
+| Determinism: same seed, same inputs, same state hash after 8 years | Tested |
+| Save in the middle of a training run and load: same result as not saving | Tested |
+| Rules purity: no Unity types in the rules assembly | Tested |
+| Speed: 8 game years headless in under 5 seconds | Tested |
+| Gap to incidents: the incident rate rises as the safety meter falls | Tested |
+| Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
+| Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
+| Bot balance over 200 games and 3 presets | A 40-world autopilot soak for now |
+| Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |

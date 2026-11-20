@@ -1,0 +1,128 @@
+using System;
+using System.Collections.Generic;
+using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
+using AiLabs.Rules.State;
+using AiLabs.Rules.Systems;
+
+namespace AiLabs.Rules.Sim
+{
+    /// <summary>Builds the world of a new game: the player's empty lab, the rivals and the sectors.</summary>
+    public static class WorldSetup
+    {
+        public static GameState NewGame(GameConfig c, NewGameOptions options)
+        {
+            var state = new GameState();
+            state.Schema = GameState.CurrentSchema;
+            state.ConfigVersion = c.Version;
+            state.Seed = options.Seed;
+            EraConfig era = StartEra(c, options);
+            int startTick = EraSystem.StartTick(c, era);
+            state.Tick = startTick;
+            state.NextId = 1;
+            state.Rng = RngSet.FromSeed(options.Seed);
+            state.Labs = new List<LabState>();
+            state.Sectors = new List<SectorState>();
+            state.Sites = new List<SiteState>();
+            state.Gauntlets = new List<GauntletRecord>();
+            state.Events = new List<GameEvent>();
+
+            PlayerStartConfig start = c.PlayerStart;
+            var player = new LabState();
+            player.Id = state.TakeId();
+            player.Name = Or(options.LabName, start.LabName);
+            player.Leader = Or(options.Leader, start.Leader);
+            player.FamilyName = Or(options.FamilyName, start.FamilyName);
+            player.Controller = LabController.Player;
+            player.PlanStartTick = startTick;
+            player.RivalId = "";
+            player.Cash = MathI.MulPermille(start.Cash, era.StartCashPermille);
+            player.Ledger.StartCash = player.Cash;
+            player.Reputation = start.Reputation;
+            player.GrantPerWeek = MathI.MulPermille(start.GrantPerWeek, era.StartGrantPermille);
+            player.GrantEndsTick = startTick + start.GrantWeeks;
+            player.HomeBlocId = start.HomeBlocId;
+            player.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
+            player.Techs.AddRange(era.StartTechs);
+            player.TrainingSharePermille = start.TrainingSharePermille;
+            state.Labs.Add(player);
+
+            for (int i = 0; i < c.Rivals.Count; i++)
+            {
+                RivalConfig rival = c.Rivals[i];
+                if (options.RivalIds != null && !options.RivalIds.Contains(rival.Id)) continue;
+
+                var lab = new LabState();
+                lab.Id = state.TakeId();
+                lab.Name = rival.Name;
+                lab.Leader = rival.Leader;
+                lab.FamilyName = rival.FamilyName;
+                lab.Controller = LabController.Plan;
+                lab.RivalId = rival.Id;
+                lab.PlanStartTick = startTick + rival.Plan.StartDelayWeeks
+                    + (rival.Plan.StartJitterWeeks > 0 ? state.Rng.Rivals.Range(0, rival.Plan.StartJitterWeeks) : 0);
+                lab.Cash = MathI.MulPermille(rival.StartCash, era.StartCashPermille);
+                lab.Ledger.StartCash = lab.Cash;
+                lab.Reputation = rival.Reputation;
+                lab.GrantPerWeek = MathI.MulPermille(rival.BackerPerWeek, era.StartGrantPermille);
+                lab.GrantEndsTick = -1;
+                lab.HomeBlocId = rival.HomeBlocId;
+                lab.LotId = IsFirst(c, era) ? rival.LotId : era.StartLotId;
+                lab.Techs.AddRange(era.StartTechs);
+                lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
+                state.Labs.Add(lab);
+            }
+
+            if (options.RivalIds != null)
+                for (int i = 0; i < options.RivalIds.Count; i++)
+                    if (c.Rival(options.RivalIds[i]) == null) throw new ArgumentException("There is no rival \"" + options.RivalIds[i] + "\" in the config.");
+
+            for (int i = 0; i < c.Market.Sectors.Count; i++) state.Sectors.Add(NewSector(c.Market.Sectors[i], GameDate.Year(c.Calendar, startTick)));
+            for (int i = 0; i < c.World.Sites.Count; i++) state.Sites.Add(NewSite(c.World.Sites[i].Id));
+            for (int i = 0; i < state.Labs.Count; i++)
+                for (int k = 0; k < c.World.Blocs.Count; k++) state.Labs[i].Blocs.Add(NewStanding(c.World.Blocs[k].Id));
+            return state;
+        }
+
+        static bool IsFirst(GameConfig c, EraConfig era) { return c.Eras[0] == era; }
+
+        /// <summary>The era the options ask for. An unknown era, or one the picker does not offer, is the caller's mistake.</summary>
+        static EraConfig StartEra(GameConfig c, NewGameOptions options)
+        {
+            if (string.IsNullOrEmpty(options.StartEraId)) return c.Eras[0];
+            EraConfig era = c.Era(options.StartEraId);
+            if (era == null) throw new ArgumentException("There is no era \"" + options.StartEraId + "\" in the config.");
+            if (!era.Startable) throw new ArgumentException(era.Name + " is not a starting era.");
+            return era;
+        }
+
+        /// <summary>A sector as it stands in a given year: its opening pool, grown for every year it has been open.</summary>
+        public static SectorState NewSector(SectorConfig sector, int year)
+        {
+            var s = new SectorState();
+            s.Id = sector.Id;
+            s.PoolPerWeek = sector.PoolPerWeek;
+            for (int y = sector.OpensYear; y < year; y++)
+                s.PoolPerWeek = MathI.MulPermille(s.PoolPerWeek, MathI.Permille + EraSystem.SectorGrowthPermille(sector, y));
+            s.ChampionLabId = -1;
+            return s;
+        }
+
+        public static SiteState NewSite(string siteId)
+        {
+            var site = new SiteState();
+            site.SiteId = siteId;
+            site.HeatwaveUntilTick = -1;
+            return site;
+        }
+
+        public static BlocStanding NewStanding(string blocId)
+        {
+            var standing = new BlocStanding();
+            standing.BlocId = blocId;
+            return standing;
+        }
+
+        static string Or(string value, string fallback) { return string.IsNullOrEmpty(value) ? fallback : value; }
+    }
+}
