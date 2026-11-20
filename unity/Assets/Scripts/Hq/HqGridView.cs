@@ -57,7 +57,7 @@ namespace AiLabs.Unity.Hq
             HqVisualPalette.EraSkin skin = HqVisualPalette.EraSkinFor(eraId);
 
             BuildFloor(lot, skin);
-            BuildRooms(player, lot, skin);
+            BuildRooms(player, lot, skin, eraId);
             CenterCamera(lot);
         }
 
@@ -102,26 +102,29 @@ namespace AiLabs.Unity.Hq
             }
         }
 
-        void BuildRooms(LabState player, LotConfig lot, HqVisualPalette.EraSkin skin)
+        void BuildRooms(LabState player, LotConfig lot, HqVisualPalette.EraSkin skin, string eraId)
         {
             var glowMap = GlowSpreadMap.Compute(_simulation.Config, player, _simulation.Tick);
 
             for (int i = 0; i < player.Rooms.Count; i++)
             {
                 RoomState room = player.Rooms[i];
-                Color color = HqVisualPalette.RoomColorEraTint(
-                    HqVisualPalette.RoomColor(_simulation.Config, room.TypeId), skin);
+                RoomTypeConfig roomType = _simulation.Config.RoomType(room.TypeId);
+                string roomEra = roomType != null ? roomType.Era : eraId;
+                int evoStep = EraRoomEvolution.Step(_simulation.Config, roomEra, eraId);
+                Color color = EraRoomEvolution.EvolvedRoomColor(_simulation.Config, room.TypeId, skin, eraId);
 
                 var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 block.name = "Room_" + room.Id;
                 block.transform.SetParent(_roomsRoot, false);
 
+                float height = HqGridLayout.RoomHeight * EraRoomEvolution.HeightScale(evoStep);
                 float w = room.Width * HqGridLayout.TileSize - 0.04f;
                 float d = room.Height * HqGridLayout.TileSize - 0.04f;
-                block.transform.localScale = new Vector3(w, HqGridLayout.RoomHeight, d);
+                block.transform.localScale = new Vector3(w, height, d);
                 block.transform.localPosition = new Vector3(
                     room.X * HqGridLayout.TileSize + w * 0.5f + 0.02f,
-                    HqGridLayout.FloorY + HqGridLayout.RoomHeight * 0.5f,
+                    HqGridLayout.FloorY + height * 0.5f,
                     room.Y * HqGridLayout.TileSize + d * 0.5f + 0.02f);
 
                 var view = block.AddComponent<RoomBlockView>();

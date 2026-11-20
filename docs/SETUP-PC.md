@@ -54,6 +54,7 @@ You do not need to create it from a template unless the folder is missing.
 | Training bar (bottom) | Start Mini/Mid/Flagship runs; progress shown in permille while training |
 | Gauntlet overlay | Pops when a new `GauntletRecord` appears (advance weeks through a year-end) |
 | Mascots (above lot) | Spheres per model; colour/scale from `ModelMood`; room blocks glow via spread map |
+| Era evolution | Advance into a new era: floor/accent skin changes; older room types grow taller and pick up era accent (`EraRoomEvolution`) |
 | Advance week | Date/tick move; cash changes when the sim bills the lab |
 | Test Runner > Edit Mode | All tests in `Assets/Editor/Tests` pass |
 
