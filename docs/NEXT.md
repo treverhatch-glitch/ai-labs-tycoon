@@ -29,8 +29,8 @@ Known limits of the slice, so nobody is surprised:
 - **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
   AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
   use every command; the host UI is the missing half.
-- **Staff are head counts**, not people.
-- **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); the six-rung ladder and alignment gap are not in yet.
+- **Staff are people** with traits and morale; feud poaching is in (schema 10).
+- **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); alignment gap and rungs 1–3 are in; reserved compute and the Envydia queue are in (schema 11).
 - **The shady path is in** for the player (cards, launder, investigations); parody labs never take shady jobs (`shadyAppetite` 0).
 - **Money is cash and a grant.** No investors, shares, debt or bubble.
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
@@ -63,8 +63,9 @@ and says why in the commit message.
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
 4b. ~~**Own chips.**~~ Done (systems design phase D, schema 5): `ChipSystem`, `ChipQueries`, foundry months, the
     six chip commands, `ComputeSplit`, listings, Envydia's reactions, the planner's chip programme (Q57 to Q67).
-5. **Reserved compute and the Envydia queue.** Allocation by standing is in (item 4); what remains is reserved
-   contracts. Touches `ComputeConfig`, lab state, `Finance`.
+5. ~~**Reserved compute and the Envydia queue.**~~ Done: `SignReservedCompute`, `QueueGpuPurchase`,
+   `ComputeContractSystem`, discounted rent and deposit, queue fulfilled at month start, schema 11;
+   `ComputeContractTests`. Golden digest `61bacf6b…`.
 6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
    seven Envydia generations as data, resale that falls a generation at a time, `BuyGpus`/`SellGpus`/`MoveHardware`
    to a holding, the fleet migration (schema 2).

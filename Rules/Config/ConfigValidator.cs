@@ -218,6 +218,9 @@ namespace AiLabs.Rules.Config
             ComputeConfig compute = c.Compute;
             Permille(p, "compute.resalePermille", compute.ResalePermille);
             Permille(p, "compute.generationDecayPermille", compute.GenerationDecayPermille);
+            Permille(p, "compute.reservedRentPermille", compute.ReservedRentPermille);
+            if (compute.ReservedContractWeeks < 1) p.Add("compute.reservedContractWeeks must be at least 1");
+            if (compute.ReservedDepositWeeks < 0) p.Add("compute.reservedDepositWeeks is negative");
             if (compute.MoveCostPerUnit < 0) p.Add("compute.moveCostPerUnit is negative");
             UniqueIds(p, "compute.gpuGenerations", compute.GpuGenerations);
             if (compute.GpuGenerations.Count == 0) { p.Add("compute.gpuGenerations is empty"); return; }

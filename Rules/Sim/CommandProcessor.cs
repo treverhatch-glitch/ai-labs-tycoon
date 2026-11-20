@@ -57,6 +57,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.StartShadyOp: return StartShadyOp(c, state, lab, cmd);
                 case CommandKind.Launder: return Launder(c, state, lab, cmd);
                 case CommandKind.RaiseFunding: return RaiseFunding(c, state, lab, cmd);
+                case CommandKind.SignReservedCompute: return SignReservedCompute(c, state, lab, cmd);
+                case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

@@ -25,6 +25,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 8) MigrateTo8(c, root);
             if (fromSchema < 9) MigrateTo9(root);
             if (fromSchema < 10) MigrateTo10(c, root);
+            if (fromSchema < 11) MigrateTo11(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -239,6 +240,16 @@ namespace AiLabs.Rules.Sim
                 int a = align == null ? 0 : (int)align.Int;
                 JsonPatch.AddIfMissing(model, "displayedAlignment", JsonValue.Of((long)a));
                 JsonPatch.AddIfMissing(model, "lastIncidentRung", JsonValue.Of(0L));
+            });
+        }
+
+        static void MigrateTo11(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reservedContracts", JsonValue.Array()));
+            JsonPatch.ForEach(root, "vendor.standings", s =>
+            {
+                JsonPatch.AddIfMissing(s, "queuedGpus", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(s, "queueHoldingId", JsonValue.Of(0L));
             });
         }
 

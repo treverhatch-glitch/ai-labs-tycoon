@@ -350,6 +350,10 @@ namespace AiLabs.Rules.Config
         public int GenerationDecayPermille;
         /// <summary>What it costs to move one unit of hardware between locations.</summary>
         public long MoveCostPerUnit;
+        /// <summary>Weekly rent on a reserved contract, as a share of the spot rental price.</summary>
+        public int ReservedRentPermille;
+        public int ReservedContractWeeks;
+        public int ReservedDepositWeeks;
         /// <summary>The vendor's line, oldest first.</summary>
         public List<GpuGenerationConfig> GpuGenerations;
 
@@ -360,6 +364,9 @@ namespace AiLabs.Rules.Config
             s.Int("resalePermille", ref ResalePermille);
             s.Int("generationDecayPermille", ref GenerationDecayPermille);
             s.Long("moveCostPerUnit", ref MoveCostPerUnit);
+            s.Int("reservedRentPermille", ref ReservedRentPermille);
+            s.Int("reservedContractWeeks", ref ReservedContractWeeks);
+            s.Int("reservedDepositWeeks", ref ReservedDepositWeeks);
             s.ObjList("gpuGenerations", ref GpuGenerations);
         }
 

@@ -168,7 +168,9 @@ namespace AiLabs.Rules.Systems
         public static ComputeSplit Split(GameConfig c, GameState state, LabState lab, bool forCustomers)
         {
             var split = new ComputeSplit();
-            split.General = (long)lab.RentedGpus * CurrentGeneration(c, state.Tick).ComputePerGpuWeek;
+            GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
+            split.General = (long)lab.RentedGpus * gen.ComputePerGpuWeek;
+            split.General += (long)ComputeContractSystem.ReservedGpus(lab) * gen.ComputePerGpuWeek;
             int throttle = WorldQueries.HeatwaveThrottle(c, lab);
             for (int i = 0; i < lab.Fleet.Count; i++)
             {
@@ -181,9 +183,9 @@ namespace AiLabs.Rules.Systems
                 }
                 else
                 {
-                    GpuGenerationConfig gen = c.Compute.Generation(batch.GpuGenId);
-                    if (gen == null) continue;
-                    part = batch.Count * (long)gen.ComputePerGpuWeek;
+                    GpuGenerationConfig batchGen = c.Compute.Generation(batch.GpuGenId);
+                    if (batchGen == null) continue;
+                    part = batch.Count * (long)batchGen.ComputePerGpuWeek;
                 }
                 if (batch.HoldingId != HardwareBatch.Hq)
                 {
@@ -398,7 +400,9 @@ namespace AiLabs.Rules.Systems
 
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
-            return CurrentGeneration(c, state.Tick).RentPerGpuWeek * lab.RentedGpus;
+            GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
+            long rent = gen.RentPerGpuWeek * lab.RentedGpus;
+            return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab);
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>

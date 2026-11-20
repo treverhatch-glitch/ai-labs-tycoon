@@ -486,6 +486,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. No new golden for test-only commit unless a soak moves.
 - Why: user review expected deeper coverage before the branch ships.
 
+### Q82. Reserved compute and the Envydia queue? DECIDED: contracts, deposit, queue at month start
+
+- Options: (a) keep instant rent and spot buys only; (b) multi-year reserved contracts at `reservedRentPermille` with an upfront `reservedDepositWeeks` block, general compute while the contract runs; (c) when allocation is gone, queue units and buy them when the next month opens.
+- Recommendation and choice: **(b)+(c)**. `SignReservedCompute` and `QueueGpuPurchase` commands; `FulfillQueues` after `RunAllocation` each month; schema 11 adds `reservedContracts` and vendor `queuedGpus`. Golden digest `61bacf6b…`.
+- Why: NEXT item 5 and DESIGN.md reserved line; allocation-by-standing was already in from phase C.
+
 ### Q80. Staff pools or people? DECIDED: `StaffMember`, traits, morale drift, feud poaching
 
 - Options: (a) keep role counts; (b) one save row per person with trait and morale, hire/fire by individual, stars poached when a rival is in a feud.

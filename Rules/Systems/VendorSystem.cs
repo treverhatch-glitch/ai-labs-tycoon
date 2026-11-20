@@ -120,6 +120,7 @@ namespace AiLabs.Rules.Systems
             state.Vendor.SupplyThisMonth = supply;
 
             RunAllocation(c, state, true);
+            ComputeContractSystem.FulfillQueues(c, state);
         }
 
         /// <summary>

@@ -12,7 +12,8 @@ namespace AiLabs.Rules.Sim
         ResearchTech, StartTraining, ReleaseModel,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
-        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding
+        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
+        SignReservedCompute, QueueGpuPurchase
     }
 
     /// <summary>
@@ -320,6 +321,21 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.RaiseFunding, labId);
             c.Id = roundId;
+            return c;
+        }
+
+        public static Command SignReservedCompute(int labId, int gpuCount)
+        {
+            Command c = Make(CommandKind.SignReservedCompute, labId);
+            c.Count = gpuCount;
+            return c;
+        }
+
+        public static Command QueueGpuPurchase(int labId, int count, int holdingId)
+        {
+            Command c = Make(CommandKind.QueueGpuPurchase, labId);
+            c.Count = count;
+            c.TargetId = holdingId;
             return c;
         }
     }

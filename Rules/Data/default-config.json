@@ -239,6 +239,9 @@
     "resalePermille": 400,
     "generationDecayPermille": 650,
     "moveCostPerUnit": 200,
+    "reservedRentPermille": 850,
+    "reservedContractWeeks": 156,
+    "reservedDepositWeeks": 4,
     "gpuGenerations": [
       { "id": "voodude", "name": "VooDude 1", "opensYear": 1995, "tier": 0, "computePerGpuWeek": 10, "rentPerGpuWeek": 250, "upkeepPerGpuWeek": 45, "buyPrice": 14760, "kwPerGpu": 1 },
       { "id": "geforks", "name": "GeForks 2", "opensYear": 2003, "tier": 1, "computePerGpuWeek": 25, "rentPerGpuWeek": 300, "upkeepPerGpuWeek": 55, "buyPrice": 17640, "kwPerGpu": 1 },

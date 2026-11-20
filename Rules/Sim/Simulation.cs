@@ -144,6 +144,7 @@ namespace AiLabs.Rules.Sim
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
+                    ComputeContractSystem.RunWeek(c, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }

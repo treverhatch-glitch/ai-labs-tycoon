@@ -76,6 +76,7 @@ namespace AiLabs.Rules.Systems
             }
             lab.Staff.Clear();
             lab.RentedGpus = 0;
+            lab.ReservedContracts.Clear();
             lab.Fleet.RemoveAll(b => b.HoldingId != HardwareBatch.Hq);
             lab.Holdings.Clear();
             Events.Add(state, EventKind.Bankrupt, lab.Id, -1, lab.Cash, "");

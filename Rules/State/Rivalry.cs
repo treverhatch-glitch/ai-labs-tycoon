@@ -121,6 +121,9 @@ namespace AiLabs.Rules.State
         public bool TrainingChipSeen;
         /// <summary>True once the lab has listed chips for sale (the first listing costs standing, later ones do not).</summary>
         public bool ListingSeen;
+        /// <summary>GPUs the lab asked for once this month's allocation is gone.</summary>
+        public int QueuedGpus;
+        public int QueueHoldingId;
 
         public void Sync(Syncer s)
         {
@@ -133,6 +136,8 @@ namespace AiLabs.Rules.State
             s.Int("fromChips", ref FromChips);
             s.Bool("trainingChipSeen", ref TrainingChipSeen);
             s.Bool("listingSeen", ref ListingSeen);
+            s.Int("queuedGpus", ref QueuedGpus);
+            s.Int("queueHoldingId", ref QueueHoldingId);
         }
     }
 }
