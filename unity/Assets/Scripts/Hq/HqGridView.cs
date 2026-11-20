@@ -104,10 +104,13 @@ namespace AiLabs.Unity.Hq
 
         void BuildRooms(LabState player, LotConfig lot, HqVisualPalette.EraSkin skin)
         {
+            var glowMap = GlowSpreadMap.Compute(_simulation.Config, player, _simulation.Tick);
+
             for (int i = 0; i < player.Rooms.Count; i++)
             {
                 RoomState room = player.Rooms[i];
-                Color color = HqVisualPalette.RoomColor(_simulation.Config, room.TypeId);
+                Color color = HqVisualPalette.RoomColorEraTint(
+                    HqVisualPalette.RoomColor(_simulation.Config, room.TypeId), skin);
 
                 var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 block.name = "Room_" + room.Id;
@@ -123,6 +126,7 @@ namespace AiLabs.Unity.Hq
 
                 var view = block.AddComponent<RoomBlockView>();
                 view.Bind(room.Id, color);
+                if (glowMap.TryGetValue(room.Id, out int glow)) view.SetGlowPermille(glow);
                 _roomViews[room.Id] = view;
             }
 

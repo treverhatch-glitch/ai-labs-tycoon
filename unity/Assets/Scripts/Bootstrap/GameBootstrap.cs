@@ -17,6 +17,7 @@ namespace AiLabs.Unity.Bootstrap
 
         SimulationHost _host;
         HqGridView _grid;
+        ModelMascotRow _mascots;
         RoomBuildController _roomBuild;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -43,6 +44,11 @@ namespace AiLabs.Unity.Bootstrap
             _grid = hq.AddComponent<HqGridView>();
             _grid.Bind(_host.Simulation);
 
+            var mascots = new GameObject("Mascots");
+            mascots.transform.SetParent(hq.transform, false);
+            _mascots = mascots.AddComponent<ModelMascotRow>();
+            _mascots.Bind(_host.Simulation);
+
             var hud = HqHudView.Create(transform, _host);
             Transform canvas = hud.transform.parent;
             RoomBuildPanel buildPanel = RoomBuildPanel.Create(canvas, _host);
@@ -57,6 +63,8 @@ namespace AiLabs.Unity.Bootstrap
         {
             if (_grid != null && _host?.Simulation != null)
                 _grid.Bind(_host.Simulation);
+            if (_mascots != null && _host?.Simulation != null)
+                _mascots.Bind(_host.Simulation);
         }
 
         static void EnsureCameraAndLight()

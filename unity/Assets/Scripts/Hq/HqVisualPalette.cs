@@ -85,6 +85,11 @@ namespace AiLabs.Unity.Hq
             };
         }
 
+        public static Color RoomColorEraTint(Color baseColor, EraSkin skin)
+        {
+            return Color.Lerp(baseColor, skin.Accent, 0.12f);
+        }
+
         public static Color RoomColor(GameConfig config, string roomTypeId)
         {
             RoomTypeConfig type = config.RoomType(roomTypeId);

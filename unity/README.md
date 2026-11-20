@@ -16,7 +16,7 @@ folder only draws state and sends commands.
 ## HQ view (eras + glow)
 
 - **Era skins** (`HqVisualPalette.EraSkinFor`) tint the floor and accent column when `Simulation.Era` changes.
-- **Rooms** use purpose colours from config; `RoomBlockView.SetGlowPermille` is reserved for model glow spreading
-  through the building in a later slice.
+- **Rooms** use purpose colours tinted by era; `GlowSpreadMap` drives `RoomBlockView` emission from compute/research seeds.
+- **Mascots** (`ModelMascotRow`) show each model's `ModelMood` via `ModelMascotPresentation`.
 
 Open and verify on the owner's PC: [docs/SETUP-PC.md](../docs/SETUP-PC.md) §2.

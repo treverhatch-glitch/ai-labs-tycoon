@@ -53,6 +53,7 @@ You do not need to create it from a template unless the folder is missing.
 | Staff/GPU panel (right) | Hire/fire roles and rent/buy GPUs; refusals show in the panel status line |
 | Training bar (bottom) | Start Mini/Mid/Flagship runs; progress shown in permille while training |
 | Gauntlet overlay | Pops when a new `GauntletRecord` appears (advance weeks through a year-end) |
+| Mascots (above lot) | Spheres per model; colour/scale from `ModelMood`; room blocks glow via spread map |
 | Advance week | Date/tick move; cash changes when the sim bills the lab |
 | Test Runner > Edit Mode | All tests in `Assets/Editor/Tests` pass |
 

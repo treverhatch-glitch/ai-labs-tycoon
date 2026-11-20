@@ -104,8 +104,8 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
 2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3.
-3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
-4. The model mascots and their three states; the glow.
+3. ~~**Room building, hire/GPU, training, Gauntlet show.**~~ On `cursor/unity-hq-views` (local); editor verification in SETUP-PC §2.
+4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; art polish on PC.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
 
 ## Studio and CI
