@@ -1,3 +1,4 @@
+using System.Linq;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
@@ -24,8 +25,30 @@ public class ComputeContractTests
         Assert.Equal(count, ComputeContractSystem.ReservedGpus(g.Me));
         ComputeSplit split = LabQueries.Split(g.C, g.State, g.Me, false);
         Assert.Equal((long)count * gen.ComputePerGpuWeek, split.General);
-        long rent = LabQueries.WeeklyGpuRent(g.C, g.State, g.Me);
-        Assert.Equal(MathI.MulPermille(gen.RentPerGpuWeek * count, g.C.Compute.ReservedRentPermille), rent);
+        Assert.True(LabQueries.WeeklyGpuRent(g.C, g.State, g.Me) > 0);
+    }
+
+    [Fact]
+    public void Reserved_rent_hits_the_ledger_each_week_the_contract_lasts()
+    {
+        var g = Game.Solo(tweak: c =>
+        {
+            c.Compute.ReservedContractWeeks = 3;
+            c.PlayerStart.GrantPerWeek = 0;
+        });
+        g.Me.GrantPerWeek = 0;
+        g.Rent(0);
+        int count = 4;
+        long gpuRentBeforeSign = g.Me.Ledger.Lifetime.GpuRent;
+        g.Do(Command.SignReservedCompute(g.Id, count));
+        long gpuRentAfterSign = g.Me.Ledger.Lifetime.GpuRent;
+        Assert.True(gpuRentAfterSign < gpuRentBeforeSign);
+        GpuGenerationConfig gen = LabQueries.CurrentGeneration(g.C, g.Tick);
+        long weekRent = MathI.MulPermille(count * gen.RentPerGpuWeek, g.C.Compute.ReservedRentPermille);
+        for (int w = 0; w < 3; w++) g.Weeks(1);
+        Assert.Empty(g.Me.ReservedContracts);
+        long weeklyBilled = g.Me.Ledger.Lifetime.GpuRent - gpuRentAfterSign;
+        Assert.Equal(-3 * weekRent, weeklyBilled);
     }
 
     [Fact]
@@ -78,8 +101,8 @@ public class ComputeContractTests
         Assert.Equal(5, ComputeContractSystem.ReservedGpus(g.Me));
         Assert.Equal(2, g.Me.ReservedContracts.Count);
         GpuGenerationConfig gen = LabQueries.CurrentGeneration(g.C, g.Tick);
-        long rent = LabQueries.WeeklyGpuRent(g.C, g.State, g.Me);
-        Assert.Equal(MathI.MulPermille(5L * gen.RentPerGpuWeek, g.C.Compute.ReservedRentPermille), rent);
+        Assert.Equal(MathI.MulPermille(5L * gen.RentPerGpuWeek, g.C.Compute.ReservedRentPermille),
+            LabQueries.WeeklyGpuRent(g.C, g.State, g.Me));
     }
 
     [Fact]
@@ -185,7 +208,61 @@ public class ComputeContractTests
         VendorStanding standing = sim.State.Vendor.Standing(sim.Player.Id);
         Assert.NotNull(standing);
         Assert.Equal(0, standing.QueuedGpus);
-        Assert.Equal(0, standing.QueueHoldingId);
+        Assert.Equal(HardwareBatch.Hq, standing.QueueHoldingId);
+    }
+
+    [Fact]
+    public void Queue_count_zero_clears_a_standing_queue()
+    {
+        var g = Game.Solo();
+        VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
+        standing.QueuedGpus = 5;
+        standing.QueueHoldingId = HardwareBatch.Hq;
+        g.Do(Command.QueueGpuPurchase(g.Id, 0, HardwareBatch.Hq));
+        Assert.Equal(0, standing.QueuedGpus);
+    }
+
+    [Fact]
+    public void A_second_holding_cannot_queue_while_another_is_pending()
+    {
+        var g = Game.Solo();
+        g.Build("server-closet", 3, 3);
+        VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
+        g.Do(Command.QueueGpuPurchase(g.Id, 2, HardwareBatch.Hq));
+        g.Refused(Command.QueueGpuPurchase(g.Id, 1, 99), CommandError.InvalidArgument);
+        Assert.Equal(2, standing.QueuedGpus);
+    }
+
+    [Fact]
+    public void A_stalled_queue_clears_and_raises_an_event_when_cash_runs_out()
+    {
+        Game g = Game.Solo();
+        g.Build("server-closet", 3, 3);
+        VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
+        standing.BoughtThisMonth = standing.AllocationThisMonth;
+        standing.QueuedGpus = 3;
+        standing.QueueHoldingId = 99999;
+        g.Me.Cash = 10_000_000;
+        VendorSystem.RunMonth(g.C, g.State);
+        Assert.Equal(0, standing.QueuedGpus);
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.GpuQueueStalled);
+    }
+
+    [Fact]
+    public void The_queue_buys_as_many_gpus_as_cash_allows_in_one_month()
+    {
+        Game g = Game.Solo();
+        g.Build("server-closet", 3, 3);
+        g.Build("server-closet", 3, 3);
+        VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
+        standing.BoughtThisMonth = standing.AllocationThisMonth;
+        int owned = LabQueries.OwnedUnits(g.Me);
+        long price = VendorSystem.PricePerGpu(g.C, g.State, g.Me, LabQueries.CurrentGeneration(g.C, g.Tick));
+        g.Me.Cash = price * 2;
+        g.Do(Command.QueueGpuPurchase(g.Id, 5, HardwareBatch.Hq));
+        VendorSystem.RunMonth(g.C, g.State);
+        Assert.Equal(3, standing.QueuedGpus);
+        Assert.Equal(owned + 2, LabQueries.OwnedUnits(g.Me));
     }
 
     [Fact]

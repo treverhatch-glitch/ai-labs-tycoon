@@ -1049,6 +1049,9 @@
   "staffPeople": {
     "moraleBaseline": 500,
     "moraleDriftPerWeek": 1,
+    "moraleDebtDriftPerWeek": 2,
+    "moraleIncidentDrop": 15,
+    "moralePoachWitnessDrop": 25,
     "poachChancePermille": 80,
     "starHirePermille": 120,
     "traits": [

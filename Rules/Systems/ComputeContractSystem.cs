@@ -59,13 +59,26 @@ namespace AiLabs.Rules.Systems
                 VendorStanding standing = state.Vendor.Standing(lab.Id);
                 if (standing == null || standing.QueuedGpus <= 0) continue;
                 int holdingId = standing.QueueHoldingId;
+                GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+                long unitPrice = VendorSystem.PricePerGpu(c, state, lab, gen);
                 while (standing.QueuedGpus > 0)
                 {
                     int left = VendorSystem.AllocationLeft(state, lab);
                     if (left <= 0) break;
                     int buy = standing.QueuedGpus < left ? standing.QueuedGpus : left;
+                    if (unitPrice > 0)
+                    {
+                        int affordable = (int)MathI.Min(lab.Cash / unitPrice, buy);
+                        buy = affordable;
+                    }
+                    if (buy < 1) break;
                     CommandResult result = CommandProcessor.Apply(c, state, Command.BuyGpus(lab.Id, buy, holdingId));
-                    if (!result.Ok) break;
+                    if (!result.Ok)
+                    {
+                        Events.Add(state, EventKind.GpuQueueStalled, lab.Id, holdingId, standing.QueuedGpus, result.Message);
+                        standing.QueuedGpus = 0;
+                        break;
+                    }
                     standing.QueuedGpus -= buy;
                 }
             }

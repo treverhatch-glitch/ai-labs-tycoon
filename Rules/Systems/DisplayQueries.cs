@@ -51,17 +51,18 @@ namespace AiLabs.Rules.Systems
 
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            int trueAlign = SafetySystem.EffectiveAlignment(c, model);
+            int effective = SafetySystem.EffectiveAlignment(c, model);
             int displayed = SafetySystem.DisplayedAlignment(model);
+            int sandbagGap = (int)MathI.Max(0, displayed - model.Alignment);
             var b = new QualityBreakdown();
             b.FromCapability = MathI.MulPermille(model.Capability, sector.CapabilityWeightPermille);
-            long honestAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, trueAlign));
-            long displayAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, displayed));
-            b.FromAlignment = honestAlign;
-            b.SandbagBoost = displayAlign - honestAlign;
+            long effectiveAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, effective));
+            long displayBoost = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, sandbagGap));
+            b.FromAlignment = effectiveAlign;
+            b.SandbagBoost = displayBoost;
             if (LabQueries.IsGlitching(c, model, tick))
             {
-                long before = b.FromCapability + displayAlign;
+                long before = b.FromCapability + effectiveAlign + displayBoost;
                 long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
                 b.GlitchAdjustment = after - before;
             }

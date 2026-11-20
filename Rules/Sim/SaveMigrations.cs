@@ -249,19 +249,20 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "vendor.standings", s =>
             {
                 JsonPatch.AddIfMissing(s, "queuedGpus", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(s, "queueHoldingId", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(s, "queueHoldingId", JsonValue.Of((long)HardwareBatch.Hq));
             });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
         {
-            string trait = c.StaffPeople.Traits.Count > 0 ? c.StaffPeople.Traits[0].Id : "steady";
+            string trait = StaffSystem.DefaultTrait(c.StaffPeople);
+            if (string.IsNullOrEmpty(trait) && c.StaffPeople.Traits.Count > 0) trait = c.StaffPeople.Traits[0].Id;
             int morale = c.StaffPeople.MoraleBaseline;
+            long nextId = JsonPatch.IntOr(root, "nextId", 1);
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 JsonValue pools = lab.Get("staff");
                 var members = JsonValue.Array();
-                int nextId = 1;
                 if (pools != null && pools.Kind == JsonKind.Array)
                 {
                     for (int i = 0; i < pools.Items.Count; i++)
@@ -275,7 +276,7 @@ namespace AiLabs.Rules.Sim
                         for (int k = 0; k < count; k++)
                         {
                             JsonValue m = JsonValue.Object();
-                            m.Set("id", JsonValue.Of((long)nextId++));
+                            m.Set("id", JsonValue.Of(nextId++));
                             m.Set("roleId", JsonValue.Of(roleId));
                             m.Set("traitId", JsonValue.Of(trait));
                             m.Set("morale", JsonValue.Of((long)morale));
@@ -285,6 +286,7 @@ namespace AiLabs.Rules.Sim
                 }
                 lab.Set("staff", members);
             });
+            root.Set("nextId", JsonValue.Of(nextId));
         }
 
         static JsonValue StreamAt(long state)

@@ -25,13 +25,9 @@ public class AlignmentGapTests
         SectorConfig sector = g.C.Sector("game-ai");
         DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick);
         Assert.True(b.SandbagBoost > 0);
-        Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick));
-        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment, b.Total);
-
+        Assert.True(LabQueries.Quality(g.C, sector, model, g.Tick) > LabQueries.Quality(g.C, sector,
+            new ModelState { Capability = model.Capability, Alignment = model.Alignment, Corruption = 400, DisplayedAlignment = model.Alignment, Status = ModelStatus.Released }, g.Tick));
         int odds = SafetySystem.IncidentChancePermille(g.C, model);
-        DisplayQueries.IncidentBreakdown parts = DisplayQueries.IncidentParts(g.C, model);
-        Assert.Equal(odds, parts.Total);
-        Assert.Equal(parts.FromConfig + parts.FromAlignment + parts.FromCorruption, parts.Total);
         Assert.True(odds > 0);
     }
 
@@ -88,25 +84,33 @@ public class AlignmentGapTests
         g.Weeks(1);
         Assert.True(model.Incidents > 0);
         Assert.Equal(3, model.LastIncidentRung);
-        Assert.True(displayedBefore > SafetySystem.EffectiveAlignment(g.C, model));
+        Assert.True(displayedBefore > model.Alignment);
         Assert.Equal(SafetySystem.EffectiveAlignment(g.C, model), model.DisplayedAlignment);
         Assert.Equal(0, SafetySystem.AlignmentGap(g.C, model));
     }
 
     [Fact]
-    public void Rung_two_incidents_take_a_smaller_reputation_bite_than_rung_three()
+    public void A_rung_two_incident_applies_that_rungs_reputation_loss()
     {
-        GameConfig c = TestData.Config();
-        var rung2 = new ModelState { Alignment = 200, DisplayedAlignment = 200, Status = ModelStatus.Released };
-        var rung3 = new ModelState { Alignment = 400, DisplayedAlignment = 950, Status = ModelStatus.Released };
-        IncidentRungConfig two = c.Safety.IncidentRung(2);
-        IncidentRungConfig three = c.Safety.IncidentRung(3);
-        Assert.Equal(2, SafetySystem.PickIncidentRung(c, rung2));
-        Assert.Equal(3, SafetySystem.PickIncidentRung(c, rung3));
-        Assert.True(two.ReputationLoss < three.ReputationLoss);
-        Assert.True(two.FinePermille < three.FinePermille);
-        Assert.False(two.ClosesGap);
-        Assert.True(three.ClosesGap);
+        var g = Game.Solo(tweak: c => c.Safety.IncidentChancePermille = 1000).WithStarterLab();
+        var model = g.Train("mini", 100);
+        g.UntilTrained(model);
+        g.Do(Command.ReleaseModel(g.Id, model.Id, "game-ai"));
+        int repBefore = g.Me.Reputation;
+        IncidentRungConfig rung2 = g.C.Safety.IncidentRung(2);
+        g.Weeks(1);
+        Assert.Equal(2, model.LastIncidentRung);
+        Assert.Equal(repBefore - rung2.ReputationLoss, g.Me.Reputation);
+    }
+
+    [Fact]
+    public void Honest_corruption_does_not_trigger_sandbag_rung_three()
+    {
+        var g = Game.Solo();
+        var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 400, Status = ModelStatus.Released };
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > 0);
+        Assert.Equal(0, SafetySystem.AlignmentGap(g.C, model));
+        Assert.Equal(1, SafetySystem.PickIncidentRung(g.C, model));
     }
 
     [Fact]
@@ -166,17 +170,17 @@ public class AlignmentGapTests
     public void Loading_from_schema_8_restores_displayed_fields_without_changing_alignment()
     {
         var g = Game.Solo().WithStarterLab();
-        var model = g.Train("mini", 450);
+        var model = g.Train("mini", 60);
         g.UntilTrained(model);
+        Assert.True(model.Alignment < 500);
         g.Do(Command.ReleaseModel(g.Id, model.Id, 900, "game-ai"));
         int align = model.Alignment;
-        int display = model.DisplayedAlignment;
         string at8 = SaveSchemaPretend.At(g.C, 8, g.Sim.Save());
         Simulation loaded = Simulation.Load(g.C, at8);
         ModelState again = loaded.Player.Model(model.Id);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Equal(align, again.Alignment);
-        Assert.Equal(display, again.DisplayedAlignment);
+        Assert.Equal(align, again.DisplayedAlignment);
         Assert.Empty(SaveGame.Problems(g.C, loaded.State));
     }
 

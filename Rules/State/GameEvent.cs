@@ -39,7 +39,9 @@ namespace AiLabs.Rules.State
         ChipsBought,
         EndingReached,
         ShadyOpStarted, ShadyOpResolved, ShadyTraced, ShadyInvestigation, ShadyConvicted, ShadyAcquitted, ShadySideJob, ShadyTemptation,
-        StaffPoached
+        StaffPoached,
+        /// <summary>The vendor could not fulfil a GPU purchase queue. Amount is GPUs left; Ref holds the reason tag.</summary>
+        GpuQueueStalled
     }
 
     /// <summary>

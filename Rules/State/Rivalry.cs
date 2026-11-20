@@ -12,12 +12,12 @@ namespace AiLabs.Rules.State
         ShiftedAllocation,
         /// <summary>The vendor courted the rivals of a lab that makes its own chips.</summary>
         Courted,
-        /// <summary>A rival poached a star from the player's lab.</summary>
-        PoachedStaff,
         /// <summary>A lab sold hardware that was generations behind and bought the current one.</summary>
         Replaced,
         TapedOut,
-        ListedChips
+        ListedChips,
+        /// <summary>A rival poached a star from the player's lab.</summary>
+        PoachedStaff
     }
 
     /// <summary>The number behind a decision. New values are appended only.</summary>

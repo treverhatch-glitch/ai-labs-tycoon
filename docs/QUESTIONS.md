@@ -489,8 +489,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q83. Test depth for alignment, staff, and compute? DECIDED: paths, edges, migration, cross-system
 
 - Options: (a) ~3 smoke tests per feature; (b) a dozen-ish facts each covering main paths, zero/max/bankrupt edges, prior-schema load, save round-trip, and one cross-system tie (endings, feud feelings, GPU generations).
-- Recommendation and choice: **(b)**. `SaveSchemaPretend` rewinds saves for isolated migrations; 372 suite total after the three expansions (13 alignment, 12 staff, 14 compute in dedicated files).
+- Recommendation and choice: **(b)**. `SaveSchemaPretend` rewinds saves for isolated migrations; the three expansion files hold 13 alignment, 12 staff, and 14 compute facts at first land; `64512a4` actually runs **370** tests (the earlier 372 count double-counted two removed parrots).
 - Why: owner quality bar before further NEXT items; behaviour assertions only, not config parroting.
+
+### Q84. Opus review must-fixes on alignment/staff? DECIDED: quality gap, billing order, queue, migrate, morale
+
+- Options: (a) ship as reviewed; (b) fix all six must-fixes with regression tests; cheap nice-to-haves where free.
+- Recommendation and choice: **(b)**. Market quality uses effective alignment and sandbag boost `max(0, displayed − alignment)` so corruption cannot cancel out; `AlignmentGap` compares displayed to true alignment; contract expiry runs after `Finance.RunWeek`; GPU queue can cancel (count 0), refuses a second holding, partial fulfilment, stalls with `GpuQueueStalled`; schema-10 staff ids come from root `nextId` with the first non-star trait; morale drifts down in debt and after incidents/poaches, poach picks the unhappiest star. Suite **380** after the review pass (+10 facts, weaker parrots removed).
+- Why: Opus review on `64512a4`; ledger-over-contract-life and corruption/gap tests would have caught the billing and quality regressions.
 
 ### Q82. Reserved compute and the Envydia queue? DECIDED: contracts, deposit, queue at month start
 

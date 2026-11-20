@@ -137,7 +137,7 @@ public class StaffPeopleTests
     }
 
     [Fact]
-    public void Poaching_takes_the_star_with_the_highest_morale_first()
+    public void Poaching_takes_the_unhappiest_star_first()
     {
         var g = Game.New(seed: 3);
         g.Build("research-lab", 4, 4);
@@ -146,13 +146,13 @@ public class StaffPeopleTests
         g.Me.Staff[0].Morale = 400;
         g.Me.Staff[1].Morale = 900;
         g.Me.Staff[2].Morale = 600;
-        int topId = g.Me.Staff[1].Id;
+        int lowId = g.Me.Staff[0].Id;
         LabState rival = g.Rival("openaye");
         rival.FeelingToPlayer = g.C.Rivalry.Feelings.FeudBelow - 50;
         g.C.StaffPeople.PoachChancePermille = 1000;
         StaffSystem.TryPoach(g.C, g.State, rival, g.Me);
         Assert.Equal(2, g.Me.Staff.Count);
-        Assert.DoesNotContain(g.Me.Staff, p => p.Id == topId);
+        Assert.DoesNotContain(g.Me.Staff, p => p.Id == lowId);
     }
 
     [Fact]
@@ -176,11 +176,37 @@ public class StaffPeopleTests
     {
         Simulation sim = Simulation.Load(TestData.Config(), MigrationTests.Schema2Save());
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
-        int researchers = LabQueries.StaffCount(sim.Player, "researcher");
-        int headCount = sim.Player.Staff.Count;
-        Assert.True(headCount >= researchers);
-        Assert.Equal(researchers, sim.Player.Staff.Count(p => p.RoleId == "researcher"));
-        Assert.All(sim.Player.Staff, p => Assert.False(string.IsNullOrEmpty(p.TraitId)));
+        Assert.Equal(8, sim.Player.Staff.Count);
+        Assert.Equal(4, LabQueries.StaffCount(sim.Player, "researcher"));
+        Assert.Equal(2, LabQueries.StaffCount(sim.Player, "engineer"));
+        Assert.Equal(1, LabQueries.StaffCount(sim.Player, "sales"));
+        Assert.Equal(1, LabQueries.StaffCount(sim.Player, "safety"));
+        Assert.Equal(8, sim.Player.Staff.Select(p => p.Id).Distinct().Count());
+        Assert.All(sim.Player.Staff, p => Assert.True(p.Id >= 44));
+        Assert.Equal("steady", sim.Player.Staff[0].TraitId);
+    }
+
+    [Fact]
+    public void Star_hire_permille_can_roll_a_star_trait_on_hire()
+    {
+        var g = Game.Solo(tweak: c => c.StaffPeople.StarHirePermille = 1000);
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        Assert.Equal("star", g.Me.Staff[0].TraitId);
+    }
+
+    [Fact]
+    public void Weeks_in_debt_lower_morale_faster_than_baseline_drift()
+    {
+        var g = Game.Solo();
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        g.Me.Staff[0].Morale = 600;
+        g.Me.GrantPerWeek = 0;
+        g.Me.Cash = -50_000;
+        g.Weeks(1);
+        Assert.True(g.Me.WeeksInDebt > 0);
+        Assert.True(g.Me.Staff[0].Morale < 600);
     }
 
     [Fact]

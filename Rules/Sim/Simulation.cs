@@ -144,7 +144,6 @@ namespace AiLabs.Rules.Sim
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
-                    ComputeContractSystem.RunWeek(c, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }
@@ -152,7 +151,11 @@ namespace AiLabs.Rules.Sim
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
-                if (!state.Labs[i].Bankrupt) Finance.RunWeek(c, state, state.Labs[i]);
+                if (!state.Labs[i].Bankrupt)
+                {
+                    Finance.RunWeek(c, state, state.Labs[i]);
+                    ComputeContractSystem.RunWeek(c, state.Labs[i]);
+                }
                 Finance.CloseWeek(state.Labs[i]);
             }
 

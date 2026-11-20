@@ -124,13 +124,17 @@ namespace AiLabs.Rules.Config
             Permille(p, "safety.rung2BelowAlignment", c.Safety.Rung2BelowAlignment);
             if (c.Safety.IncidentRungs.Count != 3) p.Add("safety.incidentRungs must have exactly three rungs");
             UniqueIds(p, "safety.incidentRungs", c.Safety.IncidentRungs);
+            var rungSeen = new bool[4];
             for (int i = 0; i < c.Safety.IncidentRungs.Count; i++)
             {
                 IncidentRungConfig r = c.Safety.IncidentRungs[i];
                 if (r.Rung < 1 || r.Rung > 3) p.Add("incident rung " + r.Id + " must be from 1 to 3");
+                else if (rungSeen[r.Rung]) p.Add("safety.incidentRungs has more than one entry for rung " + r.Rung);
+                else rungSeen[r.Rung] = true;
                 if (r.FinePermille < 0) p.Add("incident rung " + r.Id + " has negative finePermille");
                 if (r.ReputationLoss < 0) p.Add("incident rung " + r.Id + " has negative reputationLoss");
             }
+            if (!rungSeen[1] || !rungSeen[2] || !rungSeen[3]) p.Add("safety.incidentRungs must name rungs 1, 2 and 3 exactly once each");
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
@@ -548,6 +552,9 @@ namespace AiLabs.Rules.Config
             if (s == null) { p.Add("staffPeople is missing"); return; }
             Permille(p, "staffPeople.moraleBaseline", s.MoraleBaseline);
             if (s.MoraleDriftPerWeek < 0) p.Add("staffPeople.moraleDriftPerWeek is negative");
+            if (s.MoraleDebtDriftPerWeek < 0) p.Add("staffPeople.moraleDebtDriftPerWeek is negative");
+            if (s.MoraleIncidentDrop < 0) p.Add("staffPeople.moraleIncidentDrop is negative");
+            if (s.MoralePoachWitnessDrop < 0) p.Add("staffPeople.moralePoachWitnessDrop is negative");
             Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
