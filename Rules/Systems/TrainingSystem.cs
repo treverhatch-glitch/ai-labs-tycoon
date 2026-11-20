@@ -45,7 +45,7 @@ namespace AiLabs.Rules.Systems
         public static long TrainingCompute(GameConfig c, GameState state, LabState lab)
         {
             if (LabQueries.ActiveRuns(lab) == 0) return 0;
-            return MathI.MulPermille(LabQueries.WeeklyCompute(c, state, lab), lab.TrainingSharePermille);
+            return LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false));
         }
 
         public static CapabilityForecast Forecast(GameConfig c, LabState lab, ModelLineConfig line)
@@ -65,7 +65,7 @@ namespace AiLabs.Rules.Systems
         public static int EstimateWeeks(GameConfig c, GameState state, LabState lab, ModelLineConfig line, int alignmentSharePermille)
         {
             int runs = LabQueries.ActiveRuns(lab) + 1;
-            long training = MathI.MulPermille(LabQueries.WeeklyCompute(c, state, lab), lab.TrainingSharePermille) / runs;
+            long training = LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false)) / runs;
             long effective = MathI.MulPermille(training, SpeedPermille(c, lab));
             long progress = effective - MathI.MulPermille(effective, alignmentSharePermille);
             if (progress <= 0) return -1;
@@ -78,8 +78,8 @@ namespace AiLabs.Rules.Systems
             long training = TrainingCompute(c, state, lab);
             lab.LastWeek.Compute = total;
             lab.LastWeek.TrainingCompute = training;
-            long servingBase = LabQueries.WeeklyServingBase(c, state, lab);
-            lab.LastWeek.ServingCompute = servingBase - MathI.MulPermille(servingBase, training == 0 ? 0 : lab.TrainingSharePermille);
+            ComputeSplit toCustomers = LabQueries.Split(c, state, lab, true);
+            lab.LastWeek.ServingCompute = toCustomers.General - MathI.MulPermille(toCustomers.General, training == 0 ? 0 : lab.TrainingSharePermille) + toCustomers.Inference;
 
             int runs = LabQueries.ActiveRuns(lab);
             if (runs == 0) return;

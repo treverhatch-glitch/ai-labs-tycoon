@@ -53,6 +53,15 @@ public class ContentDocsTests
     }
 
     [Fact]
+    public void The_chips_page_lists_every_target_process_and_option()
+    {
+        GameConfig c = TestData.Config();
+        AssertListsEvery("chips.md", "chip target", c.Chips.Targets.Select(t => t.IdValue).ToArray());
+        AssertListsEvery("chips.md", "process", c.Chips.Nodes.Select(n => n.IdValue).ToArray());
+        AssertListsEvery("chips.md", "chip option", c.Chips.Options.Select(o => o.IdValue).ToArray());
+    }
+
+    [Fact]
     public void The_rivals_page_lists_every_rival_and_the_vendor_supply_years()
     {
         GameConfig c = TestData.Config();

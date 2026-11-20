@@ -117,6 +117,8 @@ namespace AiLabs.Rules.State
         public int FromChips;
         /// <summary>True once the lab has taped out a training chip (the first one costs standing, later ones do not).</summary>
         public bool TrainingChipSeen;
+        /// <summary>True once the lab has listed chips for sale (the first listing costs standing, later ones do not).</summary>
+        public bool ListingSeen;
 
         public void Sync(Syncer s)
         {
@@ -128,6 +130,7 @@ namespace AiLabs.Rules.State
             s.Int("fromBuying", ref FromBuying);
             s.Int("fromChips", ref FromChips);
             s.Bool("trainingChipSeen", ref TrainingChipSeen);
+            s.Bool("listingSeen", ref ListingSeen);
         }
     }
 }

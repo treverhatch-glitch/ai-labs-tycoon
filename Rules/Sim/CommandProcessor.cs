@@ -42,6 +42,12 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.BuildHall: return BuildHall(c, state, lab, cmd);
                 case CommandKind.AddPowerDeal: return AddPowerDeal(c, state, lab, cmd);
                 case CommandKind.MoveHardware: return MoveHardware(c, state, lab, cmd);
+                case CommandKind.StartChipDesign: return StartChipDesign(c, state, lab, cmd);
+                case CommandKind.CancelChipDesign: return CancelChipDesign(lab, cmd);
+                case CommandKind.TapeOut: return TapeOut(c, state, lab, cmd);
+                case CommandKind.OrderChips: return OrderChips(c, state, lab, cmd);
+                case CommandKind.SetChipListing: return SetChipListing(c, state, lab, cmd);
+                case CommandKind.BuyListedChips: return BuyListedChips(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -59,6 +65,8 @@ namespace AiLabs.Rules.Sim
             if (type == null) return Fail(CommandError.UnknownId, "There is no room type \"" + cmd.Id + "\".");
             if (!EraSystem.RoomOpen(c, type, state.Tick))
                 return Fail(CommandError.EraLocked, type.Name + " is not around yet: it arrives with " + c.Era(type.Era).Name + " (" + c.Era(type.Era).StartYear + ").");
+            if (!LabQueries.RoomUnlocked(lab, type))
+                return Fail(CommandError.MissingPrerequisite, type.Name + " needs " + c.Tech(type.RequiresTech).Name + " first.");
             if (cmd.Width < type.MinWidth || cmd.Height < type.MinHeight)
                 return Fail(CommandError.TooSmall, "A " + type.Name + " must be at least " + type.MinWidth + " by " + type.MinHeight + " tiles.");
             LotConfig lot = c.Lot(lab.LotId);
@@ -215,7 +223,7 @@ namespace AiLabs.Rules.Sim
             }
             else
             {
-                int freeKw = WorldQueries.FreeKw(c, lab, holding);
+                int freeKw = WorldQueries.FreeKw(c, state, lab, holding);
                 if (count * gen.KwPerGpu > freeKw)
                     return Fail(CommandError.NotEnoughPower, "That needs " + (count * gen.KwPerGpu) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
             }
@@ -227,7 +235,7 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Sell at least one GPU.");
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
-            int owned = LabQueries.OwnedUnits(lab, holdingId);
+            int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
             if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there.");
 
             long proceeds = 0;

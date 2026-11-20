@@ -60,6 +60,16 @@ namespace AiLabs.Rules.Sim
                 case EventKind.RivalJoined: return who + " has entered the race with $" + e.Amount + " and a plan.";
                 case EventKind.BoardDrama: return who + "'s board fired its boss on Friday. The boss was back on Tuesday.";
                 case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";
+                case EventKind.ChipTapedOut: return who + " sent " + e.Ref + " to the foundry for $" + e.Amount + ". Now everybody waits.";
+                case EventKind.ChipRespin: return "A design bug was found at tape-out. Respin. " + who + " pays $" + e.Amount + " to try " + e.Ref + " again.";
+                case EventKind.ChipReady:
+                    return e.Pick == 1
+                        ? who + ": Your first in-house chip works. It runs Minesweeper at 4,000 frames per second."
+                        : who + "'s " + e.Ref + " works. Yield " + DecisionText.Percent((int)e.Amount) + "%.";
+                case EventKind.ChipsDelivered: return who + " took delivery of " + e.Amount + " chips at " + c.World.Site(e.Ref).Name + ".";
+                case EventKind.ChipYieldCrash: return "Yield crash. " + who + "'s delivery of " + e.Ref + " came in at " + e.Amount + " working chips. The money is gone.";
+                case EventKind.ChipsBought:
+                    { LabState seller = state.Lab((int)e.SubjectId); return who + " bought " + e.Amount + " " + e.Ref + " chips from " + (seller == null ? "another lab" : seller.Name) + "."; }
                 default: return who + ": " + e.Kind + ".";
             }
         }

@@ -107,6 +107,7 @@ namespace AiLabs.Rules.Sim
             {
                 RivalSystem.RunMonth(c, state);
                 VendorSystem.RunMonth(c, state);
+                ChipSystem.RunMonth(c, state);
                 SiteSystem.RollHeatwaves(c, state);
                 for (int i = 0; i < state.Labs.Count; i++)
                 {
@@ -124,6 +125,7 @@ namespace AiLabs.Rules.Sim
                 lab.LastWeek = new WeekReport();
                 if (lab.Bankrupt) continue;
                 TrainingSystem.RunResearch(c, lab, tick);
+                ChipSystem.RunWeek(c, state, lab);
                 TrainingSystem.RunWeek(c, state, lab);
             }
 

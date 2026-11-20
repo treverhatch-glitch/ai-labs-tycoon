@@ -87,6 +87,28 @@ namespace AiLabs.Rules.Sim
                     if (batch.HoldingId != HardwareBatch.Hq && lab.Holding(batch.HoldingId) == null) p.Add(who + " has hardware in the holding " + batch.HoldingId + ", which does not exist");
                     if (!string.IsNullOrEmpty(batch.GpuGenId) && c.Compute.Generation(batch.GpuGenId) == null) p.Add(who + " has hardware of the unknown generation \"" + batch.GpuGenId + "\"");
                 }
+                foreach (ChipDesign design in lab.ChipDesigns)
+                {
+                    if (c.Chips.Target(design.Target) == null || c.Chips.Node(design.NodeId) == null
+                        || c.Chips.Option(ChipOptionGroup.Die, design.DieId) == null || c.Chips.Option(ChipOptionGroup.Format, design.FormatId) == null
+                        || c.Chips.Option(ChipOptionGroup.Memory, design.MemoryId) == null || c.Chips.Option(ChipOptionGroup.Cooling, design.CoolingId) == null)
+                        p.Add(who + " has the chip design " + design.Name + " made of something the game does not know");
+                }
+                foreach (ChipOrder order in lab.ChipOrders)
+                {
+                    LabState designer = state.Lab(order.DesignLabId);
+                    if (designer == null || designer.Design(order.DesignId) == null) p.Add(who + " has chips on order of a design that does not exist");
+                    if (lab.Holding(order.HoldingId) == null) p.Add(who + " has chips on order for the holding " + order.HoldingId + ", which does not exist");
+                    if (c.Chips.Node(order.NodeId) == null) p.Add(who + " has chips on order at the unknown process \"" + order.NodeId + "\"");
+                }
+                foreach (ChipListing listing in lab.ChipListings)
+                    if (lab.Design(listing.DesignId) == null) p.Add(who + " lists chips of a design that does not exist");
+                foreach (HardwareBatch batch in lab.Fleet)
+                {
+                    if (batch.ChipDesignId < 0) continue;
+                    LabState designer = state.Lab(batch.DesignLabId);
+                    if (designer == null || designer.Design(batch.ChipDesignId) == null) p.Add(who + " has chips of a design that does not exist");
+                }
                 foreach (string tech in lab.Techs) if (c.Tech(tech) == null) p.Add(who + " knows the unknown tech \"" + tech + "\"");
                 foreach (ModelState model in lab.Models)
                 {
@@ -98,6 +120,8 @@ namespace AiLabs.Rules.Sim
             foreach (VendorStanding standing in state.Vendor.Standings)
                 if (state.Lab(standing.LabId) == null) p.Add("the vendor holds a standing for lab " + standing.LabId + ", which does not exist");
             foreach (string id in state.PendingRivals) if (c.Rival(id) == null) p.Add("the unknown rival \"" + id + "\" is due to join");
+
+            foreach (FoundryMonth month in state.Foundry) if (c.Chips.Node(month.NodeId) == null) p.Add("the foundry has a booking at the unknown process \"" + month.NodeId + "\"");
 
             foreach (SiteState site in state.Sites) if (c.World.Site(site.SiteId) == null) p.Add("the unknown site \"" + site.SiteId + "\"");
 

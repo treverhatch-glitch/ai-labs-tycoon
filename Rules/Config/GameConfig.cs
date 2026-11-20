@@ -6,9 +6,9 @@ namespace AiLabs.Rules.Config
     // Every tunable number of the game lives in these classes and is loaded from Rules/Data/default-config.json.
     // Units: money in whole dollars, rates in permille (1000 = 100%), time in weeks (one tick is one week).
 
-    public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy }
+    public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy, ChipDesign }
 
-    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy }
+    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest }
 
     public enum TechEffectKind
     {
@@ -21,7 +21,11 @@ namespace AiLabs.Rules.Config
         /// <summary>Makes a model line available to train. <see cref="TechEffectConfig.Id"/> names the line.</summary>
         UnlockLine,
         /// <summary>Takes this much off the part of a power bill that cooling adds, and halves heatwave throttling at 300 or more.</summary>
-        CoolingPermille
+        CoolingPermille,
+        /// <summary>Lets the lab design chips for this target. <see cref="TechEffectConfig.Id"/> names the chip target.</summary>
+        UnlockChipTarget,
+        /// <summary>Adds to the maturity of the lab's chip software, in permille, on top of what its architects build.</summary>
+        SoftwarePermille
     }
 
     public sealed class GameConfig : ISync
@@ -44,6 +48,7 @@ namespace AiLabs.Rules.Config
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
+        public ChipsConfig Chips;
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -70,6 +75,7 @@ namespace AiLabs.Rules.Config
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);
+            s.Obj("chips", ref Chips);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);
@@ -300,6 +306,8 @@ namespace AiLabs.Rules.Config
         public int MinHeight;
         public long BuildCostPerTile;
         public long UpkeepPerTileWeek;
+        /// <summary>A tech the lab must know before it may build this room, or empty.</summary>
+        public string RequiresTech;
 
         public string Id { get { return IdValue; } }
 
@@ -308,6 +316,7 @@ namespace AiLabs.Rules.Config
             s.Str("id", ref IdValue);
             s.Str("name", ref Name);
             s.Str("era", ref Era);
+            s.Str("requiresTech", ref RequiresTech);
             s.Enum("purpose", ref Purpose);
             s.Str("seatsRole", ref SeatsRole);
             s.Int("tilesPerSeat", ref TilesPerSeat);

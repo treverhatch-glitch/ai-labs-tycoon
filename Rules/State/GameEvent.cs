@@ -24,7 +24,19 @@ namespace AiLabs.Rules.State
         /// <summary>A hall opened within a few weeks of its start.</summary>
         FastBuild,
         /// <summary>A plan-run lab's board had a fit and its plan pauses. Amount is the weeks.</summary>
-        BoardDrama
+        BoardDrama,
+        /// <summary>A design went to the foundry. Subject is the design, Amount the tape-out cost.</summary>
+        ChipTapedOut,
+        /// <summary>A tape-out came back with a bug. Amount is what the respin costs.</summary>
+        ChipRespin,
+        /// <summary>A design works. Subject is the design, Amount its starting yield. Pick is 1 for the lab's first.</summary>
+        ChipReady,
+        /// <summary>Chips arrived. Subject is the design, Amount the chips that came, Ref the holding's site.</summary>
+        ChipsDelivered,
+        /// <summary>A delivery lost most of its chips to a yield crash. Amount is the chips that survived.</summary>
+        ChipYieldCrash,
+        /// <summary>Chips were bought from another lab's list. LabId is the buyer, Subject the seller's lab, Amount the count.</summary>
+        ChipsBought
     }
 
     /// <summary>

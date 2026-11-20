@@ -9,8 +9,8 @@ time.
 The rules core plays a whole game headless from 1995 or 2009 to 2035: rooms, staff, GPUs, research, training,
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
-world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention). 259 tests
-pass, including 40-year headless runs and a schema 1, 2 and 3 save that migrate. There is no Unity project yet.
+world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
+that design and buy chips. 296 tests pass, including 40-year headless runs and a schema 1, 2, 3 and 4 save that migrate. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -61,6 +61,8 @@ and says why in the commit message.
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
+4b. ~~**Own chips.**~~ Done (systems design phase D, schema 5): `ChipSystem`, `ChipQueries`, foundry months, the
+    six chip commands, `ComputeSplit`, listings, Envydia's reactions, the planner's chip programme (Q57 to Q67).
 5. **Reserved compute and the Envydia queue.** Allocation by standing is in (item 4); what remains is reserved
    contracts. Touches `ComputeConfig`, lab state, `Finance`.
 6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
@@ -85,10 +87,9 @@ and says why in the commit message.
 
 ## Rules: later
 
-- Custom chips: the chip design screen's rules (generations 1 to 4, a foundry deal, selling chips to others).
-- Chips, the wider cast, endings and the shady path from the systems design (phases C to G). Its first PR landed the
-  world map: ~~data-centre sites with power, cooling, export rules and government attention~~ (schema 3). What is left of
-  it: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
+- Cloud deals for labs that only rent (so OpenAye and AntHopticsAI can use chips), the wider cast, endings and the
+  shady path from the systems design (phases E to G). The first PRs landed the world map (schema 3), rival depth (C) and own chips (D). What is left of
+  the world map: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
 - The Bubble meter and circular financing; shares in rivals; monopoly and regulators.
 - The shady path with per-model corruption; government and China deals.
 - Incident rungs 4 to 6, containment rooms, the superintelligence endings.

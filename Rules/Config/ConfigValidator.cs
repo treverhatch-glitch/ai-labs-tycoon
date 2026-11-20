@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Config
                 if (room.GpuSlotsPerTile < 0) p.Add("roomType " + room.Id + " has negative gpuSlotsPerTile");
                 if (room.MinWidth < 1 || room.MinHeight < 1) p.Add("roomType " + room.Id + " needs minWidth and minHeight of at least 1");
                 if (room.BuildCostPerTile < 0 || room.UpkeepPerTileWeek < 0) p.Add("roomType " + room.Id + " has a negative cost");
+                if (!string.IsNullOrEmpty(room.RequiresTech) && c.Tech(room.RequiresTech) == null) p.Add("roomType " + room.Id + " requires the unknown tech \"" + room.RequiresTech + "\"");
             }
             foreach (RoleConfig role in c.Roles)
             {
@@ -94,7 +95,8 @@ namespace AiLabs.Rules.Config
                 foreach (TechEffectConfig e in tech.Effects)
                 {
                     if (e.Kind == TechEffectKind.UnlockLine && c.Line(e.Id) == null) p.Add("tech " + tech.Id + " unlocks the unknown model line \"" + e.Id + "\"");
-                    if (e.Kind != TechEffectKind.UnlockLine && e.Amount <= 0) p.Add("tech " + tech.Id + " has an effect with no amount");
+                    if (e.Kind == TechEffectKind.UnlockChipTarget && c.Chips.Target(e.Id) == null) p.Add("tech " + tech.Id + " unlocks the unknown chip target \"" + e.Id + "\"");
+                    if (e.Kind != TechEffectKind.UnlockLine && e.Kind != TechEffectKind.UnlockChipTarget && e.Amount <= 0) p.Add("tech " + tech.Id + " has an effect with no amount");
                 }
             }
             TechCycles(p, c);
@@ -164,6 +166,7 @@ namespace AiLabs.Rules.Config
 
             RivalryProblems(p, c);
             VendorProblems(p, c);
+            ChipsProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
@@ -321,6 +324,68 @@ namespace AiLabs.Rules.Config
             if (w.Bloc(c.PlayerStart.HomeBlocId) == null) p.Add("playerStart.homeBlocId names the unknown bloc \"" + c.PlayerStart.HomeBlocId + "\"");
             foreach (RivalConfig rival in c.Rivals)
                 if (w.Bloc(rival.HomeBlocId) == null) p.Add("rival " + rival.Id + " has the unknown home bloc \"" + rival.HomeBlocId + "\"");
+        }
+
+        static void ChipsProblems(List<string> p, GameConfig c)
+        {
+            ChipsConfig k = c.Chips;
+            if (k.PointsPerArchitectWeek < 1) p.Add("chips.pointsPerArchitectWeek must be at least 1");
+            Permille(p, "chips.softwareStart", k.SoftwareStart);
+            if (k.SoftwareStart > k.SoftwareBaseCap || k.SoftwareBaseCap > k.SoftwareCap || k.SoftwareCap > 2 * MathI.Permille) p.Add("chips: softwareStart, softwareBaseCap and softwareCap must be in that order and no more than 2000");
+            if (k.SoftwarePerArchitectWeek < 0) p.Add("chips.softwarePerArchitectWeek is negative");
+            if (k.InHouseTrainingBonusPermille < 0) p.Add("chips.inHouseTrainingBonusPermille is negative");
+            if (k.TapeoutWeeks < 1 || k.RespinWeeks < 1) p.Add("chips.tapeoutWeeks and chips.respinWeeks must be at least 1");
+            Permille(p, "chips.respinCostPermille", k.RespinCostPermille);
+            if (k.RespinPerEngineerPermille < 0 || k.RespinEngineerCap < 0) p.Add("chips.respinPerEngineerPermille and respinEngineerCap must not be negative");
+            if (k.YieldRampPerWeek < 0 || k.YieldRampPerEngineer < 0 || k.YieldRampEngineerCap < 0) p.Add("chips: the yield ramp numbers must not be negative");
+            if (k.TestLabRampPermille < MathI.Permille) p.Add("chips.testLabRampPermille must be at least 1000: a test lab never slows the ramp");
+            Permille(p, "chips.yieldCrashPermille", k.YieldCrashPermille);
+            Permille(p, "chips.yieldCrashKeepPermille", k.YieldCrashKeepPermille);
+            if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
+            if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
+            if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
+            Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
+            RoleConfig architect = c.Role(k.ArchitectRoleId);
+            if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
+            else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");
+            RoomTypeConfig testLab = c.RoomType(k.TestLabRoomId);
+            if (testLab == null) p.Add("chips.testLabRoomId names the unknown room type \"" + k.TestLabRoomId + "\"");
+
+            UniqueIds(p, "chips.targets", k.Targets);
+            UniqueIds(p, "chips.nodes", k.Nodes);
+            if (k.Targets.Count == 0) p.Add("chips.targets is empty");
+            if (k.Nodes.Count == 0) p.Add("chips.nodes is empty");
+            foreach (ChipTargetConfig t in k.Targets)
+            {
+                if (t.Points < 1 || t.ComputePermille < 1) p.Add("chip target " + t.Id + " needs points and computePermille of at least 1");
+            }
+            for (int i = 0; i < k.Nodes.Count; i++)
+            {
+                ChipNodeConfig n = k.Nodes[i];
+                string who = "chip node " + n.Id;
+                if (n.PointsPermille < 1 || n.ComputePerChipWeek < 1 || n.KwPerChip < 1) p.Add(who + " needs pointsPermille, computePerChipWeek and kwPerChip of at least 1");
+                if (n.WaferCostPerChip < 1 || n.TapeoutCost < 0) p.Add(who + " has a bad cost");
+                Permille(p, who + " respinPermille", n.RespinPermille);
+                if (n.InitialYieldPermille < 1 || n.MaxYieldPermille > MathI.Permille || n.InitialYieldPermille > n.MaxYieldPermille) p.Add(who + " needs initialYieldPermille from 1 up to maxYieldPermille, which is at most 1000");
+                if (n.LeadWeeks < 1 || n.CapacityPerMonth < 1) p.Add(who + " needs leadWeeks and capacityPerMonth of at least 1");
+                if (n.OpensYear < c.Calendar.StartYear) p.Add(who + " opens before the game starts");
+                if (i > 0 && (n.OpensYear <= k.Nodes[i - 1].OpensYear || n.Tier < k.Nodes[i - 1].Tier)) p.Add(who + " must open after " + k.Nodes[i - 1].Id + " and not on a lower tier");
+            }
+            foreach (ChipOptionGroup group in Enum.GetValues(typeof(ChipOptionGroup)))
+            {
+                bool free = false;
+                var seen = new List<string>();
+                foreach (ChipOptionConfig o in k.Options)
+                {
+                    if (o.Group != group) continue;
+                    if (seen.Contains(o.Id)) p.Add("chips.options has two " + group + " options called " + o.Id);
+                    seen.Add(o.Id);
+                    if (o.ComputePermille < 1 || o.CostPermille < 1 || o.KwPermille < 1 || o.PointsPermille < 1) p.Add("chip option " + o.Id + " needs positive multipliers");
+                    if (!string.IsNullOrEmpty(o.RequiresTech) && c.Tech(o.RequiresTech) == null) p.Add("chip option " + o.Id + " requires the unknown tech \"" + o.RequiresTech + "\"");
+                    if (string.IsNullOrEmpty(o.RequiresTech) || o.RequiresTech == "chip-team") free = true;
+                }
+                if (!free) p.Add("chips.options has no " + group + " option a lab could use from the start of the chip programme");
+            }
         }
 
         static void RivalryProblems(List<string> p, GameConfig c)

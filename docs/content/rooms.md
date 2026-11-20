@@ -34,8 +34,9 @@
 | `mission-controller` | Mission Controller | Research | $6k | $3.5k |
 | `infra` | Infrastructure Engineer | Infrastructure | $2k | $1k |
 | `policy` | Policy Lead | Policy | $2.5k | $1.2k |
+| `chip-architect` | Chip Architect | ChipDesign | $3k | $1.8k |
 
-New roles do the work of one of the functions (Research, Engineering, Safety, Sales), so the rules stay the same while the cast grows. Two functions belong to the world map ([world.md](world.md)): Infrastructure engineers shorten hall construction, Policy leads soften what governments make of the lab.
+New roles do the work of one of the functions (Research, Engineering, Safety, Sales), so the rules stay the same while the cast grows. Chip architects (function ChipDesign) work on the lab's own chips ([chips.md](chips.md)). Two functions belong to the world map ([world.md](world.md)): Infrastructure engineers shorten hall construction, Policy leads soften what governments make of the lab.
 
 ## Room types
 
@@ -65,6 +66,10 @@ New roles do the work of one of the functions (Research, Engineering, Safety, Sa
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `research-floor` | Research Floor | Research | `researcher` | 3 | - | 4 x 4 | $700 | $12 |
 | `recruiting-office` | Recruiting Office | Sales | `recruiter` | 4 | - | 3 x 3 | $800 | $12 |
+| `chip-design-lab` | Chip Design Lab | ChipDesign | `chip-architect` | 4 | - | 3 x 3 | $600 | $12 |
+| `hw-test-lab` | Hardware Test Lab | HardwareTest | - | - | - | 3 x 3 | $700 | $14 |
+
+Both chip rooms also need the tech `chip-team`, whatever the year (the room type's `requiresTech`).
 
 ### It Writes (2017)
 

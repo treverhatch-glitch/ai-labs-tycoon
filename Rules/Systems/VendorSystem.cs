@@ -48,6 +48,7 @@ namespace AiLabs.Rules.Systems
             int price = MathI.Permille;
             if (standing < v.LowStandingBelow) price += v.LowStandingMarkupPermille;
             if (standing > v.HighStandingAbove) price -= v.HighStandingDiscountPermille;
+            if (ChipQueries.RunsOwnTrainingChips(c, state, lab)) price += v.OwnChipsMarkupPermille;
             return price;
         }
 
@@ -106,12 +107,15 @@ namespace AiLabs.Rules.Systems
                 else if (s.Standing < v.StandingStart) s.Standing = (int)MathI.Min(v.StandingStart, s.Standing + v.DriftPerMonth);
             }
 
+            ChipSystem.CourtRivals(c, state);
+
             int supply = v.SupplyInYear(year);
             GpuGenerationConfig opening = OpeningGeneration(c, year);
             if (opening != null && month == v.KeynoteMonth)
             {
                 supply = (int)MathI.MulPermille(supply, v.KeynoteSupplyPermille);
                 Events.Add(state, EventKind.Keynote, -1, -1, supply, opening.Id);
+                ChipSystem.OnKeynote(c, state);
             }
             state.Vendor.SupplyThisMonth = supply;
 

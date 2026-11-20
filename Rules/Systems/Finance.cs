@@ -43,7 +43,7 @@ namespace AiLabs.Rules.Systems
             Spend(lab, LedgerLine.RoomUpkeep, LabQueries.WeeklyRoomUpkeep(c, lab));
             Spend(lab, LedgerLine.GpuRent, LabQueries.WeeklyGpuRent(c, state, lab));
             Spend(lab, LedgerLine.GpuUpkeep, LabQueries.WeeklyGpuUpkeep(c, lab));
-            Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, lab));
+            Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, state, lab));
 
             if (lab.Cash < 0)
             {
@@ -61,6 +61,7 @@ namespace AiLabs.Rules.Systems
         public static void GoBankrupt(GameState state, LabState lab)
         {
             lab.Bankrupt = true;
+            ChipSystem.OnBankrupt(state, lab);
             for (int i = 0; i < lab.Models.Count; i++) lab.Models[i].Status = ModelStatus.Retired;
             for (int s = 0; s < state.Sectors.Count; s++)
             {

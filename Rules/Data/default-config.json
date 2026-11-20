@@ -202,33 +202,36 @@
     { "id": "roboticist", "name": "Roboticist", "function": "Engineering", "hireCost": 5500, "weeklySalary": 3200, "severance": 6400 },
     { "id": "mission-controller", "name": "Mission Controller", "function": "Research", "hireCost": 6000, "weeklySalary": 3500, "severance": 7000 },
     { "id": "infra", "name": "Infrastructure Engineer", "function": "Infrastructure", "hireCost": 2000, "weeklySalary": 1000, "severance": 2000 },
-    { "id": "policy", "name": "Policy Lead", "function": "Policy", "hireCost": 2500, "weeklySalary": 1200, "severance": 2500 }
+    { "id": "policy", "name": "Policy Lead", "function": "Policy", "hireCost": 2500, "weeklySalary": 1200, "severance": 2500 },
+    { "id": "chip-architect", "name": "Chip Architect", "function": "ChipDesign", "hireCost": 3000, "weeklySalary": 1800, "severance": 3000 }
   ],
   "roomTypes": [
-    { "id": "research-lab", "era": "dial-up-days", "name": "Research Lab", "purpose": "Research", "seatsRole": "researcher", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
-    { "id": "engineering-bay", "era": "dial-up-days", "name": "Engineering Bay", "purpose": "Engineering", "seatsRole": "engineer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
-    { "id": "safety-lab", "era": "dial-up-days", "name": "Safety & Evals Lab", "purpose": "Safety", "seatsRole": "safety", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 450, "upkeepPerTileWeek": 8 },
-    { "id": "sales-office", "era": "dial-up-days", "name": "Sales & Partnerships", "purpose": "Sales", "seatsRole": "sales", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 350, "upkeepPerTileWeek": 8 },
-    { "id": "server-closet", "era": "dial-up-days", "name": "Server Closet", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 2, "minWidth": 2, "minHeight": 2, "buildCostPerTile": 900, "upkeepPerTileWeek": 20 },
-    { "id": "labelling-room", "era": "dial-up-days", "name": "Labelling Room", "purpose": "Engineering", "seatsRole": "labeller", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 300, "upkeepPerTileWeek": 7 },
-    { "id": "ops-centre", "era": "dial-up-days", "name": "Ops Centre", "purpose": "Infrastructure", "seatsRole": "infra", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
-    { "id": "policy-office", "era": "dial-up-days", "name": "Policy Office", "purpose": "Policy", "seatsRole": "policy", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 450, "upkeepPerTileWeek": 8 },
-    { "id": "gpu-hall", "era": "punchline", "name": "GPU Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 4, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1400, "upkeepPerTileWeek": 36 },
-    { "id": "data-team-room", "era": "punchline", "name": "Data Team Room", "purpose": "Engineering", "seatsRole": "data-engineer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 700, "upkeepPerTileWeek": 12 },
-    { "id": "research-floor", "era": "it-sees", "name": "Research Floor", "purpose": "Research", "seatsRole": "researcher", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 700, "upkeepPerTileWeek": 12 },
-    { "id": "recruiting-office", "era": "it-sees", "name": "Recruiting Office", "purpose": "Sales", "seatsRole": "recruiter", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 800, "upkeepPerTileWeek": 12 },
-    { "id": "sandbox-wing", "era": "it-writes", "name": "Sandbox Wing", "purpose": "Safety", "seatsRole": "red-teamer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 900, "upkeepPerTileWeek": 14 },
-    { "id": "cluster-hall", "era": "it-writes", "name": "Cluster Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 8, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 2400, "upkeepPerTileWeek": 60 },
-    { "id": "product-studio", "era": "chat-boom", "name": "Product Studio", "purpose": "Sales", "seatsRole": "product-lead", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 3, "buildCostPerTile": 1000, "upkeepPerTileWeek": 16 },
-    { "id": "liquid-cooling-pod", "era": "chat-boom", "name": "Liquid-Cooling Pod", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 16, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 4200, "upkeepPerTileWeek": 100 },
-    { "id": "agent-ops-room", "era": "agents", "name": "Agent Ops Room", "purpose": "Engineering", "seatsRole": "agent-wrangler", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1200, "upkeepPerTileWeek": 18 },
-    { "id": "containment-wing", "era": "agents", "name": "Containment Wing", "purpose": "Safety", "seatsRole": "alignment-fellow", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1500, "upkeepPerTileWeek": 22 },
-    { "id": "synthetic-data-lab", "era": "harnesses", "name": "Synthetic Data Lab", "purpose": "Engineering", "seatsRole": "data-gardener", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1400, "upkeepPerTileWeek": 20 },
-    { "id": "harness-control-room", "era": "harnesses", "name": "Harness Control Room", "purpose": "Research", "seatsRole": "harness-operator", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1600, "upkeepPerTileWeek": 24 },
-    { "id": "ai-factory-hall", "era": "harnesses", "name": "AI Factory Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 36, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 8000, "upkeepPerTileWeek": 180 },
-    { "id": "robotics-arena", "era": "bodies", "name": "Robotics Arena", "purpose": "Engineering", "seatsRole": "roboticist", "tilesPerSeat": 6, "gpuSlotsPerTile": 0, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 2000, "upkeepPerTileWeek": 30 },
-    { "id": "launch-control", "era": "upward", "name": "Launch Control", "purpose": "Research", "seatsRole": "mission-controller", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 2500, "upkeepPerTileWeek": 36 },
-    { "id": "orbital-uplink", "era": "upward", "name": "Orbital Uplink Bay", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 90, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 16000, "upkeepPerTileWeek": 320 }
+    { "id": "research-lab", "era": "dial-up-days", "requiresTech": "", "name": "Research Lab", "purpose": "Research", "seatsRole": "researcher", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
+    { "id": "engineering-bay", "era": "dial-up-days", "requiresTech": "", "name": "Engineering Bay", "purpose": "Engineering", "seatsRole": "engineer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
+    { "id": "safety-lab", "era": "dial-up-days", "requiresTech": "", "name": "Safety & Evals Lab", "purpose": "Safety", "seatsRole": "safety", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 450, "upkeepPerTileWeek": 8 },
+    { "id": "sales-office", "era": "dial-up-days", "requiresTech": "", "name": "Sales & Partnerships", "purpose": "Sales", "seatsRole": "sales", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 350, "upkeepPerTileWeek": 8 },
+    { "id": "server-closet", "era": "dial-up-days", "requiresTech": "", "name": "Server Closet", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 2, "minWidth": 2, "minHeight": 2, "buildCostPerTile": 900, "upkeepPerTileWeek": 20 },
+    { "id": "labelling-room", "era": "dial-up-days", "requiresTech": "", "name": "Labelling Room", "purpose": "Engineering", "seatsRole": "labeller", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 300, "upkeepPerTileWeek": 7 },
+    { "id": "ops-centre", "era": "dial-up-days", "requiresTech": "", "name": "Ops Centre", "purpose": "Infrastructure", "seatsRole": "infra", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 400, "upkeepPerTileWeek": 8 },
+    { "id": "policy-office", "era": "dial-up-days", "requiresTech": "", "name": "Policy Office", "purpose": "Policy", "seatsRole": "policy", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 450, "upkeepPerTileWeek": 8 },
+    { "id": "gpu-hall", "era": "punchline", "requiresTech": "", "name": "GPU Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 4, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1400, "upkeepPerTileWeek": 36 },
+    { "id": "data-team-room", "era": "punchline", "requiresTech": "", "name": "Data Team Room", "purpose": "Engineering", "seatsRole": "data-engineer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 700, "upkeepPerTileWeek": 12 },
+    { "id": "research-floor", "era": "it-sees", "requiresTech": "", "name": "Research Floor", "purpose": "Research", "seatsRole": "researcher", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 700, "upkeepPerTileWeek": 12 },
+    { "id": "recruiting-office", "era": "it-sees", "requiresTech": "", "name": "Recruiting Office", "purpose": "Sales", "seatsRole": "recruiter", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 800, "upkeepPerTileWeek": 12 },
+    { "id": "sandbox-wing", "era": "it-writes", "requiresTech": "", "name": "Sandbox Wing", "purpose": "Safety", "seatsRole": "red-teamer", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 900, "upkeepPerTileWeek": 14 },
+    { "id": "cluster-hall", "era": "it-writes", "requiresTech": "", "name": "Cluster Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 8, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 2400, "upkeepPerTileWeek": 60 },
+    { "id": "product-studio", "era": "chat-boom", "requiresTech": "", "name": "Product Studio", "purpose": "Sales", "seatsRole": "product-lead", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 3, "buildCostPerTile": 1000, "upkeepPerTileWeek": 16 },
+    { "id": "liquid-cooling-pod", "era": "chat-boom", "requiresTech": "", "name": "Liquid-Cooling Pod", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 16, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 4200, "upkeepPerTileWeek": 100 },
+    { "id": "agent-ops-room", "era": "agents", "requiresTech": "", "name": "Agent Ops Room", "purpose": "Engineering", "seatsRole": "agent-wrangler", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1200, "upkeepPerTileWeek": 18 },
+    { "id": "containment-wing", "era": "agents", "requiresTech": "", "name": "Containment Wing", "purpose": "Safety", "seatsRole": "alignment-fellow", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1500, "upkeepPerTileWeek": 22 },
+    { "id": "synthetic-data-lab", "era": "harnesses", "requiresTech": "", "name": "Synthetic Data Lab", "purpose": "Engineering", "seatsRole": "data-gardener", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1400, "upkeepPerTileWeek": 20 },
+    { "id": "harness-control-room", "era": "harnesses", "requiresTech": "", "name": "Harness Control Room", "purpose": "Research", "seatsRole": "harness-operator", "tilesPerSeat": 3, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 1600, "upkeepPerTileWeek": 24 },
+    { "id": "ai-factory-hall", "era": "harnesses", "requiresTech": "", "name": "AI Factory Hall", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 36, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 8000, "upkeepPerTileWeek": 180 },
+    { "id": "robotics-arena", "era": "bodies", "requiresTech": "", "name": "Robotics Arena", "purpose": "Engineering", "seatsRole": "roboticist", "tilesPerSeat": 6, "gpuSlotsPerTile": 0, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 2000, "upkeepPerTileWeek": 30 },
+    { "id": "launch-control", "era": "upward", "requiresTech": "", "name": "Launch Control", "purpose": "Research", "seatsRole": "mission-controller", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 4, "minHeight": 4, "buildCostPerTile": 2500, "upkeepPerTileWeek": 36 },
+    { "id": "orbital-uplink", "era": "upward", "requiresTech": "", "name": "Orbital Uplink Bay", "purpose": "Compute", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 90, "minWidth": 6, "minHeight": 6, "buildCostPerTile": 16000, "upkeepPerTileWeek": 320 },
+    { "id": "chip-design-lab", "era": "it-sees", "requiresTech": "chip-team", "name": "Chip Design Lab", "purpose": "ChipDesign", "seatsRole": "chip-architect", "tilesPerSeat": 4, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 600, "upkeepPerTileWeek": 12 },
+    { "id": "hw-test-lab", "era": "it-sees", "requiresTech": "chip-team", "name": "Hardware Test Lab", "purpose": "HardwareTest", "seatsRole": "", "tilesPerSeat": 0, "gpuSlotsPerTile": 0, "minWidth": 3, "minHeight": 3, "buildCostPerTile": 700, "upkeepPerTileWeek": 14 }
   ],
   "compute": {
     "vendorName": "Envydia",
@@ -737,6 +740,59 @@
           { "kind": "AlignmentPermille", "amount": 2500, "id": "" },
           { "kind": "CapabilityPermille", "amount": 10000, "id": "" }
         ]
+      },
+      {
+        "id": "chip-team", "era": "it-sees", "name": "A Chip Team", "cost": 24000, "requires": [ "multi-gpu" ],
+        "blurb": "Hire people who have read a datasheet. Inference chips become possible, and so does a very expensive room.",
+        "effects": [ { "kind": "UnlockChipTarget", "amount": 0, "id": "inference" } ]
+      },
+      {
+        "id": "hbm-memory", "era": "it-sees", "name": "Memory Stacked on the Chip", "cost": 26000, "requires": [ "chip-team" ],
+        "blurb": "Put the memory next to the maths. The memory bill follows.",
+        "effects": []
+      },
+      {
+        "id": "training-silicon", "era": "it-writes", "name": "Training Silicon", "cost": 40000, "requires": [ "chip-team", "attention-arch" ],
+        "blurb": "A chip that trains as well as serves. Envydia notices.",
+        "effects": [ { "kind": "UnlockChipTarget", "amount": 0, "id": "training" } ]
+      },
+      {
+        "id": "compiler-stack-1", "era": "it-writes", "name": "Compiler Stack, Version One", "cost": 32000, "requires": [ "chip-team" ],
+        "blurb": "Your chips run at a third of their paper speed. A compiler fixes some of that.",
+        "effects": [ { "kind": "SoftwarePermille", "amount": 100, "id": "" } ]
+      },
+      {
+        "id": "compiler-stack-2", "era": "chat-boom", "name": "Compiler Stack, Version Two", "cost": 30000, "requires": [ "compiler-stack-1" ],
+        "blurb": "Kernels fused, graphs lowered, an intern's weekend project promoted to a team.",
+        "effects": [ { "kind": "SoftwarePermille", "amount": 100, "id": "" } ]
+      },
+      {
+        "id": "compiler-stack-3", "era": "agents", "name": "Compiler Stack, Version Three", "cost": 60000, "requires": [ "compiler-stack-2" ],
+        "blurb": "The compiler is partly written by the models it compiles. Nobody checks the arrangement.",
+        "effects": [ { "kind": "SoftwarePermille", "amount": 100, "id": "" } ]
+      },
+      {
+        "id": "stacked-hbm", "era": "chat-boom", "name": "Stacked Memory", "cost": 36000, "requires": [ "hbm-memory" ],
+        "blurb": "Memory in towers. The towers are very hot and very expensive.",
+        "effects": []
+      },
+      {
+        "id": "reticle-dies", "era": "chat-boom", "name": "Reticle-Sized Dies", "cost": 38000, "requires": [ "training-silicon" ],
+        "blurb": "One chip the size of the machine that makes chips. Most of them come out wrong.",
+        "effects": []
+      },
+      {
+        "id": "low-precision", "era": "agents", "name": "Four-Bit Arithmetic", "cost": 52000, "requires": [ "training-silicon", "quantised-serving" ],
+        "blurb": "Fewer bits per number and more numbers per second. The models claim not to notice.",
+        "effects": []
+      },
+      {
+        "id": "optical-interconnect", "era": "harnesses", "name": "Optical Interconnect", "cost": 120000, "requires": [ "stacked-hbm", "liquid-cooling" ],
+        "blurb": "Move the data with light and the heat goes with it. Cooling and training both speed up.",
+        "effects": [
+          { "kind": "CoolingPermille", "amount": 100, "id": "" },
+          { "kind": "TrainingSpeedPermille", "amount": 100, "id": "" }
+        ]
       }
     ]
   },
@@ -1065,6 +1121,40 @@
     "highStandingAbove": 800, "highStandingDiscountPermille": 50,
     "keynoteMonth": 3, "keynoteSupplyPermille": 500, "ambushLookbackWeeks": 8, "ambushWeeks": 12,
     "courtingSharePermille": 300, "courtingStandingBoost": 20, "shareLogPermille": 100, "logMax": 60
+  },
+  "chips": {
+    "pointsPerArchitectWeek": 10, "softwareStart": 300, "softwareCap": 1000, "softwareBaseCap": 700, "softwarePerArchitectWeek": 2,
+    "inHouseTrainingBonusPermille": 150, "tapeoutWeeks": 8, "respinWeeks": 12, "respinCostPermille": 400,
+    "respinPerEngineerPermille": 10, "respinEngineerCap": 10,
+    "yieldRampPerWeek": 10, "yieldRampPerEngineer": 1, "yieldRampEngineerCap": 10, "testLabRampPermille": 2000,
+    "yieldCrashPermille": 50, "yieldCrashKeepPermille": 300, "foundryVendorSharePermille": 500, "bookAheadMonths": 24,
+    "listingMaxPerMonth": 500, "plannerMinYieldPermille": 600,
+    "architectRoleId": "chip-architect", "testLabRoomId": "hw-test-lab",
+    "targets": [
+      { "id": "inference", "name": "Inference chip", "points": 2000, "computePermille": 1300, "trains": false },
+      { "id": "training", "name": "Training chip", "points": 5000, "computePermille": 1000, "trains": true }
+    ],
+    "nodes": [
+      { "id": "n28", "name": "TSMSea 28", "opensYear": 2012, "tier": 3, "pointsPermille": 1000, "computePerChipWeek": 160, "kwPerChip": 1, "waferCostPerChip": 9000, "tapeoutCost": 1500000, "respinPermille": 300, "initialYieldPermille": 400, "maxYieldPermille": 900, "leadWeeks": 12, "capacityPerMonth": 5000 },
+      { "id": "n16", "name": "TSMSea 16", "opensYear": 2016, "tier": 4, "pointsPermille": 1200, "computePerChipWeek": 450, "kwPerChip": 2, "waferCostPerChip": 14000, "tapeoutCost": 4000000, "respinPermille": 280, "initialYieldPermille": 350, "maxYieldPermille": 900, "leadWeeks": 14, "capacityPerMonth": 10000 },
+      { "id": "n7", "name": "TSMSea 7", "opensYear": 2019, "tier": 4, "pointsPermille": 1500, "computePerChipWeek": 1200, "kwPerChip": 2, "waferCostPerChip": 25000, "tapeoutCost": 12000000, "respinPermille": 260, "initialYieldPermille": 350, "maxYieldPermille": 920, "leadWeeks": 14, "capacityPerMonth": 20000 },
+      { "id": "n5", "name": "TSMSea 5", "opensYear": 2022, "tier": 5, "pointsPermille": 1800, "computePerChipWeek": 1800, "kwPerChip": 3, "waferCostPerChip": 45000, "tapeoutCost": 30000000, "respinPermille": 250, "initialYieldPermille": 300, "maxYieldPermille": 920, "leadWeeks": 16, "capacityPerMonth": 30000 },
+      { "id": "n3", "name": "TSMSea 3", "opensYear": 2025, "tier": 6, "pointsPermille": 2200, "computePerChipWeek": 5000, "kwPerChip": 4, "waferCostPerChip": 70000, "tapeoutCost": 80000000, "respinPermille": 250, "initialYieldPermille": 300, "maxYieldPermille": 930, "leadWeeks": 18, "capacityPerMonth": 40000 }
+    ],
+    "options": [
+      { "group": "Die", "id": "small", "name": "Small die", "requiresTech": "", "computePermille": 600, "costPermille": 500, "kwPermille": 600, "pointsPermille": 700, "yieldAdjust": 100 },
+      { "group": "Die", "id": "medium", "name": "Medium die", "requiresTech": "", "computePermille": 1000, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1000, "yieldAdjust": 0 },
+      { "group": "Die", "id": "large", "name": "Large die", "requiresTech": "", "computePermille": 1700, "costPermille": 2000, "kwPermille": 1600, "pointsPermille": 1500, "yieldAdjust": -150 },
+      { "group": "Die", "id": "reticle", "name": "Reticle-sized die", "requiresTech": "reticle-dies", "computePermille": 2500, "costPermille": 3500, "kwPermille": 2300, "pointsPermille": 2200, "yieldAdjust": -250 },
+      { "group": "Format", "id": "fp16", "name": "16-bit numbers", "requiresTech": "chip-team", "computePermille": 1000, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1000, "yieldAdjust": 0 },
+      { "group": "Format", "id": "fp8", "name": "8-bit numbers", "requiresTech": "training-silicon", "computePermille": 1600, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1300, "yieldAdjust": 0 },
+      { "group": "Format", "id": "fp4", "name": "4-bit numbers", "requiresTech": "low-precision", "computePermille": 2400, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1600, "yieldAdjust": 0 },
+      { "group": "Memory", "id": "ddr", "name": "Plain memory", "requiresTech": "", "computePermille": 800, "costPermille": 800, "kwPermille": 1000, "pointsPermille": 900, "yieldAdjust": 0 },
+      { "group": "Memory", "id": "hbm", "name": "Stacked-on-package memory", "requiresTech": "hbm-memory", "computePermille": 1000, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1000, "yieldAdjust": 0 },
+      { "group": "Memory", "id": "hbm-stacked", "name": "Towers of memory", "requiresTech": "stacked-hbm", "computePermille": 1300, "costPermille": 1300, "kwPermille": 1100, "pointsPermille": 1200, "yieldAdjust": -50 },
+      { "group": "Cooling", "id": "air", "name": "Air cooling", "requiresTech": "", "computePermille": 1000, "costPermille": 1000, "kwPermille": 1000, "pointsPermille": 1000, "yieldAdjust": 0 },
+      { "group": "Cooling", "id": "liquid", "name": "Liquid cooling", "requiresTech": "liquid-cooling", "computePermille": 1100, "costPermille": 1100, "kwPermille": 800, "pointsPermille": 1100, "yieldAdjust": 0 }
+    ]
   },
   "rivals": [
     {

@@ -12,7 +12,7 @@ namespace AiLabs.Rules.Systems
     /// would and gives the same commands a player gives, so rivals live by the same rules and prices.
     /// The plan says what the lab wants; the lab's cash decides how much of it happens.
     /// </summary>
-    public static class LabPlanner
+    public static partial class LabPlanner
     {
         /// <summary>Rooms are built at least this many seats big, so a growing lab is not a maze of closets.</summary>
         const int MinSeatsPerRoom = 4;
@@ -48,6 +48,7 @@ namespace AiLabs.Rules.Systems
             Gpus(x, weeks);
             Refresh(x);
             Sites(x, weeks);
+            Chips(x, weeks);
             Research(x);
             Train(x);
         }
@@ -157,7 +158,7 @@ namespace AiLabs.Rules.Systems
                 int seats = LabQueries.Seats(c, lab, role.Id);
                 if (seats < target)
                 {
-                    RoomTypeConfig type = RoomFor(c, role.Id, x.State.Tick);
+                    RoomTypeConfig type = RoomFor(c, lab, role.Id, x.State.Tick);
                     if (type == null) continue;
                     int want = Math.Max(target - seats, MinSeatsPerRoom);
                     BuildRoom(x, type, want * type.TilesPerSeat);
@@ -182,8 +183,9 @@ namespace AiLabs.Rules.Systems
             int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             int owned = LabQueries.OwnedUnits(lab);
+            int ordered = LabQueries.ChipsOnOrder(lab);
 
-            if (plan.OwnGpus && owned < target)
+            if (plan.OwnGpus && owned + ordered < target)
             {
                 int hq = LabQueries.HqGpus(lab);
                 int slots = LabQueries.GpuSlots(c, lab);
@@ -201,9 +203,9 @@ namespace AiLabs.Rules.Systems
                 long perGpu = VendorSystem.PricePerGpu(c, state, lab, gen) + gen.UpkeepPerGpuWeek * plan.ReserveWeeks;
                 long spare = lab.Cash - Reserve(x);
                 int affordable = (int)MathI.Clamp(spare / perGpu, 0, target);
-                int buy = Math.Min(Math.Min(target - owned, Math.Min(slots, rackTarget) - hq), affordable);
+                int buy = Math.Min(Math.Min(target - owned - ordered, Math.Min(slots, rackTarget) - hq), affordable);
                 buy = Math.Min(buy, VendorSystem.AllocationLeft(state, lab));
-                if (buy > 0) BuyGpus(x, buy, HardwareBatch.Hq, target - owned, DecisionAction.BoughtGpus);
+                if (buy > 0) BuyGpus(x, buy, HardwareBatch.Hq, target - owned - ordered, DecisionAction.BoughtGpus);
                 owned = LabQueries.OwnedUnits(lab);
             }
 
@@ -255,7 +257,7 @@ namespace AiLabs.Rules.Systems
             else
             {
                 Holding holding = lab.Holding(stale.HoldingId);
-                int room = WorldQueries.FreeKw(c, lab, holding) + stale.Count * old.KwPerGpu;
+                int room = WorldQueries.FreeKw(c, state, lab, holding) + stale.Count * old.KwPerGpu;
                 count = Math.Min(count, gen.KwPerGpu <= 0 ? count : room / gen.KwPerGpu);
             }
             long net = price - resale;
@@ -305,7 +307,7 @@ namespace AiLabs.Rules.Systems
             PlanConfig plan = x.Plan;
             if (!plan.OwnGpus || plan.SiteAppetitePermille <= 0) return;
             int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
-            int want = target - LabQueries.OwnedUnits(lab);
+            int want = target - LabQueries.OwnedUnits(lab) - LabQueries.ChipsOnOrder(lab);
             if (want <= 0) return;
             if (Math.Min(LabQueries.GpuSlots(c, lab), plan.Gpus) - LabQueries.HqGpus(lab) > 0) return;
 
@@ -314,7 +316,7 @@ namespace AiLabs.Rules.Systems
             int mostFree = 0;
             for (int i = 0; i < lab.Holdings.Count; i++)
             {
-                int free = WorldQueries.FreeKw(c, lab, lab.Holdings[i]);
+                int free = WorldQueries.FreeKw(c, state, lab, lab.Holdings[i]);
                 if (roomiest == null || free > mostFree) { roomiest = lab.Holdings[i]; mostFree = free; }
             }
             if (roomiest != null && mostFree >= gen.KwPerGpu)
@@ -330,7 +332,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Holdings.Count; i++)
             {
                 if (lab.Holdings[i].HallDoneTick >= 0) return;
-                if (WorldQueries.FreeKw(c, lab, lab.Holdings[i]) >= gen.KwPerGpu) return;
+                if (WorldQueries.FreeKw(c, state, lab, lab.Holdings[i]) >= gen.KwPerGpu) return;
             }
 
             HallConfig hall = c.World.Halls;
@@ -539,13 +541,13 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The densest room type that seats the role and is open: later eras seat more people to the tile.</summary>
-        static RoomTypeConfig RoomFor(GameConfig c, string roleId, int tick)
+        static RoomTypeConfig RoomFor(GameConfig c, LabState lab, string roleId, int tick)
         {
             RoomTypeConfig best = null;
             for (int i = 0; i < c.RoomTypes.Count; i++)
             {
                 RoomTypeConfig type = c.RoomTypes[i];
-                if (type.SeatsRole != roleId || !EraSystem.RoomOpen(c, type, tick)) continue;
+                if (type.SeatsRole != roleId || !EraSystem.RoomOpen(c, type, tick) || !LabQueries.RoomUnlocked(lab, type)) continue;
                 if (best == null || type.TilesPerSeat <= best.TilesPerSeat) best = type;
             }
             return best;

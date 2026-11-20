@@ -19,6 +19,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 2) MigrateTo2(c, root);
             if (fromSchema < 3) MigrateTo3(c, root);
             if (fromSchema < 4) MigrateTo4(c, root);
+            if (fromSchema < 5) MigrateTo5(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -161,6 +162,20 @@ namespace AiLabs.Rules.Sim
                 foreach (RivalConfig rival in c.Rivals)
                     if (rival.JoinsYear > year && rival.JoinsYear < RivalConfig.NeverJoins) pending.Add(JsonValue.Of(rival.Id));
             JsonPatch.AddIfMissing(root, "pendingRivals", pending);
+        }
+
+        /// <summary>Schema 5: each lab gets an empty chip programme, the game an empty foundry, and every vendor standing the listing flag.</summary>
+        static void MigrateTo5(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "chipDesigns", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "softwarePermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "chipOrders", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "chipListings", JsonValue.Array());
+            });
+            JsonPatch.AddIfMissing(root, "foundry", JsonValue.Array());
+            JsonPatch.ForEach(root, "vendor.standings", s => JsonPatch.AddIfMissing(s, "listingSeen", JsonValue.Of(false)));
         }
 
         static JsonValue StreamAt(long state)

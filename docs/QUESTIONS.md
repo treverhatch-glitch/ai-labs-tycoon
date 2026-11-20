@@ -173,19 +173,19 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q27. Selling your chips: open listings or bilateral deals? DECIDED: open listings
 
 - Options: (a) a listing (price, monthly cap) that rival plans buy from by rule; (b) negotiated one-off deals.
-- Recommendation and choice: **(a)**; not built yet (phase E). The `ChipSales` ledger line already exists.
+- Recommendation and choice: **(a)**; built (phase D): `SetChipListing` and `BuyListedChips`, paid on the `ChipSales` and `Hardware` ledger lines.
 - Why: rivals must use the same commands with readable reasons; a listing is one rule and logs cleanly; deals can be added on top with the funding/Bubble systems.
 
 ### Q28. How many chip designs at once? DECIDED: one in design at a time
 
 - Options: (a) one in design at a time (any number Ready); (b) unlimited in parallel.
-- Recommendation and choice: **(a)**; not built yet (phase E).
+- Recommendation and choice: **(a)**; built (phase D): `StartChipDesign` refuses while another design is Designing or TapingOut.
 - Why: MGT2's console designer is one project at a time; keeps architects a real constraint.
 
 ### Q29. Inference chips: serving only? DECIDED: serving only
 
 - Options: (a) inference chips only serve; (b) they also train at a penalty.
-- Recommendation and choice: **(a)**; not built yet (phase E).
+- Recommendation and choice: **(a)**; built (phase D): `ChipQueries.BatchTrains` is false for inference chips, so they only add to `ComputeSplit.Inference`.
 - Why: the bible's Gen 1 is the inference chip for "cheaper serving for your Mini"; training chips are "the prize".
 
 ### Q30. New rivals mid-game? DECIDED: data-driven arrivals by year
@@ -347,8 +347,74 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q56. Feelings: exact causes? DECIDED: as the design table, bracket loss counts per bracket
 
 - Options: (a) one penalty per Gauntlet; (b) the table: crown -30 for every non-bankrupt rival and -60 for the runner-up, -10 per bracket the player wins that the rival also entered.
-- Recommendation and choice: **(b)**, drift toward 0 by 5 a month, clamped to -1000..1000. A player who keeps winning ends every rival in a Feud (below -500), so rivals lobby the player's home bloc +15 attention a month (a `Lobbied` log line each time). Chips and shady causes arrive with their phases.
+- Recommendation and choice: **(b)**, drift toward 0 by 5 a month, clamped to -1000..1000. A player who keeps winning ends every rival in a Feud (below -500), so rivals lobby the player's home bloc +15 attention a month (a `Lobbied` log line each time). Chip trades add `feelings.chipOrderPermille` (Q57+); shady causes arrive with their phase.
 - Why: it is what the design table says; it makes dominance cost something. If the 40-year runs show attention smothering a strong player, `feelings.feudAttentionPerMonth` is the knob.
+
+### Q57. Which techs open the chip screen, and how do the spec's years map to eras? DECIDED: ten techs, era-gated
+
+- Options: (a) copy the spec's years and make them the only gate; (b) put the techs in the era that opens nearest to the year and let the era be the floor (Q5).
+- Recommendation and choice: **(b)**. `chip-team` (It Sees, unlocks inference), `hbm-memory`, `training-silicon` (It Writes, unlocks training), three `compiler-stack` steps (+100 software each), `stacked-hbm`, `reticle-dies`, `low-precision`, `optical-interconnect` (+100 cooling and training speed). Foundry nodes still have their own `opensYear`, so a lab with the tech in 2012 cannot order 5 nm before 2022 (`EraLocked`).
+- Why: the content tables stay one place per era, and the node years are what the chip fiction needs.
+
+### Q58. Do the chip rooms need a tech as well as an era? DECIDED: yes, `RoomTypeConfig.requiresTech`
+
+- Options: (a) era only; (b) an optional tech. 
+- Recommendation and choice: **(b)**: `chip-design-lab` and `hw-test-lab` need `chip-team`; `BuildRoom` answers `MissingPrerequisite`. The planner's `RoomFor` skips locked rooms.
+- Why: the era opens in 2012 for everyone, but the room is the lab's own chip team; a lab without it has no reason to own the room.
+
+### Q59. How are derived chip numbers rounded? DECIDED: floor at each step, kilowatts ceil once
+
+- Options: (a) float-free but rounded at the end only; (b) `MulPermille` (floor) in a fixed order: target, die, format, memory, cooling; kilowatts as one `ceil(node.kw x die x format x memory x cooling / 1e12)`, at least 1.
+- Recommendation and choice: **(b)**. Pinned: inference/n28/small/fp16/ddr/air is 99 compute, 1 kW, 1,260 points, a wafer of 3,600; training/n5/medium/fp8/hbm-stacked/liquid is 4,118, 3, 15,444, 64,350.
+- Why: whole numbers must agree between the screen, the order and the tests; one documented order is enough.
+
+### Q60. Respin odds and the yield ramp: which knobs? DECIDED: two new knobs, the rest from the spec
+
+- Options: (a) fixed respin odds by node; (b) the node's odds less `respinPerEngineerPermille` (10) per engineer, capped at `respinEngineerCap` (10).
+- Recommendation and choice: **(b)**. The ramp is `(10 + min(engineers, 10))` a week, doubled by a test lab, up to the design's maximum; a respin costs 40% of the tape-out and 12 weeks. A tape-out comes back Ready with the node's initial yield.
+- Why: the spec asked for engineers to matter in both; two integer knobs in data keep them tunable.
+
+### Q61. How is the foundry room shared? DECIDED: per node and calendar month, labs book in order
+
+- Options: (a) a global queue; (b) `capacityPerMonth x (1000 - foundryVendorSharePermille) / 1000` chips per node per month, an order takes the first month with room from the current one, up to `bookAheadMonths` (24), and delivers `leadWeeks` after that month starts.
+- Recommendation and choice: **(b)**. `GameState.Foundry` holds only booked months; past months are dropped at month start; a lab that goes bankrupt gives its room back. A full book is `FoundryFull`.
+- Why: it makes a rival's order matter to the player without a queue to simulate, and it replays the same for the same seed.
+
+### Q62. Where do chips live, and what can be done with them? DECIDED: only in holdings, never moved or sold like GPUs
+
+- Options: (a) chips behave like any hardware batch; (b) chips are batches with `ChipDesignId >= 0`, delivered to a holding, never to the HQ.
+- Recommendation and choice: **(b)**. `SellGpus` and the oldest-first refresh count GPU batches only, `MoveHardware` refuses chips, `SellLand` is refused while orders are pending (`HoldingNotEmpty`), and pending orders reserve kilowatts (`WorldQueries.FreeKw`).
+- Why: a chip is made for a node and a site at order time; moving it would need export checks twice and a resale rule nobody asked for.
+
+### Q63. How do own chips feed compute? DECIDED: `ComputeSplit` with the software factor, an in-house bonus for the maker
+
+- Options: (a) chips add their paper compute; (b) paper compute times the maker's software permille (300 to 1000); training chips count as general compute, inference chips as serving only; own training chips get +15% when the lab trained them itself.
+- Recommendation and choice: **(b)**. `SoftwarePermille` stores the base (grown by architects, capped at 700) and the compiler techs are added at read time (cap 1000). A lab that buys another lab's chips runs the seller's software level and gets no bonus.
+- Why: it makes designing worth more than buying and keeps the two ways visible as numbers.
+
+### Q64. How does a rival plan run the chip programme? DECIDED: only labs that own GPUs and build sites
+
+- Options: (a) every plan with `chipProgramYear`; (b) `chipProgramYear`, `ownGpus`, `siteAppetitePermille > 0`, `chip-team` and not overstretched.
+- Recommendation and choice: **(b)**. xAy (2020), Goggle (2014) and DeepSneak (2023) run it; OpenAye (2024) and AntHopticsAI (2025) rent and have no halls, so their `buysListedChips` stays inert until a cloud-deal feature exists. The steps are staffing architects, one design at a time on the best open node, tape-out, own orders (half the gap, counted 1:1 as GPU units), buying listings, and listing.
+- Why: chips can only be delivered to holdings (Q62), so a lab without any cannot use them; every step is logged with its reasons.
+
+### Q65. Listings: what can a buyer and a seller do? DECIDED: the buyer pays the seller the order price, the seller pays the foundry
+
+- Options: (a) the buyer pays the foundry directly; (b) `BuyListedChips` pays `PricePerChip x count` to the seller (`ChipSales`, buyer `Hardware`), the seller pays the wafers; it is refused when the seller cannot pay them.
+- Recommendation and choice: **(b)**, capped by `maxPerMonth` and `listingMaxPerMonth`. A rival buys only at or below 90% of Envydia's price per unit of compute (95% when friendly) and delivers to its own holdings. A trade with the player moves the rival's feeling by `feelings.chipOrderPermille`.
+- Why: the seller carries the yield risk, so the price has to cover it.
+
+### Q66. When does Envydia notice? DECIDED: on the first Ready training chip, each delivery, the first listing, and a yearly ambush
+
+- Options: (a) at tape-out start; (b) when the first training tape-out comes back Ready.
+- Recommendation and choice: **(b)** -150 once; -50 per delivery of own chips; -100 at the first listing (`VendorStanding.ListingSeen`, schema 5); the price rises 10% for a lab that runs own training chips; the keynote ambushes a design that became Ready within 8 weeks before it (12 weeks of `ChipAmbushUntilTick`); when one lab runs 30% or more of its general compute on own chips, the vendor courts every other lab (+20, one log line a quarter).
+- Why: it is the spec's list; the ambush window is "just before the keynote".
+
+### Q67. Is chip compute counted in the planner's GPU target? DECIDED: yes, one unit for one unit
+
+- Options: (a) a chip counts as its compute in GPU units; (b) 1:1.
+- Recommendation and choice: **(b)**, with pending orders counted when deciding what to buy but rent covering the physical gap. 
+- Why: an own chip is worth several GPUs, so the lab ends up with less hardware by count and more by compute; the 45-year soak shows no lab failing and own-chip shares of 8% to 15%, below the courting line, so courting is exercised by a test, not yet by the cast.
 
 ## Open
 

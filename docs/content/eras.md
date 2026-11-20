@@ -49,9 +49,9 @@ A model can: Images, speech and board games.
 
 Opens: Convolutional nets and speech; Reinforcement learning and game champions; Research floors and the recruiting office; Image recognition, voice and driving.
 
-- Techs: `conv-nets`, `speech-nets`, `deep-rl`, `game-champions`, `model-zoo`, `adversarial-tests`, `multi-gpu`
+- Techs: `conv-nets`, `speech-nets`, `deep-rl`, `game-champions`, `model-zoo`, `adversarial-tests`, `multi-gpu`, `chip-team`, `hbm-memory`
 - Sectors: `image-recognition`, `voice-assistants`, `autonomous-driving`
-- Rooms: `research-floor`, `recruiting-office`
+- Rooms: `research-floor`, `recruiting-office`, `chip-design-lab`, `hw-test-lab`
 
 ## It Writes (2017)
 
@@ -61,7 +61,7 @@ A model can: Fluent text and code completion.
 
 Opens: The attention architecture; Pretraining at scale and scaling laws; Safety evaluations and the sandbox wing; Code completion and writing tools.
 
-- Techs: `attention-arch`, `pretraining-at-scale`, `scaling-laws`, `code-models`, `safety-evals`, `mixed-precision`, `api-platform`, `emergent-skills`
+- Techs: `attention-arch`, `pretraining-at-scale`, `scaling-laws`, `code-models`, `safety-evals`, `mixed-precision`, `api-platform`, `emergent-skills`, `training-silicon`, `compiler-stack-1`
 - Sectors: `code-completion`, `writing-tools`
 - Rooms: `sandbox-wing`, `cluster-hall`
 
@@ -73,7 +73,7 @@ A model can: Conversation, images and early video.
 
 Opens: Human-feedback tuning and a chat box; Image, voice and video models; Liquid-cooling pods and the product studio; Consumer apps, law, music and film.
 
-- Techs: `rlhf`, `chat-interface`, `multimodal`, `retrieval`, `diffusion`, `early-video`, `quantised-serving`, `liquid-cooling`, `red-teaming`
+- Techs: `rlhf`, `chat-interface`, `multimodal`, `retrieval`, `diffusion`, `early-video`, `quantised-serving`, `liquid-cooling`, `red-teaming`, `compiler-stack-2`, `stacked-hbm`, `reticle-dies`
 - Sectors: `consumer-assistant`, `image-design`, `customer-support`, `legal-research`, `music-audio`, `video-film`
 - Rooms: `product-studio`, `liquid-cooling-pod`
 
@@ -85,7 +85,7 @@ A model can: Multi-step work with tools.
 
 Opens: Tool use and long context; Reasoning models; Agent sandboxes and the containment wing; Coding agents, enterprise seats and government work.
 
-- Techs: `tool-use`, `long-context`, `reasoning-models`, `agent-sandboxes`, `interp-v1`, `coding-agents`, `inference-batching`, `computer-use`
+- Techs: `tool-use`, `long-context`, `reasoning-models`, `agent-sandboxes`, `interp-v1`, `coding-agents`, `inference-batching`, `computer-use`, `compiler-stack-3`, `low-precision`
 - Sectors: `coding-agents`, `enterprise-knowledge`, `companionship`, `government-services`, `cybersecurity`, `finance-trading`, `science-medicine`
 - Rooms: `agent-ops-room`, `containment-wing`
 
@@ -97,7 +97,7 @@ A model can: Teams of agents running for days.
 
 Opens: Multi-agent orchestration; AI-assisted research and synthetic data; The harness control room and the AI factory hall; Selling work instead of software.
 
-- Techs: `multi-agent`, `ai-assisted-research`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`
+- Techs: `multi-agent`, `ai-assisted-research`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
 - Sectors: `agent-workforce`, `agri-logistics`, `devices`, `ai-research-services`
 - Rooms: `synthetic-data-lab`, `harness-control-room`, `ai-factory-hall`
 

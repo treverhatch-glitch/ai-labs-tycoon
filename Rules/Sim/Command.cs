@@ -10,7 +10,8 @@ namespace AiLabs.Rules.Sim
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
         ResearchTech, StartTraining, ReleaseModel,
-        BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware
+        BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
+        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips
     }
 
     /// <summary>
@@ -203,6 +204,61 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Starts designing a chip: its target, then the node, die, number format, memory and cooling.</summary>
+        public static Command StartChipDesign(int labId, string target, string node, string die, string format, string memory, string cooling)
+        {
+            Command c = Make(CommandKind.StartChipDesign, labId);
+            c.Id = target;
+            c.Ids.AddRange(new[] { node, die, format, memory, cooling });
+            return c;
+        }
+
+        public static Command CancelChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.CancelChipDesign, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        /// <summary>Sends a finished design to the foundry.</summary>
+        public static Command TapeOut(int labId, int designId)
+        {
+            Command c = Make(CommandKind.TapeOut, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        /// <summary>Books chips of one of the lab's own working designs at the foundry, to arrive in a holding.</summary>
+        public static Command OrderChips(int labId, int designId, int holdingId, int count)
+        {
+            Command c = Make(CommandKind.OrderChips, labId);
+            c.TargetId = designId;
+            c.X = holdingId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Offers chips of a working design to other labs at a price per chip, up to a number a month. A price of 0 takes the offer down.</summary>
+        public static Command SetChipListing(int labId, int designId, int pricePerChip, int maxPerMonth)
+        {
+            Command c = Make(CommandKind.SetChipListing, labId);
+            c.TargetId = designId;
+            c.Count = pricePerChip;
+            c.X = maxPerMonth;
+            return c;
+        }
+
+        /// <summary>Buys chips another lab has listed; they arrive in the buyer's holding.</summary>
+        public static Command BuyListedChips(int labId, int sellerLabId, int designId, int holdingId, int count)
+        {
+            Command c = Make(CommandKind.BuyListedChips, labId);
+            c.TargetId = sellerLabId;
+            c.Y = designId;
+            c.X = holdingId;
+            c.Count = count;
+            return c;
+        }
+
         /// <summary>Puts a trained model on sale in the named sectors, replacing the lab's older model there.</summary>
         public static Command ReleaseModel(int labId, int modelId, params string[] sectorIds)
         {
@@ -223,7 +279,8 @@ namespace AiLabs.Rules.Sim
         LineLocked, TooManyRuns, WrongModelStatus, SectorClosed, BelowSectorBar,
         EraLocked,
         SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty,
-        AllocationExhausted
+        AllocationExhausted,
+        DesignNotReady, FoundryFull
     }
 
     public struct CommandResult

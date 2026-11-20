@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 4;
+        public const int CurrentSchema = 5;
 
         public int Schema;
         public string ConfigVersion;
@@ -30,6 +30,8 @@ namespace AiLabs.Rules.State
         public VendorState Vendor;
         /// <summary>Rivals that have not joined yet, by config id. They arrive when their year does.</summary>
         public List<string> PendingRivals = new List<string>();
+        /// <summary>The foundry's booked months, from the current month on.</summary>
+        public List<FoundryMonth> Foundry = new List<FoundryMonth>();
 
         public LabState Player { get { return Labs[0]; } }
 
@@ -68,6 +70,7 @@ namespace AiLabs.Rules.State
             s.ObjList("events", ref Events);
             s.Obj("vendor", ref Vendor);
             s.StrList("pendingRivals", ref PendingRivals);
+            s.ObjList("foundry", ref Foundry);
         }
     }
 
@@ -120,6 +123,12 @@ namespace AiLabs.Rules.State
         /// <summary>Why the lab did what it did, newest last, capped at the config's rivalry.logMax.</summary>
         public List<DecisionEntry> Log = new List<DecisionEntry>();
 
+        public List<ChipDesign> ChipDesigns = new List<ChipDesign>();
+        /// <summary>How mature the lab's chip software is, in permille of paper speed: 0 until its first design starts, then it grows.</summary>
+        public int SoftwarePermille;
+        public List<ChipOrder> ChipOrders = new List<ChipOrder>();
+        public List<ChipListing> ChipListings = new List<ChipListing>();
+
         public long ResearchPoints;
         public List<string> Techs = new List<string>();
         public List<ModelState> Models = new List<ModelState>();
@@ -130,6 +139,18 @@ namespace AiLabs.Rules.State
         public HardwareBatch Batch(int id)
         {
             for (int i = 0; i < Fleet.Count; i++) if (Fleet[i].Id == id) return Fleet[i];
+            return null;
+        }
+
+        public ChipDesign Design(int id)
+        {
+            for (int i = 0; i < ChipDesigns.Count; i++) if (ChipDesigns[i].Id == id) return ChipDesigns[i];
+            return null;
+        }
+
+        public ChipListing Listing(int designId)
+        {
+            for (int i = 0; i < ChipListings.Count; i++) if (ChipListings[i].DesignId == designId) return ChipListings[i];
             return null;
         }
 
@@ -186,6 +207,10 @@ namespace AiLabs.Rules.State
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
             s.Int("chipAmbushUntilTick", ref ChipAmbushUntilTick);
             s.ObjList("log", ref Log);
+            s.ObjList("chipDesigns", ref ChipDesigns);
+            s.Int("softwarePermille", ref SoftwarePermille);
+            s.ObjList("chipOrders", ref ChipOrders);
+            s.ObjList("chipListings", ref ChipListings);
             s.Long("researchPoints", ref ResearchPoints);
             s.StrList("techs", ref Techs);
             s.ObjList("models", ref Models);
