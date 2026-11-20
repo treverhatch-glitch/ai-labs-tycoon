@@ -24,8 +24,9 @@ namespace AiLabs.Rules.Systems
             public long ReputationBoost;
             public long SalesBoost;
             public long ChampionBoost;
+            public long ExpansionBoost;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost; } }
         }
 
         public struct IncidentBreakdown
@@ -83,11 +84,15 @@ namespace AiLabs.Rules.Systems
             b.ReputationBoost = afterRep - b.Core;
             long afterSales = MathI.MulPermille(afterRep, MarketSystem.SalesPermille(c, lab));
             b.SalesBoost = afterSales - afterRep;
+            long afterCrown = afterSales;
             if (sectorState.ChampionLabId == lab.Id)
             {
-                long afterCrown = MathI.MulPermille(afterSales, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
+                afterCrown = MathI.MulPermille(afterSales, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
                 b.ChampionBoost = afterCrown - afterSales;
             }
+            int expansion = ExpansionSystem.AppealBonusPermille(c, state, lab, sector.Id);
+            long afterExpansion = ExpansionSystem.ScaleAppeal(afterCrown, expansion);
+            b.ExpansionBoost = afterExpansion - afterCrown;
             return b;
         }
 

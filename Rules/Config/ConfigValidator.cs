@@ -186,6 +186,7 @@ namespace AiLabs.Rules.Config
             ChipsProblems(p, c);
             EndingsProblems(p, c);
             ShadyProblems(p, c);
+            ExpansionsProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
@@ -201,6 +202,24 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Frontier.BaseCost < 1) p.Add("endings.frontier.baseCost must be at least 1");
             if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
             if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
+        }
+
+        static void ExpansionsProblems(List<string> p, GameConfig c)
+        {
+            if (c.Expansions == null) { p.Add("expansions is missing"); return; }
+            Kit(p, c, "expansions.bodies", c.Expansions.Bodies);
+            Kit(p, c, "expansions.upward", c.Expansions.Upward);
+        }
+
+        static void Kit(List<string> p, GameConfig c, string path, ExpansionEraKitConfig kit)
+        {
+            if (kit == null) { p.Add(path + " is missing"); return; }
+            if (string.IsNullOrEmpty(kit.EraId) || c.Era(kit.EraId) == null) p.Add(path + " names an unknown era");
+            if (string.IsNullOrEmpty(kit.RoomTypeId) || c.RoomType(kit.RoomTypeId) == null) p.Add(path + " names an unknown room type");
+            if (kit.SectorIds == null || kit.SectorIds.Count == 0) p.Add(path + " needs at least one sector");
+            else for (int i = 0; i < kit.SectorIds.Count; i++)
+                if (c.Sector(kit.SectorIds[i]) == null) p.Add(path + " names unknown sector " + kit.SectorIds[i]);
+            Permille(p, path + ".appealBonusPermille", kit.AppealBonusPermille);
         }
 
         static void ShadyProblems(List<string> p, GameConfig c)
