@@ -12,9 +12,10 @@ namespace AiLabs.Rules.Systems
         {
             public long FromCapability;
             public long FromAlignment;
+            public long SandbagBoost;
             public long GlitchAdjustment;
 
-            public long Total { get { return FromCapability + FromAlignment + GlitchAdjustment; } }
+            public long Total { get { return FromCapability + FromAlignment + SandbagBoost + GlitchAdjustment; } }
         }
 
         public struct AppealBreakdown
@@ -50,13 +51,17 @@ namespace AiLabs.Rules.Systems
 
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            int align = SafetySystem.EffectiveAlignment(c, model);
+            int trueAlign = SafetySystem.EffectiveAlignment(c, model);
+            int displayed = SafetySystem.DisplayedAlignment(model);
             var b = new QualityBreakdown();
             b.FromCapability = MathI.MulPermille(model.Capability, sector.CapabilityWeightPermille);
-            b.FromAlignment = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, align));
+            long honestAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, trueAlign));
+            long displayAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, displayed));
+            b.FromAlignment = honestAlign;
+            b.SandbagBoost = displayAlign - honestAlign;
             if (LabQueries.IsGlitching(c, model, tick))
             {
-                long before = b.FromCapability + b.FromAlignment;
+                long before = b.FromCapability + displayAlign;
                 long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
                 b.GlitchAdjustment = after - before;
             }

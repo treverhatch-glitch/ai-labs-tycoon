@@ -366,6 +366,10 @@ namespace AiLabs.Rules.Sim
             {
                 model.Status = ModelStatus.Released;
                 model.ReleasedTick = state.Tick;
+                if (cmd.Permille > 0)
+                    model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
+                else if (model.DisplayedAlignment < model.Alignment)
+                    model.DisplayedAlignment = model.Alignment;
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
 

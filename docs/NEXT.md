@@ -70,8 +70,8 @@ and says why in the commit message.
    to a holding, the fleet migration (schema 2).
 7. ~~**The funding ladder.**~~ Done: `FundingConfig`, `RaiseFunding`, founder share and investor board seats,
    schema 8 migration, `RecordOusted` when share hits `controlPermille`; `FundingTests`.
-8. **The alignment gap and incident rungs 1 to 3**, per model, replacing the single incident kind. Sandbagging
-   corrupts displayed readings, so it lands after item 3.
+8. ~~**The alignment gap and incident rungs 1 to 3.**~~ Done: `displayedAlignment`, rungs 1–3 in `SafetySystem`, sandbag on
+   release, `SandbagBoost` in `DisplayQueries`, schema 9; `AlignmentGapTests`.
 9. **Staff as people.** Traits, morale, poaching by rivals. Changes how `StaffPool` is stored, so it needs a save
    migration (the `SaveGame.Migrate` hook is there for it).
 10. ~~**Bot balance at scale.**~~ Done: `BalanceSoak` in `Rules/Sim`, `simcli soak` with three presets, `BalanceTests`

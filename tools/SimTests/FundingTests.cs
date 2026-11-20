@@ -1,4 +1,5 @@
 using AiLabs.Rules.Config;
+using AiLabs.Rules.State;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.Systems;
@@ -76,6 +77,6 @@ public class FundingTests
     Assert.Equal(1000, sim.Player.FounderSharePermille);
     Assert.Empty(sim.Player.FundingRounds);
     Assert.Equal(0, sim.Player.BoardInvestorSeats);
-    Assert.Equal(8, sim.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
   }
 }

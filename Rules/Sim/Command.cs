@@ -263,8 +263,15 @@ namespace AiLabs.Rules.Sim
         /// <summary>Puts a trained model on sale in the named sectors, replacing the lab's older model there.</summary>
         public static Command ReleaseModel(int labId, int modelId, params string[] sectorIds)
         {
+            return ReleaseModel(labId, modelId, 0, sectorIds);
+        }
+
+        /// <summary><paramref name="claimedAlignmentPermille"/> is the safety reading customers are sold (sandbagging when above the true meter).</summary>
+        public static Command ReleaseModel(int labId, int modelId, int claimedAlignmentPermille, params string[] sectorIds)
+        {
             Command c = Make(CommandKind.ReleaseModel, labId);
             c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
             c.Ids.AddRange(sectorIds);
             return c;
         }

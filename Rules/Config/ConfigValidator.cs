@@ -120,6 +120,17 @@ namespace AiLabs.Rules.Config
             Permille(p, "safety.incidentChancePermille", c.Safety.IncidentChancePermille);
             Permille(p, "safety.glitchQualityPermille", c.Safety.GlitchQualityPermille);
             Permille(p, "safety.reputationBaseline", c.Safety.ReputationBaseline);
+            Permille(p, "safety.sandbagGapPermille", c.Safety.SandbagGapPermille);
+            Permille(p, "safety.rung2BelowAlignment", c.Safety.Rung2BelowAlignment);
+            if (c.Safety.IncidentRungs.Count != 3) p.Add("safety.incidentRungs must have exactly three rungs");
+            UniqueIds(p, "safety.incidentRungs", c.Safety.IncidentRungs);
+            for (int i = 0; i < c.Safety.IncidentRungs.Count; i++)
+            {
+                IncidentRungConfig r = c.Safety.IncidentRungs[i];
+                if (r.Rung < 1 || r.Rung > 3) p.Add("incident rung " + r.Id + " must be from 1 to 3");
+                if (r.FinePermille < 0) p.Add("incident rung " + r.Id + " has negative finePermille");
+                if (r.ReputationLoss < 0) p.Add("incident rung " + r.Id + " has negative reputationLoss");
+            }
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");

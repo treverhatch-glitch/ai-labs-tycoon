@@ -37,7 +37,13 @@ namespace AiLabs.Rules.Sim
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";
-                case EventKind.Incident: return "INCIDENT at " + who + ": " + EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick].Replace("{model}", e.Ref) + " Fine: $" + e.Amount + ".";
+                case EventKind.Incident:
+                    {
+                        LabState incidentLab = state.Lab(e.LabId);
+                        ModelState incidentModel = incidentLab == null ? null : incidentLab.Model(e.SubjectId);
+                        string modelName = incidentModel == null ? e.Ref : incidentModel.Name;
+                        return "INCIDENT at " + who + ": " + EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick].Replace("{model}", modelName) + " Fine: $" + e.Amount + ".";
+                    }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";

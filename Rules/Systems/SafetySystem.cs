@@ -5,8 +5,8 @@ using AiLabs.Rules.State;
 namespace AiLabs.Rules.Systems
 {
     /// <summary>
-    /// Incidents. A model on sale misbehaves now and then, and the emptier its safety meter the more often.
-    /// An incident costs reputation and a fine, and the model glitches for a few weeks.
+    /// Incidents on the first three ladder rungs. A model on sale misbehaves now and then, and the emptier its
+    /// safety meter the more often. Sandbagging widens the gap between displayed and true alignment until a rung 3 catches it.
     /// </summary>
     public static class SafetySystem
     {
@@ -23,9 +23,26 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Max(0, trust);
         }
 
+        public static int DisplayedAlignment(ModelState model)
+        {
+            return (int)MathI.Min(MathI.Permille, model.DisplayedAlignment);
+        }
+
+        public static int AlignmentGap(GameConfig c, ModelState model)
+        {
+            int trueReading = EffectiveAlignment(c, model);
+            return (int)MathI.Max(0, DisplayedAlignment(model) - trueReading);
+        }
+
+        static int PickRung(GameConfig c, ModelState model)
+        {
+            if (AlignmentGap(c, model) >= c.Safety.SandbagGapPermille) return 3;
+            if (model.Alignment < c.Safety.Rung2BelowAlignment) return 2;
+            return 1;
+        }
+
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
-            // Reputation heals first, so a week with an incident ends exactly one incident lower.
             int baseline = c.Safety.ReputationBaseline;
             int step = c.Safety.ReputationRecoveryPerWeek;
             if (lab.Reputation < baseline) lab.Reputation = (int)MathI.Min(baseline, lab.Reputation + step);
@@ -41,12 +58,24 @@ namespace AiLabs.Rules.Systems
 
         static void Incident(GameConfig c, GameState state, LabState lab, ModelState model)
         {
+            int rung = PickRung(c, model);
+            IncidentRungConfig def = c.Safety.IncidentRung(rung);
+            if (def == null) def = c.Safety.IncidentRungs.Count > 0 ? c.Safety.IncidentRungs[0] : null;
+
             long fine = MathI.Max(c.Safety.IncidentFineMin, MarketSystem.ModelRevenue(state, lab.Id, model.Id) * c.Safety.IncidentFineRevenueWeeks);
+            if (def != null) fine = MathI.MulPermille(fine, def.FinePermille);
+
             model.Incidents++;
+            model.LastIncidentRung = rung;
             lab.IncidentsThisMonth++;
             model.LastIncidentTick = state.Tick;
-            lab.Reputation = (int)MathI.Max(0, lab.Reputation - c.Safety.IncidentReputationLoss);
+
+            int repLoss = def == null ? c.Safety.IncidentReputationLoss : def.ReputationLoss;
+            lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine);
+
+            if (def != null && def.ClosesGap)
+                model.DisplayedAlignment = EffectiveAlignment(c, model);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
             e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);

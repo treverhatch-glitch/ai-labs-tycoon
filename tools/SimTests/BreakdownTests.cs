@@ -21,6 +21,7 @@ public class BreakdownTests
         var sector = g.C.Sector("game-ai");
         DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick);
         Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick));
+        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment, b.Total);
         Assert.True(b.FromCapability > 0);
     }
 

@@ -819,7 +819,14 @@
     "glitchWeeks": 6,
     "glitchQualityPermille": 700,
     "reputationBaseline": 500,
-    "reputationRecoveryPerWeek": 1
+    "reputationRecoveryPerWeek": 1,
+    "rung2BelowAlignment": 500,
+    "sandbagGapPermille": 80,
+    "incidentRungs": [
+      { "id": "screenshot", "rung": 1, "reputationLoss": 40, "finePermille": 800, "closesGap": false },
+      { "id": "jailbreak", "rung": 2, "reputationLoss": 60, "finePermille": 1000, "closesGap": false },
+      { "id": "sandbag", "rung": 3, "reputationLoss": 80, "finePermille": 1200, "closesGap": true }
+    ]
   },
   "market": {
     "switchRatePermille": 60,

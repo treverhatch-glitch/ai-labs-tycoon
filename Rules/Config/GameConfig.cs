@@ -528,6 +528,17 @@ namespace AiLabs.Rules.Config
         public int GlitchQualityPermille;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
+        public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
+        /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
+        public int Rung2BelowAlignment;
+        /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
+        public int SandbagGapPermille;
+
+        public IncidentRungConfig IncidentRung(int rung)
+        {
+            for (int i = 0; i < IncidentRungs.Count; i++) if (IncidentRungs[i].Rung == rung) return IncidentRungs[i];
+            return null;
+        }
 
         public void Sync(Syncer s)
         {
@@ -542,6 +553,9 @@ namespace AiLabs.Rules.Config
             s.Int("glitchQualityPermille", ref GlitchQualityPermille);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
+            s.ObjList("incidentRungs", ref IncidentRungs);
+            s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
+            s.Int("sandbagGapPermille", ref SandbagGapPermille);
         }
     }
 

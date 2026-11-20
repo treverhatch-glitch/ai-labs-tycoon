@@ -1,4 +1,5 @@
 using System.Linq;
+using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -75,7 +76,9 @@ public class SafetyAndFinanceTests
         Assert.Equal(g.Sim.Tick - 1, model.LastIncidentTick);
         // The week's healing toward normal comes first, then the incident takes its bite.
         int healed = reputationBefore + System.Math.Sign(g.C.Safety.ReputationBaseline - reputationBefore) * g.C.Safety.ReputationRecoveryPerWeek;
-        Assert.Equal(healed - g.C.Safety.IncidentReputationLoss, g.Me.Reputation);
+        IncidentRungConfig rung = g.C.Safety.IncidentRung(model.LastIncidentRung);
+        int repLoss = rung == null ? g.C.Safety.IncidentReputationLoss : rung.ReputationLoss;
+        Assert.Equal(healed - repLoss, g.Me.Reputation);
         Assert.True(incident.Amount >= g.C.Safety.IncidentFineMin);
         Assert.Equal(finesBefore - incident.Amount, g.Me.Ledger.Lifetime.Fines);
         Assert.Equal(ModelMood.Glitching, LabQueries.Mood(g.C, g.Me, model, g.Sim.Tick));

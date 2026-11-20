@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 8;
+        public const int CurrentSchema = 9;
 
         public int Schema;
         public string ConfigVersion;
@@ -311,6 +311,10 @@ namespace AiLabs.Rules.State
 
         /// <summary>The safety meter, 0 to 1000. Zero while training.</summary>
         public int Alignment;
+        /// <summary>What customers and screens are told. Can sit above <see cref="Alignment"/> when the lab sandbags.</summary>
+        public int DisplayedAlignment;
+        /// <summary>The ladder rung of the last incident, 1 to 3 in this slice.</summary>
+        public int LastIncidentRung;
         public long RequiredCompute;
         public long ProgressCompute;
         public long AlignmentCompute;
@@ -338,6 +342,8 @@ namespace AiLabs.Rules.State
             s.Int("capCarryover", ref CapCarryover);
             s.Int("capLuck", ref CapLuck);
             s.Int("alignment", ref Alignment);
+            s.Int("displayedAlignment", ref DisplayedAlignment);
+            s.Int("lastIncidentRung", ref LastIncidentRung);
             s.Long("requiredCompute", ref RequiredCompute);
             s.Long("progressCompute", ref ProgressCompute);
             s.Long("alignmentCompute", ref AlignmentCompute);
