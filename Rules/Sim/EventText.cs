@@ -83,7 +83,9 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1
                         ? who + ": Your first in-house chip works. It runs Minesweeper at 4,000 frames per second."
                         : who + "'s " + e.Ref + " works. Yield " + DecisionText.Percent((int)e.Amount) + "%.";
-                case EventKind.ChipsDelivered: return who + " took delivery of " + e.Amount + " chips at " + c.World.Site(e.Ref).Name + ".";
+                case EventKind.ChipsDelivered:
+                    if (e.Ref == "cloud") return who + " took delivery of " + e.Amount + " chips on a cloud deal.";
+                    { SiteConfig site = c.World.Site(e.Ref); return who + " took delivery of " + e.Amount + " chips at " + (site == null ? e.Ref : site.Name) + "."; }
                 case EventKind.ChipYieldCrash: return "Yield crash. " + who + "'s delivery of " + e.Ref + " came in at " + e.Amount + " working chips. The money is gone.";
                 case EventKind.ChipsBought:
                     { LabState seller = state.Lab((int)e.SubjectId); return who + " bought " + e.Amount + " " + e.Ref + " chips from " + (seller == null ? "another lab" : seller.Name) + "."; }

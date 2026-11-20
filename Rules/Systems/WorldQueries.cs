@@ -171,7 +171,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The bloc a place is in: a holding's site, or the lab's home for the HQ.</summary>
         public static string BlocOfPlace(GameConfig c, LabState lab, int holdingId)
         {
-            if (holdingId == HardwareBatch.Hq) return lab.HomeBlocId;
+            if (holdingId == HardwareBatch.Hq || holdingId == HardwareBatch.Cloud) return lab.HomeBlocId;
             Holding holding = lab.Holding(holdingId);
             return holding == null ? "" : BlocOfHolding(c, holding);
         }

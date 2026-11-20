@@ -1162,7 +1162,7 @@
     "respinPerEngineerPermille": 10, "respinEngineerCap": 10,
     "yieldRampPerWeek": 10, "yieldRampPerEngineer": 1, "yieldRampEngineerCap": 10, "testLabRampPermille": 2000,
     "yieldCrashPermille": 50, "yieldCrashKeepPermille": 300, "foundryVendorSharePermille": 500, "bookAheadMonths": 24,
-    "listingMaxPerMonth": 500, "plannerMinYieldPermille": 600,
+    "listingMaxPerMonth": 500, "cloudRentPermille": 1100, "plannerMinYieldPermille": 600,
     "architectRoleId": "chip-architect", "testLabRoomId": "hw-test-lab",
     "targets": [
       { "id": "inference", "name": "Inference chip", "points": 2000, "computePermille": 1300, "trains": false },
@@ -1214,7 +1214,7 @@
         "trainingSharePermille": 750, "alignmentSharePermille": 50,
         "reserveWeeks": 8, "maxRunWeeks": 40, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 400, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 80, "chipProgramYear": 2024, "buysListedChips": true, "listsChipsMarkupPermille": 0
+        "siteAppetitePermille": 400, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 80, "chipProgramYear": 2024, "buysListedChips": true, "usesCloudDeals": true, "listsChipsMarkupPermille": 0
       }
     },
     {
@@ -1239,7 +1239,7 @@
         "trainingSharePermille": 700, "alignmentSharePermille": 250,
         "reserveWeeks": 12, "maxRunWeeks": 60, "minGainPermille": 50,
         "sectors": [ "expert-systems", "spam-search", "game-bots", "game-ai", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "coding-agents", "enterprise-knowledge", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 300, "siteBlocs": [ "us", "eu" ], "minReleaseAlignment": 550, "publishesSafetyResearch": true, "dramaPermillePerYear": 0, "chipProgramYear": 2025, "buysListedChips": true, "listsChipsMarkupPermille": 0
+        "siteAppetitePermille": 300, "siteBlocs": [ "us", "eu" ], "minReleaseAlignment": 550, "publishesSafetyResearch": true, "dramaPermillePerYear": 0, "chipProgramYear": 2025, "buysListedChips": true, "usesCloudDeals": true, "listsChipsMarkupPermille": 0
       }
     },
     {
@@ -1264,7 +1264,7 @@
         "trainingSharePermille": 800, "alignmentSharePermille": 80,
         "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "cybersecurity", "finance-trading", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 1000, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 40, "chipProgramYear": 2020, "buysListedChips": false, "listsChipsMarkupPermille": 0
+        "siteAppetitePermille": 1000, "siteBlocs": [ "us" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 40, "chipProgramYear": 2020, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
       }
     },
     {
@@ -1286,7 +1286,7 @@
         "trainingSharePermille": 750, "alignmentSharePermille": 150,
         "reserveWeeks": 10, "maxRunWeeks": 80, "minGainPermille": 150,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 800, "siteBlocs": [ "us", "eu", "nordics" ], "minReleaseAlignment": 300, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2014, "buysListedChips": false, "listsChipsMarkupPermille": 250
+        "siteAppetitePermille": 800, "siteBlocs": [ "us", "eu", "nordics" ], "minReleaseAlignment": 300, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2014, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 250
       }
     },
     {
@@ -1307,7 +1307,7 @@
         "trainingSharePermille": 800, "alignmentSharePermille": 60,
         "reserveWeeks": 6, "maxRunWeeks": 30, "minGainPermille": 30,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 700, "siteBlocs": [ "china" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2023, "buysListedChips": true, "listsChipsMarkupPermille": 0
+        "siteAppetitePermille": 700, "siteBlocs": [ "china" ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 2023, "buysListedChips": true, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
       }
     },
     {
@@ -1336,7 +1336,7 @@
         "trainingSharePermille": 700, "alignmentSharePermille": 200,
         "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
         "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-        "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "listsChipsMarkupPermille": 0
+        "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
       }
     }
   ],
@@ -1363,7 +1363,7 @@
     "trainingSharePermille": 700, "alignmentSharePermille": 200,
     "reserveWeeks": 6, "maxRunWeeks": 50, "minGainPermille": 50,
     "sectors": [ "game-ai", "game-bots", "expert-systems", "spam-search", "machine-translation", "web-ads", "doc-reading", "fraud-detection", "image-recognition", "voice-assistants", "autonomous-driving", "code-completion", "writing-tools", "consumer-assistant", "image-design", "customer-support", "legal-research", "music-audio", "video-film", "coding-agents", "enterprise-knowledge", "companionship", "government-services", "cybersecurity", "finance-trading", "science-medicine", "agent-workforce", "agri-logistics", "devices", "ai-research-services", "robotics-industry", "household-robots", "machine-science", "space-compute" ],
-    "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "listsChipsMarkupPermille": 0
+    "siteAppetitePermille": 0, "siteBlocs": [ ], "minReleaseAlignment": 0, "publishesSafetyResearch": false, "dramaPermillePerYear": 0, "chipProgramYear": 0, "buysListedChips": false, "usesCloudDeals": false, "listsChipsMarkupPermille": 0
   },
   "worldEvents": [
     { "id": "first-ipo-spree", "year": 1995, "month": 9, "headline": "A rules-engine startup goes public. The prospectus says 'synergy' 41 times and 'AI' not once.", "sectorId": "", "poolPermille": 1000 },

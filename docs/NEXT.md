@@ -90,7 +90,7 @@ and says why in the commit message.
 
 ## Rules: later
 
-- Cloud deals for labs that only rent (so OpenAye and AntHopticsAI can use chips), the wider cast, endings and the
+- The wider cast, endings and the
   shady path from the systems design (phases E to G). The first PRs landed the world map (schema 3), rival depth (C) and own chips (D). What is left of
   the world map: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
 - The Bubble meter and circular financing; shares in rivals; monopoly and regulators.

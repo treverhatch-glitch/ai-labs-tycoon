@@ -146,6 +146,7 @@ namespace AiLabs.Rules.Sim
             copy.DramaPermillePerYear = plan.DramaPermillePerYear;
             copy.ChipProgramYear = plan.ChipProgramYear;
             copy.BuysListedChips = plan.BuysListedChips;
+            copy.UsesCloudDeals = plan.UsesCloudDeals;
             copy.ListsChipsMarkupPermille = plan.ListsChipsMarkupPermille;
             copy.Staff = new List<PlanStaffConfig>();
             for (int i = 0; i < plan.Staff.Count; i++)

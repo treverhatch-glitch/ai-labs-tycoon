@@ -402,7 +402,7 @@ namespace AiLabs.Rules.Systems
         {
             GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
             long rent = gen.RentPerGpuWeek * lab.RentedGpus;
-            return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab);
+            return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab) + ChipQueries.WeeklyCloudChipRent(c, state, lab);
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>

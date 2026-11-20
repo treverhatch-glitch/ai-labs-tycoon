@@ -261,6 +261,32 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>Whether a design's chips can be put in a place this lab owns, after the export rules and permits.</summary>
+        public static bool CloudDelivery(int holdingId) { return holdingId == HardwareBatch.Cloud; }
+
+        public static string CloudPlaceProblem(GameConfig c, GameState state, LabState lab, int tier, string designerHomeBlocId)
+        {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId)) return "frozen";
+            if (!LabQueries.ExportAllowedFrom(c, state, lab.HomeBlocId, tier, lab.HomeBlocId)) return "export";
+            if (!LabQueries.ExportAllowedFrom(c, state, designerHomeBlocId, tier, lab.HomeBlocId)) return "export";
+            return null;
+        }
+
+        public static long WeeklyCloudChipRent(GameConfig c, GameState state, LabState lab)
+        {
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            if (gen.ComputePerGpuWeek < 1) return 0;
+            long rent = 0;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+            {
+                HardwareBatch batch = lab.Fleet[i];
+                if (batch.HoldingId != HardwareBatch.Cloud || batch.ChipDesignId < 0 || batch.Count <= 0) continue;
+                long compute = BatchCompute(c, state, batch);
+                long units = (compute + gen.ComputePerGpuWeek - 1) / gen.ComputePerGpuWeek;
+                rent += MathI.MulPermille(units * gen.RentPerGpuWeek, c.Chips.CloudRentPermille);
+            }
+            return rent;
+        }
+
         public static string PlaceProblem(GameConfig c, GameState state, LabState lab, int holdingId, int tier, string designerHomeBlocId)
         {
             string blocId = WorldQueries.BlocOfPlace(c, lab, holdingId);

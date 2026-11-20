@@ -742,6 +742,8 @@ namespace AiLabs.Rules.Config
         public int ChipProgramYear;
         /// <summary>The lab buys other labs' listed chips when they are cheaper per compute than the vendor's.</summary>
         public bool BuysListedChips;
+        /// <summary>Rent-only labs buy listed chips into cloud deals instead of physical halls.</summary>
+        public bool UsesCloudDeals;
         /// <summary>When above 0 the lab puts its own chips on sale at this mark-up over what they cost to make, in permille.</summary>
         public int ListsChipsMarkupPermille;
         /// <summary>How eagerly a plan-run lab takes shady jobs. Rival configs must be 0.</summary>
@@ -770,6 +772,7 @@ namespace AiLabs.Rules.Config
             s.Int("dramaPermillePerYear", ref DramaPermillePerYear);
             s.Int("chipProgramYear", ref ChipProgramYear);
             s.Bool("buysListedChips", ref BuysListedChips);
+            s.Bool("usesCloudDeals", ref UsesCloudDeals);
             s.Int("listsChipsMarkupPermille", ref ListsChipsMarkupPermille);
             s.Int("shadyAppetite", ref ShadyAppetite);
         }

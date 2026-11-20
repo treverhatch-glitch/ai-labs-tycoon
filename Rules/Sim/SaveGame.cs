@@ -102,7 +102,7 @@ namespace AiLabs.Rules.Sim
                 }
                 foreach (HardwareBatch batch in lab.Fleet)
                 {
-                    if (batch.HoldingId != HardwareBatch.Hq && lab.Holding(batch.HoldingId) == null) p.Add(who + " has hardware in the holding " + batch.HoldingId + ", which does not exist");
+                    if (batch.HoldingId != HardwareBatch.Hq && batch.HoldingId != HardwareBatch.Cloud && lab.Holding(batch.HoldingId) == null) p.Add(who + " has hardware in the holding " + batch.HoldingId + ", which does not exist");
                     if (!string.IsNullOrEmpty(batch.GpuGenId) && c.Compute.Generation(batch.GpuGenId) == null) p.Add(who + " has hardware of the unknown generation \"" + batch.GpuGenId + "\"");
                 }
                 foreach (ChipDesign design in lab.ChipDesigns)
@@ -116,7 +116,7 @@ namespace AiLabs.Rules.Sim
                 {
                     LabState designer = state.Lab(order.DesignLabId);
                     if (designer == null || designer.Design(order.DesignId) == null) p.Add(who + " has chips on order of a design that does not exist");
-                    if (lab.Holding(order.HoldingId) == null) p.Add(who + " has chips on order for the holding " + order.HoldingId + ", which does not exist");
+                    if (order.HoldingId != HardwareBatch.Cloud && lab.Holding(order.HoldingId) == null) p.Add(who + " has chips on order for the holding " + order.HoldingId + ", which does not exist");
                     if (c.Chips.Node(order.NodeId) == null) p.Add(who + " has chips on order at the unknown process \"" + order.NodeId + "\"");
                 }
                 foreach (ChipListing listing in lab.ChipListings)

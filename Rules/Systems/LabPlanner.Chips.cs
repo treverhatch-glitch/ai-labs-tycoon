@@ -15,15 +15,20 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             PlanConfig plan = x.Plan;
             if (plan.ChipProgramYear <= 0 || GameDate.Year(c.Calendar, x.State.Tick) < plan.ChipProgramYear) return;
+            int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
+            if (plan.UsesCloudDeals && plan.BuysListedChips)
+            {
+                BuyLists(x, target, true);
+                return;
+            }
             if (!plan.OwnGpus || plan.SiteAppetitePermille <= 0) return;
             if (!LabQueries.HasTech(lab, "chip-team") || Overstretched(x)) return;
 
             Architects(x);
             StartDesign(x);
             TapeOutDesign(x);
-            int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
             OrderOwnChips(x, target);
-            if (plan.BuysListedChips) BuyLists(x, target);
+            if (plan.BuysListedChips) BuyLists(x, target, false);
             if (plan.ListsChipsMarkupPermille > 0) ListChips(x);
         }
 
@@ -205,7 +210,7 @@ namespace AiLabs.Rules.Systems
         /// limit), up to the lab's GPU gap. It does not buy from a lab it is feuding with, nor in the weeks after the vendor's
         /// keynote upstaged its own chip.
         /// </summary>
-        static void BuyLists(Ctx x, int target)
+        static void BuyLists(Ctx x, int target, bool allowCloud)
         {
             GameConfig c = x.C;
             GameState state = x.State;
@@ -234,14 +239,21 @@ namespace AiLabs.Rules.Systems
 
                     int gap = target - LabQueries.OwnedUnits(lab) - LabQueries.ChipsOnOrder(lab);
                     Holding holding = RoomiestHolding(x, spec.Tier, seller.HomeBlocId, spec.Kw);
-                    if (gap < 1 || holding == null) continue;
-                    int count = Math.Min(Math.Min(gap, listing.MaxPerMonth - listing.SoldThisMonth), WorldQueries.FreeKw(c, state, lab, holding) / spec.Kw);
+                    int placeId;
+                    if (holding != null) placeId = holding.Id;
+                    else if (allowCloud && x.Lab.Holdings.Count == 0) placeId = HardwareBatch.Cloud;
+                    else continue;
+                    if (gap < 1) continue;
+                    int maxCount = listing.MaxPerMonth - listing.SoldThisMonth;
+                    if (placeId != HardwareBatch.Cloud)
+                        maxCount = Math.Min(maxCount, WorldQueries.FreeKw(c, state, lab, holding) / spec.Kw);
+                    int count = Math.Min(gap, maxCount);
                     long spare = lab.Cash - Reserve(x);
                     if (listing.PricePerChip > 0) count = (int)Math.Min(count, spare / listing.PricePerChip);
                     if (count < 1) continue;
 
                     long ppc = listing.PricePerChip * gen.ComputePerGpuWeek * MathI.Permille / (vendorPrice * effective);
-                    Decide(x, Command.BuyListedChips(lab.Id, seller.Id, d.Id, holding.Id, count), DecisionAction.BoughtChips, d.Name, count,
+                    Decide(x, Command.BuyListedChips(lab.Id, seller.Id, d.Id, placeId, count), DecisionAction.BoughtChips, d.Name, count,
                         Reason.Of(ReasonCode.PricePerComputePermille, ppc), Reason.Of(ReasonCode.GpuTargetGap, gap), Runway(x));
                 }
             }

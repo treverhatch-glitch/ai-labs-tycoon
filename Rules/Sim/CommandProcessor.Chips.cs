@@ -84,14 +84,26 @@ namespace AiLabs.Rules.Sim
             month = -1;
             holding = buyer.Holding(holdingId);
             if (count < 1) return Fail(CommandError.InvalidArgument, "Order at least one chip.");
-            if (holding == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ". Chips are delivered to a data centre.");
-            string problem = ChipQueries.PlaceProblem(c, state, buyer, holdingId, spec.Tier, designer.HomeBlocId);
-            if (problem == "frozen") return FrozenIn(c, buyer, WorldQueries.BlocOfPlace(c, buyer, holdingId));
-            if (problem == "export")
-                return Fail(CommandError.ExportBlocked, "Export rules keep chips made on " + c.Chips.Node(d.NodeId).Name + " out of " + c.World.Bloc(WorldQueries.BlocOfPlace(c, buyer, holdingId)).Name + ".");
-            int freeKw = WorldQueries.FreeKw(c, state, buyer, holding);
-            if ((long)count * spec.Kw > freeKw)
-                return Fail(CommandError.NotEnoughPower, "That needs " + ((long)count * spec.Kw) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
+            if (ChipQueries.CloudDelivery(holdingId))
+            {
+                if (buyer.Holdings.Count > 0)
+                    return Fail(CommandError.InvalidArgument, "Cloud chip deals are for labs that have no data centres.");
+                string cloudProblem = ChipQueries.CloudPlaceProblem(c, state, buyer, spec.Tier, designer.HomeBlocId);
+                if (cloudProblem == "frozen") return FrozenIn(c, buyer, buyer.HomeBlocId);
+                if (cloudProblem == "export")
+                    return Fail(CommandError.ExportBlocked, "Export rules keep chips made on " + c.Chips.Node(d.NodeId).Name + " out of " + c.World.Bloc(buyer.HomeBlocId).Name + ".");
+            }
+            else
+            {
+                if (holding == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ". Chips are delivered to a data centre.");
+                string problem = ChipQueries.PlaceProblem(c, state, buyer, holdingId, spec.Tier, designer.HomeBlocId);
+                if (problem == "frozen") return FrozenIn(c, buyer, WorldQueries.BlocOfPlace(c, buyer, holdingId));
+                if (problem == "export")
+                    return Fail(CommandError.ExportBlocked, "Export rules keep chips made on " + c.Chips.Node(d.NodeId).Name + " out of " + c.World.Bloc(WorldQueries.BlocOfPlace(c, buyer, holdingId)).Name + ".");
+                int freeKw = WorldQueries.FreeKw(c, state, buyer, holding);
+                if ((long)count * spec.Kw > freeKw)
+                    return Fail(CommandError.NotEnoughPower, "That needs " + ((long)count * spec.Kw) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
+            }
             month = ChipQueries.FirstFreeMonth(c, state, c.Chips.Node(d.NodeId), count);
             if (month < 0) return Fail(CommandError.FoundryFull, "The foundry has no room for " + count + " chips in the next " + c.Chips.BookAheadMonths + " months.");
             return CommandResult.Done(-1);
@@ -105,10 +117,10 @@ namespace AiLabs.Rules.Sim
             order.DesignId = d.Id;
             order.DesignLabId = designer.Id;
             order.BuyerLabId = buyer.Id;
-            order.HoldingId = holding.Id;
+            order.HoldingId = holding != null ? holding.Id : HardwareBatch.Cloud;
             order.Count = count;
             order.DeliveryTick = ChipQueries.DeliveryTickOf(c, node, month);
-            order.ReservedKw = count * spec.Kw;
+            order.ReservedKw = order.HoldingId == HardwareBatch.Cloud ? 0 : count * spec.Kw;
             order.FoundryMonth = month;
             order.NodeId = node.IdValue;
             buyer.ChipOrders.Add(order);

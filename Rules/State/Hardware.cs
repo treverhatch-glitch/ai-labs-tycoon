@@ -20,6 +20,8 @@ namespace AiLabs.Rules.State
         public int ArrivedTick;
 
         public const int Hq = -1;
+        /// <summary>Listed chips run in a vendor cloud deal; no site or kilowatts on the lab's map.</summary>
+        public const int Cloud = -2;
 
         public void Sync(Syncer s)
         {

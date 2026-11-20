@@ -97,9 +97,10 @@ namespace AiLabs.Rules.Systems
                 lab.ChipOrders.RemoveAt(i);
                 i--;
 
-                Holding holding = lab.Holding(order.HoldingId);
+                bool cloud = ChipQueries.CloudDelivery(order.HoldingId);
+                Holding holding = cloud ? null : lab.Holding(order.HoldingId);
                 LabState designer = state.Lab(order.DesignLabId);
-                if (holding == null || designer == null || designer.Design(order.DesignId) == null) continue;
+                if ((!cloud && holding == null) || designer == null || designer.Design(order.DesignId) == null) continue;
 
                 int count = order.Count;
                 if (state.Rng.Chips.Chance(c.Chips.YieldCrashPermille))
@@ -109,7 +110,7 @@ namespace AiLabs.Rules.Systems
                 }
                 AddChips(state, lab, order.HoldingId, order.DesignLabId, order.DesignId, count);
                 VendorSystem.Change(c, state, order.DesignLabId, -c.Vendor.DeliveryDrop, true);
-                Events.Add(state, EventKind.ChipsDelivered, lab.Id, order.DesignId, count, holding.SiteId);
+                Events.Add(state, EventKind.ChipsDelivered, lab.Id, order.DesignId, count, cloud ? "cloud" : holding.SiteId);
             }
         }
 

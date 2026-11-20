@@ -392,6 +392,7 @@ namespace AiLabs.Rules.Config
             if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
+            if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
             RoleConfig architect = c.Role(k.ArchitectRoleId);
             if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
