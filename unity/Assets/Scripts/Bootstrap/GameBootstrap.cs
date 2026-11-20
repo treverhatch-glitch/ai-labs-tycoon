@@ -48,6 +48,7 @@ namespace AiLabs.Unity.Bootstrap
             RoomBuildPanel buildPanel = RoomBuildPanel.Create(canvas, _host);
             StaffGpuPanel.Create(canvas, _host);
             TrainingRunPanel.Create(canvas, _host);
+            GauntletShowPanel.Create(canvas, _host);
             _roomBuild = hq.AddComponent<RoomBuildController>();
             _roomBuild.Bind(_host, buildPanel);
         }
