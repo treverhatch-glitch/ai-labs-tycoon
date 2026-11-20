@@ -31,3 +31,8 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: heat/stash only; injected model state; train then corrupt and start op.
 - Choice: **train mini, set corruption, start `liberate-funds`** before the ten-year soak.
 - Why: guarantees shady RNG and op queue are warm without hand-building illegal model fields.
+
+### Q6. Command fuzz and fifty-year endless soak? DECIDED: 12 seeds, BALANCE_SOAK_FULL gate
+
+- Fuzzer: 12 seeds × 160 commands covering every `CommandKind`, ~25% biased toward valid args; refusals must match pre-command digest; spectate keeps fuzzing rival labs.
+- Endless: default **6 years × 2 seeds** every run; **`BALANCE_SOAK_FULL=1`** runs **50 years × 3 seeds** with auto `bailout` / `found-again` on pending player endings, monthly invariants, and final save/load.
