@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
@@ -18,6 +19,11 @@ public static class SimHardeningSupport
         "schema4-save.json",
         "schema5-bankrupt-save.json",
     };
+
+    public static IEnumerable<object[]> FixtureRows()
+    {
+        foreach (string file in SchemaFixtures) yield return new object[] { file };
+    }
 
     public static string FixtureJson(string file)
     {
