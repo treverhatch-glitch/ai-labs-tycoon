@@ -56,8 +56,8 @@ and says why in the commit message.
    start-era picker (`NewGameOptions.StartEraId`, `simcli --era`), validator checks and tests.
 2. ~~**Era content for every era.**~~ Done: 81 techs, 34 sectors, 22 room types, 15 roles (82, 24 and 17 with the world map's Liquid Cooling, Ops Centre, Policy Office, Infrastructure and Policy), 6 lots, 50 world events and
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
-3. **Explain every number.** A breakdown for each displayed value (appeal, quality, revenue, incident odds) whose
-   parts sum to the value, with a test per breakdown. New read-only query classes; no state change.
+3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
+   odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).

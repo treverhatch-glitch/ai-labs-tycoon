@@ -1,0 +1,126 @@
+using System.Collections.Generic;
+using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
+using AiLabs.Rules.State;
+
+namespace AiLabs.Rules.Systems
+{
+    /// <summary>Read-only decompositions of numbers the UI shows. Each part sums to the total.</summary>
+    public static class DisplayQueries
+    {
+        public struct QualityBreakdown
+        {
+            public long FromCapability;
+            public long FromAlignment;
+            public long GlitchAdjustment;
+
+            public long Total { get { return FromCapability + FromAlignment + GlitchAdjustment; } }
+        }
+
+        public struct AppealBreakdown
+        {
+            public long Core;
+            public long ReputationBoost;
+            public long SalesBoost;
+            public long ChampionBoost;
+
+            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost; } }
+        }
+
+        public struct IncidentBreakdown
+        {
+            public int FromConfig;
+            public int FromAlignment;
+            public int FromCorruption;
+
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption; } }
+        }
+
+        public struct RevenueBreakdown
+        {
+            public List<RevenuePart> Parts;
+            public long Total;
+        }
+
+        public struct RevenuePart
+        {
+            public string SectorId;
+            public long Amount;
+        }
+
+        public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
+        {
+            int align = SafetySystem.EffectiveAlignment(c, model);
+            var b = new QualityBreakdown();
+            b.FromCapability = MathI.MulPermille(model.Capability, sector.CapabilityWeightPermille);
+            b.FromAlignment = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, align));
+            if (LabQueries.IsGlitching(c, model, tick))
+            {
+                long before = b.FromCapability + b.FromAlignment;
+                long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
+                b.GlitchAdjustment = after - before;
+            }
+            return b;
+        }
+
+        public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
+        {
+            return QualityParts(c, sector, model, tick).Total;
+        }
+
+        public static AppealBreakdown AppealParts(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)
+        {
+            long quality = Quality(c, sector, model, state.Tick);
+            var b = new AppealBreakdown();
+            b.Core = quality * quality;
+            long afterRep = MathI.MulPermille(b.Core, c.Safety.ReputationBaseline + lab.Reputation);
+            b.ReputationBoost = afterRep - b.Core;
+            long afterSales = MathI.MulPermille(afterRep, MarketSystem.SalesPermille(c, lab));
+            b.SalesBoost = afterSales - afterRep;
+            if (sectorState.ChampionLabId == lab.Id)
+            {
+                long afterCrown = MathI.MulPermille(afterSales, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
+                b.ChampionBoost = afterCrown - afterSales;
+            }
+            return b;
+        }
+
+        public static long Appeal(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)
+        {
+            return AppealParts(c, state, sector, sectorState, lab, model).Total;
+        }
+
+        public static IncidentBreakdown IncidentParts(GameConfig c, ModelState model)
+        {
+            var b = new IncidentBreakdown();
+            b.FromConfig = c.Safety.IncidentChancePermille;
+            long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
+            b.FromAlignment = (int)(baseChance - b.FromConfig);
+            int total = SafetySystem.IncidentChancePermille(c, model);
+            b.FromCorruption = total - (int)baseChance;
+            return b;
+        }
+
+        public static RevenueBreakdown WeeklyRevenueParts(GameState state, LabState lab)
+        {
+            var b = new RevenueBreakdown();
+            b.Parts = new List<RevenuePart>();
+            for (int s = 0; s < state.Sectors.Count; s++)
+            {
+                SectorState sector = state.Sectors[s];
+                long sectorTotal = 0;
+                for (int i = 0; i < sector.Entries.Count; i++)
+                {
+                    SectorEntry entry = sector.Entries[i];
+                    if (entry.LabId == lab.Id) sectorTotal += entry.LastRevenue;
+                }
+                if (sectorTotal != 0)
+                {
+                    b.Parts.Add(new RevenuePart { SectorId = sector.Id, Amount = sectorTotal });
+                    b.Total += sectorTotal;
+                }
+            }
+            return b;
+        }
+    }
+}

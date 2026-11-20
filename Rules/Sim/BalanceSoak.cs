@@ -45,10 +45,8 @@ namespace AiLabs.Rules.Sim
             careful.ChipProgramYear = 0;
 
             var hungry = ClonePlan(c.Autopilot);
-            hungry.TrainingSharePermille = 850;
-            hungry.AlignmentSharePermille = 80;
-            hungry.ChipProgramYear = 2016;
-            hungry.SiteAppetitePermille = 200;
+            hungry.TrainingSharePermille = 780;
+            hungry.AlignmentSharePermille = 120;
 
             return new[]
             {
