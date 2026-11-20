@@ -1,4 +1,5 @@
 using System.Linq;
+using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -19,6 +20,7 @@ public class StaffPeopleTests
         Assert.All(g.Me.Staff, p => Assert.Equal("researcher", p.RoleId));
         Assert.All(g.Me.Staff, p => Assert.Equal(g.C.StaffPeople.MoraleBaseline, p.Morale));
         Assert.All(g.Me.Staff, p => Assert.False(string.IsNullOrEmpty(p.TraitId)));
+        Assert.Equal(2, LabQueries.StaffCount(g.Me, "researcher"));
     }
 
     [Fact]
@@ -34,6 +36,32 @@ public class StaffPeopleTests
         Assert.Single(g.Me.Staff);
         Assert.Equal(800, g.Me.Staff[0].Morale);
         Assert.NotEqual(lowId, g.Me.Staff[0].Id);
+    }
+
+    [Fact]
+    public void Fire_removes_only_the_requested_role()
+    {
+        var g = Game.Solo();
+        g.Build("research-lab", 4, 4);
+        g.Build("engineering-bay", 4, 4);
+        g.Hire("researcher", 2);
+        g.Hire("engineer", 1);
+        g.Do(Command.Fire(g.Id, "researcher", 2));
+        Assert.DoesNotContain(g.Me.Staff, p => p.RoleId == "researcher");
+        Assert.Single(g.Me.Staff, p => p.RoleId == "engineer");
+    }
+
+    [Fact]
+    public void Morale_drifts_toward_baseline_each_week()
+    {
+        var g = Game.Solo();
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        g.Me.Staff[0].Morale = 200;
+        int baseline = g.C.StaffPeople.MoraleBaseline;
+        int drift = g.C.StaffPeople.MoraleDriftPerWeek;
+        g.Weeks(5);
+        Assert.Equal(MathI.Min(baseline, 200 + 5 * drift), g.Me.Staff[0].Morale);
     }
 
     [Fact]
@@ -68,6 +96,79 @@ public class StaffPeopleTests
         g.Until(() => g.State.Events.Any(e => e.Kind == EventKind.StaffPoached), 60, "a poach");
         Assert.True(g.Me.Staff.Count < before);
         Assert.DoesNotContain(g.Me.Staff, p => p.TraitId == "star");
+        GameEvent poach = g.State.Events.Last(e => e.Kind == EventKind.StaffPoached);
+        Assert.Equal(rival.Id, poach.LabId);
+        Assert.Equal(g.Id, poach.SubjectId);
+    }
+
+    [Fact]
+    public void Poaching_never_happens_without_a_feud_feeling()
+    {
+        var g = Game.New(seed: 88);
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        g.Me.Staff[0].TraitId = "star";
+        LabState rival = g.Rival("openaye");
+        rival.FeelingToPlayer = 0;
+        g.C.StaffPeople.PoachChancePermille = 1000;
+        for (int i = 0; i < 40; i++)
+        {
+            RivalSystem.RunMonth(g.C, g.State);
+            g.Weeks(4);
+        }
+        Assert.DoesNotContain(g.State.Events, e => e.Kind == EventKind.StaffPoached);
+        Assert.Single(g.Me.Staff);
+    }
+
+    [Fact]
+    public void Poaching_skips_a_bankrupt_player_even_when_a_rival_is_hostile()
+    {
+        var g = Game.New(seed: 99);
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 1);
+        g.Me.Staff[0].TraitId = "star";
+        LabState rival = g.Rival("openaye");
+        rival.FeelingToPlayer = g.C.Rivalry.Feelings.FeudBelow - 200;
+        g.C.StaffPeople.PoachChancePermille = 1000;
+        int count = g.Me.Staff.Count;
+        g.Me.Bankrupt = true;
+        StaffSystem.TryPoach(g.C, g.State, rival, g.Me);
+        Assert.Equal(count, g.Me.Staff.Count);
+    }
+
+    [Fact]
+    public void Poaching_takes_the_star_with_the_highest_morale_first()
+    {
+        var g = Game.New(seed: 3);
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 3);
+        foreach (StaffMember p in g.Me.Staff) p.TraitId = "star";
+        g.Me.Staff[0].Morale = 400;
+        g.Me.Staff[1].Morale = 900;
+        g.Me.Staff[2].Morale = 600;
+        int topId = g.Me.Staff[1].Id;
+        LabState rival = g.Rival("openaye");
+        rival.FeelingToPlayer = g.C.Rivalry.Feelings.FeudBelow - 50;
+        g.C.StaffPeople.PoachChancePermille = 1000;
+        StaffSystem.TryPoach(g.C, g.State, rival, g.Me);
+        Assert.Equal(2, g.Me.Staff.Count);
+        Assert.DoesNotContain(g.Me.Staff, p => p.Id == topId);
+    }
+
+    [Fact]
+    public void Staff_roster_survives_a_save_round_trip()
+    {
+        var g = Game.Solo();
+        g.Build("research-lab", 4, 4);
+        g.Hire("researcher", 2);
+        g.Me.Staff[0].TraitId = "star";
+        g.Me.Staff[0].Morale = 777;
+        string digest = g.Sim.Digest();
+        SaveSchemaPretend.AssertRoundTrip(g.Sim);
+        Simulation again = Simulation.Load(g.C, g.Sim.Save());
+        Assert.Equal(digest, again.Digest());
+        StaffMember p = again.Player.Staff.Single(s => s.Morale == 777);
+        Assert.Equal("star", p.TraitId);
     }
 
     [Fact]
@@ -80,5 +181,22 @@ public class StaffPeopleTests
         Assert.True(headCount >= researchers);
         Assert.Equal(researchers, sim.Player.Staff.Count(p => p.RoleId == "researcher"));
         Assert.All(sim.Player.Staff, p => Assert.False(string.IsNullOrEmpty(p.TraitId)));
+    }
+
+    [Fact]
+    public void Loading_from_schema_9_expands_pools_without_losing_headcount()
+    {
+        var g = Game.Solo();
+        g.Build("research-lab", 4, 4);
+        g.Build("engineering-bay", 4, 4);
+        g.Hire("researcher", 3);
+        g.Hire("engineer", 1);
+        int people = g.Me.Staff.Count;
+        string at9 = SaveSchemaPretend.At(g.C, 9, g.Sim.Save());
+        Simulation loaded = Simulation.Load(g.C, at9);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
+        Assert.Equal(people, loaded.Player.Staff.Count);
+        Assert.Equal(3, LabQueries.StaffCount(loaded.Player, "researcher"));
+        Assert.Empty(SaveGame.Problems(g.C, loaded.State));
     }
 }
