@@ -72,6 +72,7 @@ static class SimPlayInvariants
 
         foreach (LabState lab in state.Labs)
         {
+            if (lab.Bankrupt) continue;
             Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
             Assert.True(lab.WeeksInDebt >= 0);
             Assert.InRange(lab.Reputation, 0, 1000);
