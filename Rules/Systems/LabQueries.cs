@@ -25,8 +25,9 @@ namespace AiLabs.Rules.Systems
     {
         public static int StaffCount(LabState lab, string roleId)
         {
-            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) return lab.Staff[i].Count;
-            return 0;
+            int n = 0;
+            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) n++;
+            return n;
         }
 
         public static int StaffByFunction(GameConfig c, LabState lab, RoleFunction function)
@@ -35,17 +36,12 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
-                if (role != null && role.Function == function) n += lab.Staff[i].Count;
+                if (role != null && role.Function == function) n++;
             }
             return n;
         }
 
-        public static int TotalStaff(LabState lab)
-        {
-            int n = 0;
-            for (int i = 0; i < lab.Staff.Count; i++) n += lab.Staff[i].Count;
-            return n;
-        }
+        public static int TotalStaff(LabState lab) { return lab.Staff.Count; }
 
         public static int SeatsInRoom(GameConfig c, RoomState room)
         {
@@ -384,7 +380,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
-                if (role != null) total += role.WeeklySalary * lab.Staff[i].Count;
+                if (role != null) total += role.WeeklySalary;
             }
             return total;
         }

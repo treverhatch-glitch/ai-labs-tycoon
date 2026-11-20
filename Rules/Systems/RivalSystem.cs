@@ -26,6 +26,17 @@ namespace AiLabs.Rules.Systems
                 Lobby(c, state, lab);
                 BoardDrama(c, state, lab);
             }
+
+            LabState player = state.Player;
+            if (player != null && !player.Bankrupt)
+            {
+                for (int i = 0; i < state.Labs.Count; i++)
+                {
+                    LabState rival = state.Labs[i];
+                    if (rival.Controller != LabController.Plan || rival.Bankrupt) continue;
+                    StaffSystem.TryPoach(c, state, rival, player);
+                }
+            }
         }
 
         /// <summary>A feeling toward the player moves by this much (a rival only: the player's lab has no feelings about itself).</summary>

@@ -72,8 +72,8 @@ and says why in the commit message.
    schema 8 migration, `RecordOusted` when share hits `controlPermille`; `FundingTests`.
 8. ~~**The alignment gap and incident rungs 1 to 3.**~~ Done: `displayedAlignment`, rungs 1–3 in `SafetySystem`, sandbag on
    release, `SandbagBoost` in `DisplayQueries`, schema 9; `AlignmentGapTests`.
-9. **Staff as people.** Traits, morale, poaching by rivals. Changes how `StaffPool` is stored, so it needs a save
-   migration (the `SaveGame.Migrate` hook is there for it).
+9. ~~**Staff as people.**~~ Done: `StaffMember` rows (trait, morale), `StaffSystem`, feud poaching, schema 10
+   migration from pools; `StaffPeopleTests`.
 10. ~~**Bot balance at scale.**~~ Done: `BalanceSoak` in `Rules/Sim`, `simcli soak` with three presets, `BalanceTests`
     (default 24 games per preset; set `BALANCE_SOAK_FULL=1` for 200 each; optional `BALANCE_SOAK_GAMES_PER_PRESET`).
     Dial-up `trainingCostPermille` raised to 1500 and plan `wealthGrowthPermillePerMillion` cut (Q72); Envydia

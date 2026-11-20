@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 9;
+        public const int CurrentSchema = 10;
 
         public int Schema;
         public string ConfigVersion;
@@ -112,7 +112,7 @@ namespace AiLabs.Rules.State
         public string HomeBlocId;
         public string LotId;
         public List<RoomState> Rooms = new List<RoomState>();
-        public List<StaffPool> Staff = new List<StaffPool>();
+        public List<StaffMember> Staff = new List<StaffMember>();
 
         public int RentedGpus;
         /// <summary>The hardware the lab owns, by place and generation. Rented GPUs are a count: they live in the cloud.</summary>
@@ -275,16 +275,20 @@ namespace AiLabs.Rules.State
         }
     }
 
-    /// <summary>How many people of one role a lab employs. Staff are pools in this slice, not named people.</summary>
-    public sealed class StaffPool : ISync
+    /// <summary>One named person on the payroll.</summary>
+    public sealed class StaffMember : ISync
     {
-        public string RoleId;
-        public int Count;
+        public int Id;
+        public string RoleId = "";
+        public string TraitId = "";
+        public int Morale;
 
         public void Sync(Syncer s)
         {
+            s.Int("id", ref Id);
             s.Str("roleId", ref RoleId);
-            s.Int("count", ref Count);
+            s.Str("traitId", ref TraitId);
+            s.Int("morale", ref Morale);
         }
     }
 

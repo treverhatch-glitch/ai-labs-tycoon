@@ -88,7 +88,11 @@ namespace AiLabs.Rules.Sim
                 if (c.Lot(lab.LotId) == null) p.Add(who + " stands on the unknown lot \"" + lab.LotId + "\"");
                 if (lab.Controller == LabController.Plan && c.Rival(lab.RivalId) == null) p.Add(who + " follows the unknown rival plan \"" + lab.RivalId + "\"");
                 foreach (RoomState room in lab.Rooms) if (c.RoomType(room.TypeId) == null) p.Add(who + " has a room of the unknown type \"" + room.TypeId + "\"");
-                foreach (StaffPool pool in lab.Staff) if (c.Role(pool.RoleId) == null) p.Add(who + " employs the unknown role \"" + pool.RoleId + "\"");
+                foreach (StaffMember person in lab.Staff)
+                {
+                    if (c.Role(person.RoleId) == null) p.Add(who + " employs the unknown role \"" + person.RoleId + "\"");
+                    if (c.StaffPeople.Trait(person.TraitId) == null) p.Add(who + " has staff with unknown trait \"" + person.TraitId + "\"");
+                }
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");
                 foreach (BlocStanding standing in lab.Blocs) if (c.World.Bloc(standing.BlocId) == null) p.Add(who + " has a standing with the unknown bloc \"" + standing.BlocId + "\"");
                 foreach (Holding holding in lab.Holdings)

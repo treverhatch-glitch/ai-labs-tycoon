@@ -44,7 +44,7 @@ public class AlignmentGapTests
     public void Schema_8_models_gain_displayed_alignment()
     {
         Simulation sim = Simulation.Load(TestData.Config(), MigrationTests.Schema2Save());
-        Assert.Equal(9, sim.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
         foreach (LabState lab in sim.State.Labs)
             foreach (ModelState m in lab.Models)
                 Assert.Equal(m.Alignment, m.DisplayedAlignment);

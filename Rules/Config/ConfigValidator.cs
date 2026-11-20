@@ -157,6 +157,7 @@ namespace AiLabs.Rules.Config
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
             FundingProblems(p, c);
+            StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
             if (c.Gauntlet.HistoryYears < 1) p.Add("gauntlet.historyYears must be at least 1");
@@ -536,6 +537,25 @@ namespace AiLabs.Rules.Config
                 if (c.World.Bloc(bloc) == null) p.Add(who + " plans to build in the unknown bloc \"" + bloc + "\"");
             if (who.StartsWith("rival ") && plan.ShadyAppetite != 0)
                 p.Add(who + " must have shadyAppetite 0 (parody labs never run shady jobs)");
+        }
+
+        static void StaffPeopleProblems(List<string> p, GameConfig c)
+        {
+            StaffPeopleConfig s = c.StaffPeople;
+            if (s == null) { p.Add("staffPeople is missing"); return; }
+            Permille(p, "staffPeople.moraleBaseline", s.MoraleBaseline);
+            if (s.MoraleDriftPerWeek < 0) p.Add("staffPeople.moraleDriftPerWeek is negative");
+            Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
+            Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
+            if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
+            UniqueIds(p, "staffPeople.traits", s.Traits);
+            bool hasStar = false;
+            for (int i = 0; i < s.Traits.Count; i++)
+            {
+                if (s.Traits[i].Star) hasStar = true;
+                Permille(p, "trait " + s.Traits[i].Id + " researchPermille", s.Traits[i].ResearchPermille);
+            }
+            if (!hasStar) p.Add("staffPeople.traits needs one star trait");
         }
 
         static void FundingProblems(List<string> p, GameConfig c)

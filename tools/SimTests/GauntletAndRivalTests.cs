@@ -146,8 +146,13 @@ public class GauntletAndRivalTests
             g.Weeks(1);
             foreach (LabState lab in g.State.Labs.Skip(1))
             {
-                foreach (StaffPool pool in lab.Staff)
-                    Assert.True(pool.Count <= LabQueries.Seats(g.C, lab, pool.RoleId), lab.Name + " has more " + pool.RoleId + " than desks");
+                for (int r = 0; r < g.C.Roles.Count; r++)
+                {
+                    string roleId = g.C.Roles[r].Id;
+                    int have = LabQueries.StaffCount(lab, roleId);
+                    if (have > 0)
+                        Assert.True(have <= LabQueries.Seats(g.C, lab, roleId), lab.Name + " has more " + roleId + " than desks");
+                }
                 Assert.True(LabQueries.HqGpus(lab) <= LabQueries.GpuSlots(g.C, lab), lab.Name + " owns more GPUs than it has racks");
                 Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
                 Assert.True(LabQueries.ActiveRuns(lab) <= g.C.Training.MaxConcurrentRuns);

@@ -134,11 +134,16 @@ namespace AiLabs.Rules.Systems
                 Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
             }
 
-            StaffPool biggest = null;
-            for (int i = 0; i < lab.Staff.Count; i++)
-                if (biggest == null || lab.Staff[i].Count > biggest.Count) biggest = lab.Staff[i];
-            if (biggest != null && biggest.Count > 1)
-                Decide(x, Command.Fire(lab.Id, biggest.RoleId, 1), DecisionAction.Tightened, biggest.RoleId, 1, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
+            string biggestRole = "";
+            int biggestCount = 0;
+            GameConfig cfg = x.C;
+            for (int i = 0; i < cfg.Roles.Count; i++)
+            {
+                int n = LabQueries.StaffCount(lab, cfg.Roles[i].Id);
+                if (n > biggestCount) { biggestCount = n; biggestRole = cfg.Roles[i].Id; }
+            }
+            if (biggestCount > 1)
+                Decide(x, Command.Fire(lab.Id, biggestRole, 1), DecisionAction.Tightened, biggestRole, 1, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
         }
 
         static void Staff(Ctx x, int weeks)

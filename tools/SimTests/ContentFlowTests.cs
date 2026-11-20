@@ -69,7 +69,10 @@ public class ContentFlowTests
             run.MaxCash = Math.Max(run.MaxCash, lab.Cash);
             run.MinCash = Math.Min(run.MinCash, lab.Cash);
             foreach (RoomState room in lab.Rooms) run.RoomTypesBuilt.Add(room.TypeId);
-            foreach (StaffPool h in lab.Staff) if (h.Count > 0) run.RolesHired.Add(h.RoleId);
+            foreach (StaffMember h in lab.Staff)
+            {
+                if (!run.RolesHired.Contains(h.RoleId)) run.RolesHired.Add(h.RoleId);
+            }
             foreach (string t in lab.Techs) run.TechsOwnedBySomeone.Add(t);
             foreach (ModelState model in lab.Models) run.MaxCapability = Math.Max(run.MaxCapability, model.Capability);
         }

@@ -143,6 +143,7 @@ namespace AiLabs.Rules.Sim
                 if (!state.Labs[i].Bankrupt)
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
+                    StaffSystem.RunWeek(c, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }

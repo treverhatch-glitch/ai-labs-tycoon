@@ -144,7 +144,7 @@ namespace AiLabs.Rules.Sim
             long cost = role.HireCost * cmd.Count;
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
-            Pool(lab, role.Id).Count += cmd.Count;
+            StaffSystem.Hire(c, state, lab, role, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hiring, cost);
             Events.Add(state, EventKind.Hired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);
@@ -158,20 +158,10 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count > LabQueries.StaffCount(lab, role.Id))
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
-            // Severance is owed even by a lab with no money: letting people go is how a broke lab stops the bleeding.
-            Pool(lab, role.Id).Count -= cmd.Count;
+            StaffSystem.Fire(lab, role.Id, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hiring, role.Severance * cmd.Count);
             Events.Add(state, EventKind.Fired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);
-        }
-
-        static StaffPool Pool(LabState lab, string roleId)
-        {
-            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) return lab.Staff[i];
-            var pool = new StaffPool();
-            pool.RoleId = roleId;
-            lab.Staff.Add(pool);
-            return pool;
         }
 
         static CommandResult SetRentedGpus(GameState state, LabState lab, Command cmd)

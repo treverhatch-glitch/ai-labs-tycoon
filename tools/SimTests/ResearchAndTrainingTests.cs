@@ -131,7 +131,7 @@ public class ResearchAndTrainingTests
         Assert.True(TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0) < before);
 
         // Engineers help up to a cap: a hundred of them are no faster than the cap allows.
-        fast.Me.Staff.Find(s => s.RoleId == "engineer").Count = 100;
+        while (LabQueries.StaffCount(fast.Me, "engineer") < 100) fast.Me.Staff.Add(new StaffMember { Id = fast.State.TakeId(), RoleId = "engineer", TraitId = "steady", Morale = 500 });
         Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.Me));
     }
 

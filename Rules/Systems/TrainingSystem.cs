@@ -20,7 +20,16 @@ namespace AiLabs.Rules.Systems
         public static void RunResearch(GameConfig c, LabState lab, int tick)
         {
             long perResearcher = MathI.MulPermille(c.Research.PointsPerResearcherWeek, EraSystem.AtTick(c, tick).ResearchPermille);
-            long gained = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Research) * perResearcher;
+            long gained = 0;
+            for (int i = 0; i < lab.Staff.Count; i++)
+            {
+                StaffMember person = lab.Staff[i];
+                RoleConfig role = c.Role(person.RoleId);
+                if (role == null || role.Function != RoleFunction.Research) continue;
+                StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
+                int bonus = trait == null ? 0 : trait.ResearchPermille;
+                gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
+            }
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }

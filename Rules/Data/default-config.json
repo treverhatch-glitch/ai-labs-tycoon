@@ -1043,6 +1043,16 @@
     "bankruptcyGraceWeeks": 12,
     "historyMonths": 120
   },
+  "staffPeople": {
+    "moraleBaseline": 500,
+    "moraleDriftPerWeek": 1,
+    "poachChancePermille": 80,
+    "starHirePermille": 120,
+    "traits": [
+      { "id": "steady", "name": "Steady", "researchPermille": 0, "star": false },
+      { "id": "star", "name": "Star", "researchPermille": 150, "star": true }
+    ]
+  },
   "funding": {
     "founderStartPermille": 1000,
     "controlPermille": 450,
@@ -1092,7 +1102,8 @@
       { "id": "Courted", "text": "{lab} sweetened its offer to everyone but {ref}." },
       { "id": "Replaced", "text": "{lab} swapped {amount} old GPUs for the new {ref}." },
       { "id": "TapedOut", "text": "{lab} taped out {ref}." },
-      { "id": "ListedChips", "text": "{lab} put its {ref} chips up for sale." }
+      { "id": "ListedChips", "text": "{lab} put its {ref} chips up for sale." },
+      { "id": "PoachedStaff", "text": "{lab} poached a {ref} from the player's roster." }
     ],
     "reasonTemplates": [
       { "id": "RunwayWeeks", "text": "runway {value} weeks" },

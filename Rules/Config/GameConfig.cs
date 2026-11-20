@@ -46,6 +46,7 @@ namespace AiLabs.Rules.Config
         public MarketConfig Market;
         public FinanceConfig Finance;
         public FundingConfig Funding;
+        public StaffPeopleConfig StaffPeople;
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -76,6 +77,7 @@ namespace AiLabs.Rules.Config
             s.Obj("market", ref Market);
             s.Obj("finance", ref Finance);
             s.Obj("funding", ref Funding);
+            s.Obj("staffPeople", ref StaffPeople);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

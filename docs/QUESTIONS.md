@@ -480,6 +480,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Schema 9 copies displayed from true on migrate; rung 3 closes the gap. Golden digest `463eb18f…`.
 - Why: NEXT item 8 and DESIGN.md ladder fiction; item 8's sandbagging needed item 3's breakdown first (Q77).
 
+### Q80. Staff pools or people? DECIDED: `StaffMember`, traits, morale drift, feud poaching
+
+- Options: (a) keep role counts; (b) one save row per person with trait and morale, hire/fire by individual, stars poached when a rival is in a feud.
+- Recommendation and choice: **(b)**. Schema 10 expands pools on migrate; stars get research permille; fire drops lowest morale. Golden digest `e358c673…`.
+- Why: DESIGN.md "stars matter and get poached"; pool counts alone could not carry trait or morale state.
+
 ## Open
 
 None.

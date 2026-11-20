@@ -24,6 +24,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 7) MigrateTo7(root);
             if (fromSchema < 8) MigrateTo8(c, root);
             if (fromSchema < 9) MigrateTo9(root);
+            if (fromSchema < 10) MigrateTo10(c, root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -238,6 +239,40 @@ namespace AiLabs.Rules.Sim
                 int a = align == null ? 0 : (int)align.Int;
                 JsonPatch.AddIfMissing(model, "displayedAlignment", JsonValue.Of((long)a));
                 JsonPatch.AddIfMissing(model, "lastIncidentRung", JsonValue.Of(0L));
+            });
+        }
+
+        static void MigrateTo10(GameConfig c, JsonValue root)
+        {
+            string trait = c.StaffPeople.Traits.Count > 0 ? c.StaffPeople.Traits[0].Id : "steady";
+            int morale = c.StaffPeople.MoraleBaseline;
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonValue pools = lab.Get("staff");
+                var members = JsonValue.Array();
+                int nextId = 1;
+                if (pools != null && pools.Kind == JsonKind.Array)
+                {
+                    for (int i = 0; i < pools.Items.Count; i++)
+                    {
+                        JsonValue pool = pools.Items[i];
+                        JsonValue roleNode = pool.Get("roleId");
+                        JsonValue countNode = pool.Get("count");
+                        if (roleNode == null || countNode == null) continue;
+                        string roleId = roleNode.Str;
+                        int count = (int)countNode.Int;
+                        for (int k = 0; k < count; k++)
+                        {
+                            JsonValue m = JsonValue.Object();
+                            m.Set("id", JsonValue.Of((long)nextId++));
+                            m.Set("roleId", JsonValue.Of(roleId));
+                            m.Set("traitId", JsonValue.Of(trait));
+                            m.Set("morale", JsonValue.Of((long)morale));
+                            members.Add(m);
+                        }
+                    }
+                }
+                lab.Set("staff", members);
             });
         }
 
