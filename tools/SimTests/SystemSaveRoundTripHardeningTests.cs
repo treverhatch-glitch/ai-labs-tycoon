@@ -176,15 +176,13 @@ public class SystemSaveRoundTripHardeningTests
     [Fact]
     public void Endings_and_spectate_mid_state_round_trips()
     {
-        Game g = Game.Solo(66_909);
-        g.Me.GrantPerWeek = 0;
-        g.Me.Cash = -50_000;
-        g.Me.WeeksInDebt = g.C.Finance.BankruptcyGraceWeeks - 1;
-        g.Weeks(1);
-        int idx = g.State.Endings.FindIndex(e => e.EndingId == "bankrupt");
-        g.Do(Command.ContinueAfterEnding(g.Me.Id, idx, "spectate"));
+        Game g = Game.New(66_909);
+        g.Me.Ledger.ThisMonth.Revenue = 5_000_000;
+        g.Me.Cash = 80_000;
+        g.Do(Command.SellLab(g.Id, "spectate"));
         Assert.Equal(-1, g.State.PlayerLabId);
         Assert.Empty(SaveGame.Problems(g.C, g.State));
+        g.Weeks(8);
         SimHardeningSupport.AssertSaveLoadContinueIdenticallySpectating(g, 12);
     }
 

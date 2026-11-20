@@ -19,3 +19,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: share seed with 1995 run; independent seed.
 - Choice: **independent** (`9009`) with `StartEraId = punchline`.
 - Why: era bootstrap and starting techs differ; a second seed proves determinism per start kit.
+
+### Q4. Spectate save round-trip stepping? DECIDED: sell-lab spectate, Weeks not player Autopilot
+
+- Options: sell-lab spectate; bankrupt spectate; skip stepping after spectate.
+- Choice: **sell-lab spectate** then `Weeks()` on loaded sim (no `RunPlan` on player id); bankrupt spectate remains covered in `EndingsTests`.
+- Why: after review fixes at `c448c0f`, long steps while spectating no longer throw in `GauntletSystem.RunYear`.
+
+### Q5. Heavy shady soak setup? DECIDED: trained model plus active liberate-funds op
+
+- Options: heat/stash only; injected model state; train then corrupt and start op.
+- Choice: **train mini, set corruption, start `liberate-funds`** before the ten-year soak.
+- Why: guarantees shady RNG and op queue are warm without hand-building illegal model fields.
