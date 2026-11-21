@@ -5951,6 +5951,15 @@
     "spareUpkeep": 5,
     "expeditePermille": 150
   },
+  "covenants": {
+    "enabled": 1,
+    "minCoverPermille": 1500,
+    "cureWeeks": 8,
+    "surchargePermille": 5,
+    "waiverFeePermille": 15,
+    "waiverWeeks": 26,
+    "maxWaivers": 3
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

@@ -359,6 +359,14 @@ namespace AiLabs.Rules.Sim
                     return who + " set its GPU warranty to tier " + e.Amount + ".";
                 case EventKind.SparesStocked:
                     return who + " bought " + e.Amount + " spare GPUs.";
+                case EventKind.CovenantBreached:
+                    return who + " is in breach of its loan covenant: its chips cover " + e.Amount + " per mille of the debt.";
+                case EventKind.CovenantCured:
+                    return who + " is back within its loan covenant" + (e.Pick == 1 ? " after paying the loans down." : ".");
+                case EventKind.CovenantWaived:
+                    return who + " paid " + e.Amount + " to have its loan covenant waived.";
+                case EventKind.LoansCalled:
+                    return "The lender called " + who + "'s loans, " + e.Amount + " owed" + (e.Pick == 1 ? ", paid from cash." : ", taken from its chips.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

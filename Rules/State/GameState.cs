@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 87;
+        public const int CurrentSchema = 88;
 
         public int Schema;
         public string ConfigVersion;
@@ -329,6 +329,11 @@ namespace AiLabs.Rules.State
         public int RmaUnits;
         public int RmaDue;
         public int GpuFailures;
+        /// <summary>The weeks in breach of a loan covenant, the week a waiver lasts to, the waivers used and the times the lender has called the loans.</summary>
+        public int CovBreach;
+        public int CovWaiverUntil;
+        public int CovWaivers;
+        public int CovCalls;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -630,6 +635,10 @@ namespace AiLabs.Rules.State
             s.Int("rmaUnits", ref RmaUnits);
             s.Int("rmaDue", ref RmaDue);
             s.Int("gpuFailures", ref GpuFailures);
+            s.Int("covBreach", ref CovBreach);
+            s.Int("covWaiverUntil", ref CovWaiverUntil);
+            s.Int("covWaivers", ref CovWaivers);
+            s.Int("covCalls", ref CovCalls);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

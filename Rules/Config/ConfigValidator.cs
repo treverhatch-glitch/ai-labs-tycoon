@@ -122,6 +122,7 @@ namespace AiLabs.Rules.Config
             TaxProblems(p, c);
             StandardsProblems(p, c);
             ReliabilityProblems(p, c);
+            CovenantsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1361,6 +1362,19 @@ namespace AiLabs.Rules.Config
             if (k.SwitchFee < 0 || k.SpareUpkeep < 0) p.Add("reliability.switchFee and spareUpkeep must not be negative");
             if (k.MaxSpares < 0 || k.MaxSpares > 10000) p.Add("reliability.maxSpares must be from 0 to 10000");
             if (k.ExpeditePermille < 0 || k.ExpeditePermille > MathI.Permille) p.Add("reliability.expeditePermille must be from 0 to 1000");
+        }
+
+        static void CovenantsProblems(List<string> p, GameConfig c)
+        {
+            CovenantsConfig k = c.Covenants;
+            if (k == null) { p.Add("covenants is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("covenants.enabled must be 0 or 1");
+            if (k.MinCoverPermille < MathI.Permille || k.MinCoverPermille > 10000) p.Add("covenants.minCoverPermille must be from 1000 to 10000");
+            if (k.CureWeeks < 1 || k.CureWeeks > 520) p.Add("covenants.cureWeeks must be from 1 to 520");
+            if (k.SurchargePermille < 0 || k.SurchargePermille > 100) p.Add("covenants.surchargePermille must be from 0 to 100");
+            if (k.WaiverFeePermille < 0 || k.WaiverFeePermille > MathI.Permille) p.Add("covenants.waiverFeePermille must be from 0 to 1000");
+            if (k.WaiverWeeks < 1 || k.WaiverWeeks > 520) p.Add("covenants.waiverWeeks must be from 1 to 520");
+            if (k.MaxWaivers < 0 || k.MaxWaivers > 100) p.Add("covenants.maxWaivers must be from 0 to 100");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

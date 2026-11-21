@@ -1955,6 +1955,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A failed unit is lost unless covered. A spare (bought at the current generation's price, upkeep 5 a week, at most 40) takes its place at once with a current-generation unit. A warranty (tier 1 for 10 a unit a week, tier 2 for 30; raising it costs 15,000) sends it back and a current-generation unit arrives 8 weeks later (2 at tier 2); the waiting units can be rushed for 15% of their price. Only the player's lab.
 - Alternatives: failures as a random incident (rejected: it would need dice and give no choice), a repair crew of engineers (rejected: it would tie into the staff away list).
 
+### Q382. Does the lender mind if the chips stop covering the debt? DECIDED: yes, a loan covenant with a cure or a waiver, or the loans are called
+- New `covenants` data, commands `WaiveCovenant` and `CureCovenant`, `Covenants` system, events `CovenantBreached`, `CovenantCured`, `CovenantWaived` and `LoansCalled` and four saved lab fields (schema 88). While the player's lab owes on loans against chips the lender compares what the chips would fetch to what is owed. Below 1,500 per mille is a breach: the lender adds 0.5% of what is owed to the first loan each week, and after 8 weeks in breach it calls the loans.
+- A called loan is paid from cash if the lab has enough, otherwise the lender takes the chips as in a default (Q-loans). The lab can pay the loans down just enough to restore the cover (`CureCovenant`), or pay a waiver fee of 1.5% of what is owed to be left alone for 26 weeks (`WaiverCovenant`; three times in all). A breach that ends by itself (more chips, a smaller debt) is logged as cured. Only the player's lab.
+- Alternatives: a covenant on cash or revenue (rejected: there is no steady figure to test), a covenant for each loan (rejected: more state than decisions).
+
 ## Open
 
 None.

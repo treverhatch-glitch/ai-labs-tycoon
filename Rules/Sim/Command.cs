@@ -115,7 +115,9 @@ namespace AiLabs.Rules.Sim
         DropStandards,
         SetWarranty,
         StockSpares,
-        ExpediteReplacements
+        ExpediteReplacements,
+        WaiveCovenant,
+        CureCovenant
     }
 
     /// <summary>
@@ -1025,6 +1027,18 @@ namespace AiLabs.Rules.Sim
         public static Command ExpediteReplacements(int labId)
         {
             return Make(CommandKind.ExpediteReplacements, labId);
+        }
+
+        /// <summary>Pays the lender a fee, a share of what is owed, to look away from a breach of the loan covenant for a spell. Only a few times in all.</summary>
+        public static Command WaiveCovenant(int labId)
+        {
+            return Make(CommandKind.WaiveCovenant, labId);
+        }
+
+        /// <summary>Pays the loans down, oldest first, until the chips cover what is left as the covenant needs.</summary>
+        public static Command CureCovenant(int labId)
+        {
+            return Make(CommandKind.CureCovenant, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

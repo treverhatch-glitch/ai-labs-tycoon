@@ -100,6 +100,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 85) MigrateTo85(root);
             if (fromSchema < 86) MigrateTo86(root);
             if (fromSchema < 87) MigrateTo87(root);
+            if (fromSchema < 88) MigrateTo88(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -463,6 +464,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 88: no lab is in breach of a covenant or has used a waiver.</summary>
+        static void MigrateTo88(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "covBreach", "covWaiverUntil", "covWaivers", "covCalls" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

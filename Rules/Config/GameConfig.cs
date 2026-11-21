@@ -117,6 +117,7 @@ namespace AiLabs.Rules.Config
         public TaxConfig Tax = new TaxConfig();
         public StandardsConfig Standards = new StandardsConfig();
         public ReliabilityConfig Reliability = new ReliabilityConfig();
+        public CovenantsConfig Covenants = new CovenantsConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -232,6 +233,7 @@ namespace AiLabs.Rules.Config
             s.Obj("tax", ref Tax);
             s.Obj("standards", ref Standards);
             s.Obj("reliability", ref Reliability);
+            s.Obj("covenants", ref Covenants);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

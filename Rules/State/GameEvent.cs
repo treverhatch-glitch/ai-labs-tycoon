@@ -340,7 +340,15 @@ namespace AiLabs.Rules.State
         /// <summary>The warranty tier changed. Amount is the new tier.</summary>
         WarrantyChanged,
         /// <summary>Spares were bought. Amount is how many, SubjectId the spares held now.</summary>
-        SparesStocked
+        SparesStocked,
+        /// <summary>The player's chips no longer cover its loans as the covenant needs. Amount is the cover in permille.</summary>
+        CovenantBreached,
+        /// <summary>The breach ended. Amount is the cover, Pick 0 when it came right by itself, 1 when the lab paid down.</summary>
+        CovenantCured,
+        /// <summary>The lender looked away for a fee. Amount is the fee.</summary>
+        CovenantWaived,
+        /// <summary>The lender called the loans after the cure weeks. Amount is what was owed, Pick 1 when the lab paid it from cash.</summary>
+        LoansCalled
     }
 
     /// <summary>

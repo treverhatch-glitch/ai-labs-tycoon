@@ -201,6 +201,9 @@ namespace AiLabs.Rules.Sim
                 if (lab.WarrantyTier < 0 || lab.WarrantyTier > 2 || lab.Spares < 0 || lab.Spares > c.Reliability.MaxSpares || lab.FailCarry < 0 || lab.FailCarry >= 1000000 || lab.RmaUnits < 0 || (lab.RmaUnits == 0) != (lab.RmaDue == 0) || lab.RmaDue < 0 || lab.GpuFailures < 0
                     || ((lab.WarrantyTier != 0 || lab.Spares != 0 || lab.FailCarry != 0 || lab.RmaUnits != 0 || lab.GpuFailures != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " keeps a warranty or spares (tier " + lab.WarrantyTier + ", spares " + lab.Spares + ", waiting " + lab.RmaUnits + ") that the data does not allow");
+                if (lab.CovBreach < 0 || lab.CovWaiverUntil < 0 || lab.CovWaivers < 0 || lab.CovWaivers > c.Covenants.MaxWaivers || lab.CovCalls < 0 || (lab.CovBreach > 0 && lab.Loans.Count == 0)
+                    || ((lab.CovBreach != 0 || lab.CovWaiverUntil != 0 || lab.CovWaivers != 0 || lab.CovCalls != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " is in breach of a loan covenant or has a waiver (breach " + lab.CovBreach + ", waivers " + lab.CovWaivers + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
