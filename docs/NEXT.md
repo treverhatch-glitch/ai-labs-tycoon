@@ -280,6 +280,7 @@ and says why in the commit message.
 97. **News and chat for scrapped runs, layoffs, debt, promotions and targets.** ~~Done~~: ten headlines and ten chat lines (79 and 132 in all), `ScrapLayoffDebtPromotionTargetNewsChatTests` (Q339).
 98. **Scrapping, layoffs, debt, promotions and targets together (tests).** ~~Done~~: `ScrapLayoffDebtPromotionTargetTogetherTests` (Q340).
 99. **Endowed chairs (research, prestige, cash).** ~~Done~~: `chairs` data, `EndowChair`, `Chairs`, schema 64, `ChairsTests`, `docs/content/endowed-chairs.md` (Q341).
+100. **The whistleblower (alignment claims, safety staff).** ~~Done~~: `whistle` data, `AnswerWhistle`, `Whistle`, schema 65, `WhistleTests`, `docs/content/whistleblower.md` (Q342).
 
 ## Rules: later
 

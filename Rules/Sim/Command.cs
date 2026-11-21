@@ -65,7 +65,8 @@ namespace AiLabs.Rules.Sim
         PayDownDebt,
         PromoteStaff,
         SetRevenueTarget,
-        EndowChair
+        EndowChair,
+        AnswerWhistle
     }
 
     /// <summary>
@@ -463,6 +464,14 @@ namespace AiLabs.Rules.Sim
         public static Command EndowChair(int labId)
         {
             return Make(CommandKind.EndowChair, labId);
+        }
+
+        /// <summary>Answers a safety person's concern about a model's shown alignment: 0 comes clean (the shown number drops to the real one), 1 pays for silence (the gap stays and the next silence costs more).</summary>
+        public static Command AnswerWhistle(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerWhistle, labId);
+            c.Count = choice;
+            return c;
         }
 
         /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>

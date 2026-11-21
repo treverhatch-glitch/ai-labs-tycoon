@@ -1732,6 +1732,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every lab now saves `chairs`. Taking the field and the schema number back out reproduces the previous digest (5779f67f), so no behaviour moved; the new digest is 0691ee37.
 - Alternatives: a chair that wears off (rejected: a timed modifier); a pay-per-paper retainer (rejected: that is the grant system); a chair that needs a named researcher (rejected: a person link needs more state than a count).
 
+### Q342. What happens to a lab that launches with a better alignment than the model has? DECIDED: a safety person raises it, and the player answers or it leaks
+- New `whistle` data, four lab fields (schema 65), command `AnswerWhistle`, `Whistle` system and events `WhistleRaised`, `WhistleAnswered` and `WhistleLeaked`. The launch claim lets a lab ship a model it would not otherwise be allowed to (a release gate, an era bar), and until now the cost was only the incident odds. This is the people cost: the safety staff know. After 6 weeks of a gap of 150 points or more together with a safety person under morale 450, one of them speaks up, and the player has 4 weeks.
+- Three answers. Come clean (the shown number drops to the real one, 25 reputation, safety morale up), pay for silence (250000 times the silences so far plus one, morale down, the gap stays, it comes back) or wait (a leak: 60 reputation plus 30 for each silence bought, trust in the model's sectors, a resignation, a morale hit). Each silence makes the next dearer and the leak worse, so paying is a way to borrow, not to escape.
+- No random numbers. The count is a count of weeks (a good week takes one off), the deadline is a week, and the person who resigns is the unhappiest, the same one a layoff would take. A lab that launches honestly or looks after its safety staff never sees any of it. The player lab only.
+- Golden: the digest moves only because every lab now saves four more numbers. Taking them and the schema number back out reproduces the previous digest (0691ee37), so no behaviour moved; the new digest is 3f832830.
+- Alternatives: a random leak chance each week (rejected: unreadable, and a replay-sensitive draw), a bounty to the whistleblower (rejected: more state for a minor variant), safety staff who quit at once (rejected: no decision).
+
 ## Open
 
 None.

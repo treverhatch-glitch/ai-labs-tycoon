@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 64;
+        public const int CurrentSchema = 65;
 
         public int Schema;
         public string ConfigVersion;
@@ -200,6 +200,14 @@ namespace AiLabs.Rules.State
         public int TechDebt;
         /// <summary>University chairs the lab has endowed. Only the player's lab endows them.</summary>
         public int Chairs;
+        /// <summary>Weeks a model has shown more alignment than it has while the safety staff were unhappy, towards a whistleblower raising it.</summary>
+        public int WhistleWeeks;
+        /// <summary>The model a raised concern is about, valid while <see cref="WhistleDue"/> is above zero.</summary>
+        public int WhistleModel;
+        /// <summary>The week an unanswered concern leaks, 0 when none is open.</summary>
+        public int WhistleDue;
+        /// <summary>Silences bought and not yet leaked. Each makes the next dearer and the leak worse.</summary>
+        public int Silenced;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -416,6 +424,10 @@ namespace AiLabs.Rules.State
             s.Int("consultantLevel", ref ConsultantLevel);
             s.Int("techDebt", ref TechDebt);
             s.Int("chairs", ref Chairs);
+            s.Int("whistleWeeks", ref WhistleWeeks);
+            s.Int("whistleModel", ref WhistleModel);
+            s.Int("whistleDue", ref WhistleDue);
+            s.Int("silenced", ref Silenced);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

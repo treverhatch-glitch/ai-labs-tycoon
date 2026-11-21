@@ -97,6 +97,7 @@ namespace AiLabs.Rules.Config
             SeniorityProblems(p, c);
             RevenueTargetsProblems(p, c);
             ChairsProblems(p, c);
+            WhistleProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -965,6 +966,25 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void WhistleProblems(List<string> p, GameConfig c)
+        {
+            WhistleConfig k = c.Whistle;
+            if (k == null) { p.Add("whistle is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("whistle.enabled must be 0 or 1");
+            if (c.Role(k.RoleId) == null) p.Add("whistle.roleId must be a role of the game");
+            if (k.GapPermille < 1 || k.GapPermille > 1000) p.Add("whistle.gapPermille must be from 1 to 1000");
+            if (k.MoraleBelow < 0 || k.MoraleBelow > 1000) p.Add("whistle.moraleBelow must be from 0 to 1000");
+            if (k.WeeksToConcern < 1 || k.WeeksToConcern > 52) p.Add("whistle.weeksToConcern must be from 1 to 52");
+            if (k.AnswerWeeks < 1 || k.AnswerWeeks > 26) p.Add("whistle.answerWeeks must be from 1 to 26");
+            if (k.CleanReputation < 0 || k.CleanReputation > 500) p.Add("whistle.cleanReputation must be from 0 to 500");
+            if (k.CleanMorale < 0 || k.CleanMorale > 500) p.Add("whistle.cleanMorale must be from 0 to 500");
+            if (k.SilenceFee < 1) p.Add("whistle.silenceFee must be at least 1, so silence is never free");
+            if (k.SilenceMorale < 0 || k.SilenceMorale > 500) p.Add("whistle.silenceMorale must be from 0 to 500");
+            if (k.LeakReputation < k.CleanReputation || k.LeakReputation > 500) p.Add("whistle.leakReputation must be from cleanReputation to 500, so waiting is never cheaper than coming clean");
+            if (k.LeakPerSilence < 0 || k.LeakPerSilence > 200) p.Add("whistle.leakPerSilence must be from 0 to 200");
+            if (k.LeakMorale < 0 || k.LeakMorale > 500) p.Add("whistle.leakMorale must be from 0 to 500");
         }
 
         static void ChairsProblems(List<string> p, GameConfig c)

@@ -5622,6 +5622,21 @@
     "prestigeFloor": 120,
     "minResearchers": 3
   },
+  "whistle": {
+    "enabled": 1,
+    "roleId": "safety",
+    "gapPermille": 150,
+    "moraleBelow": 450,
+    "weeksToConcern": 6,
+    "answerWeeks": 4,
+    "cleanReputation": 25,
+    "cleanMorale": 120,
+    "silenceFee": 250000,
+    "silenceMorale": 80,
+    "leakReputation": 60,
+    "leakPerSilence": 30,
+    "leakMorale": 150
+  },
   "revenueTargets": {
     "maxLevel": 3,
     "weeks": 13,

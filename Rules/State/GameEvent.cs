@@ -202,7 +202,13 @@ namespace AiLabs.Rules.State
         /// <summary>A revenue target was judged. SubjectId is the level, Amount the revenue made, Pick 1 when it was met.</summary>
         TargetSettled,
         /// <summary>The lab endowed a university chair. SubjectId is the chairs it now holds, Amount the cost.</summary>
-        ChairEndowed
+        ChairEndowed,
+        /// <summary>A safety person raised a concern that a model shows more alignment than it has. SubjectId is the model, Amount the gap in permille.</summary>
+        WhistleRaised,
+        /// <summary>The concern was answered. SubjectId is the model, Amount what it cost, Pick 0 when the lab came clean and 1 when it paid for silence.</summary>
+        WhistleAnswered,
+        /// <summary>The concern leaked. SubjectId is the model, Amount the reputation lost, Pick 1 when a person resigned over it.</summary>
+        WhistleLeaked
     }
 
     /// <summary>

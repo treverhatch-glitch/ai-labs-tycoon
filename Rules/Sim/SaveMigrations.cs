@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 62) MigrateTo62(root);
             if (fromSchema < 63) MigrateTo63(root);
             if (fromSchema < 64) MigrateTo64(root);
+            if (fromSchema < 65) MigrateTo65(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -440,6 +441,15 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 65: no lab has a whistleblower's concern open or a silence bought.</summary>
+        static void MigrateTo65(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "whistleWeeks", "whistleModel", "whistleDue", "silenced" }) JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
