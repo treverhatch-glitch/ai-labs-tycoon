@@ -136,6 +136,7 @@ namespace AiLabs.Rules.Config
             ReplicationProblems(p, c);
             TechBetsProblems(p, c);
             WaitlistProblems(p, c);
+            BrandProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1538,6 +1539,16 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("waitlist.enabled must be 0 or 1");
             if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks) p.Add("waitlist.minWeeks must be at least 1 and maxWeeks at least minWeeks");
             if (k.HypeStep < 0 || k.HypeStep > 1000 || k.WinPerThousand < 0 || k.WinPerThousand > 1000 || k.LossPerThousand < 0 || k.LossPerThousand > 1000 || k.ClosePerThousand < 0 || k.ClosePerThousand > 1000) p.Add("waitlist.hypeStep and the per-thousand values must be from 0 to 1000");
+        }
+
+        static void BrandProblems(List<string> p, GameConfig c)
+        {
+            BrandConfig k = c.Brand;
+            if (k == null) { p.Add("brand is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("brand.enabled must be 0 or 1");
+            if (k.OpenCost < 0 || k.RepairCostPerStaff < 0) p.Add("brand.openCost and repairCostPerStaff must not be negative");
+            if (k.Start < 0 || k.Start > 1000 || k.LowBar < 0 || k.LowBar > 1000 || k.MaxFeePermille < 0 || k.MaxFeePermille > 900) p.Add("brand.start and lowBar must be from 0 to 1000 and maxFeePermille from 0 to 900");
+            if (k.KeptPoints < 0 || k.BrokenPoints < 0 || k.RepairPoints < 0 || k.IgnorePoints < 0 || k.ReviewWeeks < 1 || k.RebutReputation < 0 || k.RebutReputation > 500) p.Add("brand points must not be negative, reviewWeeks at least 1 and rebutReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

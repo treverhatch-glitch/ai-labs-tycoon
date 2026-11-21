@@ -459,6 +459,12 @@ namespace AiLabs.Rules.Sim
                     return who + " opened a public waitlist and promised the model in " + e.Amount + " weeks.";
                 case EventKind.WaitlistEnded:
                     return who + (e.Pick == 1 ? " shipped to a waiting list in time." : e.Pick == 2 ? " closed its waitlist." : " let its waitlist promise lapse.");
+                case EventKind.CareersOpened:
+                    return who + " put up a careers page.";
+                case EventKind.BadReview:
+                    return "An anonymous review of " + who + " as a place to work went around.";
+                case EventKind.ReviewAnswered:
+                    return who + (e.Pick == 1 ? " owned up to a bad review and fixed it." : e.Pick == 2 ? " publicly rebutted a bad review." : " let a bad review stand.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

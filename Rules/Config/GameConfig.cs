@@ -131,6 +131,7 @@ namespace AiLabs.Rules.Config
         public ReplicationConfig Replication = new ReplicationConfig();
         public TechBetsConfig TechBets = new TechBetsConfig();
         public WaitlistConfig Waitlist = new WaitlistConfig();
+        public BrandConfig Brand = new BrandConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -260,6 +261,7 @@ namespace AiLabs.Rules.Config
             s.Obj("replication", ref Replication);
             s.Obj("techBets", ref TechBets);
             s.Obj("waitlist", ref Waitlist);
+            s.Obj("brand", ref Brand);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

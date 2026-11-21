@@ -2055,6 +2055,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It reads the model's own status, so training, release and retirement did not change: shipping is the same decision it always was, now with a date attached.
 - Alternatives: paid pre-orders (rejected: pay-for-cash), hype that decays (rejected: no promise to keep), a waitlist for any model including released ones (rejected: nothing left to promise).
 
+### Q402. Does the lab have a name as an employer? DECIDED: yes, a score from its own people decisions that moves every hire fee
+- Staff decisions already exist one by one: promotions, equity, sabbaticals, layoffs. An employer score ties them together so the lab pays the cost of its record when it next hires, and a bad record brings a review that has to be answered.
+- Answering has three costs: cash, reputation or score. Owning up is the only way to win the score back; rebutting protects the score at the cost of the lab's name.
+- It starts when the lab sets up a careers page, so games that never do are unchanged.
+- Alternatives: a free score from the start (rejected: changes every old hire), a cash payment for score (rejected: pay-for-stat; here the cost is repairing a real problem), random reviews (rejected: nothing to plan for).
+
 ## Open
 
 None.

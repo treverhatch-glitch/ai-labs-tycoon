@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 101;
+        public const int CurrentSchema = 102;
 
         public int Schema;
         public string ConfigVersion;
@@ -444,6 +444,12 @@ namespace AiLabs.Rules.State
         public int WlLeft;
         public int WlWins;
         public int WlFlops;
+        /// <summary>Whether the lab keeps a careers page, its score as an employer (0 to 1000), the weeks left for a bad review to be answered, whether the score is under the low bar, and how many reviews it has had.</summary>
+        public int BrandOn;
+        public int BrandScore;
+        public int BrandReview;
+        public int BrandLow;
+        public int BrandReviews;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -836,6 +842,11 @@ namespace AiLabs.Rules.State
             s.Int("wlLeft", ref WlLeft);
             s.Int("wlWins", ref WlWins);
             s.Int("wlFlops", ref WlFlops);
+            s.Int("brandOn", ref BrandOn);
+            s.Int("brandScore", ref BrandScore);
+            s.Int("brandReview", ref BrandReview);
+            s.Int("brandLow", ref BrandLow);
+            s.Int("brandReviews", ref BrandReviews);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

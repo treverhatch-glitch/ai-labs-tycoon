@@ -338,6 +338,7 @@ and says why in the commit message.
 155. **How the sixth batch meets.** ~~Done~~: values read the other systems, a creed shields or exposes a lab to a backlash, `DevicesPlatformsCreedShocksReplicationTogetherTests` (Q399).
 156. **Tech bets.** ~~Done~~: `BetOnTech`, `WithdrawTechBet`, schema 100, `TechBetsTests` (Q400).
 157. **Waitlist.** ~~Done~~: `OpenWaitlist`, `CloseWaitlist`, schema 101, `WaitlistTests` (Q401).
+158. **Employer brand.** ~~Done~~: `OpenCareersPage`, `AnswerReview`, schema 102, `BrandTests` (Q402).
 
 ## Rules: later
 

@@ -440,7 +440,13 @@ namespace AiLabs.Rules.State
         /// <summary>The lab opened a waitlist. SubjectId is the model, Amount the weeks promised.</summary>
         WaitlistOpened,
         /// <summary>A waitlist ended. Amount is the reputation it changed, SubjectId the model, Pick 1 shipped in time, 0 the promise lapsed, 2 closed early.</summary>
-        WaitlistEnded
+        WaitlistEnded,
+        /// <summary>The lab set up a careers page. Amount is the cash it cost.</summary>
+        CareersOpened,
+        /// <summary>A bad review of the lab as an employer appeared. Amount is the score.</summary>
+        BadReview,
+        /// <summary>A bad review was answered. Amount is the score change, Pick 1 fixed, 2 rebutted, 3 left, 0 nobody answered in time.</summary>
+        ReviewAnswered
     }
 
     /// <summary>

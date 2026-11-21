@@ -152,7 +152,9 @@ namespace AiLabs.Rules.Sim
         BetOnTech,
         WithdrawTechBet,
         OpenWaitlist,
-        CloseWaitlist
+        CloseWaitlist,
+        OpenCareersPage,
+        AnswerReview
     }
 
     /// <summary>
@@ -1324,6 +1326,20 @@ namespace AiLabs.Rules.Sim
         public static Command CloseWaitlist(int labId)
         {
             return Make(CommandKind.CloseWaitlist, labId);
+        }
+
+        /// <summary>Sets up a careers page: the lab starts being scored as an employer. It costs the data's cash.</summary>
+        public static Command OpenCareersPage(int labId)
+        {
+            return Make(CommandKind.OpenCareersPage, labId);
+        }
+
+        /// <summary>Answers a bad review: 1 own up and fix it (costs cash for each person), 2 publicly rebut it, 3 leave it.</summary>
+        public static Command AnswerReview(int labId, int stance)
+        {
+            Command c = Make(CommandKind.AnswerReview, labId);
+            c.Count = stance;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

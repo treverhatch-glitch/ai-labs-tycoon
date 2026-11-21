@@ -6191,6 +6191,20 @@
     "lossPerThousand": 80,
     "closePerThousand": 25
   },
+  "brand": {
+    "enabled": 1,
+    "openCost": 50000,
+    "start": 500,
+    "keptPoints": 8,
+    "brokenPoints": 30,
+    "maxFeePermille": 200,
+    "lowBar": 250,
+    "reviewWeeks": 4,
+    "repairPoints": 200,
+    "repairCostPerStaff": 5000,
+    "rebutReputation": 12,
+    "ignorePoints": 60
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

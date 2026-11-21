@@ -114,6 +114,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 99) MigrateTo99(root);
             if (fromSchema < 100) MigrateTo100(root);
             if (fromSchema < 101) MigrateTo101(root);
+            if (fromSchema < 102) MigrateTo102(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -477,6 +478,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 102: no lab keeps a careers page.</summary>
+        static void MigrateTo102(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "brandOn", "brandScore", "brandReview", "brandLow", "brandReviews" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

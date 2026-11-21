@@ -265,6 +265,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.WlModel > 0 && lab.WlLeft < 1) || (lab.WlModel == 0 && (lab.WlLeft != 0 || lab.WlHype != 0))
                     || ((lab.WlModel != 0 || lab.WlWins != 0 || lab.WlFlops != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a waitlist " + lab.WlModel + " (hype " + lab.WlHype + ", " + lab.WlLeft + " weeks left) in a way the data does not allow");
+                if (lab.BrandOn < 0 || lab.BrandOn > 1 || lab.BrandScore < 0 || lab.BrandScore > 1000 || lab.BrandReview < 0 || lab.BrandLow < 0 || lab.BrandLow > 1 || lab.BrandReviews < 0
+                    || (lab.BrandOn == 0 && (lab.BrandScore != 0 || lab.BrandReview != 0 || lab.BrandLow != 0))
+                    || (lab.BrandReview > 0 && lab.BrandLow != 1)
+                    || ((lab.BrandOn != 0 || lab.BrandReviews != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has an employer brand (on " + lab.BrandOn + ", score " + lab.BrandScore + ", review " + lab.BrandReview + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
