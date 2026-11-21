@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 57;
+        public const int CurrentSchema = 58;
 
         public int Schema;
         public string ConfigVersion;
@@ -523,6 +523,10 @@ namespace AiLabs.Rules.State
         public int LastIncidentTick;
         public int Incidents;
         public int Corruption;
+        /// <summary>The reputation points the model's last incident cost its lab.</summary>
+        public int IncidentRepLoss;
+        /// <summary>0 while the last incident has no post-mortem, 1 after a summary and 2 after a full write-up.</summary>
+        public int PostMortemDone;
         /// <summary>What the run was for (an id of <c>objectives</c>), or empty for the default, to be correct.</summary>
         public string Objective = "";
         /// <summary>The model that helped design this one while it trained, or -1 when people did it alone.</summary>
@@ -565,6 +569,8 @@ namespace AiLabs.Rules.State
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
             s.Int("corruption", ref Corruption);
+            s.Int("incidentRepLoss", ref IncidentRepLoss);
+            s.Int("postMortemDone", ref PostMortemDone);
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);

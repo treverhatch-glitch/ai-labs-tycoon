@@ -5608,6 +5608,14 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "postMortem": {
+    "windowWeeks": 6,
+    "summaryCost": 20000,
+    "fullCost": 50000,
+    "summaryRecoverPermille": 300,
+    "fullRecoverPermille": 600,
+    "minSafetyStaff": 1
+  },
   "consultants": {
     "maxLevel": 2,
     "feePerLevel": 30000,

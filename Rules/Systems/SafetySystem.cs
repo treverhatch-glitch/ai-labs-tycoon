@@ -122,7 +122,10 @@ namespace AiLabs.Rules.Systems
             repLoss = PressSystem.Damp(c, lab, repLoss);
             repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - EthicsBoard.ScandalCutPermille(c, lab));
             repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - OnCall.ReputationCutPermille(c, lab));
+            int repBefore = lab.Reputation;
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
+            model.IncidentRepLoss = repBefore - lab.Reputation;
+            model.PostMortemDone = 0;
             Finance.Spend(lab, LedgerLine.Fines, fine + makeGood);
 
             if (def != null && def.ClosesGap)

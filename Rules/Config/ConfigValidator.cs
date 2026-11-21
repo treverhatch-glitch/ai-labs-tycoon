@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Config
             MarketingProblems(p, c);
             OnCallProblems(p, c);
             ConsultantsProblems(p, c);
+            PostMortemProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -894,6 +895,18 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void PostMortemProblems(List<string> p, GameConfig c)
+        {
+            PostMortemConfig k = c.PostMortem;
+            if (k == null) { p.Add("postMortem is missing"); return; }
+            if (k.WindowWeeks < 0 || k.WindowWeeks > 52) p.Add("postMortem.windowWeeks must be from 0 to 52");
+            if (k.SummaryCost < 0) p.Add("postMortem.summaryCost is negative");
+            if (k.FullCost < k.SummaryCost) p.Add("postMortem.fullCost must be at least summaryCost");
+            if (k.SummaryRecoverPermille < 0 || k.SummaryRecoverPermille > MathI.Permille) p.Add("postMortem.summaryRecoverPermille must be from 0 to 1000");
+            if (k.FullRecoverPermille < k.SummaryRecoverPermille || k.FullRecoverPermille > MathI.Permille) p.Add("postMortem.fullRecoverPermille must be from summaryRecoverPermille to 1000, so no write-up wins back more than the incident cost");
+            if (k.MinSafetyStaff < 0 || k.MinSafetyStaff > 100) p.Add("postMortem.minSafetyStaff must be from 0 to 100");
         }
 
         static void ConsultantsProblems(List<string> p, GameConfig c)

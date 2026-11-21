@@ -176,7 +176,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player changed the on-call rota. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
         OnCallSet,
         /// <summary>A firm of policy consultants came in or left. LabId is the lab, SubjectId the level, Amount the fee (0 when they leave). Pick is 1 when they start, 0 when they leave.</summary>
-        ConsultantsHired
+        ConsultantsHired,
+        /// <summary>The player published a post-mortem of a model's last incident. LabId is the lab, SubjectId the model, Amount the reputation won back, Ref the model's name. Pick is 0 for a summary, 1 for a full write-up.</summary>
+        PostMortemPublished
     }
 
     /// <summary>

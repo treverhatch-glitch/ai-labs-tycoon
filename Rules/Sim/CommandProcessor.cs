@@ -90,6 +90,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
                 case CommandKind.RetrainStaff: return RetrainStaff(c, state, lab, cmd);
                 case CommandKind.RunCampaign: return RunCampaign(c, state, lab, cmd);
+                case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);
                 case CommandKind.HireConsultants: return HireConsultants(c, state, lab, cmd);
                 case CommandKind.SetOnCall: return SetOnCall(c, state, lab, cmd);
                 case CommandKind.SetOptimisation: return SetOptimisation(c, state, lab, cmd);

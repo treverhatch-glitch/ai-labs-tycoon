@@ -216,6 +216,9 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.PostMortemPublished:
+                    return e.Pick == 1 ? who + " published a full post-mortem of " + e.Ref + " and told the public its real alignment. It won back " + e.Amount + " reputation."
+                        : who + " published a summary of what went wrong with " + e.Ref + ". It won back " + e.Amount + " reputation.";
                 case EventKind.ConsultantsHired:
                     return e.Pick == 1 ? who + " hired a level " + e.SubjectId + " firm of policy consultants for $" + e.Amount + "." : who + "'s policy consultants have gone home and left their invoices.";
                 case EventKind.OnCallSet:

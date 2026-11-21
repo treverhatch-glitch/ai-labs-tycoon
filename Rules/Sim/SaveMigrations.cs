@@ -70,6 +70,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 55) MigrateTo55(root);
             if (fromSchema < 56) MigrateTo56(root);
             if (fromSchema < 57) MigrateTo57(root);
+            if (fromSchema < 58) MigrateTo58(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -434,6 +435,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 58: no incident was ever written up.</summary>
+        static void MigrateTo58(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "incidentRepLoss", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "postMortemDone", JsonValue.Of(0L));
+            }));
         }
 
         /// <summary>Schema 57: no lab has hired policy consultants.</summary>

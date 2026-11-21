@@ -56,7 +56,8 @@ namespace AiLabs.Rules.Sim
         SetOptimisation,
         RunCampaign,
         SetOnCall,
-        HireConsultants
+        HireConsultants,
+        PublishPostMortem
     }
 
     /// <summary>
@@ -407,6 +408,15 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RunCampaign, labId);
             c.Id = sectorId;
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Publishes a post-mortem of a model's last incident: depth 1 is a summary, 2 a full write-up that also tells the public the model's true alignment. Within a few weeks of the incident, once for each.</summary>
+        public static Command PublishPostMortem(int labId, int modelId, int depth)
+        {
+            Command c = Make(CommandKind.PublishPostMortem, labId);
+            c.TargetId = modelId;
+            c.Count = depth;
             return c;
         }
 
