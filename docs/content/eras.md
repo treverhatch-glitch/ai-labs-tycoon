@@ -3,19 +3,19 @@
 # Eras
 
 The era table is data (`eras` in the config). An era is a floor: a tech or room opens when its era begins and stays open.
-Training cost and research speed are shares of the first era (1000 = x1). Start-kit money is a share of the player start (1000 = x1).
+Training cost and research speed are shares of the first era (1000 = x1). Start-kit money is a share of the player start (1000 = x1). Every era can be started in: the kit is the techs of every earlier era (so a 2022 lab does not research the basics again) and cash that grows with the era. A rival that is already in the world gets the era's share of its own start cash if it is a founder, or the cash of a lab that joined in that year (`WorldSetup.EstablishedCash`: its own start cash grown by the training-cost multiplier since it joined, held between half and double the player's kit). Rivals that join later arrive with their own start cash as before.
 
 | # | Era | From | Cost to train | Research speed | Start kit | Startable |
 | --- | --- | --- | --- | --- | --- | --- |
 | 0 | `dial-up-days` Dial-up Days | 1995 | x1 | x1 | the default start | yes |
 | 1 | `punchline` The Punchline | 2009 | x1.5 | x1.5 | cash x15, grant x10, lot `strip-mall`, 28 techs | yes |
-| 2 | `it-sees` It Sees | 2012 | x2.5 | x2.5 | - | no |
-| 3 | `it-writes` It Writes | 2017 | x5 | x4 | - | no |
-| 4 | `chat-boom` The Chat Boom | 2022 | x10 | x7 | - | no |
-| 5 | `agents` Agents | 2024 | x20 | x12 | - | no |
-| 6 | `harnesses` Harnesses | 2026 | x40 | x20 | - | no |
-| 7 | `bodies` Bodies (expansion) | 2029 | x80 | x35 | - | no |
-| 8 | `upward` Upward (expansion) | 2033 | x120 | x60 | - | no |
+| 2 | `it-sees` It Sees | 2012 | x2.5 | x2.5 | cash x30 ($6M), grant x20, lot `office-park`, 34 techs | yes |
+| 3 | `it-writes` It Writes | 2017 | x5 | x4 | cash x125 ($25M), grant x40, lot `campus`, 43 techs | yes |
+| 4 | `chat-boom` The Chat Boom | 2022 | x10 | x7 | cash x500 ($100M), no grant, lot `campus`, 53 techs | yes |
+| 5 | `agents` Agents | 2024 | x20 | x12 | cash x1250 ($250M), no grant, lot `campus`, 65 techs | yes |
+| 6 | `harnesses` Harnesses | 2026 | x40 | x20 | cash x3750 ($750M), no grant, lot `campus`, 75 techs | yes |
+| 7 | `bodies` Bodies (expansion) | 2029 | x80 | x35 | cash x7500 ($1.5B), no grant, lot `campus`, 83 techs | yes |
+| 8 | `upward` Upward (expansion) | 2033 | x120 | x60 | cash x15000 ($3B), no grant, lot `campus`, 88 techs | yes |
 
 ## Era rules
 
@@ -34,6 +34,23 @@ What each era turns, on top of training cost and research speed (table above). A
 | `upward` | x2.5 | x1 | x1.1 | x1 | x3 | 250 |
 
 The era banner event lists what changed from the era before (`EraRules.Shifts`); a screen can list all of it (`EraRules.Briefing`).
+
+## Risk classes
+
+Trouble that belongs to an era (`safety.riskClasses`). A class opens with its era and stays open. It bites a model that is on sale in one of its sectors: such an incident is that class instead of the era's plain mishap, with a larger fine and a bigger blow to reputation. A model with no class biting it gets the plain mishap as before, and the dice are not touched. The plain mishap keeps `safety.genericRiskWeight` (1000) against each class's weight, so it never disappears. The era banner names the classes an era opens.
+
+| Class | Opens | Sectors | Fine | Reputation | Weight |
+| --- | --- | --- | --- | --- | --- |
+| `bias` Bias | `it-sees` | `fraud-detection`, `doc-reading`, `image-recognition`, `voice-assistants` | x1 | x1.5 | 1000 |
+| `autonomous-crash` Autonomous crash | `it-sees` | `autonomous-driving` | x2.5 | x2 | 1000 |
+| `misuse` Misuse | `it-writes` | `writing-tools`, `code-completion`, `consumer-assistant`, `image-design`, `music-audio`, `video-film` | x1.2 | x1 | 1000 |
+| `data-leak` Data leak | `chat-boom` | `consumer-assistant`, `customer-support`, `legal-research`, `enterprise-knowledge`, `companionship` | x1.8 | x1.2 | 1000 |
+| `agent-mishap` Agent mishap | `agents` | `coding-agents`, `enterprise-knowledge`, `finance-trading`, `cybersecurity`, `government-services`, `science-medicine` | x2.5 | x1.5 | 1000 |
+| `runaway-agents` Runaway agents | `harnesses` | `agent-workforce`, `ai-research-services` | x3.5 | x2 | 1000 |
+| `physical-harm` Physical harm | `bodies` | `robotics-industry`, `household-robots` | x4 | x2.5 | 1000 |
+| `loss-of-control` Loss of control | `upward` | `machine-science`, `space-compute` | x5 | x3 | 1000 |
+
+The class is stored on the incident event (`GameEvent.RiskClass`, save schema 21); nothing else is saved. The fine is the rung fine times the class, then times the era's fine rule.
 
 ## Dial-up Days (1995)
 

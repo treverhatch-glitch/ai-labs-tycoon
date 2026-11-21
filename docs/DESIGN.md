@@ -87,13 +87,18 @@ Version 1 covers eras 0 to 6; Bodies and Upward ship in the data flagged `expans
 (`eras` in the config; the full content is in [content/](content/eras.md)). An era is a floor, not a window: a tech or
 room opens when its era begins and stays open. Each era scales what a training run costs and how fast a researcher
 works (x1 up to x60). Hardware generations now do the work the bible gives to "ten times per era": the cost
-multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Two eras can
-be chosen at the start: 1995 and 2009 (the quick start, with its own money, lot and researched techs).
+multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Every era can
+be chosen at the start (`StartEras.Offers` lists them for a picker): 1995 by default, and from 2009 on a quick start with
+that era's money, lot, researched techs and the rivals who have joined by then. There is no start screen yet.
 
 Each era also turns a few rules (`EraRules`, the `Era rules` table in [content/eras.md](content/eras.md)): the talent
 war (hiring fees from 2012), chip shortages (prices peak in the Chat Boom), customer appetite, incident chance and
 fines, and from 2022 a law: a model must *show* a minimum alignment before it can go on sale. Existing customers are
 not lost when a law arrives; only new releases are checked. None of it is saved: the year picks the era.
+
+From 2012 each era also opens *risk classes* (bias, a driving crash, misuse, a data leak, an agent that went off-script, runaway agents,
+physical harm, loss of control). An incident on a model sold in a class's sectors is that class, with a bigger fine and reputation
+hit, so what a lab sells decides what can go wrong. The era banner names the new ones. Only the class of each incident is saved.
 
 ### Models
 

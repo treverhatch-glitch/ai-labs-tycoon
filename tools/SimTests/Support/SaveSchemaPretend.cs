@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 21) StripEventRiskClass(root);
             if (schema < 20) StripAbsorbedByLab(root);
             if (schema < 19) StripBubbleCrashPhase(root);
             if (schema < 18) StripChinaDeclineCooldown(root);
@@ -37,6 +38,11 @@ public static class SaveSchemaPretend
         Simulation again = Simulation.Load(sim.Config, json);
         Assert.Empty(SaveGame.Problems(sim.Config, again.State));
         Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripEventRiskClass(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "events", e => JsonPatch.Remove(e, "riskClass"));
     }
 
     static void StripAlignmentGapFields(JsonValue root)

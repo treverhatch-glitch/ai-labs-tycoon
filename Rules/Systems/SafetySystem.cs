@@ -70,6 +70,8 @@ namespace AiLabs.Rules.Systems
             long fine = MathI.Max(c.Safety.IncidentFineMin, MarketSystem.ModelRevenue(state, lab.Id, model.Id) * c.Safety.IncidentFineRevenueWeeks);
             if (def != null) fine = MathI.MulPermille(fine, def.FinePermille);
             fine = MathI.Max(c.Safety.IncidentFineMin, fine);
+            RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
+            if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
 
             model.Incidents++;
@@ -78,6 +80,7 @@ namespace AiLabs.Rules.Systems
             model.LastIncidentTick = state.Tick;
 
             int repLoss = def == null ? c.Safety.IncidentReputationLoss : def.ReputationLoss;
+            if (risk != null) repLoss = (int)MathI.MulPermille(repLoss, risk.ReputationPermille);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine);
 
@@ -87,7 +90,12 @@ namespace AiLabs.Rules.Systems
             StaffSystem.OnIncident(c, lab);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
-            e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);
+            if (risk != null)
+            {
+                e.RiskClass = risk.Id;
+                e.Pick = state.Rng.Safety.Next(risk.Headlines.Count);
+            }
+            else e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);
         }
     }
 }
