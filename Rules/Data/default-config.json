@@ -3506,7 +3506,17 @@
         "leaderAppealPermille": 120,
         "sectorIds": [
           "image-recognition",
-          "image-design"
+          "image-design",
+          "fraud-detection"
+        ]
+      },
+      {
+        "id": "enterprise",
+        "name": "Enterprise",
+        "leaderAppealPermille": 100,
+        "sectorIds": [
+          "expert-systems",
+          "spam-search"
         ]
       }
     ],
