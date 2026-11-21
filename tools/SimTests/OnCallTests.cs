@@ -21,6 +21,10 @@ public class OnCallTests
             foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
             c.Office.ChancePermille = 0;
             c.Safety.SectorFlavours.Clear();
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
             if (tweak != null) tweak(c);
         }).WithStarterLab(researchers: 2, engineers: engineers, safety: safety, gpus: 6);
         if (rich) g.Me.Cash = 1_000_000_000_000;
@@ -397,7 +401,14 @@ public class OnCallTests
     [Fact]
     public void A_long_game_with_a_changing_rota_stays_sound_and_the_books_balance()
     {
-        Game g = Game.New(2, c => c.OnCall.LockWeeks = 4);
+        Game g = Game.New(2, c =>
+        {
+            c.OnCall.LockWeeks = 4;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+        });
         g.Autopilot(60);
         g.Me.Cash += 5_000_000;
         long gap = g.Me.Cash - g.Me.Ledger.Lifetime.Net;

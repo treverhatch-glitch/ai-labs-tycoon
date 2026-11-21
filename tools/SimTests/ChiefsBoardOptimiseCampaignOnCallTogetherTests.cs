@@ -23,6 +23,10 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             c.Marketing.MinSales = 0;
             c.OnCall.StaffPerLevel = 0;
             c.RedTeam.RoleId = "";
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
         });
     }
 
@@ -119,7 +123,13 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
     [Fact]
     public void An_unused_set_of_tools_changes_nothing_for_a_lab_that_plays_on_its_own()
     {
-        Game plain = Game.New(3);
+        Game plain = Game.New(3, c =>
+        {
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+        });
         Game withTools = Start(3);
         plain.Autopilot(120);
         withTools.Autopilot(120);

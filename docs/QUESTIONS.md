@@ -1926,6 +1926,20 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads capability, security tiers, safety staff, press damping and the docket; no random numbers; only the player's lab.
 - Alternatives: a pause on every model (rejected: no safeguards to build toward), a policy with no price for breaking it (rejected: no dilemma).
 
+### Q376. Do the five new systems talk? DECIDED: 32 headlines and 24 chat lines for the 18 new event kinds
+- Counts are pinned 174 and 219. Every pick of every new event has a headline that names the lab; picks the data does not list (a privacy or charter claim being filed, a contract lost to a leak, a nonprofit conversion) fall to the line for any pick. `LitigationSecurityContractsCharterScalingNewsChatTests` pins the counts, one headline for every pick, the chat line for every pick and the real commands reaching the ticker and the chat.
+
+### Q377. Do the five systems fit together? DECIDED: the rules where they meet are written down and tested
+- Security tier (Q372) gates contracts (Q373) and a leaked breach ends a cleared contract at once (`GovContracts.OnLeak`); a contract needing no clearance survives a leak.
+- Disclosing a breach and a leaked breach file a privacy claim on the docket (Q371); a ransom files none and makes the next ransom dearer. Leaving a nonprofit files a charter claim.
+- The contract's engineers are the last engineers off leave; the support desk takes the first and its most people is reduced by the contract's; neither can be sent on sabbatical.
+- The scaling policy (Q375) is satisfied by a security tier however it arrives (a build or a lockdown after a breach) and safety headcount; a ransom does not clear a hold. A policy softens the reputation a scandal costs and weakens negligence claims.
+- The charter (Q374) changes funding and research grants.
+- The older autopilot and fixed-script tests now switch the four weekly systems off (as they do for labour and the support desk); the events list is capped, so the extra events pushed an early rota event out of one of them. The golden chain is explained by saved fields and, for schema 82, the offer and lapse events.
+
+### Q378. Which is wrong, the schema-5 bankrupt fixture or the migration? DECIDED: the fixture; no migration debt
+- `schema5-bankrupt-save.json` loaded with cash -100 against start cash 1000 and a lifetime net of 0, because its lifetime salaries line was never filled in. Migrations carry the ledger as it is and add nothing; a played game pretended back to every schema from 5 keeps its gap, net and cash. The fixture's lifetime salaries are now -1100 so its books balance. `LedgerIdentityMigrationTests` pins that the fixture explains its own cash, that every older schema keeps the identity and that a bankrupt lab keeps its books through a save. The hardening thread's fixture test asserts problems only and is unaffected.
+
 ## Open
 
 None.

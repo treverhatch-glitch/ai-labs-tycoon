@@ -50,8 +50,8 @@ public class OfficePapersSubletNewsChatTests
     public void Three_headlines_and_four_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(142, c.News.Headlines.Count);
-        Assert.Equal(195, c.Chat.Lines.Count);
+        Assert.Equal(174, c.News.Headlines.Count);
+        Assert.Equal(219, c.Chat.Lines.Count);
         foreach (string kind in new[] { "ComplianceLapsed", "PaperPublished", "SubletChanged" })
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind);

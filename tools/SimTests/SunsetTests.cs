@@ -26,6 +26,10 @@ public class SunsetTests
             c.Safety.IncidentChancePermille = 0;
             c.Office.ChancePermille = 0;
             c.Support.Enabled = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
             c.PlayerStart.Cash = 1_000_000_000_000;
             if (tweak != null) tweak(c);
         }), options));

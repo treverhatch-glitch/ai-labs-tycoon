@@ -9675,6 +9675,198 @@
         "kind": "ScholarsLeft",
         "pick": 0,
         "text": "{lab} sends its visiting scholars home early. The mugs were already printed"
+      },
+      {
+        "id": "case-filed-incident",
+        "kind": "CaseFiled",
+        "pick": 0,
+        "text": "{lab} is sued over an incident. Lawyers call the {amount} claim 'without merit'"
+      },
+      {
+        "id": "case-filed-layoff",
+        "kind": "CaseFiled",
+        "pick": 1,
+        "text": "{lab}'s laid-off staff file a claim for {amount}. 'Regrettable,' says {lab}"
+      },
+      {
+        "id": "case-filed",
+        "kind": "CaseFiled",
+        "pick": -1,
+        "text": "{lab} is sued for {amount}. 'We will defend ourselves vigorously,' says {lab}"
+      },
+      {
+        "id": "case-judged-lost",
+        "kind": "CaseJudged",
+        "pick": 0,
+        "text": "{lab} loses a hearing and owes {amount} unless it appeals"
+      },
+      {
+        "id": "case-judged-appeal",
+        "kind": "CaseJudged",
+        "pick": 1,
+        "text": "{lab} loses its appeal. {amount} is now due"
+      },
+      {
+        "id": "case-closed-settled",
+        "kind": "CaseClosed",
+        "pick": 0,
+        "text": "{lab} settles a claim for {amount} 'without admitting anything'"
+      },
+      {
+        "id": "case-closed-won",
+        "kind": "CaseClosed",
+        "pick": 1,
+        "text": "{lab} wins in court. 'Justice,' says {lab}"
+      },
+      {
+        "id": "case-closed",
+        "kind": "CaseClosed",
+        "pick": -1,
+        "text": "{lab}'s long case ends. The lawyers send the bill"
+      },
+      {
+        "id": "security-built",
+        "kind": "SecurityBuilt",
+        "pick": -1,
+        "text": "{lab} reaches security tier {amount}. The badges are now the correct colour"
+      },
+      {
+        "id": "breach-opened",
+        "kind": "BreachOpened",
+        "pick": -1,
+        "text": "{lab} says it is 'looking into' unusual activity on its systems"
+      },
+      {
+        "id": "breach-paid",
+        "kind": "BreachAnswered",
+        "pick": 0,
+        "text": "{lab} pays {amount} to whoever was in its systems. 'We do not negotiate,' it says"
+      },
+      {
+        "id": "breach-disclosed",
+        "kind": "BreachAnswered",
+        "pick": 1,
+        "text": "{lab} tells everyone about a breach before anyone asks"
+      },
+      {
+        "id": "breach-locked",
+        "kind": "BreachAnswered",
+        "pick": -1,
+        "text": "{lab} locks its systems down for {amount}. Nobody can log in, which is the point"
+      },
+      {
+        "id": "breach-leaked",
+        "kind": "BreachLeaked",
+        "pick": -1,
+        "text": "A breach at {lab} leaks. Its reputation takes the hit"
+      },
+      {
+        "id": "contract-offered",
+        "kind": "ContractOffered",
+        "pick": -1,
+        "text": "{lab} is offered a government contract worth {amount}. The paperwork is longer than the model card"
+      },
+      {
+        "id": "contract-accepted",
+        "kind": "ContractAccepted",
+        "pick": -1,
+        "text": "{lab} signs a government contract worth {amount}. Some of its staff are not told where"
+      },
+      {
+        "id": "contract-turned-down",
+        "kind": "ContractDeclined",
+        "pick": 1,
+        "text": "{lab} turns down a government contract. 'Not a fit,' says {lab}"
+      },
+      {
+        "id": "contract-lapsed",
+        "kind": "ContractDeclined",
+        "pick": 0,
+        "text": "{lab} lets a government offer lapse. Nobody answered the email"
+      },
+      {
+        "id": "contract-paid",
+        "kind": "ContractInstalment",
+        "pick": 1,
+        "text": "{lab} is paid {amount} on its government contract"
+      },
+      {
+        "id": "contract-missed",
+        "kind": "ContractInstalment",
+        "pick": 0,
+        "text": "{lab} misses a milestone on its government contract. The agency 'notes it'"
+      },
+      {
+        "id": "contract-done",
+        "kind": "ContractEnded",
+        "pick": 1,
+        "text": "{lab} completes its government contract. A plaque is promised"
+      },
+      {
+        "id": "contract-failed",
+        "kind": "ContractEnded",
+        "pick": 0,
+        "text": "{lab}'s government contract ends over missed milestones. {amount} is owed back"
+      },
+      {
+        "id": "contract-ended",
+        "kind": "ContractEnded",
+        "pick": -1,
+        "text": "{lab}'s government contract ends early. The agency and the lab tell different stories"
+      },
+      {
+        "id": "charter-review",
+        "kind": "CharterReviewStarted",
+        "pick": -1,
+        "text": "{lab} asks regulators to approve a new legal structure. The fee is {amount}. The lawyers are thrilled"
+      },
+      {
+        "id": "charter-dropped",
+        "kind": "CharterReviewDropped",
+        "pick": -1,
+        "text": "{lab} drops its restructuring plan. 'Priorities changed,' says {lab}"
+      },
+      {
+        "id": "charter-for-profit",
+        "kind": "CharterChanged",
+        "pick": 0,
+        "text": "{lab} converts to a for-profit. The mission statement is 'under review'"
+      },
+      {
+        "id": "charter-capped",
+        "kind": "CharterChanged",
+        "pick": 1,
+        "text": "{lab} becomes a capped-profit company. The cap is 'generous'"
+      },
+      {
+        "id": "charter-changed",
+        "kind": "CharterChanged",
+        "pick": -1,
+        "text": "{lab} becomes a nonprofit. The donors applaud and the investors look at their shoes"
+      },
+      {
+        "id": "tripwire-hit",
+        "kind": "TripwireHit",
+        "pick": -1,
+        "text": "{lab}'s {ref} trips the lab's own scaling policy. Release is on hold"
+      },
+      {
+        "id": "tripwire-cleared",
+        "kind": "TripwireCleared",
+        "pick": 1,
+        "text": "{lab} meets its safeguards. The held model is cleared"
+      },
+      {
+        "id": "tripwire-let-go",
+        "kind": "TripwireCleared",
+        "pick": 0,
+        "text": "{lab}'s scaling policy no longer holds anything back. Make of that what you will"
+      },
+      {
+        "id": "policy-changed",
+        "kind": "PolicyChanged",
+        "pick": -1,
+        "text": "{lab} changes its scaling policy to level {amount}. The blog post is long"
       }
     ],
     "filler": [
@@ -12055,6 +12247,270 @@
         "pick": 1,
         "about": "lab",
         "text": "The scholars left. We have a citation and a coffee stain.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "case-filed-chat",
+        "kind": "CaseFiled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Legal asked everyone to stop writing 'oops' in the incident channel.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "case-judged-chat",
+        "kind": "CaseJudged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We lost the hearing. Legal says the appeal is 'a conversation'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "case-closed-won-chat",
+        "kind": "CaseClosed",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We won. Legal is insufferable.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "case-closed-settled-chat",
+        "kind": "CaseClosed",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We settled. Nobody is allowed to say what for.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "case-closed-chat",
+        "kind": "CaseClosed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The case is finally closed. Legal bought a plant.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "security-built-chat",
+        "kind": "SecurityBuilt",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The new door badges beep at me in a judgemental way.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "breach-opened-chat",
+        "kind": "BreachOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Please change your passwords. Yes, you, with the sticky note.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "breach-paid-chat",
+        "kind": "BreachAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Finance has a new line item called 'inconvenience'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "breach-disclosed-chat",
+        "kind": "BreachAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We told everyone. The reply-all storm has begun.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "breach-locked-chat",
+        "kind": "BreachAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Everything is locked down. I cannot get to the coffee rota.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "breach-leaked-chat",
+        "kind": "BreachLeaked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "It leaked. I read about our own breach in the news.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-offered-chat",
+        "kind": "ContractOffered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A government offer arrived. Half the team is excited and half is reading the fine print.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-accepted-chat",
+        "kind": "ContractAccepted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Some of us are moving to a room with no windows and a very good coffee machine.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-declined-chat",
+        "kind": "ContractDeclined",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We passed on the agency. I can hear sales sighing from here.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-paid-chat",
+        "kind": "ContractInstalment",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The agency paid on time. A first for any customer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-missed-chat",
+        "kind": "ContractInstalment",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We missed a milestone. The agency sent a very polite email.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-done-chat",
+        "kind": "ContractEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The contract is done. We can finally say we worked on something.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "contract-ended-chat",
+        "kind": "ContractEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The contract is over. I am no longer allowed to talk about it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "charter-review-chat",
+        "kind": "CharterReviewStarted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Legal says the restructuring will take 'a while' and cost 'a lot'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "charter-dropped-chat",
+        "kind": "CharterReviewDropped",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "They shelved the restructuring. The org chart is relieved.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "charter-changed-chat",
+        "kind": "CharterChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a new legal structure. The mission statement has been reprinted.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tripwire-hit-chat",
+        "kind": "TripwireHit",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The model passed every eval. Now we are not allowed to ship it. Safety has cake.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tripwire-cleared-chat",
+        "kind": "TripwireCleared",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We met the safeguards. Release is back on.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "policy-changed-chat",
+        "kind": "PolicyChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The scaling policy has been updated. Please re-read it. There will be a quiz.",
         "fromYear": 0,
         "toYear": 0
       }

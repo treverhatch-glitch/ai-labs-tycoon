@@ -20,6 +20,10 @@ public class CareToolsTogetherTests
             c.RedTeam.RoleId = "";
             c.Labour.Enabled = 0;
             c.Support.Enabled = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
             c.Interp.LevelTechs = new List<string> { "state-machines" };
         });
     }

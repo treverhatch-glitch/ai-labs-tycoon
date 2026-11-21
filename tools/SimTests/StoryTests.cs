@@ -216,8 +216,22 @@ public class StoryTests
     public void Two_labs_alike_in_everything_but_care_end_up_with_different_reputations()
     {
         // Same seed, same world, same orders. One boss spends a quarter of every run on alignment; the other spends nothing.
-        Game careful = Game.New(seed: 44, tweak: c => c.Naming.ConfusionPermille = 0);
-        Game reckless = Game.New(seed: 44, tweak: c => c.Naming.ConfusionPermille = 0);
+        Game careful = Game.New(seed: 44, tweak: c =>
+        {
+            c.Naming.ConfusionPermille = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+        });
+        Game reckless = Game.New(seed: 44, tweak: c =>
+        {
+            c.Naming.ConfusionPermille = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+        });
         PlanConfig carefulPlan = TestData.Config().Autopilot;
         PlanConfig recklessPlan = TestData.Config().Autopilot;
         carefulPlan.AlignmentSharePermille = 250;

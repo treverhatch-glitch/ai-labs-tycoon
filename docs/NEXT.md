@@ -314,6 +314,9 @@ and says why in the commit message.
 131. **Government contracts (offers in turn, clearance, kept-free engineers, instalments).** ~~Done~~: `govContracts` data, `AcceptContract`, `DeclineContract`, `AbandonContract`, `GovContracts`, schema 82, `GovContractsTests`, `docs/content/government-contracts.md` (Q373).
 132. **The charter (for-profit, capped-profit, nonprofit; a reviewed change).** ~~Done~~: `charter` data, `ConvertCharter`, `CancelCharterChange`, `Charter`, schema 83, `CharterTests`, `docs/content/charter.md` (Q374).
 133. **The scaling policy (capability tripwires, safeguards, breaking it).** ~~Done~~: `scaling` data, `AdoptPolicy`, `BreakPolicy`, `ScalingPolicy`, schema 84, `ScalingPolicyTests`, `docs/content/scaling-policy.md` (Q375).
+134. **News and chat for the new systems.** ~~Done~~: 32 headlines and 24 chat lines in the data (174 and 219), `LitigationSecurityContractsCharterScalingNewsChatTests` (Q376).
+135. **The five new systems together.** ~~Done~~: clearance and leaks, claims from breaches and charters, contract engineers against the desk and sabbaticals, safeguards and the policy, a long scripted game, `LitigationSecurityContractsCharterScalingTogetherTests` (Q377).
+136. **The ledger identity across schemas.** ~~Done~~: the schema-5 bankrupt fixture was wrong, not the migration; `LedgerIdentityMigrationTests` (Q378).
 
 ## Rules: later
 

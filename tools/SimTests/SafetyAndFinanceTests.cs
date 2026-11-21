@@ -31,6 +31,10 @@ public class SafetyAndFinanceTests
             c.Bubble.HotPermille = 1000;
             c.Bubble.GraceMonthsBeforeCrash = 999;
             c.Bubble.WeakCashHaircutPermille = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
         }).WithStarterLab(gpus: 8);
         ModelState model = g.Train("mini", 300);
         g.UntilTrained(model);
