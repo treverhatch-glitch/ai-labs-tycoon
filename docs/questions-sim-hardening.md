@@ -221,3 +221,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) training exempt; (b) refuse `StartTraining` like other permit checks; (c) freeze only blocks hires/land.
 - Choice: **(b)** — `CommandProcessor.StartTraining` checks home bloc `PermitFrozen`; foreign-site bloc freeze does not affect home training.
 - Why: government freeze should stop new runs, not just GPUs; aligns with rent/found permit gates.
+
+### Q38. Open weights vs data source? DECIDED: synthetic blocks `SetOpenWeights`
+
+- Options: (a) any trained model can open weights; (b) `blocksOpenWeights` on `training.dataSources`, refuse with `DataSourceBlocksOpenWeights`; (c) open weights only on internal.
+- Choice: **(b)** — synthetic mix cannot publish weights; internal/licensed may; stamp on model `dataSourceId`, not lab default.
+- Why: risky data cannot be “open sourced” credibly; crosses Q9 open weights + Q35 synthetic finish risks.

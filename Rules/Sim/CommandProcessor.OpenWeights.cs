@@ -13,6 +13,12 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.WrongModelStatus, model.Name + " must be trained or on sale to change open weights.");
             if (model.Sectors.Count == 0 && model.Status == ModelStatus.Trained)
                 return Fail(CommandError.InvalidArgument, "Release " + model.Name + " before publishing weights.");
+            if (cmd.Count != 0)
+            {
+                DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
+                if (source != null && source.BlocksOpenWeights)
+                    return Fail(CommandError.DataSourceBlocksOpenWeights, model.Name + " was trained on " + source.Name + ", which cannot be released as open weights.");
+            }
             model.OpenWeights = cmd.Count != 0;
             return CommandResult.Done(-1);
         }

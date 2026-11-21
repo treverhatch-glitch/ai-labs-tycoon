@@ -518,6 +518,8 @@ namespace AiLabs.Rules.Config
         public int FinishHeat;
         /// <summary>Home-bloc attention when a run on this source finishes (licensing scrutiny).</summary>
         public int HomeAttentionPermille;
+        /// <summary>When true, models trained on this mix cannot toggle open weights.</summary>
+        public bool BlocksOpenWeights;
 
         public string Id { get { return IdValue; } }
 
@@ -530,6 +532,7 @@ namespace AiLabs.Rules.Config
             s.Int("finishCorruption", ref FinishCorruption);
             s.Int("finishHeat", ref FinishHeat);
             s.Int("homeAttentionPermille", ref HomeAttentionPermille);
+            s.Bool("blocksOpenWeights", ref BlocksOpenWeights);
         }
     }
 
