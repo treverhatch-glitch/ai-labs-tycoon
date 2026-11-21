@@ -203,11 +203,34 @@ namespace AiLabs.Rules.Systems
             return bill;
         }
 
+        public struct PowerBillTotals
+        {
+            public long GridCost;
+            public long PrivateCost;
+            public long Cooling;
+            public long ColoMarkup;
+
+            public long Total { get { return GridCost + PrivateCost + Cooling + ColoMarkup; } }
+        }
+
+        /// <summary>Lab-wide power bill rolled up by line (sums per-holding <see cref="BillFor"/> rows).</summary>
+        public static PowerBillTotals WeeklyPowerBillTotals(GameConfig c, GameState state, LabState lab)
+        {
+            var t = new PowerBillTotals();
+            for (int i = 0; i < lab.Holdings.Count; i++)
+            {
+                PowerBill bill = BillFor(c, state, lab, lab.Holdings[i]);
+                t.GridCost += bill.GridCost;
+                t.PrivateCost += bill.PrivateCost;
+                t.Cooling += bill.Cooling;
+                t.ColoMarkup += bill.ColoMarkup;
+            }
+            return t;
+        }
+
         public static long WeeklyPowerBill(GameConfig c, GameState state, LabState lab)
         {
-            long total = 0;
-            for (int i = 0; i < lab.Holdings.Count; i++) total += BillFor(c, state, lab, lab.Holdings[i]).Total;
-            return total;
+            return WeeklyPowerBillTotals(c, state, lab).Total;
         }
 
         /// <summary>Upkeep of the halls on owned land. A colo's leased space is paid in its power bill.</summary>

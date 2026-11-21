@@ -386,6 +386,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q76. Aggregated power bill lines? DECIDED: `WorldQueries.WeeklyPowerBillTotals`
+
+- Options: (a) sum in UI from per-holding rows; (b) lab-wide Grid/Private/Cooling/Colo rollup; (c) new ledger lines.
+- Choice: **(b)** — `PowerBillTotals`; `WeeklyPowerBill` delegates to rollup total.
+- Why: cloud-holding rent accrual slice from unity-candidates; pairs Q58 running-cost power line.
+
 ### Q73. Combined landlord income? DECIDED: `LabQueries.LandlordIncomeParts`
 
 - Options: (a) sum in UI; (b) peer + cloud royalty lines; (c) new ledger.
