@@ -975,7 +975,7 @@ namespace AiLabs.Rules.Config
             if (k.CostBase < 1) p.Add("chairs.costBase must be at least 1, so a chair is never free");
             if (k.StipendPerWeek < 0) p.Add("chairs.stipendPerWeek must not be negative");
             if (k.ResearchPerWeek < 0 || k.ResearchPerWeek > 200) p.Add("chairs.researchPerWeek must be from 0 to 200");
-            if (k.PrestigeFloor < 0 || k.PrestigeFloor * (long)k.MaxChairs >= c.Prestige.Max) p.Add("chairs.prestigeFloor times maxChairs must stay under the most prestige, so papers still matter");
+            if (k.PrestigeFloor < 0 || (c.Prestige.Max > 0 && k.PrestigeFloor * (long)k.MaxChairs >= c.Prestige.Max)) p.Add("chairs.prestigeFloor times maxChairs must stay under the most prestige, so papers still matter");
             if (k.MinResearchers < 0 || k.MinResearchers > 50) p.Add("chairs.minResearchers must be from 0 to 50");
         }
 
