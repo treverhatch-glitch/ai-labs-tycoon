@@ -15,7 +15,7 @@ namespace AiLabs.Rules.Sim
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
-        LaunchSectorCampaign, EngageFactoryLine, FlushCoolant, TuneChipSoftware
+        LaunchSectorCampaign, EndSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush, TuneChipSoftware
     }
 
     /// <summary>
@@ -420,9 +420,15 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        public static Command EndSectorCampaign(int labId) { return Make(CommandKind.EndSectorCampaign, labId); }
+
         public static Command EngageFactoryLine(int labId) { return Make(CommandKind.EngageFactoryLine, labId); }
 
+        public static Command EndFactoryLine(int labId) { return Make(CommandKind.EndFactoryLine, labId); }
+
         public static Command FlushCoolant(int labId) { return Make(CommandKind.FlushCoolant, labId); }
+
+        public static Command EndCoolantFlush(int labId) { return Make(CommandKind.EndCoolantFlush, labId); }
 
         public static Command TuneChipSoftware(int labId) { return Make(CommandKind.TuneChipSoftware, labId); }
     }

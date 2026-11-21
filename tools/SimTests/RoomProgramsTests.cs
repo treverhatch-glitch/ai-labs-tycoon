@@ -178,6 +178,60 @@ public class RoomProgramsTests
     }
 
     [Fact]
+    public void End_sector_campaign_clears_timer_and_appeal()
+    {
+        Game g = At(2024);
+        StaffProductStudio(g);
+        g.Do(Command.LaunchSectorCampaign(g.Id, "code-completion"));
+        Assert.True(ProductStudioSystem.CampaignAppealPermille(g.C, g.State, g.Me, "code-completion") > 0);
+        g.Do(Command.EndSectorCampaign(g.Id));
+        Assert.Equal(-1, g.Me.SectorCampaignUntilTick);
+        Assert.Equal(0, ProductStudioSystem.CampaignAppealPermille(g.C, g.State, g.Me, "code-completion"));
+    }
+
+    [Fact]
+    public void End_sector_campaign_refused_when_idle()
+    {
+        Game g = At(2024);
+        StaffProductStudio(g);
+        g.Refused(Command.EndSectorCampaign(g.Id), CommandError.InvalidArgument);
+    }
+
+    [Fact]
+    public void End_factory_line_drops_extra_run_slot()
+    {
+        Game g = At(2028);
+        ExpansionTestSupport.BuildExpansionRoom(g, "ai-factory-hall", 6, 6);
+        int baseRuns = LabQueries.MaxConcurrentRuns(g.C, g.State, g.Me);
+        g.Do(Command.EngageFactoryLine(g.Id));
+        Assert.Equal(baseRuns + 1, LabQueries.MaxConcurrentRuns(g.C, g.State, g.Me));
+        g.Do(Command.EndFactoryLine(g.Id));
+        Assert.Equal(baseRuns, LabQueries.MaxConcurrentRuns(g.C, g.State, g.Me));
+    }
+
+    [Fact]
+    public void End_coolant_flush_clears_cut()
+    {
+        Game g = At(2024);
+        ExpansionTestSupport.BuildExpansionRoom(g, "liquid-cooling-pod");
+        g.Do(Command.FlushCoolant(g.Id));
+        Assert.True(LiquidCoolingPodSystem.CoolingCostCutPermille(g.C, g.State, g.Me) > 0);
+        g.Do(Command.EndCoolantFlush(g.Id));
+        Assert.Equal(0, LiquidCoolingPodSystem.CoolingCostCutPermille(g.C, g.State, g.Me));
+    }
+
+    [Fact]
+    public void End_program_save_load_stays_clear()
+    {
+        Game g = At(2024);
+        StaffProductStudio(g);
+        g.Do(Command.LaunchSectorCampaign(g.Id, "code-completion"));
+        g.Do(Command.EndSectorCampaign(g.Id));
+        var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
+        Assert.Equal(-1, loaded.Me.SectorCampaignUntilTick);
+    }
+
+    [Fact]
     public void Schema_23_migration_from_21()
     {
         Game g = At(2013);

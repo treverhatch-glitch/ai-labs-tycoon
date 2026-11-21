@@ -406,6 +406,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q145. Chip software tune command? DECIDED: `TuneChipSoftware` + `ChipsConfig.softwareTune*`
 - Choice: player spends cash for immediate `SoftwarePermille` gain (architect gate); no new save fields.
 
+### Q146–Q148. End room programs early? DECIDED: `EndSectorCampaign`, `EndFactoryLine`, `EndCoolantFlush`
+- Choice: player commands clear active program timers without refund; same room-era gates as start; no schema change.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

@@ -24,6 +24,19 @@ namespace AiLabs.Rules.Sim
       return CommandResult.Done(-1);
     }
 
+    static CommandResult EndSectorCampaign(GameConfig c, GameState state, LabState lab, Command cmd)
+    {
+      ProductStudioProgramConfig cfg = c.RoomPrograms?.ProductStudio;
+      if (cfg == null) return Fail(CommandError.UnknownId, "Product studio is not configured.");
+      if (!RoomProgramSupport.Gate(c, state, lab, cfg.EraId, cfg.RoomTypeId, cfg.StaffRoleId))
+        return Fail(CommandError.EraLocked, "Build a staffed product studio before ending a campaign.");
+      if (!RoomProgramSupport.ActiveUntil(lab.SectorCampaignUntilTick, state.Tick))
+        return Fail(CommandError.InvalidArgument, "There is no sector campaign running.");
+      lab.SectorCampaignSectorId = "";
+      lab.SectorCampaignUntilTick = -1;
+      return CommandResult.Done(-1);
+    }
+
     static CommandResult EngageFactoryLine(GameConfig c, GameState state, LabState lab, Command cmd)
     {
       AiFactoryHallProgramConfig cfg = c.RoomPrograms?.AiFactoryHall;
@@ -38,6 +51,18 @@ namespace AiLabs.Rules.Sim
       return CommandResult.Done(-1);
     }
 
+    static CommandResult EndFactoryLine(GameConfig c, GameState state, LabState lab, Command cmd)
+    {
+      AiFactoryHallProgramConfig cfg = c.RoomPrograms?.AiFactoryHall;
+      if (cfg == null) return Fail(CommandError.UnknownId, "AI factory hall is not configured.");
+      if (!RoomProgramSupport.Gate(c, state, lab, cfg.EraId, cfg.RoomTypeId, ""))
+        return Fail(CommandError.EraLocked, "Build an AI factory hall before ending a factory line.");
+      if (!RoomProgramSupport.ActiveUntil(lab.FactoryLineUntilTick, state.Tick))
+        return Fail(CommandError.InvalidArgument, "No factory line is engaged.");
+      lab.FactoryLineUntilTick = -1;
+      return CommandResult.Done(-1);
+    }
+
     static CommandResult FlushCoolant(GameConfig c, GameState state, LabState lab, Command cmd)
     {
       LiquidCoolingPodProgramConfig cfg = c.RoomPrograms?.LiquidCoolingPod;
@@ -49,6 +74,18 @@ namespace AiLabs.Rules.Sim
       if (cfg.FlushCashCost > 0) Finance.Spend(lab, LedgerLine.SiteBuild, cfg.FlushCashCost);
       lab.CoolantBoostUntilTick = state.Tick + cfg.FlushWeeks;
       Events.Add(state, EventKind.WorldNews, lab.Id, -1, cfg.FlushCashCost, "coolant-flush");
+      return CommandResult.Done(-1);
+    }
+
+    static CommandResult EndCoolantFlush(GameConfig c, GameState state, LabState lab, Command cmd)
+    {
+      LiquidCoolingPodProgramConfig cfg = c.RoomPrograms?.LiquidCoolingPod;
+      if (cfg == null) return Fail(CommandError.UnknownId, "Liquid cooling pod is not configured.");
+      if (!RoomProgramSupport.Gate(c, state, lab, cfg.EraId, cfg.RoomTypeId, ""))
+        return Fail(CommandError.EraLocked, "Build a liquid cooling pod before ending a coolant flush.");
+      if (!RoomProgramSupport.ActiveUntil(lab.CoolantBoostUntilTick, state.Tick))
+        return Fail(CommandError.InvalidArgument, "There is no active coolant flush.");
+      lab.CoolantBoostUntilTick = -1;
       return CommandResult.Done(-1);
     }
   }

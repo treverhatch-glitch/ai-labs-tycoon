@@ -68,8 +68,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.RentPeerCompute: return RentPeerCompute(c, state, lab, cmd);
                 case CommandKind.EndPeerCompute: return EndPeerCompute(c, state, lab, cmd);
                 case CommandKind.LaunchSectorCampaign: return LaunchSectorCampaign(c, state, lab, cmd);
+                case CommandKind.EndSectorCampaign: return EndSectorCampaign(c, state, lab, cmd);
                 case CommandKind.EngageFactoryLine: return EngageFactoryLine(c, state, lab, cmd);
+                case CommandKind.EndFactoryLine: return EndFactoryLine(c, state, lab, cmd);
                 case CommandKind.FlushCoolant: return FlushCoolant(c, state, lab, cmd);
+                case CommandKind.EndCoolantFlush: return EndCoolantFlush(c, state, lab, cmd);
                 case CommandKind.TuneChipSoftware: return TuneChipSoftware(c, state, lab, cmd);
                 case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
