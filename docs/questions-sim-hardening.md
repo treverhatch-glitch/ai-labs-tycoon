@@ -261,3 +261,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) freeze default + block `SetTrainingDataSource`; (b) rewind active runs; (c) block open weights.
 - Choice: **(a)** — lab default stays; in-flight runs keep `dataSourceId`; open weights and sector price untouched.
 - Why: pairs Q11/Q38; freeze as permit sanction, not new risk track.
+
+### Q45. Training failed runs? DECIDED: weekly collapse dice + scrap command
+
+- Options: (a) deterministic fail at low alignment only; (b) weekly permille risk from data source, engineers and alignment share; (c) auto-refund prep cash.
+- Choice: **(b)** — `TrainingSystem.RunWeek` rolls after `failAfterProgressPermille`; `ModelStatus.Failed`, `TrainingFailed` event, `ScrapFailedRun` command removes the wreck; schema **17**.
+- Why: DESIGN training row (failed runs); not recipes yet; avoids era talent/press and rules-forward bubble/shady depth.
