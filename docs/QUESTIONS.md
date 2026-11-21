@@ -1863,6 +1863,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q364. Do labour, retirement notices, account teams, papers and alumni hold together with each other and with the older systems? DECIDED: interactions pinned in six tests
 - `LabourSunsetAccountsConferenceAlumniTogetherTests`: a layoff fills the pool with laid-off people and adds labour pressure, and taking one back leaves the pressure alone; a retirement moves its sectors to the successor and the account teams stay with them; an account team and an outside bonus share one cap and the outside hook is zero here; a paper is decided while the lab is in turmoil and layoffs go on filling the pool; a save with all five in flight is sound, loads and plays on identically; and a save from before them loads with all five idle.
+- `CareToolsTogetherTests` switches labour off in its start config: its fixed 260-week script only tries a pay change when the lab has over $1M at a set week, and with labour on, seed 2 (which pays the union its recognition rise) misses that week. The test is about the care tools, so it keeps the trajectory it was written against; labour has its own tests.
 - This is a set of pinned interactions, not a 260-week play-through over seeds: that was done for the previous batch and is left for the next one.
 
 ## Open

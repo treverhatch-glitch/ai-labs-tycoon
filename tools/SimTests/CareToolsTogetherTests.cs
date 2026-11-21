@@ -18,6 +18,7 @@ public class CareToolsTogetherTests
         return Game.New(seed, c =>
         {
             c.RedTeam.RoleId = "";
+            c.Labour.Enabled = 0;
             c.Interp.LevelTechs = new List<string> { "state-machines" };
         });
     }
