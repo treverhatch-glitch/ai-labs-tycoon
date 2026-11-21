@@ -20,3 +20,5 @@ How they come back depends on their morale the day they went:
 
 - Events: `SabbaticalStarted` (SubjectId the person, Amount weeks, Ref role) and `SabbaticalEnded` (Amount morale now, Pick 2 refreshed, 1 rested, 0 restless, -1 recalled).
 - No random numbers. The point is who to send: it helps the worn-down and hurts the happy.
+
+Someone already away on a skunkworks team, an account team or the support desk cannot be sent on sabbatical (Q370).

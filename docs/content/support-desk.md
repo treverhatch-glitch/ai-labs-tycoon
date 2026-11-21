@@ -17,3 +17,5 @@ Engineers on a support desk against a weekly stream of tickets (`support.*` in t
 
 - Events: `SupportDeskSet` (Amount the people on it) and `SupportBacklogChanged` (Amount the backlog, Pick 1 when it passed the limit and 0 when it came back under).
 - No random numbers; a lab with nothing on sale has no tickets.
+
+People on a sabbatical are not drawn on: the desk takes the first engineers who are not on leave, and a desk member cannot be sent on sabbatical (Q370).

@@ -1895,6 +1895,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads seats, research points and prestige (Q308); no random numbers; only the player's lab. A new `LabQueries.FreeSeats` counts the scholars' seats and hiring, rehiring, internships and requisitions use it. The golden moved 067ec37f -> 1bbc3845 only through the new saved fields and the schema number (verified by taking them out).
 - Alternatives: scholars who may be hired (rejected: internships are that road), prestige each week (rejected: it would reward keeping them for ever).
 
+### Q370. Do the new events talk, and do the five systems fit together? DECIDED: 17 headlines and 16 chat lines, and three rules where they meet
+- The ten new event kinds (internships, support desk, sabbaticals, requisitions, scholars) get headlines (125 -> 142) and chat lines (179 -> 195) in the data; the wildcard lines come last where the event's `Pick` is a number of weeks or people.
+- Where they meet: (1) people away on a skunkworks team, an account team or the support desk cannot also be sent on sabbatical (refused); (2) the support desk draws only on engineers who are not on leave, so a sabbatical never leaves a desk place empty; (3) scholars hold researcher seats through `LabQueries.FreeSeats`, so a hire, a rehire, an internship conversion or an arriving order is turned away while they sit there. Interns and scholars are not staff: layoffs and labour do not count them, and unconverted interns join the alumni pool on good terms.
+- `Support.Enabled = 0` was set in the sunset-trust and the care-tools autopilot tests, whose fixed scripts and trust comparisons the desk's backlog changes.
+- Alternatives: letting a desk member go on leave and keep clearing tickets (rejected: the person is not there), a shared "away" counter (rejected: each system keeps its own state).
+
 ## Open
 
 None.

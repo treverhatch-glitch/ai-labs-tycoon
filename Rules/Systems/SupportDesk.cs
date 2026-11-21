@@ -14,20 +14,29 @@ namespace AiLabs.Rules.Systems
 
         public static int Engineers(LabState lab) { return LabQueries.StaffCount(lab, RoleId); }
 
-        public static int MostPeople(GameConfig c, LabState lab) { return (int)MathI.Max(0, MathI.Min(c.Support.MaxPeople, Engineers(lab) - c.Support.KeepFree)); }
+        /// <summary>Engineers the desk can draw on: those not away on a sabbatical.</summary>
+        public static int Available(LabState lab)
+        {
+            int n = 0;
+            for (int i = 0; i < lab.Staff.Count; i++)
+                if (lab.Staff[i].RoleId == RoleId && lab.Staff[i].LeaveDue == 0) n++;
+            return n;
+        }
+
+        public static int MostPeople(GameConfig c, LabState lab) { return (int)MathI.Max(0, MathI.Min(c.Support.MaxPeople, Available(lab) - c.Support.KeepFree)); }
 
         /// <summary>The engineers actually on the desk: the number set, never more than the lab has left.</summary>
-        public static int OnDesk(GameConfig c, LabState lab) { return (int)MathI.Min(lab.SupportPeople, Engineers(lab)); }
+        public static int OnDesk(GameConfig c, LabState lab) { return (int)MathI.Min(lab.SupportPeople, Available(lab)); }
 
         /// <summary>True when the person is on the desk: the first engineers in the order the lab lists them.</summary>
         public static bool Away(GameConfig c, LabState lab, StaffMember person)
         {
-            if (lab.SupportPeople <= 0 || person.RoleId != RoleId) return false;
+            if (lab.SupportPeople <= 0 || person.RoleId != RoleId || person.LeaveDue > 0) return false;
             int n = 0;
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 StaffMember other = lab.Staff[i];
-                if (other.RoleId != RoleId) continue;
+                if (other.RoleId != RoleId || other.LeaveDue > 0) continue;
                 if (other == person) return n < lab.SupportPeople;
                 n++;
             }

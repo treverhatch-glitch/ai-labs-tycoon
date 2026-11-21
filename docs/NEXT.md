@@ -307,6 +307,8 @@ and says why in the commit message.
 124. **Sabbaticals (send a person away on pay; the worn-down return refreshed, the happy restless).** ~~Done~~: `sabbatical` data, `SendOnSabbatical`, `RecallFromSabbatical`, `Sabbatical`, schema 79, `SabbaticalTests`, `docs/content/sabbatical.md` (Q367).
 125. **Open requisitions (order people for later at a locked price; seats and cash must be ready).** ~~Done~~: `requisitions` data, `OpenRequisition`, `CancelRequisition`, `Requisitions`, schema 80, `RequisitionsTests`, `docs/content/requisitions.md` (Q368).
 126. **Visiting scholars (outside researchers at researchers' desks; prestige when they leave on schedule).** ~~Done~~: `scholars` data, `HostScholars`, `SendScholarsHome`, `Scholars`, schema 80, `ScholarsTests`, `docs/content/visiting-scholars.md` (Q369).
+127. **News and chat for the new systems.** ~~Done~~: 17 headlines and 16 chat lines in the data, `InternsSupportSabbaticalRequisitionsScholarsNewsChatTests` (Q370).
+128. **The five new systems together.** ~~Done~~: sabbaticals refused for people already away, the desk skips people on leave, scholars' seats against hires, `InternsSupportSabbaticalRequisitionsScholarsTogetherTests` (Q370).
 
 ## Rules: later
 

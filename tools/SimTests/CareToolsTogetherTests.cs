@@ -19,6 +19,7 @@ public class CareToolsTogetherTests
         {
             c.RedTeam.RoleId = "";
             c.Labour.Enabled = 0;
+            c.Support.Enabled = 0;
             c.Interp.LevelTechs = new List<string> { "state-machines" };
         });
     }

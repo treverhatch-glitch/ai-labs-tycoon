@@ -15,6 +15,7 @@ namespace AiLabs.Rules.Sim
             if (person == null) return Fail(CommandError.UnknownId, "There is nobody " + cmd.TargetId + " on the payroll.");
             if (person.LeaveDue > 0) return Fail(CommandError.InvalidArgument, "That person is already away.");
             if (person.MentorId != 0 || Mentoring.IsMentor(lab, person)) return Fail(CommandError.InvalidArgument, "That person is in a mentoring pair.");
+            if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person) || SupportDesk.Away(c, lab, person)) return Fail(CommandError.InvalidArgument, "That person is already working away from their desk.");
             if (Sabbatical.Away(lab) >= c.Sabbatical.MaxAway) return Fail(CommandError.InvalidArgument, c.Sabbatical.MaxAway + " people are already away.");
             Sabbatical.Send(c, state, lab, person);
             return CommandResult.Done(-1);
