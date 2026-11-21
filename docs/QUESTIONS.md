@@ -1209,6 +1209,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)**. `designerId` per model, -1 when people did it alone (`MigrateTo35`). The chain is found by following the ids, and a helper that was pruned from the museum just ends the chain. The cost lands at the finish of the run, so nothing else is stored.
 - Why: one field is enough, and nothing that can be derived is saved. Rivals and the autopilot never use it, so the economy guards are untouched. The pinned golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
 
+### Q252. How does the player pick how long to test? DECIDED: a normal release is the tested one; a separate command skips weeks
+- Options: (a) a testing-weeks field on every release; (b) automatic testing time that grows while a model waits; (c) a separate `RushRelease` for a first launch, with the weeks skipped.
+- Recommendation and choice: **(c)**. `RushRelease(model, weeks 1 to 6, sectors)` does what `ReleaseModel` does for a model that has not been on sale and refuses all the same cases. A normal `ReleaseModel` is unchanged and carries no rush.
+- Why: (a) and (b) would change every release, including those of the autopilot and rivals, and would move the economy guards that depend on them (Q182). Treating the normal release as the tested one keeps all of that exact, and the bible's "rushing" is exactly the skipped case.
+
+### Q253. What does a rush give and cost? DECIDED: +4% appeal for 13 weeks, +0.3 points of incident chance for 26 weeks, and -3 culture, each per week skipped
+- Options: (a) only an incident cost; (b) the launch boost and the incident cost; (c) also a trust hit.
+- Recommendation and choice: **(b)** plus culture. For each week skipped: `launchAppealPermillePerWeek` 40 for `launchWeeks` 13; `incidentPermillePerWeek` 3 for `incidentWeeks` 26; `culturePointsPerWeek` 3 once. A six-week rush is +24% appeal, +1.8 points of weekly incident chance and -18 culture.
+- Why: the bible names two effects: winning the launch window and a likelier incident. A boost that ends after a quarter and a risk that lasts half a year make the rush a gamble, not a free lunch, and the culture cost matches chapter 10's "rushing a release to beat a rival". The existing culture rule only looks at alignment on release; this one is about time.
+
+### Q254. Is a save change needed, and does the golden move? DECIDED: yes, schema 36; the golden moved with a verified cause
+- Options: (a) save the release week and the weeks skipped; (b) save only the weeks skipped, and use the model's existing release date.
+- Recommendation and choice: **(b)**. `rushWeeks` per model (`MigrateTo36` sets 0). The window is read from `releasedTick`, which already exists.
+- Why: one new field is enough. Rivals and the autopilot never rush, so the economy guards, which use them, are unchanged. The golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
+
 ## Open
 
 None.

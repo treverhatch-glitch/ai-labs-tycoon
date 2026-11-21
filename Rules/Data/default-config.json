@@ -5974,6 +5974,14 @@
     "culturePoints": 15,
     "helperMinPermille": 500
   },
+  "rush": {
+    "maxWeeks": 6,
+    "launchWeeks": 13,
+    "launchAppealPermillePerWeek": 40,
+    "incidentWeeks": 26,
+    "incidentPermillePerWeek": 3,
+    "culturePointsPerWeek": 3
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -6158,6 +6166,15 @@
       "pick": -1,
       "about": "lab",
       "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part."
+    },
+      {
+      "id": "model-rushed",
+      "kind": "ModelRushed",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
     },
       {
       "id": "room-refurbished",

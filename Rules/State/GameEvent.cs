@@ -104,7 +104,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player chose what a model in training is for. SubjectId is the model, Ref the objective id (empty for the default).</summary>
         ObjectiveSet,
         /// <summary>A model was put to work on its successor's design. SubjectId is the successor, Amount the helper's id, Ref the successor's name.</summary>
-        SuccessorDesigned
+        SuccessorDesigned,
+        /// <summary>A model was put on sale with some testing skipped. SubjectId is the model, Amount the weeks skipped, Ref its name.</summary>
+        ModelRushed
     }
 
     /// <summary>

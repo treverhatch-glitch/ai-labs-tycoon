@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 35;
+        public const int CurrentSchema = 36;
 
         public int Schema;
         public string ConfigVersion;
@@ -417,6 +417,8 @@ namespace AiLabs.Rules.State
         public string Objective = "";
         /// <summary>The model that helped design this one while it trained, or -1 when people did it alone.</summary>
         public int DesignerId = -1;
+        /// <summary>Weeks of testing skipped when this model was first put on sale, or 0 for a tested launch.</summary>
+        public int RushWeeks;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -447,6 +449,7 @@ namespace AiLabs.Rules.State
             s.Int("corruption", ref Corruption);
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
+            s.Int("rushWeeks", ref RushWeeks);
             s.StrList("sectors", ref Sectors);
         }
     }

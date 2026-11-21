@@ -76,6 +76,7 @@ namespace AiLabs.Rules.Config
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
+            RushProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -505,6 +506,18 @@ namespace AiLabs.Rules.Config
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
             }
+        }
+
+        static void RushProblems(List<string> p, GameConfig c)
+        {
+            RushConfig r = c.Rush;
+            if (r == null) { p.Add("rush is missing"); return; }
+            if (r.MaxWeeks < 1 || r.MaxWeeks > 52) p.Add("rush.maxWeeks must be from 1 to 52");
+            if (r.LaunchWeeks < 1 || r.LaunchWeeks > 520) p.Add("rush.launchWeeks must be from 1 to 520");
+            if (r.IncidentWeeks < 1 || r.IncidentWeeks > 520) p.Add("rush.incidentWeeks must be from 1 to 520");
+            if (r.LaunchAppealPermillePerWeek < 0 || (long)r.LaunchAppealPermillePerWeek * r.MaxWeeks > 5000) p.Add("rush.launchAppealPermillePerWeek times maxWeeks must be from 0 to 5000");
+            if (r.IncidentPermillePerWeek < 0 || (long)r.IncidentPermillePerWeek * r.MaxWeeks > MathI.Permille) p.Add("rush.incidentPermillePerWeek times maxWeeks must be from 0 to 1000");
+            if (r.CulturePointsPerWeek < 0 || (long)r.CulturePointsPerWeek * r.MaxWeeks > MathI.Permille) p.Add("rush.culturePointsPerWeek times maxWeeks must be from 0 to 1000");
         }
 
         static void SuccessorProblems(List<string> p, GameConfig c)

@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Config
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
+        public RushConfig Rush = new RushConfig();
         public ChatConfig Chat = new ChatConfig();
         public GlowConfig Glow = new GlowConfig();
         public GauntletConfig Gauntlet;
@@ -126,6 +127,7 @@ namespace AiLabs.Rules.Config
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);
+            s.Obj("rush", ref Rush);
             s.Obj("chat", ref Chat);
             s.Obj("glow", ref Glow);
             s.Obj("gauntlet", ref Gauntlet);

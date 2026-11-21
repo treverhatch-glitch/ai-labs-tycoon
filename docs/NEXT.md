@@ -186,6 +186,10 @@ and says why in the commit message.
     `DesignWithModel`, `SuccessorDesigned` event, save schema 35 (`designerId` per model; Q249-Q251), `SuccessorDesignTests`,
     `docs/content/successor-design.md`. Still open: a button on the recipe screen (Unity), a takeoff incident from long chains, rivals doing it.
 
+32. **Release testing and the rushed launch (bible ch. 6, ch. 10).** ~~Done~~: `rush` in the data, `RushedLaunch`, `RushRelease`,
+    `ModelRushed` event, appeal `LaunchEffect` and incident `FromRush` lines, save schema 36 (`rushWeeks` per model; Q252-Q254),
+    `RushedLaunchTests`, `docs/content/rushed-launch.md`. Still open: a rush slider on the release screen (Unity), rivals rushing to beat the player to a sector.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

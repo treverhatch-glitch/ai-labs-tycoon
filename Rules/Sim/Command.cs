@@ -28,7 +28,8 @@ namespace AiLabs.Rules.Sim
         RollBackModel,
         AnswerOfficeEvent,
         SetTrainingObjective,
-        DesignWithModel
+        DesignWithModel,
+        RushRelease
     }
 
     /// <summary>
@@ -289,6 +290,15 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             c.Permille = claimedAlignmentPermille;
             c.Ids.AddRange(sectorIds);
+            return c;
+        }
+
+        /// <summary>A first release with <paramref name="weeksSkipped"/> weeks of testing skipped: it sells better for a quarter and is likelier to have an incident for half a year.</summary>
+        public static Command RushRelease(int labId, int modelId, int weeksSkipped, params string[] sectorIds)
+        {
+            Command c = ReleaseModel(labId, modelId, 0, sectorIds);
+            c.Kind = CommandKind.RushRelease;
+            c.Count = weeksSkipped;
             return c;
         }
 
