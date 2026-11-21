@@ -84,6 +84,36 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — matches training finish order; synthetic source can show negative part.
 - Why: bible data mix without new fields; pairs with Q11 data sources.
 
+### Q18. Bodies and Upward training mechanics? DECIDED: capability + orbital speed kits
+
+- Options: (a) defer to art pass; (b) `capabilityBonusPermille` on finished runs when the robotics arena is live; (c) `trainingSpeedBonusPermille` from the orbital uplink; (d) new commands.
+- Choice: **(b)+(c)** — config on `expansions` kits; `CapExpansion` on models (schema 15); `TrainedCapabilityParts.FromExpansion`; speed in `TrainingSystem.SpeedPermille`.
+- Why: NEXT “mechanics beyond appeal”; no rival planner changes.
+
+### Q19. Envydia courting at 30% own-chip share? DECIDED: harden existing `CourtRivals`
+
+- Options: (a) new event kind; (b) document + isolate tests for `ChipSystem.CourtRivals` / `VendorSystem.RunMonth`; (c) change share math.
+- Choice: **(b)** — systems design 4.7 already logs `DecisionAction.Courted`; `EnvydiaCourtingHardeningTests` (9 facts).
+- Why: gameplay already in rules; bubble/stack threads own triggers.
+
+### Q20. Vendor keynote ambush? DECIDED: harden existing `OnKeynote`
+
+- Options: (a) new UI event copy; (b) isolate lookback, month keynote, planner buy skip, save/load; (c) change ambush weeks.
+- Choice: **(b)** — systems design 3.3/4.7; `VendorKeynoteAmbushHardeningTests` (9 facts).
+- Why: gameplay already gates rival listing buys; no vendor config change.
+
+### Q21. Envydia standing hits on chip milestones? DECIDED: harden tape-out, listing, delivery
+
+- Options: (a) add breakdown queries; (b) assert one-shot training/listing flags and per-delivery drops; (c) change drop amounts.
+- Choice: **(b)** — `VendorChipStandingHardeningTests` (9 facts) over `VendorStanding` flags and `VendorSystem.Change`.
+- Why: bible 4.7 reactions already in rules; explainable via standing UI.
+
+### Q22. Chip yield ramp? DECIDED: harden weekly `RampYields`
+
+- Options: (a) defer to Unity chip UI; (b) engineers, test lab, max yield, save/load; (c) change ramp formula.
+- Choice: **(b)** — `ChipYieldRampHardeningTests` (9 facts).
+- Why: design 4.5 ramp is live gameplay; no new commands.
+
 ### Q17. Frontier research cost breakdown? DECIDED: base + growth parts
 
 - Options: (a) show only `FrontierCost` total; (b) `FrontierCostParts` with `Base`, `FromGrowth`, `Capped`; (c) list each growth multiplier step.
