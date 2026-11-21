@@ -121,6 +121,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.WalkDataLicense: return WalkDataLicense(c, state, lab, cmd);
                 case CommandKind.TerminateDataLicense: return TerminateDataLicense(c, state, lab, cmd);
                 case CommandKind.RenewDataLicense: return RenewDataLicense(c, state, lab, cmd);
+                case CommandKind.PurchaseDistillSlots: return PurchaseDistillSlots(c, state, lab, cmd);
+                case CommandKind.SubmitPublicBenchmark: return SubmitPublicBenchmark(c, state, lab, cmd);
+                case CommandKind.WithdrawPublicBenchmark: return WithdrawPublicBenchmark(c, state, lab, cmd);
+                case CommandKind.PledgeBenchmarkDefense: return PledgeBenchmarkDefense(c, state, lab, cmd);
+                case CommandKind.RetargetPublicBenchmark: return RetargetPublicBenchmark(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

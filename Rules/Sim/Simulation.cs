@@ -143,6 +143,7 @@ namespace AiLabs.Rules.Sim
             PeerComputeSystem.RunWeek(c, state);
 
             CapabilityDomainSystem.RunWeek(c, state);
+            BenchmarkLeagueSystem.RunWeek(c, state);
             MarketSystem.RunWeek(c, state);
 
             for (int i = 0; i < state.Labs.Count; i++)
@@ -161,6 +162,7 @@ namespace AiLabs.Rules.Sim
                     SectorChampionSystem.RunWeek(c, state, state.Labs[i]);
                     EnterpriseDealSystem.RunWeek(c, state, state.Labs[i]);
                     DataLicenseSystem.RunWeek(c, state, state.Labs[i]);
+                    DistillSlotSystem.RunWeek(c, state, state.Labs[i]);
                     VendorSystem.RunWeek(c, state, state.Labs[i]);
                     HeatwavePowerSystem.RunWeek(c, state, state.Labs[i]);
                     StashStorageSystem.RunWeek(c, state, state.Labs[i]);

@@ -6130,6 +6130,85 @@
     "maxLevel": 0,
     "breachBelowPermille": 900
   },
+  "publicBenchmarks": {
+    "opensYear": 2012,
+    "minResearchers": 1,
+    "liveAppealPermille": 30,
+    "leaderAppealPermille": 45,
+    "benchmarks": [
+      {
+        "id": "lang-arena",
+        "name": "Language Arena",
+        "sectorId": "coding-agents",
+        "minCapability": 200,
+        "minAlignmentPermille": 400,
+        "vettingWeeks": 2,
+        "entryFee": 15000,
+        "retargetFee": 8000,
+        "pledgeFee": 5000,
+        "leaderWeeklyCash": 1200,
+        "leaderWeeklyRep": 2,
+        "liveWeeklyRep": 1,
+        "demoteRepPenalty": 3,
+        "defendDemotePenalty": 7,
+        "pledgeLeaderBonusRep": 2
+      },
+      {
+        "id": "vision-scoreboard",
+        "name": "Vision Scoreboard",
+        "sectorId": "image-recognition",
+        "minCapability": 250,
+        "minAlignmentPermille": 450,
+        "vettingWeeks": 3,
+        "entryFee": 18000,
+        "retargetFee": 9000,
+        "pledgeFee": 6000,
+        "leaderWeeklyCash": 1400,
+        "leaderWeeklyRep": 2,
+        "liveWeeklyRep": 1,
+        "demoteRepPenalty": 4,
+        "defendDemotePenalty": 8,
+        "pledgeLeaderBonusRep": 2
+      },
+      {
+        "id": "expert-league",
+        "name": "Expert Task League",
+        "sectorId": "expert-systems",
+        "minCapability": 180,
+        "minAlignmentPermille": 500,
+        "vettingWeeks": 2,
+        "entryFee": 12000,
+        "retargetFee": 7000,
+        "pledgeFee": 4000,
+        "leaderWeeklyCash": 1000,
+        "leaderWeeklyRep": 1,
+        "liveWeeklyRep": 1,
+        "demoteRepPenalty": 3,
+        "defendDemotePenalty": 6,
+        "pledgeLeaderBonusRep": 1
+      }
+    ]
+  },
+  "distillSlots": {
+    "opensYear": 2006,
+    "minResearchers": 1,
+    "packs": [
+      {
+        "id": "short",
+        "slots": 3,
+        "validWeeks": 24,
+        "cashCost": 45000,
+        "prepDiscountPermille": 80
+      },
+      {
+        "id": "bulk",
+        "slots": 8,
+        "validWeeks": 48,
+        "cashCost": 100000,
+        "prepDiscountPermille": 140
+      }
+    ]
+  },
   "dataLicenses": {
     "opensYear": 2000,
     "prospectWindowWeeks": 16,

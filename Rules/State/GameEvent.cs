@@ -75,7 +75,18 @@ namespace AiLabs.Rules.State
         DataLicenseRevoked,
         DataLicenseCompleted,
         DataLicenseRenewed,
-        DataLicenseTerminated
+        DataLicenseTerminated,
+        DistillSlotsPurchased,
+        DistillSlotsExpired,
+        DistillSlotsExhausted,
+        PublicBenchmarkSubmitted,
+        PublicBenchmarkLive,
+        PublicBenchmarkLeader,
+        PublicBenchmarkDemoted,
+        PublicBenchmarkWithdrawn,
+        PublicBenchmarkRejected,
+        PublicBenchmarkPledged,
+        PublicBenchmarkRetargeted
     }
 
     /// <summary>

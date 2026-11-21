@@ -236,6 +236,8 @@ namespace AiLabs.Rules.Config
             ReleaseReviewProblems(p, c);
             EnterpriseDealsProblems(p, c);
             DataLicensesProblems(p, c);
+            DistillSlotsProblems(p, c);
+            PublicBenchmarksProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
@@ -869,6 +871,40 @@ namespace AiLabs.Rules.Config
                 if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
                 if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
                 Permille(p, who + " prepDiscountPermille", t.PrepDiscountPermille);
+            }
+        }
+
+        static void DistillSlotsProblems(List<string> p, GameConfig c)
+        {
+            DistillSlotsConfig e = c.DistillSlots;
+            if (e == null) { p.Add("distillSlots is missing"); return; }
+            if (e.Packs.Count < 1) p.Add("distillSlots.packs is empty");
+            UniqueIds(p, "distillSlots.packs", e.Packs);
+            for (int i = 0; i < e.Packs.Count; i++)
+            {
+                DistillSlotPackConfig pack = e.Packs[i];
+                string who = "distillSlots.packs[" + pack.Id + "]";
+                if (pack.Slots < 1) p.Add(who + " slots must be at least 1");
+                if (pack.ValidWeeks < 1) p.Add(who + " validWeeks must be at least 1");
+                Permille(p, who + " prepDiscountPermille", pack.PrepDiscountPermille);
+            }
+        }
+
+        static void PublicBenchmarksProblems(List<string> p, GameConfig c)
+        {
+            PublicBenchmarksConfig e = c.PublicBenchmarks;
+            if (e == null) { p.Add("publicBenchmarks is missing"); return; }
+            if (e.Benchmarks.Count < 1) p.Add("publicBenchmarks.benchmarks is empty");
+            UniqueIds(p, "publicBenchmarks.benchmarks", e.Benchmarks);
+            Permille(p, "publicBenchmarks.liveAppealPermille", e.LiveAppealPermille);
+            Permille(p, "publicBenchmarks.leaderAppealPermille", e.LeaderAppealPermille);
+            for (int i = 0; i < e.Benchmarks.Count; i++)
+            {
+                PublicBenchmarkConfig b = e.Benchmarks[i];
+                string who = "publicBenchmarks.benchmarks[" + b.Id + "]";
+                if (c.Sector(b.SectorId) == null) p.Add(who + " sectorId names unknown sector \"" + b.SectorId + "\"");
+                if (b.VettingWeeks < 1) p.Add(who + " vettingWeeks must be at least 1");
+                Permille(p, who + " minAlignmentPermille", b.MinAlignmentPermille);
             }
         }
 

@@ -77,6 +77,13 @@ static class ExpansionTestSupport
         return DisplayQueries.AppealParts(g.C, g.State, sector, sectorState, g.Me, model).ExpansionBoost;
     }
 
+    public static void EnsureDistillSlots(Game g, int rivalLabId, string packId = "short")
+    {
+        if (!DistillSlotSystem.Enabled(g.C, g.State, g.Me)) return;
+        if (DistillSlotSystem.HasSlotForRival(g.C, g.State, g.Me, rivalLabId)) return;
+        g.Do(Command.PurchaseDistillSlots(g.Id, rivalLabId, packId));
+    }
+
     public static void EnsureDataLicense(Game g, string sourceId, string tierId = "standard")
     {
         if (!DataLicenseSystem.SourceRequiresLicense(g.C, sourceId)) return;

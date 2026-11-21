@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 32;
+        public const int CurrentSchema = 34;
 
         public int Schema;
         public string ConfigVersion;
@@ -41,6 +41,8 @@ namespace AiLabs.Rules.State
         public int ChipShortageStrengthPermille;
         /// <summary>Best footprint per capability domain after the latest weekly refresh.</summary>
         public List<CapabilityDomainLeaderState> DomainLeaders = new List<CapabilityDomainLeaderState>();
+        /// <summary>Global public-benchmark crowns after the latest weekly refresh.</summary>
+        public List<BenchmarkLeaderState> BenchmarkLeaders = new List<BenchmarkLeaderState>();
 
         public LabState Player
         {
@@ -92,6 +94,7 @@ namespace AiLabs.Rules.State
             s.Int("chipShortageUntilTick", ref ChipShortageUntilTick);
             s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
             s.ObjList("domainLeaders", ref DomainLeaders);
+            s.ObjList("benchmarkLeaders", ref BenchmarkLeaders);
         }
     }
 
@@ -229,6 +232,9 @@ namespace AiLabs.Rules.State
         public int SlaStrikes;
         /// <summary>Data source license deals (player pipeline, Q215).</summary>
         public List<DataLicenseState> DataLicenses = new List<DataLicenseState>();
+        public List<DistillSlotLot> DistillSlotLots = new List<DistillSlotLot>();
+        /// <summary>Public benchmark submissions (player API-era league).</summary>
+        public List<PublicBenchmarkEntry> PublicBenchmarkEntries = new List<PublicBenchmarkEntry>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -354,6 +360,8 @@ namespace AiLabs.Rules.State
             s.Int("slaLockedUntil", ref SlaLockedUntil);
             s.Int("slaStrikes", ref SlaStrikes);
             s.ObjList("dataLicenses", ref DataLicenses);
+            s.ObjList("distillSlotLots", ref DistillSlotLots);
+            s.ObjList("publicBenchmarkEntries", ref PublicBenchmarkEntries);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

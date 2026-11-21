@@ -31,6 +31,7 @@ namespace AiLabs.Rules.Systems
             public long CampaignBoost;
             public long DomainLeaderBoost;
             public long DomainChallengerBoost;
+            public long BenchmarkBoost;
             public long MoodBoost;
 
             public long Total
@@ -38,7 +39,7 @@ namespace AiLabs.Rules.Systems
                 get
                 {
                     return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost
-                        + CampaignBoost + DomainLeaderBoost + DomainChallengerBoost + MoodBoost;
+                        + CampaignBoost + DomainLeaderBoost + DomainChallengerBoost + BenchmarkBoost + MoodBoost;
                 }
             }
         }
@@ -158,6 +159,9 @@ namespace AiLabs.Rules.Systems
             int challenger = CapabilityDomainSystem.ChallengerAppealPermille(c, state, lab, sector.Id);
             long afterChallenger = ExpansionSystem.ScaleAppeal(afterDomain, challenger);
             b.DomainChallengerBoost = afterChallenger - afterDomain;
+            int benchmark = BenchmarkLeagueSystem.LiveAppealPermille(c, state, lab, sector.Id);
+            long afterBench = ExpansionSystem.ScaleAppeal(afterChallenger, benchmark);
+            b.BenchmarkBoost = afterBench - afterChallenger;
             return b;
         }
 

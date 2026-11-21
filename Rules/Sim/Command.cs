@@ -25,7 +25,9 @@ namespace AiLabs.Rules.Sim
         ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach,
         SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview,
         PursueEnterpriseSeat, SignEnterpriseSeat, WalkEnterpriseSeat, TerminateEnterpriseSeat, RenewEnterpriseSeat,
-        PursueDataLicense, SignDataLicense, WalkDataLicense, TerminateDataLicense, RenewDataLicense
+        PursueDataLicense, SignDataLicense, WalkDataLicense, TerminateDataLicense, RenewDataLicense,
+        PurchaseDistillSlots,
+        SubmitPublicBenchmark, WithdrawPublicBenchmark, PledgeBenchmarkDefense, RetargetPublicBenchmark
     }
 
     /// <summary>
@@ -712,6 +714,50 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RenewDataLicense, labId);
             c.Id = sourceId;
             if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        /// <summary>Buy prepaid distill runs from a rival lab (<c>targetId</c>). <c>id</c> names the pack.</summary>
+        public static Command PurchaseDistillSlots(int labId, int rivalLabId, string packId = null)
+        {
+            Command c = Make(CommandKind.PurchaseDistillSlots, labId);
+            c.TargetId = rivalLabId;
+            c.Id = packId ?? "";
+            if (!string.IsNullOrEmpty(packId)) c.Ids.Add(packId);
+            return c;
+        }
+
+        public static Command SubmitPublicBenchmark(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.SubmitPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command WithdrawPublicBenchmark(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PledgeBenchmarkDefense(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.PledgeBenchmarkDefense, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Swap the model on an open entry. <c>count</c> is the replacement model id.</summary>
+        public static Command RetargetPublicBenchmark(int labId, string benchmarkId, int currentModelId, int newModelId)
+        {
+            Command c = Make(CommandKind.RetargetPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = currentModelId;
+            c.Count = newModelId;
             return c;
         }
     }

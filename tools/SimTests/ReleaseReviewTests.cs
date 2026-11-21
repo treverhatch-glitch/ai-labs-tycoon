@@ -312,6 +312,7 @@ public class ReleaseReviewTests
         Assert.Single(loaded.Player.ReleaseReviews);
         Assert.Empty(loaded.Player.EnterpriseDeals);
         Assert.Empty(loaded.Player.DataLicenses);
+        Assert.Empty(loaded.Player.DistillSlotLots);
     }
 
     [Fact]

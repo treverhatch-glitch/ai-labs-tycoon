@@ -227,7 +227,7 @@ public class EnterpriseDealTests
         Released(g);
         g.Do(Command.PursueEnterpriseSeat(g.Id, Sector));
         var loaded = Simulation.Load(g.C, g.Sim.Save());
-        Assert.Equal(32, loaded.State.Schema);
+        Assert.Equal(34, loaded.State.Schema);
         Assert.Single(loaded.Player.EnterpriseDeals);
     }
 

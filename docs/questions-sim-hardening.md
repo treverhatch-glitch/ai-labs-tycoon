@@ -617,6 +617,49 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) embed in model; (b) per-lab list; (c) global state.
 - Choice: **(b)** — `MigrateTo32`; `WeekReport.trainingSourceIds` for license-use reads.
 
+### Q221. Distill access model? DECIDED: prepaid slot ledger per rival (not contract SM)
+- Options: (a) pursue/sign weekly strikes; (b) consumable packs with expiry; (c) unlimited fee.
+- Choice: **(b)** — rejects enterprise/data-license template; `PurchaseDistillSlots`, `distillSlotLots`.
+
+### Q222. Consumption? DECIDED: one slot per distill run at `BeginTraining`
+- Choice: **(b)** — `DistillSlotSystem.TryConsumeSlot` after cash checks.
+
+### Q223. Gate? DECIDED: `HasSlotForRival` for `SetDistillTarget` and train start
+- Choice: **(b)** — after `opensYear`.
+
+### Q224. Pack trade-off? DECIDED: `slots` × `validWeeks` × `prepDiscountPermille` × cash
+- Choice: **(b)** — short vs bulk packs in config.
+
+### Q225. Expiry? DECIDED: `RunWeek` drops expired lots, `DistillSlotsExpired` event
+- Choice: **(b)** — unused slots lost.
+
+### Q226. Schema? DECIDED: schema **33** `distillSlotLots`
+- Choice: **(b)** — `MigrateTo33`.
+
+### Q228. Benchmark access model? DECIDED: phased vetting → live scoreboard (not Gauntlet)
+- Options: (a) yearly auto bracket; (b) player submission SM with vetting/live/demote; (c) static leaderboard query.
+- Choice: **(b)** — `SubmitPublicBenchmark`, `PublicBenchmarkEntry`, weekly global crowns; rejects contract and consumable templates.
+
+### Q229. Qualification bar? DECIDED: released model in benchmark `sectorId`
+- Choice: `ModelQualifies` checks `ModelStatus.Released`, capability and alignment mins, sector membership.
+
+### Q230. Branching stakes? DECIDED: withdraw, pledge defense, retarget
+- Choice: **(b)** — pledge bonus on leader rep with heavier `defendDemotePenalty`; retarget restarts vetting for fee.
+
+### Q231. Rewards? DECIDED: leader cash + rep, live upkeep rep, appeal permille hook
+- Choice: `Finance.Earn` leader stipend; `DisplayQueries.BenchmarkBoost` from live/leader permille.
+
+### Q232. Cross-lab crown? DECIDED: `GameState.benchmarkLeaders` refreshed weekly
+- Choice: global max score among live entries; `PublicBenchmarkLeader` event on change.
+
+### Q233. Schema? DECIDED: schema **34** `publicBenchmarkEntries` + `benchmarkLeaders`
+- Choice: **(b)** — `MigrateTo34`; slots remain schema 33 fields.
+
+### Q227. Era SuccessorDesign (PR #11) stack? DECIDED: independent hooks
+- **Era:** `DesignWithModel` saves compute at train start; `SuccessorDesign.OnTrained` adjusts capability/alignment/culture at finish.
+- **Rules:** distill slots gate prep + consume; `TrainingSystem.Finish` applies data-source + `distillFinishCapabilityPermille` only.
+- **Merge:** successor hooks run on era branch; they do not read slot lots; slot prep discount does not stack into `computeSavedPermille`. Both may apply to one model; order: slot consume at start → era compute save (if `designerId`) → finish cap from data source → era successor alignment loss.
+
 ### Q214. Enterprise seat vs era service-level pledge (PR #20 / Q329)? DECIDED: suppress deal strike on shared served miss
 - Options: (a) independent — same week can strike both; (b) cap — pledge served breach suppresses deal strike/rep/slip; (c) merge systems.
 - Choice: **(b)** — `ServiceLevelOverlap.PledgeServedBreachSuppressesDealStrike`; deal still misses bonus; incident pledge breaks do not suppress; merge runs `Sla` before `EnterpriseDealSystem`.

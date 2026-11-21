@@ -70,7 +70,23 @@ namespace AiLabs.Rules.Sim
             int licenseCut = DataLicenseSystem.PrepDiscountPermille(c, state, lab, mix.Id);
             if (licenseCut > 0)
                 prepCost = MathI.MulPermille(prepCost, MathI.Permille - licenseCut);
+            if (mix != null && mix.RequiresDistillTarget && lab.DistillTargetLabId >= 0)
+            {
+                int slotCut = DistillSlotSystem.PrepDiscountPermille(c, state, lab, lab.DistillTargetLabId);
+                if (slotCut > 0)
+                    prepCost = MathI.MulPermille(prepCost, MathI.Permille - slotCut);
+            }
+            if (mix != null && mix.RequiresDistillTarget && lab.Controller == LabController.Player
+                && !DistillSlotSystem.HasSlotForRival(c, state, lab, lab.DistillTargetLabId))
+            {
+                LabState need = state.Lab(lab.DistillTargetLabId);
+                string name = need == null ? "that lab" : need.Name;
+                return Fail(CommandError.InvalidArgument, "Buy distill slots from " + name + " first.");
+            }
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
+            if (mix != null && mix.RequiresDistillTarget && lab.Controller == LabController.Player
+                && !DistillSlotSystem.TryConsumeSlot(c, state, lab, lab.DistillTargetLabId))
+                return Fail(CommandError.InvalidArgument, "Distill slots ran out.");
 
             var model = new ModelState();
             model.Id = state.TakeId();
@@ -107,6 +123,9 @@ namespace AiLabs.Rules.Sim
             LabState rival = state.Lab(cmd.TargetId);
             if (rival == null || rival.Id == lab.Id)
                 return Fail(CommandError.InvalidArgument, "Pick another lab to distill from.");
+            if (lab.Controller == LabController.Player
+                && !DistillSlotSystem.HasSlotForRival(c, state, lab, rival.Id))
+                return Fail(CommandError.InvalidArgument, "Buy distill slots from " + rival.Name + " first.");
             lab.DistillTargetLabId = rival.Id;
             Events.Add(state, EventKind.DistillTargetSet, lab.Id, rival.Id, -1, rival.Name);
             return CommandResult.Done(-1);

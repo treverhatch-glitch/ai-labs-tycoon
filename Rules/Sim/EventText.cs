@@ -122,6 +122,29 @@ namespace AiLabs.Rules.Sim
                         return who + " renewed the " + (src == null ? e.Ref : src.Name) + " license.";
                     }
                 case EventKind.DataLicenseTerminated: return who + " terminated the " + e.Ref + " license early (penalty $" + e.Amount + ").";
+                case EventKind.DistillSlotsPurchased: return who + " bought " + e.Amount + " distill slots from " + e.Ref + ".";
+                case EventKind.DistillSlotsExpired: return who + " lost " + e.Amount + " unused distill slots (" + e.Ref + " lot expired).";
+                case EventKind.DistillSlotsExhausted: return who + " used the last distill slot from " + e.Ref + ".";
+                case EventKind.PublicBenchmarkSubmitted:
+                    {
+                        PublicBenchmarkConfig b = c.PublicBenchmarks.Benchmark(e.Ref);
+                        return who + " entered a model in " + (b == null ? e.Ref : b.Name) + " (" + e.Amount + " weeks vetting).";
+                    }
+                case EventKind.PublicBenchmarkLive:
+                    {
+                        PublicBenchmarkConfig b = c.PublicBenchmarks.Benchmark(e.Ref);
+                        return who + " cleared vetting on " + (b == null ? e.Ref : b.Name) + " (score " + e.Amount + ").";
+                    }
+                case EventKind.PublicBenchmarkLeader:
+                    {
+                        PublicBenchmarkConfig b = c.PublicBenchmarks.Benchmark(e.Ref);
+                        return who + " tops " + (b == null ? e.Ref : b.Name) + " this week (score " + e.Amount + ").";
+                    }
+                case EventKind.PublicBenchmarkDemoted: return who + " fell off a benchmark board (−" + e.Amount + " reputation).";
+                case EventKind.PublicBenchmarkWithdrawn: return who + " withdrew from " + e.Ref + ".";
+                case EventKind.PublicBenchmarkRejected: return who + " failed benchmark vetting for " + e.Ref + ".";
+                case EventKind.PublicBenchmarkPledged: return who + " pledged to defend a benchmark crown on " + e.Ref + ".";
+                case EventKind.PublicBenchmarkRetargeted: return who + " swapped benchmark entry " + e.Amount + " → model " + e.SubjectId + " on " + e.Ref + ".";
                 case EventKind.StaffPoached:
                     {
                         LabState victim = state.Lab(e.SubjectId);
