@@ -76,6 +76,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 61) MigrateTo61(root);
             if (fromSchema < 62) MigrateTo62(root);
             if (fromSchema < 63) MigrateTo63(root);
+            if (fromSchema < 64) MigrateTo64(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -440,6 +441,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 64: no lab has endowed a chair.</summary>
+        static void MigrateTo64(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chairs", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 63: no lab has committed to a revenue target.</summary>

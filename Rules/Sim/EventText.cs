@@ -229,6 +229,8 @@ namespace AiLabs.Rules.Sim
                 case EventKind.TargetSettled:
                     return e.Pick == 1 ? who + " hit its level " + e.SubjectId + " revenue target with $" + e.Amount + " and the board is pleased."
                         : who + " missed its level " + e.SubjectId + " revenue target, making $" + e.Amount + ", and the board is not pleased.";
+                case EventKind.ChairEndowed:
+                    return who + " endowed a university chair for $" + e.Amount + " and now holds " + e.SubjectId + (e.SubjectId == 1 ? " chair." : " chairs.");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

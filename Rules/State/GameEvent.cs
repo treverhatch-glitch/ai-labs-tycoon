@@ -200,7 +200,9 @@ namespace AiLabs.Rules.State
         /// <summary>The lab committed to a revenue target. SubjectId is the level, Amount the goal.</summary>
         TargetSet,
         /// <summary>A revenue target was judged. SubjectId is the level, Amount the revenue made, Pick 1 when it was met.</summary>
-        TargetSettled
+        TargetSettled,
+        /// <summary>The lab endowed a university chair. SubjectId is the chairs it now holds, Amount the cost.</summary>
+        ChairEndowed
     }
 
     /// <summary>

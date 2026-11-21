@@ -107,6 +107,7 @@ namespace AiLabs.Rules.Sim
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
                     p.Add(who + " has a revenue target (level " + lab.RevenueTargetLevel + ", goal " + lab.RevenueTargetGoal + ") that the data does not allow");
+                if (lab.Chairs < 0 || lab.Chairs > c.Chairs.MaxChairs || (lab.Chairs > 0 && lab.Id != state.PlayerLabId)) p.Add(who + " holds " + lab.Chairs + " university chairs, which the data does not allow");
                 if (lab.TechDebt < 0 || lab.TechDebt > MathI.Permille || (lab.TechDebt > 0 && lab.Id != state.PlayerLabId)) p.Add(who + " carries " + lab.TechDebt + " points of technical debt, which the data does not allow");
                 if (lab.ResearchGrantStage < 0 || lab.ResearchGrantStage > ResearchGrants.Owed || lab.ResearchGrantTier < 0 || lab.ResearchGrantTier > c.ResearchGrants.MaxTier || lab.ResearchGrantTick < 0 || lab.ResearchGrantOwed < 0 || lab.ResearchGrantLockedUntil < 0
                     || (lab.ResearchGrantStage == ResearchGrants.None && (lab.ResearchGrantTier != 0 || lab.ResearchGrantOwed != 0))

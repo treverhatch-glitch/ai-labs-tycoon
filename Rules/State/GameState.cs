@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 63;
+        public const int CurrentSchema = 64;
 
         public int Schema;
         public string ConfigVersion;
@@ -198,6 +198,8 @@ namespace AiLabs.Rules.State
         public int ConsultantLevel;
         /// <summary>Technical debt, 0 to 1000. Grows with rushed launches, crunch weeks and patched glitches; only paying it down lowers it.</summary>
         public int TechDebt;
+        /// <summary>University chairs the lab has endowed. Only the player's lab endows them.</summary>
+        public int Chairs;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -413,6 +415,7 @@ namespace AiLabs.Rules.State
             s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
             s.Int("consultantLevel", ref ConsultantLevel);
             s.Int("techDebt", ref TechDebt);
+            s.Int("chairs", ref Chairs);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

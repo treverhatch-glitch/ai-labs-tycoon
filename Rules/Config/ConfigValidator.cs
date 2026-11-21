@@ -96,6 +96,7 @@ namespace AiLabs.Rules.Config
             TechDebtProblems(p, c);
             SeniorityProblems(p, c);
             RevenueTargetsProblems(p, c);
+            ChairsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -964,6 +965,18 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void ChairsProblems(List<string> p, GameConfig c)
+        {
+            ChairsConfig k = c.Chairs;
+            if (k == null) { p.Add("chairs is missing"); return; }
+            if (k.MaxChairs < 0 || k.MaxChairs > 10) p.Add("chairs.maxChairs must be from 0 to 10 (0 turns chairs off)");
+            if (k.CostBase < 1) p.Add("chairs.costBase must be at least 1, so a chair is never free");
+            if (k.StipendPerWeek < 0) p.Add("chairs.stipendPerWeek must not be negative");
+            if (k.ResearchPerWeek < 0 || k.ResearchPerWeek > 200) p.Add("chairs.researchPerWeek must be from 0 to 200");
+            if (k.PrestigeFloor < 0 || k.PrestigeFloor * (long)k.MaxChairs >= c.Prestige.Max) p.Add("chairs.prestigeFloor times maxChairs must stay under the most prestige, so papers still matter");
+            if (k.MinResearchers < 0 || k.MinResearchers > 50) p.Add("chairs.minResearchers must be from 0 to 50");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

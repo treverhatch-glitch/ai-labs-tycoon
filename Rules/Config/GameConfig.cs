@@ -91,6 +91,7 @@ namespace AiLabs.Rules.Config
         public TechDebtConfig TechDebt = new TechDebtConfig();
         public SeniorityConfig Seniority = new SeniorityConfig();
         public RevenueTargetsConfig RevenueTargets = new RevenueTargetsConfig();
+        public ChairsConfig Chairs = new ChairsConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
@@ -178,6 +179,7 @@ namespace AiLabs.Rules.Config
             s.Obj("techDebt", ref TechDebt);
             s.Obj("seniority", ref Seniority);
             s.Obj("revenueTargets", ref RevenueTargets);
+            s.Obj("chairs", ref Chairs);
             s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);

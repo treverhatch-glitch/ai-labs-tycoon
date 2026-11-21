@@ -1725,6 +1725,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `ScrapLayoffDebtPromotionTargetTogetherTests` plays three seeds for 260 weeks with the autopilot while a script scraps runs, runs layoff rounds, crunches (to build debt), pays debt down, promotes people and sets board targets. It checks that the books balance, the save is sound, a load plays on the same, two seeds replay from the journal, a lab that uses none of the tools plays exactly as one with them all switched off, and that debt, a promotion and a layoff pull the right ways in one lab.
 - No state and no golden change.
 
+### Q341. Can the player buy a lasting research edge with a big one-off payment? DECIDED: endowed university chairs, each dearer than the last
+- New `chairs` data, lab field `chairs` (schema 64), command `EndowChair`, `Chairs` system and event `ChairEndowed`. Research and prestige were bought a week at a time (researchers, papers that decay). A chair is the permanent version: 150000 for the first, 300000 for the second, 450000 for the third, each adding 14 research points a week, a floor of 120 under prestige and 1200 a week in stipend. The decision is whether the capital is better spent on a chair, a hall, GPUs or a run; it pays back over years, not weeks.
+- The lab needs 3 researchers (a chair needs a lab to sit in) and the cash. The floor is applied where the prestige level is read, so every effect of prestige (hire discount, morale, poaching, counter-offers, grants) sees it with no other change; papers still lift prestige above the floor and it decays back to it. The validator keeps the floor under the top of the scale.
+- Only the player's lab endows chairs and the save check flags a rival with one; rivals are untouched.
+- Golden: the digest moves only because every lab now saves `chairs`. Taking the field and the schema number back out reproduces the previous digest (5779f67f), so no behaviour moved; the new digest is 0691ee37.
+- Alternatives: a chair that wears off (rejected: a timed modifier); a pay-per-paper retainer (rejected: that is the grant system); a chair that needs a named researcher (rejected: a person link needs more state than a count).
+
 ## Open
 
 None.

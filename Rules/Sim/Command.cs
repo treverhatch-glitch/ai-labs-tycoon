@@ -64,7 +64,8 @@ namespace AiLabs.Rules.Sim
         Layoff,
         PayDownDebt,
         PromoteStaff,
-        SetRevenueTarget
+        SetRevenueTarget,
+        EndowChair
     }
 
     /// <summary>
@@ -456,6 +457,12 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetRevenueTarget, labId);
             c.Count = level;
             return c;
+        }
+
+        /// <summary>Endows a university chair: a big one-off cost that pays for good in research points and a floor under academic prestige, and a stipend every week.</summary>
+        public static Command EndowChair(int labId)
+        {
+            return Make(CommandKind.EndowChair, labId);
         }
 
         /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>

@@ -5614,6 +5614,14 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "chairs": {
+    "maxChairs": 3,
+    "costBase": 150000,
+    "stipendPerWeek": 1200,
+    "researchPerWeek": 14,
+    "prestigeFloor": 120,
+    "minResearchers": 3
+  },
   "revenueTargets": {
     "maxLevel": 3,
     "weeks": 13,
