@@ -79,8 +79,8 @@ and says why in the commit message.
     (default 24 games per preset; set `BALANCE_SOAK_FULL=1` for 200 each; optional `BALANCE_SOAK_GAMES_PER_PRESET`).
     Dial-up `trainingCostPermille` raised to 1500 and plan `wealthGrowthPermillePerMillion` cut (Q72); Envydia
     courting still waits on cast chip share (Q67).
-11. **Endings that continue.** Bankrupt, Ousted and Exit as recorded moments after which play goes on. Planned as
-    phase F of the systems design (an Exit keeps the lab as a plan-run rival, Q24).
+11. ~~**Endings that continue (Q96).**~~ Done: continue modes for monopoly and superintelligence endings;
+    `EndingsContinuationTailTests`; exits/ousted/bankrupt unchanged from phase E.
 
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
     a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
@@ -98,6 +98,14 @@ and says why in the commit message.
 - **Specialist** model lines, data sources, **open weights**, sector pricing.
 - ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
 - Real **Bodies** and **Upward** expansions (era data is in, flagged `expansion`; mechanics and art are not).
+
+## Rules: forward queue (from bible / systems-design)
+
+- ~~**The Pop** ending when the bubble crashes on the player (Q97).~~
+- ~~**Second Place** ending when the player is crown runner-up N years (Q98).~~
+- ~~**Exit sell-price breakdown** (Q99).~~
+- ~~**Era incident load** shifts risk by era (Q100).~~
+- ~~**60-year headless soak** pins long-horizon stability (Q101).~~
 
 ## Unity
 

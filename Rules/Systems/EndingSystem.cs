@@ -208,6 +208,21 @@ namespace AiLabs.Rules.Systems
             return cost;
         }
 
+        public static void ApplyContinue(GameConfig c, GameState state, LabState lab, EndingRecord record, string mode)
+        {
+            if (record.EndingId == BankruptId && mode == "spectate")
+            {
+                state.PlayerLabId = -1;
+                return;
+            }
+            if (mode == "spectate" && (record.EndingId == PaperclippedId || record.EndingId == LongSummerId || record.EndingId == LooseId))
+            {
+                state.PlayerLabId = -1;
+                return;
+            }
+            // acknowledge, keep-going, and bailout handled elsewhere: no further state change.
+        }
+
         public static void ApplyBailout(GameConfig c, GameState state, LabState lab)
         {
             lab.Bankrupt = false;

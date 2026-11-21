@@ -74,10 +74,8 @@ namespace AiLabs.Rules.Sim
 
             if (record.EndingId == EndingSystem.BankruptId && cmd.Id == "bailout")
                 EndingSystem.ApplyBailout(c, state, lab);
-            else if (record.EndingId == EndingSystem.BankruptId && cmd.Id == "spectate")
-            {
-                state.PlayerLabId = -1;
-            }
+            else
+                EndingSystem.ApplyContinue(c, state, lab, record, cmd.Id);
 
             record.Choice = cmd.Id;
             record.ChoiceTick = state.Tick;

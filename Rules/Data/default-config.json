@@ -4238,7 +4238,9 @@
         "name": "Monopoly",
         "kind": "Win",
         "blurbKey": "monopoly",
-        "continueModes": []
+        "continueModes": [
+          "acknowledge"
+        ]
       },
       {
         "id": "ousted",
@@ -4273,21 +4275,30 @@
         "name": "Long Summer",
         "kind": "Best",
         "blurbKey": "long-summer",
-        "continueModes": []
+        "continueModes": [
+          "keep-going",
+          "spectate"
+        ]
       },
       {
         "id": "loose",
         "name": "Loose",
         "kind": "Neutral",
         "blurbKey": "loose",
-        "continueModes": []
+        "continueModes": [
+          "keep-going",
+          "spectate"
+        ]
       },
       {
         "id": "paperclipped",
         "name": "Paperclipped",
         "kind": "Worst",
         "blurbKey": "paperclipped",
-        "continueModes": []
+        "continueModes": [
+          "keep-going",
+          "spectate"
+        ]
       },
       {
         "id": "second-place",
