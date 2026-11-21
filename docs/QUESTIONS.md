@@ -1589,6 +1589,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The audit headlines use `pick` for the outcome and the model name in `{ref}`; the other lines match any pick except hack week, which splits start (1) and end (0).
 - Alternatives: one headline per kind (rejected: an audit that embarrasses the lab is a different story from a clean one); naming the retrained role in the headline (rejected: the placeholders have no way to name a role without a new one).
 
+### Q318. Do audits, the research focus, hack weeks, equity and retraining work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- A play-through helper uses all five tools plus the compliance office and offsites on a schedule gated on cash (audit a model every year, rotate the research focus, hack week every 30 weeks, equity at weeks 40, 120 and 200, an engineer-researcher swap). Over 260 weeks on seeds 1 to 3 the books balance, the save has no problems, a load plays on to the same digest and the journal replays to the same game.
+- Across the three seeds each tool was used at least once. A lab that uses none of them plays exactly like the same game without the tools (cash and reputation identical).
+- Equity makes the weekly salary bill smaller and the exit price smaller (a staff share appears in the breakdown).
+- No code or data changed; this is a tests-only entry.
+- Alternatives: gating none of the tools (rejected: an always-on hack week and compliance office bankrupt the thin seed, the same cost of the tool seen in Q303, Q306 and Q311).
+
 ## Open
 
 None.

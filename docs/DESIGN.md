@@ -229,6 +229,8 @@ The player can retrain a person for another role. It costs half of the new role'
 
 The people talk about the newer tools: a certificate (or an embarrassing score) from outside auditors, a new research focus, a hack week and the toaster someone built, equity nobody can sell, and being retrained. The news ticker has a headline for each.
 
+Audits, the research focus, hack weeks, equity and retraining are played together over years in tests: the books balance, saves load, journals replay, and a lab that uses none of them plays as it did before.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
