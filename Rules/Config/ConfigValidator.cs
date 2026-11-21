@@ -190,6 +190,7 @@ namespace AiLabs.Rules.Config
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
             if (c.Gauntlet.HistoryYears < 1) p.Add("gauntlet.historyYears must be at least 1");
+            GauntletProblems(p, c);
 
             if (c.Lot(c.PlayerStart.LotId) == null) p.Add("playerStart.lotId names the unknown lot \"" + c.PlayerStart.LotId + "\"");
             if (c.PlayerStart.Cash < 0) p.Add("playerStart.cash is negative");
@@ -425,6 +426,25 @@ namespace AiLabs.Rules.Config
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
             }
+        }
+
+        static void GauntletProblems(List<string> p, GameConfig c)
+        {
+            GauntletConfig g = c.Gauntlet;
+            if (g.MaxTuningPermille < 0 || g.MaxTuningPermille > 1000) p.Add("gauntlet.maxTuningPermille must be from 0 to 1000");
+            Permille(p, "gauntlet.tuningScoreSharePermille", g.TuningScoreSharePermille);
+            if (g.TuningCostHireFeesPer100 < 0) p.Add("gauntlet.tuningCostHireFeesPer100 is negative");
+            if (g.ExposeChancePerTuningPermille < 0 || g.ExposeFeudBonusPermille < 0) p.Add("gauntlet exposure chances cannot be negative");
+            if (g.MaxTuningPermille > 0 && g.ExposeChancePerTuningPermille < 1) p.Add("gauntlet.exposeChancePerTuningPermille needs at least 1 while tuning is on, or tuning is free money");
+            if (g.ExposedReputationLoss < 0 || g.DemoTriumphReputation < 0 || g.DemoMemeReputation < 0) p.Add("gauntlet reputation amounts cannot be negative");
+            if (g.DemoMemeFromPermille < 0) p.Add("gauntlet.demoMemeFromPermille is negative");
+            if (g.DemoMemeFromPermille > 0 && (g.DemoTriumphBelowPermille < 0 || g.DemoTriumphBelowPermille >= g.DemoMemeFromPermille))
+                p.Add("gauntlet.demoTriumphBelowPermille must be under demoMemeFromPermille, or one demo could be both");
+            if (g.ConfidentWrongMinGap < 1) p.Add("gauntlet.confidentWrongMinGap needs at least 1");
+            if (g.ConfidentWrongReputation < 0 || g.NewcomerReputation < 0) p.Add("gauntlet award reputation cannot be negative");
+            if (g.NewcomerYears < 0) p.Add("gauntlet.newcomerYears is negative");
+            if (g.NewcomerMorale < 0 || g.NewcomerMorale > 500) p.Add("gauntlet.newcomerMorale needs a value from 0 to 500");
+            if (g.SeasonCrownPoints < 0 || g.SeasonBracketPoints < 0) p.Add("gauntlet season points cannot be negative");
         }
 
         static void PressProblems(List<string> p, GameConfig c)

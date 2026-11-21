@@ -106,6 +106,7 @@ namespace AiLabs.Rules.Sim
                     if (c.Press.Journalist(q.JournalistId) == null) p.Add(who + " has a question from the unknown journalist \"" + q.JournalistId + "\"");
                 }
                 if (lab.PressInquiries.Count > c.Press.MaxOpenInquiries) p.Add(who + " has more open questions than the press desk allows");
+                if (lab.GauntletTuning < 0 || lab.GauntletTuning > c.Gauntlet.MaxTuningPermille) p.Add(who + " has a Gauntlet tuning of " + lab.GauntletTuning + ", outside 0 to " + c.Gauntlet.MaxTuningPermille);
                 if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");
                 foreach (BlocStanding standing in lab.Blocs) if (c.World.Bloc(standing.BlocId) == null) p.Add(who + " has a standing with the unknown bloc \"" + standing.BlocId + "\"");

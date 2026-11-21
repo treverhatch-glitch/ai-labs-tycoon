@@ -75,6 +75,20 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";
+                case EventKind.GauntletTuned:
+                    return e.Pick == 1
+                        ? who + " paid $" + e.Amount + " to tune its entries for " + c.Gauntlet.Name + "."
+                        : who + " could not find the $" + e.Amount + " to tune its entries for " + c.Gauntlet.Name + ", so they went in as they were.";
+                case EventKind.GauntletExposed:
+                    return "A rival exposed " + who + "'s tuning at " + c.Gauntlet.Name + ": " + e.SubjectId + " entries lose their lift and " + who + " loses " + e.Amount + " reputation.";
+                case EventKind.GauntletDemo:
+                    return e.Pick == 1
+                        ? who + "'s " + e.Ref + " nailed the live demo at " + c.Gauntlet.Name + ": reputation +" + e.Amount + "."
+                        : who + "'s " + e.Ref + " fell over on stage at " + c.Gauntlet.Name + " and became a meme: reputation " + e.Amount + ".";
+                case EventKind.GauntletAward:
+                    return e.Ref == GauntletSystem.AwardConfident
+                        ? who + " wins Most Confident While Wrong at " + c.Gauntlet.Name + ". Reputation " + (-e.Amount) + "."
+                        : who + " wins Best Newcomer at " + c.Gauntlet.Name + ". The staff are thrilled: morale +" + e.Amount + ".";
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";

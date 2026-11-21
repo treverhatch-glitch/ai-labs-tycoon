@@ -17,7 +17,8 @@ namespace AiLabs.Rules.Sim
         AcceptChinaDeal, DeclineChinaDeal,
         AcquireLab, SellModel,
         CounterPoach, PoachStaff,
-        AnswerPress, LeakStory
+        AnswerPress, LeakStory,
+        SetGauntletTuning
     }
 
     /// <summary>
@@ -393,6 +394,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LeakStory, labId);
             c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>
+        public static Command SetGauntletTuning(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetGauntletTuning, labId);
+            c.Permille = permille;
             return c;
         }
     }

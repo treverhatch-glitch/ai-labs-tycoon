@@ -715,6 +715,33 @@ namespace AiLabs.Rules.Config
         /// <summary>How many years of results are kept.</summary>
         public int HistoryYears;
 
+        /// <summary>The most a lab can tune for the test. 0 switches tuning off.</summary>
+        public int MaxTuningPermille;
+        /// <summary>How much of the tuning shows up as score: a tuning of 200 with a share of 500 lifts every entry by 10%.</summary>
+        public int TuningScoreSharePermille;
+        /// <summary>The prep bill, in sales-role hire fees, for each 100 permille of tuning.</summary>
+        public int TuningCostHireFeesPer100;
+        /// <summary>The chance a tuned win is exposed, per 1000 permille of tuning (so 2000 makes a tuning of 100 a 20% risk).</summary>
+        public int ExposeChancePerTuningPermille;
+        /// <summary>Added to the chance for every rival that is in a feud with the tuned lab.</summary>
+        public int ExposeFeudBonusPermille;
+        public int ExposedReputationLoss;
+        /// <summary>A model on stage whose weekly incident chance is at or under this has a triumphant demo.</summary>
+        public int DemoTriumphBelowPermille;
+        /// <summary>A model whose weekly incident chance is at or over this becomes a meme on stage. 0 switches the demo round off.</summary>
+        public int DemoMemeFromPermille;
+        public int DemoTriumphReputation;
+        public int DemoMemeReputation;
+        /// <summary>The smallest gap between claimed and true alignment that earns "Most Confident While Wrong".</summary>
+        public int ConfidentWrongMinGap;
+        public int ConfidentWrongReputation;
+        /// <summary>A lab counts as a newcomer for this many years after its first release.</summary>
+        public int NewcomerYears;
+        public int NewcomerMorale;
+        public int NewcomerReputation;
+        public int SeasonCrownPoints;
+        public int SeasonBracketPoints;
+
         public void Sync(Syncer s)
         {
             s.Str("name", ref Name);
@@ -723,6 +750,23 @@ namespace AiLabs.Rules.Config
             s.Int("safestReputation", ref SafestReputation);
             s.Int("bracketWinnerAppealPermille", ref BracketWinnerAppealPermille);
             s.Int("historyYears", ref HistoryYears);
+            s.Int("maxTuningPermille", ref MaxTuningPermille);
+            s.Int("tuningScoreSharePermille", ref TuningScoreSharePermille);
+            s.Int("tuningCostHireFeesPer100", ref TuningCostHireFeesPer100);
+            s.Int("exposeChancePerTuningPermille", ref ExposeChancePerTuningPermille);
+            s.Int("exposeFeudBonusPermille", ref ExposeFeudBonusPermille);
+            s.Int("exposedReputationLoss", ref ExposedReputationLoss);
+            s.Int("demoTriumphBelowPermille", ref DemoTriumphBelowPermille);
+            s.Int("demoMemeFromPermille", ref DemoMemeFromPermille);
+            s.Int("demoTriumphReputation", ref DemoTriumphReputation);
+            s.Int("demoMemeReputation", ref DemoMemeReputation);
+            s.Int("confidentWrongMinGap", ref ConfidentWrongMinGap);
+            s.Int("confidentWrongReputation", ref ConfidentWrongReputation);
+            s.Int("newcomerYears", ref NewcomerYears);
+            s.Int("newcomerMorale", ref NewcomerMorale);
+            s.Int("newcomerReputation", ref NewcomerReputation);
+            s.Int("seasonCrownPoints", ref SeasonCrownPoints);
+            s.Int("seasonBracketPoints", ref SeasonBracketPoints);
         }
     }
 

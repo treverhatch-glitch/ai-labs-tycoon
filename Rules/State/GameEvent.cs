@@ -62,7 +62,15 @@ namespace AiLabs.Rules.State
         /// <summary>The player leaked a rival's incident. LabId is the player's lab, SubjectId the rival, Amount the reputation the rival lost (or the leaker lost, if it was traced), Ref the model, Pick 1 if it ran.</summary>
         StoryLeaked,
         /// <summary>A launch earned reputation from the press room. LabId is the lab, SubjectId the model, Amount the reputation points.</summary>
-        LaunchBuzz
+        LaunchBuzz,
+        /// <summary>A lab paid to tune its entries for the Gauntlet. LabId is the lab, Amount the bill, Pick 1 if it was paid and the tuning went in, 0 if the lab could not afford it.</summary>
+        GauntletTuned,
+        /// <summary>A rival exposed a tuned win. LabId is the lab, SubjectId how many entries lost their lift, Amount the reputation lost.</summary>
+        GauntletExposed,
+        /// <summary>A joke award with a real effect. LabId is the winner, Ref the award id, Amount the effect (reputation, or morale for the newcomers).</summary>
+        GauntletAward,
+        /// <summary>The live demo of a lab's crown entry. LabId is the lab, SubjectId the model, Amount the reputation moved, Pick 1 for a triumph and 0 for a meme.</summary>
+        GauntletDemo
     }
 
     /// <summary>

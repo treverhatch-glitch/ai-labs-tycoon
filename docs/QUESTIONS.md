@@ -904,6 +904,38 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. No planner or rival code was touched. Rivals do not build press rooms, answer or leak, so a rival's launch earns no buzz.
 - Why: the planner code is shared with other threads, and a rival leaking at the player needs a rivalry design of its own (rivals own Q150 and up). The save format would not change.
 
+## The Gauntlet, deeper (NEXT item 17)
+
+### Q160. How does the player "teach to the test"? DECIDED: one lab-wide tuning setting that costs money and lifts every score
+
+- Options: (a) a per-entry choice; (b) one setting for the lab (0 to 300 permille) with a prep bill and a score lift; (c) a research tech.
+- Recommendation and choice: **(b)**. `SetGauntletTuning` stores it on the lab (saved, schema **26**). At the Gauntlet the lab pays 10 sales-role hire fees per 100 permille (booked under Hiring) and every score, bracket and crown alike, is lifted by half the tuning (300 gives 15%). A lab that cannot pay, or is bankrupt, enters untuned.
+- Why: the entries are already the models the lab put on sale, so a per-entry choice would mean a choice among models the player already made. One slider is the whole decision: how much to risk the lab's name for a win. Paying at the Gauntlet (not at the command) means the player can change their mind all year.
+
+### Q161. What is the downside? DECIDED: a tuned win can be exposed, more likely with feuding rivals
+
+- Options: (a) none; (b) a flat chance; (c) a chance that grows with the tuning and with the rivals who dislike the player, rolled only if the tuning actually won something.
+- Recommendation and choice: **(c)**. The chance is twice the tuning in permille (100 is 20%) plus 10% for each working rival in a feud, up to 95%. Exposure strips the lift from every entry (the Gauntlet is ranked again, so the win can go to a rival), costs 80 reputation (less scandal damping) and refunds nothing. The roll uses the existing `Ranking` stream and is made only when a tuned lab won something, so a game with no tuning draws no extra luck.
+- Why: the bible asks that rivals be able to expose overfitting. A lab that wins nothing has nothing to expose, so the risk only bites when the gamble paid. Tying it to feuds gives the rivalry system a new job without touching it.
+
+### Q162. What is the live demo? DECIDED: a deterministic reliability check on the crown entry
+
+- Options: (a) a dice roll; (b) a pure function of the model's weekly incident chance; (c) leave it to the Unity scene.
+- Recommendation and choice: **(b)**. A model at 0.8% a week or less is a triumph (+20 reputation), 2% or more is a meme (-30, less damping), in between nothing happens. It applies to every working lab. `demoMemeFromPermille` 0 switches it off.
+- Why: the bible says reliability decides the outcome. A dice roll would draw luck for every lab every year and move every seeded game; a pure function moves only reputation, and a playable scene can show the same result later.
+
+### Q163. What are the joke awards for? DECIDED: two awards, each with a real effect
+
+- Options: (a) cosmetic; (b) a small effect each.
+- Recommendation and choice: **(b)**. "Most Confident While Wrong" (the biggest gap between claimed and true alignment, at least 100) costs 30 reputation. "Best Newcomer" (the best-ranked lab, not the crown winner, within 3 years of its first release) gives 15 reputation and 80 morale to the staff. The winners are saved on the year's record.
+- Why: a gap between claimed and true alignment is what sandbagging makes, so the first award is a second, public way to be caught. The newcomer award gives a young lab a reason to enter and the morale half gives morale something to do.
+
+### Q164. Do rivals tune, and what is the season table? DECIDED: rivals never tune, and the table is a query
+
+- Options: (a) planners tune; (b) the player only. For the table: (a) saved; (b) a query over the kept history.
+- Recommendation and choice: **(b)** and **(b)**. No planner was touched. `GauntletSystem.SeasonTable` scores 5 for a crown and 2 for a bracket win over the kept years, ties by crowns and then by the older lab.
+- Why: planner code is shared with other threads, and a rival that tunes and is exposed would be a rivalry design of its own. A saved table would only repeat what the history already says.
+
 ## Open
 
 None.

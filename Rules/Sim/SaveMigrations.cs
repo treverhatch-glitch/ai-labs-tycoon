@@ -39,6 +39,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
             if (fromSchema < 25) MigrateTo25(root);
+            if (fromSchema < 26) MigrateTo26(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -349,6 +350,18 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
+        }
+
+        /// <summary>The Gauntlet, deeper (Q160): nobody tuned, no award was given and no entry was lifted in an older save.</summary>
+        static void MigrateTo26(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "gauntletTuning", JsonValue.Of(0L)));
+            JsonPatch.ForEach(root, "gauntlets", g =>
+            {
+                JsonPatch.AddIfMissing(g, "confidentLabId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(g, "newcomerLabId", JsonValue.Of(-1L));
+            });
+            JsonPatch.ForEach(root, "gauntlets.entries", e => JsonPatch.AddIfMissing(e, "tuned", JsonValue.Of(false)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

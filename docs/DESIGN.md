@@ -123,6 +123,8 @@ The press ([content/press.md](content/press.md)) turns the lab's news into choic
 launch, a journalist asks about each beat (a launch, an incident, a hearing, the crown), the player answers (tell the truth, spin it,
 offer an exclusive) or lets the question lapse, and a lab can leak a rival's recent incident. Open questions are the only saved part.
 
+The Gauntlet has more to it now ([content/gauntlet.md](content/gauntlet.md)): the player can tune the lab's entries for the test (a lift to every score for a prep bill, at the risk of being exposed), each crown entry takes a live demo whose result follows its reliability, two joke awards carry real effects, and a season table ranks labs over the kept years.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.
@@ -271,7 +273,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Shady | Eight contract cards, stash, launder, Heat, monthly investigations, model corruption; player only | Escape rungs tied to corruption |
 | Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
 | Rivals | OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak (2023) as arrivals; decision logs with reason codes, feelings toward the player, signature behaviours as plan data; Envydia as a vendor with monthly allocation by standing, a keynote and its own log | The rest of the cast, cloud deals for renting labs |
-| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
+| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab; tuning and exposure, a reliability demo, joke awards, a season table | A playable demo scene, hearings |
 | Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 5 with migrations from 1, 2, 3 and 4 (fixtures in `tools/SimTests/Fixtures`) | The same |
 
 ### The bible's first-playable checks
@@ -286,4 +288,4 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
 | Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
 | Bot balance over 200 games and 3 presets | `BalanceSoak` + `BalanceTests` (CI default 24/preset; `BALANCE_SOAK_FULL` for 200) |
-| Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |
+| Money keeps mattering; bubble; overfit Gauntlet entries | Overfitting is built (tuning and exposure); the rest comes with those systems |

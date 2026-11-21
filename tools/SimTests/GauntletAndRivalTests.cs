@@ -93,7 +93,9 @@ public class GauntletAndRivalTests
         // The only lab in the world wins both prizes.
         Assert.Equal(g.Id, g.State.Gauntlets[0].CrownLabId);
         Assert.Equal(g.Id, g.State.Gauntlets[0].SafestLabId);
-        Assert.Equal(g.C.Safety.ReputationBaseline + g.C.Gauntlet.CrownReputation + g.C.Gauntlet.SafestReputation, g.Me.Reputation);
+        GameEvent demo = g.State.Events.Single(e => e.Kind == EventKind.GauntletDemo);
+        Assert.Equal(1, demo.Pick);
+        Assert.Equal(g.C.Safety.ReputationBaseline + g.C.Gauntlet.CrownReputation + g.C.Gauntlet.SafestReputation + g.C.Gauntlet.DemoTriumphReputation, g.Me.Reputation);
     }
 
     [Fact]

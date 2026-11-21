@@ -734,7 +734,7 @@ public class PressTests
         Assert.DoesNotContain("pressInquiries", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
-        Assert.Equal(25, GameState.CurrentSchema);
+        Assert.True(GameState.CurrentSchema >= 25);
         Assert.Empty(loaded.Player.PressInquiries);
         loaded.StepMany(8);
         Assert.Empty(SaveGame.Problems(g.C, loaded.State));

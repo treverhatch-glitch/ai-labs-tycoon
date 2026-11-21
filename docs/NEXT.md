@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 949 tests pass (schemas 19–25: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 25. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1012 tests pass (schemas 19–26: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 26. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -110,6 +110,17 @@ and says why in the commit message.
     crown); the player answers with `honest`, `spin` or `exclusive` or lets the question lapse; `LeakStory` turns the press on a rival
     ([content/press.md](content/press.md)). Planners, autopilot and rivals do not use it. Still open: the press desk screen (Unity),
     rivals that leak at the player.
+
+17. ~~**The Gauntlet, deeper (bible ch. 8, "teach to the test").**~~ Done (Q160 to Q164, save schema **26**): the player sets a lab-wide tuning
+    that lifts every score for a prep bill, a tuned win can be exposed (more likely with feuding rivals, and the win can then go to a rival),
+    each crown entry takes a live demo decided by its reliability, two joke awards ("Most Confident While Wrong", "Best Newcomer") carry real
+    effects, and `GauntletSystem.SeasonTable` ranks labs across the kept years ([content/gauntlet.md](content/gauntlet.md)). Rivals never tune.
+    Still open: a playable demo scene and tuning screen (Unity), rivals that tune and get exposed.
+18. **Trust and the customer desk (bible ch. 8, "trust is slow to win and fast to lose").** A trust meter per lab per sector that carries
+    between neighbouring sectors and moves the appeal, and customer complaints that land on the player's desk like journalists do.
+    Needs trust saved, so a new save schema. Claimed, not started.
+19. **The workplace (bible ch. 14 room list and ch. 7, "morale, retention").** Kitchen and nap pods, recruiting-office poaching defence,
+    and morale that finally moves something (research output). Claimed, not started.
 
 ## Rules: later
 
