@@ -91,6 +91,11 @@ namespace AiLabs.Rules.Sim
                         StyleConfig to = parts.Length == 2 ? c.Style(parts[1]) : null;
                         return who + " pivoted to " + (to == null ? "a new style" : to.Name) + ". " + e.SubjectId + (e.SubjectId == 1 ? " person" : " people") + " left.";
                     }
+                case EventKind.EraScored:
+                    {
+                        EraConfig era = c.Era(e.Ref);
+                        return who + " finished " + (era == null ? e.Ref : era.Name) + " with " + e.SubjectId + (e.SubjectId == 1 ? " goal" : " goals") + " met, scoring " + e.Amount + ".";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

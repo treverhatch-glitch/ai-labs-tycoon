@@ -6425,6 +6425,227 @@
     "confusionWeeks": 52,
     "confusionAppealPermille": 120
   },
+  "campaign": {
+    "allMetBonus": 50,
+    "goals": [
+      {
+        "id": "dial-up-days-revenue",
+        "era": "dial-up-days",
+        "name": "Earn $400K",
+        "metric": "LifetimeRevenue",
+        "target": 400000,
+        "points": 100
+      },
+      {
+        "id": "dial-up-days-first-model",
+        "era": "dial-up-days",
+        "name": "Put a model on sale",
+        "metric": "ModelsReleased",
+        "target": 1,
+        "points": 100
+      },
+      {
+        "id": "dial-up-days-research",
+        "era": "dial-up-days",
+        "name": "Research 12 techs",
+        "metric": "Techs",
+        "target": 12,
+        "points": 100
+      },
+      {
+        "id": "punchline-revenue",
+        "era": "punchline",
+        "name": "Earn $6M",
+        "metric": "LifetimeRevenue",
+        "target": 6000000,
+        "points": 100
+      },
+      {
+        "id": "punchline-sectors",
+        "era": "punchline",
+        "name": "Serve two sectors",
+        "metric": "SectorsServed",
+        "target": 2,
+        "points": 100
+      },
+      {
+        "id": "punchline-trust",
+        "era": "punchline",
+        "name": "Keep reputation at 550",
+        "metric": "Reputation",
+        "target": 550,
+        "points": 100
+      },
+      {
+        "id": "it-sees-revenue",
+        "era": "it-sees",
+        "name": "Earn $12M",
+        "metric": "LifetimeRevenue",
+        "target": 12000000,
+        "points": 100
+      },
+      {
+        "id": "it-sees-models",
+        "era": "it-sees",
+        "name": "Release two models",
+        "metric": "ModelsReleased",
+        "target": 2,
+        "points": 100
+      },
+      {
+        "id": "it-sees-team",
+        "era": "it-sees",
+        "name": "Hire a team of 10",
+        "metric": "Staff",
+        "target": 10,
+        "points": 100
+      },
+      {
+        "id": "it-writes-revenue",
+        "era": "it-writes",
+        "name": "Earn $50M",
+        "metric": "LifetimeRevenue",
+        "target": 50000000,
+        "points": 100
+      },
+      {
+        "id": "it-writes-sectors",
+        "era": "it-writes",
+        "name": "Serve four sectors",
+        "metric": "SectorsServed",
+        "target": 4,
+        "points": 100
+      },
+      {
+        "id": "it-writes-research",
+        "era": "it-writes",
+        "name": "Research 24 techs",
+        "metric": "Techs",
+        "target": 24,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-revenue",
+        "era": "chat-boom",
+        "name": "Earn $200M",
+        "metric": "LifetimeRevenue",
+        "target": 200000000,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-models",
+        "era": "chat-boom",
+        "name": "Release three models",
+        "metric": "ModelsReleased",
+        "target": 3,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-careful",
+        "era": "chat-boom",
+        "name": "Ship a model with alignment 700",
+        "metric": "BestAlignment",
+        "target": 700,
+        "points": 100
+      },
+      {
+        "id": "agents-revenue",
+        "era": "agents",
+        "name": "Earn $500M",
+        "metric": "LifetimeRevenue",
+        "target": 500000000,
+        "points": 100
+      },
+      {
+        "id": "agents-crown",
+        "era": "agents",
+        "name": "Win a sector crown",
+        "metric": "SectorsLed",
+        "target": 1,
+        "points": 100
+      },
+      {
+        "id": "agents-team",
+        "era": "agents",
+        "name": "Hire a team of 20",
+        "metric": "Staff",
+        "target": 20,
+        "points": 100
+      },
+      {
+        "id": "harnesses-revenue",
+        "era": "harnesses",
+        "name": "Earn $1.5B",
+        "metric": "LifetimeRevenue",
+        "target": 1500000000,
+        "points": 100
+      },
+      {
+        "id": "harnesses-sectors",
+        "era": "harnesses",
+        "name": "Serve eight sectors",
+        "metric": "SectorsServed",
+        "target": 8,
+        "points": 100
+      },
+      {
+        "id": "harnesses-careful",
+        "era": "harnesses",
+        "name": "Ship a model with alignment 750",
+        "metric": "BestAlignment",
+        "target": 750,
+        "points": 100
+      },
+      {
+        "id": "bodies-revenue",
+        "era": "bodies",
+        "name": "Earn $3B",
+        "metric": "LifetimeRevenue",
+        "target": 3000000000,
+        "points": 100
+      },
+      {
+        "id": "bodies-models",
+        "era": "bodies",
+        "name": "Release six models",
+        "metric": "ModelsReleased",
+        "target": 6,
+        "points": 100
+      },
+      {
+        "id": "bodies-crowns",
+        "era": "bodies",
+        "name": "Hold three sector crowns",
+        "metric": "SectorsLed",
+        "target": 3,
+        "points": 100
+      },
+      {
+        "id": "upward-revenue",
+        "era": "upward",
+        "name": "Earn $6B",
+        "metric": "LifetimeRevenue",
+        "target": 6000000000,
+        "points": 100
+      },
+      {
+        "id": "upward-sectors",
+        "era": "upward",
+        "name": "Serve twelve sectors",
+        "metric": "SectorsServed",
+        "target": 12,
+        "points": 100
+      },
+      {
+        "id": "upward-trust",
+        "era": "upward",
+        "name": "Keep reputation at 700",
+        "metric": "Reputation",
+        "target": 700,
+        "points": 100
+      }
+    ]
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,
@@ -6768,6 +6989,15 @@
       "pick": -1,
       "about": "lab",
       "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box."
+    },
+      {
+      "id": "era-scored",
+      "kind": "EraScored",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it."
     },
       {
       "id": "room-refurbished",

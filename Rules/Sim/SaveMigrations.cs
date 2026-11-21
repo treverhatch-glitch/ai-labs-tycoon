@@ -51,6 +51,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 36) MigrateTo36(root);
             if (fromSchema < 37) MigrateTo37(root);
             if (fromSchema < 38) MigrateTo38(root);
+            if (fromSchema < 39) MigrateTo39(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -400,6 +401,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 39: no era had been scored.</summary>
+        static void MigrateTo39(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
         }
 
         /// <summary>Schema 38: no lab had pivoted.</summary>

@@ -1269,6 +1269,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)**. Events are data, and the effect uses the standing the lab already saves. No schema change; the golden is the same.
 - Why: the autopilot never answers an office event, so a longer list changes nothing it does, and no new field is stored.
 
+### Q264. What is an era goal, and how many are there? DECIDED: a metric and a target in the data, three per era, 100 points each and 50 for all three
+- Options: (a) hard-coded goals in code; (b) data: a metric from a fixed list, a target and points; (c) free-form conditions.
+- Recommendation and choice: **(b)**. Eight metrics (releases, sectors served, crowns, reputation, staff, techs, lifetime revenue, best alignment), all read off the lab's state, so a goal needs no new saved number. Every era asks for lifetime revenue and two others; the targets are cumulative and climb with the era's starting money.
+- Why: the bible says the campaign "sets goals for each era", which is data a designer will keep tuning. A fixed list of metrics keeps the rules simple and testable, and cumulative targets mean a missed goal in one era can still be caught up in the next.
+
+### Q265. When is the score taken, and for whom? DECIDED: when the next era begins, for the player only, once per era
+- Options: (a) read the score live and never save it; (b) save a mark when the era ends; (c) mark continuously.
+- Recommendation and choice: **(b)**, plus a live query for the run's total (`RunScore`) that adds the current era as it stands. A game that starts in a later era has no marks for earlier ones (the player's founding tick is compared to the era's start), and a bankrupt lab is not marked.
+- Why: a live score would let a player cash in a goal and then drop below the target; a mark taken at the era's end is what "goals for each era" means. Only the player is marked because rivals have no campaign, and a late start should not be punished for eras it never played.
+
+### Q266. Is a save change needed, and does the golden move? DECIDED: yes, schema 39; the golden moved with a verified cause
+- Options: (a) save the marks; (b) rebuild them from the event log.
+- Recommendation and choice: **(a)**. `eraScores` on every lab (`MigrateTo39` sets an empty list). The event log is bounded, so it cannot rebuild a whole run's score.
+- Why: the golden run crosses eras, so it now carries a mark and an event for each. With the sync line, the era hook, the schema number and the data removed, the previous golden returned exactly. Nothing in the sim reads a mark, so no decision, price or dice roll moved.
+
 ## Open
 
 None.

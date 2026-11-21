@@ -206,6 +206,10 @@ and says why in the commit message.
     no save change (Q262-Q263), tests added to `OfficeEventTests`, `docs/content/office-events.md`. Still open: events that need a rival, a chip deal or a data centre
     to exist, and answers that change a rival's feelings.
 
+37. **Campaign era goals and scoring (bible ch. 13).** ~~Done~~: `campaign` in the data (27 goals, three per era), `Campaign` system (`Progress`, `Mark`, `RunScore`, `OnEraBegan`),
+    `EraScore` saved on the player's lab, `EventKind.EraScored`, save schema 39 (Q264-Q266), `CampaignTests`, `docs/content/campaign.md`. Still open: the scoreboard (Unity),
+    a campaign deadline, an ending bonus, difficulty scaling.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

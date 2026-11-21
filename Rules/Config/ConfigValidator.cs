@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Config
             RushProblems(p, c);
             LobbyProblems(p, c);
             PivotProblems(p, c);
+            CampaignProblems(p, c);
             NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
@@ -551,6 +552,26 @@ namespace AiLabs.Rules.Config
                 if (end < 0) break;
                 at = end + 1;
             }
+        }
+
+        static void CampaignProblems(List<string> p, GameConfig c)
+        {
+            CampaignConfig m = c.Campaign;
+            if (m == null) { p.Add("campaign is missing"); return; }
+            if (m.AllMetBonus < 0) p.Add("campaign.allMetBonus must be non-negative");
+            UniqueIds(p, "campaign.goals", m.Goals);
+            for (int i = 0; i < m.Goals.Count; i++)
+            {
+                EraGoalConfig g = m.Goals[i];
+                string who = "campaign goal " + g.IdValue;
+                if (c.Era(g.EraId) == null) p.Add(who + " is for the unknown era \"" + g.EraId + "\"");
+                if (string.IsNullOrEmpty(g.Name)) p.Add(who + " has no name");
+                if (g.Target < 1) p.Add(who + " has a target under 1");
+                if (g.Points < 1) p.Add(who + " is worth under 1 point");
+                if ((g.Metric == GoalMetric.Reputation || g.Metric == GoalMetric.BestAlignment) && g.Target > MathI.Permille) p.Add(who + " asks for more than 1000 of a 0 to 1000 meter");
+            }
+            for (int e = 0; e < c.Eras.Count; e++)
+                if (m.GoalsOf(c.Eras[e].Id).Count == 0) p.Add("era " + c.Eras[e].Id + " has no campaign goals");
         }
 
         static void PivotProblems(List<string> p, GameConfig c)

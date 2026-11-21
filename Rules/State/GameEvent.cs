@@ -110,7 +110,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player lobbied a government. Amount is what it cost, Ref is "bloc|goal|result" (result: landed, missed or backfired).</summary>
         Lobbied,
         /// <summary>The lab changed its style. SubjectId is how many people left, Amount what it cost, Ref "from|to" style ids (from is empty for none).</summary>
-        StylePivoted
+        StylePivoted,
+        /// <summary>The player's lab was marked against an era's goals as the era ended. SubjectId is the goals met, Amount the points, Ref the era id.</summary>
+        EraScored
     }
 
     /// <summary>
