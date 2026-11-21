@@ -1533,6 +1533,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to f7bc9480 because of the lab field and the schema number only; reverting them brought the previous digest (32d55db6) back.
 - Alternatives: a cash price for papers (rejected: research points are what researchers spend their time on, so they are the honest price); prestige that never fades (rejected: reputation in a field is kept up by publishing); a morale-only effect (rejected: it would be free; the poaching risk is the cost of being famous).
 
+### Q309. Can the player let spare compute to outside customers? DECIDED: yes, up to half of the general compute, for half the rent value, with notice
+- New `sublet` data and command `SetSublet(permille)`, `Sublet` system, event `SubletChanged`, error `SubletLocked` (appended), ledger line `Sublet` (an income line, appended). The player lets up to 500 permille of the lab's general compute (rented, owned and reserved GPUs and training chips, after the research share). The share earns 500 permille of what the same compute would rent for, every week, on its own ledger line. Inference chips are never let.
+- The let compute leaves the lab: training runs get less (a run takes longer), and customers are served from less, so a lab that lets too much can be overloaded. The research share and the sublet share cut one after the other. A change locks the share for 4 weeks, because leases need notice.
+- It cannot be a money machine: a GPU rented from the cloud costs 100% of its rent and earns at most 50% back; only owned hardware or idle reserved compute really gains from it. The validator keeps the revenue share at or under 1000 permille and the most at or under 900 so the lab always keeps a tenth of its compute.
+- New state on the lab (schema 50, `MigrateTo50`): `subletPermille` and `subletLockedUntil`, and the `sublet` field of every ledger (`LedgerPlaces`). Player only and opt-in; rivals and the autopilot never sublet, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to 1b97826c because of the two lab fields, the ledger field and the schema number only; reverting them brought the previous digest (f7bc9480) back.
+- Alternatives: a per-GPU price set by the player (rejected: one share is one decision); no notice (rejected: the player could let the compute between training runs and take it back the week a run starts, for free); letting inference chips (rejected: they only serve customers, and the share would have to reach into serving).
+
 ## Open
 
 None.

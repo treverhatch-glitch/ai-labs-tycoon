@@ -62,6 +62,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 47) MigrateTo47(root);
             if (fromSchema < 48) MigrateTo48(root);
             if (fromSchema < 49) MigrateTo49(root);
+            if (fromSchema < 50) MigrateTo50(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -411,6 +412,18 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 50: no lab sublet compute, so every ledger has an empty sublet line.</summary>
+        static void MigrateTo50(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "subletPermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "subletLockedUntil", JsonValue.Of(0L));
+            });
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "sublet", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 49: no lab had published a paper.</summary>

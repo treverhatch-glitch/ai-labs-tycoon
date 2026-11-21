@@ -5517,6 +5517,11 @@
     "poachAtMax": 200,
     "counterAtMax": 100
   },
+  "sublet": {
+    "maxPermille": 500,
+    "revenuePermille": 500,
+    "noticeWeeks": 4
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

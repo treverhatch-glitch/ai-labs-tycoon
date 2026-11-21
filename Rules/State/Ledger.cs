@@ -10,7 +10,7 @@ namespace AiLabs.Rules.State
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
         ChipSales, GreyRevenue, Laundered, CapitalIn,
-        Insurance
+        Insurance, Sublet
     }
 
     /// <summary>
@@ -44,6 +44,8 @@ namespace AiLabs.Rules.State
         public long CapitalIn;
         /// <summary>The weekly premium for incident insurance.</summary>
         public long Insurance;
+        /// <summary>Income from letting compute to outside customers.</summary>
+        public long Sublet;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -52,7 +54,7 @@ namespace AiLabs.Rules.State
             get
             {
                 return Revenue + Grants + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Insurance;
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Insurance + Sublet;
             }
         }
 
@@ -79,6 +81,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.GreyRevenue: return GreyRevenue;
                 case LedgerLine.Laundered: return Laundered;
                 case LedgerLine.Insurance: return Insurance;
+                case LedgerLine.Sublet: return Sublet;
                 default: return CapitalIn;
             }
         }
@@ -106,6 +109,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.GreyRevenue: GreyRevenue += amount; break;
                 case LedgerLine.Laundered: Laundered += amount; break;
                 case LedgerLine.Insurance: Insurance += amount; break;
+                case LedgerLine.Sublet: Sublet += amount; break;
                 default: CapitalIn += amount; break;
             }
         }
@@ -132,6 +136,7 @@ namespace AiLabs.Rules.State
             s.Long("laundered", ref Laundered);
             s.Long("capitalIn", ref CapitalIn);
             s.Long("insurance", ref Insurance);
+            s.Long("sublet", ref Sublet);
         }
     }
 

@@ -146,7 +146,9 @@ namespace AiLabs.Rules.State
         /// <summary>The compliance office lost its policy staff and fell to a lower level. LabId is the lab, SubjectId the level it now runs at, Amount the level it had.</summary>
         ComplianceLapsed,
         /// <summary>The player published a paper. LabId is the lab, SubjectId the prestige now, Amount the research points it cost.</summary>
-        PaperPublished
+        PaperPublished,
+        /// <summary>The player changed the share of compute let to outside customers. LabId is the lab, SubjectId the new share in permille, Amount what it earns in a week at today's fleet.</summary>
+        SubletChanged
     }
 
     /// <summary>

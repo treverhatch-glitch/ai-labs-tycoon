@@ -248,6 +248,7 @@ and says why in the commit message.
 65. **The care tools together (tests).** ~~Done~~: `CareToolsTogetherTests` over 260 weeks and three seeds (Q306).
 66. **Compliance office (government).** ~~Done~~: `SetCompliance`, `Compliance`, `compliance` data, lab `complianceLevel` (schema 48, `MigrateTo48`), `ComplianceTests`, `docs/content/compliance.md` (Q307).
 67. **Published papers and academic prestige (talent).** ~~Done~~: `PublishPaper`, `Prestige`, `prestige` data, lab `prestige` (schema 49, `MigrateTo49`), `PrestigeTests`, `docs/content/papers.md` (Q308).
+68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 50, `MigrateTo50`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
 
 ## Rules: later
 

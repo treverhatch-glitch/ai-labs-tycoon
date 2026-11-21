@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Config
             InterpProblems(p, c);
             ComplianceProblems(p, c);
             PrestigeProblems(p, c);
+            SubletProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -842,6 +843,15 @@ namespace AiLabs.Rules.Config
             if (k.HireDiscountAtMax < 0 || k.HireDiscountAtMax > 500) p.Add("prestige.hireDiscountAtMax must be from 0 to 500");
             if (k.PoachAtMax < 0 || k.PoachAtMax > 500) p.Add("prestige.poachAtMax must be from 0 to 500");
             if (k.CounterAtMax < 0 || k.CounterAtMax > 300) p.Add("prestige.counterAtMax must be from 0 to 300");
+        }
+
+        static void SubletProblems(List<string> p, GameConfig c)
+        {
+            SubletConfig k = c.Sublet;
+            if (k == null) { p.Add("sublet is missing"); return; }
+            if (k.MaxPermille < 0 || k.MaxPermille > 900) p.Add("sublet.maxPermille must be from 0 to 900, so the lab keeps at least a tenth of its compute");
+            if (k.RevenuePermille < 0 || k.RevenuePermille > MathI.Permille) p.Add("sublet.revenuePermille must be from 0 to 1000, so subletting never beats renting out the same GPUs at full price");
+            if (k.NoticeWeeks < 0 || k.NoticeWeeks > 520) p.Add("sublet.noticeWeeks must be from 0 to 520");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

@@ -14,6 +14,9 @@ namespace AiLabs.Rules.Systems
         /// <summary>Inference chips, which only serve customers.</summary>
         public long Inference;
 
+        /// <summary>The compute the lab lets to outside customers. It is already taken out of <see cref="General"/> and is not part of <see cref="Total"/>.</summary>
+        public long Sublet;
+
         public long Total { get { return General + Inference; } }
     }
 
@@ -244,6 +247,14 @@ namespace AiLabs.Rules.Systems
                 int keep = MathI.Permille - (int)MathI.Clamp(lab.ResearchSharePermille, 0, c.Research.MaxComputeSharePermille);
                 split.General = MathI.MulPermille(split.General, keep);
                 split.OwnChips = MathI.MulPermille(split.OwnChips, keep);
+            }
+            if (lab.SubletPermille > 0)
+            {
+                int keep = MathI.Permille - Systems.Sublet.Share(c, lab);
+                long before = split.General;
+                split.General = MathI.MulPermille(split.General, keep);
+                split.OwnChips = MathI.MulPermille(split.OwnChips, keep);
+                split.Sublet = before - split.General;
             }
             return split;
         }

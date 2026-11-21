@@ -44,7 +44,8 @@ namespace AiLabs.Rules.Sim
         SetInterpretability,
         SetPayLevel,
         SetCompliance,
-        PublishPaper
+        PublishPaper,
+        SetSublet
     }
 
     /// <summary>
@@ -372,6 +373,14 @@ namespace AiLabs.Rules.Sim
             return Make(CommandKind.PublishPaper, labId);
         }
 
+        /// <summary>Lets this share of the lab's general compute (permille) to outside customers, from 0 to the data's most.</summary>
+        public static Command SetSublet(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetSublet, labId);
+            c.Permille = permille;
+            return c;
+        }
+
         /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>
         public static Command RedTeamModel(int labId, int modelId)
         {
@@ -655,7 +664,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked
     }
 
     public struct CommandResult
