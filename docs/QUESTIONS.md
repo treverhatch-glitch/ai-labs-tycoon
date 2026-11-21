@@ -1872,6 +1872,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads the hiring fee, seats and the alumni pool (Q362); no random numbers; only the player's lab. The golden moved ef0b282a -> 824557c9 only through the new saved fields and the schema number (verified by taking them out).
 - Alternatives: interns who do work at a discount (rejected: an output knob), a cohort that always converts (rejected: no seat or cash decision).
 
+### Q366. Do customers need looking after? DECIDED: a support desk of engineers against a ticket backlog that costs trust
+- New `support` data, command `StaffSupportDesk`, `SupportDesk` system, events `SupportDeskSet` and `SupportBacklogChanged` and two saved lab fields (schema 78). Released models bring tickets in proportion to what they earn ($4000 of weekly revenue per ticket); the sales team clears 6 a week with no desk and each engineer on the desk clears 4 more. What is not cleared piles up (to 100) and past 15 it costs trust in every sector the lab sells in, every week, until the desk catches up.
+- The choice is how many of the engineers (never the last one, at most 4) to take off building: the same people the account teams, skunkworks and training use. A small lab needs no desk; a lab with several models on sale does.
+- Reads revenue, trust and the staff lists; no random numbers; only the player's lab. The golden moved 824557c9 -> 743d4496 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a desk that is bought as a service (rejected: no decision over people), tickets that depend on incidents (rejected: on-call already covers those).
+
 ## Open
 
 None.

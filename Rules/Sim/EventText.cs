@@ -281,6 +281,10 @@ namespace AiLabs.Rules.Sim
                     return who + " took on " + e.Amount + " " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Amount == 1 ? " intern" : " interns") + " for " + e.Pick + " weeks.";
                 case EventKind.InternshipsEnded:
                     return who + (e.Pick == 1 ? "'s internship ended: " : " sent its interns home early: ") + e.Amount + " of " + e.SubjectId + " taken on.";
+                case EventKind.SupportDeskSet:
+                    return who + (e.Amount == 0 ? " closed its support desk." : " put " + e.Amount + " engineers on its support desk.");
+                case EventKind.SupportBacklogChanged:
+                    return e.Pick == 1 ? who + "'s support backlog passed its limit at " + e.Amount + " tickets and customers are losing patience." : who + " cleared its support backlog down to " + e.Amount + " tickets.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

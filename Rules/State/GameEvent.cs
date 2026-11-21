@@ -262,7 +262,11 @@ namespace AiLabs.Rules.State
         /// <summary>A cohort of interns began. Amount is how many, Pick the weeks, Ref the role id.</summary>
         InternshipStarted,
         /// <summary>A cohort ended. SubjectId is how many there were, Amount how many were taken on, Pick 1 when it ran its course and 0 when it was cut short, Ref the role id.</summary>
-        InternshipsEnded
+        InternshipsEnded,
+        /// <summary>The support desk was staffed or closed. Amount is the people on it now.</summary>
+        SupportDeskSet,
+        /// <summary>The backlog crossed its limit. Amount is the backlog, Pick 1 when it went over and trust began to suffer and 0 when it came back under.</summary>
+        SupportBacklogChanged
     }
 
     /// <summary>

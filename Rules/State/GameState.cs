@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 77;
+        public const int CurrentSchema = 78;
 
         public int Schema;
         public string ConfigVersion;
@@ -258,6 +258,10 @@ namespace AiLabs.Rules.State
         /// <summary>The week the cohort began and the week it ends.</summary>
         public int InternStart;
         public int InternDue;
+        /// <summary>Engineers on the support desk.</summary>
+        public int SupportPeople;
+        /// <summary>Tickets the desk has not cleared.</summary>
+        public int SupportBacklog;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -504,6 +508,8 @@ namespace AiLabs.Rules.State
             s.Int("internCount", ref InternCount);
             s.Int("internStart", ref InternStart);
             s.Int("internDue", ref InternDue);
+            s.Int("supportPeople", ref SupportPeople);
+            s.Int("supportBacklog", ref SupportBacklog);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

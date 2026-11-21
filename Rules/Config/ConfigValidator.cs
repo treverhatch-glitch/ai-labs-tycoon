@@ -110,6 +110,7 @@ namespace AiLabs.Rules.Config
             ConferenceProblems(p, c);
             AlumniProblems(p, c);
             InternshipsProblems(p, c);
+            SupportProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1160,6 +1161,22 @@ namespace AiLabs.Rules.Config
             if (k.StipendPermille < 0 || k.StipendPermille > MathI.Permille) p.Add("internships.stipendPermille must be from 0 to 1000");
             if (k.ConvertPermille < 0 || k.ConvertPermille > MathI.Permille || k.StipendPermille + k.ConvertPermille >= MathI.Permille) p.Add("internships.convertPermille must be from 0 to 1000 and with the stipend under 1000, or interns would cost more than hiring");
             if (k.ConvertMorale < -500 || k.ConvertMorale > 500) p.Add("internships.convertMorale must be from -500 to 500");
+        }
+
+        static void SupportProblems(List<string> p, GameConfig c)
+        {
+            SupportConfig k = c.Support;
+            if (k == null) { p.Add("support is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("support.enabled must be 0 or 1");
+            if (k.MaxPeople < 1 || k.MaxPeople > 50) p.Add("support.maxPeople must be from 1 to 50");
+            if (k.KeepFree < 0 || k.KeepFree > 20) p.Add("support.keepFree must be from 0 to 20");
+            if (k.RevenuePerTicket < 1) p.Add("support.revenuePerTicket must be at least 1");
+            if (k.BaseClear < 0 || k.BaseClear > 1000) p.Add("support.baseClear must be from 0 to 1000");
+            if (k.PerPerson < 1 || k.PerPerson > 1000) p.Add("support.perPerson must be from 1 to 1000");
+            if (k.BacklogLimit < 0 || k.BacklogLimit > k.MaxBacklog) p.Add("support.backlogLimit must be from 0 to maxBacklog");
+            if (k.MaxBacklog < 1 || k.MaxBacklog > 100000) p.Add("support.maxBacklog must be from 1 to 100000");
+            if (k.TrustPerTicket < 0 || k.TrustPerTicket > 100) p.Add("support.trustPerTicket must be from 0 to 100");
+            if (k.MaxWeeklyTrust < 0 || k.MaxWeeklyTrust > MathI.Permille) p.Add("support.maxWeeklyTrust must be from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

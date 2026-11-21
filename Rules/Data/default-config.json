@@ -5770,6 +5770,18 @@
     "convertPermille": 300,
     "convertMorale": 100
   },
+  "support": {
+    "enabled": 1,
+    "maxPeople": 4,
+    "keepFree": 1,
+    "revenuePerTicket": 4000,
+    "baseClear": 6,
+    "perPerson": 4,
+    "backlogLimit": 15,
+    "maxBacklog": 100,
+    "trustPerTicket": 2,
+    "maxWeeklyTrust": 20
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

@@ -87,7 +87,8 @@ namespace AiLabs.Rules.Sim
         WithdrawPaper,
         RehireAlumnus,
         StartInternships,
-        EndInternships
+        EndInternships,
+        StaffSupportDesk
     }
 
     /// <summary>
@@ -794,6 +795,14 @@ namespace AiLabs.Rules.Sim
         public static Command EndInternships(int labId)
         {
             return Make(CommandKind.EndInternships, labId);
+        }
+
+        /// <summary>Sets the engineers on the support desk (Count; 0 closes it). They leave engineering and training work, clear a set number of tickets each a week, and what is not cleared piles up as a backlog that costs trust once it passes a limit.</summary>
+        public static Command StaffSupportDesk(int labId, int people)
+        {
+            Command c = Make(CommandKind.StaffSupportDesk, labId);
+            c.Count = people;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

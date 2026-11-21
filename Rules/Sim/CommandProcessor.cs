@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.StaffSupportDesk: return StaffSupportDesk(c, state, lab, cmd);
                 case CommandKind.StartInternships: return StartInternships(c, state, lab, cmd);
                 case CommandKind.EndInternships: return EndInternships(c, state, lab, cmd);
                 case CommandKind.RehireAlumnus: return RehireAlumnus(c, state, lab, cmd);
