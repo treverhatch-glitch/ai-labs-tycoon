@@ -1434,6 +1434,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The validator rejects negative years or a first year after the last. The chat is read off the event log and never saved: the golden digest did not move and the economy is untouched.
 - Two chat tests that pinned the plain "hired" line now ask for it in 2012, a year no era line covers.
 
+### Q295. Which chip and loan events make the news? DECIDED: tapeouts, respins, yield crashes, foundry snubs, chip sales, loans, missed payments and defaults
+- Eight new headline lines for events that had none: `ChipTapedOut`, `ChipRespin`, `ChipYieldCrash`, `ChipSlotSnubbed` (item 47), `ChipsBought`, `LoanTaken`, `LoanMissed` and `LoanDefaulted`. A repaid loan stays quiet (good news is not news).
+- Every lab's events reach the ticker, so a rival's tapeout or default makes the paper too. The ticker is never saved and rolls no shared dice, so the golden digest did not move and the economy is untouched.
+- Alternatives: also headline `ModelSold`, `StaffQuit` and `GauntletAward` (rejected for now: they would crowd out the release and incident lines the player cares about).
+
 ## Open
 
 None.

@@ -8333,6 +8333,54 @@
         "kind": "ChipReady",
         "pick": 0,
         "text": "{lab} has a new chip design that works. The foundry sends flowers"
+      },
+      {
+        "id": "chip-taped-out",
+        "kind": "ChipTapedOut",
+        "pick": -1,
+        "text": "{lab} taps out {ref} for {money}. The foundry's cheque cleared faster than the design"
+      },
+      {
+        "id": "chip-respin",
+        "kind": "ChipRespin",
+        "pick": -1,
+        "text": "{lab} respins {ref} for {money}. The first one is now 'a learning chip'"
+      },
+      {
+        "id": "chip-yield-crash",
+        "kind": "ChipYieldCrash",
+        "pick": -1,
+        "text": "{lab}'s {ref} yield crashes: {amount} chips arrive. The foundry blames the weather"
+      },
+      {
+        "id": "chip-snub",
+        "kind": "ChipSlotSnubbed",
+        "pick": -1,
+        "text": "The foundry bumps {lab} down the queue by {amount} weeks. It says it is nothing personal"
+      },
+      {
+        "id": "chips-bought",
+        "kind": "ChipsBought",
+        "pick": -1,
+        "text": "{lab} buys {amount} {ref} chips from {subject}. The invoice has a lot of zeros"
+      },
+      {
+        "id": "loan-taken",
+        "kind": "LoanTaken",
+        "pick": -1,
+        "text": "{lab} borrows {money}. The bank calls the lab 'confident'"
+      },
+      {
+        "id": "loan-missed",
+        "kind": "LoanMissed",
+        "pick": -1,
+        "text": "{lab} misses a loan payment. A spokesperson says the cheque is in the post"
+      },
+      {
+        "id": "loan-defaulted",
+        "kind": "LoanDefaulted",
+        "pick": -1,
+        "text": "{lab} defaults on a loan, {money} owed. The bank 'remains optimistic'"
       }
     ],
     "filler": [

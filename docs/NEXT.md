@@ -234,6 +234,7 @@ and says why in the commit message.
 51. **Era-flavoured office events (bible "events by era").** ~~Done~~: `fromYear` / `toYear` on `OfficeEventConfig`, `OfficeEvents.InYears`, six events, `EraOfficeEventsTests`, `docs/content/office-events.md` (Q292).
 52. **Era-flavoured filler headlines (bible ch. 12 "the ticker").** ~~Done~~: `toYear` on `FillerConfig`, `NewsTicker.PickFiller`, 18 new lines, `EraFillerTests`, `docs/content/news-ticker.md` (Q293).
 53. **Era-flavoured company chat (bible ch. 10).** ~~Done~~: `fromYear` / `toYear` on `ChatLineConfig`, `CompanyChat.Fits`, seven lines, `EraChatTests`, `docs/content/company-chat-and-glow.md` (Q294).
+54. **Headlines for chip and loan events.** ~~Done~~: eight lines in `news.headlines`, `ChipLoanNewsTests`, `docs/content/news-ticker.md` (Q295).
 
 ## Rules: later
 
