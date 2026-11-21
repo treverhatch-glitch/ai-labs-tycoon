@@ -70,5 +70,20 @@ namespace AiLabs.Rules.Systems
             if (!HasRoom(lab, kit.RoomTypeId)) return 0;
             return kit.TrainingSpeedBonusPermille;
         }
+
+        /// <summary>Orbital uplink tiles contribute passive general compute before fleet batches are counted.</summary>
+        public static long PassiveOrbitalGeneralCompute(GameConfig c, GameState state, LabState lab)
+        {
+            ExpansionEraKitConfig kit = c.Expansions == null ? null : c.Expansions.Upward;
+            if (kit == null || kit.PassiveComputePermillePerTile <= 0) return 0;
+            if (!EraSystem.Open(c, kit.EraId, state.Tick)) return 0;
+            int tiles = 0;
+            for (int i = 0; i < lab.Rooms.Count; i++)
+                if (lab.Rooms[i].TypeId == kit.RoomTypeId) tiles += lab.Rooms[i].Tiles;
+            if (tiles <= 0) return 0;
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            long baseCompute = tiles * (long)gen.ComputePerGpuWeek;
+            return MathI.MulPermille(baseCompute, kit.PassiveComputePermillePerTile);
+        }
     }
 }

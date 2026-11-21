@@ -19,6 +19,14 @@ namespace AiLabs.Rules.Systems
                 ResolveOne(c, state, lab, op);
                 lab.ShadyOps.RemoveAt(i);
             }
+            for (int i = 0; i < lab.ShadyOps.Count; i++)
+            {
+                ShadyOp op = lab.ShadyOps[i];
+                if (op.ResolveTick <= state.Tick) continue;
+                ShadyCardConfig card = c.Shady.Card(op.CardId);
+                if (card == null || card.Special != ShadySpecial.GreyCompute || op.AuxId < 0) continue;
+                Finance.Earn(lab, LedgerLine.GreyRevenue, GreyPayout(c, state, lab, op.AuxId));
+            }
             if (!resolved && lab.Heat > 0)
             {
                 int drop = ShadyQueries.PolicyHeatDecay(c, lab);
@@ -130,7 +138,6 @@ namespace AiLabs.Rules.Systems
                 case ShadySpecial.HackGovernment: HackGov(c, lab, op.TargetRef, false); break;
                 case ShadySpecial.SmuggleChips: Smuggle(c, state, lab, op); break;
                 case ShadySpecial.GreyCompute:
-                    if (op.AuxId >= 0) Finance.Earn(lab, LedgerLine.GreyRevenue, GreyPayout(c, state, lab, op.AuxId));
                     break;
             }
         }

@@ -151,6 +151,8 @@ namespace AiLabs.Rules.Sim
             ChipDesign d = lab.Design(cmd.TargetId);
             if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
             if (d.Status != ChipDesignStatus.Ready) return Fail(CommandError.DesignNotReady, d.Name + " has not come back from the foundry yet.");
+            if (cmd.Count > 0 && state.Tick < lab.ChipAmbushUntilTick)
+                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before listing chips.");
             ChipListing listing = lab.Listing(d.Id);
             if (cmd.Count < 0 || cmd.X < 0) return Fail(CommandError.InvalidArgument, "A price and a monthly limit cannot be negative.");
             if (cmd.Count == 0)

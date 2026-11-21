@@ -27,6 +27,8 @@ namespace AiLabs.Rules.Config
         public int CapabilityBonusPermille;
         /// <summary>Training speed permille added while the era is live and the room is built (orbital uplink).</summary>
         public int TrainingSpeedBonusPermille;
+        /// <summary>Each uplink tile adds general compute × current GPU week × this permille (orbit carries signal, not racks).</summary>
+        public int PassiveComputePermillePerTile;
 
         public void Sync(Syncer s)
         {
@@ -36,6 +38,7 @@ namespace AiLabs.Rules.Config
             s.Int("appealBonusPermille", ref AppealBonusPermille);
             s.Int("capabilityBonusPermille", ref CapabilityBonusPermille);
             s.Int("trainingSpeedBonusPermille", ref TrainingSpeedBonusPermille);
+            s.Int("passiveComputePermillePerTile", ref PassiveComputePermillePerTile);
         }
     }
 }

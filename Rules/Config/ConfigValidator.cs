@@ -238,6 +238,7 @@ namespace AiLabs.Rules.Config
             Permille(p, path + ".appealBonusPermille", kit.AppealBonusPermille);
             Permille(p, path + ".capabilityBonusPermille", kit.CapabilityBonusPermille);
             Permille(p, path + ".trainingSpeedBonusPermille", kit.TrainingSpeedBonusPermille);
+            Permille(p, path + ".passiveComputePermillePerTile", kit.PassiveComputePermillePerTile);
         }
 
         static void ShadyProblems(List<string> p, GameConfig c)

@@ -378,7 +378,8 @@ namespace AiLabs.Rules.Sim
         AllocationExhausted,
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
-        EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable
+        EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable,
+        KeynoteAmbush
     }
 
     public struct CommandResult
