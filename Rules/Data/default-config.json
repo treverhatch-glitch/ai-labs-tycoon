@@ -5467,6 +5467,17 @@
     "fineTuneAlignment": 40,
     "rollbackReputationLoss": 20
   },
+  "redTeam": {
+    "roleId": "red-teamer",
+    "minStaff": 1,
+    "revenueWeeks": 2,
+    "minCost": 15000,
+    "weeks": 26,
+    "incidentCutPermille": 300,
+    "gapClosePermille": 500,
+    "alignmentGain": 30,
+    "culturePoints": 5
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

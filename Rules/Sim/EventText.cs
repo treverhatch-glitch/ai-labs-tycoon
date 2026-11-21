@@ -197,6 +197,7 @@ namespace AiLabs.Rules.Sim
                         if (taken != null) return who + " left '" + gone.Name + "' unanswered, so: " + taken.Text + ".";
                         return who + " did nothing about '" + (gone == null ? parts[0] : gone.Name) + "' and it blew over.";
                     }
+                case EventKind.RedTeamRan: return who + " paid $" + e.Amount + " for a red team to attack " + e.Ref + ". It came back with a list, and the model is safer for a while.";
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";
                 case EventKind.ModelRolledBack:

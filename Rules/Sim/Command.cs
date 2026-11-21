@@ -39,7 +39,8 @@ namespace AiLabs.Rules.Sim
         SetResearchShare,
         SetCrunch,
         SetInsurance,
-        HoldOffsite
+        HoldOffsite,
+        RedTeamModel
     }
 
     /// <summary>
@@ -334,6 +335,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetInsurance, labId);
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>
+        public static Command RedTeamModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.RedTeamModel, labId);
+            c.TargetId = modelId;
             return c;
         }
 

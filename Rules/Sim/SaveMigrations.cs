@@ -57,6 +57,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 42) MigrateTo42(root);
             if (fromSchema < 43) MigrateTo43(root);
             if (fromSchema < 44) MigrateTo44(root);
+            if (fromSchema < 45) MigrateTo45(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -406,6 +407,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 45: no model was ever red-teamed.</summary>
+        static void MigrateTo45(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "redTeamUntil", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 44: no lab had insurance, and the ledger gained a premium line (zero, so cash is still explained).</summary>

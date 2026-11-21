@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 44;
+        public const int CurrentSchema = 45;
 
         public int Schema;
         public string ConfigVersion;
@@ -449,6 +449,8 @@ namespace AiLabs.Rules.State
         public string Checkpoints = "";
         /// <summary>Weeks of testing skipped when this model was first put on sale, or 0 for a tested launch.</summary>
         public int RushWeeks;
+        /// <summary>The model is safer from red-team fixes until this tick; 0 when it was never red-teamed or the weeks are over.</summary>
+        public int RedTeamUntil;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -480,6 +482,7 @@ namespace AiLabs.Rules.State
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);
+            s.Int("redTeamUntil", ref RedTeamUntil);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

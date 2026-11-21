@@ -48,8 +48,10 @@ namespace AiLabs.Rules.Systems
             /// <summary>Extra chance while the lab cannot serve its customers; zero from the model-only query.</summary>
             public int FromOverload;
             public int FromCrunch;
+            /// <summary>What a red team took off while its weeks last; zero or negative.</summary>
+            public int FromRedTeam;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromRedTeam; } }
         }
 
         public struct ExitPriceBreakdown
@@ -153,7 +155,9 @@ namespace AiLabs.Rules.Systems
             b.FromAlignment = (int)(baseChance - scaledConfig);
             int withoutRush = SafetySystem.IncidentChanceWithoutRush(c, tick, model);
             b.FromCorruption = withoutRush - (int)baseChance;
-            b.FromRush = SafetySystem.IncidentChancePermille(c, tick, model) - withoutRush;
+            int withRush = (int)MathI.Min(MathI.Permille, withoutRush + RushedLaunch.IncidentPermille(c, tick, model));
+            b.FromRush = withRush - withoutRush;
+            b.FromRedTeam = RedTeam.IncidentPermille(c, tick, model, withRush);
             return b;
         }
 

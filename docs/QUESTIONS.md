@@ -1472,6 +1472,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The worry was a permanent research bonus from chained offsites. With the ceiling at resting plus 100 the extra research is about 4% and decays at the drift, so it is capped and not a loop.
 - Alternatives: a cooldown (rejected: it needs saved state and the ceiling already limits it); a flat morale set to the maximum (rejected: that would be the exploit).
 
+### Q301. Can the player pay a red team to attack a model? DECIDED: yes, one model at a time, for a bill; it cuts that model's incident chance for 26 weeks
+- Bible ch. 10 lists "red teams: people paid to break it first" among what builds control. `RedTeamModel(model)` is the player's command for it, new `redTeam` data section, `RedTeam` system, event `RedTeamRan`.
+- It needs a trained or on-sale model and at least one red-teamer on the staff (`redTeam.roleId`, `minStaff`). The bill is two weeks of what the model sells for, never under $15,000, on the training ledger line. It is refused for a rival, for a model still training or retired, while a red team's weeks are running, and when the lab cannot pay.
+- It does three things at once: half the gap between the shown and real alignment is closed (the shown meter comes down, so a sandbagged model can fall below the lab's own release gate), 30 points of real alignment are added (the shown meter moves with it, never past 1000), and the lab gains 5 safety culture.
+- For 26 weeks (`redTeam.weeks`) the model's own weekly incident chance (after a rushed launch, before overload and crunch) loses 30%. It is its own line in the incident breakdown (`FromRedTeam`, zero or negative) so the parts still add up. A model cannot be attacked again until the weeks are over.
+- New state per model (schema 45, `MigrateTo45`): `redTeamUntil`, 0 when never red-teamed. Player only and opt-in; rivals and the autopilot never use it, so defaults change nothing.
+- The golden digest moved to f76df7ee because of the model field and the schema number only; reverting them brought the previous digest (e1ea850c) back.
+- Alternatives: a flat cut that never ends (rejected: it would be permanent insurance); a bill by capability (rejected: revenue already scales with how much the model is worth); closing the whole gap (rejected: half keeps the choice of a second round after the weeks).
+
 ## Open
 
 None.

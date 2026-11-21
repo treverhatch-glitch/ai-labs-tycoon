@@ -73,6 +73,7 @@ namespace AiLabs.Rules.Config
             ControlProblems(p, c);
             LeadsProblems(p, c);
             RepairProblems(p, c);
+            RedTeamProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -782,6 +783,21 @@ namespace AiLabs.Rules.Config
             if (r.FineTuneMinCost < 0) p.Add("repair.fineTuneMinCost is negative");
             if (r.FineTuneAlignment < 0 || r.FineTuneAlignment > MathI.Permille) p.Add("repair.fineTuneAlignment must be from 0 to 1000");
             if (r.RollbackReputationLoss < 0 || r.RollbackReputationLoss > MathI.Permille) p.Add("repair.rollbackReputationLoss must be from 0 to 1000");
+        }
+
+        static void RedTeamProblems(List<string> p, GameConfig c)
+        {
+            RedTeamConfig r = c.RedTeam;
+            if (r == null) { p.Add("redTeam is missing"); return; }
+            if (r.RoleId != "" && c.Role(r.RoleId) == null) p.Add("redTeam.roleId names the unknown role \"" + r.RoleId + "\"");
+            if (r.MinStaff < 0 || r.MinStaff > 1000) p.Add("redTeam.minStaff must be from 0 to 1000");
+            if (r.RevenueWeeks < 0 || r.RevenueWeeks > 520) p.Add("redTeam.revenueWeeks must be from 0 to 520");
+            if (r.MinCost < 0) p.Add("redTeam.minCost is negative");
+            if (r.Weeks < 0 || r.Weeks > 520) p.Add("redTeam.weeks must be from 0 to 520");
+            if (r.IncidentCutPermille < 0 || r.IncidentCutPermille > MathI.Permille) p.Add("redTeam.incidentCutPermille must be from 0 to 1000");
+            if (r.GapClosePermille < 0 || r.GapClosePermille > MathI.Permille) p.Add("redTeam.gapClosePermille must be from 0 to 1000");
+            if (r.AlignmentGain < 0 || r.AlignmentGain > MathI.Permille) p.Add("redTeam.alignmentGain must be from 0 to 1000");
+            if (r.CulturePoints < 0 || r.CulturePoints > 100) p.Add("redTeam.culturePoints must be from 0 to 100");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

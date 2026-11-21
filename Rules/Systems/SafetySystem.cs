@@ -13,7 +13,8 @@ namespace AiLabs.Rules.Systems
         /// <summary>The weekly chance, in permille, that a released model has an incident.</summary>
         public static int IncidentChancePermille(GameConfig c, int tick, ModelState model)
         {
-            return (int)MathI.Min(MathI.Permille, IncidentChanceWithoutRush(c, tick, model) + RushedLaunch.IncidentPermille(c, tick, model));
+            int chance = (int)MathI.Min(MathI.Permille, IncidentChanceWithoutRush(c, tick, model) + RushedLaunch.IncidentPermille(c, tick, model));
+            return chance + RedTeam.IncidentPermille(c, tick, model, chance);
         }
 
         /// <summary>
