@@ -278,7 +278,21 @@ namespace AiLabs.Rules.State
         /// <summary>A group of visiting scholars arrived. Amount is how many, Pick the weeks they stay.</summary>
         ScholarsArrived,
         /// <summary>The scholars left. SubjectId is how many, Amount the prestige they added, Pick 1 when they left on schedule and 0 when they were sent home.</summary>
-        ScholarsLeft
+        ScholarsLeft,
+        /// <summary>A claim was filed against the lab. SubjectId is the claim, Amount what it asks, Pick the kind (0 incident, 1 layoff round, 2 breach, 3 charter), Ref a name.</summary>
+        CaseFiled,
+        /// <summary>A hearing was lost. SubjectId is the claim, Amount what the lab will pay, Pick 1 when it is the appeal's ruling.</summary>
+        CaseJudged,
+        /// <summary>A claim ended. SubjectId is the claim, Amount what the lab paid, Pick 0 settled, 1 won, 2 lost and paid, 3 overturned on appeal.</summary>
+        CaseClosed,
+        /// <summary>A security tier was built. Amount is the tier.</summary>
+        SecurityBuilt,
+        /// <summary>A breach opened. Amount is the week it leaks if nobody answers.</summary>
+        BreachOpened,
+        /// <summary>A breach was answered. Amount is the cost, Pick 0 ransom, 1 disclosure, 2 lockdown.</summary>
+        BreachAnswered,
+        /// <summary>An unanswered breach leaked. Amount is the reputation it cost.</summary>
+        BreachLeaked
     }
 
     /// <summary>

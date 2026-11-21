@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 80;
+        public const int CurrentSchema = 81;
 
         public int Schema;
         public string ConfigVersion;
@@ -268,6 +268,17 @@ namespace AiLabs.Rules.State
         public int ScholarCount;
         public int ScholarStart;
         public int ScholarDue;
+        /// <summary>Claims against the lab, soonest hearing first, and the number the next one takes.</summary>
+        public List<LawCase> Cases = new List<LawCase>();
+        public int CaseSeq;
+        /// <summary>The lab's security tier, the tier being built (0 when none) and the week it is done.</summary>
+        public int SecurityTier;
+        public int SecurityBuilding;
+        public int SecurityDue;
+        /// <summary>How exposed the lab is, the week an open breach leaks (0 when none) and the ransoms paid since the last disclosure.</summary>
+        public int Exposure;
+        public int BreachDue;
+        public int Ransoms;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -520,6 +531,14 @@ namespace AiLabs.Rules.State
             s.Int("scholarCount", ref ScholarCount);
             s.Int("scholarStart", ref ScholarStart);
             s.Int("scholarDue", ref ScholarDue);
+            s.ObjList("cases", ref Cases);
+            s.Int("caseSeq", ref CaseSeq);
+            s.Int("securityTier", ref SecurityTier);
+            s.Int("securityBuilding", ref SecurityBuilding);
+            s.Int("securityDue", ref SecurityDue);
+            s.Int("exposure", ref Exposure);
+            s.Int("breachDue", ref BreachDue);
+            s.Int("ransoms", ref Ransoms);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

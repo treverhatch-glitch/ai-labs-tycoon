@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 78) MigrateTo78(root);
             if (fromSchema < 79) MigrateTo79(root);
             if (fromSchema < 80) MigrateTo80(root);
+            if (fromSchema < 81) MigrateTo81(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -456,6 +457,17 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 81: nobody has been sued and every lab starts with no security built.</summary>
+        static void MigrateTo81(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "cases", JsonValue.Array());
+                foreach (string key in new[] { "caseSeq", "securityTier", "securityBuilding", "securityDue", "exposure", "breachDue", "ransoms" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Systems
                 for (int i = 0; i < lab.Staff.Count; i++) lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - morale);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - ReputationLoss(c, share));
             Labour.OnLayoff(c, lab, share);
+            Litigation.OnLayoff(c, state, lab, share, package, total);
             GameEvent e = Events.Add(state, EventKind.LayoffRound, lab.Id, share, total, "");
             e.Pick = share >= c.Layoffs.DeepPermille ? 1 : 0;
         }

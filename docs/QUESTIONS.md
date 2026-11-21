@@ -1901,6 +1901,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `Support.Enabled = 0` was set in the sunset-trust and the care-tools autopilot tests, whose fixed scripts and trust comparisons the desk's backlog changes.
 - Alternatives: letting a desk member go on leave and keep clearing tickets (rejected: the person is not there), a shared "away" counter (rejected: each system keeps its own state).
 
+### Q371. Can the lab be sued? DECIDED: a docket of claims with a strength, a hearing, settlement, outside counsel and one appeal
+- New `litigation` data, commands `SettleCase`, `RetainFirm` and `AppealCase`, `Litigation` system, events `CaseFiled`, `CaseJudged` and `CaseClosed`, a saved list of claims and a counter on the lab (schema 81, shared with Q372). Claims are filed by an incident (negligence), by a layoff round (dismissal), by a breach of security (privacy) and, later, by a change of charter; up to 4 are open at once. Each has a strength from 1 to 1000 fixed on the day it is filed and a hearing 12 weeks on. Before it the lab can settle for 40% of the claim, retain an outside firm (15% of the claim, takes 350 off the strength instead of the in-house counsel's 100) or do nothing. At the hearing the claim wins when its strength less the counsel's reaches 500; a won claim is a judgment (100% of the claim) paid after 8 weeks unless the lab appeals once (10% of the claim, 150 more off the strength) and gets a second ruling.
+- Strength comes from the lab's own state: an incident claim from the safety culture (weaker where the culture is strong) and the model's earlier incidents, a dismissal claim from average morale (stronger where people are unhappy) and whether the round was deep, a privacy claim from ransoms paid and security tiers held. No random numbers; reads culture (Q-culture), morale and the layoff and incident hooks; only the player's lab.
+- Alternatives: random verdicts (rejected: the player could not weigh settling), claims that grow with time (rejected: waiting would be the only move).
+
+### Q372. Can the lab be broken into? DECIDED: security tiers that are built, an exposure that fills, and a breach answered by ransom, disclosure or lockdown
+- New `security` data, commands `BuildSecurity` and `AnswerBreach`, `Security` system, events `SecurityBuilt`, `BreachOpened`, `BreachAnswered` and `BreachLeaked` and six saved lab fields (schema 81, shared with Q371). Up to 4 tiers: each costs 30,000 times its number up front, takes 8 weeks and 500 a week to hold. Every week each model on sale adds 3 to the lab's exposure and each tier takes 3 off; at 150 a breach opens and the lab has 4 weeks to answer. Paying the ransom (15,000, and 15,000 more each time since the last disclosure) is quiet but invites the next; disclosing costs reputation (20, damped by the press) and trust in every sector the lab sells in, and draws a privacy claim; a lockdown builds the next tier at once at double its price. An unanswered breach leaks: more reputation (40), the same trust loss and a stronger privacy claim.
+- Reads reputation, trust, the litigation docket (Q371) and models on sale; no random numbers; only the player's lab.
+- Alternatives: random breaches (rejected: the player could never prepare), a single "security level" with no upkeep (rejected: no decision).
+
 ## Open
 
 None.

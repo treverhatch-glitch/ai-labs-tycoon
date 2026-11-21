@@ -94,7 +94,12 @@ namespace AiLabs.Rules.Sim
         OpenRequisition,
         CancelRequisition,
         HostScholars,
-        SendScholarsHome
+        SendScholarsHome,
+        SettleCase,
+        RetainFirm,
+        AppealCase,
+        BuildSecurity,
+        AnswerBreach
     }
 
     /// <summary>
@@ -856,6 +861,44 @@ namespace AiLabs.Rules.Sim
         public static Command SendScholarsHome(int labId)
         {
             return Make(CommandKind.SendScholarsHome, labId);
+        }
+
+        /// <summary>Settles a claim before its hearing (TargetId is the claim) for a share of what it asks. It ends there.</summary>
+        public static Command SettleCase(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.SettleCase, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Retains an outside firm for a claim before its hearing (TargetId is the claim): a fee now, and the firm takes more off the claim's strength than the lab's own counsel.</summary>
+        public static Command RetainFirm(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.RetainFirm, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Appeals a lost claim once (TargetId is the claim): a fee now, a new ruling after the appeal weeks, and the appeal takes something more off the claim's strength.</summary>
+        public static Command AppealCase(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.AppealCase, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Starts building the next security tier. It is paid for now and done after the build weeks; the lab pays upkeep for every tier it holds.</summary>
+        public static Command BuildSecurity(int labId)
+        {
+            return Make(CommandKind.BuildSecurity, labId);
+        }
+
+        /// <summary>Answers an open breach: 0 pays the ransom, 1 discloses it, 2 locks everything down at once (the next tier now, at double the price).</summary>
+        public static Command AnswerBreach(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerBreach, labId);
+            c.Count = choice;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

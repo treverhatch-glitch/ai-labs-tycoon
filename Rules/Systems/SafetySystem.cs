@@ -136,6 +136,7 @@ namespace AiLabs.Rules.Systems
             SafetyAudit.OnIncident(state, lab, model);
             MarketingCampaign.OnIncident(c, state, lab, model);
 
+            Litigation.OnIncident(c, state, lab, model, fine + makeGood);
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);
             if (risk != null)
             {

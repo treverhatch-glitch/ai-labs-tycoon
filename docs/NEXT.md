@@ -309,6 +309,8 @@ and says why in the commit message.
 126. **Visiting scholars (outside researchers at researchers' desks; prestige when they leave on schedule).** ~~Done~~: `scholars` data, `HostScholars`, `SendScholarsHome`, `Scholars`, schema 80, `ScholarsTests`, `docs/content/visiting-scholars.md` (Q369).
 127. **News and chat for the new systems.** ~~Done~~: 17 headlines and 16 chat lines in the data, `InternsSupportSabbaticalRequisitionsScholarsNewsChatTests` (Q370).
 128. **The five new systems together.** ~~Done~~: sabbaticals refused for people already away, the desk skips people on leave, scholars' seats against hires, `InternsSupportSabbaticalRequisitionsScholarsTogetherTests` (Q370).
+129. **The litigation docket (claims with a strength, settlement, counsel, one appeal).** ~~Done~~: `litigation` data, `SettleCase`, `RetainFirm`, `AppealCase`, `Litigation`, schema 81, `LitigationTests`, `docs/content/litigation.md` (Q371).
+130. **Information security (tiers, exposure, breach answers).** ~~Done~~: `security` data, `BuildSecurity`, `AnswerBreach`, `Security`, schema 81, `SecurityTests`, `docs/content/security.md` (Q372).
 
 ## Rules: later
 

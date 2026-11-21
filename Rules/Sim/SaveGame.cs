@@ -164,6 +164,18 @@ namespace AiLabs.Rules.Sim
                     if (lab.ScholarCount < 0 || lab.ScholarStart < 0 || lab.ScholarDue < 0 || lab.ScholarCount > c.Scholars.MaxScholars || (lab.ScholarCount > 0) != (lab.ScholarDue > 0) || (lab.ScholarCount > 0 && (lab.ScholarDue <= lab.ScholarStart || lab.Id != state.PlayerLabId)) || (lab.ScholarCount == 0 && lab.ScholarStart != 0))
                         p.Add(who + " has visiting scholars (" + lab.ScholarCount + ", weeks " + lab.ScholarStart + " to " + lab.ScholarDue + ") that the data does not allow");
                 }
+                {
+                    if (lab.Cases.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has claims against it but is not the player's lab");
+                    if (lab.Cases.Count > c.Litigation.MaxOpen) p.Add(who + " has more claims open than the data allows");
+                    foreach (LawCase lawCase in lab.Cases)
+                        if (lawCase.Id < 1 || lawCase.Id > lab.CaseSeq || lawCase.Kind < 0 || lawCase.Kind > 3 || lawCase.Claim < 1 || lawCase.Strength < 1 || lawCase.Strength > MathI.Permille || lawCase.Stage < 0 || lawCase.Stage > 1 || lawCase.Counsel < 0 || lawCase.Counsel > 1 || lawCase.Appealed < 0 || lawCase.Appealed > 1 || lawCase.Due < 1 || (lawCase.Appealed == 1 && lawCase.Stage != 1))
+                            p.Add(who + " has a claim (" + lawCase.Id + ") that the data does not allow");
+                    if (lab.CaseSeq < 0 || lab.Cases.Count > lab.CaseSeq) p.Add(who + " has a claim count that does not add up");
+                    if (lab.SecurityTier < 0 || lab.SecurityTier > c.Security.MaxTier || lab.SecurityBuilding < 0 || lab.SecurityBuilding > c.Security.MaxTier || lab.SecurityDue < 0 || (lab.SecurityBuilding > 0) != (lab.SecurityDue > 0) || (lab.SecurityBuilding > 0 && lab.SecurityBuilding != lab.SecurityTier + 1))
+                        p.Add(who + " has security (tier " + lab.SecurityTier + ", building " + lab.SecurityBuilding + ", week " + lab.SecurityDue + ") that the data does not allow");
+                    if (lab.Exposure < 0 || lab.BreachDue < 0 || lab.Ransoms < 0 || ((lab.SecurityTier > 0 || lab.SecurityBuilding > 0 || lab.Exposure > 0 || lab.BreachDue > 0 || lab.Ransoms > 0) && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has security exposure (" + lab.Exposure + ", breach week " + lab.BreachDue + ", ransoms " + lab.Ransoms + ") that the data does not allow");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

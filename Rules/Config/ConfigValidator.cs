@@ -114,6 +114,8 @@ namespace AiLabs.Rules.Config
             SabbaticalProblems(p, c);
             RequisitionsProblems(p, c);
             ScholarsProblems(p, c);
+            LitigationProblems(p, c);
+            SecurityProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1216,6 +1218,39 @@ namespace AiLabs.Rules.Config
             if (k.StipendPermille < 0 || k.StipendPermille > MathI.Permille) p.Add("scholars.stipendPermille must be from 0 to 1000");
             if (k.ResearchPermille < 0 || k.ResearchPermille > MathI.Permille) p.Add("scholars.researchPermille must be from 0 to 1000, no more than a researcher");
             if (k.PrestigeEach < 0 || k.PrestigeEach > 200) p.Add("scholars.prestigeEach must be from 0 to 200");
+        }
+
+        static void LitigationProblems(List<string> p, GameConfig c)
+        {
+            LitigationConfig k = c.Litigation;
+            if (k == null) { p.Add("litigation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("litigation.enabled must be 0 or 1");
+            if (k.MaxOpen < 1 || k.MaxOpen > 20) p.Add("litigation.maxOpen must be from 1 to 20");
+            if (k.HearingWeeks < 1 || k.HearingWeeks > 104) p.Add("litigation.hearingWeeks must be from 1 to 104");
+            if (k.AppealWeeks < 1 || k.AppealWeeks > 104) p.Add("litigation.appealWeeks must be from 1 to 104");
+            if (k.MinClaim < 1 || k.PrivacyClaim < k.MinClaim) p.Add("litigation.minClaim must be at least 1 and no more than privacyClaim");
+            if (k.IncidentPermille < 0 || k.IncidentPermille > 20000 || k.DismissalPermille < 0 || k.DismissalPermille > 20000) p.Add("litigation.incidentPermille and dismissalPermille must be from 0 to 20000");
+            if (k.SettlePermille < 1 || k.SettlePermille >= k.JudgmentPermille) p.Add("litigation.settlePermille must be from 1 and under judgmentPermille, or nobody would defend");
+            if (k.JudgmentPermille < 1 || k.JudgmentPermille > 5000) p.Add("litigation.judgmentPermille must be from 1 to 5000");
+            if (k.InHouseStrength < 0 || k.FirmStrength < k.InHouseStrength || k.FirmStrength > MathI.Permille) p.Add("litigation.firmStrength must be from inHouseStrength (at least 0) to 1000");
+            if (k.FirmFeePermille < 0 || k.FirmFeePermille > MathI.Permille || k.AppealFeePermille < 0 || k.AppealFeePermille > MathI.Permille) p.Add("litigation.firmFeePermille and appealFeePermille must be from 0 to 1000");
+            if (k.JudgeAt < 1 || k.JudgeAt > MathI.Permille) p.Add("litigation.judgeAt must be from 1 to 1000");
+            if (k.AppealStrength < 0 || k.AppealStrength > MathI.Permille) p.Add("litigation.appealStrength must be from 0 to 1000");
+            if (k.LossReputation < 0 || k.LossReputation > 500 || k.WinReputation < 0 || k.WinReputation > 500) p.Add("litigation.lossReputation and winReputation must be from 0 to 500");
+        }
+
+        static void SecurityProblems(List<string> p, GameConfig c)
+        {
+            SecurityConfig k = c.Security;
+            if (k == null) { p.Add("security is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("security.enabled must be 0 or 1");
+            if (k.MaxTier < 1 || k.MaxTier > 10) p.Add("security.maxTier must be from 1 to 10");
+            if (k.TierCost < 1 || k.Ransom < 1) p.Add("security.tierCost and ransom must be at least 1");
+            if (k.BuildWeeks < 1 || k.BuildWeeks > 104 || k.AnswerWeeks < 1 || k.AnswerWeeks > 104) p.Add("security.buildWeeks and answerWeeks must be from 1 to 104");
+            if (k.UpkeepPerTier < 0) p.Add("security.upkeepPerTier must not be negative");
+            if (k.ExposurePerModel < 1 || k.ExposurePerModel > 1000 || k.ReliefPerTier < 0 || k.ReliefPerTier > 1000) p.Add("security.exposurePerModel must be from 1 to 1000 and reliefPerTier from 0 to 1000");
+            if (k.Threshold < 1 || k.Threshold > 100000) p.Add("security.threshold must be from 1 to 100000");
+            if (k.DiscloseReputation < 0 || k.DiscloseReputation > 500 || k.LeakReputation < k.DiscloseReputation || k.LeakReputation > 500) p.Add("security.leakReputation must be at least discloseReputation and no more than 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

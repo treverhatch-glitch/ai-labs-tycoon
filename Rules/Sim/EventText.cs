@@ -297,6 +297,20 @@ namespace AiLabs.Rules.Sim
                     return who + " hosted " + e.Amount + " visiting " + (e.Amount == 1 ? "scholar" : "scholars") + " for " + e.Pick + " weeks.";
                 case EventKind.ScholarsLeft:
                     return e.Pick == 1 ? who + "'s visiting scholars left, adding " + e.Amount + " prestige." : who + " sent its visiting scholars home early.";
+                case EventKind.CaseFiled:
+                    return "A claim for " + e.Amount + " was filed against " + who + ": " + (e.Pick == 0 ? "an incident" : e.Pick == 1 ? "a layoff round" : e.Pick == 2 ? "a breach of security" : "its change of charter") + ".";
+                case EventKind.CaseJudged:
+                    return who + " lost a hearing and owes " + e.Amount + (e.Pick == 1 ? " after its appeal." : ", unless it appeals.");
+                case EventKind.CaseClosed:
+                    return e.Pick == 0 ? who + " settled a claim for " + e.Amount + "." : e.Pick == 1 ? who + " won a claim in court." : e.Pick == 2 ? who + " paid " + e.Amount + " on a lost claim." : who + " had a judgment overturned on appeal.";
+                case EventKind.SecurityBuilt:
+                    return who + " finished security tier " + e.Amount + ".";
+                case EventKind.BreachOpened:
+                    return who + " found a breach of its systems.";
+                case EventKind.BreachAnswered:
+                    return e.Pick == 0 ? who + " paid " + e.Amount + " to the people behind a breach." : e.Pick == 1 ? who + " told everyone about a breach." : who + " locked its systems down after a breach for " + e.Amount + ".";
+                case EventKind.BreachLeaked:
+                    return "A breach at " + who + " leaked; the lab lost " + e.Amount + " reputation.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
