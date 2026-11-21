@@ -1,0 +1,71 @@
+<!-- Generated from Rules/Data/default-config.json (chat, glow). The data file is the source of truth: edit it, then update this page. -->
+# The company chat and the glow
+
+Two read-only views of the lab. Neither is saved and neither changes any rule.
+
+## The company chat
+
+The bible's chapter 14 asks for "a company chat feed where staff react to your decisions in character". `CompanyChat.Feed(config, state, lab, max)` reads the event log and returns the last lines the lab's people would say, oldest first (12 unless the screen asks for another number).
+
+- A line reacts to one kind of event, and for yes-or-no events to one pick (a counter that worked or one that did not).
+- A line can be limited to some roles, and to people with a trait. The first line in the data that fits the event and has someone to say it wins, so the lines for traits come before the plain ones.
+- The speaker is picked from the people who fit by a hash of the event: the same event always gets the same speaker while that person is on the payroll.
+- An event kind with no line is not in the feed, and a lab with nobody on the payroll is silent.
+- A poach is about the lab it was done to, not the one that did it.
+- `{model}`, `{amount}`, `{ref}`, `{sector}`, `{role}` and `{lab}` are filled in from the event.
+
+| Line | Event | Said by | Trait |
+| --- | --- | --- | --- |
+| `hired-sleeper` | Hired | anyone | sleeps-under-desk |
+| `hired` | Hired | anyone |  |
+| `fired-doomer` | Fired | anyone | doomer |
+| `fired-safety` | Fired | safety, red-teamer, alignment-fellow |  |
+| `fired` | Fired | anyone |  |
+| `room-built` | RoomBuilt | anyone |  |
+| `tech-researched` | TechResearched | researcher |  |
+| `training-started` | TrainingStarted | researcher, engineer |  |
+| `trained-tenx` | TrainingFinished | anyone | tenx |
+| `trained-doomer` | TrainingFinished | anyone | doomer |
+| `trained` | TrainingFinished | researcher, engineer |  |
+| `released-accel` | ModelReleased | anyone | accelerationist |
+| `released` | ModelReleased | sales, product-lead |  |
+| `incident-logs` | Incident | anyone | reads-the-logs |
+| `incident-doomer` | Incident | anyone | doomer |
+| `incident-accel` | Incident | anyone | accelerationist |
+| `incident-safety` | Incident | safety, red-teamer, alignment-fellow |  |
+| `incident` | Incident | anyone |  |
+| `customer-complaint` | CustomerComplaint | sales, product-lead |  |
+| `complaint-answered-good` | ComplaintAnswered | sales, product-lead |  |
+| `complaint-answered-bad` | ComplaintAnswered | sales, product-lead |  |
+| `trust-lost` | TrustLost | sales, product-lead |  |
+| `press-good` | PressAnswered | anyone |  |
+| `press-bad` | PressAnswered | anyone |  |
+| `crown` | GauntletCrown | anyone |  |
+| `demo-good` | GauntletDemo | anyone |  |
+| `demo-bad` | GauntletDemo | anyone |  |
+| `exposed` | GauntletExposed | anyone |  |
+| `funding` | FundingClosed | researcher, engineer |  |
+| `in-debt` | InDebt | engineer, infra |  |
+| `heatwave` | Heatwave | engineer, infra |  |
+| `poached` | StaffPoached | anyone |  |
+| `poach-offered` | PoachOffered | anyone |  |
+| `poach-kept` | PoachCountered | anyone |  |
+| `poach-left` | PoachCountered | anyone |  |
+
+## The glow
+
+The bible's chapter 10: the models' presence shows as a light running through the building, and "when a sandbagging model corrupts its dashboard readings, the building still shows the flicker. A careful player learns to trust the room over the chart."
+
+`Glow.Of(config, state, lab)` looks at every released or trained model and gives the worst one's stage. A stage applies when the model's weekly incident chance reaches its chance, or the rung of the incident it would have reaches its rung; the highest that applies wins.
+
+| Stage | Name | From weekly chance | From rung |
+| --- | --- | --- | --- |
+| `calm` | Calm | 0 permille | - |
+| `hum` | Humming | 10 permille | - |
+| `flicker` | Flickering | - | 2 |
+| `empty-corridor` | Empty corridor | - | 3 |
+| `doors-locked` | Doors locked | - | 4 |
+| `power-dip` | Power dips | - | 5 |
+| `quiet` | Quiet | - | 6 |
+
+The report also carries a second reading, what the dashboard's own numbers would suggest: the same calculation on the displayed alignment with no corruption. When the room is higher than the chart, `ChartIsMisleading` is true. Brightness (0 to 1000) is the combined capability of the latest model of each line, reaching 1000 at 10000.

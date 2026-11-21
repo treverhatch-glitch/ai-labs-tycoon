@@ -69,6 +69,8 @@ namespace AiLabs.Rules.Config
             TrustProblems(p, c);
             CultureProblems(p, c);
             NamingProblems(p, c);
+            ChatProblems(p, c);
+            GlowProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -450,6 +452,51 @@ namespace AiLabs.Rules.Config
                 if (k.MoraleSlopePermille < -2000 || k.MoraleSlopePermille > 2000) p.Add(who + " needs moraleSlopePermille from -2000 to 2000");
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
+            }
+        }
+
+        static void ChatProblems(List<string> p, GameConfig c)
+        {
+            ChatConfig h = c.Chat;
+            if (h == null) { p.Add("chat is missing"); return; }
+            if (h.DefaultLines < 1 || h.DefaultLines > 100) p.Add("chat.defaultLines must be from 1 to 100");
+            if (h.Lines.Count == 0) p.Add("chat.lines is empty");
+            UniqueIds(p, "chat.lines", h.Lines);
+            for (int i = 0; i < h.Lines.Count; i++)
+            {
+                ChatLineConfig l = h.Lines[i];
+                string who = "chat line " + l.IdValue;
+                if (!AiLabs.Rules.Systems.CompanyChat.IsEventKind(l.Kind)) p.Add(who + " is about the unknown event kind \"" + l.Kind + "\"");
+                if (string.IsNullOrWhiteSpace(l.Text)) p.Add(who + " has no text");
+                if (l.Pick < -1 || l.Pick > 1) p.Add(who + " needs pick -1, 0 or 1");
+                if (l.About != "lab" && l.About != "subject") p.Add(who + " needs about \"lab\" or \"subject\"");
+                foreach (string role in l.Roles)
+                    if (c.Role(role) == null) p.Add(who + " names the unknown role \"" + role + "\"");
+                if (l.Trait.Length > 0 && c.StaffPeople.Trait(l.Trait) == null) p.Add(who + " names the unknown trait \"" + l.Trait + "\"");
+            }
+        }
+
+        static void GlowProblems(List<string> p, GameConfig c)
+        {
+            GlowConfig g = c.Glow;
+            if (g == null) { p.Add("glow is missing"); return; }
+            if (g.FullAtCapability < 1) p.Add("glow.fullAtCapability must be at least 1");
+            if (g.Stages.Count == 0) p.Add("glow.stages is empty");
+            UniqueIds(p, "glow.stages", g.Stages);
+            for (int i = 0; i < g.Stages.Count; i++)
+            {
+                GlowStageConfig s = g.Stages[i];
+                string who = "glow stage " + s.IdValue;
+                if (string.IsNullOrEmpty(s.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(s.Sign)) p.Add(who + " has no sign");
+                if (s.MinChancePermille < -1 || s.MinChancePermille > MathI.Permille) p.Add(who + " needs minChancePermille from -1 to 1000");
+                if (s.MinRung < 0 || s.MinRung > 6) p.Add(who + " needs minRung from 0 to 6");
+                if (s.MinChancePermille < 0 && s.MinRung == 0) p.Add(who + " never applies: it needs a chance or a rung");
+                if (i == 0 && s.MinChancePermille != 0) p.Add("the first glow stage must apply at a chance of 0 so every model has one");
+                if (i > 0 && s.MinChancePermille >= 0 && g.Stages[i - 1].MinChancePermille >= 0 && s.MinChancePermille <= g.Stages[i - 1].MinChancePermille)
+                    p.Add(who + " does not start above the chance of the stage before it");
+                if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
+                    p.Add(who + " does not start above the rung of the stage before it");
             }
         }
 

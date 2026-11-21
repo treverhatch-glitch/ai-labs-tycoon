@@ -148,8 +148,10 @@ and says why in the commit message.
     ~~Done~~: `naming` in the data, `VersionNaming`, `CleanUpNaming`, a confusion part on appeal, save schema 30 (`namingMess`; Q195-Q197),
     `VersionNamingTests`, `docs/content/version-naming.md`. Player labs only. Still open: a naming screen (Unity), rivals with confusing names, renaming old models.
 24. **The company chat and the glow (bible ch. 14 "company chat feed", ch. 10 "the glow", "truth through the walls").** Staff react to the
-    lab's decisions in character (derived from events, the staff on the payroll and their traits; nothing saved), and the building shows the
-    worst model's risk by rung, including when a sandbagging model corrupts the dashboard. Display queries only, no schema.
+    lab's decisions in character, and the building shows the worst model's risk by rung, including when a sandbagging model corrupts the
+    dashboard. ~~Done~~: `chat` and `glow` in the data, `CompanyChat.Feed`, `Glow.Of`, no schema change and no rule effect (Q198-Q199),
+    `CompanyChatTests`, `GlowTests`, `docs/content/company-chat-and-glow.md`. Still open: the news ticker headlines, the chat as a Unity panel,
+    the mascot face on screens (art), chat lines for more event kinds.
 25. **Rooms that age (bible ch. 14, "old rooms go out of date").** A room built in an earlier era goes beige and dusty; staff in it complain
     (morale) until the lab refurbishes it for a fraction of the build cost. Save schema 31 (`builtTick` per room).
 26. **Control goes stale (bible ch. 10, "what erodes it").** Each new era, the control techniques of older eras count for less until the

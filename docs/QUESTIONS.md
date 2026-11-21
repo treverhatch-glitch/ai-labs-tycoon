@@ -1079,6 +1079,18 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**: `namingMess`. An older save migrates with it at 0 (tidy names), so nothing in an old game changes until the next training run. Names already in the save stay as they are.
 - Why: the suffixes are in the saved names; the number is the only thing the next name and the appeal part need. The golden digest moved, and the cause was checked: with no mess added, the saved number and schema number set back to schema 29's, the digest of the one pinned game equals the old golden `e77d4325`. So the move is the new field, the new schema number, and the naming rot itself (three or more runs in that game year, so names and appeal changed).
 
+## The company chat and the glow (NEXT item 24)
+
+### Q198. How does the chat know what to say, and who says it? DECIDED: read off the event log and the payroll, nothing saved
+- Options: (a) store a chat log in the save; (b) derive it from events and the people on the payroll each time it is asked for.
+- Recommendation and choice: **(b)**. `chat.lines` in the data (35 lines) say which event kind each reacts to, which roles may say it, an optional trait, and (for yes-or-no events) which pick. The first line that fits the event and has someone to say it wins, so trait lines are listed before the plain ones; the speaker is picked from the people who fit by a hash of the event, so the same event always gets the same speaker while that person is still on the payroll. A kind with no line stays out of the feed. A poach is about the lab it was done to (`about: "subject"`).
+- Why: events are already data and the bible asks for staff to react in character; saving prose would bloat the save and freeze the jokes. The cost is that a line's speaker can change when people leave, which is acceptable for a chat that is a view. Reading the chat changes nothing (checked against the digest).
+
+### Q199. What does the glow show, and does it tell the truth? DECIDED: the true meters, against a dashboard that sees only the displayed ones
+- Options: (a) show the displayed alignment; (b) show the true risk of the worst model; (c) (b) plus a second reading for the dashboard.
+- Recommendation and choice: **(c)**. Seven stages in `glow.stages` follow the ladder: calm, humming (weekly incident chance of 1% or more), flickering (rung 2), empty corridor (rung 3, sandbagging), doors locked (rung 4), power dips (rung 5), quiet (rung 6). The worst released or trained model sets the stage. The dashboard reading is the same calculation on the displayed alignment with no corruption, so when a model sandbags or is corrupted the report says `ChartIsMisleading` and the room is further up the ladder than the chart. Brightness is the combined capability of the latest model of each line, up to `fullAtCapability` 10000.
+- Why: the bible's "truth through the walls": a careful player learns to trust the room over the chart. Derived only, no save change, no effect on any rule, so the economy guards are untouched.
+
 ## Open
 
 None.

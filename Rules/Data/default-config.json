@@ -5308,6 +5308,420 @@
     "cleanPoints": 400,
     "cleanFeeHireFees": 4
   },
+  "chat": {
+    "defaultLines": 12,
+    "lines": [
+      {
+        "id": "hired-sleeper",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "sleeps-under-desk",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. There is room under my desk if the desks run out."
+      },
+      {
+        "id": "hired",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. The kitchen has one working coffee machine and we are all sharing it."
+      },
+      {
+        "id": "fired-doomer",
+        "kind": "Fired",
+        "roles": [],
+        "trait": "doomer",
+        "pick": -1,
+        "about": "lab",
+        "text": "This is how it starts."
+      },
+      {
+        "id": "fired-safety",
+        "kind": "Fired",
+        "roles": [
+          "safety",
+          "red-teamer",
+          "alignment-fellow"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "That is the third person from my side in a year. I am updating my CV in a private tab."
+      },
+      {
+        "id": "fired",
+        "kind": "Fired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Everybody saw the calendar invite. Nobody is looking at anybody."
+      },
+      {
+        "id": "room-built",
+        "kind": "RoomBuilt",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "New room. We will argue about the thermostat there too."
+      },
+      {
+        "id": "tech-researched",
+        "kind": "TechResearched",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A new technique. The whiteboard is full, and so is the other whiteboard."
+      },
+      {
+        "id": "training-started",
+        "kind": "TrainingStarted",
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Run started. I will be refreshing the loss curve for no good reason."
+      },
+      {
+        "id": "trained-tenx",
+        "kind": "TrainingFinished",
+        "roles": [],
+        "trait": "tenx",
+        "pick": -1,
+        "about": "lab",
+        "text": "I did most of {model}. Check the commit log. Actually, do not check the commit log."
+      },
+      {
+        "id": "trained-doomer",
+        "kind": "TrainingFinished",
+        "roles": [],
+        "trait": "doomer",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is done, capability {amount}. I would like to run more evals before anyone does anything exciting."
+      },
+      {
+        "id": "trained",
+        "kind": "TrainingFinished",
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} finished at capability {amount}. Nobody can say why it is good. Please do not touch anything."
+      },
+      {
+        "id": "released-accel",
+        "kind": "ModelReleased",
+        "roles": [],
+        "trait": "accelerationist",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is out. Ship it, ship it, ship it."
+      },
+      {
+        "id": "released",
+        "kind": "ModelReleased",
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is on sale in {amount} of our sectors. I have already been asked what it does."
+      },
+      {
+        "id": "incident-logs",
+        "kind": "Incident",
+        "roles": [],
+        "trait": "reads-the-logs",
+        "pick": -1,
+        "about": "lab",
+        "text": "It was in the logs. It was always in the logs."
+      },
+      {
+        "id": "incident-doomer",
+        "kind": "Incident",
+        "roles": [],
+        "trait": "doomer",
+        "pick": -1,
+        "about": "lab",
+        "text": "I am not saying I told you so. I am saying it is in the doc I wrote in March."
+      },
+      {
+        "id": "incident-accel",
+        "kind": "Incident",
+        "roles": [],
+        "trait": "accelerationist",
+        "pick": -1,
+        "about": "lab",
+        "text": "An incident? That is the model finding its own voice."
+      },
+      {
+        "id": "incident-safety",
+        "kind": "Incident",
+        "roles": [
+          "safety",
+          "red-teamer",
+          "alignment-fellow"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model}. That one was on the list I sent last quarter. The list is still pinned."
+      },
+      {
+        "id": "incident",
+        "kind": "Incident",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Has anybody seen the screenshot? Everybody has seen the screenshot."
+      },
+      {
+        "id": "customer-complaint",
+        "kind": "CustomerComplaint",
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A customer wrote in. The whole message is capitalised."
+      },
+      {
+        "id": "complaint-answered-good",
+        "kind": "ComplaintAnswered",
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The customer wrote back. They said thank you and used a single exclamation mark."
+      },
+      {
+        "id": "complaint-answered-bad",
+        "kind": "ComplaintAnswered",
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The reply landed badly. The customer has found the other thread."
+      },
+      {
+        "id": "trust-lost",
+        "kind": "TrustLost",
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The {sector} customers are not returning our calls. This is probably fine."
+      },
+      {
+        "id": "press-good",
+        "kind": "PressAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The line worked. Please never ask me to talk to a journalist again."
+      },
+      {
+        "id": "press-bad",
+        "kind": "PressAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The spin did not spin."
+      },
+      {
+        "id": "crown",
+        "kind": "GauntletCrown",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We won the crown. I would like it noted that I did not believe in the benchmark until now."
+      },
+      {
+        "id": "demo-good",
+        "kind": "GauntletDemo",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The live demo worked. I had a backup plan, and the backup plan was prayer."
+      },
+      {
+        "id": "demo-bad",
+        "kind": "GauntletDemo",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The demo fell over on stage. It is already a meme. I have seen the meme. It is good."
+      },
+      {
+        "id": "exposed",
+        "kind": "GauntletExposed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "They worked out we tuned for the test. Everyone, say nothing."
+      },
+      {
+        "id": "funding",
+        "kind": "FundingClosed",
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "New money. Can we spend a little of it on chairs?"
+      },
+      {
+        "id": "in-debt",
+        "kind": "InDebt",
+        "roles": [
+          "engineer",
+          "infra"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The GPUs are fine. It is the spreadsheet that is overheated."
+      },
+      {
+        "id": "heatwave",
+        "kind": "Heatwave",
+        "roles": [
+          "engineer",
+          "infra"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The data centre is throttling. During launch week, naturally."
+      },
+      {
+        "id": "poached",
+        "kind": "StaffPoached",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "subject",
+        "text": "A rival took one of ours. They announced it like a mission statement."
+      },
+      {
+        "id": "poach-offered",
+        "kind": "PoachOffered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "subject",
+        "text": "Somebody just got an offer. Everyone knows. Nobody is saying who."
+      },
+      {
+        "id": "poach-kept",
+        "kind": "PoachCountered",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "They stayed. The title helped. I would also like a title."
+      },
+      {
+        "id": "poach-left",
+        "kind": "PoachCountered",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "They left anyway. The farewell email was nine paragraphs long."
+      }
+    ]
+  },
+  "glow": {
+    "fullAtCapability": 10000,
+    "stages": [
+      {
+        "id": "calm",
+        "name": "Calm",
+        "minChancePermille": 0,
+        "minRung": 0,
+        "sign": "The building hums, the lamps are steady and the staff are bored."
+      },
+      {
+        "id": "hum",
+        "name": "Humming",
+        "minChancePermille": 10,
+        "minRung": 0,
+        "sign": "The fans never quite stop and the lamps have a faint warm tint."
+      },
+      {
+        "id": "flicker",
+        "name": "Flickering",
+        "minChancePermille": -1,
+        "minRung": 2,
+        "sign": "The lights flicker when anyone says the model's name."
+      },
+      {
+        "id": "empty-corridor",
+        "name": "Empty corridor",
+        "minChancePermille": -1,
+        "minRung": 3,
+        "sign": "Staff walk the long way round and nobody will say why."
+      },
+      {
+        "id": "doors-locked",
+        "name": "Doors locked",
+        "minChancePermille": -1,
+        "minRung": 4,
+        "sign": "The containment wing locks its own doors at night. The log says the locks were fine."
+      },
+      {
+        "id": "power-dip",
+        "name": "Power dips",
+        "minChancePermille": -1,
+        "minRung": 5,
+        "sign": "A face shows on every screen for one frame, and the building's power dips for a second."
+      },
+      {
+        "id": "quiet",
+        "name": "Quiet",
+        "minChancePermille": -1,
+        "minRung": 6,
+        "sign": "Everything is working perfectly and nobody is sure why. The cat has left the building."
+      }
+    ]
+  },
   "gauntlet": {
     "name": "The Gauntlet",
     "jitterPermille": 50,
