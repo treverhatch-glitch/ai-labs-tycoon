@@ -57,7 +57,10 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Released) continue;
-                if (state.Rng.Safety.Chance(IncidentChancePermille(c, state.Tick, model))) Incident(c, state, lab, model);
+                if (!state.Rng.Safety.Chance(IncidentChancePermille(c, state.Tick, model))) continue;
+                int caught = RolePerks.IncidentCatchPermille(c, lab);
+                if (caught > 0 && state.Rng.Safety.Chance(caught)) continue;
+                Incident(c, state, lab, model);
             }
         }
 

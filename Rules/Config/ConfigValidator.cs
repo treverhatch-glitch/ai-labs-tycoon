@@ -34,6 +34,7 @@ namespace AiLabs.Rules.Config
             UniqueIds(p, "worldEvents", c.WorldEvents);
             UniqueIds(p, "lots", c.Lots);
             UniqueIds(p, "roles", c.Roles);
+            UniqueIds(p, "rolePerks", c.RolePerks);
             UniqueIds(p, "roomTypes", c.RoomTypes);
             UniqueIds(p, "research.techs", c.Research.Techs);
             UniqueIds(p, "training.lines", c.Training.Lines);
@@ -56,6 +57,8 @@ namespace AiLabs.Rules.Config
             {
                 if (role.HireCost < 0 || role.WeeklySalary < 0 || role.Severance < 0) p.Add("role " + role.Id + " has a negative cost");
             }
+
+            RolePerkProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -370,6 +373,20 @@ namespace AiLabs.Rules.Config
                     EraConfig before = c.Era(safety.RiskClasses[i - 1].Era);
                     if (before != null && c.Eras.IndexOf(opens) < c.Eras.IndexOf(before)) p.Add(who + " is listed before a class that opens in an earlier era: list them oldest first");
                 }
+            }
+        }
+
+        static void RolePerkProblems(List<string> p, GameConfig c)
+        {
+            foreach (RolePerkConfig perk in c.RolePerks)
+            {
+                string who = "rolePerk " + perk.Id;
+                if (c.Role(perk.RoleId) == null) p.Add(who + " names the unknown role \"" + perk.RoleId + "\"");
+                if (perk.PerStaffPermille < 1 || perk.PerStaffPermille > 1000) p.Add(who + " needs perStaffPermille from 1 to 1000");
+                if (perk.CapPermille < perk.PerStaffPermille || perk.CapPermille > 900) p.Add(who + " needs a cap from perStaffPermille up to 900, so one person always counts and a fee or chance never reaches zero");
+                if (string.IsNullOrEmpty(perk.Blurb)) p.Add(who + " has no blurb");
+                foreach (string sector in perk.Sectors)
+                    if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
             }
         }
 

@@ -48,7 +48,8 @@ namespace AiLabs.Rules.Systems
             long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
-                + LabQueries.ContainmentAlignmentBonus(c, lab);
+                + LabQueries.ContainmentAlignmentBonus(c, lab)
+                + RolePerks.Permille(c, lab, RolePerkKind.AlignmentWork);
         }
 
         /// <summary>This week's compute going to training. It is zero when nothing is training: idle GPUs serve customers.</summary>

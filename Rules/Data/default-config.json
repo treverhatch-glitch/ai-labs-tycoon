@@ -1016,6 +1016,95 @@
       "severance": 3000
     }
   ],
+  "rolePerks": [
+    {
+      "id": "recruiter-fee-discount",
+      "roleId": "recruiter",
+      "kind": "HireDiscount",
+      "perStaffPermille": 30,
+      "capPermille": 250,
+      "sectors": [],
+      "blurb": "Every recruiter wins back 3% of every hiring fee, up to 25%. It matters most in the talent war."
+    },
+    {
+      "id": "red-team-catch",
+      "roleId": "red-teamer",
+      "kind": "IncidentCut",
+      "perStaffPermille": 25,
+      "capPermille": 300,
+      "sectors": [],
+      "blurb": "Every red-teamer catches 2.5% of the incidents a released model would have had, up to 30%."
+    },
+    {
+      "id": "alignment-fellow-work",
+      "roleId": "alignment-fellow",
+      "kind": "AlignmentWork",
+      "perStaffPermille": 40,
+      "capPermille": 400,
+      "sectors": [],
+      "blurb": "Every alignment fellow makes the compute a run spends on alignment do 4% more, up to 40%."
+    },
+    {
+      "id": "product-lead-appeal",
+      "roleId": "product-lead",
+      "kind": "SectorAppeal",
+      "perStaffPermille": 30,
+      "capPermille": 240,
+      "sectors": [],
+      "blurb": "Every product lead makes customers like the lab's models 3% more in every sector, up to 24%."
+    },
+    {
+      "id": "agent-wrangler-appeal",
+      "roleId": "agent-wrangler",
+      "kind": "SectorAppeal",
+      "perStaffPermille": 50,
+      "capPermille": 300,
+      "sectors": [
+        "coding-agents",
+        "agent-workforce",
+        "enterprise-knowledge"
+      ],
+      "blurb": "Every agent wrangler makes the lab's agents 5% more appealing in coding agents, agent workforces and enterprise knowledge, up to 30%."
+    },
+    {
+      "id": "harness-operator-appeal",
+      "roleId": "harness-operator",
+      "kind": "SectorAppeal",
+      "perStaffPermille": 50,
+      "capPermille": 300,
+      "sectors": [
+        "agent-workforce",
+        "ai-research-services"
+      ],
+      "blurb": "Every harness operator makes the lab's harnesses 5% more appealing in agent workforces and AI research services, up to 30%."
+    },
+    {
+      "id": "roboticist-appeal",
+      "roleId": "roboticist",
+      "kind": "SectorAppeal",
+      "perStaffPermille": 50,
+      "capPermille": 300,
+      "sectors": [
+        "robotics-industry",
+        "household-robots",
+        "agri-logistics",
+        "devices"
+      ],
+      "blurb": "Every roboticist makes the lab's robots and devices 5% more appealing in industry, home, farm and device markets, up to 30%."
+    },
+    {
+      "id": "mission-controller-appeal",
+      "roleId": "mission-controller",
+      "kind": "SectorAppeal",
+      "perStaffPermille": 50,
+      "capPermille": 300,
+      "sectors": [
+        "machine-science",
+        "space-compute"
+      ],
+      "blurb": "Every mission controller makes the lab's models 5% more appealing in machine science and space compute, up to 30%."
+    }
+  ],
   "roomTypes": [
     {
       "id": "research-lab",

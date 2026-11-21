@@ -37,6 +37,8 @@ namespace AiLabs.Rules.Config
         public PlayerStartConfig PlayerStart;
         public List<LotConfig> Lots;
         public List<RoleConfig> Roles;
+        /// <summary>What roles do beyond their function (the recruiter's hiring discount and the rest).</summary>
+        public List<RolePerkConfig> RolePerks = new List<RolePerkConfig>();
         public List<RoomTypeConfig> RoomTypes;
         public ComputeConfig Compute;
         public WorldConfig World;
@@ -73,6 +75,7 @@ namespace AiLabs.Rules.Config
             s.Obj("playerStart", ref PlayerStart);
             s.ObjList("lots", ref Lots);
             s.ObjList("roles", ref Roles);
+            s.ObjList("rolePerks", ref RolePerks);
             s.ObjList("roomTypes", ref RoomTypes);
             s.Obj("compute", ref Compute);
             s.Obj("world", ref World);

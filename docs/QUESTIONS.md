@@ -770,6 +770,44 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, with missing or unknown JSON keys an error as everywhere else.
 - Why: a typo in a class should fail when the config loads, not as a crash in the middle of a game.
 
+## Role perks (NEXT.md known limit: roles beyond the first four had no rule)
+
+### Q128. How does a role get a perk? DECIDED: a `rolePerks` table, derived from the staff list, nothing saved
+
+- Options: (a) a new field on every role; (b) a separate table of perks (id, role, kind, share per person, cap, sectors, blurb) read from the staff a lab has today.
+- Recommendation and choice: **(b)**. Four kinds: hire discount, incident cut, alignment work, sector appeal. Each person adds the share, held under the cap; perks of one kind add up.
+- Why: a role can carry zero, one or two perks without touching the role rows; no save change, so no schema step; letting the role go ends the perk the same week. The validator needs a known role, a share from 1 to 1000, a cap from the share up to 900 (so a fee or a chance never reaches zero), a blurb and known sectors.
+
+### Q129. What does the recruiter do? DECIDED: wins back 3% of every hiring fee per recruiter, up to 25%
+
+- Options: (a) lowers salaries; (b) takes a share off the hiring fee, after the era's talent-war multiplier.
+- Recommendation and choice: **(b)**. Nine recruiters offset a quarter of the Chat Boom's tripled fee. The hire command, the planners' budgets and a breakdown query (`HireFeeParts`: list price, era shift, discount) all use the one figure.
+- Why: it answers the talent war of item 13 with a choice (pay for recruiters or pay the fee), and costs a recruiter a salary every week whether or not the lab hires.
+
+### Q130. What do red-teamers do? DECIDED: 2.5% of incidents caught per red-teamer, up to 30%, by a second roll
+
+- Options: (a) cut the weekly incident chance in permille; (b) when an incident was about to happen, roll once more and let it pass with the lab's catch chance.
+- Recommendation and choice: **(b)**. The second roll is made only when an incident was coming and the lab has red-teamers, so a lab without them draws exactly the dice it did before and plays the same (tested by digest).
+- Why: incident odds are a few permille a week, so multiplying them by 0.75 would round to nothing or to a halving. The breakdown (`IncidentOdds`) shows the odds before and the share caught.
+
+### Q131. What do alignment fellows do? DECIDED: +4% on the work of each unit of alignment compute per fellow, up to 40%
+
+- Options: (a) nothing beyond being safety staff; (b) a perk on top of the safety-staff share and the containment wing.
+- Recommendation and choice: **(b)**. A fellow already counts as safety staff (a fellow is `Safety`), so the perk is the extra.
+- Why: the fellow costs the most of the safety roles and should do the most; the wing and the staff still stack.
+
+### Q132. What do product leads and the specialists do? DECIDED: a boost to the appeal of the lab's models, after the sales boost and before the Gauntlet crown
+
+- Options: (a) lift sales for all; (b) a product lead lifts appeal in every sector (3% each, up to 24%), and each late specialist (agent wrangler, harness operator, roboticist, mission controller) lifts it in its sectors (5% each, up to 30%).
+- Recommendation and choice: **(b)**. `AppealBreakdown.RoleBoost` joins the other parts, so the parts still add up.
+- Why: later roles should mean something in the markets of their era, and appeal is already what wins share (tested against rivals in a crowded sector).
+
+### Q133. Which roles get no perk? DECIDED: the data roles for now, and the roles that already act through their function
+
+- Options: (a) a perk for all 14; (b) none for `labeller`, `data-engineer`, `data-gardener` (they wait for data sources, which live on `cursor/rules-side-items`), nor for `infra`, `policy` and `chip-architect`, which already do their work by function.
+- Recommendation and choice: **(b)**.
+- Why: a data perk written now would collide with that branch; adding a kind later is one enum value and a data row.
+
 ## Open
 
 None.
