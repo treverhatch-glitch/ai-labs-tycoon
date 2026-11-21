@@ -73,6 +73,7 @@ namespace AiLabs.Rules.Config
             ControlProblems(p, c);
             LeadsProblems(p, c);
             RepairProblems(p, c);
+            OfficeProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -501,6 +502,35 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void OfficeProblems(List<string> p, GameConfig c)
+        {
+            OfficeConfig o = c.Office;
+            if (o == null) { p.Add("office is missing"); return; }
+            if (o.ChancePermille < 0 || o.ChancePermille > MathI.Permille) p.Add("office.chancePermille must be from 0 to 1000");
+            if (o.FirstAfterWeeks < 0 || o.FirstAfterWeeks > 2000) p.Add("office.firstAfterWeeks must be from 0 to 2000");
+            if (o.ExpireWeeks < 1 || o.ExpireWeeks > 520) p.Add("office.expireWeeks must be from 1 to 520");
+            if (o.MinWeekCost < 0) p.Add("office.minWeekCost is negative");
+            UniqueIds(p, "office.events", o.Events);
+            for (int i = 0; i < o.Events.Count; i++)
+            {
+                OfficeEventConfig e = o.Events[i];
+                string who = "office event " + e.IdValue;
+                if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
+                if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
+                UniqueIds(p, who + " choices", e.Choices);
+                for (int k = 0; k < e.Choices.Count; k++)
+                {
+                    OfficeChoiceConfig ch = e.Choices[k];
+                    string what = who + " choice " + ch.IdValue;
+                    if (string.IsNullOrEmpty(ch.Text)) p.Add(what + " has no text");
+                    if (string.IsNullOrEmpty(ch.Result)) p.Add(what + " has no result");
+                    for (int f = 0; f < ch.Effects.Count; f++)
+                        if (ch.Effects[f].Amount == 0 || ch.Effects[f].Amount < -1000 || ch.Effects[f].Amount > 1000) p.Add(what + " has an effect with an amount of " + ch.Effects[f].Amount + " (it must be from -1000 to 1000 and not 0)");
+                }
             }
         }
 

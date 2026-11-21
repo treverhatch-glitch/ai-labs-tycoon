@@ -94,7 +94,13 @@ namespace AiLabs.Rules.State
         /// <summary>The player paid to fine-tune a glitching model. LabId is the lab, SubjectId the model, Amount the cost, Ref the model name.</summary>
         ModelFineTuned,
         /// <summary>The player withdrew a glitching model and put the older version back on sale. LabId is the lab, SubjectId the older model now on sale, Amount the reputation lost, Ref the withdrawn model's name.</summary>
-        ModelRolledBack
+        ModelRolledBack,
+        /// <summary>Something happened at the player's lab that wants an answer. LabId is the lab, Ref the office event id.</summary>
+        OfficeEventPosed,
+        /// <summary>The player answered. LabId is the lab, Ref "event|choice".</summary>
+        OfficeEventAnswered,
+        /// <summary>Nobody answered in time and it blew over. LabId is the lab, Ref the office event id.</summary>
+        OfficeEventLapsed
     }
 
     /// <summary>

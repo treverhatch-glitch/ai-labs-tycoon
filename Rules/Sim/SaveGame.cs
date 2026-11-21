@@ -122,6 +122,8 @@ namespace AiLabs.Rules.Sim
                 foreach (RoomState room in lab.Rooms)
                     if (room.EraAge < 0 || room.EraAge > c.Eras.Count) p.Add(who + " has a room " + room.Id + " that is " + room.EraAge + " eras old, outside 0 to " + c.Eras.Count);
                 if (lab.NamingMess < 0 || lab.NamingMess > c.Naming.MaxMess) p.Add(who + " has a naming mess of " + lab.NamingMess + ", outside 0 to " + c.Naming.MaxMess);
+                if (!string.IsNullOrEmpty(lab.OfficeEventId) && c.Office.Event(lab.OfficeEventId) == null) p.Add(who + " has an office event \"" + lab.OfficeEventId + "\" that is not in the data");
+                foreach (string seen in lab.OfficeSeen) if (c.Office.Event(seen) == null) p.Add(who + " has seen the unknown office event \"" + seen + "\"");
                 var leadIds = new System.Collections.Generic.HashSet<int>();
                 foreach (ResearchLead lead in lab.Leads)
                 {

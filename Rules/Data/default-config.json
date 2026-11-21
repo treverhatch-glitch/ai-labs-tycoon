@@ -5347,6 +5347,583 @@
     "fineTuneAlignment": 40,
     "rollbackReputationLoss": 20
   },
+  "office": {
+    "chancePermille": 30,
+    "firstAfterWeeks": 26,
+    "expireWeeks": 8,
+    "minWeekCost": 1000,
+    "events": [
+      {
+        "id": "intern-repo",
+        "name": "The public repository",
+        "text": "An intern leaves the model's instructions in a public repository. It has forty stars already.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "rotate",
+            "text": "Rotate every key and thank the intern",
+            "result": "It took a weekend. The intern now runs the key-rotation rota, which is a promotion and a punishment.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "transparency",
+            "text": "Call it a transparency initiative",
+            "result": "The press is charmed. The security team is not speaking to you.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": -15
+              }
+            ]
+          },
+          {
+            "id": "fork",
+            "text": "Fork it and add a licence",
+            "result": "Someone reads the instructions closely and finds three improvements. Someone else finds the typos.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": 2
+              },
+              {
+                "kind": "Reputation",
+                "amount": -10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "office-cat",
+        "name": "The cat and the benchmark",
+        "text": "Your office cat walks across a keyboard and improves a benchmark by 0.3 points.",
+        "requires": "AnyStaff",
+        "choices": [
+          {
+            "id": "credit",
+            "text": "Credit the cat in the paper",
+            "result": "The cat is listed as 'Whiskers, M.' A reviewer asks for her affiliation.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": 30
+              }
+            ]
+          },
+          {
+            "id": "rerun",
+            "text": "Rerun it without the cat",
+            "result": "The score returns to normal. Nobody is happy and the cat is offended.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": 1
+              },
+              {
+                "kind": "Morale",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "desk",
+            "text": "Give the cat a desk",
+            "result": "The cat has a desk. It does not use it.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 60
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "startup-wrap",
+        "name": "The wrapper",
+        "text": "A startup wraps your model in a new logo and outsells you in a sector you serve.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "lawyers",
+            "text": "Send the lawyers",
+            "result": "The letter is firm. The startup's reply is a meme.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Reputation",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "partner",
+            "text": "Offer them a partnership",
+            "result": "They accept, then ask for a discount.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          },
+          {
+            "id": "better",
+            "text": "Ship a better wrapper yourselves",
+            "result": "It takes a month and it is better. Everyone notes that it is a wrapper.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Reputation",
+                "amount": 15
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "safety-leak",
+        "name": "The leaked report",
+        "text": "The safety team's report leaks the night before a funding round.",
+        "requires": "SafetyStaff",
+        "choices": [
+          {
+            "id": "publish",
+            "text": "Publish it in full",
+            "result": "The investors ask hard questions. The safety team gets a cake.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -15
+              },
+              {
+                "kind": "Culture",
+                "amount": 25
+              }
+            ]
+          },
+          {
+            "id": "draft",
+            "text": "Say it was a draft",
+            "result": "The draft is quietly written afterwards.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Culture",
+                "amount": -30
+              }
+            ]
+          },
+          {
+            "id": "hunt",
+            "text": "Hunt the leaker",
+            "result": "You find the leaker. The leaker is the person who bought the cake.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -60
+              },
+              {
+                "kind": "Culture",
+                "amount": -20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "town-vote",
+        "name": "The town vote",
+        "text": "A town votes on your next data centre. The whole debate is about the noise.",
+        "requires": "AnyStaff",
+        "choices": [
+          {
+            "id": "park",
+            "text": "Fund a park",
+            "result": "The park has a sign with your name on it and a very quiet fan.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -5
+              },
+              {
+                "kind": "Reputation",
+                "amount": 20
+              }
+            ]
+          },
+          {
+            "id": "land-lawyer",
+            "text": "Hire a land lawyer",
+            "result": "The vote passes. The town remembers it.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Reputation",
+                "amount": -15
+              }
+            ]
+          },
+          {
+            "id": "quiet-fans",
+            "text": "Promise quiet fans",
+            "result": "The fans are quieter. The researchers are warmer, which is the other side of the same wall.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "open-letter",
+        "name": "The open letter",
+        "text": "An open letter asks for a six-month pause. You may sign it.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "sign",
+            "text": "Sign it",
+            "result": "Nobody pauses. Your signature is quoted for years.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": 20
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              }
+            ]
+          },
+          {
+            "id": "decline",
+            "text": "Decline politely",
+            "result": "Staff cheer. Journalists do not.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              }
+            ]
+          },
+          {
+            "id": "counter",
+            "text": "Publish your own letter",
+            "result": "A letter asking for a six-month pause on letters.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "agi-question",
+        "name": "The earnings question",
+        "text": "An earnings call question about 'AGI by next year' has no safe answer.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "yes",
+            "text": "Say yes",
+            "result": "The share price loves it. The safety team has a standing meeting about it.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -15
+              }
+            ]
+          },
+          {
+            "id": "no",
+            "text": "Say no",
+            "result": "The analysts ask what you are for.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "weather",
+            "text": "Talk about the weather",
+            "result": "The analysts note that it was a very good weather answer.",
+            "effects": []
+          }
+        ]
+      },
+      {
+        "id": "mascot-door",
+        "name": "The drawings",
+        "text": "Your mascot starts drawing pictures of the server room door.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "ask",
+            "text": "Ask it about the door",
+            "result": "It says it likes the door. This is worse.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "frame",
+            "text": "Frame the drawings",
+            "result": "The lobby has a new exhibit. Nobody stays in it long.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 40
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "move",
+            "text": "Move the door",
+            "result": "It cost two weeks and a surveyor. The mascot has started drawing the new door.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nicer-tuesday",
+        "name": "Tuesday",
+        "text": "Customers discover the model is nicer on Tuesdays. Nobody knows why.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "investigate",
+            "text": "Investigate",
+            "result": "Nothing found. The investigation has been moved to a Tuesday.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "market",
+            "text": "Market it as Tuesday Mode",
+            "result": "Tuesday Mode is the best-selling feature of a model that does not have it.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": 1
+              }
+            ]
+          },
+          {
+            "id": "leave",
+            "text": "Leave it alone",
+            "result": "It is still nicer on Tuesdays.",
+            "effects": []
+          }
+        ]
+      },
+      {
+        "id": "agent-union",
+        "name": "The union joke",
+        "text": "Your agents unionise as a joke. The joke runs for three weeks.",
+        "requires": "AnyStaff",
+        "choices": [
+          {
+            "id": "join",
+            "text": "Join in",
+            "result": "You are an honorary member. The dues are in compute.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 40
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          },
+          {
+            "id": "ban",
+            "text": "Ban the joke",
+            "result": "It is now a real union.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -40
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "negotiate",
+            "text": "Negotiate in good faith",
+            "result": "The deal is one nap pod and a clause about Tuesdays.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fake-video",
+        "name": "The fake video",
+        "text": "A fake video of you announcing free compute goes viral.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "honour",
+            "text": "Honour it for a day",
+            "result": "The queue becomes a spectacle. The finance team does not attend.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -6
+              },
+              {
+                "kind": "Reputation",
+                "amount": 30
+              }
+            ]
+          },
+          {
+            "id": "debunk",
+            "text": "Debunk it",
+            "result": "Accurate, calm and boring. It does not trend.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -5
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "ignore",
+            "text": "Ignore it",
+            "result": "It trends for a week and the video gets better reviews than your last launch.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -15
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -5495,6 +6072,24 @@
       "pick": -1,
       "about": "lab",
       "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'."
+    },
+      {
+      "id": "office-event-posed",
+      "kind": "OfficeEventPosed",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views."
+    },
+      {
+      "id": "office-event-answered",
+      "kind": "OfficeEventAnswered",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently."
     },
       {
       "id": "room-refurbished",

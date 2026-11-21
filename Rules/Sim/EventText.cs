@@ -113,6 +113,23 @@ namespace AiLabs.Rules.Sim
                         RoomTypeConfig dated = c.RoomType(e.Ref);
                         return who + "'s " + (dated == null ? e.Ref : dated.Name) + " is now " + RoomAge.Stage(c, (int)e.Amount).Name.ToLowerInvariant() + ", " + e.Amount + (e.Amount == 1 ? " era" : " eras") + " behind. Staff are complaining.";
                     }
+                case EventKind.OfficeEventPosed:
+                    {
+                        OfficeEventConfig posed = c.Office.Event(e.Ref);
+                        return posed == null ? who + " has something on the desk." : who + ": " + posed.Text;
+                    }
+                case EventKind.OfficeEventAnswered:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        OfficeEventConfig asked = c.Office.Event(bits[0]);
+                        OfficeChoiceConfig chose = asked == null || bits.Length < 2 ? null : asked.Choice(bits[1]);
+                        return chose == null ? who + " dealt with it." : who + " chose to " + chose.Text.ToLowerInvariant() + ". " + chose.Result;
+                    }
+                case EventKind.OfficeEventLapsed:
+                    {
+                        OfficeEventConfig gone = c.Office.Event(e.Ref);
+                        return who + " did nothing about '" + (gone == null ? e.Ref : gone.Name) + "' and it blew over.";
+                    }
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";
                 case EventKind.ModelRolledBack:

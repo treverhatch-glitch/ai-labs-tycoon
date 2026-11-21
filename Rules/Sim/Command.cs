@@ -25,7 +25,8 @@ namespace AiLabs.Rules.Sim
         RefurbishRoom,
         FollowLead,
         FineTuneModel,
-        RollBackModel
+        RollBackModel,
+        AnswerOfficeEvent
     }
 
     /// <summary>
@@ -404,6 +405,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Answers the office event on the desk. <see cref="Command.Id"/> is the choice.</summary>
+        public static Command AnswerOfficeEvent(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.AnswerOfficeEvent, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
         /// <summary>Pays to end a glitch on a model that is on sale now. <see cref="Command.TargetId"/> is the model.</summary>
         public static Command FineTuneModel(int labId, int modelId)
         {
@@ -482,7 +491,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent
     }
 
     public struct CommandResult

@@ -173,6 +173,11 @@ and says why in the commit message.
     `ModelRepairTests`, `docs/content/model-repair.md`. Still open: buttons on the model screen (Unity), fixing a corrupted or sandbagging model
     (these need the shady and sandbag rules), the autopilot mending its models.
 
+29. **Office events with a choice (bible ch. 14 "Event ideas").** ~~Done~~: `office` in the data (eleven events, three answers each), `OfficeEvents`,
+    `AnswerOfficeEvent`, `OfficeEventPosed`/`OfficeEventAnswered`/`OfficeEventLapsed`, save schema 33 (`officeEventId`, `officeEventExpires`,
+    `officeSeen`; Q242-Q245), `OfficeEventTests`, `docs/content/office-events.md`. Player labs only. Still open: an office-desk screen (Unity),
+    more events (needs for a data centre, a chip, a merger), events with effects that last, rivals with events.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

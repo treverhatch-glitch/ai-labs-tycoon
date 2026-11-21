@@ -139,6 +139,8 @@ Research leads ([content/research-leads.md](content/research-leads.md)) are the 
 
 Fine-tune and rollback ([content/model-repair.md](content/model-repair.md)) are the two ways to mend a glitching model from the bible's state table. A fine-tune costs a week of the model's sales, ends the glitch now and adds a little alignment; a rollback withdraws the model and puts the previous version of its line back on sale for 20 reputation. Nothing is saved.
 
+Office events ([content/office-events.md](content/office-events.md)) are the bible's "event ideas": every so often something happens at the player's lab (the model's instructions leak, the cat improves a benchmark, a town votes on the data centre) and three answers trade reputation, culture, morale, research or cash. An unanswered event lapses at no cost. Save schema 33.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

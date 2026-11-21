@@ -1159,6 +1159,26 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. A fine-tune sets the last incident date back by the glitch length, which turns the glitch off through the existing rule; a rollback only changes a model's status and sector list and the sector entry's model. Nothing is added to the save and the golden digest did not move (the autopilot never mends models).
 - Why: the existing glitch rule already reads those fields; a second date would have to be kept in step with them. The player-only effect keeps the economy guards untouched, and all five hold at 1455 tests.
 
+### Q242. How do office events arrive? DECIDED: a weekly chance worked out from the date, one at a time, on the player's lab only
+- Options: (a) roll the game's dice each week; (b) a fixed calendar of events; (c) a chance worked out from the week, the lab and the seed, one event waiting at a time.
+- Recommendation and choice: **(c)**. `office.chancePermille` 30 a week once game week `firstAfterWeeks` 26 has passed and nothing is waiting. The pick is also worked out from the date and seed, among events whose needs the lab meets and that it has not had this round; when all have been had the round starts again.
+- Why: a dice roll would shift every later draw in a game and move the economy guards (Q182); a worked-out chance is as steady as a dice stream to a player and touches nothing else. The seed keeps two games different. Only the player's lab has them, as with leads and ageing.
+
+### Q243. What do the answers do, and what if nobody answers? DECIDED: small effects in five kinds; an unanswered event lapses with no effect
+- Options: (a) effects in dollars; (b) effects in weeks of the lab's own output and costs; (c) also let a lapse cost something.
+- Recommendation and choice: **(b) and not (c)**. Reputation points, culture points, morale for all staff, weeks of research output and weeks of weekly running costs. A cash loss is never more than the cash the lab has. An event waits `expireWeeks` 8 weeks, then blows over with a line in the log and no effect.
+- Why: weeks scale with the lab, so the same event is a nuisance to a big lab and a decision to a small one. Because a lapse costs nothing, the autopilot (which never answers) and a player who ignores the desk both keep the numbers the balance tests were tuned on; answering is the only way to gain or lose.
+
+### Q244. Which events, and what do they need? DECIDED: eleven from the bible's list, four needing a model, safety staff or anyone
+- Options: (a) only the six the bible names; (b) the bible's list in full; (c) invent more.
+- Recommendation and choice: **(b)**: the public repository, the cat, the wrapper, the leaked report, the town vote, the open letter, the earnings question, the mascot's drawings, Tuesday, the union joke and the fake video (the bible's "event ideas" list, ch. 14). The wrapper, drawings and Tuesday need a model on sale; the leaked report needs somebody in safety; the cat, town vote and union joke need anyone on the payroll. Every event has three answers, one of which can be to do nothing much.
+- Why: events that mention a model or a safety team make no sense without one. Each answer trades two things (reputation against culture, cash against research) so there is no best row.
+
+### Q245. Is a save change needed, and does the golden move? DECIDED: yes, schema 33; the golden moved with a verified cause
+- Options: (a) store nothing and derive the event from the date; (b) save the event waiting, its deadline and the round's seen list.
+- Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo33` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
+- Why: the answer must survive a save, and an event picked by date would be lost on an older save. Nothing derived is stored; `OfficeEvents.Waiting` is a view. All guards hold at 1481 tests.
+
 ## Open
 
 None.
