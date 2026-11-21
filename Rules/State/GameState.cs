@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 91;
+        public const int CurrentSchema = 92;
 
         public int Schema;
         public string ConfigVersion;
@@ -361,6 +361,15 @@ namespace AiLabs.Rules.State
         public int RbfTier;
         public int RbfWeeks;
         public int RbfSlump;
+        /// <summary>The foundation's fund and what it has given in all.</summary>
+        public long FoundFund;
+        public long FoundGiven;
+        /// <summary>Its focus (1 safety, 2 education, 3 open science), the giving level (0 to 3), the goodwill, the week the focus last changed and the weeks counted toward a reputation point or a report.</summary>
+        public int FoundFocus;
+        public int FoundPayout;
+        public int FoundGoodwill;
+        public int FoundSwitch;
+        public int FoundDrip;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -688,6 +697,13 @@ namespace AiLabs.Rules.State
             s.Int("rbfTier", ref RbfTier);
             s.Int("rbfWeeks", ref RbfWeeks);
             s.Int("rbfSlump", ref RbfSlump);
+            s.Long("foundFund", ref FoundFund);
+            s.Long("foundGiven", ref FoundGiven);
+            s.Int("foundFocus", ref FoundFocus);
+            s.Int("foundPayout", ref FoundPayout);
+            s.Int("foundGoodwill", ref FoundGoodwill);
+            s.Int("foundSwitch", ref FoundSwitch);
+            s.Int("foundDrip", ref FoundDrip);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -217,6 +217,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.RbfOwed == 0 && (lab.RbfAdvance != 0 || lab.RbfBase != 0 || lab.RbfShare != 0 || lab.RbfTier != 0 || lab.RbfWeeks != 0 || lab.RbfSlump != 0))
                     || (lab.RbfOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " owes " + lab.RbfOwed + " on a revenue advance (tier " + lab.RbfTier + ") in a way the data does not allow");
+                if (lab.FoundFund < 0 || lab.FoundGiven < 0 || lab.FoundFocus < 0 || lab.FoundFocus > 3 || lab.FoundPayout < 0 || lab.FoundPayout > 3 || lab.FoundGoodwill < 0 || lab.FoundGoodwill > c.Foundation.MaxGoodwill || lab.FoundSwitch < 0 || lab.FoundDrip < 0
+                    || (lab.FoundFund > 0 && lab.FoundFocus < 1)
+                    || (lab.FoundFund == 0 && (lab.FoundGiven != 0 || lab.FoundFocus != 0 || lab.FoundPayout != 0 || lab.FoundGoodwill != 0 || lab.FoundSwitch != 0 || lab.FoundDrip != 0))
+                    || (lab.FoundFund != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a foundation of " + lab.FoundFund + " (focus " + lab.FoundFocus + ", goodwill " + lab.FoundGoodwill + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

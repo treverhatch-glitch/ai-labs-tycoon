@@ -105,6 +105,10 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.EndowFoundation: return EndowFoundation(c, state, lab, cmd);
+                case CommandKind.SetFoundationFocus: return SetFoundationFocus(c, state, lab, cmd);
+                case CommandKind.SetFoundationPayout: return SetFoundationPayout(c, state, lab, cmd);
+                case CommandKind.WindUpFoundation: return WindUpFoundation(c, state, lab, cmd);
                 case CommandKind.TakeRevenueAdvance: return TakeRevenueAdvance(c, state, lab, cmd);
                 case CommandKind.BuyOutAdvance: return BuyOutAdvance(c, state, lab, cmd);
                 case CommandKind.ListCompany: return ListCompany(c, state, lab, cmd);

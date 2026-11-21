@@ -121,6 +121,7 @@ namespace AiLabs.Rules.Config
         public AllowancesConfig Allowances = new AllowancesConfig();
         public ListingConfig Listing = new ListingConfig();
         public RbfConfig Rbf = new RbfConfig();
+        public FoundationConfig Foundation = new FoundationConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -240,6 +241,7 @@ namespace AiLabs.Rules.Config
             s.Obj("allowances", ref Allowances);
             s.Obj("listing", ref Listing);
             s.Obj("rbf", ref Rbf);
+            s.Obj("foundation", ref Foundation);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

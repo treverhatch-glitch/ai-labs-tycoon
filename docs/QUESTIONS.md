@@ -1984,6 +1984,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A week with revenue under half of what it was at the advance is a slump week and adds 2% of the advance to what is owed, so a lab that stumbles pays longer. After 12 weeks the advance can be bought out for 95% of what is still owed. The advance and the sweeps go through the capital line, so they are not taxable income and not a cost (Q379). Only the player's lab; never taking one changes nothing.
 - Alternatives: a fixed instalment (rejected: that is what the loans already are), a share of the lab (rejected: that is the funding rounds and the listing).
 
+### Q388. Can the lab endow a foundation that gives its money away for goodwill? DECIDED: yes, a fund with a cause, a giving level and goodwill that pays out by the cause
+- New `foundation` data, commands `EndowFoundation`, `SetFoundationFocus`, `SetFoundationPayout` and `WindUpFoundation`, `Foundation` system, events `FoundationEndowed`, `FoundationReported`, `FoundationRefocused`, `FoundationWoundUp` and `FoundationRanDry`, and seven saved lab fields (schema 92). A first gift of at least 100,000 (in thousands, from cash through the capital line, not tax-deductible) starts a fund and sets its cause: safety, education or open science. The fund earns 0.2% a week and gives 0.2%, 0.4% or 0.8% of itself away a week by the giving level (the lab sets it; none by default). Each 500 given adds a point of goodwill (out of 1,000); goodwill fades 3% a week.
+- What goodwill is worth depends on the cause. Safety damps every scandal (up to half the goodwill in permille, at most 25%), through the press room's damping. Education gives a reputation point every six weeks once goodwill is 150. Open science takes up to 300 off the strength of claims filed over an incident. Changing the cause loses 30% of the goodwill and locks the choice for 24 weeks; winding up returns 70% of the fund, costs 15 reputation and takes the goodwill with it. A fund that gives itself dry ends. Only the player's lab; never endowing one changes nothing.
+- Alternatives: a gift that is a tax deduction (rejected: it would make giving a tax dodge and tie the tax to the foundation), a goodwill score that never fades (rejected: giving would be a one-off purchase).
+
 ## Open
 
 None.

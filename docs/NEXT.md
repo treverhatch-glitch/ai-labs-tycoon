@@ -324,6 +324,7 @@ and says why in the commit message.
 141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
 142. **Public listing and guidance.** ~~Done~~: `listing` data, `ListCompany`, `SetGuidance`, `FollowOn`, `BuyBackShares`, `TakePrivate`, `Listing`, schema 90, `ListingTests`, `docs/content/listing.md` (Q386).
 143. **Revenue-based financing.** ~~Done~~: `rbf` data, `TakeRevenueAdvance`, `BuyOutAdvance`, `RevenueFinancing`, schema 91, `RevenueFinancingTests`, `docs/content/revenue-financing.md` (Q387).
+144. **Endowed foundation.** ~~Done~~: `foundation` data, `EndowFoundation`, `SetFoundationFocus`, `SetFoundationPayout`, `WindUpFoundation`, `Foundation`, schema 92, `FoundationTests`, `docs/content/foundation.md` (Q388).
 
 ## Rules: later
 

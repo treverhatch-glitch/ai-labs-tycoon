@@ -72,7 +72,7 @@ namespace AiLabs.Rules.Systems
         public static void OnIncident(GameConfig c, GameState state, LabState lab, ModelState model, long cost)
         {
             if (!Enabled(c) || lab.Id != state.PlayerLabId) return;
-            int strength = MathI.Permille + 100 - SafetyCulture.Level(c, lab) + model.Incidents * 25 - ScalingPolicy.ClaimStrength(c, lab) - Standards.ClaimStrength(c, lab);
+            int strength = MathI.Permille + 100 - SafetyCulture.Level(c, lab) + model.Incidents * 25 - ScalingPolicy.ClaimStrength(c, lab) - Standards.ClaimStrength(c, lab) - Foundation.ClaimStrength(c, lab);
             File(c, state, lab, Incident, MathI.MulPermille(cost, c.Litigation.IncidentPermille), strength, model.Name);
         }
 

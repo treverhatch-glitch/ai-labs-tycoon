@@ -6010,6 +6010,27 @@
     "buyoutAfter": 12,
     "buyoutPermille": 950
   },
+  "foundation": {
+    "enabled": 1,
+    "minGift": 100000,
+    "returnPermille": 2,
+    "payoutA": 2,
+    "payoutB": 4,
+    "payoutC": 8,
+    "goodwillUnit": 500,
+    "goodwillDecay": 30,
+    "maxGoodwill": 1000,
+    "safetyDamp": 500,
+    "maxDamp": 250,
+    "educationEvery": 6,
+    "educationAt": 150,
+    "scienceStrength": 300,
+    "switchLoss": 300,
+    "lockWeeks": 24,
+    "windUpPermille": 700,
+    "windUpReputation": 15,
+    "reportWeeks": 12
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

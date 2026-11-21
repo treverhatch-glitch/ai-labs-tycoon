@@ -126,6 +126,7 @@ namespace AiLabs.Rules.Config
             AllowancesProblems(p, c);
             ListingProblems(p, c);
             RbfProblems(p, c);
+            FoundationProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1417,6 +1418,18 @@ namespace AiLabs.Rules.Config
             if (k.CapA < MathI.Permille || k.CapB < MathI.Permille || k.CapC < MathI.Permille || k.CapA > 5000 || k.CapB > 5000 || k.CapC > 5000) p.Add("rbf.capA, capB and capC must be from 1000 to 5000");
             if (k.SlumpPermille < 0 || k.SlumpPermille > 1000 || k.SlumpCap < 0 || k.SlumpCap > 500) p.Add("rbf.slumpPermille must be from 0 to 1000 and slumpCap from 0 to 500");
             if (k.BuyoutAfter < 0 || k.BuyoutPermille < 100 || k.BuyoutPermille > 1000) p.Add("rbf.buyoutAfter must not be negative and buyoutPermille from 100 to 1000");
+        }
+
+        static void FoundationProblems(List<string> p, GameConfig c)
+        {
+            FoundationConfig k = c.Foundation;
+            if (k == null) { p.Add("foundation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("foundation.enabled must be 0 or 1");
+            if (k.MinGift < 1 || k.ReturnPermille < 0 || k.ReturnPermille > 100) p.Add("foundation.minGift must be at least 1 and returnPermille from 0 to 100");
+            if (k.PayoutA < 0 || k.PayoutB < k.PayoutA || k.PayoutC < k.PayoutB || k.PayoutC > 200) p.Add("foundation.payoutC must be at least payoutB, payoutB at least payoutA, and all from 0 to 200");
+            if (k.GoodwillUnit < 1 || k.GoodwillDecay < 0 || k.GoodwillDecay > 1000 || k.MaxGoodwill < 1 || k.MaxGoodwill > 1000) p.Add("foundation.goodwillUnit must be at least 1, goodwillDecay from 0 to 1000 and maxGoodwill from 1 to 1000");
+            if (k.SafetyDamp < 0 || k.MaxDamp < 0 || k.MaxDamp > 800 || k.ScienceStrength < 0 || k.EducationEvery < 1 || k.EducationAt < 0) p.Add("foundation.safetyDamp, educationAt and scienceStrength must not be negative, maxDamp up to 800 and educationEvery at least 1");
+            if (k.SwitchLoss < 0 || k.SwitchLoss > 1000 || k.LockWeeks < 0 || k.WindUpPermille < 0 || k.WindUpPermille > 1000 || k.WindUpReputation < 0 || k.ReportWeeks < 1) p.Add("foundation.switchLoss and windUpPermille must be from 0 to 1000, lockWeeks and windUpReputation not negative and reportWeeks at least 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

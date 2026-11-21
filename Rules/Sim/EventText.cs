@@ -387,6 +387,16 @@ namespace AiLabs.Rules.Sim
                     return who + (e.Pick == 1 ? " bought out" : " finished paying") + " its revenue advance.";
                 case EventKind.RevenueAdvanceStretched:
                     return "A weak week stretched " + who + "'s revenue advance by " + e.Amount + ".";
+                case EventKind.FoundationEndowed:
+                    return who + " put " + e.Amount + " into its foundation.";
+                case EventKind.FoundationReported:
+                    return who + "'s foundation gave " + e.Amount + " in the last stretch; goodwill stands at " + e.SubjectId + ".";
+                case EventKind.FoundationRefocused:
+                    return who + "'s foundation turned to a new cause.";
+                case EventKind.FoundationWoundUp:
+                    return who + " wound up its foundation and took back " + e.Amount + ".";
+                case EventKind.FoundationRanDry:
+                    return who + "'s foundation ran dry after giving " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

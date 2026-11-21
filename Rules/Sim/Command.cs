@@ -125,7 +125,11 @@ namespace AiLabs.Rules.Sim
         BuyBackShares,
         TakePrivate,
         TakeRevenueAdvance,
-        BuyOutAdvance
+        BuyOutAdvance,
+        EndowFoundation,
+        SetFoundationFocus,
+        SetFoundationPayout,
+        WindUpFoundation
     }
 
     /// <summary>
@@ -1104,6 +1108,37 @@ namespace AiLabs.Rules.Sim
         public static Command BuyOutAdvance(int labId)
         {
             return Make(CommandKind.BuyOutAdvance, labId);
+        }
+
+        /// <summary>Puts cash, in thousands, into the foundation's fund. The first gift sets its focus (1 safety, 2 education, 3 open science).</summary>
+        public static Command EndowFoundation(int labId, int thousands, int focus)
+        {
+            Command c = Make(CommandKind.EndowFoundation, labId);
+            c.Count = thousands;
+            c.TargetId = focus;
+            return c;
+        }
+
+        /// <summary>Points the foundation at another cause. It loses part of its goodwill and cannot change again for a while.</summary>
+        public static Command SetFoundationFocus(int labId, int focus)
+        {
+            Command c = Make(CommandKind.SetFoundationFocus, labId);
+            c.TargetId = focus;
+            return c;
+        }
+
+        /// <summary>Sets how much of the fund the foundation gives away each week (0 none, 1, 2 or 3).</summary>
+        public static Command SetFoundationPayout(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetFoundationPayout, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Winds the foundation up and takes most of the fund back; the goodwill goes with it.</summary>
+        public static Command WindUpFoundation(int labId)
+        {
+            return Make(CommandKind.WindUpFoundation, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

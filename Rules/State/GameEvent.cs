@@ -368,7 +368,17 @@ namespace AiLabs.Rules.State
         /// <summary>A revenue advance was cleared. Amount is what was paid at the end, Pick 0 swept out of revenue and 1 bought out.</summary>
         RevenueAdvanceCleared,
         /// <summary>A slump week stretched the advance. Amount is what it added.</summary>
-        RevenueAdvanceStretched
+        RevenueAdvanceStretched,
+        /// <summary>The lab put money into its foundation. Amount is the gift, SubjectId the focus.</summary>
+        FoundationEndowed,
+        /// <summary>The foundation reported what it gave. Amount is the giving since the last report, SubjectId the goodwill.</summary>
+        FoundationReported,
+        /// <summary>The foundation changed its cause. Amount is the new focus.</summary>
+        FoundationRefocused,
+        /// <summary>The lab wound the foundation up. Amount is what it took back.</summary>
+        FoundationWoundUp,
+        /// <summary>The foundation gave until nothing was left. Amount is what it gave in all.</summary>
+        FoundationRanDry
     }
 
     /// <summary>
