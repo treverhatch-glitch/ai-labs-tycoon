@@ -5,7 +5,7 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 
 ## What makes a headline
 
-27 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
+34 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
 
 | Event | Headline (shown in capitals) |
 |---|---|
@@ -36,6 +36,13 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | Poached staff | {lab} hires away {subject}'s {ref}. {subject} wishes them well, through a lawyer |
 | Exposed Gauntlet scores | {lab}'s Gauntlet scores are exposed. {lab} calls it 'a different methodology' |
 | A launch buzz | {model} launches to a gust of buzz. {lab} says it planned that |
+| Crunch ends | {lab}'s team ends crunch time after {amount} weeks. The sofas are 'still warm' |
+| An insurance claim | {lab}'s insurer pays out {money} on {ref}. The premium 'will be reviewed' |
+| A dropped policy | {lab}'s insurer drops it after {amount} claims. 'It is not you, it is the incidents' |
+| An offsite | {lab} takes the team on an offsite for {money}. Nobody will say what happened at the escape room |
+| A red team | {lab} pays {money} for a red team to attack {ref}. The red team 'had a lovely time' |
+| A finding | {lab}'s interpretability team finishes reading {ref}. It is 'mostly about lunch' |
+| A pay change | {lab} changes its pay policy. The weekly salary bill is now {money} |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 

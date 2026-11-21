@@ -1500,6 +1500,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to 130c6c78 because of the two lab fields and the schema number only; reverting them brought the previous digest (8bce7642) back.
 - Alternatives: a per-role pay (rejected: a company-wide level is one decision, not ten); a jolt for a raise (rejected: free morale for money would be an exploit); cuts that never shock (rejected: a pay cut is felt).
 
+### Q304. Do crunch, insurance, the offsite, red teams, interpretability and pay get headlines? DECIDED: yes, seven lines, data and tests only
+- Seven new `news.headlines` lines (34 in all): `CrunchEnded`, `InsuranceClaimPaid`, `InsuranceDropped`, `OffsiteHeld`, `RedTeamRan`, `GapFound` and `PayChanged`. Buying or changing a policy, turning crunch on and setting an interpretability level make no news; only what happens as a result does.
+- Every lab's events are on the ticker, but only the player's lab can make these events, so the rivals' tickers are unchanged. Nothing is saved and no rule changes, so the golden digest did not move.
+- Alternatives: a headline for every command (rejected: the ticker is about what the world sees, not what a boss decides); a line per way crunch can end (rejected: the headline only needs the weeks, and the events carry the reason).
+
 ## Open
 
 None.

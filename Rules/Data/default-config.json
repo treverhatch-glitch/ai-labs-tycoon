@@ -8461,6 +8461,48 @@
         "kind": "LaunchBuzz",
         "pick": -1,
         "text": "{model} launches to a gust of buzz. {lab} says it planned that"
+      },
+      {
+        "id": "crunch-ended",
+        "kind": "CrunchEnded",
+        "pick": -1,
+        "text": "{lab}'s team ends crunch time after {amount} weeks. The sofas are 'still warm'"
+      },
+      {
+        "id": "insurance-claim",
+        "kind": "InsuranceClaimPaid",
+        "pick": -1,
+        "text": "{lab}'s insurer pays out {money} on {ref}. The premium 'will be reviewed'"
+      },
+      {
+        "id": "insurance-dropped",
+        "kind": "InsuranceDropped",
+        "pick": -1,
+        "text": "{lab}'s insurer drops it after {amount} claims. 'It is not you, it is the incidents'"
+      },
+      {
+        "id": "offsite-held",
+        "kind": "OffsiteHeld",
+        "pick": -1,
+        "text": "{lab} takes the team on an offsite for {money}. Nobody will say what happened at the escape room"
+      },
+      {
+        "id": "red-team-ran",
+        "kind": "RedTeamRan",
+        "pick": -1,
+        "text": "{lab} pays {money} for a red team to attack {ref}. The red team 'had a lovely time'"
+      },
+      {
+        "id": "gap-found",
+        "kind": "GapFound",
+        "pick": -1,
+        "text": "{lab}'s interpretability team finishes reading {ref}. It is 'mostly about lunch'"
+      },
+      {
+        "id": "pay-changed",
+        "kind": "PayChanged",
+        "pick": -1,
+        "text": "{lab} changes its pay policy. The weekly salary bill is now {money}"
       }
     ],
     "filler": [
