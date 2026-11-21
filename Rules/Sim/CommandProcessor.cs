@@ -105,6 +105,10 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SaleLeaseback: return SaleLeaseback(c, state, lab, cmd);
+                case CommandKind.BuyBackLease: return BuyBackLease(c, state, lab, cmd);
+                case CommandKind.ExtendLease: return ExtendLease(c, state, lab, cmd);
+                case CommandKind.ReturnLease: return ReturnLease(c, state, lab, cmd);
                 case CommandKind.EndowFoundation: return EndowFoundation(c, state, lab, cmd);
                 case CommandKind.SetFoundationFocus: return SetFoundationFocus(c, state, lab, cmd);
                 case CommandKind.SetFoundationPayout: return SetFoundationPayout(c, state, lab, cmd);
@@ -362,8 +366,8 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Sell at least one GPU.");
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
-            int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
-            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there.");
+            int owned = LabQueries.OwnedGpuUnits(lab, holdingId) - (holdingId == HardwareBatch.Hq ? lab.LeaseUnits : 0);
+            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there" + (lab.LeaseUnits > 0 && holdingId == HardwareBatch.Hq ? " that are not leased back" : "") + ".");
 
             long proceeds = 0;
             int left = cmd.Count;

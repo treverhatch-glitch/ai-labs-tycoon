@@ -378,7 +378,17 @@ namespace AiLabs.Rules.State
         /// <summary>The lab wound the foundation up. Amount is what it took back.</summary>
         FoundationWoundUp,
         /// <summary>The foundation gave until nothing was left. Amount is what it gave in all.</summary>
-        FoundationRanDry
+        FoundationRanDry,
+        /// <summary>The lab sold GPUs and leased them back. Amount is the advance, SubjectId the units.</summary>
+        GpusLeasedBack,
+        /// <summary>The lab bought its leased GPUs back. Amount is the price.</summary>
+        LeaseBoughtBack,
+        /// <summary>A lease ended. Amount is the units that went, Pick 0 the term ran out, 1 handed back early, 2 repossessed.</summary>
+        LeaseEnded,
+        /// <summary>The lab could not pay the rent this week. Amount is the rent, SubjectId the weeks in a row.</summary>
+        LeaseRentMissed,
+        /// <summary>The lab extended its lease. Amount is the new rent.</summary>
+        LeaseExtended
     }
 
     /// <summary>

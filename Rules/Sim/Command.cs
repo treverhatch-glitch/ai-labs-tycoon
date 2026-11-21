@@ -129,7 +129,11 @@ namespace AiLabs.Rules.Sim
         EndowFoundation,
         SetFoundationFocus,
         SetFoundationPayout,
-        WindUpFoundation
+        WindUpFoundation,
+        SaleLeaseback,
+        BuyBackLease,
+        ExtendLease,
+        ReturnLease
     }
 
     /// <summary>
@@ -1139,6 +1143,32 @@ namespace AiLabs.Rules.Sim
         public static Command WindUpFoundation(int labId)
         {
             return Make(CommandKind.WindUpFoundation, labId);
+        }
+
+        /// <summary>Sells some of the head office's own GPUs for most of their value and leases them straight back. One lease at a time.</summary>
+        public static Command SaleLeaseback(int labId, int count)
+        {
+            Command c = Make(CommandKind.SaleLeaseback, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Buys the leased GPUs back at the price set at the sale.</summary>
+        public static Command BuyBackLease(int labId)
+        {
+            return Make(CommandKind.BuyBackLease, labId);
+        }
+
+        /// <summary>Extends the lease once, at a higher rent.</summary>
+        public static Command ExtendLease(int labId)
+        {
+            return Make(CommandKind.ExtendLease, labId);
+        }
+
+        /// <summary>Hands the leased GPUs back now and stops the rent.</summary>
+        public static Command ReturnLease(int labId)
+        {
+            return Make(CommandKind.ReturnLease, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

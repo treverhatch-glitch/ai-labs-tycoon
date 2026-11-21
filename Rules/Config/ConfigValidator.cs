@@ -127,6 +127,7 @@ namespace AiLabs.Rules.Config
             ListingProblems(p, c);
             RbfProblems(p, c);
             FoundationProblems(p, c);
+            LeasebackProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1430,6 +1431,16 @@ namespace AiLabs.Rules.Config
             if (k.GoodwillUnit < 1 || k.GoodwillDecay < 0 || k.GoodwillDecay > 1000 || k.MaxGoodwill < 1 || k.MaxGoodwill > 1000) p.Add("foundation.goodwillUnit must be at least 1, goodwillDecay from 0 to 1000 and maxGoodwill from 1 to 1000");
             if (k.SafetyDamp < 0 || k.MaxDamp < 0 || k.MaxDamp > 800 || k.ScienceStrength < 0 || k.EducationEvery < 1 || k.EducationAt < 0) p.Add("foundation.safetyDamp, educationAt and scienceStrength must not be negative, maxDamp up to 800 and educationEvery at least 1");
             if (k.SwitchLoss < 0 || k.SwitchLoss > 1000 || k.LockWeeks < 0 || k.WindUpPermille < 0 || k.WindUpPermille > 1000 || k.WindUpReputation < 0 || k.ReportWeeks < 1) p.Add("foundation.switchLoss and windUpPermille must be from 0 to 1000, lockWeeks and windUpReputation not negative and reportWeeks at least 1");
+        }
+
+        static void LeasebackProblems(List<string> p, GameConfig c)
+        {
+            LeasebackConfig k = c.Leaseback;
+            if (k == null) { p.Add("leaseback is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("leaseback.enabled must be 0 or 1");
+            if (k.AdvancePermille < 1 || k.AdvancePermille > MathI.Permille || k.RentPermille < 0 || k.RentPermille > 200) p.Add("leaseback.advancePermille must be from 1 to 1000 and rentPermille from 0 to 200");
+            if (k.TermWeeks < 1 || k.ExtendWeeks < 0 || k.ExtendRentPermille < MathI.Permille || k.ExtendRentPermille > 5000) p.Add("leaseback.termWeeks must be at least 1, extendWeeks not negative and extendRentPermille from 1000 to 5000");
+            if (k.BuybackPermille < 100 || k.BuybackPermille > 5000 || k.MissLimit < 1 || k.RepoReputation < 0 || k.RepoReputation > 500) p.Add("leaseback.buybackPermille must be from 100 to 5000, missLimit at least 1 and repoReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

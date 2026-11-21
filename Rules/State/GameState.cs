@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 92;
+        public const int CurrentSchema = 93;
 
         public int Schema;
         public string ConfigVersion;
@@ -370,6 +370,15 @@ namespace AiLabs.Rules.State
         public int FoundGoodwill;
         public int FoundSwitch;
         public int FoundDrip;
+        /// <summary>GPUs sold and leased back, their value at the sale, the weekly rent and the price of buying them back.</summary>
+        public int LeaseUnits;
+        public long LeaseValue;
+        public long LeaseRent;
+        public long LeaseBuyback;
+        /// <summary>Weeks of the lease left, weeks of rent missed in a row and whether it was extended (0 or 1).</summary>
+        public int LeaseLeft;
+        public int LeaseMissed;
+        public int LeaseExtended;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -704,6 +713,13 @@ namespace AiLabs.Rules.State
             s.Int("foundGoodwill", ref FoundGoodwill);
             s.Int("foundSwitch", ref FoundSwitch);
             s.Int("foundDrip", ref FoundDrip);
+            s.Int("leaseUnits", ref LeaseUnits);
+            s.Long("leaseValue", ref LeaseValue);
+            s.Long("leaseRent", ref LeaseRent);
+            s.Long("leaseBuyback", ref LeaseBuyback);
+            s.Int("leaseLeft", ref LeaseLeft);
+            s.Int("leaseMissed", ref LeaseMissed);
+            s.Int("leaseExtended", ref LeaseExtended);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -17,7 +17,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>What the lab's owned GPUs would fetch today. Chips of its own design have no market and do not count.</summary>
         public static long Collateral(GameConfig c, GameState state, LabState lab)
         {
-            return LabQueries.FleetResaleValue(c, state, lab);
+            return MathI.Max(0, LabQueries.FleetResaleValue(c, state, lab) - lab.LeaseValue);
         }
 
         public static long Outstanding(LabState lab)

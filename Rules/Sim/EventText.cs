@@ -397,6 +397,16 @@ namespace AiLabs.Rules.Sim
                     return who + " wound up its foundation and took back " + e.Amount + ".";
                 case EventKind.FoundationRanDry:
                     return who + "'s foundation ran dry after giving " + e.Amount + ".";
+                case EventKind.GpusLeasedBack:
+                    return who + " sold " + e.SubjectId + " GPUs and leased them back for an advance of " + e.Amount + ".";
+                case EventKind.LeaseBoughtBack:
+                    return who + " bought its leased GPUs back for " + e.Amount + ".";
+                case EventKind.LeaseEnded:
+                    return (e.Pick == 2 ? "The lessor repossessed " : e.Pick == 1 ? who + " handed back " : "The lease ran out and ") + e.Amount + " GPUs" + (e.Pick == 2 ? " from " + who + "." : e.Pick == 1 ? "." : " went back.");
+                case EventKind.LeaseRentMissed:
+                    return who + " missed the GPU rent (" + e.SubjectId + " in a row).";
+                case EventKind.LeaseExtended:
+                    return who + " extended its GPU lease at a rent of " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

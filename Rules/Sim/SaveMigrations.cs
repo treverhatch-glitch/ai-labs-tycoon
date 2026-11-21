@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 90) MigrateTo90(root);
             if (fromSchema < 91) MigrateTo91(root);
             if (fromSchema < 92) MigrateTo92(root);
+            if (fromSchema < 93) MigrateTo93(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -468,6 +469,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 93: no lab has sold its GPUs and leased them back.</summary>
+        static void MigrateTo93(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "leaseUnits", "leaseValue", "leaseRent", "leaseBuyback", "leaseLeft", "leaseMissed", "leaseExtended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

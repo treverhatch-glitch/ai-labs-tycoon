@@ -6031,6 +6031,17 @@
     "windUpReputation": 15,
     "reportWeeks": 12
   },
+  "leaseback": {
+    "enabled": 1,
+    "advancePermille": 900,
+    "rentPermille": 3,
+    "termWeeks": 96,
+    "buybackPermille": 1100,
+    "extendWeeks": 48,
+    "extendRentPermille": 1250,
+    "missLimit": 3,
+    "repoReputation": 25
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

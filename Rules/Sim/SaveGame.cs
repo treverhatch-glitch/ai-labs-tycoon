@@ -222,6 +222,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.FoundFund == 0 && (lab.FoundGiven != 0 || lab.FoundFocus != 0 || lab.FoundPayout != 0 || lab.FoundGoodwill != 0 || lab.FoundSwitch != 0 || lab.FoundDrip != 0))
                     || (lab.FoundFund != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a foundation of " + lab.FoundFund + " (focus " + lab.FoundFocus + ", goodwill " + lab.FoundGoodwill + ") in a way the data does not allow");
+                if (lab.LeaseUnits < 0 || lab.LeaseValue < 0 || lab.LeaseRent < 0 || lab.LeaseBuyback < 0 || lab.LeaseLeft < 0 || lab.LeaseMissed < 0 || lab.LeaseExtended < 0 || lab.LeaseExtended > 1
+                    || (lab.LeaseUnits > 0 && (lab.LeaseLeft < 1 || lab.LeaseValue < 1))
+                    || (lab.LeaseUnits == 0 && (lab.LeaseValue != 0 || lab.LeaseRent != 0 || lab.LeaseBuyback != 0 || lab.LeaseLeft != 0 || lab.LeaseMissed != 0 || lab.LeaseExtended != 0))
+                    || (lab.LeaseUnits != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has " + lab.LeaseUnits + " GPUs leased back (value " + lab.LeaseValue + ", " + lab.LeaseLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
