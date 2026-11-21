@@ -62,7 +62,8 @@ namespace AiLabs.Rules.Sim
         ApplyForGrant,
         ScrapRun,
         Layoff,
-        PayDownDebt
+        PayDownDebt,
+        PromoteStaff
     }
 
     /// <summary>
@@ -437,6 +438,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.PayDownDebt, labId);
             c.Count = points;
+            return c;
+        }
+
+        /// <summary>Promotes one person to senior: a fee and a raise now, and they count for more in their function. Needs the person's id.</summary>
+        public static Command PromoteStaff(int labId, int staffId)
+        {
+            Command c = Make(CommandKind.PromoteStaff, labId);
+            c.TargetId = staffId;
             return c;
         }
 

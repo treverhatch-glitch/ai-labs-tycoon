@@ -5614,6 +5614,15 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "seniority": {
+    "enabled": 1,
+    "weightPermille": 1600,
+    "raisePermille": 400,
+    "feePermille": 1500,
+    "maxSharePermille": 250,
+    "minMorale": 400,
+    "moraleBoost": 150
+  },
   "techDebt": {
     "enabled": 1,
     "rushPerWeek": 40,

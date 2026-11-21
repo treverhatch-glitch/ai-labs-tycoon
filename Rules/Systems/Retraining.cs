@@ -36,6 +36,7 @@ namespace AiLabs.Rules.Systems
             string fromId = person.RoleId;
             if (c.Culture.ListeningRoles.Contains(fromId) && !c.Culture.ListeningRoles.Contains(to.Id)) ControlStale.OnFired(c, lab, fromId, 1);
             person.RoleId = to.Id;
+            if (!same) person.Senior = 0;
             person.Morale = (int)MathI.Max(0, person.Morale - drop);
             Finance.Spend(lab, LedgerLine.Hiring, fee);
             GameEvent e = Events.Add(state, EventKind.StaffRetrained, lab.Id, person.Id, fee, fromId + ">" + to.Id);

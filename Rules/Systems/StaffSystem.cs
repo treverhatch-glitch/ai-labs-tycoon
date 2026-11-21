@@ -41,7 +41,8 @@ namespace AiLabs.Rules.Systems
             {
                 StaffMember p = lab.Staff[i];
                 if (p.RoleId != roleId) continue;
-                if (p.Morale < morale) { morale = p.Morale; pick = i; }
+                int rank = p.Morale + p.Senior * 100000;
+                if (rank < morale) { morale = rank; pick = i; }
             }
             return pick;
         }

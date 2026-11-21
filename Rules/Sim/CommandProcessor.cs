@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ScrapRun: return ScrapRun(c, state, lab, cmd);
                 case CommandKind.Layoff: return Layoff(c, state, lab, cmd);
                 case CommandKind.PayDownDebt: return PayDownDebt(c, state, lab, cmd);
+                case CommandKind.PromoteStaff: return PromoteStaff(c, state, lab, cmd);
                 case CommandKind.ApplyForGrant: return ApplyForGrant(c, state, lab, cmd);
                 case CommandKind.SetSla: return SetSla(c, state, lab, cmd);
                 case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);

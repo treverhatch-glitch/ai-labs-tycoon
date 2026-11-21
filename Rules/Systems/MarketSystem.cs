@@ -13,7 +13,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>How strongly a lab's sales force pulls customers, in permille (1000 = no sales staff).</summary>
         public static int SalesPermille(GameConfig c, LabState lab)
         {
-            long bonus = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Sales) * c.Market.SalesBonusPermille;
+            long bonus = LabQueries.HeadsPermille(c, lab, RoleFunction.Sales) * c.Market.SalesBonusPermille / MathI.Permille;
             return MathI.Permille + (int)MathI.Min(bonus, c.Market.SalesBonusCapPermille);
         }
 

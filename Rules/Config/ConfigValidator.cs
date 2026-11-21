@@ -94,6 +94,7 @@ namespace AiLabs.Rules.Config
             AbandonProblems(p, c);
             LayoffsProblems(p, c);
             TechDebtProblems(p, c);
+            SeniorityProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -936,6 +937,20 @@ namespace AiLabs.Rules.Config
             if (k.CostPerPoint < 1) p.Add("techDebt.costPerPoint must be at least 1, so debt is never free to clear");
             if (k.MinEngineers < 0 || k.MinEngineers > 50) p.Add("techDebt.minEngineers must be from 0 to 50");
             if (k.MaxPerCommand < 1 || k.MaxPerCommand > MathI.Permille) p.Add("techDebt.maxPerCommand must be from 1 to 1000");
+        }
+
+        static void SeniorityProblems(List<string> p, GameConfig c)
+        {
+            SeniorityConfig k = c.Seniority;
+            if (k == null) { p.Add("seniority is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("seniority.enabled must be 0 or 1");
+            if (k.WeightPermille < 1000 || k.WeightPermille > 3000) p.Add("seniority.weightPermille must be from 1000 to 3000, so a senior counts for at least one person and at most three");
+            if (k.RaisePermille < 0 || k.RaisePermille > 2000) p.Add("seniority.raisePermille must be from 0 to 2000");
+            if (k.RaisePermille < k.WeightPermille - 1000 - 400) p.Add("seniority.raisePermille must not fall more than 400 below the extra weight, so promoting is never a free gain");
+            if (k.FeePermille < 0 || k.FeePermille > 10000) p.Add("seniority.feePermille must be from 0 to 10000");
+            if (k.MaxSharePermille < 1 || k.MaxSharePermille > 500) p.Add("seniority.maxSharePermille must be from 1 to 500, so a function is never all seniors");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("seniority.minMorale must be from 0 to 1000");
+            if (k.MoraleBoost < 0 || k.MoraleBoost > 500) p.Add("seniority.moraleBoost must be from 0 to 500");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

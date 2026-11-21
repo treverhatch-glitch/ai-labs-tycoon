@@ -1702,6 +1702,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every lab now saves `techDebt`. Taking the field and the schema number back out reproduces the previous digest (b10b40af), so no behaviour moved; the new digest is 0ce2f6b2.
 - Alternatives: debt that decays over time (rejected: that is a timed modifier and makes borrowing free); debt from every release (rejected: it moves the baseline for a lab that never cuts a corner); a hard cap that blocks rushing (rejected: the incident chance already prices it and the cap at 1000 stops runaway).
 
+### Q337. Can the player invest in one person, not just in headcount? DECIDED: promote a chosen person to senior, with a fee, a raise and a cap per function
+- New `seniority` data, person field `senior` (schema 62), command `PromoteStaff(person)`, `Seniority` system and event `StaffPromoted`. Staff were interchangeable heads; the only choices were how many to hire and fire. A senior counts for 1.6 of a person in their function (research per researcher, engineers in training speed, safety testers in alignment work, sales in the pull), for a fee of 1.5 times the hire cost and a 40 percent raise. Seats are scarce, so a senior is the way to get more out of the same chair, and with traits and morale the choice of who matters.
+- Limits: at most 25 percent of a function, rounded up (a team of four can have one); the person needs morale 400; the salary rises as the weight does (the validator stops the raise from falling far below the extra weight). Seniors are let go last, and retraining to a different function starts a person over.
+- Heads stay heads: only the output sums use the weight, so seats and every other head-count rule are untouched, and a lab with no seniors gets exactly its old numbers. Only the player's lab promotes; rivals' staff are not touched.
+- Golden: the digest moves only because every person now saves `senior`. Taking the field and the schema number back out reproduces the previous digest (0ce2f6b2), so no behaviour moved; the new digest is 8955b95f.
+- Alternatives: a timed promotion that wears off (rejected: a timed modifier); a per-person skill level with its own XP (rejected: a new subsystem with new randomness, and a flag is enough for a first decision); letting rivals promote (rejected: touches rival plans).
+
 ## Open
 
 None.

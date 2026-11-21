@@ -261,6 +261,8 @@ The player can run a layoff round: the same share of every function goes on a ch
 
 Shortcuts leave debt: rushed launches, crunch weeks and patched glitches add points that never wear off and raise the weekly incident chance. Only paying them down, with cash and engineers, clears them.
 
+The player can promote a chosen person to senior: a fee and a raise buy someone who counts for 1.6 of a person in their function, up to a quarter of the function, and who is let go last.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

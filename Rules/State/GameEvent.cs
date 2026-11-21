@@ -194,7 +194,9 @@ namespace AiLabs.Rules.State
         /// <summary>A layoff round. Amount is the people let go, SubjectId the share of the staff in permille, Pick 1 when it was a deep cut.</summary>
         LayoffRound,
         /// <summary>The lab paid down technical debt. Amount is the points retired, SubjectId the debt left, Pick 1 when none is left.</summary>
-        DebtPaid
+        DebtPaid,
+        /// <summary>A person was promoted to senior. SubjectId is the person, Amount the fee, Ref the role id.</summary>
+        StaffPromoted
     }
 
     /// <summary>

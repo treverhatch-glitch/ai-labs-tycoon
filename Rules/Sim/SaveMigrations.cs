@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 59) MigrateTo59(root);
             if (fromSchema < 60) MigrateTo60(root);
             if (fromSchema < 61) MigrateTo61(root);
+            if (fromSchema < 62) MigrateTo62(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -438,6 +439,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 62: nobody has been promoted to senior.</summary>
+        static void MigrateTo62(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person => JsonPatch.AddIfMissing(person, "senior", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 61: no lab has any technical debt.</summary>

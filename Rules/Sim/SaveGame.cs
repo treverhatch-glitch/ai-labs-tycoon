@@ -100,6 +100,9 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
                 if (lab.ConsultantLevel < 0 || lab.ConsultantLevel > c.Consultants.MaxLevel || lab.ConsultantWeeks < 0 || lab.ConsultantWeeks > c.Consultants.Weeks || lab.ConsultantLockedUntil < 0 || (lab.ConsultantWeeks > 0) != (lab.ConsultantLevel > 0))
                     p.Add(who + " has policy consultants (level " + lab.ConsultantLevel + ", " + lab.ConsultantWeeks + " weeks left), which the data does not allow");
+                foreach (StaffMember person in lab.Staff)
+                    if (person.Senior < 0 || person.Senior > 1 || (person.Senior == 1 && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has a senior person (" + person.Senior + ") that the data does not allow");
                 if (lab.TechDebt < 0 || lab.TechDebt > MathI.Permille || (lab.TechDebt > 0 && lab.Id != state.PlayerLabId)) p.Add(who + " carries " + lab.TechDebt + " points of technical debt, which the data does not allow");
                 if (lab.ResearchGrantStage < 0 || lab.ResearchGrantStage > ResearchGrants.Owed || lab.ResearchGrantTier < 0 || lab.ResearchGrantTier > c.ResearchGrants.MaxTier || lab.ResearchGrantTick < 0 || lab.ResearchGrantOwed < 0 || lab.ResearchGrantLockedUntil < 0
                     || (lab.ResearchGrantStage == ResearchGrants.None && (lab.ResearchGrantTier != 0 || lab.ResearchGrantOwed != 0))

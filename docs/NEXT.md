@@ -275,6 +275,7 @@ and says why in the commit message.
 92. **Scrap a training run (research, compute).** ~~Done~~: `ScrapRun`, `Abandon`, `abandon` data, no new state, `AbandonTests`, `docs/content/scrapping-a-run.md` (Q334).
 93. **Layoff rounds (staff, cash).** ~~Done~~: `Layoff`, `Layoffs`, `layoffs` data, no new state, `LayoffsTests`, `docs/content/layoff-rounds.md` (Q335).
 94. **Technical debt (safety, cash, engineers).** ~~Done~~: `techDebt` data, `PayDownDebt`, `TechDebt`, schema 61, `TechDebtTests`, `docs/content/technical-debt.md` (Q336).
+95. **Promotions (staff, cash, seats).** ~~Done~~: `seniority` data, `PromoteStaff`, `Seniority`, schema 62, `PromotionsTests`, `docs/content/promotions.md` (Q337).
 
 ## Rules: later
 
