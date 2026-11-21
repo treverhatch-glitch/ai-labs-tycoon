@@ -20,7 +20,8 @@ namespace AiLabs.Rules.Sim
         AnswerPress, LeakStory,
         SetGauntletTuning,
         AnswerComplaint,
-        SetReleaseGate
+        SetReleaseGate,
+        CleanUpNaming
     }
 
     /// <summary>
@@ -414,6 +415,12 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetReleaseGate, labId);
             c.Permille = alignment;
             return c;
+        }
+
+        /// <summary>Pays the marketing team to tidy the lab's model names, taking some of the naming mess away.</summary>
+        public static Command CleanUpNaming(int labId)
+        {
+            return Make(CommandKind.CleanUpNaming, labId);
         }
 
         /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>

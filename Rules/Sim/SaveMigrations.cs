@@ -42,6 +42,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
             if (fromSchema < 29) MigrateTo29(root);
+            if (fromSchema < 30) MigrateTo30(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -385,6 +386,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "releaseGate", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "gateSetTick", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 30: the version naming mess, tidy to start with.</summary>
+        static void MigrateTo30(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

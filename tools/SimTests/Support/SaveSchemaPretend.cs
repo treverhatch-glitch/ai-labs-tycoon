@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 30) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
             if (schema < 29) StripCulture(root);
             if (schema < 27) StripSectorTrust(root);
             if (schema < 26) StripGauntletDepth(root);

@@ -1062,6 +1062,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**: `cultureShift`, `releaseGate`, `gateSetTick`. An older save migrates with all three at 0, which is the starting culture and no gate, and needs no config. Schema 28 is stack2's ledger migration; mine chains after it and skips it the way 25 skipped 24.
 - Why: a shift means a new lab, or a lab founded again after a sale, starts at the data's `culture.start` without touching world setup. The golden digest moved only because of the new saved numbers: with every culture effect off it equals the digest of the same game with the three fields zeroed.
 
+## Version naming rot (NEXT item 23)
+
+### Q195. What rots, and how? DECIDED: a per-lab mess number; every training run adds to it and a few words stack onto new names
+- Options: (a) names grow only; (b) a mess meter with its own clean-up; (c) rename old models.
+- Recommendation and choice: **(b)**. Each new run adds 70 points of mess (up to 1000). A new model is named with one stacked word per 100 points (Pro, Max, Turbo, Ultra, Plus, v2, Final, (new), Final-FINAL, Reborn), so the third version is the first to be "Pro"; the list holds at its last word. The name is fixed when the run starts and saved with the model, so old models keep the names they were given.
+- Why: the bible calls it a joke that is also a system: names get worse as you ship, and it should cost something to fix. A meter lets the screen show the rot and lets a clean-up be a plain command. Only the player's labs rot; rivals keep plain names (the same Q182 reason as Q190 and Q194).
+
+### Q196. What does it cost, and what does a clean-up cost? DECIDED: up to 8% of appeal at full mess; a clean-up takes off 400 and costs four sales hires' fees
+- Options: (a) 10% of appeal at full mess; (b) 8%; (c) 6%.
+- Recommendation and choice: **(b)**, 80 permille at 1000 mess, linear (`confusionPermille`). It is its own named part of the appeal breakdown, after trust and before the Gauntlet crown, so the parts still add up. A clean-up (`CleanUpNaming`) takes off 400 points and costs `cleanFeeHireFees` 4 times a sales rep's hiring fee in the current era ("a little marketing effort", scaling with the era like the press room's). It is refused when the names are already tidy or the cash is short, and changes nothing then.
+- Why: 100 permille took OpenAye bankrupt in the forty-year economy guard at seeds 20 and 27 (the same knife-edge as Q182: the player's autopilot loses some share and the rival's game flips). 80 and 60 both passed those guards; 80 was kept because it is the closest to the bible's "measurably confused". Not salt-fishing: one number scanned, logged here. `StoryTests` (reckless vs careful) sets confusion to 0 so it still compares only care.
+
+### Q197. Is a save change needed? DECIDED: yes, schema 30: one lab number, nothing else
+- Options: (a) store each model's suffix count; (b) store one mess number per lab.
+- Recommendation and choice: **(b)**: `namingMess`. An older save migrates with it at 0 (tidy names), so nothing in an old game changes until the next training run. Names already in the save stay as they are.
+- Why: the suffixes are in the saved names; the number is the only thing the next name and the appeal part need. The golden digest moved, and the cause was checked: with no mess added, the saved number and schema number set back to schema 29's, the digest of the one pinned game equals the old golden `e77d4325`. So the move is the new field, the new schema number, and the naming rot itself (three or more runs in that game year, so names and appeal changed).
+
 ## Open
 
 None.

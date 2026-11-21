@@ -5299,6 +5299,15 @@
       }
     ]
   },
+  "naming": {
+    "messPerVersion": 70,
+    "maxMess": 1000,
+    "suffixEveryPoints": 100,
+    "suffixes": ["Pro", "Max", "Turbo", "Ultra", "Plus", "v2", "Final", "(new)", "Final-FINAL", "Reborn"],
+    "confusionPermille": 80,
+    "cleanPoints": 400,
+    "cleanFeeHireFees": 4
+  },
   "gauntlet": {
     "name": "The Gauntlet",
     "jitterPermille": 50,

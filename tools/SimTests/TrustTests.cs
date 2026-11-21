@@ -185,7 +185,7 @@ public class TrustTests
         var low = DisplayQueries.AppealParts(g.C, g.State, sector, state, g.Me, m);
         Assert.True(low.TrustBoost < 0);
         foreach (var parts in new[] { neutral, high, low })
-            Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
+            Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost + parts.NamingConfusion, parts.Total);
         Assert.True(high.Total > neutral.Total && neutral.Total > low.Total);
     }
 

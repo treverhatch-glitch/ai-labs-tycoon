@@ -68,6 +68,7 @@ namespace AiLabs.Rules.Config
             PressProblems(p, c);
             TrustProblems(p, c);
             CultureProblems(p, c);
+            NamingProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -450,6 +451,21 @@ namespace AiLabs.Rules.Config
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
             }
+        }
+
+        static void NamingProblems(List<string> p, GameConfig c)
+        {
+            NamingConfig n = c.Naming;
+            if (n == null) { p.Add("naming is missing"); return; }
+            if (n.MaxMess < 1 || n.MaxMess > MathI.Permille) p.Add("naming.maxMess must be from 1 to 1000");
+            if (n.MessPerVersion < 0 || n.MessPerVersion > MathI.Permille) p.Add("naming.messPerVersion must be from 0 to 1000");
+            if (n.SuffixEveryPoints < 1 || n.SuffixEveryPoints > MathI.Permille) p.Add("naming.suffixEveryPoints must be from 1 to 1000");
+            if (n.ConfusionPermille < 0 || n.ConfusionPermille > 900) p.Add("naming.confusionPermille must be from 0 to 900, or full mess would erase a model's appeal");
+            if (n.CleanPoints < 0 || n.CleanPoints > MathI.Permille) p.Add("naming.cleanPoints must be from 0 to 1000");
+            if (n.CleanFeeHireFees < 0 || n.CleanFeeHireFees > 1000) p.Add("naming.cleanFeeHireFees must be from 0 to 1000");
+            if (n.Suffixes.Count == 0) p.Add("naming.suffixes is empty");
+            for (int i = 0; i < n.Suffixes.Count; i++)
+                if (string.IsNullOrWhiteSpace(n.Suffixes[i])) p.Add("naming.suffixes has an empty word at position " + i);
         }
 
         static void CultureProblems(List<string> p, GameConfig c)

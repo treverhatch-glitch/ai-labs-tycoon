@@ -64,6 +64,7 @@ namespace AiLabs.Rules.Config
         public PressConfig Press = new PressConfig();
         public TrustConfig Trust = new TrustConfig();
         public CultureConfig Culture = new CultureConfig();
+        public NamingConfig Naming = new NamingConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -108,6 +109,7 @@ namespace AiLabs.Rules.Config
             s.Obj("press", ref Press);
             s.Obj("trust", ref Trust);
             s.Obj("culture", ref Culture);
+            s.Obj("naming", ref Naming);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

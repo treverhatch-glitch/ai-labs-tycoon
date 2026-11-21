@@ -119,6 +119,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.GauntletTuning < 0 || lab.GauntletTuning > c.Gauntlet.MaxTuningPermille) p.Add(who + " has a Gauntlet tuning of " + lab.GauntletTuning + ", outside 0 to " + c.Gauntlet.MaxTuningPermille);
                 if (c.Culture.Start + lab.CultureShift < 0 || c.Culture.Start + lab.CultureShift > MathI.Permille) p.Add(who + " has a culture shift of " + lab.CultureShift + ", which leaves 0 to 1000");
                 if (lab.ReleaseGate < 0 || lab.ReleaseGate > c.Culture.MaxGate) p.Add(who + " has a release gate of " + lab.ReleaseGate + ", outside 0 to " + c.Culture.MaxGate);
+                if (lab.NamingMess < 0 || lab.NamingMess > c.Naming.MaxMess) p.Add(who + " has a naming mess of " + lab.NamingMess + ", outside 0 to " + c.Naming.MaxMess);
                 if (lab.GateSetTick < 0) p.Add(who + " has a gate set at tick " + lab.GateSetTick);
                 if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");

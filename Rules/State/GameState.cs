@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 29;
+        public const int CurrentSchema = 30;
 
         public int Schema;
         public string ConfigVersion;
@@ -164,6 +164,8 @@ namespace AiLabs.Rules.State
         public int ReleaseGate;
         /// <summary>The tick the gate last changed; it cannot be loosened until <c>culture.gateLockWeeks</c> later.</summary>
         public int GateSetTick;
+        /// <summary>How confusing the lab's model names have become, from 0 (tidy) up. Only the player's labs let it grow.</summary>
+        public int NamingMess;
         /// <summary>Journalists' questions that still wait for an answer.</summary>
         public List<PressInquiry> PressInquiries = new List<PressInquiry>();
         public List<SectorTrust> SectorTrust = new List<SectorTrust>();
@@ -286,6 +288,7 @@ namespace AiLabs.Rules.State
             s.Int("cultureShift", ref CultureShift);
             s.Int("releaseGate", ref ReleaseGate);
             s.Int("gateSetTick", ref GateSetTick);
+            s.Int("namingMess", ref NamingMess);
             s.ObjList("pressInquiries", ref PressInquiries);
             s.ObjList("sectorTrust", ref SectorTrust);
             s.ObjList("complaints", ref Complaints);

@@ -515,7 +515,7 @@ public class RolePerksTests
         Assert.True(parts.RoleBoost > 0);
         Assert.True(parts.ChampionBoost > 0);
         Assert.Equal(parts.Total, MarketSystem.Appeal(g.C, g.State, g.C.Sector("coding-agents"), g.State.Sector("coding-agents"), g.Me, model));
-        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
+        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost + parts.NamingConfusion, parts.Total);
     }
 
     [Fact]

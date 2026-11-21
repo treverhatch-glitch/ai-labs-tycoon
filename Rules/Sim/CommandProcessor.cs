@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
                 case CommandKind.SetReleaseGate: return SetReleaseGate(c, state, lab, cmd);
+                case CommandKind.CleanUpNaming: return CleanUpNaming(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -312,7 +313,8 @@ namespace AiLabs.Rules.Sim
             model.Id = state.TakeId();
             model.LineId = line.Id;
             model.Version = LabQueries.NextVersion(lab, line.Id);
-            model.Name = lab.FamilyName + " " + line.Name + " " + model.Version;
+            model.Name = VersionNaming.NameFor(c, lab, line, model.Version);
+            VersionNaming.OnVersionNamed(c, lab);
             model.Status = ModelStatus.Training;
             model.RequiredCompute = EraSystem.RunCompute(c, line, state.Tick);
             model.AlignmentSharePermille = cmd.Permille;

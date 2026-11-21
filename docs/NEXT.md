@@ -143,6 +143,18 @@ and says why in the commit message.
     `SetReleaseGate`, culture adds to the incident catch, save schema 29 (`cultureShift`, `releaseGate`, `gateSetTick`; Q191-Q194),
     `SafetyCultureTests`, `docs/content/safety-culture.md`. Still open: a screen for both (Unity), rivals with a culture, a culture effect on staff morale.
 
+23. **Version naming rot (bible ch. 6, "joke that is also a system").** Model names grow more confusing with every version (suffixes stack
+    up: Pro, Max, Turbo, Ultra); customers are measurably confused if the lab lets it rot; clean naming costs a little marketing effort.
+    ~~Done~~: `naming` in the data, `VersionNaming`, `CleanUpNaming`, a confusion part on appeal, save schema 30 (`namingMess`; Q195-Q197),
+    `VersionNamingTests`, `docs/content/version-naming.md`. Player labs only. Still open: a naming screen (Unity), rivals with confusing names, renaming old models.
+24. **The company chat and the glow (bible ch. 14 "company chat feed", ch. 10 "the glow", "truth through the walls").** Staff react to the
+    lab's decisions in character (derived from events, the staff on the payroll and their traits; nothing saved), and the building shows the
+    worst model's risk by rung, including when a sandbagging model corrupts the dashboard. Display queries only, no schema.
+25. **Rooms that age (bible ch. 14, "old rooms go out of date").** A room built in an earlier era goes beige and dusty; staff in it complain
+    (morale) until the lab refurbishes it for a fraction of the build cost. Save schema 31 (`builtTick` per room).
+26. **Control goes stale (bible ch. 10, "what erodes it").** Each new era, the control techniques of older eras count for less until the
+    lab does new safety research; ignoring or firing the safety team shows up in the lab's culture. Player labs only; no schema expected.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
