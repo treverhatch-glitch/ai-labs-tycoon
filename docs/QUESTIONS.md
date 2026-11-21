@@ -1309,6 +1309,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move, since the golden run trains only known architectures.
 - Why: derived numbers are not saved (Q182 practice); an engineer fired mid-run should change the chance the next week.
 
+### Q272. How is a hearing question asked? DECIDED: as an office event with a hearing trigger, posed when the home government reaches the Hearing level
+- Options: (a) a new hearing system with its own state and command; (b) the existing office-event machinery with a trigger field.
+- Recommendation and choice: **(b)**. `OfficeEventConfig.Trigger` is `Random` (the weekly chance) or `Hearing` (never drawn by the chance). The answer uses `AnswerOfficeEvent`, so the Unity event panel needs nothing new.
+- Why: a hearing question is a choice with effects, which is what an office event already is. It needs no save field and no command, and the log, text and chat already know how to show it.
+
+### Q273. What do the answers move, and what happens to the automatic hit? DECIDED: heat, reputation, culture, morale and money, on top of the unchanged hit
+- Options: (a) the answer replaces the flat reputation loss; (b) the answer comes on top.
+- Recommendation and choice: **(b)**. Four questions with three answers each, every answer a trade (a promise costs culture, an honest forecast costs morale, a dodge costs reputation and heat). A hearing at home only; a waiting office event lapses; the questions rotate before repeating.
+- Why: replacing the hit would change what every unanswered or autopilot hearing costs and move the economy guards (Q182). The bible's "share price" has no lever outside the bubble work, so reputation stands for trust and the effect is left open.
+
+### Q274. Is a save change needed, and does the golden move? DECIDED: no
+- Options: (a) store the hearing's bloc on the lab; (b) pose only at home.
+- Recommendation and choice: **(b)**. Only a hearing at the home government asks a question, so the heat effect (home attention) is always the right bloc and nothing is saved. The golden run does not reach a hearing as a player.
+- Why: a hearing abroad needs its own bloc stored, which would be a schema change for a rare case; it is listed as open.
+
 ## Open
 
 None.

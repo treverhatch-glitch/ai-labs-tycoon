@@ -19,6 +19,15 @@ namespace AiLabs.Rules.Config
         Attention
     }
 
+    /// <summary>What sets an office event off.</summary>
+    public enum OfficeTrigger
+    {
+        /// <summary>The weekly chance: the event can happen to any player lab that meets its needs.</summary>
+        Random,
+        /// <summary>A hearing at the lab's home government (bible ch. 12, "a short dialogue scene"). Never drawn by the weekly chance.</summary>
+        Hearing
+    }
+
     /// <summary>What the lab needs before an office event can happen to it.</summary>
     public enum OfficeRequires
     {
@@ -70,6 +79,7 @@ namespace AiLabs.Rules.Config
         /// <summary>What happened, in a sentence or two.</summary>
         public string Text = "";
         public OfficeRequires Requires;
+        public OfficeTrigger Trigger;
         public List<OfficeChoiceConfig> Choices = new List<OfficeChoiceConfig>();
 
         public string Id { get { return IdValue; } }
@@ -86,6 +96,7 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Str("text", ref Text);
             s.Enum("requires", ref Requires);
+            s.Enum("trigger", ref Trigger);
             s.ObjList("choices", ref Choices);
         }
     }

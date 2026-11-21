@@ -56,6 +56,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < c.Office.Events.Count; i++)
             {
                 OfficeEventConfig e = c.Office.Events[i];
+                if (e.Trigger != OfficeTrigger.Random) continue;
                 if (!MeetsRequirement(c, lab, e.Requires)) continue;
                 any.Add(e);
                 if (!lab.OfficeSeen.Contains(e.IdValue)) fresh.Add(e);
@@ -81,6 +82,40 @@ namespace AiLabs.Rules.Systems
             lab.OfficeEventId = chosen.IdValue;
             lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
             if (startsAgain) lab.OfficeSeen.Clear();
+            lab.OfficeSeen.Add(chosen.IdValue);
+            Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+        }
+
+        /// <summary>The hearing questions: the events a hearing at home can pose.</summary>
+        public static List<OfficeEventConfig> HearingQuestions(GameConfig c)
+        {
+            var list = new List<OfficeEventConfig>();
+            for (int i = 0; i < c.Office.Events.Count; i++)
+                if (c.Office.Events[i].Trigger == OfficeTrigger.Hearing) list.Add(c.Office.Events[i]);
+            return list;
+        }
+
+        /// <summary>
+        /// A hearing at the player's home government has begun: the committee asks a question, taking the place of whatever was waiting
+        /// (that lapses). Rotates through the questions so the same one is not asked twice in a row. Does nothing for rivals, for a hearing
+        /// abroad, or when the data has no hearing questions.
+        /// </summary>
+        public static void OnHearing(GameConfig c, GameState state, LabState lab, string blocId)
+        {
+            if (!Has(lab) || blocId != lab.HomeBlocId) return;
+            List<OfficeEventConfig> questions = HearingQuestions(c);
+            if (questions.Count == 0) return;
+            var fresh = new List<OfficeEventConfig>();
+            for (int i = 0; i < questions.Count; i++) if (!lab.OfficeSeen.Contains(questions[i].IdValue)) fresh.Add(questions[i]);
+            if (fresh.Count == 0)
+            {
+                for (int i = 0; i < questions.Count; i++) lab.OfficeSeen.Remove(questions[i].IdValue);
+                fresh = questions;
+            }
+            OfficeEventConfig chosen = fresh[(int)(Mix(state, lab, 3) % fresh.Count)];
+            if (IsPending(lab)) Lapse(state, lab);
+            lab.OfficeEventId = chosen.IdValue;
+            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
         }

@@ -5358,6 +5358,7 @@
         "name": "The public repository",
         "text": "An intern leaves the model's instructions in a public repository. It has forty stars already.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "rotate",
@@ -5411,6 +5412,7 @@
         "name": "The cat and the benchmark",
         "text": "Your office cat walks across a keyboard and improves a benchmark by 0.3 points.",
         "requires": "AnyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "credit",
@@ -5464,6 +5466,7 @@
         "name": "The wrapper",
         "text": "A startup wraps your model in a new logo and outsells you in a sector you serve.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "lawyers",
@@ -5517,6 +5520,7 @@
         "name": "The leaked report",
         "text": "The safety team's report leaks the night before a funding round.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "publish",
@@ -5570,6 +5574,7 @@
         "name": "The town vote",
         "text": "A town votes on your next data centre. The whole debate is about the noise.",
         "requires": "AnyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "park",
@@ -5623,6 +5628,7 @@
         "name": "The open letter",
         "text": "An open letter asks for a six-month pause. You may sign it.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "sign",
@@ -5680,6 +5686,7 @@
         "name": "The earnings question",
         "text": "An earnings call question about 'AGI by next year' has no safe answer.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "yes",
@@ -5724,6 +5731,7 @@
         "name": "The drawings",
         "text": "Your mascot starts drawing pictures of the server room door.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "ask",
@@ -5777,6 +5785,7 @@
         "name": "Tuesday",
         "text": "Customers discover the model is nicer on Tuesdays. Nobody knows why.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "investigate",
@@ -5821,6 +5830,7 @@
         "name": "The union joke",
         "text": "Your agents unionise as a joke. The joke runs for three weeks.",
         "requires": "AnyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "join",
@@ -5878,6 +5888,7 @@
         "name": "The fake video",
         "text": "A fake video of you announcing free compute goes viral.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "honour",
@@ -5927,6 +5938,7 @@
         "name": "The poetry prize",
         "text": "Your model wins a poetry prize. The judges are furious.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "accept",
@@ -5984,6 +5996,7 @@
         "name": "The essay",
         "text": "Your model refuses a task and writes an essay explaining why. It is a good essay.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "publish",
@@ -6033,6 +6046,7 @@
         "name": "The honest answer",
         "text": "A journalist asks your chatbot about you. It is honest.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
         "choices": [
           {
             "id": "print",
@@ -6086,6 +6100,7 @@
         "name": "The senator's question",
         "text": "A senator asks whether the model lives in the cloud or in the phone.",
         "requires": "AnyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "brief",
@@ -6139,6 +6154,7 @@
         "name": "The signed GPU",
         "text": "The chip baron signs a GPU on stage and puts it up for auction. The room goes quiet and looks at you.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "bid",
@@ -6192,6 +6208,7 @@
         "name": "The person in the next room",
         "text": "A rival's demo turns out to be a person in another room.",
         "requires": "Nothing",
+        "trigger": "Random",
         "choices": [
           {
             "id": "post",
@@ -6241,6 +6258,7 @@
         "name": "The five per cent",
         "text": "The safety team asks for five per cent of the compute, in writing, with a graph.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "grant",
@@ -6294,6 +6312,7 @@
         "name": "The investor question",
         "text": "An investor asks why the company has a safety team at all.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
         "choices": [
           {
             "id": "explain",
@@ -6336,6 +6355,266 @@
               },
               {
                 "kind": "Morale",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-weapon",
+        "name": "The weapon question",
+        "text": "A senator asks whether your model could help someone build a weapon. The room goes quiet and the cameras turn.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "choices": [
+          {
+            "id": "plain",
+            "text": "Say what you tested and what you did not",
+            "result": "The room is cooler than you feared. One staffer writes down the word 'tested'.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": -30
+              }
+            ]
+          },
+          {
+            "id": "promise",
+            "text": "Promise a safeguard by the next hearing",
+            "result": "The committee nods. Your safety lead has to build it by then.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": -50
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "hypothetical",
+            "text": "Call it a hypothetical",
+            "result": "The clip runs all evening, cut after the word hypothetical.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -20
+              },
+              {
+                "kind": "Attention",
+                "amount": 60
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-jobs",
+        "name": "The jobs question",
+        "text": "A committee member asks how many jobs your models will replace, and whether you have a number.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "choices": [
+          {
+            "id": "forecast",
+            "text": "Give the real forecast",
+            "result": "It is not a comfortable number. They thank you for it anyway, and your staff read the transcript.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Attention",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "optimism",
+            "text": "Say it will make more jobs than it ends",
+            "result": "Heads nod. Somebody will be quoting this back to you in a year.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "fund",
+            "text": "Offer a retraining fund",
+            "result": "A cheque and a press release. The committee moves on to someone else's problems.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Attention",
+                "amount": -60
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-data",
+        "name": "The data question",
+        "text": "They ask for the list of what the model was trained on. Some of it is awkward.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "choices": [
+          {
+            "id": "handover",
+            "text": "Hand over the list",
+            "result": "It is long and some of it is embarrassing. The committee notes that you did not make them ask twice.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Attention",
+                "amount": -30
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "text": "Cite trade secrets",
+            "result": "Your team is proud of you. The committee is not.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 50
+              },
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "closed",
+            "text": "Offer a closed briefing",
+            "result": "A quiet room, a few signatures and a legal bill.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": -20
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-pause",
+        "name": "The pause question",
+        "text": "A member asks whether you would stop training if this committee told you to.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "choices": [
+          {
+            "id": "yes",
+            "text": "Say yes, if the law says so",
+            "result": "It makes the evening news. Your researchers lose two weeks sulking over the maybe.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Attention",
+                "amount": -50
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              }
+            ]
+          },
+          {
+            "id": "no",
+            "text": "Say no, and explain why",
+            "result": "A clip of you saying no goes round. Your staff cheer in the kitchen.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Attention",
+                "amount": 40
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              }
+            ]
+          },
+          {
+            "id": "board",
+            "text": "Say you would consult your board",
+            "result": "The answer satisfies nobody and offends nobody, for now.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
                 "amount": -5
               }
             ]

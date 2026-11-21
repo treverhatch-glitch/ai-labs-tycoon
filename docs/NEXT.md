@@ -215,6 +215,8 @@ and says why in the commit message.
     `docs/content/training-runs.md`. Still open: the recipe-screen rows (Unity), other failure causes, rivals trying variants.
 39. **Engineers cut failed runs (bible ch. 7 roles).** ~~Done~~: `runs.engineerSavingPermillePerStaff` / `engineerSavingCapPermille`, `TrainingRuns.EngineerSavingPermille`, failure chance now takes
     the lab (Q270-Q271), four tests added to `TrainingRunTests`; no schema, golden unchanged.
+40. **Hearing questions (bible ch. 12 hearings).** ~~Done~~: `OfficeTrigger` on office events, `OfficeEvents.OnHearing`, four hearing questions with three answers each in the data
+    (Q272-Q274), `HearingQuestionTests`, `docs/content/hearing-questions.md`; no schema, golden unchanged. Still open: a share-price effect, hearings abroad, questions that depend on the lab's history.
 
 ## Rules: later
 
