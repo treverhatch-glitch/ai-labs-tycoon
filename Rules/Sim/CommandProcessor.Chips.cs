@@ -12,6 +12,8 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult StartChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (state.Tick < lab.ChipAmbushUntilTick)
+                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before starting a new design.");
             ChipsConfig k = c.Chips;
             if (cmd.Ids == null || cmd.Ids.Count != 5) return Fail(CommandError.InvalidArgument, "A design needs a process, a die, a number format, a memory and a cooling.");
             ChipTargetConfig target = k.Target(cmd.Id);
@@ -191,6 +193,8 @@ namespace AiLabs.Rules.Sim
             ChipDesign d = seller.Design(cmd.Y);
             if (listing == null || d == null || d.Status != ChipDesignStatus.Ready) return Fail(CommandError.UnknownId, seller.Name + " has no such chips on offer.");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Buy at least one chip.");
+            if (state.Tick < lab.ChipAmbushUntilTick)
+                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before buying listed chips.");
             if (listing.SoldThisMonth + cmd.Count > listing.MaxPerMonth)
                 return Fail(CommandError.AllocationExhausted, seller.Name + " will sell " + (listing.MaxPerMonth - listing.SoldThisMonth) + " more of these this month.");
 

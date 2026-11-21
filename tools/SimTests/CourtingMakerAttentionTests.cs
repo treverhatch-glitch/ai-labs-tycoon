@@ -167,4 +167,22 @@ public class CourtingMakerAttentionTests
         Assert.Equal(standingBefore + g.C.Vendor.CourtingStandingBoost, g.State.Vendor.Standing(rival.Id).Standing);
         Assert.Equal(attentionBefore + g.C.Vendor.CourtingMakerAttentionPermille, g.Me.Bloc(g.Me.HomeBlocId).Attention);
     }
+
+    [Fact]
+    public void Attention_rises_once_per_quarter_not_every_court_call()
+    {
+        Game g = ChipLab();
+        LoadOwnTrainingChips(g, g.Me, 1200);
+        int start = g.Me.Bloc(g.Me.HomeBlocId).Attention;
+        ChipSystem.CourtRivals(g.C, g.State);
+        int afterFirst = g.Me.Bloc(g.Me.HomeBlocId).Attention;
+        Assert.Equal(g.C.Vendor.CourtingMakerAttentionPermille, afterFirst - start);
+        ChipSystem.CourtRivals(g.C, g.State);
+        Assert.Equal(afterFirst, g.Me.Bloc(g.Me.HomeBlocId).Attention);
+        int quarter = DecisionLog.QuarterOf(g.C, g.State.Tick);
+        while (DecisionLog.QuarterOf(g.C, g.State.Tick) == quarter) g.Weeks(1);
+        int beforeNext = g.Me.Bloc(g.Me.HomeBlocId).Attention;
+        ChipSystem.CourtRivals(g.C, g.State);
+        Assert.Equal(g.C.Vendor.CourtingMakerAttentionPermille, g.Me.Bloc(g.Me.HomeBlocId).Attention - beforeNext);
+    }
 }

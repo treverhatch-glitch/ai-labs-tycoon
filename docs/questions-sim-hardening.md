@@ -179,3 +179,27 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) orders like rentals (exempt); (b) same gate as listing; (c) only block first order after keynote.
 - Choice: **(b)** — `KeynoteAmbush` on `OrderChips`; tape-out / fabrication continue.
 - Why: launch window pressure on go-to-market; crosses vendor + foundry flow.
+
+### Q31. Keynote ambush vs buying listed chips? DECIDED: block buyer during ambush
+
+- Options: (a) exempt listed buys; (b) refuse `BuyListedChips` on the buyer while ambush active; (c) block seller listings only.
+- Choice: **(b)** — after listing validation, same `KeynoteAmbush` error; seller ambush does not block buyer.
+- Why: rivals cannot stockpile during buried launch; crosses rival trade + planner skip.
+
+### Q32. Keynote ambush vs new chip designs? DECIDED: block `StartChipDesign`
+
+- Options: (a) block all chip commands; (b) block new designs; tape-out/cancel continue; (c) allow redesigns.
+- Choice: **(b)** — in-progress designs still tape out; cancel allowed.
+- Why: keynote freezes go-to-market starts, not fab work in flight.
+
+### Q33. Courting maker attention frequency? DECIDED: once per quarter with court log
+
+- Options: (a) every `CourtRivals` call; (b) only when vendor logs `Courted` this quarter; (c) once per month.
+- Choice: **(b)** — attention tied to same guard as vendor court log line.
+- Why: antitrust spike is a quarterly story beat, not a weekly tick.
+
+### Q34. Own-chip share vs expansion passive compute? DECIDED: passive excluded from denominator
+
+- Options: (a) passive dilutes share like other general compute; (b) subtract passive expansion from general in `OwnChipsShare`; (c) add passive to own chips.
+- Choice: **(b)** — uplink/arena passive still in `Split` for training; share math ignores it.
+- Why: orbital signal should not mask silicon dominance for Envydia courting; crosses Q25/Q28 + Q27.

@@ -267,8 +267,10 @@ namespace AiLabs.Rules.Systems
         public static int OwnChipsShare(GameConfig c, GameState state, LabState lab)
         {
             ComputeSplit split = LabQueries.Split(c, state, lab, false);
-            if (split.General <= 0) return 0;
-            return (int)(split.OwnChips * MathI.Permille / split.General);
+            long passive = ExpansionSystem.PassiveExpansionGeneralCompute(c, state, lab);
+            long general = split.General - passive;
+            if (general <= 0) return 0;
+            return (int)(split.OwnChips * MathI.Permille / general);
         }
 
         /// <summary>True when the lab has trained or run any training chip of its own: the vendor charges it more.</summary>

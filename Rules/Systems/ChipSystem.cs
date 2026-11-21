@@ -210,17 +210,19 @@ namespace AiLabs.Rules.Systems
                 for (int o = 0; o < state.Labs.Count; o++)
                     if (o != l && !state.Labs[o].Bankrupt) VendorSystem.Change(c, state, state.Labs[o].Id, c.Vendor.CourtingStandingBoost, false);
                 if (!VendorLoggedThisQuarter(c, state, DecisionAction.Courted, lab.Id.ToString()))
+                {
                     DecisionLog.AddVendor(c, state, DecisionAction.Courted, lab.Id.ToString(), c.Vendor.CourtingStandingBoost,
                         Reason.Of(ReasonCode.ChipsOwnedSharePermille, share));
-                if (c.Vendor.CourtingMakerAttentionPermille > 0)
-                {
-                    BlocStanding home = lab.Bloc(lab.HomeBlocId);
-                    if (home != null)
+                    if (c.Vendor.CourtingMakerAttentionPermille > 0)
                     {
-                        int before = home.Attention;
-                        home.Attention = (int)MathI.Min(MathI.Permille, before + c.Vendor.CourtingMakerAttentionPermille);
-                        if (home.Attention > before)
-                            Events.Add(state, EventKind.AttentionRose, lab.Id, -1, home.Attention - before, lab.HomeBlocId);
+                        BlocStanding home = lab.Bloc(lab.HomeBlocId);
+                        if (home != null)
+                        {
+                            int before = home.Attention;
+                            home.Attention = (int)MathI.Min(MathI.Permille, home.Attention + c.Vendor.CourtingMakerAttentionPermille);
+                            if (home.Attention > before)
+                                Events.Add(state, EventKind.AttentionRose, lab.Id, -1, home.Attention - before, lab.HomeBlocId);
+                        }
                     }
                 }
             }
