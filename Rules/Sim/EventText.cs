@@ -110,6 +110,29 @@ namespace AiLabs.Rules.Sim
                         RoleConfig role = c.Role(e.Ref);
                         return who + " poached a " + (victim == null ? "rival" : victim.Name) + " star " + (role == null ? e.Ref : role.Name) + ".";
                     }
+                case EventKind.PoachOffered:
+                    {
+                        LabState victim = state.Lab(e.SubjectId);
+                        RoleConfig role = c.Role(e.Ref);
+                        return who + " offered one of " + (victim == null ? "your" : victim.Name + "'s") + " " + (role == null ? e.Ref : role.Name) + "s $" + e.Amount + " to leave. They have a few weeks to think about it.";
+                    }
+                case EventKind.PoachCountered:
+                    {
+                        CounterConfig counter = c.Talent.Counter(e.Ref);
+                        string how = counter == null ? e.Ref : counter.Name;
+                        return e.Pick == 1
+                            ? who + " kept someone with a counter: " + how + " ($" + e.Amount + "). The offer was declined with a long email."
+                            : who + " tried a counter (" + how + ", $" + e.Amount + ") and the person left anyway.";
+                    }
+                case EventKind.PoachBackTried:
+                    {
+                        LabState target = state.Lab(e.SubjectId);
+                        RoleConfig role = c.Role(e.Ref);
+                        string what = role == null ? e.Ref : role.Name;
+                        return e.Pick == 1
+                            ? who + " hired a " + what + " away from " + (target == null ? "a rival" : target.Name) + " for $" + e.Amount + ". The announcement was posted from the stage."
+                            : who + " tried to hire a " + what + " away from " + (target == null ? "a rival" : target.Name) + " and only paid the headhunter ($" + e.Amount + ").";
+                    }
                 case EventKind.GpuQueueStalled:
                     return who + "'s queued GPU purchase (" + e.Amount + " units) stalled: " + e.Ref + ".";
                 case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";

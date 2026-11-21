@@ -4464,6 +4464,61 @@
       }
     ]
   },
+  "talent": {
+    "offerWeeks": 4,
+    "maxOpenOffers": 2,
+    "packageMultiple": 6,
+    "starPackagePermille": 2000,
+    "minSuccessPermille": 50,
+    "poachBackFeePermille": 150,
+    "poachBackBasePermille": 400,
+    "poachBackMoraleSlopePermille": 600,
+    "poachBackReputationSlopePermille": 300,
+    "poachBackFeelingHit": 150,
+    "poachBackFailFeelingHit": 30,
+    "counters": [
+      {
+        "id": "money",
+        "name": "Match the money",
+        "blurb": "Pay the whole package as a retention bonus. It works, and everyone hears about it.",
+        "costPermille": 1000,
+        "baseSuccessPermille": 1000,
+        "moraleSlopePermille": 0,
+        "reputationSlopePermille": 0,
+        "moraleGain": 100
+      },
+      {
+        "id": "compute",
+        "name": "Offer compute access",
+        "blurb": "Promise them their own slice of the cluster. Costs a share of the package in credits and works most of the time.",
+        "costPermille": 400,
+        "baseSuccessPermille": 800,
+        "moraleSlopePermille": 200,
+        "reputationSlopePermille": 0,
+        "moraleGain": 60
+      },
+      {
+        "id": "title",
+        "name": "Offer a title",
+        "blurb": "Chief Scientist of something. Cheap, and it works if they like it here.",
+        "costPermille": 100,
+        "baseSuccessPermille": 450,
+        "moraleSlopePermille": 400,
+        "reputationSlopePermille": 200,
+        "moraleGain": 40
+      },
+      {
+        "id": "mission",
+        "name": "Remind them of the mission",
+        "blurb": "Costs nothing and is the easiest to lose: it only works while people believe in the lab.",
+        "costPermille": 0,
+        "baseSuccessPermille": 350,
+        "moraleSlopePermille": 500,
+        "reputationSlopePermille": 500,
+        "moraleGain": 30
+      }
+    ]
+  },
   "funding": {
     "founderStartPermille": 1000,
     "controlPermille": 450,

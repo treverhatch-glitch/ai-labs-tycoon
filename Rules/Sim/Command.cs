@@ -15,7 +15,8 @@ namespace AiLabs.Rules.Sim
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase,
         AcceptChinaDeal, DeclineChinaDeal,
-        AcquireLab, SellModel
+        AcquireLab, SellModel,
+        CounterPoach, PoachStaff
     }
 
     /// <summary>
@@ -358,6 +359,24 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             return c;
         }
+
+        /// <summary>Answers a rival's offer (<paramref name="offerId"/>) with a counter from <c>talent.counters</c> (<paramref name="counterId"/>).</summary>
+        public static Command CounterPoach(int labId, int offerId, string counterId)
+        {
+            Command c = Make(CommandKind.CounterPoach, labId);
+            c.TargetId = offerId;
+            c.Id = counterId;
+            return c;
+        }
+
+        /// <summary>Tries to poach the best person of a role from a rival lab.</summary>
+        public static Command PoachStaff(int labId, int rivalLabId, string roleId)
+        {
+            Command c = Make(CommandKind.PoachStaff, labId);
+            c.TargetId = rivalLabId;
+            c.Id = roleId;
+            return c;
+        }
     }
 
     public enum CommandError
@@ -374,7 +393,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar
+        BelowEraSafetyBar, OfferGone
     }
 
     public struct CommandResult

@@ -115,6 +115,10 @@ Dropout, the Defector, the Heir) changes the start and carries a lasting edge an
 appeal in its sectors and lowers it elsewhere, and the home base is any bloc. The founder and style are two ids on the lab; their
 effects are read from the config each time.
 
+Poaching is a market ([content/talent-market.md](content/talent-market.md)): a rival's raid is an offer that waits four weeks, the
+player counters with money, compute, a title or the mission (each a cost and a chance), or lets the person go, and can raid a
+rival's people in return. Open offers are the only saved part.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

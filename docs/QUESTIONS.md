@@ -850,6 +850,30 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** for the option; (c) is not needed because blocs already carry their own rules on the map. A lab sold to new owners (found-again or spectate) loses its founder and style so the successor is no longer "you"; `FoundAgain` hands both to the new player lab.
 - Why: the founder is the person, not the company.
 
+### Q141. What happens when a rival poaches someone? DECIDED: it makes an offer that waits four weeks, and nobody answering means the person leaves
+
+- Options: (a) keep the instant raid; (b) an offer that waits for an answer, with a cap of open offers; (c) a pop-up that pauses the game.
+- Recommendation and choice: **(b)**. `talent.offerWeeks` 4 and `talent.maxOpenOffers` 2; the offer is saved on the lab (`poachOffers`, save schema 23). Setting `offerWeeks` to 0 gives back (a). The package is the era's hire fee times 6 (twice that for a star).
+- Why: the bible says poaching is constant, so the player needs something to do about it; a wait gives a choice without ever stopping the clock, and an unanswered offer costs exactly what it always cost, so old saves and the golden run play the same.
+
+### Q142. What can the player counter with, and what does it cost? DECIDED: four counters, money sure but dear, a mission free but unlikely
+
+- Options: (a) one "match the offer" button; (b) four counters with a cost and a chance each; (c) a negotiation that goes back and forth.
+- Recommendation and choice: **(b)**: `money` (100% of the package, always works), `compute` (40%, base 80%), `title` (10%, base 45%), `mission` (free, base 35%). Morale above the baseline and reputation above 500 add to the chance (floor 5%). The cost is paid whether or not it works; a counter that works lifts morale.
+- Why: the choice is between cash, compute you may not have and the lab's good name; the chance is taken apart in a `ChanceParts` so the UI can explain it. A back and forth would need a conversation state.
+
+### Q143. How does the player poach back? DECIDED: a headhunter's fee that is always paid, a package on success, and a feud that deepens
+
+- Options: (a) no poaching back; (b) the same maths in reverse; (c) a fixed fee and a flat chance.
+- Recommendation and choice: **(b)**: 15% of the package as a fee (always spent), the package on success. Chance is 40% plus unhappiness times 0.6 plus reputation above 500 times 0.3. The rival loses 15 points of feeling on a success and 3 on a failure; only working rival labs can be raided and a free seat is needed.
+- Why: it uses the same package and morale as the defence, and raiding a rival that is already feuding is cheap, raiding a friend costs the friendship.
+
+### Q144. Do the planners and the autopilot answer offers? DECIDED: no
+
+- Options: (a) planners answer with the cheapest counter that is likely to work; (b) they never answer.
+- Recommendation and choice: **(b)**. A lab on autopilot loses its poached people a few weeks late.
+- Why: answering is the player's decision, and the planner code is shared with other threads. The suggestions system can add a prompt later without touching the rules.
+
 ## Open
 
 None.

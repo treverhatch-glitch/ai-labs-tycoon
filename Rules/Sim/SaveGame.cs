@@ -93,6 +93,14 @@ namespace AiLabs.Rules.Sim
                     if (c.Role(person.RoleId) == null) p.Add(who + " employs the unknown role \"" + person.RoleId + "\"");
                     if (c.StaffPeople.Trait(person.TraitId) == null) p.Add(who + " has staff with unknown trait \"" + person.TraitId + "\"");
                 }
+                if (!string.IsNullOrEmpty(lab.FounderId) && c.Founder(lab.FounderId) == null) p.Add(who + " has the unknown founder \"" + lab.FounderId + "\"");
+                if (!string.IsNullOrEmpty(lab.StyleId) && c.Style(lab.StyleId) == null) p.Add(who + " has the unknown style \"" + lab.StyleId + "\"");
+                foreach (PoachOffer offer in lab.PoachOffers)
+                {
+                    if (TalentSystem.Person(lab, offer.StaffId) == null) p.Add(who + " has an offer for staff " + offer.StaffId + ", who is not on the payroll");
+                    if (state.Lab(offer.RivalLabId) == null) p.Add(who + " has an offer from the unknown lab " + offer.RivalLabId);
+                }
+                if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");
                 foreach (BlocStanding standing in lab.Blocs) if (c.World.Bloc(standing.BlocId) == null) p.Add(who + " has a standing with the unknown bloc \"" + standing.BlocId + "\"");
                 foreach (Holding holding in lab.Holdings)

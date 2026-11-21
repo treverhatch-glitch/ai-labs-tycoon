@@ -64,6 +64,7 @@ namespace AiLabs.Rules.Config
             RolePerkProblems(p, c);
             RoomPerkProblems(p, c);
             FoundingProblems(p, c);
+            TalentProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -392,6 +393,36 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrEmpty(perk.Blurb)) p.Add(who + " has no blurb");
                 foreach (string sector in perk.Sectors)
                     if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
+            }
+        }
+
+        static void TalentProblems(List<string> p, GameConfig c)
+        {
+            TalentConfig t = c.Talent;
+            if (t == null) { p.Add("talent is missing"); return; }
+            if (t.OfferWeeks < 0 || t.OfferWeeks > 52) p.Add("talent.offerWeeks needs a value from 0 to 52");
+            if (t.MaxOpenOffers < 1) p.Add("talent.maxOpenOffers needs at least 1");
+            if (t.PackageMultiple < 1) p.Add("talent.packageMultiple needs at least 1");
+            if (t.StarPackagePermille < MathI.Permille) p.Add("talent.starPackagePermille must be at least 1000: a star never costs less than anyone else");
+            Permille(p, "talent.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("talent.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.PoachBackFeePermille < 0 || t.PoachBackFeePermille > 5000) p.Add("talent.poachBackFeePermille needs a value from 0 to 5000");
+            Permille(p, "talent.poachBackBasePermille", t.PoachBackBasePermille);
+            if (t.PoachBackMoraleSlopePermille < -2000 || t.PoachBackMoraleSlopePermille > 2000) p.Add("talent.poachBackMoraleSlopePermille needs a value from -2000 to 2000");
+            if (t.PoachBackReputationSlopePermille < -2000 || t.PoachBackReputationSlopePermille > 2000) p.Add("talent.poachBackReputationSlopePermille needs a value from -2000 to 2000");
+            if (t.PoachBackFeelingHit < 0 || t.PoachBackFailFeelingHit < 0) p.Add("talent.poachBackFeelingHit and poachBackFailFeelingHit cannot be negative");
+            if (t.Counters.Count == 0) p.Add("talent.counters is empty: an offer would have no answer");
+            UniqueIds(p, "talent.counters", t.Counters);
+            foreach (CounterConfig k in t.Counters)
+            {
+                string who = "counter " + k.Id;
+                if (string.IsNullOrEmpty(k.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(k.Blurb)) p.Add(who + " has no blurb");
+                if (k.CostPermille < 0 || k.CostPermille > 3000) p.Add(who + " needs costPermille from 0 to 3000");
+                Permille(p, who + " baseSuccessPermille", k.BaseSuccessPermille);
+                if (k.MoraleSlopePermille < -2000 || k.MoraleSlopePermille > 2000) p.Add(who + " needs moraleSlopePermille from -2000 to 2000");
+                if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
             }
         }
 

@@ -58,6 +58,8 @@ namespace AiLabs.Rules.Config
         public SharesConfig Shares;
         public RegulatorsConfig Regulators;
         public StaffPeopleConfig StaffPeople;
+        /// <summary>The talent market: offers, counters and poaching back.</summary>
+        public TalentConfig Talent = new TalentConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -98,6 +100,7 @@ namespace AiLabs.Rules.Config
             s.Obj("shares", ref Shares);
             s.Obj("regulators", ref Regulators);
             s.Obj("staffPeople", ref StaffPeople);
+            s.Obj("talent", ref Talent);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

@@ -48,7 +48,13 @@ namespace AiLabs.Rules.State
         /// <summary>Board update after venture capital. Amount is reputation gained.</summary>
         InvestorBoardVisit,
         LabAcquired,
-        ModelSold
+        ModelSold,
+        /// <summary>A rival made an offer to one of the player's people. LabId is the rival, SubjectId the player's lab, Amount the package, Ref the role.</summary>
+        PoachOffered,
+        /// <summary>The player answered an offer. LabId is the player's lab, SubjectId the rival, Amount what the counter cost, Ref the counter, Pick 1 if the person stayed.</summary>
+        PoachCountered,
+        /// <summary>The player tried to poach from a rival. LabId is the player's lab, SubjectId the rival, Amount what it cost, Ref the role, Pick 1 if it worked.</summary>
+        PoachBackTried
     }
 
     /// <summary>

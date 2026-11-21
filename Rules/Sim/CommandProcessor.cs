@@ -65,6 +65,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.DeclineChinaDeal: return DeclineChinaDeal(c, state, lab, cmd);
                 case CommandKind.AcquireLab: return AcquireLab(c, state, lab, cmd);
                 case CommandKind.SellModel: return SellModel(c, state, lab, cmd);
+                case CommandKind.CounterPoach: return CounterPoach(c, state, lab, cmd);
+                case CommandKind.PoachStaff: return PoachStaff(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -167,6 +169,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
             StaffSystem.Fire(lab, role.Id, cmd.Count);
+            TalentSystem.DropGoneOffers(lab);
             Finance.Spend(lab, LedgerLine.Hiring, role.Severance * cmd.Count);
             Events.Add(state, EventKind.Fired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);

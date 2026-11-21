@@ -37,6 +37,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 20) MigrateTo20(root);
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
+            if (fromSchema < 23) MigrateTo23(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -335,6 +336,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "founderId", JsonValue.Of(""));
                 JsonPatch.AddIfMissing(lab, "styleId", JsonValue.Of(""));
             });
+        }
+
+        /// <summary>The talent market (Q141): no offers were ever waiting in an older save.</summary>
+        static void MigrateTo23(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
