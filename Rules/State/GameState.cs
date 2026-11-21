@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 66;
+        public const int CurrentSchema = 67;
 
         public int Schema;
         public string ConfigVersion;
@@ -212,6 +212,8 @@ namespace AiLabs.Rules.State
         public int BountyLevel;
         /// <summary>The week the level can next change.</summary>
         public int BountyLockedUntil;
+        /// <summary>Cash the lab has set aside in its treasury reserve. Only the player's lab keeps one.</summary>
+        public long Reserve;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -434,6 +436,7 @@ namespace AiLabs.Rules.State
             s.Int("silenced", ref Silenced);
             s.Int("bountyLevel", ref BountyLevel);
             s.Int("bountyLockedUntil", ref BountyLockedUntil);
+            s.Long("reserve", ref Reserve);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -222,6 +222,10 @@ namespace AiLabs.Rules.Sim
                     return who + " laid off " + e.Amount + " people (" + e.SubjectId / 10 + "% of the staff)" + (e.Pick == 1 ? ", a deep cut that shook the office." : ".");
                 case EventKind.DebtPaid:
                     return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
+                case EventKind.ReserveMoved:
+                    return e.Pick == 1 ? who + " set $" + e.Amount + " aside in its reserve."
+                        : e.Pick == 2 ? who + "'s reserve paid out $" + e.Amount + " to cover a debt, at a steep fee."
+                        : who + " took $" + e.Amount + " back out of its reserve.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

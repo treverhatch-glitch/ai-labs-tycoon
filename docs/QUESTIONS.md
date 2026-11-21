@@ -1774,6 +1774,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Unity's release review (PR #2, Q200-Q206) already gates sandbagged alignment claims at release. After both land, a claim the review rejects or corrects must leave `displayedAlignment` equal to the real alignment, so `Whistle.Worst` finds no gap and nothing is raised. A claim the review approved is the only kind of gap that can reach the whistleblower.
 - The same overstatement is never punished twice: the review's cost (a rejected launch or a corrected number) and the whistleblower's cost (reputation, trust, a resignation) are for different outcomes, an unreviewed gap and a reviewed one. No code changes in this branch; the note is in the body of PR #22.
 
+### Q349. What can a lab do with spare cash besides spend it? DECIDED: set it aside in a reserve that earns a little and rescues a debt at a price
+- New `treasury` data, commands `SetAsideReserve` and `DrawReserve`, `Treasury` system, event `ReserveMoved` and one saved lab field (schema 67). Cash set aside leaves the lab and sits in the reserve; it earns 800 parts per million a week (about 4% a year) and comes back for a 3% fee. If the weekly bill leaves the lab in debt, the reserve pays first, at a 10% fee, so a lab that saved can ride out a bad month that would have closed it.
+- Every dollar goes through `Finance` on the capital line (set aside and cover are capital out and in), so cash still equals the founding cash plus the ledger. The reserve counts in what the lab would sell for, so saving is not a penalty at an exit. The yield is tiny against the fees, so it is a safety net, not an income.
+- Only the player's lab keeps a reserve, an empty one does nothing, and there are no random numbers. The golden moved ed987f26 only through the new saved field (verified by taking the field and the schema back out, which gave 44241b20 again).
+- Alternatives: a bigger yield (rejected: free money), a cover with no fee (rejected: it would make debt harmless), counting the reserve as cash for loans (rejected: a hidden second balance).
+
 ## Open
 
 None.

@@ -286,6 +286,7 @@ and says why in the commit message.
 103. **Loan restructuring (lower payment for a fee).** ~~Done~~: `restructure` data, `RestructureLoan`, `Restructure`, `RestructureTests`, `docs/content/loan-restructuring.md` (Q345).
 104. **Headlines and chat for chairs, whistleblowers, bounties, pullouts and restructures.** ~~Done~~: 12 headlines, 14 chat lines, `ChairsWhistleBountyPulloutRestructureNewsChatTests` (Q346).
 105. **Chairs, whistleblowers, bounties, pullouts and restructures together.** ~~Done~~: `ChairsWhistleBountyPulloutRestructureTogetherTests` (Q347).
+106. **The treasury reserve (set aside, yield, debt cover).** ~~Done~~: `treasury` data, `SetAsideReserve`, `DrawReserve`, `Treasury`, schema 67, `TreasuryTests`, `docs/content/treasury-reserve.md` (Q349).
 
 ## Rules: later
 

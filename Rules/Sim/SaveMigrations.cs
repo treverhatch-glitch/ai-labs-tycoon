@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 64) MigrateTo64(root);
             if (fromSchema < 65) MigrateTo65(root);
             if (fromSchema < 66) MigrateTo66(root);
+            if (fromSchema < 67) MigrateTo67(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -443,6 +444,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 67: no lab has set cash aside.</summary>
+        static void MigrateTo67(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reserve", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 66: no lab runs a bug bounty.</summary>

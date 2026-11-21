@@ -194,7 +194,7 @@ namespace AiLabs.Rules.Systems
         {
             long rev = RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
             long fleet = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
-            long gross = rev + fleet + lab.Cash;
+            long gross = rev + fleet + lab.Cash + lab.Reserve;
             return gross - StaffEquity.StaffShare(lab, gross);
         }
 

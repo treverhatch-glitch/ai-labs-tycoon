@@ -214,7 +214,9 @@ namespace AiLabs.Rules.State
         /// <summary>The lab pulled a model out of a sector. SubjectId is the model, Amount the break fee, Pick 1 when it was the last sector and the model was retired. Ref is the sector.</summary>
         SectorPulledOut,
         /// <summary>A loan was restructured. SubjectId is the loan, Amount the fee added to what is owed, Pick 1 when it cleared missed payments.</summary>
-        LoanRestructured
+        LoanRestructured,
+        /// <summary>Cash moved into or out of the treasury reserve. Amount is the sum moved before any fee, Pick 1 when set aside, 0 when drawn on purpose and 2 when it covered a debt.</summary>
+        ReserveMoved
     }
 
     /// <summary>

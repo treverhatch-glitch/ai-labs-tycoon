@@ -69,7 +69,9 @@ namespace AiLabs.Rules.Sim
         AnswerWhistle,
         SetBugBounty,
         PullOutOfSector,
-        RestructureLoan
+        RestructureLoan,
+        SetAsideReserve,
+        DrawReserve
     }
 
     /// <summary>
@@ -631,6 +633,22 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.RestructureLoan, labId);
             c.TargetId = loanId;
+            return c;
+        }
+
+        /// <summary>Moves cash into the treasury reserve. It earns a small yield every week and covers a debt the weekly bill would otherwise leave. Count is dollars.</summary>
+        public static Command SetAsideReserve(int labId, int dollars)
+        {
+            Command c = Make(CommandKind.SetAsideReserve, labId);
+            c.Count = dollars;
+            return c;
+        }
+
+        /// <summary>Takes dollars back out of the reserve, minus a fee. Count is dollars taken from the reserve.</summary>
+        public static Command DrawReserve(int labId, int dollars)
+        {
+            Command c = Make(CommandKind.DrawReserve, labId);
+            c.Count = dollars;
             return c;
         }
 
