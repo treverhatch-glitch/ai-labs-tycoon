@@ -42,7 +42,7 @@ namespace AiLabs.Rules.Systems
         public static ChanceParts CounterChance(GameConfig c, LabState lab, StaffMember person, CounterConfig counter)
         {
             var parts = new ChanceParts();
-            parts.Base = counter.BaseSuccessPermille;
+            parts.Base = counter.BaseSuccessPermille + Prestige.CounterBonusPermille(c, lab);
             parts.MoralePart = (int)(((long)person.Morale - c.StaffPeople.MoraleBaseline) * counter.MoraleSlopePermille / MathI.Permille);
             parts.ReputationPart = (int)(((long)lab.Reputation - 500) * counter.ReputationSlopePermille / MathI.Permille);
             return Bounded(c, parts);

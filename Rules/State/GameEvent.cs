@@ -144,7 +144,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player changed the pay policy. LabId is the lab, SubjectId the new level, Amount the weekly salary bill now. Pick is 1 for a raise and 0 for a cut.</summary>
         PayChanged,
         /// <summary>The compliance office lost its policy staff and fell to a lower level. LabId is the lab, SubjectId the level it now runs at, Amount the level it had.</summary>
-        ComplianceLapsed
+        ComplianceLapsed,
+        /// <summary>The player published a paper. LabId is the lab, SubjectId the prestige now, Amount the research points it cost.</summary>
+        PaperPublished
     }
 
     /// <summary>

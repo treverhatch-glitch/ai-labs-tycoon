@@ -5504,6 +5504,19 @@
     "auditFinePermillePerLevel": 150,
     "hearingPointsPerLevel": 5
   },
+  "prestige": {
+    "max": 1000,
+    "paperPrestige": 200,
+    "decayPerWeek": 4,
+    "paperResearchWeeks": 3,
+    "minPoints": 60,
+    "minResearchers": 2,
+    "paperReputation": 8,
+    "moraleAtMax": 60,
+    "hireDiscountAtMax": 200,
+    "poachAtMax": 200,
+    "counterAtMax": 100
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

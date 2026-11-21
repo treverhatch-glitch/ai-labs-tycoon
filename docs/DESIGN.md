@@ -213,6 +213,8 @@ The six care tools (crunch, offsite, insurance, red teams, interpretability and 
 
 The player can run a compliance office, up to three levels. Each level needs a policy person on the payroll and costs a weekly retainer; it takes a share off the attention governments gain in the lab each month, off an audit fine, and makes a hearing go a little better. If the policy staff leave, the office drops a level for each missing person and says so.
 
+The player can spend research points to publish a paper. It adds a little reputation at once and builds academic prestige, which fades over about a year. While it lasts, people are happier, hiring is cheaper and counter-offers work better, but rivals find the lab's people more tempting.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

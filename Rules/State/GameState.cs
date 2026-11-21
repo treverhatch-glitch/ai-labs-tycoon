@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 48;
+        public const int CurrentSchema = 49;
 
         public int Schema;
         public string ConfigVersion;
@@ -152,6 +152,8 @@ namespace AiLabs.Rules.State
         public int InterpLevel;
         /// <summary>The level of the compliance office the lab runs, 0 for none. Only the player's lab runs one.</summary>
         public int ComplianceLevel;
+        /// <summary>The lab's academic prestige from papers it published. It fades every week. Only the player's lab publishes.</summary>
+        public int Prestige;
         /// <summary>The pay policy: 0 is market pay, above is better paid, below is worse. Only the player's lab changes it.</summary>
         public int PayLevel;
         /// <summary>The pay policy cannot be changed before this tick.</summary>
@@ -316,6 +318,7 @@ namespace AiLabs.Rules.State
             s.Int("insuranceLockedUntil", ref InsuranceLockedUntil);
             s.Int("interpLevel", ref InterpLevel);
             s.Int("complianceLevel", ref ComplianceLevel);
+            s.Int("prestige", ref Prestige);
             s.Int("payLevel", ref PayLevel);
             s.Int("payLockedUntil", ref PayLockedUntil);
             s.Int("founderSharePermille", ref FounderSharePermille);

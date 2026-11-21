@@ -61,6 +61,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 46) MigrateTo46(root);
             if (fromSchema < 47) MigrateTo47(root);
             if (fromSchema < 48) MigrateTo48(root);
+            if (fromSchema < 49) MigrateTo49(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -410,6 +411,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 49: no lab had published a paper.</summary>
+        static void MigrateTo49(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "prestige", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 48: no lab ran a compliance office.</summary>

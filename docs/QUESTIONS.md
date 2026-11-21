@@ -1525,6 +1525,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to 32d55db6 because of the lab field and the schema number only; reverting them brought the previous digest (130c6c78) back.
 - Alternatives: a hearing sting cut in percent (rejected: a prepared hearing already gains reputation, so a cut of a loss would almost never apply); a retainer without staff (rejected: policy people are what makes a lab credible); letting a lapsed office keep its effect (rejected: it would be a free perk for a lab that fired the staff).
 
+### Q308. Can the player publish papers to build the lab's name among researchers? DECIDED: yes, for research points, with a prestige that fades
+- New `prestige` data and command `PublishPaper`, `Prestige` system, event `PaperPublished` (appended). The player spends research points: three weeks of the lab's current research output (never under 60 points), and needs at least two researchers on the payroll. A paper adds 8 reputation points at once and 200 academic prestige (the most is 1000). Prestige fades by 4 a week, so one paper lasts about 50 weeks.
+- While prestige lasts it grows every effect in step, up to these values at the most: morale settles 60 points higher, hiring fees are 20% lower (they show as a perk discount in the fee breakdown), counter-offers to a rival's offer work 10 points better, and rivals find the lab's people 20% more tempting (it adds to the poach chance after the room and pay defences, inside the same -500 to 900 limits). Fame brings offers as well as happiness.
+- A paper costs research only, so a lab with no cash can publish and a bankrupt one cannot. A lab at the most cannot publish more; a paper that would pass the most stops at it.
+- New state on the lab (schema 49, `MigrateTo49`): `prestige`. Player only and opt-in; rivals and the autopilot never publish, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to f7bc9480 because of the lab field and the schema number only; reverting them brought the previous digest (32d55db6) back.
+- Alternatives: a cash price for papers (rejected: research points are what researchers spend their time on, so they are the honest price); prestige that never fades (rejected: reputation in a field is kept up by publishing); a morale-only effect (rejected: it would be free; the poaching risk is the cost of being famous).
+
 ## Open
 
 None.

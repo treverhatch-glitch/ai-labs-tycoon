@@ -76,6 +76,7 @@ namespace AiLabs.Rules.Config
             RedTeamProblems(p, c);
             InterpProblems(p, c);
             ComplianceProblems(p, c);
+            PrestigeProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -824,6 +825,23 @@ namespace AiLabs.Rules.Config
             if (k.AttentionPermillePerLevel < 0 || k.AttentionPermillePerLevel * (long)k.MaxLevel > 900) p.Add("compliance.attentionPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the attention");
             if (k.AuditFinePermillePerLevel < 0 || k.AuditFinePermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("compliance.auditFinePermillePerLevel must be 0 or more, and every level together can take away at most the whole fine");
             if (k.HearingPointsPerLevel < 0 || k.HearingPointsPerLevel * (long)k.MaxLevel > 100) p.Add("compliance.hearingPointsPerLevel must be 0 or more, and every level together can add at most 100 points");
+        }
+
+        static void PrestigeProblems(List<string> p, GameConfig c)
+        {
+            PrestigeConfig k = c.Prestige;
+            if (k == null) { p.Add("prestige is missing"); return; }
+            if (k.Max < 0 || k.Max > 100000) p.Add("prestige.max must be from 0 to 100000");
+            if (k.PaperPrestige < 0 || k.PaperPrestige > k.Max) p.Add("prestige.paperPrestige must be from 0 to the most");
+            if (k.DecayPerWeek < 0 || k.DecayPerWeek > k.Max) p.Add("prestige.decayPerWeek must be from 0 to the most");
+            if (k.PaperResearchWeeks < 0 || k.PaperResearchWeeks > 520) p.Add("prestige.paperResearchWeeks must be from 0 to 520");
+            if (k.MinPoints < 0) p.Add("prestige.minPoints is negative");
+            if (k.MinResearchers < 0 || k.MinResearchers > 1000) p.Add("prestige.minResearchers must be from 0 to 1000");
+            if (k.PaperReputation < 0 || k.PaperReputation > 200) p.Add("prestige.paperReputation must be from 0 to 200");
+            if (k.MoraleAtMax < 0 || k.MoraleAtMax > 300) p.Add("prestige.moraleAtMax must be from 0 to 300");
+            if (k.HireDiscountAtMax < 0 || k.HireDiscountAtMax > 500) p.Add("prestige.hireDiscountAtMax must be from 0 to 500");
+            if (k.PoachAtMax < 0 || k.PoachAtMax > 500) p.Add("prestige.poachAtMax must be from 0 to 500");
+            if (k.CounterAtMax < 0 || k.CounterAtMax > 300) p.Add("prestige.counterAtMax must be from 0 to 300");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

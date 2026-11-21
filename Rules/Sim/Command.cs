@@ -43,7 +43,8 @@ namespace AiLabs.Rules.Sim
         RedTeamModel,
         SetInterpretability,
         SetPayLevel,
-        SetCompliance
+        SetCompliance,
+        PublishPaper
     }
 
     /// <summary>
@@ -363,6 +364,12 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetCompliance, labId);
             c.Count = level;
             return c;
+        }
+
+        /// <summary>Spends research points to publish a paper, which earns reputation and academic prestige.</summary>
+        public static Command PublishPaper(int labId)
+        {
+            return Make(CommandKind.PublishPaper, labId);
         }
 
         /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>

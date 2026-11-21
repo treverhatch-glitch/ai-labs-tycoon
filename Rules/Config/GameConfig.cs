@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Config
         public RedTeamConfig RedTeam = new RedTeamConfig();
         public InterpConfig Interp = new InterpConfig();
         public ComplianceConfig Compliance = new ComplianceConfig();
+        public PrestigeConfig Prestige = new PrestigeConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
@@ -137,6 +138,7 @@ namespace AiLabs.Rules.Config
             s.Obj("redTeam", ref RedTeam);
             s.Obj("interp", ref Interp);
             s.Obj("compliance", ref Compliance);
+            s.Obj("prestige", ref Prestige);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);

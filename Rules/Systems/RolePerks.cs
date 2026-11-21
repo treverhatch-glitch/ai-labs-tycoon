@@ -64,7 +64,7 @@ namespace AiLabs.Rules.Systems
         public static long HireFee(GameConfig c, LabState lab, RoleConfig role, int tick)
         {
             long eraFee = EraRules.HireFee(c, role, tick);
-            int discount = (int)MathI.Min(Permille(c, lab, RolePerkKind.HireDiscount), MathI.Permille);
+            int discount = (int)MathI.Min(Permille(c, lab, RolePerkKind.HireDiscount) + Prestige.HireDiscountPermille(c, lab), MathI.Permille);
             long fee = MathI.MulPermille(eraFee, MathI.Permille - discount);
             return MathI.MulPermille(fee, (int)MathI.Max(1, MathI.Permille + Founding.HireFeePermille(c, lab)));
         }

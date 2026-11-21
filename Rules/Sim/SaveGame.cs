@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.PayLevel < c.StaffPeople.PayMinLevel || lab.PayLevel > c.StaffPeople.PayMaxLevel || lab.PayLockedUntil < 0) p.Add(who + " pays at level " + lab.PayLevel + ", which the data does not allow");
                 if (lab.InterpLevel < 0 || lab.InterpLevel > c.Interp.MaxLevel) p.Add(who + " runs an interpretability programme at level " + lab.InterpLevel);
                 if (lab.ComplianceLevel < 0 || lab.ComplianceLevel > c.Compliance.MaxLevel) p.Add(who + " runs a compliance office at level " + lab.ComplianceLevel);
+                if (lab.Prestige < 0 || lab.Prestige > c.Prestige.Max) p.Add(who + " has " + lab.Prestige + " academic prestige");
                 if (lab.CrunchWeeks < 0 || lab.CrunchWeeks > c.StaffPeople.CrunchMaxWeeks) p.Add(who + " has been in crunch time for " + lab.CrunchWeeks + " weeks");
                 foreach (Loan loan in lab.Loans)
                     if (loan.Balance <= 0 || loan.Payment <= 0 || loan.Misses < 0) p.Add(who + " has a loan (" + loan.Id + ") with nothing owed, no payment or a negative miss count");
