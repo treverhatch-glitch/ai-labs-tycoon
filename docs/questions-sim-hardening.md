@@ -376,6 +376,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
 - Why: explainable domain scores for planner/UI without gauntlet changes.
 
+### Q66. Optical chip cooling? DECIDED: `optical` cooling option
+
+- Options: (a) tech-only effect; (b) `optical` cooling option gated on `optical-interconnect`; (c) new node.
+- Choice: **(b)** — higher compute, lower kW on derive; no schema.
+- Why: pairs Q64 exotic silicon path and harnesses `optical-interconnect` tech.
+
 ### Q65. Capability domain leaders? DECIDED: `CapabilityDomainSystem` + schema 21
 
 - Options: (a) queries only; (b) weekly leader snapshots and appeal in domain sectors; (c) gauntlet brackets.

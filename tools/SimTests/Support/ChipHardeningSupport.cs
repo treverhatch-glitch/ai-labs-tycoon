@@ -17,7 +17,7 @@ static class ChipHardeningSupport
 
     internal static readonly string[] ChipTechs =
     {
-        "chip-team", "hbm-memory", "training-silicon", "stacked-hbm", "reticle-dies", "chiplet-packaging", "low-precision", "liquid-cooling",
+        "chip-team", "hbm-memory", "training-silicon", "stacked-hbm", "reticle-dies", "chiplet-packaging", "low-precision", "liquid-cooling", "optical-interconnect",
     };
 
     internal static Game Lab(int year, int seed = 3, bool rivals = true, Action<GameConfig> tweak = null)
@@ -54,10 +54,10 @@ static class ChipHardeningSupport
     }
 
     internal static ChipDesign InjectReady(Game g, LabState lab, string target = Inference, string node = "n28",
-        string die = "small", int yield = 800, int readyTick = -1)
+        string die = "small", int yield = 800, int readyTick = -1, string cooling = "air")
     {
         var d = new ChipDesign();
-        ChipSpec spec = ChipQueries.Derive(g.C, target, node, "small", "fp16", "ddr", "air");
+        ChipSpec spec = ChipQueries.Derive(g.C, target, node, die, "fp16", "ddr", cooling);
         d.Id = g.State.TakeId();
         d.Version = ChipQueries.NextVersion(lab);
         d.Name = lab.FamilyName + " Silicon " + d.Version;
@@ -66,7 +66,7 @@ static class ChipHardeningSupport
         d.DieId = die;
         d.FormatId = "fp16";
         d.MemoryId = "ddr";
-        d.CoolingId = "air";
+        d.CoolingId = cooling;
         d.PointsRequired = spec.Points;
         d.PointsDone = spec.Points;
         d.Status = ChipDesignStatus.Ready;

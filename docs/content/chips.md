@@ -58,6 +58,7 @@ designer's home both.
 | Memory | `hbm-stacked` | `stacked-hbm` | 130% | 130% | 110% | 120% | -5 pts |
 | Cooling | `air` | - | 100% | 100% | 100% | 100% | 0 |
 | Cooling | `liquid` | `liquid-cooling` | 110% | 110% | 80% | 110% | 0 |
+| Cooling | `optical` | `optical-interconnect` | 118% | 115% | 75% | 115% | -5 pts |
 
 Worked examples (pinned by tests): an inference chip on `n28` with a small die, 16-bit numbers, plain memory and air has compute 99,
 1 kW, 1,260 design points and wafers of $3,600. A training chip on `n5` with a medium die, 8-bit numbers, towers of memory and

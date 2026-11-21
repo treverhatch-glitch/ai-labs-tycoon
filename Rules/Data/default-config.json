@@ -4676,6 +4676,17 @@
         "kwPermille": 800,
         "pointsPermille": 1100,
         "yieldAdjust": 0
+      },
+      {
+        "group": "Cooling",
+        "id": "optical",
+        "name": "Optical backplane cooling",
+        "requiresTech": "optical-interconnect",
+        "computePermille": 1180,
+        "costPermille": 1150,
+        "kwPermille": 750,
+        "pointsPermille": 1150,
+        "yieldAdjust": -5
       }
     ]
   },
