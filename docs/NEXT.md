@@ -194,6 +194,10 @@ and says why in the commit message.
     read-only, no save change (Q255-Q257), `NewsTickerTests`, `docs/content/news-ticker.md`. Still open: the ticker strip itself (Unity), headlines for the player's
     own big moments in the bible's voice, era-specific filler.
 
+34. **Lobbying (bible ch. 12, ch. 14 rooms).** ~~Done~~: `lobbying` in the data, `Command.Lobby` (a quiet word or a subsidy push, per government), `Lobbying` system,
+    `EventKind.Lobbied`, save schema 37 (`lobbyUntilTick` per standing; Q258-Q259), `LobbyingTests`, `docs/content/lobbying.md`. Still open: choosing which law a
+    government writes next, the lobby screen (Unity).
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

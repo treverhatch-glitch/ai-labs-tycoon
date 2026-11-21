@@ -75,6 +75,16 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.ModelRushed:
                     return who + " rushed " + e.Ref + " out with " + e.Amount + (e.Amount == 1 ? " week" : " weeks") + " of testing skipped.";
+                case EventKind.Lobbied:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        BlocConfig bloc = parts.Length == 3 ? c.World.Bloc(parts[0]) : null;
+                        if (bloc == null) return who + " lobbied a government.";
+                        string aim = parts[1] == Lobbying.Subsidy ? "a subsidy" : "a little less attention";
+                        if (parts[2] == "backfired") return who + " lobbied " + bloc.Name + " for " + aim + " and it became a scandal.";
+                        if (parts[2] == "missed") return who + " lobbied " + bloc.Name + " for " + aim + ". Nothing came of it.";
+                        return who + " lobbied " + bloc.Name + " and got " + aim + ".";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

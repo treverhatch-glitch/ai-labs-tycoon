@@ -1239,6 +1239,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Nothing is saved; the golden did not move.
 - Why: everything on the ticker already exists in the event log (which is bounded) or the date. Storing it would duplicate the log and need a migration for no gain.
 
+### Q258. What can the player lobby for, and what does it cost? DECIDED: a quiet word or a subsidy push, priced in weeks of running the lab, once per government per half-year
+- Options: (a) one lobbying slider that does everything; (b) two named goals, "quiet" and "subsidy", each with its own price and result; (c) let the player pick which law to nudge.
+- Recommendation and choice: **(b)**. A quiet word costs 6 weeks of running the lab and takes 150 off a government's attention. A subsidy push costs 4 weeks and, if it wins, pays 8. A government can be lobbied again after 26 weeks; backfires (12% before policy staff, 2% at best) add 200 attention and take 40 reputation. Policy staff cut the backfire chance and lift the subsidy chance (40% up to 80%).
+- Why: attention and grants are the two government levers that already exist, so the player gets something to do about a hearing that is coming without a new law system. Pricing in weeks of running costs keeps it relevant from the first year to the last. Letting the player pick the law (c) needs the law system to take a nudge; it is listed as open. The chance is a hash of the week, not a shared die, so the push cannot move anyone else's dice.
+
+### Q259. Is a save change needed, and does the golden move? DECIDED: yes, schema 37; the golden moved with a verified cause
+- Options: (a) a lab-wide cooldown; (b) a cooldown per government, stored on its standing.
+- Recommendation and choice: **(b)**. `lobbyUntilTick` on every `BlocStanding` (`MigrateTo37` sets 0).
+- Why: the bible lets labs work every government, and one cooldown for all would make lobbying a once-a-year button. The golden moved because every standing carries the field; with the sync line, the schema number and the data removed, the previous golden returned exactly.
+
 ## Open
 
 None.

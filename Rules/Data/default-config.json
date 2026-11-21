@@ -5982,6 +5982,22 @@
     "incidentPermillePerWeek": 3,
     "culturePointsPerWeek": 3
   },
+  "lobbying": {
+    "cooldownWeeks": 26,
+    "minWeekCost": 1000,
+    "quietCostWeeks": 6,
+    "quietAttention": 150,
+    "subsidyCostWeeks": 4,
+    "subsidyReturnWeeks": 8,
+    "subsidyChancePermille": 400,
+    "subsidyChancePermillePerStaff": 50,
+    "subsidyChanceCapPermille": 800,
+    "backfirePermille": 120,
+    "backfireSavingPermillePerStaff": 25,
+    "backfireFloorPermille": 20,
+    "backfireAttention": 200,
+    "backfireReputation": 40
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,
@@ -6307,6 +6323,15 @@
       "pick": -1,
       "about": "lab",
       "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
+    },
+      {
+      "id": "lobbied",
+      "kind": "Lobbied",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory."
     },
       {
       "id": "room-refurbished",

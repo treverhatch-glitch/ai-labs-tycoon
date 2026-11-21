@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Config
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
             RushProblems(p, c);
+            LobbyProblems(p, c);
             NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
@@ -549,6 +550,28 @@ namespace AiLabs.Rules.Config
                 if (end < 0) break;
                 at = end + 1;
             }
+        }
+
+        static void LobbyProblems(List<string> p, GameConfig c)
+        {
+            LobbyConfig l = c.Lobbying;
+            if (l == null) { p.Add("lobbying is missing"); return; }
+            if (l.CooldownWeeks < 0 || l.CooldownWeeks > 520) p.Add("lobbying.cooldownWeeks must be from 0 to 520");
+            if (l.MinWeekCost < 0) p.Add("lobbying.minWeekCost must be non-negative");
+            if (l.QuietCostWeeks < 1 || l.QuietCostWeeks > 520) p.Add("lobbying.quietCostWeeks must be from 1 to 520");
+            if (l.QuietAttention < 1 || l.QuietAttention > MathI.Permille) p.Add("lobbying.quietAttention must be from 1 to 1000");
+            if (l.SubsidyCostWeeks < 1 || l.SubsidyCostWeeks > 520) p.Add("lobbying.subsidyCostWeeks must be from 1 to 520");
+            if (l.SubsidyReturnWeeks < 1 || l.SubsidyReturnWeeks > 520) p.Add("lobbying.subsidyReturnWeeks must be from 1 to 520");
+            Permille(p, "lobbying.subsidyChancePermille", l.SubsidyChancePermille);
+            Permille(p, "lobbying.subsidyChanceCapPermille", l.SubsidyChanceCapPermille);
+            if (l.SubsidyChancePermillePerStaff < 0) p.Add("lobbying.subsidyChancePermillePerStaff must be non-negative");
+            if (l.SubsidyChanceCapPermille < l.SubsidyChancePermille) p.Add("lobbying.subsidyChanceCapPermille must not be under subsidyChancePermille");
+            Permille(p, "lobbying.backfirePermille", l.BackfirePermille);
+            Permille(p, "lobbying.backfireFloorPermille", l.BackfireFloorPermille);
+            if (l.BackfireSavingPermillePerStaff < 0) p.Add("lobbying.backfireSavingPermillePerStaff must be non-negative");
+            if (l.BackfireFloorPermille > l.BackfirePermille) p.Add("lobbying.backfireFloorPermille must not be over backfirePermille");
+            if (l.BackfireAttention < 0 || l.BackfireAttention > MathI.Permille) p.Add("lobbying.backfireAttention must be from 0 to 1000");
+            if (l.BackfireReputation < 0 || l.BackfireReputation > MathI.Permille) p.Add("lobbying.backfireReputation must be from 0 to 1000");
         }
 
         static void RushProblems(List<string> p, GameConfig c)

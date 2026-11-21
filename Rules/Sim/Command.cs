@@ -29,7 +29,8 @@ namespace AiLabs.Rules.Sim
         AnswerOfficeEvent,
         SetTrainingObjective,
         DesignWithModel,
-        RushRelease
+        RushRelease,
+        Lobby
     }
 
     /// <summary>
@@ -302,6 +303,15 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Pays for a push on one government (<paramref name="goal"/> is "quiet" or "subsidy"). It can land, miss or backfire as a scandal.</summary>
+        public static Command Lobby(int labId, string blocId, string goal)
+        {
+            Command c = Make(CommandKind.Lobby, labId);
+            c.Id = blocId;
+            c.Ids.Add(goal);
+            return c;
+        }
+
         public static Command ResearchFrontier(int labId)
         {
             return Make(CommandKind.ResearchFrontier, labId);
@@ -521,7 +531,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling
     }
 
     public struct CommandResult

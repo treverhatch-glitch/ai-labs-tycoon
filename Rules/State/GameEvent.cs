@@ -106,7 +106,9 @@ namespace AiLabs.Rules.State
         /// <summary>A model was put to work on its successor's design. SubjectId is the successor, Amount the helper's id, Ref the successor's name.</summary>
         SuccessorDesigned,
         /// <summary>A model was put on sale with some testing skipped. SubjectId is the model, Amount the weeks skipped, Ref its name.</summary>
-        ModelRushed
+        ModelRushed,
+        /// <summary>The player lobbied a government. Amount is what it cost, Ref is "bloc|goal|result" (result: landed, missed or backfired).</summary>
+        Lobbied
     }
 
     /// <summary>
