@@ -224,7 +224,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab announced a roadmap. SubjectId is the level, Amount the capability promised, Pick the weeks it has.</summary>
         RoadmapAnnounced,
         /// <summary>A roadmap was settled. SubjectId is the level, Amount the capability promised, Pick 1 when a model delivered it in time.</summary>
-        RoadmapSettled
+        RoadmapSettled,
+        /// <summary>A senior started mentoring a junior. SubjectId is the junior, Amount the mentor, Ref the junior's role.</summary>
+        MentoringStarted,
+        /// <summary>A pair ended. SubjectId is the junior, Amount the weeks it held, Ref the role, Pick 0 when the junior graduated, 1 when it broke up, 2 when the player called it off.</summary>
+        MentoringEnded
     }
 
     /// <summary>

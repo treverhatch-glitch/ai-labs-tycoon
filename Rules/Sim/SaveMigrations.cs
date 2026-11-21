@@ -82,6 +82,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 67) MigrateTo67(root);
             if (fromSchema < 68) MigrateTo68(root);
             if (fromSchema < 69) MigrateTo69(root);
+            if (fromSchema < 70) MigrateTo70(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -446,6 +447,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 70: nobody is being mentored.</summary>
+        static void MigrateTo70(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
+            {
+                JsonPatch.AddIfMissing(person, "mentorId", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "mentorWeeks", JsonValue.Of(0L));
+            }));
         }
 
         /// <summary>Schema 69: no lab has announced a roadmap.</summary>

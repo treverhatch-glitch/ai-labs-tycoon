@@ -1792,6 +1792,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Only the player's lab announces. No random numbers. The golden moved 2baf0743 -> 1f5f681c only through the four new saved fields (verified by taking them and the schema back out).
 - Alternatives: a promise on revenue (that is the board target of Q338), a promise a rival can break for the lab (rejected: stays out of rivals), cancelling a roadmap for a fee (rejected: a promise that can be dropped for a fee is a loan of hype).
 
+### Q356. Can a senior bring a junior along? DECIDED: mentoring pairs that trade output for a free promotion
+- New `mentoring` data, commands `AssignMentor` and `EndMentoring`, `Mentoring` system, events `MentoringStarted` and `MentoringEnded`, and two saved fields on a person (schema 70). A senior and a junior in the same function can be paired, two pairs at most. While the pair holds the mentor counts as a plain person (not the senior weight) and the junior counts for 80%, in research and in the engineering, safety and sales head counts; the junior's morale climbs 4 a week to 800. After 26 weeks, when the function has a senior seat free, the junior is promoted for nothing and both gain morale.
+- The choice is the point. Who to pair (a function's senior is its best output), whether to start now or wait for a seat (a pair waiting for a seat keeps costing output), and when to give up on a pair whose seat never opens. A paid promotion is quick and costs a fee; mentoring is free in cash but costs output for half a year, so it suits a lab that is short of cash rather than output.
+- State over time: the pair, the weeks it has held, and a rule that breaks it up (a person leaves, the mentor stops being senior, the junior is promoted another way, the functions part). No random numbers, and the player's lab only. The golden moved 1f5f681c -> defdc644 only through the two new saved fields and the schema number (verified by taking them back out).
+- Alternatives: a mentor bonus that raised the junior's output (rejected: a pay-for-stat knob), mentoring across functions (rejected: it would be a cheap retraining), no seat rule (rejected: it would bypass the seniority cap).
+
 ## Open
 
 None.

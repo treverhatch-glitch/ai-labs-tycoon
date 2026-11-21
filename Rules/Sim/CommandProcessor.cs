@@ -101,6 +101,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.PullOutOfSector: return PullOutOfSector(c, state, lab, cmd);
                 case CommandKind.RestructureLoan: return RestructureLoan(c, state, lab, cmd);
                 case CommandKind.AnnounceRoadmap: return AnnounceRoadmap(c, state, lab, cmd);
+                case CommandKind.AssignMentor: return AssignMentor(c, state, lab, cmd);
+                case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.SetPledge: return SetPledge(c, state, lab, cmd);
                 case CommandKind.SetAsideReserve: return SetAsideReserve(c, state, lab, cmd);
                 case CommandKind.DrawReserve: return DrawReserve(c, state, lab, cmd);

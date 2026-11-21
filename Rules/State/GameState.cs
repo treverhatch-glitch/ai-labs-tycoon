@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 69;
+        public const int CurrentSchema = 70;
 
         public int Schema;
         public string ConfigVersion;
@@ -558,6 +558,10 @@ namespace AiLabs.Rules.State
         public int Morale;
         /// <summary>1 when the person has been promoted to senior, 0 otherwise.</summary>
         public int Senior;
+        /// <summary>The id of the senior mentoring this person, 0 when nobody is.</summary>
+        public int MentorId;
+        /// <summary>The weeks the pair has held.</summary>
+        public int MentorWeeks;
 
         public void Sync(Syncer s)
         {
@@ -566,6 +570,8 @@ namespace AiLabs.Rules.State
             s.Str("traitId", ref TraitId);
             s.Int("morale", ref Morale);
             s.Int("senior", ref Senior);
+            s.Int("mentorId", ref MentorId);
+            s.Int("mentorWeeks", ref MentorWeeks);
         }
     }
 

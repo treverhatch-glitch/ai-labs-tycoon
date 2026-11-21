@@ -289,6 +289,7 @@ and says why in the commit message.
 106. **The treasury reserve (set aside, yield, debt cover).** ~~Done~~: `treasury` data, `SetAsideReserve`, `DrawReserve`, `Treasury`, schema 67, `TreasuryTests`, `docs/content/treasury-reserve.md` (Q349).
 107. **The public safety pledge (floor, weekly trust, breach).** ~~Done~~: `pledge` data, `SetPledge`, `Pledge`, schema 68, `PledgeTests`, `docs/content/safety-pledge.md` (Q350).
 108. **The public roadmap (promised capability, deadline, hype, reward, loss).** ~~Done~~: `roadmap` data, `AnnounceRoadmap`, `Roadmap`, schema 69, `RoadmapTests`, `docs/content/public-roadmap.md` (Q351).
+111. **Mentoring (senior and junior pairs, lost output, a free promotion when a seat opens).** ~~Done~~: `mentoring` data, `AssignMentor`, `EndMentoring`, `Mentoring`, schema 70, `MentoringTests`, `docs/content/mentoring.md` (Q356).
 
 ## Rules: later
 

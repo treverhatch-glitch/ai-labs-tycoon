@@ -236,6 +236,12 @@ namespace AiLabs.Rules.Sim
                 case EventKind.RoadmapSettled:
                     return e.Pick == 1 ? who + " delivered its roadmap, a model with capability " + e.Amount + ", and customers noticed."
                         : who + " missed its roadmap for a model with capability " + e.Amount + ", and customers noticed that too.";
+                case EventKind.MentoringStarted:
+                    return who + " paired a senior with a junior " + c.Role(e.Ref).Name.ToLowerInvariant() + " for mentoring.";
+                case EventKind.MentoringEnded:
+                    return e.Pick == 0 ? who + " graduated a junior " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior after " + e.Amount + " weeks of mentoring."
+                        : e.Pick == 1 ? "A mentoring pair at " + who + " broke up after " + e.Amount + " weeks."
+                        : who + " called off a mentoring pair after " + e.Amount + " weeks.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -101,8 +101,12 @@ namespace AiLabs.Rules.Sim
                 if (lab.ConsultantLevel < 0 || lab.ConsultantLevel > c.Consultants.MaxLevel || lab.ConsultantWeeks < 0 || lab.ConsultantWeeks > c.Consultants.Weeks || lab.ConsultantLockedUntil < 0 || (lab.ConsultantWeeks > 0) != (lab.ConsultantLevel > 0))
                     p.Add(who + " has policy consultants (level " + lab.ConsultantLevel + ", " + lab.ConsultantWeeks + " weeks left), which the data does not allow");
                 foreach (StaffMember person in lab.Staff)
+                {
                     if (person.Senior < 0 || person.Senior > 1 || (person.Senior == 1 && lab.Id != state.PlayerLabId))
                         p.Add(who + " has a senior person (" + person.Senior + ") that the data does not allow");
+                    if (person.MentorId < 0 || person.MentorWeeks < 0 || (person.MentorId == 0 && person.MentorWeeks != 0) || (person.MentorId > 0 && (lab.Id != state.PlayerLabId || person.MentorId == person.Id)))
+                        p.Add(who + " has a person with mentor " + person.MentorId + " (" + person.MentorWeeks + " weeks), which does not fit the staff");
+                }
                 if (lab.RevenueTargetLevel < 0 || lab.RevenueTargetLevel > c.RevenueTargets.MaxLevel || lab.RevenueTargetEnd < 0 || lab.RevenueTargetGoal < 0 || lab.RevenueTargetSoFar < 0
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))

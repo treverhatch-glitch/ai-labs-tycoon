@@ -102,6 +102,7 @@ namespace AiLabs.Rules.Config
             TreasuryProblems(p, c);
             PledgeProblems(p, c);
             RoadmapProblems(p, c);
+            MentoringProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1029,6 +1030,20 @@ namespace AiLabs.Rules.Config
             if (k.HypePerLevel < 0 || k.HypePerLevel > 100) p.Add("roadmap.hypePerLevel must be from 0 to 100");
             if (k.DeliverPerLevel < 0 || k.DeliverPerLevel > 200) p.Add("roadmap.deliverPerLevel must be from 0 to 200");
             if (k.MissPerLevel <= k.HypePerLevel || k.MissPerLevel > 300) p.Add("roadmap.missPerLevel must be above hypePerLevel and at most 300, so a missed roadmap loses more than the hype earned");
+        }
+
+        static void MentoringProblems(List<string> p, GameConfig c)
+        {
+            MentoringConfig k = c.Mentoring;
+            if (k == null) { p.Add("mentoring is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("mentoring.enabled must be 0 or 1");
+            if (k.MaxPairs < 1 || k.MaxPairs > 10) p.Add("mentoring.maxPairs must be from 1 to 10");
+            if (k.Weeks < 1 || k.Weeks > 104) p.Add("mentoring.weeks must be from 1 to 104");
+            if (k.MenteeWeightPermille < 100 || k.MenteeWeightPermille > MathI.Permille) p.Add("mentoring.menteeWeightPermille must be from 100 to 1000, so a junior never counts for more than a whole person");
+            if (k.MoralePerWeek < 0 || k.MoralePerWeek > 50) p.Add("mentoring.moralePerWeek must be from 0 to 50");
+            if (k.MoraleCeiling < 1 || k.MoraleCeiling > MathI.Permille) p.Add("mentoring.moraleCeiling must be from 1 to 1000");
+            if (k.GraduateMorale < 0 || k.GraduateMorale > 500) p.Add("mentoring.graduateMorale must be from 0 to 500");
+            if (k.MentorMorale < 0 || k.MentorMorale > 500) p.Add("mentoring.mentorMorale must be from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

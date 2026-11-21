@@ -37,7 +37,7 @@ namespace AiLabs.Rules.Systems
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
                 int bonus = trait == null ? 0 : trait.ResearchPermille + Traits.InterestingShift(c, lab, trait);
                 long one = MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
-                gained += person.Senior == 1 ? MathI.MulPermille(one, c.Seniority.WeightPermille) : one;
+                gained += MathI.MulPermille(one, Mentoring.Weight(c, lab, person));
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));

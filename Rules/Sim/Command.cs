@@ -73,7 +73,9 @@ namespace AiLabs.Rules.Sim
         SetAsideReserve,
         DrawReserve,
         SetPledge,
-        AnnounceRoadmap
+        AnnounceRoadmap,
+        AssignMentor,
+        EndMentoring
     }
 
     /// <summary>
@@ -668,6 +670,23 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnnounceRoadmap, labId);
             c.Count = level;
             c.TargetId = weeks;
+            return c;
+        }
+
+        /// <summary>Pairs a senior (Count, the person's id) with a junior in the same function (TargetId). The junior's morale climbs and, if the pair holds long enough and a senior seat is free, they are promoted for nothing; meanwhile both count for less.</summary>
+        public static Command AssignMentor(int labId, int mentorId, int menteeId)
+        {
+            Command c = Make(CommandKind.AssignMentor, labId);
+            c.Count = mentorId;
+            c.TargetId = menteeId;
+            return c;
+        }
+
+        /// <summary>Calls off the mentoring of the junior with this id (TargetId). The weeks so far are lost.</summary>
+        public static Command EndMentoring(int labId, int menteeId)
+        {
+            Command c = Make(CommandKind.EndMentoring, labId);
+            c.TargetId = menteeId;
             return c;
         }
 

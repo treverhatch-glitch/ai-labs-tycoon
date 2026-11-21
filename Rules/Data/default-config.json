@@ -5660,6 +5660,16 @@
     "deliverPerLevel": 20,
     "missPerLevel": 45
   },
+  "mentoring": {
+    "enabled": 1,
+    "maxPairs": 2,
+    "weeks": 26,
+    "menteeWeightPermille": 800,
+    "moralePerWeek": 4,
+    "moraleCeiling": 800,
+    "graduateMorale": 100,
+    "mentorMorale": 60
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
