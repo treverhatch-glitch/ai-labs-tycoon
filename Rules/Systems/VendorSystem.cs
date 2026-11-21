@@ -49,7 +49,7 @@ namespace AiLabs.Rules.Systems
             if (standing < v.LowStandingBelow) price += v.LowStandingMarkupPermille;
             if (standing > v.HighStandingAbove) price -= v.HighStandingDiscountPermille;
             if (ChipQueries.RunsOwnTrainingChips(c, state, lab)) price += v.OwnChipsMarkupPermille;
-            return price;
+            return (int)MathI.MulPermille(price, BubbleSystem.GpuPricePermille(c, state));
         }
 
         public static long PricePerGpu(GameConfig c, GameState state, LabState lab, GpuGenerationConfig gen)

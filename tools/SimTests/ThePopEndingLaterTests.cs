@@ -117,7 +117,7 @@ public class ThePopEndingLaterTests
         var g = WeakPlayerPopGame();
         MakeWeakPlayer(g);
         BubbleSystem.RunMonth(g.C, g.State);
-        Assert.Equal(0, g.State.BubblePermille);
+        Assert.True(BubbleSystem.InCrash(g.State));
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.WorldNews && e.Ref == "bubble-crash");
     }
 
@@ -143,7 +143,7 @@ public class ThePopEndingLaterTests
         MakeWeakPlayer(g);
         Assert.True(g.State.BubblePermille >= 150);
         BubbleSystem.RunMonth(g.C, g.State);
-        Assert.Equal(0, g.State.BubblePermille);
+        Assert.True(BubbleSystem.InCrash(g.State));
     }
 
     [Fact]

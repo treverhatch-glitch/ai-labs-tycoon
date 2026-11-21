@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 18;
+        public const int CurrentSchema = 19;
 
         public int Schema;
         public string ConfigVersion;
@@ -36,6 +36,12 @@ namespace AiLabs.Rules.State
         public int PlayerLabId;
         /// <summary>Circular-financing bubble pressure shared by the whole economy (0–1000).</summary>
         public int BubblePermille;
+        /// <summary>Cumulative venture cash that inflated the bubble.</summary>
+        public long BubbleCapitalRaised;
+        /// <summary>Weak-return months while the meter is hot.</summary>
+        public int BubbleGraceMonths;
+        /// <summary>Months left in a market-wide crash, or 0.</summary>
+        public int BubbleCrashMonthsRemaining;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -85,6 +91,9 @@ namespace AiLabs.Rules.State
             s.ObjList("foundry", ref Foundry);
             s.Int("playerLabId", ref PlayerLabId);
             s.Int("bubblePermille", ref BubblePermille);
+            s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
+            s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
+            s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
             s.ObjList("endings", ref Endings);
         }
     }

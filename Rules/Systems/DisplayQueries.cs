@@ -45,6 +45,18 @@ namespace AiLabs.Rules.Systems
             public long Total;
         }
 
+        public struct BubbleMeterBreakdown
+        {
+            public int Permille;
+            public int GraceMonths;
+            public int GraceMonthsNeeded;
+            public int CrashMonthsRemaining;
+            public long CapitalRaised;
+            public long MarketRevenueLastMonth;
+            /// <summary>0 calm, 1 warm, 2 hot, 3 crash.</summary>
+            public int WarningLevel;
+        }
+
         public struct RevenueBreakdown
         {
             public List<RevenuePart> Parts;
@@ -116,6 +128,22 @@ namespace AiLabs.Rules.Systems
             int total = SafetySystem.IncidentChancePermille(c, tick, model);
             b.FromCorruption = total - (int)baseChance;
             return b;
+        }
+
+        public static BubbleMeterBreakdown BubbleMeterParts(GameConfig c, GameState state)
+        {
+            BubbleConfig b = c.Bubble;
+            var p = new BubbleMeterBreakdown();
+            p.Permille = state.BubblePermille;
+            p.GraceMonths = state.BubbleGraceMonths;
+            p.CrashMonthsRemaining = state.BubbleCrashMonthsRemaining;
+            p.CapitalRaised = state.BubbleCapitalRaised;
+            p.MarketRevenueLastMonth = BubbleSystem.MarketRevenueThisMonth(state);
+            p.GraceMonthsNeeded = b == null ? 0 : b.GraceMonthsBeforeCrash;
+            if (BubbleSystem.InCrash(state)) p.WarningLevel = 3;
+            else if (b != null && state.BubblePermille >= b.PopAtPermille - 50) p.WarningLevel = 2;
+            else if (b != null && state.BubblePermille >= b.HotPermille) p.WarningLevel = 1;
+            return p;
         }
 
         public static ExitPriceBreakdown ExitPriceParts(GameConfig c, GameState state, LabState lab)

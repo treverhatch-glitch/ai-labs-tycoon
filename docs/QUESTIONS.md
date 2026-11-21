@@ -608,6 +608,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Schema 13; `SharesRegulatorsLaterTests.cs` at 12 facts; golden digest re-recorded for share/regulator month hooks.
 - Why: systems design circular financing and monopoly antitrust (§5).
 
+### Q103. Bubble crash phase (Hatch)? DECIDED: grace months, sustained crash, residual permille
+
+- Options: (a) instant pop clears meter; (b) grace on weak returns then multi-month crash; (c) world events only.
+- Recommendation and choice: **(b)**. `BubbleMeterCrashHatchTests`; schema **19**; `DisplayQueries.BubbleMeterParts`.
+- Why: Hatch spec — crash lasts quarters, funding/GPUs/customers tighten, meter never returns to zero.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.

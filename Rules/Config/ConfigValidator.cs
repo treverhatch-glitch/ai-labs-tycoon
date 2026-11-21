@@ -255,6 +255,16 @@ namespace AiLabs.Rules.Config
             if (b.SurvivorRevenuePpm < 0) p.Add("bubble.survivorRevenuePpm is negative");
             if (!string.IsNullOrEmpty(b.PopWorldEventId) && c.WorldEvent(b.PopWorldEventId) == null)
                 p.Add("bubble.popWorldEventId names unknown world event \"" + b.PopWorldEventId + "\"");
+            Permille(p, "bubble.hotPermille", b.HotPermille);
+            if (b.GraceMonthsBeforeCrash < 0) p.Add("bubble.graceMonthsBeforeCrash is negative");
+            Permille(p, "bubble.returnsNeededPermille", b.ReturnsNeededPermille);
+            Permille(p, "bubble.returnCoolingPermille", b.ReturnCoolingPermille);
+            if (b.CrashDurationMonths < 0) p.Add("bubble.crashDurationMonths is negative");
+            Permille(p, "bubble.postCrashResidualPermille", b.PostCrashResidualPermille);
+            Permille(p, "bubble.crashCustomerSpendPermille", b.CrashCustomerSpendPermille);
+            Permille(p, "bubble.crashFundingCashPermille", b.CrashFundingCashPermille);
+            Permille(p, "bubble.crashGpuPricePermille", b.CrashGpuPricePermille);
+            if (b.CrashFloatCutPpm < 0) p.Add("bubble.crashFloatCutPpm is negative");
         }
 
         static void SharesProblems(List<string> p, GameConfig c)

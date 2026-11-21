@@ -25,7 +25,17 @@ public class SafetyAndFinanceTests
     [Fact]
     public void A_model_with_a_full_safety_meter_never_has_an_incident()
     {
-        Game g = SellOneMini(seed: 1, alignmentShare: 300, years: 10, out ModelState model);
+        Game g = Game.Solo(1, tweak: c =>
+        {
+            c.Bubble.PopAtPermille = 1000;
+            c.Bubble.HotPermille = 1000;
+            c.Bubble.GraceMonthsBeforeCrash = 999;
+            c.Bubble.WeakCashHaircutPermille = 0;
+        }).WithStarterLab(gpus: 8);
+        ModelState model = g.Train("mini", 300);
+        g.UntilTrained(model);
+        g.Release(model, "game-ai", "game-bots");
+        g.Years(10);
         Assert.Equal(1000, model.Alignment);
         Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(0, model.Incidents);

@@ -33,6 +33,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 16) MigrateTo16(root);
             if (fromSchema < 17) MigrateTo17(root);
             if (fromSchema < 18) MigrateTo18(root);
+            if (fromSchema < 19) MigrateTo19(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -301,6 +302,14 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo18(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chinaDealDeclinedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Hatch bubble crash phase (Q103).</summary>
+        static void MigrateTo19(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "bubbleCapitalRaised", JsonValue.Of(0L));
+            JsonPatch.AddIfMissing(root, "bubbleGraceMonths", JsonValue.Of(0L));
+            JsonPatch.AddIfMissing(root, "bubbleCrashMonthsRemaining", JsonValue.Of(0L));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

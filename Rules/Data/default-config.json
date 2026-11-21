@@ -6008,7 +6008,17 @@
     "defaultFundingBoostPermille": 120,
     "survivorRevenuePpm": 80000,
     "weakCashHaircutPermille": 200,
-    "thePopEndingForPlayer": true
+    "thePopEndingForPlayer": true,
+    "hotPermille": 450,
+    "graceMonthsBeforeCrash": 18,
+    "returnsNeededPermille": 40,
+    "returnCoolingPermille": 20,
+    "crashDurationMonths": 24,
+    "postCrashResidualPermille": 75,
+    "crashCustomerSpendPermille": 780,
+    "crashFundingCashPermille": 620,
+    "crashGpuPricePermille": 860,
+    "crashFloatCutPpm": 35000
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

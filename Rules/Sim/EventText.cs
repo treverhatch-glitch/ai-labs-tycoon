@@ -51,7 +51,14 @@ namespace AiLabs.Rules.Sim
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";
                 case EventKind.Bankrupt: return who + " went bankrupt.";
                 case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline;
-                case EventKind.WorldNews: return "NEWS: " + c.WorldEvent(e.Ref).Headline;
+                case EventKind.WorldNews:
+                {
+                    WorldEventConfig news = c.WorldEvent(e.Ref);
+                    if (news != null) return "NEWS: " + news.Headline;
+                    if (e.Ref == "bubble-crash")
+                        return "NEWS: Funding dries up and AI valuations slide across the market.";
+                    return "NEWS: " + e.Ref + ".";
+                }
                 case EventKind.LandBought: return who + " bought land at " + c.World.Site(e.Ref).Name + " for $" + e.Amount + ".";
                 case EventKind.LandSold: return who + " sold its land at " + c.World.Site(e.Ref).Name + " for $" + e.Amount + ".";
                 case EventKind.ColoLeased: return who + " now leases " + e.Amount + " kW at " + c.World.Site(e.Ref).Name + ".";

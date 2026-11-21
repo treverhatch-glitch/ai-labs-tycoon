@@ -107,8 +107,16 @@ public class ContentFlowTests
         GameConfig c = run.Game.C;
         string[] landed = run.Seen.Where(e => e.Kind == EventKind.WorldNews).Select(e => e.Ref).ToArray();
         int lastYear = run.FirstYear + Years - 1;
-        Assert.Equal(c.WorldEvents.Where(w => w.Year <= lastYear).Select(w => w.Id).ToArray(), landed);
-        Assert.Contains(run.Seen, e => e.Kind == EventKind.WorldNews && c.WorldEvent(e.Ref).Year >= 2030);
+        string[] expected = c.WorldEvents.Where(w => w.Year <= lastYear).Select(w => w.Id).ToArray();
+        foreach (string id in expected) Assert.Contains(id, landed);
+        foreach (string id in landed)
+            Assert.True(System.Array.IndexOf(expected, id) >= 0 || id == "bubble-crash");
+        Assert.Contains(run.Seen, e =>
+        {
+            if (e.Kind != EventKind.WorldNews) return false;
+            WorldEventConfig w = c.WorldEvent(e.Ref);
+            return w != null && w.Year >= 2030;
+        });
     }
 
     [Fact]
