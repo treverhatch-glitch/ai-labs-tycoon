@@ -5308,6 +5308,17 @@
     "cleanPoints": 400,
     "cleanFeeHireFees": 4
   },
+  "ageing": {
+    "refurbishCostPermille": 250,
+    "maxMoralePenalty": 60,
+    "stages": [
+      {"id": "fresh", "name": "Fresh", "minEras": 0, "upkeepExtraPermille": 0, "moralePenalty": 0, "blurb": "Built for this era. The computers are the colour computers should be."},
+      {"id": "settled", "name": "Settled", "minEras": 1, "upkeepExtraPermille": 0, "moralePenalty": 0, "blurb": "A little behind the times, and nobody minds yet."},
+      {"id": "dated", "name": "Dated", "minEras": 2, "upkeepExtraPermille": 150, "moralePenalty": 20, "blurb": "The whiteboards ghost and the chairs have opinions. Staff are starting to mention it."},
+      {"id": "beige", "name": "Beige", "minEras": 3, "upkeepExtraPermille": 300, "moralePenalty": 40, "blurb": "Beige computers, dusty racks, and a standing meeting about the carpet."},
+      {"id": "museum-piece", "name": "Museum piece", "minEras": 5, "upkeepExtraPermille": 500, "moralePenalty": 60, "blurb": "Visitors ask whether it is a recreation. The model has started to feel sorry for it."}
+    ]
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -5369,6 +5380,24 @@
         "about": "lab",
         "text": "New room. We will argue about the thermostat there too."
       },
+      {
+      "id": "room-dated",
+      "kind": "RoomDated",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time."
+    },
+      {
+      "id": "room-refurbished",
+      "kind": "RoomRefurbished",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The {room} has been done up. The computers are, for once, the colour of computers."
+    },
       {
         "id": "tech-researched",
         "kind": "TechResearched",

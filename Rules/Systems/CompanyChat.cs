@@ -97,12 +97,14 @@ namespace AiLabs.Rules.Systems
             string first = e.Ref.Split('|')[0];
             SectorConfig sector = c.Sector(first);
             RoleConfig role = c.Role(e.Ref);
+            RoomTypeConfig roomType = c.RoomType(e.Ref);
             return text
                 .Replace("{model}", model)
                 .Replace("{amount}", e.Amount.ToString())
                 .Replace("{ref}", e.Ref)
                 .Replace("{sector}", sector == null ? first : sector.Name)
                 .Replace("{role}", role == null ? e.Ref : role.Name)
+                .Replace("{room}", roomType == null ? e.Ref : roomType.Name)
                 .Replace("{lab}", lab.Name);
         }
 

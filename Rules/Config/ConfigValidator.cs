@@ -69,6 +69,7 @@ namespace AiLabs.Rules.Config
             TrustProblems(p, c);
             CultureProblems(p, c);
             NamingProblems(p, c);
+            AgeingProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -497,6 +498,29 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void AgeingProblems(List<string> p, GameConfig c)
+        {
+            AgeingConfig a = c.Ageing;
+            if (a == null) { p.Add("ageing is missing"); return; }
+            if (a.RefurbishCostPermille < 0 || a.RefurbishCostPermille > 3000) p.Add("ageing.refurbishCostPermille must be from 0 to 3000");
+            if (a.MaxMoralePenalty < 0 || a.MaxMoralePenalty > MathI.Permille) p.Add("ageing.maxMoralePenalty must be from 0 to 1000");
+            if (a.Stages.Count == 0) p.Add("ageing.stages is empty");
+            UniqueIds(p, "ageing.stages", a.Stages);
+            for (int i = 0; i < a.Stages.Count; i++)
+            {
+                AgeStageConfig s = a.Stages[i];
+                string who = "age stage " + s.IdValue;
+                if (string.IsNullOrEmpty(s.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(s.Blurb)) p.Add(who + " has no blurb");
+                if (s.UpkeepExtraPermille < 0 || s.UpkeepExtraPermille > 3000) p.Add(who + " needs upkeepExtraPermille from 0 to 3000");
+                if (s.MoralePenalty < 0 || s.MoralePenalty > MathI.Permille) p.Add(who + " needs moralePenalty from 0 to 1000");
+                if (i == 0 && s.MinEras != 0) p.Add("the first age stage must start at 0 eras so every room has one");
+                if (i > 0 && s.MinEras <= a.Stages[i - 1].MinEras) p.Add(who + " does not start above the stage before it");
+                if (i > 0 && (s.UpkeepExtraPermille < a.Stages[i - 1].UpkeepExtraPermille || s.MoralePenalty < a.Stages[i - 1].MoralePenalty))
+                    p.Add(who + " costs less than the stage before it: rooms never get better with age");
             }
         }
 

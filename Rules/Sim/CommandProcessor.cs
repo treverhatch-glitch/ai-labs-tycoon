@@ -73,6 +73,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
                 case CommandKind.SetReleaseGate: return SetReleaseGate(c, state, lab, cmd);
                 case CommandKind.CleanUpNaming: return CleanUpNaming(c, state, lab, cmd);
+                case CommandKind.RefurbishRoom: return RefurbishRoom(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

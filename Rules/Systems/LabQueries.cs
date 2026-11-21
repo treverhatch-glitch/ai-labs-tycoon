@@ -425,7 +425,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Rooms.Count; i++)
             {
                 RoomTypeConfig type = c.RoomType(lab.Rooms[i].TypeId);
-                if (type != null) total += type.UpkeepPerTileWeek * lab.Rooms[i].Tiles;
+                if (type != null) total += MathI.MulPermille(type.UpkeepPerTileWeek * lab.Rooms[i].Tiles, MathI.Permille + RoomAge.UpkeepExtraPermille(c, lab, lab.Rooms[i]));
             }
             return total + WorldQueries.WeeklyHallUpkeep(c, lab);
         }

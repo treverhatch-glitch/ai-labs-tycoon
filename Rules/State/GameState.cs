@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 30;
+        public const int CurrentSchema = 31;
 
         public int Schema;
         public string ConfigVersion;
@@ -327,6 +327,8 @@ namespace AiLabs.Rules.State
         public int Y;
         public int Width;
         public int Height;
+        /// <summary>How many eras have begun since the room was built or last refurbished. Only the player's rooms age.</summary>
+        public int EraAge;
 
         public int Tiles { get { return Width * Height; } }
 
@@ -338,6 +340,7 @@ namespace AiLabs.Rules.State
             s.Int("y", ref Y);
             s.Int("width", ref Width);
             s.Int("height", ref Height);
+            s.Int("eraAge", ref EraAge);
         }
     }
 

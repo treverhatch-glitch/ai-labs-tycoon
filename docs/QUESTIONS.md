@@ -1091,6 +1091,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(c)**. Seven stages in `glow.stages` follow the ladder: calm, humming (weekly incident chance of 1% or more), flickering (rung 2), empty corridor (rung 3, sandbagging), doors locked (rung 4), power dips (rung 5), quiet (rung 6). The worst released or trained model sets the stage. The dashboard reading is the same calculation on the displayed alignment with no corruption, so when a model sandbags or is corrupted the report says `ChartIsMisleading` and the room is further up the ladder than the chart. Brightness is the combined capability of the latest model of each line, up to `fullAtCapability` 10000.
 - Why: the bible's "truth through the walls": a careful player learns to trust the room over the chart. Derived only, no save change, no effect on any rule, so the economy guards are untouched.
 
+## Rooms that age (NEXT item 25)
+
+### Q230. What makes a room old? DECIDED: how many eras have begun since it was built, not how many weeks
+- Options: (a) weeks since built; (b) eras since built (`eraAge` on each room, +1 at every era change); (c) the room type's own era.
+- Recommendation and choice: **(b)**. At each era change after the first week, every room of a player lab gets one older; a refurbish sets it back to 0. Five stages in `ageing.stages` read it: fresh (0), settled (1), dated (2), beige (3), museum piece (5).
+- Why: the bible says a room "goes out of date", and what dates a room is the world moving on, not the calendar. Counting eras makes a quick game age rooms faster in weeks and keeps it independent of the scenario's tick length. Only the player's rooms age (the Q182 knife-edge: rival upkeep is part of the economy the guards pin).
+
+### Q231. What does an old room cost, and what does it cost to fix? DECIDED: extra upkeep and a morale penalty from the dated stage on; a refurbish is a quarter of the build cost
+- Options: (a) upkeep only; (b) morale only; (c) both, with a cap on morale.
+- Recommendation and choice: **(c)**. Dated: +15% upkeep, 20 morale off the resting level; beige: +30%, 40; museum piece: +50%, 60. The morale penalty is the average over the rooms that seat people, weighted by tiles, so one old broom cupboard does not sink the lab, and it is capped by `maxMoralePenalty` 60. `RefurbishRoom` costs `refurbishCostPermille` 250 of the room's build cost per tile times its tiles (paid on the construction ledger line), refused when the room is already fresh or the cash is short.
+- Why: the first two stages are free on purpose so a player has two eras of grace and the cost arrives as a warning (a `RoomDated` event, and a chat line) rather than a surprise. The economy guards (EconomyBounds seeds 1, 2, 4, 5, 20, 24, 27, 31, ContentFlow, the soak) stayed green with these values at the first scan, so the numbers were not tuned against them. Old workplace tests that run for hundreds of weeks set `ageing.maxMoralePenalty` to 0 so they still test comfort rooms alone.
+
+### Q232. Is a save change needed? DECIDED: yes, schema 31: one number per room
+- Options: (a) store the tick each room was built and derive the age; (b) store the age.
+- Recommendation and choice: **(b)**: `eraAge` per room. An older save migrates with 0 on every room (fresh), so nothing in an old game changes until the next era change. (The first draft of NEXT said `builtTick`; the age is what a refurbish resets, so the age is what is saved.)
+- Why: a derived age would need the era history, and a refurbish would need a second field anyway. The golden digest moved and the cause was checked: with the ageing stages set to 0 upkeep and 0 morale, the saved number removed and the schema set back to 30, the digest of the pinned game equals the old golden `6b8ed8f9`. So the move is the new field, the schema number and the ageing itself (the pinned game crosses eras, so upkeep and morale changed).
+
 ## Open
 
 None.
