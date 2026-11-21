@@ -576,6 +576,10 @@ namespace AiLabs.Rules.Config
         public int SwitchRatePermille;
         public int SalesBonusPermille;
         public int SalesBonusCapPermille;
+        /// <summary>Lowest legal <see cref="SectorEntry.PricePermille"/> when a model is on sale in a sector.</summary>
+        public int SectorPriceMinPermille = 300;
+        /// <summary>Highest legal <see cref="SectorEntry.PricePermille"/>.</summary>
+        public int SectorPriceMaxPermille = 2000;
         public List<SectorConfig> Sectors;
 
         public void Sync(Syncer s)
@@ -583,6 +587,8 @@ namespace AiLabs.Rules.Config
             s.Int("switchRatePermille", ref SwitchRatePermille);
             s.Int("salesBonusPermille", ref SalesBonusPermille);
             s.Int("salesBonusCapPermille", ref SalesBonusCapPermille);
+            s.Int("sectorPriceMinPermille", ref SectorPriceMinPermille);
+            s.Int("sectorPriceMaxPermille", ref SectorPriceMaxPermille);
             s.ObjList("sectors", ref Sectors);
         }
     }

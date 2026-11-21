@@ -72,7 +72,7 @@ namespace AiLabs.Rules.Systems
                     entry.SharePpm += (int)MathI.FloorDiv((target - entry.SharePpm) * c.Market.SwitchRatePermille, MathI.Permille);
 
                     long potential = served * entry.SharePpm / MathI.Ppm;
-                    entry.LastRevenue = potential;
+                    entry.LastRevenue = MathI.MulPermille(potential, entry.PricePermille);
 
                     int labIndex = IndexOfLab(state, entry.LabId);
                     ModelLineConfig line = c.Line(state.Labs[labIndex].Model(entry.ModelId).LineId);

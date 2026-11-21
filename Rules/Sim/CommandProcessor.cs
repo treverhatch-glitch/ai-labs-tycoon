@@ -39,6 +39,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ResearchTech: return ResearchTech(c, state, lab, cmd);
                 case CommandKind.StartTraining: return StartTraining(c, state, lab, cmd);
                 case CommandKind.ReleaseModel: return ReleaseModel(c, state, lab, cmd);
+                case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
                 case CommandKind.BuyLand: return BuyLand(c, state, lab, cmd);
                 case CommandKind.SellLand: return SellLand(c, state, lab, cmd);
                 case CommandKind.LeaseColo: return LeaseColo(c, state, lab, cmd);
@@ -341,6 +342,7 @@ namespace AiLabs.Rules.Sim
                     entry = new SectorEntry();
                     entry.LabId = lab.Id;
                     entry.ModelId = model.Id;
+                    entry.PricePermille = MathI.Permille;
                     sectorState.Entries.Add(entry);
                 }
                 else if (entry.ModelId != model.Id)

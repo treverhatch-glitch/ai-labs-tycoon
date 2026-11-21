@@ -181,6 +181,24 @@ static class CommandFuzzerSamples
                 return Command.SignReservedCompute(labId, biasValid ? 2 : rng.Next(10));
             case CommandKind.QueueGpuPurchase:
                 return Command.QueueGpuPurchase(labId, biasValid ? 1 : rng.Next(4), HardwareBatch.Hq);
+            case CommandKind.SetSectorPrice:
+            {
+                LabState target = g.State.Lab(labId);
+                string sector = "game-ai";
+                if (target != null)
+                {
+                    foreach (ModelState m in target.Models)
+                    {
+                        if (m.Status == ModelStatus.Released && m.Sectors.Count > 0)
+                        {
+                            sector = m.Sectors[rng.Next(m.Sectors.Count)];
+                            break;
+                        }
+                    }
+                }
+                int price = biasValid ? MathI.Permille : rng.Next(2500);
+                return Command.SetSectorPrice(labId, sector, price);
+            }
             default:
                 return Command.BuyGpus(labId, 1);
         }

@@ -137,6 +137,9 @@ namespace AiLabs.Rules.Config
             if (!rungSeen[1] || !rungSeen[2] || !rungSeen[3]) p.Add("safety.incidentRungs must name rungs 1, 2 and 3 exactly once each");
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
+            if (c.Market.SectorPriceMinPermille < 1) p.Add("market.sectorPriceMinPermille must be at least 1");
+            if (c.Market.SectorPriceMaxPermille < c.Market.SectorPriceMinPermille)
+                p.Add("market.sectorPriceMaxPermille must be at least sectorPriceMinPermille");
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
             {

@@ -150,6 +150,8 @@ namespace AiLabs.Rules.Sim
                 {
                     LabState lab = state.Lab(entry.LabId);
                     if (lab == null || lab.Model(entry.ModelId) == null) p.Add("sector " + sector.Id + " lists a model that does not exist");
+                    if (entry.PricePermille < c.Market.SectorPriceMinPermille || entry.PricePermille > c.Market.SectorPriceMaxPermille)
+                        p.Add("sector " + sector.Id + " entry for lab " + entry.LabId + " has pricePermille " + entry.PricePermille + " outside market bounds");
                 }
             }
             return p;

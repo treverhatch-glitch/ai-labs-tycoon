@@ -9,7 +9,7 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, ReleaseModel,
+        ResearchTech, StartTraining, ReleaseModel, SetSectorPrice,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
@@ -274,6 +274,15 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             c.Permille = claimedAlignmentPermille;
             c.Ids.AddRange(sectorIds);
+            return c;
+        }
+
+        /// <summary><paramref name="id"/> is the sector id; <paramref name="pricePermille"/> scales revenue from that listing.</summary>
+        public static Command SetSectorPrice(int labId, string sectorId, int pricePermille)
+        {
+            Command c = Make(CommandKind.SetSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = pricePermille;
             return c;
         }
 

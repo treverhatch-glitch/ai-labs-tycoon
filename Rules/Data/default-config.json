@@ -835,6 +835,8 @@
     "switchRatePermille": 60,
     "salesBonusPermille": 100,
     "salesBonusCapPermille": 600,
+    "sectorPriceMinPermille": 300,
+    "sectorPriceMaxPermille": 2000,
     "sectors": [
       {
         "id": "game-ai", "era": "dial-up-days", "name": "Game AI Licensing", "buyers": "game studios who need enemies, sidekicks and crowds",

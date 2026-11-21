@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 11;
+        public const int CurrentSchema = 12;
 
         public int Schema;
         public string ConfigVersion;
@@ -398,6 +398,8 @@ namespace AiLabs.Rules.State
         public int ModelId;
         /// <summary>Share of the sector's customers, in parts per million.</summary>
         public int SharePpm;
+        /// <summary>Listed price vs the sector norm, in permille (1000 = list price). Scales revenue, not appeal.</summary>
+        public int PricePermille = MathI.Permille;
         public long LastRevenue;
 
         public void Sync(Syncer s)
@@ -405,6 +407,7 @@ namespace AiLabs.Rules.State
             s.Int("labId", ref LabId);
             s.Int("modelId", ref ModelId);
             s.Int("sharePpm", ref SharePpm);
+            s.Int("pricePermille", ref PricePermille);
             s.Long("lastRevenue", ref LastRevenue);
         }
     }
