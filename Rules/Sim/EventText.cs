@@ -61,7 +61,14 @@ namespace AiLabs.Rules.Sim
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";
                 case EventKind.Bankrupt: return who + " went bankrupt.";
                 case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline + EraShifts(c, e);
-                case EventKind.WorldNews: return "NEWS: " + c.WorldEvent(e.Ref).Headline;
+                case EventKind.WorldNews:
+                {
+                    WorldEventConfig news = c.WorldEvent(e.Ref);
+                    if (news != null) return "NEWS: " + news.Headline;
+                    if (e.Ref == "bubble-crash")
+                        return "NEWS: Funding dries up and AI valuations slide across the market.";
+                    return "NEWS: " + e.Ref + ".";
+                }
                 case EventKind.LandBought: return who + " bought land at " + c.World.Site(e.Ref).Name + " for $" + e.Amount + ".";
                 case EventKind.LandSold: return who + " sold its land at " + c.World.Site(e.Ref).Name + " for $" + e.Amount + ".";
                 case EventKind.ColoLeased: return who + " now leases " + e.Amount + " kW at " + c.World.Site(e.Ref).Name + ".";
@@ -118,6 +125,13 @@ namespace AiLabs.Rules.Sim
                         : who + " closed " + e.Ref + " ($" + e.Amount + ").";
                 case EventKind.InvestorBoardVisit:
                     return who + "'s investors held a board update. Reputation +" + e.Amount + ".";
+                case EventKind.LabAcquired:
+                    {
+                        LabState bought = state.Lab(e.SubjectId);
+                        return who + " acquired " + (bought == null ? "a rival lab" : bought.Name) + " for $" + e.Amount + ".";
+                    }
+                case EventKind.ModelSold:
+                    return who + " sold " + e.Ref + " for $" + e.Amount + " and left those sectors.";
                 default: return who + ": " + e.Kind + ".";
             }
         }

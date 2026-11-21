@@ -37,8 +37,12 @@ namespace AiLabs.Rules.Systems
     public static long EffectiveCash(GameConfig c, GameState state, FundingRoundConfig round)
     {
       FundingFollowOnConfig f = c.Funding.FollowOn;
-      if (!IsDownRound(c, state) || f == null || f.DownRoundCashPermille < 1) return round.Cash;
-      return MathI.MulPermille(round.Cash, f.DownRoundCashPermille);
+      long cash = round.Cash;
+      if (IsDownRound(c, state) && f != null && f.DownRoundCashPermille >= 1)
+        cash = MathI.MulPermille(cash, f.DownRoundCashPermille);
+      int crash = BubbleSystem.FundingCashPermille(c, state);
+      if (crash < MathI.Permille) cash = MathI.MulPermille(cash, crash);
+      return cash;
     }
 
     public static int EffectiveDilution(GameConfig c, GameState state, FundingRoundConfig round)
@@ -60,7 +64,7 @@ namespace AiLabs.Rules.Systems
       int dilution = EffectiveDilution(c, state, round);
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
-      BubbleSystem.OnFundingRaise(c, state, round);
+      BubbleSystem.OnFundingRaise(c, state, round, cash);
       lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - dilution);
       lab.BoardInvestorSeats += round.BoardSeats;
       GameEvent closed = Events.Add(state, EventKind.FundingClosed, lab.Id, -1, cash, round.Id);

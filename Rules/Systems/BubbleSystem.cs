@@ -6,16 +6,40 @@ namespace AiLabs.Rules.Systems
 {
   public static class BubbleSystem
   {
+    public static bool InCrash(GameState state) => state.BubbleCrashMonthsRemaining > 0;
+
+    public static int CustomerSpendPermille(GameConfig c, GameState state)
+    {
+      BubbleConfig b = c.Bubble;
+      if (b == null || !InCrash(state) || b.CrashCustomerSpendPermille < 1) return MathI.Permille;
+      return b.CrashCustomerSpendPermille;
+    }
+
+    public static int GpuPricePermille(GameConfig c, GameState state)
+    {
+      BubbleConfig b = c.Bubble;
+      if (b == null || !InCrash(state) || b.CrashGpuPricePermille < 1) return MathI.Permille;
+      return b.CrashGpuPricePermille;
+    }
+
+    public static int FundingCashPermille(GameConfig c, GameState state)
+    {
+      BubbleConfig b = c.Bubble;
+      if (b == null || !InCrash(state) || b.CrashFundingCashPermille < 1) return MathI.Permille;
+      return b.CrashFundingCashPermille;
+    }
+
     public static void Boost(GameConfig c, GameState state, int permille)
     {
       if (permille <= 0) return;
       state.BubblePermille = (int)MathI.Min(MathI.Permille, state.BubblePermille + permille);
     }
 
-    public static void OnFundingRaise(GameConfig c, GameState state, FundingRoundConfig round)
+    public static void OnFundingRaise(GameConfig c, GameState state, FundingRoundConfig round, long cash)
     {
       BubbleConfig b = c.Bubble;
       if (b == null) return;
+      if (cash > 0) state.BubbleCapitalRaised += cash;
       int boost = round.BubbleBoostPermille > 0 ? round.BubbleBoostPermille : b.DefaultFundingBoostPermille;
       state.BubblePermille = (int)MathI.Min(MathI.Permille, state.BubblePermille + boost);
     }
@@ -31,22 +55,81 @@ namespace AiLabs.Rules.Systems
     {
       BubbleConfig b = c.Bubble;
       if (b == null || string.IsNullOrEmpty(b.PopWorldEventId)) return;
-      if (e.Id == b.PopWorldEventId) Pop(c, state);
+      if (e.Id == b.PopWorldEventId) StartCrash(c, state, force: true, postNews: false);
+    }
+
+    public static long MarketRevenueThisMonth(GameState state)
+    {
+      long total = 0;
+      for (int i = 0; i < state.Labs.Count; i++)
+      {
+        LabState lab = state.Labs[i];
+        if (lab.Bankrupt) continue;
+        total += lab.Ledger.ThisMonth.Revenue;
+      }
+      return total;
     }
 
     public static void RunMonth(GameConfig c, GameState state)
     {
       BubbleConfig b = c.Bubble;
       if (b == null) return;
+
+      if (InCrash(state))
+      {
+        state.BubbleCrashMonthsRemaining--;
+        ApplyCrashValuationCut(c, state, b);
+        if (!InCrash(state))
+        {
+          state.BubblePermille = b.PostCrashResidualPermille;
+          state.BubbleGraceMonths = 0;
+        }
+        return;
+      }
+
       if (state.BubblePermille > 0)
-        state.BubblePermille = (int)MathI.Max(0, state.BubblePermille - b.DecayPermillePerMonth);
-      if (state.BubblePermille >= b.PopAtPermille) Pop(c, state);
+        state.BubblePermille = (int)MathI.Max(b.PostCrashResidualPermille, state.BubblePermille - b.DecayPermillePerMonth);
+
+      long revenue = MarketRevenueThisMonth(state);
+      if (state.BubblePermille >= b.HotPermille && b.GraceMonthsBeforeCrash > 0)
+      {
+        bool returnsOk = state.BubbleCapitalRaised <= 0
+          || revenue * MathI.Permille >= state.BubbleCapitalRaised * (long)b.ReturnsNeededPermille;
+        if (returnsOk)
+        {
+          state.BubbleGraceMonths = 0;
+          if (b.ReturnCoolingPermille > 0)
+            state.BubblePermille = (int)MathI.Max(b.PostCrashResidualPermille, state.BubblePermille - b.ReturnCoolingPermille);
+        }
+        else state.BubbleGraceMonths++;
+      }
+      else state.BubbleGraceMonths = 0;
+
+      if (state.BubbleGraceMonths >= b.GraceMonthsBeforeCrash || state.BubblePermille >= b.PopAtPermille)
+        StartCrash(c, state, state.BubblePermille >= b.PopAtPermille, postNews: true);
     }
 
-    public static void Pop(GameConfig c, GameState state)
+    public static void StartCrash(GameConfig c, GameState state, bool force = false, bool postNews = true)
     {
       BubbleConfig b = c.Bubble;
-      if (b == null || state.BubblePermille <= 0) return;
+      if (b == null) return;
+      if (InCrash(state)) return;
+      if (!force && state.BubbleGraceMonths < b.GraceMonthsBeforeCrash && state.BubblePermille < b.PopAtPermille) return;
+      bool playerHaircut = ApplyWeakHaircuts(c, state, b);
+      state.BubbleCrashMonthsRemaining = b.CrashDurationMonths > 0 ? b.CrashDurationMonths : 12;
+      state.BubblePermille = b.PostCrashResidualPermille;
+      state.BubbleGraceMonths = 0;
+      if (postNews)
+        Events.Add(state, EventKind.WorldNews, -1, -1, state.BubbleCrashMonthsRemaining, "bubble-crash");
+      if (b.ThePopEndingForPlayer && playerHaircut && state.PlayerLabId >= 0)
+        EndingSystem.RecordThePop(c, state, state.Player);
+    }
+
+    /// <summary>Legacy name; starts a sustained crash, not an instant meter wipe.</summary>
+    public static void Pop(GameConfig c, GameState state) => StartCrash(c, state, force: true, postNews: true);
+
+    static bool ApplyWeakHaircuts(GameConfig c, GameState state, BubbleConfig b)
+    {
       bool playerHaircut = false;
       for (int i = 0; i < state.Labs.Count; i++)
       {
@@ -61,10 +144,18 @@ namespace AiLabs.Rules.Systems
           if (lab.Id == state.PlayerLabId) playerHaircut = true;
         }
       }
-      state.BubblePermille = 0;
-      Events.Add(state, EventKind.WorldNews, -1, -1, 0, "bubble-crash");
-      if (b.ThePopEndingForPlayer && playerHaircut && state.PlayerLabId >= 0)
-        EndingSystem.RecordThePop(c, state, state.Player);
+      return playerHaircut;
+    }
+
+    static void ApplyCrashValuationCut(GameConfig c, GameState state, BubbleConfig b)
+    {
+      if (b.CrashFloatCutPpm <= 0) return;
+      for (int i = 0; i < state.Labs.Count; i++)
+      {
+        LabState lab = state.Labs[i];
+        if (lab.Bankrupt || lab.Controller != LabController.Plan) continue;
+        lab.PublicFloatPpm = (int)MathI.Max(0, lab.PublicFloatPpm - b.CrashFloatCutPpm);
+      }
     }
   }
 }

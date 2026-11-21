@@ -64,6 +64,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 long served = MathI.MulPermille(sectorState.PoolPerWeek, sectorState.AdoptionPermille);
+                served = MathI.MulPermille(served, BubbleSystem.CustomerSpendPermille(c, state));
                 for (int i = 0; i < appeals.Length; i++)
                 {
                     SectorEntry entry = sectorState.Entries[i];

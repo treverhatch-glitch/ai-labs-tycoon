@@ -6055,7 +6055,34 @@
     "defaultFundingBoostPermille": 120,
     "survivorRevenuePpm": 80000,
     "weakCashHaircutPermille": 200,
-    "thePopEndingForPlayer": true
+    "thePopEndingForPlayer": true,
+    "hotPermille": 450,
+    "graceMonthsBeforeCrash": 18,
+    "returnsNeededPermille": 40,
+    "returnCoolingPermille": 20,
+    "crashDurationMonths": 24,
+    "postCrashResidualPermille": 75,
+    "crashCustomerSpendPermille": 780,
+    "crashFundingCashPermille": 620,
+    "crashGpuPricePermille": 860,
+    "crashFloatCutPpm": 35000
+  },
+  "acquisitions": {
+    "capabilityValuePerPoint": 8000,
+    "staffValuePerHead": 25000,
+    "fleetResalePermille": 600,
+    "integrationCostPermille": 120,
+    "distressPricePermille": 700,
+    "crashDistressPricePermille": 450,
+    "minInstalledModels": 1,
+    "regulatorDealRevenue": 5000000,
+    "regulatorAttention": 80
+  },
+  "modelSales": {
+    "unprofitableSalePermille": 350,
+    "earningsMultipleWeeks": 52,
+    "sectorReputationHit": 25,
+    "minOffer": 1000
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

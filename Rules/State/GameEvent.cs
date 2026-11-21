@@ -46,7 +46,9 @@ namespace AiLabs.Rules.State
         /// <summary>Closed a funding round. Ref is the round id; Pick is 1 when terms were a down round.</summary>
         FundingClosed,
         /// <summary>Board update after venture capital. Amount is reputation gained.</summary>
-        InvestorBoardVisit
+        InvestorBoardVisit,
+        LabAcquired,
+        ModelSold
     }
 
     /// <summary>

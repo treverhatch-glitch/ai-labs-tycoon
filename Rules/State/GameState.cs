@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 18;
+        public const int CurrentSchema = 20;
 
         public int Schema;
         public string ConfigVersion;
@@ -36,6 +36,12 @@ namespace AiLabs.Rules.State
         public int PlayerLabId;
         /// <summary>Circular-financing bubble pressure shared by the whole economy (0–1000).</summary>
         public int BubblePermille;
+        /// <summary>Cumulative venture cash that inflated the bubble.</summary>
+        public long BubbleCapitalRaised;
+        /// <summary>Weak-return months while the meter is hot.</summary>
+        public int BubbleGraceMonths;
+        /// <summary>Months left in a market-wide crash, or 0.</summary>
+        public int BubbleCrashMonthsRemaining;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -85,6 +91,9 @@ namespace AiLabs.Rules.State
             s.ObjList("foundry", ref Foundry);
             s.Int("playerLabId", ref PlayerLabId);
             s.Int("bubblePermille", ref BubblePermille);
+            s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
+            s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
+            s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
             s.ObjList("endings", ref Endings);
         }
     }
@@ -141,6 +150,8 @@ namespace AiLabs.Rules.State
         public bool ChinaDealPending;
         /// <summary>No new China offer until this tick, or -1.</summary>
         public int ChinaDealDeclinedUntilTick = -1;
+        /// <summary>When bankrupt after acquisition, names the buyer lab id, or -1.</summary>
+        public int AbsorbedByLabId = -1;
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
 
@@ -250,6 +261,7 @@ namespace AiLabs.Rules.State
             s.Bool("chinaDealActive", ref ChinaDealActive);
             s.Bool("chinaDealPending", ref ChinaDealPending);
             s.Int("chinaDealDeclinedUntilTick", ref ChinaDealDeclinedUntilTick);
+            s.Int("absorbedByLabId", ref AbsorbedByLabId);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);

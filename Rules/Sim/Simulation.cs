@@ -120,7 +120,7 @@ namespace AiLabs.Rules.Sim
                 for (int i = 0; i < state.Labs.Count; i++)
                 {
                     LabState lab = state.Labs[i];
-                    if (lab.Controller != LabController.Plan || lab.Bankrupt) continue;
+                    if (lab.Controller != LabController.Plan || lab.Bankrupt || lab.AbsorbedByLabId >= 0) continue;
                     LabPlanner.Run(c, state, lab, c.Rival(lab.RivalId).Plan, ApplyInternal);
                 }
             }
@@ -168,6 +168,7 @@ namespace AiLabs.Rules.Sim
                 if (player != null && !player.Bankrupt) ShadySystem.RunMonth(c, state, player);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);
                 BubbleSystem.RunMonth(c, state);
+                AcquisitionSystem.RunMonth(c, state);
                 ShareSystem.RunMonth(c, state);
                 RegulatorSystem.RunMonth(c, state);
                 if (player != null && !player.Bankrupt) ChinaSystem.RunMonth(c, state, player);

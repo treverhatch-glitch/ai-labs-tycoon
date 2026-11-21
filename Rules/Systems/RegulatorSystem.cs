@@ -21,6 +21,14 @@ namespace AiLabs.Rules.Systems
             }
         }
 
+        public static void OnAcquisition(GameConfig c, GameState state, LabState lab, int attention)
+        {
+            if (attention <= 0) return;
+            BlocStanding home = lab.Bloc(lab.HomeBlocId);
+            if (home != null)
+                home.Attention = (int)MathI.Min(MathI.Permille, home.Attention + attention);
+        }
+
         public static void OnMonopoly(GameConfig c, GameState state, LabState lab)
         {
             RegulatorsConfig r = c.Regulators;

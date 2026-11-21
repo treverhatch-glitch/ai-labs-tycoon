@@ -26,7 +26,7 @@ public class BubbleMeterTests
     [Fact]
     public void The_meter_decays_each_month()
     {
-        var g = Game.Solo();
+        var g = Game.Solo(tweak: c => c.Bubble.HotPermille = 1000);
         g.State.BubblePermille = 500;
         g.Weeks(4);
         Assert.Equal(500 - g.C.Bubble.DecayPermillePerMonth, g.State.BubblePermille);
@@ -43,7 +43,8 @@ public class BubbleMeterTests
         g.Me.Ledger.ThisMonth.Revenue = 500_000;
         long weakCash = weak.Cash;
         BubbleSystem.RunMonth(g.C, g.State);
-        Assert.Equal(0, g.State.BubblePermille);
+        Assert.True(BubbleSystem.InCrash(g.State));
+        Assert.Equal(g.C.Bubble.PostCrashResidualPermille, g.State.BubblePermille);
         Assert.True(weak.Cash < weakCash);
     }
 
@@ -65,9 +66,9 @@ public class BubbleMeterTests
         var g = Game.Solo();
         g.State.BubblePermille = 600;
         WorldEventConfig pop = g.C.WorldEvent("bubble-pops");
+        g.Me.Ledger.ThisMonth.Revenue = 900_000;
         BubbleSystem.OnWorldEvent(g.C, g.State, pop);
-        Assert.Equal(0, g.State.BubblePermille);
-        Assert.Contains(g.State.Events, e => e.Kind == EventKind.WorldNews && e.Ref == "bubble-crash");
+        Assert.True(BubbleSystem.InCrash(g.State));
     }
 
     [Fact]
@@ -100,7 +101,7 @@ public class BubbleMeterTests
         g.State.BubblePermille = 200;
         FundingRoundConfig round = g.C.Funding.Round("angel");
         round.BubbleBoostPermille = 900;
-        BubbleSystem.OnFundingRaise(g.C, g.State, round);
+        BubbleSystem.OnFundingRaise(g.C, g.State, round, round.Cash);
         Assert.Equal(1000, g.State.BubblePermille);
     }
 
@@ -122,11 +123,12 @@ public class BubbleMeterTests
             c.Bubble.PopAtPermille = 500;
             c.Bubble.DecayPermillePerMonth = 10;
             c.Bubble.WeakCashHaircutPermille = 0;
+            c.Bubble.HotPermille = 1000;
         });
         g.State.BubblePermille = 510;
         g.Me.Ledger.ThisMonth.Revenue = 1_000_000;
         g.Weeks(4);
-        Assert.Equal(0, g.State.BubblePermille);
+        Assert.True(BubbleSystem.InCrash(g.State));
     }
 
     [Fact]

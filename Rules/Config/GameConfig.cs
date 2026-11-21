@@ -56,6 +56,8 @@ namespace AiLabs.Rules.Config
         public ChipsConfig Chips;
         public EndingsConfig Endings;
         public ShadyConfig Shady;
+        public AcquisitionConfig Acquisitions;
+        public ModelSalesConfig ModelSales;
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -90,6 +92,8 @@ namespace AiLabs.Rules.Config
             s.Obj("chips", ref Chips);
             s.Obj("endings", ref Endings);
             s.Obj("shady", ref Shady);
+            s.Obj("acquisitions", ref Acquisitions);
+            s.Obj("modelSales", ref ModelSales);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);
