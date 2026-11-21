@@ -2072,6 +2072,18 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It starts when the desk is paid for, so games that never open one are unchanged.
 - Alternatives: a free alert for every launch (rejected: no cost to the knowledge, and every old game changes), letting the lab sabotage the launch (rejected: acts on rivals), a scripted launch list (rejected: rivals decide their own).
 
+### Q405. Do the batch-seven systems make the news and the chat? DECIDED: yes, 22 headlines and 12 chat lines for 12 event kinds
+- Tech bets (made, kept, missed, withdrawn), waitlists (opened, shipped, lapsed, closed), the careers page and its reviews (opened, a bad review, fixed, ignored, answered another way), the free tier (opened, shut, lost with its model) and the launch watch (desk, a launch that beats the lab or that it beats, countered, unanswered, answered another way).
+- Picks above 1 fall to the data's wildcard line, so withdrawing a bet and a rebutted review share lines with their neighbours.
+- Alternatives: a headline per answer (rejected: the data only picks 0 and 1 besides the wildcard).
+
+### Q406. How do the five new systems meet? DECIDED: through the employer score and the launch watch's loss
+- The employer score (Q402) reads the bets and the waitlist: a kept tech promise or a waitlist that shipped in time adds the same points as a promotion; a missed promise or a lapsed waitlist takes away what a resignation does. People want to work at a lab that does what it says.
+- The launch watch (Q404) takes less loss from a rival launch the bigger the free tier's reach (a quarter of the reach in permille, so at most 25% off). A lab with a free tier has users who stay with it when a rival arrives.
+- The other pairs share nothing on purpose: a waitlist is about when to ship, a bet about what to research, and neither changes the free tier's books.
+- All five are inert until the player uses a command, so no old test needed a new switch (Q400 to Q404).
+- Alternatives: all five default-on (rejected: every old game would change), a free tier that also changes waitlist hype (rejected: two numbers moving together with no choice).
+
 ## Open
 
 None.

@@ -18,6 +18,9 @@ namespace AiLabs.Rules.Systems
 
         public static long BaseCost(GameConfig c, int level) { return level == 1 ? c.FreeTier.CostA : level == 2 ? c.FreeTier.CostB : level == 3 ? c.FreeTier.CostC : 0; }
 
+        /// <summary>How much of a rival launch's blow a big free tier takes up, in permille: a quarter of the reach. Zero with no tier.</summary>
+        public static int Cushion(LabState lab) { return lab.FtLevel > 0 ? lab.FtReach / 4 : 0; }
+
         /// <summary>What this week's serving costs: the level's cost, up with the reach.</summary>
         public static long WeeklyCost(GameConfig c, LabState lab)
         {

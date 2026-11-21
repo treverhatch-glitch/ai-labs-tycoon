@@ -18,7 +18,8 @@ namespace AiLabs.Rules.Systems
 
         public static int Loss(GameConfig c, LabState lab)
         {
-            return (int)MathI.MulPermille(c.LaunchWatch.LossReputation, 500 + lab.LwLead);
+            long loss = MathI.MulPermille(c.LaunchWatch.LossReputation, 500 + lab.LwLead);
+            return (int)MathI.MulPermille(loss, MathI.Permille - FreeTier.Cushion(lab));
         }
 
         public static bool CanOwnSafety(GameConfig c, LabState lab)

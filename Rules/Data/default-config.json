@@ -10695,6 +10695,138 @@
         "kind": "PaperReplicated",
         "pick": 0,
         "text": "Another lab cannot reproduce {lab}'s paper. The thread has a lot of replies"
+      },
+      {
+        "id": "techbet-made",
+        "kind": "TechBetMade",
+        "pick": -1,
+        "text": "{lab} tells the world it will have {ref} working before long. The roadmap slide is bold"
+      },
+      {
+        "id": "techbet-kept",
+        "kind": "TechBetEnded",
+        "pick": 1,
+        "text": "{lab} delivers {ref} as promised. The people who bet against it are quiet"
+      },
+      {
+        "id": "techbet-missed",
+        "kind": "TechBetEnded",
+        "pick": 0,
+        "text": "{lab} runs out of time on {ref}. The promise is quoted back at it"
+      },
+      {
+        "id": "techbet-withdrawn",
+        "kind": "TechBetEnded",
+        "pick": -1,
+        "text": "{lab} quietly takes back its promise on {ref}. The old slide is deleted"
+      },
+      {
+        "id": "waitlist-opened",
+        "kind": "WaitlistOpened",
+        "pick": -1,
+        "text": "{lab} opens a waitlist for a model that is not finished. The sign-up page has a countdown"
+      },
+      {
+        "id": "waitlist-shipped",
+        "kind": "WaitlistEnded",
+        "pick": 1,
+        "text": "{lab} ships to a waiting list in time. The queue becomes a crowd and the crowd becomes users"
+      },
+      {
+        "id": "waitlist-lapsed",
+        "kind": "WaitlistEnded",
+        "pick": 0,
+        "text": "{lab} lets its waitlist promise lapse. The countdown goes to zero and stays there"
+      },
+      {
+        "id": "waitlist-closed",
+        "kind": "WaitlistEnded",
+        "pick": -1,
+        "text": "{lab} closes its waitlist without a launch. The email says 'for now'"
+      },
+      {
+        "id": "careers-opened",
+        "kind": "CareersOpened",
+        "pick": -1,
+        "text": "{lab} puts up a careers page. It has a photograph of a bean bag"
+      },
+      {
+        "id": "review-bad",
+        "kind": "BadReview",
+        "pick": -1,
+        "text": "An anonymous review of {lab} as a place to work goes round. It is long and specific"
+      },
+      {
+        "id": "review-fixed",
+        "kind": "ReviewAnswered",
+        "pick": 1,
+        "text": "{lab} owns up to a bad review and fixes what it described. The thread goes quiet"
+      },
+      {
+        "id": "review-ignored",
+        "kind": "ReviewAnswered",
+        "pick": 0,
+        "text": "Nobody at {lab} answers a bad review. It is shared again"
+      },
+      {
+        "id": "review-answered",
+        "kind": "ReviewAnswered",
+        "pick": -1,
+        "text": "{lab} answers a bad review in its own way. Candidates read both sides"
+      },
+      {
+        "id": "freetier-opened",
+        "kind": "FreeTierOpened",
+        "pick": -1,
+        "text": "{lab} opens a free tier. The launch post says it is 'for everyone' and the bill says otherwise"
+      },
+      {
+        "id": "freetier-shut",
+        "kind": "FreeTierClosed",
+        "pick": 1,
+        "text": "{lab} shuts its free tier. The people who built on it are not delighted"
+      },
+      {
+        "id": "freetier-lost",
+        "kind": "FreeTierClosed",
+        "pick": 0,
+        "text": "{lab}'s free tier ends with the model behind it. The banner says 'sunset'"
+      },
+      {
+        "id": "watch-opened",
+        "kind": "WatchDeskOpened",
+        "pick": -1,
+        "text": "{lab} sets up a desk to watch rival launches. It has a wall of screens and a coffee machine"
+      },
+      {
+        "id": "watch-behind",
+        "kind": "RivalLaunchSeen",
+        "pick": 1,
+        "text": "A rival launches a model that beats {lab}'s best. The desk is not quiet"
+      },
+      {
+        "id": "watch-ahead",
+        "kind": "RivalLaunchSeen",
+        "pick": 0,
+        "text": "A rival launches a model {lab} already beats. The desk allows itself a smile"
+      },
+      {
+        "id": "watch-countered",
+        "kind": "LaunchAnswered",
+        "pick": 1,
+        "text": "{lab} counter-programmes a rival's launch. The press has two stories to cover"
+      },
+      {
+        "id": "watch-unanswered",
+        "kind": "LaunchAnswered",
+        "pick": 0,
+        "text": "Nobody at {lab} answers a rival's launch in time. The rival gets the week"
+      },
+      {
+        "id": "watch-answered",
+        "kind": "LaunchAnswered",
+        "pick": -1,
+        "text": "{lab} answers a rival's launch in its own way. The comparison charts are redrawn"
       }
     ],
     "filler": [
@@ -13988,6 +14120,138 @@
         "pick": -1,
         "about": "lab",
         "text": "Someone tried to run our paper. We held our breath.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "techbet-made-chat",
+        "kind": "TechBetMade",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We told everyone we would get there. Now we have to.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "techbet-ended-chat",
+        "kind": "TechBetEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The tech promise is settled, one way or another. The slide has been updated.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "waitlist-opened-chat",
+        "kind": "WaitlistOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The waitlist is open. Sign-ups are rising and so is the pressure.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "waitlist-ended-chat",
+        "kind": "WaitlistEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The waitlist is closed. Support has a lot of replies to write.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "careers-opened-chat",
+        "kind": "CareersOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The careers page is up. Somebody is already reading the reviews of us.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "review-bad-chat",
+        "kind": "BadReview",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "There is a review of us as a workplace. People are reading it out loud.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "review-answered-chat",
+        "kind": "ReviewAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone has answered the review. We will see how the candidates read it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "freetier-opened-chat",
+        "kind": "FreeTierOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The free tier is live. Usage is climbing and so is the serving bill.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "freetier-closed-chat",
+        "kind": "FreeTierClosed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The free tier is gone. The forums are not pleased.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "watch-opened-chat",
+        "kind": "WatchDeskOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The watch desk is open. It has opinions about every rival launch.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "watch-seen-chat",
+        "kind": "RivalLaunchSeen",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A rival just launched. The desk has put it on the big screen.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "watch-answered-chat",
+        "kind": "LaunchAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We answered the rival launch. Now we wait for the numbers.",
         "fromYear": 0,
         "toYear": 0
       }

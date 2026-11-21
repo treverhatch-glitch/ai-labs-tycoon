@@ -10,4 +10,6 @@ A desk that watches rival launches (`launchWatch.*` in the data; Q404). Six save
 
 With the desk open, each rival release of the week before is read. If the rival model is stronger than the lab's best released model (none counts as 0) the launch waits for an answer, with the rival's lead in permille; one waits at a time and a second launch is not noticed. A launch left for 3 weeks lands as held (`Pick 0`). The loss is 20 reputation (damped) at an even lead, from half that at a tiny lead to one and a half times at a huge one. A rival launch the lab already beats earns 2 reputation.
 
+A free tier takes up part of the blow: a quarter of its reach in permille comes off the loss (Q406).
+
 Events: `WatchDeskOpened`, `RivalLaunchSeen` (Pick 1 it beats the lab, 0 the lab beats it), `LaunchAnswered` (Pick 1 counter-programmed, 2 held, 3 safety story, 0 nobody answered).

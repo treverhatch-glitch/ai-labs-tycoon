@@ -9,6 +9,8 @@ The lab's name as a place to work (`brand.*` in the data; Q402). Five saved lab 
 
 The lab's own events of the week before move the score: a promotion, equity grant, mentoring start, sabbatical or internship adds 8; a layoff round, resignation or strike takes away 30. The score cuts every hire fee by up to 20% at 1000 and adds up to 20% at 0 (through the same fee breakdown as the founding choices).
 
+A tech bet that was kept or a waitlist that shipped in time adds the same 8; a missed bet or a lapsed waitlist takes away 30 (Q406).
+
 Under a score of 250 one bad review appears (once, until the score is back over the bar) and waits 4 weeks. If nobody answers it counts as left alone (-60, `Pick 0`).
 
 Events: `CareersOpened`, `BadReview`, `ReviewAnswered` (Pick 1 fixed, 2 rebutted, 3 left, 0 nobody answered).

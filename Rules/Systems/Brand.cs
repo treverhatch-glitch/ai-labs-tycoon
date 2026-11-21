@@ -86,6 +86,11 @@ namespace AiLabs.Rules.Systems
                     case EventKind.InternshipStarted:
                         Move(lab, c.Brand.KeptPoints);
                         break;
+                    case EventKind.TechBetEnded:
+                    case EventKind.WaitlistEnded:
+                        if (e.Pick == 1) Move(lab, c.Brand.KeptPoints);
+                        else if (e.Pick == 0) Move(lab, -(long)c.Brand.BrokenPoints);
+                        break;
                     case EventKind.LayoffRound:
                     case EventKind.StaffQuit:
                     case EventKind.LabourStrike:
