@@ -634,7 +634,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ## Era rules (NEXT item 13)
 
-### Q103. What does "the rules shift" mean in data? DECIDED: five era multipliers and one law, beside `incidentLoadPermille`
+### Q127. What does "the rules shift" mean in data? DECIDED: five era multipliers and one law, beside `incidentLoadPermille`
 
 - Options: (a) a free-form rules list per era; (b) typed fields on `EraConfig`; (c) per-era code branches.
 - Recommendation and choice: **(b)** `hireFeePermille`, `chipPricePermille`, `adoptionPermille`, `finePermille`, `minReleaseAlignment`; `EraRules` is the one place every system asks.
@@ -769,6 +769,86 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Options: (a) trust the data; (b) weight 1 to 100000 (so the draw cannot overflow), fine and reputation 250 to 10000 per mille, known sectors and eras, never the first era, listed oldest first, three or more headlines each with `{model}`, `genericRiskWeight` 1 to 100000.
 - Recommendation and choice: **(b)**, with missing or unknown JSON keys an error as everywhere else.
 - Why: a typo in a class should fail when the config loads, not as a crash in the middle of a game.
+
+## Role perks (NEXT.md known limit: roles beyond the first four had no rule)
+
+### Q128. How does a role get a perk? DECIDED: a `rolePerks` table, derived from the staff list, nothing saved
+
+- Options: (a) a new field on every role; (b) a separate table of perks (id, role, kind, share per person, cap, sectors, blurb) read from the staff a lab has today.
+- Recommendation and choice: **(b)**. Four kinds: hire discount, incident cut, alignment work, sector appeal. Each person adds the share, held under the cap; perks of one kind add up.
+- Why: a role can carry zero, one or two perks without touching the role rows; no save change, so no schema step; letting the role go ends the perk the same week. The validator needs a known role, a share from 1 to 1000, a cap from the share up to 900 (so a fee or a chance never reaches zero), a blurb and known sectors.
+
+### Q129. What does the recruiter do? DECIDED: wins back 3% of every hiring fee per recruiter, up to 25%
+
+- Options: (a) lowers salaries; (b) takes a share off the hiring fee, after the era's talent-war multiplier.
+- Recommendation and choice: **(b)**. Nine recruiters offset a quarter of the Chat Boom's tripled fee. The hire command, the planners' budgets and a breakdown query (`HireFeeParts`: list price, era shift, discount) all use the one figure.
+- Why: it answers the talent war of item 13 with a choice (pay for recruiters or pay the fee), and costs a recruiter a salary every week whether or not the lab hires.
+
+### Q130. What do red-teamers do? DECIDED: 2.5% of incidents caught per red-teamer, up to 30%, by a second roll
+
+- Options: (a) cut the weekly incident chance in permille; (b) when an incident was about to happen, roll once more and let it pass with the lab's catch chance.
+- Recommendation and choice: **(b)**. The second roll is made only when an incident was coming and the lab has red-teamers, so a lab without them draws exactly the dice it did before and plays the same (tested by digest).
+- Why: incident odds are a few permille a week, so multiplying them by 0.75 would round to nothing or to a halving. The breakdown (`IncidentOdds`) shows the odds before and the share caught.
+
+### Q131. What do alignment fellows do? DECIDED: +4% on the work of each unit of alignment compute per fellow, up to 40%
+
+- Options: (a) nothing beyond being safety staff; (b) a perk on top of the safety-staff share and the containment wing.
+- Recommendation and choice: **(b)**. A fellow already counts as safety staff (a fellow is `Safety`), so the perk is the extra.
+- Why: the fellow costs the most of the safety roles and should do the most; the wing and the staff still stack.
+
+### Q132. What do product leads and the specialists do? DECIDED: a boost to the appeal of the lab's models, after the sales boost and before the Gauntlet crown
+
+- Options: (a) lift sales for all; (b) a product lead lifts appeal in every sector (3% each, up to 24%), and each late specialist (agent wrangler, harness operator, roboticist, mission controller) lifts it in its sectors (5% each, up to 30%).
+- Recommendation and choice: **(b)**. `AppealBreakdown.RoleBoost` joins the other parts, so the parts still add up.
+- Why: later roles should mean something in the markets of their era, and appeal is already what wins share (tested against rivals in a crowded sector).
+
+### Q133. Which roles get no perk? DECIDED: the data roles for now, and the roles that already act through their function
+
+- Options: (a) a perk for all 14; (b) none for `labeller`, `data-engineer`, `data-gardener` (they wait for data sources, which live on `cursor/rules-side-items`), nor for `infra`, `policy` and `chip-architect`, which already do their work by function.
+- Recommendation and choice: **(b)**.
+- Why: a data perk written now would collide with that branch; adding a kind later is one enum value and a data row.
+
+### Q134. What does a room do beyond seating or holding? DECIDED: six perks, each a share per tile under a cap, worked out from the rooms
+
+- Options: (a) nothing (rooms are only for seats and GPU slots); (b) a `roomPerks` table: a room type, a kind, a share per tile and a cap, read from the tiles the lab has built; (c) per-room upgrade commands that are saved.
+- Recommendation and choice: **(b)**. Same shape as role perks (Q128): nothing is saved, so no schema change, and a demolished room stops helping that week.
+- Why: it makes the size of a room matter and gives the late rooms a reason beyond the seat. Kinds: `ResearchSpeed`, `TrainingSpeed`, `IncidentCut`, `SectorAppeal`.
+
+### Q135. Which rooms get a perk, and which kinds? DECIDED: the research rooms, the agent ops room, the sandbox wing and the robotics arena
+
+- Options: (a) every room; (b) only rooms whose purpose already names an effect nothing else covers.
+- Recommendation and choice: **(b)**. Research floor 0.3% per tile (cap 15%), harness control room 0.4% (20%) and launch control 0.5% (25%) speed research; the agent ops room speeds training 0.4% (20%); the sandbox wing catches 0.4% of incidents (20%); the robotics arena lifts appeal in the four robot and device sectors 0.3% (25%).
+- Why: the hardware test lab already speeds chip ramps (`chips.testLabRampPermille`) and the recruiting office, product studio and containment wing already feed role perks; the data rooms and compute halls wait for data sources and for the Bodies and Upward expansions, which live on `cursor/rules-side-items`. The compute halls differ by GPU slots only, which is already their whole job.
+
+### Q136. How do room perks combine with role perks and with each other? DECIDED: they add within a kind, and the incident catch is capped at 90% together
+
+- Options: (a) multiply; (b) add within a kind; cap the incident catch of rooms and staff together.
+- Recommendation and choice: **(b)**. Research speed multiplies the points after the era's research share and the researchers' traits; training speed is added into `SpeedPermille` beside techs and engineers; the wing's catch is added to the red-teamers' before the 900 cap; the arena's appeal joins the specialists' as `RoleBoost`.
+- Why: additive terms are what the existing speed and boost lines already do, and the validator keeps every cap at or below 900 so a perk never makes a chance certain.
+
+### Q137. Do founders and styles live in config, and what do they save? DECIDED: two config tables and two ids per lab, save schema 22
+
+- Options: (a) hard-code four founders; (b) a `founders` and a `styles` table in the config, the choice saved as two ids on the lab, everything else read from the config each time; (c) save the founder's effects as numbers on the lab.
+- Recommendation and choice: **(b)**. `LabState.FounderId` and `StyleId` (empty for none, and for every rival), `MigrateTo22` adds them as empty, `NewGameOptions.FounderId/StyleId/HomeBlocId` choose them, `simcli --founder/--style/--home` too.
+- Why: same shape as role and room perks (nothing derived is saved). Schema 22 chains after 21; if another thread takes 22 first, renumber on merge. The golden digest is re-recorded because the two new fields enter every lab's save.
+
+### Q138. What does each founder do? DECIDED: a start change plus one lasting edge and one lasting cost, from the bible's four
+
+- Options: (a) start changes only; (b) start changes plus lasting terms; (c) also seat starting staff ("two loyal students").
+- Recommendation and choice: **(b)**. Professor: reputation +150, grant 1.5x, research +10%, appeal -10%. Dropout: cash 1.3x, hype +250, appeal +5%, research -5% (the board's growing distrust has no hook yet, so it is a research cost). Defector: cash 1.2x, reputation +100, research +6%, and `openaye` starts at -600 toward the player (a feud). Heir: cash 3x, reputation -50, every hire 15% dearer.
+- Why: (c) is left out because staff need seats and the start has no rooms; a lasting term is the honest version of "loyal". Every term is signed and bounded by the validator so no founder is a free win.
+
+### Q139. What do the styles do? DECIDED: appeal up in a focus set of sectors and down everywhere else
+
+- Options: (a) per-domain capability ceilings (the bible's speciality points); (b) a sector-appeal term, since appeal is what wins share and is already explained in parts.
+- Recommendation and choice: **(b)**. Sniper (coding, enterprise, documents): +25% in six sectors, -8% elsewhere. Shotgun (chat, image, video, voice): +8% in eight, -2% elsewhere. Wildcard (security and science): +35% in four, -10% elsewhere. Founder and style add into `RoleBoost` beside role and room perks, floored at -50%.
+- Why: capability ceilings per domain would need new model state; appeal gives the same sniper-or-shotgun choice with no more state. Hardware Baron, Open-Weights Rebel and Garage Hacker wait for chips, open weights (rules-side-items) and shady offers.
+
+### Q140. What does choosing the home base do, and what happens when the lab is sold? DECIDED: it sets the bloc, and a sold lab loses the choices while a re-founded lab keeps them
+
+- Options: (a) no home-base option; (b) `NewGameOptions.HomeBlocId` picks any world-map bloc; (c) bloc-specific founding bonuses.
+- Recommendation and choice: **(b)** for the option; (c) is not needed because blocs already carry their own rules on the map. A lab sold to new owners (found-again or spectate) loses its founder and style so the successor is no longer "you"; `FoundAgain` hands both to the new player lab.
+- Why: the founder is the person, not the company.
 
 ## Open
 

@@ -18,6 +18,12 @@ namespace AiLabs.Rules.Sim
         public List<string> RivalIds;
         /// <summary>The era to start in (the start-era picker), by config id. Empty for the first era, the 1995 default.</summary>
         public string StartEraId = "";
+        /// <summary>Who the player is (a founder id); empty for none.</summary>
+        public string FounderId = "";
+        /// <summary>How the player's lab is good (a style id); empty for none.</summary>
+        public string StyleId = "";
+        /// <summary>The bloc the lab is incorporated in; empty for the config's default.</summary>
+        public string HomeBlocId = "";
     }
 
     /// <summary>
