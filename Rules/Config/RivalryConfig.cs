@@ -95,6 +95,10 @@ namespace AiLabs.Rules.Config
         public int FriendlyAbove;
         /// <summary>Attention a feuding rival adds against the player in the player's home bloc each month.</summary>
         public int FeudAttentionPerMonth;
+        public long LobbyDefenseCash = 9_000;
+        public int LobbyDefenseWeeks = 10;
+        /// <summary>Feud lobby bump is multiplied by (1000 − this) while <see cref="LabState.LobbyDefenseUntilTick"/> is active.</summary>
+        public int LobbyDefenseCutPermille = 600;
         /// <summary>A rival buys listed chips up to this share of the vendor's price per compute, and this share when friendly.</summary>
         public int ListedBuyLimitPermille;
         public int FriendlyBuyLimitPermille;
@@ -111,6 +115,9 @@ namespace AiLabs.Rules.Config
             s.Int("feudBelow", ref FeudBelow);
             s.Int("friendlyAbove", ref FriendlyAbove);
             s.Int("feudAttentionPerMonth", ref FeudAttentionPerMonth);
+            s.Long("lobbyDefenseCash", ref LobbyDefenseCash);
+            s.Int("lobbyDefenseWeeks", ref LobbyDefenseWeeks);
+            s.Int("lobbyDefenseCutPermille", ref LobbyDefenseCutPermille);
             s.Int("listedBuyLimitPermille", ref ListedBuyLimitPermille);
             s.Int("friendlyBuyLimitPermille", ref FriendlyBuyLimitPermille);
         }

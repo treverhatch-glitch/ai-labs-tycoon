@@ -115,10 +115,15 @@ namespace AiLabs.Rules.Systems
 
         public static ConvictionChanceBreakdown ConvictionChanceParts(GameConfig c, LabState lab)
         {
+            return ConvictionChanceParts(c, null, lab);
+        }
+
+        public static ConvictionChanceBreakdown ConvictionChanceParts(GameConfig c, GameState state, LabState lab)
+        {
             ShadyConfig cfg = c.Shady;
             var b = new ConvictionChanceBreakdown();
             b.FromHeat = lab.Heat / cfg.ConvictionDivisor;
-            int staff = WorldQueries.PolicyStaff(c, lab);
+            int staff = state == null ? WorldQueries.PolicyStaff(c, lab) : WorldQueries.EffectivePolicyStaff(c, state, lab);
             int cut = staff * cfg.ConvictionPolicyPerStaff;
             b.FromPolicyStaff = -cut;
             b.Total = (int)MathI.Clamp(b.FromHeat + b.FromPolicyStaff, 0, 900);

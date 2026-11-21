@@ -233,7 +233,7 @@ public class PatentLicenseTests
         Game g = Game.Solo().WithStarterLab();
         string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":23");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(27, loaded.State.Schema);
+        Assert.Equal(29, loaded.State.Schema);
         Assert.Equal(0, loaded.Me.Ledger.ThisWeek.PatentLicense);
     }
 

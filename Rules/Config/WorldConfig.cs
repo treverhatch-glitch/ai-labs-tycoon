@@ -253,6 +253,10 @@ namespace AiLabs.Rules.Config
         /// <summary>Policy staff it takes to face a hearing prepared.</summary>
         public int PreparedPolicyStaff;
         public int AuditFineRevenueWeeks;
+        public long ProtestOutreachCash = 8_000;
+        public int ProtestOutreachWeeks = 8;
+        /// <summary>Protest attention bump for this lab is multiplied by (1000 − this) while <see cref="LabState.ProtestMitigationUntilTick"/> is active.</summary>
+        public int ProtestOutreachCutPermille = 500;
         /// <summary>When home-bloc attention is at or above this, dated protest events add <see cref="ProtestRevoltBonusPermille"/> on top.</summary>
         public int ProtestRevoltAttentionAt;
         /// <summary>Extra protest attention as permille of the event's base bump (0 = off).</summary>
@@ -277,6 +281,9 @@ namespace AiLabs.Rules.Config
             s.Int("hearingReputationPrepared", ref HearingReputationPrepared);
             s.Int("preparedPolicyStaff", ref PreparedPolicyStaff);
             s.Int("auditFineRevenueWeeks", ref AuditFineRevenueWeeks);
+            s.Long("protestOutreachCash", ref ProtestOutreachCash);
+            s.Int("protestOutreachWeeks", ref ProtestOutreachWeeks);
+            s.Int("protestOutreachCutPermille", ref ProtestOutreachCutPermille);
             s.Int("protestRevoltAttentionAt", ref ProtestRevoltAttentionAt);
             s.Int("protestRevoltBonusPermille", ref ProtestRevoltBonusPermille);
         }

@@ -44,6 +44,8 @@ namespace AiLabs.Rules.Config
         public int CloudRentPermille;
         /// <summary>Share of a renter's weekly cloud-chip rent paid to the listing lab when it is another lab.</summary>
         public int CloudLandlordSharePermille;
+        public long CloudRoyaltyPauseCash = 4_000;
+        public int CloudRoyaltyPauseWeeks = 8;
         /// <summary>Foundry slots consumed per ordered chip for <see cref="ChipletDieIds"/> designs (permille; 1200 = 20% more room).</summary>
         public int ChipletFoundryRoomPermille = 1200;
         /// <summary>Extra training-share bonus when the lab trains on its own chiplet-packaged silicon.</summary>
@@ -104,6 +106,8 @@ namespace AiLabs.Rules.Config
             s.Long("listingSpotlightCashCost", ref ListingSpotlightCashCost);
             s.Int("cloudRentPermille", ref CloudRentPermille);
             s.Int("cloudLandlordSharePermille", ref CloudLandlordSharePermille);
+            s.Long("cloudRoyaltyPauseCash", ref CloudRoyaltyPauseCash);
+            s.Int("cloudRoyaltyPauseWeeks", ref CloudRoyaltyPauseWeeks);
             s.Int("chipletFoundryRoomPermille", ref ChipletFoundryRoomPermille);
             s.Int("chipletTrainingBonusPermille", ref ChipletTrainingBonusPermille);
             s.StrList("chipletDieIds", ref ChipletDieIds);

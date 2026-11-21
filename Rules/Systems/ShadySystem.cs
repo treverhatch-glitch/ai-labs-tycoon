@@ -25,7 +25,10 @@ namespace AiLabs.Rules.Systems
                 if (op.ResolveTick <= state.Tick) continue;
                 ShadyCardConfig card = c.Shady.Card(op.CardId);
                 if (card == null || card.Special != ShadySpecial.GreyCompute || op.AuxId < 0) continue;
-                Finance.Earn(lab, LedgerLine.GreyRevenue, ShadyQueries.GreyWeeklyPayout(c, state, lab, op.AuxId));
+                long pay = ShadyQueries.GreyWeeklyPayout(c, state, lab, op.AuxId);
+                if (lab.GreyPayoutBoostUntilTick > state.Tick && c.Shady.GreyReserveBoostPermille > 0)
+                    pay = MathI.MulPermille(pay, MathI.Permille + c.Shady.GreyReserveBoostPermille);
+                Finance.Earn(lab, LedgerLine.GreyRevenue, pay);
             }
             if (!resolved && lab.Heat > 0)
             {
@@ -76,7 +79,7 @@ namespace AiLabs.Rules.Systems
 
         static void CloseCase(GameConfig c, GameState state, LabState lab)
         {
-            int chance = ShadyQueries.ConvictionChanceParts(c, lab).Total;
+            int chance = ShadyQueries.ConvictionChanceParts(c, state, lab).Total;
             lab.CaseEndsTick = -1;
             if (state.Rng.Shady.Chance(chance))
             {

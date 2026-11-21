@@ -100,6 +100,12 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.TakeResearchLoan: return TakeResearchLoan(c, state, lab, cmd);
                 case CommandKind.GrantPeerForbearance: return GrantPeerForbearance(c, state, lab, cmd);
                 case CommandKind.PledgeSectorPrice: return PledgeSectorPrice(c, state, lab, cmd);
+                case CommandKind.FundLobbyDefense: return FundLobbyDefense(c, state, lab, cmd);
+                case CommandKind.ExtendGrantRunway: return ExtendGrantRunway(c, state, lab, cmd);
+                case CommandKind.RequestDebtForbearance: return RequestDebtForbearance(c, state, lab, cmd);
+                case CommandKind.ReserveGreyPayout: return ReserveGreyPayout(c, state, lab, cmd);
+                case CommandKind.PauseCloudRoyalties: return PauseCloudRoyalties(c, state, lab, cmd);
+                case CommandKind.FundProtestOutreach: return FundProtestOutreach(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

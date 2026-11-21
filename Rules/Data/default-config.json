@@ -1324,6 +1324,9 @@
       "hearingReputationPrepared": 10,
       "preparedPolicyStaff": 2,
       "auditFineRevenueWeeks": 2,
+      "protestOutreachCash": 8000,
+      "protestOutreachWeeks": 8,
+      "protestOutreachCutPermille": 500,
       "protestRevoltAttentionAt": 600,
       "protestRevoltBonusPermille": 500
     },
@@ -3460,6 +3463,7 @@
     "incidentPlanWeeks": 16,
     "incidentPlanWeeklyUpkeep": 800,
     "incidentPlanCutPermille": 250,
+    "incidentPlanRenewCash": 6000,
     "incidentRungs": [
       {
         "id": "screenshot",
@@ -4109,7 +4113,11 @@
   },
   "finance": {
     "bankruptcyGraceWeeks": 12,
-    "historyMonths": 120
+    "historyMonths": 120,
+    "grantExtensionCash": 15000,
+    "grantExtensionWeeks": 12,
+    "debtForbearanceCash": 10000,
+    "debtForbearanceWeeks": 8
   },
   "staffPeople": {
     "moraleBaseline": 500,
@@ -4204,6 +4212,9 @@
       "feudBelow": -500,
       "friendlyAbove": 300,
       "feudAttentionPerMonth": 15,
+      "lobbyDefenseCash": 9000,
+      "lobbyDefenseWeeks": 10,
+      "lobbyDefenseCutPermille": 600,
       "listedBuyLimitPermille": 900,
       "friendlyBuyLimitPermille": 950
     },
@@ -4515,6 +4526,8 @@
     "listingSpotlightCashCost": 5000,
     "cloudRentPermille": 1100,
     "cloudLandlordSharePermille": 450,
+    "cloudRoyaltyPauseCash": 4000,
+    "cloudRoyaltyPauseWeeks": 8,
     "chipletFoundryRoomPermille": 1200,
     "chipletTrainingBonusPermille": 80,
     "chipletDieIds": [
@@ -5072,7 +5085,10 @@
     "heatBuydownCashCost": 25000,
     "heatBuydownAmount": 100,
     "cancelShadyOpHeatPenalty": 50,
-    "stashStoragePermillePerWeek": 25
+    "stashStoragePermillePerWeek": 25,
+    "greyReserveCashCost": 6000,
+    "greyReserveWeeks": 8,
+    "greyReserveBoostPermille": 300
   },
   "expansions": {
     "bodies": {

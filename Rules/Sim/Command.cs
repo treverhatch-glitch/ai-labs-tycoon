@@ -20,7 +20,9 @@ namespace AiLabs.Rules.Sim
         AbortChipRespin, RenouncePatent, CancelChipOrder,
         CancelShadyOp, PayDownHeat, AbortTrainingRun, ExtendPatent, ReviveChipDesign,
         PayPeerLeaseArrears, BuyPowerHedge, BreakReservedContract, DiscloseModelAlignment, PauseChipListing, AdvocateVendor,
-        AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice
+        AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice,
+        FundLobbyDefense, ExtendGrantRunway, RequestDebtForbearance,
+        ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach
     }
 
     /// <summary>
@@ -582,6 +584,18 @@ namespace AiLabs.Rules.Sim
             c.Permille = pricePermille;
             return c;
         }
+
+        public static Command FundLobbyDefense(int labId) { return Make(CommandKind.FundLobbyDefense, labId); }
+
+        public static Command ExtendGrantRunway(int labId) { return Make(CommandKind.ExtendGrantRunway, labId); }
+
+        public static Command RequestDebtForbearance(int labId) { return Make(CommandKind.RequestDebtForbearance, labId); }
+
+        public static Command ReserveGreyPayout(int labId) { return Make(CommandKind.ReserveGreyPayout, labId); }
+
+        public static Command PauseCloudRoyalties(int labId) { return Make(CommandKind.PauseCloudRoyalties, labId); }
+
+        public static Command FundProtestOutreach(int labId) { return Make(CommandKind.FundProtestOutreach, labId); }
     }
 
     public enum CommandError

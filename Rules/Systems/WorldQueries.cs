@@ -138,6 +138,12 @@ namespace AiLabs.Rules.Systems
 
         public static int PolicyStaff(GameConfig c, LabState lab) { return LabQueries.StaffByFunction(c, lab, RoleFunction.Policy); }
 
+        /// <summary>Policy staff for hearings and investigations (era may add virtual staff on merge).</summary>
+        public static int EffectivePolicyStaff(GameConfig c, GameState state, LabState lab)
+        {
+            return PolicyStaff(c, lab);
+        }
+
         /// <summary>Weeks a hall extension of this size takes this lab: the base and the size, then trimmed by infrastructure staff, never under the floor.</summary>
         public static int BuildWeeks(GameConfig c, LabState lab, int kw)
         {

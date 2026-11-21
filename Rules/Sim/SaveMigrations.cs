@@ -42,6 +42,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 28) MigrateTo28(root);
+            if (fromSchema < 29) MigrateTo29(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -397,6 +399,31 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(entry, "pricePledgeUntilTick", JsonValue.Of(-1));
                 JsonPatch.AddIfMissing(entry, "pricePledgePermille", JsonValue.Of(MathI.Permille));
             }));
+        }
+
+        /// <summary>Schema 28: Q185–Q192 player programs and choices.</summary>
+        static void MigrateTo28(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "stashVaultUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "auditFineWaiverPermille", JsonValue.Of(0));
+                JsonPatch.AddIfMissing(lab, "championStipendBoostUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "greyPayoutBoostUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "cloudRoyaltyPauseUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "policyConsultantUntilTick", JsonValue.Of(-1));
+            });
+        }
+
+        /// <summary>Schema 29: Q185–Q190 player programs (lobby, grant, debt, grey, cloud, protest).</summary>
+        static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "lobbyDefenseUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "debtForbearanceUntilTick", JsonValue.Of(-1));
+                JsonPatch.AddIfMissing(lab, "protestMitigationUntilTick", JsonValue.Of(-1));
+            });
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

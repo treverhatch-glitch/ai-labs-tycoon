@@ -47,12 +47,16 @@ namespace AiLabs.Rules.Systems
 
             if (lab.Cash < 0)
             {
-                lab.WeeksInDebt++;
-                if (lab.WeeksInDebt == 1) Events.Add(state, EventKind.InDebt, lab.Id, -1, lab.Cash, "");
-                if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks)
+                bool forbear = lab.DebtForbearanceUntilTick > state.Tick;
+                if (!forbear)
                 {
-                    GoBankrupt(c, state, lab);
-                    if (lab.Id == state.PlayerLabId) EndingSystem.RecordBankrupt(c, state, lab);
+                    lab.WeeksInDebt++;
+                    if (lab.WeeksInDebt == 1) Events.Add(state, EventKind.InDebt, lab.Id, -1, lab.Cash, "");
+                    if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks)
+                    {
+                        GoBankrupt(c, state, lab);
+                        if (lab.Id == state.PlayerLabId) EndingSystem.RecordBankrupt(c, state, lab);
+                    }
                 }
             }
             else

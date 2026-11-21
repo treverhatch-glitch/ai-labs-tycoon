@@ -34,6 +34,10 @@ namespace AiLabs.Rules.Systems
                 if (standing == null) continue;
                 int before = standing.Attention;
                 int bump = ProtestAttentionBump(c, before, e.ProtestAttentionPermille);
+                AttentionConfig attention = c.World.Attention;
+                if (attention != null && lab.ProtestMitigationUntilTick > state.Tick
+                    && attention.ProtestOutreachCutPermille > 0)
+                    bump = (int)MathI.MulPermille(bump, MathI.Permille - attention.ProtestOutreachCutPermille);
                 standing.Attention = (int)MathI.Min(MathI.Permille, before + bump);
                 if (standing.Attention > before)
                     Events.Add(state, EventKind.AttentionRose, lab.Id, -1, standing.Attention - before, blocId);

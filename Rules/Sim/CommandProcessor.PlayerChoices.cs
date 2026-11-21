@@ -2,7 +2,6 @@ using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
-
 namespace AiLabs.Rules.Sim
 {
     public static partial class CommandProcessor
@@ -137,6 +136,96 @@ namespace AiLabs.Rules.Sim
             entry.PricePermille = price;
             entry.PricePledgePermille = price;
             entry.PricePledgeUntilTick = state.Tick + c.Market.SectorPricePledgeWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult FundLobbyDefense(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            FeelingsConfig f = c.Rivalry.Feelings;
+            if (f.LobbyDefenseWeeks < 1 || f.LobbyDefenseCash < 1)
+                return Fail(CommandError.InvalidArgument, "Lobby defense is not offered.");
+            if (lab.LobbyDefenseUntilTick > state.Tick)
+                return Fail(CommandError.InvalidArgument, "Lobby defense is already funded.");
+            if (lab.Cash < f.LobbyDefenseCash) return NeedCash(lab, f.LobbyDefenseCash);
+            Finance.Spend(lab, LedgerLine.RoomUpkeep, f.LobbyDefenseCash);
+            lab.LobbyDefenseUntilTick = state.Tick + f.LobbyDefenseWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult ExtendGrantRunway(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            FinanceConfig f = c.Finance;
+            if (f.GrantExtensionWeeks < 1 || f.GrantExtensionCash < 1)
+                return Fail(CommandError.InvalidArgument, "Grant extensions are not offered.");
+            if (lab.GrantPerWeek < 1 || lab.GrantEndsTick < 0)
+                return Fail(CommandError.InvalidArgument, "There is no active grant to extend.");
+            if (lab.Cash < f.GrantExtensionCash) return NeedCash(lab, f.GrantExtensionCash);
+            Finance.Spend(lab, LedgerLine.Grants, f.GrantExtensionCash);
+            lab.GrantEndsTick = (int)MathI.Max(lab.GrantEndsTick, state.Tick + 1) + f.GrantExtensionWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult RequestDebtForbearance(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            FinanceConfig f = c.Finance;
+            if (f.DebtForbearanceWeeks < 1 || f.DebtForbearanceCash < 1)
+                return Fail(CommandError.InvalidArgument, "Debt forbearance is not offered.");
+            if (lab.DebtForbearanceUntilTick > state.Tick)
+                return Fail(CommandError.InvalidArgument, "Debt forbearance is already in effect.");
+            if (lab.Cash < f.DebtForbearanceCash) return NeedCash(lab, f.DebtForbearanceCash);
+            Finance.Spend(lab, LedgerLine.Fines, f.DebtForbearanceCash);
+            lab.DebtForbearanceUntilTick = state.Tick + f.DebtForbearanceWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult ReserveGreyPayout(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ShadyConfig s = c.Shady;
+            if (s.GreyReserveCashCost < 1 || s.GreyReserveWeeks < 1)
+                return Fail(CommandError.InvalidArgument, "Grey reserves are not offered.");
+            bool grey = false;
+            for (int i = 0; i < lab.ShadyOps.Count; i++)
+            {
+                ShadyCardConfig card = c.Shady.Card(lab.ShadyOps[i].CardId);
+                if (card != null && card.Special == ShadySpecial.GreyCompute) { grey = true; break; }
+            }
+            if (!grey) return Fail(CommandError.InvalidArgument, "Run grey compute before reserving its payouts.");
+            if (lab.GreyPayoutBoostUntilTick > state.Tick)
+                return Fail(CommandError.InvalidArgument, "A grey reserve is already active.");
+            if (lab.Cash < s.GreyReserveCashCost) return NeedCash(lab, s.GreyReserveCashCost);
+            Finance.Spend(lab, LedgerLine.GreyRevenue, s.GreyReserveCashCost);
+            lab.GreyPayoutBoostUntilTick = state.Tick + s.GreyReserveWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult PauseCloudRoyalties(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            if (k.CloudRoyaltyPauseCash < 1 || k.CloudRoyaltyPauseWeeks < 1)
+                return Fail(CommandError.InvalidArgument, "Royalty pauses are not offered.");
+            if (k.CloudLandlordSharePermille < 1)
+                return Fail(CommandError.InvalidArgument, "Cloud royalties are not configured.");
+            bool listed = lab.ChipListings.Count > 0;
+            if (!listed)
+                return Fail(CommandError.InvalidArgument, "List chips for cloud rent before pausing royalties.");
+            if (lab.CloudRoyaltyPauseUntilTick > state.Tick)
+                return Fail(CommandError.InvalidArgument, "Royalties are already paused.");
+            if (lab.Cash < k.CloudRoyaltyPauseCash) return NeedCash(lab, k.CloudRoyaltyPauseCash);
+            Finance.Spend(lab, LedgerLine.ChipSales, k.CloudRoyaltyPauseCash);
+            lab.CloudRoyaltyPauseUntilTick = state.Tick + k.CloudRoyaltyPauseWeeks;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult FundProtestOutreach(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            AttentionConfig a = c.World.Attention;
+            if (a.ProtestOutreachWeeks < 1 || a.ProtestOutreachCash < 1)
+                return Fail(CommandError.InvalidArgument, "Protest outreach is not offered.");
+            if (lab.ProtestMitigationUntilTick > state.Tick)
+                return Fail(CommandError.InvalidArgument, "Protest outreach is already funded.");
+            if (lab.Cash < a.ProtestOutreachCash) return NeedCash(lab, a.ProtestOutreachCash);
+            Finance.Spend(lab, LedgerLine.RoomUpkeep, a.ProtestOutreachCash);
+            lab.ProtestMitigationUntilTick = state.Tick + a.ProtestOutreachWeeks;
             return CommandResult.Done(-1);
         }
     }

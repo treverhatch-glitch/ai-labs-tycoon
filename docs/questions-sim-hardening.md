@@ -516,6 +516,30 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - **Era (`origin/cursor/offsite-af2f`, insurance / Q299, schema ~44):** reactive `SetInsurance` + `Insurance.RunWeek` premiums; `Insurance.OnIncident` pays a **share of fines** after roll; claims loading and policy drop — not on rules branch.
 - **Fork:** merge only if we want one “safety spend” UI; until then insurance stays era-only, plan stays rules Q179.
 
+### Q185. Feud lobby defense? DECIDED: `FundLobbyDefense` + `lobbyDefenseUntilTick`
+- Choice: pay `rivalry.feelings.lobbyDefenseCash`; feuding rival lobby bumps on the home bloc are trimmed (`lobbyDefenseCutPermille`) until the tick. DESIGN ch.12 lobbying counterweight. Schema **29**.
+
+### Q186. Grant runway extension? DECIDED: `ExtendGrantRunway`
+- Choice: pay `finance.grantExtensionCash` to push `grantEndsTick` by `grantExtensionWeeks` while a grant is active (NEXT: money is cash and grant).
+
+### Q187. Debt forbearance? DECIDED: `RequestDebtForbearance` + `debtForbearanceUntilTick`
+- Choice: pay `finance.debtForbearanceCash`; `Finance.RunWeek` does not advance `weeksInDebt` or bankruptcy while active (endings-continue runway).
+
+### Q188. Grey payout reserve? DECIDED: `ReserveGreyPayout` + `greyPayoutBoostUntilTick`
+- Choice: while a grey-compute op runs, pay to boost `ShadySystem` grey weekly payouts.
+
+### Q189. Pause cloud royalties? DECIDED: `PauseCloudRoyalties` + `cloudRoyaltyPauseUntilTick`
+- Choice: chip landlord with listings waives `CloudChipLandlordSystem` earn for `cloudRoyaltyPauseWeeks`.
+
+### Q190. Protest outreach? DECIDED: `FundProtestOutreach` + `protestMitigationUntilTick`
+- Choice: pay `attention.protestOutreachCash`; dated protest headlines add less attention to this lab (`protestOutreachCutPermille`) until the tick. World-map / headlines (DESIGN ch.12).
+
+### Q191. Early audit settlement on rules branch? DECIDED: **deferred to era**
+- Hatch: rules-side `SettleAuditEarly` removed — **era PR #17 (`Compliance` + government)** owns audit fine relief and must cap stacking with compliance level there if offered.
+
+### Q192. Policy consultant on rules branch? DECIDED: **deferred to era**
+- Hatch: rules-side `HirePolicyConsultant` removed — **era** owns timed bonus policy staff for hearings/investigations and must cap with compliance office if offered.
+
 ### Q184. Q180 vs era chip loans (PR #13)? DECIDED: keep both — different debt products
 - **Rules-side (Q180):** unsecured research bridge — `TakeResearchLoan` grants cash + RP, single `researchLoanBalance`, flat `loanWeeklyPayment` on **Fines** line (schema **27**).
 - **Era (`origin/cursor/offsite-af2f`, `Loans.cs` / Q278–Q280, schema ~41):** collateralised **chip fleet** loans — `TakeLoan`/`RepayLoan`, `lab.Loans[]`, LTV on resale collateral, term amortisation, miss penalties in `Finance.RunWeek`.

@@ -196,7 +196,7 @@ public class ChipShortageTests
     public void Schema_16_on_new_game()
     {
         Game g = Game.Solo();
-        Assert.Equal(27, g.State.Schema);
+        Assert.Equal(29, g.State.Schema);
         Assert.Equal(-1, g.State.ChipShortageUntilTick);
         Assert.Equal(0, g.State.ChipShortageStrengthPermille);
     }
@@ -207,7 +207,7 @@ public class ChipShortageTests
         Game g = Game.Solo();
         string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":15");
         var loaded = Simulation.Load(g.C, json);
-        Assert.Equal(27, loaded.State.Schema);
+        Assert.Equal(29, loaded.State.Schema);
         Assert.Equal(-1, loaded.State.ChipShortageUntilTick);
     }
 

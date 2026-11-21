@@ -86,12 +86,12 @@ namespace AiLabs.Rules.Systems
             long amount = 0;
             if (standing.Level == BlocStanding.Hearing)
             {
-                amount = WorldQueries.PolicyStaff(c, lab) >= a.PreparedPolicyStaff ? a.HearingReputationPrepared : a.HearingReputation;
+                amount = WorldQueries.EffectivePolicyStaff(c, state, lab) >= a.PreparedPolicyStaff ? a.HearingReputationPrepared : a.HearingReputation;
                 lab.Reputation = (int)MathI.Clamp(lab.Reputation + amount, 0, MathI.Permille);
             }
             else if (standing.Level == BlocStanding.Audit)
             {
-                amount = GovernmentQueries.AuditFineAmount(c, lab);
+                amount = GovernmentQueries.ApplyAuditFine(c, lab);
                 Finance.Spend(lab, LedgerLine.Fines, amount);
                 if (lab.Id == state.PlayerLabId) ShadySystem.OnAuditOpen(c, state, lab);
             }

@@ -50,6 +50,7 @@ namespace AiLabs.Rules.Systems
             {
                 LabState landlord = state.Lab(pair.Key);
                 if (landlord == null || landlord.Bankrupt) continue;
+                if (landlord.CloudRoyaltyPauseUntilTick > state.Tick) continue;
                 Finance.Earn(landlord, LedgerLine.Revenue, pair.Value);
             }
         }

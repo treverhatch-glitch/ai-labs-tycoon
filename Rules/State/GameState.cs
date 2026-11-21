@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 27;
+        public const int CurrentSchema = 29;
 
         public int Schema;
         public string ConfigVersion;
@@ -201,6 +201,24 @@ namespace AiLabs.Rules.State
         public long ResearchLoanBalance;
         /// <summary>Landlord grants that shield renters from peer debt trims (Q181).</summary>
         public List<PeerForbearance> PeerForbearances = new List<PeerForbearance>();
+        /// <summary>Deprecated (schema 28); no command. Kept so older saves load.</summary>
+        public int StashVaultUntilTick = -1;
+        /// <summary>Deprecated (schema 28 draft); era owns audit settlement.</summary>
+        public int AuditFineWaiverPermille;
+        /// <summary>Deprecated (schema 28); no command. Kept so older saves load.</summary>
+        public int ChampionStipendBoostUntilTick = -1;
+        /// <summary>Grey-compute weekly payouts boosted while active (Q188).</summary>
+        public int GreyPayoutBoostUntilTick = -1;
+        /// <summary>Landlord waives cloud chip royalties until this tick (Q189).</summary>
+        public int CloudRoyaltyPauseUntilTick = -1;
+        /// <summary>Deprecated (schema 28 draft); era owns policy consultants.</summary>
+        public int PolicyConsultantUntilTick = -1;
+        /// <summary>Rival feud lobby attention is trimmed until this tick (Q185).</summary>
+        public int LobbyDefenseUntilTick = -1;
+        /// <summary>Debt clock paused until this tick (Q187).</summary>
+        public int DebtForbearanceUntilTick = -1;
+        /// <summary>Protest headlines add less attention until this tick (Q190).</summary>
+        public int ProtestMitigationUntilTick = -1;
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -311,6 +329,15 @@ namespace AiLabs.Rules.State
             s.Int("incidentPlanUntilTick", ref IncidentPlanUntilTick);
             s.Long("researchLoanBalance", ref ResearchLoanBalance);
             s.ObjList("peerForbearances", ref PeerForbearances);
+            s.Int("stashVaultUntilTick", ref StashVaultUntilTick);
+            s.Int("auditFineWaiverPermille", ref AuditFineWaiverPermille);
+            s.Int("championStipendBoostUntilTick", ref ChampionStipendBoostUntilTick);
+            s.Int("greyPayoutBoostUntilTick", ref GreyPayoutBoostUntilTick);
+            s.Int("cloudRoyaltyPauseUntilTick", ref CloudRoyaltyPauseUntilTick);
+            s.Int("policyConsultantUntilTick", ref PolicyConsultantUntilTick);
+            s.Int("lobbyDefenseUntilTick", ref LobbyDefenseUntilTick);
+            s.Int("debtForbearanceUntilTick", ref DebtForbearanceUntilTick);
+            s.Int("protestMitigationUntilTick", ref ProtestMitigationUntilTick);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

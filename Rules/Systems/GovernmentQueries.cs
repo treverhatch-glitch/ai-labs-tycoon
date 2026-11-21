@@ -1,5 +1,4 @@
 using AiLabs.Rules.Config;
-using AiLabs.Rules.Core;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -24,6 +23,12 @@ namespace AiLabs.Rules.Systems
     public static long AuditFineAmount(GameConfig c, LabState lab)
     {
       return AuditFineParts(c, lab).Total;
+    }
+
+    /// <summary>Amount charged at audit level (era compliance may adjust on merge).</summary>
+    public static long ApplyAuditFine(GameConfig c, LabState lab)
+    {
+      return AuditFineAmount(c, lab);
     }
   }
 }

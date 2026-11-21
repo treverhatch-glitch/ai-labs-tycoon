@@ -795,6 +795,7 @@ namespace AiLabs.Rules.Config
         public int IncidentPlanWeeks = 16;
         public long IncidentPlanWeeklyUpkeep = 800;
         public int IncidentPlanCutPermille = 250;
+        public long IncidentPlanRenewCash = 6_000;
         /// <summary>Optional per-sector incident headline lines (text only). Not <c>safety.sectorFlavours</c> (era economics).</summary>
         public List<SectorIncidentHeadlineConfig> SectorIncidentHeadlines = new List<SectorIncidentHeadlineConfig>();
 
@@ -835,6 +836,7 @@ namespace AiLabs.Rules.Config
             s.Int("incidentPlanWeeks", ref IncidentPlanWeeks);
             s.Long("incidentPlanWeeklyUpkeep", ref IncidentPlanWeeklyUpkeep);
             s.Int("incidentPlanCutPermille", ref IncidentPlanCutPermille);
+            s.Long("incidentPlanRenewCash", ref IncidentPlanRenewCash);
             s.ObjList("sectorIncidentHeadlines", ref SectorIncidentHeadlines);
         }
     }
@@ -1015,11 +1017,19 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab whose cash stays below zero this many weeks in a row goes bankrupt.</summary>
         public int BankruptcyGraceWeeks;
         public int HistoryMonths;
+        public long GrantExtensionCash = 15_000;
+        public int GrantExtensionWeeks = 12;
+        public long DebtForbearanceCash = 10_000;
+        public int DebtForbearanceWeeks = 8;
 
         public void Sync(Syncer s)
         {
             s.Int("bankruptcyGraceWeeks", ref BankruptcyGraceWeeks);
             s.Int("historyMonths", ref HistoryMonths);
+            s.Long("grantExtensionCash", ref GrantExtensionCash);
+            s.Int("grantExtensionWeeks", ref GrantExtensionWeeks);
+            s.Long("debtForbearanceCash", ref DebtForbearanceCash);
+            s.Int("debtForbearanceWeeks", ref DebtForbearanceWeeks);
         }
     }
 
