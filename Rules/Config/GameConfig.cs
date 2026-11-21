@@ -771,6 +771,7 @@ namespace AiLabs.Rules.Config
         /// <summary>Quality multiplier when weights are open (before appeal is squared).</summary>
         public int OpenWeightsAppealBonusPermille = 120;
         public DeviceWorkshopConfig DeviceWorkshop = new DeviceWorkshopConfig();
+        public List<CapabilityDomainConfig> CapabilityDomains = new List<CapabilityDomainConfig>();
         public List<SectorConfig> Sectors;
 
         public void Sync(Syncer s)
@@ -783,7 +784,31 @@ namespace AiLabs.Rules.Config
             s.Int("openWeightsRevenuePermille", ref OpenWeightsRevenuePermille);
             s.Int("openWeightsAppealBonusPermille", ref OpenWeightsAppealBonusPermille);
             s.Obj("deviceWorkshop", ref DeviceWorkshop);
+            s.ObjList("capabilityDomains", ref CapabilityDomains);
             s.ObjList("sectors", ref Sectors);
+        }
+
+        public CapabilityDomainConfig Domain(string id)
+        {
+            for (int i = 0; i < CapabilityDomains.Count; i++)
+                if (CapabilityDomains[i].Id == id) return CapabilityDomains[i];
+            return null;
+        }
+    }
+
+    public sealed class CapabilityDomainConfig : ISync, IHasId
+    {
+        public string IdValue;
+        public string Name;
+        public List<string> SectorIds = new List<string>();
+
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("name", ref Name);
+            s.StrList("sectorIds", ref SectorIds);
         }
     }
 

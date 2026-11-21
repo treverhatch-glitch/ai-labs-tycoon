@@ -174,10 +174,11 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>A lab that closes loses its orders, its listings and the foundry room its orders held.</summary>
-        public static void OnBankrupt(GameState state, LabState lab)
+        public static void OnBankrupt(GameConfig c, GameState state, LabState lab)
         {
             for (int i = 0; i < lab.ChipOrders.Count; i++)
-                Unbook(state, lab.ChipOrders[i].NodeId, lab.ChipOrders[i].FoundryMonth, lab.ChipOrders[i].Count);
+                Unbook(state, lab.ChipOrders[i].NodeId, lab.ChipOrders[i].FoundryMonth,
+                    ChipQueries.OrderFoundrySlots(c, state, lab.ChipOrders[i]));
             lab.ChipOrders.Clear();
             lab.ChipListings.Clear();
         }

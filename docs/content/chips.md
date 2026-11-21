@@ -47,6 +47,7 @@ designer's home both.
 | Die | `medium` | - | 100% | 100% | 100% | 100% | 0 |
 | Die | `large` | - | 170% | 200% | 160% | 150% | -15 pts |
 | Die | `reticle` | `reticle-dies` | 250% | 350% | 230% | 220% | -25 pts |
+| Die | `chiplet-mcm` | `chiplet-packaging` | 220% | 280% | 200% | 210% | -20 pts |
 | Format | `fp16` | `chip-team` | 100% | 100% | 100% | 100% | 0 |
 | Format | `fp8` | `training-silicon` | 160% | 100% | 100% | 130% | 0 |
 | Format | `fp4` | `low-precision` | 240% | 100% | 100% | 160% | 0 |

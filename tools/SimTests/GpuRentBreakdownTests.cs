@@ -79,7 +79,7 @@ public class GpuRentBreakdownTests
     public void Bankrupt_lab_breakdown_is_all_zero()
     {
         Game g = Game.Solo().WithStarterLab(gpus: 4);
-        Finance.GoBankrupt(g.State, g.Me);
+        Finance.GoBankrupt(g.C, g.State, g.Me);
         LabQueries.GpuRentBreakdown b = LabQueries.GpuRentParts(g.C, g.State, g.Me);
         Assert.Equal(0, b.Total);
     }

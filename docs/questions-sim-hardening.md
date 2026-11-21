@@ -363,3 +363,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) full permit state machine; (b) amplify protest events when attention ≥ threshold; (c) skip.
 - Choice: **(b)** — bonus permille on `ProtestSystem` bump; no schema (Q50 extension).
 - Why: world-map protest depth without audit/freeze state machine (rules-forward owns audit).
+
+### Q62. Chiplet packaging die? DECIDED: `chiplet-mcm` + foundry room multiplier
+
+- Options: (a) cosmetic die only; (b) extra foundry slots, higher derive stats, own-silicon training bonus; (c) new chip target.
+- Choice: **(b)** — Harness tech `chiplet-packaging`; `ChipQueries.FoundrySlots`; chiplet bonus stacked on in-house training share.
+- Why: bible “chiplets” row; pairs reticle dies without new save fields.
+
+### Q63. Capability domains query? DECIDED: `market.capabilityDomains`
+
+- Options: (a) UI-only grouping; (b) `CapabilityDomainQueries` best + footprint; (c) new leaderboard schema.
+- Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
+- Why: explainable domain scores for planner/UI without gauntlet changes.

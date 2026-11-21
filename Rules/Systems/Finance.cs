@@ -51,7 +51,7 @@ namespace AiLabs.Rules.Systems
                 if (lab.WeeksInDebt == 1) Events.Add(state, EventKind.InDebt, lab.Id, -1, lab.Cash, "");
                 if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks)
                 {
-                    GoBankrupt(state, lab);
+                    GoBankrupt(c, state, lab);
                     if (lab.Id == state.PlayerLabId) EndingSystem.RecordBankrupt(c, state, lab);
                 }
             }
@@ -62,10 +62,10 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The lab closes: its models leave the market, everyone goes home and the rented GPUs go back.</summary>
-        public static void GoBankrupt(GameState state, LabState lab)
+        public static void GoBankrupt(GameConfig c, GameState state, LabState lab)
         {
             lab.Bankrupt = true;
-            ChipSystem.OnBankrupt(state, lab);
+            ChipSystem.OnBankrupt(c, state, lab);
             for (int i = 0; i < lab.Models.Count; i++) lab.Models[i].Status = ModelStatus.Retired;
             for (int s = 0; s < state.Sectors.Count; s++)
             {

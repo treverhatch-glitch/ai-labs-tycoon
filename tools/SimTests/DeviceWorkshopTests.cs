@@ -158,7 +158,7 @@ public class DeviceWorkshopTests
         Game g = HarnessLab();
         ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
         ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
-        Finance.GoBankrupt(g.State, g.Me);
+        Finance.GoBankrupt(g.C, g.State, g.Me);
         Assert.Equal(0, DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, Devices));
     }
 

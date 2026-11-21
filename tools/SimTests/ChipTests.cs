@@ -857,7 +857,7 @@ public class ChipTests
         g.Do(Command.SetChipListing(g.Id, d.Id, 5000, 10));
         int month = lab.ChipOrders.Single().FoundryMonth;
         Assert.Equal(30, ChipQueries.BookedIn(g.State, "n28", month));
-        Finance.GoBankrupt(g.State, lab);
+        Finance.GoBankrupt(g.C, g.State, lab);
         Assert.Empty(lab.ChipOrders);
         Assert.Empty(lab.ChipListings);
         Assert.Equal(0, ChipQueries.BookedIn(g.State, "n28", month));

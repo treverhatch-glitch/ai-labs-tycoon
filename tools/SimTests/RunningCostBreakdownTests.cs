@@ -76,6 +76,18 @@ public class RunningCostBreakdownTests
     }
 
     [Fact]
+    public void Cloud_chips_roll_into_gpu_rent_line()
+    {
+        Game g = CloudListingHelper.SellerBuyerPair();
+        ChipDesign d = CloudListingHelper.ReadyDesign(g);
+        LabState buyer = CloudListingHelper.RentOnlyBuyer(g);
+        ChipSystem.AddChips(g.State, buyer, HardwareBatch.Cloud, g.Id, d.Id, 10);
+        var b = LabQueries.RunningCostParts(g.C, g.State, buyer);
+        Assert.True(b.GpuRent > 0);
+        Assert.Equal(LabQueries.WeeklyGpuRent(g.C, g.State, buyer), b.GpuRent);
+    }
+
+    [Fact]
     public void Reserved_contract_included_in_gpu_rent_line()
     {
         Game g = Game.Solo().WithStarterLab(gpus: 0);

@@ -248,13 +248,60 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The first foundry month from this one on with room for the whole order, or -1 when none within the booking window has.</summary>
-        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, int count)
+        public static bool IsChipletDie(GameConfig c, string dieId)
         {
+            if (string.IsNullOrEmpty(dieId) || c.Chips.ChipletDieIds == null) return false;
+            for (int i = 0; i < c.Chips.ChipletDieIds.Count; i++)
+                if (c.Chips.ChipletDieIds[i] == dieId) return true;
+            return false;
+        }
+
+        public static bool IsChipletDesign(GameConfig c, ChipDesign d)
+        {
+            return d != null && IsChipletDie(c, d.DieId);
+        }
+
+        /// <summary>How many foundry slots an order consumes (chiplet dies book extra room).</summary>
+        public static int FoundrySlots(GameConfig c, ChipDesign d, int chipCount)
+        {
+            if (chipCount < 1) return 0;
+            if (!IsChipletDesign(c, d)) return chipCount;
+            return (int)MathI.MulPermille(chipCount, c.Chips.ChipletFoundryRoomPermille);
+        }
+
+        public static bool RunsChipletTrainingChips(GameConfig c, GameState state, LabState lab)
+        {
+            for (int i = 0; i < lab.Fleet.Count; i++)
+            {
+                HardwareBatch batch = lab.Fleet[i];
+                if (batch.ChipDesignId < 0 || batch.DesignLabId != lab.Id || batch.Count < 1) continue;
+                if (!BatchTrains(c, state, batch)) continue;
+                ChipDesign design = lab.Design(batch.ChipDesignId);
+                if (design != null && IsChipletDesign(c, design)) return true;
+            }
+            return false;
+        }
+
+        public static int OrderFoundrySlots(GameConfig c, GameState state, ChipOrder order)
+        {
+            LabState designer = state.Lab(order.DesignLabId);
+            ChipDesign d = designer == null ? null : designer.Design(order.DesignId);
+            return FoundrySlots(c, d, order.Count);
+        }
+
+        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, int chipCount)
+        {
+            return FirstFreeMonth(c, state, node, null, chipCount);
+        }
+
+        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, ChipDesign design, int chipCount)
+        {
+            int slots = FoundrySlots(c, design, chipCount);
             long room = ChipShortageSystem.EffectiveFoundryRoom(c, state, node);
-            if (count > room) return -1;
+            if (slots > room) return -1;
             int now = MonthIndex(c, state.Tick);
             for (int m = now; m < now + c.Chips.BookAheadMonths; m++)
-                if (BookedIn(state, node.IdValue, m) + count <= room) return m;
+                if (BookedIn(state, node.IdValue, m) + slots <= room) return m;
             return -1;
         }
 

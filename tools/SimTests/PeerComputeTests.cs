@@ -127,7 +127,7 @@ public class PeerComputeTests
     public void Bankrupt_landlord_refuses_new_lease()
     {
         var (g, landlord) = Landlord(4);
-        Finance.GoBankrupt(g.State, landlord);
+        Finance.GoBankrupt(g.C, g.State, landlord);
         g.Refused(Command.RentPeerCompute(g.Id, landlord.Id, 1), CommandError.LabBankrupt);
     }
 
@@ -135,7 +135,7 @@ public class PeerComputeTests
     public void Bankrupt_renter_refuses_lease()
     {
         var (g, landlord) = Landlord(4);
-        Finance.GoBankrupt(g.State, g.Me);
+        Finance.GoBankrupt(g.C, g.State, g.Me);
         g.Refused(Command.RentPeerCompute(g.Id, landlord.Id, 1), CommandError.LabBankrupt);
     }
 

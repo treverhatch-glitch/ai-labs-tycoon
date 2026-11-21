@@ -106,7 +106,7 @@ namespace AiLabs.Rules.Sim
                 if ((long)count * spec.Kw > freeKw)
                     return Fail(CommandError.NotEnoughPower, "That needs " + ((long)count * spec.Kw) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
             }
-            month = ChipQueries.FirstFreeMonth(c, state, c.Chips.Node(d.NodeId), count);
+            month = ChipQueries.FirstFreeMonth(c, state, c.Chips.Node(d.NodeId), d, count);
             if (month < 0) return Fail(CommandError.FoundryFull, "The foundry has no room for " + count + " chips in the next " + c.Chips.BookAheadMonths + " months.");
             return CommandResult.Done(-1);
         }
@@ -126,7 +126,7 @@ namespace AiLabs.Rules.Sim
             order.FoundryMonth = month;
             order.NodeId = node.IdValue;
             buyer.ChipOrders.Add(order);
-            ChipSystem.Book(state, node.IdValue, month, count);
+            ChipSystem.Book(state, node.IdValue, month, ChipQueries.FoundrySlots(c, d, count));
             return order;
         }
 

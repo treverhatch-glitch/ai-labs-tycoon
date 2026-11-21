@@ -3145,6 +3145,19 @@
         "isDeadEnd": false
       },
       {
+        "id": "chiplet-packaging",
+        "era": "harnesses",
+        "name": "Chiplet Packaging",
+        "cost": 48000,
+        "requires": [
+          "reticle-dies"
+        ],
+        "blurb": "Many dies on one package. The foundry charges for the glue between them.",
+        "effects": [],
+        "patentable": true,
+        "isDeadEnd": false
+      },
+      {
         "id": "optical-interconnect",
         "era": "harnesses",
         "name": "Optical Interconnect",
@@ -3476,6 +3489,24 @@
       "sectorId": "devices",
       "appealBonusPermille": 100
     },
+    "capabilityDomains": [
+      {
+        "id": "language",
+        "name": "Language",
+        "sectorIds": [
+          "code-completion",
+          "doc-reading"
+        ]
+      },
+      {
+        "id": "vision",
+        "name": "Vision",
+        "sectorIds": [
+          "image-recognition",
+          "image-design"
+        ]
+      }
+    ],
     "sectorPriceMinPermille": 300,
     "sectorPriceMaxPermille": 2000,
     "openWeightsRevenuePermille": 750,
@@ -4383,6 +4414,11 @@
     "listingMaxPerMonth": 500,
     "cloudRentPermille": 1100,
     "cloudLandlordSharePermille": 450,
+    "chipletFoundryRoomPermille": 1200,
+    "chipletTrainingBonusPermille": 80,
+    "chipletDieIds": [
+      "chiplet-mcm"
+    ],
     "plannerMinYieldPermille": 600,
     "shortage": {
       "durationWeeks": 24,
@@ -4534,6 +4570,17 @@
         "kwPermille": 2300,
         "pointsPermille": 2200,
         "yieldAdjust": -250
+      },
+      {
+        "group": "Die",
+        "id": "chiplet-mcm",
+        "name": "Chiplet multi-die",
+        "requiresTech": "chiplet-packaging",
+        "computePermille": 2200,
+        "costPermille": 2800,
+        "kwPermille": 2000,
+        "pointsPermille": 2100,
+        "yieldAdjust": -200
       },
       {
         "group": "Format",

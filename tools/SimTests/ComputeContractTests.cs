@@ -146,7 +146,7 @@ public class ComputeContractTests
         var g = Game.Solo();
         g.Do(Command.SignReservedCompute(g.Id, 6));
         Assert.NotEmpty(g.Me.ReservedContracts);
-        Finance.GoBankrupt(g.State, g.Me);
+        Finance.GoBankrupt(g.C, g.State, g.Me);
         Assert.Empty(g.Me.ReservedContracts);
         Assert.Equal(0, LabQueries.WeeklyGpuRent(g.C, g.State, g.Me));
     }

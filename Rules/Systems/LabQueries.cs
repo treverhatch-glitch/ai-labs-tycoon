@@ -226,9 +226,17 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long TrainingShareOf(GameConfig c, LabState lab, ComputeSplit split)
         {
+            return TrainingShareOf(c, null, lab, split);
+        }
+
+        public static long TrainingShareOf(GameConfig c, GameState state, LabState lab, ComputeSplit split)
+        {
             long bought = MathI.MulPermille(split.General - split.OwnChips, lab.TrainingSharePermille);
             long own = MathI.MulPermille(split.OwnChips, lab.TrainingSharePermille);
-            return bought + MathI.MulPermille(own, MathI.Permille + c.Chips.InHouseTrainingBonusPermille);
+            int ownBonus = c.Chips.InHouseTrainingBonusPermille;
+            if (split.OwnChips > 0 && state != null && ChipQueries.RunsChipletTrainingChips(c, state, lab))
+                ownBonus += c.Chips.ChipletTrainingBonusPermille;
+            return bought + MathI.MulPermille(own, MathI.Permille + ownBonus);
         }
 
         /// <summary>

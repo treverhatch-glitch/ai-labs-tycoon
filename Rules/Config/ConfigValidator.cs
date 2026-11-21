@@ -174,6 +174,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
             if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
             DeviceWorkshopProblems(p, c);
+            CapabilityDomainProblems(p, c);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
             {
@@ -268,6 +269,21 @@ namespace AiLabs.Rules.Config
             if (string.IsNullOrEmpty(w.RoomTypeId) || c.RoomType(w.RoomTypeId) == null) p.Add("market.deviceWorkshop names an unknown room type");
             if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
             Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
+        }
+
+        static void CapabilityDomainProblems(List<string> p, GameConfig c)
+        {
+            if (c.Market.CapabilityDomains == null) return;
+            var seen = new List<string>();
+            foreach (CapabilityDomainConfig d in c.Market.CapabilityDomains)
+            {
+                if (string.IsNullOrEmpty(d.IdValue)) { p.Add("market.capabilityDomains has an entry with no id"); continue; }
+                if (seen.Contains(d.IdValue)) p.Add("market.capabilityDomains has two entries called " + d.IdValue);
+                seen.Add(d.IdValue);
+                if (d.SectorIds == null || d.SectorIds.Count == 0) p.Add("capability domain " + d.IdValue + " needs at least one sector");
+                else foreach (string s in d.SectorIds)
+                    if (c.Sector(s) == null) p.Add("capability domain " + d.IdValue + " names the unknown sector \"" + s + "\"");
+            }
         }
 
         static void SyntheticDataLabProblems(List<string> p, GameConfig c)
@@ -497,6 +513,12 @@ namespace AiLabs.Rules.Config
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.cloudLandlordSharePermille", k.CloudLandlordSharePermille);
+            if (k.ChipletFoundryRoomPermille < 0 || k.ChipletFoundryRoomPermille > 3000)
+                p.Add("chips.chipletFoundryRoomPermille must be from 0 to 3000");
+            if (k.ChipletTrainingBonusPermille < 0) p.Add("chips.chipletTrainingBonusPermille is negative");
+            if (k.ChipletDieIds != null)
+                foreach (string id in k.ChipletDieIds)
+                    if (k.Option(ChipOptionGroup.Die, id) == null) p.Add("chips.chipletDieIds names the unknown die \"" + id + "\"");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
             if (k.Shortage == null) p.Add("chips.shortage is missing");
             else

@@ -37,6 +37,12 @@ namespace AiLabs.Rules.Config
         public int CloudRentPermille;
         /// <summary>Share of a renter's weekly cloud-chip rent paid to the listing lab when it is another lab.</summary>
         public int CloudLandlordSharePermille;
+        /// <summary>Foundry slots consumed per ordered chip for <see cref="ChipletDieIds"/> designs (permille; 1200 = 20% more room).</summary>
+        public int ChipletFoundryRoomPermille = 1200;
+        /// <summary>Extra training-share bonus when the lab trains on its own chiplet-packaged silicon.</summary>
+        public int ChipletTrainingBonusPermille = 80;
+        /// <summary>Die option ids that count as multi-chiplet packages for foundry and training hooks.</summary>
+        public List<string> ChipletDieIds = new List<string>();
         /// <summary>A plan orders chips only once a design's yield has reached this.</summary>
         public int PlannerMinYieldPermille;
         public string ArchitectRoleId;
@@ -70,6 +76,9 @@ namespace AiLabs.Rules.Config
             s.Int("listingMaxPerMonth", ref ListingMaxPerMonth);
             s.Int("cloudRentPermille", ref CloudRentPermille);
             s.Int("cloudLandlordSharePermille", ref CloudLandlordSharePermille);
+            s.Int("chipletFoundryRoomPermille", ref ChipletFoundryRoomPermille);
+            s.Int("chipletTrainingBonusPermille", ref ChipletTrainingBonusPermille);
+            s.StrList("chipletDieIds", ref ChipletDieIds);
             s.Int("plannerMinYieldPermille", ref PlannerMinYieldPermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);

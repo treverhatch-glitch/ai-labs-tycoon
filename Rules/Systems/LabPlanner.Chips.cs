@@ -172,7 +172,7 @@ namespace AiLabs.Rules.Systems
             if (perChip > 0) count = (int)Math.Min(count, spare / perChip);
             while (count >= 1)
             {
-                int month = ChipQueries.FirstFreeMonth(c, x.State, c.Chips.Node(best.NodeId), count);
+                int month = ChipQueries.FirstFreeMonth(c, x.State, c.Chips.Node(best.NodeId), best, count);
                 if (month >= 0)
                 {
                     Decide(x, Command.OrderChips(lab.Id, best.Id, holding.Id, count), DecisionAction.OrderedChips, best.Name, count,

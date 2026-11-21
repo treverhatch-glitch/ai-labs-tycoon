@@ -97,7 +97,7 @@ A model can: Teams of agents running for days.
 
 Opens: Multi-agent orchestration; AI-assisted research and synthetic data; The harness control room and the AI factory hall; Selling work instead of software.
 
-- Techs: `multi-agent`, `ai-assisted-research`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
+- Techs: `multi-agent`, `ai-assisted-research`, `chiplet-packaging`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
 - Sectors: `agent-workforce`, `agri-logistics`, `devices`, `ai-research-services`
 - Rooms: `synthetic-data-lab`, `device-workshop`, `harness-control-room`, `ai-factory-hall`
 

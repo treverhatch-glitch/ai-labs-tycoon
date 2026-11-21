@@ -56,7 +56,7 @@ namespace AiLabs.Rules.Systems
         public static long TrainingCompute(GameConfig c, GameState state, LabState lab)
         {
             if (LabQueries.ActiveRuns(lab) == 0) return 0;
-            return LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false));
+            return LabQueries.TrainingShareOf(c, state, lab, LabQueries.Split(c, state, lab, false));
         }
 
         public static CapabilityForecast Forecast(GameConfig c, LabState lab, ModelLineConfig line)
@@ -76,7 +76,7 @@ namespace AiLabs.Rules.Systems
         public static int EstimateWeeks(GameConfig c, GameState state, LabState lab, ModelLineConfig line, int alignmentSharePermille)
         {
             int runs = LabQueries.ActiveRuns(lab) + 1;
-            long training = LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false)) / runs;
+            long training = LabQueries.TrainingShareOf(c, state, lab, LabQueries.Split(c, state, lab, false)) / runs;
             long effective = MathI.MulPermille(training, SpeedPermille(c, state, lab));
             long progress = effective - MathI.MulPermille(effective, alignmentSharePermille);
             if (progress <= 0) return -1;

@@ -66,7 +66,7 @@ public class CloudChipLandlordTests
         ChipDesign design = CloudListingHelper.ReadyDesign(g);
         LabState renter = CloudListingHelper.RentOnlyBuyer(g);
         ChipSystem.AddChips(g.State, renter, HardwareBatch.Cloud, g.Id, design.Id, 10);
-        Finance.GoBankrupt(g.State, g.Me);
+        Finance.GoBankrupt(g.C, g.State, g.Me);
         long before = g.Me.Ledger.Lifetime.Revenue;
         g.Weeks(1);
         Assert.Equal(before, g.Me.Ledger.Lifetime.Revenue);
@@ -79,7 +79,7 @@ public class CloudChipLandlordTests
         ChipDesign design = CloudListingHelper.ReadyDesign(g);
         LabState renter = CloudListingHelper.RentOnlyBuyer(g);
         ChipSystem.AddChips(g.State, renter, HardwareBatch.Cloud, g.Id, design.Id, 10);
-        Finance.GoBankrupt(g.State, renter);
+        Finance.GoBankrupt(g.C, g.State, renter);
         long before = g.Me.Ledger.Lifetime.Revenue;
         g.Weeks(1);
         Assert.Equal(before, g.Me.Ledger.Lifetime.Revenue);
