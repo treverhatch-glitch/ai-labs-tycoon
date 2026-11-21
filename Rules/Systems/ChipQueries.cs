@@ -73,6 +73,49 @@ namespace AiLabs.Rules.Systems
             return spec;
         }
 
+        /// <summary>Step deltas that sum to <see cref="Derive"/> compute.</summary>
+        public struct ChipComputeDeriveBreakdown
+        {
+            public long AfterNode;
+            public long FromTarget;
+            public long FromDie;
+            public long FromFormat;
+            public long FromMemory;
+            public long FromCooling;
+
+            public long Total { get { return AfterNode + FromTarget + FromDie + FromFormat + FromMemory + FromCooling; } }
+        }
+
+        public static ChipComputeDeriveBreakdown ComputeDeriveParts(GameConfig c, string targetId, string nodeId, string dieId, string formatId, string memoryId, string coolingId)
+        {
+            var b = new ChipComputeDeriveBreakdown();
+            ChipsConfig k = c.Chips;
+            ChipTargetConfig target = k.Target(targetId);
+            ChipNodeConfig node = k.Node(nodeId);
+            ChipOptionConfig die = k.Option(ChipOptionGroup.Die, dieId);
+            ChipOptionConfig format = k.Option(ChipOptionGroup.Format, formatId);
+            ChipOptionConfig memory = k.Option(ChipOptionGroup.Memory, memoryId);
+            ChipOptionConfig cooling = k.Option(ChipOptionGroup.Cooling, coolingId);
+            if (target == null || node == null || die == null || format == null || memory == null || cooling == null) return b;
+            long run = node.ComputePerChipWeek;
+            b.AfterNode = run;
+            long afterTarget = MathI.MulPermille(run, target.ComputePermille);
+            b.FromTarget = afterTarget - run;
+            run = afterTarget;
+            long afterDie = MathI.MulPermille(run, die.ComputePermille);
+            b.FromDie = afterDie - run;
+            run = afterDie;
+            long afterFormat = MathI.MulPermille(run, format.ComputePermille);
+            b.FromFormat = afterFormat - run;
+            run = afterFormat;
+            long afterMemory = MathI.MulPermille(run, memory.ComputePermille);
+            b.FromMemory = afterMemory - run;
+            run = afterMemory;
+            long afterCooling = MathI.MulPermille(run, cooling.ComputePermille);
+            b.FromCooling = afterCooling - run;
+            return b;
+        }
+
         public static ChipSpec Spec(GameConfig c, ChipDesign d)
         {
             return Derive(c, d.Target, d.NodeId, d.DieId, d.FormatId, d.MemoryId, d.CoolingId);

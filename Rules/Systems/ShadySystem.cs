@@ -25,7 +25,7 @@ namespace AiLabs.Rules.Systems
                 if (op.ResolveTick <= state.Tick) continue;
                 ShadyCardConfig card = c.Shady.Card(op.CardId);
                 if (card == null || card.Special != ShadySpecial.GreyCompute || op.AuxId < 0) continue;
-                Finance.Earn(lab, LedgerLine.GreyRevenue, GreyPayout(c, state, lab, op.AuxId));
+                Finance.Earn(lab, LedgerLine.GreyRevenue, ShadyQueries.GreyWeeklyPayout(c, state, lab, op.AuxId));
             }
             if (!resolved && lab.Heat > 0)
             {
@@ -51,8 +51,8 @@ namespace AiLabs.Rules.Systems
                 return;
             }
             if (ShadyQueries.CaseOpen(lab, tick)) return;
-            if (lab.Heat < c.Shady.InvestigationThreshold) return;
-            int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
+            int permille = ShadyQueries.InvestigationOpenPermille(c, lab);
+            if (permille < 1) return;
             if (state.Rng.Shady.Chance(permille))
             {
                 lab.CaseEndsTick = tick + c.Shady.CaseWeeks;
@@ -68,18 +68,15 @@ namespace AiLabs.Rules.Systems
 
         static void TryOpenCase(GameConfig c, GameState state, LabState lab, string tag)
         {
-            if (lab.Heat < c.Shady.InvestigationThreshold) return;
-            int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
-            if (!state.Rng.Shady.Chance(permille)) return;
+            int permille = ShadyQueries.InvestigationOpenPermille(c, lab);
+            if (permille < 1 || !state.Rng.Shady.Chance(permille)) return;
             lab.CaseEndsTick = state.Tick + c.Shady.CaseWeeks;
             Events.Add(state, EventKind.ShadyInvestigation, lab.Id, -1, lab.Heat, tag);
         }
 
         static void CloseCase(GameConfig c, GameState state, LabState lab)
         {
-            ShadyConfig cfg = c.Shady;
-            int staff = WorldQueries.PolicyStaff(c, lab);
-            int chance = (int)MathI.Clamp(lab.Heat / cfg.ConvictionDivisor - staff * cfg.ConvictionPolicyPerStaff, 0, 900);
+            int chance = ShadyQueries.ConvictionChanceParts(c, lab).Total;
             lab.CaseEndsTick = -1;
             if (state.Rng.Shady.Chance(chance))
             {
@@ -88,7 +85,7 @@ namespace AiLabs.Rules.Systems
             }
             else
             {
-                lab.Heat = (int)MathI.Max(0, lab.Heat - cfg.AcquittalHeatDrop);
+                lab.Heat = (int)MathI.Max(0, lab.Heat - c.Shady.AcquittalHeatDrop);
                 Events.Add(state, EventKind.ShadyAcquitted, lab.Id, -1, lab.Heat, "");
             }
         }
@@ -174,15 +171,6 @@ namespace AiLabs.Rules.Systems
                 }
                 RivalSystem.Feel(c, target, c.Rivalry.Feelings.TracedShadyPermille);
             }
-        }
-
-        static long GreyPayout(GameConfig c, GameState state, LabState lab, int holdingId)
-        {
-            Holding h = lab.Holding(holdingId);
-            if (h == null) return 0;
-            long kw = WorldQueries.InstalledKw(c, state, lab, holdingId) / 2;
-            ShadyCardConfig card = c.Shady.Card("grey-compute");
-            return card == null ? 0 : card.BasePayout * kw;
         }
 
         static void CopyWeights(GameConfig c, GameState state, LabState lab, LabState target, ShadyOp op)

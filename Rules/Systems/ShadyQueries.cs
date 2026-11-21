@@ -70,5 +70,73 @@ namespace AiLabs.Rules.Systems
             if (staff > c.Shady.HeatPolicyCap) staff = c.Shady.HeatPolicyCap;
             return c.Shady.HeatDecayPerWeek + staff * c.Shady.HeatPolicyPerStaff;
         }
+
+        public struct InvestigationRollBreakdown
+        {
+            public int Threshold;
+            public int HeatOverThreshold;
+            public int RollPermille;
+        }
+
+        public static InvestigationRollBreakdown InvestigationRollParts(GameConfig c, LabState lab)
+        {
+            var b = new InvestigationRollBreakdown { Threshold = c.Shady.InvestigationThreshold };
+            if (lab.Heat < b.Threshold) return b;
+            b.HeatOverThreshold = lab.Heat - b.Threshold;
+            b.RollPermille = InvestigationOpenPermille(c, lab);
+            return b;
+        }
+
+        public static int InvestigationOpenPermille(GameConfig c, LabState lab)
+        {
+            if (lab.Heat < c.Shady.InvestigationThreshold) return 0;
+            return (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
+        }
+
+        public struct ConvictionChanceBreakdown
+        {
+            public int FromHeat;
+            public int FromPolicyStaff;
+            public int Total;
+        }
+
+        public static ConvictionChanceBreakdown ConvictionChanceParts(GameConfig c, LabState lab)
+        {
+            ShadyConfig cfg = c.Shady;
+            var b = new ConvictionChanceBreakdown();
+            b.FromHeat = lab.Heat / cfg.ConvictionDivisor;
+            int staff = WorldQueries.PolicyStaff(c, lab);
+            int cut = staff * cfg.ConvictionPolicyPerStaff;
+            b.FromPolicyStaff = -cut;
+            b.Total = (int)MathI.Clamp(b.FromHeat + b.FromPolicyStaff, 0, 900);
+            return b;
+        }
+
+        public struct GreyComputePayoutBreakdown
+        {
+            public long InstalledKw;
+            public long BilledKw;
+            public long RatePerKw;
+            public long Total;
+        }
+
+        public static GreyComputePayoutBreakdown GreyWeeklyPayoutParts(GameConfig c, GameState state, LabState lab, int holdingId)
+        {
+            var b = new GreyComputePayoutBreakdown();
+            Holding h = lab.Holding(holdingId);
+            if (h == null) return b;
+            ShadyCardConfig card = c.Shady.Card("grey-compute");
+            if (card == null) return b;
+            b.InstalledKw = WorldQueries.InstalledKw(c, state, lab, holdingId);
+            b.BilledKw = b.InstalledKw / 2;
+            b.RatePerKw = card.BasePayout;
+            b.Total = b.RatePerKw * b.BilledKw;
+            return b;
+        }
+
+        public static long GreyWeeklyPayout(GameConfig c, GameState state, LabState lab, int holdingId)
+        {
+            return GreyWeeklyPayoutParts(c, state, lab, holdingId).Total;
+        }
     }
 }

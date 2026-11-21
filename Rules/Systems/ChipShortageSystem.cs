@@ -33,6 +33,37 @@ namespace AiLabs.Rules.Systems
             return MathI.MulPermille(price, PriceMulPermille(state));
         }
 
+        public struct PriceScaleBreakdown
+        {
+            public long Base;
+            public long FromShortage;
+            public long Total { get { return Base + FromShortage; } }
+        }
+
+        public static PriceScaleBreakdown PriceScaleParts(GameState state, long basePrice)
+        {
+            var b = new PriceScaleBreakdown { Base = basePrice };
+            long scaled = ScalePrice(state, basePrice);
+            b.FromShortage = scaled - basePrice;
+            return b;
+        }
+
+        public struct FoundryRoomBreakdown
+        {
+            public long Base;
+            public long FromShortage;
+            public long Total { get { return Base + FromShortage; } }
+        }
+
+        public static FoundryRoomBreakdown FoundryRoomParts(GameConfig c, GameState state, ChipNodeConfig node)
+        {
+            long baseRoom = c.Chips.FoundryRoom(node);
+            var b = new FoundryRoomBreakdown { Base = baseRoom };
+            long effective = EffectiveFoundryRoom(c, state, node);
+            b.FromShortage = effective - baseRoom;
+            return b;
+        }
+
         /// <summary>Monthly Envydia allocation pool while the crunch is on (stronger crunch → fewer GPUs).</summary>
         public static int VendorSupplyPermille(GameConfig c, GameState state)
         {

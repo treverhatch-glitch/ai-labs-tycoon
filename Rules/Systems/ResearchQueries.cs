@@ -70,5 +70,36 @@ namespace AiLabs.Rules.Systems
             int mul = c.Research.Patents == null ? 800 : c.Research.Patents.FilingCostPermille;
             return AiLabs.Rules.Core.MathI.MulPermille(tech.Cost, mul);
         }
+
+        public struct PatentFilingCostBreakdown
+        {
+            public long TechCost;
+            public int FilingPermille;
+            public long Total { get { return AiLabs.Rules.Core.MathI.MulPermille(TechCost, FilingPermille); } }
+        }
+
+        public static PatentFilingCostBreakdown PatentFilingCostParts(GameConfig c, TechConfig tech)
+        {
+            var b = new PatentFilingCostBreakdown();
+            if (tech == null) return b;
+            b.TechCost = tech.Cost;
+            b.FilingPermille = c.Research.Patents == null ? 800 : c.Research.Patents.FilingCostPermille;
+            return b;
+        }
+
+        /// <summary>Tech ids in the same fork that would be blocked after researching <paramref name="techId"/>.</summary>
+        public static System.Collections.Generic.List<string> ForkSiblingsToBlock(GameConfig c, LabState lab, string techId)
+        {
+            var list = new System.Collections.Generic.List<string>();
+            ResearchForkConfig fork = ForkFor(c, techId);
+            if (fork == null || fork.Techs == null) return list;
+            for (int i = 0; i < fork.Techs.Count; i++)
+            {
+                string other = fork.Techs[i];
+                if (other == techId || lab.BlockedTechs.Contains(other) || lab.Techs.Contains(other)) continue;
+                list.Add(other);
+            }
+            return list;
+        }
     }
 }

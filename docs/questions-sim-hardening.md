@@ -386,6 +386,30 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q125. Fork sibling preview? DECIDED: `ResearchQueries.ForkSiblingsToBlock`
+- Choice: **(a)** — lists fork mates that would be blocked before `ResearchTech` commits; research command applies `ApplyFork`.
+
+### Q124. Patent filing cost parts? DECIDED: `ResearchQueries.PatentFilingCostParts`
+- Choice: **(a)** — tech cost × `filingCostPermille`; matches `FilePatent` spend.
+
+### Q123. Grey-compute weekly payout parts? DECIDED: `ShadyQueries.GreyWeeklyPayoutParts`
+- Choice: **(a)** — half installed kW × card rate; wired into `ShadySystem.RunWeek`.
+
+### Q122. Conviction chance parts? DECIDED: `ShadyQueries.ConvictionChanceParts`
+- Choice: **(a)** — heat vs policy staff; `CloseCase` uses `.Total`.
+
+### Q121. Investigation roll parts? DECIDED: `ShadyQueries.InvestigationRollParts`
+- Choice: **(a)** — monthly `InvestigationOpenPermille` extracted; audit path shares math.
+
+### Q120. Foundry room under shortage? DECIDED: `ChipShortageSystem.FoundryRoomParts`
+- Choice: **(a)** — base room + `FromShortage`; matches `EffectiveFoundryRoom`.
+
+### Q119. Shortage price scale parts? DECIDED: `ChipShortageSystem.PriceScaleParts`
+- Choice: **(a)** — base + `FromShortage`; same multiplier as `ScalePrice` / peer rent.
+
+### Q118. Chip compute derive parts? DECIDED: `ChipQueries.ComputeDeriveParts`
+- Choice: **(a)** — step deltas sum to `Derive` compute (explain-number tail).
+
 ### Q117. Incident odds breakdown (lab-aware)? DECIDED: `DisplayQueries.IncidentParts` + `FromSafetyStaff`
 - Choice: **(a)** — parts sum to `SafetySystem.IncidentChancePermille(c, model, lab)` including Q108 staff cut.
 - Why: NEXT “explain every number” tail; closes display vs live mismatch without new economy knobs.
