@@ -1,0 +1,139 @@
+# What's next
+
+The roadmap after the foundation slice. Design is in [DESIGN.md](DESIGN.md); PC-only steps are in
+[SETUP-PC.md](SETUP-PC.md). Items inside a group are in rough order. Sizes are in terms of what has to change, not
+time.
+
+## Where things stand
+
+The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs, research, training,
+releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
+eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
+world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). **683** tests pass locally on stack2 (pushed tip **658** at Opus bar; unpushed adds Treaty/Nationalised schema **24**, Q154–Q159 hatch follow-ups), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
+
+Known limits of the slice, so nobody is surprised:
+
+- **Eras 2 to 8 are first-pass content.** Every era has techs, sectors, rooms, headlines and events, and the
+  autopilot reaches the end of the tree by 2034. Names, blurbs and the numbers are tuned to keep a whole life
+  solvent, not yet to be fun at each step; the eight-year balance soak is the first check. The content tables are in
+  [content/](content/eras.md); [QUESTIONS.md](QUESTIONS.md) lists the choices taken.
+- **Training cost per era is retuned for GPU generations.** Hardware generations landed, so the era multipliers were
+  scaled down by the compute-per-dollar they add (Q35). Late-game cash is still higher than at launch; Q76 retuned
+  dial-up costs and wealth growth for the eight-year soak.
+- **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
+  functions; a room is built for what it seats or holds.
+- **The cast is eight labs.** OpenAye, AntHopticsAI and xAy from the start; Metta (2007), Macrosoft (2012), Palantear
+  (2017), Goggle DeepMined (2010) and DeepSneak (2023) as arrivals. The start-era picker (item 12) is still UI-only.
+- **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
+- **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
+  AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
+  use every command; the host UI is the missing half.
+- **Staff are people** with traits and morale; feud poaching is in (schema 10).
+- **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); alignment gap and rungs 1–3 are in; reserved compute and the Envydia queue are in (schema 11).
+- **The shady path is in** for the player (cards, launder, investigations); parody labs never take shady jobs (`shadyAppetite` 0).
+- **Money is cash and a grant.** No investors, shares, debt or bubble.
+- **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
+  the player's side.
+
+## Who works where
+
+Agents work in parallel. Stay in your area and the merges stay boring.
+
+| Area | Folder |
+| --- | --- |
+| Rules, tests, headless sim | `Rules/`, `tools/` |
+| Unity project | `unity/` |
+| Content tables (eras, techs, sectors, events, cast) | `docs/content/`, then into `Rules/Data/` by a rules task |
+| Studio wiring, CI | `studio/`, `.github/` |
+
+A rules change that moves the golden run (`The_golden_run_has_not_moved`) re-records the digest in the same commit
+and says why in the commit message.
+
+## Rules: Hatch (high priority)
+
+1. ~~**AI bubble meter and crash.**~~ Done: schema **19**; `BubbleMeterCrashHatchTests` + `BubbleMeterHatchBarTests` (Hatch bar).
+2. ~~**Acquire other labs.**~~ Done: schema **20**; `AcquireLab` / `AcquisitionSystem`; `AcquireLabLaterTests`.
+3. ~~**Sell your own models.**~~ Done: `SellModel` / `ModelSalesSystem`; `SellModelLaterTests`.
+
+## Rules: next
+
+1. ~~**Eras as data.**~~ Done: `eras` in the config, `EraSystem`, era-gated techs and rooms (`EraLocked`), the
+   start-era picker (`NewGameOptions.StartEraId`, `simcli --era`), validator checks and tests.
+2. ~~**Era content for every era.**~~ Done: 81 techs, 34 sectors, 22 room types, 15 roles (82, 24 and 17 with the world map's Liquid Cooling, Ops Centre, Policy Office, Infrastructure and Policy), 6 lots, 50 world events and
+   per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
+3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
+   odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
+4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
+   bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
+   signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
+4b. ~~**Own chips.**~~ Done (systems design phase D, schema 5): `ChipSystem`, `ChipQueries`, foundry months, the
+    six chip commands, `ComputeSplit`, listings, Envydia's reactions, the planner's chip programme (Q57 to Q67).
+5. ~~**Reserved compute and the Envydia queue.**~~ Done: `SignReservedCompute`, `QueueGpuPurchase`,
+   `ComputeContractSystem`, discounted rent and deposit, queue fulfilled at month start, schema 11;
+   `ComputeContractTests`. Golden digest `61bacf6b…`.
+6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
+   seven Envydia generations as data, resale that falls a generation at a time, `BuyGpus`/`SellGpus`/`MoveHardware`
+   to a holding, the fleet migration (schema 2).
+7. ~~**The funding ladder.**~~ Done: `FundingConfig`, `RaiseFunding`, founder share and investor board seats,
+   schema 8 migration, `RecordOusted` when share hits `controlPermille`; `FundingTests`.
+8. ~~**The alignment gap and incident rungs 1 to 3.**~~ Done: `displayedAlignment`, rungs 1–3 in `SafetySystem`, sandbag on
+   release, `SandbagBoost` in `DisplayQueries`, schema 9; `AlignmentGapTests`.
+9. ~~**Staff as people.**~~ Done: `StaffMember` rows (trait, morale), `StaffSystem`, feud poaching, schema 10
+   migration from pools; `StaffPeopleTests`.
+10. ~~**Bot balance at scale.**~~ Done: `BalanceSoak` in `Rules/Sim`, `simcli soak` with three presets, `BalanceTests`
+    (default 24 games per preset; set `BALANCE_SOAK_FULL=1` for 200 each; optional `BALANCE_SOAK_GAMES_PER_PRESET`).
+    Dial-up `trainingCostPermille` raised to 1500 and plan `wealthGrowthPermillePerMillion` cut (Q72); Envydia
+    courting still waits on cast chip share (Q67).
+11. ~~**Endings that continue (Q96).**~~ Done: continue modes for monopoly and superintelligence endings;
+    `EndingsContinuationTailTests`; exits/ousted/bankrupt unchanged from phase E.
+
+12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
+    a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
+13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
+    "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
+
+## Rules: later
+
+- ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
+- ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.
+- ~~**Incident rungs 4–6 (Q91).**~~ Done: corruption thresholds, six rungs in data, relaxed validator; `IncidentRungsLaterTests`.
+- ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
+- ~~**Shady path depth and China deals (Q93).**~~ Done: player-only shady jobs, model corruption carry/mood/side jobs, China state requests and export vs smuggle; `ShadyChinaLaterTests`.
+- ~~**Containment rooms and superintelligence ending gates (Q94).**~~ Done: containment-wing alignment bonus, year-end `TrySuperintelligence` for paperclipped / long-summer / loose; schema 15; `ContainmentSuperintelLaterTests`.
+- ~~**Specialist** model lines, data sources, **open weights**, sector pricing.~~ Done on `cursor/rules-side-items` (PR #2); rules-forward does not reimplement.
+- ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
+- Real **Bodies** and **Upward** expansions (mechanics): **owned by Unity thread** on `cursor/rules-side-items`; era **data** only on stack2.
+- ~~**Treaty & Nationalised** ending triggers (systems-design §5.1)~~ **done (local)** — Q150–Q153; schema **24** `bubbleHadCrash`; `TreatyNationalisedLaterTests` (15); **683** tests at local tip.
+- **Hatch follow-ups** (Opus review): **done (local)** — Q154–Q159; `HatchFollowUpLaterTests` (**41**).
+- ~~**Hatch ledger lines** (Opus review)~~ **done (local)** — Q170; schema **28**; `HatchLedgerLaterTests` (8).
+- ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
+- ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
+- ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
+- ~~**Rival retrenchment soak**~~ **done (local)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests` (forty × forty).
+- ~~**Rival economy robustness (stack2)**~~ **done (local)** — Q201 perturbation soak; era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201).
+
+## Rules: forward queue (from bible / systems-design)
+
+- ~~**The Pop** ending when the bubble crashes on the player (Q97).~~ Done: `BubbleConfig.thePopEndingForPlayer`; `ThePopEndingLaterTests`.
+- ~~**Second Place** ending when the player is crown runner-up N years (Q98).~~ Done: `crownRunnerUpStreak`; schema 17.
+- ~~**Exit sell-price breakdown** (Q99).~~ Done: `DisplayQueries.ExitPriceParts`.
+- ~~**Era incident load** shifts risk by era (Q100).~~ Done: `incidentLoadPermille` on eras.
+- ~~**60-year headless soak** pins long-horizon stability (Q101).~~ Done: `LongHorizonSoakLaterTests` sixty-year step.
+
+## Unity
+
+Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
+
+1. Create the Unity 6 project in `unity/` with `Rules/` as a local package. No rules in Unity scripts: Unity sends
+   `Command`s and draws `GameState`.
+2. A first scene built in code: the garage lot as a grid, rooms as coloured blocks, a week button, cash and date.
+3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
+4. The model mascots and their three states; the glow.
+5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
+
+## Studio and CI
+
+- Create the studio on the PC and copy `studio/game.json` into it (SETUP-PC.md).
+- Beta mode is the owner's switch in the studio; it is off until the owner turns it on (SETUP-PC.md).
+- The `unity` workflow is manual and skips until `unity/` holds a project.

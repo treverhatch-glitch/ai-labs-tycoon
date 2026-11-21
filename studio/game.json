@@ -1,0 +1,16 @@
+{
+  "game": "ai-labs-tycoon",
+  "native": "unity",
+  "engines": {
+    "unity": {
+      "folder": "../ai-labs-tycoon",
+      "cwd": "../ai-labs-tycoon",
+      "target": "main",
+      "quickCheck": "dotnet build tools/SimTests --nologo",
+      "rules": {
+        "test": "dotnet test tools/SimTests",
+        "timeoutMin": 30
+      }
+    }
+  }
+}

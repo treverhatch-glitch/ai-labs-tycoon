@@ -1,0 +1,111 @@
+using System.Collections.Generic;
+using AiLabs.Rules.Core;
+
+namespace AiLabs.Rules.Config
+{
+    public enum EndingKind { Best, Win, Neutral, Loss, Worst }
+
+    public sealed class EndingsConfig : ISync
+    {
+        public List<EndingDefConfig> Endings = new List<EndingDefConfig>();
+        public long BailoutCash;
+        public int BailoutReputation;
+        public int ExitRevenueYears;
+        public int ExitFleetPermille;
+        public int MonopolyCrownYears;
+        public int MonopolyRevenuePpm;
+        public int MonopolyComputePpm;
+        public int MonopolyCooldownYears;
+        public int MonopolyAttention;
+        public int HandcuffsFinePermille;
+        public int HandcuffsShadyLockWeeks;
+        public string HandcuffsSuccessor = "";
+        public FrontierConfig Frontier = new FrontierConfig();
+        public MuseumConfig Museum = new MuseumConfig();
+        public SuperintelligenceConfig Superintelligence;
+        /// <summary>Crown runner-up years in a row before the Second Place ending fires.</summary>
+        public int SecondPlaceRunnerUpYears;
+        /// <summary>Home-bloc attention level at or above this for TryNationalised (4 = Freeze).</summary>
+        public int NationalisedHomeLevelMin;
+        /// <summary>Foreign blocs at or above this scrutiny level to count toward TryTreaty (3 = Audit).</summary>
+        public int TreatyForeignLevelMin;
+        /// <summary>How many foreign blocs must be at TreatyForeignLevelMin for TryTreaty.</summary>
+        public int TreatyForeignBlocCount;
+
+        public EndingDefConfig Def(string id)
+        {
+            for (int i = 0; i < Endings.Count; i++) if (Endings[i].Id == id) return Endings[i];
+            return null;
+        }
+
+        public void Sync(Syncer s)
+        {
+            s.ObjList("endings", ref Endings);
+            s.Long("bailoutCash", ref BailoutCash);
+            s.Int("bailoutReputation", ref BailoutReputation);
+            s.Int("exitRevenueYears", ref ExitRevenueYears);
+            s.Int("exitFleetPermille", ref ExitFleetPermille);
+            s.Int("monopolyCrownYears", ref MonopolyCrownYears);
+            s.Int("monopolyRevenuePpm", ref MonopolyRevenuePpm);
+            s.Int("monopolyComputePpm", ref MonopolyComputePpm);
+            s.Int("monopolyCooldownYears", ref MonopolyCooldownYears);
+            s.Int("monopolyAttention", ref MonopolyAttention);
+            s.Int("handcuffsFinePermille", ref HandcuffsFinePermille);
+            s.Int("handcuffsShadyLockWeeks", ref HandcuffsShadyLockWeeks);
+            s.Str("handcuffsSuccessor", ref HandcuffsSuccessor);
+            s.Obj("frontier", ref Frontier);
+            s.Obj("museum", ref Museum);
+            s.Obj("superintelligence", ref Superintelligence);
+            s.Int("secondPlaceRunnerUpYears", ref SecondPlaceRunnerUpYears);
+            s.Int("nationalisedHomeLevelMin", ref NationalisedHomeLevelMin);
+            s.Int("treatyForeignLevelMin", ref TreatyForeignLevelMin);
+            s.Int("treatyForeignBlocCount", ref TreatyForeignBlocCount);
+        }
+    }
+
+    public sealed class EndingDefConfig : ISync, IHasId
+    {
+        public string IdValue = "";
+        public string Name = "";
+        public EndingKind Kind;
+        public string BlurbKey = "";
+        public List<string> ContinueModes = new List<string>();
+
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("name", ref Name);
+            s.Enum("kind", ref Kind);
+            s.Str("blurbKey", ref BlurbKey);
+            s.StrList("continueModes", ref ContinueModes);
+        }
+    }
+
+    public sealed class FrontierConfig : ISync
+    {
+        public long BaseCost;
+        public int GrowthPermille;
+        public int MaxLevel;
+        public int CapabilityPermillePerLevel;
+
+        public void Sync(Syncer s)
+        {
+            s.Long("baseCost", ref BaseCost);
+            s.Int("growthPermille", ref GrowthPermille);
+            s.Int("maxLevel", ref MaxLevel);
+            s.Int("capabilityPermillePerLevel", ref CapabilityPermillePerLevel);
+        }
+    }
+
+    public sealed class MuseumConfig : ISync
+    {
+        public int PerLine;
+
+        public void Sync(Syncer s)
+        {
+            s.Int("perLine", ref PerLine);
+        }
+    }
+}

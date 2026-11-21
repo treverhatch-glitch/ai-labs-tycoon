@@ -1,0 +1,149 @@
+using System.Collections.Generic;
+using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
+using AiLabs.Rules.Sim;
+using AiLabs.Rules.State;
+using Xunit;
+
+namespace AiLabs.SimTests.Support;
+
+/// <summary>Rewrites a current save JSON to look like an older schema so migration steps can be tested in isolation.</summary>
+public static class SaveSchemaPretend
+{
+    public static string At(GameConfig c, int schema, string saveJson)
+    {
+        JsonValue root = Json.Parse(saveJson);
+        if (schema < GameState.CurrentSchema)
+        {
+            if (schema < 28) StripHatchLedgerLines(root);
+            if (schema < 24) StripBubbleHadCrash(root);
+            if (schema < 20) StripAbsorbedByLab(root);
+            if (schema < 19) StripBubbleCrashPhase(root);
+            if (schema < 18) StripChinaDeclineCooldown(root);
+            if (schema < 17) StripCrownRunnerUpStreak(root);
+            if (schema < 16) StripBoardLockedUntilTick(root);
+            if (schema < 14) StripChinaDealFlags(root);
+            if (schema < 13) StripPublicFloatPpm(root);
+            if (schema < 12) StripBubblePermille(root);
+            if (schema < 11) StripReservedAndQueue(root);
+            if (schema < 10) RevertStaffToPools(root);
+            if (schema < 9) StripAlignmentGapFields(root);
+        }
+        root.Set("schema", JsonValue.Of((long)schema));
+        return Json.Write(root, false);
+    }
+
+    public static void AssertRoundTrip(Simulation sim)
+    {
+        string json = sim.Save();
+        Simulation again = Simulation.Load(sim.Config, json);
+        Assert.Empty(SaveGame.Problems(sim.Config, again.State));
+        Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripAlignmentGapFields(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs.models", model =>
+        {
+            JsonPatch.Remove(model, "displayedAlignment");
+            JsonPatch.Remove(model, "lastIncidentRung");
+        });
+    }
+
+    static void RevertStaffToPools(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonValue staff = lab.Get("staff");
+            if (staff == null || staff.Kind != JsonKind.Array || staff.Items.Count == 0) return;
+            JsonValue first = staff.Items[0];
+            if (first.Get("count") != null) return;
+
+            var pools = new Dictionary<string, int>();
+            for (int i = 0; i < staff.Items.Count; i++)
+            {
+                JsonValue p = staff.Items[i];
+                JsonValue roleNode = p.Get("roleId");
+                if (roleNode == null) continue;
+                string role = roleNode.Str;
+                pools.TryGetValue(role, out int n);
+                pools[role] = n + 1;
+            }
+
+            JsonValue arr = JsonValue.Array();
+            foreach (KeyValuePair<string, int> kv in pools)
+            {
+                JsonValue o = JsonValue.Object();
+                o.Set("roleId", JsonValue.Of(kv.Key));
+                o.Set("count", JsonValue.Of((long)kv.Value));
+                arr.Add(o);
+            }
+            lab.Set("staff", arr);
+        });
+    }
+
+    static void StripBubblePermille(JsonValue root) => JsonPatch.Remove(root, "bubblePermille");
+
+    static void StripBubbleHadCrash(JsonValue root) => JsonPatch.Remove(root, "bubbleHadCrash");
+
+    static void StripAbsorbedByLab(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "absorbedByLabId"));
+    }
+
+    static void StripBubbleCrashPhase(JsonValue root)
+    {
+        JsonPatch.Remove(root, "bubbleCapitalRaised");
+        JsonPatch.Remove(root, "bubbleGraceMonths");
+        JsonPatch.Remove(root, "bubbleCrashMonthsRemaining");
+    }
+
+    static void StripPublicFloatPpm(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "publicFloatPpm"));
+    }
+
+    static void StripChinaDealFlags(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonPatch.Remove(lab, "chinaDealActive");
+            JsonPatch.Remove(lab, "chinaDealPending");
+        });
+    }
+
+    static void StripBoardLockedUntilTick(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "boardLockedUntilTick"));
+    }
+
+    static void StripCrownRunnerUpStreak(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "crownRunnerUpStreak"));
+    }
+
+    static void StripChinaDeclineCooldown(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "chinaDealDeclinedUntilTick"));
+    }
+
+    static void StripReservedAndQueue(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "reservedContracts"));
+        JsonPatch.ForEach(root, "vendor.standings", s =>
+        {
+            JsonPatch.Remove(s, "queuedGpus");
+            JsonPatch.Remove(s, "queueHoldingId");
+        });
+    }
+
+    static void StripHatchLedgerLines(JsonValue root)
+    {
+        foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+            JsonPatch.ForEach(root, place, totals =>
+            {
+                JsonPatch.Remove(totals, "acquisition");
+                JsonPatch.Remove(totals, "assetSale");
+            });
+    }
+}
