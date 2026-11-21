@@ -55,6 +55,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 40) MigrateTo40(root);
             if (fromSchema < 41) MigrateTo41(root);
             if (fromSchema < 42) MigrateTo42(root);
+            if (fromSchema < 43) MigrateTo43(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -404,6 +405,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 43: no team was in crunch time.</summary>
+        static void MigrateTo43(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crunchWeeks", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 42: no lab had set compute aside for research experiments.</summary>

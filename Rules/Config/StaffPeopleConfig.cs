@@ -40,6 +40,22 @@ namespace AiLabs.Rules.Config
         public int MaxPostsPermille;
         /// <summary>Reputation points a person quitting by blog post costs the lab, before the press room has its say.</summary>
         public int QuitReputation;
+        /// <summary>Extra research the whole team makes in crunch time, in permille.</summary>
+        public int CrunchResearchPermille;
+        /// <summary>Extra training speed in crunch time, in permille.</summary>
+        public int CrunchTrainingPermille;
+        /// <summary>Morale every person loses each week of crunch, before the weekly drift pulls it back.</summary>
+        public int CrunchMoraleDrop;
+        /// <summary>Weekly incident chance a lab in crunch adds for each week it has been in crunch, in permille.</summary>
+        public int CrunchIncidentPerWeek;
+        /// <summary>The most crunch time adds to the weekly incident chance, in permille.</summary>
+        public int CrunchIncidentCap;
+        /// <summary>Crunch cannot start while the team's average morale is below this.</summary>
+        public int CrunchMinMorale;
+        /// <summary>Crunch ends by itself when the average morale falls below this.</summary>
+        public int CrunchBreakMorale;
+        /// <summary>Crunch ends by itself after this many weeks.</summary>
+        public int CrunchMaxWeeks;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -69,6 +85,14 @@ namespace AiLabs.Rules.Config
             s.Int("traitRollSalt", ref TraitRollSalt);
             s.Int("maxPostsPermille", ref MaxPostsPermille);
             s.Int("quitReputation", ref QuitReputation);
+            s.Int("crunchResearchPermille", ref CrunchResearchPermille);
+            s.Int("crunchTrainingPermille", ref CrunchTrainingPermille);
+            s.Int("crunchMoraleDrop", ref CrunchMoraleDrop);
+            s.Int("crunchIncidentPerWeek", ref CrunchIncidentPerWeek);
+            s.Int("crunchIncidentCap", ref CrunchIncidentCap);
+            s.Int("crunchMinMorale", ref CrunchMinMorale);
+            s.Int("crunchBreakMorale", ref CrunchBreakMorale);
+            s.Int("crunchMaxWeeks", ref CrunchMaxWeeks);
             s.ObjList("traits", ref Traits);
         }
     }

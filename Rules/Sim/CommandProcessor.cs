@@ -78,6 +78,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.TakeLoan: return TakeLoan(c, state, lab, cmd);
                 case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
                 case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
+                case CommandKind.SetCrunch: return SetCrunch(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
@@ -291,6 +292,25 @@ namespace AiLabs.Rules.Sim
             if (cmd.Permille < 0 || cmd.Permille > c.Research.MaxComputeSharePermille)
                 return Fail(CommandError.InvalidArgument, "The research share is from 0 to " + c.Research.MaxComputeSharePermille + ".");
             lab.ResearchSharePermille = cmd.Permille;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetCrunch(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can ask its people to work late.");
+            if (cmd.Count != 0 && cmd.Count != 1) return Fail(CommandError.InvalidArgument, "Crunch time is on (1) or off (0).");
+            if (cmd.Count == 0)
+            {
+                if (!Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is not in crunch time.");
+                Crunch.End(state, lab, "stopped", lab.CrunchWeeks - 1);
+                return CommandResult.Done(-1);
+            }
+            if (Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is already in crunch time.");
+            if (c.StaffPeople.CrunchMaxWeeks <= 0) return Fail(CommandError.InvalidArgument, "There is no crunch time in this game.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to work late.");
+            if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
+                return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");
+            lab.CrunchWeeks = 1;
             return CommandResult.Done(-1);
         }
 

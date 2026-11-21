@@ -237,6 +237,7 @@ and says why in the commit message.
 54. **Headlines for chip and loan events.** ~~Done~~: eight lines in `news.headlines`, `ChipLoanNewsTests`, `docs/content/news-ticker.md` (Q295).
 55. **Chat lines for chip and loan events.** ~~Done~~: ten lines in `chat.lines`, `ChipLoanChatTests`, `docs/content/company-chat-and-glow.md` (Q296).
 56. **Headlines for press, poaching and Gauntlet events.** ~~Done~~: five lines in `news.headlines`, `PressNewsTests`, `docs/content/news-ticker.md` (Q297).
+57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 43, `MigrateTo43`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
 
 ## Rules: later
 

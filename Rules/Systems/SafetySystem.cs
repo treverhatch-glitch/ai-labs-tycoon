@@ -32,7 +32,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The chance the weekly roll uses: the model's own plus what an overloaded lab adds.</summary>
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab));
+            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>

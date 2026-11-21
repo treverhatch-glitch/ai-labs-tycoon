@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 42;
+        public const int CurrentSchema = 43;
 
         public int Schema;
         public string ConfigVersion;
@@ -140,6 +140,8 @@ namespace AiLabs.Rules.State
         public int TrainingSharePermille;
         /// <summary>The share of general compute set aside for research experiments before training and customers divide the rest. Zero until the player sets it.</summary>
         public int ResearchSharePermille;
+        /// <summary>Weeks the team has been in crunch time, or 0 when it is not. Only the player's lab can start one.</summary>
+        public int CrunchWeeks;
         /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
         public int FounderSharePermille;
         /// <summary>Investor seats on the board after venture rounds.</summary>
@@ -294,6 +296,7 @@ namespace AiLabs.Rules.State
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
             s.Int("researchSharePermille", ref ResearchSharePermille);
+            s.Int("crunchWeeks", ref CrunchWeeks);
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.Int("publicFloatPpm", ref PublicFloatPpm);

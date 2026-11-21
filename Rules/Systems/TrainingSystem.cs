@@ -40,7 +40,7 @@ namespace AiLabs.Rules.Systems
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
-            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab));
+            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab) + Crunch.ResearchPermille(c, lab));
         }
 
         /// <summary>The research bonus from compute set aside for experiments: the lab's share (kept inside the data's limit) times the bonus per permille.</summary>
@@ -58,7 +58,8 @@ namespace AiLabs.Rules.Systems
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
                 + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed)
                 + Traits.Report(c, lab).TrainingSpeedPermille
-                + lab.LeadSpeedPermille;
+                + lab.LeadSpeedPermille
+                + Crunch.TrainingPermille(c, lab);
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>

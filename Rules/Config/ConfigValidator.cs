@@ -1419,6 +1419,15 @@ namespace AiLabs.Rules.Config
             if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
             if (s.MaxPostsPermille < 0 || s.MaxPostsPermille > 1000) p.Add("staffPeople.maxPostsPermille needs 0 to 1000");
             if (s.QuitReputation < 0 || s.QuitReputation > MathI.Permille) p.Add("staffPeople.quitReputation needs 0 to 1000");
+            if (s.CrunchResearchPermille < 0 || s.CrunchResearchPermille > 5000) p.Add("staffPeople.crunchResearchPermille needs 0 to 5000");
+            if (s.CrunchTrainingPermille < 0 || s.CrunchTrainingPermille > 5000) p.Add("staffPeople.crunchTrainingPermille needs 0 to 5000");
+            if (s.CrunchMoraleDrop < 0 || s.CrunchMoraleDrop > MathI.Permille) p.Add("staffPeople.crunchMoraleDrop needs 0 to 1000");
+            if (s.CrunchIncidentPerWeek < 0 || s.CrunchIncidentPerWeek > MathI.Permille) p.Add("staffPeople.crunchIncidentPerWeek needs 0 to 1000");
+            if (s.CrunchIncidentCap < 0 || s.CrunchIncidentCap > MathI.Permille) p.Add("staffPeople.crunchIncidentCap needs 0 to 1000");
+            if (s.CrunchMinMorale < 0 || s.CrunchMinMorale > MathI.Permille) p.Add("staffPeople.crunchMinMorale needs 0 to 1000");
+            if (s.CrunchBreakMorale < 0 || s.CrunchBreakMorale > MathI.Permille) p.Add("staffPeople.crunchBreakMorale needs 0 to 1000");
+            if (s.CrunchBreakMorale > s.CrunchMinMorale) p.Add("staffPeople.crunchBreakMorale is above crunchMinMorale, so crunch would end the week it starts");
+            if (s.CrunchMaxWeeks < 0 || s.CrunchMaxWeeks > 520) p.Add("staffPeople.crunchMaxWeeks needs 0 to 520");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");

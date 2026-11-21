@@ -1449,6 +1449,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Left out on purpose: `TrustLost` (one event per sector, many with no loss) and `ChinaDealOffered` (an offer, not an event the paper would run).
 - The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing in the economy changed.
 
+### Q298. Can the player ask the team to work late? DECIDED: yes, crunch time: +25% research and +15% training speed for -8 morale a week and a rising incident risk, up to 26 weeks
+- New state `lab.crunchWeeks` (schema 43, `MigrateTo43`), command `SetCrunch(on)`, `Crunch` system, event `CrunchEnded`, command error `TeamTooTired`. Player only; nothing changes until it is turned on, so no rival, soak or economy guard moves.
+- It costs morale (8 a week against a 1-point drift), adds incident chance (2 permille per week up to 40) and ends when the team is worn out (average morale under 250), after 26 weeks, when the player says, or when no one is left.
+- It cannot start below an average morale of 450. A full 26-week crunch ends near 320, so the next one waits; the long-run gain is a few percent, not 25.
+- Morale below the baseline still does not slow research (Q180), so the real cost is the incident risk, the quits and the wait.
+- The golden digest moved to 691a1ad0 because of the new field and the schema number only; reverting both brought the previous digest (3ccf0148) back.
+- Alternatives: a research penalty from low morale (rejected: Q180 turned it off on purpose); a cash cost for overtime (rejected: morale and incidents are the cost the bible names for rushing).
+
 ## Open
 
 None.

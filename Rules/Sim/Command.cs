@@ -36,7 +36,8 @@ namespace AiLabs.Rules.Sim
         SetCheckpoints,
         TakeLoan,
         RepayLoan,
-        SetResearchShare
+        SetResearchShare,
+        SetCrunch
     }
 
     /// <summary>
@@ -326,6 +327,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Starts crunch time (on) or ends it (off).</summary>
+        public static Command SetCrunch(int labId, bool on)
+        {
+            Command c = Make(CommandKind.SetCrunch, labId);
+            c.Count = on ? 1 : 0;
+            return c;
+        }
+
         /// <summary>Borrows against the lab's chips: this share of what it could borrow now, in permille.</summary>
         public static Command TakeLoan(int labId, int permilleOfRoom)
         {
@@ -587,7 +596,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired
     }
 
     public struct CommandResult
