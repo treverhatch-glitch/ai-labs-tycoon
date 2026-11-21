@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 70;
+        public const int CurrentSchema = 71;
 
         public int Schema;
         public string ConfigVersion;
@@ -226,6 +226,17 @@ namespace AiLabs.Rules.State
         public int RoadmapDue;
         /// <summary>The capability a model must have to deliver it.</summary>
         public int RoadmapGoal;
+        /// <summary>The kind of skunkworks project the lab runs (research, safety or engineering), empty when none.</summary>
+        public string SkunkKind = "";
+        /// <summary>People on the team.</summary>
+        public int SkunkPeople;
+        /// <summary>The week it started and the week it pays out.</summary>
+        public int SkunkStart;
+        public int SkunkDue;
+        /// <summary>Person-weeks the team has worked so far.</summary>
+        public long SkunkWork;
+        /// <summary>The week the next project can start.</summary>
+        public int SkunkLockedUntil;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -455,6 +466,12 @@ namespace AiLabs.Rules.State
             s.Int("roadmapStart", ref RoadmapStart);
             s.Int("roadmapDue", ref RoadmapDue);
             s.Int("roadmapGoal", ref RoadmapGoal);
+            s.Str("skunkKind", ref SkunkKind);
+            s.Int("skunkPeople", ref SkunkPeople);
+            s.Int("skunkStart", ref SkunkStart);
+            s.Int("skunkDue", ref SkunkDue);
+            s.Long("skunkWork", ref SkunkWork);
+            s.Int("skunkLockedUntil", ref SkunkLockedUntil);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

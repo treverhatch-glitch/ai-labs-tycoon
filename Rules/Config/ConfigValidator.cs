@@ -103,6 +103,7 @@ namespace AiLabs.Rules.Config
             PledgeProblems(p, c);
             RoadmapProblems(p, c);
             MentoringProblems(p, c);
+            SkunkworksProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1044,6 +1045,25 @@ namespace AiLabs.Rules.Config
             if (k.MoraleCeiling < 1 || k.MoraleCeiling > MathI.Permille) p.Add("mentoring.moraleCeiling must be from 1 to 1000");
             if (k.GraduateMorale < 0 || k.GraduateMorale > 500) p.Add("mentoring.graduateMorale must be from 0 to 500");
             if (k.MentorMorale < 0 || k.MentorMorale > 500) p.Add("mentoring.mentorMorale must be from 0 to 500");
+        }
+
+        static void SkunkworksProblems(List<string> p, GameConfig c)
+        {
+            SkunkworksConfig k = c.Skunkworks;
+            if (k == null) { p.Add("skunkworks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("skunkworks.enabled must be 0 or 1");
+            if (k.MinPeople < 1 || k.MinPeople > 20) p.Add("skunkworks.minPeople must be from 1 to 20");
+            if (k.MaxSharePermille < 1 || k.MaxSharePermille > 900) p.Add("skunkworks.maxSharePermille must be from 1 to 900, so a function is never emptied");
+            if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.MaxWeeks > 104) p.Add("skunkworks.minWeeks and maxWeeks must be from 1 to 104 with maxWeeks at least minWeeks");
+            if (k.LongWeeks < k.MinWeeks || k.LongWeeks > k.MaxWeeks) p.Add("skunkworks.longWeeks must sit between minWeeks and maxWeeks");
+            if (k.LongBonusPermille < 0 || k.LongBonusPermille > 2000) p.Add("skunkworks.longBonusPermille must be from 0 to 2000");
+            if (k.EarlyPermille < 0 || k.EarlyPermille >= MathI.Permille) p.Add("skunkworks.earlyPermille must be from 0 to 999, so wrapping up early always pays less than finishing");
+            if (k.CostPerPersonWeek < 1) p.Add("skunkworks.costPerPersonWeek must be at least 1, so a project is never free");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("skunkworks.lockWeeks must be from 0 to 104");
+            if (k.ResearchPayoffPermille < 1 || k.ResearchPayoffPermille > 5000) p.Add("skunkworks.researchPayoffPermille must be from 1 to 5000");
+            if (k.AlignmentPerHundred < 0 || k.AlignmentPerHundred > 500) p.Add("skunkworks.alignmentPerHundred must be from 0 to 500");
+            if (k.MaxAlignment < 0 || k.MaxAlignment > 500) p.Add("skunkworks.maxAlignment must be from 0 to 500");
+            if (k.DebtPerPersonWeek < 0 || k.DebtPerPersonWeek > 50) p.Add("skunkworks.debtPerPersonWeek must be from 0 to 50");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -83,6 +83,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 68) MigrateTo68(root);
             if (fromSchema < 69) MigrateTo69(root);
             if (fromSchema < 70) MigrateTo70(root);
+            if (fromSchema < 71) MigrateTo71(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -446,6 +447,20 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 71: no lab runs a skunkworks project.</summary>
+        static void MigrateTo71(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "skunkKind", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "skunkPeople", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkWork", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkLockedUntil", JsonValue.Of(0L));
             });
         }
 

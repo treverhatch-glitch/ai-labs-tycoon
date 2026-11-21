@@ -167,6 +167,7 @@ namespace AiLabs.Rules.Sim
                     BugBounty.RunWeek(c, state, state.Labs[i]);
                     Roadmap.RunWeek(c, state, state.Labs[i]);
                     Mentoring.RunWeek(c, state, state.Labs[i]);
+                    Skunkworks.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     Traits.RunQuits(c, state, state.Labs[i]);
                     TalentSystem.RunWeek(c, state, state.Labs[i]);

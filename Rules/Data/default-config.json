@@ -5670,6 +5670,22 @@
     "graduateMorale": 100,
     "mentorMorale": 60
   },
+  "skunkworks": {
+    "enabled": 1,
+    "minPeople": 2,
+    "maxSharePermille": 500,
+    "minWeeks": 4,
+    "maxWeeks": 26,
+    "longWeeks": 13,
+    "longBonusPermille": 250,
+    "earlyPermille": 500,
+    "costPerPersonWeek": 600,
+    "lockWeeks": 13,
+    "researchPayoffPermille": 1500,
+    "alignmentPerHundred": 100,
+    "maxAlignment": 120,
+    "debtPerPersonWeek": 1
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

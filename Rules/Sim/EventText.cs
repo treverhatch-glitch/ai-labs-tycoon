@@ -242,6 +242,11 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 0 ? who + " graduated a junior " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior after " + e.Amount + " weeks of mentoring."
                         : e.Pick == 1 ? "A mentoring pair at " + who + " broke up after " + e.Amount + " weeks."
                         : who + " called off a mentoring pair after " + e.Amount + " weeks.";
+                case EventKind.SkunkworksStarted:
+                    return who + " pulled " + e.Amount + " " + e.Ref + " people into a " + e.Pick + "-week skunkworks project.";
+                case EventKind.SkunkworksDone:
+                    return who + (e.Pick == 1 ? " finished" : " wrapped up early") + " its " + e.Ref + " skunkworks project: "
+                        + (e.SubjectId == 1 ? e.Amount + " research points." : e.SubjectId == 2 ? e.Amount + " more alignment on its finished models." : e.Amount + " points of technical debt cleared.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

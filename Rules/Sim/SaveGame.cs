@@ -111,6 +111,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
                     p.Add(who + " has a revenue target (level " + lab.RevenueTargetLevel + ", goal " + lab.RevenueTargetGoal + ") that the data does not allow");
+                if (lab.SkunkWork < 0 || lab.SkunkPeople < 0 || lab.SkunkStart < 0 || lab.SkunkDue < 0 || lab.SkunkLockedUntil < 0 || (lab.SkunkKind != "" && Skunkworks.FunctionOf(lab.SkunkKind) == null)
+                    || (lab.SkunkKind == "" && (lab.SkunkPeople != 0 || lab.SkunkStart != 0 || lab.SkunkDue != 0 || lab.SkunkWork != 0))
+                    || (lab.SkunkKind != "" && (lab.SkunkPeople < 1 || lab.SkunkDue <= lab.SkunkStart))
+                    || ((lab.SkunkKind != "" || lab.SkunkLockedUntil > 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a skunkworks project (\"" + lab.SkunkKind + "\", " + lab.SkunkPeople + " people, due week " + lab.SkunkDue + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -75,7 +75,9 @@ namespace AiLabs.Rules.Sim
         SetPledge,
         AnnounceRoadmap,
         AssignMentor,
-        EndMentoring
+        EndMentoring,
+        StartSkunkworks,
+        WrapUpSkunkworks
     }
 
     /// <summary>
@@ -688,6 +690,22 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.EndMentoring, labId);
             c.TargetId = menteeId;
             return c;
+        }
+
+        /// <summary>Pulls a team (Count people, at least the data's minimum) out of a function for a project of TargetId weeks: Id is "research", "safety" or "engineering". The team is away the whole time and the project costs a budget up front; it pays research points, alignment on the lab's finished models or cleared technical debt, by the person-weeks worked.</summary>
+        public static Command StartSkunkworks(int labId, string kind, int people, int weeks)
+        {
+            Command c = Make(CommandKind.StartSkunkworks, labId);
+            c.Id = kind;
+            c.Count = people;
+            c.TargetId = weeks;
+            return c;
+        }
+
+        /// <summary>Ends the running project now and pays the share of the work done so far that the data allows for stopping early.</summary>
+        public static Command WrapUpSkunkworks(int labId)
+        {
+            return Make(CommandKind.WrapUpSkunkworks, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
