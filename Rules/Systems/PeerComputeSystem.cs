@@ -47,6 +47,17 @@ namespace AiLabs.Rules.Systems
             return hq - outLeased;
         }
 
+        public static long WeeklyRentBill(GameConfig c, GameState state, LabState renter)
+        {
+            long total = 0;
+            for (int i = 0; i < renter.PeerComputeLeases.Count; i++)
+            {
+                PeerComputeLease lease = renter.PeerComputeLeases[i];
+                if (lease.GpuCount > 0) total += WeeklyRent(c, state, lease.GpuCount);
+            }
+            return total;
+        }
+
         public static long WeeklyRent(GameConfig c, GameState state, int gpuCount)
         {
             if (gpuCount < 1) return 0;

@@ -27,6 +27,7 @@ namespace AiLabs.Rules.Systems
 
         public static int AppealBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId)
         {
+            if (lab.Bankrupt) return 0;
             DeviceWorkshopConfig workshop = c.Market.DeviceWorkshop;
             if (workshop == null || workshop.AppealBonusPermille <= 0) return 0;
             if (sectorId != workshop.SectorId) return 0;

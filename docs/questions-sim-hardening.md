@@ -321,3 +321,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) decor only; (b) passive compute; (c) devices-sector appeal once era live, room built, and a model is released in `devices`.
 - Choice: **(c)** — new `device-workshop` room type; `DeviceWorkshopSystem.AppealBonusPermille` in `DisplayQueries`; no save schema.
 - Why: DESIGN “device workshop” row gets a minimal consumer-hardware hook without a full product line sim.
+
+### Q55. Cloud chip landlord royalty? DECIDED: `chips.cloudLandlordSharePermille`
+
+- Options: (a) listing price only; (b) weekly royalty to design lab on another lab's cloud chips; (c) full transfer of cloud rent.
+- Choice: **(b)** — `CloudChipLandlordSystem.RunWeek` after finance; share of `CloudBatchWeeklyRent`; skips self-host and bankrupt labs.
+- Why: systems-design 4.8 “cloud landlords” gap without new holdings or schema.
+
+### Q56. GPU rent breakdown query? DECIDED: `LabQueries.GpuRentParts`
+
+- Options: (a) UI guesswork; (b) four-line breakdown (vendor, reserved, cloud, peer); (c) new ledger lines.
+- Choice: **(b)** — `GpuRentBreakdown` mirrors `WeeklyGpuRent`; pairs Q52 peer and Q55 cloud.
+- Why: hardening bar for compute spend transparency; no gameplay change.

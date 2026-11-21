@@ -481,6 +481,7 @@ namespace AiLabs.Rules.Config
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
+            Permille(p, "chips.cloudLandlordSharePermille", k.CloudLandlordSharePermille);
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
             if (k.Shortage == null) p.Add("chips.shortage is missing");
             else

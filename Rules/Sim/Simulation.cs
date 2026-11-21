@@ -162,6 +162,7 @@ namespace AiLabs.Rules.Sim
                 }
                 Finance.CloseWeek(state.Labs[i]);
             }
+            CloudChipLandlordSystem.RunWeek(c, state);
 
             if (GameDate.IsMonthEnd(c.Calendar, tick))
             {

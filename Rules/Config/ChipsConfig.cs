@@ -35,6 +35,8 @@ namespace AiLabs.Rules.Config
         public int ListingMaxPerMonth;
         /// <summary>Weekly rent on cloud-hosted chips, as permille of spot GPU rent for the same compute.</summary>
         public int CloudRentPermille;
+        /// <summary>Share of a renter's weekly cloud-chip rent paid to the listing lab when it is another lab.</summary>
+        public int CloudLandlordSharePermille;
         /// <summary>A plan orders chips only once a design's yield has reached this.</summary>
         public int PlannerMinYieldPermille;
         public string ArchitectRoleId;
@@ -67,6 +69,7 @@ namespace AiLabs.Rules.Config
             s.Int("bookAheadMonths", ref BookAheadMonths);
             s.Int("listingMaxPerMonth", ref ListingMaxPerMonth);
             s.Int("cloudRentPermille", ref CloudRentPermille);
+            s.Int("cloudLandlordSharePermille", ref CloudLandlordSharePermille);
             s.Int("plannerMinYieldPermille", ref PlannerMinYieldPermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);

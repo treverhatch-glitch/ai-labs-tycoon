@@ -1,3 +1,4 @@
+using System.Linq;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
@@ -136,5 +137,67 @@ public class DeviceWorkshopTests
         ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
         ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
         Assert.Equal(0, DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, Devices));
+    }
+
+    [Fact]
+    public void Max_appeal_permille_at_cap_scales_devices_appeal()
+    {
+        Game g = ExpansionTestSupport.SoloAtYear(2028, tweak: c => c.Market.DeviceWorkshop.AppealBonusPermille = 1000);
+        ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
+        ModelState model = ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
+        long appeal = DisplayQueries.Appeal(g.C, g.State, g.C.Sector(Devices), g.State.Sector(Devices), g.Me, model);
+        long core = DisplayQueries.AppealParts(g.C, g.State, g.C.Sector(Devices), g.State.Sector(Devices), g.Me, model).Core
+            + DisplayQueries.AppealParts(g.C, g.State, g.C.Sector(Devices), g.State.Sector(Devices), g.Me, model).ReputationBoost
+            + DisplayQueries.AppealParts(g.C, g.State, g.C.Sector(Devices), g.State.Sector(Devices), g.Me, model).SalesBoost;
+        Assert.True(appeal > ExpansionSystem.ScaleAppeal(core, 0));
+    }
+
+    [Fact]
+    public void Bankrupt_lab_gets_no_workshop_bonus()
+    {
+        Game g = HarnessLab();
+        ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
+        ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
+        Finance.GoBankrupt(g.State, g.Me);
+        Assert.Equal(0, DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, Devices));
+    }
+
+    [Fact]
+    public void Save_load_round_trip_preserves_workshop_appeal_boost()
+    {
+        Game g = HarnessLab();
+        ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
+        ModelState model = ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
+        long boost = DisplayQueries.AppealParts(g.C, g.State, g.C.Sector(Devices), g.State.Sector(Devices), g.Me, model).WorkshopBoost;
+        var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
+        ModelState m2 = loaded.Me.Models.Single(x => x.Id == model.Id);
+        long boost2 = DisplayQueries.AppealParts(loaded.C, loaded.State, loaded.C.Sector(Devices), loaded.State.Sector(Devices), loaded.Me, m2).WorkshopBoost;
+        Assert.Equal(boost, boost2);
+        Assert.True(boost2 > 0);
+    }
+
+    [Fact]
+    public void Market_system_share_drifts_up_with_workshop_appeal()
+    {
+        Game g = HarnessLab();
+        ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
+        g.Weeks(2);
+        SectorEntry entry = g.State.Sector(Devices).Entry(g.Id);
+        int shareBefore = entry.SharePpm;
+        ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
+        g.Weeks(4);
+        Assert.True(g.State.Sector(Devices).Entry(g.Id).SharePpm >= shareBefore);
+    }
+
+    [Fact]
+    public void Workshop_bonus_stacks_with_expansion_on_other_sectors_only()
+    {
+        Game g = ExpansionTestSupport.SoloAtYear(2029);
+        ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
+        ExpansionTestSupport.BuildExpansionRoom(g, "robotics-arena");
+        ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
+        Assert.True(DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, Devices) > 0);
+        Assert.Equal(0, DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, "robotics-industry"));
+        Assert.True(ExpansionSystem.AppealBonusPermille(g.C, g.State, g.Me, "robotics-industry") > 0);
     }
 }

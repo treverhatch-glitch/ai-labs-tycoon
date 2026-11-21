@@ -4373,6 +4373,7 @@
     "bookAheadMonths": 24,
     "listingMaxPerMonth": 500,
     "cloudRentPermille": 1100,
+    "cloudLandlordSharePermille": 450,
     "plannerMinYieldPermille": 600,
     "shortage": {
       "durationWeeks": 24,

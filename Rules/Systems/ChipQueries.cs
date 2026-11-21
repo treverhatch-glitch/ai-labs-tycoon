@@ -295,18 +295,25 @@ namespace AiLabs.Rules.Systems
             return null;
         }
 
-        public static long WeeklyCloudChipRent(GameConfig c, GameState state, LabState lab)
+        public static long CloudBatchWeeklyRent(GameConfig c, GameState state, HardwareBatch batch)
         {
+            if (batch.HoldingId != HardwareBatch.Cloud || batch.ChipDesignId < 0 || batch.Count <= 0) return 0;
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             if (gen.ComputePerGpuWeek < 1) return 0;
+            long compute = BatchCompute(c, state, batch);
+            long units = (compute + gen.ComputePerGpuWeek - 1) / gen.ComputePerGpuWeek;
+            long raw = MathI.MulPermille(units * gen.RentPerGpuWeek, c.Chips.CloudRentPermille);
+            return ChipShortageSystem.ScalePrice(state, raw);
+        }
+
+        public static long WeeklyCloudChipRent(GameConfig c, GameState state, LabState lab)
+        {
             long rent = 0;
             for (int i = 0; i < lab.Fleet.Count; i++)
             {
                 HardwareBatch batch = lab.Fleet[i];
-                if (batch.HoldingId != HardwareBatch.Cloud || batch.ChipDesignId < 0 || batch.Count <= 0) continue;
-                long compute = BatchCompute(c, state, batch);
-                long units = (compute + gen.ComputePerGpuWeek - 1) / gen.ComputePerGpuWeek;
-                rent += MathI.MulPermille(units * gen.RentPerGpuWeek, c.Chips.CloudRentPermille);
+                if (batch.HoldingId != HardwareBatch.Cloud) continue;
+                rent += CloudBatchWeeklyRent(c, state, batch);
             }
             return rent;
         }

@@ -409,13 +409,30 @@ namespace AiLabs.Rules.Systems
             return total + WorldQueries.WeeklyHallUpkeep(c, lab);
         }
 
+        public struct GpuRentBreakdown
+        {
+            public long VendorRented;
+            public long Reserved;
+            public long Cloud;
+            public long Peer;
+
+            /// <summary>Vendor, reserved, and cloud (what <see cref="WeeklyGpuRent"/> charges). Peer is billed in <see cref="PeerComputeSystem.RunWeek"/>.</summary>
+            public long Total { get { return VendorRented + Reserved + Cloud; } }
+        }
+
+        public static GpuRentBreakdown GpuRentParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new GpuRentBreakdown();
+            b.VendorRented = ChipShortageSystem.ScalePrice(state, CurrentGeneration(c, state.Tick).RentPerGpuWeek * lab.RentedGpus);
+            b.Reserved = ChipShortageSystem.ScalePrice(state, ComputeContractSystem.WeeklyReservedRent(c, state, lab));
+            b.Cloud = ChipQueries.WeeklyCloudChipRent(c, state, lab);
+            b.Peer = PeerComputeSystem.WeeklyRentBill(c, state, lab);
+            return b;
+        }
+
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
-            GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
-            long rent = ChipShortageSystem.ScalePrice(state, gen.RentPerGpuWeek * lab.RentedGpus);
-            long reserved = ChipShortageSystem.ScalePrice(state, ComputeContractSystem.WeeklyReservedRent(c, state, lab));
-            long cloud = ChipShortageSystem.ScalePrice(state, ChipQueries.WeeklyCloudChipRent(c, state, lab));
-            return rent + reserved + cloud;
+            return GpuRentParts(c, state, lab).Total;
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>
