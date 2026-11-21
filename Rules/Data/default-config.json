@@ -5246,6 +5246,59 @@
       }
     ]
   },
+  "culture": {
+    "start": 500,
+    "neutralLevel": 500,
+    "catchSlopePermille": 200,
+    "listeningRoles": [
+      "safety",
+      "red-teamer",
+      "alignment-fellow"
+    ],
+    "staffGainPerPerson": 1,
+    "maxStaffGain": 6,
+    "driftPerWeek": 2,
+    "rushBelowAlignment": 500,
+    "rushPoints": 40,
+    "gateKeptPoints": 10,
+    "gateLoweredPoints": 60,
+    "complaintAnsweredPoints": 10,
+    "complaintLapsedPoints": 10,
+    "maxGate": 900,
+    "gateLockWeeks": 26,
+    "bands": [
+      {
+        "id": "cover-up",
+        "name": "Cover-up",
+        "min": 0,
+        "blurb": "Bad news is stopped before it reaches the door. The red-teamers have given up writing things down."
+      },
+      {
+        "id": "hurried",
+        "name": "Hurried",
+        "min": 200,
+        "blurb": "Everyone knows about the problem. Nobody is sure it is their problem. The launch date is on the wall."
+      },
+      {
+        "id": "steady",
+        "name": "Steady",
+        "min": 400,
+        "blurb": "Concerns get raised and mostly get read. The usual amount of shipping anyway."
+      },
+      {
+        "id": "careful",
+        "name": "Careful",
+        "min": 600,
+        "blurb": "Someone has a standing meeting called 'what could go wrong'. People go to it."
+      },
+      {
+        "id": "open-book",
+        "name": "Open book",
+        "min": 800,
+        "blurb": "A junior engineer flags a bug in the CEO's favourite model and gets a thank-you note."
+      }
+    ]
+  },
   "gauntlet": {
     "name": "The Gauntlet",
     "jitterPermille": 50,

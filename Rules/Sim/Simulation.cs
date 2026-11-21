@@ -154,6 +154,7 @@ namespace AiLabs.Rules.Sim
                     TalentSystem.RunWeek(c, state, state.Labs[i]);
                     PressSystem.RunWeek(c, state, state.Labs[i]);
                     TrustSystem.RunWeek(c, state, state.Labs[i]);
+                    SafetyCulture.RunWeek(c, state, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }

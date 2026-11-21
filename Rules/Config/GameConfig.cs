@@ -63,6 +63,7 @@ namespace AiLabs.Rules.Config
         /// <summary>The press: journalists, beats, answers and leaks.</summary>
         public PressConfig Press = new PressConfig();
         public TrustConfig Trust = new TrustConfig();
+        public CultureConfig Culture = new CultureConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -106,6 +107,7 @@ namespace AiLabs.Rules.Config
             s.Obj("talent", ref Talent);
             s.Obj("press", ref Press);
             s.Obj("trust", ref Trust);
+            s.Obj("culture", ref Culture);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

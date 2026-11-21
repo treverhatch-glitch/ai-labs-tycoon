@@ -175,7 +175,11 @@ namespace AiLabs.Rules.Systems
                 if (rec.Trust == t.BaselineTrust) lab.SectorTrust.RemoveAt(i);
             }
             for (int i = lab.Complaints.Count - 1; i >= 0; i--)
-                if (state.Tick >= lab.Complaints[i].ExpiresTick) lab.Complaints.RemoveAt(i);
+                if (state.Tick >= lab.Complaints[i].ExpiresTick)
+                {
+                    lab.Complaints.RemoveAt(i);
+                    SafetyCulture.OnComplaintLapsed(c, lab);
+                }
         }
     }
 }

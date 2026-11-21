@@ -139,7 +139,9 @@ and says why in the commit message.
     glitch in `DisplayQueries`; refunds on the fines line; player-only costs behind `safety.sectorFlavoursForRivals` (Q188-Q190); no schema change;
     `SectorFlavourTests`, `docs/content/sector-flavours.md`.
 22. **Safety culture and release gates (bible ch. 10, "release gates", "culture").** A culture meter that rises when the lab listens and
-    falls when it rushes, and a gate the player sets for themselves and then has to obey. Claimed, not started.
+    falls when it rushes, and a gate the player sets for themselves and then has to obey. ~~Done~~: `culture` in the data, `SafetyCulture`,
+    `SetReleaseGate`, culture adds to the incident catch, save schema 29 (`cultureShift`, `releaseGate`, `gateSetTick`; Q191-Q194),
+    `SafetyCultureTests`, `docs/content/safety-culture.md`. Still open: a screen for both (Unity), rivals with a culture, a culture effect on staff morale.
 
 ## Rules: later
 

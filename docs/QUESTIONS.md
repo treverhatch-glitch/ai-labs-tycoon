@@ -1040,6 +1040,28 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, with the switch. Costs (fine, reputation, trust, refunds) hit the player's labs. The glitch is a quality curve in the sector, so it is the same for every lab. With every lab paying, the content-flow guard (seed 3) saw OpenAye's lifetime game go bankrupt, the same knife-edge as Q182. With the switch off the guards pass. Not salt-fishing this time: the number of rival incidents is the cause, so the honest fix is to wait for the rivals thread.
 - Why: rivals' fines in flavoured sectors are bigger by design, and nothing about the bible says rivals must pay the same. Flip the switch once the economy is robust.
 
+## Safety culture and release gates (NEXT item 22)
+
+### Q191. What is culture, and what does it do? DECIDED: a 0 to 1000 number per lab that adds to or takes from the incident catch
+- Options: (a) it changes the incident chance; (b) it changes the share of incidents caught before they ship; (c) it changes staff morale.
+- Recommendation and choice: **(b)**, 10% of catch at the extremes (`catchSlopePermille` 200, neutral 500; at 300 the eight-year balance soak sat one game over its crown limit, so the gentler slope shipped). It adds to the red-teamers', rooms' and traits' share under the same 90% ceiling, so "staff who report problems" literally means more problems caught early, and the incident-odds breakdown already explains it.
+- Why: the catch line is where the bible's staff-report-or-hide idea already lives; the incident chance is tied to alignment and era load and is used by every lab.
+
+### Q192. What moves it? DECIDED: listening staff, answered and lapsed complaints, rushed and gated releases, and a steady drift down
+- Options: (a) only staff; (b) staff plus the events the bible names ("rushing a release", "firing or ignoring the safety team").
+- Recommendation and choice: **(b)**. A point a week per safety, red-team or alignment person up to +6, against a drift of -2: three people hold it level and nobody lets it slide, which is "ignoring the safety team". A first release under 500 alignment costs 40 (once per model, so adding sectors cannot farm it); a first release through the lab's own gate at or above that line earns 10; loosening the gate costs 60; answering a complaint earns 10 and one lapsing costs 10. Only the player's labs keep a culture that moves.
+- Why: each rule is a hook on something that already exists (the weekly step, the release, the complaint desk). Rivals stay at the start level because their economies are knife-edge (Q182 and Q190), and the plan labs never set gates.
+
+### Q193. What does it mean to "have to obey" a gate? DECIDED: a release below it is refused, and loosening it waits and costs culture
+- Options: (a) breaking it costs culture but is allowed; (b) a refusal; (c) a refusal that can be lifted after a wait.
+- Recommendation and choice: **(c)**. The gate is the least displayed alignment a model may show to go on sale (up to 900), checked like the law's bar before any claim at the door is applied, so the claim cannot buy a way past it. Raising is free and restarts the lock; loosening or removing it is refused for 26 weeks after the last change, then costs 60 culture.
+- Why: a rule you can break at will is not a rule; a permanent one is a trap. The displayed meter is what the player can see, so the gate never leaks the true alignment. This keeps the sandbagging gap meaningful (a lab that lies to itself still passes).
+
+### Q194. Is a save change needed? DECIDED: yes, schema 29: three lab numbers, no config in the save
+- Options: (a) store the culture level; (b) store a shift from `culture.start`.
+- Recommendation and choice: **(b)**: `cultureShift`, `releaseGate`, `gateSetTick`. An older save migrates with all three at 0, which is the starting culture and no gate, and needs no config. Schema 28 is stack2's ledger migration; mine chains after it and skips it the way 25 skipped 24.
+- Why: a shift means a new lab, or a lab founded again after a sale, starts at the data's `culture.start` without touching world setup. The golden digest moved only because of the new saved numbers: with every culture effect off it equals the digest of the same game with the three fields zeroed.
+
 ## Open
 
 None.

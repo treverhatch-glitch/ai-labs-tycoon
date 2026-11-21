@@ -19,7 +19,8 @@ namespace AiLabs.Rules.Sim
         CounterPoach, PoachStaff,
         AnswerPress, LeakStory,
         SetGauntletTuning,
-        AnswerComplaint
+        AnswerComplaint,
+        SetReleaseGate
     }
 
     /// <summary>
@@ -407,6 +408,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Sets the lab's own release gate: the least alignment a model may show and still go on sale. 0 removes it.</summary>
+        public static Command SetReleaseGate(int labId, int alignment)
+        {
+            Command c = Make(CommandKind.SetReleaseGate, labId);
+            c.Permille = alignment;
+            return c;
+        }
+
         /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>
         public static Command SetGauntletTuning(int labId, int permille)
         {
@@ -430,7 +439,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked
     }
 
     public struct CommandResult

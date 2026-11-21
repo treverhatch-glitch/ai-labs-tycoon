@@ -41,6 +41,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 29) MigrateTo29(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -372,6 +373,17 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "sectorTrust", JsonValue.Array());
                 JsonPatch.AddIfMissing(lab, "complaints", JsonValue.Array());
+            });
+        }
+
+        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "cultureShift", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "releaseGate", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "gateSetTick", JsonValue.Of(0L));
             });
         }
 

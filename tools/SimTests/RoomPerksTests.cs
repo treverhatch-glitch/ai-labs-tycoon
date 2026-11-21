@@ -17,7 +17,7 @@ public class RoomPerksTests
     static Game Lab(string eraId, Action<GameConfig> tweak = null)
     {
         var options = new NewGameOptions { Seed = 1, StartEraId = eraId, RivalIds = new List<string>() };
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.Culture.CatchSlopePermille = 0; foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000_000;
         return g;
     }
