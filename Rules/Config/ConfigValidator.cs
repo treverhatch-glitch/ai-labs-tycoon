@@ -99,6 +99,9 @@ namespace AiLabs.Rules.Config
             ChairsProblems(p, c);
             WhistleProblems(p, c);
             BugBountyProblems(p, c);
+            TreasuryProblems(p, c);
+            PledgeProblems(p, c);
+            RoadmapProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -989,6 +992,43 @@ namespace AiLabs.Rules.Config
             if (k.FeeWeeks < 0 || k.FeeWeeks > 52) p.Add("pullout.feeWeeks must be from 0 to 52");
             if (k.TrustDrop < 0 || k.TrustDrop > 1000) p.Add("pullout.trustDrop must be from 0 to 1000");
             if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("pullout.reputationLoss must be from 0 to 500");
+        }
+
+        static void TreasuryProblems(List<string> p, GameConfig c)
+        {
+            TreasuryConfig k = c.Treasury;
+            if (k == null) { p.Add("treasury is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("treasury.enabled must be 0 or 1");
+            if (k.MinMove < 1) p.Add("treasury.minMove must be at least 1");
+            if (k.WeeklyYieldPpm < 0 || k.WeeklyYieldPpm > 5000) p.Add("treasury.weeklyYieldPpm must be from 0 to 5000, so the reserve is never a money machine");
+            if (k.DrawFeePermille < 0 || k.DrawFeePermille > 500) p.Add("treasury.drawFeePermille must be from 0 to 500");
+            if (k.CoverFeePermille < k.DrawFeePermille || k.CoverFeePermille > 900) p.Add("treasury.coverFeePermille must be from drawFeePermille to 900, so a rescue costs at least what a planned draw does");
+        }
+
+        static void PledgeProblems(List<string> p, GameConfig c)
+        {
+            PledgeConfig k = c.Pledge;
+            if (k == null) { p.Add("pledge is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("pledge.maxLevel must be from 0 to 5 (0 turns pledges off)");
+            if (k.BaseFloor < 1 || k.FloorStep < 0 || k.BaseFloor + (long)k.FloorStep * (MathI.Max(1, k.MaxLevel) - 1) > MathI.Permille)
+                p.Add("pledge.baseFloor and floorStep must keep the top level's floor from 1 to 1000");
+            if (k.TrustPerLevel < 0 || k.TrustPerLevel > 10) p.Add("pledge.trustPerLevel must be from 0 to 10");
+            if (k.BreachReputation < 0 || k.BreachReputation > 500) p.Add("pledge.breachReputation must be from 0 to 500");
+            if (k.BreachTrust < 0 || k.BreachTrust > 500) p.Add("pledge.breachTrust must be from 0 to 500");
+            if (k.WalkBackReputation < 0 || k.WalkBackReputation > k.BreachReputation) p.Add("pledge.walkBackReputation must be from 0 to breachReputation, so breaking a pledge costs more than walking it back");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("pledge.lockWeeks must be from 0 to 104");
+        }
+
+        static void RoadmapProblems(List<string> p, GameConfig c)
+        {
+            RoadmapConfig k = c.Roadmap;
+            if (k == null) { p.Add("roadmap is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("roadmap.maxLevel must be from 0 to 5 (0 turns roadmaps off)");
+            if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.MaxWeeks > 156) p.Add("roadmap.minWeeks and maxWeeks must be from 1 to 156 with maxWeeks at least minWeeks");
+            if (k.StretchPerLevel < 1 || k.StretchPerLevel > 1000) p.Add("roadmap.stretchPerLevel must be from 1 to 1000");
+            if (k.HypePerLevel < 0 || k.HypePerLevel > 100) p.Add("roadmap.hypePerLevel must be from 0 to 100");
+            if (k.DeliverPerLevel < 0 || k.DeliverPerLevel > 200) p.Add("roadmap.deliverPerLevel must be from 0 to 200");
+            if (k.MissPerLevel <= k.HypePerLevel || k.MissPerLevel > 300) p.Add("roadmap.missPerLevel must be above hypePerLevel and at most 300, so a missed roadmap loses more than the hype earned");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -5634,6 +5634,32 @@
     "trustDrop": 100,
     "reputationLoss": 10
   },
+  "treasury": {
+    "enabled": 1,
+    "minMove": 10000,
+    "weeklyYieldPpm": 800,
+    "drawFeePermille": 30,
+    "coverFeePermille": 100
+  },
+  "pledge": {
+    "maxLevel": 3,
+    "baseFloor": 450,
+    "floorStep": 150,
+    "trustPerLevel": 1,
+    "breachReputation": 40,
+    "breachTrust": 120,
+    "walkBackReputation": 15,
+    "lockWeeks": 26
+  },
+  "roadmap": {
+    "maxLevel": 3,
+    "minWeeks": 13,
+    "maxWeeks": 52,
+    "stretchPerLevel": 100,
+    "hypePerLevel": 8,
+    "deliverPerLevel": 20,
+    "missPerLevel": 45
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
