@@ -168,7 +168,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player seated or stepped down the ethics board. LabId is the lab, SubjectId the level now, Amount the cost. Pick is 1 when the level went up, 0 when it went down.</summary>
         EthicsBoardChanged,
         /// <summary>The ethics board walked out because the safety staff behind it were gone. LabId is the lab, SubjectId the level it fell to, Amount the level it had.</summary>
-        EthicsBoardResigned
+        EthicsBoardResigned,
+        /// <summary>The player set the inference optimisation level. LabId is the lab, SubjectId the level now, Amount the cost. Pick is 1 when the level went up, 0 when it went down.</summary>
+        OptimisationSet
     }
 
     /// <summary>

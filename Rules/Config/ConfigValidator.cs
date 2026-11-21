@@ -84,6 +84,7 @@ namespace AiLabs.Rules.Config
             EquityProblems(p, c);
             ChiefsProblems(p, c);
             BoardProblems(p, c);
+            OptimiseProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -889,6 +890,17 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void OptimiseProblems(List<string> p, GameConfig c)
+        {
+            OptimisationConfig k = c.Optimise;
+            if (k == null) { p.Add("optimise is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("optimise.maxLevel must be from 0 to 10");
+            if (k.SetupCostPerLevel < 0) p.Add("optimise.setupCostPerLevel is negative");
+            if (k.EngineersPerLevel < 0 || k.EngineersPerLevel > 100) p.Add("optimise.engineersPerLevel must be from 0 to 100");
+            if (k.DemandCutPermillePerLevel < 0 || k.DemandCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("optimise.demandCutPermillePerLevel must be 0 or more, and every level together at most 900, so serving never costs nothing");
+            if (k.IncidentPermillePerLevel < 0 || k.IncidentPermillePerLevel * (long)k.MaxLevel > 500) p.Add("optimise.incidentPermillePerLevel must be 0 or more, and every level together at most 500");
         }
 
         static void BoardProblems(List<string> p, GameConfig c)

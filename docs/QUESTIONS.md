@@ -1608,6 +1608,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 54, extended): `ethicsLevel` and `ethicsLockedUntil` (`MigrateTo54`). Player only and opt-in. The golden digest moved to 87b45766 because of the two lab fields only; removing them brought 0990de6e back.
 - Alternatives: a board that can be overruled for a price (rejected: the release gate already is a gate you can change); a veto on the displayed alignment (rejected: sandbagging would walk straight past it); a one-off board per release (rejected: the weekly cost and the lock are what make it a decision).
 
+### Q321. Can the engineers make serving cheaper at the cost of reliability? DECIDED: yes, three levels, a setup fee each, and the risk is permanent
+- New `optimise` data, command `SetOptimisation(level)`, `Optimisation` system, event `OptimisationSet` (appended). Each level cuts the lab's serving demand by 10% (applied in the market's second pass, so a lab short of compute serves a larger share) and adds 8 permille to every released model's weekly incident chance (`FromOptimisation` in the breakdown, before a chief safety officer's cut). It needs 2 engineers a level and $60000 a level to raise.
+- Lowering is free but the setup has to be paid again, and the level that counts is held down by the engineers who are still there, so a lab that loses its engineers keeps the setting but not the effect. It does nothing for revenue when the lab already serves everyone, only the risk: that is what makes it a decision about the lab's own state.
+- New state on the lab (schema 55, `MigrateTo55`): `optimiseLevel`. Player only and opt-in. The golden digest moved to d28b97b5 because of the lab field and the schema number only; reverting them brought 87b45766 back.
+- Alternatives: a weekly fee instead of a setup fee (rejected: compliance and the board already work that way, and this one is about a one-off project); a cut of the power bill too (rejected: a second benefit would make the first irrelevant); a fixed demand cut with no engineers (rejected: no link to who is on the payroll).
+
 ## Open
 
 None.

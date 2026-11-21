@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Config
         public EquityConfig Equity = new EquityConfig();
         public ChiefsConfig Chiefs = new ChiefsConfig();
         public EthicsBoardConfig Board = new EthicsBoardConfig();
+        public OptimisationConfig Optimise = new OptimisationConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
@@ -153,6 +154,7 @@ namespace AiLabs.Rules.Config
             s.Obj("equity", ref Equity);
             s.Obj("chiefs", ref Chiefs);
             s.Obj("ethicsBoard", ref Board);
+            s.Obj("optimise", ref Optimise);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);

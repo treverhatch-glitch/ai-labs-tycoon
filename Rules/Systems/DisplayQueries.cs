@@ -48,12 +48,14 @@ namespace AiLabs.Rules.Systems
             /// <summary>Extra chance while the lab cannot serve its customers; zero from the model-only query.</summary>
             public int FromOverload;
             public int FromCrunch;
+            /// <summary>What inference optimisation adds to the weekly chance (the models get brittle); zero when the lab does none.</summary>
+            public int FromOptimisation;
             /// <summary>What a red team took off while its weeks last; zero or negative.</summary>
             public int FromRedTeam;
             /// <summary>What a sitting chief safety officer takes off the weekly chance: zero or negative.</summary>
             public int FromChief;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromRedTeam + FromChief; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromOptimisation + FromRedTeam + FromChief; } }
         }
 
         public struct ExitPriceBreakdown
@@ -171,6 +173,7 @@ namespace AiLabs.Rules.Systems
             IncidentBreakdown b = IncidentParts(c, state.Tick, model);
             b.FromOverload = SafetySystem.OverloadPermille(c, state, lab);
             b.FromCrunch = Crunch.IncidentPermille(c, lab);
+            b.FromOptimisation = Optimisation.IncidentPermille(c, lab);
             b.FromChief = Chiefs.IncidentChange(c, lab, b.Total);
             return b;
         }

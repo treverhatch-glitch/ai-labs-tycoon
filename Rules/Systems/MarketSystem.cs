@@ -86,6 +86,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
+                demand[i] = Optimisation.Serve(c, lab, demand[i]);
                 long serving = lab.LastWeek.ServingCompute;
                 servedPermille[i] = demand[i] <= serving ? MathI.Permille : (int)(serving * MathI.Permille / demand[i]);
                 lab.LastWeek.ServingDemand = demand[i];

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 54;
+        public const int CurrentSchema = 55;
 
         public int Schema;
         public string ConfigVersion;
@@ -162,6 +162,8 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The level of inference optimisation, 0 for none. Only the player's lab does it.</summary>
+        public int OptimiseLevel;
         /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
         public int EthicsLevel;
         /// <summary>No board can be seated before this tick (set when one is stepped down or resigns).</summary>
@@ -347,6 +349,7 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("optimiseLevel", ref OptimiseLevel);
             s.Int("ethicsLevel", ref EthicsLevel);
             s.Int("ethicsLockedUntil", ref EthicsLockedUntil);
             s.Int("chiefScientistId", ref ChiefScientistId);

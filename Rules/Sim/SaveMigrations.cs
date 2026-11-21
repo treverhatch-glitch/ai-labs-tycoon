@@ -67,6 +67,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 52) MigrateTo52(root);
             if (fromSchema < 53) MigrateTo53(root);
             if (fromSchema < 54) MigrateTo54(root);
+            if (fromSchema < 55) MigrateTo55(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -419,6 +420,12 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Schema 51: no model was ever audited from outside.</summary>
+        /// <summary>Schema 55: no lab has optimised its inference.</summary>
+        static void MigrateTo55(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "optimiseLevel", JsonValue.Of(0L)));
+        }
+
         /// <summary>Schema 54: no lab has named a chief or seated an ethics board.</summary>
         static void MigrateTo54(JsonValue root)
         {

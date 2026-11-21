@@ -5579,6 +5579,13 @@
     "resignationReputation": 20,
     "lockWeeks": 52
   },
+  "optimise": {
+    "maxLevel": 3,
+    "setupCostPerLevel": 60000,
+    "engineersPerLevel": 2,
+    "demandCutPermillePerLevel": 100,
+    "incidentPermillePerLevel": 8
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,

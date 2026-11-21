@@ -52,7 +52,8 @@ namespace AiLabs.Rules.Sim
         GrantStaffEquity,
         RetrainStaff,
         AppointChief,
-        SetEthicsBoard
+        SetEthicsBoard,
+        SetOptimisation
     }
 
     /// <summary>
@@ -394,6 +395,14 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RetrainStaff, labId);
             c.TargetId = personId;
             c.Id = roleId;
+            return c;
+        }
+
+        /// <summary>Sets the level of inference optimisation, from 0 (none) to the data's highest. Raising pays a setup fee and needs engineers; lowering is free.</summary>
+        public static Command SetOptimisation(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetOptimisation, labId);
+            c.Count = level;
             return c;
         }
 

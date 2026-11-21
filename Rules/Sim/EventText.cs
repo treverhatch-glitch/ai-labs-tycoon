@@ -212,6 +212,8 @@ namespace AiLabs.Rules.Sim
                 case EventKind.HackWeek:
                     return e.Pick == 1 ? who + " started a hack week for " + e.SubjectId + " weeks. It cost $" + e.Amount + " and the roadmap is on hold."
                         : who + "'s hack week is over and the team is back on the roadmap.";
+                case EventKind.OptimisationSet:
+                    return e.Pick == 1 ? who + " raised inference optimisation to level " + e.SubjectId + " for $" + e.Amount + "." : who + " backed inference optimisation down to level " + e.SubjectId + ".";
                 case EventKind.EthicsBoardChanged:
                     return e.Pick == 1 ? who + " seated an ethics board (level " + e.SubjectId + ") for $" + e.Amount + "." : who + " stepped its ethics board down to level " + e.SubjectId + ". The press noticed.";
                 case EventKind.EthicsBoardResigned: return who + "'s ethics board resigned from level " + e.Amount + " to " + e.SubjectId + " because the safety team behind it was gone.";

@@ -260,6 +260,7 @@ and says why in the commit message.
 77. **Audits, focus, hack week, equity and retraining together (tests).** ~~Done~~: `ResearchStaffToolsTogetherTests` (Q318).
 78. **Chief officers (staff, research, safety).** ~~Done~~: `AppointChief`, `Chiefs`, `chiefs` data, lab `chiefScientistId` and `chiefSafetyId` (schema 54, `MigrateTo54`), `FromChief` in the incident breakdown, `ChiefsTests`, `docs/content/chiefs.md` (Q319).
 79. **Ethics board (safety, government).** ~~Done~~: `SetEthicsBoard`, `EthicsBoard`, `ethicsBoard` data, lab `ethicsLevel` and `ethicsLockedUntil` (schema 54), `BoardVeto` and `EthicsLocked`, `EthicsBoardTests`, `docs/content/ethics-board.md` (Q320).
+80. **Inference optimisation (engineering, compute).** ~~Done~~: `SetOptimisation`, `Optimisation`, `optimise` data, lab `optimiseLevel` (schema 55, `MigrateTo55`), `FromOptimisation` in the incident breakdown, `OptimisationTests`, `docs/content/inference-optimisation.md` (Q321).
 
 ## Rules: later
 
