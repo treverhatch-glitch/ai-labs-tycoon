@@ -166,7 +166,7 @@ public class ShadyPathLaterTests
     [Fact]
     public void Intrusion_for_hire_scales_stash_by_capability()
     {
-        var g = Game.Solo(seed: 5);
+        var g = Game.Solo(seed: 5, tweak: c => c.Shady.StashStoragePermillePerWeek = 0);
         g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2000);
         g.Me.Stash = 0;
         var model = new ModelState { Id = g.State.TakeId(), Capability = 300, Status = ModelStatus.Trained };

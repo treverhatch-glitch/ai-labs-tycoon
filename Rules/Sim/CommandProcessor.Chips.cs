@@ -176,10 +176,12 @@ namespace AiLabs.Rules.Sim
             {
                 listing = new ChipListing();
                 listing.DesignId = d.Id;
+                listing.ListedSinceTick = state.Tick;
                 lab.ChipListings.Add(listing);
             }
             listing.PricePerChip = cmd.Count;
             listing.MaxPerMonth = cmd.X;
+            if (listing.ListedSinceTick < 0) listing.ListedSinceTick = state.Tick;
 
             VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
             if (!standing.ListingSeen)
@@ -188,6 +190,11 @@ namespace AiLabs.Rules.Sim
                 VendorSystem.Change(c, state, lab.Id, -c.Vendor.ListingDrop, true);
             }
             return CommandResult.Done(-1);
+        }
+
+        static CommandResult SpotlightChipListing(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            return ChipListingSystem.SetSpotlight(c, state, lab, cmd.TargetId, cmd.Count != 0);
         }
 
         static CommandResult BuyListedChips(GameConfig c, GameState state, LabState lab, Command cmd)

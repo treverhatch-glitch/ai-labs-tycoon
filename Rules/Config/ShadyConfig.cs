@@ -45,6 +45,8 @@ namespace AiLabs.Rules.Config
         public long HeatBuydownCashCost = 25_000;
         public int HeatBuydownAmount = 100;
         public int CancelShadyOpHeatPenalty = 50;
+        /// <summary>Weekly stash storage fee as permille of balance (Q172).</summary>
+        public int StashStoragePermillePerWeek;
 
         public ShadyCardConfig Card(string id)
         {
@@ -82,6 +84,7 @@ namespace AiLabs.Rules.Config
             s.Long("heatBuydownCashCost", ref HeatBuydownCashCost);
             s.Int("heatBuydownAmount", ref HeatBuydownAmount);
             s.Int("cancelShadyOpHeatPenalty", ref CancelShadyOpHeatPenalty);
+            s.Int("stashStoragePermillePerWeek", ref StashStoragePermillePerWeek);
         }
     }
 

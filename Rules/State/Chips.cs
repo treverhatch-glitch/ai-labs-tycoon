@@ -88,6 +88,8 @@ namespace AiLabs.Rules.State
         public long PricePerChip;
         public int MaxPerMonth;
         public int SoldThisMonth;
+        public int ListedSinceTick = -1;
+        public bool Spotlight;
 
         public void Sync(Syncer s)
         {
@@ -95,6 +97,8 @@ namespace AiLabs.Rules.State
             s.Long("pricePerChip", ref PricePerChip);
             s.Int("maxPerMonth", ref MaxPerMonth);
             s.Int("soldThisMonth", ref SoldThisMonth);
+            s.Int("listedSinceTick", ref ListedSinceTick);
+            s.Bool("spotlight", ref Spotlight);
         }
     }
 

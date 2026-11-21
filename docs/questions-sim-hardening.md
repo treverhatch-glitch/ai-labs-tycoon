@@ -454,6 +454,33 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q163. Patent license royalties? DECIDED: `PatentLicenseSystem` + `licenseCashPerInfringerPerWeek`
 - Choice: each week, every non-bankrupt lab that already researched a tech pays the active patent holder; rivals blocked from re-researching still pay; ledger `PatentLicense`; no schema (ledger field only).
 
+### Q164. Product campaign weekly runway? DECIDED: `ProductStudioSystem.RunWeek`
+- Choice: while campaign timer active, spend `campaignWeeklyUpkeepCash`, earn `campaignWeeklyMarketingCash`; on expiry clear sector timer and log `SectorCampaignEnded`.
+
+### Q165. Factory line weekly ops? DECIDED: `AiFactoryHallSystem.RunWeek`
+- Choice: while factory line engaged, spend `factoryWeeklyUpkeepCash` and grant `factoryWeeklyResearchPoints`.
+
+### Q166. Coolant fouling and flush rebates? DECIDED: `LiquidCoolingPodSystem.RunWeek`
+- Choice: without an active flush, `coolantFoulingPermille` rises each week and shrinks the cooling cut during flush; flush resets fouling; rebate scales with rented GPUs (`flushRebatePerRentedGpu`); schema **25** (`coolantFoulingPermille`).
+
+### Q167. Sector champion stipend? DECIDED: `SectorChampionSystem` + `market.sectorChampionCashPerWeek`
+- Choice: weekly cash per sector where `ChampionLabId` matches the lab.
+
+### Q168. Chip listing market rules? DECIDED: `ChipListingSystem.RunWeek` + `SpotlightChipListing`
+- Choice: upkeep per listing (spotlight multiplier), cap with oldest drop, stale auto-delist, invalid design purge; schema **25** (`listedSinceTick`, `spotlight` on listings).
+
+### Q169. Vendor favored-customer grant? DECIDED: `VendorSystem.RunWeek` + `vendor.weeklyGrant*`
+- Choice: labs with standing above `weeklyGrantStandingAbove` earn `weeklyGrantPerStanding × standing` each week; rivals skip before `PlanStartTick`.
+
+### Q170. Heatwave emergency power? DECIDED: `HeatwavePowerSystem.RunWeek`
+- Choice: while a site's heatwave is active, spend `weeklySurchargeCashPerKw` × kW in affected holdings (`LedgerLine.Power`).
+
+### Q171. Peer lease debt enforcement? DECIDED: `PeerLeaseEnforcementSystem.RunWeek`
+- Choice: each week in debt, trim `peerLeaseDebtGpuTrimPerWeek` GPUs from peer leases until solvent.
+
+### Q172. Stash storage fee? DECIDED: `StashStorageSystem.RunWeek`
+- Choice: weekly `stashStoragePermillePerWeek` shaves the off-books stash (player launders via existing command).
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

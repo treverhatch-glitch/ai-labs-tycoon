@@ -169,6 +169,9 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab's share of the supply moving by this much (as a share of itself) month to month gets a line in the vendor's log.</summary>
         public int ShareLogPermille;
         public int LogMax;
+        /// <summary>Weekly cash grant per standing point when standing is above this (Q169).</summary>
+        public int WeeklyGrantStandingAbove = 450;
+        public long WeeklyGrantPerStanding = 3;
 
         public void Sync(Syncer s)
         {
@@ -195,6 +198,8 @@ namespace AiLabs.Rules.Config
             s.Int("courtingMakerAttentionPermille", ref CourtingMakerAttentionPermille);
             s.Int("shareLogPermille", ref ShareLogPermille);
             s.Int("logMax", ref LogMax);
+            s.Int("weeklyGrantStandingAbove", ref WeeklyGrantStandingAbove);
+            s.Long("weeklyGrantPerStanding", ref WeeklyGrantPerStanding);
         }
 
         /// <summary>The monthly supply in a year: the last row that has begun.</summary>

@@ -33,6 +33,13 @@ namespace AiLabs.Rules.Config
         public int BookAheadMonths;
         /// <summary>The most chips a plan-run lab lists for sale in a month.</summary>
         public int ListingMaxPerMonth;
+        /// <summary>Weekly upkeep per active chip listing (Q168).</summary>
+        public long ListingWeeklyUpkeep;
+        /// <summary>At most this many designs on the market at once; oldest non-spotlight listings drop off.</summary>
+        public int ListingMaxActive = 3;
+        public int ListingSpotlightUpkeepPermille = 1500;
+        public int ListingStaleWeeks = 24;
+        public long ListingSpotlightCashCost = 5_000;
         /// <summary>Weekly rent on cloud-hosted chips, as permille of spot GPU rent for the same compute.</summary>
         public int CloudRentPermille;
         /// <summary>Share of a renter's weekly cloud-chip rent paid to the listing lab when it is another lab.</summary>
@@ -90,6 +97,11 @@ namespace AiLabs.Rules.Config
             s.Int("foundryVendorSharePermille", ref FoundryVendorSharePermille);
             s.Int("bookAheadMonths", ref BookAheadMonths);
             s.Int("listingMaxPerMonth", ref ListingMaxPerMonth);
+            s.Long("listingWeeklyUpkeep", ref ListingWeeklyUpkeep);
+            s.Int("listingMaxActive", ref ListingMaxActive);
+            s.Int("listingSpotlightUpkeepPermille", ref ListingSpotlightUpkeepPermille);
+            s.Int("listingStaleWeeks", ref ListingStaleWeeks);
+            s.Long("listingSpotlightCashCost", ref ListingSpotlightCashCost);
             s.Int("cloudRentPermille", ref CloudRentPermille);
             s.Int("cloudLandlordSharePermille", ref CloudLandlordSharePermille);
             s.Int("chipletFoundryRoomPermille", ref ChipletFoundryRoomPermille);

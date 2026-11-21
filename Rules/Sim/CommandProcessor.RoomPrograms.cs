@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Sim
       if (cfg.FlushCashCost > 0 && lab.Cash < cfg.FlushCashCost) return NeedCash(lab, cfg.FlushCashCost);
 
       if (cfg.FlushCashCost > 0) Finance.Spend(lab, LedgerLine.SiteBuild, cfg.FlushCashCost);
+      lab.CoolantFoulingPermille = 0;
       lab.CoolantBoostUntilTick = state.Tick + cfg.FlushWeeks;
       Events.Add(state, EventKind.WorldNews, lab.Id, -1, cfg.FlushCashCost, "coolant-flush");
       return CommandResult.Done(-1);

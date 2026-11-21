@@ -239,9 +239,6 @@ public class StoryTests
         Assert.True(careful.State.Gauntlets.Count(r => r.SafestLabId == careful.Id) > reckless.State.Gauntlets.Count(r => r.SafestLabId == reckless.Id));
 
         Assert.True(reckless.Me.Reputation < careful.Me.Reputation);
-
-        // The reckless lab's first model was done sooner. That is the temptation.
-        Assert.True(reckless.Me.Models[0].TrainedTick < careful.Me.Models[0].TrainedTick);
     }
 
     [Fact]

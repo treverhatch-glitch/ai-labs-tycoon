@@ -136,7 +136,10 @@ public class SafetyAndFinanceTests
         Assert.Equal(-(2 * 1100 + 1000 + 800), week.Salaries);
         Assert.Equal(-LabQueries.WeeklyRoomUpkeep(g.C, g.Me), week.RoomUpkeep);
         Assert.Equal(-6 * g.C.Compute.GpuGenerations[0].RentPerGpuWeek, week.GpuRent);
-        Assert.Equal(g.C.PlayerStart.GrantPerWeek, week.Grants);
+        long vendorGrant = g.C.Vendor.WeeklyGrantPerStanding > 0 && VendorSystem.StandingOf(g.State, g.Me) > g.C.Vendor.WeeklyGrantStandingAbove
+            ? g.C.Vendor.WeeklyGrantPerStanding * VendorSystem.StandingOf(g.State, g.Me)
+            : 0;
+        Assert.Equal(g.C.PlayerStart.GrantPerWeek + vendorGrant, week.Grants);
         Assert.Equal(cashAfterFirstWeek + week.Net, g.Me.Cash);
         Assert.Equal(-LabQueries.WeeklyRunningCost(g.C, g.State, g.Me), week.Net - week.Grants);
         Assert.Equal(0, week.Construction + week.Hiring);
@@ -148,11 +151,14 @@ public class SafetyAndFinanceTests
         Game g = Game.Solo();
         int weeks = g.C.PlayerStart.GrantWeeks;
         g.Weeks(weeks);
-        Assert.Equal(weeks * g.C.PlayerStart.GrantPerWeek, g.Me.Ledger.Lifetime.Grants);
+        long vendorWeekly = g.C.Vendor.WeeklyGrantPerStanding > 0 && VendorSystem.StandingOf(g.State, g.Me) > g.C.Vendor.WeeklyGrantStandingAbove
+            ? g.C.Vendor.WeeklyGrantPerStanding * VendorSystem.StandingOf(g.State, g.Me)
+            : 0;
+        Assert.Equal(weeks * (g.C.PlayerStart.GrantPerWeek + vendorWeekly), g.Me.Ledger.Lifetime.Grants);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.GrantEnded);
 
         g.Weeks(10);
-        Assert.Equal(weeks * g.C.PlayerStart.GrantPerWeek, g.Me.Ledger.Lifetime.Grants);
+        Assert.Equal(weeks * (g.C.PlayerStart.GrantPerWeek + vendorWeekly) + 10 * vendorWeekly, g.Me.Ledger.Lifetime.Grants);
     }
 
     [Fact]

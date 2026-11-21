@@ -152,6 +152,13 @@ namespace AiLabs.Rules.Sim
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state, state.Labs[i]);
+                    ProductStudioSystem.RunWeek(c, state, state.Labs[i]);
+                    AiFactoryHallSystem.RunWeek(c, state, state.Labs[i]);
+                    LiquidCoolingPodSystem.RunWeek(c, state, state.Labs[i]);
+                    SectorChampionSystem.RunWeek(c, state, state.Labs[i]);
+                    VendorSystem.RunWeek(c, state, state.Labs[i]);
+                    HeatwavePowerSystem.RunWeek(c, state, state.Labs[i]);
+                    StashStorageSystem.RunWeek(c, state, state.Labs[i]);
                 }
             }
 
@@ -160,6 +167,7 @@ namespace AiLabs.Rules.Sim
                 if (!state.Labs[i].Bankrupt)
                 {
                     Finance.RunWeek(c, state, state.Labs[i]);
+                    PeerLeaseEnforcementSystem.RunWeek(c, state, state.Labs[i]);
                     ComputeContractSystem.RunWeek(c, state.Labs[i]);
                 }
                 Finance.CloseWeek(state.Labs[i]);

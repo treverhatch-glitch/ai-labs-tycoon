@@ -126,7 +126,7 @@ public class HardwareTests
         Assert.Equal(180, LabQueries.WeeklyCompute(sim.Config, sim.State, sim.Player));
 
         sim.Step();
-        Assert.Equal(302732, sim.Player.Cash);
+        Assert.Equal(304232, sim.Player.Cash);
         Assert.Equal(-540, sim.Player.Ledger.LastWeek.GpuUpkeep);
         Assert.Equal(-1500, sim.Player.Ledger.LastWeek.GpuRent);
     }

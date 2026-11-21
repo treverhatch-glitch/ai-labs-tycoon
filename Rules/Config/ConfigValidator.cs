@@ -187,6 +187,7 @@ namespace AiLabs.Rules.Config
                 p.Add("market.sectorPriceMaxPermille must be at least sectorPriceMinPermille");
             Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
             if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
+            if (c.Market.SectorChampionCashPerWeek < 0) p.Add("market.sectorChampionCashPerWeek is negative");
             DeviceWorkshopProblems(p, c);
             RoomProgramsProblems(p, c);
             CapabilityDomainProblems(p, c);
@@ -291,10 +292,17 @@ namespace AiLabs.Rules.Config
             Permille(p, "roomPrograms.productStudio.campaignAppealPermille", programs.ProductStudio.CampaignAppealPermille);
             Permille(p, "roomPrograms.productStudio.campaignRevenuePermille", programs.ProductStudio.CampaignRevenuePermille);
             if (programs.ProductStudio.ExtendCampaignWeeks < 0) p.Add("roomPrograms.productStudio.extendCampaignWeeks is negative");
+            if (programs.ProductStudio.CampaignWeeklyUpkeepCash < 0) p.Add("roomPrograms.productStudio.campaignWeeklyUpkeepCash is negative");
+            if (programs.ProductStudio.CampaignWeeklyMarketingCash < 0) p.Add("roomPrograms.productStudio.campaignWeeklyMarketingCash is negative");
             RoomProgramGateProblems(p, c, "roomPrograms.aiFactoryHall", programs.AiFactoryHall.EraId, programs.AiFactoryHall.RoomTypeId, "");
+            if (programs.AiFactoryHall.FactoryWeeklyUpkeepCash < 0) p.Add("roomPrograms.aiFactoryHall.factoryWeeklyUpkeepCash is negative");
+            if (programs.AiFactoryHall.FactoryWeeklyResearchPoints < 0) p.Add("roomPrograms.aiFactoryHall.factoryWeeklyResearchPoints is negative");
             if (programs.AiFactoryHall.ExtraConcurrentRuns < 1) p.Add("roomPrograms.aiFactoryHall.extraConcurrentRuns must be at least 1");
             RoomProgramGateProblems(p, c, "roomPrograms.liquidCoolingPod", programs.LiquidCoolingPod.EraId, programs.LiquidCoolingPod.RoomTypeId, "");
             Permille(p, "roomPrograms.liquidCoolingPod.coolingCostCutPermille", programs.LiquidCoolingPod.CoolingCostCutPermille);
+            if (programs.LiquidCoolingPod.FlushWeeklyRebateCash < 0) p.Add("roomPrograms.liquidCoolingPod.flushWeeklyRebateCash is negative");
+            Permille(p, "roomPrograms.liquidCoolingPod.maxFoulingPermille", programs.LiquidCoolingPod.MaxFoulingPermille);
+            if (programs.LiquidCoolingPod.FlushRebatePerRentedGpu < 0) p.Add("roomPrograms.liquidCoolingPod.flushRebatePerRentedGpu is negative");
         }
 
         static void RoomProgramGateProblems(List<string> p, GameConfig c, string path, string eraId, string roomTypeId, string roleId)
@@ -391,6 +399,7 @@ namespace AiLabs.Rules.Config
             if (c.Shady.HeatBuydownCashCost < 0) p.Add("shady.heatBuydownCashCost is negative");
             if (c.Shady.HeatBuydownAmount < 0) p.Add("shady.heatBuydownAmount is negative");
             if (c.Shady.CancelShadyOpHeatPenalty < 0) p.Add("shady.cancelShadyOpHeatPenalty is negative");
+            Permille(p, "shady.stashStoragePermillePerWeek", c.Shady.StashStoragePermillePerWeek);
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)
@@ -400,6 +409,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "compute.generationDecayPermille", compute.GenerationDecayPermille);
             Permille(p, "compute.reservedRentPermille", compute.ReservedRentPermille);
             Permille(p, "compute.peerLeaseRentPermille", compute.PeerLeaseRentPermille);
+            if (compute.PeerLeaseDebtGpuTrimPerWeek < 0) p.Add("compute.peerLeaseDebtGpuTrimPerWeek is negative");
             if (compute.ReservedContractWeeks < 1) p.Add("compute.reservedContractWeeks must be at least 1");
             if (compute.ReservedDepositWeeks < 0) p.Add("compute.reservedDepositWeeks is negative");
             if (compute.MoveCostPerUnit < 0) p.Add("compute.moveCostPerUnit is negative");
@@ -520,6 +530,7 @@ namespace AiLabs.Rules.Config
             if (hw.FromMonth < 1 || hw.ToMonth > c.Calendar.MonthsPerYear || hw.FromMonth > hw.ToMonth)
                 p.Add("world.heatwave months must run from 1 to " + c.Calendar.MonthsPerYear + " with fromMonth not after toMonth");
             if (hw.RollDivisor < 1) p.Add("world.heatwave.rollDivisor must be at least 1");
+            if (hw.WeeklySurchargeCashPerKw < 0) p.Add("world.heatwave.weeklySurchargeCashPerKw is negative");
 
             AttentionConfig a = w.Attention;
             Permille(p, "world.attention.decayPermillePerMonth", a.DecayPermillePerMonth);
@@ -574,6 +585,10 @@ namespace AiLabs.Rules.Config
             if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
+            if (k.ListingWeeklyUpkeep < 0) p.Add("chips.listingWeeklyUpkeep is negative");
+            if (k.ListingMaxActive < 1) p.Add("chips.listingMaxActive must be at least 1");
+            if (k.ListingSpotlightUpkeepPermille < 0) p.Add("chips.listingSpotlightUpkeepPermille is negative");
+            if (k.ListingSpotlightCashCost < 0) p.Add("chips.listingSpotlightCashCost is negative");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.cloudLandlordSharePermille", k.CloudLandlordSharePermille);
             if (k.ChipletFoundryRoomPermille < 0 || k.ChipletFoundryRoomPermille > 3000)
@@ -688,6 +703,8 @@ namespace AiLabs.Rules.Config
             if (v.LogMax < 1) p.Add("vendor.logMax must be at least 1");
             if (v.LowStandingMarkupPermille < 0 || v.OwnChipsMarkupPermille < 0 || v.HighStandingDiscountPermille < 0 || v.HighStandingDiscountPermille >= MathI.Permille)
                 p.Add("vendor has an impossible price change");
+            if (v.WeeklyGrantStandingAbove < 0) p.Add("vendor.weeklyGrantStandingAbove is negative");
+            if (v.WeeklyGrantPerStanding < 0) p.Add("vendor.weeklyGrantPerStanding is negative");
         }
 
         static void WorldEventProblems(List<string> p, GameConfig c)

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 24;
+        public const int CurrentSchema = 25;
 
         public int Schema;
         public string ConfigVersion;
@@ -187,6 +187,8 @@ namespace AiLabs.Rules.State
         public int FactoryLineUntilTick = -1;
         /// <summary>Liquid-cooling power cut ends after this tick, or -1.</summary>
         public int CoolantBoostUntilTick = -1;
+        /// <summary>Buildup without a flush; reduces effective cooling cut until the next flush (schema 25).</summary>
+        public int CoolantFoulingPermille;
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -290,6 +292,7 @@ namespace AiLabs.Rules.State
             s.Str("styleId", ref StyleId);
             s.Int("factoryLineUntilTick", ref FactoryLineUntilTick);
             s.Int("coolantBoostUntilTick", ref CoolantBoostUntilTick);
+            s.Int("coolantFoulingPermille", ref CoolantFoulingPermille);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

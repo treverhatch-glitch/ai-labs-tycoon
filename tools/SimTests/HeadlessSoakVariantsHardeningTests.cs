@@ -35,6 +35,7 @@ public class HeadlessSoakVariantsHardeningTests
         {
             g.Me.GrantPerWeek = 0;
             g.Me.GrantEndsTick = 0;
+            g.C.Vendor.WeeklyGrantPerStanding = 0;
             g.WithStarterLab(researchers: 2, engineers: 2, gpus: 40);
         };
         HeadlessSimHardeningTests_Soak.AssertTwoRuns(31_031, null, 8, configure);

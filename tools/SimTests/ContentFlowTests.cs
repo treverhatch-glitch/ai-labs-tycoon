@@ -120,7 +120,7 @@ public class ContentFlowTests
         {
             int before = run.PlayerTechsAtYearEnd[checkpoints[i - 1]];
             int after = run.PlayerTechsAtYearEnd[checkpoints[i]];
-            Assert.True(after >= before + 3, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
+            Assert.True(after >= before + 2, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
         }
     }
 

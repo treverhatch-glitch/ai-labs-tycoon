@@ -124,6 +124,16 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ShadyTemptation: return "Runway is short. " + c.Shady.Card(e.Ref).Name + " is on the table.";
                 case EventKind.ChipShortageBegan: return "The chip crunch begins (strength " + e.Amount + " permille).";
                 case EventKind.ChipShortageEnded: return "The chip crunch eases.";
+                case EventKind.SectorCampaignEnded:
+                    {
+                        SectorConfig sector = c.Sector(e.Ref);
+                        string name = sector == null ? e.Ref : sector.Name;
+                        return who + "'s marketing campaign in " + name + " wound down.";
+                    }
+                case EventKind.ChipListingEnded:
+                    return who + " dropped a chip listing (" + e.Ref + ").";
+                case EventKind.PeerLeaseTrimmed:
+                    return who + " lost peer-leased GPUs while carrying debt.";
                 case EventKind.DomainLeaderChanged:
                     {
                         CapabilityDomainConfig domain = c.Market.Domain(e.Ref);

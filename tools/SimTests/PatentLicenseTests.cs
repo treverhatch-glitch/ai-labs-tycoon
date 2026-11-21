@@ -231,9 +231,9 @@ public class PatentLicenseTests
     public void Q163_schema_24_migration_adds_patent_license_ledger()
     {
         Game g = Game.Solo().WithStarterLab();
-        string json = g.Sim.Save().Replace("\"schema\":24", "\"schema\":23");
+        string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":23");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(24, loaded.State.Schema);
+        Assert.Equal(25, loaded.State.Schema);
         Assert.Equal(0, loaded.Me.Ledger.ThisWeek.PatentLicense);
     }
 

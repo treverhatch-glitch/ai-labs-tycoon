@@ -205,6 +205,8 @@ namespace AiLabs.Rules.Config
         public int RollDivisor;
         /// <summary>Cooling tech at or above this halves the throttle.</summary>
         public int HalvedByCoolingPermille;
+        /// <summary>Emergency diesel surcharge per kW each week a site is in heatwave (Q170).</summary>
+        public long WeeklySurchargeCashPerKw;
 
         public void Sync(Syncer s)
         {
@@ -214,6 +216,7 @@ namespace AiLabs.Rules.Config
             s.Int("toMonth", ref ToMonth);
             s.Int("rollDivisor", ref RollDivisor);
             s.Int("halvedByCoolingPermille", ref HalvedByCoolingPermille);
+            s.Long("weeklySurchargeCashPerKw", ref WeeklySurchargeCashPerKw);
         }
     }
 

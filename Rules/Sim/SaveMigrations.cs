@@ -39,6 +39,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
             if (fromSchema < 24) MigrateTo24(root);
+            if (fromSchema < 25) MigrateTo25(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -352,6 +353,20 @@ namespace AiLabs.Rules.Sim
         {
             foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
                 JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "patentLicense", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 25: coolant fouling, chip listing spotlight metadata.</summary>
+        static void MigrateTo25(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "coolantFoulingPermille", JsonValue.Of(0));
+                JsonPatch.ForEach(lab, "chipListings", listing =>
+                {
+                    JsonPatch.AddIfMissing(listing, "listedSinceTick", JsonValue.Of(-1));
+                    JsonPatch.AddIfMissing(listing, "spotlight", JsonValue.Of(false));
+                });
+            });
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

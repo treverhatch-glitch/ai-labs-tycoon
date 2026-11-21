@@ -12,7 +12,7 @@ namespace AiLabs.Rules.Sim
         ResearchTech, FilePatent, StartTraining, StartTrainingRecipe, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights,
         SetTrainingDataSource, SetDistillTarget,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
-        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
+        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, SpotlightChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
         LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
@@ -277,6 +277,14 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Offers chips of a working design to other labs at a price per chip, up to a number a month. A price of 0 takes the offer down.</summary>
+        public static Command SpotlightChipListing(int labId, int designId, bool on)
+        {
+            Command c = Make(CommandKind.SpotlightChipListing, labId);
+            c.TargetId = designId;
+            c.Count = on ? 1 : 0;
+            return c;
+        }
+
         public static Command SetChipListing(int labId, int designId, int pricePerChip, int maxPerMonth)
         {
             Command c = Make(CommandKind.SetChipListing, labId);

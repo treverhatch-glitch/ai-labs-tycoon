@@ -25,7 +25,7 @@ public class RoomProgramsTests
         GameConfig c = TestData.Config();
         Assert.NotNull(c.RoomPrograms?.ProductStudio);
         ConfigValidator.Validate(c);
-        Assert.Equal(24, GameState.CurrentSchema);
+        Assert.Equal(25, GameState.CurrentSchema);
     }
 
     [Fact]
@@ -181,9 +181,9 @@ public class RoomProgramsTests
     public void Schema_23_migration_from_21()
     {
         Game g = At(2013);
-        string json = g.Sim.Save().Replace("\"schema\":24", "\"schema\":21");
+        string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":21");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(24, loaded.State.Schema);
+        Assert.Equal(25, loaded.State.Schema);
         Assert.Equal(-1, loaded.Me.SectorCampaignUntilTick);
         Assert.Equal("", loaded.Me.FounderId);
     }

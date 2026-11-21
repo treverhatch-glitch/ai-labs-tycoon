@@ -77,7 +77,7 @@ public class ChipSoftwareTuneTests
         int soft = g.Me.SoftwarePermille;
         var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
         Assert.Equal(soft, loaded.Me.SoftwarePermille);
-        Assert.Equal(24, loaded.State.Schema);
+        Assert.Equal(25, loaded.State.Schema);
     }
 
     [Fact]

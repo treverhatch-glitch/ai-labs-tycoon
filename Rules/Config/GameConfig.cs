@@ -369,6 +369,8 @@ namespace AiLabs.Rules.Config
         public int ReservedDepositWeeks;
         /// <summary>Weekly rent for GPUs leased from another lab, as permille of spot rental.</summary>
         public int PeerLeaseRentPermille = 900;
+        /// <summary>GPUs trimmed from peer leases each week while the lab is in debt (Q171).</summary>
+        public int PeerLeaseDebtGpuTrimPerWeek = 1;
         /// <summary>The vendor's line, oldest first.</summary>
         public List<GpuGenerationConfig> GpuGenerations;
 
@@ -383,6 +385,7 @@ namespace AiLabs.Rules.Config
             s.Int("reservedContractWeeks", ref ReservedContractWeeks);
             s.Int("reservedDepositWeeks", ref ReservedDepositWeeks);
             s.Int("peerLeaseRentPermille", ref PeerLeaseRentPermille);
+            s.Int("peerLeaseDebtGpuTrimPerWeek", ref PeerLeaseDebtGpuTrimPerWeek);
             s.ObjList("gpuGenerations", ref GpuGenerations);
         }
 
@@ -830,6 +833,8 @@ namespace AiLabs.Rules.Config
         public int OpenWeightsRevenuePermille = 750;
         /// <summary>Quality multiplier when weights are open (before appeal is squared).</summary>
         public int OpenWeightsAppealBonusPermille = 120;
+        /// <summary>Weekly cash grant per sector where this lab holds the Gauntlet champion slot (Q167).</summary>
+        public long SectorChampionCashPerWeek;
         public DeviceWorkshopConfig DeviceWorkshop = new DeviceWorkshopConfig();
         public List<CapabilityDomainConfig> CapabilityDomains = new List<CapabilityDomainConfig>();
         public List<SectorConfig> Sectors;
@@ -843,6 +848,7 @@ namespace AiLabs.Rules.Config
             s.Int("sectorPriceMaxPermille", ref SectorPriceMaxPermille);
             s.Int("openWeightsRevenuePermille", ref OpenWeightsRevenuePermille);
             s.Int("openWeightsAppealBonusPermille", ref OpenWeightsAppealBonusPermille);
+            s.Long("sectorChampionCashPerWeek", ref SectorChampionCashPerWeek);
             s.Obj("deviceWorkshop", ref DeviceWorkshop);
             s.ObjList("capabilityDomains", ref CapabilityDomains);
             s.ObjList("sectors", ref Sectors);

@@ -982,7 +982,8 @@
         "kwPerGpu": 8
       }
     ],
-    "peerLeaseRentPermille": 900
+    "peerLeaseRentPermille": 900,
+    "peerLeaseDebtGpuTrimPerWeek": 1
   },
   "world": {
     "blocs": [
@@ -1272,7 +1273,8 @@
       "fromMonth": 6,
       "toMonth": 8,
       "rollDivisor": 3,
-      "halvedByCoolingPermille": 300
+      "halvedByCoolingPermille": 300,
+      "weeklySurchargeCashPerKw": 8
     },
     "attention": {
       "decayPermillePerMonth": 100,
@@ -3503,6 +3505,7 @@
     "switchRatePermille": 60,
     "salesBonusPermille": 100,
     "salesBonusCapPermille": 600,
+    "sectorChampionCashPerWeek": 300,
     "deviceWorkshop": {
       "eraId": "harnesses",
       "roomTypeId": "device-workshop",
@@ -4457,7 +4460,9 @@
     "courtingStandingBoost": 20,
     "courtingMakerAttentionPermille": 30,
     "shareLogPermille": 100,
-    "logMax": 60
+    "logMax": 60,
+    "weeklyGrantStandingAbove": 450,
+    "weeklyGrantPerStanding": 3
   },
   "chips": {
     "pointsPerArchitectWeek": 10,
@@ -4480,6 +4485,11 @@
     "foundryVendorSharePermille": 500,
     "bookAheadMonths": 24,
     "listingMaxPerMonth": 500,
+    "listingWeeklyUpkeep": 50,
+    "listingMaxActive": 3,
+    "listingSpotlightUpkeepPermille": 1500,
+    "listingStaleWeeks": 24,
+    "listingSpotlightCashCost": 5000,
     "cloudRentPermille": 1100,
     "cloudLandlordSharePermille": 450,
     "chipletFoundryRoomPermille": 1200,
@@ -5038,7 +5048,8 @@
     "sabotageProgressPermille": 300,
     "heatBuydownCashCost": 25000,
     "heatBuydownAmount": 100,
-    "cancelShadyOpHeatPenalty": 50
+    "cancelShadyOpHeatPenalty": 50,
+    "stashStoragePermillePerWeek": 25
   },
   "expansions": {
     "bodies": {
@@ -5076,21 +5087,30 @@
       "campaignAppealPermille": 120,
       "campaignRevenuePermille": 100,
       "extendCampaignCashCost": 12000,
-      "extendCampaignWeeks": 4
+      "extendCampaignWeeks": 4,
+      "campaignWeeklyUpkeepCash": 500,
+      "campaignWeeklyMarketingCash": 200
     },
     "aiFactoryHall": {
       "eraId": "harnesses",
       "roomTypeId": "ai-factory-hall",
       "engageCashCost": 40000,
       "engageWeeks": 16,
-      "extraConcurrentRuns": 1
+      "extraConcurrentRuns": 1,
+      "factoryWeeklyUpkeepCash": 800,
+      "factoryWeeklyResearchPoints": 5
     },
     "liquidCoolingPod": {
       "eraId": "chat-boom",
       "roomTypeId": "liquid-cooling-pod",
       "flushCashCost": 12000,
       "flushWeeks": 8,
-      "coolingCostCutPermille": 150
+      "coolingCostCutPermille": 150,
+      "flushWeeklyRebateCash": 0,
+      "foulingGainPermillePerWeek": 30,
+      "maxFoulingPermille": 250,
+      "flushRebatePerRentedGpu": 15,
+      "flushRebateRentedGpuCap": 64
     }
   },
   "rivals": [

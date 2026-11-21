@@ -47,7 +47,13 @@ namespace AiLabs.Rules.State
         /// <summary>The global chip crunch ended. Amount is the last strength permille.</summary>
         ChipShortageEnded,
         /// <summary>A lab took the weekly lead in a capability domain. Ref is the domain id; SubjectId is the previous leader or -1.</summary>
-        DomainLeaderChanged
+        DomainLeaderChanged,
+        /// <summary>A product-studio sector campaign timer ended. Ref is the sector id.</summary>
+        SectorCampaignEnded,
+        /// <summary>A chip listing left the market (stale, over cap, or design no longer ready). Ref is the reason tag.</summary>
+        ChipListingEnded,
+        /// <summary>Debt forced a peer-compute lease down. SubjectId is the landlord lab.</summary>
+        PeerLeaseTrimmed
     }
 
     /// <summary>

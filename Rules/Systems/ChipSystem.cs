@@ -33,6 +33,7 @@ namespace AiLabs.Rules.Systems
             RampYields(c, lab);
             ResolveTapeOuts(c, state, lab);
             Deliver(c, state, lab);
+            ChipListingSystem.RunWeek(c, state, lab);
         }
 
         static void RampYields(GameConfig c, LabState lab)

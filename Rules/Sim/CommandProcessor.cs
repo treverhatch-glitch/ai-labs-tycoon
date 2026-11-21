@@ -57,6 +57,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.TapeOut: return TapeOut(c, state, lab, cmd);
                 case CommandKind.OrderChips: return OrderChips(c, state, lab, cmd);
                 case CommandKind.SetChipListing: return SetChipListing(c, state, lab, cmd);
+                case CommandKind.SpotlightChipListing: return SpotlightChipListing(c, state, lab, cmd);
                 case CommandKind.BuyListedChips: return BuyListedChips(c, state, lab, cmd);
                 case CommandKind.ResearchFrontier: return ResearchFrontier(c, state, lab, cmd);
                 case CommandKind.SellLab: return SellLab(c, state, lab, cmd);

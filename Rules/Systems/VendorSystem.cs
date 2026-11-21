@@ -175,6 +175,18 @@ namespace AiLabs.Rules.Systems
             }
         }
 
+        /// <summary>Q169: favored customers get a small weekly allocation rebate as cash.</summary>
+        public static void RunWeek(GameConfig c, GameState state, LabState lab)
+        {
+            if (lab.Bankrupt) return;
+            if (!string.IsNullOrEmpty(lab.RivalId) && state.Tick < lab.PlanStartTick) return;
+            VendorConfig v = c.Vendor;
+            if (v.WeeklyGrantPerStanding <= 0) return;
+            int standing = StandingOf(state, lab);
+            if (standing <= v.WeeklyGrantStandingAbove) return;
+            Finance.Earn(lab, LedgerLine.Grants, v.WeeklyGrantPerStanding * standing);
+        }
+
         static int Abs(int x) { return x < 0 ? -x : x; }
     }
 }
