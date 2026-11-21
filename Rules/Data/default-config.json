@@ -1219,6 +1219,20 @@
       "upkeepPerTileWeek": 8
     },
     {
+      "id": "coffee-corner",
+      "era": "dial-up-days",
+      "requiresTech": "",
+      "name": "Coffee Corner",
+      "purpose": "Comfort",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 2,
+      "minHeight": 2,
+      "buildCostPerTile": 250,
+      "upkeepPerTileWeek": 4
+    },
+    {
       "id": "gpu-hall",
       "era": "punchline",
       "requiresTech": "",
@@ -1289,6 +1303,20 @@
       "upkeepPerTileWeek": 12
     },
     {
+      "id": "kitchen",
+      "era": "it-sees",
+      "requiresTech": "",
+      "name": "Kitchen",
+      "purpose": "Comfort",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 3,
+      "minHeight": 3,
+      "buildCostPerTile": 500,
+      "upkeepPerTileWeek": 9
+    },
+    {
       "id": "sandbox-wing",
       "era": "it-writes",
       "requiresTech": "",
@@ -1357,6 +1385,20 @@
       "minHeight": 4,
       "buildCostPerTile": 4200,
       "upkeepPerTileWeek": 100
+    },
+    {
+      "id": "nap-pods",
+      "era": "chat-boom",
+      "requiresTech": "",
+      "name": "Nap Pods",
+      "purpose": "Comfort",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 3,
+      "minHeight": 3,
+      "buildCostPerTile": 700,
+      "upkeepPerTileWeek": 12
     },
     {
       "id": "agent-ops-room",
@@ -1594,6 +1636,51 @@
       "capPermille": 600,
       "sectors": [],
       "blurb": "Every tile of auditorium adds 1.5% of the launch buzz, up to 60%: a keynote stage sells a launch."
+    },
+    {
+      "id": "coffee-corner-lift",
+      "roomId": "coffee-corner",
+      "kind": "MoraleLift",
+      "perTilePermille": 3,
+      "capPermille": 45,
+      "sectors": [],
+      "blurb": "Every tile of coffee corner lifts the level morale settles at by 3 points, up to 45."
+    },
+    {
+      "id": "kitchen-lift",
+      "roomId": "kitchen",
+      "kind": "MoraleLift",
+      "perTilePermille": 4,
+      "capPermille": 100,
+      "sectors": [],
+      "blurb": "Every tile of kitchen lifts the level morale settles at by 4 points, up to 100."
+    },
+    {
+      "id": "kitchen-stay",
+      "roomId": "kitchen",
+      "kind": "PoachDefence",
+      "perTilePermille": 8,
+      "capPermille": 200,
+      "sectors": [],
+      "blurb": "Every tile of kitchen takes 0.8% off the chance a rival makes an offer, up to 20%."
+    },
+    {
+      "id": "nap-pods-lift",
+      "roomId": "nap-pods",
+      "kind": "MoraleLift",
+      "perTilePermille": 5,
+      "capPermille": 100,
+      "sectors": [],
+      "blurb": "Every tile of nap pods lifts the level morale settles at by 5 points, up to 100."
+    },
+    {
+      "id": "recruiting-office-stay",
+      "roomId": "recruiting-office",
+      "kind": "PoachDefence",
+      "perTilePermille": 10,
+      "capPermille": 300,
+      "sectors": [],
+      "blurb": "Every tile of recruiting office takes 1% off the chance a rival makes an offer, up to 30%: your recruiters hear who is being courted."
     }
   ],
   "founders": [
@@ -4546,6 +4633,10 @@
     "moraleIncidentDrop": 15,
     "moralePoachWitnessDrop": 25,
     "poachChancePermille": 80,
+    "maxMoraleLift": 150,
+    "maxPoachDefencePermille": 600,
+    "moraleResearchSlopePermille": 400,
+    "moraleResearchLossSlopePermille": 0,
     "starHirePermille": 120,
     "traits": [
       {

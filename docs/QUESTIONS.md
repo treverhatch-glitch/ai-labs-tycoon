@@ -968,6 +968,32 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Every lab's trust moves with its sales, incidents and bracket wins, so a rival that ships carelessly loses customers like the player would. No planner or rival code was touched: no rival answers complaints.
 - Why: trust that only applied to the player would make the player's appeal the only one that ever moved. The golden run moves because every lab's appeal now follows its trust. The economy-bounds and lifetime tests pass unchanged with the default numbers; they are sensitive to any change that touches rival revenue (the same seeds fail at other trust numbers, and a scan of 40 seeds shows no more rival bankruptcies than with trust switched off).
 
+## The workplace (NEXT item 19)
+
+### Q180. What does a comfort room do? DECIDED: it lifts the level morale settles at, and morale then drifts there at the usual point a week
+
+- Options: (a) rooms add morale once, when built; (b) rooms lift the resting level, so morale keeps climbing to it and falls back when the room goes.
+- Recommendation and choice: **(b)**. Three new Comfort rooms (`coffee-corner`, `kitchen`, `nap-pods`) seat nobody. Their `MoraleLift` perks give points a tile (3, 4 and 5) under a cap each (45, 100, 100) and under a game-wide cap of 150 (`maxMoraleLift`), so a full set settles at 650. A new hire starts at the resting level.
+- Why: it reuses the one drift rule that already exists, so debt, incidents and the Gauntlet's newcomer bonus still mean what they did, and nothing new is saved. The cost is that a lift of 36 takes 36 weeks to arrive, which suits a kitchen: people warm to a place slowly.
+
+### Q181. How does the lab keep people from leaving? DECIDED: a share off the chance of a rival's weekly offer, from the kitchen and the recruiting office
+
+- Options: (a) defence makes a counter-offer cheaper; (b) it cuts the chance an offer arrives.
+- Recommendation and choice: **(b)**. A `PoachDefence` perk takes 0.8% a tile off the weekly chance (kitchen, to 20%) and 1% a tile (recruiting office, to 30%); the total never passes 60% (`maxPoachDefencePermille`, validated to 900 at most so an offer is never ruled out). The roll is the same single `Rivals` roll as before against a smaller number, so no stream moved.
+- Why: the talent market (Q141 onward) already decides what happens once an offer is out, and morale already feeds that through the counter-offer chance. This is the only place left where a room can act before the offer exists.
+
+### Q182. Does morale move research, up and down? DECIDED: up in the shipped data, and the downward slope is there but set to zero
+
+- Options: (a) research moves both ways with morale; (b) it only rises above the baseline.
+- Recommendation and choice: **(b)**, with the loss slope as a data field (`moraleResearchLossSlopePermille`, 0 shipped). Above 500, research rises 40% of the distance a thousand points (650 gives 106%, 1000 gives 120%); below it, research is normal. Set the loss slope to 400 and morale 0 gives 80%.
+- Why: with both directions on, the economy-bounds and lifetime tests failed for rival OpenAye at several seeds and at every nonzero slope I tried (100 to 500). The cause is that a rival's economy splits in two: it snowballs into the billions or it stalls and goes bankrupt around year 18, and a 1.6% research dip from one incident drop in year 1 is enough to choose which. A 40-seed 40-year scan of the full autopilot lifetime showed 1 rival bankruptcy with no morale effect (seed 19) and 3 with it, at 200 and at 400. That fragility was there before this item (seed 19); the loss slope would only make the games the guards watch more likely to tip. It is for a later balance pass, where it can be tuned together with a rival that is harder to push over. Meanwhile, low morale already costs a lab through poaching and counter-offers.
+
+### Q183. What about the recruiting office's other bible effect, hiring speed? DECIDED: not built
+
+- Options: (a) build a hire delay and let recruiters shorten it; (b) leave hiring instant.
+- Recommendation and choice: **(b)**. Hiring is an instant command everywhere, in the planner and in the saved examples; a delay would need a queue of pending hires, a new save field and planner changes.
+- Why: kept for a later item once a screen exists that shows pending hires. The recruiting office keeps its offer defence.
+
 ## Open
 
 None.

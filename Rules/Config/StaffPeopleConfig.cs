@@ -16,6 +16,14 @@ namespace AiLabs.Rules.Config
         public int PoachChancePermille;
         /// <summary>Chance each hire is a star trait, in permille.</summary>
         public int StarHirePermille;
+        /// <summary>The most morale points the comfort rooms can add to the level morale settles at.</summary>
+        public int MaxMoraleLift;
+        /// <summary>The most the rooms can take off the chance of a rival's offer, in permille.</summary>
+        public int MaxPoachDefencePermille;
+        /// <summary>How far research rises for every 1000 points a researcher's morale sits above the baseline, in permille.</summary>
+        public int MoraleResearchSlopePermille;
+        /// <summary>How far research falls for every 1000 points a researcher's morale sits below the baseline, in permille. Zero in the shipped data (see Q180).</summary>
+        public int MoraleResearchLossSlopePermille;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -33,6 +41,10 @@ namespace AiLabs.Rules.Config
             s.Int("moralePoachWitnessDrop", ref MoralePoachWitnessDrop);
             s.Int("poachChancePermille", ref PoachChancePermille);
             s.Int("starHirePermille", ref StarHirePermille);
+            s.Int("maxMoraleLift", ref MaxMoraleLift);
+            s.Int("maxPoachDefencePermille", ref MaxPoachDefencePermille);
+            s.Int("moraleResearchSlopePermille", ref MoraleResearchSlopePermille);
+            s.Int("moraleResearchLossSlopePermille", ref MoraleResearchLossSlopePermille);
             s.ObjList("traits", ref Traits);
         }
     }

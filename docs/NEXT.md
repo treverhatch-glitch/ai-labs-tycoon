@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1065 tests pass (schemas 19–27: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards, sector trust), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 27. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1112 tests pass (schemas 19–27: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards, sector trust; the workplace needs no schema), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 27. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -121,8 +121,12 @@ and says why in the commit message.
     30% to the other sectors of the same family and moves appeal by up to 15% either way; an incident writes a complaint to the player's desk,
     answered with a refund, a patch or an apology ([content/trust.md](content/trust.md)). Rivals have trust but no desk. Still open: the
     customer desk screen and a trust display (Unity), rivals that answer complaints.
-19. **The workplace (bible ch. 14 room list and ch. 7, "morale, retention").** Kitchen and nap pods, recruiting-office poaching defence,
-    and morale that finally moves something (research output). Claimed, not started.
+19. ~~**The workplace (bible ch. 14 room list and ch. 7, "morale, retention").**~~ Done (Q180 to Q183, no schema change): three Comfort rooms
+    (`coffee-corner`, `kitchen`, `nap-pods`) lift the level morale settles at (up to +150) and new hires start there; the kitchen and the
+    recruiting office take a share off a rival's weekly offer chance (up to 60%); researchers above the baseline do up to 20% more
+    ([content/workplace.md](content/workplace.md)). Low morale does not slow research in the shipped data (Q182: a loss slope exists, set to 0).
+    Still open: hiring speed from the recruiting office (Q183), a workplace screen (Unity), and a rival that is harder to push into
+    bankruptcy so the loss slope can be switched on.
 
 ## Rules: later
 

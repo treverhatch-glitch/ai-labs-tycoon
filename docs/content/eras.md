@@ -62,7 +62,7 @@ Opens: Game AI and chess bots; Expert systems; Spam filtering and search; Transl
 
 - Techs: `state-machines`, `regression-tests`, `pathfinding`, `minimax`, `rules-engines`, `expert-shells`, `playtest-telemetry`, `opening-books`, `decision-trees`, `beowulf-clusters`, `spam-filters`, `search-ranking`, `neural-nets`, `bayes-nets`, `svm`, `speech-hmm`, `recommenders`, `gpgpu`, `feature-engineering`, `ensemble-methods`, `mapreduce`, `crowd-labelling`, `kernel-tricks`, `boosted-trees`, `ocr-engines`, `topic-models`, `speech-dictation`, `web-scale-crawl`
 - Sectors: `game-ai`, `game-bots`, `expert-systems`, `spam-search`, `machine-translation`, `web-ads`
-- Rooms: `research-lab`, `engineering-bay`, `safety-lab`, `sales-office`, `server-closet`, `labelling-room`, `ops-centre`, `policy-office`
+- Rooms: `research-lab`, `engineering-bay`, `safety-lab`, `sales-office`, `server-closet`, `labelling-room`, `ops-centre`, `policy-office`, `coffee-corner`
 
 ## The Punchline (2009)
 
@@ -86,7 +86,7 @@ Opens: Convolutional nets and speech; Reinforcement learning and game champions;
 
 - Techs: `conv-nets`, `speech-nets`, `deep-rl`, `game-champions`, `model-zoo`, `adversarial-tests`, `multi-gpu`, `chip-team`, `hbm-memory`
 - Sectors: `image-recognition`, `voice-assistants`, `autonomous-driving`
-- Rooms: `research-floor`, `recruiting-office`, `chip-design-lab`, `hw-test-lab`
+- Rooms: `research-floor`, `recruiting-office`, `chip-design-lab`, `hw-test-lab`, `kitchen`
 
 ## It Writes (2017)
 
@@ -110,7 +110,7 @@ Opens: Human-feedback tuning and a chat box; Image, voice and video models; Liqu
 
 - Techs: `rlhf`, `chat-interface`, `multimodal`, `retrieval`, `diffusion`, `early-video`, `quantised-serving`, `liquid-cooling`, `red-teaming`, `compiler-stack-2`, `stacked-hbm`, `reticle-dies`
 - Sectors: `consumer-assistant`, `image-design`, `customer-support`, `legal-research`, `music-audio`, `video-film`
-- Rooms: `product-studio`, `auditorium`, `liquid-cooling-pod`
+- Rooms: `product-studio`, `auditorium`, `liquid-cooling-pod`, `nap-pods`
 
 ## Agents (2024)
 

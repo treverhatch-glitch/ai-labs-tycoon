@@ -12,12 +12,13 @@ namespace AiLabs.Rules.Systems
             StaffPeopleConfig cfg = c.StaffPeople;
             string steady = DefaultTrait(cfg);
             string star = StarTrait(cfg);
+            int resting = Workplace.RestingMorale(c, lab);
             for (int i = 0; i < count; i++)
             {
                 var person = new StaffMember();
                 person.Id = state.TakeId();
                 person.RoleId = role.Id;
-                person.Morale = cfg.MoraleBaseline;
+                person.Morale = resting;
                 person.TraitId = star != null && state.Rng.World.Chance(cfg.StarHirePermille) ? star : steady;
                 lab.Staff.Add(person);
             }
@@ -48,7 +49,7 @@ namespace AiLabs.Rules.Systems
 
         public static void RunWeek(GameConfig c, LabState lab)
         {
-            int baseline = c.StaffPeople.MoraleBaseline;
+            int baseline = Workplace.RestingMorale(c, lab);
             int drift = c.StaffPeople.MoraleDriftPerWeek;
             int debtDrift = c.StaffPeople.MoraleDebtDriftPerWeek;
             for (int i = 0; i < lab.Staff.Count; i++)
@@ -81,7 +82,7 @@ namespace AiLabs.Rules.Systems
         {
             if (player == null || player.Bankrupt || player.Staff.Count == 0) return;
             if (!RivalSystem.IsFeud(c, rival)) return;
-            if (!state.Rng.Rivals.Chance(c.StaffPeople.PoachChancePermille)) return;
+            if (!state.Rng.Rivals.Chance(Workplace.PoachChancePermille(c, player))) return;
 
             if (c.Talent.OfferWeeks > 0 && player.PoachOffers.Count >= c.Talent.MaxOpenOffers) return;
             StaffMember target = BestPoachTarget(c, player);

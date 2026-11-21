@@ -127,6 +127,8 @@ The Gauntlet has more to it now ([content/gauntlet.md](content/gauntlet.md)): th
 
 Trust ([content/trust.md](content/trust.md)) is the slow side of reputation: each lab has a meter per sector that grows a little every week it sells there, jumps with a bracket win, collapses with an incident or an exposed tuning, carries to the other sectors of the same family, and moves appeal. An incident also writes a complaint to the player's desk, which can be answered with a refund, a patch or an apology.
 
+The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

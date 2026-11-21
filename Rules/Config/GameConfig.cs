@@ -8,7 +8,7 @@ namespace AiLabs.Rules.Config
 
     public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy, ChipDesign }
 
-    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest, Press }
+    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest, Press, Comfort }
 
     public enum TechEffectKind
     {

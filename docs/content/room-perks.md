@@ -14,5 +14,10 @@ A room is built for what it seats or holds, and a few of the later rooms do one 
 | `press-room-buzz` | `press-room` | LaunchBuzz | 1.2% | 40% | A launch earns reputation: this share of the launch buzz (together never more than 100%) |
 | `auditorium-damping` | `auditorium` | ScandalDamping | 0.8% | 30% | As the press room's damping |
 | `auditorium-buzz` | `auditorium` | LaunchBuzz | 1.5% | 60% | As the press room's launch buzz |
+| `coffee-corner-lift` | `coffee-corner` | MoraleLift | 3 points | 45 points | Lifts the level morale settles at |
+| `kitchen-lift` | `kitchen` | MoraleLift | 4 points | 100 points | Lifts the level morale settles at |
+| `nap-pods-lift` | `nap-pods` | MoraleLift | 5 points | 100 points | Lifts the level morale settles at |
+| `kitchen-stay` | `kitchen` | PoachDefence | 0.8% | 20% | Takes a share off the chance a rival makes an offer |
+| `recruiting-office-stay` | `recruiting-office` | PoachDefence | 1% | 30% | Takes a share off the chance a rival makes an offer (recruiters hear who is being courted) |
 
-Perks of one kind add up across rooms. The press room and the auditorium are about the press ([press.md](press.md)). The data rooms (labelling, data team, synthetic data) and the plain compute halls have no perk.
+Perks of one kind add up across rooms. The press room and the auditorium are about the press ([press.md](press.md)). The comfort rooms are about the people in them ([workplace.md](workplace.md)); their morale perks count in points, not permille. The data rooms (labelling, data team, synthetic data) and the plain compute halls have no perk.

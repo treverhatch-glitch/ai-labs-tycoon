@@ -939,6 +939,10 @@ namespace AiLabs.Rules.Config
             if (s.MoraleDebtDriftPerWeek < 0) p.Add("staffPeople.moraleDebtDriftPerWeek is negative");
             if (s.MoraleIncidentDrop < 0) p.Add("staffPeople.moraleIncidentDrop is negative");
             if (s.MoralePoachWitnessDrop < 0) p.Add("staffPeople.moralePoachWitnessDrop is negative");
+            if (s.MaxMoraleLift < 0 || s.MoraleBaseline + s.MaxMoraleLift > MathI.Permille) p.Add("staffPeople.maxMoraleLift needs to keep the resting morale within 0 to 1000");
+            if (s.MaxPoachDefencePermille < 0 || s.MaxPoachDefencePermille > 900) p.Add("staffPeople.maxPoachDefencePermille needs 0 to 900, so a rival's offer is never ruled out");
+            if (s.MoraleResearchSlopePermille < 0 || s.MoraleResearchSlopePermille > 2000) p.Add("staffPeople.moraleResearchSlopePermille needs 0 to 2000");
+            if (s.MoraleResearchLossSlopePermille < 0 || s.MoraleResearchLossSlopePermille > 2000) p.Add("staffPeople.moraleResearchLossSlopePermille needs 0 to 2000");
             Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");

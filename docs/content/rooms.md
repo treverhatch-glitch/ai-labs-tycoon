@@ -40,6 +40,8 @@ New roles do the work of one of the functions (Research, Engineering, Safety, Sa
 
 ## Room types
 
+Comfort rooms seat nobody: they are for the people already there ([workplace.md](workplace.md)).
+
 ### Dial-up Days (1995)
 
 | Id | Name | Purpose | Seats | Tiles/seat | GPU slots/tile | Min size | Build/tile | Upkeep/tile/week |
@@ -52,6 +54,7 @@ New roles do the work of one of the functions (Research, Engineering, Safety, Sa
 | `labelling-room` | Labelling Room | Engineering | `labeller` | 3 | - | 3 x 3 | $300 | $7 |
 | `ops-centre` | Ops Centre | Infrastructure | `infra` | 4 | - | 3 x 3 | $400 | $8 |
 | `policy-office` | Policy Office | Policy | `policy` | 4 | - | 3 x 3 | $450 | $8 |
+| `coffee-corner` | Coffee Corner | Comfort | - | - | - | 2 x 2 | $250 | $4 |
 
 ### The Punchline (2009)
 
@@ -67,6 +70,7 @@ New roles do the work of one of the functions (Research, Engineering, Safety, Sa
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `research-floor` | Research Floor | Research | `researcher` | 3 | - | 4 x 4 | $700 | $12 |
 | `recruiting-office` | Recruiting Office | Sales | `recruiter` | 4 | - | 3 x 3 | $800 | $12 |
+| `kitchen` | Kitchen | Comfort | - | - | - | 3 x 3 | $500 | $9 |
 | `chip-design-lab` | Chip Design Lab | ChipDesign | `chip-architect` | 4 | - | 3 x 3 | $600 | $12 |
 | `hw-test-lab` | Hardware Test Lab | HardwareTest | - | - | - | 3 x 3 | $700 | $14 |
 
@@ -86,6 +90,7 @@ Both chip rooms also need the tech `chip-team`, whatever the year (the room type
 | `product-studio` | Product Studio | Sales | `product-lead` | 4 | - | 4 x 3 | $1k | $16 |
 | `auditorium` | Auditorium | Press | - | - | - | 5 x 4 | $1.5k | $30 |
 | `liquid-cooling-pod` | Liquid-Cooling Pod | Compute | - | - | 16 | 4 x 4 | $4.2k | $100 |
+| `nap-pods` | Nap Pods | Comfort | - | - | - | 3 x 3 | $700 | $12 |
 
 ### Agents (2024)
 
