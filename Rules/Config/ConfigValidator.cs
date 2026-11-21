@@ -745,6 +745,7 @@ namespace AiLabs.Rules.Config
                 string who = "office event " + e.IdValue;
                 if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
                 if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
+                if (e.FromYear < 0 || e.ToYear < 0 || (e.ToYear > 0 && e.FromYear > e.ToYear)) p.Add(who + " has years that do not make a range (" + e.FromYear + " to " + e.ToYear + ")");
                 if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
                 if (!string.IsNullOrEmpty(e.LapseChoice) && e.Choice(e.LapseChoice) == null) p.Add(who + " lapses into the unknown choice \"" + e.LapseChoice + "\"");
                 UniqueIds(p, who + " choices", e.Choices);

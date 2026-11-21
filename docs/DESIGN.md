@@ -181,6 +181,8 @@ The first release of a model asks how the release notes should read: a small cho
 
 Compute now splits three ways: the player may set aside up to 30% of general compute for research experiments, which speeds the researchers up ([content/research-share.md](content/research-share.md); Q291).
 
+Some office events belong to their years: `fromYear` and `toYear` limit when an event can be drawn. A modem screams in the dial-up days, a model finishes the founder's sentence in the writing era, and agents book flights to cities that do not exist once agents are about. Events without years can happen at any time.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

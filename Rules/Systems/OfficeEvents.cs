@@ -53,7 +53,7 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The events that could happen now: their needs are met and the lab has not just seen them. Once all have been seen the list starts again.</summary>
-        public static List<OfficeEventConfig> Eligible(GameConfig c, LabState lab, out bool startsAgain)
+        public static List<OfficeEventConfig> Eligible(GameConfig c, LabState lab, out bool startsAgain, int tick = -1)
         {
             var fresh = new List<OfficeEventConfig>();
             var any = new List<OfficeEventConfig>();
@@ -62,11 +62,19 @@ namespace AiLabs.Rules.Systems
                 OfficeEventConfig e = c.Office.Events[i];
                 if (e.Trigger != OfficeTrigger.Random) continue;
                 if (!MeetsRequirement(c, lab, e.Requires)) continue;
+                if (tick >= 0 && !InYears(c, e, tick)) continue;
                 any.Add(e);
                 if (!lab.OfficeSeen.Contains(e.IdValue)) fresh.Add(e);
             }
             startsAgain = fresh.Count == 0;
             return startsAgain ? any : fresh;
+        }
+
+        /// <summary>True when the event's years (if it has any) take in the calendar year of this tick.</summary>
+        public static bool InYears(GameConfig c, OfficeEventConfig e, int tick)
+        {
+            int year = GameDate.Year(c.Calendar, tick);
+            return (e.FromYear <= 0 || year >= e.FromYear) && (e.ToYear <= 0 || year <= e.ToYear);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
@@ -80,7 +88,7 @@ namespace AiLabs.Rules.Systems
             if (state.Tick < c.Office.FirstAfterWeeks) return;
             if (Mix(state, lab, 1) % MathI.Permille >= c.Office.ChancePermille) return;
             bool startsAgain;
-            List<OfficeEventConfig> options = Eligible(c, lab, out startsAgain);
+            List<OfficeEventConfig> options = Eligible(c, lab, out startsAgain, state.Tick);
             if (options.Count == 0) return;
             OfficeEventConfig chosen = options[(int)(Mix(state, lab, 2) % options.Count)];
             lab.OfficeEventId = chosen.IdValue;

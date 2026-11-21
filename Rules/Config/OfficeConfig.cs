@@ -92,6 +92,10 @@ namespace AiLabs.Rules.Config
         public OfficeTrigger Trigger;
         /// <summary>The choice taken for the player when nobody answers in time (empty: nothing happens, the event blows over).</summary>
         public string LapseChoice = "";
+        /// <summary>The first calendar year the event can happen in; 0 for no start.</summary>
+        public int FromYear;
+        /// <summary>The last calendar year the event can happen in; 0 for no end.</summary>
+        public int ToYear;
         public List<OfficeChoiceConfig> Choices = new List<OfficeChoiceConfig>();
 
         public string Id { get { return IdValue; } }
@@ -110,6 +114,8 @@ namespace AiLabs.Rules.Config
             s.Enum("requires", ref Requires);
             s.Enum("trigger", ref Trigger);
             s.Str("lapseChoice", ref LapseChoice);
+            s.Int("fromYear", ref FromYear);
+            s.Int("toYear", ref ToYear);
             s.ObjList("choices", ref Choices);
         }
     }

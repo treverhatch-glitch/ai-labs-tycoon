@@ -1415,6 +1415,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `lab.researchSharePermille` (schema 42), `SetResearchShare`, limit `research.maxComputeSharePermille` 300, bonus `research.computeShareBonusPermille` 1200. The share comes off `LabQueries.Split` general compute and own-chip compute, so training and customers see the same smaller pool everywhere the split is used. The bonus multiplies the researchers' output (`TrainingSystem.ResearchPerWeek`), so a lab without researchers gets nothing.
 - Why: the bible says "split compute three ways" and only two ways existed. A fixed rate would change every lab's economy at once and the rivals' balance (Q182); a share starts at zero, is player-only and is refused for rivals, so defaults change nothing. A separate GPU pool would need new holdings and orders. Schema 42 is the one new saved field; the golden digest moved only because of it (checked by reverting the field and the schema number).
 
+### Q292. Can an office event belong to a stretch of years? DECIDED: yes, `fromYear` / `toYear` on the event (0 for open), six events use them
+- An office event may now name the first and last calendar year it can happen in. `OfficeEvents.Eligible` takes an optional tick and drops events outside their years; the weekly draw passes the current tick. Called without a tick (tests, tools) the years are ignored.
+- Six events use it: the modem handshake (to 2003), demo day (2009 to 2016), the muffin (2012 to 2021), the sentence (2017 to 2023), the phantom flights (2024 on) and the weekend request (2029 on). The older 33 events carry `fromYear: 0, toYear: 0` and happen at any date.
+- The validator rejects negative years or a first year after the last.
+- The golden digest did not move: the draw is only for the player and the golden run sees none of the new events. Rivals have no office, so the economy is untouched.
+- Alternatives: era ids instead of years (rejected: scenarios can move era dates); a separate `requires` kind (rejected: a requirement is about the lab, not the calendar).
+
 ## Open
 
 None.

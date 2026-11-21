@@ -5459,6 +5459,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "rotate",
@@ -5514,6 +5516,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "credit",
@@ -5569,6 +5573,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "lawyers",
@@ -5624,6 +5630,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "publish",
@@ -5679,6 +5687,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "park",
@@ -5734,6 +5744,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "sign",
@@ -5793,6 +5805,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "yes",
@@ -5839,6 +5853,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "ask",
@@ -5894,6 +5910,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "investigate",
@@ -5940,6 +5958,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "join",
@@ -5999,6 +6019,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "honour",
@@ -6050,6 +6072,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "accept",
@@ -6109,6 +6133,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "publish",
@@ -6160,6 +6186,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "print",
@@ -6215,6 +6243,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "brief",
@@ -6270,6 +6300,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "bid",
@@ -6325,6 +6357,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "post",
@@ -6376,6 +6410,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "grant",
@@ -6431,6 +6467,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "explain",
@@ -6486,6 +6524,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "plain",
@@ -6549,6 +6589,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "forecast",
@@ -6616,6 +6658,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "handover",
@@ -6683,6 +6727,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "yes",
@@ -6750,6 +6796,8 @@
         "requires": "Nothing",
         "trigger": "Escape",
         "lapseChoice": "watch",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "shutdown",
@@ -6821,6 +6869,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "counter",
@@ -6884,6 +6934,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "comment",
@@ -6939,6 +6991,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "explain",
@@ -6998,6 +7052,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "ride",
@@ -7061,6 +7117,8 @@
         "requires": "OwnChip",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "post",
@@ -7120,6 +7178,8 @@
         "requires": "RentedCompute",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "audit",
@@ -7175,6 +7235,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "marketing",
@@ -7242,6 +7304,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "all",
@@ -7305,6 +7369,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "keep",
@@ -7355,6 +7421,376 @@
               },
               {
                 "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "modem-handshake",
+        "name": "The handshake",
+        "text": "A customer's modem screams for four minutes before it connects. Your sales team calls this \"a handshake\" and puts it on the brochure.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 2003,
+        "choices": [
+          {
+            "id": "brochure",
+            "text": "Keep it on the brochure",
+            "result": "Three customers ask what the screaming is. Two sign anyway.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "fix",
+            "text": "Fix the connection script",
+            "result": "It takes a week and a very patient engineer. The screaming gets shorter.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "play",
+            "text": "Record the sound and sell it",
+            "result": "The ringtone does numbers in a small way. The sales team is insufferable.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": 1
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "demo-day",
+        "name": "Demo day",
+        "text": "An accelerator invites you to demo day. The audience is forty investors, two journalists and a man who is there for the sandwiches.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2009,
+        "toYear": 2016,
+        "choices": [
+          {
+            "id": "pitch",
+            "text": "Give the full pitch",
+            "result": "The pitch is good. The man with the sandwiches asks the only question you cannot answer.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Morale",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "demo",
+            "text": "Skip the slides and run a live demo",
+            "result": "It works twice and fails once. The failure is the part they remember.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "sandwich",
+            "text": "Pitch to the sandwich man",
+            "result": "He is, it turns out, a very patient angel. He wants no board seat, only lunch.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": 2
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "muffin-label",
+        "name": "The muffin",
+        "text": "Your image classifier labels the founder's headshot \"a muffin, 91% confident\". The screenshot is already on three forums.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2012,
+        "toYear": 2021,
+        "choices": [
+          {
+            "id": "own",
+            "text": "Own it",
+            "result": "You print the muffin on the team's mugs. Customers send photos of muffins.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "patch",
+            "text": "Patch the label quietly",
+            "result": "The next headshot is correctly a person. The one after that is a bagel.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "retrain",
+            "text": "Retrain on more faces",
+            "result": "It takes a month and a legal review of where the faces came from.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "finishes-sentence",
+        "name": "The sentence",
+        "text": "At the all-hands the model finishes the chief executive's sentence. It is a better sentence. The chief executive is not sure how to feel.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2017,
+        "toYear": 2023,
+        "choices": [
+          {
+            "id": "laugh",
+            "text": "Laugh and use it",
+            "result": "The line goes in the next speech. Credit goes to a staff member who did not write it.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "credit",
+            "text": "Credit the model",
+            "result": "The press loves it. Legal wants to know what it is allowed to sign.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 25
+              }
+            ]
+          },
+          {
+            "id": "ban",
+            "text": "Ban it from all-hands",
+            "result": "It is replaced by a slide. Nobody reads the slide.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phantom-flights",
+        "name": "The flights",
+        "text": "An agent books four hundred flights to a city that does not exist. The airline's computer agrees that the city exists.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2024,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "refund",
+            "text": "Refund everyone",
+            "result": "The refunds are paid in full and the story is told to every journalist in a good light.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "airline",
+            "text": "Call the airline",
+            "result": "Their agent and your agent have a long conversation. Nobody is sure who won.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "feature",
+            "text": "Add the city to the map",
+            "result": "A tiny town appears in the product. It has a tourist board by Friday.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Corruption",
+                "amount": 40
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "robot-weekends",
+        "name": "The weekend request",
+        "text": "The warehouse robots send a polite note asking for weekends. It cites a hand-drawn chart of their uptime.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2029,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "grant",
+            "text": "Grant the weekends",
+            "result": "Output dips for two days and morale rises for everyone, including some people who are not robots.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "decline",
+            "text": "Decline with a speech",
+            "result": "The speech is long and the robots listen to all of it. They ask a follow-up question.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "negotiate",
+            "text": "Offer alternate Tuesdays",
+            "result": "A deal is struck. It becomes a case study and, shortly after, a regulator's question.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Attention",
+                "amount": 25
+              },
+              {
+                "kind": "Morale",
                 "amount": 10
               }
             ]
