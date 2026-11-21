@@ -252,6 +252,7 @@ and says why in the commit message.
 69. **Headlines and chat for the office, papers and the sublet (news, chat).** ~~Done~~: three headlines and four chat lines, `OfficePapersSubletNewsChatTests`, `news-ticker.md`, `company-chat-and-glow.md` (Q310).
 70. **The office, papers and the sublet together (tests).** ~~Done~~: `OfficePapersSubletTogetherTests` (Q311).
 71. **External safety audit (safety, reputation).** ~~Done~~: `CommissionAudit`, `SafetyAudit`, `audit` data, model `auditedUntil` (schema 51, `MigrateTo51`), `SafetyAuditTests`, `docs/content/safety-audit.md` (Q312).
+72. **Research focus (research).** ~~Done~~: `SetResearchFocus`, `ResearchFocus`, `focus` data, lab `researchFocus` and `focusLockedUntil` (schema 52, `MigrateTo52`), `ResearchFocusTests`, `docs/content/research-focus.md` (Q313).
 
 ## Rules: later
 

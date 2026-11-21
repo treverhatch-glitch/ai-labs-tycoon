@@ -152,7 +152,9 @@ namespace AiLabs.Rules.State
         /// <summary>Outside auditors tested a model. LabId is the lab, SubjectId the model, Amount the fee, Ref the model's name. Pick is 1 when the numbers held up and a certificate was given, 0 when the published score embarrassed the lab, -1 for anything in between.</summary>
         AuditDone,
         /// <summary>An incident pulled a model's audit certificate. LabId is the lab, SubjectId the model, Ref its name.</summary>
-        AuditRevoked
+        AuditRevoked,
+        /// <summary>The player changed the lab's research focus. LabId is the lab, Amount the cost, Ref the focus id (empty when dropped). Pick is 1 for a new focus, 0 for none.</summary>
+        FocusChanged
     }
 
     /// <summary>

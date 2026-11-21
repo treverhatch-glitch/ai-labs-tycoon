@@ -322,6 +322,11 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long TechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
         {
+            return MathI.Max(1, MathI.MulPermille(PublishedTechCost(c, state, lab, tech), ResearchFocus.CostPermille(c, lab, tech)));
+        }
+
+        static long PublishedTechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
+        {
             if (!IsSafetyTech(tech)) return tech.Cost;
             for (int i = 0; i < state.Labs.Count; i++)
             {

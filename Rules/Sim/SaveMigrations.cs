@@ -64,6 +64,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 49) MigrateTo49(root);
             if (fromSchema < 50) MigrateTo50(root);
             if (fromSchema < 51) MigrateTo51(root);
+            if (fromSchema < 52) MigrateTo52(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -416,6 +417,16 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Schema 51: no model was ever audited from outside.</summary>
+        /// <summary>Schema 52: no lab has picked a research focus.</summary>
+        static void MigrateTo52(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchFocus", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "focusLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
         static void MigrateTo51(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "auditedUntil", JsonValue.Of(0L))));

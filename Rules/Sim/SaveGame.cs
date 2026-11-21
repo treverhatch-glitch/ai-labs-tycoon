@@ -95,6 +95,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.ComplianceLevel < 0 || lab.ComplianceLevel > c.Compliance.MaxLevel) p.Add(who + " runs a compliance office at level " + lab.ComplianceLevel);
                 if (lab.Prestige < 0 || lab.Prestige > c.Prestige.Max) p.Add(who + " has " + lab.Prestige + " academic prestige");
                 if (lab.SubletPermille < 0 || lab.SubletPermille > c.Sublet.MaxPermille || lab.SubletLockedUntil < 0) p.Add(who + " lets " + lab.SubletPermille + " permille of its compute to outsiders, which the data does not allow");
+                if (lab.FocusLockedUntil < 0 || !string.IsNullOrEmpty(lab.ResearchFocus) && c.Focus.Option(lab.ResearchFocus) == null) p.Add(who + " has the research focus \"" + lab.ResearchFocus + "\", which the data does not have");
                 if (lab.CrunchWeeks < 0 || lab.CrunchWeeks > c.StaffPeople.CrunchMaxWeeks) p.Add(who + " has been in crunch time for " + lab.CrunchWeeks + " weeks");
                 foreach (Loan loan in lab.Loans)
                     if (loan.Balance <= 0 || loan.Payment <= 0 || loan.Misses < 0) p.Add(who + " has a loan (" + loan.Id + ") with nothing owed, no payment or a negative miss count");

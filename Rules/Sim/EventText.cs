@@ -204,6 +204,11 @@ namespace AiLabs.Rules.Sim
                 case EventKind.PaperPublished: return who + " spent " + e.Amount + " research points on a paper. The field noticed, and the lab's prestige is now " + e.SubjectId + ".";
                 case EventKind.SubletChanged: return who + " now lets " + (e.SubjectId / 10) + "% of its compute to outside customers" + (e.Amount > 0 ? ", worth $" + e.Amount + " a week." : ".");
                 case EventKind.AuditDone: return who + " paid $" + e.Amount + " for outside auditors to test " + e.Ref + ". " + (e.Pick == 1 ? "Its numbers held up and it has a certificate." : e.Pick == 0 ? "The published score was not the one the lab had been showing." : "They published its real score.");
+                case EventKind.FocusChanged:
+                    {
+                        FocusOptionConfig f = c.Focus.Option(e.Ref);
+                        return who + (f == null ? " dropped its research focus" : " now focuses its research on " + f.Name) + " (it cost $" + e.Amount + ").";
+                    }
                 case EventKind.AuditRevoked: return "The auditors pulled the certificate of " + e.Ref + " after its incident.";
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";

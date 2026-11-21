@@ -1558,6 +1558,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the model (schema 51, `MigrateTo51`): `auditedUntil`. Player only and opt-in; the golden digest moved to 5204c5ee because of the field and the schema number only, and reverting them brought the previous digest (1b97826c) back.
 - Alternatives: publishing the real score only when it is higher than the shown one (rejected: an audit that can quietly keep a flattering number is not an audit); a certificate for the whole lab (rejected: it would hide a risky model behind a safe one); percent-of-fine relief (rejected, same reason as the compliance office).
 
+### Q313. Can the player focus the lab's research on one direction? DECIDED: yes, cheaper techs in it, dearer outside it, with a cost and a lock to change
+- New `focus` data, command `SetResearchFocus(focusId)`, `ResearchFocus` system, event `FocusChanged` (appended), `CommandError.FocusLocked`. Three directions made from tech effect kinds: frontier (capability and model lines), alignment, efficiency (training speed, cooling, software, chip targets).
+- A tech in the chosen direction costs 20% less research; a tech in another direction costs 10% more; techs with no direction do not change. It applies after the discount for a publishing rival's safety tech and never goes below one point. Changing or dropping the focus costs $50,000 and locks it for 26 weeks, so it cannot be flipped to match whatever is for sale.
+- New state on the lab (schema 52, `MigrateTo52`): `researchFocus` and `focusLockedUntil`. Player only and opt-in; rivals and the autopilot never pick one, so defaults change nothing. The golden digest moved to 43a606be because of the two lab fields and the schema number only; reverting them brought the previous digest (5204c5ee) back.
+- Alternatives: a focus that only discounts (rejected: it would always be right to pick one); letting a lab drop the focus for free (rejected: it would remove the penalty whenever a tech outside the focus is wanted); one direction per era (rejected: it takes the choice away).
+
 ## Open
 
 None.

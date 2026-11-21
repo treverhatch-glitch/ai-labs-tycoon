@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Config
             PrestigeProblems(p, c);
             SubletProblems(p, c);
             AuditProblems(p, c);
+            FocusProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -853,6 +854,25 @@ namespace AiLabs.Rules.Config
             if (k.MaxPermille < 0 || k.MaxPermille > 900) p.Add("sublet.maxPermille must be from 0 to 900, so the lab keeps at least a tenth of its compute");
             if (k.RevenuePermille < 0 || k.RevenuePermille > MathI.Permille) p.Add("sublet.revenuePermille must be from 0 to 1000, so subletting never beats renting out the same GPUs at full price");
             if (k.NoticeWeeks < 0 || k.NoticeWeeks > 520) p.Add("sublet.noticeWeeks must be from 0 to 520");
+        }
+
+        static void FocusProblems(List<string> p, GameConfig c)
+        {
+            ResearchFocusConfig k = c.Focus;
+            if (k == null) { p.Add("focus is missing"); return; }
+            if (k.DiscountPermille < 0 || k.DiscountPermille > 900) p.Add("focus.discountPermille must be from 0 to 900, so a tech never becomes free");
+            if (k.PenaltyPermille < 0 || k.PenaltyPermille > 1000) p.Add("focus.penaltyPermille must be from 0 to 1000");
+            if (k.SwitchCost < 0) p.Add("focus.switchCost is negative");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("focus.lockWeeks must be from 0 to 520");
+            var seen = new HashSet<string>();
+            foreach (FocusOptionConfig o in k.Options)
+            {
+                if (string.IsNullOrEmpty(o.Id) || !seen.Add(o.Id)) p.Add("focus option \"" + o.Id + "\" has no id or repeats one");
+                if (string.IsNullOrEmpty(o.Name)) p.Add("focus option " + o.Id + " has no name");
+                if (o.Kinds.Count == 0) p.Add("focus option " + o.Id + " covers no tech effect");
+                foreach (string kind in o.Kinds)
+                    if (!System.Enum.TryParse(kind, out TechEffectKind parsed) || !System.Enum.IsDefined(typeof(TechEffectKind), parsed)) p.Add("focus option " + o.Id + " names the unknown tech effect \"" + kind + "\"");
+            }
         }
 
         static void AuditProblems(List<string> p, GameConfig c)

@@ -5522,6 +5522,32 @@
     "revenuePermille": 500,
     "noticeWeeks": 4
   },
+  "focus": {
+    "options": [
+      {
+        "id": "frontier",
+        "name": "Frontier push",
+        "blurb": "Bigger is better, and nobody has proved otherwise yet.",
+        "kinds": [ "CapabilityPermille", "UnlockLine" ]
+      },
+      {
+        "id": "alignment",
+        "name": "Alignment first",
+        "blurb": "Understand it before it understands you.",
+        "kinds": [ "AlignmentPermille" ]
+      },
+      {
+        "id": "efficiency",
+        "name": "Efficiency",
+        "blurb": "The same model for fewer GPUs, and a smaller power bill to explain.",
+        "kinds": [ "TrainingSpeedPermille", "CoolingPermille", "SoftwarePermille", "UnlockChipTarget" ]
+      }
+    ],
+    "discountPermille": 200,
+    "penaltyPermille": 100,
+    "switchCost": 50000,
+    "lockWeeks": 26
+  },
   "audit": {
     "weeks": 52,
     "minSafetyStaff": 2,

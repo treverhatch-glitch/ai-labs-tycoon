@@ -46,7 +46,8 @@ namespace AiLabs.Rules.Sim
         SetCompliance,
         PublishPaper,
         SetSublet,
-        CommissionAudit
+        CommissionAudit,
+        SetResearchFocus
     }
 
     /// <summary>
@@ -382,6 +383,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Picks the lab's research direction by id, or "" to drop it. Costs cash and cannot be done again for a while.</summary>
+        public static Command SetResearchFocus(int labId, string focusId)
+        {
+            Command c = Make(CommandKind.SetResearchFocus, labId);
+            c.Id = focusId ?? "";
+            return c;
+        }
+
         /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>
         public static Command RedTeamModel(int labId, int modelId)
         {
@@ -673,7 +682,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked
     }
 
     public struct CommandResult
