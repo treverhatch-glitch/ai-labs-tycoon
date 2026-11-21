@@ -77,7 +77,9 @@ namespace AiLabs.Rules.Sim
         AssignMentor,
         EndMentoring,
         StartSkunkworks,
-        WrapUpSkunkworks
+        WrapUpSkunkworks,
+        RecogniseUnion,
+        ResistUnion
     }
 
     /// <summary>
@@ -706,6 +708,18 @@ namespace AiLabs.Rules.Sim
         public static Command WrapUpSkunkworks(int labId)
         {
             return Make(CommandKind.WrapUpSkunkworks, labId);
+        }
+
+        /// <summary>Answers a staff drive to organise by recognising the union: a contract with better pay, dearer layoffs, no crunch time and a little more research.</summary>
+        public static Command RecogniseUnion(int labId)
+        {
+            return Make(CommandKind.RecogniseUnion, labId);
+        }
+
+        /// <summary>Answers a staff drive by resisting it: legal fees now, and the drive collapses only if pressure is back under the drive level at the end of the resisting period; a strike comes first if pressure tops out.</summary>
+        public static Command ResistUnion(int labId)
+        {
+            return Make(CommandKind.ResistUnion, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

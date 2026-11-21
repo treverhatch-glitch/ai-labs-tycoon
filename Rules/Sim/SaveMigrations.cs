@@ -84,6 +84,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 69) MigrateTo69(root);
             if (fromSchema < 70) MigrateTo70(root);
             if (fromSchema < 71) MigrateTo71(root);
+            if (fromSchema < 72) MigrateTo72(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -447,6 +448,18 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 72: no lab has organised.</summary>
+        static void MigrateTo72(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "labourStage", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourPressure", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourHard", JsonValue.Of(0L));
             });
         }
 

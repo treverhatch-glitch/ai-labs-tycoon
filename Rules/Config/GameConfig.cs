@@ -99,6 +99,7 @@ namespace AiLabs.Rules.Config
         public RoadmapConfig Roadmap = new RoadmapConfig();
         public MentoringConfig Mentoring = new MentoringConfig();
         public SkunkworksConfig Skunkworks = new SkunkworksConfig();
+        public LabourConfig Labour = new LabourConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -196,6 +197,7 @@ namespace AiLabs.Rules.Config
             s.Obj("roadmap", ref Roadmap);
             s.Obj("mentoring", ref Mentoring);
             s.Obj("skunkworks", ref Skunkworks);
+            s.Obj("labour", ref Labour);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

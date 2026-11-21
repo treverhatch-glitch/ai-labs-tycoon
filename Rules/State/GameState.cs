@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 71;
+        public const int CurrentSchema = 72;
 
         public int Schema;
         public string ConfigVersion;
@@ -237,6 +237,14 @@ namespace AiLabs.Rules.State
         public long SkunkWork;
         /// <summary>The week the next project can start.</summary>
         public int SkunkLockedUntil;
+        /// <summary>The labour stage: 0 quiet, 1 organising (waiting for the player), 2 union recognised, 3 resisting, 4 on strike.</summary>
+        public int LabourStage;
+        /// <summary>Staff pressure to organise, 0 to 1000.</summary>
+        public int LabourPressure;
+        /// <summary>The week the stage ends (stages 1, 3 and 4), 0 otherwise.</summary>
+        public int LabourDue;
+        /// <summary>1 when the contract was forced by a strike.</summary>
+        public int LabourHard;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -472,6 +480,10 @@ namespace AiLabs.Rules.State
             s.Int("skunkDue", ref SkunkDue);
             s.Long("skunkWork", ref SkunkWork);
             s.Int("skunkLockedUntil", ref SkunkLockedUntil);
+            s.Int("labourStage", ref LabourStage);
+            s.Int("labourPressure", ref LabourPressure);
+            s.Int("labourDue", ref LabourDue);
+            s.Int("labourHard", ref LabourHard);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -247,6 +247,16 @@ namespace AiLabs.Rules.Sim
                 case EventKind.SkunkworksDone:
                     return who + (e.Pick == 1 ? " finished" : " wrapped up early") + " its " + e.Ref + " skunkworks project: "
                         + (e.SubjectId == 1 ? e.Amount + " research points." : e.SubjectId == 2 ? e.Amount + " more alignment on its finished models." : e.Amount + " points of technical debt cleared.");
+                case EventKind.LabourDrive:
+                    return "Staff at " + who + " are organising; the lab has " + e.SubjectId + " weeks to answer.";
+                case EventKind.LabourRecognised:
+                    return e.Pick == 1 ? who + " recognised its staff union." : who + " was forced to recognise its staff union after a strike.";
+                case EventKind.LabourResisted:
+                    return e.Pick == 1 ? who + " hired lawyers to resist its staff drive for $" + e.Amount + "." : who + " let its staff drive go unanswered and is resisting it.";
+                case EventKind.LabourHeld:
+                    return "The staff drive at " + who + " fizzled out.";
+                case EventKind.LabourStrike:
+                    return "Staff at " + who + " went on strike for " + e.Amount + " weeks.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

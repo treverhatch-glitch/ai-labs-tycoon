@@ -104,6 +104,7 @@ namespace AiLabs.Rules.Config
             RoadmapProblems(p, c);
             MentoringProblems(p, c);
             SkunkworksProblems(p, c);
+            LabourProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1064,6 +1065,31 @@ namespace AiLabs.Rules.Config
             if (k.AlignmentPerHundred < 0 || k.AlignmentPerHundred > 500) p.Add("skunkworks.alignmentPerHundred must be from 0 to 500");
             if (k.MaxAlignment < 0 || k.MaxAlignment > 500) p.Add("skunkworks.maxAlignment must be from 0 to 500");
             if (k.DebtPerPersonWeek < 0 || k.DebtPerPersonWeek > 50) p.Add("skunkworks.debtPerPersonWeek must be from 0 to 50");
+        }
+
+        static void LabourProblems(List<string> p, GameConfig c)
+        {
+            LabourConfig k = c.Labour;
+            if (k == null) { p.Add("labour is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("labour.enabled must be 0 or 1");
+            if (k.MinStaff < 2 || k.MinStaff > 200) p.Add("labour.minStaff must be from 2 to 200");
+            if (k.MoraleBelow < 0 || k.MoraleBelow > MathI.Permille) p.Add("labour.moraleBelow must be from 0 to 1000");
+            if (k.LowMoralePerWeek < 0 || k.LowMoralePerWeek > 500 || k.CrunchPerWeek < 0 || k.CrunchPerWeek > 500) p.Add("labour.lowMoralePerWeek and crunchPerWeek must be from 0 to 500");
+            if (k.LayoffPerFull < 0 || k.LayoffPerFull > 2000) p.Add("labour.layoffPerFull must be from 0 to 2000");
+            if (k.DecayPerWeek < 0 || k.DecayPerWeek > 500) p.Add("labour.decayPerWeek must be from 0 to 500");
+            if (k.DrivePressure < 100 || k.DrivePressure >= MathI.Permille) p.Add("labour.drivePressure must be from 100 to 999, so the staff can always organise before the top");
+            if (k.WindowWeeks < 1 || k.WindowWeeks > 52) p.Add("labour.windowWeeks must be from 1 to 52");
+            if (k.ResistWeeks < 1 || k.ResistWeeks > 104) p.Add("labour.resistWeeks must be from 1 to 104");
+            if (k.ResistFactorPermille < MathI.Permille || k.ResistFactorPermille > 5000) p.Add("labour.resistFactorPermille must be from 1000 to 5000, so resisting never calms anyone");
+            if (k.ResistCost < 0) p.Add("labour.resistCost must not be negative");
+            if (k.HeldPressure < 0 || k.HeldPressure >= k.DrivePressure) p.Add("labour.heldPressure must be from 0 to below drivePressure");
+            if (k.StrikeWeeks < 1 || k.StrikeWeeks > 26) p.Add("labour.strikeWeeks must be from 1 to 26");
+            if (k.StrikeMorale < 0 || k.StrikeMorale > MathI.Permille) p.Add("labour.strikeMorale must be from 0 to 1000");
+            if (k.StrikeCutPermille < 0 || k.StrikeCutPermille >= MathI.Permille) p.Add("labour.strikeCutPermille must be from 0 to 999");
+            if (k.RecogniseMorale < 0 || k.RecogniseMorale > 500) p.Add("labour.recogniseMorale must be from 0 to 500");
+            if (k.PayPermille < 0 || k.PayPermille > 500 || k.HardPayPermille < k.PayPermille || k.HardPayPermille > 1000) p.Add("labour.payPermille must be from 0 to 500 and hardPayPermille from payPermille to 1000");
+            if (k.SeverancePermille < MathI.Permille || k.HardSeverancePermille < k.SeverancePermille || k.HardSeverancePermille > 10000) p.Add("labour.severancePermille must be at least 1000 and hardSeverancePermille from severancePermille to 10000");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 500 || k.HardResearchPermille < 0 || k.HardResearchPermille > k.ResearchPermille) p.Add("labour.researchPermille must be from 0 to 500 and hardResearchPermille from 0 to researchPermille");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

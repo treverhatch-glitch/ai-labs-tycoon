@@ -234,7 +234,17 @@ namespace AiLabs.Rules.State
         /// <summary>A skunkworks project started. SubjectId is the kind (1 research, 2 safety, 3 engineering), Amount the people, Pick the weeks, Ref the kind.</summary>
         SkunkworksStarted,
         /// <summary>A project paid out. SubjectId is the kind, Amount what it paid (research points, alignment permille or debt points), Pick 1 when it ran its course, 0 when it was wrapped up early.</summary>
-        SkunkworksDone
+        SkunkworksDone,
+        /// <summary>The staff started to organise. Amount is the pressure, SubjectId the weeks the player has to answer.</summary>
+        LabourDrive,
+        /// <summary>A union was recognised. Pick 1 when the player chose it, 0 when a strike forced it. Amount is the pay it adds in permille.</summary>
+        LabourRecognised,
+        /// <summary>The player resisted a drive. Pick 1 when chosen, 0 when the window ran out. Amount is the legal fees.</summary>
+        LabourResisted,
+        /// <summary>A resisted drive collapsed because pressure was back under the drive level. Amount is the pressure left.</summary>
+        LabourHeld,
+        /// <summary>The staff went on strike. Amount is the weeks, SubjectId the morale lost.</summary>
+        LabourStrike
     }
 
     /// <summary>

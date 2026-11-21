@@ -295,6 +295,7 @@ and says why in the commit message.
 112. **Skunkworks (a team out of a function for a project, paid by person-weeks, wrap up early at half).** ~~Done~~: `skunkworks` data, `StartSkunkworks`, `WrapUpSkunkworks`, `Skunkworks`, schema 71, `SkunkworksTests`, `docs/content/skunkworks.md` (Q357).
 113. **Headlines and chat for the reserve, the pledge, the roadmap, mentoring and skunkworks.** ~~Done~~: 14 headlines, 14 chat lines, `ReservePledgeRoadmapMentoringSkunkworksNewsChatTests` (Q354).
 114. **The reserve, the pledge, the roadmap, mentoring and skunkworks together.** ~~Done~~: `ReservePledgeRoadmapMentoringSkunkworksTogetherTests` (Q355).
+115. **Labour relations (pressure from layoffs, crunch and morale; recognise, resist or let it run; strike).** ~~Done~~: `labour` data, `RecogniseUnion`, `ResistUnion`, `Labour`, schema 72, `LabourTests`, `docs/content/labour.md` (Q358).
 
 ## Rules: later
 

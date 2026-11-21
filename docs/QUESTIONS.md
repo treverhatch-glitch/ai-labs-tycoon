@@ -1822,6 +1822,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - State over time: the kind, team, dates, the person-weeks so far and the cooldown. No random numbers, and the player's lab only. The golden moved defdc644 -> 557a13a9 only through the six new saved fields and the schema number (verified by taking them back out).
 - Alternatives: a project that raises one model's capability (rejected: touches the capability maths and the model sales lines), the team picked by id (rejected: more commands for the same choice), pay that grows without a ceiling (rejected: a pay-for-stat dial; alignment and debt have ceilings).
 
+### Q358. Can the staff organise? DECIDED: labour pressure that tips into a drive the player recognises or resists
+- New `labour` data, commands `RecogniseUnion` and `ResistUnion`, `Labour` system, five events (`LabourDrive`, `LabourRecognised`, `LabourResisted`, `LabourHeld`, `LabourStrike`) and four saved lab fields (schema 72). Pressure (0 to 1000) builds in a lab of 8 or more from low morale and crunch time and jumps with layoffs; at 700 the staff organise and the player has 8 weeks to answer.
+- Real branching: recognise (a contract with +8% pay, double severance, no crunch time, +5% research and a morale lift), or resist (legal fees, and a bet that morale recovers: a resisted drive collapses only if pressure is back under 700 after 26 weeks, and tops out into a strike if it reaches 1000 first). A strike halts research and training for 3 weeks and ends in a harder contract (+12% pay, triple severance). Doing nothing counts as resisting without paying the lawyers.
+- It reads Layoffs, Crunch and morale, and writes into the pay bill, severance and the research and training sums; it adds no random numbers and only the player's lab is organised. The golden moved 557a13a9 -> 49e4eb09 only through the four new saved fields and the schema number (verified by taking them back out).
+- Alternatives: a dial that buys loyalty (rejected: a pay-for-stat knob), a union for rivals (rejected: it would touch the rivals' planners), random drives (rejected: the pressure is visible and the player can act on it).
+
 ## Open
 
 None.

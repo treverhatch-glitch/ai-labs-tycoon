@@ -116,6 +116,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.SkunkKind != "" && (lab.SkunkPeople < 1 || lab.SkunkDue <= lab.SkunkStart))
                     || ((lab.SkunkKind != "" || lab.SkunkLockedUntil > 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a skunkworks project (\"" + lab.SkunkKind + "\", " + lab.SkunkPeople + " people, due week " + lab.SkunkDue + ") that the data does not allow");
+                if (lab.LabourStage < 0 || lab.LabourStage > 4 || lab.LabourPressure < 0 || lab.LabourPressure > MathI.Permille || lab.LabourDue < 0 || (lab.LabourHard != 0 && lab.LabourHard != 1)
+                    || (lab.LabourStage == 0 || lab.LabourStage == 2 ? lab.LabourDue != 0 : lab.LabourDue < 1)
+                    || (lab.LabourHard == 1 && lab.LabourStage != 2) || (lab.LabourStage == 2 && lab.LabourPressure != 0)
+                    || ((lab.LabourStage != 0 || lab.LabourPressure != 0 || lab.LabourHard != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a labour stage (" + lab.LabourStage + ", pressure " + lab.LabourPressure + ", due week " + lab.LabourDue + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

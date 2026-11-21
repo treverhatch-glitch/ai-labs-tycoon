@@ -27,7 +27,7 @@ namespace AiLabs.Rules.Systems
         {
             long cost = 0;
             for (int i = 0; i < c.Roles.Count; i++)
-                cost += MathI.MulPermille(c.Roles[i].Severance * (long)CutIn(lab, c.Roles[i].Id, permille), c.Layoffs.SeverancePermille);
+                cost += Labour.Severance(c, lab, MathI.MulPermille(c.Roles[i].Severance * (long)CutIn(lab, c.Roles[i].Id, permille), c.Layoffs.SeverancePermille));
             return cost;
         }
 
@@ -63,6 +63,7 @@ namespace AiLabs.Rules.Systems
             if (morale > 0)
                 for (int i = 0; i < lab.Staff.Count; i++) lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - morale);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - ReputationLoss(c, share));
+            Labour.OnLayoff(c, lab, share);
             GameEvent e = Events.Add(state, EventKind.LayoffRound, lab.Id, share, total, "");
             e.Pick = share >= c.Layoffs.DeepPermille ? 1 : 0;
         }
