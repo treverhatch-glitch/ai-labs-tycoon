@@ -3777,6 +3777,14 @@
       {
         "id": "PoachedStaff",
         "text": "{lab} poached a {ref} from the player's roster."
+      },
+      {
+        "id": "SoldModel",
+        "text": "{lab} fire-sold {ref} for ${amount}."
+      },
+      {
+        "id": "AcquiredLab",
+        "text": "{lab} acquired distressed rival {ref} for ${amount}."
       }
     ],
     "reasonTemplates": [
@@ -3899,6 +3907,10 @@
       {
         "id": "ChipsOwnedSharePermille",
         "text": "{pct}% of its compute is its own chips"
+      },
+      {
+        "id": "CrashDistress",
+        "text": "crash distress at {pct}%"
       }
     ]
   },
@@ -3982,6 +3994,7 @@
     "listingMaxPerMonth": 500,
     "cloudRentPermille": 1100,
     "plannerMinYieldPermille": 600,
+    "distressListingPricePermille": 820,
     "architectRoleId": "chip-architect",
     "testLabRoomId": "hw-test-lab",
     "targets": [
@@ -6035,14 +6048,16 @@
     "minInstalledModels": 1,
     "regulatorDealRevenue": 5000000,
     "regulatorAttention": 80,
-    "rivalRollupChancePermille": 600
+    "rivalRollupChancePermille": 600,
+    "plannerAcquireChancePermille": 0
   },
   "modelSales": {
     "unprofitableSalePermille": 350,
     "earningsMultipleWeeks": 52,
     "sectorReputationHit": 25,
     "minOffer": 1000,
-    "incomeSmoothingPermille": 500
+    "incomeSmoothingPermille": 500,
+    "crashDistressOfferPermille": 650
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

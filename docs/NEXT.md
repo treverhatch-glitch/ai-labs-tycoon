@@ -109,6 +109,7 @@ and says why in the commit message.
 - ~~**Hatch ledger lines** (Opus review)~~ **done (local)** — Q170; schema **28**; `HatchLedgerLaterTests` (8).
 - ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
 - ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
+- ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**); **786** tests at local tip (golden unchanged); Q200 rival soak **WIP** (3 skipped).
 
 ## Rules: forward queue (from bible / systems-design)
 

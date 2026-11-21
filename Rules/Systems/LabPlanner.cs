@@ -37,6 +37,8 @@ namespace AiLabs.Rules.Systems
 
             Release(x);
 
+            CrashDistress(x);
+
             if (lab.WeeksInDebt > 0)
             {
                 Tighten(x);

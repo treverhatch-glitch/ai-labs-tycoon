@@ -65,6 +65,10 @@ namespace AiLabs.Rules.Systems
       else
         q.OfferCash = MathI.MulPermille(q.TrainingCostBasis, cfg.UnprofitableSalePermille);
       if (q.OfferCash < cfg.MinOffer) q.OfferCash = cfg.MinOffer;
+      if (q.WeeklyIncome > 0 && BubbleSystem.InCrash(state) && AcquisitionSystem.IsDistressed(c, state, lab)
+          && cfg.CrashDistressOfferPermille > 0 && cfg.CrashDistressOfferPermille < MathI.Permille)
+        q.OfferCash = MathI.MulPermille(q.OfferCash, cfg.CrashDistressOfferPermille);
+      if (q.OfferCash < cfg.MinOffer) q.OfferCash = cfg.MinOffer;
       for (int i = 0; i < model.Sectors.Count; i++) q.Sectors.Add(model.Sectors[i]);
       return q;
     }

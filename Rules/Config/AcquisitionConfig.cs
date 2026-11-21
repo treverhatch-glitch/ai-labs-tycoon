@@ -15,6 +15,8 @@ namespace AiLabs.Rules.Config
     public int RegulatorAttention;
     /// <summary>Chance per distressed pair that a rival rollup happens during a crash, permille out of 1000.</summary>
     public int RivalRollupChancePermille;
+    /// <summary>Each planning week in crash, chance a healthy rival tries to acquire the weakest distressed peer, permille out of 1000.</summary>
+    public int PlannerAcquireChancePermille;
 
     public void Sync(Syncer s)
     {
@@ -28,6 +30,7 @@ namespace AiLabs.Rules.Config
       s.Long("regulatorDealRevenue", ref RegulatorDealRevenue);
       s.Int("regulatorAttention", ref RegulatorAttention);
       s.Int("rivalRollupChancePermille", ref RivalRollupChancePermille);
+      s.Int("plannerAcquireChancePermille", ref PlannerAcquireChancePermille);
     }
   }
 }

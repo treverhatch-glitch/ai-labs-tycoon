@@ -722,6 +722,30 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `HatchAcquisitionGameplayLaterTests` Q175 block; ties Q171 reset to listed-chip raises.
 - Why: rivals/chips/acquisitions/model sales are the Hatch economic fantasy — they must interoperate through crash months.
 
+### Q176. Crash distress fire-sale for listed models? DECIDED: haircut via `crashDistressOfferPermille`
+
+- Options: (a) flat disabled in crash; (b) permille haircut on quoted offers when seller distressed and `BubbleSystem.InCrash`.
+- Recommendation and choice: **(b)**. `ModelSalesConfig.crashDistressOfferPermille`; `ModelSalesSystem.Quote` applies; rivalry template `SoldModel` and `ReasonCode.CrashDistress`.
+- Why: rivals flush inventory when balance sheets crack — without bypassing normal quote rules.
+
+### Q177. Planner sells distressed models before debt? DECIDED: yes (`TrySellDistressModels`)
+
+- Options: (a) manual only; (b) monthly planner fire-sell when distressed in crash, logging `DecisionAction.SoldModel`.
+- Recommendation and choice: **(b)**. `LabPlanner.Distress`; skipped when `WeeksInDebt` blocks other normal ops.
+- Why: visible rival pain in the decision log.
+
+### Q178. Distress-listed chips when reserves fail? DECIDED: discount listings at `distressListingPricePermille`
+
+- Options: (a) delist only; (b) relist at distress permille via `TryDistressChipListings`; player `BuyListedChips` works in crash.
+- Recommendation and choice: **(b)**. `ChipsConfig.distressListingPricePermille`; `HatchRivalDistressLaterTests` Q178.
+- Why: chip market is the Hatch fantasy liquidity valve during busts.
+
+### Q179. Planner acquires in crash? DECIDED: optional, default off
+
+- Options: (a) same as player distressed roll; (b) `plannerAcquireChancePermille` default 0 until soak proves rival economies.
+- Recommendation and choice: **(b)**. Hook in `LabPlanner.Distress`; config validator bounds permille.
+- Why: avoid premature rival cannibalism before Q200 retrenchment bar is green.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
