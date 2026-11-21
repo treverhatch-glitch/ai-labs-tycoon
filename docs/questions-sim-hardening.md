@@ -386,6 +386,10 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q117. Incident odds breakdown (lab-aware)? DECIDED: `DisplayQueries.IncidentParts` + `FromSafetyStaff`
+- Choice: **(a)** — parts sum to `SafetySystem.IncidentChancePermille(c, model, lab)` including Q108 staff cut.
+- Why: NEXT “explain every number” tail; closes display vs live mismatch without new economy knobs.
+
 ### Q116. Challenger cash stipend? DECIDED: `challengerCashPerWeek`
 - Choice: **(a)** — runner-up lab `Grants` in `GrantWeeklyStipends`.
 

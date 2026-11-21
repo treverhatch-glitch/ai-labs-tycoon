@@ -47,8 +47,9 @@ namespace AiLabs.Rules.Systems
             public int FromConfig;
             public int FromAlignment;
             public int FromCorruption;
+            public int FromSafetyStaff;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromSafetyStaff; } }
         }
 
         public struct RevenueBreakdown
@@ -161,14 +162,16 @@ namespace AiLabs.Rules.Systems
             return AppealParts(c, state, sector, sectorState, lab, model).Total;
         }
 
-        public static IncidentBreakdown IncidentParts(GameConfig c, ModelState model)
+        public static IncidentBreakdown IncidentParts(GameConfig c, ModelState model, LabState lab = null)
         {
             var b = new IncidentBreakdown();
             b.FromConfig = c.Safety.IncidentChancePermille;
             long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
             b.FromAlignment = (int)(baseChance - b.FromConfig);
-            int total = SafetySystem.IncidentChancePermille(c, model);
-            b.FromCorruption = total - (int)baseChance;
+            int afterCorruption = (int)MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+            b.FromCorruption = afterCorruption - (int)baseChance;
+            int afterStaff = SafetySystem.IncidentChancePermille(c, model, lab);
+            b.FromSafetyStaff = afterStaff - afterCorruption;
             return b;
         }
 
