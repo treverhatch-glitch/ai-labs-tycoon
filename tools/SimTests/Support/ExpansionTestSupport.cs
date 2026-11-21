@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
@@ -19,6 +20,16 @@ static class ExpansionTestSupport
         return g;
     }
 
+    public static Game DuoAtYear(int year, string rivalId = "openaye", long cash = 2_000_000_000, Action<GameConfig> tweak = null)
+    {
+        var options = new NewGameOptions { Seed = 17, RivalIds = new List<string> { rivalId } };
+        var g = new Game(Simulation.NewGame(TestData.Config(tweak), options));
+        g.State.Tick = GameDate.TickOfYear(g.C.Calendar, year);
+        foreach (LabState lab in g.State.Labs)
+            Finance.Earn(lab, LedgerLine.CapitalIn, cash);
+        return g;
+    }
+
     public static ModelState AddReleasedModel(Game g, int capability, string sectorId, string name = "Test")
     {
         var model = new ModelState
@@ -29,6 +40,19 @@ static class ExpansionTestSupport
         };
         g.Me.Models.Add(model);
         g.Do(Command.ReleaseModel(g.Id, model.Id, sectorId));
+        return model;
+    }
+
+    public static ModelState AddReleasedModelOnLab(Game g, LabState lab, int capability, string sectorId, string name = "Test")
+    {
+        var model = new ModelState
+        {
+            Id = g.State.TakeId(), LineId = "mini", Version = 1, Name = name,
+            Status = ModelStatus.Trained, Capability = capability, CapBase = capability,
+            Alignment = 600, DisplayedAlignment = 600,
+        };
+        lab.Models.Add(model);
+        g.Do(Command.ReleaseModel(lab.Id, model.Id, sectorId));
         return model;
     }
 
