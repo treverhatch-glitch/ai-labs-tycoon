@@ -21,8 +21,16 @@ namespace AiLabs.Rules.Systems
 
     public static bool IsDistressed(GameConfig c, GameState state, LabState target)
     {
-      if (target.Bankrupt || target.Cash < 0 || target.WeeksInDebt > 0) return true;
-      return BubbleSystem.InCrash(state);
+      if (target.Bankrupt) return true;
+      if (target.Cash < 0 || target.WeeksInDebt > 0) return true;
+      if (BubbleSystem.InCrash(state))
+      {
+        BubbleConfig bubble = c.Bubble;
+        if (bubble == null) return false;
+        int share = GovernmentSystem.RevenueSharePpm(state, target);
+        return share < bubble.SurvivorRevenuePpm;
+      }
+      return false;
     }
 
     public static AcquisitionQuote Quote(GameConfig c, GameState state, LabState buyer, LabState target)
@@ -64,6 +72,11 @@ namespace AiLabs.Rules.Systems
       if (target.Id == state.PlayerLabId && target.Controller == LabController.Player) { reason = "You cannot buy your own lab."; return false; }
       if (target.AbsorbedByLabId >= 0) { reason = target.Name + " is already absorbed."; return false; }
       if (target.Controller != LabController.Plan) { reason = "Only rival labs can be acquired."; return false; }
+      if (BubbleSystem.InCrash(state) && !IsDistressed(c, state, target))
+      {
+        reason = target.Name + " is not distressed enough to sell during the crash.";
+        return false;
+      }
       int released = 0;
       for (int i = 0; i < target.Models.Count; i++)
         if (target.Models[i].Status == ModelStatus.Released) released++;

@@ -58,7 +58,7 @@ public class HatchFollowUpLaterTests
         }
     }
 
-    static Game ChipListingSeller(long sellerCash = 50_000_000)
+    public static Game ChipListingSeller(long sellerCash = 50_000_000)
     {
         var options = new NewGameOptions { Seed = 88, StartEraId = "punchline" };
         options.RivalIds = new System.Collections.Generic.List<string>();
@@ -72,7 +72,7 @@ public class HatchFollowUpLaterTests
         return g;
     }
 
-    static ChipDesign ReadyInferenceListing(Game g)
+    public static ChipDesign ReadyInferenceListing(Game g)
     {
         ChipSpec spec = ChipQueries.Derive(g.C, "inference", "n28", "medium", "fp16", "ddr", "air");
         var d = new ChipDesign();
@@ -96,7 +96,7 @@ public class HatchFollowUpLaterTests
         return d;
     }
 
-    static LabState OpenAyeBuyer(Game g, long cash)
+    public static LabState OpenAyeBuyer(Game g, long cash)
     {
         LabState buyer = WorldSetup.AddRival(g.C, g.State, g.C.Rival("openaye"), EraSystem.AtTick(g.C, g.Tick), true);
         buyer.PlanStartTick = 0;

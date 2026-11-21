@@ -698,6 +698,30 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(c)** with default **(b)**. `BubbleConfig.resetCapitalRaisedAfterCrash`; no save schema bump.
 - Why: Opus review — hurdle should apply per bubble cycle, not all history.
 
+### Q172. Who is “distressed” during a bubble crash? DECIDED: weak revenue share or balance-sheet pain
+
+- Options: (a) every rival in crash; (b) bankrupt / in debt / revenue share below `survivorRevenuePpm` while `InCrash`.
+- Recommendation and choice: **(b)**. `AcquisitionSystem.IsDistressed`; player and rival rollups skip healthy giants; `CanAcquire` blocks non-distressed targets in crash.
+- Why: bible survivors consolidate weak labs — not mandatory fire sales for market leaders.
+
+### Q173. Player commands on absorbed labs? DECIDED: refuse with `LabAbsorbed`
+
+- Options: (a) ghost labs keep planning; (b) block hires, hardware, chips, and nested acquires on absorbed ids; chip listings cannot originate from absorbed sellers.
+- Recommendation and choice: **(b)**. `CommandProcessor` gate; `CommandProcessor.Chips` seller check.
+- Why: absorption is terminal for the target entity.
+
+### Q174. Training runs through M&amp;A? DECIDED: transfer in flight; quotes ignore training
+
+- Options: (a) scrap on absorb; (b) move `Training` models to buyer by id; sale/quote rules still exclude unreleased runs from valuation.
+- Recommendation and choice: **(b)**. `TransferModels` unchanged for training status; `Quote` skips training for parts; cross-tests for sell-after-acquire.
+- Why: crash consolidations should not wipe active science.
+
+### Q175. Bubble/chip/model paths stay coherent in crash? DECIDED: yes (gameplay bar)
+
+- Options: (a) ad hoc per hook; (b) unified checks in tests for pop news, listed-chip capital, crash GPU permille, `AssetSale` ledger during crash, bankrupt pop config, post-crash capital-reset hurdle for new listings.
+- Recommendation and choice: **(b)**. `HatchAcquisitionGameplayLaterTests` Q175 block; ties Q171 reset to listed-chip raises.
+- Why: rivals/chips/acquisitions/model sales are the Hatch economic fantasy — they must interoperate through crash months.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
