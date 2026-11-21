@@ -551,6 +551,7 @@ namespace AiLabs.Rules.Config
         public int Rung4CorruptionMin;
         public int Rung5CorruptionMin;
         public int Rung6CorruptionMin;
+        public ContainmentConfig Containment;
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -577,6 +578,7 @@ namespace AiLabs.Rules.Config
             s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);
             s.Int("rung5CorruptionMin", ref Rung5CorruptionMin);
             s.Int("rung6CorruptionMin", ref Rung6CorruptionMin);
+            s.Obj("containment", ref Containment);
         }
     }
 

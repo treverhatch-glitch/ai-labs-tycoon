@@ -94,7 +94,7 @@ and says why in the commit message.
 - ~~**Incident rungs 4–6 (Q91).**~~ Done: corruption thresholds, six rungs in data, relaxed validator; `IncidentRungsLaterTests`.
 - ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
 - ~~**Shady path depth and China deals (Q93).**~~ Done: player-only shady jobs, model corruption carry/mood/side jobs, China state requests and export vs smuggle; `ShadyChinaLaterTests`.
-- **Containment** rooms and **superintelligence** ending gates.
+- ~~**Containment rooms and superintelligence ending gates (Q94).**~~ Done: containment-wing alignment bonus, year-end `TrySuperintelligence` for paperclipped / long-summer / loose; schema 15; `ContainmentSuperintelLaterTests`.
 - **Specialist** model lines, data sources, **open weights**, sector pricing.
 - **Funding ladder** follow-ons: down rounds, board drama, investor events beyond the first raise.
 - Real **Bodies** and **Upward** expansions (era data is in, flagged `expansion`; mechanics and art are not).

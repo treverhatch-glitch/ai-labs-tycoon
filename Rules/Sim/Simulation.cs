@@ -177,6 +177,7 @@ namespace AiLabs.Rules.Sim
                 GauntletSystem.RunYear(c, state);
                 MarketSystem.GrowYear(c, state);
                 EndingSystem.TryMonopoly(c, state);
+                EndingSystem.TrySuperintelligence(c, state);
             }
 
             state.Tick = tick + 1;

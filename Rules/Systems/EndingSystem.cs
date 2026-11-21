@@ -13,6 +13,9 @@ namespace AiLabs.Rules.Systems
         public const string ExitId = "exit";
         public const string MonopolyId = "monopoly";
         public const string OustedId = "ousted";
+        public const string PaperclippedId = "paperclipped";
+        public const string LongSummerId = "long-summer";
+        public const string LooseId = "loose";
 
         public static void RecordBankrupt(GameConfig c, GameState state, LabState lab)
         {
@@ -55,6 +58,44 @@ namespace AiLabs.Rules.Systems
         {
             Add(state, labId, ExitId);
             Events.Add(state, EventKind.EndingReached, labId, -1, 0, ExitId + ":" + mode);
+        }
+
+        public static void TrySuperintelligence(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            SuperintelligenceConfig cfg = c.Endings.Superintelligence;
+            if (cfg == null || cfg.ReleasedCapabilityMin < 1) return;
+            ModelState model = LabQueries.BestReleasedModel(player);
+            if (model == null || model.Capability < cfg.ReleasedCapabilityMin) return;
+
+            if (model.Alignment <= cfg.PaperclipMaxAlignment)
+            {
+                if (!HasOpen(state, PaperclippedId))
+                {
+                    Add(state, player.Id, PaperclippedId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, PaperclippedId);
+                }
+                return;
+            }
+            if (model.Alignment >= cfg.LongSummerMinAlignment && player.FrontierLevel >= cfg.LongSummerMinFrontier)
+            {
+                if (!HasOpen(state, LongSummerId))
+                {
+                    Add(state, player.Id, LongSummerId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LongSummerId);
+                }
+                return;
+            }
+            if (cfg.LooseRequiresZeroContainment && LabQueries.ContainmentTiles(c, player) <= 0)
+            {
+                if (!HasOpen(state, LooseId))
+                {
+                    Add(state, player.Id, LooseId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LooseId);
+                }
+            }
         }
 
         public static void TryMonopoly(GameConfig c, GameState state)

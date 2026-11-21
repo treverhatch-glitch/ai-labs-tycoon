@@ -3044,7 +3044,12 @@
     ],
     "rung4CorruptionMin": 250,
     "rung5CorruptionMin": 450,
-    "rung6CorruptionMin": 700
+    "rung6CorruptionMin": 700,
+    "containment": {
+      "roomId": "containment-wing",
+      "alignmentPermillePerTile": 25,
+      "alignmentCapPermille": 200
+    }
   },
   "market": {
     "switchRatePermille": 60,
@@ -4292,6 +4297,13 @@
     "handcuffsFinePermille": 500,
     "handcuffsShadyLockWeeks": 240,
     "handcuffsSuccessor": "The Interim CEO",
+    "superintelligence": {
+      "releasedCapabilityMin": 900,
+      "paperclipMaxAlignment": 150,
+      "longSummerMinAlignment": 850,
+      "longSummerMinFrontier": 2,
+      "looseRequiresZeroContainment": true
+    },
     "frontier": {
       "baseCost": 5000,
       "growthPermille": 1400,

@@ -141,6 +141,14 @@ namespace AiLabs.Rules.Config
                     || c.Safety.Rung6CorruptionMin <= c.Safety.Rung5CorruptionMin)
                     p.Add("safety rung4/5/6 corruption thresholds must rise from 1");
             }
+            ContainmentConfig cont = c.Safety.Containment;
+            if (cont != null)
+            {
+                if (string.IsNullOrEmpty(cont.RoomId)) p.Add("safety.containment.roomId is empty");
+                else if (c.RoomType(cont.RoomId) == null) p.Add("safety.containment.roomId names the unknown room \"" + cont.RoomId + "\"");
+                if (cont.AlignmentPermillePerTile < 0) p.Add("safety.containment.alignmentPermillePerTile is negative");
+                if (cont.AlignmentCapPermille < 0) p.Add("safety.containment.alignmentCapPermille is negative");
+            }
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
@@ -210,6 +218,14 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Frontier.BaseCost < 1) p.Add("endings.frontier.baseCost must be at least 1");
             if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
             if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
+            SuperintelligenceConfig si = c.Endings.Superintelligence;
+            if (si != null)
+            {
+                if (si.ReleasedCapabilityMin < 1) p.Add("endings.superintelligence.releasedCapabilityMin must be at least 1");
+                Permille(p, "endings.superintelligence.paperclipMaxAlignment", si.PaperclipMaxAlignment);
+                Permille(p, "endings.superintelligence.longSummerMinAlignment", si.LongSummerMinAlignment);
+                if (si.LongSummerMinFrontier < 1) p.Add("endings.superintelligence.longSummerMinFrontier must be at least 1");
+            }
         }
 
         static void ShadyProblems(List<string> p, GameConfig c)

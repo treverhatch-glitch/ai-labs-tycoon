@@ -22,6 +22,7 @@ namespace AiLabs.Rules.Config
         public string HandcuffsSuccessor = "";
         public FrontierConfig Frontier = new FrontierConfig();
         public MuseumConfig Museum = new MuseumConfig();
+        public SuperintelligenceConfig Superintelligence;
 
         public EndingDefConfig Def(string id)
         {
@@ -46,6 +47,7 @@ namespace AiLabs.Rules.Config
             s.Str("handcuffsSuccessor", ref HandcuffsSuccessor);
             s.Obj("frontier", ref Frontier);
             s.Obj("museum", ref Museum);
+            s.Obj("superintelligence", ref Superintelligence);
         }
     }
 

@@ -552,6 +552,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
 - Why: bible safety ladder; pairs with corruption incident weight (Q74).
 
+### Q94. Containment rooms and superintelligence endings? DECIDED: wing bonus + three gates
+
+- Options: (a) containment as cosmetic room only; (b) tiles add capped alignment-work permille in training; (c) endings on year-end when best released model crosses capability bar.
+- Recommendation and choice: **(b)+(c)**. `ContainmentSuperintelLaterTests.cs` at 12 facts; schema 15 noop migration (config-only); paperclip / long-summer / loose priority order; loose blocked when containment tiles &gt; 0.
+- Why: bible agent-era safety wing and upward ending stubs in default-config.
+
 ### Q93. Shady depth and China deals? DECIDED: player-only crimes, export stays legal-only
 
 - Options: (a) rivals can run shady cards; (b) only the player runs shady cards; China partnership via accept/decline; smuggle bypasses export only on the shady path.

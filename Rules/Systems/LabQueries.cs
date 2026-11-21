@@ -76,6 +76,38 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
+        public static int ContainmentTiles(GameConfig c, LabState lab)
+        {
+            ContainmentConfig cfg = c.Safety == null ? null : c.Safety.Containment;
+            if (cfg == null || string.IsNullOrEmpty(cfg.RoomId)) return 0;
+            int n = 0;
+            for (int i = 0; i < lab.Rooms.Count; i++)
+            {
+                if (lab.Rooms[i].TypeId == cfg.RoomId) n += lab.Rooms[i].Tiles;
+            }
+            return n;
+        }
+
+        public static int ContainmentAlignmentBonus(GameConfig c, LabState lab)
+        {
+            ContainmentConfig cfg = c.Safety == null ? null : c.Safety.Containment;
+            if (cfg == null || cfg.AlignmentPermillePerTile <= 0) return 0;
+            int bonus = ContainmentTiles(c, lab) * cfg.AlignmentPermillePerTile;
+            return cfg.AlignmentCapPermille > 0 ? (int)MathI.Min(cfg.AlignmentCapPermille, bonus) : bonus;
+        }
+
+        public static ModelState BestReleasedModel(LabState lab)
+        {
+            ModelState best = null;
+            for (int i = 0; i < lab.Models.Count; i++)
+            {
+                ModelState m = lab.Models[i];
+                if (m.Status != ModelStatus.Released) continue;
+                if (best == null || m.Capability > best.Capability) best = m;
+            }
+            return best;
+        }
+
         /// <summary>Hardware units the lab owns at one place: -1 for the HQ's racks, else a holding's id.</summary>
         public static int OwnedUnits(LabState lab, int holdingId)
         {
