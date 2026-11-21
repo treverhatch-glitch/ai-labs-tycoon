@@ -22,7 +22,8 @@ namespace AiLabs.Rules.Sim
         AnswerComplaint,
         SetReleaseGate,
         CleanUpNaming,
-        RefurbishRoom
+        RefurbishRoom,
+        FollowLead
     }
 
     /// <summary>
@@ -401,6 +402,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Starts an investigation into a lucky run. <see cref="Command.TargetId"/> is the lead.</summary>
+        public static Command FollowLead(int labId, int leadId)
+        {
+            Command c = Make(CommandKind.FollowLead, labId);
+            c.TargetId = leadId;
+            return c;
+        }
+
         /// <summary>Answers a customer's complaint.</summary>
         public static Command AnswerComplaint(int labId, int complaintId, string responseId)
         {
@@ -455,7 +464,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone
     }
 
     public struct CommandResult

@@ -135,6 +135,8 @@ Rooms that age ([content/room-ageing.md](content/room-ageing.md)) is how the wor
 
 Control goes stale ([content/control-stale.md](content/control-stale.md)) is the bible's "each new era, control techniques go stale". A player lab's safety techs lose a tenth of their bonus for every era past the first since its newest safety research (never more than half), new safety research puts them all back, and letting go of the people who listen costs culture. Nothing is saved.
 
+Research leads ([content/research-leads.md](content/research-leads.md)) are the bible's "that mystery becomes a research lead". A player run that lands 6% or more above its aim leaves a lead; following it costs six weeks of the lab's research and eight weeks of waiting, and ends in a real insight, a training trick, a data quirk, the cat or Tuesday. Save schema 32.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

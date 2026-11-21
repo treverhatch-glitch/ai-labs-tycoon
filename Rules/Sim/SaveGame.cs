@@ -122,6 +122,14 @@ namespace AiLabs.Rules.Sim
                 foreach (RoomState room in lab.Rooms)
                     if (room.EraAge < 0 || room.EraAge > c.Eras.Count) p.Add(who + " has a room " + room.Id + " that is " + room.EraAge + " eras old, outside 0 to " + c.Eras.Count);
                 if (lab.NamingMess < 0 || lab.NamingMess > c.Naming.MaxMess) p.Add(who + " has a naming mess of " + lab.NamingMess + ", outside 0 to " + c.Naming.MaxMess);
+                var leadIds = new System.Collections.Generic.HashSet<int>();
+                foreach (ResearchLead lead in lab.Leads)
+                {
+                    if (!leadIds.Add(lead.Id)) p.Add(who + " has two leads with id " + lead.Id);
+                    if (lab.Model(lead.ModelId) == null) p.Add(who + " has a lead about the missing model " + lead.ModelId);
+                }
+                if (lab.Leads.Count > c.Leads.MaxOpen) p.Add(who + " has more leads than the desk allows");
+                if (lab.LeadSpeedPermille < 0 || lab.LeadSpeedPermille > c.Leads.MaxSpeedPermille) p.Add(who + " has a lead speed of " + lab.LeadSpeedPermille + ", outside 0 to " + c.Leads.MaxSpeedPermille);
                 if (lab.GateSetTick < 0) p.Add(who + " has a gate set at tick " + lab.GateSetTick);
                 if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");

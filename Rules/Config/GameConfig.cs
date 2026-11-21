@@ -67,6 +67,7 @@ namespace AiLabs.Rules.Config
         public NamingConfig Naming = new NamingConfig();
         public AgeingConfig Ageing = new AgeingConfig();
         public ControlConfig Control = new ControlConfig();
+        public LeadsConfig Leads = new LeadsConfig();
         public ChatConfig Chat = new ChatConfig();
         public GlowConfig Glow = new GlowConfig();
         public GauntletConfig Gauntlet;
@@ -116,6 +117,7 @@ namespace AiLabs.Rules.Config
             s.Obj("naming", ref Naming);
             s.Obj("ageing", ref Ageing);
             s.Obj("control", ref Control);
+            s.Obj("leads", ref Leads);
             s.Obj("chat", ref Chat);
             s.Obj("glow", ref Glow);
             s.Obj("gauntlet", ref Gauntlet);

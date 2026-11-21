@@ -71,6 +71,7 @@ namespace AiLabs.Rules.Config
             NamingProblems(p, c);
             AgeingProblems(p, c);
             ControlProblems(p, c);
+            LeadsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -499,6 +500,34 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void LeadsProblems(List<string> p, GameConfig c)
+        {
+            LeadsConfig l = c.Leads;
+            if (l == null) { p.Add("leads is missing"); return; }
+            if (l.MinLuckPermille < 1 || l.MinLuckPermille > MathI.Permille) p.Add("leads.minLuckPermille must be from 1 to 1000");
+            if (l.MinLuckPermille > c.Training.LuckPermille) p.Add("leads.minLuckPermille is above training.luckPermille, so no run could ever leave a lead");
+            if (l.MaxOpen < 1 || l.MaxOpen > 20) p.Add("leads.maxOpen must be from 1 to 20");
+            if (l.ExpireWeeks < 1 || l.ExpireWeeks > 520) p.Add("leads.expireWeeks must be from 1 to 520");
+            if (l.FollowWeeks < 1 || l.FollowWeeks > 520) p.Add("leads.followWeeks must be from 1 to 520");
+            if (l.FollowCostWeeks < 0 || l.FollowCostWeeks > 520) p.Add("leads.followCostWeeks must be from 0 to 520");
+            if (l.MinCost < 0) p.Add("leads.minCost is negative");
+            if (l.MaxSpeedPermille < 0 || l.MaxSpeedPermille > 2000) p.Add("leads.maxSpeedPermille must be from 0 to 2000");
+            if (l.Outcomes.Count == 0) p.Add("leads.outcomes is empty");
+            UniqueIds(p, "leads.outcomes", l.Outcomes);
+            long weights = 0;
+            for (int i = 0; i < l.Outcomes.Count; i++)
+            {
+                LeadOutcomeConfig o = l.Outcomes[i];
+                string who = "lead outcome " + o.IdValue;
+                if (string.IsNullOrEmpty(o.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(o.Blurb)) p.Add(who + " has no blurb");
+                if (o.Weight < 1 || o.Weight > 1000) p.Add(who + " needs a weight from 1 to 1000");
+                if (o.Kind != LeadEffectKind.Nothing && o.Amount < 1) p.Add(who + " does something but gives nothing");
+                if (o.Kind == LeadEffectKind.Nothing && o.Amount != 0) p.Add(who + " does nothing but has an amount");
+                weights += o.Weight;
             }
         }
 

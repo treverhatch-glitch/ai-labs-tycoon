@@ -19,6 +19,14 @@ namespace AiLabs.Rules.Systems
     {
         public static void RunResearch(GameConfig c, LabState lab, int tick)
         {
+            long gained = ResearchPerWeek(c, lab, tick);
+            lab.ResearchPoints += gained;
+            lab.LastWeek.ResearchGained = gained;
+        }
+
+        /// <summary>The research points the lab's people make in a week at this date.</summary>
+        public static long ResearchPerWeek(GameConfig c, LabState lab, int tick)
+        {
             long perResearcher = MathI.MulPermille(c.Research.PointsPerResearcherWeek, EraSystem.AtTick(c, tick).ResearchPermille);
             long gained = 0;
             for (int i = 0; i < lab.Staff.Count; i++)
@@ -32,8 +40,7 @@ namespace AiLabs.Rules.Systems
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
-            lab.ResearchPoints += gained;
-            lab.LastWeek.ResearchGained = gained;
+            return gained;
         }
 
         /// <summary>How much training work a unit of compute does: techs plus engineers, who keep the runs from crashing.</summary>
@@ -43,7 +50,8 @@ namespace AiLabs.Rules.Systems
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
                 + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed)
-                + Traits.Report(c, lab).TrainingSpeedPermille;
+                + Traits.Report(c, lab).TrainingSpeedPermille
+                + lab.LeadSpeedPermille;
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
@@ -145,6 +153,7 @@ namespace AiLabs.Rules.Systems
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;
             Events.Add(state, EventKind.TrainingFinished, lab.Id, model.Id, model.Capability, model.Name);
+            ResearchLeads.OnTrained(c, state, lab, model, luck);
         }
 
         /// <summary>The safety meter a run earns: its alignment work against what a full meter needs for a run this size.</summary>

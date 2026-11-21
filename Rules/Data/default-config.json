@@ -5325,6 +5325,22 @@
     "maxLossPermille": 500,
     "firedListenerPoints": 15
   },
+  "leads": {
+    "minLuckPermille": 60,
+    "maxOpen": 3,
+    "expireWeeks": 52,
+    "followWeeks": 8,
+    "followCostWeeks": 6,
+    "minCost": 100,
+    "maxSpeedPermille": 150,
+    "outcomes": [
+      {"id": "real-insight", "name": "A real insight", "weight": 4, "kind": "ResearchWeeks", "amount": 20, "blurb": "It was not luck. It was a good idea that nobody had written down."},
+      {"id": "training-trick", "name": "A training trick", "weight": 3, "kind": "TrainingSpeedPermille", "amount": 30, "blurb": "A learning-rate schedule that looks like a typo. It works. Nobody is allowed to fix the typo."},
+      {"id": "data-quirk", "name": "A data quirk", "weight": 2, "kind": "ResearchWeeks", "amount": 8, "blurb": "A mislabelled folder of very good data. It has been labelled correctly now, to everyone's regret."},
+      {"id": "the-cat", "name": "The cat", "weight": 1, "kind": "Nothing", "amount": 0, "blurb": "The office cat walked across a keyboard. The cat has been thanked and has not noticed."},
+      {"id": "tuesday", "name": "Tuesday", "weight": 1, "kind": "Nothing", "amount": 0, "blurb": "The model is nicer on Tuesdays. Nobody knows why. The dashboard has been asked to stop asking."}
+    ]
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -5417,6 +5433,39 @@
       "pick": -1,
       "about": "lab",
       "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have."
+    },
+      {
+      "id": "lead-found",
+      "kind": "LeadFound",
+      "roles": [
+        "researcher"
+      ],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why."
+    },
+      {
+      "id": "lead-resolved-good",
+      "kind": "LeadResolved",
+      "roles": [
+        "researcher"
+      ],
+      "trait": "",
+      "pick": 1,
+      "about": "lab",
+      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name."
+    },
+      {
+      "id": "lead-resolved-nothing",
+      "kind": "LeadResolved",
+      "roles": [
+        "researcher"
+      ],
+      "trait": "",
+      "pick": 0,
+      "about": "lab",
+      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'."
     },
       {
       "id": "room-refurbished",

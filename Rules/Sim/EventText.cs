@@ -113,6 +113,18 @@ namespace AiLabs.Rules.Sim
                         RoomTypeConfig dated = c.RoomType(e.Ref);
                         return who + "'s " + (dated == null ? e.Ref : dated.Name) + " is now " + RoomAge.Stage(c, (int)e.Amount).Name.ToLowerInvariant() + ", " + e.Amount + (e.Amount == 1 ? " era" : " eras") + " behind. Staff are complaining.";
                     }
+                case EventKind.LeadFound:
+                    return who + "'s " + e.Ref + " came out " + e.Amount / 10 + "." + e.Amount % 10 + "% better than anyone aimed for. Nobody knows why. It is a research lead.";
+                case EventKind.LeadResolved:
+                    {
+                        LeadOutcomeConfig found = c.Leads.Outcome(e.Ref);
+                        if (found == null) return who + " looked into a lucky run and found nothing.";
+                        string gain = found.Kind == LeadEffectKind.ResearchWeeks ? " (+" + e.Amount + " research points)"
+                            : found.Kind == LeadEffectKind.TrainingSpeedPermille ? " (training +" + e.Amount / 10 + "." + e.Amount % 10 + "%)" : "";
+                        return who + " looked into the lucky run: " + found.Name + gain + ". " + found.Blurb;
+                    }
+                case EventKind.LeadWentCold:
+                    return "Nobody at " + who + " looked into why " + e.Ref + " came out so well. The lead has gone cold.";
                 case EventKind.ControlStale:
                     {
                         TechConfig newest = c.Tech(e.Ref);

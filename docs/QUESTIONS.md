@@ -1125,6 +1125,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** for the roles in `culture.listeningRoles` (safety, red-teamer, alignment-fellow): `control.firedListenerPoints` 15 each, so letting a team of three go costs 45 on top of the weekly gain it stops. Letting anyone else go costs nothing. Culture stays in 0 to 1000, and a refused firing changes nothing.
 - Why: the bible lists "firing or ignoring the safety team" as something that erodes control. Ignoring was already the weekly drift of Q191; firing is a decision, so it gets a visible price. Economy and golden: no player-only revenue or cost changed. The golden run did not move (the pinned game never has the player researching safety and then crossing eras), and EconomyBounds, ContentFlow and the soak stayed green at the first values, so nothing was tuned.
 
+## Research leads (NEXT item 27)
+
+### Q236. What counts as a lucky run, and what does it leave? DECIDED: luck of 6% or more leaves a lead on the player's desk, up to three at a time, cold after a year
+- Options: (a) a lead for every run; (b) only runs above a luck bar; (c) a dice roll on top of the luck.
+- Recommendation and choice: **(b)**. Training already rolls luck of up to plus or minus 8% (`training.luckPermille` 80). A run at or above `leads.minLuckPermille` (60) leaves a `ResearchLead` for that model (`LeadFound`), about one run in eight. The desk holds `maxOpen` 3; a new lead is not found while it is full. An unfollowed lead goes cold after `expireWeeks` 52 (`LeadWentCold`). Only the player's labs find leads.
+- Why: the bible says a model sometimes "is better than it has any right to be and nobody knows why"; the luck number is already that. No second dice roll is needed, so no new random stream and no change to anyone's rolls. Rivals have none (Q182).
+
+### Q237. What does following a lead cost, and what comes of it? DECIDED: six weeks of the lab's research output, eight weeks of waiting, then one of five outcomes chosen from the lead itself
+- Options: (a) a fixed price; (b) a price in weeks of the lab's own research; (c) a price in cash.
+- Recommendation and choice: **(b)**. `FollowLead` costs `followCostWeeks` 6 times the lab's research per week (never under `minCost` 100), so it scales with the era and the team. One lead at a time. After `followWeeks` 8 it ends in one of `leads.outcomes`, picked by weight from a hash of the lead (so the same lead always ends the same way, and no dice are used): a real insight (weight 4, 20 weeks of research back), a training trick (3, +3% training speed for good, all tricks capped at +15%), a data quirk (2, 8 weeks back), the cat (1, nothing) or Tuesday (1, nothing). Following a lead that is not there is refused (`LeadGone`), as is a second at once, or too few research points; a refusal changes nothing.
+- Why: following a lead is a gamble on research you pay for in the same currency, which fits the bible's "mystery becomes a research lead"; the two nothing outcomes are the joke the bible asks for. The expected return (about 9 weeks of research on a 6 week price, plus the speed trick) is mildly positive, never decisive. The autopilot never follows leads, so the economy guards see only the lead list, not the rewards.
+
+### Q238. Is a save change needed, and what did the id counter do? DECIDED: yes, schema 32: a lead list and one number per lab; a lead's id is its model's id
+- Options: (a) take a fresh id for each lead; (b) reuse the model's id.
+- Recommendation and choice: **(b)**. `researchLeads` and `leadSpeedPermille` per lab; an older save migrates with an empty list and 0, so nothing in an old game changes. The golden digest moved and the cause was checked: with the two new fields removed, the schema set back to 31 and the lead-finding hook switched off, the digest of the pinned game equals the old golden `df0a8d9e`. So the move is the new fields, the schema number and the leads found in that game year.
+- Why (b): the first build took a fresh id from the shared counter, which shifted the ids of everything made later and nudged the eight-year soak's "careful" preset from 45.8% to 62.5% of crowns for one lab, over the 60% bar. It is the Q182 knife-edge again (a harmless-looking change moves a trajectory, not a rule), and the cure is not to touch shared counters: a lead is at most one per model, so the model's id is already unique. Logged here, nothing tuned.
+
 ## Open
 
 None.

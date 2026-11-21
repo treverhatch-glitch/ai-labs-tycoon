@@ -162,6 +162,12 @@ and says why in the commit message.
     no schema change (Q233-Q235), `ControlStaleTests`, `docs/content/control-stale.md`. Player labs only. Still open: a screen for it (Unity),
     rivals going stale, the stale readout on finished models.
 
+27. **Research leads from lucky runs (bible ch. 6, "that mystery becomes a research lead").** A run that comes out far better than aimed
+    for leaves a lead the lab can follow for research, a lasting training speed-up, or a joke. ~~Done~~: `leads` in the data, `ResearchLeads`,
+    `FollowLead`, `LeadFound`/`LeadResolved`/`LeadWentCold`, save schema 32 (`researchLeads`, `leadSpeedPermille`; Q236-Q238),
+    `ResearchLeadTests`, `docs/content/research-leads.md`. Player labs only. Still open: a leads screen (Unity), rivals with leads, leads that
+    name a tech to unlock, the autopilot following leads.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
