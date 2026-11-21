@@ -29,7 +29,7 @@ namespace AiLabs.Rules.Systems
 
         public static void Run(GameConfig c, GameState state, LabState lab, PlanConfig plan, Func<Command, CommandResult> apply)
         {
-            if (lab.Bankrupt || state.Tick < lab.PlanStartTick || state.Tick < lab.PlanPausedUntilTick) return;
+            if (lab.Bankrupt || lab.AbsorbedByLabId >= 0 || state.Tick < lab.PlanStartTick || state.Tick < lab.PlanPausedUntilTick) return;
             var x = new Ctx { C = c, State = state, Lab = lab, Plan = plan, Apply = apply };
 
             if (lab.TrainingSharePermille != plan.TrainingSharePermille)

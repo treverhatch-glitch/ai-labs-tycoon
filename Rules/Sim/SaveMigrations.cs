@@ -34,6 +34,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 17) MigrateTo17(root);
             if (fromSchema < 18) MigrateTo18(root);
             if (fromSchema < 19) MigrateTo19(root);
+            if (fromSchema < 20) MigrateTo20(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -310,6 +311,12 @@ namespace AiLabs.Rules.Sim
             JsonPatch.AddIfMissing(root, "bubbleCapitalRaised", JsonValue.Of(0L));
             JsonPatch.AddIfMissing(root, "bubbleGraceMonths", JsonValue.Of(0L));
             JsonPatch.AddIfMissing(root, "bubbleCrashMonthsRemaining", JsonValue.Of(0L));
+        }
+
+        /// <summary>Lab acquisition flag (Hatch).</summary>
+        static void MigrateTo20(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "absorbedByLabId", JsonValue.Of(-1L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

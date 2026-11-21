@@ -115,6 +115,13 @@ namespace AiLabs.Rules.Sim
                         : who + " closed " + e.Ref + " ($" + e.Amount + ").";
                 case EventKind.InvestorBoardVisit:
                     return who + "'s investors held a board update. Reputation +" + e.Amount + ".";
+                case EventKind.LabAcquired:
+                    {
+                        LabState bought = state.Lab(e.SubjectId);
+                        return who + " acquired " + (bought == null ? "a rival lab" : bought.Name) + " for $" + e.Amount + ".";
+                    }
+                case EventKind.ModelSold:
+                    return who + " sold " + e.Ref + " for $" + e.Amount + " and left those sectors.";
                 default: return who + ": " + e.Kind + ".";
             }
         }

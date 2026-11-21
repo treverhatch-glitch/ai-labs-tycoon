@@ -6020,6 +6020,23 @@
     "crashGpuPricePermille": 860,
     "crashFloatCutPpm": 35000
   },
+  "acquisitions": {
+    "capabilityValuePerPoint": 8000,
+    "staffValuePerHead": 25000,
+    "fleetResalePermille": 600,
+    "integrationCostPermille": 120,
+    "distressPricePermille": 700,
+    "crashDistressPricePermille": 450,
+    "minInstalledModels": 1,
+    "regulatorDealRevenue": 5000000,
+    "regulatorAttention": 80
+  },
+  "modelSales": {
+    "unprofitableSalePermille": 350,
+    "earningsMultipleWeeks": 52,
+    "sectorReputationHit": 25,
+    "minOffer": 1000
+  },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,
     "rivalMaxPublicFloatPpm": 600000,

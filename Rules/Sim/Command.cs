@@ -14,7 +14,8 @@ namespace AiLabs.Rules.Sim
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase,
-        AcceptChinaDeal, DeclineChinaDeal
+        AcceptChinaDeal, DeclineChinaDeal,
+        AcquireLab, SellModel
     }
 
     /// <summary>
@@ -341,6 +342,20 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.QueueGpuPurchase, labId);
             c.Count = count;
             c.TargetId = holdingId;
+            return c;
+        }
+
+        public static Command AcquireLab(int buyerId, int targetLabId)
+        {
+            Command c = Make(CommandKind.AcquireLab, buyerId);
+            c.TargetId = targetLabId;
+            return c;
+        }
+
+        public static Command SellModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.SellModel, labId);
+            c.TargetId = modelId;
             return c;
         }
     }

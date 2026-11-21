@@ -184,7 +184,7 @@ public class SaveAndDeterminismTests
         // One pinned game: seed 1, the autopilot, one year. Any change to the rules or to the numbers in
         // default-config.json moves this digest. If you meant to change behaviour, run the test, copy the
         // new digest from the failure message into Golden below, and say why in the commit message.
-        const string Golden = "9d342b32a4b77751dccd41539733560bb3682546dd416030671c51c4acaadcbb";
+        const string Golden = "507debe1d511122602e81374cfaa8c9826df7dee3fe7781bf4aabff00835a0e9";
 
         string digest = PlayedFor(48, seed: 1).Sim.Digest();
         Assert.True(digest == Golden, "The golden digest moved. New digest: " + digest);

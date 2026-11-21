@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 20) StripAbsorbedByLab(root);
             if (schema < 19) StripBubbleCrashPhase(root);
             if (schema < 18) StripChinaDeclineCooldown(root);
             if (schema < 17) StripCrownRunnerUpStreak(root);
@@ -80,6 +81,11 @@ public static class SaveSchemaPretend
     }
 
     static void StripBubblePermille(JsonValue root) => JsonPatch.Remove(root, "bubblePermille");
+
+    static void StripAbsorbedByLab(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "absorbedByLabId"));
+    }
 
     static void StripBubbleCrashPhase(JsonValue root)
     {

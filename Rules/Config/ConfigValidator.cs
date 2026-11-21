@@ -201,6 +201,8 @@ namespace AiLabs.Rules.Config
             EndingsProblems(p, c);
             ShadyProblems(p, c);
             BubbleProblems(p, c);
+            AcquisitionProblems(p, c);
+            ModelSalesProblems(p, c);
             SharesProblems(p, c);
             RegulatorsProblems(p, c);
             WorldEventProblems(p, c);
@@ -265,6 +267,31 @@ namespace AiLabs.Rules.Config
             Permille(p, "bubble.crashFundingCashPermille", b.CrashFundingCashPermille);
             Permille(p, "bubble.crashGpuPricePermille", b.CrashGpuPricePermille);
             if (b.CrashFloatCutPpm < 0) p.Add("bubble.crashFloatCutPpm is negative");
+        }
+
+        static void AcquisitionProblems(List<string> p, GameConfig c)
+        {
+            AcquisitionConfig a = c.Acquisitions;
+            if (a == null) { p.Add("acquisitions is missing"); return; }
+            if (a.CapabilityValuePerPoint < 0) p.Add("acquisitions.capabilityValuePerPoint is negative");
+            if (a.StaffValuePerHead < 0) p.Add("acquisitions.staffValuePerHead is negative");
+            Permille(p, "acquisitions.fleetResalePermille", a.FleetResalePermille);
+            Permille(p, "acquisitions.integrationCostPermille", a.IntegrationCostPermille);
+            Permille(p, "acquisitions.distressPricePermille", a.DistressPricePermille);
+            Permille(p, "acquisitions.crashDistressPricePermille", a.CrashDistressPricePermille);
+            if (a.MinInstalledModels < 0) p.Add("acquisitions.minInstalledModels is negative");
+            if (a.RegulatorDealRevenue < 0) p.Add("acquisitions.regulatorDealRevenue is negative");
+            if (a.RegulatorAttention < 0) p.Add("acquisitions.regulatorAttention is negative");
+        }
+
+        static void ModelSalesProblems(List<string> p, GameConfig c)
+        {
+            ModelSalesConfig m = c.ModelSales;
+            if (m == null) { p.Add("modelSales is missing"); return; }
+            Permille(p, "modelSales.unprofitableSalePermille", m.UnprofitableSalePermille);
+            if (m.EarningsMultipleWeeks < 0) p.Add("modelSales.earningsMultipleWeeks is negative");
+            if (m.SectorReputationHit < 0) p.Add("modelSales.sectorReputationHit is negative");
+            if (m.MinOffer < 0) p.Add("modelSales.minOffer is negative");
         }
 
         static void SharesProblems(List<string> p, GameConfig c)
