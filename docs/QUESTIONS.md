@@ -808,6 +808,24 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**.
 - Why: a data perk written now would collide with that branch; adding a kind later is one enum value and a data row.
 
+### Q134. What does a room do beyond seating or holding? DECIDED: six perks, each a share per tile under a cap, worked out from the rooms
+
+- Options: (a) nothing (rooms are only for seats and GPU slots); (b) a `roomPerks` table: a room type, a kind, a share per tile and a cap, read from the tiles the lab has built; (c) per-room upgrade commands that are saved.
+- Recommendation and choice: **(b)**. Same shape as role perks (Q128): nothing is saved, so no schema change, and a demolished room stops helping that week.
+- Why: it makes the size of a room matter and gives the late rooms a reason beyond the seat. Kinds: `ResearchSpeed`, `TrainingSpeed`, `IncidentCut`, `SectorAppeal`.
+
+### Q135. Which rooms get a perk, and which kinds? DECIDED: the research rooms, the agent ops room, the sandbox wing and the robotics arena
+
+- Options: (a) every room; (b) only rooms whose purpose already names an effect nothing else covers.
+- Recommendation and choice: **(b)**. Research floor 0.3% per tile (cap 15%), harness control room 0.4% (20%) and launch control 0.5% (25%) speed research; the agent ops room speeds training 0.4% (20%); the sandbox wing catches 0.4% of incidents (20%); the robotics arena lifts appeal in the four robot and device sectors 0.3% (25%).
+- Why: the hardware test lab already speeds chip ramps (`chips.testLabRampPermille`) and the recruiting office, product studio and containment wing already feed role perks; the data rooms and compute halls wait for data sources and for the Bodies and Upward expansions, which live on `cursor/rules-side-items`. The compute halls differ by GPU slots only, which is already their whole job.
+
+### Q136. How do room perks combine with role perks and with each other? DECIDED: they add within a kind, and the incident catch is capped at 90% together
+
+- Options: (a) multiply; (b) add within a kind; cap the incident catch of rooms and staff together.
+- Recommendation and choice: **(b)**. Research speed multiplies the points after the era's research share and the researchers' traits; training speed is added into `SpeedPermille` beside techs and engineers; the wing's catch is added to the red-teamers' before the 900 cap; the arena's appeal joins the specialists' as `RoleBoost`.
+- Why: additive terms are what the existing speed and boost lines already do, and the validator keeps every cap at or below 900 so a perk never makes a chance certain.
+
 ## Open
 
 None.

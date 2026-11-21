@@ -57,7 +57,7 @@ namespace AiLabs.Rules.Systems
                 if (perk.Sectors.Count > 0 && !perk.Sectors.Contains(sectorId)) continue;
                 total += Permille(c, lab, perk);
             }
-            return (int)total;
+            return (int)total + RoomPerks.SectorAppealPermille(c, lab, sectorId);
         }
 
         /// <summary>The fee to hire one person of a role: the era's fee, less what the lab's recruiters win back.</summary>
@@ -80,7 +80,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The share of incidents the lab's red-teamers catch before they happen, in permille (never more than 900).</summary>
         public static int IncidentCatchPermille(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(Permille(c, lab, RolePerkKind.IncidentCut), 900);
+            return (int)MathI.Min(Permille(c, lab, RolePerkKind.IncidentCut) + RoomPerks.Permille(c, lab, RoomPerkKind.IncidentCut), 900);
         }
 
         public static IncidentOddsBreakdown IncidentOdds(GameConfig c, LabState lab, int tick, ModelState model)

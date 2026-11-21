@@ -18,7 +18,7 @@ public class RolePerksTests
     static Game Lab(string eraId, Action<GameConfig> tweak = null, long seed = 1)
     {
         var options = new NewGameOptions { Seed = seed, StartEraId = eraId, RivalIds = new List<string>() };
-        var g = new Game(Simulation.NewGame(TestData.Config(tweak), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RoomPerks.Clear(); if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000_000;
         return g;
     }
@@ -424,7 +424,7 @@ public class RolePerksTests
     {
         var options = new NewGameOptions { Seed = 1, StartEraId = eraId };
         if (!rivals) options.RivalIds = new List<string>();
-        var g = new Game(Simulation.NewGame(TestData.Config(tweak), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RoomPerks.Clear(); if (tweak != null) tweak(c); }), options));
         g.WithStarterLab();
         ModelState model = g.Train("mini", 600);
         g.UntilTrained(model);

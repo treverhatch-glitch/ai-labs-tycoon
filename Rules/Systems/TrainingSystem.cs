@@ -30,6 +30,7 @@ namespace AiLabs.Rules.Systems
                 int bonus = trait == null ? 0 : trait.ResearchPermille;
                 gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
             }
+            gained = MathI.MulPermille(gained, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed));
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }
@@ -39,7 +40,8 @@ namespace AiLabs.Rules.Systems
         {
             long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
-                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille);
+                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
+                + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed);
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>

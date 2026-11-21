@@ -35,6 +35,7 @@ namespace AiLabs.Rules.Config
             UniqueIds(p, "lots", c.Lots);
             UniqueIds(p, "roles", c.Roles);
             UniqueIds(p, "rolePerks", c.RolePerks);
+            UniqueIds(p, "roomPerks", c.RoomPerks);
             UniqueIds(p, "roomTypes", c.RoomTypes);
             UniqueIds(p, "research.techs", c.Research.Techs);
             UniqueIds(p, "training.lines", c.Training.Lines);
@@ -59,6 +60,7 @@ namespace AiLabs.Rules.Config
             }
 
             RolePerkProblems(p, c);
+            RoomPerkProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -385,6 +387,21 @@ namespace AiLabs.Rules.Config
                 if (perk.PerStaffPermille < 1 || perk.PerStaffPermille > 1000) p.Add(who + " needs perStaffPermille from 1 to 1000");
                 if (perk.CapPermille < perk.PerStaffPermille || perk.CapPermille > 900) p.Add(who + " needs a cap from perStaffPermille up to 900, so one person always counts and a fee or chance never reaches zero");
                 if (string.IsNullOrEmpty(perk.Blurb)) p.Add(who + " has no blurb");
+                foreach (string sector in perk.Sectors)
+                    if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
+            }
+        }
+
+        static void RoomPerkProblems(List<string> p, GameConfig c)
+        {
+            foreach (RoomPerkConfig perk in c.RoomPerks)
+            {
+                string who = "roomPerk " + perk.Id;
+                if (c.RoomType(perk.RoomId) == null) p.Add(who + " names the unknown room type \"" + perk.RoomId + "\"");
+                if (perk.PerTilePermille < 1 || perk.PerTilePermille > 1000) p.Add(who + " needs perTilePermille from 1 to 1000");
+                if (perk.CapPermille < perk.PerTilePermille || perk.CapPermille > 900) p.Add(who + " needs a cap from perTilePermille up to 900, so one tile always counts and a chance never reaches zero");
+                if (string.IsNullOrEmpty(perk.Blurb)) p.Add(who + " has no blurb");
+                if (perk.Kind != RoomPerkKind.SectorAppeal && perk.Sectors.Count > 0) p.Add(who + " lists sectors but only a SectorAppeal perk is about sectors");
                 foreach (string sector in perk.Sectors)
                     if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
             }

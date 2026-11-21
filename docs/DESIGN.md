@@ -105,6 +105,11 @@ every hiring fee, red-teamers catch some incidents before they happen, alignment
 product leads and the late specialists lift how much customers like a lab's models in their sectors. Each is the number of people
 in the role times a share, under a cap, worked out from the staff each time: nothing is saved.
 
+Some rooms do more than seat people too (`roomPerks`, [content/room-perks.md](content/room-perks.md)): research floors, harness
+control rooms and launch control speed research, an agent ops room speeds training, a sandbox wing catches incidents beside the
+red-teamers, and a robotics arena lifts the appeal of robots and devices. Every tile adds a small share under a cap, read from the
+rooms the lab has.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

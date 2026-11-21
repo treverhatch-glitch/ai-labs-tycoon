@@ -1471,6 +1471,67 @@
       "upkeepPerTileWeek": 14
     }
   ],
+  "roomPerks": [
+    {
+      "id": "research-floor-speed",
+      "roomId": "research-floor",
+      "kind": "ResearchSpeed",
+      "perTilePermille": 3,
+      "capPermille": 150,
+      "sectors": [],
+      "blurb": "Every tile of research floor makes research 0.3% faster, up to 15%."
+    },
+    {
+      "id": "harness-control-speed",
+      "roomId": "harness-control-room",
+      "kind": "ResearchSpeed",
+      "perTilePermille": 4,
+      "capPermille": 200,
+      "sectors": [],
+      "blurb": "Every tile of harness control room makes research 0.4% faster, up to 20%."
+    },
+    {
+      "id": "launch-control-speed",
+      "roomId": "launch-control",
+      "kind": "ResearchSpeed",
+      "perTilePermille": 5,
+      "capPermille": 250,
+      "sectors": [],
+      "blurb": "Every tile of launch control makes research 0.5% faster, up to 25%."
+    },
+    {
+      "id": "agent-ops-training",
+      "roomId": "agent-ops-room",
+      "kind": "TrainingSpeed",
+      "perTilePermille": 4,
+      "capPermille": 200,
+      "sectors": [],
+      "blurb": "Every tile of agent ops room makes a unit of training compute do 0.4% more, up to 20%."
+    },
+    {
+      "id": "sandbox-wing-catch",
+      "roomId": "sandbox-wing",
+      "kind": "IncidentCut",
+      "perTilePermille": 4,
+      "capPermille": 200,
+      "sectors": [],
+      "blurb": "Every tile of sandbox wing catches 0.4% of the incidents a released model would have had, up to 20%, beside the red-teamers."
+    },
+    {
+      "id": "robotics-arena-appeal",
+      "roomId": "robotics-arena",
+      "kind": "SectorAppeal",
+      "perTilePermille": 3,
+      "capPermille": 250,
+      "sectors": [
+        "robotics-industry",
+        "household-robots",
+        "agri-logistics",
+        "devices"
+      ],
+      "blurb": "Every tile of robotics arena makes the lab's robots and devices 0.3% more appealing, up to 25%."
+    }
+  ],
   "compute": {
     "vendorName": "Envydia",
     "vendorBoss": "Jensun Hwang",

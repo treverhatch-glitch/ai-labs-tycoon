@@ -40,6 +40,8 @@ namespace AiLabs.Rules.Config
         /// <summary>What roles do beyond their function (the recruiter's hiring discount and the rest).</summary>
         public List<RolePerkConfig> RolePerks = new List<RolePerkConfig>();
         public List<RoomTypeConfig> RoomTypes;
+        /// <summary>What rooms do beyond seating people or holding GPUs.</summary>
+        public List<RoomPerkConfig> RoomPerks = new List<RoomPerkConfig>();
         public ComputeConfig Compute;
         public WorldConfig World;
         public ResearchConfig Research;
@@ -77,6 +79,7 @@ namespace AiLabs.Rules.Config
             s.ObjList("roles", ref Roles);
             s.ObjList("rolePerks", ref RolePerks);
             s.ObjList("roomTypes", ref RoomTypes);
+            s.ObjList("roomPerks", ref RoomPerks);
             s.Obj("compute", ref Compute);
             s.Obj("world", ref World);
             s.Obj("research", ref Research);
