@@ -1,4 +1,5 @@
 using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -43,6 +44,39 @@ namespace AiLabs.Rules.Systems
             if (!LeadsDomain(state, lab, domainId)) return 0;
             CapabilityDomainConfig domain = c.Market.Domain(domainId);
             return domain == null || domain.LeaderAppealPermille < 1 ? 0 : domain.LeaderAppealPermille;
+        }
+
+        /// <summary>Appeal permille for the near runner-up lab in the sector's domain (not the current leader).</summary>
+        public static int ChallengerAppealPermille(GameConfig c, GameState state, LabState lab, string sectorId)
+        {
+            if (lab.Bankrupt) return 0;
+            string domainId = DomainForSector(c, sectorId);
+            if (domainId == null || LeadsDomain(state, lab, domainId)) return 0;
+            CapabilityDomainConfig domain = c.Market.Domain(domainId);
+            if (domain == null || domain.ChallengerAppealPermille < 1) return 0;
+            CapabilityDomainLeaderState leader = Leader(state, domainId);
+            if (leader == null || leader.Footprint < 1) return 0;
+            long foot = CapabilityDomainQueries.DomainFootprint(c, state, lab, domainId);
+            if (foot < MathI.MulPermille(leader.Footprint, domain.ChallengerNearLeaderPermille)) return 0;
+            int runnerUpId = -1;
+            long bestFoot = 0;
+            int bestCap = 0;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState rival = state.Labs[i];
+                if (rival.Bankrupt || rival.Id == leader.LeaderLabId) continue;
+                long rivalFoot = CapabilityDomainQueries.DomainFootprint(c, state, rival, domainId);
+                if (rivalFoot < 1) continue;
+                int cap = CapabilityDomainQueries.BestCapability(c, rival, domainId);
+                bool better = rivalFoot > bestFoot
+                    || (rivalFoot == bestFoot && cap > bestCap)
+                    || (rivalFoot == bestFoot && cap == bestCap && (runnerUpId < 0 || rival.Id < runnerUpId));
+                if (!better) continue;
+                bestFoot = rivalFoot;
+                bestCap = cap;
+                runnerUpId = rival.Id;
+            }
+            return runnerUpId == lab.Id ? domain.ChallengerAppealPermille : 0;
         }
 
         public static void RunWeek(GameConfig c, GameState state)

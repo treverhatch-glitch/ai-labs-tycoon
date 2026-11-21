@@ -90,11 +90,14 @@ namespace AiLabs.Rules.Config
         public int PerLine;
         /// <summary>Research points granted per point of stored capability when a retired model is pruned (permille).</summary>
         public int ResearchPermillePerCapability;
+        /// <summary>Reputation gained each week for each model line kept at the retirement cap (museum full).</summary>
+        public int ReputationPerFullLine;
 
         public void Sync(Syncer s)
         {
             s.Int("perLine", ref PerLine);
             s.Int("researchPermillePerCapability", ref ResearchPermillePerCapability);
+            s.Int("reputationPerFullLine", ref ReputationPerFullLine);
         }
     }
 }

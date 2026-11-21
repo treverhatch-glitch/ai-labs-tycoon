@@ -41,7 +41,7 @@ namespace AiLabs.Rules.Systems
                     SectorConfig sector = c.Sector(sectorId);
                     SectorState sectorState = state.Sector(sectorId);
                     if (sector == null || sectorState == null) continue;
-                    total += LabQueries.Quality(c, sector, model, state.Tick);
+                    total += LabQueries.Quality(c, sector, model, state.Tick, lab);
                 }
             }
             return total;

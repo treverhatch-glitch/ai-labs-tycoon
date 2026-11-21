@@ -33,8 +33,9 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < sectorState.Entries.Count; i++)
             {
                 SectorEntry entry = sectorState.Entries[i];
-                ModelState model = state.Lab(entry.LabId).Model(entry.ModelId);
-                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick));
+                LabState entryLab = state.Lab(entry.LabId);
+                ModelState model = entryLab.Model(entry.ModelId);
+                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick, entryLab));
             }
             return (int)MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability);
         }

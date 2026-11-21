@@ -534,7 +534,7 @@ namespace AiLabs.Rules.Systems
                     {
                         if (entry.ModelId == model.Id) continue;
                         ModelState current = lab.Model(entry.ModelId);
-                        if (LabQueries.Quality(c, sector, model, state.Tick) <= LabQueries.Quality(c, sector, current, state.Tick)) continue;
+                        if (LabQueries.Quality(c, sector, model, state.Tick, lab) <= LabQueries.Quality(c, sector, current, state.Tick, lab)) continue;
                     }
                     sectors.Add(sector.Id);
                     if (sectorState.ChampionLabId >= 0 && sectorState.ChampionLabId != lab.Id) rivalWon++;

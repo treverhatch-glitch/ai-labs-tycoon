@@ -3417,6 +3417,8 @@
     "incidentFineMin": 2000,
     "glitchWeeks": 6,
     "glitchQualityPermille": 700,
+    "overworkedQualityPermille": 900,
+    "corruptedMoodQualityPermille": 650,
     "reputationBaseline": 500,
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
@@ -3494,6 +3496,8 @@
         "id": "language",
         "name": "Language",
         "leaderAppealPermille": 120,
+        "challengerAppealPermille": 60,
+        "challengerNearLeaderPermille": 900,
         "sectorIds": [
           "code-completion",
           "coding-agents",
@@ -3504,6 +3508,8 @@
         "id": "vision",
         "name": "Vision",
         "leaderAppealPermille": 120,
+        "challengerAppealPermille": 60,
+        "challengerNearLeaderPermille": 900,
         "sectorIds": [
           "image-recognition",
           "image-design",
@@ -3514,6 +3520,8 @@
         "id": "enterprise",
         "name": "Enterprise",
         "leaderAppealPermille": 100,
+        "challengerAppealPermille": 50,
+        "challengerNearLeaderPermille": 900,
         "sectorIds": [
           "expert-systems",
           "spam-search"
@@ -4811,7 +4819,8 @@
     },
     "museum": {
       "perLine": 6,
-      "researchPermillePerCapability": 500
+      "researchPermillePerCapability": 500,
+      "reputationPerFullLine": 2
     }
   },
   "shady": {

@@ -14,9 +14,10 @@ namespace AiLabs.Rules.Systems
             public long FromAlignment;
             public long SandbagBoost;
             public long GlitchAdjustment;
+            public long MoodAdjustment;
             public long OpenWeightsBoost;
 
-            public long Total { get { return FromCapability + FromAlignment + SandbagBoost + GlitchAdjustment + OpenWeightsBoost; } }
+            public long Total { get { return FromCapability + FromAlignment + SandbagBoost + GlitchAdjustment + MoodAdjustment + OpenWeightsBoost; } }
         }
 
         public struct AppealBreakdown
@@ -28,8 +29,9 @@ namespace AiLabs.Rules.Systems
             public long ExpansionBoost;
             public long WorkshopBoost;
             public long DomainLeaderBoost;
+            public long DomainChallengerBoost;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost + DomainLeaderBoost; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost + DomainLeaderBoost + DomainChallengerBoost; } }
         }
 
         public struct IncidentBreakdown
@@ -53,7 +55,7 @@ namespace AiLabs.Rules.Systems
             public long Amount;
         }
 
-        public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
+        public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick, LabState lab = null)
         {
             int effective = SafetySystem.EffectiveAlignment(c, model);
             int displayed = SafetySystem.DisplayedAlignment(model);
@@ -73,6 +75,21 @@ namespace AiLabs.Rules.Systems
                 long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
                 b.GlitchAdjustment = after - before;
             }
+            if (lab != null)
+            {
+                ModelMood mood = LabQueries.Mood(c, lab, model, tick);
+                int moodPermille = MathI.Permille;
+                if (mood == ModelMood.Overworked && c.Safety.OverworkedQualityPermille > 0)
+                    moodPermille = c.Safety.OverworkedQualityPermille;
+                else if (mood == ModelMood.Corrupted && c.Safety.CorruptedMoodQualityPermille > 0)
+                    moodPermille = c.Safety.CorruptedMoodQualityPermille;
+                if (moodPermille < MathI.Permille)
+                {
+                    long before = b.Total;
+                    long after = MathI.MulPermille(before, moodPermille);
+                    b.MoodAdjustment = after - before;
+                }
+            }
             if (model.OpenWeights)
             {
                 long before = b.Total;
@@ -82,14 +99,14 @@ namespace AiLabs.Rules.Systems
             return b;
         }
 
-        public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
+        public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick, LabState lab = null)
         {
-            return QualityParts(c, sector, model, tick).Total;
+            return QualityParts(c, sector, model, tick, lab).Total;
         }
 
         public static AppealBreakdown AppealParts(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)
         {
-            long quality = Quality(c, sector, model, state.Tick);
+            long quality = Quality(c, sector, model, state.Tick, lab);
             var b = new AppealBreakdown();
             b.Core = quality * quality;
             long afterRep = MathI.MulPermille(b.Core, c.Safety.ReputationBaseline + lab.Reputation);
@@ -111,6 +128,9 @@ namespace AiLabs.Rules.Systems
             int domainLeader = CapabilityDomainSystem.LeaderAppealPermille(c, state, lab, sector.Id);
             long afterDomain = ExpansionSystem.ScaleAppeal(afterWorkshop, domainLeader);
             b.DomainLeaderBoost = afterDomain - afterWorkshop;
+            int challenger = CapabilityDomainSystem.ChallengerAppealPermille(c, state, lab, sector.Id);
+            long afterChallenger = ExpansionSystem.ScaleAppeal(afterDomain, challenger);
+            b.DomainChallengerBoost = afterChallenger - afterDomain;
             return b;
         }
 

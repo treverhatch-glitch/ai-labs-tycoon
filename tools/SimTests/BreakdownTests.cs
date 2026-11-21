@@ -19,9 +19,9 @@ public class BreakdownTests
         g.UntilTrained(model);
         g.Release(model, "game-ai");
         var sector = g.C.Sector("game-ai");
-        DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick);
-        Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick));
-        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment + b.OpenWeightsBoost, b.Total);
+        DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick, g.Me);
+        Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick, g.Me));
+        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment + b.MoodAdjustment + b.OpenWeightsBoost, b.Total);
         Assert.True(b.FromCapability > 0);
     }
 
@@ -38,7 +38,7 @@ public class BreakdownTests
         DisplayQueries.AppealBreakdown b = DisplayQueries.AppealParts(g.C, g.State, sector, sectorState, g.Me, model);
         long appeal = MarketSystem.Appeal(g.C, g.State, sector, sectorState, g.Me, model);
         Assert.Equal(appeal, b.Total);
-        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.ChampionBoost + b.ExpansionBoost + b.WorkshopBoost + b.DomainLeaderBoost, appeal);
+        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.ChampionBoost + b.ExpansionBoost + b.WorkshopBoost + b.DomainLeaderBoost + b.DomainChallengerBoost, appeal);
     }
 
     [Fact]

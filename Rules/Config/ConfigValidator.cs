@@ -150,6 +150,8 @@ namespace AiLabs.Rules.Config
             if (c.Safety.GlitchWeeks < 0) p.Add("safety.glitchWeeks is negative");
             Permille(p, "safety.incidentChancePermille", c.Safety.IncidentChancePermille);
             Permille(p, "safety.glitchQualityPermille", c.Safety.GlitchQualityPermille);
+            Permille(p, "safety.overworkedQualityPermille", c.Safety.OverworkedQualityPermille);
+            Permille(p, "safety.corruptedMoodQualityPermille", c.Safety.CorruptedMoodQualityPermille);
             Permille(p, "safety.reputationBaseline", c.Safety.ReputationBaseline);
             Permille(p, "safety.sandbagGapPermille", c.Safety.SandbagGapPermille);
             Permille(p, "safety.rung2BelowAlignment", c.Safety.Rung2BelowAlignment);
@@ -259,6 +261,7 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
             if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
             Permille(p, "endings.museum.researchPermillePerCapability", c.Endings.Museum.ResearchPermillePerCapability);
+            if (c.Endings.Museum.ReputationPerFullLine < 0) p.Add("endings.museum.reputationPerFullLine must not be negative");
         }
 
         static void DeviceWorkshopProblems(List<string> p, GameConfig c)
@@ -284,6 +287,8 @@ namespace AiLabs.Rules.Config
                 else foreach (string s in d.SectorIds)
                     if (c.Sector(s) == null) p.Add("capability domain " + d.IdValue + " names the unknown sector \"" + s + "\"");
                 Permille(p, "capability domain " + d.IdValue + " leaderAppealPermille", d.LeaderAppealPermille);
+                Permille(p, "capability domain " + d.IdValue + " challengerAppealPermille", d.ChallengerAppealPermille);
+                Permille(p, "capability domain " + d.IdValue + " challengerNearLeaderPermille", d.ChallengerNearLeaderPermille);
             }
         }
 

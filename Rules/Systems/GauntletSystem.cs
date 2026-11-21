@@ -30,7 +30,7 @@ namespace AiLabs.Rules.Systems
                 {
                     LabState lab = state.Lab(sectorState.Entries[i].LabId);
                     ModelState model = lab.Model(sectorState.Entries[i].ModelId);
-                    long score = LabQueries.Quality(c, sector, model, state.Tick);
+                    long score = LabQueries.Quality(c, sector, model, state.Tick, lab);
                     int expansion = ExpansionSystem.AppealBonusPermille(c, state, lab, sector.Id);
                     if (expansion > 0) score = ExpansionSystem.ScaleAppeal(score, expansion);
                     bracket.Add(Entry(c, state, sector.Id, lab, model, score));

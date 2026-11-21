@@ -409,9 +409,9 @@ namespace AiLabs.Rules.Systems
         /// How good a model is for one sector: its capability, with the part of it the sector weighs
         /// by safety scaled by the safety meter, and a discount while it is glitching.
         /// </summary>
-        public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
+        public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick, LabState lab = null)
         {
-            return DisplayQueries.Quality(c, sector, model, tick);
+            return DisplayQueries.Quality(c, sector, model, tick, lab);
         }
 
         public static long WeeklySalaries(GameConfig c, LabState lab)

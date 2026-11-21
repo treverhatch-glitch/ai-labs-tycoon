@@ -708,6 +708,10 @@ namespace AiLabs.Rules.Config
         /// <summary>Weeks a model stays in the Glitching state after an incident.</summary>
         public int GlitchWeeks;
         public int GlitchQualityPermille;
+        /// <summary>Market quality permille while the model's mascot is Overworked (too little compute to serve).</summary>
+        public int OverworkedQualityPermille;
+        /// <summary>Market quality permille while corruption has pushed the mascot to Corrupted.</summary>
+        public int CorruptedMoodQualityPermille;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
@@ -735,6 +739,8 @@ namespace AiLabs.Rules.Config
             s.Long("incidentFineMin", ref IncidentFineMin);
             s.Int("glitchWeeks", ref GlitchWeeks);
             s.Int("glitchQualityPermille", ref GlitchQualityPermille);
+            s.Int("overworkedQualityPermille", ref OverworkedQualityPermille);
+            s.Int("corruptedMoodQualityPermille", ref CorruptedMoodQualityPermille);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
@@ -803,6 +809,10 @@ namespace AiLabs.Rules.Config
         public List<string> SectorIds = new List<string>();
         /// <summary>Appeal permille in the domain's sectors when this lab leads the weekly footprint ranking.</summary>
         public int LeaderAppealPermille = 120;
+        /// <summary>Appeal permille for the runner-up when its footprint is within <see cref="ChallengerNearLeaderPermille"/> of the leader.</summary>
+        public int ChallengerAppealPermille;
+        /// <summary>Runner-up must reach this share of the leader's footprint (permille) to earn <see cref="ChallengerAppealPermille"/>.</summary>
+        public int ChallengerNearLeaderPermille = 900;
 
         public string Id { get { return IdValue; } }
 
@@ -812,6 +822,8 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.StrList("sectorIds", ref SectorIds);
             s.Int("leaderAppealPermille", ref LeaderAppealPermille);
+            s.Int("challengerAppealPermille", ref ChallengerAppealPermille);
+            s.Int("challengerNearLeaderPermille", ref ChallengerNearLeaderPermille);
         }
     }
 

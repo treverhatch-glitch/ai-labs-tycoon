@@ -386,6 +386,24 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q77. Model mood cuts market quality? DECIDED: overworked + corrupted permilles in `DisplayQueries`
+
+- Why: Unity mascots were presentation-only; starving GPUs should hurt quality scores the market uses (DESIGN mood fiction).
+- Choice: **`safety.overworkedQualityPermille`** and **`safety.corruptedMoodQualityPermille`**; `QualityParts` takes optional `LabState`; `MoodAdjustment` breakdown part sums with total.
+- Thirteen `ModelMoodQualityTests`. Golden unchanged.
+
+### Q79. Museum reputation for full lines? DECIDED: `MuseumConfig.ReputationPerFullLine`
+
+- Why: Endless-play museum slice had salvage-only hooks; a full wing per line should buff market reputation (NEXT museum bullet).
+- Choice: weekly **`reputationPerFullLine`** when retired count on a line equals **`perLine`** cap (after pruning); `MuseumSystem.RetiredOnLine` query; clamped reputation.
+- Thirteen `MuseumReputationTests`. Golden unchanged.
+
+### Q78. Domain challenger appeal? DECIDED: near runner-up hook beside leader boost
+
+- Why: Capability domains had a winner bonus only; runner-up labs near the leader deserve a smaller market pull.
+- Choice: per-domain **`challengerAppealPermille`** + **`challengerNearLeaderPermille`**; `CapabilityDomainSystem.ChallengerAppealPermille`; `AppealBreakdown.DomainChallengerBoost`.
+- Thirteen `DomainChallengerAppealTests`. Golden unchanged.
+
 ### Q76. Aggregated power bill lines? DECIDED: `WorldQueries.WeeklyPowerBillTotals`
 
 - Options: (a) sum in UI from per-holding rows; (b) lab-wide Grid/Private/Cooling/Colo rollup; (c) new ledger lines.
