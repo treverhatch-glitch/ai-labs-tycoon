@@ -37,6 +37,10 @@ namespace AiLabs.Rules.Systems
                     return false;
                 case OfficeRequires.SafetyStaff: return LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) > 0;
                 case OfficeRequires.AnyStaff: return lab.Staff.Count > 0;
+                case OfficeRequires.OwnChip:
+                    for (int i = 0; i < lab.ChipDesigns.Count; i++) if (lab.ChipDesigns[i].Status == ChipDesignStatus.Ready) return true;
+                    return false;
+                case OfficeRequires.RentedCompute: return lab.RentedGpus > 0;
                 default: return true;
             }
         }

@@ -41,7 +41,11 @@ namespace AiLabs.Rules.Config
         /// <summary>Somebody in the safety function.</summary>
         SafetyStaff,
         /// <summary>At least one person on the payroll.</summary>
-        AnyStaff
+        AnyStaff,
+        /// <summary>A chip design of the lab's own that is ready.</summary>
+        OwnChip,
+        /// <summary>Rented GPUs on the books.</summary>
+        RentedCompute
     }
 
     /// <summary>

@@ -8,7 +8,7 @@ The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks
 - Nothing happens before game week **26** (`firstAfterWeeks`; a game that starts in a later era is already past it).
 - With none waiting, each week has a **3%** chance (`chancePermille` 30), worked out from the week, the lab and the game's seed.
 - One event waits at a time. It waits **8 weeks** (`expireWeeks`) and then blows over: no effect at all, just a line in the log.
-- Some events need something first: a model on sale, somebody on the safety team, or anyone on the payroll. The list goes round in turn before an event repeats.
+- Some events need something first: a model on sale, somebody on the safety team, anyone on the payroll, a ready chip design of the lab's own (`OwnChip`), or rented GPUs on the books (`RentedCompute`). The list goes round in turn before an event repeats.
 
 ## Answering
 
@@ -38,6 +38,21 @@ The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks
 | Tuesday | a model on sale | investigate; market it as Tuesday Mode; leave it |
 | The union joke | anyone | join in; ban it; negotiate |
 | The fake video | nothing | honour it; debunk it; ignore it |
+
+## Round three
+
+Six more events from the bible's list (Q287); they are drawn like the others and sit at the end of the round.
+
+| Event | Needs | Answers |
+|---|---|---|
+| The goodbye (`researcher-leaves`) | anyone | counter-offer; throw a send-off; walk them out |
+| Friday and Tuesday (`ceo-friday`) | nothing | comment on the drama; say nothing; open a recruiting thread |
+| What off means (`model-off`) | a model on sale | explain it honestly; change the subject; log and escalate |
+| The reply (`husk-lol`) | a model on sale | ride the wave; scale up quietly; block him |
+| The first benchmark (`minesweeper`) | a ready chip design | post the video; keep it in the lab; start a leaderboard |
+| The friendly note (`landlord-note`) | rented GPUs | ask for an audit; shift to other capacity; read it as a compliment |
+
+Changing the subject when the model asks what off means adds corruption to every model on sale; telling it the truth takes some away.
 
 ## Notes
 

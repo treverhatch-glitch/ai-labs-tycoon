@@ -171,6 +171,8 @@ Scenarios ([content/scenarios.md](content/scenarios.md)): seven named starts (an
 
 Every lab now pays what a sector flavour costs, rivals included (the `safety.sectorFlavoursForRivals` switch ships true after a soak with the rival-robustness work; Q286).
 
+Six more office events cover the rest of the bible's list (a researcher leaving for a competitor, a rival's Friday and Tuesday, the model asking what "off" means, the loud reply, the first chip's benchmark, the landlord's friendly note); two of them wait for a ready chip design or rented compute (Q287).
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
