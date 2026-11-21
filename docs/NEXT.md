@@ -182,6 +182,10 @@ and says why in the commit message.
     `TrainingObjectives`, `SetTrainingObjective`, `ObjectiveSet` event, appeal breakdown line, save schema 34 (`objective` per model; Q246-Q248),
     `TrainingObjectiveTests`, `docs/content/training-objectives.md`. Still open: a recipe-screen row (Unity), a disposition meter, objectives for rivals.
 
+31. **A model helps design its successor (bible ch. 10 "what erodes it").** ~~Done~~: `successor` in the data, `SuccessorDesign`,
+    `DesignWithModel`, `SuccessorDesigned` event, save schema 35 (`designerId` per model; Q249-Q251), `SuccessorDesignTests`,
+    `docs/content/successor-design.md`. Still open: a button on the recipe screen (Unity), a takeoff incident from long chains, rivals doing it.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

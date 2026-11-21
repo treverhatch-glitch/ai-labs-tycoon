@@ -27,7 +27,8 @@ namespace AiLabs.Rules.Sim
         FineTuneModel,
         RollBackModel,
         AnswerOfficeEvent,
-        SetTrainingObjective
+        SetTrainingObjective,
+        DesignWithModel
     }
 
     /// <summary>
@@ -403,6 +404,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LeakStory, labId);
             c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Puts a finished model to work on the design of a model still in training. <see cref="Command.TargetId"/> is the run and <see cref="Command.Count"/> the helper.</summary>
+        public static Command DesignWithModel(int labId, int runId, int helperId)
+        {
+            Command c = Make(CommandKind.DesignWithModel, labId);
+            c.TargetId = runId;
+            c.Count = helperId;
             return c;
         }
 

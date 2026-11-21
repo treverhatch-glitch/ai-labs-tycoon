@@ -75,6 +75,7 @@ namespace AiLabs.Rules.Config
             RepairProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
+            SuccessorProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -504,6 +505,19 @@ namespace AiLabs.Rules.Config
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
             }
+        }
+
+        static void SuccessorProblems(List<string> p, GameConfig c)
+        {
+            SuccessorConfig s = c.Successor;
+            if (s == null) { p.Add("successor is missing"); return; }
+            if (s.ComputeSavedPermille < 0 || s.ComputeSavedPermille >= MathI.Permille) p.Add("successor.computeSavedPermille must be from 0 to 999");
+            if (s.CapabilityPermille < 0 || s.CapabilityPermille > 5000) p.Add("successor.capabilityPermille must be from 0 to 5000");
+            if (s.AlignmentPoints < 0 || s.AlignmentPoints > MathI.Permille) p.Add("successor.alignmentPoints must be from 0 to 1000");
+            if (s.ChainPoints < 0 || s.ChainPoints > MathI.Permille) p.Add("successor.chainPoints must be from 0 to 1000");
+            if (s.MaxChain < 0 || s.MaxChain > 20) p.Add("successor.maxChain must be from 0 to 20");
+            if (s.CulturePoints < 0 || s.CulturePoints > MathI.Permille) p.Add("successor.culturePoints must be from 0 to 1000");
+            if (s.HelperMinPermille < 0 || s.HelperMinPermille > 5000) p.Add("successor.helperMinPermille must be from 0 to 5000");
         }
 
         static void ObjectiveProblems(List<string> p, GameConfig c)

@@ -47,6 +47,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 32) MigrateTo32(root);
             if (fromSchema < 33) MigrateTo33(root);
             if (fromSchema < 34) MigrateTo34(root);
+            if (fromSchema < 35) MigrateTo35(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -396,6 +397,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 35: every model was designed by people alone.</summary>
+        static void MigrateTo35(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
         }
 
         /// <summary>Schema 34: every model was trained to be correct.</summary>

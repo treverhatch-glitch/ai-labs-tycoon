@@ -1194,6 +1194,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `objective` per model (`MigrateTo34` sets empty). The appeal effect reads it at any time after the run, so it cannot be derived from anything else. Rivals' and the autopilot's models stay on the default, so the economy guards, which all use them, are unchanged.
 - Why: the choice has to survive a save. The pinned golden moved because every model now carries the field; with the sync line, the schema number and the data removed the previous golden came back exactly (see the commit message).
 
+### Q249. What does letting a model help design its successor give and cost? DECIDED: a cheaper, stronger run; a successor with less alignment and a culture hit
+- Options: (a) a flat speed-up; (b) a speed-up and a capability gain, paid for in alignment and culture; (c) a risk of a takeoff incident.
+- Recommendation and choice: **(b)**. The run needs 15% less of the compute it still has to do and finishes 5% stronger; the successor loses 70 real and shown alignment points and safety culture loses 15 when it finishes. Setting it up cannot be undone.
+- Why: the bible lists it as something that erodes control, so it must be a real temptation: the gain is large enough to want and the cost is the control meter. A takeoff incident would need the rung 6 rules, which already trigger from real capability and the alignment gap; this keeps those rules as they are and pays the cost up front in alignment and culture.
+
+### Q250. Does it compound? DECIDED: yes, each link of the chain loses 40 more alignment, up to three links
+- Options: (a) the same cost every time; (b) rising with the chain; (c) forbid chains.
+- Recommendation and choice: **(b)**. A helper that was itself designed with help counts one link; the loss is 70 + 40 per link, with at most 3 links counted. The helper needs at least half of the run's forecast capability, so a weak model cannot be used for a strong run.
+- Why: the bible's sixth rung is a model that "improves itself faster than anyone can". A rising cost makes a chain a real decision rather than a switch to flip every version, and the cap keeps a long-running game's numbers bounded.
+
+### Q251. Is a save change needed, and does the golden move? DECIDED: yes, schema 35; the golden moved with a verified cause
+- Options: (a) store only on the successor (the helper id); (b) store a flag on the helper too.
+- Recommendation and choice: **(a)**. `designerId` per model, -1 when people did it alone (`MigrateTo35`). The chain is found by following the ids, and a helper that was pruned from the museum just ends the chain. The cost lands at the finish of the run, so nothing else is stored.
+- Why: one field is enough, and nothing that can be derived is saved. Rivals and the autopilot never use it, so the economy guards are untouched. The pinned golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
+
 ## Open
 
 None.

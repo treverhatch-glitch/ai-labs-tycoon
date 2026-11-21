@@ -5965,6 +5965,15 @@
       }
     ]
   },
+  "successor": {
+    "computeSavedPermille": 150,
+    "capabilityPermille": 50,
+    "alignmentPoints": 70,
+    "chainPoints": 40,
+    "maxChain": 3,
+    "culturePoints": 15,
+    "helperMinPermille": 500
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -6140,6 +6149,15 @@
       "pick": -1,
       "about": "lab",
       "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things."
+    },
+      {
+      "id": "successor-designed",
+      "kind": "SuccessorDesigned",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part."
     },
       {
       "id": "room-refurbished",

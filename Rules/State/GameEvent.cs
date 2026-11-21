@@ -102,7 +102,9 @@ namespace AiLabs.Rules.State
         /// <summary>Nobody answered in time and it blew over. LabId is the lab, Ref the office event id.</summary>
         OfficeEventLapsed,
         /// <summary>The player chose what a model in training is for. SubjectId is the model, Ref the objective id (empty for the default).</summary>
-        ObjectiveSet
+        ObjectiveSet,
+        /// <summary>A model was put to work on its successor's design. SubjectId is the successor, Amount the helper's id, Ref the successor's name.</summary>
+        SuccessorDesigned
     }
 
     /// <summary>
