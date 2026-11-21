@@ -46,6 +46,7 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             if (!Active(lab)) return;
+            TechDebt.Add(c, state, lab, c.TechDebt.CrunchPerWeek);
             if (lab.Staff.Count == 0) { End(state, lab, "empty", lab.CrunchWeeks - 1); return; }
             int drop = c.StaffPeople.CrunchMoraleDrop;
             for (int i = 0; i < lab.Staff.Count; i++)

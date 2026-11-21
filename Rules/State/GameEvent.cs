@@ -192,7 +192,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player scrapped a training run. LabId is the lab, SubjectId the model's id, Amount the research points kept, Ref the model's name. Pick is 1 when the run was at least half done, 0 when it was less.</summary>
         RunScrapped,
         /// <summary>A layoff round. Amount is the people let go, SubjectId the share of the staff in permille, Pick 1 when it was a deep cut.</summary>
-        LayoffRound
+        LayoffRound,
+        /// <summary>The lab paid down technical debt. Amount is the points retired, SubjectId the debt left, Pick 1 when none is left.</summary>
+        DebtPaid
     }
 
     /// <summary>

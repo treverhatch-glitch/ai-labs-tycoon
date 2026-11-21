@@ -274,6 +274,7 @@ and says why in the commit message.
 91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
 92. **Scrap a training run (research, compute).** ~~Done~~: `ScrapRun`, `Abandon`, `abandon` data, no new state, `AbandonTests`, `docs/content/scrapping-a-run.md` (Q334).
 93. **Layoff rounds (staff, cash).** ~~Done~~: `Layoff`, `Layoffs`, `layoffs` data, no new state, `LayoffsTests`, `docs/content/layoff-rounds.md` (Q335).
+94. **Technical debt (safety, cash, engineers).** ~~Done~~: `techDebt` data, `PayDownDebt`, `TechDebt`, schema 61, `TechDebtTests`, `docs/content/technical-debt.md` (Q336).
 
 ## Rules: later
 

@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Config
         public ResearchGrantsConfig ResearchGrants = new ResearchGrantsConfig();
         public AbandonConfig Abandon = new AbandonConfig();
         public LayoffsConfig Layoffs = new LayoffsConfig();
+        public TechDebtConfig TechDebt = new TechDebtConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
@@ -172,6 +173,7 @@ namespace AiLabs.Rules.Config
             s.Obj("researchGrants", ref ResearchGrants);
             s.Obj("abandon", ref Abandon);
             s.Obj("layoffs", ref Layoffs);
+            s.Obj("techDebt", ref TechDebt);
             s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);

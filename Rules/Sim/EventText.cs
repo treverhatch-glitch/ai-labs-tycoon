@@ -220,6 +220,8 @@ namespace AiLabs.Rules.Sim
                     return who + " scrapped the training run of " + e.Ref + (e.Pick == 1 ? " well into it" : " early") + " and kept " + e.Amount + " research points.";
                 case EventKind.LayoffRound:
                     return who + " laid off " + e.Amount + " people (" + e.SubjectId / 10 + "% of the staff)" + (e.Pick == 1 ? ", a deep cut that shook the office." : ".");
+                case EventKind.DebtPaid:
+                    return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

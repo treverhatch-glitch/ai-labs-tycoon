@@ -5614,6 +5614,16 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "techDebt": {
+    "enabled": 1,
+    "rushPerWeek": 40,
+    "crunchPerWeek": 6,
+    "fineTunePatch": 30,
+    "incidentAtFull": 60,
+    "costPerPoint": 2500,
+    "minEngineers": 2,
+    "maxPerCommand": 250
+  },
   "layoffs": {
     "enabled": 1,
     "maxPermille": 300,

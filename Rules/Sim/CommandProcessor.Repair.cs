@@ -18,6 +18,7 @@ namespace AiLabs.Rules.Sim
 
             Finance.Spend(lab, LedgerLine.Training, cost);
             ModelRepair.FineTune(c, state, lab, model);
+            TechDebt.Add(c, state, lab, c.TechDebt.FineTunePatch);
             Events.Add(state, EventKind.ModelFineTuned, lab.Id, model.Id, cost, model.Name);
             return CommandResult.Done(-1);
         }

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 60;
+        public const int CurrentSchema = 61;
 
         public int Schema;
         public string ConfigVersion;
@@ -196,6 +196,8 @@ namespace AiLabs.Rules.State
         public int ResearchGrantLockedUntil;
         /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
         public int ConsultantLevel;
+        /// <summary>Technical debt, 0 to 1000. Grows with rushed launches, crunch weeks and patched glitches; only paying it down lowers it.</summary>
+        public int TechDebt;
         /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
         public int ConsultantWeeks;
         /// <summary>The next firm cannot start before this tick.</summary>
@@ -402,6 +404,7 @@ namespace AiLabs.Rules.State
             s.Int("researchGrantOwed", ref ResearchGrantOwed);
             s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
             s.Int("consultantLevel", ref ConsultantLevel);
+            s.Int("techDebt", ref TechDebt);
             s.Int("consultantWeeks", ref ConsultantWeeks);
             s.Int("consultantLockedUntil", ref ConsultantLockedUntil);
             s.Int("ethicsLevel", ref EthicsLevel);

@@ -61,7 +61,8 @@ namespace AiLabs.Rules.Sim
         SetSla,
         ApplyForGrant,
         ScrapRun,
-        Layoff
+        Layoff,
+        PayDownDebt
     }
 
     /// <summary>
@@ -428,6 +429,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.Layoff, labId);
             c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Pays down technical debt by a number of points (up to the data's cap per command) for cash. Needs engineers.</summary>
+        public static Command PayDownDebt(int labId, int points)
+        {
+            Command c = Make(CommandKind.PayDownDebt, labId);
+            c.Count = points;
             return c;
         }
 

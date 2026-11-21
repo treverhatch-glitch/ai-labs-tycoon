@@ -20,6 +20,7 @@ namespace AiLabs.Rules.Sim
             CommandResult released = ReleaseModel(c, state, lab, cmd);
             if (!released.Ok) return released;
             model.RushWeeks = cmd.Count;
+            TechDebt.Add(c, state, lab, c.TechDebt.RushPerWeek * cmd.Count);
             SafetyCulture.Move(c, lab, -c.Rush.CulturePointsPerWeek * cmd.Count);
             Events.Add(state, EventKind.ModelRushed, lab.Id, model.Id, cmd.Count, model.Name);
             return released;

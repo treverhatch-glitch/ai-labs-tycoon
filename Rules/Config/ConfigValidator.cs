@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Config
             ResearchGrantsProblems(p, c);
             AbandonProblems(p, c);
             LayoffsProblems(p, c);
+            TechDebtProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -921,6 +922,20 @@ namespace AiLabs.Rules.Config
             if (k.ReputationAtAll < 0 || k.ReputationAtAll > 200) p.Add("layoffs.reputationAtAll must be from 0 to 200");
             if (k.MoraleAtAll < 0 || k.MoraleAtAll > 500) p.Add("layoffs.moraleAtAll must be from 0 to 500");
             if (k.DeepPermille < 1 || k.DeepPermille > MathI.Permille) p.Add("layoffs.deepPermille must be from 1 to 1000");
+        }
+
+        static void TechDebtProblems(List<string> p, GameConfig c)
+        {
+            TechDebtConfig k = c.TechDebt;
+            if (k == null) { p.Add("techDebt is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("techDebt.enabled must be 0 or 1");
+            if (k.RushPerWeek < 0 || k.RushPerWeek > 200) p.Add("techDebt.rushPerWeek must be from 0 to 200");
+            if (k.CrunchPerWeek < 0 || k.CrunchPerWeek > 50) p.Add("techDebt.crunchPerWeek must be from 0 to 50");
+            if (k.FineTunePatch < 0 || k.FineTunePatch > 200) p.Add("techDebt.fineTunePatch must be from 0 to 200");
+            if (k.IncidentAtFull < 0 || k.IncidentAtFull > 200) p.Add("techDebt.incidentAtFull must be from 0 to 200");
+            if (k.CostPerPoint < 1) p.Add("techDebt.costPerPoint must be at least 1, so debt is never free to clear");
+            if (k.MinEngineers < 0 || k.MinEngineers > 50) p.Add("techDebt.minEngineers must be from 0 to 50");
+            if (k.MaxPerCommand < 1 || k.MaxPerCommand > MathI.Permille) p.Add("techDebt.maxPerCommand must be from 1 to 1000");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)
