@@ -53,10 +53,10 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: unity
-          unityVersion: 6000.3.0f1
+          unityVersion: auto
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          coverageEnabled: false
+          cliVersion: v0.1.75
 
       - uses: actions/upload-artifact@v4
         if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome != 'skipped'
