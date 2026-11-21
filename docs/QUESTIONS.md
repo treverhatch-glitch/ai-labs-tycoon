@@ -1224,6 +1224,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `rushWeeks` per model (`MigrateTo36` sets 0). The window is read from `releasedTick`, which already exists.
 - Why: one new field is enough. Rivals and the autopilot never rush, so the economy guards, which use them, are unchanged. The golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
 
+### Q255. What is on the ticker? DECIDED: a headline line per public kind of event, about every lab
+- Options: (a) reuse the plain-English event text; (b) a headline line per event kind in the data, in capitals, in the bible's voice; (c) only the player's events.
+- Recommendation and choice: **(b)**, for all labs. Fourteen lines cover eras, world news, the Gauntlet, incidents, releases, bankruptcy, acquisitions, funding, rivals joining, the keynote, board drama, endings and chips. The player's private events (hiring, building, poaching) have no line. A line may pick on an event's `pick`, which is how a lab's first chip gets the bible's Minesweeper headline.
+- Why: `EventText` is for logs and test output; a ticker needs the joke voice and the capitals, and the bible's own headlines are examples of it. The company chat already covers the lab's own life, so the ticker is about the world, and it is data so a writer can add lines without code.
+
+### Q256. What if little happened? DECIDED: pad with filler picked from the date
+- Options: (a) show fewer headlines; (b) a pool of filler headlines, padded to a minimum; (c) generate filler from rivals' state.
+- Recommendation and choice: **(b)**. At least 5 headlines are shown: real ones first, then filler lines whose year has come, never repeating on one ticker, chosen by a hash of the tick, so the same week always gives the same ticker. Eight filler lines, four from the bible's list.
+- Why: an empty ticker in the quiet early years reads as broken, and the filler is half the joke. Hashing the date, not rolling dice, keeps the view read-only and reproducible, in the same way as the company chat.
+
+### Q257. Is a save change needed? DECIDED: no
+- Options: (a) store the ticker; (b) read it off the event log.
+- Recommendation and choice: **(b)**. Nothing is saved; the golden did not move.
+- Why: everything on the ticker already exists in the event log (which is bounded) or the date. Storing it would duplicate the log and need a migration for no gain.
+
 ## Open
 
 None.

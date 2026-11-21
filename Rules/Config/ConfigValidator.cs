@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Config
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
             RushProblems(p, c);
+            NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -505,6 +506,48 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void NewsProblems(List<string> p, GameConfig c)
+        {
+            NewsConfig n = c.News;
+            if (n == null) { p.Add("news is missing"); return; }
+            if (n.DefaultHeadlines < 1 || n.DefaultHeadlines > 100) p.Add("news.defaultHeadlines must be from 1 to 100");
+            if (n.MinHeadlines < 0 || n.MinHeadlines > n.DefaultHeadlines) p.Add("news.minHeadlines must be from 0 to news.defaultHeadlines");
+            if (n.MinHeadlines > 0 && n.Filler.Count == 0) p.Add("news.minHeadlines needs some news.filler to pad with");
+            UniqueIds(p, "news.headlines", n.Headlines);
+            UniqueIds(p, "news.filler", n.Filler);
+            for (int i = 0; i < n.Headlines.Count; i++)
+            {
+                HeadlineConfig h = n.Headlines[i];
+                string who = "headline " + h.IdValue;
+                if (!AiLabs.Rules.Systems.CompanyChat.IsEventKind(h.Kind)) p.Add(who + " is about the unknown event kind \"" + h.Kind + "\"");
+                if (string.IsNullOrWhiteSpace(h.Text)) p.Add(who + " has no text");
+                if (h.Pick < -1 || h.Pick > 1) p.Add(who + " needs pick -1, 0 or 1");
+                UnknownPlaceholders(p, who, h.Text);
+            }
+            for (int i = 0; i < n.Filler.Count; i++)
+            {
+                FillerConfig f = n.Filler[i];
+                string who = "filler " + f.IdValue;
+                if (string.IsNullOrWhiteSpace(f.Text)) p.Add(who + " has no text");
+                if (f.Text != null && f.Text.IndexOf('{') >= 0) p.Add(who + " has a placeholder, and filler is not about an event");
+                if (f.FromYear < 1000 || f.FromYear > 3000) p.Add(who + " needs a fromYear from 1000 to 3000");
+            }
+        }
+
+        static void UnknownPlaceholders(List<string> p, string who, string text)
+        {
+            if (text == null) return;
+            int at = 0;
+            while ((at = text.IndexOf('{', at)) >= 0)
+            {
+                int end = text.IndexOf('}', at);
+                string tag = end < 0 ? text.Substring(at) : text.Substring(at, end - at + 1);
+                if (Array.IndexOf(AiLabs.Rules.Systems.NewsTicker.Placeholders, tag) < 0) p.Add(who + " has the unknown placeholder " + tag);
+                if (end < 0) break;
+                at = end + 1;
             }
         }
 

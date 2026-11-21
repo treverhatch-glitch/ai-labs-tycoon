@@ -190,6 +190,10 @@ and says why in the commit message.
     `ModelRushed` event, appeal `LaunchEffect` and incident `FromRush` lines, save schema 36 (`rushWeeks` per model; Q252-Q254),
     `RushedLaunchTests`, `docs/content/rushed-launch.md`. Still open: a rush slider on the release screen (Unity), rivals rushing to beat the player to a sector.
 
+33. **News ticker headlines (bible ch. 14, ch. 17).** ~~Done~~: `news` in the data, `NewsTicker.Headlines` / `About` / `Money`, 14 headline lines and 8 filler lines,
+    read-only, no save change (Q255-Q257), `NewsTickerTests`, `docs/content/news-ticker.md`. Still open: the ticker strip itself (Unity), headlines for the player's
+    own big moments in the bible's voice, era-specific filler.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

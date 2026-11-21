@@ -147,6 +147,8 @@ A model can help design its successor ([content/successor-design.md](content/suc
 
 Rushed launches ([content/rushed-launch.md](content/rushed-launch.md)): skip up to six weeks of testing on a first release and the model sells better for a quarter but is likelier to have an incident for half a year, and culture suffers. A normal release is the tested one. Save schema 36.
 
+The news ticker ([content/news-ticker.md](content/news-ticker.md)) is the world's side of the company chat: the event log turned into upper-case headlines about every lab, padded with filler when it is a quiet week. Read-only, nothing saved.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
