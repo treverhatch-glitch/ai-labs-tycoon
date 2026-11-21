@@ -812,9 +812,9 @@
     "engineerBonusPermille": 50,
     "engineerBonusCapPermille": 600,
     "dataSources": [
-      { "id": "internal", "name": "Your own users", "prepCostPermille": 1000, "capabilityBonusPermille": 0 },
-      { "id": "licensed", "name": "Licensed corpora", "prepCostPermille": 1300, "capabilityBonusPermille": 80 },
-      { "id": "synthetic", "name": "Synthetic mix", "prepCostPermille": 850, "capabilityBonusPermille": -60 }
+      { "id": "internal", "name": "Your own users", "prepCostPermille": 1000, "capabilityBonusPermille": 0, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 0 },
+      { "id": "licensed", "name": "Licensed corpora", "prepCostPermille": 1300, "capabilityBonusPermille": 80, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 25 },
+      { "id": "synthetic", "name": "Synthetic mix", "prepCostPermille": 850, "capabilityBonusPermille": -60, "finishCorruption": 45, "finishHeat": 30, "homeAttentionPermille": 0 }
     ],
     "lines": [
       { "id": "mini", "name": "Mini", "computeRequired": 500, "baseCapability": 100, "prepCost": 4000, "servingCostPermille": 600, "locked": false, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },

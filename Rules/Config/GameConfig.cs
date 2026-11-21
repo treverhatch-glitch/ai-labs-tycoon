@@ -512,6 +512,12 @@ namespace AiLabs.Rules.Config
         public int PrepCostPermille = 1000;
         /// <summary>Applied to capability when the run finishes (can be negative).</summary>
         public int CapabilityBonusPermille;
+        /// <summary>Corruption added on the finished model (synthetic / risky mixes).</summary>
+        public int FinishCorruption;
+        /// <summary>Shady heat added to the lab when a run on this source finishes.</summary>
+        public int FinishHeat;
+        /// <summary>Home-bloc attention when a run on this source finishes (licensing scrutiny).</summary>
+        public int HomeAttentionPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -521,6 +527,9 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Int("prepCostPermille", ref PrepCostPermille);
             s.Int("capabilityBonusPermille", ref CapabilityBonusPermille);
+            s.Int("finishCorruption", ref FinishCorruption);
+            s.Int("finishHeat", ref FinishHeat);
+            s.Int("homeAttentionPermille", ref HomeAttentionPermille);
         }
     }
 

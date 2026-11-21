@@ -146,6 +146,24 @@ namespace AiLabs.Rules.Systems
             ModelState previous = LabQueries.LatestOfLine(lab, model.LineId);
             if (previous != null && previous.Id != model.Id)
                 model.Corruption = (int)MathI.MulPermille(previous.Corruption, c.Shady.CarryCorruptionPermille);
+            if (source != null)
+            {
+                if (source.FinishCorruption > 0)
+                    model.Corruption = (int)MathI.Min(MathI.Permille, model.Corruption + source.FinishCorruption);
+                if (source.FinishHeat > 0)
+                    lab.Heat = (int)MathI.Min(MathI.Permille, lab.Heat + source.FinishHeat);
+                if (source.HomeAttentionPermille > 0)
+                {
+                    BlocStanding home = lab.Bloc(lab.HomeBlocId);
+                    if (home != null)
+                    {
+                        int before = home.Attention;
+                        home.Attention = (int)MathI.Min(MathI.Permille, before + source.HomeAttentionPermille);
+                        if (home.Attention > before)
+                            Events.Add(state, EventKind.AttentionRose, lab.Id, -1, home.Attention - before, lab.HomeBlocId);
+                    }
+                }
+            }
             model.ProgressCompute = model.RequiredCompute;
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;

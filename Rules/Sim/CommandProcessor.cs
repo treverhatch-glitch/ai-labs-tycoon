@@ -287,6 +287,8 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult StartTraining(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
             ModelLineConfig line = c.Line(cmd.Id);
             if (line == null) return Fail(CommandError.UnknownId, "There is no model line \"" + cmd.Id + "\".");
             if (!LabQueries.LineUnlocked(c, lab, line.Id)) return Fail(CommandError.LineLocked, "The lab has not researched how to build a " + line.Name + " yet.");

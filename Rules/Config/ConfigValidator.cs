@@ -109,6 +109,8 @@ namespace AiLabs.Rules.Config
             foreach (DataSourceConfig src in c.Training.DataSources)
             {
                 if (src.PrepCostPermille < 1) p.Add("data source " + src.Id + " needs prepCostPermille of at least 1");
+                if (src.FinishCorruption < 0 || src.FinishHeat < 0) p.Add("data source " + src.Id + " has negative finish risk");
+                Permille(p, "data source " + src.Id + ".homeAttentionPermille", src.HomeAttentionPermille);
             }
             if (c.Training.Lines.Count == 0) p.Add("training.lines is empty");
             foreach (ModelLineConfig line in c.Training.Lines)

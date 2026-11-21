@@ -203,3 +203,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) passive dilutes share like other general compute; (b) subtract passive expansion from general in `OwnChipsShare`; (c) add passive to own chips.
 - Choice: **(b)** — uplink/arena passive still in `Split` for training; share math ignores it.
 - Why: orbital signal should not mask silicon dominance for Envydia courting; crosses Q25/Q28 + Q27.
+
+### Q35. Data source finish consequences (beyond prep/cap)? DECIDED: corruption, heat, home attention
+
+- Options: (a) finish applies only prep/cap modifiers; (b) per-source finish deltas on corruption, lab heat, and home attention; (c) incident roll on finish.
+- Choice: **(b)** — `FinishCorruption` on model (capped), `FinishHeat` on lab, `HomeAttentionPermille` on home bloc when finish fires; `AttentionRose` event when attention moves.
+- Why: synthetic/open-weights risk is not just training cost; crosses shady heat + world attention + serving reputation.
+
+### Q36. Gauntlet sector bracket vs expansion appeal? DECIDED: scale bracket score, not crown
+
+- Options: (a) expansion only in market appeal; (b) multiply sector bracket entry score by bodies/upward kit bonus when era open and room present; (c) crown uses bonus too.
+- Choice: **(b)** — `GauntletSystem` scales quality-based bracket score via `ExpansionSystem.ScaleAppeal`; crown still raw capability; era gate matches market appeal.
+- Why: robotics/orbital kits should swing sector champions without rewriting crown; crosses Q28/Q25 + gauntlet records.
+
+### Q37. Freeze vs training at home? DECIDED: block `StartTraining` when home bloc frozen
+
+- Options: (a) training exempt; (b) refuse `StartTraining` like other permit checks; (c) freeze only blocks hires/land.
+- Choice: **(b)** — `CommandProcessor.StartTraining` checks home bloc `PermitFrozen`; foreign-site bloc freeze does not affect home training.
+- Why: government freeze should stop new runs, not just GPUs; aligns with rent/found permit gates.
