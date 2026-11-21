@@ -223,9 +223,9 @@ namespace AiLabs.Rules.Sim
                 case EventKind.DebtPaid:
                     return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
                 case EventKind.ReserveMoved:
-                    return e.Pick == 1 ? who + " set $" + e.Amount + " aside in its reserve."
-                        : e.Pick == 2 ? who + "'s reserve paid out $" + e.Amount + " to cover a debt, at a steep fee."
-                        : who + " took $" + e.Amount + " back out of its reserve.";
+                    return e.Pick == 1 ? who + " set $" + e.Amount + " aside in its reserve." : who + " took $" + e.Amount + " back out of its reserve.";
+                case EventKind.ReserveCovered:
+                    return who + "'s reserve paid out $" + e.Amount + " to cover a debt, at a steep fee.";
                 case EventKind.PledgeSet:
                     return e.Pick == 1 ? who + " pledged publicly that its launches will show at least " + Pledge.Floor(c, e.SubjectId) + " alignment (level " + e.SubjectId + ")."
                         : e.SubjectId == 0 ? who + " dropped its public safety pledge." : who + " walked its safety pledge back to level " + e.SubjectId + ".";

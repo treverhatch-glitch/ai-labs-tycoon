@@ -33,7 +33,7 @@ public class TreasuryTests
         return g;
     }
 
-    static List<GameEvent> Moves(Game g) { return g.State.Events.Where(e => e.Kind == EventKind.ReserveMoved).ToList(); }
+    static List<GameEvent> Moves(Game g) { return g.State.Events.Where(e => e.Kind == EventKind.ReserveMoved || e.Kind == EventKind.ReserveCovered).ToList(); }
 
     [Fact]
     public void The_data_ships_and_is_valid_and_bad_values_are_caught()
@@ -133,8 +133,8 @@ public class TreasuryTests
     public void A_debt_is_covered_from_the_reserve_at_the_steeper_fee_and_the_lab_stays_open()
     {
         Game g = Burning(350_000);
-        for (int i = 0; i < 80 && !Moves(g).Any(e => e.Pick == 2); i++) g.Weeks(1);
-        GameEvent cover = Moves(g).First(e => e.Pick == 2);
+        for (int i = 0; i < 80 && !Moves(g).Any(e => e.Kind == EventKind.ReserveCovered); i++) g.Weeks(1);
+        GameEvent cover = Moves(g).First(e => e.Kind == EventKind.ReserveCovered);
         Assert.True(cover.Amount > 0);
         Assert.True(g.Me.Cash >= 0, "cash " + g.Me.Cash);
         Assert.Equal(0, g.Me.WeeksInDebt);

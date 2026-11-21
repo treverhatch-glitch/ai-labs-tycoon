@@ -47,8 +47,7 @@ namespace AiLabs.Rules.Systems
             if (net <= 0) return;
             lab.Reserve -= gross;
             Finance.Earn(lab, LedgerLine.CapitalIn, net);
-            GameEvent e = Events.Add(state, EventKind.ReserveMoved, lab.Id, -1, gross, "");
-            e.Pick = 2;
+            Events.Add(state, EventKind.ReserveCovered, lab.Id, -1, gross, "");
         }
     }
 }

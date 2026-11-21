@@ -18,6 +18,6 @@ Refused, with nothing changed, for a rival, a game with `enabled` 0, a sum under
 
 ## Notes
 
-- Events: `ReserveMoved` (Amount the sum moved before any fee; Pick 1 set aside, 0 drawn on purpose, 2 covered a debt).
+- Events: `ReserveMoved` (Amount the sum moved before any fee; Pick 1 set aside, 0 drawn on purpose) and `ReserveCovered` (Amount the sum the reserve paid out to cover a debt, before the fee).
 - It is a safety net: the yield is smaller than the fees, so a lab that saves for no reason loses a little.
 - No random numbers. A lab that sets nothing aside is exactly as before.
