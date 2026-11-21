@@ -105,12 +105,12 @@ public static class Program
         GameState state = sim.State;
         Console.WriteLine();
         Console.WriteLine("== End of " + (sim.Year - 1) + " (" + EraSystem.AtYear(c, sim.Year - 1).Name + ") ==");
-        Console.WriteLine($"{"lab",-14}{"cash",12}{"rev/wk",10}{"cost/wk",10}{"staff",7}{"gpus",6}{"rep",5}{"techs",6}  best model");
+        Console.WriteLine($"{"lab",-14}{"cash",20}{"rev/wk",15}{"cost/wk",12}{"staff",7}{"gpus",6}{"rep",5}{"techs",6}  best model");
         foreach (LabState lab in state.Labs)
         {
             ModelState best = LabQueries.BestReleased(lab);
             string model = lab.Bankrupt ? "(bankrupt)" : best == null ? "-" : $"{best.Name} cap {best.Capability} safety {best.Alignment} {LabQueries.Mood(c, lab, best, state.Tick)}";
-            Console.WriteLine($"{lab.Name,-14}{lab.Cash,12}{lab.LastWeek.Revenue,10}{LabQueries.WeeklyRunningCost(c, state, lab),10}{LabQueries.TotalStaff(lab),7}{LabQueries.TotalGpus(lab),6}{lab.Reputation,5}{lab.Techs.Count,6}  {model}");
+            Console.WriteLine($"{lab.Name,-14}{lab.Cash,20}{lab.LastWeek.Revenue,15}{LabQueries.WeeklyRunningCost(c, state, lab),12}{LabQueries.TotalStaff(lab),7}{LabQueries.TotalGpus(lab),6}{lab.Reputation,5}{lab.Techs.Count,6}  {model}");
         }
         foreach (SectorState sector in state.Sectors)
         {

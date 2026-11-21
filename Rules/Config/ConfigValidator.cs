@@ -343,6 +343,11 @@ namespace AiLabs.Rules.Config
             }
         }
 
+        static void EraRulePermille(List<string> p, string who, string name, int value)
+        {
+            if (value < 250 || value > 5000) p.Add(who + " has " + name + " " + value + ": an era rule moves a cost or a chance between x0.25 and x5");
+        }
+
         static void EraProblems(List<string> p, GameConfig c)
         {
             if (c.Eras.Count == 0) { p.Add("eras is empty"); return; }
@@ -358,6 +363,14 @@ namespace AiLabs.Rules.Config
                 if (i > 0 && era.TrainingCostPermille < c.Eras[i - 1].TrainingCostPermille) p.Add(who + " makes training cheaper than the era before it: costs only grow");
                 if (i > 0 && era.ResearchPermille < c.Eras[i - 1].ResearchPermille) p.Add(who + " makes research slower than the era before it");
                 if (era.ResearchPermille < 1) p.Add(who + " needs researchPermille of at least 1");
+                EraRulePermille(p, who, "hireFeePermille", era.HireFeePermille);
+                EraRulePermille(p, who, "chipPricePermille", era.ChipPricePermille);
+                EraRulePermille(p, who, "adoptionPermille", era.AdoptionPermille);
+                EraRulePermille(p, who, "finePermille", era.FinePermille);
+                if (era.MinReleaseAlignment < 0 || era.MinReleaseAlignment > MathI.Permille) p.Add(who + " has minReleaseAlignment " + era.MinReleaseAlignment + ": it must be from 0 to 1000");
+                if (i > 0 && era.MinReleaseAlignment < c.Eras[i - 1].MinReleaseAlignment) p.Add(who + " lowers the release law below the era before it: a law stays on the books");
+                if (i == 0 && (era.HireFeePermille != MathI.Permille || era.ChipPricePermille != MathI.Permille || era.AdoptionPermille != MathI.Permille || era.FinePermille != MathI.Permille || era.MinReleaseAlignment != 0))
+                    p.Add(who + " is the first era and must leave every era rule at its baseline (1000, and no release law)");
                 if (era.TrainingCostPermille < 1) p.Add(who + " needs trainingCostPermille of at least 1");
                 if (era.StartCashPermille < 0 || era.StartGrantPermille < 0) p.Add(who + " has a negative start money share");
                 if (c.Lot(era.StartLotId) == null) p.Add(who + " starts on the unknown lot \"" + era.StartLotId + "\"");
@@ -556,6 +569,8 @@ namespace AiLabs.Rules.Config
             if (r.BoardDramaWeeks < 1) p.Add("rivalry.boardDramaWeeks must be at least 1");
             if (r.FastBuildWeeks < 1) p.Add("rivalry.fastBuildWeeks must be at least 1");
             if (r.ReplaceTierGap < 1) p.Add("rivalry.replaceTierGap must be at least 1");
+            if (r.RetrenchRunwayWeeks < 1) p.Add("rivalry.retrenchRunwayWeeks must be at least 1");
+            if (r.RetrenchCostPermille < MathI.Permille) p.Add("rivalry.retrenchCostPermille must be at least 1000: a plan that breaks even is not losing money");
 
             FeelingsConfig f = r.Feelings;
             if (f.DriftPerMonth < 0) p.Add("rivalry.feelings.driftPerMonth is negative");

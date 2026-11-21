@@ -149,7 +149,7 @@ namespace AiLabs.Rules.Sim
             int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
             if (cmd.Count > free)
                 return Fail(CommandError.NoSeats, "There are " + free + " free seats for a " + role.Name + ". Build a room for them first.");
-            long cost = role.HireCost * cmd.Count;
+            long cost = EraRules.HireCost(c, role, cmd.Count, state.Tick);
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             StaffSystem.Hire(c, state, lab, role, cmd.Count);
@@ -325,6 +325,8 @@ namespace AiLabs.Rules.Sim
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released)
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
+            if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
+                return Fail(CommandError.BelowEraSafetyBar, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and the law in " + EraSystem.AtTick(c, state.Tick).Name + " asks for " + EraRules.ReleaseBar(c, state.Tick) + " before a model goes on sale.");
 
             for (int i = 0; i < cmd.Ids.Count; i++)
             {

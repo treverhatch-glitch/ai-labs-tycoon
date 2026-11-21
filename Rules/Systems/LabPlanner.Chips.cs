@@ -49,7 +49,7 @@ namespace AiLabs.Rules.Systems
                 BuildRoom(x, type, Math.Max(target - seats, MinSeatsPerRoom) * type.TilesPerSeat);
                 seats = LabQueries.Seats(c, lab, role.Id);
             }
-            long perHire = role.HireCost + role.WeeklySalary * x.Plan.ReserveWeeks;
+            long perHire = EraRules.HireFee(x.C, role, x.State.Tick) + role.WeeklySalary * x.Plan.ReserveWeeks;
             long spare = lab.Cash - Reserve(x);
             int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
             int hire = Math.Min(Math.Min(target - have, seats - have), affordable);

@@ -70,6 +70,7 @@ namespace AiLabs.Rules.Systems
             long fine = MathI.Max(c.Safety.IncidentFineMin, MarketSystem.ModelRevenue(state, lab.Id, model.Id) * c.Safety.IncidentFineRevenueWeeks);
             if (def != null) fine = MathI.MulPermille(fine, def.FinePermille);
             fine = MathI.Max(c.Safety.IncidentFineMin, fine);
+            fine = EraRules.Fine(c, fine, state.Tick);
 
             model.Incidents++;
             model.LastIncidentRung = rung;

@@ -37,7 +37,7 @@ namespace AiLabs.Rules.Systems
 
             Release(x);
 
-            if (lab.WeeksInDebt > 0)
+            if (lab.WeeksInDebt > 0 || Retrenching(x))
             {
                 Tighten(x);
                 return;
@@ -119,31 +119,54 @@ namespace AiLabs.Rules.Systems
             return revenue > 0 && LabQueries.WeeklyRunningCost(x.C, x.State, x.Lab) * 2 > revenue * 3;
         }
 
+        /// <summary>
+        /// A lab whose running costs far outrun its revenue and whose cash is nearly gone cuts now, not once it is in debt:
+        /// with its model overtaken it cannot afford the next run, and waiting for debt was a death spiral.
+        /// </summary>
+        static bool Retrenching(Ctx x)
+        {
+            long cost = LabQueries.WeeklyRunningCost(x.C, x.State, x.Lab);
+            RivalryConfig r = x.C.Rivalry;
+            return cost > 0 && cost * MathI.Permille > x.Lab.LastWeek.Revenue * r.RetrenchCostPermille
+                && x.Lab.Cash < cost * r.RetrenchRunwayWeeks;
+        }
+
         static bool CanSpend(Ctx x, long cost)
         {
             return x.Lab.Cash - cost >= Reserve(x);
         }
 
-        /// <summary>In debt: hand back a quarter of the rented GPUs and let one person go from the biggest team.</summary>
+        /// <summary>
+        /// Cutting: hand back rented GPUs the customers are not using (a quarter at most, none while the lab cannot serve its
+        /// demand) and let one person in six go, taken from the biggest team each time.
+        /// </summary>
         static void Tighten(Ctx x)
         {
             LabState lab = x.Lab;
+            Reason why = lab.WeeksInDebt > 0 ? Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt) : Runway(x);
             if (lab.RentedGpus > 0)
             {
-                int give = (lab.RentedGpus + 3) / 4;
-                Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
+                long demand = lab.LastWeek.ServingDemand;
+                long surplus = lab.LastWeek.ServedPermille < MathI.Permille ? 0 : demand <= 0 ? MathI.Permille : MathI.Max(0, MathI.Permille - demand * MathI.Permille / MathI.Max(1, lab.LastWeek.ServingCompute));
+                int give = (int)MathI.Min((lab.RentedGpus + 3) / 4, lab.RentedGpus * surplus / MathI.Permille);
+                if (give > 0)
+                    Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, why);
             }
 
-            string biggestRole = "";
-            int biggestCount = 0;
+            int cuts = (int)MathI.Max(1, LabQueries.TotalStaff(lab) / 6);
             GameConfig cfg = x.C;
-            for (int i = 0; i < cfg.Roles.Count; i++)
+            for (int n = 0; n < cuts; n++)
             {
-                int n = LabQueries.StaffCount(lab, cfg.Roles[i].Id);
-                if (n > biggestCount) { biggestCount = n; biggestRole = cfg.Roles[i].Id; }
+                string biggestRole = "";
+                int biggestCount = 0;
+                for (int i = 0; i < cfg.Roles.Count; i++)
+                {
+                    int have = LabQueries.StaffCount(lab, cfg.Roles[i].Id);
+                    if (have > biggestCount) { biggestCount = have; biggestRole = cfg.Roles[i].Id; }
+                }
+                if (biggestCount <= 1) break;
+                Decide(x, Command.Fire(lab.Id, biggestRole, 1), DecisionAction.Tightened, biggestRole, 1, why);
             }
-            if (biggestCount > 1)
-                Decide(x, Command.Fire(lab.Id, biggestRole, 1), DecisionAction.Tightened, biggestRole, 1, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
         }
 
         static void Staff(Ctx x, int weeks)
@@ -171,7 +194,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 // Each hire costs the fee now and raises the reserve the lab wants to keep, so count both.
-                long perHire = role.HireCost + role.WeeklySalary * plan.ReserveWeeks;
+                long perHire = EraRules.HireFee(c, role, x.State.Tick) + role.WeeklySalary * plan.ReserveWeeks;
                 long spare = lab.Cash - Reserve(x);
                 int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
                 int hire = Math.Min(Math.Min(target - have, seats - have), affordable);
@@ -517,6 +540,15 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) continue;
+                if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
+                {
+                    if (model.Status == ModelStatus.Trained)
+                        Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
+                            Reason.Of(ReasonCode.AlignmentBelowGate, model.Alignment),
+                            Reason.Of(ReasonCode.ReleaseGate, EraRules.ReleaseBar(c, state.Tick)),
+                            Reason.Of(ReasonCode.CultureAlignmentPermille, plan.AlignmentSharePermille));
+                    continue;
+                }
                 if (model.Status == ModelStatus.Trained && model.Alignment < plan.MinReleaseAlignment)
                 {
                     Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,

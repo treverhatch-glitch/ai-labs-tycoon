@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 648 tests pass (schemas 19–20: bubble crash, acquisitions, model sales), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 711 tests pass (schemas 19–20: bubble crash, acquisitions, model sales), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -90,8 +90,10 @@ and says why in the commit message.
 
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
     a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
-13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
-    "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
+13. ~~**Make each era feel different.**~~ Done (Q103 to Q109): `EraRules`, five era rules beside incident load (talent-war
+    hiring fees, chip prices, customer appetite, fine size, and a release law on displayed alignment), the briefing
+    and shifts queries, a rules line on the era banner, no save change. Still open: new *risk classes* per era and
+    per-era mechanics that need new state (they ride on items 7 and 8).
 
 ## Rules: later
 
@@ -112,6 +114,7 @@ and says why in the commit message.
 - ~~**Exit sell-price breakdown** (Q99).~~ Done: `DisplayQueries.ExitPriceParts`.
 - ~~**Era incident load** shifts risk by era (Q100).~~ Done: `incidentLoadPermille` on eras.
 - ~~**60-year headless soak** pins long-horizon stability (Q101).~~ Done: `LongHorizonSoakLaterTests` sixty-year step.
+- ~~**Runaway economy report**~~ Done (Q111 to Q115): not a runaway (a `simcli` column overflow), but rivals could bankrupt after losing their market; plans now retrench before debt (`rivalry.retrenchRunwayWeeks`, `retrenchCostPermille`), and `EconomyBoundsTests` pins solvency and cash bounds over 40 years.
 
 ## Unity
 
