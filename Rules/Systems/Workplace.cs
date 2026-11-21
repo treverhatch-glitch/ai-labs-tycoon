@@ -30,12 +30,13 @@ namespace AiLabs.Rules.Systems
 
         public static int RestingMorale(GameConfig c, LabState lab)
         {
-            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab) - RoomAge.MoralePenalty(c, lab);
+            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab) - RoomAge.MoralePenalty(c, lab) + Pay.MoraleOffset(c, lab);
         }
 
         public static int PoachDefencePermille(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.PoachDefence), c.StaffPeople.MaxPoachDefencePermille);
+            long rooms = MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.PoachDefence), c.StaffPeople.MaxPoachDefencePermille);
+            return (int)MathI.Clamp(rooms + Pay.PoachDefencePermille(c, lab), -500, 900);
         }
 
         /// <summary>A rival's weekly chance to make an offer once the lab's rooms have taken their share off.</summary>

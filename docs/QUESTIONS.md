@@ -1491,6 +1491,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to 8bce7642 because of the lab field and the schema number only; reverting them brought the previous digest (f76df7ee) back.
 - Alternatives: a one-off purchase (rejected: it is a team, and teams cost money every week); closing the gap faster than a few weeks (rejected: it would make sandbagging free); a research bonus for the programme (rejected: it should cost research, as the bible's safety trade says).
 
+### Q303. Can the player set the lab's pay policy? DECIDED: yes, from 15% below to 30% above market, with morale, poaching and a cut that shocks
+- New `staffPeople.pay*` data and command `SetPayLevel(level)`, `Pay` system, event `PayChanged`, error `PayLocked` (appended). Level 0 is market pay and where every lab starts; the player can go down to -1 and up to +2.
+- Each level changes every salary by 15% (so the bill is 850, 1000, 1150 or 1300 per mille of the role salaries), moves the level morale settles at by 40 points, and changes the share of a rival's offers the lab turns away by 15 points. The room defences and the pay add together, kept between -500 and 900 so a rival's offer is never ruled out and never more than one and a half times likelier.
+- A cut shocks everyone's morale at once by 100 for each level it falls (never below 0), which can make people who quit when unhappy leave and can make the team too tired for crunch. A raise gives no jolt: people drift up to the new level. A change locks pay for 26 weeks.
+- The offsite and the shady cost estimates read the same salary query, so they follow the policy. Hiring and severance fees do not.
+- New state on the lab (schema 47, `MigrateTo47`): `payLevel` and `payLockedUntil`. Player only and opt-in; rivals and the autopilot never change pay, and the planners read the role salaries directly, so rivals are untouched and defaults change nothing.
+- The golden digest moved to 130c6c78 because of the two lab fields and the schema number only; reverting them brought the previous digest (8bce7642) back.
+- Alternatives: a per-role pay (rejected: a company-wide level is one decision, not ten); a jolt for a raise (rejected: free morale for money would be an exploit); cuts that never shock (rejected: a pay cut is felt).
+
 ## Open
 
 None.

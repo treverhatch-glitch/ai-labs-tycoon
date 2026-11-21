@@ -4870,6 +4870,13 @@
     "offsiteMoraleLift": 80,
     "offsiteMaxAboveResting": 100,
     "offsiteCultureLift": 15,
+    "payMinLevel": -1,
+    "payMaxLevel": 2,
+    "paySalaryStepPermille": 150,
+    "payMoraleStep": 40,
+    "payPoachStepPermille": 150,
+    "payLockWeeks": 26,
+    "payCutShock": 100,
     "traitRollSalt": 15,
     "starHirePermille": 120,
     "traits": [

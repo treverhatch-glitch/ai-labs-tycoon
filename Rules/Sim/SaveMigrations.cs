@@ -59,6 +59,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 44) MigrateTo44(root);
             if (fromSchema < 45) MigrateTo45(root);
             if (fromSchema < 46) MigrateTo46(root);
+            if (fromSchema < 47) MigrateTo47(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -408,6 +409,16 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 47: every lab paid market rates and had never changed its pay.</summary>
+        static void MigrateTo47(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "payLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "payLockedUntil", JsonValue.Of(0L));
+            });
         }
 
         /// <summary>Schema 46: no lab ran an interpretability programme.</summary>

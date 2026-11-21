@@ -203,6 +203,8 @@ The player can pay a red team to attack one model of the lab. It closes half the
 
 The player can run a standing interpretability programme, in three levels on the two interpretability techs. It costs a weekly bill and some research. In return it slowly closes the gap between the shown and real alignment of models on sale and softens what stale safety techs have lost.
 
+The player sets the lab's pay policy, from 15% below market to 30% above. Better pay costs more every week, raises the level morale settles at and turns more of a rival's offers away. A pay cut shocks everyone's morale at once. Pay can only be changed every 26 weeks.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

@@ -83,6 +83,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.HoldOffsite: return HoldOffsite(c, state, lab);
                 case CommandKind.RedTeamModel: return RedTeamModel(c, state, lab, cmd);
                 case CommandKind.SetInterpretability: return SetInterpretability(c, state, lab, cmd);
+                case CommandKind.SetPayLevel: return SetPayLevel(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);

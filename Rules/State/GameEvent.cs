@@ -140,7 +140,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player paid for a red team to attack a model. LabId is the lab, SubjectId the model, Amount the cost, Ref the model name.</summary>
         RedTeamRan,
         /// <summary>An interpretability programme closed the last of a model's alignment gap. LabId is the lab, SubjectId the model, Amount the points the gap was when the programme started on it this time, Ref the model name.</summary>
-        GapFound
+        GapFound,
+        /// <summary>The player changed the pay policy. LabId is the lab, SubjectId the new level, Amount the weekly salary bill now.</summary>
+        PayChanged
     }
 
     /// <summary>

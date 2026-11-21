@@ -41,7 +41,8 @@ namespace AiLabs.Rules.Sim
         SetInsurance,
         HoldOffsite,
         RedTeamModel,
-        SetInterpretability
+        SetInterpretability,
+        SetPayLevel
     }
 
     /// <summary>
@@ -339,6 +340,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Sets the pay policy: 0 is market pay, above 0 pays better, below 0 pays worse, within the data's limits.</summary>
+        public static Command SetPayLevel(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPayLevel, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Sets the level of the interpretability programme, from 0 (off) to the data's highest.</summary>
         public static Command SetInterpretability(int labId, int level)
         {
@@ -630,7 +639,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked
     }
 
     public struct CommandResult

@@ -199,6 +199,7 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.RedTeamRan: return who + " paid $" + e.Amount + " for a red team to attack " + e.Ref + ". It came back with a list, and the model is safer for a while.";
                 case EventKind.GapFound: return who + "'s interpretability team has read all the way through " + e.Ref + ". The shown meter now matches the real one.";
+                case EventKind.PayChanged: return who + " now pays " + Pay.Describe(c, e.SubjectId) + ". The weekly salary bill is $" + e.Amount + ".";
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";
                 case EventKind.ModelRolledBack:

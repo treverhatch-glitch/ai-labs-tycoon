@@ -1472,6 +1472,13 @@ namespace AiLabs.Rules.Config
             if (s.OffsiteMoraleLift < 0 || s.OffsiteMoraleLift > MathI.Permille) p.Add("staffPeople.offsiteMoraleLift needs 0 to 1000");
             if (s.OffsiteMaxAboveResting < 0 || s.OffsiteMaxAboveResting > MathI.Permille) p.Add("staffPeople.offsiteMaxAboveResting needs 0 to 1000");
             if (s.OffsiteCultureLift < 0 || s.OffsiteCultureLift > MathI.Permille) p.Add("staffPeople.offsiteCultureLift needs 0 to 1000");
+            if (s.PayMinLevel > 0 || s.PayMinLevel < -5) p.Add("staffPeople.payMinLevel needs -5 to 0");
+            if (s.PayMaxLevel < 0 || s.PayMaxLevel > 5) p.Add("staffPeople.payMaxLevel needs 0 to 5");
+            if (s.PaySalaryStepPermille < 0 || s.PaySalaryStepPermille * (long)-s.PayMinLevel > 900) p.Add("staffPeople.paySalaryStepPermille needs 0 or more, and the lowest level must leave at least a tenth of every salary");
+            if (s.PayMoraleStep < 0 || s.PayMoraleStep > 300) p.Add("staffPeople.payMoraleStep needs 0 to 300");
+            if (s.PayPoachStepPermille < 0 || s.PayPoachStepPermille > 300) p.Add("staffPeople.payPoachStepPermille needs 0 to 300");
+            if (s.PayLockWeeks < 0 || s.PayLockWeeks > 520) p.Add("staffPeople.payLockWeeks needs 0 to 520");
+            if (s.PayCutShock < 0 || s.PayCutShock > MathI.Permille) p.Add("staffPeople.payCutShock needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");
