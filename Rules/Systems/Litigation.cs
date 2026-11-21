@@ -12,6 +12,7 @@ namespace AiLabs.Rules.Systems
         public const int Dismissal = 1;
         public const int Privacy = 2;
         public const int Charter = 3;
+        public const int Tax = 4;
 
         public const int Settled = 0;
         public const int Won = 1;

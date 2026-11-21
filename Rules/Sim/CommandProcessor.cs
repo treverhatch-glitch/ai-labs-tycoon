@@ -105,6 +105,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.BuildTaxStructure: return BuildTaxStructure(c, state, lab, cmd);
+                case CommandKind.ClaimTaxCredit: return ClaimTaxCredit(c, state, lab, cmd);
+                case CommandKind.AnswerTaxAudit: return AnswerTaxAudit(c, state, lab, cmd);
                 case CommandKind.AdoptPolicy: return AdoptPolicy(c, state, lab, cmd);
                 case CommandKind.BreakPolicy: return BreakPolicy(c, state, lab, cmd);
                 case CommandKind.ConvertCharter: return ConvertCharter(c, state, lab, cmd);

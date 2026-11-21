@@ -314,7 +314,17 @@ namespace AiLabs.Rules.State
         /// <summary>The lab is no longer held up by a tripwire. Amount is the level that held it, Pick 1 when the safeguards were put in place and 0 when the lab broke or lowered its policy or the model was gone.</summary>
         TripwireCleared,
         /// <summary>The policy level changed. Amount is the new level, Pick the old one, Ref is "raise", "lower" or "break".</summary>
-        PolicyChanged
+        PolicyChanged,
+        /// <summary>A tax structure opened. Amount is the tier.</summary>
+        TaxStructureBuilt,
+        /// <summary>The year's tax was paid. Amount is what was paid, Pick 1 when the lab kept a structure that year.</summary>
+        TaxPaid,
+        /// <summary>The research credit was claimed. Amount is the credit.</summary>
+        TaxCreditClaimed,
+        /// <summary>A tax audit opened. Amount is what it is about, Pick 1 when the lab kept an offshore structure.</summary>
+        TaxAuditOpened,
+        /// <summary>A tax audit was answered. Amount is what the lab paid, Pick 0 cooperate, 1 settle, 2 contest, 3 left unanswered.</summary>
+        TaxAuditClosed
     }
 
     /// <summary>

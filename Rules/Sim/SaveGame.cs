@@ -168,7 +168,7 @@ namespace AiLabs.Rules.Sim
                     if (lab.Cases.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has claims against it but is not the player's lab");
                     if (lab.Cases.Count > c.Litigation.MaxOpen) p.Add(who + " has more claims open than the data allows");
                     foreach (LawCase lawCase in lab.Cases)
-                        if (lawCase.Id < 1 || lawCase.Id > lab.CaseSeq || lawCase.Kind < 0 || lawCase.Kind > 3 || lawCase.Claim < 1 || lawCase.Strength < 1 || lawCase.Strength > MathI.Permille || lawCase.Stage < 0 || lawCase.Stage > 1 || lawCase.Counsel < 0 || lawCase.Counsel > 1 || lawCase.Appealed < 0 || lawCase.Appealed > 1 || lawCase.Due < 1 || (lawCase.Appealed == 1 && lawCase.Stage != 1))
+                        if (lawCase.Id < 1 || lawCase.Id > lab.CaseSeq || lawCase.Kind < 0 || lawCase.Kind > 4 || lawCase.Claim < 1 || lawCase.Strength < 1 || lawCase.Strength > MathI.Permille || lawCase.Stage < 0 || lawCase.Stage > 1 || lawCase.Counsel < 0 || lawCase.Counsel > 1 || lawCase.Appealed < 0 || lawCase.Appealed > 1 || lawCase.Due < 1 || (lawCase.Appealed == 1 && lawCase.Stage != 1))
                             p.Add(who + " has a claim (" + lawCase.Id + ") that the data does not allow");
                     if (lab.CaseSeq < 0 || lab.Cases.Count > lab.CaseSeq) p.Add(who + " has a claim count that does not add up");
                     if (lab.SecurityTier < 0 || lab.SecurityTier > c.Security.MaxTier || lab.SecurityBuilding < 0 || lab.SecurityBuilding > c.Security.MaxTier || lab.SecurityDue < 0 || (lab.SecurityBuilding > 0) != (lab.SecurityDue > 0) || (lab.SecurityBuilding > 0 && lab.SecurityBuilding != lab.SecurityTier + 1))
@@ -192,6 +192,9 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has a charter (" + lab.Charter + ", under review " + lab.CharterTo + ", week " + lab.CharterDue + ", investors paid " + lab.CapPaid + ") that the data does not allow");
                 if (lab.PolicyLevel < 0 || lab.PolicyLevel > c.Scaling.MaxLevel || lab.PolicyLockedUntil < 0 || lab.PolicyHold < 0 || lab.PolicyHold > lab.PolicyLevel || lab.PolicyBreaks < 0 || ((lab.PolicyLevel != 0 || lab.PolicyLockedUntil != 0 || lab.PolicyBreaks != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a scaling policy (level " + lab.PolicyLevel + ", hold " + lab.PolicyHold + ", locked until " + lab.PolicyLockedUntil + ") that the data does not allow");
+                if (lab.TaxStructure < 0 || lab.TaxStructure > 2 || lab.TaxBuilding < 0 || lab.TaxBuilding > 2 || (lab.TaxBuilding != 0 && lab.TaxBuilding <= lab.TaxStructure) || (lab.TaxBuilding == 0) != (lab.TaxDue == 0) || lab.TaxAccrued < 0 || lab.TaxSaved < 0 || lab.TaxResearch < 0 || lab.TaxCredit < 0 || lab.TaxClaimed < 0 || lab.TaxExposure < 0 || lab.TaxAuditDue < 0 || lab.TaxAuditOwed < 0 || (lab.TaxAuditDue == 0) != (lab.TaxAuditOwed == 0)
+                    || ((lab.TaxStructure != 0 || lab.TaxBuilding != 0 || lab.TaxAccrued != 0 || lab.TaxSaved != 0 || lab.TaxResearch != 0 || lab.TaxCredit != 0 || lab.TaxClaimed != 0 || lab.TaxExposure != 0 || lab.TaxAuditDue != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " keeps tax books (structure " + lab.TaxStructure + ", building " + lab.TaxBuilding + ", audit due " + lab.TaxAuditDue + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

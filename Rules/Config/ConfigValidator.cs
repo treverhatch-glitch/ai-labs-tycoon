@@ -119,6 +119,7 @@ namespace AiLabs.Rules.Config
             GovContractsProblems(p, c);
             CharterProblems(p, c);
             ScalingProblems(p, c);
+            TaxProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1310,6 +1311,24 @@ namespace AiLabs.Rules.Config
             if (k.ClaimStrength < 0 || k.ClaimStrength > MathI.Permille) p.Add("scaling.claimStrength must be from 0 to 1000");
             if (k.WalkBackReputation < 0 || k.WalkBackReputation > 500 || k.OverrideReputation < k.WalkBackReputation || k.OverrideReputation > 500) p.Add("scaling.overrideReputation must be at least walkBackReputation and no more than 500");
             if (k.OverrideMorale < 0 || k.OverrideMorale > MathI.Permille || k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("scaling.overrideMorale must be from 0 to 1000 and lockWeeks from 0 to 520");
+        }
+
+        static void TaxProblems(List<string> p, GameConfig c)
+        {
+            TaxConfig k = c.Tax;
+            if (k == null) { p.Add("tax is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("tax.enabled must be 0 or 1");
+            if (k.RatePermille < 0 || k.RatePermille > 900 || k.AllowancePerWeek < 0) p.Add("tax.ratePermille must be from 0 to 900 and allowancePerWeek must not be negative");
+            if (k.HoldingCost < 0 || k.OffshoreCost < k.HoldingCost || k.HoldingWeeks < 1 || k.OffshoreWeeks < k.HoldingWeeks || k.OffshoreWeeks > 520) p.Add("tax.offshoreCost and offshoreWeeks must be at least the holding company's, weeks from 1 to 520");
+            if (k.HoldingRelief < 0 || k.OffshoreRelief < k.HoldingRelief || k.OffshoreRelief > MathI.Permille) p.Add("tax.offshoreRelief must be at least holdingRelief and no more than 1000");
+            if (k.HoldingExposure < 0 || k.OffshoreExposure < k.HoldingExposure || k.OffshoreExposure > 1000 || k.FeePerTier < 0) p.Add("tax.offshoreExposure must be at least holdingExposure, no more than 1000, and feePerTier must not be negative");
+            if (k.CreditPermille < 0 || k.CreditPermille > MathI.Permille || k.ClaimExposure < 0 || k.ClaimExposure > 10000) p.Add("tax.creditPermille must be from 0 to 1000 and claimExposure from 0 to 10000");
+            if (k.AuditThreshold < 1 || k.AuditWeeks < 1 || k.AuditWeeks > 520) p.Add("tax.auditThreshold must be at least 1 and auditWeeks from 1 to 520");
+            if (k.CooperateInterest < 0 || k.CooperateInterest > 5000) p.Add("tax.cooperateInterest must be from 0 to 5000");
+            if (k.SettlePermille < 0 || k.SettlePermille > MathI.Permille) p.Add("tax.settlePermille must be from 0 to 1000");
+            if (k.ContestClaimPermille < 0 || k.ContestClaimPermille > 10000 || k.ContestStrength < 1 || k.StructureStrength < 0 || k.ContestStrength + 2 * k.StructureStrength > MathI.Permille) p.Add("tax.contestStrength plus two tiers of structureStrength must be from 1 to 1000 and contestClaimPermille from 0 to 10000");
+            if (k.LapsePermille < 0 || k.LapsePermille > 5000) p.Add("tax.lapsePermille must be from 0 to 5000");
+            if (k.ExposedReputation < 0 || k.ExposedReputation > 500) p.Add("tax.exposedReputation must be from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

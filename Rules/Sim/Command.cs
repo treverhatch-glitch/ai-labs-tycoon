@@ -106,7 +106,10 @@ namespace AiLabs.Rules.Sim
         ConvertCharter,
         CancelCharterChange,
         AdoptPolicy,
-        BreakPolicy
+        BreakPolicy,
+        BuildTaxStructure,
+        ClaimTaxCredit,
+        AnswerTaxAudit
     }
 
     /// <summary>
@@ -952,6 +955,28 @@ namespace AiLabs.Rules.Sim
         public static Command BreakPolicy(int labId)
         {
             return Make(CommandKind.BreakPolicy, labId);
+        }
+
+        /// <summary>Builds a tax structure of this tier (1 a holding company, 2 an offshore one) over some weeks for a fee, or unwinds the structure at once when the tier is 0. A structure takes a share off the tax and adds a weekly fee and an exposure that builds toward an audit.</summary>
+        public static Command BuildTaxStructure(int labId, int tier)
+        {
+            Command c = Make(CommandKind.BuildTaxStructure, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Claims the research credit: a share of the year's training spend comes off the tax bill. It adds exposure to an audit.</summary>
+        public static Command ClaimTaxCredit(int labId)
+        {
+            return Make(CommandKind.ClaimTaxCredit, labId);
+        }
+
+        /// <summary>Answers an open tax audit: 0 cooperate (pay back what was saved with interest and unwind the structure), 1 settle (pay part and keep the structure), 2 contest (the claim goes on the litigation docket).</summary>
+        public static Command AnswerTaxAudit(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerTaxAudit, labId);
+            c.Count = choice;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

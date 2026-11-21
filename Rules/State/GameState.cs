@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 84;
+        public const int CurrentSchema = 85;
 
         public int Schema;
         public string ConfigVersion;
@@ -300,6 +300,20 @@ namespace AiLabs.Rules.State
         public int PolicyLockedUntil;
         public int PolicyHold;
         public int PolicyBreaks;
+        /// <summary>The tax structure kept (0 none, 1 a holding company, 2 an offshore one), the one being built (0 when none) and the week it opens.</summary>
+        public int TaxStructure;
+        public int TaxBuilding;
+        public int TaxDue;
+        /// <summary>Tax owed so far this year, what the structure has saved and the credit claims have taken off since the last audit, the year's training spend and the credit claimed but not yet used.</summary>
+        public long TaxAccrued;
+        public long TaxSaved;
+        public long TaxResearch;
+        public long TaxCredit;
+        public long TaxClaimed;
+        /// <summary>How exposed the lab is to a tax audit, the week an open audit must be answered by (0 when none) and what it is about.</summary>
+        public int TaxExposure;
+        public int TaxAuditDue;
+        public long TaxAuditOwed;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -577,6 +591,17 @@ namespace AiLabs.Rules.State
             s.Int("policyLockedUntil", ref PolicyLockedUntil);
             s.Int("policyHold", ref PolicyHold);
             s.Int("policyBreaks", ref PolicyBreaks);
+            s.Int("taxStructure", ref TaxStructure);
+            s.Int("taxBuilding", ref TaxBuilding);
+            s.Int("taxDue", ref TaxDue);
+            s.Long("taxAccrued", ref TaxAccrued);
+            s.Long("taxSaved", ref TaxSaved);
+            s.Long("taxResearch", ref TaxResearch);
+            s.Long("taxCredit", ref TaxCredit);
+            s.Long("taxClaimed", ref TaxClaimed);
+            s.Int("taxExposure", ref TaxExposure);
+            s.Int("taxAuditDue", ref TaxAuditDue);
+            s.Long("taxAuditOwed", ref TaxAuditOwed);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

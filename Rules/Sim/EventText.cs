@@ -298,7 +298,7 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ScholarsLeft:
                     return e.Pick == 1 ? who + "'s visiting scholars left, adding " + e.Amount + " prestige." : who + " sent its visiting scholars home early.";
                 case EventKind.CaseFiled:
-                    return "A claim for " + e.Amount + " was filed against " + who + ": " + (e.Pick == 0 ? "an incident" : e.Pick == 1 ? "a layoff round" : e.Pick == 2 ? "a breach of security" : "its change of charter") + ".";
+                    return "A claim for " + e.Amount + " was filed against " + who + ": " + (e.Pick == 0 ? "an incident" : e.Pick == 1 ? "a layoff round" : e.Pick == 2 ? "a breach of security" : e.Pick == 3 ? "its change of charter" : "a tax assessment") + ".";
                 case EventKind.CaseJudged:
                     return who + " lost a hearing and owes " + e.Amount + (e.Pick == 1 ? " after its appeal." : ", unless it appeals.");
                 case EventKind.CaseClosed:
@@ -333,6 +333,16 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " put the safeguards for its level " + e.Amount + " tripwire in place." : who + " is no longer held back by its level " + e.Amount + " tripwire.";
                 case EventKind.PolicyChanged:
                     return e.Ref == "break" ? who + " broke its scaling policy." : who + " " + (e.Ref == "raise" ? "raised" : "lowered") + " its scaling policy to level " + e.Amount + ".";
+                case EventKind.TaxStructureBuilt:
+                    return who + " opened " + (e.Amount == 2 ? "an offshore structure" : "a holding company") + " for its tax.";
+                case EventKind.TaxPaid:
+                    return who + " paid " + e.Amount + " in tax for the year.";
+                case EventKind.TaxCreditClaimed:
+                    return who + " claimed a research credit of " + e.Amount + ".";
+                case EventKind.TaxAuditOpened:
+                    return "The tax office opened an audit of " + who + " over " + e.Amount + ".";
+                case EventKind.TaxAuditClosed:
+                    return e.Pick == 0 ? who + " paid back " + e.Amount + " to the tax office." : e.Pick == 1 ? who + " settled a tax audit for " + e.Amount + "." : e.Pick == 2 ? who + " took a tax audit to court." : who + " let a tax audit lapse and paid " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
