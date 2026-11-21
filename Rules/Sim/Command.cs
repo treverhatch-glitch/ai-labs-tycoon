@@ -40,7 +40,8 @@ namespace AiLabs.Rules.Sim
         SetCrunch,
         SetInsurance,
         HoldOffsite,
-        RedTeamModel
+        RedTeamModel,
+        SetInterpretability
     }
 
     /// <summary>
@@ -334,6 +335,14 @@ namespace AiLabs.Rules.Sim
         public static Command SetInsurance(int labId, int level)
         {
             Command c = Make(CommandKind.SetInsurance, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the interpretability programme, from 0 (off) to the data's highest.</summary>
+        public static Command SetInterpretability(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetInterpretability, labId);
             c.Count = level;
             return c;
         }

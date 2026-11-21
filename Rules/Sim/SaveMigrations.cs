@@ -58,6 +58,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 43) MigrateTo43(root);
             if (fromSchema < 44) MigrateTo44(root);
             if (fromSchema < 45) MigrateTo45(root);
+            if (fromSchema < 46) MigrateTo46(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -407,6 +408,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 46: no lab ran an interpretability programme.</summary>
+        static void MigrateTo46(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "interpLevel", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 45: no model was ever red-teamed.</summary>

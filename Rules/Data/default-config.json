@@ -5478,6 +5478,17 @@
     "alignmentGain": 30,
     "culturePoints": 5
   },
+  "interp": {
+    "levelTechs": [
+      "interp-v1",
+      "interp-v1",
+      "interp-v2"
+    ],
+    "weeklyCostPerLevel": 5000,
+    "gapClosePermillePerLevel": 100,
+    "researchCostPermillePerLevel": 60,
+    "staleReliefPermillePerLevel": 150
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

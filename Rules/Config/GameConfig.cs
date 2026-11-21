@@ -70,6 +70,7 @@ namespace AiLabs.Rules.Config
         public LeadsConfig Leads = new LeadsConfig();
         public RepairConfig Repair = new RepairConfig();
         public RedTeamConfig RedTeam = new RedTeamConfig();
+        public InterpConfig Interp = new InterpConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
@@ -133,6 +134,7 @@ namespace AiLabs.Rules.Config
             s.Obj("leads", ref Leads);
             s.Obj("repair", ref Repair);
             s.Obj("redTeam", ref RedTeam);
+            s.Obj("interp", ref Interp);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);

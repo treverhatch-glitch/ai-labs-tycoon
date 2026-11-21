@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Config
             LeadsProblems(p, c);
             RepairProblems(p, c);
             RedTeamProblems(p, c);
+            InterpProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -798,6 +799,18 @@ namespace AiLabs.Rules.Config
             if (r.GapClosePermille < 0 || r.GapClosePermille > MathI.Permille) p.Add("redTeam.gapClosePermille must be from 0 to 1000");
             if (r.AlignmentGain < 0 || r.AlignmentGain > MathI.Permille) p.Add("redTeam.alignmentGain must be from 0 to 1000");
             if (r.CulturePoints < 0 || r.CulturePoints > 100) p.Add("redTeam.culturePoints must be from 0 to 100");
+        }
+
+        static void InterpProblems(List<string> p, GameConfig c)
+        {
+            InterpConfig i = c.Interp;
+            if (i == null) { p.Add("interp is missing"); return; }
+            if (i.MaxLevel > 10) p.Add("interp.levelTechs has more than 10 levels");
+            foreach (string tech in i.LevelTechs) if (c.Tech(tech) == null) p.Add("interp.levelTechs names the unknown tech \"" + tech + "\"");
+            if (i.WeeklyCostPerLevel < 0) p.Add("interp.weeklyCostPerLevel is negative");
+            if (i.GapClosePermillePerLevel < 0 || i.GapClosePermillePerLevel > MathI.Permille) p.Add("interp.gapClosePermillePerLevel must be from 0 to 1000");
+            if (i.ResearchCostPermillePerLevel < 0 || i.ResearchCostPermillePerLevel * (long)i.MaxLevel > 900) p.Add("interp.researchCostPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the research");
+            if (i.StaleReliefPermillePerLevel < 0 || i.StaleReliefPermillePerLevel * (long)i.MaxLevel > MathI.Permille) p.Add("interp.staleReliefPermillePerLevel must be 0 or more, and every level together can take away at most all of the loss");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

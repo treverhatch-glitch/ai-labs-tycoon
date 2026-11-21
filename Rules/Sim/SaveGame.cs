@@ -90,6 +90,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.ResearchSharePermille < 0 || lab.ResearchSharePermille > c.Research.MaxComputeSharePermille) p.Add(who + " has " + lab.ResearchSharePermille + " permille of compute set aside for research");
                 if (lab.InsuranceLevel < 0 || lab.InsuranceLevel > c.Finance.InsuranceMaxLevel || lab.InsuranceClaims < 0 || lab.InsuranceLockedUntil < 0)
                     p.Add(who + " has incident insurance at level " + lab.InsuranceLevel + " with " + lab.InsuranceClaims + " claims");
+                if (lab.InterpLevel < 0 || lab.InterpLevel > c.Interp.MaxLevel) p.Add(who + " runs an interpretability programme at level " + lab.InterpLevel);
                 if (lab.CrunchWeeks < 0 || lab.CrunchWeeks > c.StaffPeople.CrunchMaxWeeks) p.Add(who + " has been in crunch time for " + lab.CrunchWeeks + " weeks");
                 foreach (Loan loan in lab.Loans)
                     if (loan.Balance <= 0 || loan.Payment <= 0 || loan.Misses < 0) p.Add(who + " has a loan (" + loan.Id + ") with nothing owed, no payment or a negative miss count");

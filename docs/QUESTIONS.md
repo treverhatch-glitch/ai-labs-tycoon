@@ -1481,6 +1481,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to f76df7ee because of the model field and the schema number only; reverting them brought the previous digest (e1ea850c) back.
 - Alternatives: a flat cut that never ends (rejected: it would be permanent insurance); a bill by capability (rejected: revenue already scales with how much the model is worth); closing the whole gap (rejected: half keeps the choice of a second round after the weeks).
 
+### Q302. Can the player run a standing interpretability programme? DECIDED: yes, three levels on the two interpretability techs, a weekly bill and some research for a closing gap and fresher safety techs
+- Bible ch. 10: "interpretability: research into what the model is actually doing inside". `SetInterpretability(level)`, new `interp` data section, `Interpretability` system, event `GapFound`.
+- A level needs its tech: levels 1 and 2 need Interpretability v1, level 3 needs v2 (`interp.levelTechs`, one id per level; the list's length is the top level, and an empty list turns the programme off). Refused for a rival, a level outside 0 to the top, the same level, and a missing tech (`MissingPrerequisite`). Turning it off is free and can be done any week.
+- While it runs, each level costs $5,000 a week on the training line (paid even into debt, like any bill), takes 6% off the lab's research output (so all three take 18%), and each week closes 10% of the gap between the shown and real alignment of every model on sale (at least one point while a gap remains, so it always ends). When the last point goes, `GapFound` is logged once. Models not on sale are left alone.
+- It also takes 15% per level off what stale safety techs have lost (`ControlStale`), so level 3 halves most of the loss.
+- The honest meter can put a model under the lab's own release gate, and once the gap is under the sandbag bar an incident is no longer the sandbagging rung. A red team closes half the gap at once and the programme finishes the rest.
+- New state on the lab (schema 46, `MigrateTo46`): `interpLevel`. Player only and opt-in; rivals and the autopilot never run one, so defaults change nothing.
+- The golden digest moved to 8bce7642 because of the lab field and the schema number only; reverting them brought the previous digest (f76df7ee) back.
+- Alternatives: a one-off purchase (rejected: it is a team, and teams cost money every week); closing the gap faster than a few weeks (rejected: it would make sandbagging free); a research bonus for the programme (rejected: it should cost research, as the bible's safety trade says).
+
 ## Open
 
 None.

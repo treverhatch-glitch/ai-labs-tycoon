@@ -138,7 +138,9 @@ namespace AiLabs.Rules.State
         /// <summary>The team went on an offsite. Subject is how many people it lifted, Amount what it cost.</summary>
         OffsiteHeld,
         /// <summary>The player paid for a red team to attack a model. LabId is the lab, SubjectId the model, Amount the cost, Ref the model name.</summary>
-        RedTeamRan
+        RedTeamRan,
+        /// <summary>An interpretability programme closed the last of a model's alignment gap. LabId is the lab, SubjectId the model, Amount the points the gap was when the programme started on it this time, Ref the model name.</summary>
+        GapFound
     }
 
     /// <summary>

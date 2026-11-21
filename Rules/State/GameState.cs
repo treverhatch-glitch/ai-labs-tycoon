@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 45;
+        public const int CurrentSchema = 46;
 
         public int Schema;
         public string ConfigVersion;
@@ -148,6 +148,8 @@ namespace AiLabs.Rules.State
         public int InsuranceClaims;
         /// <summary>The policy cannot be changed before this tick.</summary>
         public int InsuranceLockedUntil;
+        /// <summary>The level of the interpretability programme the lab runs, 0 for none. Only the player's lab runs one.</summary>
+        public int InterpLevel;
         /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
         public int FounderSharePermille;
         /// <summary>Investor seats on the board after venture rounds.</summary>
@@ -306,6 +308,7 @@ namespace AiLabs.Rules.State
             s.Int("insuranceLevel", ref InsuranceLevel);
             s.Int("insuranceClaims", ref InsuranceClaims);
             s.Int("insuranceLockedUntil", ref InsuranceLockedUntil);
+            s.Int("interpLevel", ref InterpLevel);
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.Int("publicFloatPpm", ref PublicFloatPpm);

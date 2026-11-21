@@ -62,7 +62,7 @@ namespace AiLabs.Rules.Systems
                 return r;
             }
             r.StaleEras = (int)MathI.Max(0, r.EraIndex - r.NewestSafetyEraIndex);
-            r.LossPermille = LossFor(c, r.StaleEras);
+            r.LossPermille = (int)MathI.MulPermille(LossFor(c, r.StaleEras), MathI.Permille - Interpretability.StaleReliefPermille(c, lab));
             r.BonusPermille = (int)MathI.MulPermille(r.FreshBonusPermille, MathI.Permille - r.LossPermille);
             return r;
         }

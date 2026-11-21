@@ -241,6 +241,7 @@ and says why in the commit message.
 58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 44, `MigrateTo44`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
 59. **The offsite (staff).** ~~Done~~: `HoldOffsite`, `Offsite`, `staffPeople.offsite*`, `OffsiteHeld`, `OffsiteTests`, `docs/content/offsite.md` (Q300).
 60. **Red team a model (safety).** ~~Done~~: `RedTeamModel`, `RedTeam`, `redTeam` data, model `redTeamUntil` (schema 45, `MigrateTo45`), `FromRedTeam` in the incident breakdown, `RedTeamTests`, `docs/content/red-team.md` (Q301).
+61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 46, `MigrateTo46`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
 
 ## Rules: later
 
