@@ -68,7 +68,7 @@ public class ExpansionTrainingHardeningTests
         ModelState model = g.Train("mini", 200);
         g.UntilTrained(model);
         Assert.Equal(0, model.CapExpansion);
-        Assert.Equal(0, ExpansionSystem.CapabilityBonusPermille(g.C, g.State, g.Me));
+        Assert.Equal(0, ExpansionSystem.CapabilityBonusPermille(g.C, g.State, g.Me, "mini"));
     }
 
     [Fact]

@@ -218,6 +218,7 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Frontier.BaseCost < 1) p.Add("endings.frontier.baseCost must be at least 1");
             if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
             if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
+            Permille(p, "endings.museum.researchPermillePerCapability", c.Endings.Museum.ResearchPermillePerCapability);
         }
 
         static void ExpansionsProblems(List<string> p, GameConfig c)
@@ -522,6 +523,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "vendor.keynoteSupplyPermille", v.KeynoteSupplyPermille);
             if (v.AmbushLookbackWeeks < 0 || v.AmbushWeeks < 0) p.Add("vendor has a negative ambush time");
             Permille(p, "vendor.courtingSharePermille", v.CourtingSharePermille);
+            Permille(p, "vendor.courtingMakerAttentionPermille", v.CourtingMakerAttentionPermille);
             Permille(p, "vendor.shareLogPermille", v.ShareLogPermille);
             if (v.LogMax < 1) p.Add("vendor.logMax must be at least 1");
             if (v.LowStandingMarkupPermille < 0 || v.OwnChipsMarkupPermille < 0 || v.HighStandingDiscountPermille < 0 || v.HighStandingDiscountPermille >= MathI.Permille)

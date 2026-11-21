@@ -178,7 +178,7 @@ public class EndingsTests
             g.Do(Command.StartTraining(g.Id, line, 100));
             g.Me.Models.Last(m => m.LineId == line).Status = ModelStatus.Retired;
         }
-        MuseumSystem.RunWeek(g.C, g.Me);
+        MuseumSystem.RunWeek(g.C, g.State, g.Me);
         Assert.Equal(6, g.Me.Models.Count(m => m.LineId == line && m.Status == ModelStatus.Retired));
     }
 

@@ -157,7 +157,7 @@ public class EndingsContinuationTests
             var m = new ModelState { LineId = line, Version = v + 2, Status = ModelStatus.Retired, Name = "Old " + v };
             g.Me.Models.Add(m);
         }
-        MuseumSystem.RunWeek(g.C, g.Me);
+        MuseumSystem.RunWeek(g.C, g.State, g.Me);
         Assert.Contains(g.Me.Models, m => m.Status == ModelStatus.Released);
         Assert.Equal(6, g.Me.Models.Count(m => m.LineId == line && m.Status == ModelStatus.Retired));
     }

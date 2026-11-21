@@ -39,12 +39,12 @@ namespace AiLabs.Rules.Systems
             return MathI.MulPermille(appeal, MathI.Permille + bonusPermille);
         }
 
-        public static int CapabilityBonusPermille(GameConfig c, GameState state, LabState lab)
+        public static int CapabilityBonusPermille(GameConfig c, GameState state, LabState lab, string lineId)
         {
             if (c.Expansions == null) return 0;
-            int bonus = KitCapability(c, state, lab, c.Expansions.Bodies);
+            int bonus = KitCapability(c, state, lab, lineId, c.Expansions.Bodies);
             if (bonus > 0) return bonus;
-            return KitCapability(c, state, lab, c.Expansions.Upward);
+            return KitCapability(c, state, lab, lineId, c.Expansions.Upward);
         }
 
         public static int TrainingSpeedBonusPermille(GameConfig c, GameState state, LabState lab)
@@ -55,12 +55,28 @@ namespace AiLabs.Rules.Systems
             return KitSpeed(c, state, lab, c.Expansions.Bodies);
         }
 
-        static int KitCapability(GameConfig c, GameState state, LabState lab, ExpansionEraKitConfig kit)
+        static int KitCapability(GameConfig c, GameState state, LabState lab, string lineId, ExpansionEraKitConfig kit)
         {
             if (kit == null || kit.CapabilityBonusPermille <= 0) return 0;
             if (!EraSystem.Open(c, kit.EraId, state.Tick)) return 0;
             if (!HasRoom(lab, kit.RoomTypeId)) return 0;
+            if (!LineMatchesKitCapability(c, lineId, kit)) return 0;
             return kit.CapabilityBonusPermille;
+        }
+
+        /// <summary>General lines always match; specialist lines need a specialist sector on the kit list.</summary>
+        static bool LineMatchesKitCapability(GameConfig c, string lineId, ExpansionEraKitConfig kit)
+        {
+            ModelLineConfig line = c.Line(lineId);
+            if (line == null) return false;
+            if (line.SpecialistSectorIds.Count == 0) return true;
+            for (int i = 0; i < line.SpecialistSectorIds.Count; i++)
+            {
+                string sector = line.SpecialistSectorIds[i];
+                for (int k = 0; k < kit.SectorIds.Count; k++)
+                    if (kit.SectorIds[k] == sector) return true;
+            }
+            return false;
         }
 
         static int KitSpeed(GameConfig c, GameState state, LabState lab, ExpansionEraKitConfig kit)
@@ -71,10 +87,23 @@ namespace AiLabs.Rules.Systems
             return kit.TrainingSpeedBonusPermille;
         }
 
-        /// <summary>Orbital uplink tiles contribute passive general compute before fleet batches are counted.</summary>
+        /// <summary>Expansion rooms that define passive compute contribute general power before fleet batches are counted.</summary>
+        public static long PassiveExpansionGeneralCompute(GameConfig c, GameState state, LabState lab)
+        {
+            if (c.Expansions == null) return 0;
+            long total = PassiveKitGeneralCompute(c, state, lab, c.Expansions.Bodies);
+            total += PassiveKitGeneralCompute(c, state, lab, c.Expansions.Upward);
+            return total;
+        }
+
+        /// <summary>Orbital uplink tiles only (tests and breakdowns that isolate upward).</summary>
         public static long PassiveOrbitalGeneralCompute(GameConfig c, GameState state, LabState lab)
         {
-            ExpansionEraKitConfig kit = c.Expansions == null ? null : c.Expansions.Upward;
+            return c.Expansions == null ? 0 : PassiveKitGeneralCompute(c, state, lab, c.Expansions.Upward);
+        }
+
+        static long PassiveKitGeneralCompute(GameConfig c, GameState state, LabState lab, ExpansionEraKitConfig kit)
+        {
             if (kit == null || kit.PassiveComputePermillePerTile <= 0) return 0;
             if (!EraSystem.Open(c, kit.EraId, state.Tick)) return 0;
             int tiles = 0;

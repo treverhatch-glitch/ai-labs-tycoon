@@ -133,7 +133,7 @@ namespace AiLabs.Rules.Systems
             if (source != null && source.CapabilityBonusPermille != 0)
                 model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + source.CapabilityBonusPermille);
 
-            int expansionCap = ExpansionSystem.CapabilityBonusPermille(c, state, lab);
+            int expansionCap = ExpansionSystem.CapabilityBonusPermille(c, state, lab, model.LineId);
             if (expansionCap > 0)
             {
                 int before = model.Capability;

@@ -164,6 +164,8 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab with this share of its general compute on its own chips makes the vendor court its rivals.</summary>
         public int CourtingSharePermille;
         public int CourtingStandingBoost;
+        /// <summary>Home-bloc attention the dominant chip maker draws when Envydia courts rivals.</summary>
+        public int CourtingMakerAttentionPermille;
         /// <summary>A lab's share of the supply moving by this much (as a share of itself) month to month gets a line in the vendor's log.</summary>
         public int ShareLogPermille;
         public int LogMax;
@@ -190,6 +192,7 @@ namespace AiLabs.Rules.Config
             s.Int("ambushWeeks", ref AmbushWeeks);
             s.Int("courtingSharePermille", ref CourtingSharePermille);
             s.Int("courtingStandingBoost", ref CourtingStandingBoost);
+            s.Int("courtingMakerAttentionPermille", ref CourtingMakerAttentionPermille);
             s.Int("shareLogPermille", ref ShareLogPermille);
             s.Int("logMax", ref LogMax);
         }

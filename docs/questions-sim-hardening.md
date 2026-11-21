@@ -131,3 +131,51 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) image specialist on `multimodal`; (b) unlock with `conv-nets`, home sectors `image-recognition` + `image-design`; (c) wait for era-content art.
 - Choice: **(b)** — parallel to code-specialist pattern; locked line + sector bonus permille.
 - Why: completes NEXT “specialist lines” slice without rival training planner changes (`LabPlanner` still skips specialist lines).
+
+### Q23. Grey compute payout timing? DECIDED: weekly while op active
+
+- Options: (a) lump sum on resolve; (b) weekly `GreyPayout` each op week; (c) defer payout to stash only.
+- Choice: **(b)** — `ShadySystem` pays each week; resolve clears op without lump grant.
+- Why: makes long grey runs costly/opaque; crosses finance ledger.
+
+### Q24. Keynote ambush vs chip listing? DECIDED: block priced listing only
+
+- Options: (a) freeze all chip commands; (b) refuse `SetChipListing` with price while ambush active; (c) block delist too.
+- Choice: **(b)** — `CommandError.KeynoteAmbush` on new price/limit; delist with count 0 still allowed.
+- Why: rivals can exit a bad list; matches vendor narrative.
+
+### Q25. Orbital uplink passive compute? DECIDED: permille per tile in split
+
+- Options: (a) training-speed only; (b) `passiveComputePermillePerTile` adds to `LabQueries.Split` general; (c) new holding type.
+- Choice: **(b)** — config 60‰ per tile after Upward era; `PassiveOrbitalGeneralCompute`.
+- Why: gives expansion rooms rackless compute; crosses fleet split.
+
+### Q26. Museum beyond retire cap? DECIDED: salvage research on prune
+
+- Options: (a) delete silently; (b) grant `researchPermillePerCapability` on pruned retirees; (c) reputation only.
+- Choice: **(b)** — `MuseumSystem.RunWeek` grants research + `TechResearched` ref `museum-salvage`; crosses frontier spend.
+- Why: endless play loop; no schema bump (config only).
+
+### Q27. Envydia courting antitrust attention? DECIDED: home bloc attention on maker
+
+- Options: (a) rival attention only; (b) `courtingMakerAttentionPermille` on chip-dominant lab home bloc; (c) global world event.
+- Choice: **(b)** — with existing `CourtRivals` standing boost; `AttentionRose` event; crosses `GovernmentSystem.CloseMonth`.
+- Why: dominant silicon draws scrutiny at home; config-only.
+
+### Q28. Robotics arena passive compute? DECIDED: mirror orbital on bodies kit
+
+- Options: (a) capability only; (b) `passiveComputePermillePerTile` on bodies kit; (c) same as uplink shared helper.
+- Choice: **(b)** — 45‰ default; `PassiveExpansionGeneralCompute` sums bodies + upward.
+- Why: symmetric expansion payoff; crosses training split.
+
+### Q29. Bodies capability on specialist lines? DECIDED: sector overlap gate
+
+- Options: (a) all lines get bodies bonus; (b) specialists need specialist sector ∈ kit sectors; (c) disable for all specialists.
+- Choice: **(b)** — general lines unchanged; `code-specialist` / `image-specialist` off unless overlap (config or tweak).
+- Why: robotics arena boosts robot sectors, not every specialist by default.
+
+### Q30. Keynote ambush vs chip orders? DECIDED: block `OrderChips` during ambush
+
+- Options: (a) orders like rentals (exempt); (b) same gate as listing; (c) only block first order after keynote.
+- Choice: **(b)** — `KeynoteAmbush` on `OrderChips`; tape-out / fabrication continue.
+- Why: launch window pressure on go-to-market; crosses vendor + foundry flow.

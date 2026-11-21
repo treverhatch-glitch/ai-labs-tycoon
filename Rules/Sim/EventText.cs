@@ -31,6 +31,7 @@ namespace AiLabs.Rules.Sim
                 case EventKind.GpusSold: return who + " sold " + e.Amount + " GPUs.";
                 case EventKind.TechResearched:
                     if (e.Ref == "frontier") return who + " pushed the research frontier.";
+                    if (e.Ref == "museum-salvage") return who + " recovered " + e.Amount + " research points from the museum.";
                     TechConfig tech = c.Tech(e.Ref);
                     return who + " researched " + (tech == null ? e.Ref : tech.Name) + ".";
                 case EventKind.TrainingStarted: return who + " started training " + e.Ref + ".";

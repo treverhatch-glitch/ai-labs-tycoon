@@ -88,10 +88,13 @@ namespace AiLabs.Rules.Config
     public sealed class MuseumConfig : ISync
     {
         public int PerLine;
+        /// <summary>Research points granted per point of stored capability when a retired model is pruned (permille).</summary>
+        public int ResearchPermillePerCapability;
 
         public void Sync(Syncer s)
         {
             s.Int("perLine", ref PerLine);
+            s.Int("researchPermillePerCapability", ref ResearchPermillePerCapability);
         }
     }
 }

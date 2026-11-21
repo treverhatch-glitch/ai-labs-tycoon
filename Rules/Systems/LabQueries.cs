@@ -207,7 +207,7 @@ namespace AiLabs.Rules.Systems
                     split.Inference += part;
                 }
             }
-            split.General += ExpansionSystem.PassiveOrbitalGeneralCompute(c, state, lab);
+            split.General += ExpansionSystem.PassiveExpansionGeneralCompute(c, state, lab);
             return split;
         }
 
