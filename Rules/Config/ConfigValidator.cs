@@ -1496,6 +1496,7 @@ namespace AiLabs.Rules.Config
             if (k.StartIntegrity < 0 || k.StartIntegrity > MathI.Permille || k.FlipIntegrity < 0 || k.FlipIntegrity > MathI.Permille || k.OwnUpRestore < 0 || k.OwnUpRestore > MathI.Permille || k.FlipLockWeeks < 0) p.Add("creed.startIntegrity, flipIntegrity and ownUpRestore must be from 0 to 1000 and flipLockWeeks not negative");
             if (k.LowBar < 0 || k.HighBar > MathI.Permille || k.LowBar + k.Gap >= k.HighBar - k.Gap || k.Gap < 0) p.Add("creed.lowBar must be under highBar by more than twice gap, and highBar at most 1000");
             if (k.HighReputation < 0 || k.LowReputation < 0 || k.OwnUpReputation < 0 || k.HighReputation > 500 || k.LowReputation > 500 || k.OwnUpReputation > 500 || k.HighMorale < 0 || k.LowMorale < 0 || k.HighMorale > MathI.Permille || k.LowMorale > MathI.Permille) p.Add("creed.highReputation, lowReputation and ownUpReputation must be from 0 to 500 and highMorale and lowMorale from 0 to 1000");
+            if (k.ShieldPermille < 0 || k.ShieldPermille > MathI.Permille || k.ExposePermille < MathI.Permille || k.ExposePermille > 5000) p.Add("creed.shieldPermille must be from 0 to 1000 and exposePermille from 1000 to 5000");
             if (k.TownCost < 0 || k.TownGain < 0 || k.TownGain > MathI.Permille || k.TownCooldown < 0) p.Add("creed.townCost, townGain and townCooldown must not be negative and townGain at most 1000");
         }
 

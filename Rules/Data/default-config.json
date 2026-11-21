@@ -6136,7 +6136,9 @@
     "townGain": 80,
     "townCooldown": 12,
     "ownUpReputation": 30,
-    "ownUpRestore": 500
+    "ownUpRestore": 500,
+    "shieldPermille": 700,
+    "exposePermille": 1400
   },
   "shocks": {
     "enabled": 1,
@@ -10504,6 +10506,138 @@
         "kind": "NoteExtended",
         "pick": -1,
         "text": "{lab} gets its convertible note extended. The holders ask for a little more interest"
+      },
+      {
+        "id": "device-designed",
+        "kind": "DeviceDesigned",
+        "pick": -1,
+        "text": "{lab} starts designing a gadget. The prototype is a cardboard box with a speaker taped to it"
+      },
+      {
+        "id": "device-hit",
+        "kind": "DeviceLaunched",
+        "pick": 1,
+        "text": "{lab} launches a gadget and the crowd applauds. Pre-orders are described as 'brisk'"
+      },
+      {
+        "id": "device-flop",
+        "kind": "DeviceLaunched",
+        "pick": 0,
+        "text": "{lab} launches a gadget on stage and it does not work. The demo is described as 'bold'"
+      },
+      {
+        "id": "device-recalled",
+        "kind": "DeviceRecalled",
+        "pick": -1,
+        "text": "{lab} recalls its gadget at a cost of {amount}. The boxes are on their way back"
+      },
+      {
+        "id": "device-withdrawn",
+        "kind": "DeviceWithdrawn",
+        "pick": -1,
+        "text": "{lab} ends its gadget line after {amount} units. The warehouse is quiet"
+      },
+      {
+        "id": "platform-signed",
+        "kind": "PlatformSigned",
+        "pick": -1,
+        "text": "{lab} signs a distribution deal and will be on a platform's home screen. The platform keeps a cut"
+      },
+      {
+        "id": "platform-holdup",
+        "kind": "PlatformHoldup",
+        "pick": -1,
+        "text": "The platform raises its cut on {lab} to {amount} permille as the deal comes up. It knows who needs whom"
+      },
+      {
+        "id": "platform-renewed",
+        "kind": "PlatformRenewed",
+        "pick": -1,
+        "text": "{lab} renews its distribution deal at a {amount} permille cut. The press release calls it 'deepening'"
+      },
+      {
+        "id": "platform-walked",
+        "kind": "PlatformEnded",
+        "pick": 0,
+        "text": "{lab} walks away from its distribution deal. The platform wishes it well and removes the icon"
+      },
+      {
+        "id": "platform-ran-out",
+        "kind": "PlatformEnded",
+        "pick": 1,
+        "text": "{lab}'s distribution deal runs out. Some of its users go with it"
+      },
+      {
+        "id": "creed-set",
+        "kind": "CreedSet",
+        "pick": -1,
+        "text": "{lab} puts its values in writing. The poster is laminated"
+      },
+      {
+        "id": "town-hall",
+        "kind": "TownHallHeld",
+        "pick": -1,
+        "text": "{lab} holds a town hall on its values. Someone asks a question and the answer is long"
+      },
+      {
+        "id": "creed-owned-up",
+        "kind": "CreedOwnedUp",
+        "pick": -1,
+        "text": "{lab} tells its staff it has not lived up to its values. The room is quiet and then, slowly, relieved"
+      },
+      {
+        "id": "creed-hollow",
+        "kind": "CreedHollow",
+        "pick": -1,
+        "text": "{lab}'s staff now laugh at its values. The poster has been defaced"
+      },
+      {
+        "id": "creed-proud",
+        "kind": "CreedProud",
+        "pick": -1,
+        "text": "{lab} is held up as a lab that lives its values. Other labs ask how"
+      },
+      {
+        "id": "shock-braced",
+        "kind": "ShockAnswered",
+        "pick": 1,
+        "text": "{lab} braces for the news and pays for the privilege. Finance would like it noted"
+      },
+      {
+        "id": "shock-answered",
+        "kind": "ShockAnswered",
+        "pick": -1,
+        "text": "{lab} meets the news in its own way. History will say whether it was the right one"
+      },
+      {
+        "id": "code-released",
+        "kind": "CodeReleased",
+        "pick": -1,
+        "text": "{lab} puts a paper's code and data out for anyone to run. The repository is, for once, tidy"
+      },
+      {
+        "id": "code-withheld",
+        "kind": "CodeWithheld",
+        "pick": 0,
+        "text": "{lab} keeps a paper's code and data back. The community writes a politely worded thread"
+      },
+      {
+        "id": "code-withheld-late",
+        "kind": "CodeWithheld",
+        "pick": 1,
+        "text": "{lab} dithers until the code for a paper is as good as kept back. The window closes"
+      },
+      {
+        "id": "paper-replicated",
+        "kind": "PaperReplicated",
+        "pick": 1,
+        "text": "Another lab reproduces {lab}'s paper. The preprint gets a note: 'it works'"
+      },
+      {
+        "id": "paper-not-replicated",
+        "kind": "PaperReplicated",
+        "pick": 0,
+        "text": "Another lab cannot reproduce {lab}'s paper. The thread has a lot of replies"
       }
     ],
     "filler": [
@@ -13599,6 +13733,204 @@
         "pick": -1,
         "about": "lab",
         "text": "The note was extended. The holders smiled in a way I did not like.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "device-designed-chat",
+        "kind": "DeviceDesigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are building a gadget. It already has a name and no working parts.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "device-launched-chat",
+        "kind": "DeviceLaunched",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The gadget launched. Whether it was a good launch depends on who you ask and when.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "device-recalled-chat",
+        "kind": "DeviceRecalled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The gadget is being recalled. There is a van and a lot of boxes.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "device-withdrawn-chat",
+        "kind": "DeviceWithdrawn",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We stopped making the gadget. The prototype shelf is the fullest it has been.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "platform-signed-chat",
+        "kind": "PlatformSigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are on their home screen now. They would like a word about the cut.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "platform-holdup-chat",
+        "kind": "PlatformHoldup",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The platform wants more. They know how many of our users come through them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "platform-renewed-chat",
+        "kind": "PlatformRenewed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We renewed with the platform. Nobody enjoyed it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "platform-ended-chat",
+        "kind": "PlatformEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The platform deal is over. Our usage graph has noticed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "creed-set-chat",
+        "kind": "CreedSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The values are on the wall. Let us see who reads them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "town-hall-chat",
+        "kind": "TownHallHeld",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The town hall ran long. Several people said the right words.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "creed-owned-up-chat",
+        "kind": "CreedOwnedUp",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We admitted we missed our own values. It was awkward and it helped.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "creed-hollow-chat",
+        "kind": "CreedHollow",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "People are reading the values out loud in funny voices.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "creed-proud-chat",
+        "kind": "CreedProud",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Visitors keep asking about our values. We used to dread that.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "shock-struck-chat",
+        "kind": "ShockStruck",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The news just landed and everyone is looking at the founders.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "shock-answered-chat",
+        "kind": "ShockAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We made our call on the news. Now we wait and see.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "code-released-chat",
+        "kind": "CodeReleased",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The code is out. Someone has already filed an issue.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "code-withheld-chat",
+        "kind": "CodeWithheld",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We kept the code back. The comments section has opinions.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-replicated-chat",
+        "kind": "PaperReplicated",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone tried to run our paper. We held our breath.",
         "fromYear": 0,
         "toYear": 0
       }

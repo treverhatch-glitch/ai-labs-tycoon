@@ -25,27 +25,34 @@ namespace AiLabs.Rules.Systems
             {
                 case Safety:
                     if (kind == EventKind.RedTeamRan || kind == EventKind.PostMortemPublished || kind == EventKind.BountySet || kind == EventKind.AuditDone) return 1;
-                    if (kind == EventKind.ModelRushed || kind == EventKind.WhistleLeaked) return -1;
+                    if (kind == EventKind.ModelRushed || kind == EventKind.WhistleLeaked || kind == EventKind.DeviceRecalled) return -1;
                     return 0;
                 case Speed:
-                    if (kind == EventKind.ModelRushed || kind == EventKind.HackWeek || kind == EventKind.SkunkworksStarted || kind == EventKind.FastBuild) return 1;
+                    if (kind == EventKind.ModelRushed || kind == EventKind.HackWeek || kind == EventKind.SkunkworksStarted || kind == EventKind.FastBuild || kind == EventKind.DeviceDesigned) return 1;
                     if (kind == EventKind.RedTeamRan || kind == EventKind.PostMortemPublished) return -1;
                     return 0;
                 case Openness:
-                    if (kind == EventKind.PaperPublished || kind == EventKind.PostMortemPublished || kind == EventKind.ScholarsArrived) return 1;
-                    if (kind == EventKind.ContractAccepted || kind == EventKind.ModelSold) return -1;
+                    if (kind == EventKind.PaperPublished || kind == EventKind.PostMortemPublished || kind == EventKind.ScholarsArrived || kind == EventKind.CodeReleased) return 1;
+                    if (kind == EventKind.ContractAccepted || kind == EventKind.ModelSold || kind == EventKind.CodeWithheld) return -1;
                     return 0;
                 case People:
                     if (kind == EventKind.StaffPromoted || kind == EventKind.SabbaticalStarted || kind == EventKind.MentoringStarted || kind == EventKind.InternshipStarted || kind == EventKind.EquityGranted || kind == EventKind.LabourRecognised) return 1;
                     if (kind == EventKind.LayoffRound || kind == EventKind.LabourResisted) return -1;
                     return 0;
                 case Profit:
-                    if (kind == EventKind.FollowOnSold || kind == EventKind.RevenueAdvanceTaken || kind == EventKind.PlatformSigned || kind == EventKind.ContractAccepted || kind == EventKind.FundingClosed) return 1;
+                    if (kind == EventKind.FollowOnSold || kind == EventKind.RevenueAdvanceTaken || kind == EventKind.PlatformSigned || kind == EventKind.PlatformRenewed || kind == EventKind.ContractAccepted || kind == EventKind.FundingClosed) return 1;
                     if (kind == EventKind.FoundationEndowed || kind == EventKind.ChairEndowed) return -1;
                     return 0;
                 default:
                     return 0;
             }
+        }
+
+        /// <summary>What a backlash costs this lab, in permille of the hit: less for a lab held up as an example, more for one whose creed is a joke.</summary>
+        public static int Exposure(GameConfig c, LabState lab)
+        {
+            if (!Enabled(c) || !Has(lab)) return MathI.Permille;
+            return lab.CreedBand == 1 ? c.Creed.ShieldPermille : lab.CreedBand == 2 ? c.Creed.ExposePermille : MathI.Permille;
         }
 
         static void Shift(GameConfig c, LabState lab, int delta)

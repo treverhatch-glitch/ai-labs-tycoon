@@ -2034,6 +2034,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The weekly observer reads the lab's own paper events of the week before, as the values system does (Q395), so the paper systems themselves did not change.
 - Alternatives: random replication (rejected: nothing to plan for), only ever a prestige bonus (rejected: no risk), letting rivals' papers be replicated too (rejected: rivals do not publish).
 
+### Q398. Do the new systems make the news and the chat? DECIDED: yes, 22 headlines and 18 chat lines for 18 event kinds
+- Devices (designed, hit, flop, recalled, withdrawn), platform deals (signed, holdup, renewed, walked, ran out), the lab's values (stated, town hall, owned up, a joke, held up), shocks (braced, answered; the landing itself is already the world news headline so it has chat only) and replication (code out, withheld by choice or by waiting, replicated, not replicated). Counts are pinned at 255 headlines and 278 chat lines in the tests that pin them, and a new test checks every pick.
+- Picks above 1 fall to the data's wildcard line, so a shock answered by riding, countering or lapsing shares one headline.
+- Alternatives: a headline per shock answer (rejected: the data only picks 0 and 1 besides the wildcard).
+
+### Q399. How do the five new systems meet? DECIDED: through the values observer, the press, the books and the world shocks
+- The values observer (Q395) reads the other systems' events: a platform deal or its renewal keeps profit, a recalled device breaks safety, designing a device keeps speed, putting a paper's code out keeps openness and keeping it back breaks it. A lab held up as an example by its values takes 70% of a backlash shock (Q396) and one whose creed is a joke 140%, before the answer scales it (`Creed.Exposure`, used in `Shocks.Hit`). A squeeze that lands on a lab whose values are a joke cannot push morale below nothing.
+- Device sales go on the revenue line and a platform's lift goes in at the market, so the books keep no gap (Q393, Q394). A replication that fails and a backlash both go through the press room's damping (Q397, Q396). A bankrupt lab that spectates still saves cleanly with all five in use, and a long scripted game over three seeds keeps the books, the save and the replay.
+- Shocks are on by default, so a lab that never answers takes its hits. Seven old tests that ran across the dates of world events (five morale tests in `WorkplaceTests`, and one older-save replay each in `RushedLaunchTests` and `TrainingObjectiveTests`) now turn shocks off in their own config, because a pretend older save drops a shock still waiting; the rest of the suite needed nothing.
+- Alternatives: shocks off by default (rejected: the news would never reach the player), the values observer reading only its own systems (rejected: the player expects every act to count).
+
 ## Open
 
 None.

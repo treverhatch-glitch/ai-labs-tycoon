@@ -42,6 +42,10 @@ namespace AiLabs.Rules.Config
         public int OwnUpReputation;
         /// <summary>Integrity owning up brings the lab back to, at least.</summary>
         public int OwnUpRestore;
+        /// <summary>What a backlash costs a lab that is held up as an example, in permille of the hit.</summary>
+        public int ShieldPermille;
+        /// <summary>What a backlash costs a lab whose creed is a joke, in permille of the hit.</summary>
+        public int ExposePermille;
 
         public void Sync(Syncer s)
         {
@@ -63,6 +67,8 @@ namespace AiLabs.Rules.Config
             s.Int("townCooldown", ref TownCooldown);
             s.Int("ownUpReputation", ref OwnUpReputation);
             s.Int("ownUpRestore", ref OwnUpRestore);
+            s.Int("shieldPermille", ref ShieldPermille);
+            s.Int("exposePermille", ref ExposePermille);
         }
     }
 }

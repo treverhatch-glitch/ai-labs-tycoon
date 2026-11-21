@@ -76,7 +76,7 @@ namespace AiLabs.Rules.Systems
                 Shift(lab, -(int)MathI.MulPermille(c.Shocks.HitMorale, permille));
                 return 0;
             }
-            int loss = PressSystem.Damp(c, lab, (int)MathI.MulPermille(c.Shocks.HitReputation, permille));
+            int loss = PressSystem.Damp(c, lab, (int)MathI.MulPermille(MathI.MulPermille(c.Shocks.HitReputation, permille), Creed.Exposure(c, lab)));
             PressSystem.AddReputation(lab, -loss);
             return -loss;
         }

@@ -12,4 +12,4 @@ When one lands (`EraSystem.RunWeek`, after the news event) the lab has 8 weeks t
 | 2 Ride | takes all of it | takes all of it | gains 30 |
 | 3 Counter (best released model capability 500) | works: no hit, +30 reputation; fails: takes double | the same | works: gains triple; fails: loses double (damped) |
 
-An answer not given is a ride (`Pick 5`); a second shock landing first rides the first. Events: `ShockStruck`, `ShockAnswered` (Pick 1 braced, 2 rode, 3 countered and it worked, 4 countered and it failed, 5 nobody answered).
+A lab held up as an example by its creed (Q395) takes 70% of a backlash's reputation hit and one whose creed is a joke 140%, before the answer scales it. An answer not given is a ride (`Pick 5`); a second shock landing first rides the first. Events: `ShockStruck`, `ShockAnswered` (Pick 1 braced, 2 rode, 3 countered and it worked, 4 countered and it failed, 5 nobody answered).
