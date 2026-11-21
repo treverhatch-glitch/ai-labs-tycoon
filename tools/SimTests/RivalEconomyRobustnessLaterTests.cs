@@ -64,4 +64,28 @@ public class RivalEconomyRobustnessLaterTests
         }
         Assert.True(saw, "expected runway-driven tightening on seed 19 before debt");
     }
+
+    /// <summary>Q201: mild year-1 research permille shock must not bankrupt plan labs (stack2 bar; no sector flavours).</summary>
+    [Theory]
+    [InlineData(0)]
+    [InlineData(16)]
+    public void Q201_forty_seeds_forty_years_no_plan_bankruptcies_with_research_perturbation(int bumpPermille)
+    {
+        var bankrupts = new List<string>();
+        for (long seed = 1; seed <= 40; seed++)
+        {
+            var g = new Game(Simulation.NewGame(TestData.Config(c =>
+            {
+                if (bumpPermille > 0)
+                    c.Eras[0].ResearchPermille = (int)MathI.MulPermille(c.Eras[0].ResearchPermille, MathI.Permille + bumpPermille);
+            }), seed));
+            StepYears(g, Years);
+            foreach (LabState lab in g.State.Labs)
+            {
+                if (lab.Controller != LabController.Plan) continue;
+                if (lab.Bankrupt) bankrupts.Add("bump " + bumpPermille + " seed " + seed + ": " + lab.Name);
+            }
+        }
+        Assert.Empty(bankrupts);
+    }
 }

@@ -752,6 +752,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)+(c)**. `Retrenching`/`Retrench`/`CapGrowthTarget`; `RivalEconomyRobustnessLaterTests` (forty seeds × forty years, seed-19 runway log).
 - Why: tiny perturbations should not flip rivals into bankruptcy spirals — retrench is visible in the decision log before `WeeksInDebt`.
 
+### Q201. Stack2 rival economy bar vs era sector flavours? DECIDED: fork — stack2 soak first; rivals pay flavours later on era chain
+
+- Options: (a) merge era PRs into stack2 and flip `safety.sectorFlavoursForRivals` here; (b) prove forty×forty solvent on stack2, defer flavours + `traitRollSalt` soak to era PRs #4–#10.
+- Recommendation and choice: **(b)**. Coordinator (Nov 21): do not merge `cursor/version-naming-af2f` into `cursor/later-rules-stack2-75cd` — it would stack all era work onto PR #3. Stack2 ships `RunwayRetrenchment`, rivalry retrench data when present, and `RivalEconomyRobustnessLaterTests` Q200–Q201. Era turns `sectorFlavoursForRivals` on after stack2 robustness lands.
+- Why: review stacks stay separable; knife-edge rival economics are gated before flavoured incident costs hit plan labs.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.

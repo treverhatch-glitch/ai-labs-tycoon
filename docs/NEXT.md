@@ -111,6 +111,7 @@ and says why in the commit message.
 - ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
 - ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
 - ~~**Rival retrenchment soak**~~ **done (local)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests` (forty × forty).
+- ~~**Rival economy robustness (stack2)**~~ **done (local)** — Q201 perturbation soak; era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201).
 
 ## Rules: forward queue (from bible / systems-design)
 
