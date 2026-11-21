@@ -323,7 +323,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Models.Count; i++)
             {
                 ModelState m = lab.Models[i];
-                if (m.LineId != lineId || m.Status == ModelStatus.Training) continue;
+                if (m.LineId != lineId || m.Status == ModelStatus.Training || m.Status == ModelStatus.Failed) continue;
                 if (best == null || m.Version > best.Version) best = m;
             }
             return best;

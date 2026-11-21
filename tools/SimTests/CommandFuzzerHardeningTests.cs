@@ -123,6 +123,8 @@ static class CommandFuzzerSamples
                 return Command.ResearchTech(labId, biasValid ? "state-machines" : "moon-math");
             case CommandKind.StartTraining:
                 return Command.StartTraining(labId, biasValid ? "mini" : Lines[rng.Next(Lines.Length)], biasValid ? 200 : rng.Next(1000));
+            case CommandKind.ScrapFailedRun:
+                return Command.ScrapFailedRun(labId, PickTarget(g, biasValid, lab.Models, m => m.Id, rng, -1));
             case CommandKind.ReleaseModel:
             {
                 int modelId = PickTarget(g, biasValid, lab.Models, m => m.Id, rng, -1);

@@ -115,8 +115,39 @@ namespace AiLabs.Rules.Systems
                 model.ProgressCompute += effective - alignmentPart;
                 model.AlignmentCompute += MathI.MulPermille(alignmentPart, alignmentWork);
 
+                if (MaybeFail(c, state, lab, model)) continue;
                 if (model.ProgressCompute >= model.RequiredCompute) Finish(c, state, lab, model);
             }
+        }
+
+        /// <summary>Weekly chance a run collapses after early progress. Engineers and alignment share cut the odds.</summary>
+        public static int WeeklyFailPermille(GameConfig c, LabState lab, ModelState model)
+        {
+            DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
+            int risk = c.Training.BaseFailPermille + (source == null ? 0 : source.WeeklyFailRiskPermille);
+            int engineers = LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering);
+            risk -= engineers * c.Training.FailEngineerCutPermille;
+            risk -= model.AlignmentSharePermille / 100 * c.Training.FailAlignmentCutPermille;
+            return (int)MathI.Clamp(risk, 0, 950);
+        }
+
+        static bool MaybeFail(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            if (model.RequiredCompute <= 0) return false;
+            long progress = model.ProgressCompute * MathI.Permille;
+            if (progress < model.RequiredCompute * c.Training.FailAfterProgressPermille) return false;
+            int risk = WeeklyFailPermille(c, lab, model);
+            if (risk <= 0) return false;
+            int roll = state.Rng.TrainingCollapse.Range(0, MathI.Permille - 1);
+            if (roll >= risk) return false;
+            FailRun(c, state, lab, model);
+            return true;
+        }
+
+        public static void FailRun(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            model.Status = ModelStatus.Failed;
+            Events.Add(state, EventKind.TrainingFailed, lab.Id, model.Id, model.ProgressCompute, model.Name);
         }
 
         static void Finish(GameConfig c, GameState state, LabState lab, ModelState model)

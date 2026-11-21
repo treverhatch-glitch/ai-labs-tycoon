@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetTrainingShare: return SetTrainingShare(lab, cmd);
                 case CommandKind.ResearchTech: return ResearchTech(c, state, lab, cmd);
                 case CommandKind.StartTraining: return StartTraining(c, state, lab, cmd);
+                case CommandKind.ScrapFailedRun: return ScrapFailedRun(lab, cmd);
                 case CommandKind.ReleaseModel: return ReleaseModel(c, state, lab, cmd);
                 case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
                 case CommandKind.SetOpenWeights: return SetOpenWeights(c, state, lab, cmd);
@@ -323,6 +324,16 @@ namespace AiLabs.Rules.Sim
             Finance.Spend(lab, LedgerLine.Training, prepCost);
             Events.Add(state, EventKind.TrainingStarted, lab.Id, model.Id, prepCost, model.Name);
             return CommandResult.Done(model.Id);
+        }
+
+        static CommandResult ScrapFailedRun(LabState lab, Command cmd)
+        {
+            ModelState model = lab.Model(cmd.TargetId);
+            if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
+            if (model.Status != ModelStatus.Failed)
+                return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a failed run can be scrapped.");
+            lab.Models.Remove(model);
+            return CommandResult.Done(cmd.TargetId);
         }
 
         static CommandResult ReleaseModel(GameConfig c, GameState state, LabState lab, Command cmd)

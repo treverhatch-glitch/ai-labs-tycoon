@@ -9,7 +9,7 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, ReleaseModel, SetSectorPrice, SetOpenWeights, SetTrainingDataSource,
+        ResearchTech, StartTraining, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights, SetTrainingDataSource,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
@@ -150,6 +150,14 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.StartTraining, labId);
             c.Id = lineId;
             c.Permille = alignmentSharePermille;
+            return c;
+        }
+
+        /// <summary>Removes a failed training run so the lab can start a new version.</summary>
+        public static Command ScrapFailedRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ScrapFailedRun, labId);
+            c.TargetId = modelId;
             return c;
         }
 
