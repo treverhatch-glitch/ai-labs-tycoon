@@ -131,15 +131,20 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Clamp(risk, 0, 950);
         }
 
+        /// <summary>Player runs use <see cref="RngSet.TrainingCollapse"/>; plan-run rivals use <see cref="RngSet.Rivals"/> so collapse never interferes with player dice.</summary>
+        public static Rng CollapseRng(GameState state, LabState lab)
+        {
+            return lab.Controller == LabController.Plan ? state.Rng.Rivals : state.Rng.TrainingCollapse;
+        }
+
         static bool MaybeFail(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            if (lab.Controller == LabController.Plan) return false;
             if (model.RequiredCompute <= 0) return false;
             long progress = model.ProgressCompute * MathI.Permille;
             if (progress < model.RequiredCompute * c.Training.FailAfterProgressPermille) return false;
             int risk = WeeklyFailPermille(c, lab, model);
             if (risk <= 0) return false;
-            int roll = state.Rng.TrainingCollapse.Range(0, MathI.Permille - 1);
+            int roll = CollapseRng(state, lab).Range(0, MathI.Permille - 1);
             if (roll >= risk) return false;
             FailRun(c, state, lab, model);
             return true;

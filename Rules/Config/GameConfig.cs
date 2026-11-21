@@ -216,6 +216,10 @@ namespace AiLabs.Rules.Config
         public int PoolPermille;
         /// <summary>When above zero, starts or refreshes a global chip shortage at this strength permille.</summary>
         public int ChipShortageStrengthPermille;
+        /// <summary>When above zero, each lab gains this much attention in <see cref="ProtestBlocId"/> (or at home when empty).</summary>
+        public int ProtestAttentionPermille;
+        /// <summary>World bloc id for protest scrutiny, or empty for every lab's home bloc.</summary>
+        public string ProtestBlocId;
 
         public string Id { get { return IdValue; } }
 
@@ -228,6 +232,8 @@ namespace AiLabs.Rules.Config
             s.Str("sectorId", ref SectorId);
             s.Int("poolPermille", ref PoolPermille);
             s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
+            s.Int("protestAttentionPermille", ref ProtestAttentionPermille);
+            s.Str("protestBlocId", ref ProtestBlocId);
         }
     }
 
@@ -571,6 +577,8 @@ namespace AiLabs.Rules.Config
         public int OpensYear;
         /// <summary>Training refuses until <see cref="LabState.DistillTargetLabId"/> points at a stronger rival.</summary>
         public bool RequiresDistillTarget;
+        /// <summary>When true, only the player may train on this mix (scrape, distill — rivals never commit crimes).</summary>
+        public bool PlayerOnly;
 
         public string Id { get { return IdValue; } }
 
@@ -587,6 +595,7 @@ namespace AiLabs.Rules.Config
             s.Int("weeklyFailRiskPermille", ref WeeklyFailRiskPermille);
             s.Int("opensYear", ref OpensYear);
             s.Bool("requiresDistillTarget", ref RequiresDistillTarget);
+            s.Bool("playerOnly", ref PlayerOnly);
         }
     }
 

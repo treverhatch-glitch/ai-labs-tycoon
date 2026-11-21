@@ -406,6 +406,7 @@ namespace AiLabs.Rules.Sim
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable,
         DataSourceBlocksOpenWeights,
         DistillTargetRequired,
+        PlayerOnlyDataSource,
         KeynoteAmbush
     }
 

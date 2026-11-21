@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Systems
                 }
                 Events.Add(state, EventKind.WorldNews, -1, -1, e.PoolPermille, e.Id);
                 ChipShortageSystem.OnWorldEvent(c, state, e);
+                ProtestSystem.OnWorldEvent(c, state, e);
             }
         }
     }

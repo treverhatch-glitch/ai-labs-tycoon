@@ -580,6 +580,9 @@ namespace AiLabs.Rules.Config
                 if (e.ChipShortageStrengthPermille != 0 &&
                     (e.ChipShortageStrengthPermille < 1000 || e.ChipShortageStrengthPermille > 2000))
                     p.Add(who + " has chipShortageStrengthPermille " + e.ChipShortageStrengthPermille + ": use 0 or 1000 to 2000");
+                Permille(p, who + ".protestAttentionPermille", e.ProtestAttentionPermille);
+                if (!string.IsNullOrEmpty(e.ProtestBlocId) && c.World.Bloc(e.ProtestBlocId) == null)
+                    p.Add(who + " protests an unknown bloc \"" + e.ProtestBlocId + "\"");
                 if (i > 0)
                 {
                     WorldEventConfig before = c.WorldEvents[i - 1];

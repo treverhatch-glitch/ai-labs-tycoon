@@ -35,8 +35,22 @@ namespace AiLabs.Rules.Systems
             DataSourceConfig source = c.Training.DataSource(sourceId);
             if (source == null) { message = "There is no data source \"" + sourceId + "\"."; return false; }
             if (!DataSourceOpen(c, source, state.Tick)) { message = source.Name + " is not available yet."; return false; }
+            if (source.PlayerOnly && lab.Controller == LabController.Plan)
+            {
+                message = source.Name + " is not how " + lab.Name + " trains.";
+                return false;
+            }
             if (!source.RequiresDistillTarget) return true;
             return DistillTargetOk(c, state, lab, lineId, lab.DistillTargetLabId, out message);
+        }
+
+        /// <summary>The mix a rival planner may use for the next run (never scrape or distill).</summary>
+        public static string PlanDataSourceId(GameConfig c, LabState lab)
+        {
+            string id = string.IsNullOrEmpty(lab.TrainingDataSourceId) ? "internal" : lab.TrainingDataSourceId;
+            DataSourceConfig source = c.Training.DataSource(id);
+            if (source == null || source.PlayerOnly) return "internal";
+            return id;
         }
 
         public static bool DistillTargetOk(GameConfig c, GameState state, LabState lab, string lineId, int targetLabId, out string message)

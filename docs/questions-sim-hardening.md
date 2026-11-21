@@ -279,3 +279,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) scrape only; (b) distill without rival pick; (c) `scrape` (1999) and `distill-rival` (2004) with `SetDistillTarget` and `DistillTargetRequired` gate.
 - Choice: **(c)** — `TrainingQueries.SourceUsable` + `distillMinLeadPermille`; rival recipe `rival-distill`; events `DistillTargetSet`; save fields `distillTargetLabId`, `distillSourceLabId`.
 - Why: completes data-source ladder before rules-forward talent; crosses open-weights blocks on risky mixes (Q38) without shady jobs.
+
+### Q48. Plan labs vs training collapse? DECIDED: same dice, separate stream
+
+- Options: (a) rivals immune (skip `MaybeFail`); (b) shared `trainingCollapse` stream; (c) rivals roll on `rng.rivals`.
+- Choice: **(c)** — `TrainingSystem.CollapseRng` uses `TrainingCollapse` for the player and `Rivals` for `LabController.Plan`; failed plan runs still auto-clear each week so the planner retries.
+- Why: rivals felt immune after Q45; separate stream keeps player golden/determinism isolated from rival collapse rolls.
+
+### Q49. Rivals vs scrape/distill? DECIDED: `playerOnly` on shady mixes
+
+- Options: (a) rivals ignore lab default; (b) `dataSources.playerOnly` on scrape and distill-rival; refuse commands and force `internal` for plan `StartTraining`; (c) recipes only.
+- Choice: **(b)** — `PlayerOnlyDataSource` on `SetTrainingDataSource`; `PlanDataSourceId`; recipes and distill target refused on plan labs.
+- Why: bible treats scrape/distill as player/shady path; rivals never commit crimes.
+
+### Q50. Protest world headlines? DECIDED: attention bump via `ProtestSystem`
+
+- Options: (a) headlines only; (b) `protestAttentionPermille` on dated events (home bloc or named `protestBlocId`); (c) permit revolt state machine.
+- Choice: **(b)** — `ProtestSystem.OnWorldEvent` after `WorldNews`; `teen-chatbot` and `pause-letter` ship in config; `AttentionRose` when attention moves.
+- Why: DESIGN world-map protest gap without new save schema or permit-revolt depth.

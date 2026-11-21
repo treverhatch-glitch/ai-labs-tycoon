@@ -31,6 +31,8 @@ namespace AiLabs.Rules.Sim
             if (string.IsNullOrEmpty(cmd.Id)) return Fail(CommandError.InvalidArgument, "Name the data source.");
             DataSourceConfig source = c.Training.DataSource(cmd.Id);
             if (source == null) return Fail(CommandError.UnknownId, "There is no data source \"" + cmd.Id + "\".");
+            if (source.PlayerOnly && lab.Controller == LabController.Plan)
+                return Fail(CommandError.PlayerOnlyDataSource, source.Name + " is not how " + lab.Name + " trains.");
             if (!TrainingQueries.DataSourceOpen(c, source, state.Tick))
                 return Fail(CommandError.EraLocked, source.Name + " is not available until " + source.OpensYear + ".");
             if (source.RequiresDistillTarget && lab.DistillTargetLabId < 0)

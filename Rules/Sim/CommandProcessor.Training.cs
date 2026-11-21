@@ -11,13 +11,16 @@ namespace AiLabs.Rules.Sim
         {
             ModelLineConfig line = c.Line(cmd.Id);
             if (line == null) return Fail(CommandError.UnknownId, "There is no model line \"" + cmd.Id + "\".");
-            string sourceId = lab.TrainingDataSourceId;
-            if (string.IsNullOrEmpty(sourceId)) sourceId = "internal";
+            string sourceId = lab.Controller == LabController.Plan
+                ? TrainingQueries.PlanDataSourceId(c, lab)
+                : (string.IsNullOrEmpty(lab.TrainingDataSourceId) ? "internal" : lab.TrainingDataSourceId);
             return BeginTraining(c, state, lab, line, cmd.Permille, sourceId, "", MathI.Permille);
         }
 
         static CommandResult StartTrainingRecipe(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (lab.Controller == LabController.Plan)
+                return Fail(CommandError.InvalidArgument, "Training recipes are for the player lab.");
             TrainingRecipeConfig recipe = TrainingQueries.Recipe(c, cmd.Id);
             if (recipe == null) return Fail(CommandError.UnknownId, "There is no training recipe \"" + cmd.Id + "\".");
             if (!TrainingQueries.RecipeOpen(c, recipe, state.Tick))
@@ -76,6 +79,8 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult SetDistillTarget(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (lab.Controller == LabController.Plan)
+                return Fail(CommandError.InvalidArgument, "Rivals do not distill weights from each other.");
             if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
                 return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
             if (cmd.TargetId < 0)
