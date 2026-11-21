@@ -243,8 +243,6 @@ The player can put safety people and engineers on an on-call rota of up to three
 
 Chiefs, the ethics board, marketing campaigns, inference optimisation and the on-call rota have headlines and chat lines of their own, and are tested together over years on three seeds.
 
-The player can put safety people and engineers on an on-call rota of up to three levels. When an incident lands it cuts the fine, the reputation lost and the team's morale drop, for a weekly fee, a lower settled morale and a lock of eight weeks on any change. It never changes how often incidents happen.
-
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

@@ -1639,12 +1639,6 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No code or data changed; this is a tests-only entry.
 - Alternatives: gating none of the tools (rejected: the board and the rota are weekly costs that bankrupt the thin seed, as with Q311 and Q318).
 
-### Q323. Can the team be put on call so that incidents cost less? DECIDED: yes, a locked weekly rota that trades morale for a softer landing
-- New `onCall` data, command `SetOnCall(level)`, `OnCall` system, event `OnCallSet` and error `OnCallLocked` (appended). Each level cuts an incident's fine by 10% and its reputation loss by 10%, cuts the team's morale drop by 25%, at $1500 a week and 3 points off where morale settles. It needs 2 safety people or engineers a level; any change locks the rota for 8 weeks.
-- The decision is a bet on how likely an incident is: the rota pays for itself only when one lands, and costs money and morale every week. The lock stops it being switched on only when the risk shows. The rota never changes how often incidents happen (that is the safety work, the chiefs and the optimisation level).
-- New state on the lab (schema 56, `MigrateTo56`): `onCallLevel`, `onCallLockedUntil`. Player only and opt-in. The golden digest moved to fc8f4202; reverting the two fields and the schema number brought dcfb9d2c back.
-- Alternatives: a setup fee instead of a weekly bill (rejected: optimisation already works that way, and this is about a standing cost); no lock (rejected: free to toggle makes the choice meaningless); no morale penalty (rejected: a strict upgrade for any lab with the staff).
-
 ## Open
 
 None.

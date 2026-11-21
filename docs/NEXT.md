@@ -265,7 +265,6 @@ and says why in the commit message.
 82. **Incident response / on-call (safety, staff).** ~~Done~~: `SetOnCall`, `OnCall`, `onCall` data, lab `onCallLevel` and `onCallLockedUntil` (schema 56, `MigrateTo56`), `OnCallTests`, `docs/content/incident-response.md` (Q323).
 83. **Headlines and chat for chiefs, the board, campaigns, optimisation and the rota.** ~~Done~~: ten headlines and eleven chat lines, data only, `ChiefsBoardCampaignNewsChatTests` (Q324).
 84. **Chiefs, the board, optimisation, campaigns and the rota together (tests).** ~~Done~~: `ChiefsBoardOptimiseCampaignOnCallTogetherTests` (Q325).
-82. **Incident response / on-call (safety, staff).** ~~Done~~: `SetOnCall`, `OnCall`, `onCall` data, lab `onCallLevel` and `onCallLockedUntil` (schema 56, `MigrateTo56`), `OnCallTests`, `docs/content/incident-response.md` (Q323).
 
 ## Rules: later
 
