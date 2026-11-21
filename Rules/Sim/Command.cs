@@ -109,7 +109,10 @@ namespace AiLabs.Rules.Sim
         BreakPolicy,
         BuildTaxStructure,
         ClaimTaxCredit,
-        AnswerTaxAudit
+        AnswerTaxAudit,
+        TakeStandardsRole,
+        AdoptStandards,
+        DropStandards
     }
 
     /// <summary>
@@ -977,6 +980,26 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerTaxAudit, labId);
             c.Count = choice;
             return c;
+        }
+
+        /// <summary>Takes a part in the draft of the next standard: 0 observer, 1 member, 2 sponsor, 3 obstructor. A member and a sponsor speed the draft up for dues each week, a sponsor also pays a fee to become one, and an obstructor holds it back for dues and reputation.</summary>
+        public static Command TakeStandardsRole(int labId, int role)
+        {
+            Command c = Make(CommandKind.TakeStandardsRole, labId);
+            c.Count = role;
+            return c;
+        }
+
+        /// <summary>Adopts every standard ratified so far, for a cost on each new level and an upkeep each week.</summary>
+        public static Command AdoptStandards(int labId)
+        {
+            return Make(CommandKind.AdoptStandards, labId);
+        }
+
+        /// <summary>Stops complying with the standards: the upkeep ends, and a capable release is fined again.</summary>
+        public static Command DropStandards(int labId)
+        {
+            return Make(CommandKind.DropStandards, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

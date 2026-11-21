@@ -120,6 +120,7 @@ namespace AiLabs.Rules.Config
             CharterProblems(p, c);
             ScalingProblems(p, c);
             TaxProblems(p, c);
+            StandardsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1329,6 +1330,22 @@ namespace AiLabs.Rules.Config
             if (k.ContestClaimPermille < 0 || k.ContestClaimPermille > 10000 || k.ContestStrength < 1 || k.StructureStrength < 0 || k.ContestStrength + 2 * k.StructureStrength > MathI.Permille) p.Add("tax.contestStrength plus two tiers of structureStrength must be from 1 to 1000 and contestClaimPermille from 0 to 10000");
             if (k.LapsePermille < 0 || k.LapsePermille > 5000) p.Add("tax.lapsePermille must be from 0 to 5000");
             if (k.ExposedReputation < 0 || k.ExposedReputation > 500) p.Add("tax.exposedReputation must be from 0 to 500");
+        }
+
+        static void StandardsProblems(List<string> p, GameConfig c)
+        {
+            StandardsConfig k = c.Standards;
+            if (k == null) { p.Add("standards is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("standards.enabled must be 0 or 1");
+            if (k.MaxLevel < 1 || k.MaxLevel > 10 || k.FirstWeeks < 1 || k.EveryWeeks < 1 || k.FirstWeeks > 2000 || k.EveryWeeks > 2000) p.Add("standards.maxLevel must be from 1 to 10 and firstWeeks and everyWeeks from 1 to 2000");
+            if (k.SupportNeeded < 1 || k.IndustryRate < 1 || k.MemberRate < 0 || k.SponsorRate < k.MemberRate || k.ObstructRate < 0) p.Add("standards.supportNeeded and industryRate must be at least 1, sponsorRate at least memberRate, and rates must not be negative");
+            if (k.MemberDues < 0 || k.SponsorDues < k.MemberDues || k.ObstructDues < 0 || k.SponsorFee < 0) p.Add("standards.sponsorDues must be at least memberDues and dues and fees must not be negative");
+            if (k.ObstructEvery < 1 || k.ObstructEvery > 520 || k.ObstructReputation < 0 || k.ObstructReputation > 500) p.Add("standards.obstructEvery must be from 1 to 520 and obstructReputation from 0 to 500");
+            if (k.AdoptCost < 0 || k.UpkeepPerLevel < 0 || k.BindingCapability < 0) p.Add("standards.adoptCost, upkeepPerLevel and bindingCapability must not be negative");
+            if (k.LapseFine < 0) p.Add("standards.lapseFine must not be negative");
+            if (k.LapseReputation < 0 || k.LapseReputation > 500) p.Add("standards.lapseReputation must be from 0 to 500");
+            if (k.ClaimStrength < 0 || k.ClaimStrength * k.MaxLevel > MathI.Permille) p.Add("standards.claimStrength times maxLevel must be from 0 to 1000");
+            if (k.SafetyRelief < 0 || k.SafetyRelief > 20) p.Add("standards.safetyRelief must be from 0 to 20");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

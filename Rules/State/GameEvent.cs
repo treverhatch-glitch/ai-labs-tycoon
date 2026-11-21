@@ -324,7 +324,15 @@ namespace AiLabs.Rules.State
         /// <summary>A tax audit opened. Amount is what it is about, Pick 1 when the lab kept an offshore structure.</summary>
         TaxAuditOpened,
         /// <summary>A tax audit was answered. Amount is what the lab paid, Pick 0 cooperate, 1 settle, 2 contest, 3 left unanswered.</summary>
-        TaxAuditClosed
+        TaxAuditClosed,
+        /// <summary>The industry began drafting a standard. Amount is its level.</summary>
+        StandardDrafted,
+        /// <summary>A standard was ratified. Amount is its level, Pick the part the lab took in the draft.</summary>
+        StandardRatified,
+        /// <summary>The lab adopted the standards. Amount is the level it now complies with.</summary>
+        StandardAdopted,
+        /// <summary>The lab released a capable model without complying. SubjectId is the model, Amount the fine and Pick the levels it lacked.</summary>
+        StandardLapsed
     }
 
     /// <summary>

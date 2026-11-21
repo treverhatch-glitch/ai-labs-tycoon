@@ -343,6 +343,14 @@ namespace AiLabs.Rules.Sim
                     return "The tax office opened an audit of " + who + " over " + e.Amount + ".";
                 case EventKind.TaxAuditClosed:
                     return e.Pick == 0 ? who + " paid back " + e.Amount + " to the tax office." : e.Pick == 1 ? who + " settled a tax audit for " + e.Amount + "." : e.Pick == 2 ? who + " took a tax audit to court." : who + " let a tax audit lapse and paid " + e.Amount + ".";
+                case EventKind.StandardDrafted:
+                    return "The industry began drafting a level " + e.Amount + " standard.";
+                case EventKind.StandardRatified:
+                    return "A level " + e.Amount + " standard was ratified" + (e.Pick == 2 ? " with " + who + " as its sponsor." : e.Pick == 3 ? " over the objections of " + who + "." : ".");
+                case EventKind.StandardAdopted:
+                    return who + " adopted the standards up to level " + e.Amount + ".";
+                case EventKind.StandardLapsed:
+                    return who + " released a model that lacked " + e.Pick + " levels of the standards and was fined " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

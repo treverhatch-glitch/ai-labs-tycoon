@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 85;
+        public const int CurrentSchema = 86;
 
         public int Schema;
         public string ConfigVersion;
@@ -314,6 +314,14 @@ namespace AiLabs.Rules.State
         public int TaxExposure;
         public int TaxAuditDue;
         public long TaxAuditOwed;
+        /// <summary>The standards ratified so far, the level being drafted (0 when none), the support it has, the lab's part in the draft, the week the next draft starts, the level the lab has adopted and the times it released a capable model without complying.</summary>
+        public int StdLevel;
+        public int StdDraft;
+        public int StdSupport;
+        public int StdRole;
+        public int StdNext;
+        public int StdAdopted;
+        public int StdLapses;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -602,6 +610,13 @@ namespace AiLabs.Rules.State
             s.Int("taxExposure", ref TaxExposure);
             s.Int("taxAuditDue", ref TaxAuditDue);
             s.Long("taxAuditOwed", ref TaxAuditOwed);
+            s.Int("stdLevel", ref StdLevel);
+            s.Int("stdDraft", ref StdDraft);
+            s.Int("stdSupport", ref StdSupport);
+            s.Int("stdRole", ref StdRole);
+            s.Int("stdNext", ref StdNext);
+            s.Int("stdAdopted", ref StdAdopted);
+            s.Int("stdLapses", ref StdLapses);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
