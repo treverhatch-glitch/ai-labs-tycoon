@@ -4217,6 +4217,8 @@
       }
     ],
     "sectorFlavoursForRivals": true,
+    "overloadIncidentPermille": 60,
+    "overloadForRivals": false,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
     "incidentRungs": [

@@ -1397,6 +1397,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `chips.snubStandingBelow` 350, `snubChancePermille` 250, `snubWeeks` 20 (a bit under half the 48-week year). It reads the vendor's standing, which falls when a lab makes its own training chips (Envydia's reaction), so the risk is the price of independence. The roll is a hash of the seed, the week, the lab and the order, so it draws nothing from the dice stream and nothing is saved; `ChipSlotSnubbed` goes in the log. Player labs only, and only the lab's own orders, not chips bought from another lab's list.
 - Why: a year would end a run of chips outright and rivals' chip buying is plan-driven economy that must stay knife-edge safe (Q182). A lost order would need a refund path. A slip uses the delivery tick the order already has. No schema change; the golden digest did not move.
 
+### Q289. Does serving too much hurt reliability? DECIDED: yes, an overloaded player lab adds up to 6 points to every model's weekly incident chance
+
+- Options: (a) quality penalty only; (b) extra incident chance scaled by the share of demand left unserved; (c) a new meter.
+- Recommendation and choice: **(b)**. `safety.overloadIncidentPermille` 60 times the unserved share of last week's demand, added at the weekly roll (`SafetySystem.WeeklyChancePermille`), shown as `FromOverload` in the incident breakdown. Player labs only (`safety.overloadForRivals` false): the rivals' incident counts feed the knife-edge guards (Q182, Q190), so rivals keep rolling exactly as before.
+- Why: the bible's "overworked" state says reliability drops. The mood already exists and a quality hit would need a new term in the appeal breakdown; the incident chance already has a breakdown and is where "reliable" lives. Nothing is saved, no schema change.
+
 ## Open
 
 None.

@@ -634,6 +634,10 @@ namespace AiLabs.Rules.Config
         public List<SectorFlavourConfig> SectorFlavours = new List<SectorFlavourConfig>();
         /// <summary>When false (the shipped value) only the player's labs pay what a flavour costs in fines, reputation, trust and refunds; rivals fail the plain way.</summary>
         public bool SectorFlavoursForRivals;
+        /// <summary>The extra weekly incident chance, in permille, for a lab that serves none of its demand. It scales with the share left unserved (bible ch. 6, "overworked: serving load too high; reliability drops").</summary>
+        public int OverloadIncidentPermille;
+        /// <summary>When false (the shipped value) only the player's labs have the overload risk: rivals' economies are knife-edge (Q182).</summary>
+        public bool OverloadForRivals;
         /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
@@ -673,6 +677,8 @@ namespace AiLabs.Rules.Config
             s.ObjList("riskClasses", ref RiskClasses);
             s.ObjList("sectorFlavours", ref SectorFlavours);
             s.Bool("sectorFlavoursForRivals", ref SectorFlavoursForRivals);
+            s.Int("overloadIncidentPermille", ref OverloadIncidentPermille);
+            s.Bool("overloadForRivals", ref OverloadForRivals);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
             s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);

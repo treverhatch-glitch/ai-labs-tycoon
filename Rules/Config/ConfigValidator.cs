@@ -409,6 +409,7 @@ namespace AiLabs.Rules.Config
         {
             SafetyConfig safety = c.Safety;
             UniqueIds(p, "safety.sectorFlavours", safety.SectorFlavours);
+            Permille(p, "safety.overloadIncidentPermille", safety.OverloadIncidentPermille);
             for (int i = 0; i < safety.SectorFlavours.Count; i++)
             {
                 SectorFlavourConfig f = safety.SectorFlavours[i];
