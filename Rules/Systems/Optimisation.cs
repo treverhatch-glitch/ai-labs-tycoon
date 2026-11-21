@@ -20,7 +20,11 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The level that counts: the set level, held down by the engineers behind it.</summary>
-        public static int Effective(GameConfig c, LabState lab) { return (int)MathI.Min(Level(c, lab), EngineersCover(c, lab)); }
+        public static int Effective(GameConfig c, LabState lab)
+        {
+            int level = Level(c, lab);
+            return level == 0 ? 0 : (int)MathI.Min(level, EngineersCover(c, lab));
+        }
 
         public static long SetupCost(GameConfig c, LabState lab, int level)
         {

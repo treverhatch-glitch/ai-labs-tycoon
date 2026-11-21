@@ -26,7 +26,11 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The level that counts: the set level, held down by the people behind it.</summary>
-        public static int Effective(GameConfig c, LabState lab) { return (int)MathI.Min(Level(c, lab), StaffCover(c, lab)); }
+        public static int Effective(GameConfig c, LabState lab)
+        {
+            int level = Level(c, lab);
+            return level == 0 ? 0 : (int)MathI.Min(level, StaffCover(c, lab));
+        }
 
         public static bool Locked(GameState state, LabState lab) { return state.Tick < lab.OnCallLockedUntil; }
 
