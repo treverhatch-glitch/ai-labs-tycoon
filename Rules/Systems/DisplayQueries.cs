@@ -28,8 +28,10 @@ namespace AiLabs.Rules.Systems
             public long ChampionBoost;
             /// <summary>Zero or negative: customers who cannot tell the lab's models apart.</summary>
             public long NamingConfusion;
+            /// <summary>Positive for a model trained to be engaging, negative for one trained to be careful; zero for the default.</summary>
+            public long ObjectiveEffect;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect; } }
         }
 
         public struct IncidentBreakdown
@@ -118,6 +120,7 @@ namespace AiLabs.Rules.Systems
                 long afterCrown = MathI.MulPermille(afterNames, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
                 b.ChampionBoost = afterCrown - afterNames;
             }
+            b.ObjectiveEffect = MathI.MulPermille(b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost, TrainingObjectives.AppealPermille(c, model)) - (b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost);
             return b;
         }
 

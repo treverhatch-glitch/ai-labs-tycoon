@@ -171,6 +171,7 @@ namespace AiLabs.Rules.Sim
                 foreach (string tech in lab.Techs) if (c.Tech(tech) == null) p.Add(who + " knows the unknown tech \"" + tech + "\"");
                 foreach (ModelState model in lab.Models)
                 {
+                    if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

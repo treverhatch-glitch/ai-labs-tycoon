@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 33;
+        public const int CurrentSchema = 34;
 
         public int Schema;
         public string ConfigVersion;
@@ -413,6 +413,8 @@ namespace AiLabs.Rules.State
         public int LastIncidentTick;
         public int Incidents;
         public int Corruption;
+        /// <summary>What the run was for (an id of <c>objectives</c>), or empty for the default, to be correct.</summary>
+        public string Objective = "";
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -441,6 +443,7 @@ namespace AiLabs.Rules.State
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
             s.Int("corruption", ref Corruption);
+            s.Str("objective", ref Objective);
             s.StrList("sectors", ref Sectors);
         }
     }

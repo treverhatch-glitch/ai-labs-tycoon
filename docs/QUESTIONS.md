@@ -1179,6 +1179,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo33` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
 - Why: the answer must survive a save, and an event picked by date would be lost on an older save. Nothing derived is stored; `OfficeEvents.Waiting` is a view. All guards hold at 1481 tests.
 
+### Q246. How does the player choose a training objective? DECIDED: a command while the model trains, with a neutral default
+- Options: (a) a new argument on `StartTraining`; (b) a separate command for a model still training; (c) a research unlock.
+- Recommendation and choice: **(b)**. `SetTrainingObjective(model, objective)` works only while the model is training and can be changed freely; the last choice wins. The default objective, `correct`, changes nothing and is stored as empty.
+- Why: `StartTraining` is used by rivals, planners and most tests, and a new argument would touch them all. The recipe screen can send both commands in one tap, and the choice can still be changed during the run, like the bible's long wait.
+
+### Q247. What do the four objectives do? DECIDED: engaging sells and erodes control, obedient adds capability and erodes control, careful the reverse
+- Options: (a) only change appeal; (b) change alignment, capability, appeal and culture by data-table points; (c) a hidden "disposition" meter.
+- Recommendation and choice: **(b)**. Be engaging: -80 alignment, +15% appeal, -10 culture. Be obedient: -60 alignment, +6% capability, +3% appeal, -10 culture. Be careful: +100 alignment, -7% capability, -3% appeal, +5 culture. Alignment moves the real and shown meters together.
+- Why: the bible says engagement sells and "breeds flattery" and that engagement or obedience erodes control, so each pays something real and costs control; careful is the honest slow option. A hidden disposition meter would be a second alignment meter to keep in step with the first; the existing alignment gap already carries "partly hidden". Moving the two meters together keeps these models off the sandbagging rung, which reads the gap between them.
+
+### Q248. Is a save change needed, and does the golden move? DECIDED: yes, schema 34; the golden moved with a verified cause
+- Options: (a) store nothing (the effects land at the end of the run, so recompute from the objective); (b) store the objective on the model.
+- Recommendation and choice: **(b)**. `objective` per model (`MigrateTo34` sets empty). The appeal effect reads it at any time after the run, so it cannot be derived from anything else. Rivals' and the autopilot's models stay on the default, so the economy guards, which all use them, are unchanged.
+- Why: the choice has to survive a save. The pinned golden moved because every model now carries the field; with the sync line, the schema number and the data removed the previous golden came back exactly (see the commit message).
+
 ## Open
 
 None.

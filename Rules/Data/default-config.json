@@ -5924,6 +5924,47 @@
       }
     ]
   },
+  "objectives": {
+    "defaultId": "correct",
+    "objectives": [
+      {
+        "id": "correct",
+        "name": "Be correct",
+        "text": "Honest and plain. It says what it knows and what it does not.",
+        "alignmentPoints": 0,
+        "capabilityPermille": 0,
+        "appealPermille": 0,
+        "culturePoints": 0
+      },
+      {
+        "id": "engaging",
+        "name": "Be engaging",
+        "text": "People love talking to it, and it agrees with them a lot.",
+        "alignmentPoints": -80,
+        "capabilityPermille": 0,
+        "appealPermille": 150,
+        "culturePoints": -10
+      },
+      {
+        "id": "obedient",
+        "name": "Be obedient",
+        "text": "It does what it is told, including the things it should not.",
+        "alignmentPoints": -60,
+        "capabilityPermille": 60,
+        "appealPermille": 30,
+        "culturePoints": -10
+      },
+      {
+        "id": "careful",
+        "name": "Be careful",
+        "text": "It checks twice and says so. Customers find it slow.",
+        "alignmentPoints": 100,
+        "capabilityPermille": -70,
+        "appealPermille": -30,
+        "culturePoints": 5
+      }
+    ]
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -6090,6 +6131,15 @@
       "pick": -1,
       "about": "lab",
       "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently."
+    },
+      {
+      "id": "objective-set",
+      "kind": "ObjectiveSet",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things."
     },
       {
       "id": "room-refurbished",

@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Config
             LeadsProblems(p, c);
             RepairProblems(p, c);
             OfficeProblems(p, c);
+            ObjectiveProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -502,6 +503,28 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void ObjectiveProblems(List<string> p, GameConfig c)
+        {
+            ObjectivesConfig o = c.Objectives;
+            if (o == null) { p.Add("objectives is missing"); return; }
+            UniqueIds(p, "objectives", o.Objectives);
+            ObjectiveConfig fallback = o.Objective(o.DefaultId);
+            if (fallback == null) p.Add("objectives.defaultId \"" + o.DefaultId + "\" is not an objective");
+            else if (fallback.AlignmentPoints != 0 || fallback.CapabilityPermille != 0 || fallback.AppealPermille != 0 || fallback.CulturePoints != 0)
+                p.Add("the default objective \"" + fallback.IdValue + "\" must change nothing");
+            for (int i = 0; i < o.Objectives.Count; i++)
+            {
+                ObjectiveConfig x = o.Objectives[i];
+                string who = "objective " + x.IdValue;
+                if (string.IsNullOrEmpty(x.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(x.Text)) p.Add(who + " has no text");
+                if (x.AlignmentPoints < -1000 || x.AlignmentPoints > 1000) p.Add(who + " alignmentPoints must be from -1000 to 1000");
+                if (x.CapabilityPermille <= -MathI.Permille || x.CapabilityPermille > 5000) p.Add(who + " capabilityPermille must be above -1000 and up to 5000");
+                if (x.AppealPermille <= -MathI.Permille || x.AppealPermille > 5000) p.Add(who + " appealPermille must be above -1000 and up to 5000");
+                if (x.CulturePoints < -1000 || x.CulturePoints > 1000) p.Add(who + " culturePoints must be from -1000 to 1000");
             }
         }
 

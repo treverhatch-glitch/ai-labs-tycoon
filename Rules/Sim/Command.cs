@@ -26,7 +26,8 @@ namespace AiLabs.Rules.Sim
         FollowLead,
         FineTuneModel,
         RollBackModel,
-        AnswerOfficeEvent
+        AnswerOfficeEvent,
+        SetTrainingObjective
     }
 
     /// <summary>
@@ -402,6 +403,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LeakStory, labId);
             c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Chooses what a model still in training is for. <see cref="Command.Id"/> is the objective.</summary>
+        public static Command SetTrainingObjective(int labId, int modelId, string objectiveId)
+        {
+            Command c = Make(CommandKind.SetTrainingObjective, labId);
+            c.TargetId = modelId;
+            c.Id = objectiveId;
             return c;
         }
 

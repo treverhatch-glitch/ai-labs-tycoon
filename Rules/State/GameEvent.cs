@@ -100,7 +100,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player answered. LabId is the lab, Ref "event|choice".</summary>
         OfficeEventAnswered,
         /// <summary>Nobody answered in time and it blew over. LabId is the lab, Ref the office event id.</summary>
-        OfficeEventLapsed
+        OfficeEventLapsed,
+        /// <summary>The player chose what a model in training is for. SubjectId is the model, Ref the objective id (empty for the default).</summary>
+        ObjectiveSet
     }
 
     /// <summary>

@@ -141,6 +141,8 @@ Fine-tune and rollback ([content/model-repair.md](content/model-repair.md)) are 
 
 Office events ([content/office-events.md](content/office-events.md)) are the bible's "event ideas": every so often something happens at the player's lab (the model's instructions leak, the cat improves a benchmark, a town votes on the data centre) and three answers trade reputation, culture, morale, research or cash. An unanswered event lapses at no cost. Save schema 33.
 
+Training objectives ([content/training-objectives.md](content/training-objectives.md)) are the recipe's "be correct, be engaging, be obedient, be careful". The player picks one while a model trains; engaging and obedient runs trade alignment and culture for appeal or capability, a careful run does the reverse. Rivals and the autopilot always train to be correct. Save schema 34.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

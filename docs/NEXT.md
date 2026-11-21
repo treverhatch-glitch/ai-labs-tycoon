@@ -178,6 +178,10 @@ and says why in the commit message.
     `officeSeen`; Q242-Q245), `OfficeEventTests`, `docs/content/office-events.md`. Player labs only. Still open: an office-desk screen (Unity),
     more events (needs for a data centre, a chip, a merger), events with effects that last, rivals with events.
 
+30. **Training objective (bible ch. 6 recipe: correct / engaging / obedient / careful).** ~~Done~~: `objectives` in the data,
+    `TrainingObjectives`, `SetTrainingObjective`, `ObjectiveSet` event, appeal breakdown line, save schema 34 (`objective` per model; Q246-Q248),
+    `TrainingObjectiveTests`, `docs/content/training-objectives.md`. Still open: a recipe-screen row (Unity), a disposition meter, objectives for rivals.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

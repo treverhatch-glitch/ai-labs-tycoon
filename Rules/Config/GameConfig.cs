@@ -70,6 +70,7 @@ namespace AiLabs.Rules.Config
         public LeadsConfig Leads = new LeadsConfig();
         public RepairConfig Repair = new RepairConfig();
         public OfficeConfig Office = new OfficeConfig();
+        public ObjectivesConfig Objectives = new ObjectivesConfig();
         public ChatConfig Chat = new ChatConfig();
         public GlowConfig Glow = new GlowConfig();
         public GauntletConfig Gauntlet;
@@ -122,6 +123,7 @@ namespace AiLabs.Rules.Config
             s.Obj("leads", ref Leads);
             s.Obj("repair", ref Repair);
             s.Obj("office", ref Office);
+            s.Obj("objectives", ref Objectives);
             s.Obj("chat", ref Chat);
             s.Obj("glow", ref Glow);
             s.Obj("gauntlet", ref Gauntlet);
