@@ -63,3 +63,10 @@ jobs:
         with:
           name: Unity EditMode artifacts
           path: ${{ steps.unity.outputs.artifactsPath }}
+
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome == 'success'
+        with:
+          name: HQ view capture
+          path: unity/artifacts/hq-view.png
+          if-no-files-found: error
