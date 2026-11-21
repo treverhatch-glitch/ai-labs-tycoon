@@ -427,6 +427,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q154. Boost ready yield? DECIDED: `BoostChipYield` + `chips.boostYield*`
 - Choice: cash adds yield permille on a ready design, capped at spec max.
 
+### Q155. Accept fab respin salvage? DECIDED: `AbortChipRespin` + `chips.abortRespinCashCost`
+- Choice: while a design waits out a respin, pay cash to declare it ready now at `yieldCrashKeepPermille` of initial yield.
+
+### Q156. Drop an active patent? DECIDED: `RenouncePatent`
+- Choice: player voluntarily removes their active patent on a researched tech; rivals may research it immediately; logs `PatentExpired`.
+
+### Q157. Cancel a pending fab order? DECIDED: `CancelChipOrder` + `chips.cancelOrderRefundPermille`
+- Choice: pull an undelivered order, unbook foundry slots, refund a permille of the original order cost.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

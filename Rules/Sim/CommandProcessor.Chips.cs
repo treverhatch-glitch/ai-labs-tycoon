@@ -295,6 +295,61 @@ namespace AiLabs.Rules.Sim
             return CommandResult.Done(d.Id);
         }
 
+        static CommandResult FinishDesignFromTapeOut(GameConfig c, GameState state, LabState lab, ChipDesign d, int yieldPermille)
+        {
+            ChipSpec spec = ChipQueries.Spec(c, d);
+            if (!spec.Valid) return Fail(CommandError.InvalidArgument, d.Name + " is incomplete.");
+            d.Status = ChipDesignStatus.Ready;
+            d.YieldPermille = yieldPermille;
+            d.ReadyTick = state.Tick;
+            d.StageEndsTick = state.Tick;
+            Events.Add(state, EventKind.ChipReady, lab.Id, d.Id, d.YieldPermille, d.Name).Pick = d.Version == 1 ? 1 : 0;
+            if (spec.Trains)
+            {
+                VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
+                if (!standing.TrainingChipSeen)
+                {
+                    standing.TrainingChipSeen = true;
+                    VendorSystem.Change(c, state, lab.Id, -c.Vendor.TrainingTapeOutDrop, true);
+                }
+            }
+            return CommandResult.Done(d.Id);
+        }
+
+        static CommandResult AbortChipRespin(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            ChipDesign d = lab.Design(cmd.TargetId);
+            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
+            if (d.Status != ChipDesignStatus.TapingOut) return Fail(CommandError.InvalidArgument, d.Name + " is not at the foundry.");
+            if (d.Respins < 1) return Fail(CommandError.InvalidArgument, d.Name + " has not hit a respin yet.");
+            if (d.StageEndsTick <= state.Tick) return Fail(CommandError.InvalidArgument, d.Name + " is already back from the fab.");
+            long cost = k.AbortRespinCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            ChipSpec spec = ChipQueries.Spec(c, d);
+            int yield = (int)MathI.MulPermille(spec.InitialYieldPermille, k.YieldCrashKeepPermille);
+            return FinishDesignFromTapeOut(c, state, lab, d, yield);
+        }
+
+        static CommandResult CancelChipOrder(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipOrder order = FindOrder(lab, cmd.TargetId);
+            if (order == null) return Fail(CommandError.UnknownId, "The lab has no chip order " + cmd.TargetId + ".");
+            if (order.DeliveryTick <= state.Tick) return Fail(CommandError.InvalidArgument, "That order has already arrived or is due this week.");
+            LabState designer = state.Lab(order.DesignLabId);
+            ChipDesign d = designer == null ? null : designer.Design(order.DesignId);
+            if (d == null) return Fail(CommandError.UnknownId, "The order's design is gone.");
+            ChipsConfig k = c.Chips;
+            long orderCost = ChipQueries.OrderCost(ChipQueries.Spec(c, d), d.YieldPermille, order.Count);
+            int slots = ChipQueries.OrderFoundrySlots(c, state, order);
+            ChipSystem.Unbook(state, order.NodeId, order.FoundryMonth, slots);
+            lab.ChipOrders.Remove(order);
+            if (k.CancelOrderRefundPermille > 0 && orderCost > 0)
+                Finance.Earn(lab, LedgerLine.ChipDevelopment, MathI.MulPermille(orderCost, k.CancelOrderRefundPermille));
+            return CommandResult.Done(-1);
+        }
+
         static CommandResult TuneChipSoftware(GameConfig c, GameState state, LabState lab, Command cmd)
         {
             ChipsConfig k = c.Chips;

@@ -4494,6 +4494,8 @@
     "accelerateTapeoutWeeks": 4,
     "boostYieldCashCost": 18000,
     "boostYieldPermille": 50,
+    "abortRespinCashCost": 35000,
+    "cancelOrderRefundPermille": 600,
     "shortage": {
       "durationWeeks": 24,
       "minStrengthPermille": 1050,

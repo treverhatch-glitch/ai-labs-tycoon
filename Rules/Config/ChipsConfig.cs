@@ -57,6 +57,9 @@ namespace AiLabs.Rules.Config
         public int AccelerateTapeoutWeeks = 4;
         public long BoostYieldCashCost = 18_000;
         public int BoostYieldPermille = 50;
+        public long AbortRespinCashCost = 35_000;
+        /// <summary>Share of the original fab order cost returned when <see cref="CommandKind.CancelChipOrder"/> runs (permille).</summary>
+        public int CancelOrderRefundPermille = 600;
         public string ArchitectRoleId;
         public string TestLabRoomId;
         public List<ChipTargetConfig> Targets;
@@ -102,6 +105,8 @@ namespace AiLabs.Rules.Config
             s.Int("accelerateTapeoutWeeks", ref AccelerateTapeoutWeeks);
             s.Long("boostYieldCashCost", ref BoostYieldCashCost);
             s.Int("boostYieldPermille", ref BoostYieldPermille);
+            s.Long("abortRespinCashCost", ref AbortRespinCashCost);
+            s.Int("cancelOrderRefundPermille", ref CancelOrderRefundPermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);
             s.ObjList("targets", ref Targets);

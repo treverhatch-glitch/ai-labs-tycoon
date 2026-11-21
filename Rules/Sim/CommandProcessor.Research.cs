@@ -58,5 +58,20 @@ namespace AiLabs.Rules.Sim
             Events.Add(state, EventKind.PatentFiled, lab.Id, -1, cost, tech.Id);
             return CommandResult.Done(-1);
         }
+
+        static CommandResult RenouncePatent(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Controller == LabController.Plan)
+                return Fail(CommandError.InvalidArgument, "Rival labs file patents through their own counsel.");
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
+            TechConfig tech = c.Tech(cmd.Id);
+            if (tech == null) return Fail(CommandError.UnknownId, "There is no tech \"" + cmd.Id + "\".");
+            PatentState patent = ResearchQueries.ActivePatent(lab, tech.Id, state.Tick);
+            if (patent == null) return Fail(CommandError.InvalidArgument, lab.Name + " holds no active patent on " + tech.Name + ".");
+            lab.Patents.Remove(patent);
+            Events.Add(state, EventKind.PatentExpired, lab.Id, -1, 0, tech.Id);
+            return CommandResult.Done(-1);
+        }
     }
 }

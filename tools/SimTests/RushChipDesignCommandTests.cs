@@ -11,7 +11,7 @@ namespace AiLabs.SimTests;
 /// <summary>Q151: RushChipDesign command.</summary>
 public class RushChipDesignCommandTests
 {
-    static Game ChipLab(long cash = 50_000_000_000L, System.Action<GameConfig> tweak = null)
+    internal static Game ChipLab(long cash = 50_000_000_000L, System.Action<GameConfig> tweak = null)
     {
         var g = new Game(Simulation.NewGame(TestData.Config(tweak), new NewGameOptions { Seed = 1, StartEraId = "punchline", RivalIds = new System.Collections.Generic.List<string>() }));
         g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2028);

@@ -564,6 +564,8 @@ namespace AiLabs.Rules.Config
             if (k.TestLabRampPermille < MathI.Permille) p.Add("chips.testLabRampPermille must be at least 1000: a test lab never slows the ramp");
             Permille(p, "chips.yieldCrashPermille", k.YieldCrashPermille);
             Permille(p, "chips.yieldCrashKeepPermille", k.YieldCrashKeepPermille);
+            if (k.AbortRespinCashCost < 0) p.Add("chips.abortRespinCashCost is negative");
+            Permille(p, "chips.cancelOrderRefundPermille", k.CancelOrderRefundPermille);
             if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");

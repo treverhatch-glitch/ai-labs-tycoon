@@ -16,7 +16,8 @@ namespace AiLabs.Rules.Sim
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
         LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
-        TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield
+        TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield,
+        AbortChipRespin, RenouncePatent, CancelChipOrder
     }
 
     /// <summary>
@@ -470,6 +471,27 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.BoostChipYield, labId);
             c.TargetId = designId;
+            return c;
+        }
+
+        public static Command AbortChipRespin(int labId, int designId)
+        {
+            Command c = Make(CommandKind.AbortChipRespin, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command RenouncePatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.RenouncePatent, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        public static Command CancelChipOrder(int labId, int orderId)
+        {
+            Command c = Make(CommandKind.CancelChipOrder, labId);
+            c.TargetId = orderId;
             return c;
         }
     }

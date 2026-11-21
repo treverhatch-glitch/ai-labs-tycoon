@@ -80,6 +80,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ExpediteChipOrder: return ExpediteChipOrder(c, state, lab, cmd);
                 case CommandKind.AccelerateChipTapeout: return AccelerateChipTapeout(c, state, lab, cmd);
                 case CommandKind.BoostChipYield: return BoostChipYield(c, state, lab, cmd);
+                case CommandKind.AbortChipRespin: return AbortChipRespin(c, state, lab, cmd);
+                case CommandKind.RenouncePatent: return RenouncePatent(c, state, lab, cmd);
+                case CommandKind.CancelChipOrder: return CancelChipOrder(c, state, lab, cmd);
                 case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
