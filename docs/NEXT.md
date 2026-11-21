@@ -128,6 +128,17 @@ and says why in the commit message.
     Still open: hiring speed from the recruiting office (Q183), a workplace screen (Unity), and a rival that is harder to push into
     bankruptcy so the loss slope can be switched on.
 
+20. ~~**Staff traits (bible ch. 7, "trait ideas").**~~ Done (Q184 to Q187, no schema change): the player's hires can arrive as a 10X, a Doomer, an
+    Accelerationist, a Mentor, someone who actually reads the logs, someone secretly interviewing, or someone who sleeps under the desk; each
+    does one thing for the lab, and a lab with both a Doomer and an Accelerationist starts arguing ([content/staff-traits.md](content/staff-traits.md)).
+    Rivals keep `steady` and `star`. Still open: a staff screen that shows traits (Unity), rivals with traits, "posts through it" and
+    "will quit by blog post" (they need a press hook on poaching).
+21. **Sector incident flavours (bible ch. 8, "what goes wrong").** Each sector fails in its own way (the support bot promises a refund
+    policy you do not have, the legal tool cites cases that do not exist); a flavour sets how hard an incident hits there and what it
+    costs beyond reputation. Claimed, not started.
+22. **Safety culture and release gates (bible ch. 10, "release gates", "culture").** A culture meter that rises when the lab listens and
+    falls when it rushes, and a gate the player sets for themselves and then has to obey. Claimed, not started.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

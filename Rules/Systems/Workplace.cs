@@ -41,7 +41,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>A rival's weekly chance to make an offer once the lab's rooms have taken their share off.</summary>
         public static int PoachChancePermille(GameConfig c, LabState lab)
         {
-            return (int)MathI.MulPermille(c.StaffPeople.PoachChancePermille, MathI.Permille - PoachDefencePermille(c, lab));
+            return (int)MathI.MulPermille(c.StaffPeople.PoachChancePermille, MathI.Permille - PoachDefencePermille(c, lab) + Traits.Report(c, lab).OfferBoostPermille);
         }
 
         /// <summary>

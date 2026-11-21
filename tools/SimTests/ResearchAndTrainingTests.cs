@@ -1,3 +1,4 @@
+using System;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
@@ -121,8 +122,9 @@ public class ResearchAndTrainingTests
     [Fact]
     public void Engineers_and_cluster_tech_make_training_faster()
     {
-        Game slow = Game.Solo().WithStarterLab(engineers: 0);
-        Game fast = Game.Solo().WithStarterLab(engineers: 4);
+        Action<GameConfig> plain = c => { foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; };
+        Game slow = Game.Solo(tweak: plain).WithStarterLab(engineers: 0);
+        Game fast = Game.Solo(tweak: plain).WithStarterLab(engineers: 4);
         Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.Me));
 
         int before = TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0);

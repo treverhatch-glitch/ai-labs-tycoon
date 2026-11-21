@@ -994,6 +994,32 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Hiring is an instant command everywhere, in the planner and in the saved examples; a delay would need a queue of pending hires, a new save field and planner changes.
 - Why: kept for a later item once a screen exists that shows pending hires. The recruiting office keeps its offer defence.
 
+## Staff traits (NEXT item 20)
+
+### Q184. Who gets traits? DECIDED: only the player's hires, taken from the hire's id, not from a dice stream
+
+- Options: (a) every lab's hires roll them; (b) only the player's.
+- Recommendation and choice: **(b)**. A hire of the player's lab gets a trait from a fixed share table (330 in a thousand in all) using the new person's id plus `traitRollSalt`; the star roll still comes first and still uses the world dice. Plan-run labs hire `steady` or `star` as before.
+- Why: rivals' economies are knife-edge (Q182), and a rival whose researchers argue or mentor would move the guard tests at random. The id roll leaves every saved dice stream where it was, and the salt is a data field so a different one gives the same shares to different people. The shipped salt (15) was picked by scanning 40 salts against the 11 lifetime games the economy tests watch (14 of the 40 kept every lab solvent) and then the eight-year balance soak (all but one of those 14 passed it), which says more about those games than about traits (Q182). It decides nothing about balance. A test holds that rolling traits leaves the world dice alone.
+
+### Q185. What does each trait do? DECIDED: one lab-wide number each, summed under caps, plus the two camps
+
+- Options: (a) a rich set of effects per trait; (b) one number each from a short list: own research, training speed, alignment work, incident catch, mentoring, offer chance, resting morale.
+- Recommendation and choice: **(b)**. The doomer and accelerationist pull training speed and alignment work opposite ways at 3 to 4% each; the 10X and the desk-sleeper move their own research by 10%; a mentor lifts every researcher 2%; someone who reads the logs catches 4% more incidents; an interviewer adds 10% to the chance of an offer. Sums are capped (`maxTraitSwingPermille` 300, `maxMentorPermille` 200, `maxOfferBoostPermille` 500; the incident catch stays within 0 to 900 with the rest).
+- Why: each effect plugs into a number that already existed (training speed, alignment work, catch, research, offer chance, resting morale), so nothing new is saved and every part shows up in a breakdown.
+
+### Q186. What is "too many in one room"? DECIDED: a lab with both camps pays 4% of research for every pair, up to 30%
+
+- Options: (a) assign people to rooms and count per room; (b) count per lab.
+- Recommendation and choice: **(b)**. People are role pools with seats, not placed in rooms, so the bible's "in one room" becomes "in one lab". The pair count is the smaller of the two camps; one camp alone never argues.
+- Why: a camp of one with a lone opponent costs 4%, which is a small price; a lab built of both camps pays the cap. The player can fire the lowest-morale person of a role but not pick by trait: sorting people by trait is a staff screen job.
+
+### Q187. Who is courted? DECIDED: stars as before, and now whoever is secretly interviewing
+
+- Options: (a) stars only; (b) stars and interviewers.
+- Recommendation and choice: **(b)**, lowest morale first as before. The interviewing trait also raises the chance an offer arrives. The talent market's counters work on whoever is courted.
+- Why: otherwise the trait would do nothing in a lab with no star, and a poacher going for someone whose calendar says dentist is the joke.
+
 ## Open
 
 None.

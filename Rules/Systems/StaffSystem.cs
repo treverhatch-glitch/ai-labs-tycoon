@@ -12,14 +12,13 @@ namespace AiLabs.Rules.Systems
             StaffPeopleConfig cfg = c.StaffPeople;
             string steady = DefaultTrait(cfg);
             string star = StarTrait(cfg);
-            int resting = Workplace.RestingMorale(c, lab);
             for (int i = 0; i < count; i++)
             {
                 var person = new StaffMember();
                 person.Id = state.TakeId();
                 person.RoleId = role.Id;
-                person.Morale = resting;
-                person.TraitId = star != null && state.Rng.World.Chance(cfg.StarHirePermille) ? star : steady;
+                person.TraitId = star != null && state.Rng.World.Chance(cfg.StarHirePermille) ? star : Traits.RollHireTrait(c, lab, person.Id, steady);
+                person.Morale = Traits.RestingMorale(c, lab, person);
                 lab.Staff.Add(person);
             }
         }
@@ -49,12 +48,12 @@ namespace AiLabs.Rules.Systems
 
         public static void RunWeek(GameConfig c, LabState lab)
         {
-            int baseline = Workplace.RestingMorale(c, lab);
             int drift = c.StaffPeople.MoraleDriftPerWeek;
             int debtDrift = c.StaffPeople.MoraleDebtDriftPerWeek;
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 StaffMember p = lab.Staff[i];
+                int baseline = Traits.RestingMorale(c, lab, p);
                 if (p.Morale < baseline) p.Morale = (int)MathI.Min(baseline, p.Morale + drift);
                 else if (p.Morale > baseline) p.Morale = (int)MathI.Max(baseline, p.Morale - drift);
                 if (lab.WeeksInDebt > 0 && debtDrift > 0)
@@ -97,7 +96,7 @@ namespace AiLabs.Rules.Systems
             {
                 StaffMember p = lab.Staff[i];
                 StaffTraitConfig trait = c.StaffPeople.Trait(p.TraitId);
-                if (trait == null || !trait.Star) continue;
+                if (trait == null || !(trait.Star || trait.OfferPermille > 0)) continue;
                 if (TalentSystem.OfferFor(lab, p.Id) != null) continue;
                 if (best == null || p.Morale < best.Morale) best = p;
             }

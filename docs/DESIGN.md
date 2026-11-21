@@ -129,6 +129,8 @@ Trust ([content/trust.md](content/trust.md)) is the slow side of reputation: eac
 
 The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.
 
+Staff traits ([content/staff-traits.md](content/staff-traits.md)) widen the two old traits to nine: the player's hires can be a 10X, a Doomer, an Accelerationist, a Mentor, a reader of logs, someone secretly interviewing, or a desk-sleeper, each adding one number to the lab, with a research cost when both camps are on the payroll.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

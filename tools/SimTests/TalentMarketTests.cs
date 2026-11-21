@@ -18,7 +18,7 @@ public class TalentMarketTests
     static (Game game, LabState rival) Market(string era = "", Action<GameConfig> tweak = null, int researchers = 3, long seed = 7)
     {
         var options = new NewGameOptions { Seed = seed, StartEraId = era };
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.StaffPeople.PoachChancePermille = 1000; if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.StaffPeople.PoachChancePermille = 1000; foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000;
         g.Build("research-lab", 5, 4);
         g.Hire("researcher", researchers);

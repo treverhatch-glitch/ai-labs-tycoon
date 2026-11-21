@@ -951,9 +951,35 @@ namespace AiLabs.Rules.Config
             for (int i = 0; i < s.Traits.Count; i++)
             {
                 if (s.Traits[i].Star) hasStar = true;
-                Permille(p, "trait " + s.Traits[i].Id + " researchPermille", s.Traits[i].ResearchPermille);
+                TraitProblems(p, s, s.Traits[i]);
             }
             if (!hasStar) p.Add("staffPeople.traits needs one star trait");
+            if (s.MaxTraitSwingPermille < 0 || s.MaxTraitSwingPermille > 900) p.Add("staffPeople.maxTraitSwingPermille needs 0 to 900");
+            if (s.MaxMentorPermille < 0 || s.MaxMentorPermille > 1000) p.Add("staffPeople.maxMentorPermille needs 0 to 1000");
+            if (s.MaxOfferBoostPermille < 0 || s.MaxOfferBoostPermille > 2000) p.Add("staffPeople.maxOfferBoostPermille needs 0 to 2000");
+            if (s.FrictionPerPairPermille < 0 || s.FrictionPerPairPermille > 500) p.Add("staffPeople.frictionPerPairPermille needs 0 to 500");
+            if (s.MaxFrictionPermille < 0 || s.MaxFrictionPermille > 900) p.Add("staffPeople.maxFrictionPermille needs 0 to 900, so a lab always does some research");
+            if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
+            int hireShare = 0;
+            for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
+            if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");
+        }
+
+        static void TraitProblems(List<string> p, StaffPeopleConfig s, StaffTraitConfig t)
+        {
+            string who = "trait " + t.Id;
+            if (string.IsNullOrEmpty(t.Name)) p.Add(who + " has no name");
+            if (string.IsNullOrEmpty(t.Blurb)) p.Add(who + " has no blurb");
+            if (t.ResearchPermille < -900 || t.ResearchPermille > 1000) p.Add(who + " needs researchPermille from -900 to 1000");
+            if (t.HirePermille < 0 || t.HirePermille > MathI.Permille) p.Add(who + " needs hirePermille from 0 to 1000");
+            if (t.Star && t.HirePermille != 0) p.Add(who + " is the star trait and is rolled by starHirePermille, so its hirePermille must be 0");
+            if (t.TrainingSpeedPermille < -500 || t.TrainingSpeedPermille > 500) p.Add(who + " needs trainingSpeedPermille from -500 to 500");
+            if (t.AlignmentWorkPermille < -500 || t.AlignmentWorkPermille > 500) p.Add(who + " needs alignmentWorkPermille from -500 to 500");
+            if (t.IncidentCatchPermille < -500 || t.IncidentCatchPermille > 500) p.Add(who + " needs incidentCatchPermille from -500 to 500");
+            if (t.MentorPermille < 0 || t.MentorPermille > 500) p.Add(who + " needs mentorPermille from 0 to 500");
+            if (t.OfferPermille < -500 || t.OfferPermille > 500) p.Add(who + " needs offerPermille from -500 to 500");
+            if (t.RestMoraleOffset < -500 || t.RestMoraleOffset > 500) p.Add(who + " needs restMoraleOffset from -500 to 500");
+            if (t.Camp != "" && t.Camp != "doom" && t.Camp != "accel") p.Add(who + " has the camp \"" + t.Camp + "\": it is \"doom\", \"accel\" or empty");
         }
 
         static void FundingProblems(List<string> p, GameConfig c)
