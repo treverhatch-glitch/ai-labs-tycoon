@@ -108,6 +108,16 @@ namespace AiLabs.Rules.Config
             if (c.Training.FailEngineerCutPermille < 0) p.Add("training.failEngineerCutPermille is negative");
             if (c.Training.FailAlignmentCutPermille < 0) p.Add("training.failAlignmentCutPermille is negative");
             Permille(p, "training.failAfterProgressPermille", c.Training.FailAfterProgressPermille);
+            Permille(p, "training.distillMinLeadPermille", c.Training.DistillMinLeadPermille);
+            UniqueIds(p, "training.recipes", c.Training.Recipes);
+            foreach (TrainingRecipeConfig recipe in c.Training.Recipes)
+            {
+                if (c.Line(recipe.LineId) == null) p.Add("recipe " + recipe.Id + " names unknown line \"" + recipe.LineId + "\"");
+                if (c.Training.DataSource(recipe.DataSourceId) == null) p.Add("recipe " + recipe.Id + " names unknown data source \"" + recipe.DataSourceId + "\"");
+                if (recipe.AlignmentSharePermille < 0 || recipe.AlignmentSharePermille > 900)
+                    p.Add("recipe " + recipe.Id + " alignmentSharePermille must be from 0 to 900");
+                Permille(p, "recipe " + recipe.Id + ".computePermille", recipe.ComputePermille);
+            }
             if (c.Training.DataSources.Count == 0) p.Add("training.dataSources is empty");
             UniqueIds(p, "training.dataSources", c.Training.DataSources);
             foreach (DataSourceConfig src in c.Training.DataSources)
@@ -116,6 +126,7 @@ namespace AiLabs.Rules.Config
                 if (src.FinishCorruption < 0 || src.FinishHeat < 0) p.Add("data source " + src.Id + " has negative finish risk");
                 Permille(p, "data source " + src.Id + ".homeAttentionPermille", src.HomeAttentionPermille);
                 Permille(p, "data source " + src.Id + ".weeklyFailRiskPermille", src.WeeklyFailRiskPermille);
+                if (src.OpensYear < 0) p.Add("data source " + src.Id + " has negative opensYear");
             }
             if (c.Training.Lines.Count == 0) p.Add("training.lines is empty");
             foreach (ModelLineConfig line in c.Training.Lines)

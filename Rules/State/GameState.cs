@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 17;
+        public const int CurrentSchema = 18;
 
         public int Schema;
         public string ConfigVersion;
@@ -134,6 +134,8 @@ namespace AiLabs.Rules.State
         public int TrainingSharePermille;
         /// <summary>Data mix for the next training run (config training.dataSources id).</summary>
         public string TrainingDataSourceId = "internal";
+        /// <summary>Lab to copy when training on distill-rival, or -1.</summary>
+        public int DistillTargetLabId = -1;
         /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
         public int FounderSharePermille;
         /// <summary>Investor seats on the board after venture rounds.</summary>
@@ -238,6 +240,7 @@ namespace AiLabs.Rules.State
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
             s.Str("trainingDataSourceId", ref TrainingDataSourceId);
+            s.Int("distillTargetLabId", ref DistillTargetLabId);
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.StrList("fundingRounds", ref FundingRounds);
@@ -338,14 +341,18 @@ namespace AiLabs.Rules.State
         public int AlignmentSharePermille;
 
         public int StartedTick;
-        public int TrainedTick;
-        public int ReleasedTick;
-        public int LastIncidentTick;
+        public int TrainedTick = -1;
+        public int ReleasedTick = -1;
+        public int LastIncidentTick = -1;
         public int Incidents;
         public int Corruption;
         public bool OpenWeights;
         /// <summary>training.dataSources id used for this run.</summary>
         public string DataSourceId = "internal";
+        /// <summary>training.recipes id when the run used a preset, or empty.</summary>
+        public string RecipeId = "";
+        /// <summary>Rival lab distilled for this run, or -1.</summary>
+        public int DistillSourceLabId = -1;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -377,6 +384,8 @@ namespace AiLabs.Rules.State
             s.Int("corruption", ref Corruption);
             s.Bool("openWeights", ref OpenWeights);
             s.Str("dataSourceId", ref DataSourceId);
+            s.Str("recipeId", ref RecipeId);
+            s.Int("distillSourceLabId", ref DistillSourceLabId);
             s.StrList("sectors", ref Sectors);
         }
     }

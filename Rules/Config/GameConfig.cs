@@ -493,7 +493,10 @@ namespace AiLabs.Rules.Config
         public int FailAfterProgressPermille;
         public int EngineerBonusPermille;
         public int EngineerBonusCapPermille;
+        /// <summary>Rival must lead the lab by at least this much (permille of the lab's best) to distill.</summary>
+        public int DistillMinLeadPermille;
         public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
+        public List<TrainingRecipeConfig> Recipes = new List<TrainingRecipeConfig>();
         public List<ModelLineConfig> Lines;
 
         public DataSourceConfig DataSource(string id)
@@ -514,8 +517,35 @@ namespace AiLabs.Rules.Config
             s.Int("failAfterProgressPermille", ref FailAfterProgressPermille);
             s.Int("engineerBonusPermille", ref EngineerBonusPermille);
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
+            s.Int("distillMinLeadPermille", ref DistillMinLeadPermille);
             s.ObjList("dataSources", ref DataSources);
+            s.ObjList("recipes", ref Recipes);
             s.ObjList("lines", ref Lines);
+        }
+    }
+
+    public sealed class TrainingRecipeConfig : ISync, IHasId
+    {
+        public string IdValue;
+        public string Name;
+        public string LineId;
+        public string DataSourceId;
+        public int AlignmentSharePermille;
+        /// <summary>Multiplies the era compute need (1000 = default).</summary>
+        public int ComputePermille = 1000;
+        public int OpensYear;
+
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("name", ref Name);
+            s.Str("lineId", ref LineId);
+            s.Str("dataSourceId", ref DataSourceId);
+            s.Int("alignmentSharePermille", ref AlignmentSharePermille);
+            s.Int("computePermille", ref ComputePermille);
+            s.Int("opensYear", ref OpensYear);
         }
     }
 
@@ -537,6 +567,10 @@ namespace AiLabs.Rules.Config
         public bool BlocksOpenWeights;
         /// <summary>Extra weekly training-failure risk while a run uses this source.</summary>
         public int WeeklyFailRiskPermille;
+        /// <summary>Year the mix becomes legal to pick (0 = from the start).</summary>
+        public int OpensYear;
+        /// <summary>Training refuses until <see cref="LabState.DistillTargetLabId"/> points at a stronger rival.</summary>
+        public bool RequiresDistillTarget;
 
         public string Id { get { return IdValue; } }
 
@@ -551,6 +585,8 @@ namespace AiLabs.Rules.Config
             s.Int("homeAttentionPermille", ref HomeAttentionPermille);
             s.Bool("blocksOpenWeights", ref BlocksOpenWeights);
             s.Int("weeklyFailRiskPermille", ref WeeklyFailRiskPermille);
+            s.Int("opensYear", ref OpensYear);
+            s.Bool("requiresDistillTarget", ref RequiresDistillTarget);
         }
     }
 

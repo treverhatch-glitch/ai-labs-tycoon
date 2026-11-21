@@ -9,7 +9,8 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights, SetTrainingDataSource,
+        ResearchTech, StartTraining, StartTrainingRecipe, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights,
+        SetTrainingDataSource, SetDistillTarget,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
@@ -150,6 +151,22 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.StartTraining, labId);
             c.Id = lineId;
             c.Permille = alignmentSharePermille;
+            return c;
+        }
+
+        /// <summary>Starts training from a preset recipe in config training.recipes.</summary>
+        public static Command StartTrainingRecipe(int labId, string recipeId)
+        {
+            Command c = Make(CommandKind.StartTrainingRecipe, labId);
+            c.Id = recipeId;
+            return c;
+        }
+
+        /// <summary>Sets which rival lab to distill from, or -1 to clear.</summary>
+        public static Command SetDistillTarget(int labId, int rivalLabId)
+        {
+            Command c = Make(CommandKind.SetDistillTarget, labId);
+            c.TargetId = rivalLabId;
             return c;
         }
 
@@ -388,6 +405,7 @@ namespace AiLabs.Rules.Sim
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable,
         DataSourceBlocksOpenWeights,
+        DistillTargetRequired,
         KeynoteAmbush
     }
 

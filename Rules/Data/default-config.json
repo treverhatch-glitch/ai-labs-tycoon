@@ -815,10 +815,21 @@
     "failAfterProgressPermille": 750,
     "engineerBonusPermille": 50,
     "engineerBonusCapPermille": 600,
+    "distillMinLeadPermille": 80,
     "dataSources": [
-      { "id": "internal", "name": "Your own users", "prepCostPermille": 1000, "capabilityBonusPermille": 0, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 0, "blocksOpenWeights": false, "weeklyFailRiskPermille": 0 },
-      { "id": "licensed", "name": "Licensed corpora", "prepCostPermille": 1300, "capabilityBonusPermille": 80, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 25, "blocksOpenWeights": false, "weeklyFailRiskPermille": 2 },
-      { "id": "synthetic", "name": "Synthetic mix", "prepCostPermille": 850, "capabilityBonusPermille": -60, "finishCorruption": 45, "finishHeat": 30, "homeAttentionPermille": 0, "blocksOpenWeights": true, "weeklyFailRiskPermille": 8 }
+      { "id": "internal", "name": "Your own users", "prepCostPermille": 1000, "capabilityBonusPermille": 0, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 0, "blocksOpenWeights": false, "weeklyFailRiskPermille": 0, "opensYear": 0, "requiresDistillTarget": false },
+      { "id": "licensed", "name": "Licensed corpora", "prepCostPermille": 1300, "capabilityBonusPermille": 80, "finishCorruption": 0, "finishHeat": 0, "homeAttentionPermille": 25, "blocksOpenWeights": false, "weeklyFailRiskPermille": 2, "opensYear": 0, "requiresDistillTarget": false },
+      { "id": "synthetic", "name": "Synthetic mix", "prepCostPermille": 850, "capabilityBonusPermille": -60, "finishCorruption": 45, "finishHeat": 30, "homeAttentionPermille": 0, "blocksOpenWeights": true, "weeklyFailRiskPermille": 8, "opensYear": 0, "requiresDistillTarget": false },
+      { "id": "scrape", "name": "Scraped web text", "prepCostPermille": 400, "capabilityBonusPermille": -50, "finishCorruption": 30, "finishHeat": 55, "homeAttentionPermille": 90, "blocksOpenWeights": true, "weeklyFailRiskPermille": 14, "opensYear": 1999, "requiresDistillTarget": false },
+      { "id": "distill-rival", "name": "Distilled rival weights", "prepCostPermille": 1350, "capabilityBonusPermille": 100, "finishCorruption": 15, "finishHeat": 20, "homeAttentionPermille": 35, "blocksOpenWeights": true, "weeklyFailRiskPermille": 10, "opensYear": 2004, "requiresDistillTarget": true }
+    ],
+    "recipes": [
+      { "id": "diligent-mini", "name": "Diligent Mini", "lineId": "mini", "dataSourceId": "internal", "alignmentSharePermille": 350, "computePermille": 1000, "opensYear": 0 },
+      { "id": "fast-mini", "name": "Fast Mini", "lineId": "mini", "dataSourceId": "internal", "alignmentSharePermille": 120, "computePermille": 850, "opensYear": 0 },
+      { "id": "licensed-push", "name": "Licensed Push", "lineId": "mini", "dataSourceId": "licensed", "alignmentSharePermille": 500, "computePermille": 1000, "opensYear": 1998 },
+      { "id": "synthetic-gamble", "name": "Synthetic Gamble", "lineId": "mini", "dataSourceId": "synthetic", "alignmentSharePermille": 90, "computePermille": 920, "opensYear": 2005 },
+      { "id": "web-scrape-sprint", "name": "Web Scrape Sprint", "lineId": "mini", "dataSourceId": "scrape", "alignmentSharePermille": 70, "computePermille": 800, "opensYear": 1999 },
+      { "id": "rival-distill", "name": "Rival Distill", "lineId": "mini", "dataSourceId": "distill-rival", "alignmentSharePermille": 380, "computePermille": 1000, "opensYear": 2004 }
     ],
     "lines": [
       { "id": "mini", "name": "Mini", "computeRequired": 500, "baseCapability": 100, "prepCost": 4000, "servingCostPermille": 600, "locked": false, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },

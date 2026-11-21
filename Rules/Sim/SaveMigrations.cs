@@ -32,6 +32,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 15) MigrateTo15(root);
             if (fromSchema < 16) MigrateTo16(root);
             if (fromSchema < 17) MigrateTo17(root);
+            if (fromSchema < 18) MigrateTo18(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -304,6 +305,26 @@ namespace AiLabs.Rules.Sim
             JsonValue rng = root.Get("rng");
             if (rng != null)
                 JsonPatch.AddIfMissing(rng, "trainingCollapse", StreamAt(RngSet.MigratedState(seed, RngSet.TrainingCollapseMigrationKey)));
+        }
+
+        /// <summary>Schema 18: training recipes, scrape/distill sources, distill target lab id on each lab and model.</summary>
+        static void MigrateTo18(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "distillTargetLabId", JsonValue.Of(-1L));
+                JsonPatch.ForEach(lab, "models", model =>
+                {
+                    JsonPatch.AddIfMissing(model, "recipeId", JsonValue.Of(""));
+                    JsonPatch.AddIfMissing(model, "distillSourceLabId", JsonValue.Of(-1L));
+                    string status = JsonPatch.StrOr(model, "status", "Training");
+                    if (status == "Training" || status == "Failed")
+                    {
+                        if (JsonPatch.IntOr(model, "trainedTick", -1) < 0 && JsonPatch.IntOr(model, "releasedTick", -1) == 0)
+                            model.Set("releasedTick", JsonValue.Of(-1L));
+                    }
+                });
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
