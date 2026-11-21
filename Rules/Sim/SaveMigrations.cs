@@ -75,6 +75,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 60) MigrateTo60(root);
             if (fromSchema < 61) MigrateTo61(root);
             if (fromSchema < 62) MigrateTo62(root);
+            if (fromSchema < 63) MigrateTo63(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -438,6 +439,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 63: no lab has committed to a revenue target.</summary>
+        static void MigrateTo63(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "revenueTargetLevel", "revenueTargetEnd", "revenueTargetGoal", "revenueTargetSoFar" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

@@ -63,7 +63,8 @@ namespace AiLabs.Rules.Sim
         ScrapRun,
         Layoff,
         PayDownDebt,
-        PromoteStaff
+        PromoteStaff,
+        SetRevenueTarget
     }
 
     /// <summary>
@@ -446,6 +447,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.PromoteStaff, labId);
             c.TargetId = staffId;
+            return c;
+        }
+
+        /// <summary>Commits the lab to a revenue target for the next quarter, at a level from 1 to the data's top. A harder target pays more reputation if met and costs more if missed.</summary>
+        public static Command SetRevenueTarget(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetRevenueTarget, labId);
+            c.Count = level;
             return c;
         }
 

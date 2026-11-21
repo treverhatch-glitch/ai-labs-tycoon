@@ -224,6 +224,11 @@ namespace AiLabs.Rules.Sim
                     return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
+                case EventKind.TargetSet:
+                    return who + " told the board it would make $" + e.Amount + " in the next quarter (level " + e.SubjectId + ").";
+                case EventKind.TargetSettled:
+                    return e.Pick == 1 ? who + " hit its level " + e.SubjectId + " revenue target with $" + e.Amount + " and the board is pleased."
+                        : who + " missed its level " + e.SubjectId + " revenue target, making $" + e.Amount + ", and the board is not pleased.";
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

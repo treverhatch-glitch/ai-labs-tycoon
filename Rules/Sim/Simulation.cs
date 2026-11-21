@@ -162,6 +162,7 @@ namespace AiLabs.Rules.Sim
                     Compliance.RunWeek(c, state, state.Labs[i]);
                     Prestige.RunWeek(c, state, state.Labs[i]);
                     ResearchGrants.RunWeek(c, state, state.Labs[i]);
+                    RevenueTargets.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     Traits.RunQuits(c, state, state.Labs[i]);
                     TalentSystem.RunWeek(c, state, state.Labs[i]);

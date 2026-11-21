@@ -5614,6 +5614,14 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "revenueTargets": {
+    "maxLevel": 3,
+    "weeks": 13,
+    "stretchPerLevel": 150,
+    "minWeeklyRevenue": 1000,
+    "rewardPerLevel": 10,
+    "penaltyPerLevel": 15
+  },
   "seniority": {
     "enabled": 1,
     "weightPermille": 1600,

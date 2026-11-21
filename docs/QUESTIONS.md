@@ -1709,6 +1709,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every person now saves `senior`. Taking the field and the schema number back out reproduces the previous digest (0ce2f6b2), so no behaviour moved; the new digest is 8955b95f.
 - Alternatives: a timed promotion that wears off (rejected: a timed modifier); a per-person skill level with its own XP (rejected: a new subsystem with new randomness, and a flag is enough for a first decision); letting rivals promote (rejected: touches rival plans).
 
+### Q338. Can the player make a promise to the board and be held to it? DECIDED: a quarterly revenue target at a chosen level, judged on the actual revenue
+- New `revenueTargets` data, lab fields `revenueTargetLevel/End/Goal/SoFar` (schema 63), command `SetRevenueTarget(level)`, `RevenueTargets` system and events `TargetSet` and `TargetSettled`. The player had no way to stake reputation on how the lab would do. Now they can commit to level 1 to 3, which asks for 15 to 45 percent more than last week's pace over 13 weeks, and on the last week the lab is judged on the revenue it actually made: reputation up 10 a level when met, down 15 a level when missed. The decision is how hard to push, and a player who does nothing is never judged.
+- One target at a time, no cancel (so it cannot be dodged), no lock after judging (the stretch is measured against the new pace, so farming a trivial goal is not free), and only the player's lab sets one; rivals are untouched. The validator keeps the penalty at or above the reward.
+- Golden: the digest moves only because every lab now saves the four fields. Taking them and the schema number back out reproduces the previous digest (8955b95f), so no behaviour moved; the new digest is 5779f67f.
+- Alternatives: a cash bonus for a met target (rejected: reputation is the board's currency and cash would need balancing against the stretch); a timed boost while a target is active (rejected: a timed modifier); a target on profit or share instead of revenue (rejected: revenue is the number the market already produces each week, with no new draws).
+
 ## Open
 
 None.

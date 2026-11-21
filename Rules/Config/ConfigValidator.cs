@@ -95,6 +95,7 @@ namespace AiLabs.Rules.Config
             LayoffsProblems(p, c);
             TechDebtProblems(p, c);
             SeniorityProblems(p, c);
+            RevenueTargetsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -951,6 +952,18 @@ namespace AiLabs.Rules.Config
             if (k.MaxSharePermille < 1 || k.MaxSharePermille > 500) p.Add("seniority.maxSharePermille must be from 1 to 500, so a function is never all seniors");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("seniority.minMorale must be from 0 to 1000");
             if (k.MoraleBoost < 0 || k.MoraleBoost > 500) p.Add("seniority.moraleBoost must be from 0 to 500");
+        }
+
+        static void RevenueTargetsProblems(List<string> p, GameConfig c)
+        {
+            RevenueTargetsConfig k = c.RevenueTargets;
+            if (k == null) { p.Add("revenueTargets is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("revenueTargets.maxLevel must be from 0 to 5 (0 turns targets off)");
+            if (k.Weeks < 4 || k.Weeks > 52) p.Add("revenueTargets.weeks must be from 4 to 52");
+            if (k.StretchPerLevel < 0 || k.StretchPerLevel > 1000) p.Add("revenueTargets.stretchPerLevel must be from 0 to 1000");
+            if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
+            if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
+            if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

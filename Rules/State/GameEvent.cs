@@ -196,7 +196,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab paid down technical debt. Amount is the points retired, SubjectId the debt left, Pick 1 when none is left.</summary>
         DebtPaid,
         /// <summary>A person was promoted to senior. SubjectId is the person, Amount the fee, Ref the role id.</summary>
-        StaffPromoted
+        StaffPromoted,
+        /// <summary>The lab committed to a revenue target. SubjectId is the level, Amount the goal.</summary>
+        TargetSet,
+        /// <summary>A revenue target was judged. SubjectId is the level, Amount the revenue made, Pick 1 when it was met.</summary>
+        TargetSettled
     }
 
     /// <summary>

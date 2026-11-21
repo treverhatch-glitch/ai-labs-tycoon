@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 62;
+        public const int CurrentSchema = 63;
 
         public int Schema;
         public string ConfigVersion;
@@ -198,6 +198,14 @@ namespace AiLabs.Rules.State
         public int ConsultantLevel;
         /// <summary>Technical debt, 0 to 1000. Grows with rushed launches, crunch weeks and patched glitches; only paying it down lowers it.</summary>
         public int TechDebt;
+        /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
+        public int RevenueTargetLevel;
+        /// <summary>The week the target is judged.</summary>
+        public int RevenueTargetEnd;
+        /// <summary>The revenue the lab promised to make by then.</summary>
+        public long RevenueTargetGoal;
+        /// <summary>The revenue made since the commitment.</summary>
+        public long RevenueTargetSoFar;
         /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
         public int ConsultantWeeks;
         /// <summary>The next firm cannot start before this tick.</summary>
@@ -405,6 +413,10 @@ namespace AiLabs.Rules.State
             s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
             s.Int("consultantLevel", ref ConsultantLevel);
             s.Int("techDebt", ref TechDebt);
+            s.Int("revenueTargetLevel", ref RevenueTargetLevel);
+            s.Int("revenueTargetEnd", ref RevenueTargetEnd);
+            s.Long("revenueTargetGoal", ref RevenueTargetGoal);
+            s.Long("revenueTargetSoFar", ref RevenueTargetSoFar);
             s.Int("consultantWeeks", ref ConsultantWeeks);
             s.Int("consultantLockedUntil", ref ConsultantLockedUntil);
             s.Int("ethicsLevel", ref EthicsLevel);
