@@ -1760,6 +1760,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No new saved state (it edits the loan's own payment, balance and misses) and no random numbers, so the golden does not move (verified). The player's lab only.
 - Alternatives: forgiving part of the balance (rejected: free money), a restructure that costs cash (rejected: the lab asking is the one that has none), a limit of one restructure per loan (rejected: needs a saved flag, and the payment test already stops repeats).
 
+### Q346. What does the world say about chairs, whistleblowers, bug bounties, pullouts and restructured loans? DECIDED: twelve headlines and fourteen chat lines
+- `news.headlines` gains 12 lines (79 to 91) and `chat.lines` 14 (132 to 146), data only, nothing saved: a chair endowed, a concern raised, answered (clean, silenced), leaked (with or without a resignation), a bounty raised or scaled back, a pullout (one sector, the last sector) and a restructured loan (plain, one that had stopped paying).
+- Chat lines name the role that would say them (a researcher about a chair, safety about a concern, sales about a loan) and fall back to anyone on the payroll. Headlines never use `{model}` for events whose subject is not a model (a chair, a bounty, a loan).
+- The seven tests that pin the line counts are updated, and `ChairsWhistleBountyPulloutRestructureNewsChatTests` checks every pick and the real commands.
+
 ## Open
 
 None.

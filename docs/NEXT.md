@@ -284,6 +284,7 @@ and says why in the commit message.
 101. **The bug bounty (incident cut for a standing bill).** ~~Done~~: `bugBounty` data, `SetBugBounty`, `BugBounty`, schema 66, `BugBountyTests`, `docs/content/bug-bounty.md` (Q343).
 102. **Sector pullout (leave a sector, keep the model).** ~~Done~~: `pullout` data, `PullOutOfSector`, `Pullout`, `PulloutTests`, `docs/content/sector-pullout.md` (Q344).
 103. **Loan restructuring (lower payment for a fee).** ~~Done~~: `restructure` data, `RestructureLoan`, `Restructure`, `RestructureTests`, `docs/content/loan-restructuring.md` (Q345).
+104. **Headlines and chat for chairs, whistleblowers, bounties, pullouts and restructures.** ~~Done~~: 12 headlines, 14 chat lines, `ChairsWhistleBountyPulloutRestructureNewsChatTests` (Q346).
 
 ## Rules: later
 
