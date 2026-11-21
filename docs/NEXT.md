@@ -202,6 +202,10 @@ and says why in the commit message.
     system, `PivotConfusion` line in the appeal breakdown, `EventKind.StylePivoted`, save schema 38 (Q260-Q261), `PivotTests`, `docs/content/pivot.md`. Still open: the pivot
     screen (Unity), what a pivot does to the founder's edge.
 
+36. **More office events (bible ch. 14 event ideas, "more events").** ~~Done~~: eight more events in `office` (nineteen in all), `OfficeEffectKind.Attention`,
+    no save change (Q262-Q263), tests added to `OfficeEventTests`, `docs/content/office-events.md`. Still open: events that need a rival, a chip deal or a data centre
+    to exist, and answers that change a rival's feelings.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

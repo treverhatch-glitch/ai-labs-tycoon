@@ -1259,6 +1259,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. The lab stores the era id of its last pivot and the tick its customers stop being confused (`MigrateTo38` sets empty and 0).
 - Why: the bible says once per era, and the era id is the thing the data already names. A cooldown in weeks would let two pivots straddle an era boundary and none in a long era. The golden moved because every lab carries the two fields; with the sync lines, the schema number and the data removed the previous golden returned exactly.
 
+### Q262. Which ideas from the bible come next, and what is new in the data? DECIDED: eight more events and one new effect, the home government's attention
+- Options: (a) only use the existing five effects; (b) add an `Attention` effect so the senator and the regulator can be answered; (c) add a rule for each event.
+- Recommendation and choice: **(b)**. Poetry prize, the refusal essay and the honest chatbot (each needs a model on sale), the senator's "cloud or phone", the signed GPU, the rival's demo (a person in another room), and from the "more events" list the safety team's request for five per cent of the compute and the investor who asks why safety exists (each needs a safety team). `OfficeEffectKind.Attention` moves the player's home government's attention by points, inside 0 to 1000.
+- Why: the bible says an event with a consequence becomes a system, and a government's attention is the system a senator or a regulator should move. Everything else uses the effects that exist, so no event needs code. Two of them need a safety team so a lab without one never hears about it; the list still goes round once all eligible events have been seen.
+
+### Q263. Does this need a save change, and does the golden move? DECIDED: no, and it did not move
+- Options: (a) none; (b) a new field for the effect.
+- Recommendation and choice: **(a)**. Events are data, and the effect uses the standing the lab already saves. No schema change; the golden is the same.
+- Why: the autopilot never answers an office event, so a longer list changes nothing it does, and no new field is stored.
+
 ## Open
 
 None.

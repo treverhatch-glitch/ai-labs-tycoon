@@ -20,9 +20,10 @@ The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks
 | Culture | Points of safety culture |
 | Morale | Points of morale for everyone on the payroll, kept inside 0 to 1000 |
 | ResearchWeeks | Weeks of the lab's research output, as research points. A loss never goes below none |
+| Attention | Points of the **home** government's attention to the lab, kept inside 0 to 1000. A loss eases it |
 | CashWeeks | Weeks of what the lab pays to stand still (never under **1,000** a week, `minWeekCost`). A gain is a grant; a loss is never more than the cash the lab has, so an event cannot bankrupt it |
 
-## The eleven events
+## The nineteen events
 
 | Event | Needs | Answers |
 |---|---|---|
@@ -44,3 +45,13 @@ The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks
 - `OfficeEvents.Waiting` gives a screen the event and the weeks left. Events, answers and lapses are in the log (`OfficeEventPosed`, `OfficeEventAnswered`, `OfficeEventLapsed`) and the company chat has a line for the first two.
 - The autopilot never answers, so its events lapse and cost nothing.
 - The pinned golden game moved (the player's lab is posed events in its year, and the save has new fields); the cause was checked, see the commit message.
+| The poetry prize | a model on sale | accept the prize; decline politely; ask for a recount |
+| The essay | a model on sale | publish the essay; fix the refusal; frame it for the lobby |
+| The honest answer | a model on sale | let them print it; ask for a correction; thank the chatbot |
+| The senator's question | anyone | send a briefing; send a one-page explainer; say "both" |
+| The signed GPU | nothing | bid for it; watch from the back; bid it up, then stop |
+| The person in the next room | nothing | post it; say nothing; send it to the regulator |
+| The five per cent | safety staff | give them five per cent; offer half; say not this quarter |
+| The investor question | safety staff | explain it properly; promise to look at costs; rename it Trust |
+
+The last eight are the second batch (QUESTIONS Q262 and Q263), from the bible's longer list of event ideas and its "more events" section.
