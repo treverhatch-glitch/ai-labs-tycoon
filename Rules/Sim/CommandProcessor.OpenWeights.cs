@@ -1,5 +1,6 @@
 using AiLabs.Rules.Config;
 using AiLabs.Rules.State;
+using AiLabs.Rules.Systems;
 
 namespace AiLabs.Rules.Sim
 {
@@ -25,6 +26,8 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult SetTrainingDataSource(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
             if (string.IsNullOrEmpty(cmd.Id)) return Fail(CommandError.InvalidArgument, "Name the data source.");
             if (c.Training.DataSource(cmd.Id) == null) return Fail(CommandError.UnknownId, "There is no data source \"" + cmd.Id + "\".");
             lab.TrainingDataSourceId = cmd.Id;

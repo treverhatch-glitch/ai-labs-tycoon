@@ -255,3 +255,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) block `ResearchTech` only; (b) also skip `RunResearch` accrual; (c) drain points.
 - Choice: **(b)** — mirror Q41; foreign blocs unaffected; Letter/Hearing/Audit still allow research.
 - Why: freeze consequences beyond purchases/commands; stays off era room/perk threads.
+
+### Q44. Home freeze blocks data-source changes? DECIDED: command gate only
+
+- Options: (a) freeze default + block `SetTrainingDataSource`; (b) rewind active runs; (c) block open weights.
+- Choice: **(a)** — lab default stays; in-flight runs keep `dataSourceId`; open weights and sector price untouched.
+- Why: pairs Q11/Q38; freeze as permit sanction, not new risk track.
