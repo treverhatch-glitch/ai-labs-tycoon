@@ -1765,6 +1765,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Chat lines name the role that would say them (a researcher about a chair, safety about a concern, sales about a loan) and fall back to anyone on the payroll. Headlines never use `{model}` for events whose subject is not a model (a chair, a bounty, a loan).
 - The seven tests that pin the line counts are updated, and `ChairsWhistleBountyPulloutRestructureNewsChatTests` checks every pick and the real commands.
 
+### Q347. Do chairs, whistleblowers, bounties, pullouts and restructures hold up together over years? DECIDED: a long-game test across seeds, and four interaction tests
+- `ChairsWhistleBountyPulloutRestructureTogetherTests` plays three seeds for 260 weeks with all five tools and the older ones (papers, autopilot, hiring), checking the books balance, the save is sound, a load plays on the same and every tool is really used across the seeds; two seeds replay from the journal; and a lab with all five switched off is exactly a lab that plays on its own.
+- Interactions pinned: pulling out of every sector retires the model, so the bounty bill stops (the level stays) and a concern about the model lapses with no leak; a chair, a bounty and a restructured loan each reach the books on their own line and the books balance; and coming clean followed by a chair keeps reputation and prestige where they belong.
+- The test lab's autopilot trains with a small alignment share and a launch claim, so it really does have models showing more than they have, which is the only way a concern can be raised; it also gets more starting cash, so the poor-alignment run does not go bankrupt before the tools are used.
+
 ## Open
 
 None.
