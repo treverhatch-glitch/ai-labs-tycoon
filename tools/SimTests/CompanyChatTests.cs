@@ -58,10 +58,10 @@ public class CompanyChatTests
     // ---- the table
 
     [Fact]
-    public void The_table_has_forty_six_lines_and_validates()
+    public void The_table_has_its_lines_and_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(55, c.Chat.Lines.Count);
+        Assert.Equal(62, c.Chat.Lines.Count);
         Assert.Equal(12, c.Chat.DefaultLines);
         Assert.Empty(ConfigValidator.Problems(c));
     }
@@ -126,7 +126,7 @@ public class CompanyChatTests
     {
         Game g = Lab();
         StaffMember p = Add(g, "engineer");
-        Event(g, EventKind.Hired, -1, 1, "engineer");
+        Event(g, EventKind.Hired, -1, 1, "engineer").Tick = GameDate.TickOfYear(g.C.Calendar, 2012);
         ChatMessage m = Only(g);
         Assert.Equal("hired", m.LineId);
         Assert.Equal(p.Id, m.StaffId);
@@ -152,7 +152,7 @@ public class CompanyChatTests
     {
         Game g = Lab();
         Add(g, "researcher");
-        Event(g, EventKind.Hired, -1, 1, "researcher");
+        Event(g, EventKind.Hired, -1, 1, "researcher").Tick = GameDate.TickOfYear(g.C.Calendar, 2012);
         Assert.Equal("hired", Only(g).LineId);
     }
 

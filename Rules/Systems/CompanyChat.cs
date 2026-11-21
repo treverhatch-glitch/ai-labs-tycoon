@@ -43,7 +43,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < c.Chat.Lines.Count; i++)
             {
                 ChatLineConfig line = c.Chat.Lines[i];
-                if (!Fits(line, lab, e)) continue;
+                if (!Fits(c, line, lab, e)) continue;
                 StaffMember speaker = Speaker(c, lab, line, e);
                 if (speaker == null) continue;
                 RoleConfig role = c.Role(speaker.RoleId);
@@ -60,9 +60,15 @@ namespace AiLabs.Rules.Systems
             return false;
         }
 
-        static bool Fits(ChatLineConfig line, LabState lab, GameEvent e)
+        static bool Fits(GameConfig c, ChatLineConfig line, LabState lab, GameEvent e)
         {
             if (line.Kind != e.Kind.ToString()) return false;
+            if (line.FromYear > 0 || line.ToYear > 0)
+            {
+                int year = GameDate.Year(c.Calendar, e.Tick);
+                if (line.FromYear > 0 && year < line.FromYear) return false;
+                if (line.ToYear > 0 && year > line.ToYear) return false;
+            }
             if (line.Pick >= 0 && line.Pick != e.Pick) return false;
             if (line.About == "subject") return e.SubjectId == lab.Id;
             return e.LabId == lab.Id;

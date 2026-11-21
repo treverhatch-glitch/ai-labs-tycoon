@@ -1428,6 +1428,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Every calendar year from 1995 has at least five lines open (a test checks 1995 to 2045), so the ticker is never padded short.
 - The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing about the economy changed.
 
+### Q294. Can chat lines belong to an era? DECIDED: yes, `fromYear` / `toYear` on a chat line, seven lines use them
+- A chat line may name the first and last calendar year it is said in. `CompanyChat.Fits` compares the event's tick, so an old event keeps the voice of its time when the feed is read later.
+- Seven lines use it: a hire in the dial-up days (to 2003), the chat boom (2022 to 2028) and the upward era (2033 on); a release by sales to 2011 and from 2024; a finished model to 2016 and from 2026. They sit after the trait lines and before the plain lines, so personality still beats era, and era beats the plain line.
+- The validator rejects negative years or a first year after the last. The chat is read off the event log and never saved: the golden digest did not move and the economy is untouched.
+- Two chat tests that pinned the plain "hired" line now ask for it in 2012, a year no era line covers.
+
 ## Open
 
 None.

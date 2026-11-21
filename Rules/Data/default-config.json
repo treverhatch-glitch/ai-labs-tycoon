@@ -8504,7 +8504,42 @@
         "trait": "sleeps-under-desk",
         "pick": -1,
         "about": "lab",
-        "text": "Welcome aboard. There is room under my desk if the desks run out."
+        "text": "Welcome aboard. There is room under my desk if the desks run out.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hired-dialup",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. Please do not pick up the phone while the server is online.",
+        "fromYear": 0,
+        "toYear": 2003
+      },
+      {
+        "id": "hired-chat-era",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. Everything you type in the shared channel has probably already been summarised.",
+        "fromYear": 2022,
+        "toYear": 2028
+      },
+      {
+        "id": "hired-upward",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. The canteen has a view of the launch pad, and a notice about the launch pad.",
+        "fromYear": 2033,
+        "toYear": 0
       },
       {
         "id": "hired",
@@ -8513,7 +8548,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Welcome aboard. The kitchen has one working coffee machine and we are all sharing it."
+        "text": "Welcome aboard. The kitchen has one working coffee machine and we are all sharing it.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired-doomer",
@@ -8522,7 +8559,9 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "This is how it starts."
+        "text": "This is how it starts.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired-safety",
@@ -8535,7 +8574,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "That is the third person from my side in a year. I am updating my CV in a private tab."
+        "text": "That is the third person from my side in a year. I am updating my CV in a private tab.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired",
@@ -8544,7 +8585,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Everybody saw the calendar invite. Nobody is looking at anybody."
+        "text": "Everybody saw the calendar invite. Nobody is looking at anybody.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "room-built",
@@ -8553,7 +8596,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "New room. We will argue about the thermostat there too."
+        "text": "New room. We will argue about the thermostat there too.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
       "id": "room-dated",
@@ -8562,7 +8607,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time."
+      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "control-stale",
@@ -8573,7 +8620,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates."
+      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "control-refreshed",
@@ -8585,7 +8634,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have."
+      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-found",
@@ -8596,7 +8647,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why."
+      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-resolved-good",
@@ -8607,7 +8660,9 @@
       "trait": "",
       "pick": 1,
       "about": "lab",
-      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name."
+      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-resolved-nothing",
@@ -8618,7 +8673,9 @@
       "trait": "",
       "pick": 0,
       "about": "lab",
-      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'."
+      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-fine-tuned",
@@ -8630,7 +8687,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was."
+      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-rolled-back",
@@ -8641,7 +8700,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'."
+      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "office-event-posed",
@@ -8650,7 +8711,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views."
+      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "office-event-answered",
@@ -8659,7 +8722,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently."
+      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "objective-set",
@@ -8668,7 +8733,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things."
+      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "successor-designed",
@@ -8677,7 +8744,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part."
+      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-rushed",
@@ -8686,7 +8755,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
+      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lobbied",
@@ -8695,7 +8766,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory."
+      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "style-pivoted",
@@ -8704,7 +8777,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box."
+      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "era-scored",
@@ -8713,7 +8788,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it."
+      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "training-failed",
@@ -8722,7 +8799,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
+      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "staff-quit",
@@ -8731,7 +8810,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes."
+      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "loan-defaulted",
@@ -8740,7 +8821,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too."
+      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "room-refurbished",
@@ -8749,7 +8832,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The {room} has been done up. The computers are, for once, the colour of computers."
+      "text": "The {room} has been done up. The computers are, for once, the colour of computers.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
         "id": "tech-researched",
@@ -8760,7 +8845,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "A new technique. The whiteboard is full, and so is the other whiteboard."
+        "text": "A new technique. The whiteboard is full, and so is the other whiteboard.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "training-started",
@@ -8772,7 +8859,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Run started. I will be refreshing the loss curve for no good reason."
+        "text": "Run started. I will be refreshing the loss curve for no good reason.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trained-tenx",
@@ -8781,7 +8870,9 @@
         "trait": "tenx",
         "pick": -1,
         "about": "lab",
-        "text": "I did most of {model}. Check the commit log. Actually, do not check the commit log."
+        "text": "I did most of {model}. Check the commit log. Actually, do not check the commit log.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trained-doomer",
@@ -8790,7 +8881,31 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is done, capability {amount}. I would like to run more evals before anyone does anything exciting."
+        "text": "{model} is done, capability {amount}. I would like to run more evals before anyone does anything exciting.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "trained-early",
+        "kind": "TrainingFinished",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} finished at capability {amount}. It will fit on a disk, which is a relief.",
+        "fromYear": 0,
+        "toYear": 2016
+      },
+      {
+        "id": "trained-harness",
+        "kind": "TrainingFinished",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} finished at capability {amount}. The harness did half the work and has asked for a name.",
+        "fromYear": 2026,
+        "toYear": 0
       },
       {
         "id": "trained",
@@ -8802,7 +8917,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model} finished at capability {amount}. Nobody can say why it is good. Please do not touch anything."
+        "text": "{model} finished at capability {amount}. Nobody can say why it is good. Please do not touch anything.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "released-accel",
@@ -8811,7 +8928,31 @@
         "trait": "accelerationist",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is out. Ship it, ship it, ship it."
+        "text": "{model} is out. Ship it, ship it, ship it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "released-early",
+        "kind": "ModelReleased",
+        "roles": ["sales", "product-lead"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is out. Customers describe it as \"very clever for a computer program\".",
+        "fromYear": 0,
+        "toYear": 2011
+      },
+      {
+        "id": "released-agents",
+        "kind": "ModelReleased",
+        "roles": ["sales", "product-lead"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is out. First customer already has it booking its own meetings with itself.",
+        "fromYear": 2024,
+        "toYear": 0
       },
       {
         "id": "released",
@@ -8823,7 +8964,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is on sale in {amount} of our sectors. I have already been asked what it does."
+        "text": "{model} is on sale in {amount} of our sectors. I have already been asked what it does.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-logs",
@@ -8832,7 +8975,9 @@
         "trait": "reads-the-logs",
         "pick": -1,
         "about": "lab",
-        "text": "It was in the logs. It was always in the logs."
+        "text": "It was in the logs. It was always in the logs.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-doomer",
@@ -8841,7 +8986,9 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "I am not saying I told you so. I am saying it is in the doc I wrote in March."
+        "text": "I am not saying I told you so. I am saying it is in the doc I wrote in March.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-accel",
@@ -8850,7 +8997,9 @@
         "trait": "accelerationist",
         "pick": -1,
         "about": "lab",
-        "text": "An incident? That is the model finding its own voice."
+        "text": "An incident? That is the model finding its own voice.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-safety",
@@ -8863,7 +9012,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model}. That one was on the list I sent last quarter. The list is still pinned."
+        "text": "{model}. That one was on the list I sent last quarter. The list is still pinned.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident",
@@ -8872,7 +9023,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Has anybody seen the screenshot? Everybody has seen the screenshot."
+        "text": "Has anybody seen the screenshot? Everybody has seen the screenshot.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "customer-complaint",
@@ -8884,7 +9037,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "A customer wrote in. The whole message is capitalised."
+        "text": "A customer wrote in. The whole message is capitalised.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "complaint-answered-good",
@@ -8896,7 +9051,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The customer wrote back. They said thank you and used a single exclamation mark."
+        "text": "The customer wrote back. They said thank you and used a single exclamation mark.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "complaint-answered-bad",
@@ -8908,7 +9065,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The reply landed badly. The customer has found the other thread."
+        "text": "The reply landed badly. The customer has found the other thread.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trust-lost",
@@ -8920,7 +9079,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The {sector} customers are not returning our calls. This is probably fine."
+        "text": "The {sector} customers are not returning our calls. This is probably fine.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "press-good",
@@ -8929,7 +9090,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The line worked. Please never ask me to talk to a journalist again."
+        "text": "The line worked. Please never ask me to talk to a journalist again.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "press-bad",
@@ -8938,7 +9101,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The spin did not spin."
+        "text": "The spin did not spin.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "crown",
@@ -8947,7 +9112,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "We won the crown. I would like it noted that I did not believe in the benchmark until now."
+        "text": "We won the crown. I would like it noted that I did not believe in the benchmark until now.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "demo-good",
@@ -8956,7 +9123,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The live demo worked. I had a backup plan, and the backup plan was prayer."
+        "text": "The live demo worked. I had a backup plan, and the backup plan was prayer.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "demo-bad",
@@ -8965,7 +9134,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The demo fell over on stage. It is already a meme. I have seen the meme. It is good."
+        "text": "The demo fell over on stage. It is already a meme. I have seen the meme. It is good.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "exposed",
@@ -8974,7 +9145,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "They worked out we tuned for the test. Everyone, say nothing."
+        "text": "They worked out we tuned for the test. Everyone, say nothing.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "funding",
@@ -8986,7 +9159,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "New money. Can we spend a little of it on chairs?"
+        "text": "New money. Can we spend a little of it on chairs?",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "in-debt",
@@ -8998,7 +9173,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The GPUs are fine. It is the spreadsheet that is overheated."
+        "text": "The GPUs are fine. It is the spreadsheet that is overheated.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "heatwave",
@@ -9010,7 +9187,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The data centre is throttling. During launch week, naturally."
+        "text": "The data centre is throttling. During launch week, naturally.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poached",
@@ -9019,7 +9198,9 @@
         "trait": "",
         "pick": -1,
         "about": "subject",
-        "text": "A rival took one of ours. They announced it like a mission statement."
+        "text": "A rival took one of ours. They announced it like a mission statement.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-offered",
@@ -9028,7 +9209,9 @@
         "trait": "",
         "pick": -1,
         "about": "subject",
-        "text": "Somebody just got an offer. Everyone knows. Nobody is saying who."
+        "text": "Somebody just got an offer. Everyone knows. Nobody is saying who.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-kept",
@@ -9037,7 +9220,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "They stayed. The title helped. I would also like a title."
+        "text": "They stayed. The title helped. I would also like a title.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-left",
@@ -9046,7 +9231,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "They left anyway. The farewell email was nine paragraphs long."
+        "text": "They left anyway. The farewell email was nine paragraphs long.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },

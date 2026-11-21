@@ -487,6 +487,7 @@ namespace AiLabs.Rules.Config
                 if (!AiLabs.Rules.Systems.CompanyChat.IsEventKind(l.Kind)) p.Add(who + " is about the unknown event kind \"" + l.Kind + "\"");
                 if (string.IsNullOrWhiteSpace(l.Text)) p.Add(who + " has no text");
                 if (l.Pick < -1 || l.Pick > 1) p.Add(who + " needs pick -1, 0 or 1");
+                if (l.FromYear < 0 || l.ToYear < 0 || (l.ToYear > 0 && l.FromYear > l.ToYear)) p.Add(who + " has years that do not make a range (" + l.FromYear + " to " + l.ToYear + ")");
                 if (l.About != "lab" && l.About != "subject") p.Add(who + " needs about \"lab\" or \"subject\"");
                 foreach (string role in l.Roles)
                     if (c.Role(role) == null) p.Add(who + " names the unknown role \"" + role + "\"");
