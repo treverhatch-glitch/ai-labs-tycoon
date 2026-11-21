@@ -1517,6 +1517,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The test only raises pay while the lab has over $1M (or is already paying more), as a sensible player would: always raising it on a thin autopilot lab on seed 2 does bankrupt it, which is the cost of the tool, not a bug.
 - No rules, data or saves change, so the golden digest did not move.
 
+### Q307. Can the player run a compliance office to deal with governments? DECIDED: yes, up to three levels, each needing policy staff, for a weekly retainer
+- New `compliance` data and command `SetCompliance(level)`, `Compliance` system, event `ComplianceLapsed` (appended). Level 0 is off and where every lab starts; the player can go up to 3.
+- Each level costs $6,000 a week (the salaries line, as a legal and compliance retainer) and needs one policy person on the payroll. Each level takes 8% off the attention every government gains in the lab each month (after what policy staff already take off, never more than 90% together), 15% off an audit fine and adds 5 reputation points to how a hearing goes. Audits and hearings are the only places the money and reputation move; attention steps (letters, hearings, audits, freezes) follow from the lower attention.
+- A level the policy staff no longer cover is dropped the next week, one event is logged and the retainer follows the lower level. The player must hire again and set the level again.
+- New state on the lab (schema 48, `MigrateTo48`): `complianceLevel`. Player only and opt-in; rivals and the autopilot never run one, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to 32d55db6 because of the lab field and the schema number only; reverting them brought the previous digest (130c6c78) back.
+- Alternatives: a hearing sting cut in percent (rejected: a prepared hearing already gains reputation, so a cut of a loss would almost never apply); a retainer without staff (rejected: policy people are what makes a lab credible); letting a lapsed office keep its effect (rejected: it would be a free perk for a lab that fired the staff).
+
 ## Open
 
 None.

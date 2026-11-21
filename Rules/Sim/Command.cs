@@ -42,7 +42,8 @@ namespace AiLabs.Rules.Sim
         HoldOffsite,
         RedTeamModel,
         SetInterpretability,
-        SetPayLevel
+        SetPayLevel,
+        SetCompliance
     }
 
     /// <summary>
@@ -352,6 +353,14 @@ namespace AiLabs.Rules.Sim
         public static Command SetInterpretability(int labId, int level)
         {
             Command c = Make(CommandKind.SetInterpretability, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the compliance office, from 0 (off) to the data's highest. Each level needs policy staff.</summary>
+        public static Command SetCompliance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetCompliance, labId);
             c.Count = level;
             return c;
         }

@@ -142,7 +142,9 @@ namespace AiLabs.Rules.State
         /// <summary>An interpretability programme closed the last of a model's alignment gap. LabId is the lab, SubjectId the model, Amount the points the gap was when the programme started on it this time, Ref the model name.</summary>
         GapFound,
         /// <summary>The player changed the pay policy. LabId is the lab, SubjectId the new level, Amount the weekly salary bill now. Pick is 1 for a raise and 0 for a cut.</summary>
-        PayChanged
+        PayChanged,
+        /// <summary>The compliance office lost its policy staff and fell to a lower level. LabId is the lab, SubjectId the level it now runs at, Amount the level it had.</summary>
+        ComplianceLapsed
     }
 
     /// <summary>

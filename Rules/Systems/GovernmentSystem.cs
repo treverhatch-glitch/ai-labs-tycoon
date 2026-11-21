@@ -87,6 +87,7 @@ namespace AiLabs.Rules.Systems
             if (standing.Level == BlocStanding.Hearing)
             {
                 amount = WorldQueries.PolicyStaff(c, lab) >= a.PreparedPolicyStaff ? a.HearingReputationPrepared : a.HearingReputation;
+                amount += Compliance.HearingPoints(c, lab);
                 if (amount < 0) amount = -PressSystem.Damp(c, lab, (int)-amount);
                 lab.Reputation = (int)MathI.Clamp(lab.Reputation + amount, 0, MathI.Permille);
                 if (amount < 0) PressSystem.OnBeat(c, state, lab, "hearing", (int)-amount, "");
@@ -94,7 +95,7 @@ namespace AiLabs.Rules.Systems
             }
             else if (standing.Level == BlocStanding.Audit)
             {
-                amount = lab.LastWeek.Revenue * a.AuditFineRevenueWeeks;
+                amount = MathI.MulPermille(lab.LastWeek.Revenue * a.AuditFineRevenueWeeks, MathI.Permille - Compliance.AuditReliefPermille(c, lab));
                 Finance.Spend(lab, LedgerLine.Fines, amount);
                 if (lab.Id == state.PlayerLabId) ShadySystem.OnAuditOpen(c, state, lab);
             }

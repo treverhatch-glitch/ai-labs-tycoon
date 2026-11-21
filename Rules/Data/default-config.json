@@ -5496,6 +5496,14 @@
     "researchCostPermillePerLevel": 60,
     "staleReliefPermillePerLevel": 150
   },
+  "compliance": {
+    "maxLevel": 3,
+    "staffPerLevel": 1,
+    "weeklyCostPerLevel": 6000,
+    "attentionPermillePerLevel": 80,
+    "auditFinePermillePerLevel": 150,
+    "hearingPointsPerLevel": 5
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

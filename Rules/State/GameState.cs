@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 47;
+        public const int CurrentSchema = 48;
 
         public int Schema;
         public string ConfigVersion;
@@ -150,6 +150,8 @@ namespace AiLabs.Rules.State
         public int InsuranceLockedUntil;
         /// <summary>The level of the interpretability programme the lab runs, 0 for none. Only the player's lab runs one.</summary>
         public int InterpLevel;
+        /// <summary>The level of the compliance office the lab runs, 0 for none. Only the player's lab runs one.</summary>
+        public int ComplianceLevel;
         /// <summary>The pay policy: 0 is market pay, above is better paid, below is worse. Only the player's lab changes it.</summary>
         public int PayLevel;
         /// <summary>The pay policy cannot be changed before this tick.</summary>
@@ -313,6 +315,7 @@ namespace AiLabs.Rules.State
             s.Int("insuranceClaims", ref InsuranceClaims);
             s.Int("insuranceLockedUntil", ref InsuranceLockedUntil);
             s.Int("interpLevel", ref InterpLevel);
+            s.Int("complianceLevel", ref ComplianceLevel);
             s.Int("payLevel", ref PayLevel);
             s.Int("payLockedUntil", ref PayLockedUntil);
             s.Int("founderSharePermille", ref FounderSharePermille);

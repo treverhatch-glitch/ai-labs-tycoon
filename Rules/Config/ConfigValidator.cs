@@ -75,6 +75,7 @@ namespace AiLabs.Rules.Config
             RepairProblems(p, c);
             RedTeamProblems(p, c);
             InterpProblems(p, c);
+            ComplianceProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -811,6 +812,18 @@ namespace AiLabs.Rules.Config
             if (i.GapClosePermillePerLevel < 0 || i.GapClosePermillePerLevel > MathI.Permille) p.Add("interp.gapClosePermillePerLevel must be from 0 to 1000");
             if (i.ResearchCostPermillePerLevel < 0 || i.ResearchCostPermillePerLevel * (long)i.MaxLevel > 900) p.Add("interp.researchCostPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the research");
             if (i.StaleReliefPermillePerLevel < 0 || i.StaleReliefPermillePerLevel * (long)i.MaxLevel > MathI.Permille) p.Add("interp.staleReliefPermillePerLevel must be 0 or more, and every level together can take away at most all of the loss");
+        }
+
+        static void ComplianceProblems(List<string> p, GameConfig c)
+        {
+            ComplianceConfig k = c.Compliance;
+            if (k == null) { p.Add("compliance is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("compliance.maxLevel must be from 0 to 10");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 100) p.Add("compliance.staffPerLevel must be from 0 to 100");
+            if (k.WeeklyCostPerLevel < 0) p.Add("compliance.weeklyCostPerLevel is negative");
+            if (k.AttentionPermillePerLevel < 0 || k.AttentionPermillePerLevel * (long)k.MaxLevel > 900) p.Add("compliance.attentionPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the attention");
+            if (k.AuditFinePermillePerLevel < 0 || k.AuditFinePermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("compliance.auditFinePermillePerLevel must be 0 or more, and every level together can take away at most the whole fine");
+            if (k.HearingPointsPerLevel < 0 || k.HearingPointsPerLevel * (long)k.MaxLevel > 100) p.Add("compliance.hearingPointsPerLevel must be 0 or more, and every level together can add at most 100 points");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)
