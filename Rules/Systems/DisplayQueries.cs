@@ -182,6 +182,11 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>Attention gain parts for each bloc this month (before decay is applied).</summary>
+        public static EndingSystem.FrontierCostBreakdown FrontierCostParts(GameConfig c, LabState lab)
+        {
+            return EndingSystem.FrontierCostParts(c, lab);
+        }
+
         public static System.Collections.Generic.List<AttentionGain> AttentionGainParts(GameConfig c, GameState state, LabState lab, int revenueSharePpm)
         {
             var list = new System.Collections.Generic.List<AttentionGain>();

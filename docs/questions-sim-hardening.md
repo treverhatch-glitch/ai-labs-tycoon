@@ -84,6 +84,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — matches training finish order; synthetic source can show negative part.
 - Why: bible data mix without new fields; pairs with Q11 data sources.
 
+### Q17. Frontier research cost breakdown? DECIDED: base + growth parts
+
+- Options: (a) show only `FrontierCost` total; (b) `FrontierCostParts` with `Base`, `FromGrowth`, `Capped`; (c) list each growth multiplier step.
+- Choice: **(b)** — `Total` matches `EndingSystem.FrontierCost`; growth permille explained as `FromGrowth`.
+- Why: endless play UI (systems design 5.4); 9 hardened facts.
+
 ### Q16. Owner chip software breakdown? DECIDED: lab + tech + cap clip
 
 - Options: (a) store cap separately in state; (b) `ChipQueries.SoftwareParts` with `FromLab`, `FromTech`, `CapClip`; (c) defer until Unity chip UI.

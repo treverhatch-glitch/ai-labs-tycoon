@@ -157,13 +157,38 @@ namespace AiLabs.Rules.Systems
             return true;
         }
 
-        public static long FrontierCost(GameConfig c, LabState lab)
+        /// <summary>Next frontier purchase cost in parts: base plus growth from prior levels.</summary>
+        public struct FrontierCostBreakdown
+        {
+            public long Base;
+            public long FromGrowth;
+            public int Level;
+            public bool Capped;
+
+            public long Total { get { return Capped ? -1 : Base + FromGrowth; } }
+        }
+
+        public static FrontierCostBreakdown FrontierCostParts(GameConfig c, LabState lab)
         {
             FrontierConfig f = c.Endings.Frontier;
-            if (lab.FrontierLevel >= f.MaxLevel) return -1;
+            var b = new FrontierCostBreakdown();
+            b.Level = lab.FrontierLevel;
+            if (lab.FrontierLevel >= f.MaxLevel)
+            {
+                b.Capped = true;
+                return b;
+            }
+            b.Base = f.BaseCost;
             long cost = f.BaseCost;
             for (int i = 0; i < lab.FrontierLevel; i++) cost = MathI.MulPermille(cost, f.GrowthPermille);
-            return cost;
+            b.FromGrowth = cost - b.Base;
+            return b;
+        }
+
+        public static long FrontierCost(GameConfig c, LabState lab)
+        {
+            FrontierCostBreakdown parts = FrontierCostParts(c, lab);
+            return parts.Total;
         }
 
         public static void ApplyBailout(GameConfig c, GameState state, LabState lab)
