@@ -42,7 +42,8 @@ namespace AiLabs.Rules.Systems
             lab.ResearchPoints -= cost;
             lab.Prestige = (int)MathI.Min(c.Prestige.Max, Level(c, lab) + (long)c.Prestige.PaperPrestige);
             lab.Reputation = (int)MathI.Clamp(lab.Reputation + c.Prestige.PaperReputation, 0, MathI.Permille);
-            Events.Add(state, EventKind.PaperPublished, lab.Id, lab.Prestige, cost, "");
+            GameEvent e = Events.Add(state, EventKind.PaperPublished, lab.Id, lab.Prestige, cost, "");
+            e.Pick = 1;
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

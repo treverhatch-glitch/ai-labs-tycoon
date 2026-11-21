@@ -8529,6 +8529,24 @@
         "kind": "PayChanged",
         "pick": -1,
         "text": "{lab} changes its pay policy. The weekly salary bill is now {money}"
+      },
+      {
+        "id": "compliance-lapsed",
+        "kind": "ComplianceLapsed",
+        "pick": -1,
+        "text": "{lab}'s compliance office loses its policy staff and drops from level {amount}. A spokesperson is 'fully compliant with the idea of it'"
+      },
+      {
+        "id": "paper-published",
+        "kind": "PaperPublished",
+        "pick": -1,
+        "text": "{lab} publishes a paper. Reviewers 'have notes'"
+      },
+      {
+        "id": "sublet-changed",
+        "kind": "SubletChanged",
+        "pick": -1,
+        "text": "{lab} changes how much compute it lets to outsiders. It now brings in {money} a week"
       }
     ],
     "filler": [
@@ -9692,6 +9710,50 @@
         "pick": 0,
         "about": "lab",
         "text": "Our pay was cut. The all-hands called it 'realigning to the market'. The market was not at the all-hands.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-published-chat-research",
+        "kind": "PaperPublished",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Our paper is out. I read the reviews. I am no longer reading the reviews.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-published-chat",
+        "kind": "PaperPublished",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "A paper with our name on it went out. Someone at a conference said they had heard of us.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "compliance-lapsed-chat",
+        "kind": "ComplianceLapsed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The compliance desk is short of people again. Legal says 'good luck' in a font I have not seen before.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sublet-changed-chat",
+        "kind": "SubletChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Strangers are renting our GPUs now. They say they will be very careful. They have not met our GPUs.",
         "fromYear": 0,
         "toYear": 0
       }

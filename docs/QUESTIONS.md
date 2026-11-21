@@ -1541,6 +1541,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to 1b97826c because of the two lab fields, the ledger field and the schema number only; reverting them brought the previous digest (f7bc9480) back.
 - Alternatives: a per-GPU price set by the player (rejected: one share is one decision); no notice (rejected: the player could let the compute between training runs and take it back the week a run starts, for free); letting inference chips (rejected: they only serve customers, and the share would have to reach into serving).
 
+### Q310. Do the compliance office, papers and the compute sublet show up in the news and the chat? DECIDED: yes, three headlines and four chat lines
+- Data only: headlines `compliance-lapsed`, `paper-published` and `sublet-changed` (37 in all), and chat lines `paper-published-chat-research`, `paper-published-chat`, `compliance-lapsed-chat` and `sublet-changed-chat` (90 in all). Nothing here is saved.
+- `Prestige.Publish` sets pick 1 on `PaperPublished`, so chat can tell a paper from other events. The other two events carry the default pick, and their lines take any.
+- `ComplianceLapsed` stores the level it had in the amount, so its headline says "drops from level N" (`{subject}` is another lab's name in a headline, so it cannot hold a level). `SubletChanged` stores the weekly money in the amount.
+- Alternatives: a headline each time a level is set (rejected: the player knows, and the ticker is for what others would read); chat for every compliance level (rejected: one lapse line is enough).
+
+### Q311. Do the compliance office, papers and the sublet work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- Tests only: a game with the office, papers, the sublet, a pay level and the offsite used together stays solvent on three seeds, the books balance, the save is sound and a load plays on identically; the journal replays on two more seeds (the office needs no policy staff in those tests, because hired staff are not in the journal); at least one seed opens an office, publishes and lets compute; and an unused set of tools changes nothing against a game without them.
+- Finding: with the office started at week 0 and kept on, seed 2's thin lab went bankrupt (a $12,000 retainer from the first week). The test opens the office only when the lab holds over $1M, and closes it below $300K. That is the tool's cost, like pay.
+
 ## Open
 
 None.
