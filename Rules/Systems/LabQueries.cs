@@ -53,7 +53,7 @@ namespace AiLabs.Rules.Systems
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != function) continue;
-                if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person) || SupportDesk.Away(c, lab, person)) continue;
+                if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person) || SupportDesk.Away(c, lab, person) || Sabbatical.Away(c, lab, person)) continue;
                 n += Mentoring.Weight(c, lab, person);
             }
             return n;

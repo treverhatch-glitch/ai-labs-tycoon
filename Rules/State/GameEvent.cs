@@ -266,7 +266,11 @@ namespace AiLabs.Rules.State
         /// <summary>The support desk was staffed or closed. Amount is the people on it now.</summary>
         SupportDeskSet,
         /// <summary>The backlog crossed its limit. Amount is the backlog, Pick 1 when it went over and trust began to suffer and 0 when it came back under.</summary>
-        SupportBacklogChanged
+        SupportBacklogChanged,
+        /// <summary>A person went on sabbatical. SubjectId is the person, Amount the weeks, Ref the role id.</summary>
+        SabbaticalStarted,
+        /// <summary>A person came back. SubjectId is the person, Amount their morale now, Pick 2 refreshed, 1 rested, 0 restless, -1 called back early, Ref the role id.</summary>
+        SabbaticalEnded
     }
 
     /// <summary>

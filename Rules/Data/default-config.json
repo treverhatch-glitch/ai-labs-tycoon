@@ -5782,6 +5782,16 @@
     "trustPerTicket": 2,
     "maxWeeklyTrust": 20
   },
+  "sabbatical": {
+    "enabled": 1,
+    "weeks": 8,
+    "maxAway": 2,
+    "burnoutBelow": 350,
+    "refreshedMorale": 850,
+    "restlessAbove": 650,
+    "restlessMorale": 400,
+    "restedBonus": 100
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

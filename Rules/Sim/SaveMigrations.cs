@@ -91,6 +91,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 76) MigrateTo76(root);
             if (fromSchema < 77) MigrateTo77(root);
             if (fromSchema < 78) MigrateTo78(root);
+            if (fromSchema < 79) MigrateTo79(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -455,6 +456,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 79: nobody is on a sabbatical.</summary>
+        static void MigrateTo79(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
+            {
+                JsonPatch.AddIfMissing(person, "leaveDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "leaveMorale", JsonValue.Of(0L));
+            }));
         }
 
         /// <summary>Schema 78: nobody has a support desk.</summary>

@@ -1878,6 +1878,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads revenue, trust and the staff lists; no random numbers; only the player's lab. The golden moved 824557c9 -> 743d4496 only through the new saved fields and the schema number (verified by taking them out).
 - Alternatives: a desk that is bought as a service (rejected: no decision over people), tickets that depend on incidents (rejected: on-call already covers those).
 
+### Q367. Can a burnt-out person be sent away to recover? DECIDED: sabbaticals that help the worn-down and spoil the happy
+- New `sabbatical` data, commands `SendOnSabbatical` and `RecallFromSabbatical`, `Sabbatical` system, events `SabbaticalStarted` and `SabbaticalEnded` and two saved fields on a person (schema 79). A person goes away for 8 weeks on full pay (two at a time at most, not a mentoring pair), does no work and cannot quit while away.
+- They come back by how they went: below 350 morale refreshed (850), above 650 restless (400), otherwise rested (settled plus 100). Calling them back early keeps the morale they left with. The choice is who: it is a cure for someone about to quit and a mistake for a star in good spirits, at the price of their output for two months.
+- Reads morale and the same away check the skunkworks, account teams and support desk use; no random numbers; only the player's lab. The golden moved 743d4496 -> 067ec37f only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a flat morale boost for pay (rejected: a pay-for-stat knob), sabbaticals that never end badly (rejected: no wrong choice).
+
 ## Open
 
 None.

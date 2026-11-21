@@ -88,7 +88,9 @@ namespace AiLabs.Rules.Sim
         RehireAlumnus,
         StartInternships,
         EndInternships,
-        StaffSupportDesk
+        StaffSupportDesk,
+        SendOnSabbatical,
+        RecallFromSabbatical
     }
 
     /// <summary>
@@ -802,6 +804,22 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.StaffSupportDesk, labId);
             c.Count = people;
+            return c;
+        }
+
+        /// <summary>Sends a person away for the sabbatical weeks on full pay (TargetId is the person). They do no work and cannot quit while away. A worn-down person comes back refreshed, a happy one restless, the rest a little better than settled.</summary>
+        public static Command SendOnSabbatical(int labId, int personId)
+        {
+            Command c = Make(CommandKind.SendOnSabbatical, labId);
+            c.TargetId = personId;
+            return c;
+        }
+
+        /// <summary>Calls a person back early (TargetId is the person). They return with the morale they left with.</summary>
+        public static Command RecallFromSabbatical(int labId, int personId)
+        {
+            Command c = Make(CommandKind.RecallFromSabbatical, labId);
+            c.TargetId = personId;
             return c;
         }
 

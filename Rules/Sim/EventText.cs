@@ -285,6 +285,10 @@ namespace AiLabs.Rules.Sim
                     return who + (e.Amount == 0 ? " closed its support desk." : " put " + e.Amount + " engineers on its support desk.");
                 case EventKind.SupportBacklogChanged:
                     return e.Pick == 1 ? who + "'s support backlog passed its limit at " + e.Amount + " tickets and customers are losing patience." : who + " cleared its support backlog down to " + e.Amount + " tickets.";
+                case EventKind.SabbaticalStarted:
+                    return who + " sent a " + c.Role(e.Ref).Name.ToLowerInvariant() + " on a " + e.Amount + "-week sabbatical.";
+                case EventKind.SabbaticalEnded:
+                    return "A " + c.Role(e.Ref).Name.ToLowerInvariant() + " at " + who + " came back from sabbatical " + (e.Pick == 2 ? "refreshed." : e.Pick == 1 ? "rested." : e.Pick == 0 ? "restless." : "early.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -111,6 +111,7 @@ namespace AiLabs.Rules.Config
             AlumniProblems(p, c);
             InternshipsProblems(p, c);
             SupportProblems(p, c);
+            SabbaticalProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1177,6 +1178,18 @@ namespace AiLabs.Rules.Config
             if (k.MaxBacklog < 1 || k.MaxBacklog > 100000) p.Add("support.maxBacklog must be from 1 to 100000");
             if (k.TrustPerTicket < 0 || k.TrustPerTicket > 100) p.Add("support.trustPerTicket must be from 0 to 100");
             if (k.MaxWeeklyTrust < 0 || k.MaxWeeklyTrust > MathI.Permille) p.Add("support.maxWeeklyTrust must be from 0 to 1000");
+        }
+
+        static void SabbaticalProblems(List<string> p, GameConfig c)
+        {
+            SabbaticalConfig k = c.Sabbatical;
+            if (k == null) { p.Add("sabbatical is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sabbatical.enabled must be 0 or 1");
+            if (k.Weeks < 1 || k.Weeks > 52) p.Add("sabbatical.weeks must be from 1 to 52");
+            if (k.MaxAway < 1 || k.MaxAway > 20) p.Add("sabbatical.maxAway must be from 1 to 20");
+            if (k.BurnoutBelow < 0 || k.BurnoutBelow > k.RestlessAbove || k.RestlessAbove > MathI.Permille) p.Add("sabbatical.burnoutBelow must be from 0 to restlessAbove, and restlessAbove at most 1000");
+            if (k.RefreshedMorale < 0 || k.RefreshedMorale > MathI.Permille || k.RestlessMorale < 0 || k.RestlessMorale > MathI.Permille || k.RefreshedMorale <= k.RestlessMorale) p.Add("sabbatical.refreshedMorale and restlessMorale must be from 0 to 1000, with refreshedMorale above restlessMorale");
+            if (k.RestedBonus < -500 || k.RestedBonus > 500) p.Add("sabbatical.restedBonus must be from -500 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

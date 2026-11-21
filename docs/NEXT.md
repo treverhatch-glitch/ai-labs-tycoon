@@ -304,6 +304,7 @@ and says why in the commit message.
 121. **Labour, retirement notices, account teams, papers and alumni together.** ~~Done~~: `LabourSunsetAccountsConferenceAlumniTogetherTests` (Q364).
 122. **Internships (a cohort with a stipend and a job offer at the end).** ~~Done~~: `internships` data, `StartInternships`, `EndInternships`, `Internships`, schema 77, `InternshipsTests`, `docs/content/internships.md` (Q365).
 123. **Customer support desk (engineers against a ticket backlog that costs trust).** ~~Done~~: `support` data, `StaffSupportDesk`, `SupportDesk`, schema 78, `SupportDeskTests`, `docs/content/support-desk.md` (Q366).
+124. **Sabbaticals (send a person away on pay; the worn-down return refreshed, the happy restless).** ~~Done~~: `sabbatical` data, `SendOnSabbatical`, `RecallFromSabbatical`, `Sabbatical`, schema 79, `SabbaticalTests`, `docs/content/sabbatical.md` (Q367).
 
 ## Rules: later
 

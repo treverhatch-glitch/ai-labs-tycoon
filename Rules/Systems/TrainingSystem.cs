@@ -33,7 +33,7 @@ namespace AiLabs.Rules.Systems
             {
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
-                if (role == null || role.Function != RoleFunction.Research || Skunkworks.Away(c, lab, person) || SupportDesk.Away(c, lab, person)) continue;
+                if (role == null || role.Function != RoleFunction.Research || Skunkworks.Away(c, lab, person) || SupportDesk.Away(c, lab, person) || Sabbatical.Away(c, lab, person)) continue;
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
                 int bonus = trait == null ? 0 : trait.ResearchPermille + Traits.InterestingShift(c, lab, trait);
                 long one = MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));

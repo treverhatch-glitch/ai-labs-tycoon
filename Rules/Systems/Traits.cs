@@ -96,7 +96,7 @@ namespace AiLabs.Rules.Systems
             {
                 StaffMember p = lab.Staff[i];
                 StaffTraitConfig t = c.StaffPeople.Trait(p.TraitId);
-                if (t == null || t.QuitBelowMorale <= 0 || p.Morale >= t.QuitBelowMorale) continue;
+                if (t == null || t.QuitBelowMorale <= 0 || p.Morale >= t.QuitBelowMorale || p.LeaveDue > 0) continue;
                 lab.Staff.RemoveAt(i);
                 Alumni.Record(c, state, lab, p, Alumni.Quit);
                 int loss = PressSystem.Damp(c, lab, c.StaffPeople.QuitReputation);

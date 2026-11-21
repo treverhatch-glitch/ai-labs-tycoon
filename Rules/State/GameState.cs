@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 78;
+        public const int CurrentSchema = 79;
 
         public int Schema;
         public string ConfigVersion;
@@ -617,6 +617,10 @@ namespace AiLabs.Rules.State
         public int MentorId;
         /// <summary>The weeks the pair has held.</summary>
         public int MentorWeeks;
+        /// <summary>The week the person is back from a sabbatical, 0 when they are not away.</summary>
+        public int LeaveDue;
+        /// <summary>Their morale on the day they went.</summary>
+        public int LeaveMorale;
 
         public void Sync(Syncer s)
         {
@@ -627,6 +631,8 @@ namespace AiLabs.Rules.State
             s.Int("senior", ref Senior);
             s.Int("mentorId", ref MentorId);
             s.Int("mentorWeeks", ref MentorWeeks);
+            s.Int("leaveDue", ref LeaveDue);
+            s.Int("leaveMorale", ref LeaveMorale);
         }
     }
 

@@ -104,9 +104,12 @@ namespace AiLabs.Rules.Sim
                 {
                     if (person.Senior < 0 || person.Senior > 1 || (person.Senior == 1 && lab.Id != state.PlayerLabId))
                         p.Add(who + " has a senior person (" + person.Senior + ") that the data does not allow");
+                    if (person.LeaveDue < 0 || person.LeaveMorale < 0 || person.LeaveMorale > 1000 || (person.LeaveDue == 0 && person.LeaveMorale != 0) || (person.LeaveDue > 0 && (lab.Id != state.PlayerLabId || person.MentorId != 0)))
+                        p.Add(who + " has a person on sabbatical until week " + person.LeaveDue + " (morale " + person.LeaveMorale + ") that the data does not allow");
                     if (person.MentorId < 0 || person.MentorWeeks < 0 || (person.MentorId == 0 && person.MentorWeeks != 0) || (person.MentorId > 0 && (lab.Id != state.PlayerLabId || person.MentorId == person.Id)))
                         p.Add(who + " has a person with mentor " + person.MentorId + " (" + person.MentorWeeks + " weeks), which does not fit the staff");
                 }
+                if (Sabbatical.Away(lab) > c.Sabbatical.MaxAway) p.Add(who + " has more people on sabbatical than the data allows");
                 if (lab.RevenueTargetLevel < 0 || lab.RevenueTargetLevel > c.RevenueTargets.MaxLevel || lab.RevenueTargetEnd < 0 || lab.RevenueTargetGoal < 0 || lab.RevenueTargetSoFar < 0
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
