@@ -1130,7 +1130,7 @@ namespace AiLabs.Rules.Config
             if (k.MaxPending < 1 || k.MaxPending > 10) p.Add("conference.maxPending must be from 1 to 10");
             if (k.MainCost < 1 || k.FlagshipCost < k.MainCost || k.FlagshipCost > 20) p.Add("conference.mainCost must be at least 1 and flagshipCost from mainCost to 20");
             if (k.WorkshopWeeks < 1 || k.MainWeeks < k.WorkshopWeeks || k.FlagshipWeeks < k.MainWeeks || k.FlagshipWeeks > 104) p.Add("conference.workshopWeeks must be at least 1, mainWeeks at least workshopWeeks and flagshipWeeks from mainWeeks to 104");
-            if (k.MainBar < 0 || k.FlagshipBar < k.MainBar || k.FlagshipBar > 2 * c.Prestige.Max) p.Add("conference.mainBar must be at least 0 and flagshipBar from mainBar to twice the most prestige");
+            if (k.MainBar < 0 || k.FlagshipBar < k.MainBar || k.FlagshipBar > 2000) p.Add("conference.mainBar must be at least 0 and flagshipBar from mainBar to 2000");
             if (k.EffortPrestige < 0 || k.EffortPrestige > 500) p.Add("conference.effortPrestige must be from 0 to 500");
             if (k.AcceptPrestige < 0 || k.AcceptPrestige > 500 || k.AcceptReputation < 0 || k.AcceptReputation > 200) p.Add("conference.acceptPrestige must be from 0 to 500 and acceptReputation from 0 to 200");
             if (k.RefundPermille < 0 || k.RefundPermille >= MathI.Permille || k.WithdrawPermille < k.RefundPermille || k.WithdrawPermille >= MathI.Permille) p.Add("conference.refundPermille must be from 0 to 999 and withdrawPermille from refundPermille to 999, so a paper always costs something");

@@ -23,5 +23,5 @@ Refused, with nothing changed, for a rival, a game with `enabled` 0 (or no paper
 ## Notes
 
 - Events: `PaperSubmitted` (SubjectId the venue, Amount the points, Pick the effort), `PaperDecided` (Amount the prestige added or the points back, Pick 1 accepted, 0 rejected, 2 withdrawn).
-- The validator keeps the bars and costs rising with the venue, and a withdrawal at least as kind as a rejection but never free.
+- The validator keeps the bars (up to 2000) and costs rising with the venue, and a withdrawal at least as kind as a rejection but never free.
 - No random numbers; a lab that submits nothing is exactly as before (the golden moved only through the new saved list and the schema number, verified by taking them out).
