@@ -14,7 +14,7 @@ namespace AiLabs.Rules.Sim
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
-        SignReservedCompute, QueueGpuPurchase
+        SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute
     }
 
     /// <summary>
@@ -393,6 +393,22 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.QueueGpuPurchase, labId);
             c.Count = count;
             c.TargetId = holdingId;
+            return c;
+        }
+
+        public static Command RentPeerCompute(int renterLabId, int landlordLabId, int gpuCount)
+        {
+            Command c = Make(CommandKind.RentPeerCompute, renterLabId);
+            c.Count = gpuCount;
+            c.TargetId = landlordLabId;
+            return c;
+        }
+
+        public static Command EndPeerCompute(int renterLabId, int landlordLabId, int gpuCount)
+        {
+            Command c = Make(CommandKind.EndPeerCompute, renterLabId);
+            c.Count = gpuCount;
+            c.TargetId = landlordLabId;
             return c;
         }
     }

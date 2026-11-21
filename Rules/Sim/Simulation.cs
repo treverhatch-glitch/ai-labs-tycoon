@@ -138,6 +138,7 @@ namespace AiLabs.Rules.Sim
                 TrainingSystem.ClearFailedRunsForPlans(lab);
                 PatentSystem.RunWeek(c, state, lab);
             }
+            PeerComputeSystem.RunWeek(c, state);
 
             MarketSystem.RunWeek(c, state);
 

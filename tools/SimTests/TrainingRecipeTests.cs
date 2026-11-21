@@ -151,16 +151,16 @@ public class TrainingRecipeTests
     public void Migrate_17_to_18_adds_recipe_fields()
     {
         Game g = Kitchen();
-        string json = g.Sim.Save().Replace("\"schema\":19", "\"schema\":17");
+        string json = g.Sim.Save().Replace("\"schema\":20", "\"schema\":17");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(19, loaded.State.Schema);
+        Assert.Equal(20, loaded.State.Schema);
         Assert.Equal(-1, loaded.Me.DistillTargetLabId);
     }
 
     [Fact]
-    public void Schema_19_on_new_game()
+    public void Schema_20_on_new_game()
     {
-        Assert.Equal(19, Game.Solo().State.Schema);
+        Assert.Equal(20, Game.Solo().State.Schema);
     }
 
     [Fact]

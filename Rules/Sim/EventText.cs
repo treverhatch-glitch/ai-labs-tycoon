@@ -58,7 +58,11 @@ namespace AiLabs.Rules.Sim
                         LabState incidentLab = state.Lab(e.LabId);
                         ModelState incidentModel = incidentLab == null ? null : incidentLab.Model(e.SubjectId);
                         string modelName = incidentModel == null ? e.Ref : incidentModel.Name;
-                        return "INCIDENT at " + who + ": " + EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick].Replace("{model}", modelName) + " Fine: $" + e.Amount + ".";
+                        EraConfig era = EraSystem.AtTick(c, e.Tick);
+                        var headlines = SafetyQueries.SectorIncidentHeadlines(c, e.Ref) ?? era.IncidentHeadlines;
+                        if (headlines.Count == 0) headlines = era.IncidentHeadlines;
+                        string line = headlines[e.Pick % headlines.Count].Replace("{model}", modelName);
+                        return "INCIDENT at " + who + ": " + line + " Fine: $" + e.Amount + ".";
                     }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";

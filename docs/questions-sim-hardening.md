@@ -303,3 +303,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) flavor-only mutually exclusive tech descriptions; (b) config `research.forks` block sibling techs after pick; (c) patents as passive rep bump only.
 - Choice: **(b)+(c)** — `blockedTechs` on `LabState` when a fork tech is researched; shipped fork `classical-ml` (`bayes-nets` / `svm`); `go-fish-heuristic` dead-end flavor tech; `CommandKind.FilePatent` spends cash, blocks rivals on that tech for `research.patents.durationWeeks`; schema **19**.
 - Why: DESIGN research row (branching bets, dead ends, patent races) without rival-AI patent logic yet; pairs Q48–Q49 plan/player fairness.
+
+### Q52. Inter-lab compute rental? DECIDED: `RentPeerCompute` on HQ fleet
+
+- Options: (a) flavor-only cloud deals; (b) extend vendor reserved contracts; (c) weekly leases between labs with landlord revenue.
+- Choice: **(c)** — `peerComputeLeases` on `LabState`; renter gains compute, landlord HQ GPUs taken off their stack; `compute.peerLeaseRentPermille`; schema **20**.
+- Why: bible 4.8 landlord hook without chip-listing complexity; mirrors vendor reserved rent pattern.
+
+### Q53. Sector incident headline text? DECIDED: `safety.sectorIncidentHeadlines` (text hook only)
+
+- Options: (a) era headlines only; (b) dedicated headline list keyed by sector; (c) share `safety.sectorFlavours` with era (Q188–Q190).
+- Choice: **(b)** — `SafetyQueries.SectorIncidentHeadlines`; minimal `SafetySystem`/`EventText` hook; **no** schema, **no** economics. Era thread owns `safety.sectorFlavours` economics on row 21 (`cursor/sector-flavours-af2f`).
+- Why: avoid config-key collision while shipping sector-specific incident copy early.
+
+### Q54. Device workshop room? DECIDED: `market.deviceWorkshop` appeal bump
+
+- Options: (a) decor only; (b) passive compute; (c) devices-sector appeal once era live, room built, and a model is released in `devices`.
+- Choice: **(c)** — new `device-workshop` room type; `DeviceWorkshopSystem.AppealBonusPermille` in `DisplayQueries`; no save schema.
+- Why: DESIGN “device workshop” row gets a minimal consumer-hardware hook without a full product line sim.

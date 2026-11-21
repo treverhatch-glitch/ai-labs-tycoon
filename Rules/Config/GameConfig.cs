@@ -365,6 +365,8 @@ namespace AiLabs.Rules.Config
         public int ReservedRentPermille;
         public int ReservedContractWeeks;
         public int ReservedDepositWeeks;
+        /// <summary>Weekly rent for GPUs leased from another lab, as permille of spot rental.</summary>
+        public int PeerLeaseRentPermille = 900;
         /// <summary>The vendor's line, oldest first.</summary>
         public List<GpuGenerationConfig> GpuGenerations;
 
@@ -378,6 +380,7 @@ namespace AiLabs.Rules.Config
             s.Int("reservedRentPermille", ref ReservedRentPermille);
             s.Int("reservedContractWeeks", ref ReservedContractWeeks);
             s.Int("reservedDepositWeeks", ref ReservedDepositWeeks);
+            s.Int("peerLeaseRentPermille", ref PeerLeaseRentPermille);
             s.ObjList("gpuGenerations", ref GpuGenerations);
         }
 
@@ -690,6 +693,8 @@ namespace AiLabs.Rules.Config
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
         public int SandbagGapPermille;
+        /// <summary>Optional per-sector incident headline lines (text only). Not <c>safety.sectorFlavours</c> (era economics).</summary>
+        public List<SectorIncidentHeadlineConfig> SectorIncidentHeadlines = new List<SectorIncidentHeadlineConfig>();
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -713,6 +718,19 @@ namespace AiLabs.Rules.Config
             s.ObjList("incidentRungs", ref IncidentRungs);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
+            s.ObjList("sectorIncidentHeadlines", ref SectorIncidentHeadlines);
+        }
+    }
+
+    public sealed class SectorIncidentHeadlineConfig : ISync
+    {
+        public string SectorId;
+        public List<string> Headlines = new List<string>();
+
+        public void Sync(Syncer s)
+        {
+            s.Str("sectorId", ref SectorId);
+            s.StrList("headlines", ref Headlines);
         }
     }
 
@@ -730,6 +748,7 @@ namespace AiLabs.Rules.Config
         public int OpenWeightsRevenuePermille = 750;
         /// <summary>Quality multiplier when weights are open (before appeal is squared).</summary>
         public int OpenWeightsAppealBonusPermille = 120;
+        public DeviceWorkshopConfig DeviceWorkshop = new DeviceWorkshopConfig();
         public List<SectorConfig> Sectors;
 
         public void Sync(Syncer s)
@@ -741,7 +760,24 @@ namespace AiLabs.Rules.Config
             s.Int("sectorPriceMaxPermille", ref SectorPriceMaxPermille);
             s.Int("openWeightsRevenuePermille", ref OpenWeightsRevenuePermille);
             s.Int("openWeightsAppealBonusPermille", ref OpenWeightsAppealBonusPermille);
+            s.Obj("deviceWorkshop", ref DeviceWorkshop);
             s.ObjList("sectors", ref Sectors);
+        }
+    }
+
+    public sealed class DeviceWorkshopConfig : ISync
+    {
+        public string EraId = "harnesses";
+        public string RoomTypeId = "device-workshop";
+        public string SectorId = "devices";
+        public int AppealBonusPermille = 100;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("eraId", ref EraId);
+            s.Str("roomTypeId", ref RoomTypeId);
+            s.Str("sectorId", ref SectorId);
+            s.Int("appealBonusPermille", ref AppealBonusPermille);
         }
     }
 

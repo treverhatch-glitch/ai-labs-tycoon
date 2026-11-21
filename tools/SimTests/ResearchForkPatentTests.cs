@@ -137,17 +137,17 @@ public class ResearchForkPatentTests
     public void Migrate_18_to_19_adds_fork_and_patent_arrays()
     {
         Game g = Game.Solo();
-        string json = g.Sim.Save().Replace("\"schema\":19", "\"schema\":18");
+        string json = g.Sim.Save().Replace("\"schema\":20", "\"schema\":18");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(19, loaded.State.Schema);
+        Assert.Equal(20, loaded.State.Schema);
         Assert.NotNull(loaded.Me.BlockedTechs);
         Assert.NotNull(loaded.Me.Patents);
     }
 
     [Fact]
-    public void Schema_19_on_new_game()
+    public void Schema_20_on_new_game()
     {
-        Assert.Equal(19, Game.Solo().State.Schema);
+        Assert.Equal(20, Game.Solo().State.Schema);
     }
 
     [Fact]

@@ -172,6 +172,7 @@ namespace AiLabs.Rules.Config
                 p.Add("market.sectorPriceMaxPermille must be at least sectorPriceMinPermille");
             Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
             if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
+            DeviceWorkshopProblems(p, c);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
             {
@@ -191,6 +192,24 @@ namespace AiLabs.Rules.Config
                 if (sector.CapabilityWeightPermille + sector.SafetyWeightPermille != 1000) p.Add("sector " + sector.Id + ": capabilityWeightPermille and safetyWeightPermille must add up to 1000");
                 if (sector.CapabilityWeightPermille < 0 || sector.SafetyWeightPermille < 0) p.Add("sector " + sector.Id + " has a negative weight");
                 if (sector.RevenuePerComputeUnit < 1) p.Add("sector " + sector.Id + " needs revenuePerComputeUnit of at least 1");
+            }
+            for (int i = 0; i < c.Safety.SectorIncidentHeadlines.Count; i++)
+            {
+                for (int k = 0; k < i; k++)
+                    if (c.Safety.SectorIncidentHeadlines[k].SectorId == c.Safety.SectorIncidentHeadlines[i].SectorId)
+                        p.Add("safety.sectorIncidentHeadlines has sector \"" + c.Safety.SectorIncidentHeadlines[i].SectorId + "\" twice");
+            }
+            for (int i = 0; i < c.Safety.SectorIncidentHeadlines.Count; i++)
+            {
+                SectorIncidentHeadlineConfig flavour = c.Safety.SectorIncidentHeadlines[i];
+                if (c.Sector(flavour.SectorId) == null) p.Add("safety.sectorIncidentHeadlines[" + i + "] names unknown sector \"" + flavour.SectorId + "\"");
+                if (flavour.Headlines == null || flavour.Headlines.Count == 0)
+                    p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " needs at least one headline");
+                else foreach (string headline in flavour.Headlines)
+                {
+                    if (string.IsNullOrEmpty(headline)) p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " has an empty headline");
+                    else if (!headline.Contains("{model}")) p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " headline must contain {model}");
+                }
             }
 
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
@@ -240,6 +259,16 @@ namespace AiLabs.Rules.Config
             Permille(p, "endings.museum.researchPermillePerCapability", c.Endings.Museum.ResearchPermillePerCapability);
         }
 
+        static void DeviceWorkshopProblems(List<string> p, GameConfig c)
+        {
+            DeviceWorkshopConfig w = c.Market.DeviceWorkshop;
+            if (w == null) { p.Add("market.deviceWorkshop is missing"); return; }
+            if (string.IsNullOrEmpty(w.EraId) || c.Era(w.EraId) == null) p.Add("market.deviceWorkshop names an unknown era");
+            if (string.IsNullOrEmpty(w.RoomTypeId) || c.RoomType(w.RoomTypeId) == null) p.Add("market.deviceWorkshop names an unknown room type");
+            if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
+            Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
+        }
+
         static void ExpansionsProblems(List<string> p, GameConfig c)
         {
             if (c.Expansions == null) { p.Add("expansions is missing"); return; }
@@ -281,6 +310,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "compute.resalePermille", compute.ResalePermille);
             Permille(p, "compute.generationDecayPermille", compute.GenerationDecayPermille);
             Permille(p, "compute.reservedRentPermille", compute.ReservedRentPermille);
+            Permille(p, "compute.peerLeaseRentPermille", compute.PeerLeaseRentPermille);
             if (compute.ReservedContractWeeks < 1) p.Add("compute.reservedContractWeeks must be at least 1");
             if (compute.ReservedDepositWeeks < 0) p.Add("compute.reservedDepositWeeks is negative");
             if (compute.MoveCostPerUnit < 0) p.Add("compute.moveCostPerUnit is negative");

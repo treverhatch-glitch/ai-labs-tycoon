@@ -171,6 +171,8 @@ namespace AiLabs.Rules.Systems
             GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
             split.General = (long)lab.RentedGpus * gen.ComputePerGpuWeek;
             split.General += (long)ComputeContractSystem.ReservedGpus(lab) * gen.ComputePerGpuWeek;
+            split.General += (long)PeerComputeSystem.LeasedInGpus(lab) * gen.ComputePerGpuWeek;
+            int hqPeerLeft = PeerComputeSystem.LeasedOutFrom(state, lab.Id);
             int throttle = WorldQueries.HeatwaveThrottle(c, lab);
             for (int i = 0; i < lab.Fleet.Count; i++)
             {
@@ -185,7 +187,14 @@ namespace AiLabs.Rules.Systems
                 {
                     GpuGenerationConfig batchGen = c.Compute.Generation(batch.GpuGenId);
                     if (batchGen == null) continue;
-                    part = batch.Count * (long)batchGen.ComputePerGpuWeek;
+                    int usable = batch.Count;
+                    if (hqPeerLeft > 0 && batch.HoldingId == HardwareBatch.Hq)
+                    {
+                        int take = usable > hqPeerLeft ? hqPeerLeft : usable;
+                        usable -= take;
+                        hqPeerLeft -= take;
+                    }
+                    part = usable * (long)batchGen.ComputePerGpuWeek;
                 }
                 if (batch.HoldingId != HardwareBatch.Hq)
                 {

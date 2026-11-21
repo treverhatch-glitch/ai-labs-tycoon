@@ -79,8 +79,13 @@ namespace AiLabs.Rules.Systems
 
             StaffSystem.OnIncident(c, lab);
 
-            GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
-            e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);
+            EraConfig era = EraSystem.AtTick(c, state.Tick);
+            string sectorId = model.Sectors.Count > 0 ? model.Sectors[0] : "";
+            var sectorHeadlines = SafetyQueries.SectorIncidentHeadlines(c, sectorId);
+            var headlines = sectorHeadlines ?? era.IncidentHeadlines;
+            string headlineRef = sectorHeadlines != null ? sectorId : model.Name;
+            GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, headlineRef);
+            e.Pick = headlines.Count > 0 ? state.Rng.Safety.Next(headlines.Count) : 0;
         }
     }
 }

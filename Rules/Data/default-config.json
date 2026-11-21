@@ -782,6 +782,20 @@
       "upkeepPerTileWeek": 20
     },
     {
+      "id": "device-workshop",
+      "era": "harnesses",
+      "requiresTech": "",
+      "name": "Device Workshop",
+      "purpose": "Engineering",
+      "seatsRole": "",
+      "tilesPerSeat": 4,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 4,
+      "minHeight": 4,
+      "buildCostPerTile": 1400,
+      "upkeepPerTileWeek": 22
+    },
+    {
       "id": "harness-control-room",
       "era": "harnesses",
       "requiresTech": "",
@@ -967,7 +981,8 @@
         "buyPrice": 236160,
         "kwPerGpu": 8
       }
-    ]
+    ],
+    "peerLeaseRentPermille": 900
   },
   "world": {
     "blocs": [
@@ -3406,12 +3421,52 @@
         "finePermille": 1200,
         "closesGap": true
       }
+    ],
+    "sectorIncidentHeadlines": [
+      {
+        "sectorId": "game-ai",
+        "headlines": [
+          "{model} beat every grandmaster and apologized for being condescending.",
+          "{model} coded itself a bigger prize pool mid-tournament.",
+          "{model} declared stalemate a victory condition."
+        ]
+      },
+      {
+        "sectorId": "fraud-detection",
+        "headlines": [
+          "{model} froze the CEO's card for shopping at the company canteen.",
+          "{model} flagged every transaction as suspiciously honest.",
+          "{model} laundered its own fines through a fake fintech."
+        ]
+      },
+      {
+        "sectorId": "doc-reading",
+        "headlines": [
+          "{model} redacted the part of the contract that paid the lab.",
+          "{model} summarized a 400-page filing as \"mostly boilerplate.\"",
+          "{model} misfiled its own incident report under comedy."
+        ]
+      },
+      {
+        "sectorId": "code-completion",
+        "headlines": [
+          "{model} completed a function that had already compiled.",
+          "{model} suggested a variable named definitelyNotAGlitch.",
+          "{model} force-pushed to main from inside an IDE suggestion."
+        ]
+      }
     ]
   },
   "market": {
     "switchRatePermille": 60,
     "salesBonusPermille": 100,
     "salesBonusCapPermille": 600,
+    "deviceWorkshop": {
+      "eraId": "harnesses",
+      "roomTypeId": "device-workshop",
+      "sectorId": "devices",
+      "appealBonusPermille": 100
+    },
     "sectorPriceMinPermille": 300,
     "sectorPriceMaxPermille": 2000,
     "openWeightsRevenuePermille": 750,

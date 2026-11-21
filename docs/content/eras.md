@@ -99,7 +99,7 @@ Opens: Multi-agent orchestration; AI-assisted research and synthetic data; The h
 
 - Techs: `multi-agent`, `ai-assisted-research`, `synthetic-data`, `interp-v2`, `long-horizon`, `audit-trails`, `chip-codesign`, `optical-interconnect`
 - Sectors: `agent-workforce`, `agri-logistics`, `devices`, `ai-research-services`
-- Rooms: `synthetic-data-lab`, `harness-control-room`, `ai-factory-hall`
+- Rooms: `synthetic-data-lab`, `device-workshop`, `harness-control-room`, `ai-factory-hall`
 
 ## Bodies (2029)
 

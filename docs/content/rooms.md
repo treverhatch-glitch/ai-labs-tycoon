@@ -97,6 +97,7 @@ Both chip rooms also need the tech `chip-team`, whatever the year (the room type
 | Id | Name | Purpose | Seats | Tiles/seat | GPU slots/tile | Min size | Build/tile | Upkeep/tile/week |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `synthetic-data-lab` | Synthetic Data Lab | Engineering | `data-gardener` | 4 | - | 4 x 4 | $1.4k | $20 |
+| `device-workshop` | Device Workshop | Engineering | - | - | - | 4 x 4 | $1.4k | $22 |
 | `harness-control-room` | Harness Control Room | Research | `harness-operator` | 3 | - | 4 x 4 | $1.6k | $24 |
 | `ai-factory-hall` | AI Factory Hall | Compute | - | - | 36 | 6 x 6 | $8k | $180 |
 

@@ -187,6 +187,10 @@ static class CommandFuzzerSamples
             }
             case CommandKind.SignReservedCompute:
                 return Command.SignReservedCompute(labId, biasValid ? 2 : rng.Next(10));
+            case CommandKind.RentPeerCompute:
+                return Command.RentPeerCompute(labId, biasValid && g.State.Labs.Count > 1 ? g.State.Labs[1].Id : -1, biasValid ? 1 : rng.Next(4));
+            case CommandKind.EndPeerCompute:
+                return Command.EndPeerCompute(labId, biasValid && g.State.Labs.Count > 1 ? g.State.Labs[1].Id : -1, 1);
             case CommandKind.QueueGpuPurchase:
                 return Command.QueueGpuPurchase(labId, biasValid ? 1 : rng.Next(4), HardwareBatch.Hq);
             case CommandKind.SetOpenWeights:

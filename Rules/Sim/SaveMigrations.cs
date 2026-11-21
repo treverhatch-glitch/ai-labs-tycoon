@@ -34,6 +34,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 17) MigrateTo17(root);
             if (fromSchema < 18) MigrateTo18(root);
             if (fromSchema < 19) MigrateTo19(root);
+            if (fromSchema < 20) MigrateTo20(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -306,6 +307,12 @@ namespace AiLabs.Rules.Sim
             JsonValue rng = root.Get("rng");
             if (rng != null)
                 JsonPatch.AddIfMissing(rng, "trainingCollapse", StreamAt(RngSet.MigratedState(seed, RngSet.TrainingCollapseMigrationKey)));
+        }
+
+        /// <summary>Schema 20: peer compute leases between labs.</summary>
+        static void MigrateTo20(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "peerComputeLeases", JsonValue.Array()));
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

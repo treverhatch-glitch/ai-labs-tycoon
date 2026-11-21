@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 19;
+        public const int CurrentSchema = 20;
 
         public int Schema;
         public string ConfigVersion;
@@ -122,6 +122,8 @@ namespace AiLabs.Rules.State
 
         public int RentedGpus;
         public List<ReservedContract> ReservedContracts = new List<ReservedContract>();
+        /// <summary>GPUs this lab rents from other labs' HQ fleets.</summary>
+        public List<PeerComputeLease> PeerComputeLeases = new List<PeerComputeLease>();
         /// <summary>The hardware the lab owns, by place and generation. Rented GPUs are a count: they live in the cloud.</summary>
         public List<HardwareBatch> Fleet = new List<HardwareBatch>();
         /// <summary>The lab's data-centre sites: owned land with a hall, or leased colo space.</summary>
@@ -237,6 +239,7 @@ namespace AiLabs.Rules.State
             s.ObjList("staff", ref Staff);
             s.Int("rentedGpus", ref RentedGpus);
             s.ObjList("reservedContracts", ref ReservedContracts);
+            s.ObjList("peerComputeLeases", ref PeerComputeLeases);
             s.ObjList("fleet", ref Fleet);
             s.ObjList("holdings", ref Holdings);
             s.ObjList("blocs", ref Blocs);
