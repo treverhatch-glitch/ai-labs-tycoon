@@ -1,3 +1,4 @@
+using System.Linq;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
@@ -179,5 +180,27 @@ public class BubbleMeterCrashHatchTests
         g.State.BubbleCrashMonthsRemaining = 1;
         g.C.Bubble.CrashCustomerSpendPermille = 600;
         Assert.Equal(600, BubbleSystem.CustomerSpendPermille(g.C, g.State));
+    }
+
+    [Fact]
+    public void Synthetic_bubble_crash_world_news_has_no_config_row_but_event_text_works()
+    {
+        var g = Game.Solo();
+        Assert.Null(g.C.WorldEvent("bubble-crash"));
+        var e = new GameEvent { Kind = EventKind.WorldNews, Ref = "bubble-crash", Tick = g.Tick, LabId = -1 };
+        string line = EventText.Describe(g.C, g.State, e);
+        Assert.Contains("NEWS:", line);
+        Assert.Contains("valuations", line);
+    }
+
+    [Fact]
+    public void Start_crash_emits_bubble_crash_news_describable_in_ui()
+    {
+        var g = Game.Solo(tweak: c => c.Bubble.PopAtPermille = 200);
+        g.State.BubblePermille = 400;
+        BubbleSystem.RunMonth(g.C, g.State);
+        GameEvent news = g.State.Events.LastOrDefault(e => e.Kind == EventKind.WorldNews && e.Ref == "bubble-crash");
+        Assert.NotNull(news);
+        Assert.DoesNotContain("NullReference", EventText.Describe(g.C, g.State, news));
     }
 }
