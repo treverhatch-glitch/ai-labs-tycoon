@@ -217,6 +217,8 @@ and says why in the commit message.
     the lab (Q270-Q271), four tests added to `TrainingRunTests`; no schema, golden unchanged.
 40. **Hearing questions (bible ch. 12 hearings).** ~~Done~~: `OfficeTrigger` on office events, `OfficeEvents.OnHearing`, four hearing questions with three answers each in the data
     (Q272-Q274), `HearingQuestionTests`, `docs/content/hearing-questions.md`; no schema, golden unchanged. Still open: a share-price effect, hearings abroad, questions that depend on the lab's history.
+41. **Staff traits round 2 (bible ch. 7 trait ideas, ch. 14 "leave in protest").** ~~Done~~: `posts-through-it`, `quits-by-blog-post`, `only-interesting` in the data, `Traits.RunQuits`,
+    `EventKind.StaffQuit`, buzz and scandal sums in `TraitReport`, `interestingPermille` in the research sum (Q275-Q277), `MoreTraitsTests`, `docs/content/staff-traits.md`; no schema; golden moved with a verified cause.
 
 ## Rules: later
 

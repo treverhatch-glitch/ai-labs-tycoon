@@ -1324,6 +1324,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Only a hearing at the home government asks a question, so the heat effect (home attention) is always the right bloc and nothing is saved. The golden run does not reach a hearing as a player.
 - Why: a hearing abroad needs its own bloc stored, which would be a schema change for a rare case; it is listed as open.
 
+### Q275. What do posts through it and only works on what is interesting do? DECIDED: posts make launches and scandals louder; the other does more on variant runs and less otherwise
+- Options: (a) posts leak secrets; (b) posts add to launch buzz and to what scandals cost; (c) only the loud half. For the third trait: (d) a flat research change; (e) a research change that depends on what the lab is working on.
+- Recommendation and choice: **(b)** with +12% each way per poster, capped at 30%, and **(e)** with the work being interesting while a variant run (item 38) trains: +20% to their own research then, -20% otherwise.
+- Why: the bible lists the traits without numbers. Live posting is naturally both: free reach when the news is good and a megaphone when it is bad. "Only works on what is interesting" needs a notion of interesting that the player controls, and a variant run is the experiment the game already has. Both stay small so the economy guards (Q182) hold.
+
+### Q276. What does "will quit by blog post" do? DECIDED: they leave the first week their morale is under 300 and the post costs 20 reputation
+- Options: (a) a random chance of quitting each week; (b) a morale line.
+- Recommendation and choice: **(b)**. No dice are used, so no saved stream moves. The player can see it coming and prevent it with morale (comfort rooms, rest, not running into debt). The reputation loss goes through the press room's damping (and a poster in the lab makes it louder).
+- Why: the bible says "leave in protest" and "quits by blog post" as jokes from mechanics, and a mechanic the player can read is funnier than a random one. A line below the resting level of 500 means the trait is only a risk in a lab that is already in trouble.
+
+### Q277. Does this move the golden, and how was that checked? DECIDED: yes, because the new traits change who the golden run's hires turn out to be; with their hire shares at zero the previous golden returned exactly
+- Options: (a) give the new traits no hire share (never hired); (b) hire them like the rest.
+- Recommendation and choice: **(b)**, 4%, 3% and 4%. No save change: the trait id was always saved. The golden moved to `b1bf2703`.
+- Why: a trait nobody can hire is no trait. They come after the existing bands in the roll, so nobody who had a trait lost it. The effects are small and only reach labs that get the people, and none of the economy guards moved.
+
 ## Open
 
 None.

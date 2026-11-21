@@ -116,7 +116,9 @@ namespace AiLabs.Rules.State
         /// <summary>A training run set itself back. SubjectId is the model, Amount the compute thrown away, Ref the model's name.</summary>
         TrainingFailed,
         /// <summary>The player set up a run. SubjectId is the model, Ref "approach|id" or "checkpoints|id" (empty id for the default).</summary>
-        RunSetUp
+        RunSetUp,
+        /// <summary>Somebody quit by blog post. SubjectId is the person, Amount the reputation it cost, Ref "role|trait".</summary>
+        StaffQuit
     }
 
     /// <summary>

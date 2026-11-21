@@ -33,14 +33,14 @@ namespace AiLabs.Rules.Systems
 
         public static int Buzz(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.LaunchBuzz), c.Press.MaxBuzzPermille);
+            return (int)MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.LaunchBuzz), c.Press.MaxBuzzPermille) + Traits.Report(c, lab).BuzzPermille;
         }
 
         /// <summary>A reputation loss after the press room has had its say.</summary>
         public static int Damp(GameConfig c, LabState lab, int loss)
         {
             if (loss <= 0) return loss;
-            return loss - (int)MathI.MulPermille(loss, Damping(c, lab));
+            return loss - (int)MathI.MulPermille(loss, Damping(c, lab)) + (int)MathI.MulPermille(loss, Traits.Report(c, lab).ScandalPermille);
         }
 
         public static int LaunchPoints(GameConfig c, LabState lab)

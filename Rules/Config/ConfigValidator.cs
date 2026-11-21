@@ -1370,6 +1370,8 @@ namespace AiLabs.Rules.Config
             if (s.FrictionPerPairPermille < 0 || s.FrictionPerPairPermille > 500) p.Add("staffPeople.frictionPerPairPermille needs 0 to 500");
             if (s.MaxFrictionPermille < 0 || s.MaxFrictionPermille > 900) p.Add("staffPeople.maxFrictionPermille needs 0 to 900, so a lab always does some research");
             if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
+            if (s.MaxPostsPermille < 0 || s.MaxPostsPermille > 1000) p.Add("staffPeople.maxPostsPermille needs 0 to 1000");
+            if (s.QuitReputation < 0 || s.QuitReputation > MathI.Permille) p.Add("staffPeople.quitReputation needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");
@@ -1389,6 +1391,10 @@ namespace AiLabs.Rules.Config
             if (t.MentorPermille < 0 || t.MentorPermille > 500) p.Add(who + " needs mentorPermille from 0 to 500");
             if (t.OfferPermille < -500 || t.OfferPermille > 500) p.Add(who + " needs offerPermille from -500 to 500");
             if (t.RestMoraleOffset < -500 || t.RestMoraleOffset > 500) p.Add(who + " needs restMoraleOffset from -500 to 500");
+            if (t.BuzzPermille < 0 || t.BuzzPermille > 500) p.Add(who + " needs buzzPermille from 0 to 500");
+            if (t.ScandalPermille < 0 || t.ScandalPermille > 500) p.Add(who + " needs scandalPermille from 0 to 500");
+            if (t.QuitBelowMorale < 0 || t.QuitBelowMorale > s.MoraleBaseline) p.Add(who + " needs quitBelowMorale from 0 to the baseline morale, or its people quit the day they arrive");
+            if (t.InterestingPermille < 0 || t.InterestingPermille > 900) p.Add(who + " needs interestingPermille from 0 to 900");
             if (t.Camp != "" && t.Camp != "doom" && t.Camp != "accel") p.Add(who + " has the camp \"" + t.Camp + "\": it is \"doom\", \"accel\" or empty");
         }
 

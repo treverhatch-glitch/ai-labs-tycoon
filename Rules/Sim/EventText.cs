@@ -109,6 +109,12 @@ namespace AiLabs.Rules.Sim
                         CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
                         return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
                     }
+                case EventKind.StaffQuit:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        RoleConfig role = c.Role(parts[0]);
+                        return "A " + (role == null ? parts[0] : role.Name.ToLowerInvariant()) + " quit " + who + " by blog post. It cost " + e.Amount + " reputation.";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

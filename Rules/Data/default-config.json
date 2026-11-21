@@ -4843,6 +4843,8 @@
     "maxOfferBoostPermille": 500,
     "frictionPerPairPermille": 40,
     "maxFrictionPermille": 300,
+    "maxPostsPermille": 300,
+    "quitReputation": 20,
     "traitRollSalt": 15,
     "starHirePermille": 120,
     "traits": [
@@ -4859,6 +4861,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Turns up, does the work, goes home."
       },
       {
@@ -4874,6 +4880,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Worth more than a building of average hires, and knows it."
       },
       {
@@ -4889,6 +4899,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Says they are a 10X engineer. Is, a little."
       },
       {
@@ -4904,6 +4918,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "doom",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Raises control and slows releases."
       },
       {
@@ -4919,6 +4937,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "accel",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Ships faster and reads the safety reports later."
       },
       {
@@ -4934,6 +4956,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Everyone near them gets a little better."
       },
       {
@@ -4949,6 +4975,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Notices the incident before it is a screenshot."
       },
       {
@@ -4964,6 +4994,10 @@
         "offerPermille": 100,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Their calendar says dentist. Rivals know better."
       },
       {
@@ -4979,7 +5013,68 @@
         "offerPermille": 0,
         "restMoraleOffset": 60,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Happy, rested, and not at their desk."
+      },
+      {
+        "id": "posts-through-it",
+        "name": "Posts Through It",
+        "researchPermille": 0,
+        "star": false,
+        "hirePermille": 40,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 120,
+        "scandalPermille": 120,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
+        "blurb": "Live-posted the outage, the launch and the lunch. Launches get a little louder. So do scandals."
+      },
+      {
+        "id": "quits-by-blog-post",
+        "name": "Will Quit By Blog Post",
+        "researchPermille": 50,
+        "star": false,
+        "hirePermille": 30,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 300,
+        "interestingPermille": 0,
+        "blurb": "Cares a great deal. When it is too much, there will be a table of contents."
+      },
+      {
+        "id": "only-interesting",
+        "name": "Only Works On What Is Interesting",
+        "researchPermille": 0,
+        "star": false,
+        "hirePermille": 40,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 200,
+        "blurb": "Brilliant while a variant run is training. Otherwise they are 'thinking about something'."
       }
     ]
   },
@@ -7324,6 +7419,15 @@
       "pick": -1,
       "about": "lab",
       "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
+    },
+      {
+      "id": "staff-quit",
+      "kind": "StaffQuit",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes."
     },
       {
       "id": "room-refurbished",
