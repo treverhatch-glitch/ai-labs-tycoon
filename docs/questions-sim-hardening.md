@@ -233,3 +233,13 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) flavor-only `card-shortage` headline; (b) `chipShortageStrengthPermille` on world events + `GameState` clock; (c) random monthly roll.
 - Choice: **(b)** — `ChipShortageSystem` scales GPU rent/buy, reserved deposit, fab orders, listed buys; shrinks effective foundry room; `ChipShortageBegan`/`Ended` events; schema **16**.
 - Why: DESIGN.md world-map tail (chip shortages) with visible economy; crosses `WorldNews`, vendor compute, and chips without new player commands.
+
+### Q40. Sandbox wing catches incidents? DROPPED — era room perks (`b45d2c8`)
+
+- Overlaps PR #6 `roomPerks` + `rolePerks` (`IncidentCut`, 90% combined cap). Reverted on `cursor/rules-side-items` (`45657b7`). Log: agent store `internal/q40-vs-era-room-perks.md`.
+
+### Q41. Home freeze stalls active training? DECIDED: progress pauses (no schema)
+
+- Options: (a) freeze only blocks commands (Q37); (b) `TrainingSystem.RunWeek` returns before progress when home is `Freeze`; (c) auto-cancel runs.
+- Choice: **(b)** — in-progress runs neither gain capability nor alignment compute; ledger/compute stats still roll; research and release commands unchanged.
+- Why: NEXT freeze consequences beyond purchases; world-map only; avoids room/perk/press/talent/gauntlet/rival threads.

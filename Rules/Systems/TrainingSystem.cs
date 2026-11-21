@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Systems
 
             int runs = LabQueries.ActiveRuns(lab);
             if (runs == 0) return;
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId)) return;
 
             int speed = SpeedPermille(c, state, lab);
             int alignmentWork = AlignmentWorkPermille(c, lab);
