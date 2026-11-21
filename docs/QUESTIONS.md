@@ -614,6 +614,18 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `BubbleMeterCrashHatchTests`; schema **19**; `DisplayQueries.BubbleMeterParts`.
 - Why: Hatch spec — crash lasts quarters, funding/GPUs/customers tighten, meter never returns to zero.
 
+### Q116. Acquire distressed rival labs (Hatch)? DECIDED: quote, integration, regulator on large deals
+
+- Options: (a) player-only; (b) distressed pricing + rival rollups during crash; (c) full M&A sim.
+- Recommendation and choice: **(b)**. `AcquireLab`; `absorbedByLabId` schema **20**; rivals skip planning when absorbed.
+- Why: Hatch spec — crash consolidations without counting absorption as bankruptcy.
+
+### Q117. Sell released models (Hatch)? DECIDED: earnings multiple vs scrap basis
+
+- Options: (a) retire only; (b) one-shot cash for income foregone + sector rep hit; (c) sell to rivals as entities.
+- Recommendation and choice: **(b)**. `SellModel`; `DisplayQueries.ModelSaleParts`; cannot sell last active model.
+- Why: Hatch spec — liquidity vs lost weekly sector revenue.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
