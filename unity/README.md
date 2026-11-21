@@ -1,6 +1,6 @@
 # unity/
 
-Unity **6000.3** presentation for AI Labs Tycoon. Game rules live in [`Rules/`](../Rules) as a local package; this
+Unity **6000.0.58f1** LTS (GameCI `ubuntu-6000.0.58f1-linux-il2cpp-3`) for AI Labs Tycoon. Game rules live in [`Rules/`](../Rules) as a local package; this
 folder only draws state and sends commands.
 
 ## Layout

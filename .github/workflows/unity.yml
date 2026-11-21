@@ -1,5 +1,5 @@
 # GameCI compile gate for unity/ (Edit Mode). Secrets only on the test-runner step.
-# Unity 6000.3: pass UNITY_EMAIL + UNITY_PASSWORD only (not UNITY_LICENSE); see game-ci/unity-test-runner#336.
+# Unity 6000.0.58f1 LTS — docker tag ubuntu-6000.0.58f1-linux-il2cpp-3 (Q247).
 name: unity
 
 on:
@@ -49,11 +49,12 @@ jobs:
         if: steps.project.outputs.ready == 'true'
         id: unity
         env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: unity
-          unityVersion: auto
+          unityVersion: 6000.0.58f1
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           cliVersion: v0.1.75
