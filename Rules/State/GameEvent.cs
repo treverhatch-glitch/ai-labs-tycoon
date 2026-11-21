@@ -426,7 +426,13 @@ namespace AiLabs.Rules.State
         /// <summary>A shock landed on the lab. SubjectId is the kind (1 squeeze, 2 backlash, 3 boom), Ref the world event.</summary>
         ShockStruck,
         /// <summary>A shock was answered. Amount is the reputation it changed, SubjectId the kind, Ref the world event, Pick 1 braced, 2 rode, 3 countered and it worked, 4 countered and it failed, 5 nobody answered.</summary>
-        ShockAnswered
+        ShockAnswered,
+        /// <summary>The lab put a paper's code out. Amount is the research points the clean-up cost, Pick the weeks of clean-up, SubjectId how reproducible it is.</summary>
+        CodeReleased,
+        /// <summary>The lab kept a paper's code back. Amount is the prestige it cost, Pick 0 the lab chose to, 1 it waited too long.</summary>
+        CodeWithheld,
+        /// <summary>Another lab tried to reproduce a paper. Amount is the prestige it changed, SubjectId how reproducible the paper was, Pick 1 it replicated and 0 it did not.</summary>
+        PaperReplicated
     }
 
     /// <summary>

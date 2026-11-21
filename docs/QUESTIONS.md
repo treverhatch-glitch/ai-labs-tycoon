@@ -2029,6 +2029,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Because it is default on, an unanswered shock rides: a lab that ignores the news takes its hits. No old test changed (listed in the PR if any did).
 - Alternatives: every event a shock (rejected: most are colour), dice for the outcome (rejected: nothing to plan for), a pause until answered (rejected: the world does not wait).
 
+### Q397. Do other labs try to reproduce the lab's papers? DECIDED: yes, a published paper waits for the player to put its code out or keep it back
+- A paper is more than prestige: it has to hold up. Each paper the player publishes or has accepted waits for a decision. Putting the code out invites other labs to try to reproduce it; it replicates if it is reproducible enough for the lab's standing and is a scandal if not, so the real choice is how much clean-up to pay for (research points and weeks), against the cost of keeping it back. A famous lab is held to a higher bar.
+- The weekly observer reads the lab's own paper events of the week before, as the values system does (Q395), so the paper systems themselves did not change.
+- Alternatives: random replication (rejected: nothing to plan for), only ever a prestige bonus (rejected: no risk), letting rivals' papers be replicated too (rejected: rivals do not publish).
+
 ## Open
 
 None.

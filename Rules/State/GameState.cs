@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 98;
+        public const int CurrentSchema = 99;
 
         public int Schema;
         public string ConfigVersion;
@@ -425,6 +425,14 @@ namespace AiLabs.Rules.State
         public int ShockBraced;
         public int ShockRode;
         public int ShockCountered;
+        /// <summary>Papers waiting for the lab to decide about their code, the weeks the oldest has waited, the weeks left before another lab finishes trying to reproduce the one that went out (0 when none) and how reproducible it is.</summary>
+        public int ReplPending;
+        public int ReplWait;
+        public int ReplLeft;
+        public int ReplRigor;
+        /// <summary>How many papers replicated and how many did not.</summary>
+        public int ReplWins;
+        public int ReplFails;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -802,6 +810,12 @@ namespace AiLabs.Rules.State
             s.Int("shockBraced", ref ShockBraced);
             s.Int("shockRode", ref ShockRode);
             s.Int("shockCountered", ref ShockCountered);
+            s.Int("replPending", ref ReplPending);
+            s.Int("replWait", ref ReplWait);
+            s.Int("replLeft", ref ReplLeft);
+            s.Int("replRigor", ref ReplRigor);
+            s.Int("replWins", ref ReplWins);
+            s.Int("replFails", ref ReplFails);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

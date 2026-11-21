@@ -146,7 +146,9 @@ namespace AiLabs.Rules.Sim
         SetCreed,
         HoldTownHall,
         OwnUp,
-        AnswerShock
+        AnswerShock,
+        ReleaseCode,
+        WithholdCode
     }
 
     /// <summary>
@@ -1275,6 +1277,20 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerShock, labId);
             c.Count = stance;
             return c;
+        }
+
+        /// <summary>Puts the code and data of the oldest waiting paper out after some weeks of cleaning it up, which costs research points and makes it likelier to replicate.</summary>
+        public static Command ReleaseCode(int labId, int effort)
+        {
+            Command c = Make(CommandKind.ReleaseCode, labId);
+            c.Count = effort;
+            return c;
+        }
+
+        /// <summary>Keeps the code and data of the oldest waiting paper back. It costs some standing.</summary>
+        public static Command WithholdCode(int labId)
+        {
+            return Make(CommandKind.WithholdCode, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

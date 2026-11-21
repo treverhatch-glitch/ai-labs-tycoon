@@ -6153,6 +6153,24 @@
     "counterGain": 30,
     "counterBoom": 3000
   },
+  "replication": {
+    "enabled": 1,
+    "pendingMax": 3,
+    "pendingWeeks": 12,
+    "weeks": 12,
+    "maxEffort": 3,
+    "effortPoints": 40,
+    "rigorBase": 350,
+    "rigorStep": 150,
+    "rigorPerWriter": 30,
+    "barBase": 500,
+    "barPerPrestige": 300,
+    "winPrestige": 120,
+    "winReputation": 15,
+    "lossPrestige": 200,
+    "lossReputation": 40,
+    "withholdPrestige": 40
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

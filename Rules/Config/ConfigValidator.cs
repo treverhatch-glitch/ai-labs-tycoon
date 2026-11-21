@@ -133,6 +133,7 @@ namespace AiLabs.Rules.Config
             PlatformsProblems(p, c);
             CreedProblems(p, c);
             ShocksProblems(p, c);
+            ReplicationProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1506,6 +1507,16 @@ namespace AiLabs.Rules.Config
             if (k.WindowWeeks < 1 || k.BraceCost < 0 || k.HitCash < 0 || k.BracePermille < 0 || k.BracePermille > MathI.Permille) p.Add("shocks.windowWeeks must be at least 1, braceCost and hitCash not negative and bracePermille from 0 to 1000");
             if (k.HitReputation < 0 || k.HitReputation > 500 || k.BoomReputation < 0 || k.BoomReputation > 500 || k.CounterGain < 0 || k.CounterGain > 500 || k.HitMorale < 0 || k.HitMorale > MathI.Permille) p.Add("shocks.hitReputation, boomReputation and counterGain must be from 0 to 500 and hitMorale from 0 to 1000");
             if (k.BoomBrace < MathI.Permille || k.BoomBrace > 10000 || k.CounterBoom < MathI.Permille || k.CounterBoom > 10000 || k.CounterMiss < MathI.Permille || k.CounterMiss > 10000 || k.CounterBar < 0) p.Add("shocks.boomBrace, counterBoom and counterMiss must be from 1000 to 10000 and counterBar not negative");
+        }
+
+        static void ReplicationProblems(List<string> p, GameConfig c)
+        {
+            ReplicationConfig k = c.Replication;
+            if (k == null) { p.Add("replication is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("replication.enabled must be 0 or 1");
+            if (k.PendingMax < 1 || k.PendingWeeks < 1 || k.Weeks < 1 || k.MaxEffort < 0 || k.MaxEffort > 12 || k.EffortPoints < 0) p.Add("replication.pendingMax, pendingWeeks and weeks must be at least 1, maxEffort from 0 to 12 and effortPoints not negative");
+            if (k.RigorBase < 0 || k.RigorStep < 0 || k.RigorPerWriter < 0 || k.BarBase < 0 || k.BarBase > MathI.Permille || k.BarPerPrestige < 0 || k.BarPerPrestige > MathI.Permille) p.Add("replication.rigorBase, rigorStep and rigorPerWriter must not be negative, barBase and barPerPrestige from 0 to 1000");
+            if (k.WinPrestige < 0 || k.LossPrestige < 0 || k.WithholdPrestige < 0 || k.WinReputation < 0 || k.LossReputation < 0 || k.WinReputation > 500 || k.LossReputation > 500) p.Add("replication.winPrestige, lossPrestige and withholdPrestige must not be negative and winReputation and lossReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

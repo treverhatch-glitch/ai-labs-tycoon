@@ -333,6 +333,7 @@ and says why in the commit message.
 150. **Platform deals.** ~~Done~~: `SignPlatform`, `RenewPlatform`, `WalkFromPlatform`, schema 96, `PlatformsTests` (Q394).
 151. **Lab values.** ~~Done~~: `SetCreed`, `HoldTownHall`, `OwnUp`, schema 97, `CreedTests` (Q395).
 152. **World shocks.** ~~Done~~: `AnswerShock`, schema 98, `ShocksTests` (Q396).
+153. **Replication.** ~~Done~~: `ReleaseCode`, `WithholdCode`, schema 99, `ReplicationTests` (Q397).
 
 ## Rules: later
 

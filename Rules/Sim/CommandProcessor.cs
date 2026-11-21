@@ -105,6 +105,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.ReleaseCode: return ReleaseCode(c, state, lab, cmd);
+                case CommandKind.WithholdCode: return WithholdCode(c, state, lab, cmd);
                 case CommandKind.AnswerShock: return AnswerShock(c, state, lab, cmd);
                 case CommandKind.SetCreed: return SetCreed(c, state, lab, cmd);
                 case CommandKind.HoldTownHall: return HoldTownHall(c, state, lab, cmd);
