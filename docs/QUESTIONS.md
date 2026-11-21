@@ -746,6 +746,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Hook in `LabPlanner.Distress`; config validator bounds permille.
 - Why: avoid premature rival cannibalism before Q200 retrenchment bar is green.
 
+### Q200. Rival plan economies robust at 40 years? DECIDED: retrench before debt (no save schema)
+
+- Options: (a) loosen plans/data only; (b) `LabPlanner.Retrenchment` runway caps, liquidity model sales, optional staff/gpu trim; (c) disable wealth growth while retrenching.
+- Recommendation and choice: **(b)+(c)**. `Retrenching`/`Retrench`/`CapGrowthTarget`; `RivalEconomyRobustnessLaterTests` (forty seeds × forty years, seed-19 runway log).
+- Why: tiny perturbations should not flip rivals into bankruptcy spirals — retrench is visible in the decision log before `WeeksInDebt`.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.

@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Systems
             Release(x);
 
             CrashDistress(x);
+            Retrench(x);
 
             if (lab.WeeksInDebt > 0)
             {
@@ -101,7 +102,7 @@ namespace AiLabs.Rules.Systems
         {
             GameConfig c = x.C;
             long growth = (long)growthPermillePerYear * weeks / c.Calendar.WeeksPerYear;
-            if (x.Lab.Cash > 0)
+            if (x.Lab.Cash > 0 && !Retrenching(x))
             {
                 long firstEraCash = x.Lab.Cash * c.Eras[0].TrainingCostPermille / EraSystem.AtTick(c, x.State.Tick).TrainingCostPermille;
                 growth += firstEraCash * x.Plan.WealthGrowthPermillePerMillion / 1000000;
@@ -157,7 +158,7 @@ namespace AiLabs.Rules.Systems
             {
                 RoleConfig role = c.Role(plan.Staff[i].RoleId);
                 if (GameDate.Year(c.Calendar, x.State.Tick) < plan.Staff[i].FromYear) continue;
-                int target = Grown(x, plan.Staff[i].Count, plan.StaffGrowthPermillePerYear, weeks);
+                int target = CapGrowthTarget(x, Grown(x, plan.Staff[i].Count, plan.StaffGrowthPermillePerYear, weeks), LabQueries.StaffCount(lab, role.Id), plan.Staff[i].Count);
                 int have = LabQueries.StaffCount(lab, role.Id);
                 if (have >= target) continue;
                 if (have >= plan.Staff[i].Count && Overstretched(x)) continue;
@@ -218,7 +219,6 @@ namespace AiLabs.Rules.Systems
 
             // Rent what the lab does not own, as far as the reserve allows. Rent is weekly, so "afford" means the reserve covers it.
             int rent = Math.Max(0, target - owned);
-            if (lab.RentedGpus >= plan.Gpus && Overstretched(x)) rent = Math.Min(rent, lab.RentedGpus);
             if (rent > lab.RentedGpus && plan.ReserveWeeks > 0)
             {
                 long withoutRent = LabQueries.WeeklyRunningCost(c, state, lab) - LabQueries.WeeklyGpuRent(c, state, lab);
@@ -226,6 +226,8 @@ namespace AiLabs.Rules.Systems
                 int affordable = gen.RentPerGpuWeek <= 0 ? rent : (int)MathI.Clamp(weekly / gen.RentPerGpuWeek, 0, rent);
                 rent = Math.Max(lab.RentedGpus, affordable);
             }
+            if (Retrenching(x) && rent > lab.RentedGpus) rent = lab.RentedGpus;
+            if (lab.RentedGpus >= plan.Gpus && Overstretched(x)) rent = Math.Min(rent, lab.RentedGpus);
             if (rent != lab.RentedGpus)
                 Decide(x, Command.SetRentedGpus(lab.Id, rent), DecisionAction.RentedGpus, "", rent, Reason.Of(ReasonCode.GpuTargetGap, Math.Max(0, target - owned)), Runway(x));
         }
