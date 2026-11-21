@@ -225,6 +225,8 @@ The player can hold a hack week: for two weeks the researchers build what they l
 
 The founder can give the team equity, up to three levels. Each level moves a slice of the founder's stake to the people, who then take lower salaries, settle at better morale and are harder to poach. It cannot be taken back, funding rounds dilute it, it can bring a board takeover closer, and the people's share comes out of the price if the lab is sold.
 
+The player can retrain a person for another role. It costs half of the new role's hire fee (a quarter inside a function) and some morale, needs a free seat, and keeps the person's trait. It is cheaper than letting them go and hiring, but a person who is already low will not do it.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

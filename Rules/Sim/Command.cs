@@ -49,7 +49,8 @@ namespace AiLabs.Rules.Sim
         CommissionAudit,
         SetResearchFocus,
         HoldHackWeek,
-        GrantStaffEquity
+        GrantStaffEquity,
+        RetrainStaff
     }
 
     /// <summary>
@@ -382,6 +383,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetSublet, labId);
             c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Moves one person to another role for a share of that role's hire fee and some of their morale. The new role needs a free seat.</summary>
+        public static Command RetrainStaff(int labId, int personId, string roleId)
+        {
+            Command c = Make(CommandKind.RetrainStaff, labId);
+            c.TargetId = personId;
+            c.Id = roleId;
             return c;
         }
 

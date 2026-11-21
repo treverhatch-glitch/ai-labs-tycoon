@@ -255,6 +255,7 @@ and says why in the commit message.
 72. **Research focus (research).** ~~Done~~: `SetResearchFocus`, `ResearchFocus`, `focus` data, lab `researchFocus` and `focusLockedUntil` (schema 52, `MigrateTo52`), `ResearchFocusTests`, `docs/content/research-focus.md` (Q313).
 73. **Hack week (research, staff).** ~~Done~~: `HoldHackWeek`, `HackWeek`, `hack` data, lab `hackWeeks` and `hackLockedUntil` (schema 52), `HackWeekTests`, `docs/content/hack-week.md` (Q314).
 74. **Staff equity (pay, funding).** ~~Done~~: `GrantStaffEquity`, `StaffEquity`, `equity` data, lab `equityLevel` and `equityPermille` (schema 53, `MigrateTo53`), `StaffEquityTests`, `docs/content/staff-equity.md` (Q315).
+75. **Retrain a person (staff).** ~~Done~~: `RetrainStaff`, `Retraining`, `retrain` data, no new state, `RetrainTests`, `docs/content/retraining.md` (Q316).
 
 ## Rules: later
 

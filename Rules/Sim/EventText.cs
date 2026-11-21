@@ -213,6 +213,13 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a hack week for " + e.SubjectId + " weeks. It cost $" + e.Amount + " and the roadmap is on hold."
                         : who + "'s hack week is over and the team is back on the roadmap.";
                 case EventKind.EquityGranted: return who + " gave the team equity (level " + e.SubjectId + "). The people now own " + (e.Amount / 10) + "." + (e.Amount % 10) + "% of the company.";
+                case EventKind.StaffRetrained:
+                    {
+                        string[] roles = (e.Ref ?? "").Split('>');
+                        RoleConfig from = roles.Length == 2 ? c.Role(roles[0]) : null;
+                        RoleConfig to = roles.Length == 2 ? c.Role(roles[1]) : null;
+                        return who + " retrained a " + (from == null ? "person" : from.Name) + " as a " + (to == null ? "new role" : to.Name) + " for $" + e.Amount + (e.Pick == 1 ? "." : ", and they are not thrilled.");
+                    }
                 case EventKind.AuditRevoked: return "The auditors pulled the certificate of " + e.Ref + " after its incident.";
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";

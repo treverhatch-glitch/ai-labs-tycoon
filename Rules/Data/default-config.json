@@ -5548,6 +5548,14 @@
     "switchCost": 50000,
     "lockWeeks": 26
   },
+  "retrain": {
+    "enabled": true,
+    "feePermille": 500,
+    "sameFunctionFeePermille": 250,
+    "moraleDrop": 120,
+    "sameFunctionMoraleDrop": 40,
+    "minMorale": 300
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,

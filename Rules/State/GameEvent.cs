@@ -158,7 +158,9 @@ namespace AiLabs.Rules.State
         /// <summary>A hack week started or ended. LabId is the lab, SubjectId its length in weeks, Amount the cost (0 at the end). Pick is 1 when it starts and 0 when it ends.</summary>
         HackWeek,
         /// <summary>The player gave the team another level of equity. LabId is the lab, SubjectId the level now, Amount the share of the company the people own, in permille.</summary>
-        EquityGranted
+        EquityGranted,
+        /// <summary>The player moved a person to another role. LabId is the lab, SubjectId the person, Amount the fee, Ref "oldRole>newRole". Pick is 1 inside a function and 0 across functions.</summary>
+        StaffRetrained
     }
 
     /// <summary>

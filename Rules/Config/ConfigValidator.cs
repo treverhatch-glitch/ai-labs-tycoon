@@ -82,6 +82,7 @@ namespace AiLabs.Rules.Config
             FocusProblems(p, c);
             HackProblems(p, c);
             EquityProblems(p, c);
+            RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -875,6 +876,17 @@ namespace AiLabs.Rules.Config
                 foreach (string kind in o.Kinds)
                     if (!System.Enum.TryParse(kind, out TechEffectKind parsed) || !System.Enum.IsDefined(typeof(TechEffectKind), parsed)) p.Add("focus option " + o.Id + " names the unknown tech effect \"" + kind + "\"");
             }
+        }
+
+        static void RetrainProblems(List<string> p, GameConfig c)
+        {
+            RetrainConfig k = c.Retrain;
+            if (k == null) { p.Add("retrain is missing"); return; }
+            if (k.FeePermille < 0 || k.FeePermille > MathI.Permille) p.Add("retrain.feePermille must be from 0 to 1000, so retraining never costs more than hiring");
+            if (k.SameFunctionFeePermille < 0 || k.SameFunctionFeePermille > k.FeePermille) p.Add("retrain.sameFunctionFeePermille must be from 0 to feePermille");
+            if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
+            if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
         }
 
         static void EquityProblems(List<string> p, GameConfig c)

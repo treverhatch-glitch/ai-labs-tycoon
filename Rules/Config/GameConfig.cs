@@ -77,6 +77,7 @@ namespace AiLabs.Rules.Config
         public ResearchFocusConfig Focus = new ResearchFocusConfig();
         public HackWeekConfig Hack = new HackWeekConfig();
         public EquityConfig Equity = new EquityConfig();
+        public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
@@ -148,6 +149,7 @@ namespace AiLabs.Rules.Config
             s.Obj("focus", ref Focus);
             s.Obj("hack", ref Hack);
             s.Obj("equity", ref Equity);
+            s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);

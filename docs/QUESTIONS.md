@@ -1577,6 +1577,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 53, `MigrateTo53`): `equityLevel` and `equityPermille`. Player only and opt-in. The golden digest moved to b16cb924 because of the two lab fields and the schema number only; reverting them brought the previous digest (7f191f56) back.
 - Alternatives: a per-person grant (rejected: it needs a vesting list and a screen for each person); equity that can be bought back (rejected: it turns it into a loan); letting the people's stake stay put when a round dilutes the founder (rejected: the two would add up to more than the company).
 
+### Q316. Can the player move a person to another role instead of firing and hiring? DECIDED: yes, for half the new role's hire fee and some morale, if a seat is free
+- New `retrain` data, command `RetrainStaff(personId, roleId)`, `Retraining` system, event `StaffRetrained` (appended). A move across functions costs 50% of the new role's hire fee and 120 morale; inside a function 25% and 40 morale. The person must have 300 morale and the new role a free seat.
+- The person keeps their trait and id and the seat is freed. Moving a safety listener out of the listening roles costs culture like letting them go. Policy, safety and research counts used by the compliance office, audits and hack weeks follow the new role.
+- No new state, so no schema bump and the golden digest did not move. The morale floor is the only limit on repeating it.
+- Alternatives: a per-person cooldown (rejected: it needs a saved field and a schema number); a retrain that keeps all morale (rejected: then firing and hiring would never be worth it); letting a person move to a role with no seat (rejected: seats are what limits every role).
+
 ## Open
 
 None.
