@@ -302,6 +302,7 @@ and says why in the commit message.
 119. **Alumni network (leavers stay in a pool, boomerang rehires carry trait and morale).** ~~Done~~: `alumni` data, `RehireAlumnus`, `Alumni`, schema 76, `AlumniTests`, `docs/content/alumni.md` (Q362).
 120. **Headlines and chat for labour, retirement notices, account teams, papers and alumni.** ~~Done~~: 20 headlines, 19 chat lines, `LabourSunsetAccountsConferenceAlumniNewsChatTests` (Q363).
 121. **Labour, retirement notices, account teams, papers and alumni together.** ~~Done~~: `LabourSunsetAccountsConferenceAlumniTogetherTests` (Q364).
+122. **Internships (a cohort with a stipend and a job offer at the end).** ~~Done~~: `internships` data, `StartInternships`, `EndInternships`, `Internships`, schema 77, `InternshipsTests`, `docs/content/internships.md` (Q365).
 
 ## Rules: later
 

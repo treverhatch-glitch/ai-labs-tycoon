@@ -148,6 +148,8 @@ namespace AiLabs.Rules.Sim
                     if (lab.Alumni.Count > c.Alumni.MaxSize) p.Add(who + " has more alumni than the data allows");
                     if (lab.Alumni.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has alumni, which only the player's lab can have");
                 }
+                if (lab.InternCount < 0 || lab.InternStart < 0 || lab.InternDue < 0 || (lab.InternCount > 0) != (lab.InternRole.Length > 0) || (lab.InternCount > 0 && (lab.InternCount > c.Internships.MaxCohort || c.Role(lab.InternRole) == null || lab.InternDue <= lab.InternStart || lab.Id != state.PlayerLabId)) || (lab.InternCount == 0 && (lab.InternStart != 0 || lab.InternDue != 0)))
+                    p.Add(who + " has interns (" + lab.InternCount + " in " + lab.InternRole + ", weeks " + lab.InternStart + " to " + lab.InternDue + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

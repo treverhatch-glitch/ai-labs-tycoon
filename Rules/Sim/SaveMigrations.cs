@@ -89,6 +89,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 74) MigrateTo74(root);
             if (fromSchema < 75) MigrateTo75(root);
             if (fromSchema < 76) MigrateTo76(root);
+            if (fromSchema < 77) MigrateTo77(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -452,6 +453,18 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 77: nobody has interns.</summary>
+        static void MigrateTo77(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "internRole", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "internCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internDue", JsonValue.Of(0L));
             });
         }
 

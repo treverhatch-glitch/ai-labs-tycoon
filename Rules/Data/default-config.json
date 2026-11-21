@@ -5762,6 +5762,14 @@
     "peerLaidOff": -10,
     "peerQuit": -20
   },
+  "internships": {
+    "enabled": 1,
+    "maxCohort": 4,
+    "weeks": 26,
+    "stipendPermille": 250,
+    "convertPermille": 300,
+    "convertMorale": 100
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

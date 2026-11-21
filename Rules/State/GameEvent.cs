@@ -258,7 +258,11 @@ namespace AiLabs.Rules.State
         /// <summary>A paper was decided. SubjectId is the venue, Amount the prestige it added (accepted) or the points given back (rejected or withdrawn), Pick 1 accepted, 0 rejected, 2 withdrawn, Ref the venue name.</summary>
         PaperDecided,
         /// <summary>A former employee came back. SubjectId is their old id, Amount the fee, Pick how they had left (1 good terms, 0 laid off, -1 quit), Ref the role id.</summary>
-        AlumniRehired
+        AlumniRehired,
+        /// <summary>A cohort of interns began. Amount is how many, Pick the weeks, Ref the role id.</summary>
+        InternshipStarted,
+        /// <summary>A cohort ended. SubjectId is how many there were, Amount how many were taken on, Pick 1 when it ran its course and 0 when it was cut short, Ref the role id.</summary>
+        InternshipsEnded
     }
 
     /// <summary>

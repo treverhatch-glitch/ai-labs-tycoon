@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 76;
+        public const int CurrentSchema = 77;
 
         public int Schema;
         public string ConfigVersion;
@@ -251,6 +251,13 @@ namespace AiLabs.Rules.State
         public List<Submission> Submissions = new List<Submission>();
         /// <summary>People who left the lab and can be asked back, oldest first.</summary>
         public List<Alumnus> Alumni = new List<Alumnus>();
+        /// <summary>The role of the cohort of interns in the lab now, empty when there is none.</summary>
+        public string InternRole = "";
+        /// <summary>How many interns are in the cohort.</summary>
+        public int InternCount;
+        /// <summary>The week the cohort began and the week it ends.</summary>
+        public int InternStart;
+        public int InternDue;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -493,6 +500,10 @@ namespace AiLabs.Rules.State
             s.ObjList("accountTeams", ref AccountTeams);
             s.ObjList("submissions", ref Submissions);
             s.ObjList("alumni", ref Alumni);
+            s.Str("internRole", ref InternRole);
+            s.Int("internCount", ref InternCount);
+            s.Int("internStart", ref InternStart);
+            s.Int("internDue", ref InternDue);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

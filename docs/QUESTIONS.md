@@ -1866,6 +1866,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `CareToolsTogetherTests` switches labour off in its start config: its fixed 260-week script only tries a pay change when the lab has over $1M at a set week, and with labour on, seed 2 (which pays the union its recognition rise) misses that week. The test is about the care tools, so it keeps the trajectory it was written against; labour has its own tests.
 - This is a set of pinned interactions, not a 260-week play-through over seeds: that was done for the previous batch and is left for the next one.
 
+### Q365. Can the lab grow its own juniors? DECIDED: internship cohorts with a stipend and an offer at the end
+- New `internships` data, commands `StartInternships` and `EndInternships`, `Internships` system, events `InternshipStarted` and `InternshipsEnded` and four saved lab fields (schema 77). One cohort of up to 4 interns in a role; the stipend (25% of the hiring fee each) is paid over 26 weeks and must be in the bank at the start; interns hold no seat and do no work.
+- At the end each is offered the job for 30% of the hiring fee, while there are free seats and cash, arriving in good spirits; the rest join the alumni pool on good terms. The choice is whether to pay half a year of stipend and have a seat ready then, against hiring at once at the full fee.
+- Reads the hiring fee, seats and the alumni pool (Q362); no random numbers; only the player's lab. The golden moved ef0b282a -> 824557c9 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: interns who do work at a discount (rejected: an output knob), a cohort that always converts (rejected: no seat or cash decision).
+
 ## Open
 
 None.

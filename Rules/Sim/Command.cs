@@ -85,7 +85,9 @@ namespace AiLabs.Rules.Sim
         AssignAccountTeam,
         SubmitPaper,
         WithdrawPaper,
-        RehireAlumnus
+        RehireAlumnus,
+        StartInternships,
+        EndInternships
     }
 
     /// <summary>
@@ -777,6 +779,21 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RehireAlumnus, labId);
             c.TargetId = personId;
             return c;
+        }
+
+        /// <summary>Takes on a cohort of interns in a role (Id the role, Count the interns). The stipend is paid weekly and must be in the bank now; interns hold no seat and do no work. At the end each is offered the job for a share of the hiring fee, if a seat and the cash are there.</summary>
+        public static Command StartInternships(int labId, string roleId, int count)
+        {
+            Command c = Make(CommandKind.StartInternships, labId);
+            c.Id = roleId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Sends the cohort home early. Nobody is offered a job; they join the alumni pool on good terms.</summary>
+        public static Command EndInternships(int labId)
+        {
+            return Make(CommandKind.EndInternships, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

@@ -104,6 +104,7 @@ namespace AiLabs.Rules.Config
         public AccountsConfig Accounts = new AccountsConfig();
         public ConferenceConfig Conference = new ConferenceConfig();
         public AlumniConfig Alumni = new AlumniConfig();
+        public InternshipsConfig Internships = new InternshipsConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -206,6 +207,7 @@ namespace AiLabs.Rules.Config
             s.Obj("accounts", ref Accounts);
             s.Obj("conference", ref Conference);
             s.Obj("alumni", ref Alumni);
+            s.Obj("internships", ref Internships);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

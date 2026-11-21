@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Config
             AccountsProblems(p, c);
             ConferenceProblems(p, c);
             AlumniProblems(p, c);
+            InternshipsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1147,6 +1148,18 @@ namespace AiLabs.Rules.Config
             if (k.FeeGoodPermille < 0 || k.FeeLaidOffPermille < k.FeeGoodPermille || k.FeeQuitPermille < k.FeeLaidOffPermille || k.FeeQuitPermille > MathI.Permille) p.Add("alumni.feeGoodPermille must be at least 0, feeLaidOffPermille at least feeGoodPermille and feeQuitPermille from feeLaidOffPermille to 1000, so a worse parting never makes a return cheaper");
             if (k.MoraleGood < -500 || k.MoraleGood > 500 || k.MoraleLaidOff < -500 || k.MoraleLaidOff > k.MoraleGood || k.MoraleQuit < -500 || k.MoraleQuit > k.MoraleLaidOff) p.Add("alumni.moraleGood must be from -500 to 500, moraleLaidOff from -500 to moraleGood and moraleQuit from -500 to moraleLaidOff");
             if (k.PeerGood < -200 || k.PeerGood > 200 || k.PeerLaidOff < -200 || k.PeerLaidOff > k.PeerGood || k.PeerQuit < -200 || k.PeerQuit > k.PeerLaidOff) p.Add("alumni.peerGood must be from -200 to 200, peerLaidOff from -200 to peerGood and peerQuit from -200 to peerLaidOff");
+        }
+
+        static void InternshipsProblems(List<string> p, GameConfig c)
+        {
+            InternshipsConfig k = c.Internships;
+            if (k == null) { p.Add("internships is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("internships.enabled must be 0 or 1");
+            if (k.MaxCohort < 1 || k.MaxCohort > 20) p.Add("internships.maxCohort must be from 1 to 20");
+            if (k.Weeks < 1 || k.Weeks > 104) p.Add("internships.weeks must be from 1 to 104");
+            if (k.StipendPermille < 0 || k.StipendPermille > MathI.Permille) p.Add("internships.stipendPermille must be from 0 to 1000");
+            if (k.ConvertPermille < 0 || k.ConvertPermille > MathI.Permille || k.StipendPermille + k.ConvertPermille >= MathI.Permille) p.Add("internships.convertPermille must be from 0 to 1000 and with the stipend under 1000, or interns would cost more than hiring");
+            if (k.ConvertMorale < -500 || k.ConvertMorale > 500) p.Add("internships.convertMorale must be from -500 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

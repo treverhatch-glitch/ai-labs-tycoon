@@ -277,6 +277,10 @@ namespace AiLabs.Rules.Sim
                         : who + " withdrew a paper from a " + e.Ref + " and got " + e.Amount + " research points back.";
                 case EventKind.AlumniRehired:
                     return who + " rehired a former " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Pick == 1 ? " who had left on good terms" : e.Pick == 0 ? " who had been laid off" : " who had quit") + " for $" + e.Amount + ".";
+                case EventKind.InternshipStarted:
+                    return who + " took on " + e.Amount + " " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Amount == 1 ? " intern" : " interns") + " for " + e.Pick + " weeks.";
+                case EventKind.InternshipsEnded:
+                    return who + (e.Pick == 1 ? "'s internship ended: " : " sent its interns home early: ") + e.Amount + " of " + e.SubjectId + " taken on.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
