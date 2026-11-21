@@ -3185,7 +3185,8 @@
     ],
     "patents": {
       "durationWeeks": 52,
-      "filingCostPermille": 800
+      "filingCostPermille": 800,
+      "reputationPerActivePatent": 3
     },
     "forks": [
       {

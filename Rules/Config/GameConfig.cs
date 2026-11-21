@@ -466,11 +466,14 @@ namespace AiLabs.Rules.Config
         public int DurationWeeks = 52;
         /// <summary>Cash cost is the tech's research cost times this permille.</summary>
         public int FilingCostPermille = 800;
+        /// <summary>Reputation gained each week per non-expired patent held by the lab.</summary>
+        public int ReputationPerActivePatent;
 
         public void Sync(Syncer s)
         {
             s.Int("durationWeeks", ref DurationWeeks);
             s.Int("filingCostPermille", ref FilingCostPermille);
+            s.Int("reputationPerActivePatent", ref ReputationPerActivePatent);
         }
     }
 

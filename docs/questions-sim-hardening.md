@@ -386,6 +386,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q81. Patent reputation upkeep? DECIDED: `reputationPerActivePatent`
+
+- Why: Q51 patents blocked rivals but gave no ongoing upside while active.
+- Choice: weekly reputation per live patent in `PatentSystem.RunWeek`; `ActivePatentCount` query; clamped.
+- Thirteen `PatentReputationTests`. Golden unchanged.
+
 ### Q80. Staff morale research hook? DECIDED: `moraleResearchPermillePerPoint`
 
 - Why: Staff people slice had morale drift and poaching but research output ignored morale (DESIGN “staff as people”).

@@ -136,7 +136,6 @@ namespace AiLabs.Rules.Sim
                 ChipSystem.RunWeek(c, state, lab);
                 TrainingSystem.RunWeek(c, state, lab);
                 TrainingSystem.ClearFailedRunsForPlans(lab);
-                PatentSystem.RunWeek(c, state, lab);
             }
             PeerComputeSystem.RunWeek(c, state);
 
@@ -148,6 +147,7 @@ namespace AiLabs.Rules.Sim
                 if (!state.Labs[i].Bankrupt)
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
+                    PatentSystem.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state, state.Labs[i]);

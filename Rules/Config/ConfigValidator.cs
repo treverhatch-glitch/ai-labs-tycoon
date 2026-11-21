@@ -769,6 +769,7 @@ namespace AiLabs.Rules.Config
             {
                 if (c.Research.Patents.DurationWeeks < 0) p.Add("research.patents.durationWeeks is negative");
                 if (c.Research.Patents.FilingCostPermille < 0) p.Add("research.patents.filingCostPermille is negative");
+                if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
             }
             UniqueIds(p, "research.forks", c.Research.Forks);
             var forkCount = new Dictionary<string, int>();
