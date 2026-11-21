@@ -4829,7 +4829,16 @@
   },
   "finance": {
     "bankruptcyGraceWeeks": 12,
-    "historyMonths": 120
+    "historyMonths": 120,
+    "insuranceMaxLevel": 3,
+    "insuranceCoverPermille": 250,
+    "insurancePremiumPermille": 12,
+    "insuranceMinPremium": 2000,
+    "insuranceClaimLoadingPermille": 300,
+    "insuranceForgetWeeks": 52,
+    "insuranceDropClaims": 3,
+    "insuranceExcludedRung": 5,
+    "insuranceLockWeeks": 13
   },
   "staffPeople": {
     "moraleBaseline": 500,

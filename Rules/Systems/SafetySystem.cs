@@ -104,6 +104,8 @@ namespace AiLabs.Rules.Systems
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
+            long covered = Insurance.OnIncident(c, state, lab, model, rung, fine);
+            fine -= covered;
 
             model.Incidents++;
             model.LastIncidentRung = rung;

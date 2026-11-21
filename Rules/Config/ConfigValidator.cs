@@ -208,6 +208,17 @@ namespace AiLabs.Rules.Config
 
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
+            FinanceConfig fin = c.Finance;
+            if (fin.InsuranceMaxLevel < 0 || fin.InsuranceMaxLevel > 10) p.Add("finance.insuranceMaxLevel needs 0 to 10");
+            if (fin.InsuranceCoverPermille < 0 || fin.InsuranceCoverPermille > MathI.Permille) p.Add("finance.insuranceCoverPermille needs 0 to 1000");
+            if (fin.InsuranceMaxLevel * fin.InsuranceCoverPermille > MathI.Permille) p.Add("finance.insuranceMaxLevel times insuranceCoverPermille is over 1000, so the top level would cover more than the fine");
+            if (fin.InsurancePremiumPermille < 0 || fin.InsurancePremiumPermille > MathI.Permille) p.Add("finance.insurancePremiumPermille needs 0 to 1000");
+            if (fin.InsuranceMinPremium < 0) p.Add("finance.insuranceMinPremium is negative");
+            if (fin.InsuranceClaimLoadingPermille < 0 || fin.InsuranceClaimLoadingPermille > 10000) p.Add("finance.insuranceClaimLoadingPermille needs 0 to 10000");
+            if (fin.InsuranceForgetWeeks < 1 || fin.InsuranceForgetWeeks > 520) p.Add("finance.insuranceForgetWeeks needs 1 to 520");
+            if (fin.InsuranceDropClaims < 1 || fin.InsuranceDropClaims > 100) p.Add("finance.insuranceDropClaims needs 1 to 100");
+            if (fin.InsuranceExcludedRung < 1 || fin.InsuranceExcludedRung > 99) p.Add("finance.insuranceExcludedRung needs 1 to 99");
+            if (fin.InsuranceLockWeeks < 0 || fin.InsuranceLockWeeks > 520) p.Add("finance.insuranceLockWeeks needs 0 to 520");
             FundingProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");

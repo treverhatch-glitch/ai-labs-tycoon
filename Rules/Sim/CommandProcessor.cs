@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
                 case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
                 case CommandKind.SetCrunch: return SetCrunch(c, state, lab, cmd);
+                case CommandKind.SetInsurance: return SetInsurance(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
@@ -311,6 +312,20 @@ namespace AiLabs.Rules.Sim
             if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
                 return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");
             lab.CrunchWeeks = 1;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetInsurance(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab buys incident insurance.");
+            FinanceConfig f = c.Finance;
+            if (cmd.Count < 0 || cmd.Count > f.InsuranceMaxLevel) return Fail(CommandError.InvalidArgument, "Insurance is from level 0 to " + f.InsuranceMaxLevel + ".");
+            if (cmd.Count == lab.InsuranceLevel) return Fail(CommandError.InvalidArgument, "The lab already has that cover.");
+            if (state.Tick < lab.InsuranceLockedUntil) return Fail(CommandError.InsuranceLocked, "The policy was changed recently and cannot be changed before week " + lab.InsuranceLockedUntil + ".");
+            if (cmd.Count > lab.InsuranceLevel && lab.InsuranceClaims >= f.InsuranceDropClaims)
+                return Fail(CommandError.Uninsurable, "No insurer will sell cover to a lab with " + lab.InsuranceClaims + " recent claims.");
+            lab.InsuranceLevel = cmd.Count;
+            lab.InsuranceLockedUntil = state.Tick + f.InsuranceLockWeeks;
             return CommandResult.Done(-1);
         }
 

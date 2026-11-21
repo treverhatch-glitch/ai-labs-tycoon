@@ -195,6 +195,8 @@ The ticker reports leaks (and the ones that backfire), poaching, exposed Gauntle
 
 The player can ask the team to work late. Research and training go faster, and every person loses morale each week while released models become more likely to have an incident. It ends when the player stops it, the team is worn out, or it reaches 26 weeks. A tired team cannot start another until morale comes back.
 
+The player's lab can insure against incident fines. A level covers a quarter of the fine for a weekly premium that grows with revenue and with the claims the insurer remembers. The worst incidents are never covered and too many claims end the policy.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

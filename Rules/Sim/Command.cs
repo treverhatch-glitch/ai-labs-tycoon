@@ -37,7 +37,8 @@ namespace AiLabs.Rules.Sim
         TakeLoan,
         RepayLoan,
         SetResearchShare,
-        SetCrunch
+        SetCrunch,
+        SetInsurance
     }
 
     /// <summary>
@@ -327,6 +328,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Takes out, changes or cancels incident insurance: the level, from 0 (none) to the data's highest.</summary>
+        public static Command SetInsurance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetInsurance, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Starts crunch time (on) or ends it (off).</summary>
         public static Command SetCrunch(int labId, bool on)
         {
@@ -596,7 +605,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked
     }
 
     public struct CommandResult

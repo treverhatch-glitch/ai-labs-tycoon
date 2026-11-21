@@ -39,6 +39,7 @@ namespace AiLabs.Rules.Systems
                     Events.Add(state, EventKind.GrantEnded, lab.Id, -1, lab.GrantPerWeek, "");
             }
 
+            Insurance.RunWeek(c, state, lab);
             Spend(lab, LedgerLine.Salaries, LabQueries.WeeklySalaries(c, lab));
             Spend(lab, LedgerLine.RoomUpkeep, LabQueries.WeeklyRoomUpkeep(c, lab));
             Spend(lab, LedgerLine.GpuRent, LabQueries.WeeklyGpuRent(c, state, lab));

@@ -9,7 +9,8 @@ namespace AiLabs.Rules.State
         Salaries, RoomUpkeep, GpuRent, GpuUpkeep,
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
-        ChipSales, GreyRevenue, Laundered, CapitalIn
+        ChipSales, GreyRevenue, Laundered, CapitalIn,
+        Insurance
     }
 
     /// <summary>
@@ -41,6 +42,8 @@ namespace AiLabs.Rules.State
         public long Laundered;
         /// <summary>Money put into the lab from outside: a bailout, the proceeds of selling a lab.</summary>
         public long CapitalIn;
+        /// <summary>The weekly premium for incident insurance.</summary>
+        public long Insurance;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -49,7 +52,7 @@ namespace AiLabs.Rules.State
             get
             {
                 return Revenue + Grants + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn;
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Insurance;
             }
         }
 
@@ -75,6 +78,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: return ChipSales;
                 case LedgerLine.GreyRevenue: return GreyRevenue;
                 case LedgerLine.Laundered: return Laundered;
+                case LedgerLine.Insurance: return Insurance;
                 default: return CapitalIn;
             }
         }
@@ -101,6 +105,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: ChipSales += amount; break;
                 case LedgerLine.GreyRevenue: GreyRevenue += amount; break;
                 case LedgerLine.Laundered: Laundered += amount; break;
+                case LedgerLine.Insurance: Insurance += amount; break;
                 default: CapitalIn += amount; break;
             }
         }
@@ -126,6 +131,7 @@ namespace AiLabs.Rules.State
             s.Long("greyRevenue", ref GreyRevenue);
             s.Long("laundered", ref Laundered);
             s.Long("capitalIn", ref CapitalIn);
+            s.Long("insurance", ref Insurance);
         }
     }
 

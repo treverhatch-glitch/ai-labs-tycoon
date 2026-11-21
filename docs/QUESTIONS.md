@@ -1457,6 +1457,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to 691a1ad0 because of the new field and the schema number only; reverting both brought the previous digest (3ccf0148) back.
 - Alternatives: a research penalty from low morale (rejected: Q180 turned it off on purpose); a cash cost for overtime (rejected: morale and incidents are the cost the bible names for rushing).
 
+### Q299. Can the player insure against incident fines? DECIDED: yes, three levels of 25% cover each, a premium on revenue, claims that load it, and a drop-out at three
+- New state on the lab (schema 44, `MigrateTo44`): `insuranceLevel`, `insuranceClaims`, `insuranceLockedUntil`; a new ledger line `insurance` (appended to `LedgerLine`, migrated into every ledger totals object as zero); command `SetInsurance(level)`; `Insurance` system; events `InsuranceClaimPaid` and `InsuranceDropped`; command errors `Uninsurable` and `InsuranceLocked`. All appended.
+- Premium per level is the larger of $2,000 and 1.2% of last week's revenue, plus 30% for each remembered claim. The cover is 25% of the fine per level, so level 3 covers 75% and the validator keeps the top level at or under 100%.
+- Rung 5 and above (an escape) is never covered, make-good payments and reputation loss are not covered, a claim is forgotten every 52 weeks, and the third remembered claim ends the policy. Changing it locks the policy for 13 weeks.
+- Player only and opt-in: no rival buys, the autopilot does not buy, so economy bounds and the balance soak are unchanged. `EconomyBoundsTests` and the soak were not rerun for this item beyond the full suite, since defaults change nothing.
+- The golden digest moved to e1ea850c because of the three lab fields, the ledger field and the schema number only; reverting them brought the previous digest (691a1ad0) back.
+- Alternatives: a flat premium (rejected: a rich lab would never feel it); covering reputation loss (rejected: insurance pays money, not trust); a one-off deductible instead of a share (rejected: a share scales with the fine).
+
 ## Open
 
 None.

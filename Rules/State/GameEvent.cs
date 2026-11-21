@@ -130,7 +130,11 @@ namespace AiLabs.Rules.State
         /// <summary>The foundry gave an order's slot to someone else. Subject is the design, Amount the weeks the delivery slipped, Ref the order id.</summary>
         ChipSlotSnubbed,
         /// <summary>Crunch time ended. Amount is how many weeks it lasted, Ref is why: "stopped", "tired" (morale gave out), "spent" (the longest crunch) or "empty" (no one left).</summary>
-        CrunchEnded
+        CrunchEnded,
+        /// <summary>The insurer paid part of an incident's fine. Subject is the model, Amount what it paid, Ref the model's name.</summary>
+        InsuranceClaimPaid,
+        /// <summary>The insurer ended the policy after too many claims. Amount is how many it remembered.</summary>
+        InsuranceDropped
     }
 
     /// <summary>
