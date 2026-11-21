@@ -127,6 +127,8 @@ The Gauntlet has more to it now ([content/gauntlet.md](content/gauntlet.md)): th
 
 Trust ([content/trust.md](content/trust.md)) is the slow side of reputation: each lab has a meter per sector that grows a little every week it sells there, jumps with a bracket win, collapses with an incident or an exposed tuning, carries to the other sectors of the same family, and moves appeal. An incident also writes a complaint to the player's desk, which can be answered with a refund, a patch or an apology.
 
+Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
+
 The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.
 
 Staff traits ([content/staff-traits.md](content/staff-traits.md)) widen the two old traits to nine: the player's hires can be a 10X, a Doomer, an Accelerationist, a Mentor, a reader of logs, someone secretly interviewing, or a desk-sleeper, each adding one number to the lab, with a research cost when both camps are on the payroll.

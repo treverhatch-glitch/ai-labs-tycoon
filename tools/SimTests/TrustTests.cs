@@ -290,7 +290,7 @@ public class TrustTests
     [Fact]
     public void An_incident_costs_trust_in_every_sector_the_model_is_on_sale_in()
     {
-        Game g = Hit(null, Chat, Support);
+        Game g = Hit(c => c.Safety.SectorFlavours.Clear(), Chat, Support);
         Assert.Equal(1, Count(g, EventKind.Incident));
         Assert.Equal(500 - 60, Trust(g, g.Me, Chat));
         Assert.Equal(500 - 60, Trust(g, g.Me, Support));

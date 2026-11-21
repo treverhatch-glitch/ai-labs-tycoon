@@ -82,10 +82,10 @@ namespace AiLabs.Rules.Systems
             long displayBoost = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, sandbagGap));
             b.FromAlignment = effectiveAlign;
             b.SandbagBoost = displayBoost;
-            if (LabQueries.IsGlitching(c, model, tick))
+            if (SectorFlavours.IsGlitching(c, model, sector.Id, tick))
             {
                 long before = b.FromCapability + effectiveAlign + displayBoost;
-                long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
+                long after = MathI.MulPermille(before, SectorFlavours.GlitchQualityPermille(c, sector.Id));
                 b.GlitchAdjustment = after - before;
             }
             return b;

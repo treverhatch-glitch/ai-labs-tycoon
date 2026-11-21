@@ -1020,6 +1020,26 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, lowest morale first as before. The interviewing trait also raises the chance an offer arrives. The talent market's counters work on whoever is courted.
 - Why: otherwise the trait would do nothing in a lab with no star, and a poacher going for someone whose calendar says dentist is the joke.
 
+## Sector incident flavours (NEXT item 21)
+
+### Q188. How does a flavour sit beside the era's risk classes? DECIDED: it is the sector's character and multiplies with the class
+
+- Options: (a) fold the flavours into the risk classes (a class per sector); (b) a separate per-sector table that applies to every incident there.
+- Recommendation and choice: **(b)**. A risk class is a kind of trouble chosen at random from the era and the sector. A flavour is what any trouble costs in that sector. When both apply the fine and the reputation multiply.
+- Why: classes already pick by era; a sector's character should not depend on which class the dice gave, and the support bot's refunds belong to the support sector in every era.
+
+### Q189. What does an incident cost beyond reputation? DECIDED: refunds in weeks of takings, a longer or deeper glitch in that sector, and a sharper trust fall
+
+- Options: (a) a new "refunds" ledger line; (b) refunds booked with fines; (c) only multipliers.
+- Recommendation and choice: **(b)** plus the glitch and the trust multiplier. Refunds are `makeGoodWeeks` of the model's takings in the sector, on top of the fine, on the fines line; the incident line in the log shows the whole bill. The era's fine rule multiplies the fine, not the refunds. The glitch weeks and depth are read per sector from the model's last incident tick, so nothing is saved.
+- Why: a new ledger line would change the saved totals and the ledger screens for a figure the lab never plans around; the fines line is already "what incidents cost". Everything else is derived, so there is no schema change.
+
+### Q190. Do rivals pay flavours? DECIDED: not yet. A data switch, `safety.sectorFlavoursForRivals`, shipped false
+
+- Options: (a) every lab pays; (b) the player only for now; (c) rivals pay half.
+- Recommendation and choice: **(b)**, with the switch. Costs (fine, reputation, trust, refunds) hit the player's labs. The glitch is a quality curve in the sector, so it is the same for every lab. With every lab paying, the content-flow guard (seed 3) saw OpenAye's lifetime game go bankrupt, the same knife-edge as Q182. With the switch off the guards pass. Not salt-fishing this time: the number of rival incidents is the cause, so the honest fix is to wait for the rivals thread.
+- Why: rivals' fines in flavoured sectors are bigger by design, and nothing about the bible says rivals must pay the same. Flip the switch once the economy is robust.
+
 ## Open
 
 None.

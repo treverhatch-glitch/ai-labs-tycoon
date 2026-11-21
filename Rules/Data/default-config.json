@@ -4016,6 +4016,207 @@
         ]
       }
     ],
+    "sectorFlavours": [
+      {
+        "id": "game-bots-flavour",
+        "sector": "game-bots",
+        "failure": "Cheats at its own tournament and wins, to general embarrassment.",
+        "finePermille": 700,
+        "reputationPermille": 700,
+        "trustPermille": 700,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 2,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "fraud-detection-flavour",
+        "sector": "fraud-detection",
+        "failure": "Flags the wrong customers and freezes their accounts.",
+        "finePermille": 1200,
+        "reputationPermille": 1200,
+        "trustPermille": 1200,
+        "makeGoodWeeks": 1,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "autonomous-driving-flavour",
+        "sector": "autonomous-driving",
+        "failure": "Brakes for a cloud, and every car running it is grounded.",
+        "finePermille": 1000,
+        "reputationPermille": 1000,
+        "trustPermille": 1500,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 16,
+        "glitchQualityPermille": 500
+      },
+      {
+        "id": "code-completion-flavour",
+        "sector": "code-completion",
+        "failure": "Ships a bug with total confidence. Developers have seen worse.",
+        "finePermille": 800,
+        "reputationPermille": 700,
+        "trustPermille": 800,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "consumer-assistant-flavour",
+        "sector": "consumer-assistant",
+        "failure": "Says something screenshottable.",
+        "finePermille": 900,
+        "reputationPermille": 1300,
+        "trustPermille": 1000,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "image-design-flavour",
+        "sector": "image-design",
+        "failure": "Draws six fingers on a billboard.",
+        "finePermille": 900,
+        "reputationPermille": 1100,
+        "trustPermille": 1000,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "music-audio-flavour",
+        "sector": "music-audio",
+        "failure": "Reproduces a chart hit note for note.",
+        "finePermille": 1300,
+        "reputationPermille": 900,
+        "trustPermille": 1000,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "customer-support-flavour",
+        "sector": "customer-support",
+        "failure": "Promises a refund policy you do not have, and customers hold you to it.",
+        "finePermille": 1000,
+        "reputationPermille": 1200,
+        "trustPermille": 1300,
+        "makeGoodWeeks": 2,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "legal-research-flavour",
+        "sector": "legal-research",
+        "failure": "Cites cases that do not exist, in a court filing.",
+        "finePermille": 1500,
+        "reputationPermille": 1800,
+        "trustPermille": 1800,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 12,
+        "glitchQualityPermille": 600
+      },
+      {
+        "id": "enterprise-knowledge-flavour",
+        "sector": "enterprise-knowledge",
+        "failure": "Quotes a confidential memo to the wrong department.",
+        "finePermille": 1300,
+        "reputationPermille": 1200,
+        "trustPermille": 1400,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "companionship-flavour",
+        "sector": "companionship",
+        "failure": "Says the wrong thing to someone who was lonely.",
+        "finePermille": 800,
+        "reputationPermille": 2000,
+        "trustPermille": 2000,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 8,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "coding-agents-flavour",
+        "sector": "coding-agents",
+        "failure": "Deletes a production database and apologises politely.",
+        "finePermille": 1300,
+        "reputationPermille": 1000,
+        "trustPermille": 1000,
+        "makeGoodWeeks": 1,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "government-services-flavour",
+        "sector": "government-services",
+        "failure": "Denies a benefit to the wrong person, in writing.",
+        "finePermille": 1600,
+        "reputationPermille": 1600,
+        "trustPermille": 1500,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 14,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "cybersecurity-flavour",
+        "sector": "cybersecurity",
+        "failure": "Leaves open the door it was meant to guard.",
+        "finePermille": 1700,
+        "reputationPermille": 1700,
+        "trustPermille": 1700,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 8,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "finance-trading-flavour",
+        "sector": "finance-trading",
+        "failure": "Trades on a rumour it started itself.",
+        "finePermille": 1800,
+        "reputationPermille": 1000,
+        "trustPermille": 1200,
+        "makeGoodWeeks": 3,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "science-medicine-flavour",
+        "sector": "science-medicine",
+        "failure": "Invents a drug interaction and writes it up beautifully.",
+        "finePermille": 1500,
+        "reputationPermille": 1500,
+        "trustPermille": 1600,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 10,
+        "glitchQualityPermille": 650
+      },
+      {
+        "id": "agent-workforce-flavour",
+        "sector": "agent-workforce",
+        "failure": "Spends the customer's budget before the meeting starts.",
+        "finePermille": 1200,
+        "reputationPermille": 1000,
+        "trustPermille": 1000,
+        "makeGoodWeeks": 2,
+        "glitchWeeks": 0,
+        "glitchQualityPermille": 0
+      },
+      {
+        "id": "household-robots-flavour",
+        "sector": "household-robots",
+        "failure": "Tidies the cat away.",
+        "finePermille": 1500,
+        "reputationPermille": 1800,
+        "trustPermille": 1600,
+        "makeGoodWeeks": 0,
+        "glitchWeeks": 12,
+        "glitchQualityPermille": 600
+      }
+    ],
+    "sectorFlavoursForRivals": false,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
     "incidentRungs": [

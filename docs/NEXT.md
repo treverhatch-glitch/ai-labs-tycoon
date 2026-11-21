@@ -135,7 +135,9 @@ and says why in the commit message.
     "will quit by blog post" (they need a press hook on poaching).
 21. **Sector incident flavours (bible ch. 8, "what goes wrong").** Each sector fails in its own way (the support bot promises a refund
     policy you do not have, the legal tool cites cases that do not exist); a flavour sets how hard an incident hits there and what it
-    costs beyond reputation. Claimed, not started.
+    costs beyond reputation. ~~Done~~: `safety.sectorFlavours` (18 sectors), `SectorFlavours`, hooks in `SafetySystem`, `TrustSystem` and the quality
+    glitch in `DisplayQueries`; refunds on the fines line; player-only costs behind `safety.sectorFlavoursForRivals` (Q188-Q190); no schema change;
+    `SectorFlavourTests`, `docs/content/sector-flavours.md`.
 22. **Safety culture and release gates (bible ch. 10, "release gates", "culture").** A culture meter that rises when the lab listens and
     falls when it rushes, and a gate the player sets for themselves and then has to obey. Claimed, not started.
 

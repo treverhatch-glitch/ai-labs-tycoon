@@ -124,7 +124,7 @@ namespace AiLabs.Rules.Systems
         {
             int n = model.Sectors.Count;
             var lost = new int[n];
-            for (int i = 0; i < n; i++) lost[i] = -Shift(c, state, lab, model.Sectors[i], -c.Trust.IncidentDrop, true);
+            for (int i = 0; i < n; i++) lost[i] = -Shift(c, state, lab, model.Sectors[i], -(int)MathI.MulPermille(c.Trust.IncidentDrop, SectorFlavours.TrustPermille(c, state, lab, model.Sectors[i])), true);
 
             if (lab.Id != state.PlayerLabId) return;
             string worstSector = "";

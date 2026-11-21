@@ -592,6 +592,10 @@ namespace AiLabs.Rules.Config
         public int GenericRiskWeight;
         /// <summary>Kinds of trouble that open era by era.</summary>
         public List<RiskClassConfig> RiskClasses = new List<RiskClassConfig>();
+        /// <summary>How each sector fails; a sector without an entry fails the plain way.</summary>
+        public List<SectorFlavourConfig> SectorFlavours = new List<SectorFlavourConfig>();
+        /// <summary>When false (the shipped value) only the player's labs pay what a flavour costs in fines, reputation, trust and refunds; rivals fail the plain way.</summary>
+        public bool SectorFlavoursForRivals;
         /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
@@ -600,6 +604,12 @@ namespace AiLabs.Rules.Config
         public int Rung5CorruptionMin;
         public int Rung6CorruptionMin;
         public ContainmentConfig Containment;
+
+        public SectorFlavourConfig SectorFlavour(string sectorId)
+        {
+            for (int i = 0; i < SectorFlavours.Count; i++) if (SectorFlavours[i].Sector == sectorId) return SectorFlavours[i];
+            return null;
+        }
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -623,6 +633,8 @@ namespace AiLabs.Rules.Config
             s.ObjList("incidentRungs", ref IncidentRungs);
             s.Int("genericRiskWeight", ref GenericRiskWeight);
             s.ObjList("riskClasses", ref RiskClasses);
+            s.ObjList("sectorFlavours", ref SectorFlavours);
+            s.Bool("sectorFlavoursForRivals", ref SectorFlavoursForRivals);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
             s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);

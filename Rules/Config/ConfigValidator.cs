@@ -153,6 +153,7 @@ namespace AiLabs.Rules.Config
                     p.Add("safety rung4/5/6 corruption thresholds must rise from 1");
             }
             RiskClassProblems(p, c);
+            SectorFlavourProblems(p, c);
             ContainmentConfig cont = c.Safety.Containment;
             if (cont != null)
             {
@@ -382,6 +383,27 @@ namespace AiLabs.Rules.Config
                     EraConfig before = c.Era(safety.RiskClasses[i - 1].Era);
                     if (before != null && c.Eras.IndexOf(opens) < c.Eras.IndexOf(before)) p.Add(who + " is listed before a class that opens in an earlier era: list them oldest first");
                 }
+            }
+        }
+
+        static void SectorFlavourProblems(List<string> p, GameConfig c)
+        {
+            SafetyConfig safety = c.Safety;
+            UniqueIds(p, "safety.sectorFlavours", safety.SectorFlavours);
+            for (int i = 0; i < safety.SectorFlavours.Count; i++)
+            {
+                SectorFlavourConfig f = safety.SectorFlavours[i];
+                string who = "sector flavour " + f.Id;
+                if (c.Sector(f.Sector) == null) p.Add(who + " belongs to the unknown sector \"" + f.Sector + "\"");
+                for (int k = 0; k < i; k++)
+                    if (safety.SectorFlavours[k].Sector == f.Sector) p.Add(who + " is the second flavour of sector " + f.Sector);
+                if (string.IsNullOrEmpty(f.Failure)) p.Add(who + " has no failure line");
+                if (f.FinePermille < 250 || f.FinePermille > 5000) p.Add(who + " has finePermille " + f.FinePermille + ": it must be from 250 to 5000");
+                if (f.ReputationPermille < 250 || f.ReputationPermille > 5000) p.Add(who + " has reputationPermille " + f.ReputationPermille + ": it must be from 250 to 5000");
+                if (f.TrustPermille < 250 || f.TrustPermille > 5000) p.Add(who + " has trustPermille " + f.TrustPermille + ": it must be from 250 to 5000");
+                if (f.MakeGoodWeeks < 0 || f.MakeGoodWeeks > 26) p.Add(who + " has makeGoodWeeks " + f.MakeGoodWeeks + ": it must be from 0 to 26");
+                if (f.GlitchWeeks < 0 || f.GlitchWeeks > 52) p.Add(who + " has glitchWeeks " + f.GlitchWeeks + ": it must be from 0 to 52 (0 = the lab-wide value)");
+                if (f.GlitchQualityPermille < 0 || f.GlitchQualityPermille > MathI.Permille) p.Add(who + " has glitchQualityPermille " + f.GlitchQualityPermille + ": it must be from 0 to 1000 (0 = the lab-wide value)");
             }
         }
 
