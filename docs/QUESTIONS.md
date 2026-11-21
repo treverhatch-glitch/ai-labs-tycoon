@@ -1391,6 +1391,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `OfficeRequires.OwnChip` (a ready design in `chipDesigns`) and `OfficeRequires.RentedCompute` (rented GPUs on the books). The six events: a researcher leaves for a competing lab, a rival's chief executive is fired on Friday and back on Tuesday, the model asks what "off" means (uses the corruption effect from Q282), a loud reply that takes the servers down, the first chip's Minesweeper benchmark, and the landlord who trains its own models sends a friendly note about your usage.
 - Why: events with no right answer are the bible's "event ideas". A chip event for a lab with no chips, or a landlord event for a lab that rents nothing, would read as noise. Nothing is saved, no schema change. The golden digest did not move.
 
+### Q288. What does the foundry snub do, and to whom? DECIDED: a 20-week slip on the player's own new orders when the vendor's standing is under 350, one chance in four
+
+- Options: (a) a year's slip as in the bible's table; (b) a shorter slip with a roll; (c) a lost order.
+- Recommendation and choice: **(b)**. `chips.snubStandingBelow` 350, `snubChancePermille` 250, `snubWeeks` 20 (a bit under half the 48-week year). It reads the vendor's standing, which falls when a lab makes its own training chips (Envydia's reaction), so the risk is the price of independence. The roll is a hash of the seed, the week, the lab and the order, so it draws nothing from the dice stream and nothing is saved; `ChipSlotSnubbed` goes in the log. Player labs only, and only the lab's own orders, not chips bought from another lab's list.
+- Why: a year would end a run of chips outright and rivals' chip buying is plan-driven economy that must stay knife-edge safe (Q182). A lost order would need a refund path. A slip uses the delivery tick the order already has. No schema change; the golden digest did not move.
+
 ## Open
 
 None.

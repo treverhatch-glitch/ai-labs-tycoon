@@ -29,6 +29,11 @@ namespace AiLabs.Rules.Config
         public int TestLabRampPermille;
         public int YieldCrashPermille;
         public int YieldCrashKeepPermille;
+        /// <summary>The vendor's standing with a lab below which the foundry may give the lab's slot away (bible ch. 7 "foundry snub"). Player labs only.</summary>
+        public int SnubStandingBelow;
+        public int SnubChancePermille;
+        /// <summary>Weeks a snubbed delivery slips.</summary>
+        public int SnubWeeks;
         public int FoundryVendorSharePermille;
         public int BookAheadMonths;
         /// <summary>The most chips a plan-run lab lists for sale in a month.</summary>
@@ -62,6 +67,9 @@ namespace AiLabs.Rules.Config
             s.Int("testLabRampPermille", ref TestLabRampPermille);
             s.Int("yieldCrashPermille", ref YieldCrashPermille);
             s.Int("yieldCrashKeepPermille", ref YieldCrashKeepPermille);
+            s.Int("snubStandingBelow", ref SnubStandingBelow);
+            s.Int("snubChancePermille", ref SnubChancePermille);
+            s.Int("snubWeeks", ref SnubWeeks);
             s.Int("foundryVendorSharePermille", ref FoundryVendorSharePermille);
             s.Int("bookAheadMonths", ref BookAheadMonths);
             s.Int("listingMaxPerMonth", ref ListingMaxPerMonth);

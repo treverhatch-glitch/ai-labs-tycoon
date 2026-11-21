@@ -88,6 +88,21 @@ namespace AiLabs.Rules.Systems
             }
         }
 
+        /// <summary>
+        /// Weeks a new order slips because the foundry gave its slot away: only the player's own orders, only when the vendor thinks little of the
+        /// lab (it keeps making its own chips), and only on a roll worked out from the seed, the week, the lab and the order, so nothing is saved.
+        /// </summary>
+        public static int SnubWeeks(GameConfig c, GameState state, LabState lab, int orderId)
+        {
+            ChipsConfig k = c.Chips;
+            if (lab.Id != state.PlayerLabId || k.SnubWeeks <= 0 || k.SnubChancePermille <= 0) return 0;
+            VendorStanding standing = state.Vendor.Standing(lab.Id);
+            if (standing == null || standing.Standing >= k.SnubStandingBelow) return 0;
+            long mix = (state.Seed * 31 + state.Tick) * 31 + lab.Id * 17 + orderId * 13 + 7;
+            mix = (mix & 0x7FFFFFFFL) * 2654435761L & 0xFFFFFFFFL;
+            return (int)((mix >> 8) % MathI.Permille) < k.SnubChancePermille ? k.SnubWeeks : 0;
+        }
+
         static void Deliver(GameConfig c, GameState state, LabState lab)
         {
             for (int i = 0; i < lab.ChipOrders.Count; i++)

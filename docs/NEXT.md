@@ -227,6 +227,7 @@ and says why in the commit message.
     `ScenarioTests`, `docs/content/scenarios.md`; no schema, golden unchanged. Still open: starting situations, per-scenario goals, the picker (Unity), the 1956 prologue.
 45. **Rivals pay sector flavours (Q190 switch).** ~~Done~~: `safety.sectorFlavoursForRivals` ships true after a forty-year soak on a throwaway merge with the rival-robustness work (Q286); the sector-flavours page says every lab pays; tests set the switch explicitly where they want the plain way. No schema, golden unchanged.
 46. **More office events, round three (bible ch. 14 "event ideas", v0.2 headlines).** ~~Done~~: six events (a goodbye, a rival's Friday, what "off" means, the reply, the first chip benchmark, the landlord's note), `OfficeRequires.OwnChip` and `RentedCompute` (Q287), `MoreOfficeEventsTests`, `docs/content/office-events.md`. No schema.
+47. **Foundry snub (bible ch. 7 chip risk events).** ~~Done~~: `chips.snubStandingBelow`/`snubChancePermille`/`snubWeeks`, `ChipSystem.SnubWeeks`, `EventKind.ChipSlotSnubbed`, `FoundrySnubTests`, `docs/content/chips.md` (Q288). No schema.
 
 ## Rules: later
 
