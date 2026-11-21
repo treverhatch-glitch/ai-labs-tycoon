@@ -138,6 +138,7 @@ namespace AiLabs.Rules.Config
             WaitlistProblems(p, c);
             BrandProblems(p, c);
             FreeTierProblems(p, c);
+            LaunchWatchProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1559,6 +1560,16 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("freeTier.enabled must be 0 or 1");
             if (k.LiftA < 0 || k.LiftB < k.LiftA || k.LiftC < k.LiftB || k.LiftC > 900) p.Add("freeTier.liftA, liftB and liftC must not fall and liftC be at most 900");
             if (k.StepA < 0 || k.StepB < 0 || k.StepC < 0 || k.CostA < 0 || k.CostB < 0 || k.CostC < 0 || k.CloseLoss < 0 || k.CloseLoss > 500) p.Add("freeTier steps and costs must not be negative and closeLoss from 0 to 500");
+        }
+
+        static void LaunchWatchProblems(List<string> p, GameConfig c)
+        {
+            LaunchWatchConfig k = c.LaunchWatch;
+            if (k == null) { p.Add("launchWatch is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("launchWatch.enabled must be 0 or 1");
+            if (k.OpenCost < 0 || k.WeeklyCost < 0 || k.CounterPerStaff < 0 || k.WaitWeeks < 1) p.Add("launchWatch costs must not be negative and waitWeeks at least 1");
+            if (k.CounterKeepPermille < 0 || k.CounterKeepPermille > 1000 || k.SafetyBar < 0 || k.SafetyBar > 1000) p.Add("launchWatch.counterKeepPermille and safetyBar must be from 0 to 1000");
+            if (k.LossReputation < 0 || k.LossReputation > 500 || k.SafetyGain < 0 || k.SafetyGain > 500 || k.LeadGain < 0 || k.LeadGain > 500) p.Add("launchWatch reputation values must be from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

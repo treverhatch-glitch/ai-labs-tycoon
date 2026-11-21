@@ -156,7 +156,10 @@ namespace AiLabs.Rules.Sim
         OpenCareersPage,
         AnswerReview,
         OpenFreeTier,
-        CloseFreeTier
+        CloseFreeTier,
+        OpenWatchDesk,
+        CloseWatchDesk,
+        AnswerLaunch
     }
 
     /// <summary>
@@ -1356,6 +1359,26 @@ namespace AiLabs.Rules.Sim
         public static Command CloseFreeTier(int labId)
         {
             return Make(CommandKind.CloseFreeTier, labId);
+        }
+
+        /// <summary>Sets up a launch watch desk. It costs the data's cash and then a weekly bill.</summary>
+        public static Command OpenWatchDesk(int labId)
+        {
+            return Make(CommandKind.OpenWatchDesk, labId);
+        }
+
+        /// <summary>Shuts the launch watch desk. A launch waiting for an answer is taken as held.</summary>
+        public static Command CloseWatchDesk(int labId)
+        {
+            return Make(CommandKind.CloseWatchDesk, labId);
+        }
+
+        /// <summary>Answers a rival launch that beats the lab: 1 counter-programme (cash for each person), 2 hold, 3 own the safety story (needs a safe enough model).</summary>
+        public static Command AnswerLaunch(int labId, int answer)
+        {
+            Command c = Make(CommandKind.AnswerLaunch, labId);
+            c.Count = answer;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

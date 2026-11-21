@@ -6218,6 +6218,18 @@
     "costC": 110000,
     "closeLoss": 30
   },
+  "launchWatch": {
+    "enabled": 1,
+    "openCost": 100000,
+    "weeklyCost": 12000,
+    "waitWeeks": 3,
+    "lossReputation": 20,
+    "counterPerStaff": 4000,
+    "counterKeepPermille": 250,
+    "safetyBar": 600,
+    "safetyGain": 10,
+    "leadGain": 2
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

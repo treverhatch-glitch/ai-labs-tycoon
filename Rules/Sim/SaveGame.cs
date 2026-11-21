@@ -274,6 +274,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.FtLevel == 0 && (lab.FtReach != 0 || lab.FtWeeks != 0))
                     || ((lab.FtLevel != 0 || lab.FtSpent != 0 || lab.FtEarned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a free tier (level " + lab.FtLevel + ", reach " + lab.FtReach + ") in a way the data does not allow");
+                if (lab.LwOn < 0 || lab.LwOn > 1 || lab.LwRival < 0 || lab.LwLead < 0 || lab.LwLead > 1000 || lab.LwWait < 0 || lab.LwHits < 0 || lab.LwAnswers < 0
+                    || (lab.LwOn == 0 && (lab.LwRival != 0 || lab.LwLead != 0 || lab.LwWait != 0))
+                    || (lab.LwRival == 0 && (lab.LwLead != 0 || lab.LwWait != 0))
+                    || ((lab.LwOn != 0 || lab.LwHits != 0 || lab.LwAnswers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a launch watch (on " + lab.LwOn + ", rival " + lab.LwRival + ", lead " + lab.LwLead + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

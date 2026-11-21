@@ -2066,6 +2066,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Nothing is paid up front and nothing is unlocked by paying: the only thing the lab can choose is how much of its own revenue to risk.
 - Alternatives: a fixed ratio of revenue (rejected: no cost growth, always right), free access for rivals too (rejected: rivals' behaviour belongs to the rivals work), a one-off launch discount (rejected: no state).
 
+### Q404. Does the lab watch what rivals launch? DECIDED: yes, with a desk it pays for, and it only reads
+- Rivals release models all through the game, but the player only saw them in the market share. A watch desk turns a rival launch into a decision: if it beats the lab, answer it (counter-programme for cash, or own the safety story if the lab's model is safe enough) or take the reputation hit. A launch the lab already beats is a small win. Owning the safety story is only possible for a lab that actually built a safe model, so the choice reflects earlier ones.
+- The desk reads rival models and release events and nothing more: it changes no rival state, so rival behaviour stays entirely with the rivals work. The only link is that the player's reputation moves the shared market, as it already did.
+- It starts when the desk is paid for, so games that never open one are unchanged.
+- Alternatives: a free alert for every launch (rejected: no cost to the knowledge, and every old game changes), letting the lab sabotage the launch (rejected: acts on rivals), a scripted launch list (rejected: rivals decide their own).
+
 ## Open
 
 None.

@@ -116,6 +116,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 101) MigrateTo101(root);
             if (fromSchema < 102) MigrateTo102(root);
             if (fromSchema < 103) MigrateTo103(root);
+            if (fromSchema < 104) MigrateTo104(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -479,6 +480,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 104: no lab keeps a launch watch desk.</summary>
+        static void MigrateTo104(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "lwOn", "lwRival", "lwLead", "lwWait", "lwHits", "lwAnswers" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

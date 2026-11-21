@@ -469,6 +469,12 @@ namespace AiLabs.Rules.Sim
                     return who + " opened a free tier (level " + e.Amount + ").";
                 case EventKind.FreeTierClosed:
                     return who + (e.Pick == 1 ? " shut its free tier." : " lost the model behind its free tier.");
+                case EventKind.WatchDeskOpened:
+                    return who + " set up a desk to watch rival launches.";
+                case EventKind.RivalLaunchSeen:
+                    return who + (e.Pick == 1 ? " watched a rival launch overtake its best model." : " watched a rival launch it already beats.");
+                case EventKind.LaunchAnswered:
+                    return who + (e.Pick == 1 ? " counter-programmed a rival launch." : e.Pick == 3 ? " answered a rival launch with its safety record." : " let a rival launch land.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

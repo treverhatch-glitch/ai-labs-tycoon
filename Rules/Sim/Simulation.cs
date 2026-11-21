@@ -169,6 +169,7 @@ namespace AiLabs.Rules.Sim
                     Mentoring.RunWeek(c, state, state.Labs[i]);
                     Skunkworks.RunWeek(c, state, state.Labs[i]);
                     Alumni.RunWeek(c, state, state.Labs[i]);
+                    LaunchWatch.RunWeek(c, state, state.Labs[i]);
                     FreeTier.RunWeek(c, state, state.Labs[i]);
                     Brand.RunWeek(c, state, state.Labs[i]);
                     Waitlist.RunWeek(c, state, state.Labs[i]);

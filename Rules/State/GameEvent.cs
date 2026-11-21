@@ -450,7 +450,13 @@ namespace AiLabs.Rules.State
         /// <summary>The lab opened a free tier. Amount is the level.</summary>
         FreeTierOpened,
         /// <summary>The free tier closed. Amount is the reputation lost, SubjectId the weeks it ran, Pick 1 shut by the lab, 0 the model went.</summary>
-        FreeTierClosed
+        FreeTierClosed,
+        /// <summary>The lab set up a launch watch desk. Amount is the cash it cost.</summary>
+        WatchDeskOpened,
+        /// <summary>The desk saw a rival launch. SubjectId is the rival, Amount how far ahead of the lab it is in permille (0 when the lab already beats it), Pick 1 it beats the lab.</summary>
+        RivalLaunchSeen,
+        /// <summary>A rival launch was answered. SubjectId is the rival, Amount the reputation change, Pick 1 counter-programmed, 2 held, 3 owned the safety story, 0 nobody answered in time.</summary>
+        LaunchAnswered
     }
 
     /// <summary>

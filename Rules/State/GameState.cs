@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 103;
+        public const int CurrentSchema = 104;
 
         public int Schema;
         public string ConfigVersion;
@@ -456,6 +456,13 @@ namespace AiLabs.Rules.State
         public int FtWeeks;
         public long FtSpent;
         public long FtEarned;
+        /// <summary>Whether the lab keeps a launch watch desk, the rival (its id plus one) whose launch is waiting for an answer (0 none), how far ahead of the lab it is in permille, the weeks it has waited, and how many launches landed and were answered.</summary>
+        public int LwOn;
+        public int LwRival;
+        public int LwLead;
+        public int LwWait;
+        public int LwHits;
+        public int LwAnswers;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -858,6 +865,12 @@ namespace AiLabs.Rules.State
             s.Int("ftWeeks", ref FtWeeks);
             s.Long("ftSpent", ref FtSpent);
             s.Long("ftEarned", ref FtEarned);
+            s.Int("lwOn", ref LwOn);
+            s.Int("lwRival", ref LwRival);
+            s.Int("lwLead", ref LwLead);
+            s.Int("lwWait", ref LwWait);
+            s.Int("lwHits", ref LwHits);
+            s.Int("lwAnswers", ref LwAnswers);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
