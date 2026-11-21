@@ -19,6 +19,7 @@ namespace AiLabs.Rules.Systems
     {
         public static void RunResearch(GameConfig c, LabState lab, int tick)
         {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId)) return;
             long perResearcher = MathI.MulPermille(c.Research.PointsPerResearcherWeek, EraSystem.AtTick(c, tick).ResearchPermille);
             long gained = 0;
             for (int i = 0; i < lab.Staff.Count; i++)

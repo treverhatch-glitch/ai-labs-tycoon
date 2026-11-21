@@ -149,14 +149,14 @@ public class FreezeTrainingStallTests
     }
 
     [Fact]
-    public void Research_still_runs_under_home_freeze()
+    public void Research_stalls_under_home_freeze()
     {
         Game g = Game.Solo().WithStarterLab();
         g.Do(Command.Hire(g.Id, "researcher", 2));
         long before = g.Me.ResearchPoints;
         g.Me.Bloc(g.Me.HomeBlocId).Level = BlocStanding.Freeze;
         g.Weeks(1);
-        Assert.True(g.Me.ResearchPoints > before);
+        Assert.Equal(before, g.Me.ResearchPoints);
     }
 
     [Fact]

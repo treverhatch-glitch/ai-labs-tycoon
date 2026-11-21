@@ -267,6 +267,8 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult ResearchTech(GameConfig c, GameState state, LabState lab, Command cmd)
         {
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
             TechConfig tech = c.Tech(cmd.Id);
             if (tech == null) return Fail(CommandError.UnknownId, "There is no tech \"" + cmd.Id + "\".");
             if (LabQueries.HasTech(lab, tech.Id)) return Fail(CommandError.AlreadyResearched, tech.Name + " is already researched.");
