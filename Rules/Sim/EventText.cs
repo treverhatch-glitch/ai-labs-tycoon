@@ -231,6 +231,11 @@ namespace AiLabs.Rules.Sim
                         : e.SubjectId == 0 ? who + " dropped its public safety pledge." : who + " walked its safety pledge back to level " + e.SubjectId + ".";
                 case EventKind.PledgeBroken:
                     return who + " broke its public safety pledge: " + e.Ref + " launched showing less than the " + e.Amount + " alignment it had promised.";
+                case EventKind.RoadmapAnnounced:
+                    return who + " announced a level " + e.SubjectId + " roadmap: a model with capability " + e.Amount + " inside " + e.Pick + " weeks.";
+                case EventKind.RoadmapSettled:
+                    return e.Pick == 1 ? who + " delivered its roadmap, a model with capability " + e.Amount + ", and customers noticed."
+                        : who + " missed its roadmap for a model with capability " + e.Amount + ", and customers noticed that too.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

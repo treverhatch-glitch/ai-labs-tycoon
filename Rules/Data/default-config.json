@@ -5655,7 +5655,7 @@
     "maxLevel": 3,
     "minWeeks": 13,
     "maxWeeks": 52,
-    "stretchPerLevel": 100,
+    "stretchPerLevel": 200,
     "hypePerLevel": 8,
     "deliverPerLevel": 20,
     "missPerLevel": 45

@@ -107,6 +107,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
                     p.Add(who + " has a revenue target (level " + lab.RevenueTargetLevel + ", goal " + lab.RevenueTargetGoal + ") that the data does not allow");
+                if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
+                    || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
+                    || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
+                    p.Add(who + " has a roadmap (level " + lab.RoadmapLevel + ", due week " + lab.RoadmapDue + ") that the data does not allow");
                 if (lab.PledgeLevel < 0 || lab.PledgeLevel > c.Pledge.MaxLevel || lab.PledgeLockedUntil < 0 || ((lab.PledgeLevel > 0 || lab.PledgeLockedUntil > 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a safety pledge at level " + lab.PledgeLevel + " (locked until " + lab.PledgeLockedUntil + "), which the data does not allow");
                 if (lab.Reserve < 0 || (lab.Reserve > 0 && lab.Id != state.PlayerLabId))

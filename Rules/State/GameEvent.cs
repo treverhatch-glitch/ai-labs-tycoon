@@ -220,7 +220,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab changed its safety pledge. SubjectId is the new level, Amount the reputation lost walking it back, Pick 1 when it was raised.</summary>
         PledgeSet,
         /// <summary>A launch broke the pledge. SubjectId is the model, Amount the alignment the pledge asked, Pick the level that was broken.</summary>
-        PledgeBroken
+        PledgeBroken,
+        /// <summary>The lab announced a roadmap. SubjectId is the level, Amount the capability promised, Pick the weeks it has.</summary>
+        RoadmapAnnounced,
+        /// <summary>A roadmap was settled. SubjectId is the level, Amount the capability promised, Pick 1 when a model delivered it in time.</summary>
+        RoadmapSettled
     }
 
     /// <summary>

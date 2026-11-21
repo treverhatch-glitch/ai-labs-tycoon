@@ -1786,6 +1786,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Only the player's lab pledges and a lab at level 0 is as it always was. No random numbers. The golden moved ed987f26 -> 2baf0743 only through the two new saved fields (verified by taking them and the schema back out).
 - Alternatives: judging on the true alignment (rejected: customers cannot see it, and the whistleblower already covers the gap), blocking the launch (rejected: the lab's own release gate does that and a pledge that can never be broken is no pledge), a pledge that decays (rejected: a standing promise should need an act to end).
 
+### Q351. Can a lab promise a better model by a date? DECIDED: a public roadmap with hype now, a reward for delivering and a bigger loss for missing
+- New `roadmap` data, command `AnnounceRoadmap`, `Roadmap` system, events `RoadmapAnnounced` and `RoadmapSettled` and four saved lab fields (schema 69). The lab announces, at a level from 1 to 3 and a deadline of 13 to 52 weeks, a model whose capability is at least its best finished model's plus 20% for each level. The announcement earns 8 reputation a level at once. Releasing a model that clears the bar before the deadline settles it at once for 20 a level; the deadline passing first costs 45 a level, far more than the hype earned, so a roadmap is not free.
+- The bar is set on the best finished model, so no model that exists on the day of the announcement can meet it, and a model still in training can: announcing is the moment a lab is sure a run will land. A next version of the same line is about 30% better, so level 1 is what a routine successor does, and levels 2 and 3 need a bigger step (a better line). One roadmap is open at a time and it cannot be taken back; a lab with no finished model has nothing to announce a successor to.
+- Only the player's lab announces. No random numbers. The golden moved 2baf0743 -> 1f5f681c only through the four new saved fields (verified by taking them and the schema back out).
+- Alternatives: a promise on revenue (that is the board target of Q338), a promise a rival can break for the lab (rejected: stays out of rivals), cancelling a roadmap for a fee (rejected: a promise that can be dropped for a fee is a loan of hype).
+
 ## Open
 
 None.

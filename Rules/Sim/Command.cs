@@ -72,7 +72,8 @@ namespace AiLabs.Rules.Sim
         RestructureLoan,
         SetAsideReserve,
         DrawReserve,
-        SetPledge
+        SetPledge,
+        AnnounceRoadmap
     }
 
     /// <summary>
@@ -658,6 +659,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetPledge, labId);
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Announces a public roadmap: a model at least so much more capable than the lab's best (level 1 to the data's top, a bolder promise at each) inside a number of weeks (TargetId). The announcement earns reputation at once; delivering earns more and the deadline passing costs far more.</summary>
+        public static Command AnnounceRoadmap(int labId, int level, int weeks)
+        {
+            Command c = Make(CommandKind.AnnounceRoadmap, labId);
+            c.Count = level;
+            c.TargetId = weeks;
             return c;
         }
 

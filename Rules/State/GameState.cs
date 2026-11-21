@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 68;
+        public const int CurrentSchema = 69;
 
         public int Schema;
         public string ConfigVersion;
@@ -218,6 +218,14 @@ namespace AiLabs.Rules.State
         public int PledgeLevel;
         /// <summary>The week the pledge can next change.</summary>
         public int PledgeLockedUntil;
+        /// <summary>The level of the roadmap the lab has announced, 0 when none.</summary>
+        public int RoadmapLevel;
+        /// <summary>The week it was announced.</summary>
+        public int RoadmapStart;
+        /// <summary>The week it is judged.</summary>
+        public int RoadmapDue;
+        /// <summary>The capability a model must have to deliver it.</summary>
+        public int RoadmapGoal;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -443,6 +451,10 @@ namespace AiLabs.Rules.State
             s.Long("reserve", ref Reserve);
             s.Int("pledgeLevel", ref PledgeLevel);
             s.Int("pledgeLockedUntil", ref PledgeLockedUntil);
+            s.Int("roadmapLevel", ref RoadmapLevel);
+            s.Int("roadmapStart", ref RoadmapStart);
+            s.Int("roadmapDue", ref RoadmapDue);
+            s.Int("roadmapGoal", ref RoadmapGoal);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
