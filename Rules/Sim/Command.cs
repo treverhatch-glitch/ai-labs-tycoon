@@ -145,7 +145,8 @@ namespace AiLabs.Rules.Sim
         WalkFromPlatform,
         SetCreed,
         HoldTownHall,
-        OwnUp
+        OwnUp,
+        AnswerShock
     }
 
     /// <summary>
@@ -1266,6 +1267,14 @@ namespace AiLabs.Rules.Sim
         public static Command OwnUp(int labId)
         {
             return Make(CommandKind.OwnUp, labId);
+        }
+
+        /// <summary>Answers the shock waiting at the lab: 1 brace for it, 2 ride it out, 3 counter it with the lab's best model.</summary>
+        public static Command AnswerShock(int labId, int stance)
+        {
+            Command c = Make(CommandKind.AnswerShock, labId);
+            c.Count = stance;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

@@ -422,7 +422,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab's integrity fell far enough for the creed to be a joke. Amount is the reputation lost.</summary>
         CreedHollow,
         /// <summary>The lab's integrity rose far enough for it to be held up as an example. Amount is the reputation earned.</summary>
-        CreedProud
+        CreedProud,
+        /// <summary>A shock landed on the lab. SubjectId is the kind (1 squeeze, 2 backlash, 3 boom), Ref the world event.</summary>
+        ShockStruck,
+        /// <summary>A shock was answered. Amount is the reputation it changed, SubjectId the kind, Ref the world event, Pick 1 braced, 2 rode, 3 countered and it worked, 4 countered and it failed, 5 nobody answered.</summary>
+        ShockAnswered
     }
 
     /// <summary>

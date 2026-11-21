@@ -441,6 +441,10 @@ namespace AiLabs.Rules.Sim
                     return who + "'s staff now laugh at its values.";
                 case EventKind.CreedProud:
                     return who + " is held up as a lab that lives its values.";
+                case EventKind.ShockStruck:
+                    return e.SubjectId == 3 ? who + " is in the middle of a boom and has to decide how to meet it." : who + " is hit by the news and has to decide how to meet it.";
+                case EventKind.ShockAnswered:
+                    return who + (e.Pick == 1 ? " braced and took the news in its stride." : e.Pick == 3 ? " turned the news round." : e.Pick == 4 ? " tried to turn the news round and could not." : e.Pick == 5 ? " let the news happen to it." : " rode the news out.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

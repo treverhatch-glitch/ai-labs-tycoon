@@ -132,6 +132,7 @@ namespace AiLabs.Rules.Config
             DevicesProblems(p, c);
             PlatformsProblems(p, c);
             CreedProblems(p, c);
+            ShocksProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1495,6 +1496,16 @@ namespace AiLabs.Rules.Config
             if (k.LowBar < 0 || k.HighBar > MathI.Permille || k.LowBar + k.Gap >= k.HighBar - k.Gap || k.Gap < 0) p.Add("creed.lowBar must be under highBar by more than twice gap, and highBar at most 1000");
             if (k.HighReputation < 0 || k.LowReputation < 0 || k.OwnUpReputation < 0 || k.HighReputation > 500 || k.LowReputation > 500 || k.OwnUpReputation > 500 || k.HighMorale < 0 || k.LowMorale < 0 || k.HighMorale > MathI.Permille || k.LowMorale > MathI.Permille) p.Add("creed.highReputation, lowReputation and ownUpReputation must be from 0 to 500 and highMorale and lowMorale from 0 to 1000");
             if (k.TownCost < 0 || k.TownGain < 0 || k.TownGain > MathI.Permille || k.TownCooldown < 0) p.Add("creed.townCost, townGain and townCooldown must not be negative and townGain at most 1000");
+        }
+
+        static void ShocksProblems(List<string> p, GameConfig c)
+        {
+            ShocksConfig k = c.Shocks;
+            if (k == null) { p.Add("shocks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("shocks.enabled must be 0 or 1");
+            if (k.WindowWeeks < 1 || k.BraceCost < 0 || k.HitCash < 0 || k.BracePermille < 0 || k.BracePermille > MathI.Permille) p.Add("shocks.windowWeeks must be at least 1, braceCost and hitCash not negative and bracePermille from 0 to 1000");
+            if (k.HitReputation < 0 || k.HitReputation > 500 || k.BoomReputation < 0 || k.BoomReputation > 500 || k.CounterGain < 0 || k.CounterGain > 500 || k.HitMorale < 0 || k.HitMorale > MathI.Permille) p.Add("shocks.hitReputation, boomReputation and counterGain must be from 0 to 500 and hitMorale from 0 to 1000");
+            if (k.BoomBrace < MathI.Permille || k.BoomBrace > 10000 || k.CounterBoom < MathI.Permille || k.CounterBoom > 10000 || k.CounterMiss < MathI.Permille || k.CounterMiss > 10000 || k.CounterBar < 0) p.Add("shocks.boomBrace, counterBoom and counterMiss must be from 1000 to 10000 and counterBar not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

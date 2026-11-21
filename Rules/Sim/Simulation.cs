@@ -169,6 +169,7 @@ namespace AiLabs.Rules.Sim
                     Mentoring.RunWeek(c, state, state.Labs[i]);
                     Skunkworks.RunWeek(c, state, state.Labs[i]);
                     Alumni.RunWeek(c, state, state.Labs[i]);
+                    Shocks.RunWeek(c, state, state.Labs[i]);
                     Creed.RunWeek(c, state, state.Labs[i]);
                     Platforms.RunWeek(c, state, state.Labs[i]);
                     Devices.RunWeek(c, state, state.Labs[i]);

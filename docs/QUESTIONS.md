@@ -2023,6 +2023,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The observer reads events and changes nothing else, so no other system had to change; it is inert until the player states a creed.
 - Alternatives: values as a menu of bonuses (rejected: the bible wants them to be tested by what the lab does), scoring every system's state each week (rejected: events are what the player did), letting rivals state values (rejected: rivals have no saved creed).
 
+### Q396. Does the world's news land on the lab? DECIDED: yes, the big dated events become a squeeze, a backlash or a boom the player answers
+- From the world events in the bible and `docs/content/events.md`. Until now they moved a sector's pool and appeared in the ticker. Now the ones that would hit or lift any lab also land on the player's lab as a shock with an 8-week window. The player brackets the answer between paying to be ready (brace), taking it as it comes (ride) and betting the lab's best model can turn it round (counter, judged by the model the lab has, not by a roll). Nothing is timed after the answer: each answer settles once.
+- The kind of each event is a table in the code, so adding a world event to the data adds news and no shock until it is placed.
+- Because it is default on, an unanswered shock rides: a lab that ignores the news takes its hits. No old test changed (listed in the PR if any did).
+- Alternatives: every event a shock (rejected: most are colour), dice for the outcome (rejected: nothing to plan for), a pause until answered (rejected: the world does not wait).
+
 ## Open
 
 None.

@@ -127,6 +127,7 @@ namespace AiLabs.Rules.Config
         public DevicesConfig Devices = new DevicesConfig();
         public PlatformsConfig Platforms = new PlatformsConfig();
         public CreedConfig Creed = new CreedConfig();
+        public ShocksConfig Shocks = new ShocksConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -252,6 +253,7 @@ namespace AiLabs.Rules.Config
             s.Obj("devices", ref Devices);
             s.Obj("platforms", ref Platforms);
             s.Obj("creed", ref Creed);
+            s.Obj("shocks", ref Shocks);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

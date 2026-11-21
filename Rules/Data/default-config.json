@@ -6138,6 +6138,21 @@
     "ownUpReputation": 30,
     "ownUpRestore": 500
   },
+  "shocks": {
+    "enabled": 1,
+    "windowWeeks": 8,
+    "braceCost": 20000,
+    "bracePermille": 250,
+    "hitReputation": 40,
+    "hitMorale": 80,
+    "hitCash": 15000,
+    "boomReputation": 30,
+    "boomBrace": 2000,
+    "counterBar": 500,
+    "counterMiss": 2000,
+    "counterGain": 30,
+    "counterBoom": 3000
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

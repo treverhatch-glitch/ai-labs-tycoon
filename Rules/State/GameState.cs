@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 97;
+        public const int CurrentSchema = 98;
 
         public int Schema;
         public string ConfigVersion;
@@ -417,6 +417,14 @@ namespace AiLabs.Rules.State
         public int CreedTown;
         public long CreedKept;
         public long CreedBroken;
+        /// <summary>The shock waiting for an answer (1 squeeze, 2 backlash, 3 boom; 0 none), the world event behind it (its place in the data plus one) and the weeks left to answer.</summary>
+        public int ShockKind;
+        public int ShockRef;
+        public int ShockLeft;
+        /// <summary>How many shocks the lab braced for, rode out and countered.</summary>
+        public int ShockBraced;
+        public int ShockRode;
+        public int ShockCountered;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -788,6 +796,12 @@ namespace AiLabs.Rules.State
             s.Int("creedTown", ref CreedTown);
             s.Long("creedKept", ref CreedKept);
             s.Long("creedBroken", ref CreedBroken);
+            s.Int("shockKind", ref ShockKind);
+            s.Int("shockRef", ref ShockRef);
+            s.Int("shockLeft", ref ShockLeft);
+            s.Int("shockBraced", ref ShockBraced);
+            s.Int("shockRode", ref ShockRode);
+            s.Int("shockCountered", ref ShockCountered);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

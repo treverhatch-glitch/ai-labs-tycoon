@@ -247,6 +247,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.CreedA == 0 && (lab.CreedB != 0 || lab.CreedIntegrity != 0 || lab.CreedBand != 0 || lab.CreedLock != 0 || lab.CreedTown != 0 || lab.CreedKept != 0 || lab.CreedBroken != 0))
                     || (lab.CreedA != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a creed of " + lab.CreedA + " and " + lab.CreedB + " (integrity " + lab.CreedIntegrity + ") in a way the data does not allow");
+                if (lab.ShockKind < 0 || lab.ShockKind > 3 || lab.ShockRef < 0 || lab.ShockRef > c.WorldEvents.Count || lab.ShockLeft < 0 || lab.ShockBraced < 0 || lab.ShockRode < 0 || lab.ShockCountered < 0
+                    || (lab.ShockKind > 0 && (lab.ShockLeft < 1 || lab.ShockRef < 1))
+                    || (lab.ShockKind == 0 && (lab.ShockRef != 0 || lab.ShockLeft != 0))
+                    || ((lab.ShockKind != 0 || lab.ShockBraced != 0 || lab.ShockRode != 0 || lab.ShockCountered != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a shock " + lab.ShockKind + " waiting (" + lab.ShockLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
