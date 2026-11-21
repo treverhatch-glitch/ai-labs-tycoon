@@ -118,7 +118,15 @@ namespace AiLabs.Rules.State
         /// <summary>The player set up a run. SubjectId is the model, Ref "approach|id" or "checkpoints|id" (empty id for the default).</summary>
         RunSetUp,
         /// <summary>Somebody quit by blog post. SubjectId is the person, Amount the reputation it cost, Ref "role|trait".</summary>
-        StaffQuit
+        StaffQuit,
+        /// <summary>The player borrowed against chips. SubjectId is the loan, Amount the principal.</summary>
+        LoanTaken,
+        /// <summary>A loan was paid off. SubjectId is the loan, Amount what was paid (early) or the principal (term), Ref "early" or "term".</summary>
+        LoanRepaid,
+        /// <summary>A payment was missed (the first of a run). SubjectId is the loan, Amount the payment.</summary>
+        LoanMissed,
+        /// <summary>The lender took chips. SubjectId is how many GPUs, Amount what was still owed after they were sold, Ref the loan id.</summary>
+        LoanDefaulted
     }
 
     /// <summary>

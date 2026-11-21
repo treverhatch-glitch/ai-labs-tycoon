@@ -7058,6 +7058,15 @@
       }
     ]
   },
+  "loans": {
+    "loanToValuePermille": 500,
+    "termWeeks": 52,
+    "interestPermille": 80,
+    "minPrincipal": 5000,
+    "maxOpen": 3,
+    "missPenaltyPermille": 100,
+    "defaultAfterMisses": 3
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,
@@ -7428,6 +7437,15 @@
       "pick": -1,
       "about": "lab",
       "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes."
+    },
+      {
+      "id": "loan-defaulted",
+      "kind": "LoanDefaulted",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too."
     },
       {
       "id": "room-refurbished",

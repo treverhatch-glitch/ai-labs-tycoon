@@ -78,6 +78,7 @@ namespace AiLabs.Rules.Config
             SuccessorProblems(p, c);
             RushProblems(p, c);
             LobbyProblems(p, c);
+            LoanProblems(p, c);
             PivotProblems(p, c);
             CampaignProblems(p, c);
             RunsProblems(p, c);
@@ -619,6 +620,19 @@ namespace AiLabs.Rules.Config
             if (v.StaffLossPermille < 0 || v.StaffLossPermille > MathI.Permille) p.Add("pivot.staffLossPermille must be from 0 to 1000");
             if (v.ConfusionWeeks < 1 || v.ConfusionWeeks > 520) p.Add("pivot.confusionWeeks must be from 1 to 520");
             if (v.ConfusionAppealPermille < 0 || v.ConfusionAppealPermille >= MathI.Permille) p.Add("pivot.confusionAppealPermille must be from 0 to 999");
+        }
+
+        static void LoanProblems(List<string> p, GameConfig c)
+        {
+            LoansConfig l = c.Loans;
+            if (l == null) { p.Add("loans is missing"); return; }
+            if (l.LoanToValuePermille < 1 || l.LoanToValuePermille > MathI.Permille) p.Add("loans.loanToValuePermille must be from 1 to 1000");
+            if (l.TermWeeks < 1 || l.TermWeeks > 520) p.Add("loans.termWeeks must be from 1 to 520");
+            if (l.InterestPermille < 0 || l.InterestPermille > 2000) p.Add("loans.interestPermille must be from 0 to 2000");
+            if (l.MinPrincipal < 1) p.Add("loans.minPrincipal must be at least 1");
+            if (l.MaxOpen < 1 || l.MaxOpen > 20) p.Add("loans.maxOpen must be from 1 to 20");
+            if (l.MissPenaltyPermille < 0 || l.MissPenaltyPermille > MathI.Permille) p.Add("loans.missPenaltyPermille must be from 0 to 1000");
+            if (l.DefaultAfterMisses < 1 || l.DefaultAfterMisses > 52) p.Add("loans.defaultAfterMisses must be from 1 to 52");
         }
 
         static void LobbyProblems(List<string> p, GameConfig c)

@@ -1339,6 +1339,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, 4%, 3% and 4%. No save change: the trait id was always saved. The golden moved to `b1bf2703`.
 - Why: a trait nobody can hire is no trait. They come after the existing bands in the roll, so nobody who had a trait lost it. The effects are small and only reach labs that get the people, and none of the economy guards moved.
 
+### Q278. How much can be borrowed, and against what? DECIDED: half of what the lab's owned GPUs would fetch today, less what it still owes
+- Options: (a) a flat limit by era; (b) a share of the lab's cash flow; (c) a share of the chips' resale value.
+- Recommendation and choice: **(c)**, 50% (`loanToValuePermille` 500), counting interest in what is owed. Rented and reserved compute and the lab's own chip designs are not collateral, since the first two are not the lab's and the last has no market price.
+- Why: the bible says "against your chips". Resale value already falls a generation at a time, so the borrowing room shrinks as the chips age, which is the lesson ("whatever the chip is worth by then") without a new number. Half leaves the lender a margin.
+
+### Q279. How is it paid back, and what if it is not? DECIDED: weekly over a year with flat interest; three missed payments in a row and the lender takes the chips
+- Options: (a) interest every week on a falling balance; (b) flat interest once, equal weekly payments; (c) a margin call when the chips lose value.
+- Recommendation and choice: **(b)**, 8% over 52 weeks, a 10% penalty on a missed payment and a default after three. The lender takes the most valuable GPUs first and writes off what they do not cover. No margin call.
+- Why: the bible says repayment is "on schedule, whatever the chip is worth by then", which rules out (c). Flat interest keeps the sums whole and easy to read. Taking the best chips first is what hurts, and the write-off keeps a lab from owing more than it ever had.
+
+### Q280. Where does the money go on the books, and is a save change needed? DECIDED: the capital line both ways; yes, schema 41, and the golden moved with a verified cause
+- Options: (a) a new ledger line for loans; (b) the existing capital line.
+- Recommendation and choice: **(b)**, with payments as negative capital. One list of loans per lab (`MigrateTo41` gives every lab an empty one). The golden moved only because every lab now carries the list: with the sync line and the schema number reverted, the previous golden returned exactly.
+- Why: a new ledger line touches every total and every display (Q182 practice); a loan is capital in and out, so the capital line says what happened.
+
 ## Open
 
 None.

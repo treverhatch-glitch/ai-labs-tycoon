@@ -219,6 +219,8 @@ and says why in the commit message.
     (Q272-Q274), `HearingQuestionTests`, `docs/content/hearing-questions.md`; no schema, golden unchanged. Still open: a share-price effect, hearings abroad, questions that depend on the lab's history.
 41. **Staff traits round 2 (bible ch. 7 trait ideas, ch. 14 "leave in protest").** ~~Done~~: `posts-through-it`, `quits-by-blog-post`, `only-interesting` in the data, `Traits.RunQuits`,
     `EventKind.StaffQuit`, buzz and scandal sums in `TraitReport`, `interestingPermille` in the research sum (Q275-Q277), `MoreTraitsTests`, `docs/content/staff-traits.md`; no schema; golden moved with a verified cause.
+42. **Chip-backed loans (bible ch. 9 funding ladder).** ~~Done~~: `loans` in the data, `Command.TakeLoan` / `RepayLoan`, `Loans` system (room, weekly payments, misses, default and repossession),
+    `Loan` on the lab, `EventKind.LoanTaken` / `LoanRepaid` / `LoanMissed` / `LoanDefaulted`, save schema 41 (Q278-Q280), `LoanTests`, `docs/content/loans.md`. Still open: loans against own chips, a margin call, exit prices that count debt, a screen (Unity).
 
 ## Rules: later
 

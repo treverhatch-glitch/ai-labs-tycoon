@@ -45,6 +45,8 @@ namespace AiLabs.Rules.Systems
             Spend(lab, LedgerLine.GpuUpkeep, LabQueries.WeeklyGpuUpkeep(c, lab));
             Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, state, lab));
 
+            Loans.RunWeek(c, state, lab);
+
             if (lab.Cash < 0)
             {
                 lab.WeeksInDebt++;
@@ -75,6 +77,7 @@ namespace AiLabs.Rules.Systems
                 if (sector.ChampionLabId == lab.Id) sector.ChampionLabId = -1;
             }
             lab.Staff.Clear();
+            Loans.OnBankrupt(lab);
             lab.RentedGpus = 0;
             lab.ReservedContracts.Clear();
             lab.Fleet.RemoveAll(b => b.HoldingId != HardwareBatch.Hq);

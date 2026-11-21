@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Config
         public SuccessorConfig Successor = new SuccessorConfig();
         public RushConfig Rush = new RushConfig();
         public LobbyConfig Lobbying = new LobbyConfig();
+        public LoansConfig Loans = new LoansConfig();
         public PivotConfig Pivot = new PivotConfig();
         public CampaignConfig Campaign = new CampaignConfig();
         public RunsConfig Runs = new RunsConfig();
@@ -134,6 +135,7 @@ namespace AiLabs.Rules.Config
             s.Obj("successor", ref Successor);
             s.Obj("rush", ref Rush);
             s.Obj("lobbying", ref Lobbying);
+            s.Obj("loans", ref Loans);
             s.Obj("pivot", ref Pivot);
             s.Obj("campaign", ref Campaign);
             s.Obj("runs", ref Runs);

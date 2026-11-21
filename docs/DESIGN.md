@@ -163,6 +163,8 @@ Hearing questions ([content/hearing-questions.md](content/hearing-questions.md))
 
 More traits ([content/staff-traits.md](content/staff-traits.md)): three more of the bible's trait ideas. A poster makes launches and scandals louder, a blog-post quitter leaves when morale falls under 300 and costs reputation, and someone who only works on what is interesting does more on variant runs and less otherwise.
 
+Loans against chips ([content/loans.md](content/loans.md)): the player can borrow up to half of what the GPUs they own would fetch, with 8% flat interest over 52 weekly payments. Miss three in a row and the lender takes the best chips. There is no margin call: chips that lose value shrink the room, not the debt. Save schema 41.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
