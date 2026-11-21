@@ -301,7 +301,7 @@ public class ChiefsTests
     [Fact]
     public void The_largest_cut_in_the_data_still_leaves_some_chance()
     {
-        Game g = Lab(c => c.Chiefs.IncidentCutPermille = 900);
+        Game g = Lab(c => { c.Chiefs.IncidentCutPermille = 900; c.IncidentFloor.ChanceFloorPermille = 0; });
         ModelState m = Released(g);
         int before = Chance(g, m);
         g.Do(Command.AppointChief(g.Id, Chiefs.Safety, Person(g, "safety").Id));

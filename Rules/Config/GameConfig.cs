@@ -82,6 +82,7 @@ namespace AiLabs.Rules.Config
         public OptimisationConfig Optimise = new OptimisationConfig();
         public MarketingConfig Marketing = new MarketingConfig();
         public OnCallConfig OnCall = new OnCallConfig();
+        public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
@@ -159,6 +160,7 @@ namespace AiLabs.Rules.Config
             s.Obj("optimise", ref Optimise);
             s.Obj("marketing", ref Marketing);
             s.Obj("onCall", ref OnCall);
+            s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);

@@ -5608,6 +5608,10 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "incidentFloor": {
+    "fineFloorPermille": 150,
+    "chanceFloorPermille": 400
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,

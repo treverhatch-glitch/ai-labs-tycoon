@@ -87,6 +87,7 @@ namespace AiLabs.Rules.Config
             OptimiseProblems(p, c);
             MarketingProblems(p, c);
             OnCallProblems(p, c);
+            IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -892,6 +893,14 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void IncidentFloorProblems(List<string> p, GameConfig c)
+        {
+            IncidentFloorConfig k = c.IncidentFloor;
+            if (k == null) { p.Add("incidentFloor is missing"); return; }
+            if (k.FineFloorPermille < 0 || k.FineFloorPermille > MathI.Permille) p.Add("incidentFloor.fineFloorPermille must be from 0 to 1000");
+            if (k.ChanceFloorPermille < 0 || k.ChanceFloorPermille > MathI.Permille) p.Add("incidentFloor.chanceFloorPermille must be from 0 to 1000");
         }
 
         static void OnCallProblems(List<string> p, GameConfig c)

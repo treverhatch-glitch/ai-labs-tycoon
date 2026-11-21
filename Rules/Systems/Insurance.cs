@@ -58,10 +58,10 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>An incident with this fine happened. Returns what the insurer pays (0 when the lab has no cover or the rung is excluded).</summary>
-        public static long OnIncident(GameConfig c, GameState state, LabState lab, ModelState model, int rung, long fine)
+        public static long OnIncident(GameConfig c, GameState state, LabState lab, ModelState model, int rung, long fine, long maxPayout)
         {
             if (lab.InsuranceLevel <= 0 || rung >= c.Finance.InsuranceExcludedRung) return 0;
-            long paid = MathI.MulPermille(fine, CoverPermille(c, lab));
+            long paid = MathI.Min(MathI.MulPermille(fine, CoverPermille(c, lab)), maxPayout);
             lab.InsuranceClaims++;
             if (paid > 0) Events.Add(state, EventKind.InsuranceClaimPaid, lab.Id, model.Id, paid, model.Name);
             if (lab.InsuranceClaims >= c.Finance.InsuranceDropClaims)

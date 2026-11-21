@@ -34,7 +34,7 @@ namespace AiLabs.Rules.Systems
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
             long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab);
-            return (int)MathI.Min(MathI.Permille, before + Chiefs.IncidentChange(c, lab, before));
+            return IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>
@@ -105,9 +105,10 @@ namespace AiLabs.Rules.Systems
             RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
-            fine = MathI.MulPermille(fine, MathI.Permille - OnCall.FineCutPermille(c, lab));
+            long gross = fine;
+            fine = IncidentFloor.CutFine(c, gross, MathI.MulPermille(fine, MathI.Permille - OnCall.FineCutPermille(c, lab)));
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
-            long covered = Insurance.OnIncident(c, state, lab, model, rung, fine);
+            long covered = Insurance.OnIncident(c, state, lab, model, rung, fine, IncidentFloor.MaxPayout(c, gross, fine));
             fine -= covered;
 
             model.Incidents++;
