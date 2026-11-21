@@ -82,6 +82,7 @@ namespace AiLabs.Rules.Config
             FocusProblems(p, c);
             HackProblems(p, c);
             EquityProblems(p, c);
+            ChiefsProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -887,6 +888,19 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void ChiefsProblems(List<string> p, GameConfig c)
+        {
+            ChiefsConfig k = c.Chiefs;
+            if (k == null) { p.Add("chiefs is missing"); return; }
+            if (k.MinStaff < 0 || k.MinStaff > 1000) p.Add("chiefs.minStaff must be from 0 to 1000");
+            if (k.Fee < 0) p.Add("chiefs.fee is negative");
+            if (k.WeeklyPremium < 0) p.Add("chiefs.weeklyPremium is negative");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 1000) p.Add("chiefs.researchPermille must be from 0 to 1000");
+            if (k.IncidentCutPermille < 0 || k.IncidentCutPermille > 900) p.Add("chiefs.incidentCutPermille must be from 0 to 900, so a safety chief never rules incidents out");
+            if (k.PoachPenaltyPermille < 0 || k.PoachPenaltyPermille > 300) p.Add("chiefs.poachPenaltyPermille must be from 0 to 300");
+            if (k.ShockMorale < 0 || k.ShockMorale > MathI.Permille) p.Add("chiefs.shockMorale must be from 0 to 1000");
         }
 
         static void EquityProblems(List<string> p, GameConfig c)

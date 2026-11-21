@@ -50,8 +50,10 @@ namespace AiLabs.Rules.Systems
             public int FromCrunch;
             /// <summary>What a red team took off while its weeks last; zero or negative.</summary>
             public int FromRedTeam;
+            /// <summary>What a sitting chief safety officer takes off the weekly chance: zero or negative.</summary>
+            public int FromChief;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromRedTeam; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromRedTeam + FromChief; } }
         }
 
         public struct ExitPriceBreakdown
@@ -169,6 +171,7 @@ namespace AiLabs.Rules.Systems
             IncidentBreakdown b = IncidentParts(c, state.Tick, model);
             b.FromOverload = SafetySystem.OverloadPermille(c, state, lab);
             b.FromCrunch = Crunch.IncidentPermille(c, lab);
+            b.FromChief = Chiefs.IncidentChange(c, lab, b.Total);
             return b;
         }
 

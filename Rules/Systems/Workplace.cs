@@ -36,7 +36,7 @@ namespace AiLabs.Rules.Systems
         public static int PoachDefencePermille(GameConfig c, LabState lab)
         {
             long rooms = MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.PoachDefence), c.StaffPeople.MaxPoachDefencePermille);
-            return (int)MathI.Clamp(rooms + Pay.PoachDefencePermille(c, lab) + StaffEquity.PoachDefencePermille(c, lab) - Prestige.PoachPenaltyPermille(c, lab), -500, 900);
+            return (int)MathI.Clamp(rooms + Pay.PoachDefencePermille(c, lab) + StaffEquity.PoachDefencePermille(c, lab) - Prestige.PoachPenaltyPermille(c, lab) - Chiefs.PoachPenaltyPermille(c, lab), -500, 900);
         }
 
         /// <summary>A rival's weekly chance to make an offer once the lab's rooms have taken their share off.</summary>

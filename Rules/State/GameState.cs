@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 53;
+        public const int CurrentSchema = 54;
 
         public int Schema;
         public string ConfigVersion;
@@ -162,6 +162,10 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The person named chief scientist, or -1 for nobody. Only the player's lab names one.</summary>
+        public int ChiefScientistId = -1;
+        /// <summary>The person named chief safety officer, or -1 for nobody.</summary>
+        public int ChiefSafetyId = -1;
         /// <summary>The levels of staff equity the lab has granted, 0 for none. Only the player's lab grants it.</summary>
         public int EquityLevel;
         /// <summary>The share of the company the people own, in permille of the company. Funding rounds dilute it.</summary>
@@ -339,6 +343,8 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("chiefScientistId", ref ChiefScientistId);
+            s.Int("chiefSafetyId", ref ChiefSafetyId);
             s.Int("equityLevel", ref EquityLevel);
             s.Int("equityPermille", ref EquityPermille);
             s.Int("hackWeeks", ref HackWeeks);

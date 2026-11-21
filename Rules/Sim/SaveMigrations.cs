@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 51) MigrateTo51(root);
             if (fromSchema < 52) MigrateTo52(root);
             if (fromSchema < 53) MigrateTo53(root);
+            if (fromSchema < 54) MigrateTo54(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -418,6 +419,16 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Schema 51: no model was ever audited from outside.</summary>
+        /// <summary>Schema 54: no lab has named a chief.</summary>
+        static void MigrateTo54(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "chiefScientistId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "chiefSafetyId", JsonValue.Of(-1L));
+            });
+        }
+
         /// <summary>Schema 53: no lab gave its team equity.</summary>
         static void MigrateTo53(JsonValue root)
         {

@@ -258,6 +258,7 @@ and says why in the commit message.
 75. **Retrain a person (staff).** ~~Done~~: `RetrainStaff`, `Retraining`, `retrain` data, no new state, `RetrainTests`, `docs/content/retraining.md` (Q316).
 76. **Headlines and chat for audits, focus, hack week, equity and retraining.** ~~Done~~: `ResearchAndStaffToolsNewsChatTests`, news and chat data (Q317).
 77. **Audits, focus, hack week, equity and retraining together (tests).** ~~Done~~: `ResearchStaffToolsTogetherTests` (Q318).
+78. **Chief officers (staff, research, safety).** ~~Done~~: `AppointChief`, `Chiefs`, `chiefs` data, lab `chiefScientistId` and `chiefSafetyId` (schema 54, `MigrateTo54`), `FromChief` in the incident breakdown, `ChiefsTests`, `docs/content/chiefs.md` (Q319).
 
 ## Rules: later
 

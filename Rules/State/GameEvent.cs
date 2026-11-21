@@ -160,7 +160,11 @@ namespace AiLabs.Rules.State
         /// <summary>The player gave the team another level of equity. LabId is the lab, SubjectId the level now, Amount the share of the company the people own, in permille.</summary>
         EquityGranted,
         /// <summary>The player moved a person to another role. LabId is the lab, SubjectId the person, Amount the fee, Ref "oldRole>newRole". Pick is 1 inside a function and 0 across functions.</summary>
-        StaffRetrained
+        StaffRetrained,
+        /// <summary>The player named or stood down a chief. LabId is the lab, SubjectId the person, Amount the fee, Ref the title ("scientist" or "safety"). Pick is 1 when named, 0 when stood down.</summary>
+        ChiefChanged,
+        /// <summary>A chief left the payroll or their field and the title fell empty. LabId is the lab, Amount the morale the team lost, Ref the title.</summary>
+        ChiefLeft
     }
 
     /// <summary>

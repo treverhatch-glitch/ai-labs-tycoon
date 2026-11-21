@@ -5556,6 +5556,16 @@
     "sameFunctionMoraleDrop": 40,
     "minMorale": 300
   },
+  "chiefs": {
+    "enabled": true,
+    "minStaff": 5,
+    "fee": 30000,
+    "weeklyPremium": 1200,
+    "researchPermille": 120,
+    "incidentCutPermille": 150,
+    "poachPenaltyPermille": 40,
+    "shockMorale": 100
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,

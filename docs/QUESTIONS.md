@@ -1596,6 +1596,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No code or data changed; this is a tests-only entry.
 - Alternatives: gating none of the tools (rejected: an always-on hack week and compliance office bankrupt the thin seed, the same cost of the tool seen in Q303, Q306 and Q311).
 
+### Q319. Can the player name a chief scientist or a chief safety officer? DECIDED: yes, from the lab's own people, for a fee and a weekly premium, and the team feels it when one goes
+- New `chiefs` data, command `AppointChief(title, personId)`, `Chiefs` system, events `ChiefChanged` and `ChiefLeft` (appended). The scientist adds 12% research, the safety officer takes 15% off the weekly incident chance; each costs $30000 to name and $1200 a week, and takes 4% off the lab's poach defence.
+- A chief counts only while the person is still on the payroll in a role of the right function, so a fired, poached or retrained chief stops counting at once. The seat empties on the next week and every remaining person loses 100 morale.
+- New state on the lab (schema 54, `MigrateTo54`): `chiefScientistId` and `chiefSafetyId`, -1 for nobody. Player only and opt-in. The golden digest moved to 0990de6e because of the two lab fields and the schema number only; reverting them brought the previous digest (b16cb924) back.
+- Alternatives: a chief that is a separate hire (rejected: the point is to pick someone you already have and risk losing them); effects that grow with the person's morale (rejected: a second moving part with no new choice); an empty seat that stays until filled and holds the lab's morale down (rejected: one shock at the loss is the cleaner rule).
+
 ## Open
 
 None.

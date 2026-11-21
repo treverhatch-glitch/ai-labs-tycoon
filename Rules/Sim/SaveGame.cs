@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.FocusLockedUntil < 0 || !string.IsNullOrEmpty(lab.ResearchFocus) && c.Focus.Option(lab.ResearchFocus) == null) p.Add(who + " has the research focus \"" + lab.ResearchFocus + "\", which the data does not have");
                 if (lab.EquityLevel < 0 || lab.EquityLevel > c.Equity.MaxLevel || lab.EquityPermille < 0 || lab.EquityPermille > MathI.Permille || lab.EquityLevel == 0 != (lab.EquityPermille == 0) || lab.EquityPermille + lab.FounderSharePermille > MathI.Permille)
                     p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
+                if (lab.ChiefScientistId < -1 || lab.ChiefSafetyId < -1) p.Add(who + " has a chief with the id " + (lab.ChiefScientistId < -1 ? lab.ChiefScientistId : lab.ChiefSafetyId));
                 if (lab.HackWeeks < 0 || lab.HackWeeks > c.Hack.Weeks || lab.HackLockedUntil < 0) p.Add(who + " has " + lab.HackWeeks + " weeks of hack week left, which the data does not allow");
                 if (lab.CrunchWeeks < 0 || lab.CrunchWeeks > c.StaffPeople.CrunchMaxWeeks) p.Add(who + " has been in crunch time for " + lab.CrunchWeeks + " weeks");
                 foreach (Loan loan in lab.Loans)

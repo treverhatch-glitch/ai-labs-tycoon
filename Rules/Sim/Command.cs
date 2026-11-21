@@ -50,7 +50,8 @@ namespace AiLabs.Rules.Sim
         SetResearchFocus,
         HoldHackWeek,
         GrantStaffEquity,
-        RetrainStaff
+        RetrainStaff,
+        AppointChief
     }
 
     /// <summary>
@@ -392,6 +393,15 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RetrainStaff, labId);
             c.TargetId = personId;
             c.Id = roleId;
+            return c;
+        }
+
+        /// <summary>Names a person to a chief title ("scientist" or "safety") for a fee, or steps the sitting chief down when the person id is -1.</summary>
+        public static Command AppointChief(int labId, string title, int personId)
+        {
+            Command c = Make(CommandKind.AppointChief, labId);
+            c.Id = title;
+            c.TargetId = personId;
             return c;
         }
 
