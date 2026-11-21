@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Config
             FoundingProblems(p, c);
             TalentProblems(p, c);
             PressProblems(p, c);
+            TrustProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -426,6 +427,40 @@ namespace AiLabs.Rules.Config
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
             }
+        }
+
+        static void TrustProblems(List<string> p, GameConfig c)
+        {
+            TrustConfig t = c.Trust;
+            if (t == null) { p.Add("trust is missing"); return; }
+            if (t.BaselineTrust < 0 || t.BaselineTrust > 1000) p.Add("trust.baselineTrust must be from 0 to 1000");
+            if (t.GainPerWeek < 0 || t.GainPerWeek > 1000) p.Add("trust.gainPerWeek must be from 0 to 1000");
+            if (t.IdleDecayPerWeek < 0 || t.IdleDecayPerWeek > 1000) p.Add("trust.idleDecayPerWeek must be from 0 to 1000");
+            if (t.IncidentDrop < 0 || t.IncidentDrop > 1000) p.Add("trust.incidentDrop must be from 0 to 1000");
+            if (t.BracketWinPoints < 0 || t.BracketWinPoints > 1000) p.Add("trust.bracketWinPoints must be from 0 to 1000");
+            if (t.ExposedDrop < 0 || t.ExposedDrop > 1000) p.Add("trust.exposedDrop must be from 0 to 1000");
+            Permille(p, "trust.carryPermille", t.CarryPermille);
+            if (t.AppealSlopePermille < 0 || t.AppealSlopePermille > 1800) p.Add("trust.appealSlopePermille must be from 0 to 1800, or full distrust would erase a model's appeal");
+            if (t.ComplaintWeeks < 1 || t.ComplaintWeeks > 52) p.Add("trust.complaintWeeks needs a value from 1 to 52");
+            if (t.MaxOpenComplaints < 0) p.Add("trust.maxOpenComplaints cannot be negative");
+            Permille(p, "trust.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("trust.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.Responses.Count == 0) p.Add("trust.responses is empty: a customer would have no answer");
+            UniqueIds(p, "trust.responses", t.Responses);
+            foreach (ComplaintResponseConfig r in t.Responses)
+            {
+                string who = "complaint response " + r.Id;
+                if (string.IsNullOrEmpty(r.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(r.Blurb)) p.Add(who + " has no blurb");
+                if (r.CostHireFees < 0 || r.CostHireFees > 1000) p.Add(who + " needs costHireFees from 0 to 1000");
+                if (r.CostRevenuePermille < 0 || r.CostRevenuePermille > 5000) p.Add(who + " needs costRevenuePermille from 0 to 5000");
+                Permille(p, who + " baseSuccessPermille", r.BaseSuccessPermille);
+                if (r.ReputationSlopePermille < -2000 || r.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (r.RestorePermille < 0 || r.RestorePermille > 2000) p.Add(who + " needs restorePermille from 0 to 2000");
+                if (r.BackfirePermille < 0 || r.BackfirePermille > 2000) p.Add(who + " needs backfirePermille from 0 to 2000");
+            }
+            foreach (SectorConfig s in c.Market.Sectors)
+                if (string.IsNullOrEmpty(s.Family)) p.Add("sector " + s.Id + " has no family, so trust could not carry to or from it");
         }
 
         static void GauntletProblems(List<string> p, GameConfig c)

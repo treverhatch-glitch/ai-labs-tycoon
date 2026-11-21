@@ -62,6 +62,7 @@ namespace AiLabs.Rules.Config
         public TalentConfig Talent = new TalentConfig();
         /// <summary>The press: journalists, beats, answers and leaks.</summary>
         public PressConfig Press = new PressConfig();
+        public TrustConfig Trust = new TrustConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -104,6 +105,7 @@ namespace AiLabs.Rules.Config
             s.Obj("staffPeople", ref StaffPeople);
             s.Obj("talent", ref Talent);
             s.Obj("press", ref Press);
+            s.Obj("trust", ref Trust);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);
@@ -654,6 +656,8 @@ namespace AiLabs.Rules.Config
         /// <summary>The era the sector opens in. <see cref="OpensYear"/> falls inside it.</summary>
         public string Era;
         public string Buyers;
+        /// <summary>The group of sectors whose customers talk to each other: trust carries between them (see TrustConfig).</summary>
+        public string Family;
         public int OpensYear;
         /// <summary>What the whole sector would pay per week in the year it opens, once AI is good enough for all of it. It grows every year after that.</summary>
         public long PoolPerWeek;
@@ -677,6 +681,7 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Str("era", ref Era);
             s.Str("buyers", ref Buyers);
+            s.Str("family", ref Family);
             s.Int("opensYear", ref OpensYear);
             s.Long("poolPerWeek", ref PoolPerWeek);
             s.Int("growthPermillePerYear", ref GrowthPermillePerYear);

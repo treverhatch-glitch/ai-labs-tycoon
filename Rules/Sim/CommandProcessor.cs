@@ -69,6 +69,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.PoachStaff: return PoachStaff(c, state, lab, cmd);
                 case CommandKind.AnswerPress: return AnswerPress(c, state, lab, cmd);
                 case CommandKind.LeakStory: return LeakStory(c, state, lab, cmd);
+                case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }

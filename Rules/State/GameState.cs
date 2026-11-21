@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 26;
+        public const int CurrentSchema = 27;
 
         public int Schema;
         public string ConfigVersion;
@@ -160,6 +160,8 @@ namespace AiLabs.Rules.State
         public int GauntletTuning;
         /// <summary>Journalists' questions that still wait for an answer.</summary>
         public List<PressInquiry> PressInquiries = new List<PressInquiry>();
+        public List<SectorTrust> SectorTrust = new List<SectorTrust>();
+        public List<Complaint> Complaints = new List<Complaint>();
         /// <summary>How the player chose to be good at the start (a style id), or empty for none.</summary>
         public string StyleId = "";
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
@@ -276,6 +278,8 @@ namespace AiLabs.Rules.State
             s.ObjList("poachOffers", ref PoachOffers);
             s.Int("gauntletTuning", ref GauntletTuning);
             s.ObjList("pressInquiries", ref PressInquiries);
+            s.ObjList("sectorTrust", ref SectorTrust);
+            s.ObjList("complaints", ref Complaints);
             s.Str("styleId", ref StyleId);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);

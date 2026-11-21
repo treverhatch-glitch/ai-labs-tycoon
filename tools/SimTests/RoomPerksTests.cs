@@ -304,7 +304,7 @@ public class RoomPerksTests
         g.Build("robotics-arena", 6, 6);
         var parts = DisplayQueries.AppealParts(g.C, g.State, sector, g.State.Sector("robotics-industry"), g.Me, model);
         Assert.True(parts.RoleBoost > 0);
-        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.ChampionBoost, parts.Total);
+        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
     }
 
     // ---- saves, the validator, the data

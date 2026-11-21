@@ -106,6 +106,16 @@ namespace AiLabs.Rules.Sim
                     if (c.Press.Journalist(q.JournalistId) == null) p.Add(who + " has a question from the unknown journalist \"" + q.JournalistId + "\"");
                 }
                 if (lab.PressInquiries.Count > c.Press.MaxOpenInquiries) p.Add(who + " has more open questions than the press desk allows");
+                var trustSeen = new System.Collections.Generic.HashSet<string>();
+                foreach (SectorTrust trust in lab.SectorTrust)
+                {
+                    if (c.Sector(trust.SectorId) == null) p.Add(who + " has trust in the unknown sector \"" + trust.SectorId + "\"");
+                    if (!trustSeen.Add(trust.SectorId)) p.Add(who + " has two trust records for \"" + trust.SectorId + "\"");
+                    if (trust.Trust < 0 || trust.Trust > 1000) p.Add(who + " has a trust of " + trust.Trust + " in " + trust.SectorId + ", outside 0 to 1000");
+                }
+                foreach (Complaint complaint in lab.Complaints)
+                    if (c.Sector(complaint.SectorId) == null) p.Add(who + " has a complaint from the unknown sector \"" + complaint.SectorId + "\"");
+                if (lab.Complaints.Count > c.Trust.MaxOpenComplaints) p.Add(who + " has more open complaints than the customer desk allows");
                 if (lab.GauntletTuning < 0 || lab.GauntletTuning > c.Gauntlet.MaxTuningPermille) p.Add(who + " has a Gauntlet tuning of " + lab.GauntletTuning + ", outside 0 to " + c.Gauntlet.MaxTuningPermille);
                 if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");

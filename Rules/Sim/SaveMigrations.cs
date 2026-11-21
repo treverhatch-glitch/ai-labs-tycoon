@@ -40,6 +40,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 23) MigrateTo23(root);
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
+            if (fromSchema < 27) MigrateTo27(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -362,6 +363,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(g, "newcomerLabId", JsonValue.Of(-1L));
             });
             JsonPatch.ForEach(root, "gauntlets.entries", e => JsonPatch.AddIfMissing(e, "tuned", JsonValue.Of(false)));
+        }
+
+        /// <summary>Sector trust and the customer desk (Q165): every sector sits at the baseline and no complaint ever waited in an older save.</summary>
+        static void MigrateTo27(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "sectorTrust", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "complaints", JsonValue.Array());
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

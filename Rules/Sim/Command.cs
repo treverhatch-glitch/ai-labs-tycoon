@@ -18,7 +18,8 @@ namespace AiLabs.Rules.Sim
         AcquireLab, SellModel,
         CounterPoach, PoachStaff,
         AnswerPress, LeakStory,
-        SetGauntletTuning
+        SetGauntletTuning,
+        AnswerComplaint
     }
 
     /// <summary>
@@ -397,6 +398,15 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Answers a customer's complaint.</summary>
+        public static Command AnswerComplaint(int labId, int complaintId, string responseId)
+        {
+            Command c = Make(CommandKind.AnswerComplaint, labId);
+            c.TargetId = complaintId;
+            c.Id = responseId;
+            return c;
+        }
+
         /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>
         public static Command SetGauntletTuning(int labId, int permille)
         {
@@ -420,7 +430,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone
     }
 
     public struct CommandResult

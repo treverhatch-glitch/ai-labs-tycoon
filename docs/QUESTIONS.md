@@ -936,6 +936,38 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** and **(b)**. No planner was touched. `GauntletSystem.SeasonTable` scores 5 for a crown and 2 for a bracket win over the kept years, ties by crowns and then by the older lab.
 - Why: planner code is shared with other threads, and a rival that tunes and is exposed would be a rivalry design of its own. A saved table would only repeat what the history already says.
 
+## Sector trust and the customer desk (NEXT item 18)
+
+### Q165. What is sector trust, and what does it do? DECIDED: a 0 to 1000 meter per lab per sector that moves appeal
+
+- Options: (a) one trust number per lab (that is reputation already); (b) a meter per lab per sector that scales appeal; (c) a meter that only unlocks things.
+- Recommendation and choice: **(b)**. Trust sits at 500 where it changes nothing, and appeal is multiplied by 1 + (trust - 500) x 0.3, so full trust is +15% and none is -15%. It shows as its own `TrustBoost` part of the appeal breakdown, so the parts still add up. It is saved as a list of records on the lab (`sectorTrust`, save schema **27**); a sector with no record is at the baseline, so a lab that sells nowhere has nothing saved.
+- Why: reputation already says how the world sees the lab; the bible's point is that each sector's customers judge separately ("trust is slow to win and fast to lose" in the sector where you stumbled). The slope of 0.3 keeps trust worth about as much as a good year of reputation, not a new way to win by itself. A steeper slope or a bigger drop pushed rivals that ship carelessly into bankruptcy in the economy-bounds seeds, because a lab that has an incident every few months sits near zero trust for good.
+
+### Q166. How slow is slow, and how fast is fast? DECIDED: +2 a week and +40 for a bracket win, against -60 for an incident and -100 for being exposed
+
+- Options: (a) symmetric moves; (b) gains well under losses.
+- Recommendation and choice: **(b)**. A lab gains 2 a week in each sector where it has a model on sale (a year is about 96), takes 40 for a bracket win, and loses 60 in every sector an incident's model is on sale in and 100 in every bracket whose tuned win was exposed. A sector the lab has left drifts back to 500 by 1 a week and its record goes. Bankrupt labs are frozen. These are all config numbers.
+- Why: one incident should undo thirty weeks of patient work, and a tuned lab that is caught should lose more than the 40 the lie bought. Making old trust drift away stops a lab that left a sector from keeping a stale bonus for ever.
+
+### Q167. What does "carries to neighbouring sectors" mean in data? DECIDED: sectors belong to a family, and 30% of any move lands in the rest of the family
+
+- Options: (a) a neighbour list per sector; (b) a family tag per sector; (c) no carry.
+- Recommendation and choice: **(b)**. Each of the 33 sectors has a `family` (games, finance, web, language, creative, code, state, physical, science). A trust move (a win or a loss) lands 30% in each other sector of the same family where the lab has a model on sale, with no second-hand carry (carried moves do not carry again). A sector the lab is not in is not touched.
+- Why: a neighbour list for 33 sectors is 33 judgement calls and a validator for symmetry; a tag is one judgement per sector, easy to read in the data and to change. Carrying only into sectors the lab sells in keeps the records few and the effect where it can matter.
+
+### Q168. What is the customer desk? DECIDED: an incident writes one complaint to the player, answered with a refund, a patch or an apology, and an ignored one lapses
+
+- Options: (a) an ignored complaint costs more trust; (b) it lapses with no effect, so only answering changes anything.
+- Recommendation and choice: **(b)**, as with the press (Q146). An incident that costs the player trust writes one complaint, from the sector where the model earns most; its stake is the trust lost there (60 with the default numbers). The desk holds 3, a complaint waits 4 weeks. `refund` costs 3 sales fees and a week of the model's takings in that sector, always works and wins back 70% of the stake. `patch` costs 4 fees, works 60% of the time (a good reputation helps), wins back 60%, and loses another 30% if it fails. `apology` is free and wins back 15%. Money is booked under Hiring and the dice are the existing `Rivals` stream (no new stream, no moved saved state). Complaints are saved on the lab.
+- Why: the incident has already cost the trust, so the desk is only a way to buy some of it back, and a lab on autopilot plays on as before. The three answers sit at the three useful price points: certain and dear, cheap and risky, free and small.
+
+### Q169. Do rivals and planners use trust? DECIDED: rivals gain and lose trust and it moves their appeal; nobody but the player has a desk
+
+- Options: (a) trust is for the player only; (b) every lab has it, only the player answers complaints.
+- Recommendation and choice: **(b)**. Every lab's trust moves with its sales, incidents and bracket wins, so a rival that ships carelessly loses customers like the player would. No planner or rival code was touched: no rival answers complaints.
+- Why: trust that only applied to the player would make the player's appeal the only one that ever moved. The golden run moves because every lab's appeal now follows its trust. The economy-bounds and lifetime tests pass unchanged with the default numbers; they are sensitive to any change that touches rival revenue (the same seeds fail at other trust numbers, and a scan of 40 seeds shows no more rival bankruptcies than with trust switched off).
+
 ## Open
 
 None.

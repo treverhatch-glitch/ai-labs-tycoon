@@ -106,6 +106,7 @@ namespace AiLabs.Rules.Systems
                 if (bracket.Count > 0)
                 {
                     Events.Add(state, EventKind.GauntletBracket, bracket[0].LabId, bracket[0].ModelId, bracket[0].Score, sectorId);
+                    TrustSystem.OnBracketWin(c, state, state.Lab(bracket[0].LabId), sectorId);
                     if (state.PlayerLabId >= 0 && bracket[0].LabId == state.PlayerLabId)
                         for (int i = 1; i < bracket.Count; i++) RivalSystem.Feel(c, state.Lab(bracket[i].LabId), c.Rivalry.Feelings.BracketPermille);
                 }
@@ -213,6 +214,8 @@ namespace AiLabs.Rules.Systems
                     row.Entries[e].Score = row.Raw[e];
                     row.Entries[e].Tuned = false;
                 }
+                for (int e = 0; e < row.Entries.Count; e++)
+                    if (row.Entries[e].Bracket != CrownBracket) TrustSystem.OnExposed(c, state, lab, row.Entries[e].Bracket);
                 int before = lab.Reputation;
                 AddReputation(lab, -PressSystem.Damp(c, lab, c.Gauntlet.ExposedReputationLoss));
                 Events.Add(state, EventKind.GauntletExposed, lab.Id, row.Entries.Count, before - lab.Reputation, "");

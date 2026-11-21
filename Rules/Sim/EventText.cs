@@ -89,6 +89,25 @@ namespace AiLabs.Rules.Sim
                     return e.Ref == GauntletSystem.AwardConfident
                         ? who + " wins Most Confident While Wrong at " + c.Gauntlet.Name + ". Reputation " + (-e.Amount) + "."
                         : who + " wins Best Newcomer at " + c.Gauntlet.Name + ". The staff are thrilled: morale +" + e.Amount + ".";
+                case EventKind.TrustLost:
+                    return who + " lost " + e.Amount + " trust with " + c.Sector(e.Ref).Buyers + " (" + c.Sector(e.Ref).Name + ").";
+                case EventKind.CustomerComplaint:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        SectorConfig sector = c.Sector(bits[0]);
+                        return "A customer in " + (sector == null ? bits[0] : sector.Name) + " wrote to " + who + " about " + (bits.Length > 1 ? bits[1] : "an incident") + " (" + e.Amount + " trust at stake).";
+                    }
+                case EventKind.ComplaintAnswered:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        ComplaintResponseConfig response = c.Trust.Response(bits[0]);
+                        SectorConfig sector = bits.Length > 1 ? c.Sector(bits[1]) : null;
+                        string where = sector == null ? "a sector" : sector.Name;
+                        string how = response == null ? bits[0] : response.Name.ToLowerInvariant();
+                        return e.Pick == 1
+                            ? who + " answered the complaint from " + where + " with a " + how + ": trust +" + e.Amount + "."
+                            : who + "'s " + how + " went down badly in " + where + ": trust " + e.Amount + ".";
+                    }
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";

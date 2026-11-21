@@ -92,6 +92,7 @@ namespace AiLabs.Rules.Systems
                 model.DisplayedAlignment = EffectiveAlignment(c, model);
 
             StaffSystem.OnIncident(c, lab);
+            TrustSystem.OnIncident(c, state, lab, model);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
             if (risk != null)

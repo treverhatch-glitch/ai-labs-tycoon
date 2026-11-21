@@ -70,7 +70,13 @@ namespace AiLabs.Rules.State
         /// <summary>A joke award with a real effect. LabId is the winner, Ref the award id, Amount the effect (reputation, or morale for the newcomers).</summary>
         GauntletAward,
         /// <summary>The live demo of a lab's crown entry. LabId is the lab, SubjectId the model, Amount the reputation moved, Pick 1 for a triumph and 0 for a meme.</summary>
-        GauntletDemo
+        GauntletDemo,
+        /// <summary>An incident cost a lab the trust of one sector's customers. LabId is the lab, Ref the sector, Amount the trust lost. Logged for the player's lab only.</summary>
+        TrustLost,
+        /// <summary>A customer let down by an incident wrote to the player's desk. LabId is the player's lab, SubjectId the complaint, Amount the trust at stake, Ref "sector|model".</summary>
+        CustomerComplaint,
+        /// <summary>The player answered a complaint. LabId is the player's lab, SubjectId the complaint, Amount the trust moved (negative if it backfired), Ref "response|sector", Pick 1 if it worked.</summary>
+        ComplaintAnswered
     }
 
     /// <summary>
