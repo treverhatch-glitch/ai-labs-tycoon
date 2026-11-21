@@ -232,6 +232,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.NoteOwed == 0 && (lab.NotePrincipal != 0 || lab.NoteRate != 0 || lab.NoteDiscount != 0 || lab.NoteLeft != 0 || lab.NoteExtended != 0 || lab.NoteTier != 0))
                     || (lab.NoteOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " owes " + lab.NoteOwed + " on a convertible note (tier " + lab.NoteTier + ", " + lab.NoteLeft + " weeks left) in a way the data does not allow");
+                if (lab.DevLine < 0 || lab.DevLine > 3 || lab.DevStage < 0 || lab.DevStage > 2 || lab.DevWeeks < 0 || lab.DevQuality < 0 || lab.DevQuality > 1000 || lab.DevTier < 0 || lab.DevTier > 3 || lab.DevSold < 0 || lab.DevBase < 0
+                    || (lab.DevLine > 0 && (lab.DevStage < 1 || lab.DevTier < 1))
+                    || (lab.DevLine == 0 && (lab.DevStage != 0 || lab.DevWeeks != 0 || lab.DevQuality != 0 || lab.DevTier != 0 || lab.DevSold != 0 || lab.DevBase != 0))
+                    || (lab.DevLine != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a device line " + lab.DevLine + " (stage " + lab.DevStage + ", quality " + lab.DevQuality + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

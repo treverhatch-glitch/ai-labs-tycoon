@@ -2008,6 +2008,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A safety foundation's damping works through the press room's damping, so an activist's reputation hit at a listing is softer (Q388, Q386); an open science foundation takes strength off incident claims (Q371). The listing proceeds, the advance, the foundation's gifts and the note go through the capital line and stay out of the tax base; the listing's reporting cost and the lease rent are costs and come off it (Q379).
 - All five are command-driven, so a lab that never uses them plays exactly as before: the full suite needed no old test changed. A lab that goes bankrupt and spectates still saves cleanly with every one of them in use. A long scripted game over three seeds keeps the books, the save and the replay.
 
+### Q393. Can the lab ship a device? DECIDED: yes, one side line (speaker, glasses, home robot) with design, testing, a launch bar, a price tier and a recall
+- From the bible's hardware side lines. Each line opens in its own era and needs a released model good enough to put in a box (capability 100). The player chooses the line, how many weeks to test (each buys quality), and a price tier on sale. A thin model or no testing means a flop on stage; a device that sells badly and stays poor is recalled at a cost that grows with the units sold, so a low price on a poor device is the riskiest. Only the player's lab, and only through commands, so a lab that never designs one plays as before.
+- The cost of the design goes through the chip-development line, the sales through the revenue line (so the tax and the covenants see them), and the recall through fines.
+- Alternatives: devices as a one-click revenue boost (rejected: no decision), a model-per-device pipeline (rejected: too big for a side line), letting rivals ship them too (rejected: rivals have no saved lines).
+
 ## Open
 
 None.

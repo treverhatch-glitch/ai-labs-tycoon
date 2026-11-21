@@ -136,7 +136,10 @@ namespace AiLabs.Rules.Sim
         ReturnLease,
         IssueNote,
         RepayNote,
-        ExtendNote
+        ExtendNote,
+        DesignDevice,
+        SetDevicePrice,
+        WithdrawDevice
     }
 
     /// <summary>
@@ -1193,6 +1196,29 @@ namespace AiLabs.Rules.Sim
         public static Command ExtendNote(int labId)
         {
             return Make(CommandKind.ExtendNote, labId);
+        }
+
+        /// <summary>Starts designing a device (1 speaker, 2 glasses, 3 home robot) with some weeks of testing before the launch, which buys quality. One line at a time.</summary>
+        public static Command DesignDevice(int labId, int line, int testWeeks)
+        {
+            Command c = Make(CommandKind.DesignDevice, labId);
+            c.TargetId = line;
+            c.Count = testWeeks;
+            return c;
+        }
+
+        /// <summary>Sets the device's price tier: 1 low (more units, thin margin), 2 middle, 3 high.</summary>
+        public static Command SetDevicePrice(int labId, int tier)
+        {
+            Command c = Make(CommandKind.SetDevicePrice, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Ends the device line: stops selling it or drops the design.</summary>
+        public static Command WithdrawDevice(int labId)
+        {
+            return Make(CommandKind.WithdrawDevice, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

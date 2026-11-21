@@ -415,6 +415,14 @@ namespace AiLabs.Rules.Sim
                     return who + " repaid its convertible note with " + e.Amount + ".";
                 case EventKind.NoteExtended:
                     return who + " extended its convertible note.";
+                case EventKind.DeviceDesigned:
+                    return who + " started designing a device for " + e.Amount + ".";
+                case EventKind.DeviceLaunched:
+                    return who + (e.Pick == 1 ? "'s device launches to applause." : "'s device flops on stage.");
+                case EventKind.DeviceRecalled:
+                    return who + " recalled its device at a cost of " + e.Amount + ".";
+                case EventKind.DeviceWithdrawn:
+                    return who + " ended its device line after " + e.Amount + " units.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

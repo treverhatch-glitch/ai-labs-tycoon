@@ -129,6 +129,7 @@ namespace AiLabs.Rules.Config
             FoundationProblems(p, c);
             LeasebackProblems(p, c);
             NotesProblems(p, c);
+            DevicesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1454,6 +1455,20 @@ namespace AiLabs.Rules.Config
             if (k.DiscountA < 0 || k.DiscountB < k.DiscountA || k.DiscountC < k.DiscountB || k.DiscountC > 800 || k.MaturityDiscount < 0 || k.MaturityDiscount > 800) p.Add("convertibleNotes.discountC must be at least discountB, discountB at least discountA, and all up to 800");
             if (k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1 || k.ExtendWeeks < 0) p.Add("convertibleNotes.weeksA, weeksB and weeksC must be at least 1 and extendWeeks not negative");
             if (k.MaxConvertPermille < 1 || k.MaxConvertPermille > 900 || k.ExtendRate < MathI.Permille || k.ExtendRate > 5000 || k.ExtendDiscount < 0 || k.ExtendDiscount > 500) p.Add("convertibleNotes.maxConvertPermille must be from 1 to 900, extendRate from 1000 to 5000 and extendDiscount from 0 to 500");
+        }
+
+        static void DevicesProblems(List<string> p, GameConfig c)
+        {
+            DevicesConfig k = c.Devices;
+            if (k == null) { p.Add("devices is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("devices.enabled must be 0 or 1");
+            if (k.MinCapability < 0 || k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB) p.Add("devices.minCapability and eraA must not be negative, eraB at least eraA and eraC at least eraB");
+            if (k.CostA < 0 || k.CostB < 0 || k.CostC < 0 || k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1) p.Add("devices.costA, costB and costC must not be negative and weeksA, weeksB and weeksC at least 1");
+            if (k.DemandA < 0 || k.DemandB < 0 || k.DemandC < 0 || k.MarginA < 0 || k.MarginB < 0 || k.MarginC < 0) p.Add("devices.demandA, demandB, demandC, marginA, marginB and marginC must not be negative");
+            if (k.BaseQuality < 0 || k.ModelQuality < 0 || k.CapForMax < 1 || k.TestQuality < 0 || k.MaxTestWeeks < 0 || k.MaxTestWeeks > 12) p.Add("devices.baseQuality, modelQuality and testQuality must not be negative, capForMax at least 1 and maxTestWeeks from 0 to 12");
+            if (k.LaunchBar < 0 || k.LaunchBar > MathI.Permille || k.RecallBar < 0 || k.RecallBar > MathI.Permille || k.FlopReputation < 0 || k.HitReputation < 0 || k.FlopReputation > 500 || k.HitReputation > 500) p.Add("devices.launchBar and recallBar must be from 0 to 1000, flopReputation and hitReputation from 0 to 500");
+            if (k.FlopDemand < 0 || k.FlopDemand > MathI.Permille || k.FadePermille < 0 || k.FadePermille > 500 || k.RecallWeeks < 1 || k.RecallCost < 0) p.Add("devices.flopDemand must be from 0 to 1000, fadePermille from 0 to 500, recallWeeks at least 1 and recallCost not negative");
+            if (k.LowPrice < 100 || k.LowPrice > MathI.Permille || k.HighPrice < MathI.Permille || k.HighPrice > 5000 || k.LowDemand < MathI.Permille || k.LowDemand > 5000 || k.HighDemand < 0 || k.HighDemand > MathI.Permille) p.Add("devices.lowPrice must be from 100 to 1000, highPrice from 1000 to 5000, lowDemand from 1000 to 5000 and highDemand from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

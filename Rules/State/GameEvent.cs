@@ -396,7 +396,15 @@ namespace AiLabs.Rules.State
         /// <summary>The lab repaid the note. Amount is what it paid.</summary>
         NoteRepaid,
         /// <summary>The lab extended the note. Amount is the new weekly rate.</summary>
-        NoteExtended
+        NoteExtended,
+        /// <summary>The lab started designing a device. Amount is the cost, SubjectId the line.</summary>
+        DeviceDesigned,
+        /// <summary>A device launched. Amount is its quality, SubjectId the line, Pick 1 a hit and 0 a flop.</summary>
+        DeviceLaunched,
+        /// <summary>A poor device was recalled. Amount is what the recall cost, SubjectId the line.</summary>
+        DeviceRecalled,
+        /// <summary>The lab ended its device line. Amount is the units sold in all, SubjectId the line.</summary>
+        DeviceWithdrawn
     }
 
     /// <summary>

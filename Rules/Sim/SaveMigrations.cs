@@ -107,6 +107,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 92) MigrateTo92(root);
             if (fromSchema < 93) MigrateTo93(root);
             if (fromSchema < 94) MigrateTo94(root);
+            if (fromSchema < 95) MigrateTo95(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -470,6 +471,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 95: no lab has a device line.</summary>
+        static void MigrateTo95(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "devLine", "devStage", "devWeeks", "devQuality", "devTier", "devSold", "devBase" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

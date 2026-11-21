@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 94;
+        public const int CurrentSchema = 95;
 
         public int Schema;
         public string ConfigVersion;
@@ -388,6 +388,15 @@ namespace AiLabs.Rules.State
         public int NoteLeft;
         public int NoteExtended;
         public int NoteTier;
+        /// <summary>The device line (1 speaker, 2 glasses, 3 home robot, 0 none), its stage (1 designing, 2 on sale), the weeks left to design or on sale so far, and its quality.</summary>
+        public int DevLine;
+        public int DevStage;
+        public int DevWeeks;
+        public int DevQuality;
+        /// <summary>The price tier (1 low, 2 middle, 3 high), the units sold in all and the weekly demand it started at.</summary>
+        public int DevTier;
+        public long DevSold;
+        public long DevBase;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -736,6 +745,13 @@ namespace AiLabs.Rules.State
             s.Int("noteLeft", ref NoteLeft);
             s.Int("noteExtended", ref NoteExtended);
             s.Int("noteTier", ref NoteTier);
+            s.Int("devLine", ref DevLine);
+            s.Int("devStage", ref DevStage);
+            s.Int("devWeeks", ref DevWeeks);
+            s.Int("devQuality", ref DevQuality);
+            s.Int("devTier", ref DevTier);
+            s.Long("devSold", ref DevSold);
+            s.Long("devBase", ref DevBase);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
