@@ -10,6 +10,8 @@ namespace AiLabs.Rules.State
         TechResearched,
         TrainingStarted, TrainingFinished, ModelReleased, ModelRetired,
         Incident,
+        /// <summary>Red-team sandbox contained an incident before it went public. Amount is the quiet fine.</summary>
+        SandboxCaught,
         GauntletCrown, GauntletBracket, GauntletSafest,
         GrantEnded, InDebt, Bankrupt,
         EraBegan, WorldNews,

@@ -840,6 +840,11 @@
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
+    "sandboxCatch": {
+      "roomTypeId": "sandbox-wing", "roleId": "red-teamer", "maxRungCaught": 2,
+      "catchPermillePerTile": 6, "catchPermillePerStaff": 35, "catchCapPermille": 450,
+      "caughtFinePermille": 250, "caughtReputationPermille": 200
+    },
     "incidentRungs": [
       { "id": "screenshot", "rung": 1, "reputationLoss": 40, "finePermille": 800, "closesGap": false },
       { "id": "jailbreak", "rung": 2, "reputationLoss": 60, "finePermille": 1000, "closesGap": false },

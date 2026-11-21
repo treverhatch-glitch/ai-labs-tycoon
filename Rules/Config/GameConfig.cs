@@ -593,6 +593,7 @@ namespace AiLabs.Rules.Config
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
         public int SandbagGapPermille;
+        public SandboxCatchConfig SandboxCatch = new SandboxCatchConfig();
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -616,6 +617,34 @@ namespace AiLabs.Rules.Config
             s.ObjList("incidentRungs", ref IncidentRungs);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
+            s.Obj("sandboxCatch", ref SandboxCatch);
+        }
+    }
+
+    /// <summary>Red-team sandbox wing: chance to contain an incident before it becomes a public scandal.</summary>
+    public sealed class SandboxCatchConfig : ISync
+    {
+        public string RoomTypeId = "sandbox-wing";
+        public string RoleId = "red-teamer";
+        /// <summary>Rungs at or below this may be caught; sandbag (3) always goes public.</summary>
+        public int MaxRungCaught = 2;
+        public int CatchPermillePerTile = 6;
+        public int CatchPermillePerStaff = 35;
+        public int CatchCapPermille = 450;
+        /// <summary>Fine and reputation scale when caught (permille of the public incident).</summary>
+        public int CaughtFinePermille = 250;
+        public int CaughtReputationPermille = 200;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("roomTypeId", ref RoomTypeId);
+            s.Str("roleId", ref RoleId);
+            s.Int("maxRungCaught", ref MaxRungCaught);
+            s.Int("catchPermillePerTile", ref CatchPermillePerTile);
+            s.Int("catchPermillePerStaff", ref CatchPermillePerStaff);
+            s.Int("catchCapPermille", ref CatchCapPermille);
+            s.Int("caughtFinePermille", ref CaughtFinePermille);
+            s.Int("caughtReputationPermille", ref CaughtReputationPermille);
         }
     }
 

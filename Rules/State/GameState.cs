@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 16;
+        public const int CurrentSchema = 17;
 
         public int Schema;
         public string ConfigVersion;
@@ -130,6 +130,8 @@ namespace AiLabs.Rules.State
         public List<BlocStanding> Blocs = new List<BlocStanding>();
         /// <summary>Safety incidents this month, which the home government counts when the month closes.</summary>
         public int IncidentsThisMonth;
+        /// <summary>Incidents the sandbox wing caught before they became public scandals.</summary>
+        public int SandboxCaughtTotal;
         /// <summary>The share of compute that goes to training while a run is active. The rest serves customers.</summary>
         public int TrainingSharePermille;
         /// <summary>Data mix for the next training run (config training.dataSources id).</summary>
@@ -236,6 +238,7 @@ namespace AiLabs.Rules.State
             s.ObjList("holdings", ref Holdings);
             s.ObjList("blocs", ref Blocs);
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
+            s.Int("sandboxCaughtTotal", ref SandboxCaughtTotal);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
             s.Str("trainingDataSourceId", ref TrainingDataSourceId);
             s.Int("founderSharePermille", ref FounderSharePermille);

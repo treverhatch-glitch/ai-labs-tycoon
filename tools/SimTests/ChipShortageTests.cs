@@ -193,21 +193,21 @@ public class ChipShortageTests
     }
 
     [Fact]
-    public void Schema_16_on_new_game()
+    public void Schema_17_on_new_game_includes_shortage_fields()
     {
         Game g = Game.Solo();
-        Assert.Equal(16, g.State.Schema);
+        Assert.Equal(17, g.State.Schema);
         Assert.Equal(-1, g.State.ChipShortageUntilTick);
         Assert.Equal(0, g.State.ChipShortageStrengthPermille);
     }
 
     [Fact]
-    public void Migration_15_to_16_adds_shortage_fields()
+    public void Migration_15_through_17_adds_shortage_fields()
     {
         Game g = Game.Solo();
-        string json = g.Sim.Save().Replace("\"schema\":16", "\"schema\":15");
+        string json = g.Sim.Save().Replace("\"schema\":17", "\"schema\":15");
         var loaded = Simulation.Load(g.C, json);
-        Assert.Equal(16, loaded.State.Schema);
+        Assert.Equal(17, loaded.State.Schema);
         Assert.Equal(-1, loaded.State.ChipShortageUntilTick);
     }
 

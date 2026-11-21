@@ -231,5 +231,11 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q39. Global chip shortage from world news? DECIDED: timed crunch on prices and foundry
 
 - Options: (a) flavor-only `card-shortage` headline; (b) `chipShortageStrengthPermille` on world events + `GameState` clock; (c) random monthly roll.
-- Choice: **(b)** — `ChipShortageSystem` scales GPU rent/buy, reserved deposit, fab orders, listed buys; shrinks effective foundry room; `ChipShortageBegan`/`Ended` events; schema **16**.
+- Choice: **(b)** — `ChipShortageSystem` scales GPU rent/buy, reserved deposit, fab orders, listed buys; shrinks effective foundry room; `ChipShortageBegan`/`Ended` events; save schema **16** (fields; current game schema **17** after Q40).
 - Why: DESIGN.md world-map tail (chip shortages) with visible economy; crosses `WorldNews`, vendor compute, and chips without new player commands.
+
+### Q40. Sandbox wing catches incidents? DECIDED: red-team containment before public scandal
+
+- Options: (a) sandbox wing is flavor-only; (b) tiles + red-teamers roll catch permille before public `Incident`; (c) catch only at rung 1.
+- Choice: **(b)** — `SandboxSystem.CatchPermille` from wing tiles and staffed red-teamers; caught incidents use reduced fine/reputation, emit `SandboxCaught`, skip `IncidentsThisMonth` and public headlines; rung 3 sandbag never caught; `lab.sandboxCaughtTotal`; schema **17**.
+- Why: `sandbox-wing` room (era it-writes) finally ties safety staff to outcome; crosses alignment incident rungs without rivaling press/regulator threads.

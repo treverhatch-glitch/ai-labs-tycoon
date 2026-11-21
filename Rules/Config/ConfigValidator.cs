@@ -148,6 +148,17 @@ namespace AiLabs.Rules.Config
                 if (r.ReputationLoss < 0) p.Add("incident rung " + r.Id + " has negative reputationLoss");
             }
             if (!rungSeen[1] || !rungSeen[2] || !rungSeen[3]) p.Add("safety.incidentRungs must name rungs 1, 2 and 3 exactly once each");
+            SandboxCatchConfig sc = c.Safety.SandboxCatch;
+            if (sc == null) p.Add("safety.sandboxCatch is missing");
+            else
+            {
+                if (c.RoomType(sc.RoomTypeId) == null) p.Add("safety.sandboxCatch.roomTypeId is unknown");
+                if (c.Role(sc.RoleId) == null) p.Add("safety.sandboxCatch.roleId is unknown");
+                if (sc.MaxRungCaught < 1 || sc.MaxRungCaught > 2) p.Add("safety.sandboxCatch.maxRungCaught must be 1 or 2");
+                Permille(p, "safety.sandboxCatch.catchCapPermille", sc.CatchCapPermille);
+                Permille(p, "safety.sandboxCatch.caughtFinePermille", sc.CaughtFinePermille);
+                Permille(p, "safety.sandboxCatch.caughtReputationPermille", sc.CaughtReputationPermille);
+            }
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
             if (c.Market.SectorPriceMinPermille < 1) p.Add("market.sectorPriceMinPermille must be at least 1");
