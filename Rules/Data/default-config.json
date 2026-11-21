@@ -4216,7 +4216,7 @@
         "glitchQualityPermille": 600
       }
     ],
-    "sectorFlavoursForRivals": false,
+    "sectorFlavoursForRivals": true,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
     "incidentRungs": [

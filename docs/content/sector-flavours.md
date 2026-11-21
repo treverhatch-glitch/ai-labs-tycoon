@@ -23,7 +23,7 @@ Refunds are booked on the same ledger line as fines, so the lab's books and the 
 
 ## Who pays
 
-The player's labs pay what a flavour costs: the fine, the reputation, the trust and the refunds. Rivals fail the plain way while `safety.sectorFlavoursForRivals` is false (the shipped value), because the rivals' economies are knife-edge (Q182) and turning it on made OpenAye's lifetime game go bankrupt in the guard tests (Q190). The glitch is different: it is a quality curve for a model in a sector, which every lab's customers see, so it follows the sector for everyone.
+Every lab pays what a flavour costs: the fine, the reputation, the trust and the refunds. `safety.sectorFlavoursForRivals` ships true (Q286); it was false while the rivals' economies were knife-edge (Q182, Q190), and setting it back to false makes rivals fail the plain way again. The glitch is a quality curve for a model in a sector, which every lab's customers see, so it follows the sector for everyone either way.
 
 ## The table
 

@@ -225,6 +225,7 @@ and says why in the commit message.
     the `escape-attempt` event with three answers (Q281-Q283), `EscapeCrisisTests`, `docs/content/escape-crisis.md`; no schema, golden unchanged. Still open: a real gamble, a rung-6 crisis, one-site shutdowns.
 44. **Scenarios (bible ch. 15 "start as a named archetype in a specific year").** ~~Done~~: `scenarios` in the data (seven named starts), `Scenarios.List` / `Options` / `Start`, the validator (Q284-Q285),
     `ScenarioTests`, `docs/content/scenarios.md`; no schema, golden unchanged. Still open: starting situations, per-scenario goals, the picker (Unity), the 1956 prologue.
+45. **Rivals pay sector flavours (Q190 switch).** ~~Done~~: `safety.sectorFlavoursForRivals` ships true after a forty-year soak on a throwaway merge with the rival-robustness work (Q286); the sector-flavours page says every lab pays; tests set the switch explicitly where they want the plain way. No schema, golden unchanged.
 
 ## Rules: later
 

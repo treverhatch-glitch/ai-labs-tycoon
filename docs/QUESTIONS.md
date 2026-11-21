@@ -1379,6 +1379,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. The game is exactly what the options make; no schema change and the golden did not move.
 - Why: nothing in the rules would read it. A screen that wants "you are playing the Heir's Gambit" can keep that outside the rules.
 
+### Q286. Do rivals pay sector flavours now? DECIDED: yes, `safety.sectorFlavoursForRivals` ships true
+
+- Options: (a) leave it false until the rivals thread has merged; (b) turn it on in this chain once a forty-year soak shows no extra bankruptcies; (c) rivals pay half.
+- Recommendation and choice: **(b)**. Checked on a throwaway merge of this chain with the rival-robustness work (PR #3, `RunwayRetrenchment` and Q200-Q201), never pushed: forty seeds (1-40) of forty years with the autopilot player, counting plan labs that ended bankrupt. Switch off: 0 of 40. Switch on: 0 of 40. A second range, seeds 101-180, ended with 12 rival bankruptcies with the switch off and 5 with it on, so the switch does not add bankruptcies; the Q201 bar of zero holds on its own seeds 1-40 only, which is for that thread to know. On this chain alone (the older retrenchment rule), seeds 1-40 had 1 bankruptcy with the switch off (seed 12) and 0 with it on. The full suite passes with the switch on, the golden digest did not move, and the content-flow and economy-bounds guards are green.
+- Why: Q190 turned it off because rival incidents bankrupted OpenAye's lifetime game; with retrenchment before debt that no longer happens. The switch stays in the data, so it can be turned off again if a future change makes the economy knife-edge.
+
 ## Open
 
 None.
