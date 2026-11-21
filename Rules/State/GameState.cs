@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 93;
+        public const int CurrentSchema = 94;
 
         public int Schema;
         public string ConfigVersion;
@@ -379,6 +379,15 @@ namespace AiLabs.Rules.State
         public int LeaseLeft;
         public int LeaseMissed;
         public int LeaseExtended;
+        /// <summary>What is owed on the convertible note (with the interest) and what was borrowed.</summary>
+        public long NoteOwed;
+        public long NotePrincipal;
+        /// <summary>Its weekly interest and discount in permille, the weeks to maturity, whether it was extended (0 or 1) and its tier.</summary>
+        public int NoteRate;
+        public int NoteDiscount;
+        public int NoteLeft;
+        public int NoteExtended;
+        public int NoteTier;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -720,6 +729,13 @@ namespace AiLabs.Rules.State
             s.Int("leaseLeft", ref LeaseLeft);
             s.Int("leaseMissed", ref LeaseMissed);
             s.Int("leaseExtended", ref LeaseExtended);
+            s.Long("noteOwed", ref NoteOwed);
+            s.Long("notePrincipal", ref NotePrincipal);
+            s.Int("noteRate", ref NoteRate);
+            s.Int("noteDiscount", ref NoteDiscount);
+            s.Int("noteLeft", ref NoteLeft);
+            s.Int("noteExtended", ref NoteExtended);
+            s.Int("noteTier", ref NoteTier);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

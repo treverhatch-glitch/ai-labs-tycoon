@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 94) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "noteOwed", "notePrincipal", "noteRate", "noteDiscount", "noteLeft", "noteExtended", "noteTier" }) JsonPatch.Remove(lab, key); });
             if (schema < 93) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "leaseUnits", "leaseValue", "leaseRent", "leaseBuyback", "leaseLeft", "leaseMissed", "leaseExtended" }) JsonPatch.Remove(lab, key); });
             if (schema < 92) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "foundFund", "foundGiven", "foundFocus", "foundPayout", "foundGoodwill", "foundSwitch", "foundDrip" }) JsonPatch.Remove(lab, key); });
             if (schema < 91) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "rbfAdvance", "rbfOwed", "rbfBase", "rbfShare", "rbfTier", "rbfWeeks", "rbfSlump" }) JsonPatch.Remove(lab, key); });

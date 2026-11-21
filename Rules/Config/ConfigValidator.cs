@@ -128,6 +128,7 @@ namespace AiLabs.Rules.Config
             RbfProblems(p, c);
             FoundationProblems(p, c);
             LeasebackProblems(p, c);
+            NotesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1441,6 +1442,18 @@ namespace AiLabs.Rules.Config
             if (k.AdvancePermille < 1 || k.AdvancePermille > MathI.Permille || k.RentPermille < 0 || k.RentPermille > 200) p.Add("leaseback.advancePermille must be from 1 to 1000 and rentPermille from 0 to 200");
             if (k.TermWeeks < 1 || k.ExtendWeeks < 0 || k.ExtendRentPermille < MathI.Permille || k.ExtendRentPermille > 5000) p.Add("leaseback.termWeeks must be at least 1, extendWeeks not negative and extendRentPermille from 1000 to 5000");
             if (k.BuybackPermille < 100 || k.BuybackPermille > 5000 || k.MissLimit < 1 || k.RepoReputation < 0 || k.RepoReputation > 500) p.Add("leaseback.buybackPermille must be from 100 to 5000, missLimit at least 1 and repoReputation from 0 to 500");
+        }
+
+        static void NotesProblems(List<string> p, GameConfig c)
+        {
+            NotesConfig k = c.ConvertibleNotes;
+            if (k == null) { p.Add("convertibleNotes is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("convertibleNotes.enabled must be 0 or 1");
+            if (k.MaxThousands < 1 || k.MaxThousands > 1000000) p.Add("convertibleNotes.maxThousands must be from 1 to 1000000");
+            if (k.RateA < 0 || k.RateB < k.RateA || k.RateC < k.RateB || k.RateC > 100) p.Add("convertibleNotes.rateC must be at least rateB, rateB at least rateA, and all from 0 to 100");
+            if (k.DiscountA < 0 || k.DiscountB < k.DiscountA || k.DiscountC < k.DiscountB || k.DiscountC > 800 || k.MaturityDiscount < 0 || k.MaturityDiscount > 800) p.Add("convertibleNotes.discountC must be at least discountB, discountB at least discountA, and all up to 800");
+            if (k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1 || k.ExtendWeeks < 0) p.Add("convertibleNotes.weeksA, weeksB and weeksC must be at least 1 and extendWeeks not negative");
+            if (k.MaxConvertPermille < 1 || k.MaxConvertPermille > 900 || k.ExtendRate < MathI.Permille || k.ExtendRate > 5000 || k.ExtendDiscount < 0 || k.ExtendDiscount > 500) p.Add("convertibleNotes.maxConvertPermille must be from 1 to 900, extendRate from 1000 to 5000 and extendDiscount from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

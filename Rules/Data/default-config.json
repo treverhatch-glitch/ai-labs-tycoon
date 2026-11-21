@@ -6042,6 +6042,24 @@
     "missLimit": 3,
     "repoReputation": 25
   },
+  "convertibleNotes": {
+    "enabled": 1,
+    "maxThousands": 5000,
+    "rateA": 2,
+    "rateB": 4,
+    "rateC": 6,
+    "discountA": 100,
+    "discountB": 200,
+    "discountC": 300,
+    "weeksA": 96,
+    "weeksB": 72,
+    "weeksC": 48,
+    "maxConvertPermille": 400,
+    "maturityDiscount": 400,
+    "extendWeeks": 24,
+    "extendRate": 1500,
+    "extendDiscount": 50
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

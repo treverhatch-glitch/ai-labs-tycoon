@@ -388,7 +388,15 @@ namespace AiLabs.Rules.State
         /// <summary>The lab could not pay the rent this week. Amount is the rent, SubjectId the weeks in a row.</summary>
         LeaseRentMissed,
         /// <summary>The lab extended its lease. Amount is the new rent.</summary>
-        LeaseExtended
+        LeaseExtended,
+        /// <summary>The lab issued a convertible note. Amount is the cash, SubjectId the tier.</summary>
+        NoteIssued,
+        /// <summary>A note turned into shares. Amount is what was owed, SubjectId the share of the lab it became in permille, Pick 0 at a funding round, 1 at a listing, 2 at maturity.</summary>
+        NoteConverted,
+        /// <summary>The lab repaid the note. Amount is what it paid.</summary>
+        NoteRepaid,
+        /// <summary>The lab extended the note. Amount is the new weekly rate.</summary>
+        NoteExtended
     }
 
     /// <summary>

@@ -1994,6 +1994,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Leased units cannot be sold, and their value at the sale comes off the collateral the loans lend against (so the covenant cover moves, Q382). If the lab cannot pay the rent it is missed; three misses in a row and the lessor repossesses the units and the lab loses 25 reputation (after the press room has had its say). Units lost another way shrink the lease with them. One lease at a time. Only the player's lab; never leasing back changes nothing.
 - Alternatives: leasing out spare compute (rejected: that is the sublet), a lessor that varies the price (rejected: one number set at the sale is enough of a choice).
 
+### Q390. Can the lab raise a bridge that turns into shares? DECIDED: yes, a convertible note that converts at the next round or listing, or at maturity on harsher terms
+- New `convertibleNotes` data, commands `IssueNote`, `RepayNote` and `ExtendNote`, `Notes` system, events `NoteIssued`, `NoteConverted`, `NoteRepaid` and `NoteExtended`, and seven saved lab fields (schema 94). The lab picks a tier and an amount (up to 5,000 thousand) and gets the cash now; one note at a time. Tier 1 earns 0.2% a week, converts at a 10% discount and runs 96 weeks; tier 2 0.4%, 20%, 72 weeks; tier 3 0.6%, 30%, 48 weeks. Interest compounds into what is owed.
+- A funding round that closes while the note is open converts it at the round's price less the discount (the round's value is its cash over its dilution), and the founders are diluted by the round and the note together (`FundingSystem.ApplyRaise`, Q386's listing does the same at the listing price, in `Listing.List`). At most 40% of the lab can convert at once. The lab can repay it with its interest, or extend it once (24 weeks more, the rate up by half and 5% more discount). A note that reaches maturity converts at a 40% discount against the lab's value (at least double what is owed). Only the player's lab; never issuing one changes nothing.
+- Alternatives: a valuation cap (rejected: a share of the lab is already capped), several notes at once (rejected: that is a list with no new decision).
+
 ## Open
 
 None.

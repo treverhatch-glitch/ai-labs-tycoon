@@ -227,6 +227,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.LeaseUnits == 0 && (lab.LeaseValue != 0 || lab.LeaseRent != 0 || lab.LeaseBuyback != 0 || lab.LeaseLeft != 0 || lab.LeaseMissed != 0 || lab.LeaseExtended != 0))
                     || (lab.LeaseUnits != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has " + lab.LeaseUnits + " GPUs leased back (value " + lab.LeaseValue + ", " + lab.LeaseLeft + " weeks left) in a way the data does not allow");
+                if (lab.NoteOwed < 0 || lab.NotePrincipal < 0 || lab.NoteRate < 0 || lab.NoteDiscount < 0 || lab.NoteDiscount > 1000 || lab.NoteLeft < 0 || lab.NoteExtended < 0 || lab.NoteExtended > 1 || lab.NoteTier < 0 || lab.NoteTier > 3
+                    || (lab.NoteOwed > 0 && (lab.NotePrincipal < 1 || lab.NoteLeft < 1 || lab.NoteTier < 1))
+                    || (lab.NoteOwed == 0 && (lab.NotePrincipal != 0 || lab.NoteRate != 0 || lab.NoteDiscount != 0 || lab.NoteLeft != 0 || lab.NoteExtended != 0 || lab.NoteTier != 0))
+                    || (lab.NoteOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " owes " + lab.NoteOwed + " on a convertible note (tier " + lab.NoteTier + ", " + lab.NoteLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

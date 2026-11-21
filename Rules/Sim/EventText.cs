@@ -407,6 +407,14 @@ namespace AiLabs.Rules.Sim
                     return who + " missed the GPU rent (" + e.SubjectId + " in a row).";
                 case EventKind.LeaseExtended:
                     return who + " extended its GPU lease at a rent of " + e.Amount + ".";
+                case EventKind.NoteIssued:
+                    return who + " issued a convertible note for " + e.Amount + ".";
+                case EventKind.NoteConverted:
+                    return who + "'s convertible note of " + e.Amount + " turned into " + (e.SubjectId / 10) + "." + (e.SubjectId % 10) + "% of the company" + (e.Pick == 2 ? " at maturity." : e.Pick == 1 ? " at the listing." : " in the new round.");
+                case EventKind.NoteRepaid:
+                    return who + " repaid its convertible note with " + e.Amount + ".";
+                case EventKind.NoteExtended:
+                    return who + " extended its convertible note.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -133,7 +133,10 @@ namespace AiLabs.Rules.Sim
         SaleLeaseback,
         BuyBackLease,
         ExtendLease,
-        ReturnLease
+        ReturnLease,
+        IssueNote,
+        RepayNote,
+        ExtendNote
     }
 
     /// <summary>
@@ -1169,6 +1172,27 @@ namespace AiLabs.Rules.Sim
         public static Command ReturnLease(int labId)
         {
             return Make(CommandKind.ReturnLease, labId);
+        }
+
+        /// <summary>Issues a convertible note of tier 1, 2 or 3 (a bigger discount and more interest for less time), for an amount in thousands. One at a time.</summary>
+        public static Command IssueNote(int labId, int tier, int thousands)
+        {
+            Command c = Make(CommandKind.IssueNote, labId);
+            c.Count = thousands;
+            c.TargetId = tier;
+            return c;
+        }
+
+        /// <summary>Repays the note with its interest.</summary>
+        public static Command RepayNote(int labId)
+        {
+            return Make(CommandKind.RepayNote, labId);
+        }
+
+        /// <summary>Extends the note once: more time for a higher rate and a deeper discount.</summary>
+        public static Command ExtendNote(int labId)
+        {
+            return Make(CommandKind.ExtendNote, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
