@@ -18,6 +18,8 @@ public class CapabilityDomainTests
         GameConfig c = TestData.Config();
         Assert.NotNull(c.Market.Domain("language"));
         Assert.NotNull(c.Market.Domain("vision"));
+        Assert.NotNull(c.Market.Domain("enterprise"));
+        Assert.Equal(3, c.Market.CapabilityDomains.Count);
         ConfigValidator.Validate(c);
     }
 
