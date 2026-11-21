@@ -56,7 +56,8 @@ namespace AiLabs.Rules.Systems
 
         public static int ClampedSuccess(ShadyOddsBreakdown b)
         {
-            return (int)MathI.Clamp(b.SuccessPermille, 50, 950);
+            int floor = b.SuccessPermille <= 0 ? 0 : 50;
+            return (int)MathI.Clamp(b.SuccessPermille, floor, 950);
         }
 
         public static int TracePermille(GameConfig c, LabState lab, ShadyCardConfig card)

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 13;
+        public const int CurrentSchema = 14;
 
         public int Schema;
         public string ConfigVersion;
@@ -135,6 +135,10 @@ namespace AiLabs.Rules.State
         public int BoardInvestorSeats;
         /// <summary>Plan-run rivals: how much stock the public holds, in ppm.</summary>
         public int PublicFloatPpm;
+        /// <summary>Player accepted China's infrastructure partnership (cheaper power, more scrutiny).</summary>
+        public bool ChinaDealActive;
+        /// <summary>A state request is waiting for accept or decline.</summary>
+        public bool ChinaDealPending;
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
 
@@ -237,6 +241,8 @@ namespace AiLabs.Rules.State
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.Int("publicFloatPpm", ref PublicFloatPpm);
+            s.Bool("chinaDealActive", ref ChinaDealActive);
+            s.Bool("chinaDealPending", ref ChinaDealPending);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);

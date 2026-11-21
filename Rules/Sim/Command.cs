@@ -13,7 +13,8 @@ namespace AiLabs.Rules.Sim
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
-        SignReservedCompute, QueueGpuPurchase
+        SignReservedCompute, QueueGpuPurchase,
+        AcceptChinaDeal, DeclineChinaDeal
     }
 
     /// <summary>
@@ -330,6 +331,10 @@ namespace AiLabs.Rules.Sim
             c.Count = gpuCount;
             return c;
         }
+
+        public static Command AcceptChinaDeal(int labId) { return Make(CommandKind.AcceptChinaDeal, labId); }
+
+        public static Command DeclineChinaDeal(int labId) { return Make(CommandKind.DeclineChinaDeal, labId); }
 
         public static Command QueueGpuPurchase(int labId, int count, int holdingId)
         {

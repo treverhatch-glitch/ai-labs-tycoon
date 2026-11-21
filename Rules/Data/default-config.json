@@ -1342,7 +1342,14 @@
         ],
         "maxTier": 3
       }
-    ]
+    ],
+    "chinaDeals": {
+      "blocId": "china",
+      "minInstalledKw": 400,
+      "activePowerPermille": 850,
+      "acceptAttention": 120,
+      "declineAttention": 80
+    }
   },
   "research": {
     "pointsPerResearcherWeek": 10,

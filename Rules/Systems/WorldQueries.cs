@@ -196,6 +196,8 @@ namespace AiLabs.Rules.Systems
             bill.PrivateKw = privateUsed;
             bill.GridKw = gridUsed;
             bill.GridCost = (long)gridUsed * site.PowerPricePerKwWeek;
+            if (lab.ChinaDealActive && c.World.ChinaDeals != null && site.BlocId == c.World.ChinaDeals.BlocId)
+                bill.GridCost = MathI.MulPermille(bill.GridCost, c.World.ChinaDeals.ActivePowerPermille);
             bill.PrivateCost = (long)privateUsed * dealPrice;
             long energy = MathI.MulPermille(bill.GridCost + bill.PrivateCost, EffectiveCooling(c, lab, site));
             bill.Cooling = energy - bill.GridCost - bill.PrivateCost;

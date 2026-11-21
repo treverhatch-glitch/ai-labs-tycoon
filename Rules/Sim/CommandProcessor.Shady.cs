@@ -9,7 +9,7 @@ namespace AiLabs.Rules.Sim
     {
         static CommandResult StartShadyOp(GameConfig c, GameState state, LabState lab, Command cmd)
         {
-            if (lab.Id != state.PlayerLabId && (lab.Controller != LabController.Plan || c.Rival(lab.RivalId) == null || c.Rival(lab.RivalId).Plan.ShadyAppetite <= 0))
+            if (lab.Id != state.PlayerLabId)
                 return Fail(CommandError.InvalidArgument, "Only the player's lab may run shady jobs.");
             if (ShadyQueries.IsLocked(lab, state.Tick))
                 return Fail(CommandError.ShadyLocked, lab.Name + " is locked out of shady work.");

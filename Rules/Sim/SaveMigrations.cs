@@ -28,6 +28,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 11) MigrateTo11(root);
             if (fromSchema < 12) MigrateTo12(root);
             if (fromSchema < 13) MigrateTo13(root);
+            if (fromSchema < 14) MigrateTo14(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -263,6 +264,15 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo13(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "publicFloatPpm", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo14(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "chinaDealActive", JsonValue.Of(false));
+                JsonPatch.AddIfMissing(lab, "chinaDealPending", JsonValue.Of(false));
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

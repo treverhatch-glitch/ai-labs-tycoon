@@ -552,6 +552,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
 - Why: bible safety ladder; pairs with corruption incident weight (Q74).
 
+### Q93. Shady depth and China deals? DECIDED: player-only crimes, export stays legal-only
+
+- Options: (a) rivals can run shady cards; (b) only the player runs shady cards; China partnership via accept/decline; smuggle bypasses export only on the shady path.
+- Recommendation and choice: **(b)**. `ShadyChinaLaterTests.cs` at 12 facts; schema 14; real country name China in data; `ClampedSuccess` floor 0 when odds are 0.
+- Why: project-context rule 10 (parody rivals never commit crimes); bible state requests in China.
+
 ### Q92. Rival shares and regulators vs monopoly? DECIDED: public float, IPO loop, scrutiny
 
 - Options: (a) defer until funding shares UI; (b) plan-run `publicFloatPpm`, monthly IPO when bubble hot, regulator attention on dominance and monopoly.

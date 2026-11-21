@@ -406,6 +406,15 @@ namespace AiLabs.Rules.Config
             if (a.DropMargin < 0) p.Add("world.attention.dropMargin is negative");
             if (a.AuditFineRevenueWeeks < 0) p.Add("world.attention.auditFineRevenueWeeks is negative");
 
+            ChinaDealsConfig china = w.ChinaDeals;
+            if (china != null)
+            {
+                if (w.Bloc(china.BlocId) == null) p.Add("world.chinaDeals.blocId names unknown bloc \"" + china.BlocId + "\"");
+                if (china.MinInstalledKw < 0) p.Add("world.chinaDeals.minInstalledKw is negative");
+                Permille(p, "world.chinaDeals.activePowerPermille", china.ActivePowerPermille);
+                if (china.AcceptAttention < 0 || china.DeclineAttention < 0) p.Add("world.chinaDeals attention must be non-negative");
+            }
+
             foreach (ExportRuleConfig rule in w.ExportRules)
             {
                 string who = "exportRule " + rule.Id;

@@ -169,6 +169,7 @@ namespace AiLabs.Rules.Sim
                 BubbleSystem.RunMonth(c, state);
                 ShareSystem.RunMonth(c, state);
                 RegulatorSystem.RunMonth(c, state);
+                if (player != null && !player.Bankrupt) ChinaSystem.RunMonth(c, state, player);
             }
 
             if (GameDate.IsYearEnd(c.Calendar, tick))
