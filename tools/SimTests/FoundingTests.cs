@@ -85,7 +85,7 @@ public class FoundingTests
         AssertProblem(Problems(c => c.Styles[0].OtherAppealPermille = 10), "otherAppealPermille");
         AssertProblem(Problems(c => c.Styles.Add(c.Styles[0])), "styles");
         AssertProblem(Problems(c => c.Founders.Add(c.Founders[0])), "founders");
-        Assert.Empty(Problems(c => { c.Founders.Clear(); c.Styles.Clear(); }));
+        Assert.Empty(Problems(c => { c.Founders.Clear(); c.Styles.Clear(); c.Scenarios.Scenarios.Clear(); }));
     }
 
     [Fact]

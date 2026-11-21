@@ -75,6 +75,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.RushRelease: return RushRelease(c, state, lab, cmd);
                 case CommandKind.Lobby: return Lobby(c, state, lab, cmd);
                 case CommandKind.PivotStyle: return PivotStyle(c, state, lab, cmd);
+                case CommandKind.TakeLoan: return TakeLoan(c, state, lab, cmd);
+                case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);

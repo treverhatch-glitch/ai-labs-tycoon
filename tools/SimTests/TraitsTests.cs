@@ -67,10 +67,10 @@ public class TraitsTests
     // ---- the table
 
     [Fact]
-    public void There_are_nine_traits_and_the_plain_one_does_nothing()
+    public void There_are_twelve_traits_and_the_plain_one_does_nothing()
     {
         StaffPeopleConfig s = TestData.Config().StaffPeople;
-        Assert.Equal(new[] { "steady", "star", "tenx", "doomer", "accelerationist", "mentor", "reads-the-logs", "interviewing", "sleeps-under-desk" }, s.Traits.Select(t => t.Id).ToArray());
+        Assert.Equal(new[] { "steady", "star", "tenx", "doomer", "accelerationist", "mentor", "reads-the-logs", "interviewing", "sleeps-under-desk", "posts-through-it", "quits-by-blog-post", "only-interesting" }, s.Traits.Select(t => t.Id).ToArray());
         StaffTraitConfig steady = s.Trait("steady");
         Assert.Equal(0, steady.ResearchPermille + steady.HirePermille + steady.TrainingSpeedPermille + steady.AlignmentWorkPermille
             + steady.IncidentCatchPermille + steady.MentorPermille + steady.OfferPermille + steady.RestMoraleOffset);
@@ -109,7 +109,7 @@ public class TraitsTests
             Assert.False(string.IsNullOrWhiteSpace(t.Name), t.Id);
             Assert.False(string.IsNullOrWhiteSpace(t.Blurb), t.Id);
         }
-        Assert.Equal(330, s.Traits.Sum(t => t.HirePermille));
+        Assert.Equal(440, s.Traits.Sum(t => t.HirePermille));
     }
 
     [Fact]
@@ -133,8 +133,8 @@ public class TraitsTests
     public void The_validator_keeps_the_star_out_of_the_hire_roll_and_the_roll_under_a_whole()
     {
         AssertProblem(Problems(c => Trait(c, "star").HirePermille = 10), "star trait");
-        AssertProblem(Problems(c => Trait(c, "steady").HirePermille = 700), "hirePermille adds up");
-        Assert.DoesNotContain(Problems(c => Trait(c, "steady").HirePermille = 670), p => p.Contains("adds up"));
+        AssertProblem(Problems(c => Trait(c, "steady").HirePermille = 600), "hirePermille adds up");
+        Assert.DoesNotContain(Problems(c => Trait(c, "steady").HirePermille = 560), p => p.Contains("adds up"));
     }
 
     [Fact]
@@ -541,7 +541,7 @@ public class TraitsTests
         }
         foreach (StaffTraitConfig t in c.StaffPeople.Traits.Where(t => t.HirePermille > 0))
             Assert.InRange(counts[t.Id], n * t.HirePermille / 1000 * 75 / 100, n * t.HirePermille / 1000 * 125 / 100);
-        Assert.InRange(counts["steady"], n * 670 / 1000 * 95 / 100, n * 670 / 1000 * 105 / 100);
+        Assert.InRange(counts["steady"], n * 560 / 1000 * 95 / 100, n * 560 / 1000 * 105 / 100);
         Assert.False(counts.ContainsKey("star"));
     }
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 40;
+        public const int CurrentSchema = 41;
 
         public int Schema;
         public string ConfigVersion;
@@ -188,6 +188,8 @@ namespace AiLabs.Rules.State
         public int PivotUntilTick;
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
+        /// <summary>Loans against the lab's chips that are still being paid back, oldest first.</summary>
+        public List<Loan> Loans = new List<Loan>();
 
         /// <summary>What a rival thinks of the player, -1000 (feud) to 1000 (fan). Always 0 for the player's own lab.</summary>
         public int FeelingToPlayer;
@@ -316,6 +318,7 @@ namespace AiLabs.Rules.State
             s.Str("pivotEraId", ref PivotEraId);
             s.Int("pivotUntilTick", ref PivotUntilTick);
             s.StrList("fundingRounds", ref FundingRounds);
+            s.ObjList("loans", ref Loans);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
             s.Int("boardLockedUntilTick", ref BoardLockedUntilTick);

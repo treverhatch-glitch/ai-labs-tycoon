@@ -13,6 +13,10 @@ namespace AiLabs.Rules.Config
     {
         public string DefaultApproachId = "";
         public string DefaultCheckpointId = "";
+        /// <summary>Each engineer takes this share off a run's weekly failure chance, in permille of the chance (bible ch. 7: engineers mean "fewer failed runs").</summary>
+        public int EngineerSavingPermillePerStaff;
+        /// <summary>The most the engineers can take off, in permille of the chance.</summary>
+        public int EngineerSavingCapPermille;
         public List<ApproachConfig> Approaches = new List<ApproachConfig>();
         public List<CheckpointConfig> Checkpoints = new List<CheckpointConfig>();
 
@@ -32,6 +36,8 @@ namespace AiLabs.Rules.Config
         {
             s.Str("defaultApproachId", ref DefaultApproachId);
             s.Str("defaultCheckpointId", ref DefaultCheckpointId);
+            s.Int("engineerSavingPermillePerStaff", ref EngineerSavingPermillePerStaff);
+            s.Int("engineerSavingCapPermille", ref EngineerSavingCapPermille);
             s.ObjList("approaches", ref Approaches);
             s.ObjList("checkpoints", ref Checkpoints);
         }

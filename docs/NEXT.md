@@ -213,6 +213,18 @@ and says why in the commit message.
 38. **Experimental runs and checkpoints (bible ch. 6 recipe table, "running it").** ~~Done~~: `runs` in the data, `Command.SetRunApproach` / `SetCheckpoints`,
     `TrainingRuns` system (failure hash, loss, weekly cost, capability bonus), `EventKind.TrainingFailed` / `RunSetUp`, save schema 40 (Q267-Q269), `TrainingRunTests`,
     `docs/content/training-runs.md`. Still open: the recipe-screen rows (Unity), other failure causes, rivals trying variants.
+39. **Engineers cut failed runs (bible ch. 7 roles).** ~~Done~~: `runs.engineerSavingPermillePerStaff` / `engineerSavingCapPermille`, `TrainingRuns.EngineerSavingPermille`, failure chance now takes
+    the lab (Q270-Q271), four tests added to `TrainingRunTests`; no schema, golden unchanged.
+40. **Hearing questions (bible ch. 12 hearings).** ~~Done~~: `OfficeTrigger` on office events, `OfficeEvents.OnHearing`, four hearing questions with three answers each in the data
+    (Q272-Q274), `HearingQuestionTests`, `docs/content/hearing-questions.md`; no schema, golden unchanged. Still open: a share-price effect, hearings abroad, questions that depend on the lab's history.
+41. **Staff traits round 2 (bible ch. 7 trait ideas, ch. 14 "leave in protest").** ~~Done~~: `posts-through-it`, `quits-by-blog-post`, `only-interesting` in the data, `Traits.RunQuits`,
+    `EventKind.StaffQuit`, buzz and scandal sums in `TraitReport`, `interestingPermille` in the research sum (Q275-Q277), `MoreTraitsTests`, `docs/content/staff-traits.md`; no schema; golden moved with a verified cause.
+42. **Chip-backed loans (bible ch. 9 funding ladder).** ~~Done~~: `loans` in the data, `Command.TakeLoan` / `RepayLoan`, `Loans` system (room, weekly payments, misses, default and repossession),
+    `Loan` on the lab, `EventKind.LoanTaken` / `LoanRepaid` / `LoanMissed` / `LoanDefaulted`, save schema 41 (Q278-Q280), `LoanTests`, `docs/content/loans.md`. Still open: loans against own chips, a margin call, exit prices that count debt, a screen (Unity).
+43. **The escape-attempt crisis (bible ch. 10 incident ladder, rung 5).** ~~Done~~: `OfficeTrigger.Escape`, `OfficeEventConfig.lapseChoice`, `OfficeEffectKind.Corruption`, `OfficeEvents.OnEscape`,
+    the `escape-attempt` event with three answers (Q281-Q283), `EscapeCrisisTests`, `docs/content/escape-crisis.md`; no schema, golden unchanged. Still open: a real gamble, a rung-6 crisis, one-site shutdowns.
+44. **Scenarios (bible ch. 15 "start as a named archetype in a specific year").** ~~Done~~: `scenarios` in the data (seven named starts), `Scenarios.List` / `Options` / `Start`, the validator (Q284-Q285),
+    `ScenarioTests`, `docs/content/scenarios.md`; no schema, golden unchanged. Still open: starting situations, per-scenario goals, the picker (Unity), the 1956 prologue.
 
 ## Rules: later
 

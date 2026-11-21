@@ -112,6 +112,7 @@ namespace AiLabs.Rules.Systems
             }
             else e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);
             PressSystem.OnBeat(c, state, lab, "incident", repLoss, model.Name);
+            if (rung == 5) OfficeEvents.OnEscape(c, state, lab);
         }
     }
 }

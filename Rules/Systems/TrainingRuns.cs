@@ -17,11 +17,19 @@ namespace AiLabs.Rules.Systems
             return c.Runs.Checkpoint(string.IsNullOrEmpty(model.Checkpoints) ? c.Runs.DefaultCheckpointId : model.Checkpoints);
         }
 
-        /// <summary>The chance, in permille, that the run fails this week.</summary>
-        public static int FailureChancePermille(GameConfig c, ModelState model)
+        /// <summary>The share, in permille, the lab's engineers take off a run's failure chance: so much a head, up to a cap.</summary>
+        public static int EngineerSavingPermille(GameConfig c, LabState lab)
+        {
+            long saving = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Runs.EngineerSavingPermillePerStaff;
+            return (int)MathI.Min(c.Runs.EngineerSavingCapPermille, saving);
+        }
+
+        /// <summary>The chance, in permille, that the run fails this week: the approach's chance less what the engineers save.</summary>
+        public static int FailureChancePermille(GameConfig c, LabState lab, ModelState model)
         {
             ApproachConfig a = ApproachOf(c, model);
-            return a == null ? 0 : a.FailurePermillePerWeek;
+            if (a == null || a.FailurePermillePerWeek <= 0) return 0;
+            return (int)MathI.MulPermille(a.FailurePermillePerWeek, MathI.Permille - EngineerSavingPermille(c, lab));
         }
 
         /// <summary>What a failure would throw away right now, in compute.</summary>
@@ -52,7 +60,7 @@ namespace AiLabs.Rules.Systems
             long cost = WeeklyCost(c, state, lab, model);
             if (cost > 0) Finance.Spend(lab, LedgerLine.Training, MathI.Min(cost, MathI.Max(0, lab.Cash)));
 
-            int chance = FailureChancePermille(c, model);
+            int chance = FailureChancePermille(c, lab, model);
             if (chance <= 0 || (int)(Mix(state, lab, model) % MathI.Permille) >= chance) return;
             CheckpointConfig k = CheckpointOf(c, model);
             long lost = MathI.MulPermille(model.ProgressCompute, k.LossPermille);

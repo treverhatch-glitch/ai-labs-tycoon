@@ -157,6 +157,18 @@ Campaign scoring ([content/campaign.md](content/campaign.md)): every era has thr
 
 Experimental runs ([content/training-runs.md](content/training-runs.md)): while a model trains the player can choose their own architecture variant (8% more capability, a 1.5% weekly chance the run diverges) and how often to checkpoint (a failure loses half the run, or a tenth if you pay to checkpoint often). A run nobody set up never fails. Save schema 40.
 
+Engineers and failed runs ([content/training-runs.md](content/training-runs.md)): each engineer takes 6% off a variant run's weekly failure chance, up to 60%, so a crew makes experiments cheaper without making them safe.
+
+Hearing questions ([content/hearing-questions.md](content/hearing-questions.md)): when the home government holds a hearing, a committee member also asks the player a question (the weapon, jobs, data or pause question) with three answers that trade heat, trust, culture, morale and money. Unanswered, it lapses and changes nothing.
+
+More traits ([content/staff-traits.md](content/staff-traits.md)): three more of the bible's trait ideas. A poster makes launches and scandals louder, a blog-post quitter leaves when morale falls under 300 and costs reputation, and someone who only works on what is interesting does more on variant runs and less otherwise.
+
+Loans against chips ([content/loans.md](content/loans.md)): the player can borrow up to half of what the GPUs they own would fetch, with 8% flat interest over 52 weekly payments. Miss three in a row and the lender takes the best chips. There is no margin call: chips that lose value shrink the room, not the debt. Save schema 41.
+
+The escape attempt ([content/escape-crisis.md](content/escape-crisis.md)): a rung-5 incident on the player's lab poses a crisis with a clock: pull the plug on the data centres (costly, clean), gamble on the sandbox, or watch. Run out the clock and the lab watches.
+
+Scenarios ([content/scenarios.md](content/scenarios.md)): seven named starts (an archetype in a specific year: the Professor's Grant, the Dropout's Deck, the Defector's Lawsuit, the Heir's Gambit, the Dial-Up Prologue, the Quiet Lab, the Two-Horse Race), each a bundle of the era, founder, style, home bloc, names and rivals the new-game options already take.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
