@@ -77,6 +77,22 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.MulPermille(supply, VendorSupplyPermille(c, state));
         }
 
+        public struct VendorSupplyBreakdown
+        {
+            public int Base;
+            public int Scaled;
+            public int FromShortage { get { return Scaled - Base; } }
+        }
+
+        public static VendorSupplyBreakdown VendorSupplyParts(GameConfig c, GameState state, int baseSupply)
+        {
+            return new VendorSupplyBreakdown
+            {
+                Base = baseSupply,
+                Scaled = ScaleVendorSupply(c, state, baseSupply),
+            };
+        }
+
         public static long EffectiveFoundryRoom(GameConfig c, GameState state, ChipNodeConfig node)
         {
             return MathI.MulPermille(c.Chips.FoundryRoom(node), FoundryRoomMulPermille(state));

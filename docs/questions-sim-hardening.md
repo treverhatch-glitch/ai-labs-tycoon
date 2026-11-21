@@ -386,6 +386,30 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
+- Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
+
+### Q132. Peer lease rent breakdown? DECIDED: `PeerComputeQueries.WeeklyRentParts`
+- Choice: **(a)** — spot generation rent, lease permille, shortage bump; sums to `PeerComputeSystem.WeeklyRent`.
+
+### Q131. Audit fine breakdown? DECIDED: `GovernmentQueries.AuditFineParts`
+- Choice: **(a)** — last-week revenue × `auditFineRevenueWeeks`; `GovernmentSystem` audit path uses `AuditFineAmount`.
+
+### Q130. Shady trace odds parts? DECIDED: `ShadyQueries.TracePermilleParts`
+- Choice: **(a)** — card base + heat/5; clamped total matches monthly trace roll.
+
+### Q129. Foundry slot breakdown? DECIDED: `ChipQueries.FoundrySlotParts`
+- Choice: **(a)** — chip count + chiplet foundry premium; total matches `FoundrySlots`.
+
+### Q128. Tape-out respin chance parts? DECIDED: `ChipQueries.RespinChanceParts`
+- Choice: **(a)** — node base minus engineer cut; total matches `RespinChancePermille`.
+
+### Q127. Fab order cost parts? DECIDED: `ChipQueries.OrderCostParts`
+- Choice: **(a)** — wafer base, yield premium, count multiple; sums to `OrderCost`.
+
+### Q126. Chip wafer derive parts? DECIDED: `ChipQueries.WaferDeriveParts`
+- Choice: **(a)** — step deltas sum to `Derive` wafer cost (format excluded from wafer stack).
+
 ### Q125. Fork sibling preview? DECIDED: `ResearchQueries.ForkSiblingsToBlock`
 - Choice: **(a)** — lists fork mates that would be blocked before `ResearchTech` commits; research command applies `ApplyFork`.
 

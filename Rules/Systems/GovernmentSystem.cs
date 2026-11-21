@@ -91,7 +91,7 @@ namespace AiLabs.Rules.Systems
             }
             else if (standing.Level == BlocStanding.Audit)
             {
-                amount = lab.LastWeek.Revenue * a.AuditFineRevenueWeeks;
+                amount = GovernmentQueries.AuditFineAmount(c, lab);
                 Finance.Spend(lab, LedgerLine.Fines, amount);
                 if (lab.Id == state.PlayerLabId) ShadySystem.OnAuditOpen(c, state, lab);
             }

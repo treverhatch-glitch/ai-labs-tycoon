@@ -116,6 +116,95 @@ namespace AiLabs.Rules.Systems
             return b;
         }
 
+        /// <summary>Step deltas that sum to <see cref="Derive"/> wafer cost.</summary>
+        public struct ChipWaferDeriveBreakdown
+        {
+            public long AfterNode;
+            public long FromDie;
+            public long FromMemory;
+            public long FromCooling;
+
+            public long Total { get { return AfterNode + FromDie + FromMemory + FromCooling; } }
+        }
+
+        public static ChipWaferDeriveBreakdown WaferDeriveParts(GameConfig c, string targetId, string nodeId, string dieId, string formatId, string memoryId, string coolingId)
+        {
+            var b = new ChipWaferDeriveBreakdown();
+            ChipsConfig k = c.Chips;
+            ChipTargetConfig target = k.Target(targetId);
+            ChipNodeConfig node = k.Node(nodeId);
+            ChipOptionConfig die = k.Option(ChipOptionGroup.Die, dieId);
+            ChipOptionConfig format = k.Option(ChipOptionGroup.Format, formatId);
+            ChipOptionConfig memory = k.Option(ChipOptionGroup.Memory, memoryId);
+            ChipOptionConfig cooling = k.Option(ChipOptionGroup.Cooling, coolingId);
+            if (target == null || node == null || die == null || format == null || memory == null || cooling == null) return b;
+            long run = node.WaferCostPerChip;
+            b.AfterNode = run;
+            long afterDie = MathI.MulPermille(run, die.CostPermille);
+            b.FromDie = afterDie - run;
+            run = afterDie;
+            long afterMemory = MathI.MulPermille(run, memory.CostPermille);
+            b.FromMemory = afterMemory - run;
+            run = afterMemory;
+            long afterCooling = MathI.MulPermille(run, cooling.CostPermille);
+            b.FromCooling = afterCooling - run;
+            return b;
+        }
+
+        public struct OrderCostBreakdown
+        {
+            public long WaferBase;
+            public long FromYield;
+            public long FromCount;
+
+            public long Total { get { return WaferBase + FromYield + FromCount; } }
+        }
+
+        public static OrderCostBreakdown OrderCostParts(ChipSpec spec, int yieldPermille, int count)
+        {
+            var b = new OrderCostBreakdown();
+            long one = OrderCost(spec, yieldPermille, 1);
+            b.WaferBase = spec.WaferCost;
+            b.FromYield = one - b.WaferBase;
+            b.FromCount = OrderCost(spec, yieldPermille, count) - one;
+            return b;
+        }
+
+        public struct FoundrySlotBreakdown
+        {
+            public int BaseChips;
+            public int FromChiplet;
+            public int Total { get { return BaseChips + FromChiplet; } }
+        }
+
+        public static FoundrySlotBreakdown FoundrySlotParts(GameConfig c, ChipDesign d, int chipCount)
+        {
+            var b = new FoundrySlotBreakdown { BaseChips = chipCount };
+            if (chipCount < 1 || d == null || !IsChipletDesign(c, d)) return b;
+            int slots = FoundrySlots(c, d, chipCount);
+            b.FromChiplet = slots - chipCount;
+            return b;
+        }
+
+        public struct RespinChanceBreakdown
+        {
+            public int FromNode;
+            public int FromEngineers;
+            public int Total;
+        }
+
+        public static RespinChanceBreakdown RespinChanceParts(GameConfig c, LabState lab, ChipNodeConfig node)
+        {
+            var b = new RespinChanceBreakdown();
+            if (node == null) return b;
+            b.FromNode = node.RespinPermille;
+            long engineers = MathI.Min(Engineers(c, lab), c.Chips.RespinEngineerCap);
+            int cut = (int)(engineers * c.Chips.RespinPerEngineerPermille);
+            b.FromEngineers = -cut;
+            b.Total = RespinChancePermille(c, lab, node);
+            return b;
+        }
+
         public static ChipSpec Spec(GameConfig c, ChipDesign d)
         {
             return Derive(c, d.Target, d.NodeId, d.DieId, d.FormatId, d.MemoryId, d.CoolingId);

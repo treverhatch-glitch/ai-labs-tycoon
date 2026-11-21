@@ -59,9 +59,22 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Clamp(b.SuccessPermille, 50, 950);
         }
 
+        public struct TracePermilleBreakdown
+        {
+            public int Base;
+            public int FromHeat;
+            public int Total { get { return Base + FromHeat; } }
+        }
+
+        public static TracePermilleBreakdown TracePermilleParts(GameConfig c, LabState lab, ShadyCardConfig card)
+        {
+            var b = new TracePermilleBreakdown { Base = card.TracePermille, FromHeat = lab.Heat / 5 };
+            return b;
+        }
+
         public static int TracePermille(GameConfig c, LabState lab, ShadyCardConfig card)
         {
-            return (int)MathI.Clamp(card.TracePermille + lab.Heat / 5, 0, 950);
+            return (int)MathI.Clamp(TracePermilleParts(c, lab, card).Total, 0, 950);
         }
 
         public static int PolicyHeatDecay(GameConfig c, LabState lab)
