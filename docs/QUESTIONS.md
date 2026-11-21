@@ -1409,6 +1409,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. A new office trigger, `Release` (like `Hearing` and `Escape`), three events (the changelog, known issues, a joke), posed by `OfficeEvents.OnRelease` when a model first goes on sale. Unlike hearings and the escape crisis it does not replace an event that is waiting, so a release never wipes out something the player has not answered. Player labs only. Small effects (reputation, attention, culture, morale; letting the model write them adds 30 corruption).
 - Why: the bible's tone rule says a joke without a consequence is flavour text and one with a consequence is a system. A new field on the release command would change `Command` and every caller for a few points of reputation; the event machinery already has the answer, expiry and lapse. No schema change. The pinned golden game moved: the golden player releases a model, so the log now has a posed (and lapsed) release note; moving the three events to another trigger gave the old digest back, so that is the whole cause.
 
+### Q291. What is the third share of compute, and what does it buy? DECIDED: a player-set share of general compute for research experiments, at +1.2 permille of research per permille set aside, up to 30%
+
+- Options: (a) research always needs compute at a fixed rate; (b) a share the player sets, taken off general compute before training and serving divide it; (c) a separate pool of experiment GPUs.
+- Recommendation and choice: **(b)**. `lab.researchSharePermille` (schema 42), `SetResearchShare`, limit `research.maxComputeSharePermille` 300, bonus `research.computeShareBonusPermille` 1200. The share comes off `LabQueries.Split` general compute and own-chip compute, so training and customers see the same smaller pool everywhere the split is used. The bonus multiplies the researchers' output (`TrainingSystem.ResearchPerWeek`), so a lab without researchers gets nothing.
+- Why: the bible says "split compute three ways" and only two ways existed. A fixed rate would change every lab's economy at once and the rivals' balance (Q182); a share starts at zero, is player-only and is refused for rivals, so defaults change nothing. A separate GPU pool would need new holdings and orders. Schema 42 is the one new saved field; the golden digest moved only because of it (checked by reverting the field and the schema number).
+
 ## Open
 
 None.

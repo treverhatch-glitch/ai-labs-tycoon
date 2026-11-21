@@ -35,7 +35,8 @@ namespace AiLabs.Rules.Sim
         SetRunApproach,
         SetCheckpoints,
         TakeLoan,
-        RepayLoan
+        RepayLoan,
+        SetResearchShare
     }
 
     /// <summary>
@@ -314,6 +315,14 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.Lobby, labId);
             c.Id = blocId;
             c.Ids.Add(goal);
+            return c;
+        }
+
+        /// <summary>Sets aside this share of general compute for research experiments, in permille.</summary>
+        public static Command SetResearchShare(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetResearchShare, labId);
+            c.Permille = permille;
             return c;
         }
 

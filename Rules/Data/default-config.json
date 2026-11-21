@@ -2258,6 +2258,8 @@
   },
   "research": {
     "pointsPerResearcherWeek": 10,
+    "maxComputeSharePermille": 300,
+    "computeShareBonusPermille": 1200,
     "techs": [
       {
         "id": "state-machines",

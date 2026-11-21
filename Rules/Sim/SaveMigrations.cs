@@ -54,6 +54,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 39) MigrateTo39(root);
             if (fromSchema < 40) MigrateTo40(root);
             if (fromSchema < 41) MigrateTo41(root);
+            if (fromSchema < 42) MigrateTo42(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -403,6 +404,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 42: no lab had set compute aside for research experiments.</summary>
+        static void MigrateTo42(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 41: no lab had borrowed.</summary>

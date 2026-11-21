@@ -508,11 +508,17 @@ namespace AiLabs.Rules.Config
     public sealed class ResearchConfig : ISync
     {
         public int PointsPerResearcherWeek;
+        /// <summary>The most of its general compute a lab may set aside for research experiments (bible ch. 3, "split compute three ways").</summary>
+        public int MaxComputeSharePermille;
+        /// <summary>The research bonus, in permille, for each permille of compute set aside: 1200 turns a 10% share into +12% research.</summary>
+        public int ComputeShareBonusPermille;
         public List<TechConfig> Techs;
 
         public void Sync(Syncer s)
         {
             s.Int("pointsPerResearcherWeek", ref PointsPerResearcherWeek);
+            s.Int("maxComputeSharePermille", ref MaxComputeSharePermille);
+            s.Int("computeShareBonusPermille", ref ComputeShareBonusPermille);
             s.ObjList("techs", ref Techs);
         }
     }

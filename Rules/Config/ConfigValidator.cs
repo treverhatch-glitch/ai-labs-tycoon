@@ -109,6 +109,8 @@ namespace AiLabs.Rules.Config
             WorldProblems(p, c);
 
             if (c.Research.PointsPerResearcherWeek < 0) p.Add("research.pointsPerResearcherWeek is negative");
+            Permille(p, "research.maxComputeSharePermille", c.Research.MaxComputeSharePermille);
+            if (c.Research.ComputeShareBonusPermille < 0) p.Add("research.computeShareBonusPermille is negative");
             foreach (TechConfig tech in c.Research.Techs)
             {
                 if (tech.Cost < 0) p.Add("tech " + tech.Id + " has a negative cost");

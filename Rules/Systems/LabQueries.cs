@@ -239,6 +239,12 @@ namespace AiLabs.Rules.Systems
                     split.Inference += part;
                 }
             }
+            if (lab.ResearchSharePermille > 0)
+            {
+                int keep = MathI.Permille - (int)MathI.Clamp(lab.ResearchSharePermille, 0, c.Research.MaxComputeSharePermille);
+                split.General = MathI.MulPermille(split.General, keep);
+                split.OwnChips = MathI.MulPermille(split.OwnChips, keep);
+            }
             return split;
         }
 

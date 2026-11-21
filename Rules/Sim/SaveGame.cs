@@ -87,6 +87,7 @@ namespace AiLabs.Rules.Sim
                 for (int k = 0; k < i; k++) if (state.Labs[k].Id == lab.Id) p.Add("two labs share the id " + lab.Id);
                 if (c.Lot(lab.LotId) == null) p.Add(who + " stands on the unknown lot \"" + lab.LotId + "\"");
                 if (lab.Controller == LabController.Plan && c.Rival(lab.RivalId) == null) p.Add(who + " follows the unknown rival plan \"" + lab.RivalId + "\"");
+                if (lab.ResearchSharePermille < 0 || lab.ResearchSharePermille > c.Research.MaxComputeSharePermille) p.Add(who + " has " + lab.ResearchSharePermille + " permille of compute set aside for research");
                 foreach (Loan loan in lab.Loans)
                     if (loan.Balance <= 0 || loan.Payment <= 0 || loan.Misses < 0) p.Add(who + " has a loan (" + loan.Id + ") with nothing owed, no payment or a negative miss count");
                 foreach (RoomState room in lab.Rooms) if (c.RoomType(room.TypeId) == null) p.Add(who + " has a room of the unknown type \"" + room.TypeId + "\"");
