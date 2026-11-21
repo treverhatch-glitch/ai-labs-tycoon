@@ -13,11 +13,12 @@ public class MuseumSalvageResearchTests
 {
     static void AddRetired(Game g, string line, int capability, int version)
     {
+        int when = g.State.Tick - 10_000 + version * 10;
         g.Me.Models.Add(new ModelState
         {
             Id = g.State.TakeId(), LineId = line, Version = version, Name = "v" + version,
             Status = ModelStatus.Retired, Capability = capability, CapBase = capability,
-            StartedTick = g.State.Tick - version * 10,
+            StartedTick = when, TrainedTick = when, ReleasedTick = when,
         });
     }
 

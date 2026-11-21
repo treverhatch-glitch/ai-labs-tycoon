@@ -267,3 +267,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) deterministic fail at low alignment only; (b) weekly permille risk from data source, engineers and alignment share; (c) auto-refund prep cash.
 - Choice: **(b)** — `TrainingSystem.RunWeek` rolls after `failAfterProgressPermille`; `ModelStatus.Failed`, `TrainingFailed` event, `ScrapFailedRun` command removes the wreck; schema **17**.
 - Why: DESIGN training row (failed runs); not recipes yet; avoids era talent/press and rules-forward bubble/shady depth.
+
+### Q46. Training recipes? DECIDED: named presets via `StartTrainingRecipe`
+
+- Options: (a) player macros only (UI); (b) config `training.recipes` with line, data source, alignment share, compute permille; (c) rival-only presets.
+- Choice: **(b)** — `CommandKind.StartTrainingRecipe`; six presets in `default-config.json`; stamps `ModelState.recipeId`; schema **18**; plan labs keep `StartTraining`.
+- Why: DESIGN training row (recipes); pairs Q11 data sources; no new risk track beyond existing finish/fail dice.
+
+### Q47. Scrape and rival-distill data sources? DECIDED: era-gated mixes + distill target lab
+
+- Options: (a) scrape only; (b) distill without rival pick; (c) `scrape` (1999) and `distill-rival` (2004) with `SetDistillTarget` and `DistillTargetRequired` gate.
+- Choice: **(c)** — `TrainingQueries.SourceUsable` + `distillMinLeadPermille`; rival recipe `rival-distill`; events `DistillTargetSet`; save fields `distillTargetLabId`, `distillSourceLabId`.
+- Why: completes data-source ladder before rules-forward talent; crosses open-weights blocks on risky mixes (Q38) without shady jobs.
