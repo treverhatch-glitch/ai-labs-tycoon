@@ -131,6 +131,7 @@ namespace AiLabs.Rules.Config
             NotesProblems(p, c);
             DevicesProblems(p, c);
             PlatformsProblems(p, c);
+            CreedProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1482,6 +1483,18 @@ namespace AiLabs.Rules.Config
             if (k.CutA < 0 || k.CutB < 0 || k.CutC < 0 || k.MaxCut < k.CutA || k.MaxCut < k.CutB || k.MaxCut < k.CutC || k.MaxCut > 950) p.Add("platforms.cutA, cutB and cutC must not be negative and no more than maxCut, which is at most 950");
             if (k.TermWeeks < 2 || k.WindowWeeks < 1 || k.WindowWeeks >= k.TermWeeks) p.Add("platforms.termWeeks must be at least 2 and windowWeeks at least 1 and under termWeeks");
             if (k.RelianceStep < 0 || k.RelianceStep > MathI.Permille || k.HoldupBar < 0 || k.HoldupBar > MathI.Permille || k.HoldupCut < 0 || k.RenewCutStep < 0 || k.WalkReputation < 0 || k.WalkReputation > 500) p.Add("platforms.relianceStep and holdupBar must be from 0 to 1000, holdupCut and renewCutStep not negative and walkReputation from 0 to 500");
+        }
+
+        static void CreedProblems(List<string> p, GameConfig c)
+        {
+            CreedConfig k = c.Creed;
+            if (k == null) { p.Add("creed is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("creed.enabled must be 0 or 1");
+            if (k.KeptPoints < 0 || k.BrokenPoints < 0 || k.KeptPoints > MathI.Permille || k.BrokenPoints > MathI.Permille) p.Add("creed.keptPoints and brokenPoints must be from 0 to 1000");
+            if (k.StartIntegrity < 0 || k.StartIntegrity > MathI.Permille || k.FlipIntegrity < 0 || k.FlipIntegrity > MathI.Permille || k.OwnUpRestore < 0 || k.OwnUpRestore > MathI.Permille || k.FlipLockWeeks < 0) p.Add("creed.startIntegrity, flipIntegrity and ownUpRestore must be from 0 to 1000 and flipLockWeeks not negative");
+            if (k.LowBar < 0 || k.HighBar > MathI.Permille || k.LowBar + k.Gap >= k.HighBar - k.Gap || k.Gap < 0) p.Add("creed.lowBar must be under highBar by more than twice gap, and highBar at most 1000");
+            if (k.HighReputation < 0 || k.LowReputation < 0 || k.OwnUpReputation < 0 || k.HighReputation > 500 || k.LowReputation > 500 || k.OwnUpReputation > 500 || k.HighMorale < 0 || k.LowMorale < 0 || k.HighMorale > MathI.Permille || k.LowMorale > MathI.Permille) p.Add("creed.highReputation, lowReputation and ownUpReputation must be from 0 to 500 and highMorale and lowMorale from 0 to 1000");
+            if (k.TownCost < 0 || k.TownGain < 0 || k.TownGain > MathI.Permille || k.TownCooldown < 0) p.Add("creed.townCost, townGain and townCooldown must not be negative and townGain at most 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

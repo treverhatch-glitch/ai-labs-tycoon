@@ -431,6 +431,16 @@ namespace AiLabs.Rules.Sim
                     return who + " renewed its distribution deal at a " + e.Amount / 10 + "% cut.";
                 case EventKind.PlatformEnded:
                     return who + (e.Pick == 1 ? "'s distribution deal ran out." : " walked from its distribution deal.");
+                case EventKind.CreedSet:
+                    return who + " put its values in writing.";
+                case EventKind.TownHallHeld:
+                    return who + " held a town hall on its values.";
+                case EventKind.CreedOwnedUp:
+                    return who + " told its staff it had not lived up to its values.";
+                case EventKind.CreedHollow:
+                    return who + "'s staff now laugh at its values.";
+                case EventKind.CreedProud:
+                    return who + " is held up as a lab that lives its values.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -6118,6 +6118,26 @@
     "maxCut": 800,
     "walkReputation": 120
   },
+  "creed": {
+    "enabled": 1,
+    "keptPoints": 15,
+    "brokenPoints": 60,
+    "startIntegrity": 500,
+    "flipIntegrity": 300,
+    "flipLockWeeks": 48,
+    "highBar": 800,
+    "lowBar": 300,
+    "gap": 100,
+    "highReputation": 20,
+    "highMorale": 60,
+    "lowReputation": 40,
+    "lowMorale": 100,
+    "townCost": 100000,
+    "townGain": 80,
+    "townCooldown": 12,
+    "ownUpReputation": 30,
+    "ownUpRestore": 500
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

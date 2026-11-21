@@ -242,6 +242,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.PlatPlat == 0 && (lab.PlatLeft != 0 || lab.PlatCut != 0 || lab.PlatRenewals != 0 || lab.PlatReliance != 0 || lab.PlatHoldup != 0 || lab.PlatPaid != 0 || lab.PlatKept != 0))
                     || (lab.PlatPlat != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a deal with platform " + lab.PlatPlat + " (" + lab.PlatLeft + " weeks left, cut " + lab.PlatCut + ") in a way the data does not allow");
+                if (lab.CreedA < 0 || lab.CreedA > 5 || lab.CreedB < 0 || lab.CreedB > 5 || lab.CreedIntegrity < 0 || lab.CreedIntegrity > MathI.Permille || lab.CreedBand < 0 || lab.CreedBand > 2 || lab.CreedLock < 0 || lab.CreedTown < 0 || lab.CreedKept < 0 || lab.CreedBroken < 0
+                    || (lab.CreedA > 0 && (lab.CreedB < 1 || lab.CreedB == lab.CreedA))
+                    || (lab.CreedA == 0 && (lab.CreedB != 0 || lab.CreedIntegrity != 0 || lab.CreedBand != 0 || lab.CreedLock != 0 || lab.CreedTown != 0 || lab.CreedKept != 0 || lab.CreedBroken != 0))
+                    || (lab.CreedA != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a creed of " + lab.CreedA + " and " + lab.CreedB + " (integrity " + lab.CreedIntegrity + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 96;
+        public const int CurrentSchema = 97;
 
         public int Schema;
         public string ConfigVersion;
@@ -407,6 +407,16 @@ namespace AiLabs.Rules.State
         public int PlatHoldup;
         public long PlatPaid;
         public long PlatKept;
+        /// <summary>The two values the lab states (1 safety, 2 speed, 3 openness, 4 people, 5 profit; 0 none), how much of them it lives up to (permille) and the band that puts it in (0 neither, 1 held up, 2 a joke).</summary>
+        public int CreedA;
+        public int CreedB;
+        public int CreedIntegrity;
+        public int CreedBand;
+        /// <summary>Weeks before the creed can be changed, weeks before another town hall or owning up, and how many acts have kept it and broken it.</summary>
+        public int CreedLock;
+        public int CreedTown;
+        public long CreedKept;
+        public long CreedBroken;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -770,6 +780,14 @@ namespace AiLabs.Rules.State
             s.Int("platHoldup", ref PlatHoldup);
             s.Long("platPaid", ref PlatPaid);
             s.Long("platKept", ref PlatKept);
+            s.Int("creedA", ref CreedA);
+            s.Int("creedB", ref CreedB);
+            s.Int("creedIntegrity", ref CreedIntegrity);
+            s.Int("creedBand", ref CreedBand);
+            s.Int("creedLock", ref CreedLock);
+            s.Int("creedTown", ref CreedTown);
+            s.Long("creedKept", ref CreedKept);
+            s.Long("creedBroken", ref CreedBroken);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

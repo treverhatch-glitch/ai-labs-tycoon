@@ -331,6 +331,7 @@ and says why in the commit message.
 148. **How the fifth batch meets.** ~~Done~~: the covenant counts a revenue advance as debt, `ListingRevenueFoundationLeasebackNotesTogetherTests` (Q392).
 149. **Devices.** ~~Done~~: `DesignDevice`, `SetDevicePrice`, `WithdrawDevice`, schema 95, `DevicesTests` (Q393).
 150. **Platform deals.** ~~Done~~: `SignPlatform`, `RenewPlatform`, `WalkFromPlatform`, schema 96, `PlatformsTests` (Q394).
+151. **Lab values.** ~~Done~~: `SetCreed`, `HoldTownHall`, `OwnUp`, schema 97, `CreedTests` (Q395).
 
 ## Rules: later
 

@@ -412,7 +412,17 @@ namespace AiLabs.Rules.State
         /// <summary>The lab renewed a deal. Amount is the cut, SubjectId the platform.</summary>
         PlatformRenewed,
         /// <summary>A deal ended. Amount is the reputation lost, SubjectId the platform, Pick 0 the lab walked, 1 the term ran out.</summary>
-        PlatformEnded
+        PlatformEnded,
+        /// <summary>The lab stated its values. Amount is the integrity it starts at, SubjectId is first times ten plus second.</summary>
+        CreedSet,
+        /// <summary>The lab held a town hall. Amount is the integrity after.</summary>
+        TownHallHeld,
+        /// <summary>The lab owned up. Amount is the reputation it cost.</summary>
+        CreedOwnedUp,
+        /// <summary>The lab's integrity fell far enough for the creed to be a joke. Amount is the reputation lost.</summary>
+        CreedHollow,
+        /// <summary>The lab's integrity rose far enough for it to be held up as an example. Amount is the reputation earned.</summary>
+        CreedProud
     }
 
     /// <summary>

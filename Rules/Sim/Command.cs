@@ -142,7 +142,10 @@ namespace AiLabs.Rules.Sim
         WithdrawDevice,
         SignPlatform,
         RenewPlatform,
-        WalkFromPlatform
+        WalkFromPlatform,
+        SetCreed,
+        HoldTownHall,
+        OwnUp
     }
 
     /// <summary>
@@ -1242,6 +1245,27 @@ namespace AiLabs.Rules.Sim
         public static Command WalkFromPlatform(int labId)
         {
             return Make(CommandKind.WalkFromPlatform, labId);
+        }
+
+        /// <summary>States the lab's values: two of 1 safety, 2 speed, 3 openness, 4 people, 5 profit. Changing them later starts from distrust.</summary>
+        public static Command SetCreed(int labId, int first, int second)
+        {
+            Command c = Make(CommandKind.SetCreed, labId);
+            c.TargetId = first;
+            c.Count = second;
+            return c;
+        }
+
+        /// <summary>Holds a town hall on the values, which lifts integrity. Not while the creed is a joke.</summary>
+        public static Command HoldTownHall(int labId)
+        {
+            return Make(CommandKind.HoldTownHall, labId);
+        }
+
+        /// <summary>Admits to the staff that the lab has not lived up to its values. Costs reputation, brings integrity back.</summary>
+        public static Command OwnUp(int labId)
+        {
+            return Make(CommandKind.OwnUp, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

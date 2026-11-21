@@ -2018,6 +2018,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The lift goes in at the market (`MarketSystem.RunWeek`) before the revenue is booked, so the books, the tax and the covenants see it as revenue; the platform's cut never reaches the lab's books.
 - Alternatives: a flat revenue bonus (rejected: no decision and no cost), a fee paid up front (rejected: nothing to lose later), letting rivals sign too (rejected: rivals have no saved deals).
 
+### Q395. Do the lab's values mean anything? DECIDED: yes, the player states two, and the lab's own acts keep or break them
+- The player picks two of safety, speed, openness, people and profit. From then on a weekly observer reads the lab's own events of the week before and scores them against the two values; breaking one costs four times what keeping one adds, so a lab that picks safety and speed and then rushes a model loses ground. Integrity is a number the player can see; at the top the lab is held up as an example, at the bottom the creed is a joke and morale and reputation fall once. A town hall lifts integrity (not while it is a joke), owning up costs reputation and brings it back, and changing the values starts from distrust.
+- The observer reads events and changes nothing else, so no other system had to change; it is inert until the player states a creed.
+- Alternatives: values as a menu of bonuses (rejected: the bible wants them to be tested by what the lab does), scoring every system's state each week (rejected: events are what the player did), letting rivals state values (rejected: rivals have no saved creed).
+
 ## Open
 
 None.

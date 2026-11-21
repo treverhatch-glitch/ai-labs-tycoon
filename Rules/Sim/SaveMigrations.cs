@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 94) MigrateTo94(root);
             if (fromSchema < 95) MigrateTo95(root);
             if (fromSchema < 96) MigrateTo96(root);
+            if (fromSchema < 97) MigrateTo97(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -472,6 +473,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 97: no lab has stated its values.</summary>
+        static void MigrateTo97(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "creedA", "creedB", "creedIntegrity", "creedBand", "creedLock", "creedTown", "creedKept", "creedBroken" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
