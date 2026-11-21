@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.FollowLead: return FollowLead(c, state, lab, cmd);
                 case CommandKind.RushRelease: return RushRelease(c, state, lab, cmd);
                 case CommandKind.Lobby: return Lobby(c, state, lab, cmd);
+                case CommandKind.PivotStyle: return PivotStyle(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
                 case CommandKind.SetTrainingObjective: return SetTrainingObjective(c, state, lab, cmd);
                 case CommandKind.AnswerOfficeEvent: return AnswerOfficeEvent(c, state, lab, cmd);

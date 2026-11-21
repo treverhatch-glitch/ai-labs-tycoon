@@ -151,6 +151,8 @@ The news ticker ([content/news-ticker.md](content/news-ticker.md)) is the world'
 
 Lobbying ([content/lobbying.md](content/lobbying.md)): pay weeks of running costs for a quiet word that takes attention off, or a subsidy push that might win a grant, once per government every half-year; policy staff make it safer, and a backfire adds attention and costs reputation. Save schema 37.
 
+Pivoting ([content/pivot.md](content/pivot.md)): once per era the player can change what the lab is good at; it costs eight weeks of running costs and 15% of the staff, and every model sells 12% worse for a year. Save schema 38.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

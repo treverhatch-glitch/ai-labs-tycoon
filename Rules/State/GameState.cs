@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 37;
+        public const int CurrentSchema = 38;
 
         public int Schema;
         public string ConfigVersion;
@@ -181,6 +181,10 @@ namespace AiLabs.Rules.State
         public List<Complaint> Complaints = new List<Complaint>();
         /// <summary>How the player chose to be good at the start (a style id), or empty for none.</summary>
         public string StyleId = "";
+        /// <summary>The era (an era id) the lab last changed its style in, or empty. A lab can pivot once per era.</summary>
+        public string PivotEraId = "";
+        /// <summary>Customers are confused by the last pivot until this tick.</summary>
+        public int PivotUntilTick;
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
 
@@ -307,6 +311,8 @@ namespace AiLabs.Rules.State
             s.ObjList("sectorTrust", ref SectorTrust);
             s.ObjList("complaints", ref Complaints);
             s.Str("styleId", ref StyleId);
+            s.Str("pivotEraId", ref PivotEraId);
+            s.Int("pivotUntilTick", ref PivotUntilTick);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);

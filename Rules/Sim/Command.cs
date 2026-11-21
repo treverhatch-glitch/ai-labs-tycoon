@@ -30,7 +30,8 @@ namespace AiLabs.Rules.Sim
         SetTrainingObjective,
         DesignWithModel,
         RushRelease,
-        Lobby
+        Lobby,
+        PivotStyle
     }
 
     /// <summary>
@@ -312,6 +313,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
+        public static Command PivotStyle(int labId, string styleId)
+        {
+            Command c = Make(CommandKind.PivotStyle, labId);
+            c.Id = styleId;
+            return c;
+        }
+
         public static Command ResearchFrontier(int labId)
         {
             return Make(CommandKind.ResearchFrontier, labId);
@@ -531,7 +540,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent
     }
 
     public struct CommandResult

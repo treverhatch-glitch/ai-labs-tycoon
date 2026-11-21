@@ -198,6 +198,10 @@ and says why in the commit message.
     `EventKind.Lobbied`, save schema 37 (`lobbyUntilTick` per standing; Q258-Q259), `LobbyingTests`, `docs/content/lobbying.md`. Still open: choosing which law a
     government writes next, the lobby screen (Unity).
 
+35. **Speciality pivot (bible ch. 3, ch. 5).** ~~Done~~: `pivot` in the data, `Command.PivotStyle` (once per era; staff leave, money, a year of confused customers), `Pivot`
+    system, `PivotConfusion` line in the appeal breakdown, `EventKind.StylePivoted`, save schema 38 (Q260-Q261), `PivotTests`, `docs/content/pivot.md`. Still open: the pivot
+    screen (Unity), what a pivot does to the founder's edge.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

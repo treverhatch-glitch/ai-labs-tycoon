@@ -78,6 +78,7 @@ namespace AiLabs.Rules.Config
             SuccessorProblems(p, c);
             RushProblems(p, c);
             LobbyProblems(p, c);
+            PivotProblems(p, c);
             NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
@@ -550,6 +551,17 @@ namespace AiLabs.Rules.Config
                 if (end < 0) break;
                 at = end + 1;
             }
+        }
+
+        static void PivotProblems(List<string> p, GameConfig c)
+        {
+            PivotConfig v = c.Pivot;
+            if (v == null) { p.Add("pivot is missing"); return; }
+            if (v.MinWeekCost < 0) p.Add("pivot.minWeekCost must be non-negative");
+            if (v.CostWeeks < 1 || v.CostWeeks > 520) p.Add("pivot.costWeeks must be from 1 to 520");
+            if (v.StaffLossPermille < 0 || v.StaffLossPermille > MathI.Permille) p.Add("pivot.staffLossPermille must be from 0 to 1000");
+            if (v.ConfusionWeeks < 1 || v.ConfusionWeeks > 520) p.Add("pivot.confusionWeeks must be from 1 to 520");
+            if (v.ConfusionAppealPermille < 0 || v.ConfusionAppealPermille >= MathI.Permille) p.Add("pivot.confusionAppealPermille must be from 0 to 999");
         }
 
         static void LobbyProblems(List<string> p, GameConfig c)

@@ -85,6 +85,12 @@ namespace AiLabs.Rules.Sim
                         if (parts[2] == "missed") return who + " lobbied " + bloc.Name + " for " + aim + ". Nothing came of it.";
                         return who + " lobbied " + bloc.Name + " and got " + aim + ".";
                     }
+                case EventKind.StylePivoted:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        StyleConfig to = parts.Length == 2 ? c.Style(parts[1]) : null;
+                        return who + " pivoted to " + (to == null ? "a new style" : to.Name) + ". " + e.SubjectId + (e.SubjectId == 1 ? " person" : " people") + " left.";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

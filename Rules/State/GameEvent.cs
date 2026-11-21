@@ -108,7 +108,9 @@ namespace AiLabs.Rules.State
         /// <summary>A model was put on sale with some testing skipped. SubjectId is the model, Amount the weeks skipped, Ref its name.</summary>
         ModelRushed,
         /// <summary>The player lobbied a government. Amount is what it cost, Ref is "bloc|goal|result" (result: landed, missed or backfired).</summary>
-        Lobbied
+        Lobbied,
+        /// <summary>The lab changed its style. SubjectId is how many people left, Amount what it cost, Ref "from|to" style ids (from is empty for none).</summary>
+        StylePivoted
     }
 
     /// <summary>

@@ -5998,6 +5998,13 @@
     "backfireAttention": 200,
     "backfireReputation": 40
   },
+  "pivot": {
+    "minWeekCost": 1000,
+    "costWeeks": 8,
+    "staffLossPermille": 150,
+    "confusionWeeks": 52,
+    "confusionAppealPermille": 120
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,
@@ -6332,6 +6339,15 @@
       "pick": -1,
       "about": "lab",
       "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory."
+    },
+      {
+      "id": "style-pivoted",
+      "kind": "StylePivoted",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box."
     },
       {
       "id": "room-refurbished",

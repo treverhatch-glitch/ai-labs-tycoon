@@ -1249,6 +1249,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `lobbyUntilTick` on every `BlocStanding` (`MigrateTo37` sets 0).
 - Why: the bible lets labs work every government, and one cooldown for all would make lobbying a once-a-year button. The golden moved because every standing carries the field; with the sync line, the schema number and the data removed, the previous golden returned exactly.
 
+### Q260. What does a pivot cost? DECIDED: 8 weeks of running the lab, 15% of the staff (the unhappiest first), and -12% appeal for a year
+- Options: (a) money only; (b) money, people and a year of confused customers; (c) also drop the lab's reputation.
+- Recommendation and choice: **(b)**. `costWeeks` 8, `staffLossPermille` 150 (rounded down, at least one), `confusionAppealPermille` 120 for `confusionWeeks` 52. The leavers are the lowest morale, ties to the earlier hire, so the result is the same every time.
+- Why: the bible names exactly two costs, "loses some staff" and "confuses customers for a year", and money is the tycoon's price for anything. The confusion is a line of its own in the appeal breakdown, so the player can see what the pivot is costing. Reputation is left alone: the staff and customers are already paying. Choosing who leaves by morale avoids a die and gives a reason to keep the staff happy before a pivot.
+
+### Q261. How often, and what is saved? DECIDED: once per era, `pivotEraId` and `pivotUntilTick` on the lab (schema 38); the golden moved with a verified cause
+- Options: (a) once per game; (b) once per era, stored as the era's id; (c) a cooldown in weeks.
+- Recommendation and choice: **(b)**. The lab stores the era id of its last pivot and the tick its customers stop being confused (`MigrateTo38` sets empty and 0).
+- Why: the bible says once per era, and the era id is the thing the data already names. A cooldown in weeks would let two pivots straddle an era boundary and none in a long era. The golden moved because every lab carries the two fields; with the sync lines, the schema number and the data removed the previous golden returned exactly.
+
 ## Open
 
 None.

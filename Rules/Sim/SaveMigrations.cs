@@ -50,6 +50,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 35) MigrateTo35(root);
             if (fromSchema < 36) MigrateTo36(root);
             if (fromSchema < 37) MigrateTo37(root);
+            if (fromSchema < 38) MigrateTo38(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -399,6 +400,16 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 38: no lab had pivoted.</summary>
+        static void MigrateTo38(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
+            });
         }
 
         /// <summary>Schema 37: no government had been lobbied.</summary>
