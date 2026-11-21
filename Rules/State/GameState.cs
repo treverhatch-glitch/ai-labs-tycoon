@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 82;
+        public const int CurrentSchema = 83;
 
         public int Schema;
         public string ConfigVersion;
@@ -290,6 +290,11 @@ namespace AiLabs.Rules.State
         public int OfferDue;
         public int OfferSeq;
         public int ContractNext;
+        /// <summary>The lab's charter (0 for-profit, 1 capped-profit, 2 nonprofit), the charter under review (0 none, otherwise the form plus one), the week the review ends and what investors have taken so far under a cap.</summary>
+        public int Charter;
+        public int CharterTo;
+        public int CharterDue;
+        public long CapPaid;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -559,6 +564,10 @@ namespace AiLabs.Rules.State
             s.Int("offerDue", ref OfferDue);
             s.Int("offerSeq", ref OfferSeq);
             s.Int("contractNext", ref ContractNext);
+            s.Int("charter", ref Charter);
+            s.Int("charterTo", ref CharterTo);
+            s.Int("charterDue", ref CharterDue);
+            s.Long("capPaid", ref CapPaid);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

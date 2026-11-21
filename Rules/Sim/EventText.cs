@@ -321,6 +321,12 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " was paid " + e.Amount + " on its government contract." : who + " missed an instalment on its government contract.";
                 case EventKind.ContractEnded:
                     return e.Pick == 1 ? who + " completed its government contract." : e.Pick == 0 ? who + " lost its government contract after missed instalments and paid " + e.Amount + "." : e.Pick == 2 ? who + " lost its government contract to a leak and paid " + e.Amount + "." : who + " walked away from its government contract and paid " + e.Amount + ".";
+                case EventKind.CharterReviewStarted:
+                    return who + " applied to become " + Charter.Describe(e.Pick) + ".";
+                case EventKind.CharterReviewDropped:
+                    return who + " dropped its plan to become " + Charter.Describe(e.Pick) + ".";
+                case EventKind.CharterChanged:
+                    return who + " is now " + Charter.Describe(e.Pick) + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

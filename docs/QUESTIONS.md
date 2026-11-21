@@ -1916,6 +1916,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Security (Q372) gates the contract and a leaked breach ends a cleared one at once; the support desk (Q366) takes fewer engineers while a contract is in force; sabbaticals (Q367) are refused for the contract's engineers. No random numbers; only the player's lab.
 - Alternatives: contracts whenever the player asks (rejected: no waiting, no choice of timing), pay up front (rejected: nothing to lose by walking away).
 
+### Q374. Can the lab change what kind of company it is? DECIDED: a charter (for-profit, capped-profit, nonprofit) with a reviewed, fee-paid change
+- New `charter` data, commands `ConvertCharter` and `CancelCharterChange`, `Charter` system, events `CharterReviewStarted`, `CharterReviewDropped` and `CharterChanged` and four saved lab fields (schema 83). Every lab starts for-profit. A for-profit raises funding in full and gets research grants as they are; a capped-profit raises 70% of a round, gets grants at 120% and pays investors 15% of each good week until 400,000 has gone; a nonprofit cannot raise funding, gets grants at 180% and 20 a week for each point of prestige in donations. A change costs 40,000 now and is reviewed for 26 weeks (it can be dropped; the fee stays spent). Turning a nonprofit for-profit costs every person 200 morale and draws a challenge on the litigation docket (claim 250,000, strength 650); becoming a nonprofit gives everyone 100.
+- Reads funding (the raise and the command), research grants (the award and the clawback), prestige, morale and the litigation docket (Q371); no random numbers; only the player's lab.
+- Alternatives: a choice at founding only (rejected: no later decision), nonprofits that can still raise (rejected: the form would only be a label).
+
 ## Open
 
 None.

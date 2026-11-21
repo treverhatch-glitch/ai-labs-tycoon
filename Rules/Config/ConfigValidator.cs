@@ -117,6 +117,7 @@ namespace AiLabs.Rules.Config
             LitigationProblems(p, c);
             SecurityProblems(p, c);
             GovContractsProblems(p, c);
+            CharterProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1279,6 +1280,21 @@ namespace AiLabs.Rules.Config
                 if (kind.Morale < 0 || kind.Morale > MathI.Permille) p.Add(who + " has a morale cost from 0 to 1000");
                 if (kind.AcceptReputation < -500 || kind.AcceptReputation > 500 || kind.DoneReputation < 0 || kind.DoneReputation > 500) p.Add(who + " has a reputation outside the allowed range");
             }
+        }
+
+        static void CharterProblems(List<string> p, GameConfig c)
+        {
+            CharterConfig k = c.Charter;
+            if (k == null) { p.Add("charter is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("charter.enabled must be 0 or 1");
+            if (k.ReviewWeeks < 1 || k.ReviewWeeks > 104) p.Add("charter.reviewWeeks must be from 1 to 104");
+            if (k.ConvertFee < 0 || k.CapAmount < 1 || k.ChallengeClaim < 1) p.Add("charter.convertFee must not be negative and capAmount and challengeClaim must be at least 1");
+            if (k.CappedFundingPermille < 1 || k.CappedFundingPermille > MathI.Permille) p.Add("charter.cappedFundingPermille must be from 1 to 1000");
+            if (k.ForProfitGrantPermille < 0 || k.CappedGrantPermille < 0 || k.NonprofitGrantPermille < 0 || k.ForProfitGrantPermille > 5000 || k.CappedGrantPermille > 5000 || k.NonprofitGrantPermille > 5000) p.Add("charter grant shares must be from 0 to 5000");
+            if (k.DonationPerPrestige < 0 || k.DonationPerPrestige > 100000) p.Add("charter.donationPerPrestige must be from 0 to 100000");
+            if (k.DistributionPermille < 0 || k.DistributionPermille > MathI.Permille) p.Add("charter.distributionPermille must be from 0 to 1000");
+            if (k.ChallengeStrength < 1 || k.ChallengeStrength > MathI.Permille) p.Add("charter.challengeStrength must be from 1 to 1000");
+            if (k.ProfitMorale < 0 || k.ProfitMorale > MathI.Permille || k.MissionMorale < 0 || k.MissionMorale > MathI.Permille) p.Add("charter morale changes must be from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

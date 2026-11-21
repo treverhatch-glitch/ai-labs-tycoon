@@ -5858,6 +5858,22 @@
       { "id": "defence", "name": "Defence systems", "clearance": 3, "weeks": 30, "pay": 600000, "people": 4, "morale": 300, "acceptReputation": -30, "doneReputation": 5 }
     ]
   },
+  "charter": {
+    "enabled": 1,
+    "reviewWeeks": 26,
+    "convertFee": 40000,
+    "cappedFundingPermille": 700,
+    "forProfitGrantPermille": 1000,
+    "cappedGrantPermille": 1200,
+    "nonprofitGrantPermille": 1800,
+    "donationPerPrestige": 20,
+    "distributionPermille": 150,
+    "capAmount": 400000,
+    "challengeClaim": 250000,
+    "challengeStrength": 650,
+    "profitMorale": 200,
+    "missionMorale": 100
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

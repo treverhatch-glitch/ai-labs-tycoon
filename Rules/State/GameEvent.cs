@@ -302,7 +302,13 @@ namespace AiLabs.Rules.State
         /// <summary>An instalment fell due. Ref is the kind, Amount what was paid, Pick 1 paid and 0 missed.</summary>
         ContractInstalment,
         /// <summary>A contract ended. Ref is the kind, Amount the penalty paid, Pick 1 completed, 0 ended for misses, -1 abandoned, 2 lost to a leak.</summary>
-        ContractEnded
+        ContractEnded,
+        /// <summary>A change of charter went under review. Amount is the fee, Pick the form it is heading for.</summary>
+        CharterReviewStarted,
+        /// <summary>A change of charter was dropped. Pick is the form it was heading for.</summary>
+        CharterReviewDropped,
+        /// <summary>The lab's charter changed. Pick is the new form, Amount the old one.</summary>
+        CharterChanged
     }
 
     /// <summary>

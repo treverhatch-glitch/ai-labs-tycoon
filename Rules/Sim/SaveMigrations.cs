@@ -95,6 +95,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 80) MigrateTo80(root);
             if (fromSchema < 81) MigrateTo81(root);
             if (fromSchema < 82) MigrateTo82(root);
+            if (fromSchema < 83) MigrateTo83(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -458,6 +459,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 83: every lab is a for-profit company with no change of charter under review.</summary>
+        static void MigrateTo83(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "charter", "charterTo", "charterDue", "capPaid" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

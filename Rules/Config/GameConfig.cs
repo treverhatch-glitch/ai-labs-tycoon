@@ -112,6 +112,7 @@ namespace AiLabs.Rules.Config
         public LitigationConfig Litigation = new LitigationConfig();
         public SecurityConfig Security = new SecurityConfig();
         public GovContractsConfig GovContracts = new GovContractsConfig();
+        public CharterConfig Charter = new CharterConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -222,6 +223,7 @@ namespace AiLabs.Rules.Config
             s.Obj("litigation", ref Litigation);
             s.Obj("security", ref Security);
             s.Obj("govContracts", ref GovContracts);
+            s.Obj("charter", ref Charter);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

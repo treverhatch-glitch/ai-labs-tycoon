@@ -102,7 +102,9 @@ namespace AiLabs.Rules.Sim
         AnswerBreach,
         AcceptContract,
         DeclineContract,
-        AbandonContract
+        AbandonContract,
+        ConvertCharter,
+        CancelCharterChange
     }
 
     /// <summary>
@@ -920,6 +922,20 @@ namespace AiLabs.Rules.Sim
         public static Command AbandonContract(int labId)
         {
             return Make(CommandKind.AbandonContract, labId);
+        }
+
+        /// <summary>Starts a change of charter (Count is the form: 0 for-profit, 1 capped-profit, 2 nonprofit). The fee is paid now and the change takes effect after the review weeks.</summary>
+        public static Command ConvertCharter(int labId, int form)
+        {
+            Command c = Make(CommandKind.ConvertCharter, labId);
+            c.Count = form;
+            return c;
+        }
+
+        /// <summary>Drops the change of charter under review. The fee is not given back.</summary>
+        public static Command CancelCharterChange(int labId)
+        {
+            return Make(CommandKind.CancelCharterChange, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
