@@ -15,7 +15,11 @@ namespace AiLabs.Rules.Sim
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase,
         AcceptChinaDeal, DeclineChinaDeal,
-        AcquireLab, SellModel
+        AcquireLab, SellModel,
+        CounterPoach, PoachStaff,
+        AnswerPress, LeakStory,
+        SetGauntletTuning,
+        AnswerComplaint
     }
 
     /// <summary>
@@ -358,6 +362,58 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             return c;
         }
+
+        /// <summary>Answers a rival's offer (<paramref name="offerId"/>) with a counter from <c>talent.counters</c> (<paramref name="counterId"/>).</summary>
+        public static Command CounterPoach(int labId, int offerId, string counterId)
+        {
+            Command c = Make(CommandKind.CounterPoach, labId);
+            c.TargetId = offerId;
+            c.Id = counterId;
+            return c;
+        }
+
+        /// <summary>Tries to poach the best person of a role from a rival lab.</summary>
+        public static Command PoachStaff(int labId, int rivalLabId, string roleId)
+        {
+            Command c = Make(CommandKind.PoachStaff, labId);
+            c.TargetId = rivalLabId;
+            c.Id = roleId;
+            return c;
+        }
+
+        /// <summary>Answers a journalist's question (<paramref name="inquiryId"/>) with a response from <c>press.responses</c>.</summary>
+        public static Command AnswerPress(int labId, int inquiryId, string responseId)
+        {
+            Command c = Make(CommandKind.AnswerPress, labId);
+            c.TargetId = inquiryId;
+            c.Id = responseId;
+            return c;
+        }
+
+        /// <summary>Leaks a rival's recent incident to the press.</summary>
+        public static Command LeakStory(int labId, int rivalLabId)
+        {
+            Command c = Make(CommandKind.LeakStory, labId);
+            c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Answers a customer's complaint.</summary>
+        public static Command AnswerComplaint(int labId, int complaintId, string responseId)
+        {
+            Command c = Make(CommandKind.AnswerComplaint, labId);
+            c.TargetId = complaintId;
+            c.Id = responseId;
+            return c;
+        }
+
+        /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>
+        public static Command SetGauntletTuning(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetGauntletTuning, labId);
+            c.Permille = permille;
+            return c;
+        }
     }
 
     public enum CommandError
@@ -374,7 +430,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone
     }
 
     public struct CommandResult

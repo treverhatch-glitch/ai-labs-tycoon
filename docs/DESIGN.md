@@ -115,6 +115,22 @@ Dropout, the Defector, the Heir) changes the start and carries a lasting edge an
 appeal in its sectors and lowers it elsewhere, and the home base is any bloc. The founder and style are two ids on the lab; their
 effects are read from the config each time.
 
+Poaching is a market ([content/talent-market.md](content/talent-market.md)): a rival's raid is an offer that waits four weeks, the
+player counters with money, compute, a title or the mission (each a cost and a chance), or lets the person go, and can raid a
+rival's people in return. Open offers are the only saved part.
+
+The press ([content/press.md](content/press.md)) turns the lab's news into choices: press rooms dampen what a scandal costs and sharpen a
+launch, a journalist asks about each beat (a launch, an incident, a hearing, the crown), the player answers (tell the truth, spin it,
+offer an exclusive) or lets the question lapse, and a lab can leak a rival's recent incident. Open questions are the only saved part.
+
+The Gauntlet has more to it now ([content/gauntlet.md](content/gauntlet.md)): the player can tune the lab's entries for the test (a lift to every score for a prep bill, at the risk of being exposed), each crown entry takes a live demo whose result follows its reliability, two joke awards carry real effects, and a season table ranks labs over the kept years.
+
+Trust ([content/trust.md](content/trust.md)) is the slow side of reputation: each lab has a meter per sector that grows a little every week it sells there, jumps with a bracket win, collapses with an incident or an exposed tuning, carries to the other sectors of the same family, and moves appeal. An incident also writes a complaint to the player's desk, which can be answered with a refund, a patch or an apology.
+
+The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.
+
+Staff traits ([content/staff-traits.md](content/staff-traits.md)) widen the two old traits to nine: the player's hires can be a 10X, a Doomer, an Accelerationist, a Mentor, a reader of logs, someone secretly interviewing, or a desk-sleeper, each adding one number to the lab, with a research cost when both camps are on the payroll.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.
@@ -248,7 +264,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Area | In the slice | The bible's fuller version (see [NEXT.md](NEXT.md)) |
 | --- | --- | --- |
 | Time | Weekly ticks from 1995 (or 2009), endless; nine eras as data (1995 to 2033) | Rules that shift per era, not just costs |
-| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 24 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, press, device workshop) |
+| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 28 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, device workshop) |
 | People | Role pools (17 roles across six functions: research, engineering, safety, sales, infrastructure, policy), each needing a desk in its own room | Named staff with traits, morale and poaching |
 | Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue |
 | World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze). Audit can open a shady investigation | Chip-shortage events, protests |
@@ -263,7 +279,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Shady | Eight contract cards, stash, launder, Heat, monthly investigations, model corruption; player only | Escape rungs tied to corruption |
 | Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
 | Rivals | OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak (2023) as arrivals; decision logs with reason codes, feelings toward the player, signature behaviours as plan data; Envydia as a vendor with monthly allocation by standing, a keynote and its own log | The rest of the cast, cloud deals for renting labs |
-| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
+| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab; tuning and exposure, a reliability demo, joke awards, a season table | A playable demo scene, hearings |
 | Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 5 with migrations from 1, 2, 3 and 4 (fixtures in `tools/SimTests/Fixtures`) | The same |
 
 ### The bible's first-playable checks
@@ -278,4 +294,4 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
 | Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
 | Bot balance over 200 games and 3 presets | `BalanceSoak` + `BalanceTests` (CI default 24/preset; `BALANCE_SOAK_FULL` for 200) |
-| Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |
+| Money keeps mattering; bubble; overfit Gauntlet entries | Overfitting is built (tuning and exposure); the rest comes with those systems |

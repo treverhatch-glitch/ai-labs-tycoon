@@ -37,6 +37,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 20) MigrateTo20(root);
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
+            if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 25) MigrateTo25(root);
+            if (fromSchema < 26) MigrateTo26(root);
+            if (fromSchema < 27) MigrateTo27(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -334,6 +338,40 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "founderId", JsonValue.Of(""));
                 JsonPatch.AddIfMissing(lab, "styleId", JsonValue.Of(""));
+            });
+        }
+
+        /// <summary>The talent market (Q141): no offers were ever waiting in an older save.</summary>
+        static void MigrateTo23(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
+        }
+
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        static void MigrateTo25(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
+        }
+
+        /// <summary>The Gauntlet, deeper (Q160): nobody tuned, no award was given and no entry was lifted in an older save.</summary>
+        static void MigrateTo26(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "gauntletTuning", JsonValue.Of(0L)));
+            JsonPatch.ForEach(root, "gauntlets", g =>
+            {
+                JsonPatch.AddIfMissing(g, "confidentLabId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(g, "newcomerLabId", JsonValue.Of(-1L));
+            });
+            JsonPatch.ForEach(root, "gauntlets.entries", e => JsonPatch.AddIfMissing(e, "tuned", JsonValue.Of(false)));
+        }
+
+        /// <summary>Sector trust and the customer desk (Q165): every sector sits at the baseline and no complaint ever waited in an older save.</summary>
+        static void MigrateTo27(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "sectorTrust", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "complaints", JsonValue.Array());
             });
         }
 

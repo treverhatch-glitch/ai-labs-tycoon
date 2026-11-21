@@ -93,6 +93,31 @@ namespace AiLabs.Rules.Sim
                     if (c.Role(person.RoleId) == null) p.Add(who + " employs the unknown role \"" + person.RoleId + "\"");
                     if (c.StaffPeople.Trait(person.TraitId) == null) p.Add(who + " has staff with unknown trait \"" + person.TraitId + "\"");
                 }
+                if (!string.IsNullOrEmpty(lab.FounderId) && c.Founder(lab.FounderId) == null) p.Add(who + " has the unknown founder \"" + lab.FounderId + "\"");
+                if (!string.IsNullOrEmpty(lab.StyleId) && c.Style(lab.StyleId) == null) p.Add(who + " has the unknown style \"" + lab.StyleId + "\"");
+                foreach (PoachOffer offer in lab.PoachOffers)
+                {
+                    if (TalentSystem.Person(lab, offer.StaffId) == null) p.Add(who + " has an offer for staff " + offer.StaffId + ", who is not on the payroll");
+                    if (state.Lab(offer.RivalLabId) == null) p.Add(who + " has an offer from the unknown lab " + offer.RivalLabId);
+                }
+                foreach (PressInquiry q in lab.PressInquiries)
+                {
+                    if (c.Press.Beat(q.BeatId) == null) p.Add(who + " has a question about the unknown beat \"" + q.BeatId + "\"");
+                    if (c.Press.Journalist(q.JournalistId) == null) p.Add(who + " has a question from the unknown journalist \"" + q.JournalistId + "\"");
+                }
+                if (lab.PressInquiries.Count > c.Press.MaxOpenInquiries) p.Add(who + " has more open questions than the press desk allows");
+                var trustSeen = new System.Collections.Generic.HashSet<string>();
+                foreach (SectorTrust trust in lab.SectorTrust)
+                {
+                    if (c.Sector(trust.SectorId) == null) p.Add(who + " has trust in the unknown sector \"" + trust.SectorId + "\"");
+                    if (!trustSeen.Add(trust.SectorId)) p.Add(who + " has two trust records for \"" + trust.SectorId + "\"");
+                    if (trust.Trust < 0 || trust.Trust > 1000) p.Add(who + " has a trust of " + trust.Trust + " in " + trust.SectorId + ", outside 0 to 1000");
+                }
+                foreach (Complaint complaint in lab.Complaints)
+                    if (c.Sector(complaint.SectorId) == null) p.Add(who + " has a complaint from the unknown sector \"" + complaint.SectorId + "\"");
+                if (lab.Complaints.Count > c.Trust.MaxOpenComplaints) p.Add(who + " has more open complaints than the customer desk allows");
+                if (lab.GauntletTuning < 0 || lab.GauntletTuning > c.Gauntlet.MaxTuningPermille) p.Add(who + " has a Gauntlet tuning of " + lab.GauntletTuning + ", outside 0 to " + c.Gauntlet.MaxTuningPermille);
+                if (lab.PoachOffers.Count > c.Talent.MaxOpenOffers && c.Talent.OfferWeeks > 0) p.Add(who + " has more open offers than the talent market allows");
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");
                 foreach (BlocStanding standing in lab.Blocs) if (c.World.Bloc(standing.BlocId) == null) p.Add(who + " has a standing with the unknown bloc \"" + standing.BlocId + "\"");
                 foreach (Holding holding in lab.Holdings)

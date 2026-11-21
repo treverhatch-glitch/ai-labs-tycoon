@@ -75,6 +75,39 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";
+                case EventKind.GauntletTuned:
+                    return e.Pick == 1
+                        ? who + " paid $" + e.Amount + " to tune its entries for " + c.Gauntlet.Name + "."
+                        : who + " could not find the $" + e.Amount + " to tune its entries for " + c.Gauntlet.Name + ", so they went in as they were.";
+                case EventKind.GauntletExposed:
+                    return "A rival exposed " + who + "'s tuning at " + c.Gauntlet.Name + ": " + e.SubjectId + " entries lose their lift and " + who + " loses " + e.Amount + " reputation.";
+                case EventKind.GauntletDemo:
+                    return e.Pick == 1
+                        ? who + "'s " + e.Ref + " nailed the live demo at " + c.Gauntlet.Name + ": reputation +" + e.Amount + "."
+                        : who + "'s " + e.Ref + " fell over on stage at " + c.Gauntlet.Name + " and became a meme: reputation " + e.Amount + ".";
+                case EventKind.GauntletAward:
+                    return e.Ref == GauntletSystem.AwardConfident
+                        ? who + " wins Most Confident While Wrong at " + c.Gauntlet.Name + ". Reputation " + (-e.Amount) + "."
+                        : who + " wins Best Newcomer at " + c.Gauntlet.Name + ". The staff are thrilled: morale +" + e.Amount + ".";
+                case EventKind.TrustLost:
+                    return who + " lost " + e.Amount + " trust with " + c.Sector(e.Ref).Buyers + " (" + c.Sector(e.Ref).Name + ").";
+                case EventKind.CustomerComplaint:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        SectorConfig sector = c.Sector(bits[0]);
+                        return "A customer in " + (sector == null ? bits[0] : sector.Name) + " wrote to " + who + " about " + (bits.Length > 1 ? bits[1] : "an incident") + " (" + e.Amount + " trust at stake).";
+                    }
+                case EventKind.ComplaintAnswered:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        ComplaintResponseConfig response = c.Trust.Response(bits[0]);
+                        SectorConfig sector = bits.Length > 1 ? c.Sector(bits[1]) : null;
+                        string where = sector == null ? "a sector" : sector.Name;
+                        string how = response == null ? bits[0] : response.Name.ToLowerInvariant();
+                        return e.Pick == 1
+                            ? who + " answered the complaint from " + where + " with a " + how + ": trust +" + e.Amount + "."
+                            : who + "'s " + how + " went down badly in " + where + ": trust " + e.Amount + ".";
+                    }
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";
@@ -110,6 +143,56 @@ namespace AiLabs.Rules.Sim
                         RoleConfig role = c.Role(e.Ref);
                         return who + " poached a " + (victim == null ? "rival" : victim.Name) + " star " + (role == null ? e.Ref : role.Name) + ".";
                     }
+                case EventKind.PoachOffered:
+                    {
+                        LabState victim = state.Lab(e.SubjectId);
+                        RoleConfig role = c.Role(e.Ref);
+                        return who + " offered one of " + (victim == null ? "your" : victim.Name + "'s") + " " + (role == null ? e.Ref : role.Name) + "s $" + e.Amount + " to leave. They have a few weeks to think about it.";
+                    }
+                case EventKind.PoachCountered:
+                    {
+                        CounterConfig counter = c.Talent.Counter(e.Ref);
+                        string how = counter == null ? e.Ref : counter.Name;
+                        return e.Pick == 1
+                            ? who + " kept someone with a counter: " + how + " ($" + e.Amount + "). The offer was declined with a long email."
+                            : who + " tried a counter (" + how + ", $" + e.Amount + ") and the person left anyway.";
+                    }
+                case EventKind.PoachBackTried:
+                    {
+                        LabState target = state.Lab(e.SubjectId);
+                        RoleConfig role = c.Role(e.Ref);
+                        string what = role == null ? e.Ref : role.Name;
+                        return e.Pick == 1
+                            ? who + " hired a " + what + " away from " + (target == null ? "a rival" : target.Name) + " for $" + e.Amount + ". The announcement was posted from the stage."
+                            : who + " tried to hire a " + what + " away from " + (target == null ? "a rival" : target.Name) + " and only paid the headhunter ($" + e.Amount + ").";
+                    }
+                case EventKind.PressInquiry:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        BeatConfig beat = c.Press.Beat(bits[0]);
+                        JournalistConfig journalist = bits.Length > 1 ? c.Press.Journalist(bits[1]) : null;
+                        string what = bits.Length > 2 && bits[2].Length > 0 ? " about " + bits[2] : "";
+                        return (journalist == null ? "A journalist" : journalist.Name + " of " + journalist.Outlet) + " asked " + who + " for a line" + what + " (" + (beat == null ? bits[0] : beat.Name.ToLowerInvariant()) + ", " + e.Amount + " reputation at stake).";
+                    }
+                case EventKind.PressAnswered:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        PressResponseConfig response = c.Press.Response(bits[0]);
+                        string how = response == null ? bits[0] : response.Name.ToLowerInvariant();
+                        return e.Pick == 1
+                            ? who + " answered the press (" + how + ") and it landed: reputation " + (e.Amount >= 0 ? "+" : "") + e.Amount + "."
+                            : who + " answered the press (" + how + ") and it backfired: reputation " + e.Amount + ".";
+                    }
+                case EventKind.StoryLeaked:
+                    {
+                        LabState target = state.Lab(e.SubjectId);
+                        string rival = target == null ? "a rival" : target.Name;
+                        string about = string.IsNullOrEmpty(e.Ref) ? "its problems" : "the trouble with " + e.Ref;
+                        return e.Pick == 1
+                            ? who + " leaked " + about + " at " + rival + ". It ran on the front page: " + rival + " lost " + e.Amount + " reputation."
+                            : who + " tried to leak " + about + " at " + rival + " and was traced: " + who + " lost " + e.Amount + " reputation.";
+                    }
+                case EventKind.LaunchBuzz: return who + "'s launch of " + e.Ref + " drew a crowd to the press room: reputation +" + e.Amount + ".";
                 case EventKind.GpuQueueStalled:
                     return who + "'s queued GPU purchase (" + e.Amount + " units) stalled: " + e.Ref + ".";
                 case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";

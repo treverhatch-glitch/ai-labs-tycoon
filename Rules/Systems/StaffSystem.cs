@@ -17,8 +17,8 @@ namespace AiLabs.Rules.Systems
                 var person = new StaffMember();
                 person.Id = state.TakeId();
                 person.RoleId = role.Id;
-                person.Morale = cfg.MoraleBaseline;
-                person.TraitId = star != null && state.Rng.World.Chance(cfg.StarHirePermille) ? star : steady;
+                person.TraitId = star != null && state.Rng.World.Chance(cfg.StarHirePermille) ? star : Traits.RollHireTrait(c, lab, person.Id, steady);
+                person.Morale = Traits.RestingMorale(c, lab, person);
                 lab.Staff.Add(person);
             }
         }
@@ -48,12 +48,12 @@ namespace AiLabs.Rules.Systems
 
         public static void RunWeek(GameConfig c, LabState lab)
         {
-            int baseline = c.StaffPeople.MoraleBaseline;
             int drift = c.StaffPeople.MoraleDriftPerWeek;
             int debtDrift = c.StaffPeople.MoraleDebtDriftPerWeek;
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 StaffMember p = lab.Staff[i];
+                int baseline = Traits.RestingMorale(c, lab, p);
                 if (p.Morale < baseline) p.Morale = (int)MathI.Min(baseline, p.Morale + drift);
                 else if (p.Morale > baseline) p.Morale = (int)MathI.Max(baseline, p.Morale - drift);
                 if (lab.WeeksInDebt > 0 && debtDrift > 0)
@@ -69,7 +69,7 @@ namespace AiLabs.Rules.Systems
                 lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - drop);
         }
 
-        static void OnPoachWitness(GameConfig c, LabState lab)
+        public static void OnPoachWitness(GameConfig c, LabState lab)
         {
             int drop = c.StaffPeople.MoralePoachWitnessDrop;
             if (drop <= 0) return;
@@ -81,15 +81,12 @@ namespace AiLabs.Rules.Systems
         {
             if (player == null || player.Bankrupt || player.Staff.Count == 0) return;
             if (!RivalSystem.IsFeud(c, rival)) return;
-            if (!state.Rng.Rivals.Chance(c.StaffPeople.PoachChancePermille)) return;
+            if (!state.Rng.Rivals.Chance(Workplace.PoachChancePermille(c, player))) return;
 
+            if (c.Talent.OfferWeeks > 0 && player.PoachOffers.Count >= c.Talent.MaxOpenOffers) return;
             StaffMember target = BestPoachTarget(c, player);
             if (target == null) return;
-            player.Staff.Remove(target);
-            OnPoachWitness(c, player);
-            Events.Add(state, EventKind.StaffPoached, rival.Id, player.Id, 1, target.RoleId);
-            DecisionLog.Add(c, rival, state.Tick, DecisionAction.PoachedStaff, target.RoleId, 1,
-                Reason.Of(ReasonCode.FeelingTowardPlayer, rival.FeelingToPlayer));
+            TalentSystem.MakeOffer(c, state, rival, player, target);
         }
 
         static StaffMember BestPoachTarget(GameConfig c, LabState lab)
@@ -99,7 +96,8 @@ namespace AiLabs.Rules.Systems
             {
                 StaffMember p = lab.Staff[i];
                 StaffTraitConfig trait = c.StaffPeople.Trait(p.TraitId);
-                if (trait == null || !trait.Star) continue;
+                if (trait == null || !(trait.Star || trait.OfferPermille > 0)) continue;
+                if (TalentSystem.OfferFor(lab, p.Id) != null) continue;
                 if (best == null || p.Morale < best.Morale) best = p;
             }
             return best;

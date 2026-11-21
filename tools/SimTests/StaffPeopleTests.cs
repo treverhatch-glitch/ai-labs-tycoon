@@ -151,8 +151,8 @@ public class StaffPeopleTests
         rival.FeelingToPlayer = g.C.Rivalry.Feelings.FeudBelow - 50;
         g.C.StaffPeople.PoachChancePermille = 1000;
         StaffSystem.TryPoach(g.C, g.State, rival, g.Me);
-        Assert.Equal(2, g.Me.Staff.Count);
-        Assert.DoesNotContain(g.Me.Staff, p => p.Id == lowId);
+        Assert.Equal(3, g.Me.Staff.Count);
+        Assert.Equal(lowId, Assert.Single(g.Me.PoachOffers).StaffId);
     }
 
     [Fact]

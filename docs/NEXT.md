@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 866 tests pass (schemas 19–22: bubble crash, acquisitions, model sales, risk classes, founding choices), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 22. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1112 tests pass (schemas 19–27: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards, sector trust; the workplace needs no schema), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 27. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -100,12 +100,44 @@ and says why in the commit message.
     founders change the start and carry a lasting edge and cost, styles lift appeal in their sectors and lower it elsewhere
     ([content/founding.md](content/founding.md)). Still open: the picker screen (Unity), and the Hardware Baron, Open-Weights Rebel
     and Garage Hacker presets (they wait for chips, open weights and shady offers).
-15. **Talent market (bible ch. 7, "poaching is constant").** Rivals offer absurd packages and the player can answer: counter with
-    money, compute access, a title or the mission, or let the person go; stars have a price, and the player can poach back. Needs
-    pending offers in state, so a new save schema. Not started.
-16. **The press and reputation (bible ch. 14, the press room).** A press room, journalists and news beats: launches, incidents,
-    leaks and hearings change reputation in ways the lab can steer, and the press room dampens a scandal and sharpens a launch.
-    Not started.
+15. ~~**Talent market (bible ch. 7, "poaching is constant").**~~ Done (Q141 to Q144, save schema **23**): a rival's poach is an offer that waits
+    4 weeks (`poachOffers` on the lab); the player counters with `money`, `compute`, a `title` or the `mission` (each a cost and a chance, taken
+    apart in `ChanceParts`), or lets the person go; stars cost twice the package; `PoachStaff` raids a rival's people for a fee
+    ([content/talent-market.md](content/talent-market.md)). Planners and the autopilot never answer, so autopilot labs lose people late.
+    Still open: the offers and counters screen (Unity) and a suggestion that prompts the player.
+16. ~~**The press and reputation (bible ch. 14, the press room).**~~ Done (Q145 to Q149, save schema **25**): a `press-room` (The Punchline) and
+    an `auditorium` (The Chat Boom) dampen scandal and sharpen launches; three journalists ask about four beats (launch, incident, hearing,
+    crown); the player answers with `honest`, `spin` or `exclusive` or lets the question lapse; `LeakStory` turns the press on a rival
+    ([content/press.md](content/press.md)). Planners, autopilot and rivals do not use it. Still open: the press desk screen (Unity),
+    rivals that leak at the player.
+
+17. ~~**The Gauntlet, deeper (bible ch. 8, "teach to the test").**~~ Done (Q160 to Q164, save schema **26**): the player sets a lab-wide tuning
+    that lifts every score for a prep bill, a tuned win can be exposed (more likely with feuding rivals, and the win can then go to a rival),
+    each crown entry takes a live demo decided by its reliability, two joke awards ("Most Confident While Wrong", "Best Newcomer") carry real
+    effects, and `GauntletSystem.SeasonTable` ranks labs across the kept years ([content/gauntlet.md](content/gauntlet.md)). Rivals never tune.
+    Still open: a playable demo scene and tuning screen (Unity), rivals that tune and get exposed.
+18. ~~**Trust and the customer desk (bible ch. 8, "trust is slow to win and fast to lose").**~~ Done (Q165 to Q169, save schema **27**): a trust
+    meter per lab per sector (+2 a week while selling, +40 for a bracket win, -60 for an incident, -100 for an exposed tuning) that carries
+    30% to the other sectors of the same family and moves appeal by up to 15% either way; an incident writes a complaint to the player's desk,
+    answered with a refund, a patch or an apology ([content/trust.md](content/trust.md)). Rivals have trust but no desk. Still open: the
+    customer desk screen and a trust display (Unity), rivals that answer complaints.
+19. ~~**The workplace (bible ch. 14 room list and ch. 7, "morale, retention").**~~ Done (Q180 to Q183, no schema change): three Comfort rooms
+    (`coffee-corner`, `kitchen`, `nap-pods`) lift the level morale settles at (up to +150) and new hires start there; the kitchen and the
+    recruiting office take a share off a rival's weekly offer chance (up to 60%); researchers above the baseline do up to 20% more
+    ([content/workplace.md](content/workplace.md)). Low morale does not slow research in the shipped data (Q182: a loss slope exists, set to 0).
+    Still open: hiring speed from the recruiting office (Q183), a workplace screen (Unity), and a rival that is harder to push into
+    bankruptcy so the loss slope can be switched on.
+
+20. ~~**Staff traits (bible ch. 7, "trait ideas").**~~ Done (Q184 to Q187, no schema change): the player's hires can arrive as a 10X, a Doomer, an
+    Accelerationist, a Mentor, someone who actually reads the logs, someone secretly interviewing, or someone who sleeps under the desk; each
+    does one thing for the lab, and a lab with both a Doomer and an Accelerationist starts arguing ([content/staff-traits.md](content/staff-traits.md)).
+    Rivals keep `steady` and `star`. Still open: a staff screen that shows traits (Unity), rivals with traits, "posts through it" and
+    "will quit by blog post" (they need a press hook on poaching).
+21. **Sector incident flavours (bible ch. 8, "what goes wrong").** Each sector fails in its own way (the support bot promises a refund
+    policy you do not have, the legal tool cites cases that do not exist); a flavour sets how hard an incident hits there and what it
+    costs beyond reputation. Claimed, not started.
+22. **Safety culture and release gates (bible ch. 10, "release gates", "culture").** A culture meter that rises when the lab listens and
+    falls when it rushes, and a gate the player sets for themselves and then has to obey. Claimed, not started.
 
 ## Rules: later
 

@@ -28,9 +28,10 @@ namespace AiLabs.Rules.Systems
                 if (role == null || role.Function != RoleFunction.Research) continue;
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
                 int bonus = trait == null ? 0 : trait.ResearchPermille;
-                gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
+                gained += MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
             }
-            gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)));
+            gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
+                + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }
@@ -41,7 +42,8 @@ namespace AiLabs.Rules.Systems
             long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
-                + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed);
+                + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed)
+                + Traits.Report(c, lab).TrainingSpeedPermille;
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
@@ -51,7 +53,8 @@ namespace AiLabs.Rules.Systems
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
                 + LabQueries.ContainmentAlignmentBonus(c, lab)
-                + RolePerks.Permille(c, lab, RolePerkKind.AlignmentWork);
+                + RolePerks.Permille(c, lab, RolePerkKind.AlignmentWork)
+                + Traits.Report(c, lab).AlignmentWorkPermille;
         }
 
         /// <summary>This week's compute going to training. It is zero when nothing is training: idle GPUs serve customers.</summary>

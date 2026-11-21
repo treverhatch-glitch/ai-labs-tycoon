@@ -15,6 +15,10 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 27) StripSectorTrust(root);
+            if (schema < 26) StripGauntletDepth(root);
+            if (schema < 25) StripPressInquiries(root);
+            if (schema < 23) StripPoachOffers(root);
             if (schema < 22) StripFoundingChoices(root);
             if (schema < 21) StripEventRiskClass(root);
             if (schema < 20) StripAbsorbedByLab(root);
@@ -39,6 +43,36 @@ public static class SaveSchemaPretend
         Simulation again = Simulation.Load(sim.Config, json);
         Assert.Empty(SaveGame.Problems(sim.Config, again.State));
         Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripSectorTrust(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonPatch.Remove(lab, "sectorTrust");
+            JsonPatch.Remove(lab, "complaints");
+        });
+    }
+
+    static void StripGauntletDepth(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "gauntletTuning"));
+        JsonPatch.ForEach(root, "gauntlets", g =>
+        {
+            JsonPatch.Remove(g, "confidentLabId");
+            JsonPatch.Remove(g, "newcomerLabId");
+        });
+        JsonPatch.ForEach(root, "gauntlets.entries", e => JsonPatch.Remove(e, "tuned"));
+    }
+
+    static void StripPressInquiries(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "pressInquiries"));
+    }
+
+    static void StripPoachOffers(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "poachOffers"));
     }
 
     static void StripFoundingChoices(JsonValue root)

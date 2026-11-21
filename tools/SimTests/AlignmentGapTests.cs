@@ -75,7 +75,7 @@ public class AlignmentGapTests
     [Fact]
     public void A_sandbag_scandal_closes_the_gap_on_the_displayed_meter()
     {
-        var g = Game.Solo(tweak: c => c.Safety.IncidentChancePermille = 1000).WithStarterLab(gpus: 10);
+        var g = Game.Solo(tweak: c => { c.Safety.IncidentChancePermille = 1000; foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; }).WithStarterLab(gpus: 10);
         var model = g.Train("mini", 200);
         g.UntilTrained(model);
         g.Do(Command.ReleaseModel(g.Id, model.Id, 950, "game-ai"));
@@ -192,6 +192,7 @@ public class AlignmentGapTests
             c.Safety.IncidentChancePermille = 1000;
             c.Safety.IncidentFineMin = 50_000;
             c.Finance.BankruptcyGraceWeeks = 1;
+            foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
         }).WithStarterLab(gpus: 12);
         g.Me.Cash = 80_000;
         g.Me.GrantPerWeek = 0;

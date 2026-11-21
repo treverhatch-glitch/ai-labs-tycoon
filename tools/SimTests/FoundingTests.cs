@@ -332,7 +332,7 @@ public class FoundingTests
         long with = AppealIn(g, model, "doc-reading").RoleBoost;
         Assert.True(with > alone && alone > 0);
         var parts = AppealIn(g, model, "doc-reading");
-        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.ChampionBoost, parts.Total);
+        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
     }
 
     // ---- home base
