@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 24) MigrateTo24(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -344,6 +345,13 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "factoryLineUntilTick", JsonValue.Of(-1L));
                 JsonPatch.AddIfMissing(lab, "coolantBoostUntilTick", JsonValue.Of(-1L));
             });
+        }
+
+        /// <summary>Schema 24: Q163 patent license ledger line.</summary>
+        static void MigrateTo24(JsonValue root)
+        {
+            foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "patentLicense", JsonValue.Of(0L)));
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

@@ -212,16 +212,16 @@ public class PeerComputeTests
         g.Me.PeerComputeLeases.Add(new PeerComputeLease { LandlordLabId = 99, GpuCount = 2 });
         var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
         Assert.Equal(2, loaded.Me.PeerComputeLeases[0].GpuCount);
-        Assert.Equal(23, loaded.State.Schema);
+        Assert.Equal(24, loaded.State.Schema);
     }
 
     [Fact]
     public void Migrate_19_to_20_adds_peer_leases_array()
     {
         Game g = Game.Solo();
-        string json = g.Sim.Save().Replace("\"schema\":23", "\"schema\":19");
+        string json = g.Sim.Save().Replace("\"schema\":24", "\"schema\":19");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(23, loaded.State.Schema);
+        Assert.Equal(24, loaded.State.Schema);
         Assert.NotNull(loaded.Me.PeerComputeLeases);
         Assert.Empty(loaded.Me.PeerComputeLeases);
     }
@@ -237,7 +237,7 @@ public class PeerComputeTests
     }
 
     [Fact]
-    public void Schema_23_on_new_game() => Assert.Equal(23, Game.Solo().State.Schema);
+    public void Schema_23_on_new_game() => Assert.Equal(24, Game.Solo().State.Schema);
 
     [Fact]
     public void Landlord_ledger_revenue_gets_peer_rent()

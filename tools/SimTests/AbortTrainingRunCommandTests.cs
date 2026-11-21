@@ -35,6 +35,23 @@ public class AbortTrainingRunCommandTests
     }
 
     [Fact]
+    public void Q160_max_full_refund_at_max_permille()
+    {
+        var (gHalf, mHalf) = Training();
+        gHalf.C.Training.AbortTrainingRefundPermille = 500;
+        long cashHalf = gHalf.Me.Cash;
+        gHalf.Do(Command.AbortTrainingRun(gHalf.Id, mHalf.Id));
+        long halfRefund = gHalf.Me.Cash - cashHalf;
+
+        var (gFull, mFull) = Training();
+        gFull.C.Training.AbortTrainingRefundPermille = 1000;
+        long cashFull = gFull.Me.Cash;
+        gFull.Do(Command.AbortTrainingRun(gFull.Id, mFull.Id));
+        long fullRefund = gFull.Me.Cash - cashFull;
+        Assert.Equal(halfRefund * 2, fullRefund);
+    }
+
+    [Fact]
     public void Q160_zero_refund_when_permille_zero()
     {
         var (g, m) = Training();

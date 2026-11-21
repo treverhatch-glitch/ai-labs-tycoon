@@ -476,6 +476,8 @@ namespace AiLabs.Rules.Config
         public long CashPerActivePatent;
         public long ExtendCashCost = 15_000;
         public int ExtendWeeks = 26;
+        /// <summary>Each week, labs that hold the tech without their own patent pay this much to the patent holder.</summary>
+        public long LicenseCashPerInfringerPerWeek;
 
         public void Sync(Syncer s)
         {
@@ -486,6 +488,7 @@ namespace AiLabs.Rules.Config
             s.Long("cashPerActivePatent", ref CashPerActivePatent);
             s.Long("extendCashCost", ref ExtendCashCost);
             s.Int("extendWeeks", ref ExtendWeeks);
+            s.Long("licenseCashPerInfringerPerWeek", ref LicenseCashPerInfringerPerWeek);
         }
     }
 

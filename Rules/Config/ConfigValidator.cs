@@ -836,6 +836,7 @@ namespace AiLabs.Rules.Config
                 if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
                 if (c.Research.Patents.ResearchPerActivePatent < 0) p.Add("research.patents.researchPerActivePatent is negative");
                 if (c.Research.Patents.CashPerActivePatent < 0) p.Add("research.patents.cashPerActivePatent is negative");
+                if (c.Research.Patents.LicenseCashPerInfringerPerWeek < 0) p.Add("research.patents.licenseCashPerInfringerPerWeek is negative");
                 if (c.Research.Patents.ExtendCashCost < 0) p.Add("research.patents.extendCashCost is negative");
                 if (c.Research.Patents.ExtendWeeks < 0) p.Add("research.patents.extendWeeks is negative");
             }

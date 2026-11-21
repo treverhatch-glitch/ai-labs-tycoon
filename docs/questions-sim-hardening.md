@@ -451,6 +451,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q162. Revive a cancelled chip design? DECIDED: `ReviveChipDesign` + `chips.reviveDesignCashCost`
 - Choice: cancelled design returns to `Designing`; blocked if another design is in progress.
 
+### Q163. Patent license royalties? DECIDED: `PatentLicenseSystem` + `licenseCashPerInfringerPerWeek`
+- Choice: each week, every non-bankrupt lab that already researched a tech pays the active patent holder; rivals blocked from re-researching still pay; ledger `PatentLicense`; no schema (ledger field only).
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 
