@@ -436,6 +436,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q157. Cancel a pending fab order? DECIDED: `CancelChipOrder` + `chips.cancelOrderRefundPermille`
 - Choice: pull an undelivered order, unbook foundry slots, refund a permille of the original order cost.
 
+### Q158. Cancel a shady job early? DECIDED: `CancelShadyOp` + `shady.cancelShadyOpHeatPenalty`
+- Choice: player pulls a pending op before `ResolveTick`; heat penalty even on success.
+
+### Q159. Pay down heat? DECIDED: `PayDownHeat` + `shady.heatBuydown*`
+- Choice: cash buys a fixed heat drop; disabled when heat is zero.
+
+### Q160. Abort an active training run? DECIDED: `AbortTrainingRun` + `training.abortTrainingRefundPermille`
+- Choice: remove a `Training` model and refund a permille of prep cost; frees a concurrent slot.
+
+### Q161. Extend an active patent? DECIDED: `ExtendPatent` + `research.patents.extend*`
+- Choice: cash adds `extendWeeks` to `ExpiresTick` on an active patent.
+
+### Q162. Revive a cancelled chip design? DECIDED: `ReviveChipDesign` + `chips.reviveDesignCashCost`
+- Choice: cancelled design returns to `Designing`; blocked if another design is in progress.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

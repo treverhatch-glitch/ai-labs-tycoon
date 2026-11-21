@@ -83,6 +83,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.AbortChipRespin: return AbortChipRespin(c, state, lab, cmd);
                 case CommandKind.RenouncePatent: return RenouncePatent(c, state, lab, cmd);
                 case CommandKind.CancelChipOrder: return CancelChipOrder(c, state, lab, cmd);
+                case CommandKind.CancelShadyOp: return CancelShadyOp(c, state, lab, cmd);
+                case CommandKind.PayDownHeat: return PayDownHeat(c, state, lab, cmd);
+                case CommandKind.AbortTrainingRun: return AbortTrainingRun(c, state, lab, cmd);
+                case CommandKind.ExtendPatent: return ExtendPatent(c, state, lab, cmd);
+                case CommandKind.ReviveChipDesign: return ReviveChipDesign(c, state, lab, cmd);
                 case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }

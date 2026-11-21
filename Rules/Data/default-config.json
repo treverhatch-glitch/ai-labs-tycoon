@@ -3188,7 +3188,9 @@
       "filingCostPermille": 800,
       "reputationPerActivePatent": 3,
       "researchPerActivePatent": 8,
-      "cashPerActivePatent": 40
+      "cashPerActivePatent": 40,
+      "extendCashCost": 15000,
+      "extendWeeks": 26
     },
     "forks": [
       {
@@ -3212,6 +3214,7 @@
     "engineerBonusCapPermille": 600,
     "distillMinLeadPermille": 80,
     "distillFinishCapabilityPermille": 60,
+    "abortTrainingRefundPermille": 500,
     "syntheticDataLab": {
       "eraId": "harnesses",
       "roomTypeId": "synthetic-data-lab",
@@ -4496,6 +4499,7 @@
     "boostYieldPermille": 50,
     "abortRespinCashCost": 35000,
     "cancelOrderRefundPermille": 600,
+    "reviveDesignCashCost": 12000,
     "shortage": {
       "durationWeeks": 24,
       "minStrengthPermille": 1050,
@@ -5030,7 +5034,10 @@
     "copyCapabilityPermille": 850,
     "copyAlignmentPermille": 700,
     "copyCorruption": 150,
-    "sabotageProgressPermille": 300
+    "sabotageProgressPermille": 300,
+    "heatBuydownCashCost": 25000,
+    "heatBuydownAmount": 100,
+    "cancelShadyOpHeatPenalty": 50
   },
   "expansions": {
     "bodies": {

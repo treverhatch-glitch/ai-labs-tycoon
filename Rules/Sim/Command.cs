@@ -17,7 +17,8 @@ namespace AiLabs.Rules.Sim
         SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
         LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
         TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield,
-        AbortChipRespin, RenouncePatent, CancelChipOrder
+        AbortChipRespin, RenouncePatent, CancelChipOrder,
+        CancelShadyOp, PayDownHeat, AbortTrainingRun, ExtendPatent, ReviveChipDesign
     }
 
     /// <summary>
@@ -492,6 +493,36 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.CancelChipOrder, labId);
             c.TargetId = orderId;
+            return c;
+        }
+
+        public static Command CancelShadyOp(int labId, int opId)
+        {
+            Command c = Make(CommandKind.CancelShadyOp, labId);
+            c.TargetId = opId;
+            return c;
+        }
+
+        public static Command PayDownHeat(int labId) { return Make(CommandKind.PayDownHeat, labId); }
+
+        public static Command AbortTrainingRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AbortTrainingRun, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command ExtendPatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.ExtendPatent, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        public static Command ReviveChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.ReviveChipDesign, labId);
+            c.TargetId = designId;
             return c;
         }
     }

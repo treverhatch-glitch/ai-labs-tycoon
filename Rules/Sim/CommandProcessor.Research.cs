@@ -73,5 +73,24 @@ namespace AiLabs.Rules.Sim
             Events.Add(state, EventKind.PatentExpired, lab.Id, -1, 0, tech.Id);
             return CommandResult.Done(-1);
         }
+
+        static CommandResult ExtendPatent(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Controller == LabController.Plan)
+                return Fail(CommandError.InvalidArgument, "Rival labs file patents through their own counsel.");
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
+            TechConfig tech = c.Tech(cmd.Id);
+            if (tech == null) return Fail(CommandError.UnknownId, "There is no tech \"" + cmd.Id + "\".");
+            PatentState patent = ResearchQueries.ActivePatent(lab, tech.Id, state.Tick);
+            if (patent == null) return Fail(CommandError.InvalidArgument, lab.Name + " holds no active patent on " + tech.Name + ".");
+            PatentRulesConfig rules = c.Research.Patents;
+            if (rules.ExtendWeeks < 1) return Fail(CommandError.InvalidArgument, "Patent extensions are disabled.");
+            long cost = rules.ExtendCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.Fines, cost);
+            patent.ExpiresTick += rules.ExtendWeeks;
+            return CommandResult.Done(-1);
+        }
     }
 }

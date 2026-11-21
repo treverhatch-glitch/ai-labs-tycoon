@@ -60,6 +60,7 @@ namespace AiLabs.Rules.Config
         public long AbortRespinCashCost = 35_000;
         /// <summary>Share of the original fab order cost returned when <see cref="CommandKind.CancelChipOrder"/> runs (permille).</summary>
         public int CancelOrderRefundPermille = 600;
+        public long ReviveDesignCashCost = 12_000;
         public string ArchitectRoleId;
         public string TestLabRoomId;
         public List<ChipTargetConfig> Targets;
@@ -107,6 +108,7 @@ namespace AiLabs.Rules.Config
             s.Int("boostYieldPermille", ref BoostYieldPermille);
             s.Long("abortRespinCashCost", ref AbortRespinCashCost);
             s.Int("cancelOrderRefundPermille", ref CancelOrderRefundPermille);
+            s.Long("reviveDesignCashCost", ref ReviveDesignCashCost);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);
             s.ObjList("targets", ref Targets);

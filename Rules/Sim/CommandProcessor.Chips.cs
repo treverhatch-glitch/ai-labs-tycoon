@@ -350,6 +350,23 @@ namespace AiLabs.Rules.Sim
             return CommandResult.Done(-1);
         }
 
+        static CommandResult ReviveChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipDesign d = lab.Design(cmd.TargetId);
+            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
+            if (d.Status != ChipDesignStatus.Cancelled) return Fail(CommandError.InvalidArgument, d.Name + " is not cancelled.");
+            if (ChipQueries.DesignInProgress(lab) != null)
+                return Fail(CommandError.InvalidArgument, "The lab is already designing a chip.");
+            long cost = c.Chips.ReviveDesignCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            d.Status = ChipDesignStatus.Designing;
+            d.StageEndsTick = -1;
+            d.ReadyTick = -1;
+            d.YieldPermille = 0;
+            return CommandResult.Done(d.Id);
+        }
+
         static CommandResult TuneChipSoftware(GameConfig c, GameState state, LabState lab, Command cmd)
         {
             ChipsConfig k = c.Chips;

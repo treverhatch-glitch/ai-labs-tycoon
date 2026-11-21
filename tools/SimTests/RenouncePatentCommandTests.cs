@@ -10,7 +10,7 @@ namespace AiLabs.SimTests;
 /// <summary>Q156: RenouncePatent command.</summary>
 public class RenouncePatentCommandTests
 {
-    static Game WithPatent()
+    internal static Game WithPatent()
     {
         Game g = Game.Solo().WithStarterLab();
         g.Me.Cash = 1_000_000;

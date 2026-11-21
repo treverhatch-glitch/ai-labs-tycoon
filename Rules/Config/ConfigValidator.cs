@@ -112,6 +112,7 @@ namespace AiLabs.Rules.Config
             SyntheticDataLabProblems(p, c);
             Permille(p, "training.distillMinLeadPermille", c.Training.DistillMinLeadPermille);
             Permille(p, "training.distillFinishCapabilityPermille", c.Training.DistillFinishCapabilityPermille);
+            Permille(p, "training.abortTrainingRefundPermille", c.Training.AbortTrainingRefundPermille);
             UniqueIds(p, "training.recipes", c.Training.Recipes);
             foreach (TrainingRecipeConfig recipe in c.Training.Recipes)
             {
@@ -387,6 +388,9 @@ namespace AiLabs.Rules.Config
             }
             Permille(p, "shady.launderKeepPermille", c.Shady.LaunderKeepPermille);
             if (c.Shady.LaunderHeatPer < 1) p.Add("shady.launderHeatPer must be at least 1");
+            if (c.Shady.HeatBuydownCashCost < 0) p.Add("shady.heatBuydownCashCost is negative");
+            if (c.Shady.HeatBuydownAmount < 0) p.Add("shady.heatBuydownAmount is negative");
+            if (c.Shady.CancelShadyOpHeatPenalty < 0) p.Add("shady.cancelShadyOpHeatPenalty is negative");
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)
@@ -566,6 +570,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "chips.yieldCrashKeepPermille", k.YieldCrashKeepPermille);
             if (k.AbortRespinCashCost < 0) p.Add("chips.abortRespinCashCost is negative");
             Permille(p, "chips.cancelOrderRefundPermille", k.CancelOrderRefundPermille);
+            if (k.ReviveDesignCashCost < 0) p.Add("chips.reviveDesignCashCost is negative");
             if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
@@ -831,6 +836,8 @@ namespace AiLabs.Rules.Config
                 if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
                 if (c.Research.Patents.ResearchPerActivePatent < 0) p.Add("research.patents.researchPerActivePatent is negative");
                 if (c.Research.Patents.CashPerActivePatent < 0) p.Add("research.patents.cashPerActivePatent is negative");
+                if (c.Research.Patents.ExtendCashCost < 0) p.Add("research.patents.extendCashCost is negative");
+                if (c.Research.Patents.ExtendWeeks < 0) p.Add("research.patents.extendWeeks is negative");
             }
             UniqueIds(p, "research.forks", c.Research.Forks);
             var forkCount = new Dictionary<string, int>();

@@ -474,6 +474,8 @@ namespace AiLabs.Rules.Config
         public long ResearchPerActivePatent;
         /// <summary>Cash granted each week per non-expired patent.</summary>
         public long CashPerActivePatent;
+        public long ExtendCashCost = 15_000;
+        public int ExtendWeeks = 26;
 
         public void Sync(Syncer s)
         {
@@ -482,6 +484,8 @@ namespace AiLabs.Rules.Config
             s.Int("reputationPerActivePatent", ref ReputationPerActivePatent);
             s.Long("researchPerActivePatent", ref ResearchPerActivePatent);
             s.Long("cashPerActivePatent", ref CashPerActivePatent);
+            s.Long("extendCashCost", ref ExtendCashCost);
+            s.Int("extendWeeks", ref ExtendWeeks);
         }
     }
 
@@ -554,6 +558,8 @@ namespace AiLabs.Rules.Config
         public int DistillMinLeadPermille;
         /// <summary>Capability multiplier applied when a run finishes on a rival-distill mix.</summary>
         public int DistillFinishCapabilityPermille;
+        /// <summary>Share of prep spend returned when the player aborts an active training run.</summary>
+        public int AbortTrainingRefundPermille = 500;
         public SyntheticDataLabConfig SyntheticDataLab = new SyntheticDataLabConfig();
         public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
         public List<TrainingRecipeConfig> Recipes = new List<TrainingRecipeConfig>();
@@ -579,6 +585,7 @@ namespace AiLabs.Rules.Config
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
             s.Int("distillMinLeadPermille", ref DistillMinLeadPermille);
             s.Int("distillFinishCapabilityPermille", ref DistillFinishCapabilityPermille);
+            s.Int("abortTrainingRefundPermille", ref AbortTrainingRefundPermille);
             s.Obj("syntheticDataLab", ref SyntheticDataLab);
             s.ObjList("dataSources", ref DataSources);
             s.ObjList("recipes", ref Recipes);

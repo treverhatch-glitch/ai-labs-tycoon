@@ -42,6 +42,9 @@ namespace AiLabs.Rules.Config
         public int CopyAlignmentPermille;
         public int CopyCorruption;
         public int SabotageProgressPermille;
+        public long HeatBuydownCashCost = 25_000;
+        public int HeatBuydownAmount = 100;
+        public int CancelShadyOpHeatPenalty = 50;
 
         public ShadyCardConfig Card(string id)
         {
@@ -76,6 +79,9 @@ namespace AiLabs.Rules.Config
             s.Int("copyAlignmentPermille", ref CopyAlignmentPermille);
             s.Int("copyCorruption", ref CopyCorruption);
             s.Int("sabotageProgressPermille", ref SabotageProgressPermille);
+            s.Long("heatBuydownCashCost", ref HeatBuydownCashCost);
+            s.Int("heatBuydownAmount", ref HeatBuydownAmount);
+            s.Int("cancelShadyOpHeatPenalty", ref CancelShadyOpHeatPenalty);
         }
     }
 

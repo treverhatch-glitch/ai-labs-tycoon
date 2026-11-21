@@ -102,5 +102,43 @@ namespace AiLabs.Rules.Sim
             Events.Add(state, EventKind.DistillTargetSet, lab.Id, rival.Id, -1, rival.Name);
             return CommandResult.Done(-1);
         }
+
+        static long PrepCostForModel(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            ModelLineConfig line = c.Line(model.LineId);
+            if (line == null) return 0;
+            DataSourceConfig mix = c.Training.DataSource(model.DataSourceId);
+            if (mix == null) mix = c.Training.DataSource("internal");
+            long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
+            if (mix != null)
+            {
+                prepCost = MathI.MulPermille(prepCost, mix.PrepCostPermille);
+                int workshopCut = DeviceWorkshopSystem.PrepCostCutPermille(c, state, lab);
+                if (workshopCut > 0) prepCost = MathI.MulPermille(prepCost, MathI.Permille - workshopCut);
+                int syntheticCut = SyntheticDataLabSystem.PrepCostCutPermille(c, state, lab, mix.Id);
+                if (syntheticCut > 0) prepCost = MathI.MulPermille(prepCost, MathI.Permille - syntheticCut);
+            }
+            return prepCost;
+        }
+
+        static CommandResult AbortTrainingRun(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Controller == LabController.Plan)
+                return Fail(CommandError.InvalidArgument, "Rivals do not abort training runs.");
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
+            ModelState model = lab.Model(cmd.TargetId);
+            if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
+            if (model.Status != ModelStatus.Training)
+                return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a training run can be aborted.");
+            int refundMul = c.Training.AbortTrainingRefundPermille;
+            if (refundMul > 0)
+            {
+                long prep = PrepCostForModel(c, state, lab, model);
+                if (prep > 0) Finance.Earn(lab, LedgerLine.Training, MathI.MulPermille(prep, refundMul));
+            }
+            lab.Models.Remove(model);
+            return CommandResult.Done(cmd.TargetId);
+        }
     }
 }

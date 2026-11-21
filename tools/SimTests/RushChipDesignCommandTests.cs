@@ -24,7 +24,7 @@ public class RushChipDesignCommandTests
         return g;
     }
 
-    static ChipDesign Start(Game g)
+    internal static ChipDesign Start(Game g)
     {
         g.Do(Command.StartChipDesign(g.Id, "inference", "n28", "small", "fp16", "ddr", "air"));
         return ChipQueries.DesignInProgress(g.Me);
