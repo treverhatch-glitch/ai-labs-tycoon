@@ -52,6 +52,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 37) MigrateTo37(root);
             if (fromSchema < 38) MigrateTo38(root);
             if (fromSchema < 39) MigrateTo39(root);
+            if (fromSchema < 40) MigrateTo40(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -401,6 +402,16 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 40: every run was built the known way with checkpoints now and then.</summary>
+        static void MigrateTo40(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
+            }));
         }
 
         /// <summary>Schema 39: no era had been scored.</summary>

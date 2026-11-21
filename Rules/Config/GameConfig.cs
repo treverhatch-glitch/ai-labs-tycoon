@@ -76,6 +76,7 @@ namespace AiLabs.Rules.Config
         public LobbyConfig Lobbying = new LobbyConfig();
         public PivotConfig Pivot = new PivotConfig();
         public CampaignConfig Campaign = new CampaignConfig();
+        public RunsConfig Runs = new RunsConfig();
         public NewsConfig News = new NewsConfig();
         public ChatConfig Chat = new ChatConfig();
         public GlowConfig Glow = new GlowConfig();
@@ -135,6 +136,7 @@ namespace AiLabs.Rules.Config
             s.Obj("lobbying", ref Lobbying);
             s.Obj("pivot", ref Pivot);
             s.Obj("campaign", ref Campaign);
+            s.Obj("runs", ref Runs);
             s.Obj("news", ref News);
             s.Obj("chat", ref Chat);
             s.Obj("glow", ref Glow);

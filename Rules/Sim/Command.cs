@@ -31,7 +31,9 @@ namespace AiLabs.Rules.Sim
         DesignWithModel,
         RushRelease,
         Lobby,
-        PivotStyle
+        PivotStyle,
+        SetRunApproach,
+        SetCheckpoints
     }
 
     /// <summary>
@@ -451,6 +453,24 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetTrainingObjective, labId);
             c.TargetId = modelId;
             c.Id = objectiveId;
+            return c;
+        }
+
+        /// <summary>Chooses how a model still in training is built. <see cref="Command.Id"/> is the approach.</summary>
+        public static Command SetRunApproach(int labId, int modelId, string approachId)
+        {
+            Command c = Make(CommandKind.SetRunApproach, labId);
+            c.TargetId = modelId;
+            c.Id = approachId;
+            return c;
+        }
+
+        /// <summary>Chooses how often a model still in training is checkpointed. <see cref="Command.Id"/> is the habit.</summary>
+        public static Command SetCheckpoints(int labId, int modelId, string checkpointId)
+        {
+            Command c = Make(CommandKind.SetCheckpoints, labId);
+            c.TargetId = modelId;
+            c.Id = checkpointId;
             return c;
         }
 

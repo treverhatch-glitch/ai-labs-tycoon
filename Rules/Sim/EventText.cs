@@ -96,6 +96,19 @@ namespace AiLabs.Rules.Sim
                         EraConfig era = c.Era(e.Ref);
                         return who + " finished " + (era == null ? e.Ref : era.Name) + " with " + e.SubjectId + (e.SubjectId == 1 ? " goal" : " goals") + " met, scoring " + e.Amount + ".";
                     }
+                case EventKind.TrainingFailed:
+                    return who + "'s run of " + e.Ref + " diverged and lost " + e.Amount + " compute of progress.";
+                case EventKind.RunSetUp:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        if (parts.Length == 2 && parts[0] == "approach")
+                        {
+                            ApproachConfig a = c.Runs.Approach(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultApproachId : parts[1]);
+                            return who + " chose " + (a == null ? parts[1] : a.Name) + " for a run.";
+                        }
+                        CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
+                        return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

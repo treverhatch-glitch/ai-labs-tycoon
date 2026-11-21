@@ -210,6 +210,10 @@ and says why in the commit message.
     `EraScore` saved on the player's lab, `EventKind.EraScored`, save schema 39 (Q264-Q266), `CampaignTests`, `docs/content/campaign.md`. Still open: the scoreboard (Unity),
     a campaign deadline, an ending bonus, difficulty scaling.
 
+38. **Experimental runs and checkpoints (bible ch. 6 recipe table, "running it").** ~~Done~~: `runs` in the data, `Command.SetRunApproach` / `SetCheckpoints`,
+    `TrainingRuns` system (failure hash, loss, weekly cost, capability bonus), `EventKind.TrainingFailed` / `RunSetUp`, save schema 40 (Q267-Q269), `TrainingRunTests`,
+    `docs/content/training-runs.md`. Still open: the recipe-screen rows (Unity), other failure causes, rivals trying variants.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

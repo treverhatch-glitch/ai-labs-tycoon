@@ -80,6 +80,7 @@ namespace AiLabs.Rules.Config
             LobbyProblems(p, c);
             PivotProblems(p, c);
             CampaignProblems(p, c);
+            RunsProblems(p, c);
             NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
@@ -551,6 +552,39 @@ namespace AiLabs.Rules.Config
                 if (Array.IndexOf(AiLabs.Rules.Systems.NewsTicker.Placeholders, tag) < 0) p.Add(who + " has the unknown placeholder " + tag);
                 if (end < 0) break;
                 at = end + 1;
+            }
+        }
+
+        static void RunsProblems(List<string> p, GameConfig c)
+        {
+            RunsConfig r = c.Runs;
+            if (r == null) { p.Add("runs is missing"); return; }
+            UniqueIds(p, "runs.approaches", r.Approaches);
+            UniqueIds(p, "runs.checkpoints", r.Checkpoints);
+            ApproachConfig fallbackApproach = r.Approach(r.DefaultApproachId);
+            if (fallbackApproach == null) p.Add("runs.defaultApproachId \"" + r.DefaultApproachId + "\" is not an approach");
+            else if (fallbackApproach.CapabilityPermille != 0 || fallbackApproach.FailurePermillePerWeek != 0)
+                p.Add("the default approach \"" + fallbackApproach.IdValue + "\" must change nothing and never fail");
+            CheckpointConfig fallbackCheckpoint = r.Checkpoint(r.DefaultCheckpointId);
+            if (fallbackCheckpoint == null) p.Add("runs.defaultCheckpointId \"" + r.DefaultCheckpointId + "\" is not a checkpoint habit");
+            else if (fallbackCheckpoint.WeeklyCostPermille != 0) p.Add("the default checkpoint habit \"" + fallbackCheckpoint.IdValue + "\" must be free");
+            for (int i = 0; i < r.Approaches.Count; i++)
+            {
+                ApproachConfig a = r.Approaches[i];
+                string who = "approach " + a.IdValue;
+                if (string.IsNullOrEmpty(a.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(a.Text)) p.Add(who + " has no text");
+                if (a.CapabilityPermille <= -MathI.Permille || a.CapabilityPermille > 5000) p.Add(who + " capabilityPermille must be above -1000 and up to 5000");
+                if (a.FailurePermillePerWeek < 0 || a.FailurePermillePerWeek > MathI.Permille) p.Add(who + " failurePermillePerWeek must be from 0 to 1000");
+            }
+            for (int i = 0; i < r.Checkpoints.Count; i++)
+            {
+                CheckpointConfig k = r.Checkpoints[i];
+                string who = "checkpoint habit " + k.IdValue;
+                if (string.IsNullOrEmpty(k.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(k.Text)) p.Add(who + " has no text");
+                if (k.LossPermille < 0 || k.LossPermille > MathI.Permille) p.Add(who + " lossPermille must be from 0 to 1000");
+                if (k.WeeklyCostPermille < 0 || k.WeeklyCostPermille > 5000) p.Add(who + " weeklyCostPermille must be from 0 to 5000");
             }
         }
 

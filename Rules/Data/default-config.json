@@ -6646,6 +6646,42 @@
       }
     ]
   },
+  "runs": {
+    "defaultApproachId": "standard",
+    "defaultCheckpointId": "rare",
+    "approaches": [
+      {
+        "id": "standard",
+        "name": "Known architecture",
+        "text": "Build it the way everyone knows how. It ships when the compute is in.",
+        "capabilityPermille": 0,
+        "failurePermillePerWeek": 0
+      },
+      {
+        "id": "experimental",
+        "name": "Your own variant",
+        "text": "A new design with a higher ceiling. Every week it might diverge.",
+        "capabilityPermille": 80,
+        "failurePermillePerWeek": 15
+      }
+    ],
+    "checkpoints": [
+      {
+        "id": "rare",
+        "name": "Checkpoint now and then",
+        "text": "Free. If the run fails, half of it is gone.",
+        "lossPermille": 500,
+        "weeklyCostPermille": 0
+      },
+      {
+        "id": "often",
+        "name": "Checkpoint every few days",
+        "text": "A failure costs a tenth of the run, and the storage bill arrives every week.",
+        "lossPermille": 100,
+        "weeklyCostPermille": 40
+      }
+    ]
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,
@@ -6998,6 +7034,15 @@
       "pick": -1,
       "about": "lab",
       "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it."
+    },
+      {
+      "id": "training-failed",
+      "kind": "TrainingFailed",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
     },
       {
       "id": "room-refurbished",

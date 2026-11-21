@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 39;
+        public const int CurrentSchema = 40;
 
         public int Schema;
         public string ConfigVersion;
@@ -425,6 +425,10 @@ namespace AiLabs.Rules.State
         public string Objective = "";
         /// <summary>The model that helped design this one while it trained, or -1 when people did it alone.</summary>
         public int DesignerId = -1;
+        /// <summary>How the run was built (an id of <c>runs.approaches</c>), or empty for the known architecture.</summary>
+        public string Approach = "";
+        /// <summary>How often the run was checkpointed (an id of <c>runs.checkpoints</c>), or empty for now and then.</summary>
+        public string Checkpoints = "";
         /// <summary>Weeks of testing skipped when this model was first put on sale, or 0 for a tested launch.</summary>
         public int RushWeeks;
         /// <summary>The sectors this model is on sale in.</summary>
@@ -458,6 +462,8 @@ namespace AiLabs.Rules.State
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);
+            s.Str("approach", ref Approach);
+            s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);
         }
     }

@@ -112,7 +112,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab changed its style. SubjectId is how many people left, Amount what it cost, Ref "from|to" style ids (from is empty for none).</summary>
         StylePivoted,
         /// <summary>The player's lab was marked against an era's goals as the era ended. SubjectId is the goals met, Amount the points, Ref the era id.</summary>
-        EraScored
+        EraScored,
+        /// <summary>A training run set itself back. SubjectId is the model, Amount the compute thrown away, Ref the model's name.</summary>
+        TrainingFailed,
+        /// <summary>The player set up a run. SubjectId is the model, Ref "approach|id" or "checkpoints|id" (empty id for the default).</summary>
+        RunSetUp
     }
 
     /// <summary>

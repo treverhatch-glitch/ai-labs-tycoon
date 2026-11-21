@@ -155,6 +155,8 @@ Pivoting ([content/pivot.md](content/pivot.md)): once per era the player can cha
 
 Campaign scoring ([content/campaign.md](content/campaign.md)): every era has three goals (lifetime revenue and two others); when the era ends the player's lab is marked, 100 points a goal and 50 for all three, and the marks are saved. A sandbox game ignores them. Save schema 39.
 
+Experimental runs ([content/training-runs.md](content/training-runs.md)): while a model trains the player can choose their own architecture variant (8% more capability, a 1.5% weekly chance the run diverges) and how often to checkpoint (a failure loses half the run, or a tenth if you pay to checkpoint often). A run nobody set up never fails. Save schema 40.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

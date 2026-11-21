@@ -1284,6 +1284,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)**. `eraScores` on every lab (`MigrateTo39` sets an empty list). The event log is bounded, so it cannot rebuild a whole run's score.
 - Why: the golden run crosses eras, so it now carries a mark and an event for each. With the sync line, the era hook, the schema number and the data removed, the previous golden returned exactly. Nothing in the sim reads a mark, so no decision, price or dice roll moved.
 
+### Q267. What can the player choose, and what do the choices do? DECIDED: an approach (known or your own variant) and a checkpoint habit (now and then or often), both while the run trains
+- Options: (a) every run can fail by default; (b) failure only for what the player opts into; (c) an architecture tree of its own.
+- Recommendation and choice: **(b)**. A variant adds 8% to the finished capability and fails 1.5% of training weeks; checkpointing often drops what a failure costs from half the run to a tenth, for 4% of a week of running costs each training week. The defaults change nothing.
+- Why: the bible ties higher ceilings to "fail more often", which is a risk the player picks. Making every run fail (a) would change what the autopilot and rivals do and move the economy guards (Q182); (b) leaves them exactly as they were. A tree (c) needs the research side of architecture, which is its own job.
+
+### Q268. What does a failure do? DECIDED: it throws away the habit's share of progress and safety work, from a hash of the week
+- Options: (a) the run is lost; (b) a share of the progress is lost; (c) the run is delayed a fixed number of weeks.
+- Recommendation and choice: **(b)**, and the same share of the safety work, so the run does not end up with safety that outruns its progress. The chance is a hash of the seed, the week, the lab and the model, so no shared die is used, and a failure with nothing to lose is skipped.
+- Why: the bible's example, "a data bug found in week nine", is about lost weeks, and checkpoints are what decide how many. Losing the whole run (a) makes the experimental choice a trap; a flat delay (c) would not be changed by checkpoints.
+
+### Q269. Is a save change needed, and does the golden move? DECIDED: yes, schema 40; the golden moved with a verified cause
+- Options: (a) two strings per model; (b) pack them into one.
+- Recommendation and choice: **(a)**. `approach` and `checkpoints` on every model (`MigrateTo40` sets both empty).
+- Why: two ids, two fields, in the same shape as the objective. The golden moved because every model carries them; with the sync lines, the hooks, the schema number and the data removed the previous golden returned exactly.
+
 ## Open
 
 None.
