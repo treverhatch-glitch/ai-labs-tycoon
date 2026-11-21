@@ -56,6 +56,9 @@ namespace AiLabs.Rules.Config
         public ExpansionsConfig Expansions;
         public RoomProgramsConfig RoomPrograms = new RoomProgramsConfig();
         public ReleaseReviewConfig ReleaseReview = new ReleaseReviewConfig();
+        public EnterpriseDealsConfig EnterpriseDeals = new EnterpriseDealsConfig();
+        /// <summary>Era Q329 pledge overlap stub — maxLevel 0 until PR #20 lands; Q214 reads breach bar when set.</summary>
+        public SlaConfig Sla = new SlaConfig();
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -90,6 +93,8 @@ namespace AiLabs.Rules.Config
             s.Obj("expansions", ref Expansions);
             s.Obj("roomPrograms", ref RoomPrograms);
             s.Obj("releaseReview", ref ReleaseReview);
+            s.Obj("enterpriseDeals", ref EnterpriseDeals);
+            s.Obj("sla", ref Sla);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);

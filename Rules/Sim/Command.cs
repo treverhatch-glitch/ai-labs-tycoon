@@ -23,7 +23,8 @@ namespace AiLabs.Rules.Sim
         AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice,
         FundLobbyDefense, ExtendGrantRunway, RequestDebtForbearance,
         ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach,
-        SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview
+        SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview,
+        PursueEnterpriseSeat, SignEnterpriseSeat, WalkEnterpriseSeat, TerminateEnterpriseSeat, RenewEnterpriseSeat
     }
 
     /// <summary>
@@ -633,6 +634,45 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.ExpediteReleaseReview, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PursueEnterpriseSeat(int labId, string sectorId, string tierId = null)
+        {
+            Command c = Make(CommandKind.PursueEnterpriseSeat, labId);
+            c.Id = sectorId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command SignEnterpriseSeat(int labId, string sectorId, int modelId, string tierId = null)
+        {
+            Command c = Make(CommandKind.SignEnterpriseSeat, labId);
+            c.Id = sectorId;
+            c.TargetId = modelId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command WalkEnterpriseSeat(int labId, string sectorId)
+        {
+            Command c = Make(CommandKind.WalkEnterpriseSeat, labId);
+            c.Id = sectorId;
+            return c;
+        }
+
+        public static Command TerminateEnterpriseSeat(int labId, int dealIndex)
+        {
+            Command c = Make(CommandKind.TerminateEnterpriseSeat, labId);
+            c.Count = dealIndex;
+            return c;
+        }
+
+        public static Command RenewEnterpriseSeat(int labId, string sectorId, string tierId = null)
+        {
+            Command c = Make(CommandKind.RenewEnterpriseSeat, labId);
+            c.Id = sectorId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
             return c;
         }
     }

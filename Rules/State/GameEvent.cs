@@ -61,7 +61,14 @@ namespace AiLabs.Rules.State
         /// <summary>Review blocked the package. Amount is reputation lost; Ref is the model name.</summary>
         ReleaseReviewRejected,
         /// <summary>Review sent the package back for a lower alignment claim. Amount is the gap permille.</summary>
-        ReleaseReviewRevision
+        ReleaseReviewRevision,
+        EnterpriseSeatPursued,
+        EnterpriseSeatSigned,
+        EnterpriseSeatSlip,
+        EnterpriseSeatChurned,
+        EnterpriseSeatCompleted,
+        EnterpriseSeatRenewed,
+        EnterpriseSeatTerminated
     }
 
     /// <summary>

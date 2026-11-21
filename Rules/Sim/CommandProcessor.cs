@@ -111,6 +111,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.AppealReleaseReview: return AppealReleaseReview(c, state, lab, cmd);
                 case CommandKind.WithdrawReleaseReview: return WithdrawReleaseReview(c, state, lab, cmd);
                 case CommandKind.ExpediteReleaseReview: return ExpediteReleaseReview(c, state, lab, cmd);
+                case CommandKind.PursueEnterpriseSeat: return PursueEnterpriseSeat(c, state, lab, cmd);
+                case CommandKind.SignEnterpriseSeat: return SignEnterpriseSeat(c, state, lab, cmd);
+                case CommandKind.WalkEnterpriseSeat: return WalkEnterpriseSeat(c, state, lab, cmd);
+                case CommandKind.TerminateEnterpriseSeat: return TerminateEnterpriseSeat(c, state, lab, cmd);
+                case CommandKind.RenewEnterpriseSeat: return RenewEnterpriseSeat(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

@@ -92,6 +92,13 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ReleaseReviewApproved: return who + "'s review cleared " + e.Ref + " for " + e.Amount + " sectors.";
                 case EventKind.ReleaseReviewRejected: return who + "'s review blocked " + e.Ref + " (−" + e.Amount + " reputation).";
                 case EventKind.ReleaseReviewRevision: return who + " must revise " + e.Ref + "'s alignment claim (gap " + e.Amount + "‰).";
+                case EventKind.EnterpriseSeatPursued: return who + " is chasing an enterprise seat in " + c.Sector(e.Ref).Name + ".";
+                case EventKind.EnterpriseSeatSigned: return who + " signed an enterprise seat in " + c.Sector(e.Ref).Name + " for " + e.Amount + " weeks.";
+                case EventKind.EnterpriseSeatSlip: return who + " missed the SLA in " + c.Sector(e.Ref).Name + " (served " + e.Amount + "‰).";
+                case EventKind.EnterpriseSeatChurned: return who + " lost the enterprise seat in " + c.Sector(e.Ref).Name + ".";
+                case EventKind.EnterpriseSeatCompleted: return who + " finished an enterprise seat term in " + c.Sector(e.Ref).Name + ".";
+                case EventKind.EnterpriseSeatRenewed: return who + " renewed the enterprise seat in " + c.Sector(e.Ref).Name + ".";
+                case EventKind.EnterpriseSeatTerminated: return who + " walked away from the enterprise seat in " + c.Sector(e.Ref).Name + " (penalty $" + e.Amount + ").";
                 case EventKind.StaffPoached:
                     {
                         LabState victim = state.Lab(e.SubjectId);

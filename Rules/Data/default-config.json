@@ -6126,6 +6126,46 @@
       }
     }
   ],
+  "sla": {
+    "maxLevel": 0,
+    "breachBelowPermille": 900
+  },
+  "enterpriseDeals": {
+    "opensYear": 2018,
+    "prospectWindowWeeks": 24,
+    "churnReputationPenalty": 25,
+    "minSalesStaff": 1,
+    "eligibleSectorIds": [
+      "customer-support",
+      "enterprise-knowledge",
+      "coding-agents",
+      "government-services",
+      "cybersecurity",
+      "finance-trading"
+    ],
+    "tiers": [
+      {
+        "id": "standard",
+        "slaServedPermille": 700,
+        "revenueBonusPermille": 150,
+        "termWeeks": 96,
+        "strikeLimit": 3,
+        "pursuitCash": 40000,
+        "signCash": 120000,
+        "breakPenalty": 80000
+      },
+      {
+        "id": "premium",
+        "slaServedPermille": 850,
+        "revenueBonusPermille": 280,
+        "termWeeks": 48,
+        "strikeLimit": 2,
+        "pursuitCash": 65000,
+        "signCash": 200000,
+        "breakPenalty": 150000
+      }
+    ]
+  },
   "releaseReview": {
     "opensYear": 2017,
     "baseSlotsPerMonth": 1,

@@ -45,6 +45,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
+            if (fromSchema < 31) MigrateTo31(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -430,6 +431,17 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "releaseReviews", JsonValue.Array()));
+        }
+
+        static void MigrateTo31(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "enterpriseDeals", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "slaLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaLockedUntil", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "slaStrikes", JsonValue.Of(0L));
+            });
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

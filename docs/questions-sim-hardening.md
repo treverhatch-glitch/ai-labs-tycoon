@@ -569,6 +569,35 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q206. Q193–Q198 timed world programs? DECIDED: **dropped** (knob-drift template)
 - Hatch HOLD: do not ship pay-cash-until-tick modifiers; unpushed squash reverted from `2b71f88` base.
 
+### Q208. Enterprise seat scope? DECIDED: player-only pipeline on config sector list
+- Options: (a) all labs; (b) player only; (c) enterprise domain sectors only auto.
+- Choice: **(b)** — `EnterpriseDealSystem.Enabled` checks `PlayerLabId`; rivals never pursue.
+
+### Q209. SLA metric? DECIDED: `LastWeek.ServedPermille` lab-wide
+- Options: (a) per-sector compute; (b) lab-wide served permille; (c) sector revenue only.
+- Choice: **(b)** — ties seat to real serving capacity (`MarketSystem` cross-test).
+
+### Q210. Strike ladder? DECIDED: weekly miss increments, reset on pass
+- Options: (a) monthly only; (b) weekly strikes with `AtRisk`; (c) instant churn.
+- Choice: **(b)** — `strikeLimit` per tier; churn reputation from config.
+
+### Q211. Revenue bonus? DECIDED: sector `LastRevenue` × bonus permille
+- Options: (a) flat weekly cash; (b) multiply sector entry revenue; (c) total lab revenue.
+- Choice: **(b)** — paid only on SLA pass weeks.
+
+### Q212. Prospect expiry? DECIDED: `prospectWindowWeeks` → `Churned`
+- Options: (a) refund pursuit; (b) silent drop; (c) mark churned.
+- Choice: **(c)** — same terminal phase as walk-away.
+
+### Q213. Schema save field? DECIDED: schema **31** `enterpriseDeals` array
+- Options: (a) embed in sector state; (b) per-lab list; (c) no save (session only).
+- Choice: **(b)** — `MigrateTo31`.
+
+### Q214. Enterprise seat vs era service-level pledge (PR #20 / Q329)? DECIDED: suppress deal strike on shared served miss
+- Options: (a) independent — same week can strike both; (b) cap — pledge served breach suppresses deal strike/rep/slip; (c) merge systems.
+- Choice: **(b)** — `ServiceLevelOverlap.PledgeServedBreachSuppressesDealStrike`; deal still misses bonus; incident pledge breaks do not suppress; merge runs `Sla` before `EnterpriseDealSystem`.
+- Near-duplicate? **No** — pledge is opt-in lab-wide revenue premium/refund; seats are sector contracts with tiers and term. Same signal (`LastWeek.ServedPermille`), different fiction and ledgers.
+
 ### Q207. Release review vs era ethics board (PR #19 / Q320)? DECIDED: stacked gates, one approval each
 - Options: (a) merge into one board UI; (b) review substitutes for ethics veto when approved; (c) serial gates, independent approvals.
 - Choice: **(c)** — ethics veto + rush block stay instant/opt-in at `ReleaseModel`/`RushRelease` (era); review stays monthly/mandatory for strict sectors and sandbag **claims** (rules). Order: culture gate → ethics veto → era bar → **consume review approval** → sectors (`docs/release-review.md`). Review reject penalties do not stack with a later ethics refusal; approval is not consumed until `ReleaseModel` succeeds.

@@ -234,6 +234,7 @@ namespace AiLabs.Rules.Config
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
             FundingProblems(p, c);
             ReleaseReviewProblems(p, c);
+            EnterpriseDealsProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
@@ -823,6 +824,27 @@ namespace AiLabs.Rules.Config
             if (r.StrictSectorIds.Count < 1) p.Add("releaseReview.strictSectorIds is empty");
             for (int i = 0; i < r.StrictSectorIds.Count; i++)
                 if (c.Sector(r.StrictSectorIds[i]) == null) p.Add("releaseReview.strictSectorIds names unknown sector \"" + r.StrictSectorIds[i] + "\"");
+        }
+
+        static void EnterpriseDealsProblems(List<string> p, GameConfig c)
+        {
+            EnterpriseDealsConfig e = c.EnterpriseDeals;
+            if (e == null) { p.Add("enterpriseDeals is missing"); return; }
+            if (e.Tiers.Count < 1) p.Add("enterpriseDeals.tiers is empty");
+            UniqueIds(p, "enterpriseDeals.tiers", e.Tiers);
+            if (e.EligibleSectorIds.Count < 1) p.Add("enterpriseDeals.eligibleSectorIds is empty");
+            for (int i = 0; i < e.EligibleSectorIds.Count; i++)
+                if (c.Sector(e.EligibleSectorIds[i]) == null)
+                    p.Add("enterpriseDeals.eligibleSectorIds names unknown sector \"" + e.EligibleSectorIds[i] + "\"");
+            if (e.ProspectWindowWeeks < 1) p.Add("enterpriseDeals.prospectWindowWeeks must be at least 1");
+            for (int i = 0; i < e.Tiers.Count; i++)
+            {
+                EnterpriseDealTierConfig t = e.Tiers[i];
+                string who = "enterpriseDeals.tiers[" + t.Id + "]";
+                Permille(p, who + " slaServedPermille", t.SlaServedPermille);
+                if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
+                if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
+            }
         }
 
         static void FundingProblems(List<string> p, GameConfig c)

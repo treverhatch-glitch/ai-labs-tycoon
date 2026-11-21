@@ -306,10 +306,11 @@ public class ReleaseReviewTests
         var g = GateYear();
         var m = Trained(g, 600, 90_000);
         g.Do(Command.SubmitReleaseReview(g.Id, m.Id, 600, Strict));
-        string json = g.Sim.Save();
+        string json = SaveSchemaPretend.At(g.C, 30, g.Sim.Save());
         var loaded = Simulation.Load(g.C, json);
-        Assert.Equal(30, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Single(loaded.Player.ReleaseReviews);
+        Assert.Empty(loaded.Player.EnterpriseDeals);
     }
 
     [Fact]

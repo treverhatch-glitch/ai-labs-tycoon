@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 30;
+        public const int CurrentSchema = 31;
 
         public int Schema;
         public string ConfigVersion;
@@ -221,6 +221,12 @@ namespace AiLabs.Rules.State
         public int ProtestMitigationUntilTick = -1;
         /// <summary>Monthly release review packages (player API-era gate).</summary>
         public List<ReleaseReviewCase> ReleaseReviews = new List<ReleaseReviewCase>();
+        /// <summary>Enterprise seat SLA deals (player pipeline).</summary>
+        public List<EnterpriseDealState> EnterpriseDeals = new List<EnterpriseDealState>();
+        /// <summary>Era Q329 service-level pledge; saved for Q214 overlap. Zero when pledge off.</summary>
+        public int SlaLevel;
+        public int SlaLockedUntil = -1;
+        public int SlaStrikes;
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -341,6 +347,10 @@ namespace AiLabs.Rules.State
             s.Int("debtForbearanceUntilTick", ref DebtForbearanceUntilTick);
             s.Int("protestMitigationUntilTick", ref ProtestMitigationUntilTick);
             s.ObjList("releaseReviews", ref ReleaseReviews);
+            s.ObjList("enterpriseDeals", ref EnterpriseDeals);
+            s.Int("slaLevel", ref SlaLevel);
+            s.Int("slaLockedUntil", ref SlaLockedUntil);
+            s.Int("slaStrikes", ref SlaStrikes);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }
