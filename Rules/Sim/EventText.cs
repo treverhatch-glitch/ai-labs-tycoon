@@ -311,6 +311,16 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 0 ? who + " paid " + e.Amount + " to the people behind a breach." : e.Pick == 1 ? who + " told everyone about a breach." : who + " locked its systems down after a breach for " + e.Amount + ".";
                 case EventKind.BreachLeaked:
                     return "A breach at " + who + " leaked; the lab lost " + e.Amount + " reputation.";
+                case EventKind.ContractOffered:
+                    return "A government offered " + who + " a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract worth " + e.Amount + " over " + e.Pick + " weeks.";
+                case EventKind.ContractAccepted:
+                    return who + " took on a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract.";
+                case EventKind.ContractDeclined:
+                    return e.Pick == 1 ? who + " turned down a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract." : "An offer of a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract to " + who + " lapsed.";
+                case EventKind.ContractInstalment:
+                    return e.Pick == 1 ? who + " was paid " + e.Amount + " on its government contract." : who + " missed an instalment on its government contract.";
+                case EventKind.ContractEnded:
+                    return e.Pick == 1 ? who + " completed its government contract." : e.Pick == 0 ? who + " lost its government contract after missed instalments and paid " + e.Amount + "." : e.Pick == 2 ? who + " lost its government contract to a leak and paid " + e.Amount + "." : who + " walked away from its government contract and paid " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

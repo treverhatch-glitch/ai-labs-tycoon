@@ -311,6 +311,7 @@ and says why in the commit message.
 128. **The five new systems together.** ~~Done~~: sabbaticals refused for people already away, the desk skips people on leave, scholars' seats against hires, `InternsSupportSabbaticalRequisitionsScholarsTogetherTests` (Q370).
 129. **The litigation docket (claims with a strength, settlement, counsel, one appeal).** ~~Done~~: `litigation` data, `SettleCase`, `RetainFirm`, `AppealCase`, `Litigation`, schema 81, `LitigationTests`, `docs/content/litigation.md` (Q371).
 130. **Information security (tiers, exposure, breach answers).** ~~Done~~: `security` data, `BuildSecurity`, `AnswerBreach`, `Security`, schema 81, `SecurityTests`, `docs/content/security.md` (Q372).
+131. **Government contracts (offers in turn, clearance, kept-free engineers, instalments).** ~~Done~~: `govContracts` data, `AcceptContract`, `DeclineContract`, `AbandonContract`, `GovContracts`, schema 82, `GovContractsTests`, `docs/content/government-contracts.md` (Q373).
 
 ## Rules: later
 

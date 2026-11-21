@@ -99,7 +99,10 @@ namespace AiLabs.Rules.Sim
         RetainFirm,
         AppealCase,
         BuildSecurity,
-        AnswerBreach
+        AnswerBreach,
+        AcceptContract,
+        DeclineContract,
+        AbandonContract
     }
 
     /// <summary>
@@ -899,6 +902,24 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerBreach, labId);
             c.Count = choice;
             return c;
+        }
+
+        /// <summary>Accepts the contract on offer. It needs the security tier, free engineers and no other contract; accepting can cost reputation and the safety staff's morale.</summary>
+        public static Command AcceptContract(int labId)
+        {
+            return Make(CommandKind.AcceptContract, labId);
+        }
+
+        /// <summary>Turns the contract on offer down. The next offer comes after the usual wait.</summary>
+        public static Command DeclineContract(int labId)
+        {
+            return Make(CommandKind.DeclineContract, labId);
+        }
+
+        /// <summary>Walks away from the contract in force: the penalty is paid and reputation is lost.</summary>
+        public static Command AbandonContract(int labId)
+        {
+            return Make(CommandKind.AbandonContract, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

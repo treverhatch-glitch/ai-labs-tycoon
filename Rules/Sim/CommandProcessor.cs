@@ -105,6 +105,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.AcceptContract: return AcceptContract(c, state, lab, cmd);
+                case CommandKind.DeclineContract: return DeclineContract(c, state, lab, cmd);
+                case CommandKind.AbandonContract: return AbandonContract(c, state, lab, cmd);
                 case CommandKind.SettleCase: return SettleCase(c, state, lab, cmd);
                 case CommandKind.RetainFirm: return RetainFirm(c, state, lab, cmd);
                 case CommandKind.AppealCase: return AppealCase(c, state, lab, cmd);

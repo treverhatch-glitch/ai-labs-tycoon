@@ -1911,6 +1911,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads reputation, trust, the litigation docket (Q371) and models on sale; no random numbers; only the player's lab.
 - Alternatives: random breaches (rejected: the player could never prepare), a single "security level" with no upkeep (rejected: no decision).
 
+### Q373. Will a government ever hire the lab? DECIDED: contracts offered in turn that need a security tier and kept-free engineers, paid in instalments
+- New `govContracts` data (with a list of three kinds), commands `AcceptContract`, `DeclineContract` and `AbandonContract`, `GovContracts` system, events `ContractOffered`, `ContractAccepted`, `ContractDeclined`, `ContractInstalment` and `ContractEnded` and nine saved lab fields (schema 82). Once the lab has a model on sale, and 30 weeks after the last contract ended or was turned down, a government offers the next kind in turn: public services (no clearance, 2 engineers, 24 weeks, 90,000), intelligence analysis (tier 2, 3 engineers, 26 weeks, 240,000, safety morale -150, reputation -10) or defence systems (tier 3, 4 engineers, 30 weeks, 600,000, safety morale -300, reputation -30). An offer stays open 8 weeks. Accepting needs the security tier and enough engineers who are free (not on leave, not on the desk, one always kept free); the last engineers in the list are kept on it for the term. The pay comes in 3 instalments, each paid if the engineers are still free on its date and missed if not; 2 misses end the contract with a penalty of 30% of its pay and lost reputation, walking away costs the same and 20 reputation, and finishing gives reputation back.
+- Security (Q372) gates the contract and a leaked breach ends a cleared one at once; the support desk (Q366) takes fewer engineers while a contract is in force; sabbaticals (Q367) are refused for the contract's engineers. No random numbers; only the player's lab.
+- Alternatives: contracts whenever the player asks (rejected: no waiting, no choice of timing), pay up front (rejected: nothing to lose by walking away).
+
 ## Open
 
 None.

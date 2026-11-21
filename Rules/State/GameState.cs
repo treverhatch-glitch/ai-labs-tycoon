@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 81;
+        public const int CurrentSchema = 82;
 
         public int Schema;
         public string ConfigVersion;
@@ -279,6 +279,17 @@ namespace AiLabs.Rules.State
         public int Exposure;
         public int BreachDue;
         public int Ransoms;
+        /// <summary>The government contract in force (empty when none), the week it began and ends, the instalments paid and missed.</summary>
+        public string ContractKind = "";
+        public int ContractStart;
+        public int ContractDue;
+        public int ContractPaid;
+        public int ContractMissed;
+        /// <summary>The contract on offer (empty when none), the week the offer lapses, which offer comes next and the week the next one is due.</summary>
+        public string OfferKind = "";
+        public int OfferDue;
+        public int OfferSeq;
+        public int ContractNext;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -539,6 +550,15 @@ namespace AiLabs.Rules.State
             s.Int("exposure", ref Exposure);
             s.Int("breachDue", ref BreachDue);
             s.Int("ransoms", ref Ransoms);
+            s.Str("contractKind", ref ContractKind);
+            s.Int("contractStart", ref ContractStart);
+            s.Int("contractDue", ref ContractDue);
+            s.Int("contractPaid", ref ContractPaid);
+            s.Int("contractMissed", ref ContractMissed);
+            s.Str("offerKind", ref OfferKind);
+            s.Int("offerDue", ref OfferDue);
+            s.Int("offerSeq", ref OfferSeq);
+            s.Int("contractNext", ref ContractNext);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

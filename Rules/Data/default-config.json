@@ -5842,6 +5842,22 @@
     "discloseReputation": 20,
     "leakReputation": 40
   },
+  "govContracts": {
+    "enabled": 1,
+    "offerEveryWeeks": 30,
+    "offerWeeks": 8,
+    "installments": 3,
+    "missLimit": 2,
+    "penaltyPermille": 300,
+    "abandonReputation": 20,
+    "keepFree": 1,
+    "moraleRole": "safety",
+    "kinds": [
+      { "id": "public-services", "name": "Public services", "clearance": 0, "weeks": 24, "pay": 90000, "people": 2, "morale": 0, "acceptReputation": 0, "doneReputation": 15 },
+      { "id": "intelligence", "name": "Intelligence analysis", "clearance": 2, "weeks": 26, "pay": 240000, "people": 3, "morale": 150, "acceptReputation": -10, "doneReputation": 10 },
+      { "id": "defence", "name": "Defence systems", "clearance": 3, "weeks": 30, "pay": 600000, "people": 4, "morale": 300, "acceptReputation": -30, "doneReputation": 5 }
+    ]
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

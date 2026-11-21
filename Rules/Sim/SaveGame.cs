@@ -176,6 +176,18 @@ namespace AiLabs.Rules.Sim
                     if (lab.Exposure < 0 || lab.BreachDue < 0 || lab.Ransoms < 0 || ((lab.SecurityTier > 0 || lab.SecurityBuilding > 0 || lab.Exposure > 0 || lab.BreachDue > 0 || lab.Ransoms > 0) && lab.Id != state.PlayerLabId))
                         p.Add(who + " has security exposure (" + lab.Exposure + ", breach week " + lab.BreachDue + ", ransoms " + lab.Ransoms + ") that the data does not allow");
                 }
+                {
+                    bool contract = lab.ContractKind.Length > 0;
+                    bool offer = lab.OfferKind.Length > 0;
+                    if (contract && (c.GovContracts.Kind(lab.ContractKind) == null || lab.ContractDue <= lab.ContractStart || lab.ContractPaid < 0 || lab.ContractMissed < 0 || lab.ContractPaid + lab.ContractMissed > c.GovContracts.Installments || lab.ContractMissed >= c.GovContracts.MissLimit))
+                        p.Add(who + " has a government contract (" + lab.ContractKind + ", weeks " + lab.ContractStart + " to " + lab.ContractDue + ") that the data does not allow");
+                    if (!contract && (lab.ContractStart != 0 || lab.ContractDue != 0 || lab.ContractPaid != 0 || lab.ContractMissed != 0))
+                        p.Add(who + " has contract dates but no contract");
+                    if (offer && (contract || c.GovContracts.Kind(lab.OfferKind) == null || lab.OfferDue < 1)) p.Add(who + " has an offer (" + lab.OfferKind + ") that the data does not allow");
+                    if (!offer && lab.OfferDue != 0) p.Add(who + " has an offer date but no offer");
+                    if (lab.OfferSeq < 0 || lab.ContractNext < 0 || ((contract || offer || lab.OfferSeq > 0 || lab.ContractNext > 0) && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has government contract state that the data does not allow");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

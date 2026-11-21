@@ -94,6 +94,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 79) MigrateTo79(root);
             if (fromSchema < 80) MigrateTo80(root);
             if (fromSchema < 81) MigrateTo81(root);
+            if (fromSchema < 82) MigrateTo82(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -457,6 +458,18 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 82: no lab has a government contract or an offer.</summary>
+        static void MigrateTo82(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "contractKind", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "offerKind", JsonValue.Of(""));
+                foreach (string key in new[] { "contractStart", "contractDue", "contractPaid", "contractMissed", "offerDue", "offerSeq", "contractNext" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

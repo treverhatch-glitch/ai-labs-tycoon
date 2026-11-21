@@ -94,6 +94,7 @@ namespace AiLabs.Rules.Systems
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - PressSystem.Damp(c, lab, c.Security.LeakReputation));
             Expose(c, state, lab);
             SueFor(c, state, lab, true);
+            GovContracts.OnLeak(c, state, lab);
             lab.Exposure = 0;
             lab.BreachDue = 0;
             Events.Add(state, EventKind.BreachLeaked, lab.Id, -1, before - lab.Reputation, "");

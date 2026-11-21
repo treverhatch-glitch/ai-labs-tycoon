@@ -292,7 +292,17 @@ namespace AiLabs.Rules.State
         /// <summary>A breach was answered. Amount is the cost, Pick 0 ransom, 1 disclosure, 2 lockdown.</summary>
         BreachAnswered,
         /// <summary>An unanswered breach leaked. Amount is the reputation it cost.</summary>
-        BreachLeaked
+        BreachLeaked,
+        /// <summary>A government offered a contract. Ref is its kind, Amount its pay, Pick the weeks it lasts.</summary>
+        ContractOffered,
+        /// <summary>A contract was accepted. Ref is its kind, Amount its pay.</summary>
+        ContractAccepted,
+        /// <summary>An offer ended without a contract. Ref is its kind, Pick 1 when the lab turned it down and 0 when it lapsed.</summary>
+        ContractDeclined,
+        /// <summary>An instalment fell due. Ref is the kind, Amount what was paid, Pick 1 paid and 0 missed.</summary>
+        ContractInstalment,
+        /// <summary>A contract ended. Ref is the kind, Amount the penalty paid, Pick 1 completed, 0 ended for misses, -1 abandoned, 2 lost to a leak.</summary>
+        ContractEnded
     }
 
     /// <summary>

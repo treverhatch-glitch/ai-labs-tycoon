@@ -116,6 +116,7 @@ namespace AiLabs.Rules.Config
             ScholarsProblems(p, c);
             LitigationProblems(p, c);
             SecurityProblems(p, c);
+            GovContractsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1251,6 +1252,33 @@ namespace AiLabs.Rules.Config
             if (k.ExposurePerModel < 1 || k.ExposurePerModel > 1000 || k.ReliefPerTier < 0 || k.ReliefPerTier > 1000) p.Add("security.exposurePerModel must be from 1 to 1000 and reliefPerTier from 0 to 1000");
             if (k.Threshold < 1 || k.Threshold > 100000) p.Add("security.threshold must be from 1 to 100000");
             if (k.DiscloseReputation < 0 || k.DiscloseReputation > 500 || k.LeakReputation < k.DiscloseReputation || k.LeakReputation > 500) p.Add("security.leakReputation must be at least discloseReputation and no more than 500");
+        }
+
+        static void GovContractsProblems(List<string> p, GameConfig c)
+        {
+            GovContractsConfig k = c.GovContracts;
+            if (k == null) { p.Add("govContracts is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("govContracts.enabled must be 0 or 1");
+            if (k.OfferEveryWeeks < 1 || k.OfferEveryWeeks > 520 || k.OfferWeeks < 1 || k.OfferWeeks > 104) p.Add("govContracts.offerEveryWeeks must be from 1 to 520 and offerWeeks from 1 to 104");
+            if (k.Installments < 1 || k.Installments > 20) p.Add("govContracts.installments must be from 1 to 20");
+            if (k.MissLimit < 1 || k.MissLimit > k.Installments) p.Add("govContracts.missLimit must be from 1 to installments");
+            if (k.PenaltyPermille < 0 || k.PenaltyPermille > 5000) p.Add("govContracts.penaltyPermille must be from 0 to 5000");
+            if (k.AbandonReputation < 0 || k.AbandonReputation > 500) p.Add("govContracts.abandonReputation must be from 0 to 500");
+            if (k.KeepFree < 0 || k.KeepFree > 20) p.Add("govContracts.keepFree must be from 0 to 20");
+            if (c.Role(k.MoraleRole) == null) p.Add("govContracts.moraleRole names the unknown role \"" + k.MoraleRole + "\"");
+            if (k.Kinds.Count == 0) p.Add("govContracts.kinds is empty");
+            UniqueIds(p, "govContracts.kinds", k.Kinds);
+            for (int i = 0; i < k.Kinds.Count; i++)
+            {
+                ContractKindConfig kind = k.Kinds[i];
+                string who = "govContracts.kinds[" + i + "]";
+                if (kind.Clearance < 0 || kind.Clearance > 10) p.Add(who + " needs a clearance from 0 to 10");
+                if (kind.Weeks < k.Installments || kind.Weeks > 520) p.Add(who + " must last from installments to 520 weeks");
+                if (kind.Pay < k.Installments) p.Add(who + " must pay at least one a instalment");
+                if (kind.People < 1 || kind.People > 20) p.Add(who + " must need from 1 to 20 engineers");
+                if (kind.Morale < 0 || kind.Morale > MathI.Permille) p.Add(who + " has a morale cost from 0 to 1000");
+                if (kind.AcceptReputation < -500 || kind.AcceptReputation > 500 || kind.DoneReputation < 0 || kind.DoneReputation > 500) p.Add(who + " has a reputation outside the allowed range");
+            }
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
