@@ -6649,6 +6649,8 @@
   "runs": {
     "defaultApproachId": "standard",
     "defaultCheckpointId": "rare",
+    "engineerSavingPermillePerStaff": 60,
+    "engineerSavingCapPermille": 600,
     "approaches": [
       {
         "id": "standard",

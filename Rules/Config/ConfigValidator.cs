@@ -561,6 +561,8 @@ namespace AiLabs.Rules.Config
             if (r == null) { p.Add("runs is missing"); return; }
             UniqueIds(p, "runs.approaches", r.Approaches);
             UniqueIds(p, "runs.checkpoints", r.Checkpoints);
+            if (r.EngineerSavingPermillePerStaff < 0) p.Add("runs.engineerSavingPermillePerStaff must be non-negative");
+            if (r.EngineerSavingCapPermille < 0 || r.EngineerSavingCapPermille > MathI.Permille) p.Add("runs.engineerSavingCapPermille must be from 0 to 1000");
             ApproachConfig fallbackApproach = r.Approach(r.DefaultApproachId);
             if (fallbackApproach == null) p.Add("runs.defaultApproachId \"" + r.DefaultApproachId + "\" is not an approach");
             else if (fallbackApproach.CapabilityPermille != 0 || fallbackApproach.FailurePermillePerWeek != 0)

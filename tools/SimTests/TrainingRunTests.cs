@@ -227,6 +227,73 @@ public class TrainingRunTests
         Assert.True(fails < weeks, "and not every week");
     }
 
+    // ---- engineers
+
+    [Fact]
+    public void Engineers_take_a_share_off_the_failure_chance_up_to_a_cap()
+    {
+        Game g = Lab(c =>
+        {
+            Sure(c, 400, 500);
+            c.Runs.EngineerSavingPermillePerStaff = 250;
+            c.Runs.EngineerSavingCapPermille = 600;
+        });
+        ModelState m = g.Train("mini", 600);
+        g.Do(Command.SetRunApproach(g.Id, m.Id, "experimental"));
+        Assert.Equal(1, LabQueries.StaffByFunction(g.C, g.Me, RoleFunction.Engineering));
+        Assert.Equal(250, TrainingRuns.EngineerSavingPermille(g.C, g.Me));
+        Assert.Equal(300, TrainingRuns.FailureChancePermille(g.C, g.Me, m));
+        g.Hire("engineer", 3);
+        Assert.Equal(600, TrainingRuns.EngineerSavingPermille(g.C, g.Me));
+        Assert.Equal(160, TrainingRuns.FailureChancePermille(g.C, g.Me, m));
+    }
+
+    [Fact]
+    public void Engineers_save_nothing_on_a_run_that_cannot_fail_and_the_shipped_default_is_modest()
+    {
+        Game g = Lab();
+        ModelState m = g.Train("mini", 600);
+        Assert.Equal(0, TrainingRuns.FailureChancePermille(g.C, g.Me, m));
+        Assert.True(g.C.Runs.EngineerSavingPermillePerStaff > 0);
+        Assert.True(g.C.Runs.EngineerSavingCapPermille < MathI.Permille, "engineers never make a variant run safe");
+        g.Do(Command.SetRunApproach(g.Id, m.Id, "experimental"));
+        Assert.True(TrainingRuns.FailureChancePermille(g.C, g.Me, m) > 0);
+    }
+
+    [Fact]
+    public void A_lab_with_engineers_fails_fewer_weeks_than_the_same_lab_without()
+    {
+        int Failures(int engineers)
+        {
+            Game g = Lab(c =>
+            {
+                Sure(c, 400, 100);
+                c.Runs.EngineerSavingPermillePerStaff = 300;
+                c.Runs.EngineerSavingCapPermille = 900;
+            });
+            if (engineers > 1) g.Hire("engineer", engineers - 1);
+            ModelState m = g.Train("mini", 600);
+            g.Do(Command.SetRunApproach(g.Id, m.Id, "experimental"));
+            int weeks = 0;
+            while (m.Status == ModelStatus.Training && weeks < 600)
+            {
+                g.Weeks(1);
+                weeks++;
+            }
+            return g.State.Events.Count(e => e.Kind == EventKind.TrainingFailed);
+        }
+
+        Assert.True(Failures(4) <= Failures(1), "more engineers should not mean more failures");
+    }
+
+    [Fact]
+    public void The_validator_catches_a_bad_engineer_saving()
+    {
+        AssertProblem(Problems(c => c.Runs.EngineerSavingPermillePerStaff = -1), "engineerSavingPermillePerStaff");
+        AssertProblem(Problems(c => c.Runs.EngineerSavingCapPermille = 1001), "engineerSavingCapPermille");
+        AssertProblem(Problems(c => c.Runs.EngineerSavingCapPermille = -1), "engineerSavingCapPermille");
+    }
+
     [Fact]
     public void The_outcome_uses_none_of_the_shared_dice()
     {

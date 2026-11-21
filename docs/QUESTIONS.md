@@ -1299,6 +1299,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)**. `approach` and `checkpoints` on every model (`MigrateTo40` sets both empty).
 - Why: two ids, two fields, in the same shape as the objective. The golden moved because every model carries them; with the sync lines, the hooks, the schema number and the data removed the previous golden returned exactly.
 
+### Q270. How do engineers cut failed runs? DECIDED: each engineer takes 6% off a variant run's weekly failure chance, up to 60%
+- Options: (a) a flat chance cut per engineer; (b) a share of the chance per engineer, with a cap; (c) engineers set the checkpoint loss instead.
+- Recommendation and choice: **(b)**, `engineerSavingPermillePerStaff` 60 and `engineerSavingCapPermille` 600 in the `runs` data. The chance a variant run fails in a week is its approach's chance (1.5%) less that share, rounded down to whole permille.
+- Why: the bible lists "fewer failed runs" among what engineers do. Training speed already scales with engineers up to a cap, so the same shape is used. A share of the chance cannot push it below zero, and the cap means no crew makes a variant run safe. Known architectures never fail, so nothing changes unless the player chose a variant.
+
+### Q271. Does this need a save change or move the golden? DECIDED: no, the chance is worked out each week from the staff on the books
+- Options: (a) store a per-model saving; (b) work it out when the week runs.
+- Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move, since the golden run trains only known architectures.
+- Why: derived numbers are not saved (Q182 practice); an engineer fired mid-run should change the chance the next week.
+
 ## Open
 
 None.

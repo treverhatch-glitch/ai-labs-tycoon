@@ -213,6 +213,8 @@ and says why in the commit message.
 38. **Experimental runs and checkpoints (bible ch. 6 recipe table, "running it").** ~~Done~~: `runs` in the data, `Command.SetRunApproach` / `SetCheckpoints`,
     `TrainingRuns` system (failure hash, loss, weekly cost, capability bonus), `EventKind.TrainingFailed` / `RunSetUp`, save schema 40 (Q267-Q269), `TrainingRunTests`,
     `docs/content/training-runs.md`. Still open: the recipe-screen rows (Unity), other failure causes, rivals trying variants.
+39. **Engineers cut failed runs (bible ch. 7 roles).** ~~Done~~: `runs.engineerSavingPermillePerStaff` / `engineerSavingCapPermille`, `TrainingRuns.EngineerSavingPermille`, failure chance now takes
+    the lab (Q270-Q271), four tests added to `TrainingRunTests`; no schema, golden unchanged.
 
 ## Rules: later
 
