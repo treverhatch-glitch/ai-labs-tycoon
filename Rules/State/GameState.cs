@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 12;
+        public const int CurrentSchema = 14;
 
         public int Schema;
         public string ConfigVersion;
@@ -126,6 +126,8 @@ namespace AiLabs.Rules.State
         public int IncidentsThisMonth;
         /// <summary>The share of compute that goes to training while a run is active. The rest serves customers.</summary>
         public int TrainingSharePermille;
+        /// <summary>Data mix for the next training run (config training.dataSources id).</summary>
+        public string TrainingDataSourceId = "internal";
         /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
         public int FounderSharePermille;
         /// <summary>Investor seats on the board after venture rounds.</summary>
@@ -229,6 +231,7 @@ namespace AiLabs.Rules.State
             s.ObjList("blocs", ref Blocs);
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
+            s.Str("trainingDataSourceId", ref TrainingDataSourceId);
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.StrList("fundingRounds", ref FundingRounds);
@@ -332,6 +335,9 @@ namespace AiLabs.Rules.State
         public int LastIncidentTick;
         public int Incidents;
         public int Corruption;
+        public bool OpenWeights;
+        /// <summary>training.dataSources id used for this run.</summary>
+        public string DataSourceId = "internal";
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -360,6 +366,8 @@ namespace AiLabs.Rules.State
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
             s.Int("corruption", ref Corruption);
+            s.Bool("openWeights", ref OpenWeights);
+            s.Str("dataSourceId", ref DataSourceId);
             s.StrList("sectors", ref Sectors);
         }
     }

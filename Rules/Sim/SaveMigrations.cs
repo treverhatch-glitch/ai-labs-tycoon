@@ -27,6 +27,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 10) MigrateTo10(c, root);
             if (fromSchema < 11) MigrateTo11(root);
             if (fromSchema < 12) MigrateTo12(root);
+            if (fromSchema < 13) MigrateTo13(root);
+            if (fromSchema < 14) MigrateTo14(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -259,6 +261,23 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "sectors", sector =>
             {
                 JsonPatch.ForEach(sector, "entries", entry => JsonPatch.AddIfMissing(entry, "pricePermille", JsonValue.Of((long)MathI.Permille)));
+            });
+        }
+
+        static void MigrateTo13(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", model => JsonPatch.AddIfMissing(model, "openWeights", JsonValue.Of(false)));
+            });
+        }
+
+        static void MigrateTo14(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "trainingDataSourceId", JsonValue.Of("internal"));
+                JsonPatch.ForEach(lab, "models", model => JsonPatch.AddIfMissing(model, "dataSourceId", JsonValue.Of("internal")));
             });
         }
 

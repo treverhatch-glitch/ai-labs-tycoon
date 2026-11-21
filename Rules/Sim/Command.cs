@@ -9,7 +9,7 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, ReleaseModel, SetSectorPrice,
+        ResearchTech, StartTraining, ReleaseModel, SetSectorPrice, SetOpenWeights, SetTrainingDataSource,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
@@ -283,6 +283,22 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetSectorPrice, labId);
             c.Id = sectorId;
             c.Permille = pricePermille;
+            return c;
+        }
+
+        /// <summary><paramref name="open"/> is 0 for closed weights, non-zero for open.</summary>
+        public static Command SetOpenWeights(int labId, int modelId, bool open)
+        {
+            Command c = Make(CommandKind.SetOpenWeights, labId);
+            c.TargetId = modelId;
+            c.Count = open ? 1 : 0;
+            return c;
+        }
+
+        public static Command SetTrainingDataSource(int labId, string dataSourceId)
+        {
+            Command c = Make(CommandKind.SetTrainingDataSource, labId);
+            c.Id = dataSourceId;
             return c;
         }
 

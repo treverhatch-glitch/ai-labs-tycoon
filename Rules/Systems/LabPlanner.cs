@@ -470,6 +470,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelLineConfig line = c.Training.Lines[i];
                 if (!LabQueries.LineUnlocked(c, lab, line.Id)) continue;
+                if (lab.Controller != LabController.Player && line.SpecialistQualityBonusPermille > 0) continue;
                 bool report = first;
                 first = false;
                 // A run is how a lab earns its next dollar, so it may dip into half of the reserve.

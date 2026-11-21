@@ -40,6 +40,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.StartTraining: return StartTraining(c, state, lab, cmd);
                 case CommandKind.ReleaseModel: return ReleaseModel(c, state, lab, cmd);
                 case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
+                case CommandKind.SetOpenWeights: return SetOpenWeights(c, state, lab, cmd);
+                case CommandKind.SetTrainingDataSource: return SetTrainingDataSource(c, state, lab, cmd);
                 case CommandKind.BuyLand: return BuyLand(c, state, lab, cmd);
                 case CommandKind.SellLand: return SellLand(c, state, lab, cmd);
                 case CommandKind.LeaseColo: return LeaseColo(c, state, lab, cmd);
@@ -292,7 +294,12 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.InvalidArgument, "The alignment share is from 0 to " + MaxAlignmentSharePermille + ": some of the run has to train the model.");
             if (LabQueries.ActiveRuns(lab) >= c.Training.MaxConcurrentRuns)
                 return Fail(CommandError.TooManyRuns, "The lab can train " + c.Training.MaxConcurrentRuns + " models at once.");
+            string sourceId = lab.TrainingDataSourceId;
+            if (string.IsNullOrEmpty(sourceId)) sourceId = "internal";
+            DataSourceConfig source = c.Training.DataSource(sourceId);
+            if (source == null) return Fail(CommandError.UnknownId, "There is no data source \"" + sourceId + "\".");
             long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
+            prepCost = MathI.MulPermille(prepCost, source.PrepCostPermille);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
             var model = new ModelState();
@@ -307,6 +314,7 @@ namespace AiLabs.Rules.Sim
             model.TrainedTick = -1;
             model.ReleasedTick = -1;
             model.LastIncidentTick = -1;
+            model.DataSourceId = source.Id;
             lab.Models.Add(model);
             Finance.Spend(lab, LedgerLine.Training, prepCost);
             Events.Add(state, EventKind.TrainingStarted, lab.Id, model.Id, prepCost, model.Name);

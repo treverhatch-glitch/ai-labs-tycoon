@@ -542,7 +542,10 @@
       {
         "id": "code-models", "era": "it-writes", "name": "Code Completion Models", "cost": 37000, "requires": [ "pretraining-at-scale" ],
         "blurb": "It autocompletes your function. And your bugs, faithfully.",
-        "effects": [ { "kind": "CapabilityPermille", "amount": 3000, "id": "" } ]
+        "effects": [
+          { "kind": "CapabilityPermille", "amount": 3000, "id": "" },
+          { "kind": "UnlockLine", "amount": 0, "id": "code-specialist" }
+        ]
       },
       {
         "id": "safety-evals", "era": "it-writes", "name": "Safety Evaluations v1", "cost": 25000, "requires": [ "adversarial-tests", "attention-arch" ],
@@ -805,10 +808,17 @@
     "luckPermille": 80,
     "engineerBonusPermille": 50,
     "engineerBonusCapPermille": 600,
+    "dataSources": [
+      { "id": "internal", "name": "Your own users", "prepCostPermille": 1000, "capabilityBonusPermille": 0 },
+      { "id": "licensed", "name": "Licensed corpora", "prepCostPermille": 1300, "capabilityBonusPermille": 80 },
+      { "id": "synthetic", "name": "Synthetic mix", "prepCostPermille": 850, "capabilityBonusPermille": -60 }
+    ],
     "lines": [
-      { "id": "mini", "name": "Mini", "computeRequired": 500, "baseCapability": 100, "prepCost": 4000, "servingCostPermille": 600, "locked": false },
-      { "id": "mid", "name": "Mid", "computeRequired": 2500, "baseCapability": 240, "prepCost": 30000, "servingCostPermille": 1000, "locked": true },
-      { "id": "flagship", "name": "Flagship", "computeRequired": 12000, "baseCapability": 520, "prepCost": 250000, "servingCostPermille": 1600, "locked": true }
+      { "id": "mini", "name": "Mini", "computeRequired": 500, "baseCapability": 100, "prepCost": 4000, "servingCostPermille": 600, "locked": false, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },
+      { "id": "mid", "name": "Mid", "computeRequired": 2500, "baseCapability": 240, "prepCost": 30000, "servingCostPermille": 1000, "locked": true, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },
+      { "id": "flagship", "name": "Flagship", "computeRequired": 12000, "baseCapability": 520, "prepCost": 250000, "servingCostPermille": 1600, "locked": true, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },
+      { "id": "code-specialist", "name": "Code Specialist", "computeRequired": 3500, "baseCapability": 160, "prepCost": 22000, "servingCostPermille": 750, "locked": true,
+        "specialistSectorIds": [ "code-completion", "coding-agents" ], "specialistQualityBonusPermille": 220 }
     ]
   },
   "safety": {
@@ -837,6 +847,8 @@
     "salesBonusCapPermille": 600,
     "sectorPriceMinPermille": 300,
     "sectorPriceMaxPermille": 2000,
+    "openWeightsRevenuePermille": 750,
+    "openWeightsAppealBonusPermille": 120,
     "sectors": [
       {
         "id": "game-ai", "era": "dial-up-days", "name": "Game AI Licensing", "buyers": "game studios who need enemies, sidekicks and crowds",

@@ -104,6 +104,12 @@ namespace AiLabs.Rules.Config
             if (c.Training.MaxConcurrentRuns < 1) p.Add("training.maxConcurrentRuns must be at least 1");
             Permille(p, "training.carryoverPermille", c.Training.CarryoverPermille);
             if (c.Training.LuckPermille < 0 || c.Training.LuckPermille >= 1000) p.Add("training.luckPermille must be from 0 to 999");
+            if (c.Training.DataSources.Count == 0) p.Add("training.dataSources is empty");
+            UniqueIds(p, "training.dataSources", c.Training.DataSources);
+            foreach (DataSourceConfig src in c.Training.DataSources)
+            {
+                if (src.PrepCostPermille < 1) p.Add("data source " + src.Id + " needs prepCostPermille of at least 1");
+            }
             if (c.Training.Lines.Count == 0) p.Add("training.lines is empty");
             foreach (ModelLineConfig line in c.Training.Lines)
             {
@@ -112,6 +118,11 @@ namespace AiLabs.Rules.Config
                 if (line.PrepCost < 0) p.Add("line " + line.Id + " has a negative prepCost");
                 if (line.ServingCostPermille < 1) p.Add("line " + line.Id + " needs servingCostPermille of at least 1");
                 if (line.Locked && !Unlockable(c, line.Id)) p.Add("line " + line.Id + " is locked and no tech unlocks it");
+                if (line.SpecialistQualityBonusPermille > 0 && line.SpecialistSectorIds.Count == 0)
+                    p.Add("line " + line.Id + " is a specialist but names no sectors");
+                for (int i = 0; i < line.SpecialistSectorIds.Count; i++)
+                    if (c.Sector(line.SpecialistSectorIds[i]) == null)
+                        p.Add("line " + line.Id + " names the unknown specialist sector \"" + line.SpecialistSectorIds[i] + "\"");
             }
 
             if (c.Safety.FullAlignmentComputePermille < 1) p.Add("safety.fullAlignmentComputePermille must be at least 1");
@@ -140,6 +151,8 @@ namespace AiLabs.Rules.Config
             if (c.Market.SectorPriceMinPermille < 1) p.Add("market.sectorPriceMinPermille must be at least 1");
             if (c.Market.SectorPriceMaxPermille < c.Market.SectorPriceMinPermille)
                 p.Add("market.sectorPriceMaxPermille must be at least sectorPriceMinPermille");
+            Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
+            if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
             {

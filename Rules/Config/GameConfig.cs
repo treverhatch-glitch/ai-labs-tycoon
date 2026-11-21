@@ -482,7 +482,15 @@ namespace AiLabs.Rules.Config
         public int LuckPermille;
         public int EngineerBonusPermille;
         public int EngineerBonusCapPermille;
+        public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
         public List<ModelLineConfig> Lines;
+
+        public DataSourceConfig DataSource(string id)
+        {
+            for (int i = 0; i < DataSources.Count; i++)
+                if (DataSources[i].Id == id) return DataSources[i];
+            return null;
+        }
 
         public void Sync(Syncer s)
         {
@@ -491,7 +499,28 @@ namespace AiLabs.Rules.Config
             s.Int("luckPermille", ref LuckPermille);
             s.Int("engineerBonusPermille", ref EngineerBonusPermille);
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
+            s.ObjList("dataSources", ref DataSources);
             s.ObjList("lines", ref Lines);
+        }
+    }
+
+    public sealed class DataSourceConfig : ISync, IHasId
+    {
+        public string IdValue;
+        public string Name;
+        /// <summary>Multiplies the line prep cost when a run starts (1000 = list).</summary>
+        public int PrepCostPermille = 1000;
+        /// <summary>Applied to capability when the run finishes (can be negative).</summary>
+        public int CapabilityBonusPermille;
+
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("name", ref Name);
+            s.Int("prepCostPermille", ref PrepCostPermille);
+            s.Int("capabilityBonusPermille", ref CapabilityBonusPermille);
         }
     }
 
@@ -507,6 +536,9 @@ namespace AiLabs.Rules.Config
         public int ServingCostPermille;
         /// <summary>True when the line needs an UnlockLine tech before it can be trained.</summary>
         public bool Locked;
+        /// <summary>Sectors where this specialist line gets <see cref="SpecialistQualityBonusPermille"/>.</summary>
+        public List<string> SpecialistSectorIds = new List<string>();
+        public int SpecialistQualityBonusPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -519,6 +551,8 @@ namespace AiLabs.Rules.Config
             s.Long("prepCost", ref PrepCost);
             s.Int("servingCostPermille", ref ServingCostPermille);
             s.Bool("locked", ref Locked);
+            s.StrList("specialistSectorIds", ref SpecialistSectorIds);
+            s.Int("specialistQualityBonusPermille", ref SpecialistQualityBonusPermille);
         }
     }
 
@@ -580,6 +614,10 @@ namespace AiLabs.Rules.Config
         public int SectorPriceMinPermille = 300;
         /// <summary>Highest legal <see cref="SectorEntry.PricePermille"/>.</summary>
         public int SectorPriceMaxPermille = 2000;
+        /// <summary>Revenue multiplier when a released model's weights are open (permille, applied after sector price).</summary>
+        public int OpenWeightsRevenuePermille = 750;
+        /// <summary>Quality multiplier when weights are open (before appeal is squared).</summary>
+        public int OpenWeightsAppealBonusPermille = 120;
         public List<SectorConfig> Sectors;
 
         public void Sync(Syncer s)
@@ -589,6 +627,8 @@ namespace AiLabs.Rules.Config
             s.Int("salesBonusCapPermille", ref SalesBonusCapPermille);
             s.Int("sectorPriceMinPermille", ref SectorPriceMinPermille);
             s.Int("sectorPriceMaxPermille", ref SectorPriceMaxPermille);
+            s.Int("openWeightsRevenuePermille", ref OpenWeightsRevenuePermille);
+            s.Int("openWeightsAppealBonusPermille", ref OpenWeightsAppealBonusPermille);
             s.ObjList("sectors", ref Sectors);
         }
     }

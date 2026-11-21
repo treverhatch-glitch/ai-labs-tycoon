@@ -113,7 +113,7 @@ public class SectorPricingHardeningTests
     {
         GameConfig c = TestData.Config();
         Simulation sim = SimHardeningSupport.LoadFixture(c, file);
-        Assert.Equal(12, sim.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
         foreach (SectorState sector in sim.State.Sectors)
         {
             foreach (SectorEntry entry in sector.Entries)
@@ -127,7 +127,7 @@ public class SectorPricingHardeningTests
     {
         var c = TestData.Config();
         Simulation sim = SimHardeningSupport.LoadFixture(c, "schema4-save.json");
-        Assert.Equal(12, sim.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
         Assert.Contains(sim.State.Sectors, s => s.Entries.Count > 0);
         foreach (SectorState sector in sim.State.Sectors)
             foreach (SectorEntry entry in sector.Entries)

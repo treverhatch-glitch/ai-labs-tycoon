@@ -47,3 +47,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: **(a)** per-`SectorEntry` `pricePermille` + `SetSectorPrice`; **(b)** open weights; **(c)** specialist lines; **(d)** data sources (defer).
 - Choice: **(a)** — default 1000 permille, config min/max, scales `LastRevenue` after share split; appeal unchanged (quality still wins customers).
 - Why: smallest bible-aligned market slice; schema 12 migration; open weights and specialist lines remain later on the same NEXT row.
+
+### Q9. Open weights slice? DECIDED: model flag + market permilles
+
+- Options: (a) per-sector open listing; (b) `ModelState.openWeights` + `SetOpenWeights`, config `openWeightsRevenuePermille` / `openWeightsAppealBonusPermille`; (c) always-on for mini lines.
+- Choice: **(b)** — toggle after train; revenue scales after sector price; quality scales before appeal square.
+- Why: matches bible trade-off; schema 13 adds bool; cross-tested with sector pricing.
+
+### Q10. First specialist line? DECIDED: code-specialist on code sectors
+
+- Options: (a) image specialist; (b) `code-specialist` unlocked by `code-models`, bonus permille only in listed `specialistSectorIds`; (c) flagship-only sectors.
+- Choice: **(b)** — line data in config; `SpecialistSystem` applies bonus in `QualityParts.FromCapability` only.
+- Why: sectors and tech already exist; no new commands beyond training the line.
+
+### Q11. Data sources v1? DECIDED: lab default + prep/capability permilles
+
+- Options: (a) per-run command list; (b) `training.dataSources`, `SetTrainingDataSource`, stamp `dataSourceId` on model; (c) full lawsuit/shady track now.
+- Choice: **(b)** — prep at train start, capability at finish; schema 14 migrates `internal` default.
+- Why: bible data mix without shady; defers scrape/legal events.

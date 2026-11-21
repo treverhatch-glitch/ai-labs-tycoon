@@ -128,9 +128,13 @@ namespace AiLabs.Rules.Sim
                     if (designer == null || designer.Design(batch.ChipDesignId) == null) p.Add(who + " has chips of a design that does not exist");
                 }
                 foreach (string tech in lab.Techs) if (c.Tech(tech) == null) p.Add(who + " knows the unknown tech \"" + tech + "\"");
+                if (!string.IsNullOrEmpty(lab.TrainingDataSourceId) && c.Training.DataSource(lab.TrainingDataSourceId) == null)
+                    p.Add(who + " uses the unknown training data source \"" + lab.TrainingDataSourceId + "\"");
                 foreach (ModelState model in lab.Models)
                 {
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
+                    if (!string.IsNullOrEmpty(model.DataSourceId) && c.Training.DataSource(model.DataSourceId) == null)
+                        p.Add(model.Name + " trained on the unknown data source \"" + model.DataSourceId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }
             }

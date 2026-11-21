@@ -181,6 +181,10 @@ static class CommandFuzzerSamples
                 return Command.SignReservedCompute(labId, biasValid ? 2 : rng.Next(10));
             case CommandKind.QueueGpuPurchase:
                 return Command.QueueGpuPurchase(labId, biasValid ? 1 : rng.Next(4), HardwareBatch.Hq);
+            case CommandKind.SetOpenWeights:
+                return Command.SetOpenWeights(labId, PickTarget(g, biasValid, Lab(g).Models, m => m.Id, rng, 999), biasValid);
+            case CommandKind.SetTrainingDataSource:
+                return Command.SetTrainingDataSource(labId, biasValid ? "internal" : (rng.Next(3) == 0 ? "licensed" : "bogus"));
             case CommandKind.SetSectorPrice:
             {
                 LabState target = g.State.Lab(labId);

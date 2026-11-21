@@ -57,6 +57,9 @@ namespace AiLabs.Rules.Systems
             int sandbagGap = (int)MathI.Max(0, displayed - model.Alignment);
             var b = new QualityBreakdown();
             b.FromCapability = MathI.MulPermille(model.Capability, sector.CapabilityWeightPermille);
+            int specialist = SpecialistSystem.QualityBonusPermille(c, model.LineId, sector.Id);
+            if (specialist > 0)
+                b.FromCapability = MathI.MulPermille(b.FromCapability, MathI.Permille + specialist);
             long effectiveAlign = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, effective));
             long displayBoost = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, sandbagGap));
             b.FromAlignment = effectiveAlign;
@@ -72,7 +75,10 @@ namespace AiLabs.Rules.Systems
 
         public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            return QualityParts(c, sector, model, tick).Total;
+            long total = QualityParts(c, sector, model, tick).Total;
+            if (model.OpenWeights)
+                total = MathI.MulPermille(total, MathI.Permille + c.Market.OpenWeightsAppealBonusPermille);
+            return total;
         }
 
         public static AppealBreakdown AppealParts(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)

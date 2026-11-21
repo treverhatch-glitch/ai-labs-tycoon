@@ -128,6 +128,9 @@ namespace AiLabs.Rules.Systems
             model.CapLuck = (int)MathI.MulPermille(f.Total, luck);
             if (f.Total + model.CapLuck < 1) model.CapLuck = 1 - f.Total;
             model.Capability = f.Total + model.CapLuck;
+            DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
+            if (source != null && source.CapabilityBonusPermille != 0)
+                model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + source.CapabilityBonusPermille);
 
             model.Alignment = AlignmentFor(c, model.RequiredCompute, model.AlignmentCompute);
             model.DisplayedAlignment = model.Alignment;
