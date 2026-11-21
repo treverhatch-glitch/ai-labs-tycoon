@@ -15,7 +15,8 @@ namespace AiLabs.Rules.Sim
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
         SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
-        LaunchSectorCampaign, EndSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush, TuneChipSoftware
+        LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
+        TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield
     }
 
     /// <summary>
@@ -422,6 +423,11 @@ namespace AiLabs.Rules.Sim
 
         public static Command EndSectorCampaign(int labId) { return Make(CommandKind.EndSectorCampaign, labId); }
 
+        public static Command ExtendSectorCampaign(int labId)
+        {
+            return Make(CommandKind.ExtendSectorCampaign, labId);
+        }
+
         public static Command EngageFactoryLine(int labId) { return Make(CommandKind.EngageFactoryLine, labId); }
 
         public static Command EndFactoryLine(int labId) { return Make(CommandKind.EndFactoryLine, labId); }
@@ -431,6 +437,41 @@ namespace AiLabs.Rules.Sim
         public static Command EndCoolantFlush(int labId) { return Make(CommandKind.EndCoolantFlush, labId); }
 
         public static Command TuneChipSoftware(int labId) { return Make(CommandKind.TuneChipSoftware, labId); }
+
+        public static Command SalvageMuseumLine(int labId, string lineId)
+        {
+            Command c = Make(CommandKind.SalvageMuseumLine, labId);
+            c.Id = lineId;
+            return c;
+        }
+
+        public static Command RushChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.RushChipDesign, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command ExpediteChipOrder(int labId, int orderId)
+        {
+            Command c = Make(CommandKind.ExpediteChipOrder, labId);
+            c.TargetId = orderId;
+            return c;
+        }
+
+        public static Command AccelerateChipTapeout(int labId, int designId)
+        {
+            Command c = Make(CommandKind.AccelerateChipTapeout, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command BoostChipYield(int labId, int designId)
+        {
+            Command c = Make(CommandKind.BoostChipYield, labId);
+            c.TargetId = designId;
+            return c;
+        }
     }
 
     public enum CommandError

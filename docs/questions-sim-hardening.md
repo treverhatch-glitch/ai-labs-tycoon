@@ -409,6 +409,24 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q146–Q148. End room programs early? DECIDED: `EndSectorCampaign`, `EndFactoryLine`, `EndCoolantFlush`
 - Choice: player commands clear active program timers without refund; same room-era gates as start; no schema change.
 
+### Q149. Manual museum salvage? DECIDED: `SalvageMuseumLine` + `MuseumSystem.SalvageOneOverCap`
+- Choice: player pays `endings.museum.manualSalvageCashCost` to prune one oldest retired model over cap; RP grant matches weekly auto-salvage permille.
+
+### Q150. Extend product campaign? DECIDED: `ExtendSectorCampaign` + `roomPrograms.productStudio.extend*`
+- Choice: pay cash to add `extendCampaignWeeks` while a sector campaign timer is active.
+
+### Q151. Rush chip design points? DECIDED: `RushChipDesign` + `chips.rushDesign*`
+- Choice: architects required; cash buys fixed design points on an in-progress design.
+
+### Q152. Expedite foundry delivery? DECIDED: `ExpediteChipOrder` + `chips.expediteOrder*`
+- Choice: cash pulls `DeliveryTick` forward; does not bypass shortage pricing elsewhere.
+
+### Q153. Accelerate tapeout? DECIDED: `AccelerateChipTapeout` + `chips.accelerateTapeout*`
+- Choice: cash shaves weeks off `StageEndsTick` while taping out.
+
+### Q154. Boost ready yield? DECIDED: `BoostChipYield` + `chips.boostYield*`
+- Choice: cash adds yield permille on a ready design, capped at spec max.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

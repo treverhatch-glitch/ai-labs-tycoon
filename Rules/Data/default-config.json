@@ -4486,6 +4486,14 @@
     "plannerMinYieldPermille": 600,
     "softwareTuneCashCost": 20000,
     "softwareTuneGainPermille": 40,
+    "rushDesignCashCost": 15000,
+    "rushDesignPoints": 80,
+    "expediteOrderCashCost": 25000,
+    "expediteDeliveryWeeks": 8,
+    "accelerateTapeoutCashCost": 30000,
+    "accelerateTapeoutWeeks": 4,
+    "boostYieldCashCost": 18000,
+    "boostYieldPermille": 50,
     "shortage": {
       "durationWeeks": 24,
       "minStrengthPermille": 1050,
@@ -4866,6 +4874,7 @@
       "cashPerLevel": 200
     },
     "museum": {
+      "manualSalvageCashCost": 5000,
       "perLine": 6,
       "researchPermillePerCapability": 500,
       "reputationPerFullLine": 2,
@@ -5055,7 +5064,9 @@
       "campaignCashCost": 25000,
       "campaignWeeks": 12,
       "campaignAppealPermille": 120,
-      "campaignRevenuePermille": 100
+      "campaignRevenuePermille": 100,
+      "extendCampaignCashCost": 12000,
+      "extendCampaignWeeks": 4
     },
     "aiFactoryHall": {
       "eraId": "harnesses",

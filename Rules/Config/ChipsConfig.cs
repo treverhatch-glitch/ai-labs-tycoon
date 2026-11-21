@@ -49,6 +49,14 @@ namespace AiLabs.Rules.Config
         public long SoftwareTuneCashCost = 20_000;
         /// <summary>Software maturity gained per tune command, in permille points.</summary>
         public int SoftwareTuneGainPermille = 40;
+        public long RushDesignCashCost = 15_000;
+        public long RushDesignPoints = 80;
+        public long ExpediteOrderCashCost = 25_000;
+        public int ExpediteDeliveryWeeks = 8;
+        public long AccelerateTapeoutCashCost = 30_000;
+        public int AccelerateTapeoutWeeks = 4;
+        public long BoostYieldCashCost = 18_000;
+        public int BoostYieldPermille = 50;
         public string ArchitectRoleId;
         public string TestLabRoomId;
         public List<ChipTargetConfig> Targets;
@@ -86,6 +94,14 @@ namespace AiLabs.Rules.Config
             s.Int("plannerMinYieldPermille", ref PlannerMinYieldPermille);
             s.Long("softwareTuneCashCost", ref SoftwareTuneCashCost);
             s.Int("softwareTuneGainPermille", ref SoftwareTuneGainPermille);
+            s.Long("rushDesignCashCost", ref RushDesignCashCost);
+            s.Long("rushDesignPoints", ref RushDesignPoints);
+            s.Long("expediteOrderCashCost", ref ExpediteOrderCashCost);
+            s.Int("expediteDeliveryWeeks", ref ExpediteDeliveryWeeks);
+            s.Long("accelerateTapeoutCashCost", ref AccelerateTapeoutCashCost);
+            s.Int("accelerateTapeoutWeeks", ref AccelerateTapeoutWeeks);
+            s.Long("boostYieldCashCost", ref BoostYieldCashCost);
+            s.Int("boostYieldPermille", ref BoostYieldPermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);
             s.ObjList("targets", ref Targets);

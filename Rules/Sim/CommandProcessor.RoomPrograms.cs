@@ -24,6 +24,22 @@ namespace AiLabs.Rules.Sim
       return CommandResult.Done(-1);
     }
 
+    static CommandResult ExtendSectorCampaign(GameConfig c, GameState state, LabState lab, Command cmd)
+    {
+      ProductStudioProgramConfig cfg = c.RoomPrograms?.ProductStudio;
+      if (cfg == null) return Fail(CommandError.UnknownId, "Product studio is not configured.");
+      if (!RoomProgramSupport.Gate(c, state, lab, cfg.EraId, cfg.RoomTypeId, cfg.StaffRoleId))
+        return Fail(CommandError.EraLocked, "Build a staffed product studio before extending a campaign.");
+      if (!RoomProgramSupport.ActiveUntil(lab.SectorCampaignUntilTick, state.Tick))
+        return Fail(CommandError.InvalidArgument, "There is no sector campaign running.");
+      if (cfg.ExtendCampaignWeeks < 1) return Fail(CommandError.InvalidArgument, "Campaign extension is disabled.");
+      long cost = cfg.ExtendCampaignCashCost;
+      if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+      if (cost > 0) Finance.Spend(lab, LedgerLine.Construction, cost);
+      lab.SectorCampaignUntilTick += cfg.ExtendCampaignWeeks;
+      return CommandResult.Done(-1);
+    }
+
     static CommandResult EndSectorCampaign(GameConfig c, GameState state, LabState lab, Command cmd)
     {
       ProductStudioProgramConfig cfg = c.RoomPrograms?.ProductStudio;

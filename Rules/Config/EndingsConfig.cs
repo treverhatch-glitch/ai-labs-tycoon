@@ -96,6 +96,8 @@ namespace AiLabs.Rules.Config
 
     public sealed class MuseumConfig : ISync
     {
+        /// <summary>Optional cash cost for <see cref="CommandKind.SalvageMuseumLine"/>.</summary>
+        public long ManualSalvageCashCost;
         public int PerLine;
         /// <summary>Research points granted per point of stored capability when a retired model is pruned (permille).</summary>
         public int ResearchPermillePerCapability;
@@ -108,6 +110,7 @@ namespace AiLabs.Rules.Config
 
         public void Sync(Syncer s)
         {
+            s.Long("manualSalvageCashCost", ref ManualSalvageCashCost);
             s.Int("perLine", ref PerLine);
             s.Int("researchPermillePerCapability", ref ResearchPermillePerCapability);
             s.Int("reputationPerFullLine", ref ReputationPerFullLine);

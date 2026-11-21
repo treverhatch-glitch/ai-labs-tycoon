@@ -11,6 +11,8 @@ namespace AiLabs.Rules.Config
     public int CampaignWeeks = 12;
     public int CampaignAppealPermille = 120;
     public int CampaignRevenuePermille = 100;
+    public long ExtendCampaignCashCost = 12_000;
+    public int ExtendCampaignWeeks = 4;
 
     public void Sync(Syncer s)
     {
@@ -21,6 +23,8 @@ namespace AiLabs.Rules.Config
       s.Int("campaignWeeks", ref CampaignWeeks);
       s.Int("campaignAppealPermille", ref CampaignAppealPermille);
       s.Int("campaignRevenuePermille", ref CampaignRevenuePermille);
+      s.Long("extendCampaignCashCost", ref ExtendCampaignCashCost);
+      s.Int("extendCampaignWeeks", ref ExtendCampaignWeeks);
     }
   }
 

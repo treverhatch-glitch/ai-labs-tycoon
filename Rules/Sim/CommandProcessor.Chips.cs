@@ -227,6 +227,74 @@ namespace AiLabs.Rules.Sim
             return CommandResult.Done(order.Id);
         }
 
+        static ChipOrder FindOrder(LabState lab, int orderId)
+        {
+            for (int i = 0; i < lab.ChipOrders.Count; i++)
+                if (lab.ChipOrders[i].Id == orderId) return lab.ChipOrders[i];
+            return null;
+        }
+
+        static CommandResult RushChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            ChipDesign d = lab.Design(cmd.TargetId);
+            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
+            if (d.Status != ChipDesignStatus.Designing) return Fail(CommandError.InvalidArgument, d.Name + " is not in the design stage.");
+            if (ChipQueries.Architects(c, lab) < 1) return Fail(CommandError.NotEnoughStaff, "Rushing needs at least one chip architect.");
+            if (d.PointsDone >= d.PointsRequired) return Fail(CommandError.InvalidArgument, d.Name + " already has enough design points.");
+            long cost = k.RushDesignCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            d.PointsDone = System.Math.Min(d.PointsRequired, d.PointsDone + k.RushDesignPoints);
+            return CommandResult.Done(d.Id);
+        }
+
+        static CommandResult ExpediteChipOrder(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            ChipOrder order = FindOrder(lab, cmd.TargetId);
+            if (order == null) return Fail(CommandError.UnknownId, "The lab has no chip order " + cmd.TargetId + ".");
+            if (order.DeliveryTick <= state.Tick) return Fail(CommandError.InvalidArgument, "That order has already arrived or is due this week.");
+            if (k.ExpediteDeliveryWeeks < 1) return Fail(CommandError.InvalidArgument, "Foundry expedite is disabled.");
+            long cost = k.ExpediteOrderCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            order.DeliveryTick = System.Math.Max(state.Tick + 1, order.DeliveryTick - k.ExpediteDeliveryWeeks);
+            return CommandResult.Done(order.Id);
+        }
+
+        static CommandResult AccelerateChipTapeout(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            ChipDesign d = lab.Design(cmd.TargetId);
+            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
+            if (d.Status != ChipDesignStatus.TapingOut) return Fail(CommandError.InvalidArgument, d.Name + " is not taping out.");
+            if (d.StageEndsTick <= state.Tick) return Fail(CommandError.InvalidArgument, d.Name + " is already back from the fab.");
+            if (k.AccelerateTapeoutWeeks < 1) return Fail(CommandError.InvalidArgument, "Tapeout acceleration is disabled.");
+            long cost = k.AccelerateTapeoutCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            d.StageEndsTick = System.Math.Max(state.Tick + 1, d.StageEndsTick - k.AccelerateTapeoutWeeks);
+            return CommandResult.Done(d.Id);
+        }
+
+        static CommandResult BoostChipYield(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            ChipDesign d = lab.Design(cmd.TargetId);
+            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
+            if (d.Status != ChipDesignStatus.Ready) return Fail(CommandError.InvalidArgument, d.Name + " is not a ready design.");
+            ChipSpec spec = ChipQueries.Spec(c, d);
+            if (!spec.Valid) return Fail(CommandError.InvalidArgument, "That design is incomplete.");
+            if (d.YieldPermille >= spec.MaxYieldPermille) return Fail(CommandError.InvalidArgument, d.Name + " is already at full yield.");
+            if (k.BoostYieldPermille < 1) return Fail(CommandError.InvalidArgument, "Yield boost is disabled.");
+            long cost = k.BoostYieldCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            d.YieldPermille = (int)MathI.Min(spec.MaxYieldPermille, d.YieldPermille + k.BoostYieldPermille);
+            return CommandResult.Done(d.Id);
+        }
+
         static CommandResult TuneChipSoftware(GameConfig c, GameState state, LabState lab, Command cmd)
         {
             ChipsConfig k = c.Chips;

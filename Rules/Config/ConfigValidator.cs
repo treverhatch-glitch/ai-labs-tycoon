@@ -289,6 +289,7 @@ namespace AiLabs.Rules.Config
             if (programs.ProductStudio.CampaignWeeks < 1) p.Add("roomPrograms.productStudio.campaignWeeks must be at least 1");
             Permille(p, "roomPrograms.productStudio.campaignAppealPermille", programs.ProductStudio.CampaignAppealPermille);
             Permille(p, "roomPrograms.productStudio.campaignRevenuePermille", programs.ProductStudio.CampaignRevenuePermille);
+            if (programs.ProductStudio.ExtendCampaignWeeks < 0) p.Add("roomPrograms.productStudio.extendCampaignWeeks is negative");
             RoomProgramGateProblems(p, c, "roomPrograms.aiFactoryHall", programs.AiFactoryHall.EraId, programs.AiFactoryHall.RoomTypeId, "");
             if (programs.AiFactoryHall.ExtraConcurrentRuns < 1) p.Add("roomPrograms.aiFactoryHall.extraConcurrentRuns must be at least 1");
             RoomProgramGateProblems(p, c, "roomPrograms.liquidCoolingPod", programs.LiquidCoolingPod.EraId, programs.LiquidCoolingPod.RoomTypeId, "");

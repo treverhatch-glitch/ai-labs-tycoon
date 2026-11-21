@@ -64,6 +64,26 @@ namespace AiLabs.Rules.Systems
             return count;
         }
 
+        /// <summary>Player salvage: remove one oldest retired model over the line cap and grant research points.</summary>
+        public static long SalvageOneOverCap(LabState lab, string lineId, int researchPermillePerCapability, int cap)
+        {
+            if (cap < 1 || string.IsNullOrEmpty(lineId)) return 0;
+            if (RetiredOnLine(lab, lineId) <= cap) return 0;
+            var retired = new List<ModelState>();
+            for (int i = 0; i < lab.Models.Count; i++)
+            {
+                ModelState m = lab.Models[i];
+                if (m.LineId == lineId && m.Status == ModelStatus.Retired) retired.Add(m);
+            }
+            retired.Sort((a, b) => RetireOrder(a).CompareTo(RetireOrder(b)));
+            ModelState victim = retired[0];
+            long gained = researchPermillePerCapability > 0
+                ? MathI.MulPermille(victim.Capability, researchPermillePerCapability)
+                : 0;
+            lab.Models.Remove(victim);
+            return gained;
+        }
+
         static long PruneLine(LabState lab, string lineId, int cap, int researchPermillePerCapability)
         {
             var retired = new List<ModelState>();
