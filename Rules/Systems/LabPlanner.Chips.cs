@@ -88,7 +88,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < k.Nodes.Count; i++)
             {
                 ChipNodeConfig n = k.Nodes[i];
-                if (ChipQueries.NodeOpen(c, n, x.State.Tick) && n.TapeoutCost + ChipQueries.RespinCost(c, n) <= spare) node = n;
+                if (ChipQueries.NodeUnlocked(c, x.Lab, n, x.State.Tick) && n.TapeoutCost + ChipQueries.RespinCost(c, n) <= spare) node = n;
             }
             if (node == null) return;
 

@@ -35,6 +35,8 @@ other labs. Numbers are read from `Rules/Data/default-config.json` (`chips`, `ve
 | `n5` | TSMSea 5 | 2022 | 5 | 1,800 | 3 | $45k | $30M | 25% | 30% / 92% | 16 weeks | 15,000 |
 | `n3` | TSMSea 3 | 2025 | 6 | 5,000 | 4 | $70k | $80M | 25% | 30% / 93% | 18 weeks | 20,000 |
 
+The 3 nm process also needs the `chip-codesign` tech before a lab may start a design on it (calendar year alone is not enough).
+
 Half the foundry's capacity goes to the vendor's own customers; the other half is the "room" shared by every lab. The tier is the
 export tier: the export rules of [world.md](world.md) apply to a chip as to a GPU of that tier, to the buyer's home and the
 designer's home both.

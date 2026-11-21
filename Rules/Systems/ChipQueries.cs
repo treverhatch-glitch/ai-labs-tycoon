@@ -190,6 +190,13 @@ namespace AiLabs.Rules.Systems
             return GameDate.Year(c.Calendar, tick) >= node.OpensYear;
         }
 
+        /// <summary>Whether the calendar year and the lab's techs allow using this foundry node.</summary>
+        public static bool NodeUnlocked(GameConfig c, LabState lab, ChipNodeConfig node, int tick)
+        {
+            if (node == null || !NodeOpen(c, node, tick)) return false;
+            return string.IsNullOrEmpty(node.RequiresTech) || LabQueries.HasTech(lab, node.RequiresTech);
+        }
+
         /// <summary>The design in progress (Designing or TapingOut), or null.</summary>
         public static ChipDesign DesignInProgress(LabState lab)
         {

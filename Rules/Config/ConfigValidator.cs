@@ -554,6 +554,7 @@ namespace AiLabs.Rules.Config
                 if (n.LeadWeeks < 1 || n.CapacityPerMonth < 1) p.Add(who + " needs leadWeeks and capacityPerMonth of at least 1");
                 if (n.OpensYear < c.Calendar.StartYear) p.Add(who + " opens before the game starts");
                 if (i > 0 && (n.OpensYear <= k.Nodes[i - 1].OpensYear || n.Tier < k.Nodes[i - 1].Tier)) p.Add(who + " must open after " + k.Nodes[i - 1].Id + " and not on a lower tier");
+                if (!string.IsNullOrEmpty(n.RequiresTech) && c.Tech(n.RequiresTech) == null) p.Add(who + " requires the unknown tech \"" + n.RequiresTech + "\"");
             }
             foreach (ChipOptionGroup group in Enum.GetValues(typeof(ChipOptionGroup)))
             {

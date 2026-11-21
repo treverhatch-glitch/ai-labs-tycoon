@@ -375,3 +375,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) UI-only grouping; (b) `CapabilityDomainQueries` best + footprint; (c) new leaderboard schema.
 - Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
 - Why: explainable domain scores for planner/UI without gauntlet changes.
+
+### Q64. Exotic foundry node gate? DECIDED: `ChipNodeConfig.requiresTech`
+
+- Options: (a) new n2 node; (b) n3 gated on `chip-codesign`; (c) skip exotic nodes.
+- Choice: **(b)** — `ChipQueries.NodeUnlocked`; planner and `StartChipDesign` enforce; listings unchanged.
+- Why: bible “exotic nodes” hook without new processes or schema.

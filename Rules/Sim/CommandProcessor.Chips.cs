@@ -23,6 +23,12 @@ namespace AiLabs.Rules.Sim
             ChipNodeConfig node = k.Node(cmd.Ids[0]);
             if (node == null) return Fail(CommandError.UnknownId, "There is no process \"" + cmd.Ids[0] + "\".");
             if (!ChipQueries.NodeOpen(c, node, state.Tick)) return Fail(CommandError.EraLocked, node.Name + " opens in " + node.OpensYear + ".");
+            if (!string.IsNullOrEmpty(node.RequiresTech) && !ChipQueries.NodeUnlocked(c, lab, node, state.Tick))
+            {
+                TechConfig tech = c.Tech(node.RequiresTech);
+                string name = tech == null ? node.RequiresTech : tech.Name;
+                return Fail(CommandError.MissingPrerequisite, node.Name + " needs " + name + " first.");
+            }
             for (int g = 0; g < OptionGroups.Length; g++)
             {
                 ChipOptionConfig option = k.Option(OptionGroups[g], cmd.Ids[g + 1]);

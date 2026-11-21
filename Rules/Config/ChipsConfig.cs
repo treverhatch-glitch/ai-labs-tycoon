@@ -151,6 +151,8 @@ namespace AiLabs.Rules.Config
         public int MaxYieldPermille;
         public int LeadWeeks;
         public long CapacityPerMonth;
+        /// <summary>When set, only labs with this tech may design or book this node (beyond <see cref="OpensYear"/>).</summary>
+        public string RequiresTech;
 
         public string Id { get { return IdValue; } }
 
@@ -170,6 +172,7 @@ namespace AiLabs.Rules.Config
             s.Int("maxYieldPermille", ref MaxYieldPermille);
             s.Int("leadWeeks", ref LeadWeeks);
             s.Long("capacityPerMonth", ref CapacityPerMonth);
+            s.Str("requiresTech", ref RequiresTech);
         }
     }
 
