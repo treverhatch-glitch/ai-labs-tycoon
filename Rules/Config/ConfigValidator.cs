@@ -106,6 +106,7 @@ namespace AiLabs.Rules.Config
             SkunkworksProblems(p, c);
             LabourProblems(p, c);
             SunsetProblems(p, c);
+            AccountsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1104,6 +1105,20 @@ namespace AiLabs.Rules.Config
             if (k.AssistedCutPermille < 0 || k.AssistedCutPermille > MathI.Permille) p.Add("sunset.assistedCutPermille must be from 0 to 1000");
             if (k.DroppedPermille < MathI.Permille || k.DroppedPermille > 5000) p.Add("sunset.droppedPermille must be from 1000 to 5000, so losing a sector never hurts less than moving it");
             if (k.CancelReputation < 0 || k.CancelReputation > 200 || k.BrokenReputation < k.CancelReputation || k.BrokenReputation > 400) p.Add("sunset.cancelReputation must be from 0 to 200 and brokenReputation from cancelReputation to 400");
+        }
+
+        static void AccountsProblems(List<string> p, GameConfig c)
+        {
+            AccountsConfig k = c.Accounts;
+            if (k == null) { p.Add("accounts is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("accounts.enabled must be 0 or 1");
+            if (k.MaxPeople < 1 || k.MaxPeople > 10) p.Add("accounts.maxPeople must be from 1 to 10");
+            if (k.KeepFree < 0 || k.KeepFree > 10) p.Add("accounts.keepFree must be from 0 to 10");
+            if (k.PerPersonPermille < 0 || k.PerPersonPermille > 500) p.Add("accounts.perPersonPermille must be from 0 to 500");
+            if (k.StartPermille < 0 || k.StartPermille >= MathI.Permille) p.Add("accounts.startPermille must be from 0 to 999, so a team always has something to learn");
+            if (k.MaxWeeks < 1 || k.MaxWeeks > 260) p.Add("accounts.maxWeeks must be from 1 to 260");
+            if (k.ComboCapPermille < 0 || k.ComboCapPermille > 1000) p.Add("accounts.comboCapPermille must be from 0 to 1000");
+            if (k.MaxPeople * k.PerPersonPermille > 1000) p.Add("accounts.maxPeople times perPersonPermille must not top 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

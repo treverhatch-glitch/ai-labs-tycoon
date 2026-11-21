@@ -5723,6 +5723,15 @@
     "cancelReputation": 20,
     "brokenReputation": 40
   },
+  "accounts": {
+    "enabled": 1,
+    "maxPeople": 3,
+    "keepFree": 1,
+    "perPersonPermille": 40,
+    "startPermille": 300,
+    "maxWeeks": 52,
+    "comboCapPermille": 150
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

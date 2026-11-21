@@ -263,6 +263,12 @@ namespace AiLabs.Rules.Sim
                     return who + " retired " + e.Ref + "; " + e.Amount + (e.Amount == 1 ? " sector moved" : " sectors moved") + " to its successor" + (e.Pick == 1 ? "." : " and the rest were dropped.");
                 case EventKind.SunsetCalledOff:
                     return e.Pick == 1 ? who + " called off the retirement of " + e.Ref + "." : who + " withdrew the retirement of " + e.Ref + " because its successor was gone.";
+                case EventKind.AccountTeamChanged:
+                    return e.Pick == 1 ? who + " put " + e.Amount + " salespeople on the " + e.Ref + " account team."
+                        : e.Pick == 0 ? who + " resized the " + e.Ref + " account team to " + e.Amount + " (" + e.SubjectId + " weeks of familiarity kept)."
+                        : e.Pick == 2 ? who + " disbanded the " + e.Ref + " account team."
+                        : e.Pick == 3 ? "The " + e.Ref + " account team at " + who + " is down to " + e.Amount + " people."
+                        : "The " + e.Ref + " account team at " + who + " was disbanded when the lab left the sector.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

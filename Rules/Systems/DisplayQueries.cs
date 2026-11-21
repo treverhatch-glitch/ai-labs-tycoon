@@ -36,8 +36,10 @@ namespace AiLabs.Rules.Systems
             public long PivotConfusion;
             /// <summary>Positive while a marketing campaign runs in the sector, negative in the hangover after it; zero otherwise.</summary>
             public long CampaignEffect;
+            /// <summary>Positive while an account team works the sector; zero otherwise.</summary>
+            public long AccountEffect;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion + CampaignEffect; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion + CampaignEffect + AccountEffect; } }
         }
 
         public struct IncidentBreakdown
@@ -150,6 +152,8 @@ namespace AiLabs.Rules.Systems
             b.PivotConfusion = MathI.MulPermille(beforePivot, Pivot.AppealPermille(c, state, lab)) - beforePivot;
             long beforeCampaign = beforePivot + b.PivotConfusion;
             b.CampaignEffect = MathI.MulPermille(beforeCampaign, MarketingCampaign.AppealPermille(c, state, lab, sector.Id)) - beforeCampaign;
+            long beforeAccount = beforeCampaign + b.CampaignEffect;
+            b.AccountEffect = MathI.MulPermille(beforeAccount, MathI.Permille + AccountTeams.AppealPermille(c, state, lab, sector.Id)) - beforeAccount;
             return b;
         }
 

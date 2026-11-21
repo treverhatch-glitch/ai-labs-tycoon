@@ -297,6 +297,7 @@ and says why in the commit message.
 114. **The reserve, the pledge, the roadmap, mentoring and skunkworks together.** ~~Done~~: `ReservePledgeRoadmapMentoringSkunkworksTogetherTests` (Q355).
 115. **Labour relations (pressure from layoffs, crunch and morale; recognise, resist or let it run; strike).** ~~Done~~: `labour` data, `RecogniseUnion`, `ResistUnion`, `Labour`, schema 72, `LabourTests`, `docs/content/labour.md` (Q358).
 116. **Model end-of-life notice (retire a model on a date, customers move to the successor it helped design).** ~~Done~~: `sunset` data, `AnnounceSunset`, `CancelSunset`, `Sunset`, schema 73, `SunsetTests`, `docs/content/sunset.md` (Q359).
+117. **Sector account teams (salespeople on a sector, familiarity over weeks, shared cap with enterprise seats).** ~~Done~~: `accounts` data, `AssignAccountTeam`, `AccountTeams`, schema 74, `AccountTeamsTests`, `docs/content/account-teams.md` (Q360).
 
 ## Rules: later
 

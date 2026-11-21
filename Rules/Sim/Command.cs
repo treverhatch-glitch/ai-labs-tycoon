@@ -81,7 +81,8 @@ namespace AiLabs.Rules.Sim
         RecogniseUnion,
         ResistUnion,
         AnnounceSunset,
-        CancelSunset
+        CancelSunset,
+        AssignAccountTeam
     }
 
     /// <summary>
@@ -738,6 +739,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.CancelSunset, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Sets the salespeople on a sector's account team (Id is the sector, Count the people, 0 to disband). The sector needs a model of the lab on sale, and the people leave the lab-wide sales force. A new team starts from nothing and a changed one loses part of what it built.</summary>
+        public static Command AssignAccountTeam(int labId, string sectorId, int people)
+        {
+            Command c = Make(CommandKind.AssignAccountTeam, labId);
+            c.Id = sectorId;
+            c.Count = people;
             return c;
         }
 

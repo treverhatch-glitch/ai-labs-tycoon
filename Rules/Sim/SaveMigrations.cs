@@ -86,6 +86,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 71) MigrateTo71(root);
             if (fromSchema < 72) MigrateTo72(root);
             if (fromSchema < 73) MigrateTo73(root);
+            if (fromSchema < 74) MigrateTo74(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -450,6 +451,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 74: no lab has account teams.</summary>
+        static void MigrateTo74(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "accountTeams", JsonValue.Array()));
         }
 
         /// <summary>Schema 73: no model has an end-of-life notice.</summary>

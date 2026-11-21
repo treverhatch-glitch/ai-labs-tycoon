@@ -121,6 +121,18 @@ namespace AiLabs.Rules.Sim
                     || (lab.LabourHard == 1 && lab.LabourStage != 2) || (lab.LabourStage == 2 && lab.LabourPressure != 0)
                     || ((lab.LabourStage != 0 || lab.LabourPressure != 0 || lab.LabourHard != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a labour stage (" + lab.LabourStage + ", pressure " + lab.LabourPressure + ", due week " + lab.LabourDue + ") that the data does not allow");
+                {
+                    var seen = new System.Collections.Generic.HashSet<string>();
+                    int assigned = 0;
+                    foreach (AccountTeam team in lab.AccountTeams)
+                    {
+                        assigned += team.People;
+                        if (c.Sector(team.SectorId) == null || !seen.Add(team.SectorId) || team.People < 1 || team.People > c.Accounts.MaxPeople || team.Weeks < 0 || team.Weeks > c.Accounts.MaxWeeks)
+                            p.Add(who + " has an account team (" + team.SectorId + ", " + team.People + " people, " + team.Weeks + " weeks) that the data does not allow");
+                    }
+                    if (lab.AccountTeams.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has account teams, which only the player's lab can have");
+                    if (assigned > c.Accounts.MaxPeople * c.Market.Sectors.Count) p.Add(who + " has more people on account teams than the data allows");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

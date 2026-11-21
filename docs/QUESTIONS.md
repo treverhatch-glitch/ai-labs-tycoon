@@ -1835,6 +1835,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden moved 49e4eb09 -> 3ab439c4 only through the two new saved fields and the schema number (verified by taking them back out). No random numbers; only the player's lab.
 - Alternatives: any model as the successor (rejected: a second successor rule beside the design one), customers drifting away over the notice (rejected: it would reach into the market share maths), a refund for the early cancel (rejected: a notice should cost something to take back).
 
+### Q360. Can salespeople be put on one sector? DECIDED: account teams that build familiarity and share a cap with the enterprise seat deals
+- New `accounts` data, command `AssignAccountTeam`, `AccountTeams` system, event `AccountTeamChanged`, a new appeal part `AccountEffect` and a saved list on the lab (schema 74). The player puts up to 3 salespeople on a sector where a model is on sale, keeping at least one on the lab-wide force. Each assigned person stops counting in the sales boost on every sector and adds 4% to their own sector's appeal, growing from 30% to 100% of that over 52 weeks.
+- State and decisions over time: where to spend scarce salespeople, and the cost of changing your mind (resizing spreads the built-up weeks over the larger size, and a person moved to another sector starts that team from nothing). Losing salespeople thins the teams, and leaving the sector disbands one.
+- It must not double-count with Unity's enterprise seat deals (Q208-Q214), so a sector's gain from a team and from any other account-level deal together is capped (150 permille, the other deal is never reduced). `AccountTeams.Effective` is the pure rule and `AccountTeams.ExternalBonusPermille` the single hook, which returns 0 here because the deals are not in this branch; the merge wires the deal's sector bonus into it (see the claims merge note). Tested on the pure rule, the cap and the zero hook.
+- The golden moved 3ab439c4 -> f8ed11f8 only through the new saved list and the schema number (verified by taking it back out). No random numbers; only the player's lab.
+- Alternatives: a team that raises revenue directly (rejected: would sit on top of the enterprise deal bonus with no shared cap), assigning named people (rejected: more commands for the same choice), familiarity that never decays on resize (rejected: no cost to reshuffling).
+
 ## Open
 
 None.

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 73;
+        public const int CurrentSchema = 74;
 
         public int Schema;
         public string ConfigVersion;
@@ -245,6 +245,8 @@ namespace AiLabs.Rules.State
         public int LabourDue;
         /// <summary>1 when the contract was forced by a strike.</summary>
         public int LabourHard;
+        /// <summary>The salespeople assigned to sectors, one team a sector.</summary>
+        public List<AccountTeam> AccountTeams = new List<AccountTeam>();
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -484,6 +486,7 @@ namespace AiLabs.Rules.State
             s.Int("labourPressure", ref LabourPressure);
             s.Int("labourDue", ref LabourDue);
             s.Int("labourHard", ref LabourHard);
+            s.ObjList("accountTeams", ref AccountTeams);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
