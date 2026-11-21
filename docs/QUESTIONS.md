@@ -626,6 +626,78 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `SellModel`; `DisplayQueries.ModelSaleParts`; cannot sell last active model.
 - Why: Hatch spec — liquidity vs lost weekly sector revenue.
 
+### Q150. Treaty ending trigger? DECIDED: multi-bloc foreign scrutiny on month end
+
+- Options: (a) stub forever; (b) count non-home blocs at Audit+ after `GovernmentSystem.CloseMonth`; (c) require foreign holdings footprint.
+- Recommendation and choice: **(b)**. `TryTreaty` on `Simulation.Step` month end; config `treatyForeignLevelMin` / `treatyForeignBlocCount`; no continue modes yet.
+- Why: systems-design §5.1 stub `treaty`; stack2 rules-forward (era thread owns Q118–Q140 founding, Q141–Q144 talent market).
+
+### Q151. Nationalised ending trigger? DECIDED: home Freeze on month end
+
+- Options: (a) stub; (b) home bloc level ≥ Freeze once attention is closed; (c) consecutive freeze months in save.
+- Recommendation and choice: **(b)**. `TryNationalised`; `nationalisedHomeLevelMin` default Freeze; record-only; no schema bump for triggers.
+- Why: pairs with permit freeze (Q45); endings list already in save since schema 6.
+
+### Q152. Treaty fork — both endings same month? DECIDED: independent triggers
+
+- Options: (a) one blocks the other; (b) both may record on one month end.
+- Recommendation and choice: **(b)**. Order: treaty then nationalised in `Simulation`; tests pin both records.
+- Why: orthogonal scrutiny stories (foreign vs home).
+
+### Q153. Bubble decay residual floor? DECIDED: only after first crash (schema 24)
+
+- Options: (a) always floor at `postCrashResidualPermille`; (b) floor only when `bubbleHadCrash`.
+- Recommendation and choice: **(b)**. `MigrateTo24` on stack2 (era thread owns schemas **21–23**); golden digest moved on seed-1 autopilot year (unchanged crash path, save field default false).
+- Why: Opus review — tiny meter should not jump to 75‰ residual before any crash.
+
+### Q154. Pop at permille before decay? DECIDED: yes
+
+- Options: (a) decay then grace/pop; (b) check `popAtPermille` before decay.
+- Recommendation and choice: **(b)**. Opus review — meter at 950 decayed below pop and never burst.
+- Why: matches bubble bible “overheating snaps” moment.
+
+### Q155. Bubble meter “last month” revenue display? DECIDED: closed ledger month
+
+- Options: (a) open `ThisMonth`; (b) sum last closed month in each lab ledger history.
+- Recommendation and choice: **(b)**. `BubbleSystem.MarketRevenueLastClosedMonth`; `DisplayQueries` uses it for returns context.
+- Why: systems-design hatch UI copy refers to last month, not month in progress.
+
+### Q156. Bubble pop warning margin? DECIDED: config `popWarningMarginPermille`
+
+- Options: (a) hard-code 50; (b) config default 50.
+- Recommendation and choice: **(b)**.
+- Why: Opus review DisplayQueries hard-code.
+
+### Q157. Rival crash rollup chance? DECIDED: config + buyer/target ordering
+
+- Options: (a) hard-coded 60‰; (b) `rivalRollupChancePermille` and sort buyers by cash, targets by distress (cash asc).
+- Recommendation and choice: **(b)**. Zero chance disables rollups.
+- Why: Opus review; bible survivors buy distressed peers.
+
+### Q158. Listed-chip trades and bubble capital? DECIDED: trade cash adds to `bubbleCapitalRaised`
+
+- Options: (a) permille boost only; (b) also count notional hot money like funding boosts.
+- Recommendation and choice: **(b)**. `OnListedChipTrade(c, state, tradeCash)`.
+- Why: circular financing thread; listed GPUs are bubble fuel.
+
+### Q159. Model sale income quote smoothing? DECIDED: blend toward lab last-week revenue
+
+- Options: (a) single-week sector `LastRevenue`; (b) `incomeSmoothingPermille` toward lab ledger last week by model share.
+- Recommendation and choice: **(b)**. Default 500‰ smooth in config.
+- Why: Opus review spiky weekly sector ticks.
+
+### Q170. Hatch ledger line hygiene? DECIDED: Acquisition and AssetSale lines
+
+- Options: (a) keep booking M&amp;A as `Hardware` and sales as `CapitalIn`; (b) dedicated `Acquisition` and `AssetSale` totals on the lab ledger.
+- Recommendation and choice: **(b)**. Save schema **28** adds zeroed `acquisition` / `assetSale` on every ledger total (era owns schemas **25–27**: press, Gauntlet, trust); exit-price query still uses cash on hand.
+- Why: Opus review — reports and exit breakdowns were misleading.
+
+### Q171. Reset `bubbleCapitalRaised` when a crash ends? DECIDED: yes (config default on)
+
+- Options: (a) cumulative forever (later bubbles always fail returns hurdle); (b) zero when crash months reach 0; (c) config toggle.
+- Recommendation and choice: **(c)** with default **(b)**. `BubbleConfig.resetCapitalRaisedAfterCrash`; no save schema bump.
+- Why: Opus review — hurdle should apply per bubble cycle, not all history.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.

@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 658 tests pass (schemas 19–20: bubble crash, acquisitions, model sales; Opus review regressions), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). **683** tests pass locally on stack2 (pushed tip **658** at Opus bar; unpushed adds Treaty/Nationalised schema **24**, Q154–Q159 hatch follow-ups), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -104,7 +104,10 @@ and says why in the commit message.
 - ~~**Specialist** model lines, data sources, **open weights**, sector pricing.~~ Done on `cursor/rules-side-items` (PR #2); rules-forward does not reimplement.
 - ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
 - Real **Bodies** and **Upward** expansions (mechanics): **owned by Unity thread** on `cursor/rules-side-items`; era **data** only on stack2.
-- **Treaty & Nationalised** ending triggers (systems-design stubs): **in progress** on stack2 (rules-forward).
+- ~~**Treaty & Nationalised** ending triggers (systems-design §5.1)~~ **done (local)** — Q150–Q153; schema **24** `bubbleHadCrash`; `TreatyNationalisedLaterTests` (15); **683** tests at local tip.
+- **Hatch follow-ups** (Opus review): **done (local)** — Q154–Q159; `HatchFollowUpLaterTests` (**41**).
+- ~~**Hatch ledger lines** (Opus review)~~ **done (local)** — Q170; schema **28**; `HatchLedgerLaterTests` (8).
+- ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
 
 ## Rules: forward queue (from bible / systems-design)
 
