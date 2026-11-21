@@ -9514,6 +9514,160 @@
         "text": "We paid it off. The bank sent a card. It is the only thing in the building that is not a liability.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "crunch-tired",
+        "kind": "CrunchEnded",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We stopped because we physically could not type any more. Management calls it a 'natural end'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "crunch-stopped",
+        "kind": "CrunchEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Crunch is over. I have started sleeping in the bed again. The bed is surprised.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "crunch-ended",
+        "kind": "CrunchEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Crunch ended. The coffee machine is being given a eulogy.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "insurance-claim-chat",
+        "kind": "InsuranceClaimPaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The insurer paid. They sent a card. It says 'we are watching'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "insurance-dropped-chat",
+        "kind": "InsuranceDropped",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The insurer has dropped us. I am told the phrase was 'uninsurable, but charming'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "offsite-chat-eng",
+        "kind": "OffsiteHeld",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The offsite had a trust fall. Nobody caught anybody. We are all very close now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "offsite-chat",
+        "kind": "OffsiteHeld",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Nice offsite. We solved nothing and I feel wonderful.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "red-team-chat-safety",
+        "kind": "RedTeamRan",
+        "roles": ["red-teamer", "safety"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} lasted forty minutes. It then apologised to us. That was worse.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "red-team-chat",
+        "kind": "RedTeamRan",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The red team is back with a list of things {model} did. We have a new list of things to say we did not know.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gap-found-chat-research",
+        "kind": "GapFound",
+        "roles": ["researcher", "alignment-fellow"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We read all of {model} and the meter finally matches. I miss the old numbers.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gap-found-chat",
+        "kind": "GapFound",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model}'s real score and its shown score are the same now. Marketing is thinking about this.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pay-raise-chat",
+        "kind": "PayChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Pay went up. I have bought a second monitor. For the monitor.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pay-cut-chat-research",
+        "kind": "PayChanged",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "A pay cut, and then a slide about gratitude.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pay-cut-chat",
+        "kind": "PayChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Our pay was cut. The all-hands called it 'realigning to the market'. The market was not at the all-hands.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },

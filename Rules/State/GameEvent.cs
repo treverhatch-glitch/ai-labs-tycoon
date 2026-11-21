@@ -129,7 +129,7 @@ namespace AiLabs.Rules.State
         LoanDefaulted,
         /// <summary>The foundry gave an order's slot to someone else. Subject is the design, Amount the weeks the delivery slipped, Ref the order id.</summary>
         ChipSlotSnubbed,
-        /// <summary>Crunch time ended. Amount is how many weeks it lasted, Ref is why: "stopped", "tired" (morale gave out), "spent" (the longest crunch) or "empty" (no one left).</summary>
+        /// <summary>Crunch time ended. Amount is how many weeks it lasted, Ref is why: "stopped", "tired" (morale gave out), "spent" (the longest crunch) or "empty" (no one left). Pick is 1 for "tired", 0 for "stopped" and -1 for the other two, for chat lines.</summary>
         CrunchEnded,
         /// <summary>The insurer paid part of an incident's fine. Subject is the model, Amount what it paid, Ref the model's name.</summary>
         InsuranceClaimPaid,
@@ -141,7 +141,7 @@ namespace AiLabs.Rules.State
         RedTeamRan,
         /// <summary>An interpretability programme closed the last of a model's alignment gap. LabId is the lab, SubjectId the model, Amount the points the gap was when the programme started on it this time, Ref the model name.</summary>
         GapFound,
-        /// <summary>The player changed the pay policy. LabId is the lab, SubjectId the new level, Amount the weekly salary bill now.</summary>
+        /// <summary>The player changed the pay policy. LabId is the lab, SubjectId the new level, Amount the weekly salary bill now. Pick is 1 for a raise and 0 for a cut.</summary>
         PayChanged
     }
 

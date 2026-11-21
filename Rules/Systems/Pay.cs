@@ -42,7 +42,8 @@ namespace AiLabs.Rules.Systems
             }
             lab.PayLevel = level;
             lab.PayLockedUntil = state.Tick + c.StaffPeople.PayLockWeeks;
-            Events.Add(state, EventKind.PayChanged, lab.Id, level, LabQueries.WeeklySalaries(c, lab), "");
+            GameEvent e = Events.Add(state, EventKind.PayChanged, lab.Id, level, LabQueries.WeeklySalaries(c, lab), "");
+            e.Pick = level > before ? 1 : 0;
         }
     }
 }

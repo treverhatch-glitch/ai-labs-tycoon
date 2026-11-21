@@ -244,6 +244,7 @@ and says why in the commit message.
 61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 46, `MigrateTo46`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
 62. **Pay policy (staff).** ~~Done~~: `SetPayLevel`, `Pay`, `staffPeople.pay*` data, lab `payLevel`/`payLockedUntil` (schema 47, `MigrateTo47`), `PayPolicyTests`, `docs/content/pay-policy.md` (Q303).
 63. **Headlines for the care tools (news).** ~~Done~~: seven lines for crunch, insurance, the offsite, red teams, interpretability and pay; data and `CareToolsNewsTests` only (Q304).
+64. **Chat lines for the care tools (chat).** ~~Done~~: 14 lines for crunch, insurance, the offsite, red teams, findings and pay; picks on `CrunchEnded` and `PayChanged`; `CareToolsChatTests` (Q305).
 
 ## Rules: later
 

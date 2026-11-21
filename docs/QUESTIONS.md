@@ -1505,6 +1505,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Every lab's events are on the ticker, but only the player's lab can make these events, so the rivals' tickers are unchanged. Nothing is saved and no rule changes, so the golden digest did not move.
 - Alternatives: a headline for every command (rejected: the ticker is about what the world sees, not what a boss decides); a line per way crunch can end (rejected: the headline only needs the weeks, and the events carry the reason).
 
+### Q305. Do the people talk about what the care tools do? DECIDED: yes, 14 chat lines, with the event's pick carrying the reason where it matters
+- Fourteen new `chat.lines` (86 in all) for `CrunchEnded`, `InsuranceClaimPaid`, `InsuranceDropped`, `OffsiteHeld`, `RedTeamRan`, `GapFound` and `PayChanged`. A researcher, engineer, red-teamer, safety person or alignment fellow has a line of their own where it fits, and anyone else gets the plain line.
+- Two events now carry a pick, so a line can tell apart what happened. `CrunchEnded`: 1 when morale gave out ("tired"), 0 when the player stopped it, -1 for the longest crunch or an empty lab. `PayChanged`: 1 for a raise, 0 for a cut. The pick is already a saved event field, so no schema change; chat line picks stay in -1 to 1.
+- Nothing about the rules changes and the pinned golden game has none of these events, so the golden digest did not move.
+- Alternatives: a new `ref` filter on chat lines (rejected: a config change for two events, when the pick does it); a line for every crunch reason (rejected: the pick only holds -1 to 1).
+
 ## Open
 
 None.

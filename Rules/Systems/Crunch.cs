@@ -37,7 +37,8 @@ namespace AiLabs.Rules.Systems
         /// <summary>Ends crunch time. <c>weeksWorked</c> is how many weeks of it the team has done.</summary>
         public static void End(GameState state, LabState lab, string why, int weeksWorked)
         {
-            Events.Add(state, EventKind.CrunchEnded, lab.Id, -1, weeksWorked, why);
+            GameEvent e = Events.Add(state, EventKind.CrunchEnded, lab.Id, -1, weeksWorked, why);
+            e.Pick = why == "tired" ? 1 : why == "stopped" ? 0 : -1;
             lab.CrunchWeeks = 0;
         }
 
