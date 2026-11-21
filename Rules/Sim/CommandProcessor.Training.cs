@@ -39,8 +39,9 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.LineLocked, "The lab has not researched how to build a " + line.Name + " yet.");
             if (alignmentSharePermille < 0 || alignmentSharePermille > MaxAlignmentSharePermille)
                 return Fail(CommandError.InvalidArgument, "The alignment share is from 0 to " + MaxAlignmentSharePermille + ": some of the run has to train the model.");
-            if (LabQueries.ActiveRuns(lab) >= c.Training.MaxConcurrentRuns)
-                return Fail(CommandError.TooManyRuns, "The lab can train " + c.Training.MaxConcurrentRuns + " models at once.");
+            int maxRuns = LabQueries.MaxConcurrentRuns(c, state, lab);
+            if (LabQueries.ActiveRuns(lab) >= maxRuns)
+                return Fail(CommandError.TooManyRuns, "The lab can train " + maxRuns + " models at once.");
             if (!TrainingQueries.SourceUsable(c, state, lab, sourceId, line.Id, out string sourceMessage))
             {
                 DataSourceConfig source = c.Training.DataSource(sourceId);

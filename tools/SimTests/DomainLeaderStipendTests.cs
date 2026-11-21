@@ -113,6 +113,23 @@ public class DomainLeaderStipendTests
     }
 
     [Fact]
+    public void Sim_week_applies_leader_stipend()
+    {
+        int repStart = TestData.Config().Safety.ReputationBaseline + 40;
+        Game bare = At(2028);
+        bare.Me.Reputation = repStart;
+        bare.Weeks(1);
+        long bareAfter = bare.Me.Reputation;
+
+        Game g = At(2028);
+        g.Me.Reputation = repStart;
+        ExpansionTestSupport.AddReleasedModel(g, 55_000, "code-completion");
+        int stipend = g.C.Market.Domain("language").LeaderReputationPerWeek;
+        g.Weeks(1);
+        Assert.True(g.Me.Reputation >= bareAfter + stipend);
+    }
+
+    [Fact]
     public void Save_load_then_stipend_still_runs()
     {
         Game g = At(2028);

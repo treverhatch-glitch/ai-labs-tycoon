@@ -353,6 +353,11 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
+        public static int MaxConcurrentRuns(GameConfig c, GameState state, LabState lab)
+        {
+            return c.Training.MaxConcurrentRuns + AiFactoryHallSystem.ExtraConcurrentRuns(c, state, lab);
+        }
+
         /// <summary>The newest finished model of a line, or null. Its capability carries over into the next version.</summary>
         public static ModelState LatestOfLine(LabState lab, string lineId)
         {

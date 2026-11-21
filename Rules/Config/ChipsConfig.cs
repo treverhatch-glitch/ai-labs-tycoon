@@ -45,6 +45,10 @@ namespace AiLabs.Rules.Config
         public List<string> ChipletDieIds = new List<string>();
         /// <summary>A plan orders chips only once a design's yield has reached this.</summary>
         public int PlannerMinYieldPermille;
+        /// <summary>Cash cost of <see cref="CommandKind.TuneChipSoftware"/>.</summary>
+        public long SoftwareTuneCashCost = 20_000;
+        /// <summary>Software maturity gained per tune command, in permille points.</summary>
+        public int SoftwareTuneGainPermille = 40;
         public string ArchitectRoleId;
         public string TestLabRoomId;
         public List<ChipTargetConfig> Targets;
@@ -80,6 +84,8 @@ namespace AiLabs.Rules.Config
             s.Int("chipletTrainingBonusPermille", ref ChipletTrainingBonusPermille);
             s.StrList("chipletDieIds", ref ChipletDieIds);
             s.Int("plannerMinYieldPermille", ref PlannerMinYieldPermille);
+            s.Long("softwareTuneCashCost", ref SoftwareTuneCashCost);
+            s.Int("softwareTuneGainPermille", ref SoftwareTuneGainPermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);
             s.ObjList("targets", ref Targets);

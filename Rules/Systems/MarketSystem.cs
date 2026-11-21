@@ -82,6 +82,9 @@ namespace AiLabs.Rules.Systems
                     int workshopRev = DeviceWorkshopSystem.RevenueBonusPermille(c, state, entryLab, sector.Id);
                     if (workshopRev > 0)
                         entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + workshopRev);
+                    int campaignRev = ProductStudioSystem.CampaignRevenuePermille(c, state, entryLab, sector.Id);
+                    if (campaignRev > 0)
+                        entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + campaignRev);
                     entry.LastRevenue = entryRevenue;
 
                     ModelLineConfig line = c.Line(entryModel.LineId);

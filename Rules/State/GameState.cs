@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 21;
+        public const int CurrentSchema = 23;
 
         public int Schema;
         public string ConfigVersion;
@@ -175,6 +175,18 @@ namespace AiLabs.Rules.State
         public int ShadyLockedUntilTick;
         public int CaseEndsTick = -1;
         public List<ShadyOp> ShadyOps = new List<ShadyOp>();
+        /// <summary>Sector id for an active product-studio campaign, or empty.</summary>
+        public string SectorCampaignSectorId = "";
+        /// <summary>First tick the sector campaign ends, or -1.</summary>
+        public int SectorCampaignUntilTick = -1;
+        /// <summary>Who the player chose at start (PR #6 era chain); empty when not set.</summary>
+        public string FounderId = "";
+        /// <summary>Starting style id (PR #6 era chain); empty when not set.</summary>
+        public string StyleId = "";
+        /// <summary>AI factory extra concurrent runs end after this tick, or -1.</summary>
+        public int FactoryLineUntilTick = -1;
+        /// <summary>Liquid-cooling power cut ends after this tick, or -1.</summary>
+        public int CoolantBoostUntilTick = -1;
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -272,6 +284,12 @@ namespace AiLabs.Rules.State
             s.Int("shadyLockedUntilTick", ref ShadyLockedUntilTick);
             s.Int("caseEndsTick", ref CaseEndsTick);
             s.ObjList("shadyOps", ref ShadyOps);
+            s.Str("sectorCampaignSectorId", ref SectorCampaignSectorId);
+            s.Int("sectorCampaignUntilTick", ref SectorCampaignUntilTick);
+            s.Str("founderId", ref FounderId);
+            s.Str("styleId", ref StyleId);
+            s.Int("factoryLineUntilTick", ref FactoryLineUntilTick);
+            s.Int("coolantBoostUntilTick", ref CoolantBoostUntilTick);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

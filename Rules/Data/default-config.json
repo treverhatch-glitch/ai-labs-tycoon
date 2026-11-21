@@ -4484,6 +4484,8 @@
       "chiplet-mcm"
     ],
     "plannerMinYieldPermille": 600,
+    "softwareTuneCashCost": 20000,
+    "softwareTuneGainPermille": 40,
     "shortage": {
       "durationWeeks": 24,
       "minStrengthPermille": 1050,
@@ -5043,6 +5045,31 @@
       "capabilityBonusPermille": 0,
       "trainingSpeedBonusPermille": 120,
       "passiveComputePermillePerTile": 60
+    }
+  },
+  "roomPrograms": {
+    "productStudio": {
+      "eraId": "chat-boom",
+      "roomTypeId": "product-studio",
+      "staffRoleId": "product-lead",
+      "campaignCashCost": 25000,
+      "campaignWeeks": 12,
+      "campaignAppealPermille": 120,
+      "campaignRevenuePermille": 100
+    },
+    "aiFactoryHall": {
+      "eraId": "harnesses",
+      "roomTypeId": "ai-factory-hall",
+      "engageCashCost": 40000,
+      "engageWeeks": 16,
+      "extraConcurrentRuns": 1
+    },
+    "liquidCoolingPod": {
+      "eraId": "chat-boom",
+      "roomTypeId": "liquid-cooling-pod",
+      "flushCashCost": 12000,
+      "flushWeeks": 8,
+      "coolingCostCutPermille": 150
     }
   },
   "rivals": [

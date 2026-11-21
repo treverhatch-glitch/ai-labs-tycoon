@@ -386,6 +386,26 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q134–Q137. Sandbox / research floor / agent ops / launch control perks? **DEFERRED (PR #6 era chain)**
+- Dropped local `roomPerks` object + `*System` hooks; era `RoomPerks.cs` tile stack on `cursor/founding-choices-af2f` owns these rooms.
+- Q138 containment wing + Q139 cluster hall: defer as new `RoomPerkKind` entries on era branch (not a second config tree).
+
+### Q140. Product studio sector campaign? DECIDED: `roomPrograms.productStudio` + `LaunchSectorCampaign`
+- Choice: schema **23** `sectorCampaignSectorId` / `sectorCampaignUntilTick` (schema **22** reserved for era `founderId` / `styleId`).
+- Cross: `ProductStudioSystem` appeal/revenue hooks in `DisplayQueries` and `MarketSystem`.
+
+### Q141–Q142. Recruiting spin-up / harness calibrate? **DROPPED (overlap PR #6)**
+- Hire cuts live in `rolePerks` + era `roomPerks` harness-control; no parallel `roomPrograms` timers on rules-side-items.
+
+### Q143. AI factory extra training slot? DECIDED: `roomPrograms.aiFactoryHall` + `EngageFactoryLine`
+- Choice: `LabQueries.MaxConcurrentRuns` stacks timed `extraConcurrentRuns` on the hall gate.
+
+### Q144. Liquid cooling flush? DECIDED: `roomPrograms.liquidCoolingPod` + `FlushCoolant`
+- Choice: timed `coolantBoostUntilTick`; `WorldQueries.BillFor` trims cooling line.
+
+### Q145. Chip software tune command? DECIDED: `TuneChipSoftware` + `ChipsConfig.softwareTune*`
+- Choice: player spends cash for immediate `SoftwarePermille` gain (architect gate); no new save fields.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

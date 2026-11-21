@@ -28,6 +28,7 @@ namespace AiLabs.Rules.Systems
             public long ChampionBoost;
             public long ExpansionBoost;
             public long WorkshopBoost;
+            public long CampaignBoost;
             public long DomainLeaderBoost;
             public long DomainChallengerBoost;
             public long MoodBoost;
@@ -37,7 +38,7 @@ namespace AiLabs.Rules.Systems
                 get
                 {
                     return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost
-                        + DomainLeaderBoost + DomainChallengerBoost + MoodBoost;
+                        + CampaignBoost + DomainLeaderBoost + DomainChallengerBoost + MoodBoost;
                 }
             }
         }
@@ -148,9 +149,12 @@ namespace AiLabs.Rules.Systems
             int workshop = DeviceWorkshopSystem.AppealBonusPermille(c, state, lab, sector.Id);
             long afterWorkshop = ExpansionSystem.ScaleAppeal(afterExpansion, workshop);
             b.WorkshopBoost = afterWorkshop - afterExpansion;
+            int campaign = ProductStudioSystem.CampaignAppealPermille(c, state, lab, sector.Id);
+            long afterCampaign = ExpansionSystem.ScaleAppeal(afterWorkshop, campaign);
+            b.CampaignBoost = afterCampaign - afterWorkshop;
             int domainLeader = CapabilityDomainSystem.LeaderAppealPermille(c, state, lab, sector.Id);
-            long afterDomain = ExpansionSystem.ScaleAppeal(afterWorkshop, domainLeader);
-            b.DomainLeaderBoost = afterDomain - afterWorkshop;
+            long afterDomain = ExpansionSystem.ScaleAppeal(afterCampaign, domainLeader);
+            b.DomainLeaderBoost = afterDomain - afterCampaign;
             int challenger = CapabilityDomainSystem.ChallengerAppealPermille(c, state, lab, sector.Id);
             long afterChallenger = ExpansionSystem.ScaleAppeal(afterDomain, challenger);
             b.DomainChallengerBoost = afterChallenger - afterDomain;

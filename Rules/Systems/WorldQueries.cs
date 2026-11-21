@@ -199,6 +199,9 @@ namespace AiLabs.Rules.Systems
             bill.PrivateCost = (long)privateUsed * dealPrice;
             long energy = MathI.MulPermille(bill.GridCost + bill.PrivateCost, EffectiveCooling(c, lab, site));
             bill.Cooling = energy - bill.GridCost - bill.PrivateCost;
+            int podCut = LiquidCoolingPodSystem.CoolingCostCutPermille(c, state, lab);
+            if (podCut > 0 && bill.Cooling > 0)
+                bill.Cooling = MathI.MulPermille(bill.Cooling, MathI.Permille - podCut);
             if (holding.Kind == HoldingKind.Colo) bill.ColoMarkup = (long)c.World.Colo.MarkupPerKwWeek * holding.HallKw;
             return bill;
         }

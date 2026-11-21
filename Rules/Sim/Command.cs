@@ -14,7 +14,8 @@ namespace AiLabs.Rules.Sim
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
         ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
-        SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute
+        SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
+        LaunchSectorCampaign, EngageFactoryLine, FlushCoolant, TuneChipSoftware
     }
 
     /// <summary>
@@ -411,6 +412,19 @@ namespace AiLabs.Rules.Sim
             c.TargetId = landlordLabId;
             return c;
         }
+
+        public static Command LaunchSectorCampaign(int labId, string sectorId)
+        {
+            Command c = Make(CommandKind.LaunchSectorCampaign, labId);
+            c.Id = sectorId;
+            return c;
+        }
+
+        public static Command EngageFactoryLine(int labId) { return Make(CommandKind.EngageFactoryLine, labId); }
+
+        public static Command FlushCoolant(int labId) { return Make(CommandKind.FlushCoolant, labId); }
+
+        public static Command TuneChipSoftware(int labId) { return Make(CommandKind.TuneChipSoftware, labId); }
     }
 
     public enum CommandError

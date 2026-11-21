@@ -187,6 +187,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
             if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
             DeviceWorkshopProblems(p, c);
+            RoomProgramsProblems(p, c);
             CapabilityDomainProblems(p, c);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
@@ -278,6 +279,27 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Frontier.TrainingSpeedPermillePerLevel < 0) p.Add("endings.frontier.trainingSpeedPermillePerLevel is negative");
             if (c.Endings.Frontier.ResearchPointsPerLevel < 0) p.Add("endings.frontier.researchPointsPerLevel is negative");
             if (c.Endings.Frontier.CashPerLevel < 0) p.Add("endings.frontier.cashPerLevel is negative");
+        }
+
+        static void RoomProgramsProblems(List<string> p, GameConfig c)
+        {
+            RoomProgramsConfig programs = c.RoomPrograms;
+            if (programs == null) { p.Add("roomPrograms is missing"); return; }
+            RoomProgramGateProblems(p, c, "roomPrograms.productStudio", programs.ProductStudio.EraId, programs.ProductStudio.RoomTypeId, programs.ProductStudio.StaffRoleId);
+            if (programs.ProductStudio.CampaignWeeks < 1) p.Add("roomPrograms.productStudio.campaignWeeks must be at least 1");
+            Permille(p, "roomPrograms.productStudio.campaignAppealPermille", programs.ProductStudio.CampaignAppealPermille);
+            Permille(p, "roomPrograms.productStudio.campaignRevenuePermille", programs.ProductStudio.CampaignRevenuePermille);
+            RoomProgramGateProblems(p, c, "roomPrograms.aiFactoryHall", programs.AiFactoryHall.EraId, programs.AiFactoryHall.RoomTypeId, "");
+            if (programs.AiFactoryHall.ExtraConcurrentRuns < 1) p.Add("roomPrograms.aiFactoryHall.extraConcurrentRuns must be at least 1");
+            RoomProgramGateProblems(p, c, "roomPrograms.liquidCoolingPod", programs.LiquidCoolingPod.EraId, programs.LiquidCoolingPod.RoomTypeId, "");
+            Permille(p, "roomPrograms.liquidCoolingPod.coolingCostCutPermille", programs.LiquidCoolingPod.CoolingCostCutPermille);
+        }
+
+        static void RoomProgramGateProblems(List<string> p, GameConfig c, string path, string eraId, string roomTypeId, string roleId)
+        {
+            if (string.IsNullOrEmpty(eraId) || c.Era(eraId) == null) p.Add(path + " names an unknown era");
+            if (string.IsNullOrEmpty(roomTypeId) || c.RoomType(roomTypeId) == null) p.Add(path + " names an unknown room type");
+            if (!string.IsNullOrEmpty(roleId) && c.Role(roleId) == null) p.Add(path + " names an unknown role");
         }
 
         static void DeviceWorkshopProblems(List<string> p, GameConfig c)

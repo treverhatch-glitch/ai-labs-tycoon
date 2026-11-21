@@ -36,6 +36,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 19) MigrateTo19(root);
             if (fromSchema < 20) MigrateTo20(root);
             if (fromSchema < 21) MigrateTo21(root);
+            if (fromSchema < 22) MigrateTo22(root);
+            if (fromSchema < 23) MigrateTo23(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -320,6 +322,28 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo21(JsonValue root)
         {
             JsonPatch.AddIfMissing(root, "domainLeaders", JsonValue.Array());
+        }
+
+        /// <summary>Schema 22: founding ids on each lab (matches era PR #6; reconcile at merge).</summary>
+        static void MigrateTo22(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "founderId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "styleId", JsonValue.Of(""));
+            });
+        }
+
+        /// <summary>Schema 23: timed room programs (product campaign, factory line, coolant flush).</summary>
+        static void MigrateTo23(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "sectorCampaignSectorId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "sectorCampaignUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "factoryLineUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "coolantBoostUntilTick", JsonValue.Of(-1L));
+            });
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

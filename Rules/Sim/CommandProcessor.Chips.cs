@@ -226,5 +226,18 @@ namespace AiLabs.Rules.Sim
             if (rival != null) RivalSystem.Feel(c, rival, c.Rivalry.Feelings.ChipOrderPermille);
             return CommandResult.Done(order.Id);
         }
+
+        static CommandResult TuneChipSoftware(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            ChipsConfig k = c.Chips;
+            if (ChipQueries.Architects(c, lab) < 1) return Fail(CommandError.NotEnoughStaff, "Tuning needs at least one chip architect.");
+            if (lab.SoftwarePermille >= k.SoftwareCap) return Fail(CommandError.InvalidArgument, "The chip software stack is already at full maturity.");
+            long cost = k.SoftwareTuneCashCost;
+            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            lab.SoftwarePermille = (int)MathI.Min(k.SoftwareCap, lab.SoftwarePermille + k.SoftwareTuneGainPermille);
+            Events.Add(state, EventKind.TechResearched, lab.Id, -1, lab.SoftwarePermille, "chip-software-tune");
+            return CommandResult.Done(-1);
+        }
     }
 }

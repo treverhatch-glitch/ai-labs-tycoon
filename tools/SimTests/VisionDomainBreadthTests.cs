@@ -79,7 +79,7 @@ public class VisionDomainBreadthTests
     public void Schema_21_round_trip_empty_leaders_then_fraud_run_week()
     {
         Game g = Game.Solo();
-        Assert.Equal(21, g.State.Schema);
+        Assert.Equal(23, g.State.Schema);
         g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2030);
         g.WithStarterLab(gpus: 20);
         ExpansionTestSupport.AddReleasedModel(g, 44_000, "fraud-detection");
