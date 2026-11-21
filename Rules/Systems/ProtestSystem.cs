@@ -9,6 +9,18 @@ namespace AiLabs.Rules.Systems
     /// </summary>
     public static class ProtestSystem
     {
+        /// <summary>Attention permille added by a protest headline, including Q61 revolt bonus when already hot.</summary>
+        public static int ProtestAttentionBump(GameConfig c, int attentionBefore, int basePermille)
+        {
+            if (basePermille < 1) return 0;
+            int bump = basePermille;
+            AttentionConfig attention = c.World.Attention;
+            if (attention != null && attention.ProtestRevoltBonusPermille > 0 && attention.ProtestRevoltAttentionAt > 0
+                && attentionBefore >= attention.ProtestRevoltAttentionAt)
+                bump += (int)MathI.MulPermille(bump, attention.ProtestRevoltBonusPermille);
+            return bump;
+        }
+
         public static void OnWorldEvent(GameConfig c, GameState state, WorldEventConfig e)
         {
             if (e.ProtestAttentionPermille < 1) return;
@@ -21,11 +33,7 @@ namespace AiLabs.Rules.Systems
                 BlocStanding standing = lab.Bloc(blocId);
                 if (standing == null) continue;
                 int before = standing.Attention;
-                int bump = e.ProtestAttentionPermille;
-                AttentionConfig attention = c.World.Attention;
-                if (attention != null && attention.ProtestRevoltBonusPermille > 0 && attention.ProtestRevoltAttentionAt > 0
-                    && before >= attention.ProtestRevoltAttentionAt)
-                    bump += (int)MathI.MulPermille(bump, attention.ProtestRevoltBonusPermille);
+                int bump = ProtestAttentionBump(c, before, e.ProtestAttentionPermille);
                 standing.Attention = (int)MathI.Min(MathI.Permille, before + bump);
                 if (standing.Attention > before)
                     Events.Add(state, EventKind.AttentionRose, lab.Id, -1, standing.Attention - before, blocId);

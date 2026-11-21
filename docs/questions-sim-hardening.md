@@ -386,6 +386,24 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q73. Combined landlord income? DECIDED: `LabQueries.LandlordIncomeParts`
+
+- Options: (a) sum in UI; (b) peer + cloud royalty lines; (c) new ledger.
+- Choice: **(b)** — `WeeklyLandlordIncome`; matches Q59 + Q71 payouts.
+- Why: single landlord HUD row for chip designer who also leases GPUs.
+
+### Q74. Protest bump query? DECIDED: `ProtestSystem.ProtestAttentionBump`
+
+- Options: (a) duplicate Q61 math; (b) shared function for UI preview and `OnWorldEvent`; (c) skip.
+- Choice: **(b)** — extract revolt bonus from Q61; event amount equals query.
+- Why: planner/world UI can show protest impact before firing headline.
+
+### Q75. Training share breakdown? DECIDED: `LabQueries.TrainingShareParts`
+
+- Options: (a) total only; (b) bought vs own + in-house + chiplet bonus permille; (c) training UI only.
+- Choice: **(b)** — sums to `TrainingShareOf`; chiplet line reuses Q62 detection.
+- Why: explain training compute allocation alongside Q60 fail parts.
+
 ### Q71. Cloud landlord revenue query? DECIDED: `CloudChipLandlordSystem.RevenueParts`
 
 - Options: (a) ledger guesswork; (b) gross cloud rent + royalty matching `RunWeek`; (c) new schema.

@@ -224,6 +224,17 @@ namespace AiLabs.Rules.Systems
         /// What goes to training when a run is active: the share of general compute, with the part from the lab's own training
         /// chips counting a little more (the models are tuned to them). Inference chips never train.
         /// </summary>
+        public struct TrainingShareBreakdown
+        {
+            public long BoughtShare;
+            public long OwnShareBeforeBonus;
+            public int InHouseBonusPermille;
+            public int ChipletBonusPermille;
+            public long OwnShare;
+
+            public long Total { get { return BoughtShare + OwnShare; } }
+        }
+
         public static long TrainingShareOf(GameConfig c, LabState lab, ComputeSplit split)
         {
             return TrainingShareOf(c, null, lab, split);
@@ -231,12 +242,20 @@ namespace AiLabs.Rules.Systems
 
         public static long TrainingShareOf(GameConfig c, GameState state, LabState lab, ComputeSplit split)
         {
-            long bought = MathI.MulPermille(split.General - split.OwnChips, lab.TrainingSharePermille);
-            long own = MathI.MulPermille(split.OwnChips, lab.TrainingSharePermille);
-            int ownBonus = c.Chips.InHouseTrainingBonusPermille;
+            return TrainingShareParts(c, state, lab, split).Total;
+        }
+
+        public static TrainingShareBreakdown TrainingShareParts(GameConfig c, GameState state, LabState lab, ComputeSplit split)
+        {
+            var b = new TrainingShareBreakdown();
+            b.BoughtShare = MathI.MulPermille(split.General - split.OwnChips, lab.TrainingSharePermille);
+            b.OwnShareBeforeBonus = MathI.MulPermille(split.OwnChips, lab.TrainingSharePermille);
+            b.InHouseBonusPermille = c.Chips.InHouseTrainingBonusPermille;
+            b.ChipletBonusPermille = 0;
             if (split.OwnChips > 0 && state != null && ChipQueries.RunsChipletTrainingChips(c, state, lab))
-                ownBonus += c.Chips.ChipletTrainingBonusPermille;
-            return bought + MathI.MulPermille(own, MathI.Permille + ownBonus);
+                b.ChipletBonusPermille = c.Chips.ChipletTrainingBonusPermille;
+            b.OwnShare = MathI.MulPermille(b.OwnShareBeforeBonus, MathI.Permille + b.InHouseBonusPermille + b.ChipletBonusPermille);
+            return b;
         }
 
         /// <summary>
@@ -441,6 +460,28 @@ namespace AiLabs.Rules.Systems
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
             return GpuRentParts(c, state, lab).Total;
+        }
+
+        public struct LandlordIncomeBreakdown
+        {
+            public long PeerCompute;
+            public long CloudChipRoyalty;
+
+            public long Total { get { return PeerCompute + CloudChipRoyalty; } }
+        }
+
+        /// <summary>Weekly income from other labs: peer GPU leases plus cloud-chip royalties (matches finance <c>RunWeek</c> payouts).</summary>
+        public static LandlordIncomeBreakdown LandlordIncomeParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new LandlordIncomeBreakdown();
+            b.PeerCompute = PeerComputeSystem.WeeklyLandlordRevenue(c, state, lab);
+            b.CloudChipRoyalty = CloudChipLandlordSystem.WeeklyLandlordRevenue(c, state, lab);
+            return b;
+        }
+
+        public static long WeeklyLandlordIncome(GameConfig c, GameState state, LabState lab)
+        {
+            return LandlordIncomeParts(c, state, lab).Total;
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>
