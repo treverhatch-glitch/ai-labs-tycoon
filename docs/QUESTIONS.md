@@ -1498,6 +1498,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The offsite and the shady cost estimates read the same salary query, so they follow the policy. Hiring and severance fees do not.
 - New state on the lab (schema 47, `MigrateTo47`): `payLevel` and `payLockedUntil`. Player only and opt-in; rivals and the autopilot never change pay, and the planners read the role salaries directly, so rivals are untouched and defaults change nothing.
 - The golden digest moved to 130c6c78 because of the two lab fields and the schema number only; reverting them brought the previous digest (8bce7642) back.
+- Always raising pay on a thin lab does bankrupt it: on seed 2 of the autopilot game, a +1 level raised from the start (a 15% heavier payroll) ran the lab into the debt clock. That is accepted as the tool's cost, not a bug. The long-game test only raises pay while the lab holds over $1M.
 - Alternatives: a per-role pay (rejected: a company-wide level is one decision, not ten); a jolt for a raise (rejected: free morale for money would be an exploit); cuts that never shock (rejected: a pay cut is felt).
 
 ### Q304. Do crunch, insurance, the offsite, red teams, interpretability and pay get headlines? DECIDED: yes, seven lines, data and tests only
