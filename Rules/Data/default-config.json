@@ -5634,9 +5634,9 @@
   "techDebt": {
     "enabled": 1,
     "rushPerWeek": 40,
-    "crunchPerWeek": 6,
+    "crunchPerWeek": 3,
     "fineTunePatch": 30,
-    "incidentAtFull": 60,
+    "incidentAtFull": 40,
     "costPerPoint": 2500,
     "minEngineers": 2,
     "maxPerCommand": 250

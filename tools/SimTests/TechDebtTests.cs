@@ -156,9 +156,9 @@ public class TechDebtTests
         int half = SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m);
         g.Me.TechDebt = 1000;
         int full = SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m);
-        Assert.Equal(30, half - clean);
-        Assert.Equal(60, full - clean);
-        Assert.Equal(60, TechDebt.IncidentPermille(g.C, g.Me));
+        Assert.Equal(20, half - clean);
+        Assert.Equal(40, full - clean);
+        Assert.Equal(40, TechDebt.IncidentPermille(g.C, g.Me));
     }
 
     [Fact]
@@ -168,7 +168,7 @@ public class TechDebtTests
         ModelState m = Trained(g);
         g.Me.TechDebt = 750;
         DisplayQueries.IncidentBreakdown b = DisplayQueries.IncidentParts(g.C, g.State, g.Me, m);
-        Assert.Equal(45, b.FromDebt);
+        Assert.Equal(30, b.FromDebt);
         Assert.Equal(b.FromConfig + b.FromAlignment + b.FromCorruption + b.FromRush + b.FromOverload + b.FromCrunch + b.FromDebt + b.FromOptimisation + b.FromRedTeam + b.FromChief, b.Total);
         int weekly = SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m);
         Assert.Equal(weekly, (int)MathI.Min(MathI.Permille, b.Total));
@@ -251,7 +251,7 @@ public class TechDebtTests
         ModelState m = Trained(g);
         Assert.Equal(0, SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m));
         g.Me.TechDebt = 1000;
-        Assert.True(SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m) >= 60);
+        Assert.True(SafetySystem.WeeklyChancePermille(g.C, g.State, g.Me, m) >= 40);
     }
 
     [Fact]

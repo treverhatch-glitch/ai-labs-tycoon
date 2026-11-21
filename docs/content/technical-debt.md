@@ -7,14 +7,14 @@ Cutting corners piles up debt in the player's lab. Debt never wears off. It rais
 | Source | Points |
 |---|---|
 | A rushed launch | `rushPerWeek` (40) for each week of testing skipped |
-| A week of crunch time | `crunchPerWeek` (6) |
+| A week of crunch time | `crunchPerWeek` (3) |
 | Fine-tuning a glitching model | `fineTunePatch` (30) |
 
 Debt stops at 1000. Only the player's lab keeps it; rivals never do, and a save that gives a rival debt is flagged. A lab that cuts none of these corners never has any.
 
 ## What it does
 
-`incidentAtFull` (60 permille) is added to the model's weekly incident chance at 1000 points and less for less (30 at 500). It sits in the same sum as crunch and overload, so the incident breakdown shows it as `FromDebt` and the parts still add up to the total. The incident floor applies after it, as with the other parts.
+`incidentAtFull` (40 permille) is added to the model's weekly incident chance at 1000 points and less for less (20 at 500). It sits in the same sum as crunch and overload, so the incident breakdown shows it as `FromDebt` and the parts still add up to the total. The incident floor applies after it, as with the other parts.
 
 ## `PayDownDebt(points)`
 
