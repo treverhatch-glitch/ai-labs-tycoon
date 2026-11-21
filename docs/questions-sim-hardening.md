@@ -71,3 +71,21 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) leave open-weights appeal outside `QualityParts` (parts no longer sum); (b) add `OpenWeightsBoost` so `QualityParts.Total` matches `DisplayQueries.Quality`; (c) stop showing open weights in quality at all.
 - Choice: **(b)** — same permille as revenue; appeal still flows through squared quality.
 - Why: matches NEXT item 3 explain-every-number; `MarketBreakdownHardeningTests` cover specialist, sector price, and open weights sums.
+
+### Q13. World map breakdown queries? DECIDED: reuse `WorldQueries` parts via `DisplayQueries`
+
+- Options: (a) duplicate power/attention math in `DisplayQueries`; (b) lab-level rollups `WeeklyPowerBillParts` and `AttentionGainParts` over existing `PowerBill` / `AttentionGain`; (c) defer attention until Unity.
+- Choice: **(b)** — systems design 2.8; `WorldBreakdownHardeningTests` assert part sums and save/load.
+- Why: zero behaviour change; UI gets one import.
+
+### Q14. Trained capability breakdown? DECIDED: `CapBase`..`CapLuck` + `FromDataSource` delta
+
+- Options: (a) store data-source boost in state; (b) derive `FromDataSource = Capability − (CapBase + CapTech + CapCarryover + CapLuck)` on trained models; (c) skip until model sales UI.
+- Choice: **(b)** — matches training finish order; synthetic source can show negative part.
+- Why: bible data mix without new fields; pairs with Q11 data sources.
+
+### Q15. Second specialist line? DECIDED: `image-specialist` on `conv-nets`
+
+- Options: (a) image specialist on `multimodal`; (b) unlock with `conv-nets`, home sectors `image-recognition` + `image-design`; (c) wait for era-content art.
+- Choice: **(b)** — parallel to code-specialist pattern; locked line + sector bonus permille.
+- Why: completes NEXT “specialist lines” slice without rival training planner changes (`LabPlanner` still skips specialist lines).

@@ -95,8 +95,9 @@ and says why in the commit message.
 - The Bubble meter and circular financing; shares in rivals; monopoly and regulators.
 - The shady path with per-model corruption; government and China deals.
 - Incident rungs 4 to 6, containment rooms, the superintelligence endings.
-- Specialist model lines, data sources, open weights, pricing.
-- Real Bodies and Upward expansions (the data for both eras is already in, flagged `expansion`; what is missing is their own mechanics and art).
+- ~~Specialist model lines, data sources, open weights, pricing.~~ Done on `cursor/rules-side-items`: sector price (schema 12), open weights (13), code-specialist, data sources (14), image-specialist, market/world/training breakdown queries (Q9–Q15 in `docs/questions-sim-hardening.md`).
+- ~~Real Bodies and Upward expansions~~ Done on `cursor/rules-side-items`: expansion appeal kits + room gates (`expansions` config); art/mechanics beyond appeal still open for a future pass.
+- **Explain every number (tail):** power/attention/capability breakdowns landed; chip-compute and shady-odds breakdowns already exist — optional hardening only.
 
 ## Unity
 

@@ -489,7 +489,10 @@
       {
         "id": "conv-nets", "era": "it-sees", "name": "Convolutional Nets", "cost": 17000, "requires": [ "digit-readers", "gpu-clusters" ],
         "blurb": "Slide a tiny window over everything. Suddenly it tells a cat from a lorry. Mostly.",
-        "effects": [ { "kind": "CapabilityPermille", "amount": 2200, "id": "" } ]
+        "effects": [
+          { "kind": "CapabilityPermille", "amount": 2200, "id": "" },
+          { "kind": "UnlockLine", "amount": 0, "id": "image-specialist" }
+        ]
       },
       {
         "id": "speech-nets", "era": "it-sees", "name": "Neural Speech Recognition", "cost": 18000, "requires": [ "conv-nets" ],
@@ -818,7 +821,9 @@
       { "id": "mid", "name": "Mid", "computeRequired": 2500, "baseCapability": 240, "prepCost": 30000, "servingCostPermille": 1000, "locked": true, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },
       { "id": "flagship", "name": "Flagship", "computeRequired": 12000, "baseCapability": 520, "prepCost": 250000, "servingCostPermille": 1600, "locked": true, "specialistSectorIds": [], "specialistQualityBonusPermille": 0 },
       { "id": "code-specialist", "name": "Code Specialist", "computeRequired": 3500, "baseCapability": 160, "prepCost": 22000, "servingCostPermille": 750, "locked": true,
-        "specialistSectorIds": [ "code-completion", "coding-agents" ], "specialistQualityBonusPermille": 220 }
+        "specialistSectorIds": [ "code-completion", "coding-agents" ], "specialistQualityBonusPermille": 220 },
+      { "id": "image-specialist", "name": "Vision Specialist", "computeRequired": 3200, "baseCapability": 150, "prepCost": 20000, "servingCostPermille": 720, "locked": true,
+        "specialistSectorIds": [ "image-recognition", "image-design" ], "specialistQualityBonusPermille": 210 }
     ]
   },
   "safety": {

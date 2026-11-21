@@ -143,5 +143,54 @@ namespace AiLabs.Rules.Systems
             }
             return b;
         }
+
+        /// <summary>Parts of a trained model's capability after a run (including data-source scaling).</summary>
+        public struct TrainedCapabilityBreakdown
+        {
+            public int FromBase;
+            public int FromTech;
+            public int FromCarryover;
+            public int FromLuck;
+            public int FromDataSource;
+
+            public int Total { get { return FromBase + FromTech + FromCarryover + FromLuck + FromDataSource; } }
+        }
+
+        public static TrainedCapabilityBreakdown TrainedCapabilityParts(ModelState model)
+        {
+            var b = new TrainedCapabilityBreakdown();
+            if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) return b;
+            b.FromBase = model.CapBase;
+            b.FromTech = model.CapTech;
+            b.FromCarryover = model.CapCarryover;
+            b.FromLuck = model.CapLuck;
+            int beforeSource = b.FromBase + b.FromTech + b.FromCarryover + b.FromLuck;
+            b.FromDataSource = model.Capability - beforeSource;
+            return b;
+        }
+
+        /// <summary>Every holding's weekly power bill; parts within each bill sum to that bill's total.</summary>
+        public static System.Collections.Generic.List<PowerBill> WeeklyPowerBillParts(GameConfig c, GameState state, LabState lab)
+        {
+            var list = new System.Collections.Generic.List<PowerBill>();
+            for (int i = 0; i < lab.Holdings.Count; i++)
+            {
+                PowerBill bill = WorldQueries.BillFor(c, state, lab, lab.Holdings[i]);
+                if (bill.Total != 0) list.Add(bill);
+            }
+            return list;
+        }
+
+        /// <summary>Attention gain parts for each bloc this month (before decay is applied).</summary>
+        public static System.Collections.Generic.List<AttentionGain> AttentionGainParts(GameConfig c, GameState state, LabState lab, int revenueSharePpm)
+        {
+            var list = new System.Collections.Generic.List<AttentionGain>();
+            for (int i = 0; i < c.World.Blocs.Count; i++)
+            {
+                string blocId = c.World.Blocs[i].Id;
+                list.Add(WorldQueries.GainFor(c, state, lab, blocId, revenueSharePpm));
+            }
+            return list;
+        }
     }
 }
