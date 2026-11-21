@@ -1770,6 +1770,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Interactions pinned: pulling out of every sector retires the model, so the bounty bill stops (the level stays) and a concern about the model lapses with no leak; a chair, a bounty and a restructured loan each reach the books on their own line and the books balance; and coming clean followed by a chair keeps reputation and prestige where they belong.
 - The test lab's autopilot trains with a small alignment share and a launch claim, so it really does have models showing more than they have, which is the only way a concern can be raised; it also gets more starting cash, so the poor-alignment run does not go bankrupt before the tools are used.
 
+### Q348. What happens to the whistleblower when Unity's release review lands? DECIDED (merge note): it fires only on a claim gap that survived an approved review, with no double penalty
+- Unity's release review (PR #2, Q200-Q206) already gates sandbagged alignment claims at release. After both land, a claim the review rejects or corrects must leave `displayedAlignment` equal to the real alignment, so `Whistle.Worst` finds no gap and nothing is raised. A claim the review approved is the only kind of gap that can reach the whistleblower.
+- The same overstatement is never punished twice: the review's cost (a rejected launch or a corrected number) and the whistleblower's cost (reputation, trust, a resignation) are for different outcomes, an unreviewed gap and a reviewed one. No code changes in this branch; the note is in the body of PR #22.
+
 ## Open
 
 None.
