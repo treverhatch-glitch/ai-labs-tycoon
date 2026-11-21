@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 90;
+        public const int CurrentSchema = 91;
 
         public int Schema;
         public string ConfigVersion;
@@ -352,6 +352,15 @@ namespace AiLabs.Rules.State
         public int ListStreak;
         public int ListFollowOn;
         public int ListActivist;
+        /// <summary>The revenue advance taken, what is still owed on it, and the weekly revenue when it was taken.</summary>
+        public long RbfAdvance;
+        public long RbfOwed;
+        public long RbfBase;
+        /// <summary>The share of each week's revenue swept in permille, the tier, the weeks since it was taken and the weeks of slump.</summary>
+        public int RbfShare;
+        public int RbfTier;
+        public int RbfWeeks;
+        public int RbfSlump;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -672,6 +681,13 @@ namespace AiLabs.Rules.State
             s.Int("listStreak", ref ListStreak);
             s.Int("listFollowOn", ref ListFollowOn);
             s.Int("listActivist", ref ListActivist);
+            s.Long("rbfAdvance", ref RbfAdvance);
+            s.Long("rbfOwed", ref RbfOwed);
+            s.Long("rbfBase", ref RbfBase);
+            s.Int("rbfShare", ref RbfShare);
+            s.Int("rbfTier", ref RbfTier);
+            s.Int("rbfWeeks", ref RbfWeeks);
+            s.Int("rbfSlump", ref RbfSlump);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

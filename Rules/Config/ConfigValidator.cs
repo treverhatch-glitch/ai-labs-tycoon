@@ -125,6 +125,7 @@ namespace AiLabs.Rules.Config
             CovenantsProblems(p, c);
             AllowancesProblems(p, c);
             ListingProblems(p, c);
+            RbfProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1404,6 +1405,18 @@ namespace AiLabs.Rules.Config
             if (k.FollowOnWeeks < 0 || k.BuybackImpact < 0 || k.BuybackImpact > 5000) p.Add("listing.followOnWeeks must not be negative and buybackImpact from 0 to 5000");
             if (k.ActivistBelow < 0 || k.ActivistReputation < 0 || k.ActivistReputation > 500 || k.MaxActivist < 1 || k.MaxActivist > 10) p.Add("listing.activistBelow and activistReputation must not be negative (reputation up to 500) and maxActivist from 1 to 10");
             if (k.TakePrivatePermille < MathI.Permille || k.TakePrivatePermille > 5000) p.Add("listing.takePrivatePermille must be from 1000 to 5000");
+        }
+
+        static void RbfProblems(List<string> p, GameConfig c)
+        {
+            RbfConfig k = c.Rbf;
+            if (k == null) { p.Add("rbf is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rbf.enabled must be 0 or 1");
+            if (k.MinWeeklyRevenue < 0 || k.AdvanceWeeks < 1 || k.AdvanceWeeks > 100) p.Add("rbf.minWeeklyRevenue must not be negative and advanceWeeks from 1 to 100");
+            if (k.ShareA < 1 || k.ShareB < k.ShareA || k.ShareC < k.ShareB || k.ShareC > 1000) p.Add("rbf.shareC must be at least shareB, shareB at least shareA, and all from 1 to 1000");
+            if (k.CapA < MathI.Permille || k.CapB < MathI.Permille || k.CapC < MathI.Permille || k.CapA > 5000 || k.CapB > 5000 || k.CapC > 5000) p.Add("rbf.capA, capB and capC must be from 1000 to 5000");
+            if (k.SlumpPermille < 0 || k.SlumpPermille > 1000 || k.SlumpCap < 0 || k.SlumpCap > 500) p.Add("rbf.slumpPermille must be from 0 to 1000 and slumpCap from 0 to 500");
+            if (k.BuyoutAfter < 0 || k.BuyoutPermille < 100 || k.BuyoutPermille > 1000) p.Add("rbf.buyoutAfter must not be negative and buyoutPermille from 100 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -5995,6 +5995,21 @@
     "maxActivist": 3,
     "takePrivatePermille": 1300
   },
+  "rbf": {
+    "enabled": 1,
+    "minWeeklyRevenue": 10000,
+    "advanceWeeks": 10,
+    "shareA": 50,
+    "shareB": 100,
+    "shareC": 200,
+    "capA": 1400,
+    "capB": 1300,
+    "capC": 1200,
+    "slumpPermille": 500,
+    "slumpCap": 20,
+    "buyoutAfter": 12,
+    "buyoutPermille": 950
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

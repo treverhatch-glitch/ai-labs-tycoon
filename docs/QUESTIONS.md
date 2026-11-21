@@ -1979,6 +1979,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A follow-on offering sells 10% more at today's price, at most every 24 weeks. A buyback spends cash, in thousands, to lift the price and give the founders back their share. Taking the lab private pays 130% of the public's shares and restores the founders' share. Only the player's lab; the default (never list) changes nothing.
 - Alternatives: a per-share price with a number of shares (rejected: a price index and the share still held say the same in whole numbers), analyst ratings (rejected: guidance is the one decision the player controls).
 
+### Q387. Can the lab sell a slice of its future revenue for cash? DECIDED: yes, one revenue-based advance at a time, paid back as a share of each week's revenue
+- New `rbf` data, commands `TakeRevenueAdvance` and `BuyOutAdvance`, `RevenueFinancing` system, events `RevenueAdvanceTaken`, `RevenueAdvanceCleared` and `RevenueAdvanceStretched`, and seven saved lab fields (schema 91). A lab with 10,000 a week in revenue can take an advance of up to ten weeks of its revenue, in tiers: 1 sweeps 5% of each week's revenue until 140% of the advance is repaid, 2 sweeps 10% until 130%, 3 sweeps 20% until 120%. A bigger share clears sooner and for less, but takes more of every week.
+- A week with revenue under half of what it was at the advance is a slump week and adds 2% of the advance to what is owed, so a lab that stumbles pays longer. After 12 weeks the advance can be bought out for 95% of what is still owed. The advance and the sweeps go through the capital line, so they are not taxable income and not a cost (Q379). Only the player's lab; never taking one changes nothing.
+- Alternatives: a fixed instalment (rejected: that is what the loans already are), a share of the lab (rejected: that is the funding rounds and the listing).
+
 ## Open
 
 None.

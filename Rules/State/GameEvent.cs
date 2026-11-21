@@ -362,7 +362,13 @@ namespace AiLabs.Rules.State
         /// <summary>An activist moved closer. Amount is the step.</summary>
         ActivistArrived,
         /// <summary>The lab went private. Amount is what it paid.</summary>
-        CompanyDelisted
+        CompanyDelisted,
+        /// <summary>The lab took a revenue advance. Amount is the cash, SubjectId the tier.</summary>
+        RevenueAdvanceTaken,
+        /// <summary>A revenue advance was cleared. Amount is what was paid at the end, Pick 0 swept out of revenue and 1 bought out.</summary>
+        RevenueAdvanceCleared,
+        /// <summary>A slump week stretched the advance. Amount is what it added.</summary>
+        RevenueAdvanceStretched
     }
 
     /// <summary>

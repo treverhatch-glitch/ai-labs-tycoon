@@ -381,6 +381,12 @@ namespace AiLabs.Rules.Sim
                     return "An activist investor took a step toward " + who + "'s board (" + e.Amount + ").";
                 case EventKind.CompanyDelisted:
                     return who + " went private again for " + e.Amount + ".";
+                case EventKind.RevenueAdvanceTaken:
+                    return who + " took a revenue advance of " + e.Amount + ".";
+                case EventKind.RevenueAdvanceCleared:
+                    return who + (e.Pick == 1 ? " bought out" : " finished paying") + " its revenue advance.";
+                case EventKind.RevenueAdvanceStretched:
+                    return "A weak week stretched " + who + "'s revenue advance by " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

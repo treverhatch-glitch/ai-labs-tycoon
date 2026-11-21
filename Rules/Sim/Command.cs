@@ -123,7 +123,9 @@ namespace AiLabs.Rules.Sim
         SetGuidance,
         FollowOn,
         BuyBackShares,
-        TakePrivate
+        TakePrivate,
+        TakeRevenueAdvance,
+        BuyOutAdvance
     }
 
     /// <summary>
@@ -1087,6 +1089,21 @@ namespace AiLabs.Rules.Sim
         public static Command TakePrivate(int labId)
         {
             return Make(CommandKind.TakePrivate, labId);
+        }
+
+        /// <summary>Takes a revenue advance: tier 1, 2 or 3 (a bigger share of each week's revenue swept for a lower total), for a share of the largest the lab's revenue allows, in permille. One at a time.</summary>
+        public static Command TakeRevenueAdvance(int labId, int tier, int permille)
+        {
+            Command c = Make(CommandKind.TakeRevenueAdvance, labId);
+            c.Count = tier;
+            c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Buys the advance out: pays most of what is still owed, once it has run a while.</summary>
+        public static Command BuyOutAdvance(int labId)
+        {
+            return Make(CommandKind.BuyOutAdvance, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

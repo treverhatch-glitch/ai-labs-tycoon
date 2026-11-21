@@ -120,6 +120,7 @@ namespace AiLabs.Rules.Config
         public CovenantsConfig Covenants = new CovenantsConfig();
         public AllowancesConfig Allowances = new AllowancesConfig();
         public ListingConfig Listing = new ListingConfig();
+        public RbfConfig Rbf = new RbfConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -238,6 +239,7 @@ namespace AiLabs.Rules.Config
             s.Obj("covenants", ref Covenants);
             s.Obj("allowances", ref Allowances);
             s.Obj("listing", ref Listing);
+            s.Obj("rbf", ref Rbf);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

@@ -212,6 +212,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.Listed == 0 && (lab.ListPrice != 0 || lab.ListGuidance != 0 || lab.ListTarget != 0 || lab.ListQuarter != 0 || lab.ListNext != 0 || lab.ListKeep != 0 || lab.ListStreak != 0 || lab.ListActivist != 0))
                     || ((lab.Listed != 0 || lab.ListBase != 0 || lab.ListFollowOn != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " is listed (price " + lab.ListPrice + ", guidance " + lab.ListGuidance + ", activist " + lab.ListActivist + ") in a way the data does not allow");
+                if (lab.RbfAdvance < 0 || lab.RbfOwed < 0 || lab.RbfBase < 0 || lab.RbfShare < 0 || lab.RbfShare > 1000 || lab.RbfTier < 0 || lab.RbfTier > 3 || lab.RbfWeeks < 0 || lab.RbfSlump < 0
+                    || (lab.RbfOwed > 0 && (lab.RbfAdvance < 1 || lab.RbfTier < 1 || lab.RbfShare < 1))
+                    || (lab.RbfOwed == 0 && (lab.RbfAdvance != 0 || lab.RbfBase != 0 || lab.RbfShare != 0 || lab.RbfTier != 0 || lab.RbfWeeks != 0 || lab.RbfSlump != 0))
+                    || (lab.RbfOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " owes " + lab.RbfOwed + " on a revenue advance (tier " + lab.RbfTier + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

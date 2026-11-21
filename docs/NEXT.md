@@ -323,6 +323,7 @@ and says why in the commit message.
 140. **Loan covenants (cover, cure, waiver or a call).** ~~Done~~: `covenants` data, `WaiveCovenant`, `CureCovenant`, `Covenants`, schema 88, `CovenantTests`, `docs/content/covenants.md` (Q382).
 141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
 142. **Public listing and guidance.** ~~Done~~: `listing` data, `ListCompany`, `SetGuidance`, `FollowOn`, `BuyBackShares`, `TakePrivate`, `Listing`, schema 90, `ListingTests`, `docs/content/listing.md` (Q386).
+143. **Revenue-based financing.** ~~Done~~: `rbf` data, `TakeRevenueAdvance`, `BuyOutAdvance`, `RevenueFinancing`, schema 91, `RevenueFinancingTests`, `docs/content/revenue-financing.md` (Q387).
 
 ## Rules: later
 
