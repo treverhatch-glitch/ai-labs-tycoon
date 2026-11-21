@@ -275,6 +275,8 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? "A " + e.Ref + " accepted a paper from " + who + ", adding " + e.Amount + " prestige."
                         : e.Pick == 0 ? "A " + e.Ref + " rejected a paper from " + who + "; " + e.Amount + " research points came back."
                         : who + " withdrew a paper from a " + e.Ref + " and got " + e.Amount + " research points back.";
+                case EventKind.AlumniRehired:
+                    return who + " rehired a former " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Pick == 1 ? " who had left on good terms" : e.Pick == 0 ? " who had been laid off" : " who had quit") + " for $" + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

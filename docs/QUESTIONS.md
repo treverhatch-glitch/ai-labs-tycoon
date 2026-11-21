@@ -1849,6 +1849,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden moved f8ed11f8 -> 3ed3c0a0 only through the new saved list and the schema number (verified by taking it back out). Only the player's lab.
 - Alternatives: a chance of acceptance (rejected: the brief asks for no random numbers and a visible rule is more fun), a venue per paper chosen by id (rejected: three tiers say the same), a reward that scales with prestige (rejected: prestige already pays through hiring and morale).
 
+### Q362. Can former staff be asked back? DECIDED: an alumni pool with expiry and boomerang rehires that carry trait and morale
+- New `alumni` data, command `RehireAlumnus`, `Alumni` system, event `AlumniRehired` and a saved list on the lab (schema 76). People who leave the player's lab (poached, laid off or fired, or quit) are remembered for 104 weeks with their role, trait and how they left; the pool holds 12 and drops its oldest.
+- Boomerang rehires carry consequences: the fee is half the hiring fee for someone poached away, 70% for a layoff and 90% for a quitter; the person comes back with the same trait (the known quantity: a star again, or the quitter who walks again) and a morale that depends on the parting (+80, -40, -100); every colleague's morale moves once (+10, -10, -20). The choice is whom to bring back and whether a seat is worth it.
+- It reads layoffs, quits, poaching and hiring, and adds no random numbers; only the player's lab. The golden moved 3ed3c0a0 -> ef0b282a only through the new saved list and the schema number (verified by taking it back out).
+- Alternatives: alumni who send referrals or lower hiring fees (rejected: a pay-for-stat knob), a pool that never expires (rejected: no pressure to decide), rehiring at a flat price (rejected: how someone left should matter).
+
 ## Open
 
 None.

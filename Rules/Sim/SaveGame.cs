@@ -140,6 +140,14 @@ namespace AiLabs.Rules.Sim
                     if (lab.Submissions.Count > c.Conference.MaxPending) p.Add(who + " has more papers out for review than the data allows");
                     if (lab.Submissions.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has papers out for review, which only the player's lab can have");
                 }
+                {
+                    var seenAlumni = new System.Collections.Generic.HashSet<int>();
+                    foreach (Alumnus gone in lab.Alumni)
+                        if (c.Role(gone.RoleId) == null || gone.Terms < -1 || gone.Terms > 1 || gone.Left < 0 || gone.Left > state.Tick || !seenAlumni.Add(gone.Id))
+                            p.Add(who + " has an alumnus (" + gone.Id + ", " + gone.RoleId + ", left week " + gone.Left + ") that the data does not allow");
+                    if (lab.Alumni.Count > c.Alumni.MaxSize) p.Add(who + " has more alumni than the data allows");
+                    if (lab.Alumni.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has alumni, which only the player's lab can have");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

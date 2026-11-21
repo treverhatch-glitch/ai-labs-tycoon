@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 73) MigrateTo73(root);
             if (fromSchema < 74) MigrateTo74(root);
             if (fromSchema < 75) MigrateTo75(root);
+            if (fromSchema < 76) MigrateTo76(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -452,6 +453,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 76: nobody has left a lab into the alumni pool.</summary>
+        static void MigrateTo76(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "alumni", JsonValue.Array()));
         }
 
         /// <summary>Schema 75: no lab has a paper out for review.</summary>

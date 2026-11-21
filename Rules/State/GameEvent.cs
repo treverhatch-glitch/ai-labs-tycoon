@@ -256,7 +256,9 @@ namespace AiLabs.Rules.State
         /// <summary>A paper went out for review. SubjectId is the venue (1 workshop, 2 main, 3 flagship), Amount the research points, Pick the effort, Ref the venue name.</summary>
         PaperSubmitted,
         /// <summary>A paper was decided. SubjectId is the venue, Amount the prestige it added (accepted) or the points given back (rejected or withdrawn), Pick 1 accepted, 0 rejected, 2 withdrawn, Ref the venue name.</summary>
-        PaperDecided
+        PaperDecided,
+        /// <summary>A former employee came back. SubjectId is their old id, Amount the fee, Pick how they had left (1 good terms, 0 laid off, -1 quit), Ref the role id.</summary>
+        AlumniRehired
     }
 
     /// <summary>

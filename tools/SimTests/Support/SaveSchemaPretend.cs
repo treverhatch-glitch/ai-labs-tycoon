@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 76) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "alumni"));
             if (schema < 75) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "submissions"));
             if (schema < 74) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "accountTeams"));
             if (schema < 73) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { JsonPatch.Remove(m, "sunsetStart"); JsonPatch.Remove(m, "sunsetTick"); }));

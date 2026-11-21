@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.RehireAlumnus: return RehireAlumnus(c, state, lab, cmd);
                 case CommandKind.SubmitPaper: return SubmitPaper(c, state, lab, cmd);
                 case CommandKind.WithdrawPaper: return WithdrawPaper(c, state, lab, cmd);
                 case CommandKind.AssignAccountTeam: return AssignAccountTeam(c, state, lab, cmd);
@@ -237,7 +238,9 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count > LabQueries.StaffCount(lab, role.Id))
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
+            var leavers = Alumni.Roster(lab);
             StaffSystem.Fire(lab, role.Id, cmd.Count);
+            Alumni.RecordGone(c, state, lab, leavers, Alumni.LaidOff);
             ControlStale.OnFired(c, lab, role.Id, cmd.Count);
             TalentSystem.DropGoneOffers(lab);
             Finance.Spend(lab, LedgerLine.Hiring, Labour.Severance(c, lab, role.Severance * cmd.Count));

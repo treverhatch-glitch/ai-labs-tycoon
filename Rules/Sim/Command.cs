@@ -84,7 +84,8 @@ namespace AiLabs.Rules.Sim
         CancelSunset,
         AssignAccountTeam,
         SubmitPaper,
-        WithdrawPaper
+        WithdrawPaper,
+        RehireAlumnus
     }
 
     /// <summary>
@@ -767,6 +768,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.WithdrawPaper, labId);
             c.TargetId = index;
+            return c;
+        }
+
+        /// <summary>Brings a former employee back (TargetId is the person's old id from the lab's alumni list). It costs a share of the hiring fee that is smaller for a better parting, needs a free seat, and the person returns with their old trait and a morale that depends on how they left.</summary>
+        public static Command RehireAlumnus(int labId, int personId)
+        {
+            Command c = Make(CommandKind.RehireAlumnus, labId);
+            c.TargetId = personId;
             return c;
         }
 

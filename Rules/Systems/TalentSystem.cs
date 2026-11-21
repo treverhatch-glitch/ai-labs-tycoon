@@ -106,6 +106,7 @@ namespace AiLabs.Rules.Systems
         public static void Leave(GameConfig c, GameState state, LabState rival, LabState player, StaffMember person)
         {
             player.Staff.Remove(person);
+            Alumni.Record(c, state, player, person, Alumni.Good);
             StaffSystem.OnPoachWitness(c, player);
             Events.Add(state, EventKind.StaffPoached, rival == null ? -1 : rival.Id, player.Id, 1, person.RoleId);
             if (rival != null)

@@ -5748,6 +5748,20 @@
     "refundPermille": 500,
     "withdrawPermille": 800
   },
+  "alumni": {
+    "enabled": 1,
+    "maxSize": 12,
+    "expireWeeks": 104,
+    "feeGoodPermille": 500,
+    "feeLaidOffPermille": 700,
+    "feeQuitPermille": 900,
+    "moraleGood": 80,
+    "moraleLaidOff": -40,
+    "moraleQuit": -100,
+    "peerGood": 10,
+    "peerLaidOff": -10,
+    "peerQuit": -20
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

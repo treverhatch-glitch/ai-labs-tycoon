@@ -108,6 +108,7 @@ namespace AiLabs.Rules.Config
             SunsetProblems(p, c);
             AccountsProblems(p, c);
             ConferenceProblems(p, c);
+            AlumniProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1134,6 +1135,18 @@ namespace AiLabs.Rules.Config
             if (k.EffortPrestige < 0 || k.EffortPrestige > 500) p.Add("conference.effortPrestige must be from 0 to 500");
             if (k.AcceptPrestige < 0 || k.AcceptPrestige > 500 || k.AcceptReputation < 0 || k.AcceptReputation > 200) p.Add("conference.acceptPrestige must be from 0 to 500 and acceptReputation from 0 to 200");
             if (k.RefundPermille < 0 || k.RefundPermille >= MathI.Permille || k.WithdrawPermille < k.RefundPermille || k.WithdrawPermille >= MathI.Permille) p.Add("conference.refundPermille must be from 0 to 999 and withdrawPermille from refundPermille to 999, so a paper always costs something");
+        }
+
+        static void AlumniProblems(List<string> p, GameConfig c)
+        {
+            AlumniConfig k = c.Alumni;
+            if (k == null) { p.Add("alumni is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("alumni.enabled must be 0 or 1");
+            if (k.MaxSize < 1 || k.MaxSize > 50) p.Add("alumni.maxSize must be from 1 to 50");
+            if (k.ExpireWeeks < 1 || k.ExpireWeeks > 520) p.Add("alumni.expireWeeks must be from 1 to 520");
+            if (k.FeeGoodPermille < 0 || k.FeeLaidOffPermille < k.FeeGoodPermille || k.FeeQuitPermille < k.FeeLaidOffPermille || k.FeeQuitPermille > MathI.Permille) p.Add("alumni.feeGoodPermille must be at least 0, feeLaidOffPermille at least feeGoodPermille and feeQuitPermille from feeLaidOffPermille to 1000, so a worse parting never makes a return cheaper");
+            if (k.MoraleGood < -500 || k.MoraleGood > 500 || k.MoraleLaidOff < -500 || k.MoraleLaidOff > k.MoraleGood || k.MoraleQuit < -500 || k.MoraleQuit > k.MoraleLaidOff) p.Add("alumni.moraleGood must be from -500 to 500, moraleLaidOff from -500 to moraleGood and moraleQuit from -500 to moraleLaidOff");
+            if (k.PeerGood < -200 || k.PeerGood > 200 || k.PeerLaidOff < -200 || k.PeerLaidOff > k.PeerGood || k.PeerQuit < -200 || k.PeerQuit > k.PeerLaidOff) p.Add("alumni.peerGood must be from -200 to 200, peerLaidOff from -200 to peerGood and peerQuit from -200 to peerLaidOff");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

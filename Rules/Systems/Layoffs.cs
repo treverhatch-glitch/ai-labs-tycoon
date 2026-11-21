@@ -48,6 +48,7 @@ namespace AiLabs.Rules.Systems
             int share = StaffSharePermille(c, lab, permille);
             long package = Package(c, lab, permille);
             int total = 0;
+            var leavers = Alumni.Roster(lab);
             for (int i = 0; i < c.Roles.Count; i++)
             {
                 RoleConfig role = c.Roles[i];
@@ -57,6 +58,7 @@ namespace AiLabs.Rules.Systems
                 ControlStale.OnFired(c, lab, role.Id, cut);
                 total += cut;
             }
+            Alumni.RecordGone(c, state, lab, leavers, Alumni.LaidOff);
             TalentSystem.DropGoneOffers(lab);
             Finance.Spend(lab, LedgerLine.Hiring, package);
             int morale = MoraleLoss(c, share);
