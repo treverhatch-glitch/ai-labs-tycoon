@@ -118,6 +118,7 @@ namespace AiLabs.Rules.Config
             SecurityProblems(p, c);
             GovContractsProblems(p, c);
             CharterProblems(p, c);
+            ScalingProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1295,6 +1296,20 @@ namespace AiLabs.Rules.Config
             if (k.DistributionPermille < 0 || k.DistributionPermille > MathI.Permille) p.Add("charter.distributionPermille must be from 0 to 1000");
             if (k.ChallengeStrength < 1 || k.ChallengeStrength > MathI.Permille) p.Add("charter.challengeStrength must be from 1 to 1000");
             if (k.ProfitMorale < 0 || k.ProfitMorale > MathI.Permille || k.MissionMorale < 0 || k.MissionMorale > MathI.Permille) p.Add("charter morale changes must be from 0 to 1000");
+        }
+
+        static void ScalingProblems(List<string> p, GameConfig c)
+        {
+            ScalingConfig k = c.Scaling;
+            if (k == null) { p.Add("scaling is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scaling.enabled must be 0 or 1");
+            if (k.MaxLevel < 1 || k.MaxLevel > 10) p.Add("scaling.maxLevel must be from 1 to 10");
+            if (k.FirstTripwire < 1 || k.TripwireStep < 1) p.Add("scaling.firstTripwire and tripwireStep must be at least 1");
+            if (k.SafetyPerTier < 0 || k.SafetyPerTier > 20 || k.AdoptFee < 0) p.Add("scaling.safetyPerTier must be from 0 to 20 and adoptFee must not be negative");
+            if (k.DampPermille < 0 || k.DampPermille * k.MaxLevel > MathI.Permille) p.Add("scaling.dampPermille times maxLevel must be from 0 to 1000");
+            if (k.ClaimStrength < 0 || k.ClaimStrength > MathI.Permille) p.Add("scaling.claimStrength must be from 0 to 1000");
+            if (k.WalkBackReputation < 0 || k.WalkBackReputation > 500 || k.OverrideReputation < k.WalkBackReputation || k.OverrideReputation > 500) p.Add("scaling.overrideReputation must be at least walkBackReputation and no more than 500");
+            if (k.OverrideMorale < 0 || k.OverrideMorale > MathI.Permille || k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("scaling.overrideMorale must be from 0 to 1000 and lockWeeks from 0 to 520");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

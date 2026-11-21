@@ -1921,6 +1921,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads funding (the raise and the command), research grants (the award and the clawback), prestige, morale and the litigation docket (Q371); no random numbers; only the player's lab.
 - Alternatives: a choice at founding only (rejected: no later decision), nonprofits that can still raise (rejected: the form would only be a label).
 
+### Q375. Can the lab promise to stop? DECIDED: a scaling policy with capability tripwires, safeguards to meet them and a price for breaking it
+- New `scaling` data, commands `AdoptPolicy` and `BreakPolicy`, `ScalingPolicy` system, events `TripwireHit`, `TripwireCleared` and `PolicyChanged` and four saved lab fields (schema 84). The lab commits to a policy of level 0 to 3; level k has a tripwire at capability 400 + 400 (k-1). A trained model that reaches a tripwire of the policy cannot go on sale, and no new run can start, until the lab holds the safeguards for that level: a security tier (Q372) and 2 safety people for each level. The lab can put the safeguards in, lower the policy (reputation 25, damped, and the lowered level is locked 26 weeks), or break it (reputation 40, safety staff morale -300, the level drops below the lowest tripwire the model reached). Raising costs 10,000 a level. Holding a policy takes 6% a level off the reputation a scandal costs and 40 a level off the strength of a negligence claim (Q371).
+- Reads capability, security tiers, safety staff, press damping and the docket; no random numbers; only the player's lab.
+- Alternatives: a pause on every model (rejected: no safeguards to build toward), a policy with no price for breaking it (rejected: no dilemma).
+
 ## Open
 
 None.

@@ -308,7 +308,13 @@ namespace AiLabs.Rules.State
         /// <summary>A change of charter was dropped. Pick is the form it was heading for.</summary>
         CharterReviewDropped,
         /// <summary>The lab's charter changed. Pick is the new form, Amount the old one.</summary>
-        CharterChanged
+        CharterChanged,
+        /// <summary>A trained model reached a tripwire of the lab's policy. SubjectId is the model, Amount the level of the tripwire.</summary>
+        TripwireHit,
+        /// <summary>The lab is no longer held up by a tripwire. Amount is the level that held it, Pick 1 when the safeguards were put in place and 0 when the lab broke or lowered its policy or the model was gone.</summary>
+        TripwireCleared,
+        /// <summary>The policy level changed. Amount is the new level, Pick the old one, Ref is "raise", "lower" or "break".</summary>
+        PolicyChanged
     }
 
     /// <summary>

@@ -5874,6 +5874,20 @@
     "profitMorale": 200,
     "missionMorale": 100
   },
+  "scaling": {
+    "enabled": 1,
+    "maxLevel": 3,
+    "firstTripwire": 400,
+    "tripwireStep": 400,
+    "safetyPerTier": 2,
+    "adoptFee": 10000,
+    "dampPermille": 60,
+    "claimStrength": 40,
+    "walkBackReputation": 25,
+    "overrideReputation": 40,
+    "overrideMorale": 300,
+    "lockWeeks": 26
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

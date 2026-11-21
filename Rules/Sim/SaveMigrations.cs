@@ -96,6 +96,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 81) MigrateTo81(root);
             if (fromSchema < 82) MigrateTo82(root);
             if (fromSchema < 83) MigrateTo83(root);
+            if (fromSchema < 84) MigrateTo84(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -459,6 +460,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 84: no lab has a scaling policy.</summary>
+        static void MigrateTo84(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "policyLevel", "policyLockedUntil", "policyHold", "policyBreaks" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

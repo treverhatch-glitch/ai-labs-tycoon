@@ -327,6 +327,12 @@ namespace AiLabs.Rules.Sim
                     return who + " dropped its plan to become " + Charter.Describe(e.Pick) + ".";
                 case EventKind.CharterChanged:
                     return who + " is now " + Charter.Describe(e.Pick) + ".";
+                case EventKind.TripwireHit:
+                    return who + "'s " + e.Ref + " reached a level " + e.Amount + " tripwire and is held back.";
+                case EventKind.TripwireCleared:
+                    return e.Pick == 1 ? who + " put the safeguards for its level " + e.Amount + " tripwire in place." : who + " is no longer held back by its level " + e.Amount + " tripwire.";
+                case EventKind.PolicyChanged:
+                    return e.Ref == "break" ? who + " broke its scaling policy." : who + " " + (e.Ref == "raise" ? "raised" : "lowered") + " its scaling policy to level " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

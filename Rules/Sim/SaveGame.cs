@@ -190,6 +190,8 @@ namespace AiLabs.Rules.Sim
                 }
                 if (lab.Charter < 0 || lab.Charter > 2 || lab.CharterTo < 0 || lab.CharterTo > 3 || lab.CharterDue < 0 || (lab.CharterTo > 0) != (lab.CharterDue > 0) || (lab.CharterTo > 0 && lab.CharterTo - 1 == lab.Charter) || lab.CapPaid < 0 || ((lab.Charter != 0 || lab.CharterTo != 0 || lab.CapPaid != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a charter (" + lab.Charter + ", under review " + lab.CharterTo + ", week " + lab.CharterDue + ", investors paid " + lab.CapPaid + ") that the data does not allow");
+                if (lab.PolicyLevel < 0 || lab.PolicyLevel > c.Scaling.MaxLevel || lab.PolicyLockedUntil < 0 || lab.PolicyHold < 0 || lab.PolicyHold > lab.PolicyLevel || lab.PolicyBreaks < 0 || ((lab.PolicyLevel != 0 || lab.PolicyLockedUntil != 0 || lab.PolicyBreaks != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a scaling policy (level " + lab.PolicyLevel + ", hold " + lab.PolicyHold + ", locked until " + lab.PolicyLockedUntil + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

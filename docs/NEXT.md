@@ -313,6 +313,7 @@ and says why in the commit message.
 130. **Information security (tiers, exposure, breach answers).** ~~Done~~: `security` data, `BuildSecurity`, `AnswerBreach`, `Security`, schema 81, `SecurityTests`, `docs/content/security.md` (Q372).
 131. **Government contracts (offers in turn, clearance, kept-free engineers, instalments).** ~~Done~~: `govContracts` data, `AcceptContract`, `DeclineContract`, `AbandonContract`, `GovContracts`, schema 82, `GovContractsTests`, `docs/content/government-contracts.md` (Q373).
 132. **The charter (for-profit, capped-profit, nonprofit; a reviewed change).** ~~Done~~: `charter` data, `ConvertCharter`, `CancelCharterChange`, `Charter`, schema 83, `CharterTests`, `docs/content/charter.md` (Q374).
+133. **The scaling policy (capability tripwires, safeguards, breaking it).** ~~Done~~: `scaling` data, `AdoptPolicy`, `BreakPolicy`, `ScalingPolicy`, schema 84, `ScalingPolicyTests`, `docs/content/scaling-policy.md` (Q375).
 
 ## Rules: later
 

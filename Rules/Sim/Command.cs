@@ -104,7 +104,9 @@ namespace AiLabs.Rules.Sim
         DeclineContract,
         AbandonContract,
         ConvertCharter,
-        CancelCharterChange
+        CancelCharterChange,
+        AdoptPolicy,
+        BreakPolicy
     }
 
     /// <summary>
@@ -936,6 +938,20 @@ namespace AiLabs.Rules.Sim
         public static Command CancelCharterChange(int labId)
         {
             return Make(CommandKind.CancelCharterChange, labId);
+        }
+
+        /// <summary>Sets the scaling policy level, 0 to the data's top. Raising it costs a fee for each level up; lowering it costs reputation and is refused while the level is locked; either change locks lowering for some weeks. Level k has a tripwire at a capability: a trained model that reaches a tripwire of the policy is held back, and so is every new run, until the safeguards for that level are in place.</summary>
+        public static Command AdoptPolicy(int labId, int level)
+        {
+            Command c = Make(CommandKind.AdoptPolicy, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Breaks the policy while a tripwire holds the lab up: the level drops below the tripwire, the lab loses reputation and the safety staff lose morale.</summary>
+        public static Command BreakPolicy(int labId)
+        {
+            return Make(CommandKind.BreakPolicy, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

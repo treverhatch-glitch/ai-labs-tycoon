@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 83;
+        public const int CurrentSchema = 84;
 
         public int Schema;
         public string ConfigVersion;
@@ -295,6 +295,11 @@ namespace AiLabs.Rules.State
         public int CharterTo;
         public int CharterDue;
         public long CapPaid;
+        /// <summary>The scaling policy level, the week until which it cannot be lowered, the level of the tripwire now holding the lab up (0 when none) and the times the policy was broken.</summary>
+        public int PolicyLevel;
+        public int PolicyLockedUntil;
+        public int PolicyHold;
+        public int PolicyBreaks;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -568,6 +573,10 @@ namespace AiLabs.Rules.State
             s.Int("charterTo", ref CharterTo);
             s.Int("charterDue", ref CharterDue);
             s.Long("capPaid", ref CapPaid);
+            s.Int("policyLevel", ref PolicyLevel);
+            s.Int("policyLockedUntil", ref PolicyLockedUntil);
+            s.Int("policyHold", ref PolicyHold);
+            s.Int("policyBreaks", ref PolicyBreaks);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
