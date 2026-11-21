@@ -1999,6 +1999,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A funding round that closes while the note is open converts it at the round's price less the discount (the round's value is its cash over its dilution), and the founders are diluted by the round and the note together (`FundingSystem.ApplyRaise`, Q386's listing does the same at the listing price, in `Listing.List`). At most 40% of the lab can convert at once. The lab can repay it with its interest, or extend it once (24 weeks more, the rate up by half and 5% more discount). A note that reaches maturity converts at a 40% discount against the lab's value (at least double what is owed). Only the player's lab; never issuing one changes nothing.
 - Alternatives: a valuation cap (rejected: a share of the lab is already capped), several notes at once (rejected: that is a list with no new decision).
 
+### Q391. Do the five new systems make the news and the chat? DECIDED: yes, 30 headlines and 23 chat lines for 23 event kinds
+- The listing (listed, earnings missed, met or beaten, follow-on, buyback, activist, delisted), the revenue advance (taken, swept out, bought out, stretched), the foundation (endowed, reported, refocused, wound up, ran dry), the leaseback (sold, bought back, ended at term, early or repossessed, rent missed, extended) and the convertible notes (issued, converted in a round, at a listing or at maturity, repaid, extended). Counts are pinned at 233 headlines and 260 chat lines in the tests that pin them, and a new test checks every pick.
+- Alternatives: one headline per system (rejected: the end of a lease or the conversion of a note reads differently by how it happened).
+
+### Q392. How do the five new systems meet? DECIDED: through the cap table, the loans, the chips, the press and the books
+- A convertible note converts at a listing (at the listing price less its discount) and at a funding round (in `FundingSystem.ApplyRaise`, the founders taking the round and the note together), so a lab that lists with a note open leaves nothing for a later round to convert (Q386, Q390). A revenue advance counts as debt in the loan cover and in what a cure must pay down, so it makes a covenant breach likelier (Q387, Q382). A sale-leaseback takes the leased units' value off the collateral and stops them being sold (Q389), so it can trip the covenant and a buy-back clears it.
+- A safety foundation's damping works through the press room's damping, so an activist's reputation hit at a listing is softer (Q388, Q386); an open science foundation takes strength off incident claims (Q371). The listing proceeds, the advance, the foundation's gifts and the note go through the capital line and stay out of the tax base; the listing's reporting cost and the lease rent are costs and come off it (Q379).
+- All five are command-driven, so a lab that never uses them plays exactly as before: the full suite needed no old test changed. A lab that goes bankrupt and spectates still saves cleanly with every one of them in use. A long scripted game over three seeds keeps the books, the save and the replay.
+
 ## Open
 
 None.

@@ -16,3 +16,5 @@ Cover is what the chips would fetch over what is owed, in permille. Below `minCo
 | the cover comes right | by more chips or less debt: logged as cured, nothing paid |
 
 Events: `CovenantBreached`, `CovenantCured` (Pick 1 when the lab paid down), `CovenantWaived`, `LoansCalled` (Pick 1 when paid from cash).
+
+Two later systems feed the cover. An outstanding revenue advance (`docs/content/revenue-financing.md`) is added to the debt, and a sale-leaseback (`docs/content/leaseback.md`) takes the leased units' value off the collateral (`Loans.Collateral`). A cure pays down the loans enough for the chips to cover the loans and the advance together.

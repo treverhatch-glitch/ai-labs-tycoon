@@ -327,6 +327,8 @@ and says why in the commit message.
 144. **Endowed foundation.** ~~Done~~: `foundation` data, `EndowFoundation`, `SetFoundationFocus`, `SetFoundationPayout`, `WindUpFoundation`, `Foundation`, schema 92, `FoundationTests`, `docs/content/foundation.md` (Q388).
 145. **Sale-leaseback of GPUs.** ~~Done~~: `leaseback` data, `SaleLeaseback`, `BuyBackLease`, `ExtendLease`, `ReturnLease`, `Leaseback`, schema 93, `LeasebackTests`, `docs/content/leaseback.md` (Q389).
 146. **Convertible notes.** ~~Done~~: `convertibleNotes` data, `IssueNote`, `RepayNote`, `ExtendNote`, `Notes`, schema 94, `NotesTests`, `docs/content/convertible-notes.md` (Q390).
+147. **News and chat for the fifth batch.** ~~Done~~: 30 headlines and 23 chat lines, `ListingRevenueFoundationLeasebackNotesNewsChatTests`, pins at 233 and 260 (Q391).
+148. **How the fifth batch meets.** ~~Done~~: the covenant counts a revenue advance as debt, `ListingRevenueFoundationLeasebackNotesTogetherTests` (Q392).
 
 ## Rules: later
 
