@@ -143,6 +143,43 @@ public class CapabilityDomainSystemTests
     }
 
     [Fact]
+    public void Enterprise_domain_third_leaderboard()
+    {
+        Game g = At(2028);
+        ExpansionTestSupport.AddReleasedModel(g, 40_000, "code-completion");
+        ExpansionTestSupport.AddReleasedModel(g, 42_000, "image-design");
+        ExpansionTestSupport.AddReleasedModel(g, 50_000, "expert-systems");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        CapabilityDomainLeaderState ent = CapabilityDomainSystem.Leader(g.State, "enterprise");
+        Assert.NotNull(ent);
+        Assert.Equal(g.Id, ent.LeaderLabId);
+        Assert.Equal(3, g.State.DomainLeaders.Count);
+    }
+
+    [Fact]
+    public void Leader_change_emits_event()
+    {
+        Game g = At(2028);
+        ExpansionTestSupport.AddReleasedModel(g, 35_000, "code-completion");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        Assert.Single(g.State.Events, e => e.Kind == EventKind.DomainLeaderChanged);
+        ModelState rival = ExpansionTestSupport.AddReleasedModel(g, 200_000, "code-completion", "Big");
+        g.Weeks(1);
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.DomainLeaderChanged && e.LabId == g.Id);
+    }
+
+    [Fact]
+    public void Same_leader_twice_no_duplicate_event()
+    {
+        Game g = At(2028);
+        ExpansionTestSupport.AddReleasedModel(g, 40_000, "code-completion");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        int n = g.State.Events.Count;
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        Assert.Equal(n, g.State.Events.Count);
+    }
+
+    [Fact]
     public void Coding_agents_sector_counts_in_language_domain()
     {
         Game g = At(2030);
@@ -150,5 +187,26 @@ public class CapabilityDomainSystemTests
         CapabilityDomainSystem.RunWeek(g.C, g.State);
         Assert.Equal(m.Capability, CapabilityDomainQueries.BestCapability(g.C, g.Me, "language"));
         Assert.True(CapabilityDomainSystem.LeaderAppealPermille(g.C, g.State, g.Me, "coding-agents") > 0);
+    }
+
+    [Fact]
+    public void Fraud_detection_counts_in_vision_domain()
+    {
+        Game g = At(2030);
+        ModelState m = ExpansionTestSupport.AddReleasedModel(g, 55_000, "fraud-detection");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        Assert.Equal(m.Capability, CapabilityDomainQueries.BestCapability(g.C, g.Me, "vision"));
+        Assert.NotNull(CapabilityDomainSystem.Leader(g.State, "vision"));
+    }
+
+    [Fact]
+    public void Domain_leader_changed_has_event_text()
+    {
+        Game g = At(2028);
+        ExpansionTestSupport.AddReleasedModel(g, 30_000, "code-completion");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        GameEvent e = Assert.Single(g.State.Events, x => x.Kind == EventKind.DomainLeaderChanged);
+        string line = EventText.Describe(g.C, g.State, e);
+        Assert.Contains("Language", line);
     }
 }

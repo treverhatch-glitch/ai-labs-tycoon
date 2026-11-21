@@ -122,6 +122,14 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ShadyAcquitted: return who + " was acquitted.";
                 case EventKind.ShadySideJob: return e.Ref + " did a little job on the side. It left you a tip.";
                 case EventKind.ShadyTemptation: return "Runway is short. " + c.Shady.Card(e.Ref).Name + " is on the table.";
+                case EventKind.ChipShortageBegan: return "The chip crunch begins (strength " + e.Amount + " permille).";
+                case EventKind.ChipShortageEnded: return "The chip crunch eases.";
+                case EventKind.DomainLeaderChanged:
+                    {
+                        CapabilityDomainConfig domain = c.Market.Domain(e.Ref);
+                        string domainName = domain == null ? e.Ref : domain.Name;
+                        return who + " now leads the " + domainName + " models.";
+                    }
                 default: return who + ": " + e.Kind + ".";
             }
         }

@@ -47,6 +47,8 @@ namespace AiLabs.Rules.Systems
 
         public static void RunWeek(GameConfig c, GameState state)
         {
+            var previous = new CapabilityDomainLeaderState[state.DomainLeaders.Count];
+            for (int i = 0; i < state.DomainLeaders.Count; i++) previous[i] = state.DomainLeaders[i];
             state.DomainLeaders.Clear();
             for (int d = 0; d < c.Market.CapabilityDomains.Count; d++)
             {
@@ -71,6 +73,9 @@ namespace AiLabs.Rules.Systems
                     leaderId = lab.Id;
                 }
                 if (leaderId < 0 || bestFoot < 1) continue;
+                int priorLeader = -1;
+                for (int p = 0; p < previous.Length; p++)
+                    if (previous[p].DomainId == domain.Id) { priorLeader = previous[p].LeaderLabId; break; }
                 state.DomainLeaders.Add(new CapabilityDomainLeaderState
                 {
                     DomainId = domain.Id,
@@ -78,6 +83,8 @@ namespace AiLabs.Rules.Systems
                     Footprint = bestFoot,
                     BestCapability = bestCap,
                 });
+                if (priorLeader != leaderId)
+                    Events.Add(state, EventKind.DomainLeaderChanged, leaderId, priorLeader, bestFoot, domain.Id);
             }
         }
     }

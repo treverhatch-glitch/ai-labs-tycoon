@@ -376,6 +376,22 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
 - Why: explainable domain scores for planner/UI without gauntlet changes.
 
+### Q68. Domain leader events? DECIDED: `EventKind.DomainLeaderChanged`
+
+- Options: (a) silent refresh; (b) event log when leader lab changes; (c) world news.
+- Choice: **(b)** — `Events.Add` from `CapabilityDomainSystem.RunWeek`; `EventText` line.
+- Why: makes Q65 visible to player without Unity UI.
+
+### Q69. Vision domain breadth? DECIDED: add `fraud-detection` sector
+
+- Config extension only; reuses Q65 leader/appeal path.
+
+### Q70. Third capability domain? DECIDED: `enterprise` domain
+
+- Options: (a) third domain grouping expert/search sectors; (b) defer to UI; (c) gauntlet hook.
+- Choice: **(a)** — `enterprise` with `expert-systems` and `spam-search`; same leader/appeal rules as Q65.
+- Why: bible “capability domains” beyond language/vision without new schema.
+
 ### Q67. Language domain breadth? DECIDED: add `coding-agents` sector
 
 - Options: (a) third domain; (b) extend language `sectorIds`; (c) UI only.

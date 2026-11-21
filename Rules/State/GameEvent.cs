@@ -45,7 +45,9 @@ namespace AiLabs.Rules.State
         /// <summary>The global chip crunch began. Amount is strength permille.</summary>
         ChipShortageBegan,
         /// <summary>The global chip crunch ended. Amount is the last strength permille.</summary>
-        ChipShortageEnded
+        ChipShortageEnded,
+        /// <summary>A lab took the weekly lead in a capability domain. Ref is the domain id; SubjectId is the previous leader or -1.</summary>
+        DomainLeaderChanged
     }
 
     /// <summary>
