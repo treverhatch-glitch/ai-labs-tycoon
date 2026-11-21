@@ -439,6 +439,8 @@ namespace AiLabs.Rules.Config
             else
             {
                 if (k.Shortage.DurationWeeks < 1) p.Add("chips.shortage.durationWeeks must be at least 1");
+                Permille(p, "chips.shortage.vendorSupplyFloorPermille", k.Shortage.VendorSupplyFloorPermille);
+                if (k.Shortage.VendorSupplyFloorPermille < 1) p.Add("chips.shortage.vendorSupplyFloorPermille must be at least 1");
                 if (k.Shortage.MinStrengthPermille < MathI.Permille || k.Shortage.MaxStrengthPermille < k.Shortage.MinStrengthPermille)
                     p.Add("chips.shortage strength permilles must run from 1000 upward");
             }

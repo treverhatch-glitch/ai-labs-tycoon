@@ -33,6 +33,19 @@ namespace AiLabs.Rules.Systems
             return MathI.MulPermille(price, PriceMulPermille(state));
         }
 
+        /// <summary>Monthly Envydia allocation pool while the crunch is on (stronger crunch → fewer GPUs).</summary>
+        public static int VendorSupplyPermille(GameConfig c, GameState state)
+        {
+            if (!Active(state)) return MathI.Permille;
+            int floor = c.Chips.Shortage.VendorSupplyFloorPermille;
+            return (int)MathI.Max(floor, 2000 - state.ChipShortageStrengthPermille);
+        }
+
+        public static int ScaleVendorSupply(GameConfig c, GameState state, int supply)
+        {
+            return (int)MathI.MulPermille(supply, VendorSupplyPermille(c, state));
+        }
+
         public static long EffectiveFoundryRoom(GameConfig c, GameState state, ChipNodeConfig node)
         {
             return MathI.MulPermille(c.Chips.FoundryRoom(node), FoundryRoomMulPermille(state));

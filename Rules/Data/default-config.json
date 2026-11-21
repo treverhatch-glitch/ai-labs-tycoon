@@ -1182,7 +1182,7 @@
     "yieldRampPerWeek": 10, "yieldRampPerEngineer": 1, "yieldRampEngineerCap": 10, "testLabRampPermille": 2000,
     "yieldCrashPermille": 50, "yieldCrashKeepPermille": 300, "foundryVendorSharePermille": 500, "bookAheadMonths": 24,
     "listingMaxPerMonth": 500, "cloudRentPermille": 1100, "plannerMinYieldPermille": 600,
-    "shortage": { "durationWeeks": 24, "minStrengthPermille": 1050, "maxStrengthPermille": 1600 },
+    "shortage": { "durationWeeks": 24, "minStrengthPermille": 1050, "maxStrengthPermille": 1600, "vendorSupplyFloorPermille": 400 },
     "architectRoleId": "chip-architect", "testLabRoomId": "hw-test-lab",
     "targets": [
       { "id": "inference", "name": "Inference chip", "points": 2000, "computePermille": 1300, "trains": false },

@@ -243,3 +243,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) freeze only blocks commands (Q37); (b) `TrainingSystem.RunWeek` returns before progress when home is `Freeze`; (c) auto-cancel runs.
 - Choice: **(b)** — in-progress runs neither gain capability nor alignment compute; ledger/compute stats still roll; research and release commands unchanged.
 - Why: NEXT freeze consequences beyond purchases; world-map only; avoids room/perk/press/talent/gauntlet/rival threads.
+
+### Q42. Chip shortage cuts Envydia supply? DECIDED: inverse strength on monthly pool
+
+- Options: (a) prices only (Q39); (b) `VendorSystem.RunMonth` supply scaled by `2000 − strength` floored at `vendorSupplyFloorPermille`; (c) block queue.
+- Choice: **(b)** — same active window as Q39; allocations/queue shrink; keynote month still applies first.
+- Why: bible “card shortage” hits gamers buying GPUs, not just list prices; no new schema.
+
+### Q43. Home freeze blocks research? DECIDED: no spend, no accrual
+
+- Options: (a) block `ResearchTech` only; (b) also skip `RunResearch` accrual; (c) drain points.
+- Choice: **(b)** — mirror Q41; foreign blocs unaffected; Letter/Hearing/Audit still allow research.
+- Why: freeze consequences beyond purchases/commands; stays off era room/perk threads.

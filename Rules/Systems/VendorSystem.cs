@@ -118,6 +118,7 @@ namespace AiLabs.Rules.Systems
                 Events.Add(state, EventKind.Keynote, -1, -1, supply, opening.Id);
                 ChipSystem.OnKeynote(c, state);
             }
+            supply = ChipShortageSystem.ScaleVendorSupply(c, state, supply);
             state.Vendor.SupplyThisMonth = supply;
 
             RunAllocation(c, state, true);

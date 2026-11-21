@@ -167,12 +167,15 @@ namespace AiLabs.Rules.Config
         public int DurationWeeks = 24;
         public int MinStrengthPermille = 1050;
         public int MaxStrengthPermille = 1600;
+        /// <summary>Monthly Envydia GPU supply is supply times this over shortage strength (2000 − strength), floored.</summary>
+        public int VendorSupplyFloorPermille = 400;
 
         public void Sync(Syncer s)
         {
             s.Int("durationWeeks", ref DurationWeeks);
             s.Int("minStrengthPermille", ref MinStrengthPermille);
             s.Int("maxStrengthPermille", ref MaxStrengthPermille);
+            s.Int("vendorSupplyFloorPermille", ref VendorSupplyFloorPermille);
         }
     }
 
