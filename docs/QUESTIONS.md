@@ -1675,6 +1675,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 60, `MigrateTo60`): `researchGrantStage`, `researchGrantTier`, `researchGrantTick`, `researchGrantOwed`, `researchGrantLockedUntil`. Player only and opt-in. `Prestige.Publish` calls `ResearchGrants.OnPaper`, which is a no-op unless a grant is owed. Golden digest moved to b10b40af; reverting the five fields and the schema number brought 5fcd3147 back.
 - Alternatives: a random verdict (rejected, see above); money without papers owed (rejected: the bible's "no strings" grants would then be free income); prizes that pay when the Gauntlet is won (rejected: that is the Gauntlet's own reward); a grant that pays on delivery (rejected: no need for the lab to hold the risk, and the up-front payment is the reason to apply early).
 
+### Q331. Headlines and chat for policy consultants, post-mortems, the pledge and grants. DECIDED: twelve headlines and twelve chat lines, data only
+- Twelve headlines (consultants in and out, a post-mortem summary and a full one, a pledge made, lowered, broken by load and broken by an incident, a grant awarded, declined, delivered and clawed back) and twelve chat lines. Counts are now 69 headlines and 122 chat lines; the older content tests pin the new totals. The grant application and the dropped-pledge and delivered-grant outcomes have no chat line on purpose: nothing happened yet, or the news is the absence of trouble.
+- Chat lines are checked in data order and the first that fits wins, so each role-specific line sits before the generic one for its kind (a test pins it for every pair). The `Pick` values stay inside -1, 0 and 1, which the validator enforces for chat and news. Nothing here is saved.
+- Alternatives: a line for every event kind (rejected: dull and repetitive); chat for the grant application (rejected: no outcome to react to).
+
+### Q332. Are policy consultants, post-mortems, the pledge and grants tested together? DECIDED: yes, a 260-week play-through over three seeds with every tool plus the rota and insurance
+- `ConsultantsPostMortemSlaTogetherTests` runs three seeds for 260 weeks with firms, pledges, the rota, insurance, papers, grant applications and post-mortems used on a timetable. It checks the books balance, the save is sound, a load plays on the same, the journal replays, an unused set of tools changes nothing, every tool is used across the seeds, and an incident with insurance, the rota and a top pledge cannot be free (the fine floors still hold) while a full write-up never wins back more than the incident cost.
+- Alternatives: separate play-throughs for each system (rejected: the interactions are the point, the same reason as Q325).
+
 ## Open
 
 None.

@@ -270,6 +270,8 @@ and says why in the commit message.
 87. **Public post-mortems (safety).** ~~Done~~: `PublishPostMortem`, `PostMortem`, `postMortem` data, model `incidentRepLoss` and `postMortemDone` (schema 58, `MigrateTo58`), `PostMortemTests`, `docs/content/post-mortems.md` (Q328).
 88. **Service-level pledge (economy, safety).** ~~Done~~: `SetSla`, `Sla`, `sla` data, lab `slaLevel`, `slaLockedUntil`, `slaStrikes` (schema 59, `MigrateTo59`), `SlaTests`, `docs/content/service-level-pledge.md` (Q329).
 89. **Research grants (research, funding).** ~~Done~~: `ApplyForGrant`, `ResearchGrants`, `researchGrants` data, five lab fields (schema 60, `MigrateTo60`), `ResearchGrantsTests`, `docs/content/research-grants.md` (Q333). The recruiting drive was rejected as a priced timed modifier (Q330).
+90. **Headlines and chat for consultants, post-mortems, the pledge and grants.** ~~Done~~: twelve headlines and twelve chat lines, data only, `ConsultantsPostMortemSlaNewsChatTests` (Q331).
+91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
 
 ## Rules: later
 
