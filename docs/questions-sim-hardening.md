@@ -386,6 +386,18 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q71. Cloud landlord revenue query? DECIDED: `CloudChipLandlordSystem.RevenueParts`
+
+- Options: (a) ledger guesswork; (b) gross cloud rent + royalty matching `RunWeek`; (c) new schema.
+- Choice: **(b)** — `WeeklyLandlordRevenue` and `RevenueBreakdown`; refactor `RunWeek` to same math.
+- Why: landlord-side mirror of Q56 renter `GpuRentParts.Cloud` and Q55 payout.
+
+### Q72. Planner stale GPU query? DECIDED: `Fleet.StaleGpuBatch`
+
+- Options: (a) duplicate planner logic in UI; (b) shared query used by `LabPlanner.Refresh`; (c) skip.
+- Choice: **(b)** — extract stale batch pick; planner refresh unchanged behaviour.
+- Why: bible sell-oldest-gen tuning hook for planner UI without duplicating tier-gap rules.
+
 ### Q70. Third capability domain? DECIDED: `enterprise` domain
 
 - Options: (a) third domain grouping expert/search sectors; (b) defer to UI; (c) gauntlet hook.

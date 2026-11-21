@@ -240,13 +240,7 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             if (!x.Plan.OwnGpus || Overstretched(x)) return;
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
-            HardwareBatch stale = null;
-            for (int i = 0; i < lab.Fleet.Count; i++)
-            {
-                HardwareBatch b = lab.Fleet[i];
-                if (b.GpuGenId == null || b.ChipDesignId >= 0 || gen.Tier - Fleet.TierOf(c, b) < c.Rivalry.ReplaceTierGap) continue;
-                if (stale == null || Fleet.TierOf(c, b) < Fleet.TierOf(c, stale) || (Fleet.TierOf(c, b) == Fleet.TierOf(c, stale) && b.Id < stale.Id)) stale = b;
-            }
+            HardwareBatch stale = Fleet.StaleGpuBatch(c, state, lab);
             if (stale == null) return;
 
             string blocId = WorldQueries.BlocOfPlace(c, lab, stale.HoldingId);
