@@ -14,8 +14,9 @@ namespace AiLabs.Rules.Systems
             public long FromAlignment;
             public long SandbagBoost;
             public long GlitchAdjustment;
+            public long OpenWeightsBoost;
 
-            public long Total { get { return FromCapability + FromAlignment + SandbagBoost + GlitchAdjustment; } }
+            public long Total { get { return FromCapability + FromAlignment + SandbagBoost + GlitchAdjustment + OpenWeightsBoost; } }
         }
 
         public struct AppealBreakdown
@@ -70,15 +71,18 @@ namespace AiLabs.Rules.Systems
                 long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
                 b.GlitchAdjustment = after - before;
             }
+            if (model.OpenWeights)
+            {
+                long before = b.Total;
+                long after = MathI.MulPermille(before, MathI.Permille + c.Market.OpenWeightsAppealBonusPermille);
+                b.OpenWeightsBoost = after - before;
+            }
             return b;
         }
 
         public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            long total = QualityParts(c, sector, model, tick).Total;
-            if (model.OpenWeights)
-                total = MathI.MulPermille(total, MathI.Permille + c.Market.OpenWeightsAppealBonusPermille);
-            return total;
+            return QualityParts(c, sector, model, tick).Total;
         }
 
         public static AppealBreakdown AppealParts(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)

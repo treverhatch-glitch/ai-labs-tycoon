@@ -65,3 +65,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) per-run command list; (b) `training.dataSources`, `SetTrainingDataSource`, stamp `dataSourceId` on model; (c) full lawsuit/shady track now.
 - Choice: **(b)** — prep at train start, capability at finish; schema 14 migrates `internal` default.
 - Why: bible data mix without shady; defers scrape/legal events.
+
+### Q12. Open weights in quality breakdown? DECIDED: `OpenWeightsBoost` part
+
+- Options: (a) leave open-weights appeal outside `QualityParts` (parts no longer sum); (b) add `OpenWeightsBoost` so `QualityParts.Total` matches `DisplayQueries.Quality`; (c) stop showing open weights in quality at all.
+- Choice: **(b)** — same permille as revenue; appeal still flows through squared quality.
+- Why: matches NEXT item 3 explain-every-number; `MarketBreakdownHardeningTests` cover specialist, sector price, and open weights sums.
