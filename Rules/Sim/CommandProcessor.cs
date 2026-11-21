@@ -20,7 +20,10 @@ namespace AiLabs.Rules.Sim
             if (cmd == null) return Fail(CommandError.InvalidArgument, "There is no command.");
             LabState lab = state.Lab(cmd.LabId);
             if (lab == null) return Fail(CommandError.UnknownLab, "There is no lab " + cmd.LabId + ".");
-            if (lab.Bankrupt) return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (cmd.LabId >= 0 && lab.Bankrupt && cmd.Kind != CommandKind.ContinueAfterEnding)
+                return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
+                return Fail(CommandError.UnknownLab, "That is not the player's lab.");
 
             switch (cmd.Kind)
             {
@@ -34,14 +37,37 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SellGpus: return SellGpus(c, state, lab, cmd);
                 case CommandKind.SetTrainingShare: return SetTrainingShare(lab, cmd);
                 case CommandKind.ResearchTech: return ResearchTech(c, state, lab, cmd);
+                case CommandKind.FilePatent: return FilePatent(c, state, lab, cmd);
                 case CommandKind.StartTraining: return StartTraining(c, state, lab, cmd);
+                case CommandKind.StartTrainingRecipe: return StartTrainingRecipe(c, state, lab, cmd);
+                case CommandKind.ScrapFailedRun: return ScrapFailedRun(lab, cmd);
+                case CommandKind.SetDistillTarget: return SetDistillTarget(c, state, lab, cmd);
                 case CommandKind.ReleaseModel: return ReleaseModel(c, state, lab, cmd);
+                case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
+                case CommandKind.SetOpenWeights: return SetOpenWeights(c, state, lab, cmd);
+                case CommandKind.SetTrainingDataSource: return SetTrainingDataSource(c, state, lab, cmd);
                 case CommandKind.BuyLand: return BuyLand(c, state, lab, cmd);
                 case CommandKind.SellLand: return SellLand(c, state, lab, cmd);
                 case CommandKind.LeaseColo: return LeaseColo(c, state, lab, cmd);
                 case CommandKind.BuildHall: return BuildHall(c, state, lab, cmd);
                 case CommandKind.AddPowerDeal: return AddPowerDeal(c, state, lab, cmd);
                 case CommandKind.MoveHardware: return MoveHardware(c, state, lab, cmd);
+                case CommandKind.StartChipDesign: return StartChipDesign(c, state, lab, cmd);
+                case CommandKind.CancelChipDesign: return CancelChipDesign(lab, cmd);
+                case CommandKind.TapeOut: return TapeOut(c, state, lab, cmd);
+                case CommandKind.OrderChips: return OrderChips(c, state, lab, cmd);
+                case CommandKind.SetChipListing: return SetChipListing(c, state, lab, cmd);
+                case CommandKind.BuyListedChips: return BuyListedChips(c, state, lab, cmd);
+                case CommandKind.ResearchFrontier: return ResearchFrontier(c, state, lab, cmd);
+                case CommandKind.SellLab: return SellLab(c, state, lab, cmd);
+                case CommandKind.ContinueAfterEnding: return ContinueAfterEnding(c, state, lab, cmd);
+                case CommandKind.StartShadyOp: return StartShadyOp(c, state, lab, cmd);
+                case CommandKind.Launder: return Launder(c, state, lab, cmd);
+                case CommandKind.RaiseFunding: return RaiseFunding(c, state, lab, cmd);
+                case CommandKind.SignReservedCompute: return SignReservedCompute(c, state, lab, cmd);
+                case CommandKind.RentPeerCompute: return RentPeerCompute(c, state, lab, cmd);
+                case CommandKind.EndPeerCompute: return EndPeerCompute(c, state, lab, cmd);
+                case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -59,6 +85,8 @@ namespace AiLabs.Rules.Sim
             if (type == null) return Fail(CommandError.UnknownId, "There is no room type \"" + cmd.Id + "\".");
             if (!EraSystem.RoomOpen(c, type, state.Tick))
                 return Fail(CommandError.EraLocked, type.Name + " is not around yet: it arrives with " + c.Era(type.Era).Name + " (" + c.Era(type.Era).StartYear + ").");
+            if (!LabQueries.RoomUnlocked(lab, type))
+                return Fail(CommandError.MissingPrerequisite, type.Name + " needs " + c.Tech(type.RequiresTech).Name + " first.");
             if (cmd.Width < type.MinWidth || cmd.Height < type.MinHeight)
                 return Fail(CommandError.TooSmall, "A " + type.Name + " must be at least " + type.MinWidth + " by " + type.MinHeight + " tiles.");
             LotConfig lot = c.Lot(lab.LotId);
@@ -127,7 +155,7 @@ namespace AiLabs.Rules.Sim
             long cost = role.HireCost * cmd.Count;
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
-            Pool(lab, role.Id).Count += cmd.Count;
+            StaffSystem.Hire(c, state, lab, role, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hiring, cost);
             Events.Add(state, EventKind.Hired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);
@@ -141,20 +169,10 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count > LabQueries.StaffCount(lab, role.Id))
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
-            // Severance is owed even by a lab with no money: letting people go is how a broke lab stops the bleeding.
-            Pool(lab, role.Id).Count -= cmd.Count;
+            StaffSystem.Fire(lab, role.Id, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hiring, role.Severance * cmd.Count);
             Events.Add(state, EventKind.Fired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);
-        }
-
-        static StaffPool Pool(LabState lab, string roleId)
-        {
-            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) return lab.Staff[i];
-            var pool = new StaffPool();
-            pool.RoleId = roleId;
-            lab.Staff.Add(pool);
-            return pool;
         }
 
         static CommandResult SetRentedGpus(GameState state, LabState lab, Command cmd)
@@ -175,11 +193,15 @@ namespace AiLabs.Rules.Sim
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             CommandResult place = CheckPlaceForHardware(c, state, lab, holdingId, gen, cmd.Count);
             if (!place.Ok) return place;
-            long cost = gen.BuyPrice * cmd.Count;
+            int allocation = VendorSystem.AllocationLeft(state, lab);
+            if (cmd.Count > allocation)
+                return Fail(CommandError.AllocationExhausted, c.Compute.VendorName + " has " + allocation + " GPUs left to sell " + lab.Name + " this month.");
+            long cost = VendorSystem.PricePerGpu(c, state, lab, gen) * cmd.Count;
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             Fleet.AddGpus(state, lab, holdingId, gen.Id, cmd.Count);
             Finance.Spend(lab, LedgerLine.Hardware, cost);
+            VendorSystem.OnBought(c, state, lab, cmd.Count);
             Events.Add(state, EventKind.GpusBought, lab.Id, holdingId, cmd.Count, gen.Id);
             return CommandResult.Done(-1);
         }
@@ -211,7 +233,7 @@ namespace AiLabs.Rules.Sim
             }
             else
             {
-                int freeKw = WorldQueries.FreeKw(c, lab, holding);
+                int freeKw = WorldQueries.FreeKw(c, state, lab, holding);
                 if (count * gen.KwPerGpu > freeKw)
                     return Fail(CommandError.NotEnoughPower, "That needs " + (count * gen.KwPerGpu) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
             }
@@ -223,7 +245,7 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Sell at least one GPU.");
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
-            int owned = LabQueries.OwnedUnits(lab, holdingId);
+            int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
             if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there.");
 
             long proceeds = 0;
@@ -249,53 +271,14 @@ namespace AiLabs.Rules.Sim
             return CommandResult.Done(-1);
         }
 
-        static CommandResult ResearchTech(GameConfig c, GameState state, LabState lab, Command cmd)
+        static CommandResult ScrapFailedRun(LabState lab, Command cmd)
         {
-            TechConfig tech = c.Tech(cmd.Id);
-            if (tech == null) return Fail(CommandError.UnknownId, "There is no tech \"" + cmd.Id + "\".");
-            if (LabQueries.HasTech(lab, tech.Id)) return Fail(CommandError.AlreadyResearched, tech.Name + " is already researched.");
-            if (!EraSystem.TechOpen(c, tech, state.Tick))
-                return Fail(CommandError.EraLocked, tech.Name + " is not invented yet: it arrives with " + c.Era(tech.Era).Name + " (" + c.Era(tech.Era).StartYear + ").");
-            for (int i = 0; i < tech.Requires.Count; i++)
-                if (!LabQueries.HasTech(lab, tech.Requires[i]))
-                    return Fail(CommandError.MissingPrerequisite, tech.Name + " needs " + c.Tech(tech.Requires[i]).Name + " first.");
-            if (lab.ResearchPoints < tech.Cost)
-                return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + tech.Cost + " research points and the lab has " + lab.ResearchPoints + ".");
-
-            lab.ResearchPoints -= tech.Cost;
-            lab.Techs.Add(tech.Id);
-            Events.Add(state, EventKind.TechResearched, lab.Id, -1, tech.Cost, tech.Id);
-            return CommandResult.Done(-1);
-        }
-
-        static CommandResult StartTraining(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ModelLineConfig line = c.Line(cmd.Id);
-            if (line == null) return Fail(CommandError.UnknownId, "There is no model line \"" + cmd.Id + "\".");
-            if (!LabQueries.LineUnlocked(c, lab, line.Id)) return Fail(CommandError.LineLocked, "The lab has not researched how to build a " + line.Name + " yet.");
-            if (cmd.Permille < 0 || cmd.Permille > MaxAlignmentSharePermille)
-                return Fail(CommandError.InvalidArgument, "The alignment share is from 0 to " + MaxAlignmentSharePermille + ": some of the run has to train the model.");
-            if (LabQueries.ActiveRuns(lab) >= c.Training.MaxConcurrentRuns)
-                return Fail(CommandError.TooManyRuns, "The lab can train " + c.Training.MaxConcurrentRuns + " models at once.");
-            long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
-            if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
-
-            var model = new ModelState();
-            model.Id = state.TakeId();
-            model.LineId = line.Id;
-            model.Version = LabQueries.NextVersion(lab, line.Id);
-            model.Name = lab.FamilyName + " " + line.Name + " " + model.Version;
-            model.Status = ModelStatus.Training;
-            model.RequiredCompute = EraSystem.RunCompute(c, line, state.Tick);
-            model.AlignmentSharePermille = cmd.Permille;
-            model.StartedTick = state.Tick;
-            model.TrainedTick = -1;
-            model.ReleasedTick = -1;
-            model.LastIncidentTick = -1;
-            lab.Models.Add(model);
-            Finance.Spend(lab, LedgerLine.Training, prepCost);
-            Events.Add(state, EventKind.TrainingStarted, lab.Id, model.Id, prepCost, model.Name);
-            return CommandResult.Done(model.Id);
+            ModelState model = lab.Model(cmd.TargetId);
+            if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
+            if (model.Status != ModelStatus.Failed)
+                return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a failed run can be scrapped.");
+            lab.Models.Remove(model);
+            return CommandResult.Done(cmd.TargetId);
         }
 
         static CommandResult ReleaseModel(GameConfig c, GameState state, LabState lab, Command cmd)
@@ -327,6 +310,7 @@ namespace AiLabs.Rules.Sim
                     entry = new SectorEntry();
                     entry.LabId = lab.Id;
                     entry.ModelId = model.Id;
+                    entry.PricePermille = MathI.Permille;
                     sectorState.Entries.Add(entry);
                 }
                 else if (entry.ModelId != model.Id)
@@ -344,6 +328,10 @@ namespace AiLabs.Rules.Sim
             {
                 model.Status = ModelStatus.Released;
                 model.ReleasedTick = state.Tick;
+                if (cmd.Permille > 0)
+                    model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
+                else if (model.DisplayedAlignment < model.Alignment)
+                    model.DisplayedAlignment = model.Alignment;
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
 

@@ -118,6 +118,23 @@ public sealed class Game
 
     public void Research(string techId) { Do(Command.ResearchTech(Id, techId)); }
 
+    /// <summary>Researches every tech the lab can still buy, respecting forks and prerequisites.</summary>
+    public void ResearchAllReachable(long points = 9_999_999)
+    {
+        GrantResearch(points);
+        bool bought = true;
+        while (bought)
+        {
+            bought = false;
+            foreach (TechConfig tech in C.Research.Techs)
+            {
+                if (!LabQueries.CanResearch(C, Me, tech, Tick)) continue;
+                Research(tech.Id);
+                bought = true;
+            }
+        }
+    }
+
     public ModelState Train(string lineId, int alignmentSharePermille)
     {
         return Me.Model(Do(Command.StartTraining(Id, lineId, alignmentSharePermille)).CreatedId);

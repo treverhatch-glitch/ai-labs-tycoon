@@ -23,12 +23,7 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long Appeal(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)
         {
-            long quality = LabQueries.Quality(c, sector, model, state.Tick);
-            long appeal = quality * quality;
-            appeal = MathI.MulPermille(appeal, c.Safety.ReputationBaseline + lab.Reputation);
-            appeal = MathI.MulPermille(appeal, SalesPermille(c, lab));
-            if (sectorState.ChampionLabId == lab.Id) appeal = MathI.MulPermille(appeal, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
-            return appeal;
+            return DisplayQueries.Appeal(c, state, sector, sectorState, lab, model);
         }
 
         /// <summary>How much of a sector has a use for AI at all: the best model on sale against the sector's saturation bar.</summary>
@@ -38,8 +33,9 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < sectorState.Entries.Count; i++)
             {
                 SectorEntry entry = sectorState.Entries[i];
-                ModelState model = state.Lab(entry.LabId).Model(entry.ModelId);
-                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick));
+                LabState entryLab = state.Lab(entry.LabId);
+                ModelState model = entryLab.Model(entry.ModelId);
+                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick, entryLab));
             }
             return (int)MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability);
         }
@@ -77,11 +73,19 @@ namespace AiLabs.Rules.Systems
                     entry.SharePpm += (int)MathI.FloorDiv((target - entry.SharePpm) * c.Market.SwitchRatePermille, MathI.Permille);
 
                     long potential = served * entry.SharePpm / MathI.Ppm;
-                    entry.LastRevenue = potential;
-
                     int labIndex = IndexOfLab(state, entry.LabId);
-                    ModelLineConfig line = c.Line(state.Labs[labIndex].Model(entry.ModelId).LineId);
-                    demand[labIndex] += ServingDemand(sector, line, potential);
+                    LabState entryLab = state.Labs[labIndex];
+                    ModelState entryModel = entryLab.Model(entry.ModelId);
+                    long entryRevenue = MathI.MulPermille(potential, entry.PricePermille);
+                    if (entryModel.OpenWeights)
+                        entryRevenue = MathI.MulPermille(entryRevenue, c.Market.OpenWeightsRevenuePermille);
+                    int workshopRev = DeviceWorkshopSystem.RevenueBonusPermille(c, state, entryLab, sector.Id);
+                    if (workshopRev > 0)
+                        entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + workshopRev);
+                    entry.LastRevenue = entryRevenue;
+
+                    ModelLineConfig line = c.Line(entryModel.LineId);
+                    demand[labIndex] += ServingDemand(sector, line, entryRevenue);
                 }
             }
 

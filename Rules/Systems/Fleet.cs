@@ -31,11 +31,11 @@ namespace AiLabs.Rules.Systems
             return batch;
         }
 
-        /// <summary>The batches at a place, oldest generation first; the same generation by arrival, then by id.</summary>
+        /// <summary>The GPU batches at a place (chips are not sold with them), oldest generation first; the same generation by arrival, then by id.</summary>
         public static List<HardwareBatch> OldestFirst(GameConfig c, LabState lab, int holdingId)
         {
             var list = new List<HardwareBatch>();
-            for (int i = 0; i < lab.Fleet.Count; i++) if (lab.Fleet[i].HoldingId == holdingId) list.Add(lab.Fleet[i]);
+            for (int i = 0; i < lab.Fleet.Count; i++) if (lab.Fleet[i].HoldingId == holdingId && lab.Fleet[i].ChipDesignId < 0) list.Add(lab.Fleet[i]);
             list.Sort((a, b) =>
             {
                 int byTier = TierOf(c, a).CompareTo(TierOf(c, b));
@@ -58,6 +58,22 @@ namespace AiLabs.Rules.Systems
         {
             batch.Count -= count;
             if (batch.Count <= 0) lab.Fleet.Remove(batch);
+        }
+
+        /// <summary>Oldest HQ GPU batch a planner would sell when <c>ReplaceTierGap</c> or more generations behind current.</summary>
+        public static HardwareBatch StaleGpuBatch(GameConfig c, GameState state, LabState lab)
+        {
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            HardwareBatch stale = null;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+            {
+                HardwareBatch b = lab.Fleet[i];
+                if (b.GpuGenId == null || b.ChipDesignId >= 0 || gen.Tier - TierOf(c, b) < c.Rivalry.ReplaceTierGap) continue;
+                if (stale == null || TierOf(c, b) < TierOf(c, stale)
+                    || (TierOf(c, b) == TierOf(c, stale) && b.Id < stale.Id))
+                    stale = b;
+            }
+            return stale;
         }
     }
 }

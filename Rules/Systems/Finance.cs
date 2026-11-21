@@ -43,13 +43,17 @@ namespace AiLabs.Rules.Systems
             Spend(lab, LedgerLine.RoomUpkeep, LabQueries.WeeklyRoomUpkeep(c, lab));
             Spend(lab, LedgerLine.GpuRent, LabQueries.WeeklyGpuRent(c, state, lab));
             Spend(lab, LedgerLine.GpuUpkeep, LabQueries.WeeklyGpuUpkeep(c, lab));
-            Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, lab));
+            Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, state, lab));
 
             if (lab.Cash < 0)
             {
                 lab.WeeksInDebt++;
                 if (lab.WeeksInDebt == 1) Events.Add(state, EventKind.InDebt, lab.Id, -1, lab.Cash, "");
-                if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks) GoBankrupt(state, lab);
+                if (lab.WeeksInDebt >= c.Finance.BankruptcyGraceWeeks)
+                {
+                    GoBankrupt(c, state, lab);
+                    if (lab.Id == state.PlayerLabId) EndingSystem.RecordBankrupt(c, state, lab);
+                }
             }
             else
             {
@@ -58,9 +62,10 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The lab closes: its models leave the market, everyone goes home and the rented GPUs go back.</summary>
-        public static void GoBankrupt(GameState state, LabState lab)
+        public static void GoBankrupt(GameConfig c, GameState state, LabState lab)
         {
             lab.Bankrupt = true;
+            ChipSystem.OnBankrupt(c, state, lab);
             for (int i = 0; i < lab.Models.Count; i++) lab.Models[i].Status = ModelStatus.Retired;
             for (int s = 0; s < state.Sectors.Count; s++)
             {
@@ -71,6 +76,7 @@ namespace AiLabs.Rules.Systems
             }
             lab.Staff.Clear();
             lab.RentedGpus = 0;
+            lab.ReservedContracts.Clear();
             lab.Fleet.RemoveAll(b => b.HoldingId != HardwareBatch.Hq);
             lab.Holdings.Clear();
             Events.Add(state, EventKind.Bankrupt, lab.Id, -1, lab.Cash, "");

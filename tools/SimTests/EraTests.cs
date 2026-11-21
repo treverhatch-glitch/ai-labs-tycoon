@@ -50,7 +50,7 @@ public class EraTests
     public void Costs_and_research_speed_only_grow_from_era_to_era()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(1000, c.Eras[0].TrainingCostPermille);
+        Assert.Equal(1500, c.Eras[0].TrainingCostPermille);
         Assert.Equal(1000, c.Eras[0].ResearchPermille);
         for (int i = 1; i < c.Eras.Count; i++)
         {
@@ -267,8 +267,9 @@ public class EraTests
         long before = early.Me.Cash;
         ModelState a = early.Train("mini", 0);
         long earlyCost = before - early.Me.Cash;
-        Assert.Equal(mini.PrepCost, earlyCost);
-        Assert.Equal(mini.ComputeRequired, a.RequiredCompute);
+        EraConfig earlyEra = early.C.Eras[0];
+        Assert.Equal(mini.PrepCost * earlyEra.TrainingCostPermille / 1000, earlyCost);
+        Assert.Equal(mini.ComputeRequired * earlyEra.TrainingCostPermille / 1000, a.RequiredCompute);
 
         Game later = StartedIn("punchline");
         later.WithStarterLab();
@@ -328,7 +329,8 @@ public class EraTests
             Assert.All(era.StartTechs, t => Assert.Contains(t, lab.Techs));
             Assert.True(lab.PlanStartTick >= sim.Tick, lab.Name + " must not act on a plan that started before the game did");
         }
-        Assert.Equal(c.Rivals.Count + 1, sim.State.Labs.Count);
+        int startYear = GameDate.Year(c.Calendar, sim.Tick);
+        Assert.Equal(c.Rivals.Count(r => r.JoinsYear <= startYear) + 1, sim.State.Labs.Count);
     }
 
     [Fact]

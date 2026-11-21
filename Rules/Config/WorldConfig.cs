@@ -242,6 +242,10 @@ namespace AiLabs.Rules.Config
         /// <summary>Policy staff it takes to face a hearing prepared.</summary>
         public int PreparedPolicyStaff;
         public int AuditFineRevenueWeeks;
+        /// <summary>When home-bloc attention is at or above this, dated protest events add <see cref="ProtestRevoltBonusPermille"/> on top.</summary>
+        public int ProtestRevoltAttentionAt;
+        /// <summary>Extra protest attention as permille of the event's base bump (0 = off).</summary>
+        public int ProtestRevoltBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -262,6 +266,8 @@ namespace AiLabs.Rules.Config
             s.Int("hearingReputationPrepared", ref HearingReputationPrepared);
             s.Int("preparedPolicyStaff", ref PreparedPolicyStaff);
             s.Int("auditFineRevenueWeeks", ref AuditFineRevenueWeeks);
+            s.Int("protestRevoltAttentionAt", ref ProtestRevoltAttentionAt);
+            s.Int("protestRevoltBonusPermille", ref ProtestRevoltBonusPermille);
         }
 
         /// <summary>The attention at which a level (1 to 4) is entered.</summary>

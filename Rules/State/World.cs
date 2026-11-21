@@ -33,6 +33,8 @@ namespace AiLabs.Rules.State
         public int HallBuildingKw;
         /// <summary>The week the extension is ready, or -1 when none is being built.</summary>
         public int HallDoneTick;
+        /// <summary>The week the extension in the works was started, or -1 when none is.</summary>
+        public int HallStartTick;
         /// <summary>Power from the holding's own deal that is working now, in kilowatts.</summary>
         public int PrivateKw;
         /// <summary>The power deal bought for this holding, or empty. One per holding.</summary>
@@ -48,6 +50,7 @@ namespace AiLabs.Rules.State
             s.Int("hallKw", ref HallKw);
             s.Int("hallBuildingKw", ref HallBuildingKw);
             s.Int("hallDoneTick", ref HallDoneTick);
+            s.Int("hallStartTick", ref HallStartTick);
             s.Int("privateKw", ref PrivateKw);
             s.Str("dealId", ref DealId);
             s.Int("dealDoneTick", ref DealDoneTick);

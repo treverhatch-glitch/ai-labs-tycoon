@@ -29,12 +29,41 @@ namespace AiLabs.Rules.Sim
                 case EventKind.GpusRented: return who + " now rents " + e.Amount + " GPUs.";
                 case EventKind.GpusBought: return who + " bought " + e.Amount + " GPUs from " + c.Compute.VendorName + ".";
                 case EventKind.GpusSold: return who + " sold " + e.Amount + " GPUs.";
-                case EventKind.TechResearched: return who + " researched " + c.Tech(e.Ref).Name + ".";
+                case EventKind.TechResearched:
+                    if (e.Ref == "frontier") return who + " pushed the research frontier.";
+                    if (e.Ref == "museum-salvage") return who + " recovered " + e.Amount + " research points from the museum.";
+                    TechConfig tech = c.Tech(e.Ref);
+                    return who + " researched " + (tech == null ? e.Ref : tech.Name) + ".";
+                case EventKind.PatentFiled:
+                    {
+                        TechConfig filed = c.Tech(e.Ref);
+                        string name = filed == null ? e.Ref : filed.Name;
+                        return who + " filed a patent on " + name + " for $" + e.Amount + ".";
+                    }
+                case EventKind.PatentExpired:
+                    {
+                        TechConfig expired = c.Tech(e.Ref);
+                        return "The patent on " + (expired == null ? e.Ref : expired.Name) + " held by " + who + " expired.";
+                    }
                 case EventKind.TrainingStarted: return who + " started training " + e.Ref + ".";
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
+                case EventKind.TrainingFailed:
+                    return who + "'s training run " + e.Ref + " collapsed after " + e.Amount + " units of compute. The weights are unusable.";
+                case EventKind.DistillTargetSet:
+                    return who + " will distill the next rival-distill run from " + e.Ref + ".";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";
-                case EventKind.Incident: return "INCIDENT at " + who + ": " + EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick].Replace("{model}", e.Ref) + " Fine: $" + e.Amount + ".";
+                case EventKind.Incident:
+                    {
+                        LabState incidentLab = state.Lab(e.LabId);
+                        ModelState incidentModel = incidentLab == null ? null : incidentLab.Model(e.SubjectId);
+                        string modelName = incidentModel == null ? e.Ref : incidentModel.Name;
+                        EraConfig era = EraSystem.AtTick(c, e.Tick);
+                        var headlines = SafetyQueries.SectorIncidentHeadlines(c, e.Ref) ?? era.IncidentHeadlines;
+                        if (headlines.Count == 0) headlines = era.IncidentHeadlines;
+                        string line = headlines[e.Pick % headlines.Count].Replace("{model}", modelName);
+                        return "INCIDENT at " + who + ": " + line + " Fine: $" + e.Amount + ".";
+                    }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";
@@ -56,6 +85,51 @@ namespace AiLabs.Rules.Sim
                 case EventKind.Heatwave: return "A heatwave throttles " + who + "'s data centre at " + c.World.Site(e.Ref).Name + " for " + e.Amount + " weeks. During launch week, naturally.";
                 case EventKind.AttentionRose: return AttentionLine(c, e, who);
                 case EventKind.AttentionFell: return who + " is under less scrutiny from " + c.World.Bloc(e.Ref).Agency + ".";
+                case EventKind.Keynote: return c.Compute.VendorName + " unveils the " + c.Compute.Generation(e.Ref).Name + ". It was sold out before the presenter walked on stage. This month's supply: " + e.Amount + " units.";
+                case EventKind.RivalJoined: return who + " has entered the race with $" + e.Amount + " and a plan.";
+                case EventKind.BoardDrama: return who + "'s board fired its boss on Friday. The boss was back on Tuesday.";
+                case EventKind.StaffPoached:
+                    {
+                        LabState victim = state.Lab(e.SubjectId);
+                        RoleConfig role = c.Role(e.Ref);
+                        return who + " poached a " + (victim == null ? "rival" : victim.Name) + " star " + (role == null ? e.Ref : role.Name) + ".";
+                    }
+                case EventKind.GpuQueueStalled:
+                    return who + "'s queued GPU purchase (" + e.Amount + " units) stalled: " + e.Ref + ".";
+                case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";
+                case EventKind.ChipTapedOut: return who + " sent " + e.Ref + " to the foundry for $" + e.Amount + ". Now everybody waits.";
+                case EventKind.ChipRespin: return "A design bug was found at tape-out. Respin. " + who + " pays $" + e.Amount + " to try " + e.Ref + " again.";
+                case EventKind.ChipReady:
+                    return e.Pick == 1
+                        ? who + ": Your first in-house chip works. It runs Minesweeper at 4,000 frames per second."
+                        : who + "'s " + e.Ref + " works. Yield " + DecisionText.Percent((int)e.Amount) + "%.";
+                case EventKind.ChipsDelivered:
+                    if (e.Ref == "cloud") return who + " took delivery of " + e.Amount + " chips on a cloud deal.";
+                    { SiteConfig site = c.World.Site(e.Ref); return who + " took delivery of " + e.Amount + " chips at " + (site == null ? e.Ref : site.Name) + "."; }
+                case EventKind.ChipYieldCrash: return "Yield crash. " + who + "'s delivery of " + e.Ref + " came in at " + e.Amount + " working chips. The money is gone.";
+                case EventKind.ChipsBought:
+                    { LabState seller = state.Lab((int)e.SubjectId); return who + " bought " + e.Amount + " " + e.Ref + " chips from " + (seller == null ? "another lab" : seller.Name) + "."; }
+                case EventKind.EndingReached:
+                    {
+                        EndingDefConfig def = c.Endings.Def(e.Ref);
+                        return who + " reached an ending: " + (def == null ? e.Ref : def.Name) + ".";
+                    }
+                case EventKind.ShadyOpStarted: return who + " started " + c.Shady.Card(e.Ref).Name + " (" + e.Amount + " weeks).";
+                case EventKind.ShadyOpResolved: return who + "'s shady job " + (e.Amount == 1 ? "succeeded" : "failed") + ".";
+                case EventKind.ShadyTraced: return who + " was traced running " + c.Shady.Card(e.Ref).Name + ".";
+                case EventKind.ShadyInvestigation: return who + " is under investigation.";
+                case EventKind.ShadyConvicted: return who + " was convicted.";
+                case EventKind.ShadyAcquitted: return who + " was acquitted.";
+                case EventKind.ShadySideJob: return e.Ref + " did a little job on the side. It left you a tip.";
+                case EventKind.ShadyTemptation: return "Runway is short. " + c.Shady.Card(e.Ref).Name + " is on the table.";
+                case EventKind.ChipShortageBegan: return "The chip crunch begins (strength " + e.Amount + " permille).";
+                case EventKind.ChipShortageEnded: return "The chip crunch eases.";
+                case EventKind.DomainLeaderChanged:
+                    {
+                        CapabilityDomainConfig domain = c.Market.Domain(e.Ref);
+                        string domainName = domain == null ? e.Ref : domain.Name;
+                        return who + " now leads the " + domainName + " models.";
+                    }
                 default: return who + ": " + e.Kind + ".";
             }
         }

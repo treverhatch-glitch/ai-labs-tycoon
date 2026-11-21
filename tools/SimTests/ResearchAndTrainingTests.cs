@@ -56,7 +56,7 @@ public class ResearchAndTrainingTests
         long cash = g.Me.Cash;
 
         ModelState model = g.Train("mini", 200);
-        Assert.Equal(cash - g.C.Line("mini").PrepCost, g.Me.Cash);
+        Assert.Equal(cash - EraSystem.RunPrepCost(g.C, g.C.Line("mini"), g.Tick), g.Me.Cash);
         Assert.Equal(ModelStatus.Training, model.Status);
         Assert.Equal(0, model.Capability);
 
@@ -123,7 +123,7 @@ public class ResearchAndTrainingTests
     {
         Game slow = Game.Solo().WithStarterLab(engineers: 0);
         Game fast = Game.Solo().WithStarterLab(engineers: 4);
-        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.Me));
+        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.State, slow.Me));
 
         int before = TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0);
         fast.GrantResearch(2000);
@@ -131,8 +131,8 @@ public class ResearchAndTrainingTests
         Assert.True(TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0) < before);
 
         // Engineers help up to a cap: a hundred of them are no faster than the cap allows.
-        fast.Me.Staff.Find(s => s.RoleId == "engineer").Count = 100;
-        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.Me));
+        while (LabQueries.StaffCount(fast.Me, "engineer") < 100) fast.Me.Staff.Add(new StaffMember { Id = fast.State.TakeId(), RoleId = "engineer", TraitId = "steady", Morale = 500 });
+        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me));
     }
 
     [Fact]

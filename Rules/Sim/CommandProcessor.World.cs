@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Sim
             holding.SiteId = siteId;
             holding.Kind = kind;
             holding.HallDoneTick = -1;
+            holding.HallStartTick = -1;
             holding.DealId = "";
             holding.DealDoneTick = -1;
             return holding;
@@ -48,6 +49,7 @@ namespace AiLabs.Rules.Sim
             Holding holding = lab.Holding(cmd.TargetId);
             if (holding == null || holding.Kind != HoldingKind.Owned) return Fail(CommandError.UnknownId, "The lab owns no land with the id " + cmd.TargetId + ".");
             if (LabQueries.OwnedUnits(lab, holding.Id) > 0) return Fail(CommandError.HoldingNotEmpty, "There is still hardware on that land. Sell it or move it first.");
+            if (ChipQueries.PendingOrdersAt(lab, holding.Id) > 0) return Fail(CommandError.HoldingNotEmpty, "Chips are on order for that land. They arrive there.");
             if (holding.HallDoneTick >= 0 || holding.DealDoneTick >= 0) return Fail(CommandError.BuildRunning, "Something is still being built there.");
 
             SiteConfig site = c.World.Site(holding.SiteId);
@@ -79,7 +81,7 @@ namespace AiLabs.Rules.Sim
             }
             if (holding != null)
             {
-                int installed = WorldQueries.InstalledKw(c, lab, holding.Id);
+                int installed = WorldQueries.InstalledKw(c, state, lab, holding.Id) + ChipQueries.ReservedKw(lab, holding.Id);
                 if (installed > cmd.Count) return Fail(CommandError.NotEnoughPower, "The lab's hardware there draws " + installed + " kW, more than " + cmd.Count + " kW.");
             }
 
@@ -123,6 +125,7 @@ namespace AiLabs.Rules.Sim
 
             holding.HallBuildingKw = cmd.Count;
             holding.HallDoneTick = state.Tick + weeks;
+            holding.HallStartTick = state.Tick;
             Finance.Spend(lab, LedgerLine.SiteBuild, cost);
             Events.Add(state, EventKind.HallStarted, lab.Id, holding.Id, cmd.Count, site.Id);
             if (voted) Events.Add(state, EventKind.TownVoteDelayed, lab.Id, holding.Id, hall.TownVoteDelayWeeks, site.Id);
@@ -150,6 +153,7 @@ namespace AiLabs.Rules.Sim
         {
             HardwareBatch batch = lab.Batch(cmd.TargetId);
             if (batch == null) return Fail(CommandError.UnknownId, "The lab has no hardware batch " + cmd.TargetId + ".");
+            if (batch.ChipDesignId >= 0) return Fail(CommandError.InvalidArgument, "Chips stay where the foundry delivered them.");
             if (cmd.Count < 1 || cmd.Count > batch.Count) return Fail(CommandError.InvalidArgument, "Move from 1 to " + batch.Count + " units.");
             int to = cmd.X;
             if (to == batch.HoldingId) return Fail(CommandError.InvalidArgument, "The hardware is already there.");

@@ -6,34 +6,35 @@ time.
 
 ## Where things stand
 
-The rules core plays a whole game headless from 1995 or 2009 to 2035: rooms, staff, GPUs, research, training,
-releases into 34 sectors, three parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
+The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs, research, training,
+releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
-world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention). 233 tests
-pass, including 40-year headless runs and a schema 1 and a schema 2 save that migrate. There is no Unity project yet.
+world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). SimTests pass in the hundreds, including balance soaks and saves through schema 11. The Unity project lives under `unity/` (garage grid, HUD, week button in code); GameCI runs on PRs that touch `unity/**`; full editor verification is on the PC.
 
 Known limits of the slice, so nobody is surprised:
 
 - **Eras 2 to 8 are first-pass content.** Every era has techs, sectors, rooms, headlines and events, and the
   autopilot reaches the end of the tree by 2034. Names, blurbs and the numbers are tuned to keep a whole life
-  solvent, not yet to be fun at each step: the bot-balance item below is how that gets checked. The content tables are in
+  solvent, not yet to be fun at each step; the eight-year balance soak is the first check. The content tables are in
   [content/](content/eras.md); [QUESTIONS.md](QUESTIONS.md) lists the choices taken.
 - **Training cost per era is retuned for GPU generations.** Hardware generations landed, so the era multipliers were
-  scaled down by the compute-per-dollar they add (Q35). Late-game cash is much higher than it was; the bot-balance
-  item below is how that gets checked.
+  scaled down by the compute-per-dollar they add (Q35). Late-game cash is still higher than at launch; Q76 retuned
+  dial-up costs and wealth growth for the eight-year soak.
 - **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
   functions; a room is built for what it seats or holds.
-- **Rivals are still the three parody labs** across all nine eras; the wider cast (item 12 below) is not in.
-- **Retired models stay in the lab's model list** for the whole game. Fine for decades of play (a 40-year test keeps
-  the save in bounds), and worth an archive once the model museum is designed.
-- **The world map is in, the plans barely use it.** Only xAy builds data centres (OpenAye and AntHopticsAI rent), and no
-  plan replaces obsolete hardware, so a rival's fleet stops growing once its halls fill with old generations (Q44).
-  The player can use every command; the host UI is the missing half.
-- **Staff are head counts**, not people.
-- **One incident kind.** The six-rung ladder, the alignment gap and endings are not in yet.
+- **The cast is eight labs.** OpenAye, AntHopticsAI and xAy from the start; Metta (2007), Macrosoft (2012), Palantear
+  (2017), Goggle DeepMined (2010) and DeepSneak (2023) as arrivals. The start-era picker (item 12) is still UI-only.
+- **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
+- **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
+  AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
+  use every command; the host UI is the missing half.
+- **Staff are people** with traits and morale; feud poaching is in (schema 10).
+- **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); alignment gap and rungs 1–3 are in; reserved compute and the Envydia queue are in (schema 11).
+- **The shady path is in** for the player (cards, launder, investigations); parody labs never take shady jobs (`shadyAppetite` 0).
 - **Money is cash and a grant.** No investors, shares, debt or bubble.
-- **Rivals follow plans, they do not explain themselves.** The plan runs through the same commands as the player, so
-  a decision log is an addition to `LabPlanner`, not a rewrite.
+- **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
+  the player's side.
 
 ## Who works where
 
@@ -55,54 +56,57 @@ and says why in the commit message.
    start-era picker (`NewGameOptions.StartEraId`, `simcli --era`), validator checks and tests.
 2. ~~**Era content for every era.**~~ Done: 81 techs, 34 sectors, 22 room types, 15 roles (82, 24 and 17 with the world map's Liquid Cooling, Ops Centre, Policy Office, Infrastructure and Policy), 6 lots, 50 world events and
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
-3. **Explain every number.** A breakdown for each displayed value (appeal, quality, revenue, incident odds) whose
-   parts sum to the value, with a test per breakdown. New read-only query classes; no state change.
-4. **Rival decision logs.** `LabPlanner` records why it did each thing; the log is bounded and saved. Planned as
-   phase C of the systems design, with Envydia's standing and the feelings rivals have toward the player.
-5. **Reserved compute and the Envydia queue.** Reduced to reserved contracts and allocation by standing with Envydia:
-   the hardware generations it needed (item 6) are in, so what remains is the contract and the queue. Touches
-   `ComputeConfig`, lab state, `Finance`.
+3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
+   odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
+4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
+   bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
+   signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
+4b. ~~**Own chips.**~~ Done (systems design phase D, schema 5): `ChipSystem`, `ChipQueries`, foundry months, the
+    six chip commands, `ComputeSplit`, listings, Envydia's reactions, the planner's chip programme (Q57 to Q67).
+5. ~~**Reserved compute and the Envydia queue.**~~ Done: `SignReservedCompute`, `QueueGpuPurchase`,
+   `ComputeContractSystem`, discounted rent and deposit, queue fulfilled at month start, schema 11;
+   `ComputeContractTests`. Golden digest `61bacf6b…`.
 6. ~~**Hardware generations.**~~ Done (systems design phases 0 and A): `HardwareBatch` rows by generation and place,
    seven Envydia generations as data, resale that falls a generation at a time, `BuyGpus`/`SellGpus`/`MoveHardware`
    to a holding, the fleet migration (schema 2).
-7. **The funding ladder.** Angels and two venture rounds with dilution and a board; the Ousted ending. New system
-   and state.
-8. **The alignment gap and incident rungs 1 to 3**, per model, replacing the single incident kind. Sandbagging
-   corrupts displayed readings, so it lands after item 3.
-9. **Staff as people.** Traits, morale, poaching by rivals. Changes how `StaffPool` is stored, so it needs a save
-   migration (the `SaveGame.Migrate` hook is there for it).
-10. **Bot balance at scale.** `simcli soak` over 200 games and 3 player presets as a test: no preset wins more than
-    60%, a rival survives in 95% of games, money still matters in year 8.
+7. ~~**The funding ladder.**~~ Done: `FundingConfig`, `RaiseFunding`, founder share and investor board seats,
+   schema 8 migration, `RecordOusted` when share hits `controlPermille`; `FundingTests`.
+8. ~~**The alignment gap and incident rungs 1 to 3.**~~ Done: `displayedAlignment`, rungs 1–3 in `SafetySystem`, sandbag on
+   release, `SandbagBoost` in `DisplayQueries`, schema 9; `AlignmentGapTests`.
+9. ~~**Staff as people.**~~ Done: `StaffMember` rows (trait, morale), `StaffSystem`, feud poaching, schema 10
+   migration from pools; `StaffPeopleTests`.
+10. ~~**Bot balance at scale.**~~ Done: `BalanceSoak` in `Rules/Sim`, `simcli soak` with three presets, `BalanceTests`
+    (default 24 games per preset; set `BALANCE_SOAK_FULL=1` for 200 each; optional `BALANCE_SOAK_GAMES_PER_PRESET`).
+    Dial-up `trainingCostPermille` raised to 1500 and plan `wealthGrowthPermillePerMillion` cut (Q72); Envydia
+    courting still waits on cast chip share (Q67).
 11. **Endings that continue.** Bankrupt, Ousted and Exit as recorded moments after which play goes on. Planned as
     phase F of the systems design (an Exit keeps the lab as a plan-run rival, Q24).
 
-12. **The wider cast.** The other labs and companies named in the bible (Goggle DeepMined, Macrosoft, Metta,
-    DeepSneak, Palantear) as rival plans that enter in later eras, plus a start-era picker screen that shows each
-    era's tagline and kit. Data and plans; no new systems.
+12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
+    a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
 13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
     "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
 
 ## Rules: later
 
-- Custom chips: the chip design screen's rules (generations 1 to 4, a foundry deal, selling chips to others).
-- Chips, the wider cast, endings and the shady path from the systems design (phases C to G). Its first PR landed the
-  world map: ~~data-centre sites with power, cooling, export rules and government attention~~ (schema 3). What is left of
-  it: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
+- Endings and the
+  shady path from the systems design (phases E to G). The first PRs landed the world map (schema 3), rival depth (C) and own chips (D). What is left of
+  the world map: Audit's investigation roll and Freeze consequences beyond blocking purchases come with the shady path (Q45).
 - The Bubble meter and circular financing; shares in rivals; monopoly and regulators.
 - The shady path with per-model corruption; government and China deals.
 - Incident rungs 4 to 6, containment rooms, the superintelligence endings.
-- Specialist model lines, data sources, open weights, pricing.
-- Real Bodies and Upward expansions (the data for both eras is already in, flagged `expansion`; what is missing is their own mechanics and art).
+- ~~Specialist model lines, data sources, open weights, pricing.~~ Done on `cursor/rules-side-items`: sector price (schema 12), open weights (13), code-specialist, data sources (14), image-specialist, market/world/training breakdown queries (Q9–Q15 in `docs/questions-sim-hardening.md`).
+- ~~Real Bodies and Upward expansions~~ Done on `cursor/rules-side-items`: expansion appeal kits + room gates (`expansions` config); art/mechanics beyond appeal still open for a future pass.
+- **Explain every number (tail):** Q12–Q17 breakdowns on `cursor/rules-side-items` (pushed through Q16 @ `a4f16dd`; Q17 frontier cost local); chip derive + shady odds — optional hardening only.
 
 ## Unity
 
 Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
-1. Create the Unity 6 project in `unity/` with `Rules/` as a local package. No rules in Unity scripts: Unity sends
-   `Command`s and draws `GameState`.
-2. A first scene built in code: the garage lot as a grid, rooms as coloured blocks, a week button, cash and date.
-3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
-4. The model mascots and their three states; the glow.
+1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
+2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3.
+3. ~~**Room building, hire/GPU, training, Gauntlet show.**~~ On `cursor/unity-hq-views` (local); editor verification in SETUP-PC §2.
+4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; art polish on PC.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
 
 ## Studio and CI

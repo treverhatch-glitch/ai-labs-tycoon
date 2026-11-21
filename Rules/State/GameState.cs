@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 3;
+        public const int CurrentSchema = 21;
 
         public int Schema;
         public string ConfigVersion;
@@ -26,8 +26,30 @@ namespace AiLabs.Rules.State
         public List<GauntletRecord> Gauntlets;
         /// <summary>The newest events, oldest first, capped at the config's eventLogMax.</summary>
         public List<GameEvent> Events;
+        /// <summary>The GPU vendor's supply, its standing for every lab and its log.</summary>
+        public VendorState Vendor;
+        /// <summary>Rivals that have not joined yet, by config id. They arrive when their year does.</summary>
+        public List<string> PendingRivals = new List<string>();
+        /// <summary>The foundry's booked months, from the current month on.</summary>
+        public List<FoundryMonth> Foundry = new List<FoundryMonth>();
+        /// <summary>The lab the player controls, or -1 when spectating.</summary>
+        public int PlayerLabId;
+        public List<EndingRecord> Endings = new List<EndingRecord>();
+        /// <summary>First tick after which the global chip crunch is over, or -1 when inactive.</summary>
+        public int ChipShortageUntilTick = -1;
+        /// <summary>How hard the crunch hits prices (permille); 1000 is normal.</summary>
+        public int ChipShortageStrengthPermille;
+        /// <summary>Best footprint per capability domain after the latest weekly refresh.</summary>
+        public List<CapabilityDomainLeaderState> DomainLeaders = new List<CapabilityDomainLeaderState>();
 
-        public LabState Player { get { return Labs[0]; } }
+        public LabState Player
+        {
+            get
+            {
+                if (PlayerLabId < 0) return null;
+                return Lab(PlayerLabId);
+            }
+        }
 
         public LabState Lab(int id)
         {
@@ -62,6 +84,14 @@ namespace AiLabs.Rules.State
             s.ObjList("sites", ref Sites);
             s.ObjList("gauntlets", ref Gauntlets);
             s.ObjList("events", ref Events);
+            s.Obj("vendor", ref Vendor);
+            s.StrList("pendingRivals", ref PendingRivals);
+            s.ObjList("foundry", ref Foundry);
+            s.Int("playerLabId", ref PlayerLabId);
+            s.ObjList("endings", ref Endings);
+            s.Int("chipShortageUntilTick", ref ChipShortageUntilTick);
+            s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
+            s.ObjList("domainLeaders", ref DomainLeaders);
         }
     }
 
@@ -91,9 +121,12 @@ namespace AiLabs.Rules.State
         public string HomeBlocId;
         public string LotId;
         public List<RoomState> Rooms = new List<RoomState>();
-        public List<StaffPool> Staff = new List<StaffPool>();
+        public List<StaffMember> Staff = new List<StaffMember>();
 
         public int RentedGpus;
+        public List<ReservedContract> ReservedContracts = new List<ReservedContract>();
+        /// <summary>GPUs this lab rents from other labs' HQ fleets.</summary>
+        public List<PeerComputeLease> PeerComputeLeases = new List<PeerComputeLease>();
         /// <summary>The hardware the lab owns, by place and generation. Rented GPUs are a count: they live in the cloud.</summary>
         public List<HardwareBatch> Fleet = new List<HardwareBatch>();
         /// <summary>The lab's data-centre sites: owned land with a hall, or leased colo space.</summary>
@@ -104,10 +137,44 @@ namespace AiLabs.Rules.State
         public int IncidentsThisMonth;
         /// <summary>The share of compute that goes to training while a run is active. The rest serves customers.</summary>
         public int TrainingSharePermille;
+        /// <summary>Data mix for the next training run (config training.dataSources id).</summary>
+        public string TrainingDataSourceId = "internal";
+        /// <summary>Lab to copy when training on distill-rival, or -1.</summary>
+        public int DistillTargetLabId = -1;
+        /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
+        public int FounderSharePermille;
+        /// <summary>Investor seats on the board after venture rounds.</summary>
+        public int BoardInvestorSeats;
+        /// <summary>Funding round ids this lab has closed, oldest first.</summary>
+        public List<string> FundingRounds = new List<string>();
+
+        /// <summary>What a rival thinks of the player, -1000 (feud) to 1000 (fan). Always 0 for the player's own lab.</summary>
+        public int FeelingToPlayer;
+        /// <summary>The first tick the plan acts again after a board fit, or -1.</summary>
+        public int PlanPausedUntilTick;
+        /// <summary>Until this tick the vendor's keynote has upstaged the lab's new chip and it will not buy lists, or -1.</summary>
+        public int ChipAmbushUntilTick;
+        /// <summary>Why the lab did what it did, newest last, capped at the config's rivalry.logMax.</summary>
+        public List<DecisionEntry> Log = new List<DecisionEntry>();
+
+        public List<ChipDesign> ChipDesigns = new List<ChipDesign>();
+        /// <summary>How mature the lab's chip software is, in permille of paper speed: 0 until its first design starts, then it grows.</summary>
+        public int SoftwarePermille;
+        public List<ChipOrder> ChipOrders = new List<ChipOrder>();
+        public List<ChipListing> ChipListings = new List<ChipListing>();
 
         public long ResearchPoints;
         public List<string> Techs = new List<string>();
+        /// <summary>Fork branches this lab closed by researching a sibling.</summary>
+        public List<string> BlockedTechs = new List<string>();
+        public List<PatentState> Patents = new List<PatentState>();
         public List<ModelState> Models = new List<ModelState>();
+        public int FrontierLevel;
+        public int Heat;
+        public long Stash;
+        public int ShadyLockedUntilTick;
+        public int CaseEndsTick = -1;
+        public List<ShadyOp> ShadyOps = new List<ShadyOp>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -115,6 +182,18 @@ namespace AiLabs.Rules.State
         public HardwareBatch Batch(int id)
         {
             for (int i = 0; i < Fleet.Count; i++) if (Fleet[i].Id == id) return Fleet[i];
+            return null;
+        }
+
+        public ChipDesign Design(int id)
+        {
+            for (int i = 0; i < ChipDesigns.Count; i++) if (ChipDesigns[i].Id == id) return ChipDesigns[i];
+            return null;
+        }
+
+        public ChipListing Listing(int designId)
+        {
+            for (int i = 0; i < ChipListings.Count; i++) if (ChipListings[i].DesignId == designId) return ChipListings[i];
             return null;
         }
 
@@ -162,16 +241,53 @@ namespace AiLabs.Rules.State
             s.ObjList("rooms", ref Rooms);
             s.ObjList("staff", ref Staff);
             s.Int("rentedGpus", ref RentedGpus);
+            s.ObjList("reservedContracts", ref ReservedContracts);
+            s.ObjList("peerComputeLeases", ref PeerComputeLeases);
             s.ObjList("fleet", ref Fleet);
             s.ObjList("holdings", ref Holdings);
             s.ObjList("blocs", ref Blocs);
             s.Int("incidentsThisMonth", ref IncidentsThisMonth);
             s.Int("trainingSharePermille", ref TrainingSharePermille);
+            s.Str("trainingDataSourceId", ref TrainingDataSourceId);
+            s.Int("distillTargetLabId", ref DistillTargetLabId);
+            s.Int("founderSharePermille", ref FounderSharePermille);
+            s.Int("boardInvestorSeats", ref BoardInvestorSeats);
+            s.StrList("fundingRounds", ref FundingRounds);
+            s.Int("feelingToPlayer", ref FeelingToPlayer);
+            s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
+            s.Int("chipAmbushUntilTick", ref ChipAmbushUntilTick);
+            s.ObjList("log", ref Log);
+            s.ObjList("chipDesigns", ref ChipDesigns);
+            s.Int("softwarePermille", ref SoftwarePermille);
+            s.ObjList("chipOrders", ref ChipOrders);
+            s.ObjList("chipListings", ref ChipListings);
             s.Long("researchPoints", ref ResearchPoints);
             s.StrList("techs", ref Techs);
+            s.StrList("blockedTechs", ref BlockedTechs);
+            s.ObjList("patents", ref Patents);
             s.ObjList("models", ref Models);
+            s.Int("frontierLevel", ref FrontierLevel);
+            s.Int("heat", ref Heat);
+            s.Long("stash", ref Stash);
+            s.Int("shadyLockedUntilTick", ref ShadyLockedUntilTick);
+            s.Int("caseEndsTick", ref CaseEndsTick);
+            s.ObjList("shadyOps", ref ShadyOps);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
+        }
+    }
+
+    public sealed class PatentState : ISync
+    {
+        public string TechId = "";
+        public int FiledTick = -1;
+        public int ExpiresTick = -1;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("techId", ref TechId);
+            s.Int("filedTick", ref FiledTick);
+            s.Int("expiresTick", ref ExpiresTick);
         }
     }
 
@@ -198,23 +314,27 @@ namespace AiLabs.Rules.State
         }
     }
 
-    /// <summary>How many people of one role a lab employs. Staff are pools in this slice, not named people.</summary>
-    public sealed class StaffPool : ISync
+    /// <summary>One named person on the payroll.</summary>
+    public sealed class StaffMember : ISync
     {
-        public string RoleId;
-        public int Count;
+        public int Id;
+        public string RoleId = "";
+        public string TraitId = "";
+        public int Morale;
 
         public void Sync(Syncer s)
         {
+            s.Int("id", ref Id);
             s.Str("roleId", ref RoleId);
-            s.Int("count", ref Count);
+            s.Str("traitId", ref TraitId);
+            s.Int("morale", ref Morale);
         }
     }
 
-    public enum ModelStatus { Training, Trained, Released, Retired }
+    public enum ModelStatus { Training, Trained, Released, Retired, Failed }
 
     /// <summary>How a model's creature looks right now. Derived from the state, never stored.</summary>
-    public enum ModelMood { Healthy, Overworked, Glitching }
+    public enum ModelMood { Healthy, Overworked, Glitching, Corrupted }
 
     public sealed class ModelState : ISync
     {
@@ -231,19 +351,33 @@ namespace AiLabs.Rules.State
         public int CapTech;
         public int CapCarryover;
         public int CapLuck;
+        /// <summary>Capability gained from an expansion room at train time. Zero when none applied.</summary>
+        public int CapExpansion;
 
         /// <summary>The safety meter, 0 to 1000. Zero while training.</summary>
         public int Alignment;
+        /// <summary>What customers and screens are told. Can sit above <see cref="Alignment"/> when the lab sandbags.</summary>
+        public int DisplayedAlignment;
+        /// <summary>The ladder rung of the last incident, 1 to 3 in this slice.</summary>
+        public int LastIncidentRung;
         public long RequiredCompute;
         public long ProgressCompute;
         public long AlignmentCompute;
         public int AlignmentSharePermille;
 
         public int StartedTick;
-        public int TrainedTick;
-        public int ReleasedTick;
-        public int LastIncidentTick;
+        public int TrainedTick = -1;
+        public int ReleasedTick = -1;
+        public int LastIncidentTick = -1;
         public int Incidents;
+        public int Corruption;
+        public bool OpenWeights;
+        /// <summary>training.dataSources id used for this run.</summary>
+        public string DataSourceId = "internal";
+        /// <summary>training.recipes id when the run used a preset, or empty.</summary>
+        public string RecipeId = "";
+        /// <summary>Rival lab distilled for this run, or -1.</summary>
+        public int DistillSourceLabId = -1;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -259,7 +393,10 @@ namespace AiLabs.Rules.State
             s.Int("capTech", ref CapTech);
             s.Int("capCarryover", ref CapCarryover);
             s.Int("capLuck", ref CapLuck);
+            s.Int("capExpansion", ref CapExpansion);
             s.Int("alignment", ref Alignment);
+            s.Int("displayedAlignment", ref DisplayedAlignment);
+            s.Int("lastIncidentRung", ref LastIncidentRung);
             s.Long("requiredCompute", ref RequiredCompute);
             s.Long("progressCompute", ref ProgressCompute);
             s.Long("alignmentCompute", ref AlignmentCompute);
@@ -269,6 +406,11 @@ namespace AiLabs.Rules.State
             s.Int("releasedTick", ref ReleasedTick);
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
+            s.Int("corruption", ref Corruption);
+            s.Bool("openWeights", ref OpenWeights);
+            s.Str("dataSourceId", ref DataSourceId);
+            s.Str("recipeId", ref RecipeId);
+            s.Int("distillSourceLabId", ref DistillSourceLabId);
             s.StrList("sectors", ref Sectors);
         }
     }
@@ -307,6 +449,8 @@ namespace AiLabs.Rules.State
         public int ModelId;
         /// <summary>Share of the sector's customers, in parts per million.</summary>
         public int SharePpm;
+        /// <summary>Listed price vs the sector norm, in permille (1000 = list price). Scales revenue, not appeal.</summary>
+        public int PricePermille = MathI.Permille;
         public long LastRevenue;
 
         public void Sync(Syncer s)
@@ -314,6 +458,7 @@ namespace AiLabs.Rules.State
             s.Int("labId", ref LabId);
             s.Int("modelId", ref ModelId);
             s.Int("sharePpm", ref SharePpm);
+            s.Int("pricePermille", ref PricePermille);
             s.Long("lastRevenue", ref LastRevenue);
         }
     }
@@ -333,6 +478,22 @@ namespace AiLabs.Rules.State
             s.Int("crownModelId", ref CrownModelId);
             s.Int("safestLabId", ref SafestLabId);
             s.ObjList("entries", ref Entries);
+        }
+    }
+
+    public sealed class CapabilityDomainLeaderState : ISync
+    {
+        public string DomainId;
+        public int LeaderLabId;
+        public long Footprint;
+        public int BestCapability;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("domainId", ref DomainId);
+            s.Int("leaderLabId", ref LeaderLabId);
+            s.Long("footprint", ref Footprint);
+            s.Int("bestCapability", ref BestCapability);
         }
     }
 

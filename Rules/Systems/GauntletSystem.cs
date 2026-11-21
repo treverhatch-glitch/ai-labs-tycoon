@@ -30,14 +30,21 @@ namespace AiLabs.Rules.Systems
                 {
                     LabState lab = state.Lab(sectorState.Entries[i].LabId);
                     ModelState model = lab.Model(sectorState.Entries[i].ModelId);
-                    bracket.Add(Entry(c, state, sector.Id, lab, model, LabQueries.Quality(c, sector, model, state.Tick)));
+                    long score = LabQueries.Quality(c, sector, model, state.Tick, lab);
+                    int expansion = ExpansionSystem.AppealBonusPermille(c, state, lab, sector.Id);
+                    if (expansion > 0) score = ExpansionSystem.ScaleAppeal(score, expansion);
+                    bracket.Add(Entry(c, state, sector.Id, lab, model, score));
                 }
                 Rank(bracket);
                 record.Entries.AddRange(bracket);
 
                 sectorState.ChampionLabId = bracket.Count > 0 ? bracket[0].LabId : -1;
                 if (bracket.Count > 0)
+                {
                     Events.Add(state, EventKind.GauntletBracket, bracket[0].LabId, bracket[0].ModelId, bracket[0].Score, sector.Id);
+                    if (state.PlayerLabId >= 0 && bracket[0].LabId == state.PlayerLabId)
+                        for (int i = 1; i < bracket.Count; i++) RivalSystem.Feel(c, state.Lab(bracket[i].LabId), c.Rivalry.Feelings.BracketPermille);
+                }
             }
 
             var crown = new List<GauntletEntry>();
@@ -63,6 +70,13 @@ namespace AiLabs.Rules.Systems
                 record.CrownModelId = crown[0].ModelId;
                 AddReputation(state.Lab(record.CrownLabId), c.Gauntlet.CrownReputation);
                 Events.Add(state, EventKind.GauntletCrown, record.CrownLabId, record.CrownModelId, crown[0].Score, crown[0].ModelName);
+                if (state.PlayerLabId >= 0 && record.CrownLabId == state.PlayerLabId)
+                {
+                    int runnerUp = crown.Count > 1 ? crown[1].LabId : -1;
+                    for (int i = 0; i < state.Labs.Count; i++)
+                        if (!state.Labs[i].Bankrupt)
+                            RivalSystem.Feel(c, state.Labs[i], state.Labs[i].Id == runnerUp ? c.Rivalry.Feelings.SecondPlacePermille : c.Rivalry.Feelings.CrownPermille);
+                }
             }
             if (record.SafestLabId >= 0)
             {

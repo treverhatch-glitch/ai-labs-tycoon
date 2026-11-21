@@ -87,6 +87,8 @@ namespace AiLabs.Rules.Systems
                     if (sector != null) sector.PoolPerWeek = MathI.MulPermille(sector.PoolPerWeek, e.PoolPermille);
                 }
                 Events.Add(state, EventKind.WorldNews, -1, -1, e.PoolPermille, e.Id);
+                ChipShortageSystem.OnWorldEvent(c, state, e);
+                ProtestSystem.OnWorldEvent(c, state, e);
             }
         }
     }

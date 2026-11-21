@@ -15,7 +15,7 @@ Needs the .NET 8 SDK. No Unity.
 dotnet test tools/SimTests                                   # the rules tests
 dotnet run --project tools/SimCli -- run --years 8           # watch a whole game play itself
 dotnet run --project tools/SimCli -- run --years 8 --events  # ...with the headlines
-dotnet run --project tools/SimCli -- soak --games 60         # balance over many seeds
+dotnet run --project tools/SimCli -- soak --games 24         # balance: 24 games × 3 presets (8 years)
 ```
 
 ## Where things are

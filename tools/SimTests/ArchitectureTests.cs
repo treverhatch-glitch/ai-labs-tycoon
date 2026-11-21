@@ -193,9 +193,13 @@ public class ArchitectureTests
         }
 
         string unity = File.ReadAllText(Path.Combine(dir, "unity.yml"));
-        Assert.DoesNotContain("pull_request", unity.Split('\n').Where(l => !l.TrimStart().StartsWith("#")).Select(l => l.Trim().TrimEnd(':')));
-        Assert.Contains("github.ref == 'refs/heads/main'", unity);
+        string[] unityLines = unity.Split('\n').Where(l => !l.TrimStart().StartsWith("#")).Select(l => l.Trim()).ToArray();
+        Assert.Contains(unityLines, l => l == "pull_request:");
+        Assert.Contains("unity/**", unity);
+        Assert.Contains(".github/workflows/unity.yml", unity);
+        Assert.DoesNotContain("github.ref == 'refs/heads/main'", unity);
         Assert.Contains("ProjectSettings/ProjectVersion.txt", unity);
+        Assert.Contains("workflow_dispatch:", unity);
     }
 
     [Fact]
