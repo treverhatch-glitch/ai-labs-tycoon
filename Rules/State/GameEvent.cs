@@ -41,7 +41,11 @@ namespace AiLabs.Rules.State
         ShadyOpStarted, ShadyOpResolved, ShadyTraced, ShadyInvestigation, ShadyConvicted, ShadyAcquitted, ShadySideJob, ShadyTemptation,
         StaffPoached,
         /// <summary>The vendor could not fulfil a GPU purchase queue. Amount is GPUs left; Ref holds the reason tag.</summary>
-        GpuQueueStalled
+        GpuQueueStalled,
+        /// <summary>The global chip crunch began. Amount is strength permille.</summary>
+        ChipShortageBegan,
+        /// <summary>The global chip crunch ended. Amount is the last strength permille.</summary>
+        ChipShortageEnded
     }
 
     /// <summary>

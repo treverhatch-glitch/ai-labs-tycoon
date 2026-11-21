@@ -402,8 +402,10 @@ namespace AiLabs.Rules.Systems
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
             GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
-            long rent = gen.RentPerGpuWeek * lab.RentedGpus;
-            return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab) + ChipQueries.WeeklyCloudChipRent(c, state, lab);
+            long rent = ChipShortageSystem.ScalePrice(state, gen.RentPerGpuWeek * lab.RentedGpus);
+            long reserved = ChipShortageSystem.ScalePrice(state, ComputeContractSystem.WeeklyReservedRent(c, state, lab));
+            long cloud = ChipShortageSystem.ScalePrice(state, ChipQueries.WeeklyCloudChipRent(c, state, lab));
+            return rent + reserved + cloud;
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>

@@ -30,6 +30,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 13) MigrateTo13(root);
             if (fromSchema < 14) MigrateTo14(root);
             if (fromSchema < 15) MigrateTo15(root);
+            if (fromSchema < 16) MigrateTo16(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -287,6 +288,12 @@ namespace AiLabs.Rules.Sim
         {
             JsonPatch.ForEach(root, "labs", lab =>
                 JsonPatch.ForEach(lab, "models", model => JsonPatch.AddIfMissing(model, "capExpansion", JsonValue.Of(0L))));
+        }
+
+        static void MigrateTo16(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "chipShortageUntilTick", JsonValue.Of(-1L));
+            JsonPatch.AddIfMissing(root, "chipShortageStrengthPermille", JsonValue.Of(0L));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

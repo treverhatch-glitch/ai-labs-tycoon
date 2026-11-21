@@ -142,7 +142,7 @@ namespace AiLabs.Rules.Sim
             Holding holding;
             CommandResult check = CheckChipDelivery(c, state, lab, lab, d, cmd.X, cmd.Count, out spec, out month, out holding);
             if (!check.Ok) return check;
-            long cost = ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count);
+            long cost = ChipShortageSystem.ScalePrice(state, ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count));
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             ChipOrder order = PlaceChipOrder(c, state, lab, lab, d, spec, holding, cmd.Count, month);
@@ -203,7 +203,7 @@ namespace AiLabs.Rules.Sim
             Holding holding;
             CommandResult check = CheckChipDelivery(c, state, lab, seller, d, cmd.X, cmd.Count, out spec, out month, out holding);
             if (!check.Ok) return check;
-            long price = listing.PricePerChip * cmd.Count;
+            long price = ChipShortageSystem.ScalePrice(state, listing.PricePerChip * cmd.Count);
             if (lab.Cash < price) return NeedCash(lab, price);
             long wafers = ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count);
             if (seller.Cash < wafers) return Fail(CommandError.NotEnoughCash, seller.Name + " cannot pay the foundry for that many chips right now.");

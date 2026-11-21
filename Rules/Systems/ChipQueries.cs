@@ -250,7 +250,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The first foundry month from this one on with room for the whole order, or -1 when none within the booking window has.</summary>
         public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, int count)
         {
-            long room = c.Chips.FoundryRoom(node);
+            long room = ChipShortageSystem.EffectiveFoundryRoom(c, state, node);
             if (count > room) return -1;
             int now = MonthIndex(c, state.Tick);
             for (int m = now; m < now + c.Chips.BookAheadMonths; m++)

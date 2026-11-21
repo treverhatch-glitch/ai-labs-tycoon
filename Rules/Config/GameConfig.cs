@@ -214,6 +214,8 @@ namespace AiLabs.Rules.Config
         public string SectorId;
         /// <summary>The sector's pool is multiplied by this, in permille (700 = a 30% crash). 1000 when there is no sector.</summary>
         public int PoolPermille;
+        /// <summary>When above zero, starts or refreshes a global chip shortage at this strength permille.</summary>
+        public int ChipShortageStrengthPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -225,6 +227,7 @@ namespace AiLabs.Rules.Config
             s.Str("headline", ref Headline);
             s.Str("sectorId", ref SectorId);
             s.Int("poolPermille", ref PoolPermille);
+            s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
         }
     }
 

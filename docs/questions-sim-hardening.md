@@ -227,3 +227,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) any trained model can open weights; (b) `blocksOpenWeights` on `training.dataSources`, refuse with `DataSourceBlocksOpenWeights`; (c) open weights only on internal.
 - Choice: **(b)** — synthetic mix cannot publish weights; internal/licensed may; stamp on model `dataSourceId`, not lab default.
 - Why: risky data cannot be “open sourced” credibly; crosses Q9 open weights + Q35 synthetic finish risks.
+
+### Q39. Global chip shortage from world news? DECIDED: timed crunch on prices and foundry
+
+- Options: (a) flavor-only `card-shortage` headline; (b) `chipShortageStrengthPermille` on world events + `GameState` clock; (c) random monthly roll.
+- Choice: **(b)** — `ChipShortageSystem` scales GPU rent/buy, reserved deposit, fab orders, listed buys; shrinks effective foundry room; `ChipShortageBegan`/`Ended` events; schema **16**.
+- Why: DESIGN.md world-map tail (chip shortages) with visible economy; crosses `WorldNews`, vendor compute, and chips without new player commands.

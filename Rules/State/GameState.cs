@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 15;
+        public const int CurrentSchema = 16;
 
         public int Schema;
         public string ConfigVersion;
@@ -35,6 +35,10 @@ namespace AiLabs.Rules.State
         /// <summary>The lab the player controls, or -1 when spectating.</summary>
         public int PlayerLabId;
         public List<EndingRecord> Endings = new List<EndingRecord>();
+        /// <summary>First tick after which the global chip crunch is over, or -1 when inactive.</summary>
+        public int ChipShortageUntilTick = -1;
+        /// <summary>How hard the crunch hits prices (permille); 1000 is normal.</summary>
+        public int ChipShortageStrengthPermille;
 
         public LabState Player
         {
@@ -83,6 +87,8 @@ namespace AiLabs.Rules.State
             s.ObjList("foundry", ref Foundry);
             s.Int("playerLabId", ref PlayerLabId);
             s.ObjList("endings", ref Endings);
+            s.Int("chipShortageUntilTick", ref ChipShortageUntilTick);
+            s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
         }
     }
 

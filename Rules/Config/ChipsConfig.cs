@@ -42,6 +42,7 @@ namespace AiLabs.Rules.Config
         public List<ChipTargetConfig> Targets;
         public List<ChipNodeConfig> Nodes;
         public List<ChipOptionConfig> Options;
+        public ChipShortageConfig Shortage = new ChipShortageConfig();
 
         public void Sync(Syncer s)
         {
@@ -72,6 +73,7 @@ namespace AiLabs.Rules.Config
             s.ObjList("targets", ref Targets);
             s.ObjList("nodes", ref Nodes);
             s.ObjList("options", ref Options);
+            s.Obj("shortage", ref Shortage);
         }
 
         public ChipTargetConfig Target(string id)
@@ -156,6 +158,21 @@ namespace AiLabs.Rules.Config
             s.Int("maxYieldPermille", ref MaxYieldPermille);
             s.Int("leadWeeks", ref LeadWeeks);
             s.Long("capacityPerMonth", ref CapacityPerMonth);
+        }
+    }
+
+    /// <summary>How long a world-news chip crunch lasts and how strong events may be.</summary>
+    public sealed class ChipShortageConfig : ISync
+    {
+        public int DurationWeeks = 24;
+        public int MinStrengthPermille = 1050;
+        public int MaxStrengthPermille = 1600;
+
+        public void Sync(Syncer s)
+        {
+            s.Int("durationWeeks", ref DurationWeeks);
+            s.Int("minStrengthPermille", ref MinStrengthPermille);
+            s.Int("maxStrengthPermille", ref MaxStrengthPermille);
         }
     }
 

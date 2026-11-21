@@ -435,6 +435,13 @@ namespace AiLabs.Rules.Config
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
+            if (k.Shortage == null) p.Add("chips.shortage is missing");
+            else
+            {
+                if (k.Shortage.DurationWeeks < 1) p.Add("chips.shortage.durationWeeks must be at least 1");
+                if (k.Shortage.MinStrengthPermille < MathI.Permille || k.Shortage.MaxStrengthPermille < k.Shortage.MinStrengthPermille)
+                    p.Add("chips.shortage strength permilles must run from 1000 upward");
+            }
             RoleConfig architect = c.Role(k.ArchitectRoleId);
             if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
             else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");
@@ -552,6 +559,9 @@ namespace AiLabs.Rules.Config
                     else if (e.Year < sector.OpensYear) p.Add(who + " moves " + e.SectorId + " before it opens in " + sector.OpensYear);
                     if (e.PoolPermille < 100 || e.PoolPermille > 3000) p.Add(who + " has poolPermille " + e.PoolPermille + ": a single event moves a market from 100 to 3000");
                 }
+                if (e.ChipShortageStrengthPermille != 0 &&
+                    (e.ChipShortageStrengthPermille < 1000 || e.ChipShortageStrengthPermille > 2000))
+                    p.Add(who + " has chipShortageStrengthPermille " + e.ChipShortageStrengthPermille + ": use 0 or 1000 to 2000");
                 if (i > 0)
                 {
                     WorldEventConfig before = c.WorldEvents[i - 1];

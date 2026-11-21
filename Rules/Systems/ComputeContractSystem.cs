@@ -47,6 +47,7 @@ namespace AiLabs.Rules.Systems
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             long spot = gen.RentPerGpuWeek * count;
             long weekRent = MathI.MulPermille(spot, c.Compute.ReservedRentPermille);
+            weekRent = ChipShortageSystem.ScalePrice(state, weekRent);
             return weekRent * c.Compute.ReservedDepositWeeks;
         }
 

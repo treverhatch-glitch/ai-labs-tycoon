@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Sim
             int tick = state.Tick;
 
             EraSystem.RunWeek(c, state);
+            ChipShortageSystem.RunWeek(c, state);
 
             if (GameDate.IsMonthStart(c.Calendar, tick))
             {
