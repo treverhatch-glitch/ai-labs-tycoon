@@ -35,6 +35,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 18) MigrateTo18(root);
             if (fromSchema < 19) MigrateTo19(root);
             if (fromSchema < 20) MigrateTo20(root);
+            if (fromSchema < 21) MigrateTo21(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -313,6 +314,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo20(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "peerComputeLeases", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 21: weekly capability domain leader snapshots on the game state.</summary>
+        static void MigrateTo21(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "domainLeaders", JsonValue.Array());
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 20;
+        public const int CurrentSchema = 21;
 
         public int Schema;
         public string ConfigVersion;
@@ -39,6 +39,8 @@ namespace AiLabs.Rules.State
         public int ChipShortageUntilTick = -1;
         /// <summary>How hard the crunch hits prices (permille); 1000 is normal.</summary>
         public int ChipShortageStrengthPermille;
+        /// <summary>Best footprint per capability domain after the latest weekly refresh.</summary>
+        public List<CapabilityDomainLeaderState> DomainLeaders = new List<CapabilityDomainLeaderState>();
 
         public LabState Player
         {
@@ -89,6 +91,7 @@ namespace AiLabs.Rules.State
             s.ObjList("endings", ref Endings);
             s.Int("chipShortageUntilTick", ref ChipShortageUntilTick);
             s.Int("chipShortageStrengthPermille", ref ChipShortageStrengthPermille);
+            s.ObjList("domainLeaders", ref DomainLeaders);
         }
     }
 
@@ -475,6 +478,22 @@ namespace AiLabs.Rules.State
             s.Int("crownModelId", ref CrownModelId);
             s.Int("safestLabId", ref SafestLabId);
             s.ObjList("entries", ref Entries);
+        }
+    }
+
+    public sealed class CapabilityDomainLeaderState : ISync
+    {
+        public string DomainId;
+        public int LeaderLabId;
+        public long Footprint;
+        public int BestCapability;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("domainId", ref DomainId);
+            s.Int("leaderLabId", ref LeaderLabId);
+            s.Long("footprint", ref Footprint);
+            s.Int("bestCapability", ref BestCapability);
         }
     }
 

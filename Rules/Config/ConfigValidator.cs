@@ -283,6 +283,7 @@ namespace AiLabs.Rules.Config
                 if (d.SectorIds == null || d.SectorIds.Count == 0) p.Add("capability domain " + d.IdValue + " needs at least one sector");
                 else foreach (string s in d.SectorIds)
                     if (c.Sector(s) == null) p.Add("capability domain " + d.IdValue + " names the unknown sector \"" + s + "\"");
+                Permille(p, "capability domain " + d.IdValue + " leaderAppealPermille", d.LeaderAppealPermille);
             }
         }
 

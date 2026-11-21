@@ -140,6 +140,7 @@ namespace AiLabs.Rules.Sim
             }
             PeerComputeSystem.RunWeek(c, state);
 
+            CapabilityDomainSystem.RunWeek(c, state);
             MarketSystem.RunWeek(c, state);
 
             for (int i = 0; i < state.Labs.Count; i++)

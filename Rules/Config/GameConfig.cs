@@ -801,6 +801,8 @@ namespace AiLabs.Rules.Config
         public string IdValue;
         public string Name;
         public List<string> SectorIds = new List<string>();
+        /// <summary>Appeal permille in the domain's sectors when this lab leads the weekly footprint ranking.</summary>
+        public int LeaderAppealPermille = 120;
 
         public string Id { get { return IdValue; } }
 
@@ -809,6 +811,7 @@ namespace AiLabs.Rules.Config
             s.Str("id", ref IdValue);
             s.Str("name", ref Name);
             s.StrList("sectorIds", ref SectorIds);
+            s.Int("leaderAppealPermille", ref LeaderAppealPermille);
         }
     }
 

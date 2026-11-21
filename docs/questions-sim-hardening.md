@@ -376,6 +376,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
 - Why: explainable domain scores for planner/UI without gauntlet changes.
 
+### Q65. Capability domain leaders? DECIDED: `CapabilityDomainSystem` + schema 21
+
+- Options: (a) queries only; (b) weekly leader snapshots and appeal in domain sectors; (c) gauntlet brackets.
+- Choice: **(b)** — `GameState.domainLeaders`; `RunWeek` before market; `DisplayQueries.DomainLeaderBoost`.
+- Why: bible “capability domains” as a live system; golden updated for appeal path.
+
 ### Q64. Exotic foundry node gate? DECIDED: `ChipNodeConfig.requiresTech`
 
 - Options: (a) new n2 node; (b) n3 gated on `chip-codesign`; (c) skip exotic nodes.

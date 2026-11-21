@@ -323,16 +323,16 @@ public class TrainingFailureTests
         Game loaded = new Game(Simulation.Load(g.C, json));
         ModelState again = loaded.Me.Model(model.Id);
         Assert.Equal(ModelStatus.Failed, again.Status);
-        Assert.Equal(20, loaded.State.Schema);
+        Assert.Equal(21, loaded.State.Schema);
     }
 
     [Fact]
     public void Migrate_16_to_17_bumps_schema()
     {
         Game g = Game.Solo();
-        string json = g.Sim.Save().Replace("\"schema\":20", "\"schema\":16");
+        string json = g.Sim.Save().Replace("\"schema\":21", "\"schema\":16");
         Game loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(20, loaded.State.Schema);
+        Assert.Equal(21, loaded.State.Schema);
     }
 
     [Fact]

@@ -27,8 +27,9 @@ namespace AiLabs.Rules.Systems
             public long ChampionBoost;
             public long ExpansionBoost;
             public long WorkshopBoost;
+            public long DomainLeaderBoost;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost + DomainLeaderBoost; } }
         }
 
         public struct IncidentBreakdown
@@ -107,6 +108,9 @@ namespace AiLabs.Rules.Systems
             int workshop = DeviceWorkshopSystem.AppealBonusPermille(c, state, lab, sector.Id);
             long afterWorkshop = ExpansionSystem.ScaleAppeal(afterExpansion, workshop);
             b.WorkshopBoost = afterWorkshop - afterExpansion;
+            int domainLeader = CapabilityDomainSystem.LeaderAppealPermille(c, state, lab, sector.Id);
+            long afterDomain = ExpansionSystem.ScaleAppeal(afterWorkshop, domainLeader);
+            b.DomainLeaderBoost = afterDomain - afterWorkshop;
             return b;
         }
 
