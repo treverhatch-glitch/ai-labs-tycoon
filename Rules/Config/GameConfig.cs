@@ -95,6 +95,7 @@ namespace AiLabs.Rules.Config
         public WhistleConfig Whistle = new WhistleConfig();
         public BugBountyConfig BugBounty = new BugBountyConfig();
         public PulloutConfig Pullout = new PulloutConfig();
+        public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
@@ -186,6 +187,7 @@ namespace AiLabs.Rules.Config
             s.Obj("whistle", ref Whistle);
             s.Obj("bugBounty", ref BugBounty);
             s.Obj("pullout", ref Pullout);
+            s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);

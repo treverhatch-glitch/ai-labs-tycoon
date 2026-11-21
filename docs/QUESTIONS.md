@@ -1753,6 +1753,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No new saved state and no random numbers, so the golden does not move (verified). The player's lab only.
 - Alternatives: leaving for free (rejected: a free exit makes entry free, so a launch is never a bet), a lock on going back in (rejected: the lost share is already the lock), pulling a sector out for every lab (rejected: that is the rivals' planner, left alone).
 
+### Q345. What can a lab do when it cannot meet a loan's payments but does not want to lose its chips? DECIDED: ask the lender to restructure it
+- New `restructure` data, command `RestructureLoan`, `Restructure` system and event `LoanRestructured`. A loan against chips was pay or default (three misses and the lender takes the chips). A restructure stretches what is left over twice the term (104 weeks for 52), so the weekly payment is a little over half, for a fee of 10% of the balance added to what is owed, 15 reputation, and it clears the missed payments.
+- It trades cash flow now for money later and a dent in the name, which is the same trade a real lender offers, and it is the first thing a lab short of cash can do about a loan other than repay it. A lab that restructures a loan it could have paid pays 10% for nothing.
+- It works only while it would lower the payment, so it cannot be repeated for nothing: after a restructure the payment is already over the long term, and a second one is refused until enough has been paid off for the longer term to give a lower payment.
+- No new saved state (it edits the loan's own payment, balance and misses) and no random numbers, so the golden does not move (verified). The player's lab only.
+- Alternatives: forgiving part of the balance (rejected: free money), a restructure that costs cash (rejected: the lab asking is the one that has none), a limit of one restructure per loan (rejected: needs a saved flag, and the payment test already stops repeats).
+
 ## Open
 
 None.

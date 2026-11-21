@@ -212,7 +212,9 @@ namespace AiLabs.Rules.State
         /// <summary>The lab changed its bug bounty. SubjectId is the new level, Amount the fee, Pick 1 when it was raised.</summary>
         BountySet,
         /// <summary>The lab pulled a model out of a sector. SubjectId is the model, Amount the break fee, Pick 1 when it was the last sector and the model was retired. Ref is the sector.</summary>
-        SectorPulledOut
+        SectorPulledOut,
+        /// <summary>A loan was restructured. SubjectId is the loan, Amount the fee added to what is owed, Pick 1 when it cleared missed payments.</summary>
+        LoanRestructured
     }
 
     /// <summary>

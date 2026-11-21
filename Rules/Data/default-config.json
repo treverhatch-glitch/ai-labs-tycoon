@@ -5622,6 +5622,12 @@
     "prestigeFloor": 120,
     "minResearchers": 3
   },
+  "restructure": {
+    "enabled": 1,
+    "stretchPermille": 2000,
+    "feePermille": 100,
+    "reputationLoss": 15
+  },
   "pullout": {
     "enabled": 1,
     "feeWeeks": 4,

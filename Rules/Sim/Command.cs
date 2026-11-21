@@ -68,7 +68,8 @@ namespace AiLabs.Rules.Sim
         EndowChair,
         AnswerWhistle,
         SetBugBounty,
-        PullOutOfSector
+        PullOutOfSector,
+        RestructureLoan
     }
 
     /// <summary>
@@ -621,6 +622,14 @@ namespace AiLabs.Rules.Sim
         public static Command RepayLoan(int labId, int loanId)
         {
             Command c = Make(CommandKind.RepayLoan, labId);
+            c.TargetId = loanId;
+            return c;
+        }
+
+        /// <summary>Asks the lender to stretch a loan over a longer term: a lower weekly payment for a fee added to what is owed, a dent in the lab's name and a clean sheet of missed payments.</summary>
+        public static Command RestructureLoan(int labId, int loanId)
+        {
+            Command c = Make(CommandKind.RestructureLoan, labId);
             c.TargetId = loanId;
             return c;
         }

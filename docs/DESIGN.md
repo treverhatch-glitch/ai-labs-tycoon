@@ -275,6 +275,8 @@ The player can run a bug bounty at three levels: a fee to raise, a weekly bill f
 
 The player can pull a model out of one sector for a break fee, lost trust and reputation and the share it had built, shedding that sector's load and exposure.
 
+A lab short of cash can ask the lender to stretch a loan over twice the term for a fee added to what it owes, a dent in its reputation and a clean sheet of missed payments.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

@@ -243,6 +243,8 @@ namespace AiLabs.Rules.Sim
                         : who + (e.Pick == 1 ? " raised" : " lowered") + " its bug bounty to level " + e.SubjectId + (e.Amount > 0 ? " for $" + e.Amount + "." : ".");
                 case EventKind.SectorPulledOut:
                     return who + " pulled out of " + e.Ref + (e.Amount > 0 ? ", paying $" + e.Amount + " to its customers" : "") + (e.Pick == 1 ? " and retired the model." : ".");
+                case EventKind.LoanRestructured:
+                    return who + " restructured loan " + e.SubjectId + ": a longer term and a lower payment for $" + e.Amount + " added to what it owes" + (e.Pick == 1 ? ", with its missed payments forgiven." : ".");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

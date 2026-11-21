@@ -100,6 +100,7 @@ namespace AiLabs.Rules.Config
             WhistleProblems(p, c);
             BugBountyProblems(p, c);
             PulloutProblems(p, c);
+            RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -968,6 +969,16 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void RestructureProblems(List<string> p, GameConfig c)
+        {
+            RestructureConfig k = c.Restructure;
+            if (k == null) { p.Add("restructure is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("restructure.enabled must be 0 or 1");
+            if (k.StretchPermille < 1000 || k.StretchPermille > 5000) p.Add("restructure.stretchPermille must be from 1000 to 5000, so a restructure never shortens the term");
+            if (k.FeePermille < 0 || k.FeePermille > 500) p.Add("restructure.feePermille must be from 0 to 500");
+            if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("restructure.reputationLoss must be from 0 to 500");
         }
 
         static void PulloutProblems(List<string> p, GameConfig c)
