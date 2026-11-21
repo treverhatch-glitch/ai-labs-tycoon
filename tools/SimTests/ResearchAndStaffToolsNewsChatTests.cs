@@ -53,8 +53,8 @@ public class ResearchAndStaffToolsNewsChatTests
     public void Ten_headlines_and_nine_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(47, c.News.Headlines.Count);
-        Assert.Equal(99, c.Chat.Lines.Count);
+        Assert.Equal(57, c.News.Headlines.Count);
+        Assert.Equal(110, c.Chat.Lines.Count);
         foreach (string kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind);
