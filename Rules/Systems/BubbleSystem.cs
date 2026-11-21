@@ -64,7 +64,7 @@ namespace AiLabs.Rules.Systems
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState lab = state.Labs[i];
-        if (lab.Bankrupt) continue;
+        if (!LabQueries.ParticipatesInEconomy(lab)) continue;
         total += lab.Ledger.ThisMonth.Revenue;
       }
       return total;
@@ -134,7 +134,7 @@ namespace AiLabs.Rules.Systems
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState lab = state.Labs[i];
-        if (lab.Bankrupt) continue;
+        if (!LabQueries.ParticipatesInEconomy(lab)) continue;
         int share = GovernmentSystem.RevenueSharePpm(state, lab);
         if (share >= b.SurvivorRevenuePpm) continue;
         long cut = MathI.MulPermille(lab.Cash, b.WeakCashHaircutPermille);

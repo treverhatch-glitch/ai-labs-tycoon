@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 648 tests pass (schemas 19–20: bubble crash, acquisitions, model sales), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 655 tests pass (schemas 19–20: bubble crash, acquisitions, model sales; Opus review regressions), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 20. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -101,9 +101,10 @@ and says why in the commit message.
 - ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
 - ~~**Shady path depth and China deals (Q93).**~~ Done: player-only shady jobs, model corruption carry/mood/side jobs, China state requests and export vs smuggle; `ShadyChinaLaterTests`.
 - ~~**Containment rooms and superintelligence ending gates (Q94).**~~ Done: containment-wing alignment bonus, year-end `TrySuperintelligence` for paperclipped / long-summer / loose; schema 15; `ContainmentSuperintelLaterTests`.
-- **Specialist** model lines, data sources, **open weights**, sector pricing.
+- ~~**Specialist** model lines, data sources, **open weights**, sector pricing.~~ Done on `cursor/rules-side-items` (PR #2); rules-forward does not reimplement.
 - ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
-- Real **Bodies** and **Upward** expansions (era data is in, flagged `expansion`; mechanics and art are not).
+- Real **Bodies** and **Upward** expansions (mechanics): **owned by Unity thread** on `cursor/rules-side-items`; era **data** only on stack2.
+- **Treaty & Nationalised** ending triggers (systems-design stubs): **in progress** on stack2 (rules-forward).
 
 ## Rules: forward queue (from bible / systems-design)
 

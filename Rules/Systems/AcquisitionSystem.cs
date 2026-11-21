@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
 using AiLabs.Rules.State;
@@ -12,6 +13,7 @@ namespace AiLabs.Rules.Systems
       public long ModelsPart;
       public long StaffPart;
       public long CashPart;
+      public long DebtAssumed;
       public long IntegrationCost;
       public long Total;
       public bool Distressed;
@@ -30,6 +32,7 @@ namespace AiLabs.Rules.Systems
       if (cfg == null || buyer == null || target == null) return q;
       q.Distressed = IsDistressed(c, state, target);
       q.CashPart = target.Cash > 0 ? target.Cash : 0;
+      q.DebtAssumed = target.Cash < 0 ? -target.Cash : 0;
       for (int i = 0; i < target.Models.Count; i++)
       {
         ModelState m = target.Models[i];
@@ -37,13 +40,15 @@ namespace AiLabs.Rules.Systems
         q.ModelsPart += (long)m.Capability * cfg.CapabilityValuePerPoint;
       }
       q.StaffPart = (long)target.Staff.Count * cfg.StaffValuePerHead;
-      q.FleetPart = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, target), cfg.FleetResalePermille);
-      long subtotal = q.CashPart + q.ModelsPart + q.StaffPart + q.FleetPart;
+      q.FleetPart = LabQueries.FleetResaleValue(c, state, target);
+      long distressedBundle = q.ModelsPart + q.StaffPart;
       if (q.Distressed)
       {
         int permille = BubbleSystem.InCrash(state) ? cfg.CrashDistressPricePermille : cfg.DistressPricePermille;
-        subtotal = MathI.MulPermille(subtotal, permille);
+        distressedBundle = MathI.MulPermille(distressedBundle, permille);
       }
+      long subtotal = distressedBundle + q.FleetPart + q.CashPart;
+      subtotal = (long)MathI.Max(0, subtotal - q.DebtAssumed);
       q.IntegrationCost = MathI.MulPermille(subtotal, cfg.IntegrationCostPermille);
       q.Total = subtotal + q.IntegrationCost;
       return q;
@@ -72,9 +77,18 @@ namespace AiLabs.Rules.Systems
     {
       AcquisitionQuote q = Quote(c, state, buyer, target);
       Finance.Spend(buyer, LedgerLine.Hardware, q.Total);
+      long cash = target.Cash;
+      if (cash > 0)
+      {
+        Finance.Earn(buyer, LedgerLine.CapitalIn, cash);
+        Finance.Spend(target, LedgerLine.CapitalIn, cash);
+      }
+      else if (cash < 0)
+        Finance.Spend(buyer, LedgerLine.Hardware, -cash);
+      target.Cash = 0;
       TransferModels(c, state, buyer, target);
       TransferStaff(c, buyer, target);
-      TransferFleet(c, state, buyer, target);
+      TransferHoldingsAndFleet(c, state, buyer, target);
       for (int s = 0; s < state.Sectors.Count; s++)
       {
         SectorState sector = state.Sectors[s];
@@ -82,14 +96,22 @@ namespace AiLabs.Rules.Systems
           if (sector.Entries[i].LabId == target.Id) sector.Entries.RemoveAt(i);
         if (sector.ChampionLabId == target.Id) sector.ChampionLabId = buyer.Id;
       }
-      target.Models.Clear();
-      target.Staff.Clear();
-      target.Fleet.Clear();
-      target.RentedGpus = 0;
+      SealAbsorbed(state, target);
       target.AbsorbedByLabId = buyer.Id;
       if (q.Total >= c.Acquisitions.RegulatorDealRevenue)
         RegulatorSystem.OnAcquisition(c, state, buyer, c.Acquisitions.RegulatorAttention);
       Events.Add(state, EventKind.LabAcquired, buyer.Id, target.Id, q.Total, target.RivalId);
+    }
+
+    static void SealAbsorbed(GameState state, LabState target)
+    {
+      ChipSystem.OnBankrupt(state, target);
+      target.Models.Clear();
+      target.Staff.Clear();
+      target.Fleet.Clear();
+      target.Holdings.Clear();
+      target.RentedGpus = 0;
+      target.ReservedContracts.Clear();
     }
 
     static void TransferModels(GameConfig c, GameState state, LabState buyer, LabState target)
@@ -98,13 +120,14 @@ namespace AiLabs.Rules.Systems
       {
         ModelState m = target.Models[i];
         if (m.Status == ModelStatus.Retired) continue;
-        m.Id = state.TakeId();
         buyer.Models.Add(m);
         for (int s = 0; s < m.Sectors.Count; s++)
         {
           SectorState sector = state.Sector(m.Sectors[s]);
           if (sector == null) continue;
           SectorEntry entry = sector.Entry(buyer.Id);
+          ModelState incumbent = entry == null ? null : buyer.Model(entry.ModelId);
+          if (incumbent != null && incumbent.Capability >= m.Capability) continue;
           if (entry == null)
           {
             entry = new SectorEntry { LabId = buyer.Id, ModelId = m.Id };
@@ -126,12 +149,22 @@ namespace AiLabs.Rules.Systems
       }
     }
 
-    static void TransferFleet(GameConfig c, GameState state, LabState buyer, LabState target)
+    static void TransferHoldingsAndFleet(GameConfig c, GameState state, LabState buyer, LabState target)
     {
+      var holdingMap = new Dictionary<int, int>();
+      for (int i = 0; i < target.Holdings.Count; i++)
+      {
+        Holding h = target.Holdings[i];
+        int oldId = h.Id;
+        h.Id = state.TakeId();
+        holdingMap[oldId] = h.Id;
+        buyer.Holdings.Add(h);
+      }
       for (int i = 0; i < target.Fleet.Count; i++)
       {
         HardwareBatch b = target.Fleet[i];
-        if (b.HoldingId != HardwareBatch.Hq) continue;
+        if (b.HoldingId != HardwareBatch.Hq && holdingMap.TryGetValue(b.HoldingId, out int mapped)) b.HoldingId = mapped;
+        else if (b.HoldingId != HardwareBatch.Hq) continue;
         b.Id = state.TakeId();
         buyer.Fleet.Add(b);
       }

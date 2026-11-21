@@ -188,7 +188,7 @@ namespace AiLabs.Rules.Systems
             for (int l = 0; l < state.Labs.Count; l++)
             {
                 LabState lab = state.Labs[l];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 for (int i = 0; i < lab.ChipDesigns.Count; i++)
                 {
                     ChipDesign d = lab.ChipDesigns[i];
@@ -204,7 +204,7 @@ namespace AiLabs.Rules.Systems
             for (int l = 0; l < state.Labs.Count; l++)
             {
                 LabState lab = state.Labs[l];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 int share = ChipQueries.OwnChipsShare(c, state, lab);
                 if (share < c.Vendor.CourtingSharePermille) continue;
                 for (int o = 0; o < state.Labs.Count; o++)
