@@ -25,7 +25,7 @@ public class CapabilityDomainSystemTests
     public void New_game_schema_23_and_empty_leaders()
     {
         Game g = Game.Solo();
-        Assert.Equal(29, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
         Assert.Empty(g.State.DomainLeaders);
     }
 
@@ -107,7 +107,7 @@ public class CapabilityDomainSystemTests
         g.State.Schema = 20;
         string json = g.Sim.Save();
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.NotNull(loaded.State.DomainLeaders);
     }
 

@@ -153,14 +153,14 @@ public class TrainingRecipeTests
         Game g = Kitchen();
         string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":17");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Equal(-1, loaded.Me.DistillTargetLabId);
     }
 
     [Fact]
     public void Schema_22_on_new_game()
     {
-        Assert.Equal(29, Game.Solo().State.Schema);
+        Assert.Equal(GameState.CurrentSchema, Game.Solo().State.Schema);
     }
 
     [Fact]

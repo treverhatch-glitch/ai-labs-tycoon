@@ -88,6 +88,10 @@ namespace AiLabs.Rules.Sim
                 case EventKind.Keynote: return c.Compute.VendorName + " unveils the " + c.Compute.Generation(e.Ref).Name + ". It was sold out before the presenter walked on stage. This month's supply: " + e.Amount + " units.";
                 case EventKind.RivalJoined: return who + " has entered the race with $" + e.Amount + " and a plan.";
                 case EventKind.BoardDrama: return who + "'s board fired its boss on Friday. The boss was back on Tuesday.";
+                case EventKind.ReleaseReviewSubmitted: return who + " filed " + e.Ref + " for release review in " + e.Amount + " sectors.";
+                case EventKind.ReleaseReviewApproved: return who + "'s review cleared " + e.Ref + " for " + e.Amount + " sectors.";
+                case EventKind.ReleaseReviewRejected: return who + "'s review blocked " + e.Ref + " (−" + e.Amount + " reputation).";
+                case EventKind.ReleaseReviewRevision: return who + " must revise " + e.Ref + "'s alignment claim (gap " + e.Amount + "‰).";
                 case EventKind.StaffPoached:
                     {
                         LabState victim = state.Lab(e.SubjectId);

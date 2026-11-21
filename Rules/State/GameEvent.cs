@@ -53,7 +53,15 @@ namespace AiLabs.Rules.State
         /// <summary>A chip listing left the market (stale, over cap, or design no longer ready). Ref is the reason tag.</summary>
         ChipListingEnded,
         /// <summary>Debt forced a peer-compute lease down. SubjectId is the landlord lab.</summary>
-        PeerLeaseTrimmed
+        PeerLeaseTrimmed,
+        /// <summary>A model package entered monthly release review. Ref is the model name.</summary>
+        ReleaseReviewSubmitted,
+        /// <summary>Review cleared the package. Amount is sector count; Ref is the model name.</summary>
+        ReleaseReviewApproved,
+        /// <summary>Review blocked the package. Amount is reputation lost; Ref is the model name.</summary>
+        ReleaseReviewRejected,
+        /// <summary>Review sent the package back for a lower alignment claim. Amount is the gap permille.</summary>
+        ReleaseReviewRevision
     }
 
     /// <summary>

@@ -39,6 +39,14 @@ static class ExpansionTestSupport
             Alignment = 600, DisplayedAlignment = 600,
         };
         g.Me.Models.Add(model);
+        if (ReleaseReviewSystem.NeedsReviewBeforeRelease(g.C, g.State, g.Me, model, new[] { sectorId }, 0))
+        {
+            int claim = ReleaseReviewSystem.EffectiveClaimedPermille(g.C, model, 0);
+            g.Do(Command.SubmitReleaseReview(g.Id, model.Id, claim, sectorId));
+            int w = g.C.Calendar.WeeksPerMonth;
+            int rem = g.Tick % w;
+            g.Weeks(rem == 0 ? w : w - rem);
+        }
         g.Do(Command.ReleaseModel(g.Id, model.Id, sectorId));
         return model;
     }

@@ -4236,6 +4236,10 @@
         "text": "{lab} held back {ref}: it is not safe enough to sell."
       },
       {
+        "id": "Submitted",
+        "text": "{lab} filed {ref} for release review ({amount} sectors)."
+      },
+      {
         "id": "Hired",
         "text": "{lab} hired {amount} x {ref}."
       },
@@ -6122,6 +6126,32 @@
       }
     }
   ],
+  "releaseReview": {
+    "opensYear": 2017,
+    "baseSlotsPerMonth": 1,
+    "slotsPerSafetyStaff": 1,
+    "maxSlotsPerMonth": 4,
+    "sandbagSendBackGapPermille": 80,
+    "minAlignmentStrictSector": 450,
+    "maxRevisionRounds": 3,
+    "backlogReputationPenalty": 6,
+    "maxBacklogBeforePenalty": 2,
+    "rejectedReputationPenalty": 12,
+    "appealCashCost": 80000,
+    "appealSuccessPermille": 550,
+    "appealFailReputationPenalty": 20,
+    "expediteCashCost": 30000,
+    "strictSectorIds": [
+      "customer-support",
+      "legal-research",
+      "enterprise-knowledge",
+      "government-services",
+      "coding-agents",
+      "cybersecurity",
+      "finance-trading",
+      "science-medicine"
+    ]
+  },
   "autopilot": {
     "shadyAppetite": 0,
     "startDelayWeeks": 0,

@@ -55,6 +55,7 @@ namespace AiLabs.Rules.Config
         public ShadyConfig Shady;
         public ExpansionsConfig Expansions;
         public RoomProgramsConfig RoomPrograms = new RoomProgramsConfig();
+        public ReleaseReviewConfig ReleaseReview = new ReleaseReviewConfig();
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -88,6 +89,7 @@ namespace AiLabs.Rules.Config
             s.Obj("shady", ref Shady);
             s.Obj("expansions", ref Expansions);
             s.Obj("roomPrograms", ref RoomPrograms);
+            s.Obj("releaseReview", ref ReleaseReview);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);

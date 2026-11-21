@@ -22,7 +22,8 @@ namespace AiLabs.Rules.Sim
         PayPeerLeaseArrears, BuyPowerHedge, BreakReservedContract, DiscloseModelAlignment, PauseChipListing, AdvocateVendor,
         AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice,
         FundLobbyDefense, ExtendGrantRunway, RequestDebtForbearance,
-        ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach
+        ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach,
+        SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview
     }
 
     /// <summary>
@@ -596,6 +597,44 @@ namespace AiLabs.Rules.Sim
         public static Command PauseCloudRoyalties(int labId) { return Make(CommandKind.PauseCloudRoyalties, labId); }
 
         public static Command FundProtestOutreach(int labId) { return Make(CommandKind.FundProtestOutreach, labId); }
+
+        public static Command SubmitReleaseReview(int labId, int modelId, int claimedAlignmentPermille, params string[] sectorIds)
+        {
+            Command c = Make(CommandKind.SubmitReleaseReview, labId);
+            c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
+            if (sectorIds != null) for (int i = 0; i < sectorIds.Length; i++) c.Ids.Add(sectorIds[i]);
+            return c;
+        }
+
+        public static Command ReviseReleaseReview(int labId, int modelId, int claimedAlignmentPermille)
+        {
+            Command c = Make(CommandKind.ReviseReleaseReview, labId);
+            c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
+            return c;
+        }
+
+        public static Command AppealReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AppealReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command WithdrawReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command ExpediteReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ExpediteReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
     }
 
     public enum CommandError
@@ -616,7 +655,9 @@ namespace AiLabs.Rules.Sim
         DistillTargetRequired,
         PlayerOnlyDataSource,
         TechForkBlocked, PatentBlocked, NotPatentable, PatentAlreadyFiled,
-        KeynoteAmbush
+        KeynoteAmbush,
+        ReleaseReviewRequired,
+        ReleaseReviewNotReady
     }
 
     public struct CommandResult

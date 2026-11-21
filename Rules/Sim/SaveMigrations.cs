@@ -44,6 +44,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 27) MigrateTo27(root);
             if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
+            if (fromSchema < 30) MigrateTo30(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -424,6 +425,11 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "debtForbearanceUntilTick", JsonValue.Of(-1));
                 JsonPatch.AddIfMissing(lab, "protestMitigationUntilTick", JsonValue.Of(-1));
             });
+        }
+
+        static void MigrateTo30(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "releaseReviews", JsonValue.Array()));
         }
 
         /// <summary>Schema 19: research fork blocks and patents on labs.</summary>

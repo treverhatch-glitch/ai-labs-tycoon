@@ -540,9 +540,29 @@ namespace AiLabs.Rules.Systems
                     if (sectorState.ChampionLabId >= 0 && sectorState.ChampionLabId != lab.Id) rivalWon++;
                 }
                 if (sectors.Count > 0)
+                {
+                    if (lab.Id == state.PlayerLabId
+                        && ReleaseReviewSystem.NeedsReviewBeforeRelease(c, state, lab, model, sectors, 0))
+                    {
+                        int claimed = ReleaseReviewSystem.EffectiveClaimedPermille(c, model, 0);
+                        if (ReleaseReviewSystem.FindApproved(lab, model.Id, sectors, claimed) == null)
+                        {
+                            if (ReleaseReviewSystem.HasOpenCase(lab, model.Id))
+                            {
+                                Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
+                                    Reason.Of(ReasonCode.ReleaseGate, claimed));
+                                continue;
+                            }
+                            Decide(x, Command.SubmitReleaseReview(lab.Id, model.Id, claimed, sectors.ToArray()),
+                                DecisionAction.Submitted, model.Name, sectors.Count,
+                                Reason.Of(ReasonCode.ReleaseGate, claimed));
+                            continue;
+                        }
+                    }
                     Decide(x, Command.ReleaseModel(lab.Id, model.Id, sectors.ToArray()), DecisionAction.Released, model.Name, sectors.Count,
                         Reason.Of(ReasonCode.RivalBestCapability, RivalSystem.BestOtherCapability(state, lab)),
                         Reason.Of(ReasonCode.RivalWonBracket, rivalWon));
+                }
             }
         }
 

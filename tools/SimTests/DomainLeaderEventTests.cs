@@ -112,7 +112,7 @@ public class DomainLeaderEventTests
         ExpansionTestSupport.AddReleasedModel(g, 28_000, "code-completion");
         g.State.Schema = 20;
         var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Empty(loaded.State.DomainLeaders);
         CapabilityDomainSystem.RunWeek(loaded.C, loaded.State);
         Assert.Contains(loaded.State.Events, e => e.Kind == EventKind.DomainLeaderChanged);

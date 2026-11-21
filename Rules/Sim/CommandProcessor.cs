@@ -106,6 +106,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ReserveGreyPayout: return ReserveGreyPayout(c, state, lab, cmd);
                 case CommandKind.PauseCloudRoyalties: return PauseCloudRoyalties(c, state, lab, cmd);
                 case CommandKind.FundProtestOutreach: return FundProtestOutreach(c, state, lab, cmd);
+                case CommandKind.SubmitReleaseReview: return SubmitReleaseReview(c, state, lab, cmd);
+                case CommandKind.ReviseReleaseReview: return ReviseReleaseReview(c, state, lab, cmd);
+                case CommandKind.AppealReleaseReview: return AppealReleaseReview(c, state, lab, cmd);
+                case CommandKind.WithdrawReleaseReview: return WithdrawReleaseReview(c, state, lab, cmd);
+                case CommandKind.ExpediteReleaseReview: return ExpediteReleaseReview(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -327,6 +332,15 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
 
+            int claimedPermille = ReleaseReviewSystem.EffectiveClaimedPermille(c, model, cmd.Permille);
+            ReleaseReviewCase reviewApproval = null;
+            if (ReleaseReviewSystem.NeedsReviewBeforeRelease(c, state, lab, model, cmd.Ids, cmd.Permille))
+            {
+                reviewApproval = ReleaseReviewSystem.FindApproved(lab, model.Id, cmd.Ids, claimedPermille);
+                if (reviewApproval == null)
+                    return Fail(CommandError.ReleaseReviewRequired, model.Name + " needs an approved review package before it can go on sale.");
+            }
+
             for (int i = 0; i < cmd.Ids.Count; i++)
             {
                 SectorConfig sector = c.Sector(cmd.Ids[i]);
@@ -362,6 +376,7 @@ namespace AiLabs.Rules.Sim
                 if (!model.Sectors.Contains(sectorState.Id)) model.Sectors.Add(sectorState.Id);
             }
 
+            if (reviewApproval != null) ReleaseReviewSystem.ConsumeApproval(lab, reviewApproval);
             if (model.Status != ModelStatus.Released)
             {
                 model.Status = ModelStatus.Released;

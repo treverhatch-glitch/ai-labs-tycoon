@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 29;
+        public const int CurrentSchema = 30;
 
         public int Schema;
         public string ConfigVersion;
@@ -219,6 +219,8 @@ namespace AiLabs.Rules.State
         public int DebtForbearanceUntilTick = -1;
         /// <summary>Protest headlines add less attention until this tick (Q190).</summary>
         public int ProtestMitigationUntilTick = -1;
+        /// <summary>Monthly release review packages (player API-era gate).</summary>
+        public List<ReleaseReviewCase> ReleaseReviews = new List<ReleaseReviewCase>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -338,6 +340,7 @@ namespace AiLabs.Rules.State
             s.Int("lobbyDefenseUntilTick", ref LobbyDefenseUntilTick);
             s.Int("debtForbearanceUntilTick", ref DebtForbearanceUntilTick);
             s.Int("protestMitigationUntilTick", ref ProtestMitigationUntilTick);
+            s.ObjList("releaseReviews", ref ReleaseReviews);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

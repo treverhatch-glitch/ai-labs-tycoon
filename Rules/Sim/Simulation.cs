@@ -113,6 +113,9 @@ namespace AiLabs.Rules.Sim
 
             if (GameDate.IsMonthStart(c.Calendar, tick))
             {
+                LabState playerAtMonth = state.Player;
+                if (playerAtMonth != null && !playerAtMonth.Bankrupt)
+                    ReleaseReviewSystem.RunMonth(c, state, playerAtMonth);
                 RivalSystem.RunMonth(c, state);
                 VendorSystem.RunMonth(c, state);
                 ChipSystem.RunMonth(c, state);

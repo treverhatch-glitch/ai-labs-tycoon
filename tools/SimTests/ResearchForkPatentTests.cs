@@ -139,7 +139,7 @@ public class ResearchForkPatentTests
         Game g = Game.Solo();
         string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":18");
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.NotNull(loaded.Me.BlockedTechs);
         Assert.NotNull(loaded.Me.Patents);
     }
@@ -147,7 +147,7 @@ public class ResearchForkPatentTests
     [Fact]
     public void Schema_22_on_new_game()
     {
-        Assert.Equal(29, Game.Solo().State.Schema);
+        Assert.Equal(GameState.CurrentSchema, Game.Solo().State.Schema);
     }
 
     [Fact]

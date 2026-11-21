@@ -323,7 +323,7 @@ public class TrainingFailureTests
         Game loaded = new Game(Simulation.Load(g.C, json));
         ModelState again = loaded.Me.Model(model.Id);
         Assert.Equal(ModelStatus.Failed, again.Status);
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
     }
 
     [Fact]
@@ -332,7 +332,7 @@ public class TrainingFailureTests
         Game g = Game.Solo();
         string json = g.Sim.Save().Replace("\"schema\":25", "\"schema\":16");
         Game loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
     }
 
     [Fact]

@@ -233,6 +233,7 @@ namespace AiLabs.Rules.Config
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
             FundingProblems(p, c);
+            ReleaseReviewProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
@@ -807,6 +808,21 @@ namespace AiLabs.Rules.Config
                 Permille(p, "trait " + s.Traits[i].Id + " researchPermille", s.Traits[i].ResearchPermille);
             }
             if (!hasStar) p.Add("staffPeople.traits needs one star trait");
+        }
+
+        static void ReleaseReviewProblems(List<string> p, GameConfig c)
+        {
+            ReleaseReviewConfig r = c.ReleaseReview;
+            if (r == null) { p.Add("releaseReview is missing"); return; }
+            if (r.OpensYear < c.Calendar.StartYear) p.Add("releaseReview.opensYear is before the calendar start");
+            if (r.BaseSlotsPerMonth < 0) p.Add("releaseReview.baseSlotsPerMonth is negative");
+            if (r.MaxSlotsPerMonth < 1) p.Add("releaseReview.maxSlotsPerMonth must be at least 1");
+            if (r.SandbagSendBackGapPermille < 1) p.Add("releaseReview.sandbagSendBackGapPermille must be at least 1");
+            Permille(p, "releaseReview.minAlignmentStrictSector", r.MinAlignmentStrictSector);
+            if (r.MaxRevisionRounds < 0) p.Add("releaseReview.maxRevisionRounds is negative");
+            if (r.StrictSectorIds.Count < 1) p.Add("releaseReview.strictSectorIds is empty");
+            for (int i = 0; i < r.StrictSectorIds.Count; i++)
+                if (c.Sector(r.StrictSectorIds[i]) == null) p.Add("releaseReview.strictSectorIds names unknown sector \"" + r.StrictSectorIds[i] + "\"");
         }
 
         static void FundingProblems(List<string> p, GameConfig c)

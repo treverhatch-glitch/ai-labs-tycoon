@@ -541,6 +541,38 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Hatch: rules-side `HirePolicyConsultant` removed — **era** owns timed bonus policy staff for hearings/investigations and must cap with compliance office if offered.
 
 ### Q184. Q180 vs era chip loans (PR #13)? DECIDED: keep both — different debt products
+
+### Q200. Release review scope? DECIDED: player-only; strict sectors + sandbag
+- Options: (a) every player release; (b) strict sectors or inflated alignment claim only; (c) only when `boardInvestorSeats > 0`.
+- Choice: **(b)** — `releaseReview.strictSectorIds` and claimed alignment above true; rivals and honest consumer releases unchanged.
+
+### Q201. Review cadence? DECIDED: monthly slots at month start
+- Options: (a) instant on submit; (b) monthly queue with safety-staff slots; (c) weekly drip.
+- Choice: **(b)** — `ReleaseReviewSystem.RunMonth` on month start; backlog reputation penalty.
+
+### Q202. Sandbag send-back vs hard reject? DECIDED: send-back until `maxRevisionRounds`
+- Options: (a) always reject; (b) `NeedsRevision` with revise/appeal; (c) auto-trim claim.
+- Choice: **(b)** — gap ≥ `sandbagSendBackGapPermille`; appeals on `Safety` RNG.
+
+### Q203. ReleaseModel gate? DECIDED: consume matching approved package
+- Options: (a) binary flag per model; (b) exact sector list + claimed alignment match; (c) token per sector.
+- Choice: **(b)** — approval removed on successful release.
+
+### Q204. Strict-sector fail? DECIDED: reject + `incidentsThisMonth`
+- Options: (a) reputation only; (b) reputation + government attention increment; (c) freeze exports.
+- Choice: **(b)** — ties into existing monthly attention close.
+
+### Q205. Autopilot? DECIDED: submit then hold until approved
+- Options: (a) bypass review for autopilot; (b) `SubmitReleaseReview` + hold; (c) auto-revise.
+- Choice: **(b)** — `LabPlanner.Release` mirrors player gate.
+
+### Q206. Q193–Q198 timed world programs? DECIDED: **dropped** (knob-drift template)
+- Hatch HOLD: do not ship pay-cash-until-tick modifiers; unpushed squash reverted from `2b71f88` base.
+
+### Q207. Release review vs era ethics board (PR #19 / Q320)? DECIDED: stacked gates, one approval each
+- Options: (a) merge into one board UI; (b) review substitutes for ethics veto when approved; (c) serial gates, independent approvals.
+- Choice: **(c)** — ethics veto + rush block stay instant/opt-in at `ReleaseModel`/`RushRelease` (era); review stays monthly/mandatory for strict sectors and sandbag **claims** (rules). Order: culture gate → ethics veto → era bar → **consume review approval** → sectors (`docs/release-review.md`). Review reject penalties do not stack with a later ethics refusal; approval is not consumed until `ReleaseModel` succeeds.
+- Near-duplicate? **No** — ethics is true-alignment veto + anti-rush; review is sector/claim package clearance.
 - **Rules-side (Q180):** unsecured research bridge — `TakeResearchLoan` grants cash + RP, single `researchLoanBalance`, flat `loanWeeklyPayment` on **Fines** line (schema **27**).
 - **Era (`origin/cursor/offsite-af2f`, `Loans.cs` / Q278–Q280, schema ~41):** collateralised **chip fleet** loans — `TakeLoan`/`RepayLoan`, `lab.Loans[]`, LTV on resale collateral, term amortisation, miss penalties in `Finance.RunWeek`.
 - **Fork:** do not fold Q180 into chip loans; research bridge is RP/cash pacing, chip loans are hardware leverage.
