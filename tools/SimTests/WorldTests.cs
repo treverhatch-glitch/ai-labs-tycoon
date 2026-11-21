@@ -33,7 +33,7 @@ public class WorldTests
     }
 
     /// <summary>The player and one rival, both with plenty of cash.</summary>
-    static Game Duo(Action<GameConfig> tweak = null)
+    public static Game Duo(Action<GameConfig> tweak = null)
     {
         var options = new NewGameOptions { Seed = 1, RivalIds = new List<string> { "openaye" } };
         GameConfig c = TestData.Config(cfg =>
