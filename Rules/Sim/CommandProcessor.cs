@@ -67,6 +67,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SellModel: return SellModel(c, state, lab, cmd);
                 case CommandKind.CounterPoach: return CounterPoach(c, state, lab, cmd);
                 case CommandKind.PoachStaff: return PoachStaff(c, state, lab, cmd);
+                case CommandKind.AnswerPress: return AnswerPress(c, state, lab, cmd);
+                case CommandKind.LeakStory: return LeakStory(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -369,6 +371,7 @@ namespace AiLabs.Rules.Sim
             {
                 model.Status = ModelStatus.Released;
                 model.ReleasedTick = state.Tick;
+                PressSystem.OnLaunch(c, state, lab, model);
                 if (cmd.Permille > 0)
                     model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
                 else if (model.DisplayedAlignment < model.Alignment)

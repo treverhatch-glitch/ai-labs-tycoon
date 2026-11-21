@@ -16,7 +16,8 @@ namespace AiLabs.Rules.Sim
         SignReservedCompute, QueueGpuPurchase,
         AcceptChinaDeal, DeclineChinaDeal,
         AcquireLab, SellModel,
-        CounterPoach, PoachStaff
+        CounterPoach, PoachStaff,
+        AnswerPress, LeakStory
     }
 
     /// <summary>
@@ -377,6 +378,23 @@ namespace AiLabs.Rules.Sim
             c.Id = roleId;
             return c;
         }
+
+        /// <summary>Answers a journalist's question (<paramref name="inquiryId"/>) with a response from <c>press.responses</c>.</summary>
+        public static Command AnswerPress(int labId, int inquiryId, string responseId)
+        {
+            Command c = Make(CommandKind.AnswerPress, labId);
+            c.TargetId = inquiryId;
+            c.Id = responseId;
+            return c;
+        }
+
+        /// <summary>Leaks a rival's recent incident to the press.</summary>
+        public static Command LeakStory(int labId, int rivalLabId)
+        {
+            Command c = Make(CommandKind.LeakStory, labId);
+            c.TargetId = rivalLabId;
+            return c;
+        }
     }
 
     public enum CommandError
@@ -393,7 +411,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone
+        BelowEraSafetyBar, OfferGone, InquiryGone
     }
 
     public struct CommandResult

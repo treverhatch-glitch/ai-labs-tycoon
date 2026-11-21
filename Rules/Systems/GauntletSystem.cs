@@ -67,6 +67,7 @@ namespace AiLabs.Rules.Systems
                 record.CrownModelId = crown[0].ModelId;
                 AddReputation(state.Lab(record.CrownLabId), c.Gauntlet.CrownReputation);
                 Events.Add(state, EventKind.GauntletCrown, record.CrownLabId, record.CrownModelId, crown[0].Score, crown[0].ModelName);
+                PressSystem.OnBeat(c, state, state.Lab(record.CrownLabId), "crown", c.Gauntlet.CrownReputation, crown[0].ModelName);
                 int runnerUp = crown.Count > 1 ? crown[1].LabId : -1;
                 if (state.PlayerLabId >= 0)
                 {

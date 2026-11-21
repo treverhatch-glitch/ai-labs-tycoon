@@ -8,7 +8,7 @@ namespace AiLabs.Rules.Config
 
     public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy, ChipDesign }
 
-    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest }
+    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest, Press }
 
     public enum TechEffectKind
     {
@@ -60,6 +60,8 @@ namespace AiLabs.Rules.Config
         public StaffPeopleConfig StaffPeople;
         /// <summary>The talent market: offers, counters and poaching back.</summary>
         public TalentConfig Talent = new TalentConfig();
+        /// <summary>The press: journalists, beats, answers and leaks.</summary>
+        public PressConfig Press = new PressConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -101,6 +103,7 @@ namespace AiLabs.Rules.Config
             s.Obj("regulators", ref Regulators);
             s.Obj("staffPeople", ref StaffPeople);
             s.Obj("talent", ref Talent);
+            s.Obj("press", ref Press);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

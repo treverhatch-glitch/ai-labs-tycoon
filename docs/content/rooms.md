@@ -59,6 +59,7 @@ New roles do the work of one of the functions (Research, Engineering, Safety, Sa
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `gpu-hall` | GPU Hall | Compute | - | - | 4 | 4 x 4 | $1.4k | $36 |
 | `data-team-room` | Data Team Room | Engineering | `data-engineer` | 4 | - | 3 x 3 | $700 | $12 |
+| `press-room` | Press Room | Press | - | - | - | 3 x 3 | $600 | $12 |
 
 ### It Sees (2012)
 
@@ -83,6 +84,7 @@ Both chip rooms also need the tech `chip-team`, whatever the year (the room type
 | Id | Name | Purpose | Seats | Tiles/seat | GPU slots/tile | Min size | Build/tile | Upkeep/tile/week |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `product-studio` | Product Studio | Sales | `product-lead` | 4 | - | 4 x 3 | $1k | $16 |
+| `auditorium` | Auditorium | Press | - | - | - | 5 x 4 | $1.5k | $30 |
 | `liquid-cooling-pod` | Liquid-Cooling Pod | Compute | - | - | 16 | 4 x 4 | $4.2k | $100 |
 
 ### Agents (2024)

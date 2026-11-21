@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 899 tests pass (schemas 19–23: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 23. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 949 tests pass (schemas 19–25: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 25. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -105,9 +105,11 @@ and says why in the commit message.
     apart in `ChanceParts`), or lets the person go; stars cost twice the package; `PoachStaff` raids a rival's people for a fee
     ([content/talent-market.md](content/talent-market.md)). Planners and the autopilot never answer, so autopilot labs lose people late.
     Still open: the offers and counters screen (Unity) and a suggestion that prompts the player.
-16. **The press and reputation (bible ch. 14, the press room).** A press room, journalists and news beats: launches, incidents,
-    leaks and hearings change reputation in ways the lab can steer, and the press room dampens a scandal and sharpens a launch.
-    Not started.
+16. ~~**The press and reputation (bible ch. 14, the press room).**~~ Done (Q145 to Q149, save schema **25**): a `press-room` (The Punchline) and
+    an `auditorium` (The Chat Boom) dampen scandal and sharpen launches; three journalists ask about four beats (launch, incident, hearing,
+    crown); the player answers with `honest`, `spin` or `exclusive` or lets the question lapse; `LeakStory` turns the press on a rival
+    ([content/press.md](content/press.md)). Planners, autopilot and rivals do not use it. Still open: the press desk screen (Unity),
+    rivals that leak at the player.
 
 ## Rules: later
 

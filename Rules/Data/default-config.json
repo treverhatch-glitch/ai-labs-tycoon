@@ -1247,6 +1247,20 @@
       "upkeepPerTileWeek": 12
     },
     {
+      "id": "press-room",
+      "era": "punchline",
+      "requiresTech": "",
+      "name": "Press Room",
+      "purpose": "Press",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 3,
+      "minHeight": 3,
+      "buildCostPerTile": 600,
+      "upkeepPerTileWeek": 12
+    },
+    {
       "id": "research-floor",
       "era": "it-sees",
       "requiresTech": "",
@@ -1315,6 +1329,20 @@
       "minHeight": 3,
       "buildCostPerTile": 1000,
       "upkeepPerTileWeek": 16
+    },
+    {
+      "id": "auditorium",
+      "era": "chat-boom",
+      "requiresTech": "",
+      "name": "Auditorium",
+      "purpose": "Press",
+      "seatsRole": "",
+      "tilesPerSeat": 0,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 5,
+      "minHeight": 4,
+      "buildCostPerTile": 1500,
+      "upkeepPerTileWeek": 30
     },
     {
       "id": "liquid-cooling-pod",
@@ -1530,6 +1558,42 @@
         "devices"
       ],
       "blurb": "Every tile of robotics arena makes the lab's robots and devices 0.3% more appealing, up to 25%."
+    },
+    {
+      "id": "press-room-damping",
+      "roomId": "press-room",
+      "kind": "ScandalDamping",
+      "perTilePermille": 10,
+      "capPermille": 300,
+      "sectors": [],
+      "blurb": "Every tile of press room takes 1% off every reputation a scandal costs, up to 30%, and helps your answers to journalists."
+    },
+    {
+      "id": "press-room-buzz",
+      "roomId": "press-room",
+      "kind": "LaunchBuzz",
+      "perTilePermille": 12,
+      "capPermille": 400,
+      "sectors": [],
+      "blurb": "Every tile of press room adds 1.2% of the launch buzz a model going on sale earns, up to 40%."
+    },
+    {
+      "id": "auditorium-damping",
+      "roomId": "auditorium",
+      "kind": "ScandalDamping",
+      "perTilePermille": 8,
+      "capPermille": 300,
+      "sectors": [],
+      "blurb": "Every tile of auditorium takes 0.8% off every reputation a scandal costs, up to 30%."
+    },
+    {
+      "id": "auditorium-buzz",
+      "roomId": "auditorium",
+      "kind": "LaunchBuzz",
+      "perTilePermille": 15,
+      "capPermille": 600,
+      "sectors": [],
+      "blurb": "Every tile of auditorium adds 1.5% of the launch buzz, up to 60%: a keynote stage sells a launch."
     }
   ],
   "founders": [
@@ -4516,6 +4580,117 @@
         "moraleSlopePermille": 500,
         "reputationSlopePermille": 500,
         "moraleGain": 30
+      }
+    ]
+  },
+  "press": {
+    "inquiryWeeks": 3,
+    "maxOpenInquiries": 3,
+    "launchBuzzPoints": 120,
+    "maxDampingPermille": 600,
+    "maxBuzzPermille": 1000,
+    "minSuccessPermille": 50,
+    "leakWindowWeeks": 26,
+    "leakFeeHireFees": 20,
+    "leakBaseSuccessPermille": 450,
+    "leakReputationSlopePermille": 300,
+    "leakRoomSlopePermille": 500,
+    "leakHitPoints": 70,
+    "leakBackfirePoints": 40,
+    "leakFeelingHit": 120,
+    "leakFailFeelingHit": 40,
+    "beats": [
+      {
+        "id": "launch",
+        "name": "A launch",
+        "good": true,
+        "stakePoints": 40,
+        "blurb": "A model goes on sale and a journalist wants a line for the launch piece."
+      },
+      {
+        "id": "crown",
+        "name": "The Gauntlet crown",
+        "good": true,
+        "stakePoints": 0,
+        "blurb": "The lab wins the televised tournament and gets the profile treatment."
+      },
+      {
+        "id": "incident",
+        "name": "An incident",
+        "good": false,
+        "stakePoints": 0,
+        "blurb": "A model did something it should not have and the story is out."
+      },
+      {
+        "id": "hearing",
+        "name": "A hearing",
+        "good": false,
+        "stakePoints": 0,
+        "blurb": "A government calls the lab in and a journalist is waiting on the steps."
+      }
+    ],
+    "journalists": [
+      {
+        "id": "nell-hype",
+        "name": "Nell Hype",
+        "outlet": "The Daily Parameter",
+        "beats": ["incident", "hearing", "launch"],
+        "chancePermille": -100,
+        "backfirePermille": 1500,
+        "blurb": "Tabloid. Loves a scandal and a superlative, and a gaffe in her paper is a big one."
+      },
+      {
+        "id": "ravi-benchmark",
+        "name": "Ravi Benchmark",
+        "outlet": "Token & Tonic",
+        "beats": ["launch", "crown"],
+        "chancePermille": 100,
+        "backfirePermille": 800,
+        "blurb": "Trade press. Friendly to labs that ship, and forgiving when they trip."
+      },
+      {
+        "id": "ada-fine-print",
+        "name": "Ada Fine-Print",
+        "outlet": "The Regulator's Ledger",
+        "beats": ["incident", "hearing", "crown"],
+        "chancePermille": 0,
+        "backfirePermille": 1000,
+        "blurb": "Reads the footnotes. Fair, thorough and hard to charm."
+      }
+    ],
+    "responses": [
+      {
+        "id": "honest",
+        "name": "Tell the truth",
+        "blurb": "Free and always lands, but wins back only a little.",
+        "costHireFees": 0,
+        "baseSuccessPermille": 1000,
+        "roomSlopePermille": 0,
+        "reputationSlopePermille": 0,
+        "recoverPermille": 250,
+        "backfirePermille": 0
+      },
+      {
+        "id": "spin",
+        "name": "Spin it",
+        "blurb": "A prepared line from the comms team: wins most of the stake if the journalist buys it, costs a share of it if not. A press room helps a lot.",
+        "costHireFees": 6,
+        "baseSuccessPermille": 450,
+        "roomSlopePermille": 1000,
+        "reputationSlopePermille": 300,
+        "recoverPermille": 700,
+        "backfirePermille": 600
+      },
+      {
+        "id": "exclusive",
+        "name": "Offer an exclusive",
+        "blurb": "Dear, but journalists like being first: a good chance and a mild downside.",
+        "costHireFees": 15,
+        "baseSuccessPermille": 750,
+        "roomSlopePermille": 500,
+        "reputationSlopePermille": 200,
+        "recoverPermille": 600,
+        "backfirePermille": 150
       }
     ]
   },

@@ -74,7 +74,7 @@ Opens: Neural nets on gaming cards; Big labelled datasets; The first GPU halls a
 
 - Techs: `big-datasets`, `backprop-tricks`, `gpu-clusters`, `digit-readers`, `layerwise-pretraining`, `cloud-credits`
 - Sectors: `doc-reading`, `fraud-detection`
-- Rooms: `gpu-hall`, `data-team-room`
+- Rooms: `gpu-hall`, `data-team-room`, `press-room`
 
 ## It Sees (2012)
 
@@ -110,7 +110,7 @@ Opens: Human-feedback tuning and a chat box; Image, voice and video models; Liqu
 
 - Techs: `rlhf`, `chat-interface`, `multimodal`, `retrieval`, `diffusion`, `early-video`, `quantised-serving`, `liquid-cooling`, `red-teaming`, `compiler-stack-2`, `stacked-hbm`, `reticle-dies`
 - Sectors: `consumer-assistant`, `image-design`, `customer-support`, `legal-research`, `music-audio`, `video-film`
-- Rooms: `product-studio`, `liquid-cooling-pod`
+- Rooms: `product-studio`, `auditorium`, `liquid-cooling-pod`
 
 ## Agents (2024)
 

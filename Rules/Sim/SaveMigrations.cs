@@ -38,6 +38,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 25) MigrateTo25(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -342,6 +343,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo23(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
+        }
+
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        static void MigrateTo25(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

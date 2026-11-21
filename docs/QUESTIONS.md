@@ -874,6 +874,36 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. A lab on autopilot loses its poached people a few weeks late.
 - Why: answering is the player's decision, and the planner code is shared with other threads. The suggestions system can add a prompt later without touching the rules.
 
+### Q145. What do press rooms do, and are they new rooms? DECIDED: two new stateless rooms, the press room and the auditorium, that dampen scandal and sharpen launches
+
+- Options: (a) a press role that staffs a comms desk; (b) rooms with perks like the later rooms (Q134 to Q136); (c) a flat "PR budget" setting.
+- Recommendation and choice: **(b)**. The bible lists the press room (launches, crisis comms, keynotes) and "room → auditorium", but the config had neither. `press-room` opens in The Punchline and `auditorium` in The Chat Boom, both without seats (new room purpose `Press`). Two room-perk kinds: `ScandalDamping` (a share off every reputation loss from an incident or hearing) and `LaunchBuzz` (a share of 120 reputation points when a model first goes on sale). Together they are capped (60% and 100%).
+- Why: it is the same derived-perk pattern as the other rooms, so nothing about rooms is saved and a sold room stops helping at once. A press role would need a seat, a planner and hiring balance for one effect.
+
+### Q146. What do journalists do, and what happens if the player ignores them? DECIDED: they ask about beats, and an unanswered question just lapses
+
+- Options: (a) an ignored question runs a bad story (a reputation cost); (b) an ignored question lapses with no effect, so only answering changes anything.
+- Recommendation and choice: **(b)**. Four beats (a launch, an incident, a hearing, the Gauntlet crown) bring one of three journalists to the player's desk for 3 weeks, up to 3 questions at a time. The stake is the reputation at play (40 for a launch, what the beat cost or paid otherwise). Open questions are saved on the lab (`pressInquiries`, save schema **25**; 24 is left to another thread).
+- Why: with (b) a lab on autopilot plays as before (the golden run moves only by the new field and the new "journalist asked" events), and the new system is all opportunity. (a) would tax every existing game and rebalance the soak.
+
+### Q147. How does the player answer? DECIDED: three answers priced in sales fees, each a chance of winning a share of the stake or losing a share of it
+
+- Options: (a) one "issue a statement" button; (b) three answers with a cost, a chance and a downside; (c) a free-text negotiation.
+- Recommendation and choice: **(b)**. `honest` is free, always lands and wins back 25%. `spin` costs 6 sales fees, starts at 45%, and a press room's damping raises its chance one for one; it wins 70% and loses 60% on failure. `exclusive` costs 15 fees, starts at 75% and wins 60% for a 15% downside. The journalist adds to the chance (the trade writer +10%, the tabloid -10%) and scales a gaffe (the tabloid 150%). The chance is split into parts so a screen can explain it. Money is booked under the Hiring ledger line (another line would be another schema) and the dice are the existing `Rivals` stream (a new stream would move the saved state of every game).
+- Why: honest is the safe floor, spin is a bet the press room turns into a sure thing, and the exclusive is the dear safe option for a lab without one: three useful choices.
+
+### Q148. Can the player turn the press on a rival? DECIDED: yes, a leak, for a rival with a recent incident, with a backfire
+
+- Options: (a) no; (b) `LeakStory` on a rival that had an incident in the last 26 weeks, for a fee, with a chance and a traced-back cost.
+- Recommendation and choice: **(b)**, because the bible names it ("leak its problems to the press"). It costs 20 sales fees win or lose, starts at 45% (damping and reputation help), and if it runs the rival loses 70 reputation (less its own press rooms) and 12 feeling toward the player; if it is traced the player loses 40 reputation (less the player's damping) and the rival 4 feeling.
+- Why: it is the press version of poaching back (Q143): a cheap shot at a rival that already stumbled, with a price for being caught.
+
+### Q149. Do the planners, the autopilot and the rivals use the press? DECIDED: no
+
+- Options: (a) planners answer journalists and rivals leak; (b) neither.
+- Recommendation and choice: **(b)**. No planner or rival code was touched. Rivals do not build press rooms, answer or leak, so a rival's launch earns no buzz.
+- Why: the planner code is shared with other threads, and a rival leaking at the player needs a rivalry design of its own (rivals own Q150 and up). The save format would not change.
+
 ## Open
 
 None.

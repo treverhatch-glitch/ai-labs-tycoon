@@ -133,6 +133,33 @@ namespace AiLabs.Rules.Sim
                             ? who + " hired a " + what + " away from " + (target == null ? "a rival" : target.Name) + " for $" + e.Amount + ". The announcement was posted from the stage."
                             : who + " tried to hire a " + what + " away from " + (target == null ? "a rival" : target.Name) + " and only paid the headhunter ($" + e.Amount + ").";
                     }
+                case EventKind.PressInquiry:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        BeatConfig beat = c.Press.Beat(bits[0]);
+                        JournalistConfig journalist = bits.Length > 1 ? c.Press.Journalist(bits[1]) : null;
+                        string what = bits.Length > 2 && bits[2].Length > 0 ? " about " + bits[2] : "";
+                        return (journalist == null ? "A journalist" : journalist.Name + " of " + journalist.Outlet) + " asked " + who + " for a line" + what + " (" + (beat == null ? bits[0] : beat.Name.ToLowerInvariant()) + ", " + e.Amount + " reputation at stake).";
+                    }
+                case EventKind.PressAnswered:
+                    {
+                        string[] bits = e.Ref.Split('|');
+                        PressResponseConfig response = c.Press.Response(bits[0]);
+                        string how = response == null ? bits[0] : response.Name.ToLowerInvariant();
+                        return e.Pick == 1
+                            ? who + " answered the press (" + how + ") and it landed: reputation " + (e.Amount >= 0 ? "+" : "") + e.Amount + "."
+                            : who + " answered the press (" + how + ") and it backfired: reputation " + e.Amount + ".";
+                    }
+                case EventKind.StoryLeaked:
+                    {
+                        LabState target = state.Lab(e.SubjectId);
+                        string rival = target == null ? "a rival" : target.Name;
+                        string about = string.IsNullOrEmpty(e.Ref) ? "its problems" : "the trouble with " + e.Ref;
+                        return e.Pick == 1
+                            ? who + " leaked " + about + " at " + rival + ". It ran on the front page: " + rival + " lost " + e.Amount + " reputation."
+                            : who + " tried to leak " + about + " at " + rival + " and was traced: " + who + " lost " + e.Amount + " reputation.";
+                    }
+                case EventKind.LaunchBuzz: return who + "'s launch of " + e.Ref + " drew a crowd to the press room: reputation +" + e.Amount + ".";
                 case EventKind.GpuQueueStalled:
                     return who + "'s queued GPU purchase (" + e.Amount + " units) stalled: " + e.Ref + ".";
                 case EventKind.FastBuild: return who + " built a data centre at " + c.World.Site(e.Ref).Name + " over a weekend. Mostly.";

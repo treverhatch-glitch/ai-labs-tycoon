@@ -119,6 +119,10 @@ Poaching is a market ([content/talent-market.md](content/talent-market.md)): a r
 player counters with money, compute, a title or the mission (each a cost and a chance), or lets the person go, and can raid a
 rival's people in return. Open offers are the only saved part.
 
+The press ([content/press.md](content/press.md)) turns the lab's news into choices: press rooms dampen what a scandal costs and sharpen a
+launch, a journalist asks about each beat (a launch, an incident, a hearing, the crown), the player answers (tell the truth, spin it,
+offer an exclusive) or lets the question lapse, and a lab can leak a rival's recent incident. Open questions are the only saved part.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.
@@ -252,7 +256,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Area | In the slice | The bible's fuller version (see [NEXT.md](NEXT.md)) |
 | --- | --- | --- |
 | Time | Weekly ticks from 1995 (or 2009), endless; nine eras as data (1995 to 2033) | Rules that shift per era, not just costs |
-| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 24 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, press, device workshop) |
+| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 28 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, device workshop) |
 | People | Role pools (17 roles across six functions: research, engineering, safety, sales, infrastructure, policy), each needing a desk in its own room | Named staff with traits, morale and poaching |
 | Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue |
 | World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze). Audit can open a shady investigation | Chip-shortage events, protests |

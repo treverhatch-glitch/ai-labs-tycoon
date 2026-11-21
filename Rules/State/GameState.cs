@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 23;
+        public const int CurrentSchema = 25;
 
         public int Schema;
         public string ConfigVersion;
@@ -156,6 +156,8 @@ namespace AiLabs.Rules.State
         public string FounderId = "";
         /// <summary>Rivals' offers to the player's people that still wait for an answer.</summary>
         public List<PoachOffer> PoachOffers = new List<PoachOffer>();
+        /// <summary>Journalists' questions that still wait for an answer.</summary>
+        public List<PressInquiry> PressInquiries = new List<PressInquiry>();
         /// <summary>How the player chose to be good at the start (a style id), or empty for none.</summary>
         public string StyleId = "";
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
@@ -270,6 +272,7 @@ namespace AiLabs.Rules.State
             s.Int("absorbedByLabId", ref AbsorbedByLabId);
             s.Str("founderId", ref FounderId);
             s.ObjList("poachOffers", ref PoachOffers);
+            s.ObjList("pressInquiries", ref PressInquiries);
             s.Str("styleId", ref StyleId);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);

@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 25) StripPressInquiries(root);
             if (schema < 23) StripPoachOffers(root);
             if (schema < 22) StripFoundingChoices(root);
             if (schema < 21) StripEventRiskClass(root);
@@ -40,6 +41,11 @@ public static class SaveSchemaPretend
         Simulation again = Simulation.Load(sim.Config, json);
         Assert.Empty(SaveGame.Problems(sim.Config, again.State));
         Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripPressInquiries(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "pressInquiries"));
     }
 
     static void StripPoachOffers(JsonValue root)

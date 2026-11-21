@@ -65,6 +65,7 @@ namespace AiLabs.Rules.Config
             RoomPerkProblems(p, c);
             FoundingProblems(p, c);
             TalentProblems(p, c);
+            PressProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -424,6 +425,67 @@ namespace AiLabs.Rules.Config
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
             }
+        }
+
+        static void PressProblems(List<string> p, GameConfig c)
+        {
+            PressConfig t = c.Press;
+            if (t == null) { p.Add("press is missing"); return; }
+            if (t.InquiryWeeks < 1 || t.InquiryWeeks > 52) p.Add("press.inquiryWeeks needs a value from 1 to 52");
+            if (t.MaxOpenInquiries < 1) p.Add("press.maxOpenInquiries needs at least 1");
+            if (t.LaunchBuzzPoints < 0 || t.LaunchBuzzPoints > 500) p.Add("press.launchBuzzPoints needs a value from 0 to 500");
+            if (t.MaxDampingPermille < 0 || t.MaxDampingPermille > 900) p.Add("press.maxDampingPermille needs a value from 0 to 900: no lab is immune to a scandal");
+            if (t.MaxBuzzPermille < 0 || t.MaxBuzzPermille > 2000) p.Add("press.maxBuzzPermille needs a value from 0 to 2000");
+            Permille(p, "press.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("press.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.LeakWindowWeeks < 1) p.Add("press.leakWindowWeeks needs at least 1");
+            if (t.LeakFeeHireFees < 0) p.Add("press.leakFeeHireFees cannot be negative");
+            Permille(p, "press.leakBaseSuccessPermille", t.LeakBaseSuccessPermille);
+            if (t.LeakReputationSlopePermille < -2000 || t.LeakReputationSlopePermille > 2000) p.Add("press.leakReputationSlopePermille needs a value from -2000 to 2000");
+            if (t.LeakRoomSlopePermille < -2000 || t.LeakRoomSlopePermille > 2000) p.Add("press.leakRoomSlopePermille needs a value from -2000 to 2000");
+            if (t.LeakHitPoints < 0 || t.LeakHitPoints > 1000 || t.LeakBackfirePoints < 0 || t.LeakBackfirePoints > 1000) p.Add("press.leakHitPoints and leakBackfirePoints need values from 0 to 1000");
+            if (t.LeakFeelingHit < 0 || t.LeakFailFeelingHit < 0) p.Add("press.leakFeelingHit and leakFailFeelingHit cannot be negative");
+
+            if (t.Beats.Count == 0) p.Add("press.beats is empty");
+            UniqueIds(p, "press.beats", t.Beats);
+            foreach (BeatConfig b in t.Beats)
+            {
+                string who = "beat " + b.Id;
+                if (string.IsNullOrEmpty(b.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(b.Blurb)) p.Add(who + " has no blurb");
+                if (b.StakePoints < 0 || b.StakePoints > 1000) p.Add(who + " needs stakePoints from 0 to 1000");
+                if (!b.Good && b.StakePoints > 0) p.Add(who + " is bad news, whose stake is what it cost, so stakePoints must be 0");
+                bool covered = false;
+                foreach (JournalistConfig j in t.Journalists) if (j.Beats.Contains(b.Id)) covered = true;
+                if (!covered) p.Add(who + " is covered by no journalist, so nobody would ever ask");
+            }
+            if (t.Journalists.Count == 0) p.Add("press.journalists is empty");
+            UniqueIds(p, "press.journalists", t.Journalists);
+            foreach (JournalistConfig j in t.Journalists)
+            {
+                string who = "journalist " + j.Id;
+                if (string.IsNullOrEmpty(j.Name) || string.IsNullOrEmpty(j.Outlet)) p.Add(who + " needs a name and an outlet");
+                if (string.IsNullOrEmpty(j.Blurb)) p.Add(who + " has no blurb");
+                if (j.Beats.Count == 0) p.Add(who + " covers no beat");
+                foreach (string beat in j.Beats) if (t.Beat(beat) == null) p.Add(who + " covers the unknown beat \"" + beat + "\"");
+                if (j.ChancePermille < -900 || j.ChancePermille > 900) p.Add(who + " needs chancePermille from -900 to 900");
+                if (j.BackfirePermille < 0 || j.BackfirePermille > 5000) p.Add(who + " needs backfirePermille from 0 to 5000");
+            }
+            if (t.Responses.Count == 0) p.Add("press.responses is empty: a journalist would have no answer");
+            UniqueIds(p, "press.responses", t.Responses);
+            foreach (PressResponseConfig r in t.Responses)
+            {
+                string who = "press response " + r.Id;
+                if (string.IsNullOrEmpty(r.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(r.Blurb)) p.Add(who + " has no blurb");
+                if (r.CostHireFees < 0 || r.CostHireFees > 1000) p.Add(who + " needs costHireFees from 0 to 1000");
+                Permille(p, who + " baseSuccessPermille", r.BaseSuccessPermille);
+                if (r.RoomSlopePermille < -2000 || r.RoomSlopePermille > 2000) p.Add(who + " needs roomSlopePermille from -2000 to 2000");
+                if (r.ReputationSlopePermille < -2000 || r.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (r.RecoverPermille < 0 || r.RecoverPermille > 2000) p.Add(who + " needs recoverPermille from 0 to 2000");
+                if (r.BackfirePermille < 0 || r.BackfirePermille > 2000) p.Add(who + " needs backfirePermille from 0 to 2000");
+            }
+            if (c.Role("sales") == null) p.Add("press costs are priced in hiring fees of the \"sales\" role, which does not exist");
         }
 
         static void FoundingProblems(List<string> p, GameConfig c)

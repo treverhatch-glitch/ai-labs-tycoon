@@ -54,7 +54,15 @@ namespace AiLabs.Rules.State
         /// <summary>The player answered an offer. LabId is the player's lab, SubjectId the rival, Amount what the counter cost, Ref the counter, Pick 1 if the person stayed.</summary>
         PoachCountered,
         /// <summary>The player tried to poach from a rival. LabId is the player's lab, SubjectId the rival, Amount what it cost, Ref the role, Pick 1 if it worked.</summary>
-        PoachBackTried
+        PoachBackTried,
+        /// <summary>A journalist asked the player about a beat. LabId is the player's lab, SubjectId the inquiry, Amount the reputation at play, Ref "beat|journalist|what".</summary>
+        PressInquiry,
+        /// <summary>The player answered a journalist. LabId is the player's lab, SubjectId the inquiry, Amount the reputation moved (negative if it backfired), Ref the response, Pick 1 if it worked.</summary>
+        PressAnswered,
+        /// <summary>The player leaked a rival's incident. LabId is the player's lab, SubjectId the rival, Amount the reputation the rival lost (or the leaker lost, if it was traced), Ref the model, Pick 1 if it ran.</summary>
+        StoryLeaked,
+        /// <summary>A launch earned reputation from the press room. LabId is the lab, SubjectId the model, Amount the reputation points.</summary>
+        LaunchBuzz
     }
 
     /// <summary>
