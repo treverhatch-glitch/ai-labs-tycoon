@@ -172,7 +172,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player set the inference optimisation level. LabId is the lab, SubjectId the level now, Amount the cost. Pick is 1 when the level went up, 0 when it went down.</summary>
         OptimisationSet,
         /// <summary>A marketing campaign started or ended. LabId is the lab, SubjectId the budget level, Amount the cost (0 at the end), Ref the sector. Pick is 1 when it starts, 0 when it ends, 2 when an incident cut it short.</summary>
-        CampaignRun
+        CampaignRun,
+        /// <summary>The player changed the on-call rota. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
+        OnCallSet
     }
 
     /// <summary>

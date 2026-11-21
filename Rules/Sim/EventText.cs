@@ -216,6 +216,8 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.OnCallSet:
+                    return e.Pick == 1 ? who + " put its team on an on-call rota (level " + e.SubjectId + ")." : who + " took its on-call rota down to level " + e.SubjectId + ".";
                 case EventKind.OptimisationSet:
                     return e.Pick == 1 ? who + " raised inference optimisation to level " + e.SubjectId + " for $" + e.Amount + "." : who + " backed inference optimisation down to level " + e.SubjectId + ".";
                 case EventKind.EthicsBoardChanged:

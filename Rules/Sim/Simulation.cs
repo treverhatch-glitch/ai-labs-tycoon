@@ -154,6 +154,7 @@ namespace AiLabs.Rules.Sim
                     HackWeek.RunWeek(c, state, state.Labs[i]);
                     Chiefs.RunWeek(c, state, state.Labs[i]);
                     MarketingCampaign.RunWeek(c, state, state.Labs[i]);
+                    OnCall.RunWeek(c, state, state.Labs[i]);
                     EthicsBoard.RunWeek(c, state, state.Labs[i]);
                     Interpretability.RunWeek(c, state, state.Labs[i]);
                     Compliance.RunWeek(c, state, state.Labs[i]);

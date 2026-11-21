@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Sim
                 if (lab.FocusLockedUntil < 0 || !string.IsNullOrEmpty(lab.ResearchFocus) && c.Focus.Option(lab.ResearchFocus) == null) p.Add(who + " has the research focus \"" + lab.ResearchFocus + "\", which the data does not have");
                 if (lab.EquityLevel < 0 || lab.EquityLevel > c.Equity.MaxLevel || lab.EquityPermille < 0 || lab.EquityPermille > MathI.Permille || lab.EquityLevel == 0 != (lab.EquityPermille == 0) || lab.EquityPermille + lab.FounderSharePermille > MathI.Permille)
                     p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
+                if (lab.OnCallLevel < 0 || lab.OnCallLevel > c.OnCall.MaxLevel || lab.OnCallLockedUntil < 0) p.Add(who + " has an on-call rota of level " + lab.OnCallLevel + ", which the data does not allow");
                 if (lab.CampaignLevel < 0 || lab.CampaignLevel > c.Marketing.MaxLevel || lab.CampaignWeeks < 0 || lab.CampaignWeeks > c.Marketing.Weeks || lab.HangoverWeeks < 0 || lab.HangoverWeeks > c.Marketing.HangoverWeeks || lab.CampaignLockedUntil < 0
                     || (lab.CampaignWeeks > 0 || lab.HangoverWeeks > 0) != (lab.CampaignLevel > 0 && !string.IsNullOrEmpty(lab.CampaignSector) && c.Sector(lab.CampaignSector) != null))
                     p.Add(who + " has a marketing campaign (level " + lab.CampaignLevel + ", " + lab.CampaignWeeks + " weeks, hangover " + lab.HangoverWeeks + ") that does not fit the data");

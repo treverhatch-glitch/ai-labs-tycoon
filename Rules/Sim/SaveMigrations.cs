@@ -68,6 +68,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 53) MigrateTo53(root);
             if (fromSchema < 54) MigrateTo54(root);
             if (fromSchema < 55) MigrateTo55(root);
+            if (fromSchema < 56) MigrateTo56(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -431,6 +432,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 56: no lab has an on-call rota.</summary>
+        static void MigrateTo56(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "onCallLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "onCallLockedUntil", JsonValue.Of(0L));
             });
         }
 

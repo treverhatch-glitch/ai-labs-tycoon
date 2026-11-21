@@ -30,7 +30,7 @@ namespace AiLabs.Rules.Systems
 
         public static int RestingMorale(GameConfig c, LabState lab)
         {
-            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab) - RoomAge.MoralePenalty(c, lab) + Pay.MoraleOffset(c, lab) + Prestige.MoraleOffset(c, lab) + StaffEquity.MoraleOffset(c, lab);
+            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab) - RoomAge.MoralePenalty(c, lab) + Pay.MoraleOffset(c, lab) + Prestige.MoraleOffset(c, lab) + StaffEquity.MoraleOffset(c, lab) - OnCall.MoralePenalty(c, lab);
         }
 
         public static int PoachDefencePermille(GameConfig c, LabState lab)

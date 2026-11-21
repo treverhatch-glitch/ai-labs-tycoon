@@ -86,6 +86,7 @@ namespace AiLabs.Rules.Config
             BoardProblems(p, c);
             OptimiseProblems(p, c);
             MarketingProblems(p, c);
+            OnCallProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -891,6 +892,20 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void OnCallProblems(List<string> p, GameConfig c)
+        {
+            OnCallConfig k = c.OnCall;
+            if (k == null) { p.Add("onCall is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("onCall.maxLevel must be from 0 to 10");
+            if (k.WeeklyCostPerLevel < 0) p.Add("onCall.weeklyCostPerLevel is negative");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 100) p.Add("onCall.staffPerLevel must be from 0 to 100");
+            if (k.FineCutPermillePerLevel < 0 || k.FineCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("onCall.fineCutPermillePerLevel must be 0 or more, and every level together at most 900, so an incident always costs something");
+            if (k.ReputationCutPermillePerLevel < 0 || k.ReputationCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("onCall.reputationCutPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.MoraleDropCutPermillePerLevel < 0 || k.MoraleDropCutPermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("onCall.moraleDropCutPermillePerLevel must be 0 or more, and every level together at most 1000");
+            if (k.MoralePenaltyPerLevel < 0 || k.MoralePenaltyPerLevel * (long)k.MaxLevel > 50) p.Add("onCall.moralePenaltyPerLevel must be 0 or more, and every level together at most 50");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("onCall.lockWeeks must be from 0 to 104");
         }
 
         static void MarketingProblems(List<string> p, GameConfig c)

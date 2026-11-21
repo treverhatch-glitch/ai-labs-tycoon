@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Systems
             RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
+            fine = MathI.MulPermille(fine, MathI.Permille - OnCall.FineCutPermille(c, lab));
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
             long covered = Insurance.OnIncident(c, state, lab, model, rung, fine);
             fine -= covered;
@@ -119,6 +120,7 @@ namespace AiLabs.Rules.Systems
             if (flavour != null) repLoss = (int)MathI.MulPermille(repLoss, flavour.ReputationPermille);
             repLoss = PressSystem.Damp(c, lab, repLoss);
             repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - EthicsBoard.ScandalCutPermille(c, lab));
+            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - OnCall.ReputationCutPermille(c, lab));
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine + makeGood);
 

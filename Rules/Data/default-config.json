@@ -5598,6 +5598,16 @@
     "cooldownWeeks": 26,
     "minSales": 1
   },
+  "onCall": {
+    "maxLevel": 3,
+    "weeklyCostPerLevel": 1500,
+    "staffPerLevel": 2,
+    "fineCutPermillePerLevel": 100,
+    "reputationCutPermillePerLevel": 100,
+    "moraleDropCutPermillePerLevel": 250,
+    "moralePenaltyPerLevel": 3,
+    "lockWeeks": 8
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,
