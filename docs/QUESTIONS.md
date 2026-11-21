@@ -1142,6 +1142,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `researchLeads` and `leadSpeedPermille` per lab; an older save migrates with an empty list and 0, so nothing in an old game changes. The golden digest moved and the cause was checked: with the two new fields removed, the schema set back to 31 and the lead-finding hook switched off, the digest of the pinned game equals the old golden `df0a8d9e`. So the move is the new fields, the schema number and the leads found in that game year.
 - Why (b): the first build took a fresh id from the shared counter, which shifted the ids of everything made later and nudged the eight-year soak's "careful" preset from 45.8% to 62.5% of crowns for one lab, over the 60% bar. It is the Q182 knife-edge again (a harmless-looking change moves a trajectory, not a rule), and the cure is not to touch shared counters: a lead is at most one per model, so the model's id is already unique. Logged here, nothing tuned.
 
+## Fine-tune and rollback (NEXT item 28)
+
+### Q239. How does a player mend a glitching model? DECIDED: two commands, a fine-tune that pays to end it and a rollback that swaps the old version back in
+- Options: (a) nothing, the glitch just runs out; (b) one "fix" command; (c) the bible's two: fine-tune or rollback.
+- Recommendation and choice: **(c)**. The bible's state table says a glitching model is "recent incident or bad data; fix with fine-tune or rollback". `FineTuneModel` and `RollBackModel` both need a model on sale that is glitching (an incident, and fewer weeks since it than the longest glitch of the sectors it sells in); otherwise they are refused and change nothing.
+- Why: the glitch already costs quality (30% in the shipped data) for weeks, so a way to end it early is a real decision, and two ways with different prices is the choice the bible describes.
+
+### Q240. What do they cost? DECIDED: a fine-tune is a week of the model's sales and buys 40 alignment; a rollback is free in cash and costs 20 reputation
+- Options: (a) fine-tune at two weeks of sales; (b) one week; (c) a flat price.
+- Recommendation and choice: **(b)** (`repair.fineTuneRevenueWeeks` 1, never under `fineTuneMinCost` 1000), paid on the training ledger line. It ends the glitch now and adds `fineTuneAlignment` 40 to the real and shown meters (never past 1000), so it also helps the next release gate and the glow. A rollback withdraws the model from all its sectors (it goes back to Trained, so it can be put on sale again after a look) and puts back the newest retired earlier version of the same line in those sectors, losing `rollbackReputationLoss` 20. It is refused when there is no earlier version, or when the older one would not pass the lab's own gate or the law's bar today.
+- Why: at 30% quality loss, a week of sales pays for itself within about three weeks of a six-week glitch, and longer glitches (a self-driving model is grounded for sixteen weeks) pay far more, so a fine-tune is a good buy early and a poor one late; a rollback costs reputation instead of cash and gives up the newer model's capability. An incident's date is reset by a fine-tune, so rivals trying to leak that incident see old news (a rival's leak window counts from the same date).
+
+### Q241. Is a save change needed? DECIDED: no
+- Options: (a) store a "repaired until" date; (b) move the incident date back and use the model and sector fields that already exist.
+- Recommendation and choice: **(b)**. A fine-tune sets the last incident date back by the glitch length, which turns the glitch off through the existing rule; a rollback only changes a model's status and sector list and the sector entry's model. Nothing is added to the save and the golden digest did not move (the autopilot never mends models).
+- Why: the existing glitch rule already reads those fields; a second date would have to be kept in step with them. The player-only effect keeps the economy guards untouched, and all five hold at 1455 tests.
+
 ## Open
 
 None.

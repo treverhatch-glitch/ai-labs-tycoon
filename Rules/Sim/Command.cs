@@ -23,7 +23,9 @@ namespace AiLabs.Rules.Sim
         SetReleaseGate,
         CleanUpNaming,
         RefurbishRoom,
-        FollowLead
+        FollowLead,
+        FineTuneModel,
+        RollBackModel
     }
 
     /// <summary>
@@ -399,6 +401,22 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LeakStory, labId);
             c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Pays to end a glitch on a model that is on sale now. <see cref="Command.TargetId"/> is the model.</summary>
+        public static Command FineTuneModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.FineTuneModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Withdraws a glitching model and puts the previous version of its line back on sale. <see cref="Command.TargetId"/> is the model.</summary>
+        public static Command RollBackModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.RollBackModel, labId);
+            c.TargetId = modelId;
             return c;
         }
 

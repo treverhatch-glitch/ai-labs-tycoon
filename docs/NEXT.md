@@ -168,6 +168,11 @@ and says why in the commit message.
     `ResearchLeadTests`, `docs/content/research-leads.md`. Player labs only. Still open: a leads screen (Unity), rivals with leads, leads that
     name a tech to unlock, the autopilot following leads.
 
+28. **Fine-tune and rollback for glitching models (bible ch. 6 state table: "fix with fine-tune or rollback").** ~~Done~~: `repair` in the
+    data, `ModelRepair`, `FineTuneModel` and `RollBackModel`, `ModelFineTuned`/`ModelRolledBack` events, no schema change (Q239-Q241),
+    `ModelRepairTests`, `docs/content/model-repair.md`. Still open: buttons on the model screen (Unity), fixing a corrupted or sandbagging model
+    (these need the shady and sandbag rules), the autopilot mending its models.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

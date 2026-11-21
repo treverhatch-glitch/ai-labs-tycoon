@@ -5341,6 +5341,12 @@
       {"id": "tuesday", "name": "Tuesday", "weight": 1, "kind": "Nothing", "amount": 0, "blurb": "The model is nicer on Tuesdays. Nobody knows why. The dashboard has been asked to stop asking."}
     ]
   },
+  "repair": {
+    "fineTuneRevenueWeeks": 1,
+    "fineTuneMinCost": 1000,
+    "fineTuneAlignment": 40,
+    "rollbackReputationLoss": 20
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -5466,6 +5472,29 @@
       "pick": 0,
       "about": "lab",
       "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'."
+    },
+      {
+      "id": "model-fine-tuned",
+      "kind": "ModelFineTuned",
+      "roles": [
+        "engineer",
+        "researcher"
+      ],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was."
+    },
+      {
+      "id": "model-rolled-back",
+      "kind": "ModelRolledBack",
+      "roles": [
+        "engineer"
+      ],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'."
     },
       {
       "id": "room-refurbished",

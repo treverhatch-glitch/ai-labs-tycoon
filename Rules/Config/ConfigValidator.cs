@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Config
             AgeingProblems(p, c);
             ControlProblems(p, c);
             LeadsProblems(p, c);
+            RepairProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -501,6 +502,16 @@ namespace AiLabs.Rules.Config
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
             }
+        }
+
+        static void RepairProblems(List<string> p, GameConfig c)
+        {
+            RepairConfig r = c.Repair;
+            if (r == null) { p.Add("repair is missing"); return; }
+            if (r.FineTuneRevenueWeeks < 0 || r.FineTuneRevenueWeeks > 520) p.Add("repair.fineTuneRevenueWeeks must be from 0 to 520");
+            if (r.FineTuneMinCost < 0) p.Add("repair.fineTuneMinCost is negative");
+            if (r.FineTuneAlignment < 0 || r.FineTuneAlignment > MathI.Permille) p.Add("repair.fineTuneAlignment must be from 0 to 1000");
+            if (r.RollbackReputationLoss < 0 || r.RollbackReputationLoss > MathI.Permille) p.Add("repair.rollbackReputationLoss must be from 0 to 1000");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

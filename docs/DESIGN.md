@@ -137,6 +137,8 @@ Control goes stale ([content/control-stale.md](content/control-stale.md)) is the
 
 Research leads ([content/research-leads.md](content/research-leads.md)) are the bible's "that mystery becomes a research lead". A player run that lands 6% or more above its aim leaves a lead; following it costs six weeks of the lab's research and eight weeks of waiting, and ends in a real insight, a training trick, a data quirk, the cat or Tuesday. Save schema 32.
 
+Fine-tune and rollback ([content/model-repair.md](content/model-repair.md)) are the two ways to mend a glitching model from the bible's state table. A fine-tune costs a week of the model's sales, ends the glitch now and adds a little alignment; a rollback withdraws the model and puts the previous version of its line back on sale for 20 reputation. Nothing is saved.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

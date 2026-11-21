@@ -90,7 +90,11 @@ namespace AiLabs.Rules.State
         /// <summary>An investigation ended. LabId is the lab, SubjectId the lead, Amount what it gave (points or permille), Ref the outcome id, Pick 1 when something came of it.</summary>
         LeadResolved,
         /// <summary>A lead nobody followed went cold. LabId is the lab, SubjectId the lead, Ref the model name.</summary>
-        LeadWentCold
+        LeadWentCold,
+        /// <summary>The player paid to fine-tune a glitching model. LabId is the lab, SubjectId the model, Amount the cost, Ref the model name.</summary>
+        ModelFineTuned,
+        /// <summary>The player withdrew a glitching model and put the older version back on sale. LabId is the lab, SubjectId the older model now on sale, Amount the reputation lost, Ref the withdrawn model's name.</summary>
+        ModelRolledBack
     }
 
     /// <summary>

@@ -113,6 +113,14 @@ namespace AiLabs.Rules.Sim
                         RoomTypeConfig dated = c.RoomType(e.Ref);
                         return who + "'s " + (dated == null ? e.Ref : dated.Name) + " is now " + RoomAge.Stage(c, (int)e.Amount).Name.ToLowerInvariant() + ", " + e.Amount + (e.Amount == 1 ? " era" : " eras") + " behind. Staff are complaining.";
                     }
+                case EventKind.ModelFineTuned:
+                    return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";
+                case EventKind.ModelRolledBack:
+                    {
+                        LabState backLab = state.Lab(e.LabId);
+                        ModelState back = backLab == null ? null : backLab.Model(e.SubjectId);
+                        return who + " pulled " + e.Ref + " and put " + (back == null ? "the older version" : back.Name) + " back on sale. Reputation -" + e.Amount + ".";
+                    }
                 case EventKind.LeadFound:
                     return who + "'s " + e.Ref + " came out " + e.Amount / 10 + "." + e.Amount % 10 + "% better than anyone aimed for. Nobody knows why. It is a research lead.";
                 case EventKind.LeadResolved:
