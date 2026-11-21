@@ -159,8 +159,12 @@ namespace AiLabs.Rules.Sim
                     VendorSystem.RunWeek(c, state, state.Labs[i]);
                     HeatwavePowerSystem.RunWeek(c, state, state.Labs[i]);
                     StashStorageSystem.RunWeek(c, state, state.Labs[i]);
+                    IncidentPlanSystem.RunWeek(c, state, state.Labs[i]);
+                    ResearchLoanSystem.RunWeek(c, state, state.Labs[i]);
+                    SectorPricePledgeSystem.RunWeek(c, state, state.Labs[i]);
                 }
             }
+            PeerForbearanceSystem.RunWeek(c, state);
 
             for (int i = 0; i < state.Labs.Count; i++)
             {

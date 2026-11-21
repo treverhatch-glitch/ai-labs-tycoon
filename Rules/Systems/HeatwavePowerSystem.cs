@@ -1,4 +1,5 @@
 using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -24,6 +25,12 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             long pay = WeeklySurcharge(c, state, lab);
+            if (pay > 0 && lab.PowerHedgeUntilTick > state.Tick)
+            {
+                HeatwaveConfig hw = c.World?.Heatwave;
+                int waive = hw?.HedgeWaiverPermille ?? 0;
+                if (waive > 0) pay = MathI.MulPermille(pay, MathI.Permille - MathI.Min(MathI.Permille, waive));
+            }
             if (pay > 0 && lab.Cash >= pay)
                 Finance.Spend(lab, LedgerLine.Power, pay);
         }

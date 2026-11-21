@@ -90,6 +90,16 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ExtendPatent: return ExtendPatent(c, state, lab, cmd);
                 case CommandKind.ReviveChipDesign: return ReviveChipDesign(c, state, lab, cmd);
                 case CommandKind.QueueGpuPurchase: return QueueGpuPurchase(c, state, lab, cmd);
+                case CommandKind.PayPeerLeaseArrears: return PayPeerLeaseArrears(c, state, lab, cmd);
+                case CommandKind.BuyPowerHedge: return BuyPowerHedge(c, state, lab, cmd);
+                case CommandKind.BreakReservedContract: return BreakReservedContract(c, state, lab, cmd);
+                case CommandKind.DiscloseModelAlignment: return DiscloseModelAlignment(c, state, lab, cmd);
+                case CommandKind.PauseChipListing: return PauseChipListing(c, state, lab, cmd);
+                case CommandKind.AdvocateVendor: return AdvocateVendor(c, state, lab, cmd);
+                case CommandKind.AdoptIncidentPlan: return AdoptIncidentPlan(c, state, lab, cmd);
+                case CommandKind.TakeResearchLoan: return TakeResearchLoan(c, state, lab, cmd);
+                case CommandKind.GrantPeerForbearance: return GrantPeerForbearance(c, state, lab, cmd);
+                case CommandKind.PledgeSectorPrice: return PledgeSectorPrice(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

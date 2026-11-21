@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 25;
+        public const int CurrentSchema = 27;
 
         public int Schema;
         public string ConfigVersion;
@@ -189,6 +189,18 @@ namespace AiLabs.Rules.State
         public int CoolantBoostUntilTick = -1;
         /// <summary>Buildup without a flush; reduces effective cooling cut until the next flush (schema 25).</summary>
         public int CoolantFoulingPermille;
+        /// <summary>Peer lease debt trim is suspended until this tick (Q173).</summary>
+        public int PeerLeaseShieldUntilTick = -1;
+        /// <summary>Heatwave emergency power is discounted until this tick (Q174).</summary>
+        public int PowerHedgeUntilTick = -1;
+        /// <summary>Cannot buy vendor advocacy again until this tick (Q178).</summary>
+        public int VendorAdvocateCooldownUntilTick = -1;
+        /// <summary>Active incident-response plan ends after this tick, or -1 (Q179).</summary>
+        public int IncidentPlanUntilTick = -1;
+        /// <summary>Cash still owed on a research bridge loan (Q180).</summary>
+        public long ResearchLoanBalance;
+        /// <summary>Landlord grants that shield renters from peer debt trims (Q181).</summary>
+        public List<PeerForbearance> PeerForbearances = new List<PeerForbearance>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -293,6 +305,12 @@ namespace AiLabs.Rules.State
             s.Int("factoryLineUntilTick", ref FactoryLineUntilTick);
             s.Int("coolantBoostUntilTick", ref CoolantBoostUntilTick);
             s.Int("coolantFoulingPermille", ref CoolantFoulingPermille);
+            s.Int("peerLeaseShieldUntilTick", ref PeerLeaseShieldUntilTick);
+            s.Int("powerHedgeUntilTick", ref PowerHedgeUntilTick);
+            s.Int("vendorAdvocateCooldownUntilTick", ref VendorAdvocateCooldownUntilTick);
+            s.Int("incidentPlanUntilTick", ref IncidentPlanUntilTick);
+            s.Long("researchLoanBalance", ref ResearchLoanBalance);
+            s.ObjList("peerForbearances", ref PeerForbearances);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }
@@ -473,6 +491,9 @@ namespace AiLabs.Rules.State
         /// <summary>Listed price vs the sector norm, in permille (1000 = list price). Scales revenue, not appeal.</summary>
         public int PricePermille = MathI.Permille;
         public long LastRevenue;
+        /// <summary>Until this tick the lab cannot reprice below the pledge (Q182).</summary>
+        public int PricePledgeUntilTick = -1;
+        public int PricePledgePermille = MathI.Permille;
 
         public void Sync(Syncer s)
         {
@@ -481,6 +502,8 @@ namespace AiLabs.Rules.State
             s.Int("sharePpm", ref SharePpm);
             s.Int("pricePermille", ref PricePermille);
             s.Long("lastRevenue", ref LastRevenue);
+            s.Int("pricePledgeUntilTick", ref PricePledgeUntilTick);
+            s.Int("pricePledgePermille", ref PricePledgePermille);
         }
     }
 

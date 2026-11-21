@@ -172,6 +172,10 @@ namespace AiLabs.Rules.Config
         /// <summary>Weekly cash grant per standing point when standing is above this (Q169).</summary>
         public int WeeklyGrantStandingAbove = 450;
         public long WeeklyGrantPerStanding = 3;
+        /// <summary>Cash to lobby Envydia for standing (Q178).</summary>
+        public long AdvocateCashCost = 20_000;
+        public int AdvocateStandingGain = 40;
+        public int AdvocateCooldownWeeks = 12;
 
         public void Sync(Syncer s)
         {
@@ -200,6 +204,9 @@ namespace AiLabs.Rules.Config
             s.Int("logMax", ref LogMax);
             s.Int("weeklyGrantStandingAbove", ref WeeklyGrantStandingAbove);
             s.Long("weeklyGrantPerStanding", ref WeeklyGrantPerStanding);
+            s.Long("advocateCashCost", ref AdvocateCashCost);
+            s.Int("advocateStandingGain", ref AdvocateStandingGain);
+            s.Int("advocateCooldownWeeks", ref AdvocateCooldownWeeks);
         }
 
         /// <summary>The monthly supply in a year: the last row that has begun.</summary>

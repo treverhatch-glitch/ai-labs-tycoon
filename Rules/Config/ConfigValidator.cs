@@ -410,6 +410,9 @@ namespace AiLabs.Rules.Config
             Permille(p, "compute.reservedRentPermille", compute.ReservedRentPermille);
             Permille(p, "compute.peerLeaseRentPermille", compute.PeerLeaseRentPermille);
             if (compute.PeerLeaseDebtGpuTrimPerWeek < 0) p.Add("compute.peerLeaseDebtGpuTrimPerWeek is negative");
+            if (compute.PeerLeaseArrearsCashPerGpu < 0) p.Add("compute.peerLeaseArrearsCashPerGpu is negative");
+            if (compute.PeerLeaseShieldWeeks < 0) p.Add("compute.peerLeaseShieldWeeks is negative");
+            Permille(p, "compute.reservedBreakPenaltyPermille", compute.ReservedBreakPenaltyPermille);
             if (compute.ReservedContractWeeks < 1) p.Add("compute.reservedContractWeeks must be at least 1");
             if (compute.ReservedDepositWeeks < 0) p.Add("compute.reservedDepositWeeks is negative");
             if (compute.MoveCostPerUnit < 0) p.Add("compute.moveCostPerUnit is negative");
@@ -531,6 +534,9 @@ namespace AiLabs.Rules.Config
                 p.Add("world.heatwave months must run from 1 to " + c.Calendar.MonthsPerYear + " with fromMonth not after toMonth");
             if (hw.RollDivisor < 1) p.Add("world.heatwave.rollDivisor must be at least 1");
             if (hw.WeeklySurchargeCashPerKw < 0) p.Add("world.heatwave.weeklySurchargeCashPerKw is negative");
+            if (hw.HedgeCashCost < 0) p.Add("world.heatwave.hedgeCashCost is negative");
+            if (hw.HedgeWeeks < 0) p.Add("world.heatwave.hedgeWeeks is negative");
+            Permille(p, "world.heatwave.hedgeWaiverPermille", hw.HedgeWaiverPermille);
 
             AttentionConfig a = w.Attention;
             Permille(p, "world.attention.decayPermillePerMonth", a.DecayPermillePerMonth);
@@ -705,6 +711,9 @@ namespace AiLabs.Rules.Config
                 p.Add("vendor has an impossible price change");
             if (v.WeeklyGrantStandingAbove < 0) p.Add("vendor.weeklyGrantStandingAbove is negative");
             if (v.WeeklyGrantPerStanding < 0) p.Add("vendor.weeklyGrantPerStanding is negative");
+            if (v.AdvocateCashCost < 0) p.Add("vendor.advocateCashCost is negative");
+            if (v.AdvocateStandingGain < 0) p.Add("vendor.advocateStandingGain is negative");
+            if (v.AdvocateCooldownWeeks < 0) p.Add("vendor.advocateCooldownWeeks is negative");
         }
 
         static void WorldEventProblems(List<string> p, GameConfig c)

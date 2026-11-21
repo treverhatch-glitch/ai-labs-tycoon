@@ -983,7 +983,13 @@
       }
     ],
     "peerLeaseRentPermille": 900,
-    "peerLeaseDebtGpuTrimPerWeek": 1
+    "peerLeaseDebtGpuTrimPerWeek": 1,
+    "peerLeaseArrearsCashPerGpu": 4000,
+    "peerLeaseShieldWeeks": 8,
+    "reservedBreakPenaltyPermille": 600,
+    "peerForbearanceAdoptionCash": 10000,
+    "peerForbearanceWeeks": 8,
+    "peerForbearanceSubsidyPerGpuWeek": 150
   },
   "world": {
     "blocs": [
@@ -1274,7 +1280,10 @@
       "toMonth": 8,
       "rollDivisor": 3,
       "halvedByCoolingPermille": 300,
-      "weeklySurchargeCashPerKw": 8
+      "weeklySurchargeCashPerKw": 8,
+      "hedgeCashCost": 25000,
+      "hedgeWeeks": 12,
+      "hedgeWaiverPermille": 800
     },
     "attention": {
       "decayPermillePerMonth": 100,
@@ -1365,6 +1374,9 @@
   },
   "research": {
     "pointsPerResearcherWeek": 10,
+    "loanPrincipal": 40000,
+    "loanResearchPoints": 25,
+    "loanWeeklyPayment": 2000,
     "techs": [
       {
         "id": "state-machines",
@@ -3443,6 +3455,11 @@
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
+    "discloseReputationGain": 80,
+    "incidentPlanAdoptionCash": 15000,
+    "incidentPlanWeeks": 16,
+    "incidentPlanWeeklyUpkeep": 800,
+    "incidentPlanCutPermille": 250,
     "incidentRungs": [
       {
         "id": "screenshot",
@@ -3506,6 +3523,9 @@
     "salesBonusPermille": 100,
     "salesBonusCapPermille": 600,
     "sectorChampionCashPerWeek": 300,
+    "sectorPricePledgeWeeks": 12,
+    "sectorPricePledgeAdoptionCash": 5000,
+    "sectorPricePledgeWeeklyUpkeep": 600,
     "deviceWorkshop": {
       "eraId": "harnesses",
       "roomTypeId": "device-workshop",
@@ -4462,7 +4482,10 @@
     "shareLogPermille": 100,
     "logMax": 60,
     "weeklyGrantStandingAbove": 450,
-    "weeklyGrantPerStanding": 3
+    "weeklyGrantPerStanding": 3,
+    "advocateCashCost": 20000,
+    "advocateStandingGain": 40,
+    "advocateCooldownWeeks": 12
   },
   "chips": {
     "pointsPerArchitectWeek": 10,

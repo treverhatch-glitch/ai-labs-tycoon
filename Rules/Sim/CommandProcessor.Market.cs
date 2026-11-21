@@ -20,6 +20,8 @@ namespace AiLabs.Rules.Sim
             SectorState sectorState = state.Sector(sector.Id);
             SectorEntry entry = sectorState.Entry(lab.Id);
             if (entry == null) return Fail(CommandError.InvalidArgument, lab.Name + " has no model on sale in " + sector.Name + ".");
+            if (SectorPricePledgeSystem.PledgeActive(entry, state.Tick))
+                return Fail(CommandError.InvalidArgument, sector.Name + " has a price pledge in force.");
             entry.PricePermille = price;
             return CommandResult.Done(-1);
         }

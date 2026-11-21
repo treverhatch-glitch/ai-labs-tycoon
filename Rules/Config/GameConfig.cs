@@ -371,6 +371,15 @@ namespace AiLabs.Rules.Config
         public int PeerLeaseRentPermille = 900;
         /// <summary>GPUs trimmed from peer leases each week while the lab is in debt (Q171).</summary>
         public int PeerLeaseDebtGpuTrimPerWeek = 1;
+        /// <summary>Cash per leased GPU to suspend peer lease trimming (Q173).</summary>
+        public long PeerLeaseArrearsCashPerGpu = 4_000;
+        /// <summary>Weeks <see cref="LabState.PeerLeaseShieldUntilTick"/> lasts after arrears payment.</summary>
+        public int PeerLeaseShieldWeeks = 8;
+        /// <summary>Share of remaining reserved-contract value charged to break early (Q175).</summary>
+        public int ReservedBreakPenaltyPermille = 600;
+        public long PeerForbearanceAdoptionCash = 10_000;
+        public int PeerForbearanceWeeks = 8;
+        public long PeerForbearanceSubsidyPerGpuWeek = 150;
         /// <summary>The vendor's line, oldest first.</summary>
         public List<GpuGenerationConfig> GpuGenerations;
 
@@ -386,6 +395,12 @@ namespace AiLabs.Rules.Config
             s.Int("reservedDepositWeeks", ref ReservedDepositWeeks);
             s.Int("peerLeaseRentPermille", ref PeerLeaseRentPermille);
             s.Int("peerLeaseDebtGpuTrimPerWeek", ref PeerLeaseDebtGpuTrimPerWeek);
+            s.Long("peerLeaseArrearsCashPerGpu", ref PeerLeaseArrearsCashPerGpu);
+            s.Int("peerLeaseShieldWeeks", ref PeerLeaseShieldWeeks);
+            s.Int("reservedBreakPenaltyPermille", ref ReservedBreakPenaltyPermille);
+            s.Long("peerForbearanceAdoptionCash", ref PeerForbearanceAdoptionCash);
+            s.Int("peerForbearanceWeeks", ref PeerForbearanceWeeks);
+            s.Long("peerForbearanceSubsidyPerGpuWeek", ref PeerForbearanceSubsidyPerGpuWeek);
             s.ObjList("gpuGenerations", ref GpuGenerations);
         }
 
@@ -443,6 +458,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Mutually exclusive research branches.</summary>
         public List<ResearchForkConfig> Forks = new List<ResearchForkConfig>();
         public PatentRulesConfig Patents = new PatentRulesConfig();
+        public long LoanPrincipal = 40_000;
+        public long LoanResearchPoints = 25;
+        public long LoanWeeklyPayment = 2_000;
 
         public void Sync(Syncer s)
         {
@@ -450,6 +468,9 @@ namespace AiLabs.Rules.Config
             s.ObjList("techs", ref Techs);
             s.ObjList("forks", ref Forks);
             s.Obj("patents", ref Patents);
+            s.Long("loanPrincipal", ref LoanPrincipal);
+            s.Long("loanResearchPoints", ref LoanResearchPoints);
+            s.Long("loanWeeklyPayment", ref LoanWeeklyPayment);
         }
     }
 
@@ -768,6 +789,12 @@ namespace AiLabs.Rules.Config
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
         public int SandbagGapPermille;
+        /// <summary>Reputation gained when the player voluntarily closes a sandbag gap (Q176).</summary>
+        public int DiscloseReputationGain = 80;
+        public long IncidentPlanAdoptionCash = 15_000;
+        public int IncidentPlanWeeks = 16;
+        public long IncidentPlanWeeklyUpkeep = 800;
+        public int IncidentPlanCutPermille = 250;
         /// <summary>Optional per-sector incident headline lines (text only). Not <c>safety.sectorFlavours</c> (era economics).</summary>
         public List<SectorIncidentHeadlineConfig> SectorIncidentHeadlines = new List<SectorIncidentHeadlineConfig>();
 
@@ -803,6 +830,11 @@ namespace AiLabs.Rules.Config
             s.ObjList("incidentRungs", ref IncidentRungs);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
+            s.Int("discloseReputationGain", ref DiscloseReputationGain);
+            s.Long("incidentPlanAdoptionCash", ref IncidentPlanAdoptionCash);
+            s.Int("incidentPlanWeeks", ref IncidentPlanWeeks);
+            s.Long("incidentPlanWeeklyUpkeep", ref IncidentPlanWeeklyUpkeep);
+            s.Int("incidentPlanCutPermille", ref IncidentPlanCutPermille);
             s.ObjList("sectorIncidentHeadlines", ref SectorIncidentHeadlines);
         }
     }
@@ -835,6 +867,9 @@ namespace AiLabs.Rules.Config
         public int OpenWeightsAppealBonusPermille = 120;
         /// <summary>Weekly cash grant per sector where this lab holds the Gauntlet champion slot (Q167).</summary>
         public long SectorChampionCashPerWeek;
+        public int SectorPricePledgeWeeks = 12;
+        public long SectorPricePledgeAdoptionCash = 5_000;
+        public long SectorPricePledgeWeeklyUpkeep = 600;
         public DeviceWorkshopConfig DeviceWorkshop = new DeviceWorkshopConfig();
         public List<CapabilityDomainConfig> CapabilityDomains = new List<CapabilityDomainConfig>();
         public List<SectorConfig> Sectors;
@@ -849,6 +884,9 @@ namespace AiLabs.Rules.Config
             s.Int("openWeightsRevenuePermille", ref OpenWeightsRevenuePermille);
             s.Int("openWeightsAppealBonusPermille", ref OpenWeightsAppealBonusPermille);
             s.Long("sectorChampionCashPerWeek", ref SectorChampionCashPerWeek);
+            s.Int("sectorPricePledgeWeeks", ref SectorPricePledgeWeeks);
+            s.Long("sectorPricePledgeAdoptionCash", ref SectorPricePledgeAdoptionCash);
+            s.Long("sectorPricePledgeWeeklyUpkeep", ref SectorPricePledgeWeeklyUpkeep);
             s.Obj("deviceWorkshop", ref DeviceWorkshop);
             s.ObjList("capabilityDomains", ref CapabilityDomains);
             s.ObjList("sectors", ref Sectors);

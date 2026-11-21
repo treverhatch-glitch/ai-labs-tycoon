@@ -9,6 +9,8 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             if (lab.Bankrupt || lab.WeeksInDebt < 1 || lab.PeerComputeLeases.Count == 0) return;
+            if (lab.PeerLeaseShieldUntilTick > state.Tick) return;
+            if (PeerForbearanceSystem.RenterShielded(state, lab)) return;
             int trim = c.Compute.PeerLeaseDebtGpuTrimPerWeek;
             if (trim < 1) return;
             for (int n = 0; n < trim; n++)

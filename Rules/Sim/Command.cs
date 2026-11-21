@@ -18,7 +18,9 @@ namespace AiLabs.Rules.Sim
         LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
         TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield,
         AbortChipRespin, RenouncePatent, CancelChipOrder,
-        CancelShadyOp, PayDownHeat, AbortTrainingRun, ExtendPatent, ReviveChipDesign
+        CancelShadyOp, PayDownHeat, AbortTrainingRun, ExtendPatent, ReviveChipDesign,
+        PayPeerLeaseArrears, BuyPowerHedge, BreakReservedContract, DiscloseModelAlignment, PauseChipListing, AdvocateVendor,
+        AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice
     }
 
     /// <summary>
@@ -531,6 +533,53 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.ReviveChipDesign, labId);
             c.TargetId = designId;
+            return c;
+        }
+
+        public static Command PayPeerLeaseArrears(int labId) { return Make(CommandKind.PayPeerLeaseArrears, labId); }
+
+        public static Command BuyPowerHedge(int labId) { return Make(CommandKind.BuyPowerHedge, labId); }
+
+        public static Command BreakReservedContract(int labId, int contractIndex)
+        {
+            Command c = Make(CommandKind.BreakReservedContract, labId);
+            c.Count = contractIndex;
+            return c;
+        }
+
+        public static Command DiscloseModelAlignment(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.DiscloseModelAlignment, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PauseChipListing(int labId, int designId, bool pause)
+        {
+            Command c = Make(CommandKind.PauseChipListing, labId);
+            c.TargetId = designId;
+            c.Count = pause ? 1 : 0;
+            return c;
+        }
+
+        public static Command AdvocateVendor(int labId) { return Make(CommandKind.AdvocateVendor, labId); }
+
+        public static Command AdoptIncidentPlan(int labId) { return Make(CommandKind.AdoptIncidentPlan, labId); }
+
+        public static Command TakeResearchLoan(int labId) { return Make(CommandKind.TakeResearchLoan, labId); }
+
+        public static Command GrantPeerForbearance(int landlordLabId, int renterLabId)
+        {
+            Command c = Make(CommandKind.GrantPeerForbearance, landlordLabId);
+            c.TargetId = renterLabId;
+            return c;
+        }
+
+        public static Command PledgeSectorPrice(int labId, string sectorId, int pricePermille)
+        {
+            Command c = Make(CommandKind.PledgeSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = pricePermille;
             return c;
         }
     }

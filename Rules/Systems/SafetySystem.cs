@@ -65,7 +65,10 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Released) continue;
-                if (state.Rng.Safety.Chance(IncidentChancePermille(c, model, lab))) Incident(c, state, lab, model);
+                int chance = IncidentChancePermille(c, model, lab);
+                int cut = IncidentPlanSystem.IncidentCutPermille(c, lab, state.Tick);
+                if (cut > 0) chance = (int)MathI.MulPermille(chance, MathI.Permille - cut);
+                if (state.Rng.Safety.Chance(chance)) Incident(c, state, lab, model);
             }
         }
 

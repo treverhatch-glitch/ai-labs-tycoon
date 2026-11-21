@@ -90,6 +90,8 @@ namespace AiLabs.Rules.State
         public int SoldThisMonth;
         public int ListedSinceTick = -1;
         public bool Spotlight;
+        /// <summary>Paused listings skip upkeep and sales until unpaused (Q177).</summary>
+        public bool Paused;
 
         public void Sync(Syncer s)
         {
@@ -99,6 +101,7 @@ namespace AiLabs.Rules.State
             s.Int("soldThisMonth", ref SoldThisMonth);
             s.Int("listedSinceTick", ref ListedSinceTick);
             s.Bool("spotlight", ref Spotlight);
+            s.Bool("paused", ref Paused);
         }
     }
 

@@ -481,6 +481,46 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q172. Stash storage fee? DECIDED: `StashStorageSystem.RunWeek`
 - Choice: weekly `stashStoragePermillePerWeek` shaves the off-books stash (player launders via existing command).
 
+### Q173. Pay peer lease arrears? DECIDED: `PayPeerLeaseArrears` + `PeerLeaseShieldUntilTick`
+- Choice: **(a)** while in debt with peer leases, pay `peerLeaseArrearsCashPerGpu` × leased GPUs to set a shield for `peerLeaseShieldWeeks` (Q171 trim skipped); does not clear `WeeksInDebt`. Schema **26**.
+
+### Q174. Buy emergency power hedge? DECIDED: `BuyPowerHedge` + `PowerHedgeUntilTick`
+- Choice: **(a)** pay `world.heatwave.hedgeCashCost` for `hedgeWeeks`; Q170 surcharge multiplied by `(1000 − hedgeWaiverPermille)` while active; cannot stack. Schema **26**.
+
+### Q175. Break reserved compute early? DECIDED: `BreakReservedContract`
+- Choice: **(a)** remove one `ReservedContract` and pay `reservedBreakPenaltyPermille` of remaining weekly rent × weeks left; deposit already sunk stays sunk.
+
+### Q176. Disclose sandbagged alignment? DECIDED: `DiscloseModelAlignment`
+- Choice: **(a)** on a released model with alignment gap, set `DisplayedAlignment = Alignment` and grant `discloseReputationGain`; voluntary alternative to a rung-3 scandal closing the gap.
+
+### Q177. Pause chip listing? DECIDED: `PauseChipListing` + `ChipListing.Paused`
+- Choice: **(a)** paused listings skip Q168 upkeep, block `BuyListedChips`, and stale-delist still applies; player toggles per design. Schema **26** (`paused` on listing).
+
+### Q178. Advocate with Envydia? DECIDED: `AdvocateVendor`
+- Choice: **(a)** pay `vendor.advocateCashCost` for `advocateStandingGain` (capped at `standingMax`) and lock repeats until `vendorAdvocateCooldownWeeks`. Schema **26** (`vendorAdvocateCooldownUntilTick`).
+
+### Q179. Incident response plan? DECIDED: `AdoptIncidentPlan` + `IncidentPlanSystem.RunWeek`
+- Choice: **(a)** pay adoption cash for `incidentPlanWeeks`; weekly upkeep while active; cuts released-model incident odds by `incidentPlanCutPermille`. Schema **27** (`incidentPlanUntilTick`).
+
+### Q180. Research bridge loan? DECIDED: `TakeResearchLoan` + `ResearchLoanSystem.RunWeek`
+- Choice: **(a)** one loan at a time: grants cash + RP, sets `researchLoanBalance`; weekly `loanWeeklyPayment` until zero. Schema **27**.
+
+### Q181. Peer lease forbearance? DECIDED: `GrantPeerForbearance` + `PeerForbearanceSystem.RunWeek`
+- Choice: **(a)** landlord pays adoption fee; renter with lease from landlord skips Q171 trim and may receive weekly `peerForbearanceSubsidyPerGpuWeek`. Schema **27** (`peerForbearances`).
+
+### Q182. Sector price pledge? DECIDED: `PledgeSectorPrice` + `SectorPricePledgeSystem.RunWeek`
+- Choice: **(a)** lock `SectorEntry.pricePermille` for `sectorPricePledgeWeeks`; blocks `SetSectorPrice`; weekly `sectorPricePledgeWeeklyUpkeep`. Schema **27** (pledge fields on entry).
+
+### Q183. Q179 vs era incident insurance (PR #16)? DECIDED: keep both — different layers
+- **Rules-side (Q179):** proactive `AdoptIncidentPlan` + weekly upkeep; cuts **pre-roll** incident odds while active (`incidentPlanUntilTick`, schema **27** on rules branch).
+- **Era (`origin/cursor/offsite-af2f`, insurance / Q299, schema ~44):** reactive `SetInsurance` + `Insurance.RunWeek` premiums; `Insurance.OnIncident` pays a **share of fines** after roll; claims loading and policy drop — not on rules branch.
+- **Fork:** merge only if we want one “safety spend” UI; until then insurance stays era-only, plan stays rules Q179.
+
+### Q184. Q180 vs era chip loans (PR #13)? DECIDED: keep both — different debt products
+- **Rules-side (Q180):** unsecured research bridge — `TakeResearchLoan` grants cash + RP, single `researchLoanBalance`, flat `loanWeeklyPayment` on **Fines** line (schema **27**).
+- **Era (`origin/cursor/offsite-af2f`, `Loans.cs` / Q278–Q280, schema ~41):** collateralised **chip fleet** loans — `TakeLoan`/`RepayLoan`, `lab.Loans[]`, LTV on resale collateral, term amortisation, miss penalties in `Finance.RunWeek`.
+- **Fork:** do not fold Q180 into chip loans; research bridge is RP/cash pacing, chip loans are hardware leverage.
+
 ### Q133. Vendor supply under shortage? DECIDED: `ChipShortageSystem.VendorSupplyParts`
 - Choice: **(a)** — base vs scaled Envydia stock; same permille as `ScaleVendorSupply`.
 

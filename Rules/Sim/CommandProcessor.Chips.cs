@@ -205,6 +205,7 @@ namespace AiLabs.Rules.Sim
             ChipListing listing = seller.Listing(cmd.Y);
             ChipDesign d = seller.Design(cmd.Y);
             if (listing == null || d == null || d.Status != ChipDesignStatus.Ready) return Fail(CommandError.UnknownId, seller.Name + " has no such chips on offer.");
+            if (listing.Paused) return Fail(CommandError.InvalidArgument, seller.Name + " paused that listing.");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Buy at least one chip.");
             if (state.Tick < lab.ChipAmbushUntilTick)
                 return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before buying listed chips.");

@@ -1,5 +1,6 @@
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
+using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -185,6 +186,25 @@ namespace AiLabs.Rules.Systems
             int standing = StandingOf(state, lab);
             if (standing <= v.WeeklyGrantStandingAbove) return;
             Finance.Earn(lab, LedgerLine.Grants, v.WeeklyGrantPerStanding * standing);
+        }
+
+        /// <summary>Q178: pay Envydia for a standing bump and a cooldown before repeating.</summary>
+        public static CommandResult Advocate(GameConfig c, GameState state, LabState lab)
+        {
+            VendorConfig v = c.Vendor;
+            if (v.AdvocateCashCost < 1 || v.AdvocateStandingGain < 1)
+                return CommandResult.Fail(CommandError.InvalidArgument, "Vendor advocacy is not offered.");
+            if (state.Tick < lab.VendorAdvocateCooldownUntilTick)
+                return CommandResult.Fail(CommandError.InvalidArgument, "Wait out the advocacy cooldown.");
+            if (lab.Cash < v.AdvocateCashCost)
+                return CommandResult.Fail(CommandError.NotEnoughCash, "Need $" + v.AdvocateCashCost + " to advocate with the vendor.");
+            Finance.Spend(lab, LedgerLine.Grants, v.AdvocateCashCost);
+            VendorStanding standing = EnsureStanding(c, state, lab.Id);
+            standing.Standing = standing.Standing + v.AdvocateStandingGain;
+            if (standing.Standing > v.StandingMax) standing.Standing = v.StandingMax;
+            int cooldown = v.AdvocateCooldownWeeks;
+            if (cooldown > 0) lab.VendorAdvocateCooldownUntilTick = state.Tick + cooldown;
+            return CommandResult.Done(-1);
         }
 
         static int Abs(int x) { return x < 0 ? -x : x; }

@@ -17,6 +17,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.ChipListings.Count; i++)
             {
                 ChipListing listing = lab.ChipListings[i];
+                if (listing.Paused) continue;
                 long each = k.ListingWeeklyUpkeep;
                 if (listing.Spotlight && k.ListingSpotlightUpkeepPermille > 0)
                     each = MathI.MulPermille(each, k.ListingSpotlightUpkeepPermille);
@@ -34,6 +35,18 @@ namespace AiLabs.Rules.Systems
             long upkeep = WeeklyUpkeep(c, lab);
             if (upkeep > 0 && lab.Cash >= upkeep)
                 Finance.Spend(lab, LedgerLine.ChipDevelopment, upkeep);
+        }
+
+        public static CommandResult SetPaused(GameConfig c, GameState state, LabState lab, int designId, bool pause)
+        {
+            ChipListing listing = lab.Listing(designId);
+            if (listing == null)
+                return CommandResult.Fail(CommandError.InvalidArgument, "List the design before pausing it.");
+            ChipDesign design = lab.Design(designId);
+            if (design == null || design.Status != ChipDesignStatus.Ready)
+                return CommandResult.Fail(CommandError.InvalidArgument, "That design is not ready to list.");
+            listing.Paused = pause;
+            return CommandResult.Done(designId);
         }
 
         public static CommandResult SetSpotlight(GameConfig c, GameState state, LabState lab, int designId, bool on)

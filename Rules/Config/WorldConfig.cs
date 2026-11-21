@@ -207,6 +207,11 @@ namespace AiLabs.Rules.Config
         public int HalvedByCoolingPermille;
         /// <summary>Emergency diesel surcharge per kW each week a site is in heatwave (Q170).</summary>
         public long WeeklySurchargeCashPerKw;
+        /// <summary>Up-front cost to buy a heatwave hedge (Q174).</summary>
+        public long HedgeCashCost = 25_000;
+        public int HedgeWeeks = 12;
+        /// <summary>Permille of surcharge waived while <see cref="LabState.PowerHedgeUntilTick"/> is active.</summary>
+        public int HedgeWaiverPermille = 800;
 
         public void Sync(Syncer s)
         {
@@ -217,6 +222,9 @@ namespace AiLabs.Rules.Config
             s.Int("rollDivisor", ref RollDivisor);
             s.Int("halvedByCoolingPermille", ref HalvedByCoolingPermille);
             s.Long("weeklySurchargeCashPerKw", ref WeeklySurchargeCashPerKw);
+            s.Long("hedgeCashCost", ref HedgeCashCost);
+            s.Int("hedgeWeeks", ref HedgeWeeks);
+            s.Int("hedgeWaiverPermille", ref HedgeWaiverPermille);
         }
     }
 
