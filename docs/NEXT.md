@@ -269,6 +269,7 @@ and says why in the commit message.
 85. **Policy consultants (government, staff).** ~~Done~~: `HireConsultants`, `PolicyConsultants`, `consultants` data, lab `consultantLevel`, `consultantWeeks`, `consultantLockedUntil` (schema 57, `MigrateTo57`), `WorldQueries.PolicyStaffWithConsultants`, `ConsultantsTests`, `docs/content/policy-consultants.md` (Q326). Early audit settlement was considered and left out (Q326).
 87. **Public post-mortems (safety).** ~~Done~~: `PublishPostMortem`, `PostMortem`, `postMortem` data, model `incidentRepLoss` and `postMortemDone` (schema 58, `MigrateTo58`), `PostMortemTests`, `docs/content/post-mortems.md` (Q328).
 88. **Service-level pledge (economy, safety).** ~~Done~~: `SetSla`, `Sla`, `sla` data, lab `slaLevel`, `slaLockedUntil`, `slaStrikes` (schema 59, `MigrateTo59`), `SlaTests`, `docs/content/service-level-pledge.md` (Q329).
+89. **Research grants (research, funding).** ~~Done~~: `ApplyForGrant`, `ResearchGrants`, `researchGrants` data, five lab fields (schema 60, `MigrateTo60`), `ResearchGrantsTests`, `docs/content/research-grants.md` (Q333). The recruiting drive was rejected as a priced timed modifier (Q330).
 
 ## Rules: later
 

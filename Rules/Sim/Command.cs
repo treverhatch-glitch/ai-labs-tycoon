@@ -58,7 +58,8 @@ namespace AiLabs.Rules.Sim
         SetOnCall,
         HireConsultants,
         PublishPostMortem,
-        SetSla
+        SetSla,
+        ApplyForGrant
     }
 
     /// <summary>
@@ -409,6 +410,14 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RunCampaign, labId);
             c.Id = sectorId;
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>
+        public static Command ApplyForGrant(int labId, int tier)
+        {
+            Command c = Make(CommandKind.ApplyForGrant, labId);
+            c.Count = tier;
             return c;
         }
 
@@ -781,7 +790,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked
     }
 
     public struct CommandResult

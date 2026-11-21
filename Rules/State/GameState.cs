@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 59;
+        public const int CurrentSchema = 60;
 
         public int Schema;
         public string ConfigVersion;
@@ -184,6 +184,16 @@ namespace AiLabs.Rules.State
         public int SlaLockedUntil;
         /// <summary>Broken weeks in a row.</summary>
         public int SlaStrikes;
+        /// <summary>0 with no grant, 1 while one is under review, 2 while the papers for an awarded one are owed.</summary>
+        public int ResearchGrantStage;
+        /// <summary>The tier applied for (0 with no grant).</summary>
+        public int ResearchGrantTier;
+        /// <summary>The week the review ends (stage 1) or the papers are due (stage 2).</summary>
+        public int ResearchGrantTick;
+        /// <summary>The papers still owed for an awarded grant.</summary>
+        public int ResearchGrantOwed;
+        /// <summary>The week the lab can next apply.</summary>
+        public int ResearchGrantLockedUntil;
         /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
         public int ConsultantLevel;
         /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
@@ -386,6 +396,11 @@ namespace AiLabs.Rules.State
             s.Int("slaLevel", ref SlaLevel);
             s.Int("slaLockedUntil", ref SlaLockedUntil);
             s.Int("slaStrikes", ref SlaStrikes);
+            s.Int("researchGrantStage", ref ResearchGrantStage);
+            s.Int("researchGrantTier", ref ResearchGrantTier);
+            s.Int("researchGrantTick", ref ResearchGrantTick);
+            s.Int("researchGrantOwed", ref ResearchGrantOwed);
+            s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
             s.Int("consultantLevel", ref ConsultantLevel);
             s.Int("consultantWeeks", ref ConsultantWeeks);
             s.Int("consultantLockedUntil", ref ConsultantLockedUntil);

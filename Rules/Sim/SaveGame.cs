@@ -100,6 +100,12 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
                 if (lab.ConsultantLevel < 0 || lab.ConsultantLevel > c.Consultants.MaxLevel || lab.ConsultantWeeks < 0 || lab.ConsultantWeeks > c.Consultants.Weeks || lab.ConsultantLockedUntil < 0 || (lab.ConsultantWeeks > 0) != (lab.ConsultantLevel > 0))
                     p.Add(who + " has policy consultants (level " + lab.ConsultantLevel + ", " + lab.ConsultantWeeks + " weeks left), which the data does not allow");
+                if (lab.ResearchGrantStage < 0 || lab.ResearchGrantStage > ResearchGrants.Owed || lab.ResearchGrantTier < 0 || lab.ResearchGrantTier > c.ResearchGrants.MaxTier || lab.ResearchGrantTick < 0 || lab.ResearchGrantOwed < 0 || lab.ResearchGrantLockedUntil < 0
+                    || (lab.ResearchGrantStage == ResearchGrants.None && (lab.ResearchGrantTier != 0 || lab.ResearchGrantOwed != 0))
+                    || (lab.ResearchGrantStage != ResearchGrants.None && lab.ResearchGrantTier < 1)
+                    || (lab.ResearchGrantStage == ResearchGrants.InReview && lab.ResearchGrantOwed != 0)
+                    || (lab.ResearchGrantStage == ResearchGrants.Owed && (lab.ResearchGrantOwed < 1 || lab.ResearchGrantOwed > lab.ResearchGrantTier)))
+                    p.Add(who + " has a research grant (stage " + lab.ResearchGrantStage + ", tier " + lab.ResearchGrantTier + ", " + lab.ResearchGrantOwed + " papers owed) that the data does not allow");
                 if (lab.SlaLevel < 0 || lab.SlaLevel > c.Sla.MaxLevel || lab.SlaLockedUntil < 0 || lab.SlaStrikes < 0 || (c.Sla.StrikeWeeks > 0 && lab.SlaStrikes >= c.Sla.StrikeWeeks)) p.Add(who + " has a service-level pledge (level " + lab.SlaLevel + ", " + lab.SlaStrikes + " broken weeks) that the data does not allow");
                 if (lab.OnCallLevel < 0 || lab.OnCallLevel > c.OnCall.MaxLevel || lab.OnCallLockedUntil < 0) p.Add(who + " has an on-call rota of level " + lab.OnCallLevel + ", which the data does not allow");
                 if (lab.CampaignLevel < 0 || lab.CampaignLevel > c.Marketing.MaxLevel || lab.CampaignWeeks < 0 || lab.CampaignWeeks > c.Marketing.Weeks || lab.HangoverWeeks < 0 || lab.HangoverWeeks > c.Marketing.HangoverWeeks || lab.CampaignLockedUntil < 0

@@ -90,6 +90,7 @@ namespace AiLabs.Rules.Config
             ConsultantsProblems(p, c);
             PostMortemProblems(p, c);
             SlaProblems(p, c);
+            ResearchGrantsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -896,6 +897,24 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void ResearchGrantsProblems(List<string> p, GameConfig c)
+        {
+            ResearchGrantsConfig k = c.ResearchGrants;
+            if (k == null) { p.Add("researchGrants is missing"); return; }
+            if (k.MaxTier < 0 || k.MaxTier > 5) p.Add("researchGrants.maxTier must be from 0 to 5");
+            if (k.MinResearchers < 0 || k.MinResearchers > 100) p.Add("researchGrants.minResearchers must be from 0 to 100");
+            if (k.ApplyCostPerTier < 0) p.Add("researchGrants.applyCostPerTier is negative");
+            if (k.AwardPerTier < k.ApplyCostPerTier) p.Add("researchGrants.awardPerTier must be at least applyCostPerTier, or no grant could pay for its own application");
+            if (k.BarPerTier < 0 || k.BarPerTier * (long)k.MaxTier > 2000) p.Add("researchGrants.barPerTier must be 0 or more, and the top tier's bar at most 2000");
+            if (k.ReputationWeightPermille < 0 || k.ReputationWeightPermille > MathI.Permille) p.Add("researchGrants.reputationWeightPermille must be from 0 to 1000");
+            if (k.ReviewWeeks < 1 || k.ReviewWeeks > 52) p.Add("researchGrants.reviewWeeks must be from 1 to 52");
+            if (k.DeliverWeeks < 1 || k.DeliverWeeks > 104) p.Add("researchGrants.deliverWeeks must be from 1 to 104");
+            if (k.ClawbackPermille < 0 || k.ClawbackPermille > MathI.Permille) p.Add("researchGrants.clawbackPermille must be from 0 to 1000");
+            if (k.CompletedReputation < 0 || k.CompletedReputation > 100) p.Add("researchGrants.completedReputation must be from 0 to 100");
+            if (k.FailedReputation < 0 || k.FailedReputation > 200) p.Add("researchGrants.failedReputation must be from 0 to 200");
+            if (k.CooldownWeeks < 0 || k.CooldownWeeks > 104) p.Add("researchGrants.cooldownWeeks must be from 0 to 104");
         }
 
         static void SlaProblems(List<string> p, GameConfig c)

@@ -182,7 +182,13 @@ namespace AiLabs.Rules.State
         /// <summary>The player changed the service-level pledge, or a run of broken weeks dropped it. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
         SlaPledged,
         /// <summary>A week broke the service-level pledge. LabId is the lab, SubjectId the level, Amount the refund. Pick is 0 for too little serving compute, 1 for an incident.</summary>
-        SlaBroken
+        SlaBroken,
+        /// <summary>The player applied for a research grant. LabId is the lab, SubjectId the tier, Amount the application fee. Pick is 1.</summary>
+        GrantApplied,
+        /// <summary>The panel ruled on a research grant. LabId is the lab, SubjectId the tier, Amount the award (0 when declined). Pick is 1 when awarded, 0 when declined.</summary>
+        GrantDecided,
+        /// <summary>A research grant was settled. LabId is the lab, SubjectId the tier, Amount the cash paid back. Pick is 1 when the papers were delivered, 0 when they were not.</summary>
+        GrantSettled
     }
 
     /// <summary>

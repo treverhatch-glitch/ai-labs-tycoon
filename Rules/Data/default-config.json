@@ -5608,6 +5608,20 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "researchGrants": {
+    "maxTier": 3,
+    "minResearchers": 2,
+    "applyCostPerTier": 5000,
+    "awardPerTier": 60000,
+    "barPerTier": 250,
+    "reputationWeightPermille": 300,
+    "reviewWeeks": 6,
+    "deliverWeeks": 30,
+    "clawbackPermille": 500,
+    "completedReputation": 15,
+    "failedReputation": 30,
+    "cooldownWeeks": 20
+  },
   "sla": {
     "maxLevel": 3,
     "premiumPermillePerLevel": 40,
