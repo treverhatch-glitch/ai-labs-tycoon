@@ -119,6 +119,28 @@ namespace AiLabs.Rules.Systems
             return false;
         }
 
+        /// <summary>Parts of owner chip software permille; each part sums to <see cref="EffectiveSoftware"/>.</summary>
+        public struct OwnerSoftwareBreakdown
+        {
+            public int FromLab;
+            public int FromTech;
+            /// <summary>Negative when <see cref="FromLab"/> + <see cref="FromTech"/> exceeds the config cap.</summary>
+            public int CapClip;
+
+            public int Total { get { return FromLab + FromTech + CapClip; } }
+        }
+
+        public static OwnerSoftwareBreakdown SoftwareParts(GameConfig c, LabState lab)
+        {
+            var b = new OwnerSoftwareBreakdown();
+            b.FromLab = lab.SoftwarePermille;
+            if (b.FromLab <= 0) return b;
+            b.FromTech = (int)LabQueries.TechBonus(c, lab, TechEffectKind.SoftwarePermille);
+            int capped = EffectiveSoftware(c, lab);
+            b.CapClip = capped - b.FromLab - b.FromTech;
+            return b;
+        }
+
         /// <summary>The software a lab's chips run, in permille of paper speed: what its compiler has matured to, plus its compiler techs.</summary>
         public static int EffectiveSoftware(GameConfig c, LabState lab)
         {

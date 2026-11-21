@@ -84,6 +84,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — matches training finish order; synthetic source can show negative part.
 - Why: bible data mix without new fields; pairs with Q11 data sources.
 
+### Q16. Owner chip software breakdown? DECIDED: lab + tech + cap clip
+
+- Options: (a) store cap separately in state; (b) `ChipQueries.SoftwareParts` with `FromLab`, `FromTech`, `CapClip`; (c) defer until Unity chip UI.
+- Choice: **(b)** — `Total` equals `EffectiveSoftware`; batch compute cross-tested.
+- Why: systems design 4.6/4.11 explainable software permille.
+
 ### Q15. Second specialist line? DECIDED: `image-specialist` on `conv-nets`
 
 - Options: (a) image specialist on `multimodal`; (b) unlock with `conv-nets`, home sectors `image-recognition` + `image-design`; (c) wait for era-content art.
