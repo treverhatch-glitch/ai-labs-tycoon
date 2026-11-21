@@ -836,6 +836,8 @@ namespace AiLabs.Rules.Config
         public string RoomTypeId = "device-workshop";
         public string SectorId = "devices";
         public int AppealBonusPermille = 100;
+        /// <summary>Extra revenue permille in <see cref="SectorId"/> when the workshop gate is satisfied.</summary>
+        public int RevenueBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -843,6 +845,7 @@ namespace AiLabs.Rules.Config
             s.Str("roomTypeId", ref RoomTypeId);
             s.Str("sectorId", ref SectorId);
             s.Int("appealBonusPermille", ref AppealBonusPermille);
+            s.Int("revenueBonusPermille", ref RevenueBonusPermille);
         }
     }
 

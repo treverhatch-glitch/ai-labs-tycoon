@@ -386,6 +386,18 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q83. Device workshop revenue? DECIDED: `revenueBonusPermille`
+
+- Why: Q54 workshop only scaled appeal; consumer hardware should also lift cash in `devices`.
+- Choice: `DeviceWorkshopSystem.RevenueBonusPermille`; applied in `MarketSystem` entry revenue; gates match appeal.
+- Thirteen `DeviceWorkshopRevenueTests`. Golden unchanged.
+
+### Q82. Morale alignment work? DECIDED: `moraleAlignmentPermillePerPoint`
+
+- Why: Pair Q80 research hook; unhappy teams slow alignment work during training.
+- Choice: `StaffSystem.MoraleDeltaPermille`; `TrainingSystem.AlignmentWorkPermille` includes morale term.
+- Thirteen `StaffMoraleAlignmentTests`. Golden unchanged.
+
 ### Q81. Patent reputation upkeep? DECIDED: `reputationPerActivePatent`
 
 - Why: Q51 patents blocked rivals but gave no ongoing upside while active.

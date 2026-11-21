@@ -3490,7 +3490,8 @@
       "eraId": "harnesses",
       "roomTypeId": "device-workshop",
       "sectorId": "devices",
-      "appealBonusPermille": 100
+      "appealBonusPermille": 100,
+      "revenueBonusPermille": 80
     },
     "capabilityDomains": [
       {
@@ -4059,6 +4060,7 @@
     "poachChancePermille": 80,
     "starHirePermille": 120,
     "moraleResearchPermillePerPoint": 4,
+    "moraleAlignmentPermillePerPoint": 3,
     "traits": [
       {
         "id": "steady",

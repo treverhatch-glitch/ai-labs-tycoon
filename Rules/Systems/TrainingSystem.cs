@@ -51,8 +51,10 @@ namespace AiLabs.Rules.Systems
         public static int AlignmentWorkPermille(GameConfig c, LabState lab)
         {
             long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
-            return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
+            int total = MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille);
+            total += StaffSystem.MoraleAlignmentPermille(c, lab);
+            return total;
         }
 
         /// <summary>This week's compute going to training. It is zero when nothing is training: idle GPUs serve customers.</summary>

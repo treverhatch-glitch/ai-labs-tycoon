@@ -79,6 +79,9 @@ namespace AiLabs.Rules.Systems
                     long entryRevenue = MathI.MulPermille(potential, entry.PricePermille);
                     if (entryModel.OpenWeights)
                         entryRevenue = MathI.MulPermille(entryRevenue, c.Market.OpenWeightsRevenuePermille);
+                    int workshopRev = DeviceWorkshopSystem.RevenueBonusPermille(c, state, entryLab, sector.Id);
+                    if (workshopRev > 0)
+                        entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + workshopRev);
                     entry.LastRevenue = entryRevenue;
 
                     ModelLineConfig line = c.Line(entryModel.LineId);

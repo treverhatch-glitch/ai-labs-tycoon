@@ -27,14 +27,24 @@ namespace AiLabs.Rules.Systems
 
         public static int AppealBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId)
         {
-            if (lab.Bankrupt) return 0;
+            return WorkshopBonusPermille(c, state, lab, sectorId, c.Market.DeviceWorkshop?.AppealBonusPermille ?? 0);
+        }
+
+        public static int RevenueBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId)
+        {
+            return WorkshopBonusPermille(c, state, lab, sectorId, c.Market.DeviceWorkshop?.RevenueBonusPermille ?? 0);
+        }
+
+        static int WorkshopBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId, int bonus)
+        {
+            if (lab.Bankrupt || bonus <= 0) return 0;
             DeviceWorkshopConfig workshop = c.Market.DeviceWorkshop;
-            if (workshop == null || workshop.AppealBonusPermille <= 0) return 0;
+            if (workshop == null) return 0;
             if (sectorId != workshop.SectorId) return 0;
             if (!EraSystem.Open(c, workshop.EraId, state.Tick)) return 0;
             if (!HasRoom(lab, workshop.RoomTypeId)) return 0;
             if (!HasReleasedInSector(lab, workshop.SectorId)) return 0;
-            return workshop.AppealBonusPermille;
+            return bonus;
         }
     }
 }

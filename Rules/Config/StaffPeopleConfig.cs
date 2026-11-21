@@ -18,6 +18,8 @@ namespace AiLabs.Rules.Config
         public int StarHirePermille;
         /// <summary>Research output permille per point of average morale above <see cref="MoraleBaseline"/> (can go negative).</summary>
         public int MoraleResearchPermillePerPoint;
+        /// <summary>Alignment work permille per point of average morale above baseline.</summary>
+        public int MoraleAlignmentPermillePerPoint;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -36,6 +38,7 @@ namespace AiLabs.Rules.Config
             s.Int("poachChancePermille", ref PoachChancePermille);
             s.Int("starHirePermille", ref StarHirePermille);
             s.Int("moraleResearchPermillePerPoint", ref MoraleResearchPermillePerPoint);
+            s.Int("moraleAlignmentPermillePerPoint", ref MoraleAlignmentPermillePerPoint);
             s.ObjList("traits", ref Traits);
         }
     }

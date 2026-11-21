@@ -272,6 +272,7 @@ namespace AiLabs.Rules.Config
             if (string.IsNullOrEmpty(w.RoomTypeId) || c.RoomType(w.RoomTypeId) == null) p.Add("market.deviceWorkshop names an unknown room type");
             if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
             Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
+            Permille(p, "market.deviceWorkshop.revenueBonusPermille", w.RevenueBonusPermille);
         }
 
         static void CapabilityDomainProblems(List<string> p, GameConfig c)
@@ -708,6 +709,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
             if (s.MoraleResearchPermillePerPoint < 0) p.Add("staffPeople.moraleResearchPermillePerPoint is negative");
+            if (s.MoraleAlignmentPermillePerPoint < 0) p.Add("staffPeople.moraleAlignmentPermillePerPoint is negative");
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
             UniqueIds(p, "staffPeople.traits", s.Traits);
             bool hasStar = false;
