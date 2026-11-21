@@ -75,6 +75,7 @@ namespace AiLabs.Rules.Config
         public PrestigeConfig Prestige = new PrestigeConfig();
         public SubletConfig Sublet = new SubletConfig();
         public ResearchFocusConfig Focus = new ResearchFocusConfig();
+        public HackWeekConfig Hack = new HackWeekConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
@@ -144,6 +145,7 @@ namespace AiLabs.Rules.Config
             s.Obj("prestige", ref Prestige);
             s.Obj("sublet", ref Sublet);
             s.Obj("focus", ref Focus);
+            s.Obj("hack", ref Hack);
             s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);

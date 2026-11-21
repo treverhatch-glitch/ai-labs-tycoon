@@ -1564,6 +1564,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 52, `MigrateTo52`): `researchFocus` and `focusLockedUntil`. Player only and opt-in; rivals and the autopilot never pick one, so defaults change nothing. The golden digest moved to 43a606be because of the two lab fields and the schema number only; reverting them brought the previous digest (5204c5ee) back.
 - Alternatives: a focus that only discounts (rejected: it would always be right to pick one); letting a lab drop the focus for free (rejected: it would remove the penalty whenever a tech outside the focus is wanted); one direction per era (rejected: it takes the choice away).
 
+### Q314. Can the player hold a hack week? DECIDED: yes, two weeks of more research and a happier team, with slower training and a cooldown
+- New `hack` data, command `HoldHackWeek`, `HackWeek` system, event `HackWeek` (appended; Pick 1 start, 0 end), `CommandError.HackLocked`. It costs $800 for each person (hiring line), needs two researchers and an average morale of 300, and cannot overlap crunch time in either order.
+- For two weeks research points are 40% higher, training speed is 40% lower and everyone gains 80 morale at the start. The next one can be held 26 weeks after the start.
+- New state on the lab (schema 52, same `MigrateTo52` as the research focus): `hackWeeks` and `hackLockedUntil`. Player only and opt-in. The golden digest moved to 7f191f56 because of the two lab fields; with only those two sync lines reverted the previous digest (43a606be) came back.
+- Alternatives: a one-off payout of research points (rejected: a cost that falls on training is what makes it a choice); letting it overlap crunch time (rejected: two big research bonuses and a morale lift would stack into the best week of the game); a morale cost (rejected: the point is the opposite of crunch).
+
 ## Open
 
 None.

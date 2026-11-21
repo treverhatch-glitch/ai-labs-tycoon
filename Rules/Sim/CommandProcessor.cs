@@ -88,6 +88,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.PublishPaper: return PublishPaper(c, state, lab);
                 case CommandKind.SetSublet: return SetSublet(c, state, lab, cmd);
                 case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
+                case CommandKind.HoldHackWeek: return HoldHackWeek(c, state, lab);
                 case CommandKind.SetResearchFocus: return SetResearchFocus(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
@@ -317,6 +318,7 @@ namespace AiLabs.Rules.Sim
             }
             if (Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is already in crunch time.");
             if (c.StaffPeople.CrunchMaxWeeks <= 0) return Fail(CommandError.InvalidArgument, "There is no crunch time in this game.");
+            if (HackWeek.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is on a hack week; crunch time can start when it is over.");
             if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to work late.");
             if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
                 return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");

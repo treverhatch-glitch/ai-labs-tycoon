@@ -162,6 +162,10 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The weeks of hack week still to run, 0 when none is on. Only the player's lab holds one.</summary>
+        public int HackWeeks;
+        /// <summary>The next hack week cannot be held before this tick.</summary>
+        public int HackLockedUntil;
         /// <summary>The pay policy: 0 is market pay, above is better paid, below is worse. Only the player's lab changes it.</summary>
         public int PayLevel;
         /// <summary>The pay policy cannot be changed before this tick.</summary>
@@ -331,6 +335,8 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("hackWeeks", ref HackWeeks);
+            s.Int("hackLockedUntil", ref HackLockedUntil);
             s.Int("payLevel", ref PayLevel);
             s.Int("payLockedUntil", ref PayLockedUntil);
             s.Int("founderSharePermille", ref FounderSharePermille);

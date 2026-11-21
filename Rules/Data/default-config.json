@@ -5548,6 +5548,16 @@
     "switchCost": 50000,
     "lockWeeks": 26
   },
+  "hack": {
+    "weeks": 2,
+    "minResearchers": 2,
+    "minMorale": 300,
+    "costPerStaff": 800,
+    "moraleLift": 80,
+    "researchPermille": 400,
+    "trainingCutPermille": 400,
+    "cooldownWeeks": 26
+  },
   "audit": {
     "weeks": 52,
     "minSafetyStaff": 2,

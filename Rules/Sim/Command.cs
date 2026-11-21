@@ -47,7 +47,8 @@ namespace AiLabs.Rules.Sim
         PublishPaper,
         SetSublet,
         CommissionAudit,
-        SetResearchFocus
+        SetResearchFocus,
+        HoldHackWeek
     }
 
     /// <summary>
@@ -383,6 +384,12 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Lets the researchers build what they like for the data's weeks: happier, more research, slower training, then a cooldown.</summary>
+        public static Command HoldHackWeek(int labId)
+        {
+            return Make(CommandKind.HoldHackWeek, labId);
+        }
+
         /// <summary>Picks the lab's research direction by id, or "" to drop it. Costs cash and cannot be done again for a while.</summary>
         public static Command SetResearchFocus(int labId, string focusId)
         {
@@ -682,7 +689,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked
     }
 
     public struct CommandResult

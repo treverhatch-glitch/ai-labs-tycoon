@@ -417,13 +417,15 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Schema 51: no model was ever audited from outside.</summary>
-        /// <summary>Schema 52: no lab has picked a research focus.</summary>
+        /// <summary>Schema 52: no lab has picked a research focus or held a hack week.</summary>
         static void MigrateTo52(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 JsonPatch.AddIfMissing(lab, "researchFocus", JsonValue.Of(""));
                 JsonPatch.AddIfMissing(lab, "focusLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackLockedUntil", JsonValue.Of(0L));
             });
         }
 

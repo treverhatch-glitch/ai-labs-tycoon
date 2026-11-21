@@ -80,6 +80,7 @@ namespace AiLabs.Rules.Config
             SubletProblems(p, c);
             AuditProblems(p, c);
             FocusProblems(p, c);
+            HackProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -873,6 +874,20 @@ namespace AiLabs.Rules.Config
                 foreach (string kind in o.Kinds)
                     if (!System.Enum.TryParse(kind, out TechEffectKind parsed) || !System.Enum.IsDefined(typeof(TechEffectKind), parsed)) p.Add("focus option " + o.Id + " names the unknown tech effect \"" + kind + "\"");
             }
+        }
+
+        static void HackProblems(List<string> p, GameConfig c)
+        {
+            HackWeekConfig k = c.Hack;
+            if (k == null) { p.Add("hack is missing"); return; }
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("hack.weeks must be from 0 to 52");
+            if (k.MinResearchers < 0 || k.MinResearchers > 1000) p.Add("hack.minResearchers must be from 0 to 1000");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("hack.minMorale must be from 0 to 1000");
+            if (k.CostPerStaff < 0) p.Add("hack.costPerStaff is negative");
+            if (k.MoraleLift < 0 || k.MoraleLift > MathI.Permille) p.Add("hack.moraleLift must be from 0 to 1000");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 2000) p.Add("hack.researchPermille must be from 0 to 2000");
+            if (k.TrainingCutPermille < 0 || k.TrainingCutPermille > 900) p.Add("hack.trainingCutPermille must be from 0 to 900, so training never stops");
+            if (k.CooldownWeeks < k.Weeks || k.CooldownWeeks > 520) p.Add("hack.cooldownWeeks must be from weeks to 520, so one cannot start while another is on");
         }
 
         static void AuditProblems(List<string> p, GameConfig c)
