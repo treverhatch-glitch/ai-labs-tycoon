@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Config
             RushProblems(p, c);
             LobbyProblems(p, c);
             LoanProblems(p, c);
+            ScenarioProblems(p, c);
             PivotProblems(p, c);
             CampaignProblems(p, c);
             RunsProblems(p, c);
@@ -620,6 +621,28 @@ namespace AiLabs.Rules.Config
             if (v.StaffLossPermille < 0 || v.StaffLossPermille > MathI.Permille) p.Add("pivot.staffLossPermille must be from 0 to 1000");
             if (v.ConfusionWeeks < 1 || v.ConfusionWeeks > 520) p.Add("pivot.confusionWeeks must be from 1 to 520");
             if (v.ConfusionAppealPermille < 0 || v.ConfusionAppealPermille >= MathI.Permille) p.Add("pivot.confusionAppealPermille must be from 0 to 999");
+        }
+
+        static void ScenarioProblems(List<string> p, GameConfig c)
+        {
+            ScenariosConfig sc = c.Scenarios;
+            if (sc == null) { p.Add("scenarios is missing"); return; }
+            UniqueIds(p, "scenarios", sc.Scenarios);
+            for (int i = 0; i < sc.Scenarios.Count; i++)
+            {
+                ScenarioConfig s = sc.Scenarios[i];
+                string who = "scenario " + s.IdValue;
+                if (string.IsNullOrEmpty(s.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(s.Blurb)) p.Add(who + " has no blurb");
+                EraConfig era = c.Era(s.EraId);
+                if (era == null) p.Add(who + " starts in the unknown era \"" + s.EraId + "\"");
+                else if (!era.Startable) p.Add(who + " starts in " + era.Name + ", which is not a starting era");
+                if (!string.IsNullOrEmpty(s.FounderId) && c.Founder(s.FounderId) == null) p.Add(who + " has the unknown founder \"" + s.FounderId + "\"");
+                if (!string.IsNullOrEmpty(s.StyleId) && c.Style(s.StyleId) == null) p.Add(who + " has the unknown style \"" + s.StyleId + "\"");
+                if (!string.IsNullOrEmpty(s.HomeBlocId) && c.World.Bloc(s.HomeBlocId) == null) p.Add(who + " has the unknown home bloc \"" + s.HomeBlocId + "\"");
+                for (int k = 0; k < s.RivalIds.Count; k++)
+                    if (c.Rival(s.RivalIds[k]) == null) p.Add(who + " has the unknown rival \"" + s.RivalIds[k] + "\"");
+            }
         }
 
         static void LoanProblems(List<string> p, GameConfig c)

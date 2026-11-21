@@ -1369,6 +1369,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move.
 - Why: rung 5 needs corruption of 450 or more, which only comes from shady contracts, so labs that never choose them see none of this. For labs that do, the answers are the choice the bible asks for.
 
+### Q284. What is a scenario? DECIDED: a named bundle of the choices a new game already has, filled in from the data
+- Options: (a) scenarios that also set up a starting situation (a lawsuit under way, a hall half built); (b) a named bundle of era, founder, style, home bloc, names and rivals.
+- Recommendation and choice: **(b)**, seven of them: four founders in their natural year, the 1995 prologue, a quiet alignment-minded lab in the Nordics and a two-rival race. `Scenarios.Options` and `Scenarios.Start` turn one into a game. A game from a scenario has the same digest as one made by hand with the same options.
+- Why: the bible asks for "a named archetype in a specific year". Everything such a start needs is already a new-game option, so the data-only version is faithful, testable and changes no rules. Starting situations need a save field or setup code per scenario and are listed as open.
+
+### Q285. Is anything saved? DECIDED: no
+- Options: (a) remember which scenario a game began as; (b) nothing.
+- Recommendation and choice: **(b)**. The game is exactly what the options make; no schema change and the golden did not move.
+- Why: nothing in the rules would read it. A screen that wants "you are playing the Heir's Gambit" can keep that outside the rules.
+
 ## Open
 
 None.

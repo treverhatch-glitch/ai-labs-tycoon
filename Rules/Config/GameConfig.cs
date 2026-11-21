@@ -75,6 +75,7 @@ namespace AiLabs.Rules.Config
         public RushConfig Rush = new RushConfig();
         public LobbyConfig Lobbying = new LobbyConfig();
         public LoansConfig Loans = new LoansConfig();
+        public ScenariosConfig Scenarios = new ScenariosConfig();
         public PivotConfig Pivot = new PivotConfig();
         public CampaignConfig Campaign = new CampaignConfig();
         public RunsConfig Runs = new RunsConfig();
@@ -136,6 +137,7 @@ namespace AiLabs.Rules.Config
             s.Obj("rush", ref Rush);
             s.Obj("lobbying", ref Lobbying);
             s.Obj("loans", ref Loans);
+            s.Obj("scenarios", ref Scenarios);
             s.Obj("pivot", ref Pivot);
             s.Obj("campaign", ref Campaign);
             s.Obj("runs", ref Runs);

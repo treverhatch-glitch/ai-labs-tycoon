@@ -7161,6 +7161,104 @@
     "missPenaltyPermille": 100,
     "defaultAfterMisses": 3
   },
+  "scenarios": {
+    "scenarios": [
+      {
+        "id": "professors-grant",
+        "name": "The Professor's Grant",
+        "blurb": "2009. You left the university with a grant, a whiteboard and a reputation for being right a long time ago.",
+        "eraId": "punchline",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "us",
+        "labName": "Ivory Tower Labs",
+        "leader": "Prof. Okafor",
+        "familyName": "Ivory",
+        "rivalIds": []
+      },
+      {
+        "id": "dropouts-deck",
+        "name": "The Dropout's Deck",
+        "blurb": "2012. You have a pitch deck, a hoodie and a terrifying amount of confidence. The research is still on the way.",
+        "eraId": "it-sees",
+        "founderId": "dropout",
+        "styleId": "wildcard",
+        "homeBlocId": "us",
+        "labName": "Pitch Deck Labs",
+        "leader": "Sam",
+        "familyName": "Deck",
+        "rivalIds": []
+      },
+      {
+        "id": "defectors-lawsuit",
+        "name": "The Defector's Lawsuit",
+        "blurb": "2017. You walked out of OpenAye with secrets and a non-compete lawsuit. They have not forgotten.",
+        "eraId": "it-writes",
+        "founderId": "defector",
+        "styleId": "shotgun",
+        "homeBlocId": "us",
+        "labName": "Second Chance AI",
+        "leader": "Dr. Vale",
+        "familyName": "Chance",
+        "rivalIds": []
+      },
+      {
+        "id": "heirs-gambit",
+        "name": "The Heir's Gambit",
+        "blurb": "2022. Old money, new chips. Everyone in the lab knows who your father is. Nobody has told you what a loss curve is.",
+        "eraId": "chat-boom",
+        "founderId": "heir",
+        "styleId": "shotgun",
+        "homeBlocId": "gulf",
+        "labName": "Old Money Labs",
+        "leader": "Alexandra",
+        "familyName": "Money",
+        "rivalIds": []
+      },
+      {
+        "id": "dial-up-prologue",
+        "name": "The Dial-Up Prologue",
+        "blurb": "1995. A modem screams in a spare room. Nobody has heard of a neural net, which is lucky, because you are about to build a small one.",
+        "eraId": "dial-up-days",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "uk",
+        "labName": "Cambridge Backroom",
+        "leader": "You",
+        "familyName": "Backroom",
+        "rivalIds": []
+      },
+      {
+        "id": "nordic-quiet",
+        "name": "The Quiet Lab",
+        "blurb": "2024. A fjord, an alignment team and a board who would like you to ship less. Agents have just arrived.",
+        "eraId": "agents",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "nordics",
+        "labName": "Fjord Alignment Lab",
+        "leader": "Dr. Lind",
+        "familyName": "Fjord",
+        "rivalIds": []
+      },
+      {
+        "id": "two-horse-race",
+        "name": "The Two-Horse Race",
+        "blurb": "2009. Only OpenAye and DeepSneak are in the world and one of them is about to notice you.",
+        "eraId": "punchline",
+        "founderId": "dropout",
+        "styleId": "shotgun",
+        "homeBlocId": "us",
+        "labName": "Third Horse Labs",
+        "leader": "Jo",
+        "familyName": "Horse",
+        "rivalIds": [
+          "openaye",
+          "deepsneak"
+        ]
+      }
+    ]
+  },
   "news": {
     "defaultHeadlines": 8,
     "minHeadlines": 5,

@@ -223,6 +223,8 @@ and says why in the commit message.
     `Loan` on the lab, `EventKind.LoanTaken` / `LoanRepaid` / `LoanMissed` / `LoanDefaulted`, save schema 41 (Q278-Q280), `LoanTests`, `docs/content/loans.md`. Still open: loans against own chips, a margin call, exit prices that count debt, a screen (Unity).
 43. **The escape-attempt crisis (bible ch. 10 incident ladder, rung 5).** ~~Done~~: `OfficeTrigger.Escape`, `OfficeEventConfig.lapseChoice`, `OfficeEffectKind.Corruption`, `OfficeEvents.OnEscape`,
     the `escape-attempt` event with three answers (Q281-Q283), `EscapeCrisisTests`, `docs/content/escape-crisis.md`; no schema, golden unchanged. Still open: a real gamble, a rung-6 crisis, one-site shutdowns.
+44. **Scenarios (bible ch. 15 "start as a named archetype in a specific year").** ~~Done~~: `scenarios` in the data (seven named starts), `Scenarios.List` / `Options` / `Start`, the validator (Q284-Q285),
+    `ScenarioTests`, `docs/content/scenarios.md`; no schema, golden unchanged. Still open: starting situations, per-scenario goals, the picker (Unity), the 1956 prologue.
 
 ## Rules: later
 
