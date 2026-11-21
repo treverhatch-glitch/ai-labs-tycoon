@@ -8,7 +8,7 @@ namespace AiLabs.Rules.State
         Hired, Fired,
         GpusRented, GpusBought, GpusSold,
         TechResearched,
-        TrainingStarted, TrainingFinished, ModelReleased, ModelRetired,
+        TrainingStarted, TrainingFinished, TrainingFailed, ModelReleased, ModelRetired,
         Incident,
         GauntletCrown, GauntletBracket, GauntletSafest,
         GrantEnded, InDebt, Bankrupt,

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 16;
+        public const int CurrentSchema = 17;
 
         public int Schema;
         public string ConfigVersion;
@@ -303,7 +303,7 @@ namespace AiLabs.Rules.State
         }
     }
 
-    public enum ModelStatus { Training, Trained, Released, Retired }
+    public enum ModelStatus { Training, Trained, Released, Retired, Failed }
 
     /// <summary>How a model's creature looks right now. Derived from the state, never stored.</summary>
     public enum ModelMood { Healthy, Overworked, Glitching, Corrupted }

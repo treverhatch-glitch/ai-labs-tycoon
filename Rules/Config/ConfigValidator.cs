@@ -104,6 +104,10 @@ namespace AiLabs.Rules.Config
             if (c.Training.MaxConcurrentRuns < 1) p.Add("training.maxConcurrentRuns must be at least 1");
             Permille(p, "training.carryoverPermille", c.Training.CarryoverPermille);
             if (c.Training.LuckPermille < 0 || c.Training.LuckPermille >= 1000) p.Add("training.luckPermille must be from 0 to 999");
+            Permille(p, "training.baseFailPermille", c.Training.BaseFailPermille);
+            if (c.Training.FailEngineerCutPermille < 0) p.Add("training.failEngineerCutPermille is negative");
+            if (c.Training.FailAlignmentCutPermille < 0) p.Add("training.failAlignmentCutPermille is negative");
+            Permille(p, "training.failAfterProgressPermille", c.Training.FailAfterProgressPermille);
             if (c.Training.DataSources.Count == 0) p.Add("training.dataSources is empty");
             UniqueIds(p, "training.dataSources", c.Training.DataSources);
             foreach (DataSourceConfig src in c.Training.DataSources)
@@ -111,6 +115,7 @@ namespace AiLabs.Rules.Config
                 if (src.PrepCostPermille < 1) p.Add("data source " + src.Id + " needs prepCostPermille of at least 1");
                 if (src.FinishCorruption < 0 || src.FinishHeat < 0) p.Add("data source " + src.Id + " has negative finish risk");
                 Permille(p, "data source " + src.Id + ".homeAttentionPermille", src.HomeAttentionPermille);
+                Permille(p, "data source " + src.Id + ".weeklyFailRiskPermille", src.WeeklyFailRiskPermille);
             }
             if (c.Training.Lines.Count == 0) p.Add("training.lines is empty");
             foreach (ModelLineConfig line in c.Training.Lines)

@@ -483,6 +483,14 @@ namespace AiLabs.Rules.Config
         public int CarryoverPermille;
         /// <summary>A finished run lands within plus or minus this much of what it aimed for.</summary>
         public int LuckPermille;
+        /// <summary>Weekly dice: base chance a training run collapses (permille of 1000).</summary>
+        public int BaseFailPermille;
+        /// <summary>Each engineer on staff cuts the weekly fail chance by this much.</summary>
+        public int FailEngineerCutPermille;
+        /// <summary>Each 100 permille of alignment share on the run cuts fail chance by this much.</summary>
+        public int FailAlignmentCutPermille;
+        /// <summary>Do not roll failure until progress reaches this share of required compute.</summary>
+        public int FailAfterProgressPermille;
         public int EngineerBonusPermille;
         public int EngineerBonusCapPermille;
         public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
@@ -500,6 +508,10 @@ namespace AiLabs.Rules.Config
             s.Int("maxConcurrentRuns", ref MaxConcurrentRuns);
             s.Int("carryoverPermille", ref CarryoverPermille);
             s.Int("luckPermille", ref LuckPermille);
+            s.Int("baseFailPermille", ref BaseFailPermille);
+            s.Int("failEngineerCutPermille", ref FailEngineerCutPermille);
+            s.Int("failAlignmentCutPermille", ref FailAlignmentCutPermille);
+            s.Int("failAfterProgressPermille", ref FailAfterProgressPermille);
             s.Int("engineerBonusPermille", ref EngineerBonusPermille);
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
             s.ObjList("dataSources", ref DataSources);
@@ -523,6 +535,8 @@ namespace AiLabs.Rules.Config
         public int HomeAttentionPermille;
         /// <summary>When true, models trained on this mix cannot toggle open weights.</summary>
         public bool BlocksOpenWeights;
+        /// <summary>Extra weekly training-failure risk while a run uses this source.</summary>
+        public int WeeklyFailRiskPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -536,6 +550,7 @@ namespace AiLabs.Rules.Config
             s.Int("finishHeat", ref FinishHeat);
             s.Int("homeAttentionPermille", ref HomeAttentionPermille);
             s.Bool("blocksOpenWeights", ref BlocksOpenWeights);
+            s.Int("weeklyFailRiskPermille", ref WeeklyFailRiskPermille);
         }
     }
 
