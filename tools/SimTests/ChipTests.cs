@@ -886,7 +886,7 @@ public class ChipTests
         var options = new NewGameOptions { Seed = 3, RivalIds = new List<string> { "xay" } };
         GameConfig c = TestData.Config(cfg => cfg.Rivalry.LogMax = 100000);
         var g = new Game(Simulation.NewGame(c, options));
-        for (int w = 0; w < 31 * c.Calendar.WeeksPerYear; w++)
+        for (int w = 0; w < 36 * c.Calendar.WeeksPerYear; w++)
         {
             if (GameDate.IsMonthStart(c.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, c.Autopilot);
             g.Sim.Step();

@@ -100,6 +100,7 @@ namespace AiLabs.Rules.Config
                 }
             }
             TechCycles(p, c);
+            ResearchForkProblems(p, c);
 
             if (c.Training.MaxConcurrentRuns < 1) p.Add("training.maxConcurrentRuns must be at least 1");
             Permille(p, "training.carryoverPermille", c.Training.CarryoverPermille);
@@ -684,6 +685,33 @@ namespace AiLabs.Rules.Config
                 foreach (TechEffectConfig e in tech.Effects)
                     if (e.Kind == TechEffectKind.UnlockLine && e.Id == lineId) return true;
             return false;
+        }
+
+        static void ResearchForkProblems(List<string> p, GameConfig c)
+        {
+            if (c.Research.Patents != null)
+            {
+                if (c.Research.Patents.DurationWeeks < 0) p.Add("research.patents.durationWeeks is negative");
+                if (c.Research.Patents.FilingCostPermille < 0) p.Add("research.patents.filingCostPermille is negative");
+            }
+            UniqueIds(p, "research.forks", c.Research.Forks);
+            var forkCount = new Dictionary<string, int>();
+            foreach (ResearchForkConfig fork in c.Research.Forks)
+            {
+                if (fork.Techs == null || fork.Techs.Count < 2)
+                    p.Add("research fork " + fork.Id + " needs at least two techs");
+                if (fork.Techs != null)
+                {
+                    for (int i = 0; i < fork.Techs.Count; i++)
+                    {
+                        string techId = fork.Techs[i];
+                        if (c.Tech(techId) == null) p.Add("research fork " + fork.Id + " lists the unknown tech \"" + techId + "\"");
+                        if (!forkCount.ContainsKey(techId)) forkCount[techId] = 0;
+                        forkCount[techId]++;
+                        if (forkCount[techId] > 1) p.Add("tech " + techId + " appears in more than one research fork");
+                    }
+                }
+            }
         }
 
         /// <summary>A tech that (through others) requires itself could never be researched.</summary>

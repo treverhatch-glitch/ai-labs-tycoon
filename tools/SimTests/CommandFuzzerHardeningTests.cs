@@ -121,6 +121,8 @@ static class CommandFuzzerSamples
                 return Command.SetTrainingShare(labId, biasValid ? 700 : rng.Next(1500));
             case CommandKind.ResearchTech:
                 return Command.ResearchTech(labId, biasValid ? "state-machines" : "moon-math");
+            case CommandKind.FilePatent:
+                return Command.FilePatent(labId, biasValid ? "state-machines" : "void-tech");
             case CommandKind.StartTraining:
                 return Command.StartTraining(labId, biasValid ? "mini" : Lines[rng.Next(Lines.Length)], biasValid ? 200 : rng.Next(1000));
             case CommandKind.StartTrainingRecipe:

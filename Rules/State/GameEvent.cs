@@ -7,7 +7,7 @@ namespace AiLabs.Rules.State
         RoomBuilt, RoomDemolished, LotBought,
         Hired, Fired,
         GpusRented, GpusBought, GpusSold,
-        TechResearched,
+        TechResearched, PatentFiled, PatentExpired,
         TrainingStarted, TrainingFinished, TrainingFailed, DistillTargetSet, ModelReleased, ModelRetired,
         Incident,
         GauntletCrown, GauntletBracket, GauntletSafest,

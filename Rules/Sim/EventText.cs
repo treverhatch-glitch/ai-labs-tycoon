@@ -34,6 +34,17 @@ namespace AiLabs.Rules.Sim
                     if (e.Ref == "museum-salvage") return who + " recovered " + e.Amount + " research points from the museum.";
                     TechConfig tech = c.Tech(e.Ref);
                     return who + " researched " + (tech == null ? e.Ref : tech.Name) + ".";
+                case EventKind.PatentFiled:
+                    {
+                        TechConfig filed = c.Tech(e.Ref);
+                        string name = filed == null ? e.Ref : filed.Name;
+                        return who + " filed a patent on " + name + " for $" + e.Amount + ".";
+                    }
+                case EventKind.PatentExpired:
+                    {
+                        TechConfig expired = c.Tech(e.Ref);
+                        return "The patent on " + (expired == null ? e.Ref : expired.Name) + " held by " + who + " expired.";
+                    }
                 case EventKind.TrainingStarted: return who + " started training " + e.Ref + ".";
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.TrainingFailed:

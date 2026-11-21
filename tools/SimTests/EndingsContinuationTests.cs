@@ -102,8 +102,7 @@ public class EndingsContinuationTests
         g.Refused(Command.ResearchFrontier(g.Id), CommandError.FrontierUnavailable);
         g.Research(open);
         if (EndingSystem.AllOpenTechsDone(g.C, g.Me, g.Tick)) g.Do(Command.ResearchFrontier(g.Id));
-        else foreach (TechConfig tech in g.C.Research.Techs)
-            if (EraSystem.TechOpen(g.C, tech, g.Tick) && !g.Me.Techs.Contains(tech.Id)) g.Research(tech.Id);
+        else g.ResearchAllReachable();
         g.Do(Command.ResearchFrontier(g.Id));
         Assert.Equal(1, g.Me.FrontierLevel);
     }

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, StartTrainingRecipe, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights,
+        ResearchTech, FilePatent, StartTraining, StartTrainingRecipe, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights,
         SetTrainingDataSource, SetDistillTarget,
         BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
         StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, BuyListedChips,
@@ -141,6 +141,13 @@ namespace AiLabs.Rules.Sim
         public static Command ResearchTech(int labId, string techId)
         {
             Command c = Make(CommandKind.ResearchTech, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        public static Command FilePatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.FilePatent, labId);
             c.Id = techId;
             return c;
         }
@@ -407,6 +414,7 @@ namespace AiLabs.Rules.Sim
         DataSourceBlocksOpenWeights,
         DistillTargetRequired,
         PlayerOnlyDataSource,
+        TechForkBlocked, PatentBlocked, NotPatentable, PatentAlreadyFiled,
         KeynoteAmbush
     }
 

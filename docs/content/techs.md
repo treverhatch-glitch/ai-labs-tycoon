@@ -11,6 +11,7 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `state-machines` | Finite State Machines | 120 | - | CapabilityPermille +100 | Guards that patrol, spot you, and forget you five seconds later. |
 | `regression-tests` | Regression Test Suites | 200 | - | AlignmentPermille +200 | Find out the bot cheats before the customer does. |
 | `pathfinding` | A* Pathfinding | 240 | `state-machines` | CapabilityPermille +150 | Enemies can now find the player. Most of the time. Doors remain a problem. |
+| `go-fish-heuristic` | Go Fish Heuristics | 420 | `minimax` | CapabilityPermille +40 | A promising dead end. The grant committee loves it. |
 | `minimax` | Minimax & Alpha-Beta Search | 300 | - | CapabilityPermille +150 | Think ahead by assuming everyone else is as smart as you. Bold. |
 | `rules-engines` | Rules Engines | 450 | - | CapabilityPermille +100 | Ten thousand IF statements in a trench coat. |
 | `expert-shells` | Expert System Shells | 700 | `rules-engines` | unlocks `mid` | Bottle a senior expert. The expert has questions about this. |

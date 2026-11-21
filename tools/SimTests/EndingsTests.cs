@@ -120,9 +120,7 @@ public class EndingsTests
         long c0 = EndingSystem.FrontierCost(g.C, g.Me);
         Assert.True(c0 > 0);
         g.Refused(Command.ResearchFrontier(g.Id), CommandError.FrontierUnavailable);
-        g.Me.ResearchPoints = 9_999_999;
-        foreach (TechConfig tech in g.C.Research.Techs)
-            if (EraSystem.TechOpen(g.C, tech, g.Tick) && !g.Me.Techs.Contains(tech.Id)) g.Research(tech.Id);
+        g.ResearchAllReachable();
         int techBefore = LabQueries.TechBonus(g.C, g.Me, TechEffectKind.CapabilityPermille);
         g.Do(Command.ResearchFrontier(g.Id));
         Assert.Equal(1, g.Me.FrontierLevel);

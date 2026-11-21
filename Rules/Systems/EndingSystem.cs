@@ -152,7 +152,13 @@ namespace AiLabs.Rules.Systems
             {
                 TechConfig tech = c.Research.Techs[i];
                 if (!EraSystem.TechOpen(c, tech, tick)) continue;
-                if (!LabQueries.HasTech(lab, tech.Id)) return false;
+                if (tech.IsDeadEnd) continue;
+                if (ResearchQueries.IsBlocked(lab, tech.Id)) continue;
+                if (!LabQueries.HasTech(lab, tech.Id))
+                {
+                    if (!LabQueries.CanResearch(c, lab, tech, tick)) continue;
+                    return false;
+                }
             }
             return true;
         }

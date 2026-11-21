@@ -432,11 +432,42 @@ namespace AiLabs.Rules.Config
     {
         public int PointsPerResearcherWeek;
         public List<TechConfig> Techs;
+        /// <summary>Mutually exclusive research branches.</summary>
+        public List<ResearchForkConfig> Forks = new List<ResearchForkConfig>();
+        public PatentRulesConfig Patents = new PatentRulesConfig();
 
         public void Sync(Syncer s)
         {
             s.Int("pointsPerResearcherWeek", ref PointsPerResearcherWeek);
             s.ObjList("techs", ref Techs);
+            s.ObjList("forks", ref Forks);
+            s.Obj("patents", ref Patents);
+        }
+    }
+
+    public sealed class ResearchForkConfig : ISync, IHasId
+    {
+        public string IdValue;
+        public List<string> Techs = new List<string>();
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.StrList("techs", ref Techs);
+        }
+    }
+
+    public sealed class PatentRulesConfig : ISync
+    {
+        public int DurationWeeks = 52;
+        /// <summary>Cash cost is the tech's research cost times this permille.</summary>
+        public int FilingCostPermille = 800;
+
+        public void Sync(Syncer s)
+        {
+            s.Int("durationWeeks", ref DurationWeeks);
+            s.Int("filingCostPermille", ref FilingCostPermille);
         }
     }
 
@@ -452,6 +483,10 @@ namespace AiLabs.Rules.Config
         public long Cost;
         public List<string> Requires;
         public List<TechEffectConfig> Effects;
+        /// <summary>When true, the lab may file a patent after researching this tech.</summary>
+        public bool Patentable = true;
+        /// <summary>Flavor-only weak branch (still in forks if listed there).</summary>
+        public bool IsDeadEnd;
 
         public string Id { get { return IdValue; } }
 
@@ -464,6 +499,8 @@ namespace AiLabs.Rules.Config
             s.Long("cost", ref Cost);
             s.StrList("requires", ref Requires);
             s.ObjList("effects", ref Effects);
+            s.Bool("patentable", ref Patentable);
+            s.Bool("isDeadEnd", ref IsDeadEnd);
         }
     }
 

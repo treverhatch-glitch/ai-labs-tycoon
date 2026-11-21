@@ -37,6 +37,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SellGpus: return SellGpus(c, state, lab, cmd);
                 case CommandKind.SetTrainingShare: return SetTrainingShare(lab, cmd);
                 case CommandKind.ResearchTech: return ResearchTech(c, state, lab, cmd);
+                case CommandKind.FilePatent: return FilePatent(c, state, lab, cmd);
                 case CommandKind.StartTraining: return StartTraining(c, state, lab, cmd);
                 case CommandKind.StartTrainingRecipe: return StartTrainingRecipe(c, state, lab, cmd);
                 case CommandKind.ScrapFailedRun: return ScrapFailedRun(lab, cmd);
@@ -265,28 +266,6 @@ namespace AiLabs.Rules.Sim
             if (cmd.Permille < 0 || cmd.Permille > MathI.Permille)
                 return Fail(CommandError.InvalidArgument, "The training share is from 0 to 1000.");
             lab.TrainingSharePermille = cmd.Permille;
-            return CommandResult.Done(-1);
-        }
-
-        static CommandResult ResearchTech(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
-                return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
-            TechConfig tech = c.Tech(cmd.Id);
-            if (tech == null) return Fail(CommandError.UnknownId, "There is no tech \"" + cmd.Id + "\".");
-            if (LabQueries.HasTech(lab, tech.Id)) return Fail(CommandError.AlreadyResearched, tech.Name + " is already researched.");
-            if (!EraSystem.TechOpen(c, tech, state.Tick))
-                return Fail(CommandError.EraLocked, tech.Name + " is not invented yet: it arrives with " + c.Era(tech.Era).Name + " (" + c.Era(tech.Era).StartYear + ").");
-            for (int i = 0; i < tech.Requires.Count; i++)
-                if (!LabQueries.HasTech(lab, tech.Requires[i]))
-                    return Fail(CommandError.MissingPrerequisite, tech.Name + " needs " + c.Tech(tech.Requires[i]).Name + " first.");
-            long cost = LabQueries.TechCost(c, state, lab, tech);
-            if (lab.ResearchPoints < cost)
-                return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + cost + " research points and the lab has " + lab.ResearchPoints + ".");
-
-            lab.ResearchPoints -= cost;
-            lab.Techs.Add(tech.Id);
-            Events.Add(state, EventKind.TechResearched, lab.Id, -1, cost, tech.Id);
             return CommandResult.Done(-1);
         }
 

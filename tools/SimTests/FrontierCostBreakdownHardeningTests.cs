@@ -10,13 +10,7 @@ namespace AiLabs.SimTests;
 
 public class FrontierCostBreakdownHardeningTests
 {
-    static void ResearchAllOpen(Game g)
-    {
-        g.Me.ResearchPoints = 9_999_999;
-        foreach (TechConfig tech in g.C.Research.Techs)
-            if (EraSystem.TechOpen(g.C, tech, g.State.Tick) && !g.Me.Techs.Contains(tech.Id))
-                g.Research(tech.Id);
-    }
+    static void ResearchAllOpen(Game g) => g.ResearchAllReachable();
 
     [Fact]
     public void Level_zero_parts_sum_to_next_frontier_cost()

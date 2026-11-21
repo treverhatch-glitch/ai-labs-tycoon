@@ -297,3 +297,9 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) headlines only; (b) `protestAttentionPermille` on dated events (home bloc or named `protestBlocId`); (c) permit revolt state machine.
 - Choice: **(b)** — `ProtestSystem.OnWorldEvent` after `WorldNews`; `teen-chatbot` and `pause-letter` ship in config; `AttentionRose` when attention moves.
 - Why: DESIGN world-map protest gap without new save schema or permit-revolt depth.
+
+### Q51. Research forks, dead ends, and patents? DECIDED: `ResearchForkConfig` + `FilePatent`
+
+- Options: (a) flavor-only mutually exclusive tech descriptions; (b) config `research.forks` block sibling techs after pick; (c) patents as passive rep bump only.
+- Choice: **(b)+(c)** — `blockedTechs` on `LabState` when a fork tech is researched; shipped fork `classical-ml` (`bayes-nets` / `svm`); `go-fish-heuristic` dead-end flavor tech; `CommandKind.FilePatent` spends cash, blocks rivals on that tech for `research.patents.durationWeeks`; schema **19**.
+- Why: DESIGN research row (branching bets, dead ends, patent races) without rival-AI patent logic yet; pairs Q48–Q49 plan/player fairness.

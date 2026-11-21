@@ -134,7 +134,12 @@ public class ContentFlowTests
         foreach (EraConfig era in c.Eras.Take(6))
         {
             foreach (TechConfig tech in c.Research.Techs.Where(t => t.Era == era.Id))
+            {
+                if (tech.IsDeadEnd) continue;
+                if (run.Game.Me.BlockedTechs.Contains(tech.Id)) continue;
+                if (!run.Game.Me.Techs.Contains(tech.Id) && !LabQueries.CanResearch(c, run.Game.Me, tech, run.Game.Tick)) continue;
                 Assert.Contains(tech.Id, run.Game.Me.Techs);
+            }
         }
     }
 

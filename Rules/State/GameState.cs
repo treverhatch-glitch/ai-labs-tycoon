@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 18;
+        public const int CurrentSchema = 19;
 
         public int Schema;
         public string ConfigVersion;
@@ -160,6 +160,9 @@ namespace AiLabs.Rules.State
 
         public long ResearchPoints;
         public List<string> Techs = new List<string>();
+        /// <summary>Fork branches this lab closed by researching a sibling.</summary>
+        public List<string> BlockedTechs = new List<string>();
+        public List<PatentState> Patents = new List<PatentState>();
         public List<ModelState> Models = new List<ModelState>();
         public int FrontierLevel;
         public int Heat;
@@ -254,6 +257,8 @@ namespace AiLabs.Rules.State
             s.ObjList("chipListings", ref ChipListings);
             s.Long("researchPoints", ref ResearchPoints);
             s.StrList("techs", ref Techs);
+            s.StrList("blockedTechs", ref BlockedTechs);
+            s.ObjList("patents", ref Patents);
             s.ObjList("models", ref Models);
             s.Int("frontierLevel", ref FrontierLevel);
             s.Int("heat", ref Heat);
@@ -263,6 +268,20 @@ namespace AiLabs.Rules.State
             s.ObjList("shadyOps", ref ShadyOps);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
+        }
+    }
+
+    public sealed class PatentState : ISync
+    {
+        public string TechId = "";
+        public int FiledTick = -1;
+        public int ExpiresTick = -1;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("techId", ref TechId);
+            s.Int("filedTick", ref FiledTick);
+            s.Int("expiresTick", ref ExpiresTick);
         }
     }
 

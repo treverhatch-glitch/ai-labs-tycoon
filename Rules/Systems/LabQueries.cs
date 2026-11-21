@@ -304,6 +304,7 @@ namespace AiLabs.Rules.Systems
         public static bool CanResearch(GameConfig c, LabState lab, TechConfig tech, int tick)
         {
             if (HasTech(lab, tech.Id)) return false;
+            if (ResearchQueries.IsBlocked(lab, tech.Id)) return false;
             if (!EraSystem.TechOpen(c, tech, tick)) return false;
             for (int i = 0; i < tech.Requires.Count; i++) if (!HasTech(lab, tech.Requires[i])) return false;
             return true;
