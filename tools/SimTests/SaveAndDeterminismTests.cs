@@ -83,7 +83,7 @@ public class SaveAndDeterminismTests
 
         Assert.Contains("not readable", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Substring(0, save.Length / 2))).Message);
         Assert.Contains("no schema", Assert.Throws<SaveException>(() => Simulation.Load(c, "{\"hello\":1}")).Message);
-        Assert.Contains("newer version", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"schema\":" + GameState.CurrentSchema + ",", "\"schema\":99,"))).Message);
+        Assert.Contains("newer version", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"schema\":" + GameState.CurrentSchema + ",", "\"schema\":" + (GameState.CurrentSchema + 1) + ","))).Message);
         Assert.Contains("unknown key", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"tick\":", "\"tock\":0,\"tick\":"))).Message);
         Assert.Contains("research-lab-deluxe", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"research-lab\"", "\"research-lab-deluxe\""))).Message);
     }
