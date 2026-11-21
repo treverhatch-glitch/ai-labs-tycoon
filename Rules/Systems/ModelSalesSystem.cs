@@ -31,6 +31,26 @@ namespace AiLabs.Rules.Systems
       return total;
     }
 
+    public static long SmoothedWeeklyIncome(GameConfig c, GameState state, LabState lab, ModelState model)
+    {
+      ModelSalesConfig cfg = c.ModelSales;
+      long week = WeeklyIncome(state, lab, model);
+      if (cfg == null || cfg.IncomeSmoothingPermille <= 0) return week;
+      long labWeek = lab.Ledger.LastWeek.Revenue;
+      if (labWeek <= week) return week;
+      long all = 0;
+      for (int i = 0; i < lab.Models.Count; i++)
+      {
+        ModelState m = lab.Models[i];
+        if (m.Status == ModelStatus.Released || m.Status == ModelStatus.Trained)
+          all += WeeklyIncome(state, lab, m);
+      }
+      long share = all > 0 ? labWeek * week / all : labWeek;
+      int smooth = cfg.IncomeSmoothingPermille;
+      if (smooth > MathI.Permille) smooth = MathI.Permille;
+      return (week * (MathI.Permille - smooth) + share * smooth) / MathI.Permille;
+    }
+
     public static ModelSaleQuote Quote(GameConfig c, GameState state, LabState lab, ModelState model)
     {
       ModelSalesConfig cfg = c.ModelSales;
@@ -38,7 +58,7 @@ namespace AiLabs.Rules.Systems
       if (cfg == null || model == null) return q;
       ModelLineConfig line = c.Line(model.LineId);
       if (line != null) q.TrainingCostBasis = EraSystem.RunPrepCost(c, line, state.Tick);
-      q.WeeklyIncome = WeeklyIncome(state, lab, model);
+      q.WeeklyIncome = SmoothedWeeklyIncome(c, state, lab, model);
       q.IncomeForegonePerWeek = q.WeeklyIncome;
       if (q.WeeklyIncome > 0)
         q.OfferCash = q.WeeklyIncome * cfg.EarningsMultipleWeeks;
@@ -76,7 +96,7 @@ namespace AiLabs.Rules.Systems
     {
       ModelSalesConfig cfg = c.ModelSales;
       ModelSaleQuote q = Quote(c, state, lab, model);
-      Finance.Earn(lab, LedgerLine.CapitalIn, q.OfferCash);
+      Finance.Earn(lab, LedgerLine.AssetSale, q.OfferCash);
       int hit = cfg.SectorReputationHit;
       for (int s = 0; s < state.Sectors.Count; s++)
       {

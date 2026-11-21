@@ -167,6 +167,8 @@ namespace AiLabs.Rules.Sim
                     LabState lab = state.Labs[i];
                     if (LabQueries.ParticipatesInEconomy(lab)) GovernmentSystem.CloseMonth(c, state, lab);
                 }
+                EndingSystem.TryTreaty(c, state);
+                EndingSystem.TryNationalised(c, state);
                 LabState player = state.Player;
                 if (player != null && LabQueries.ParticipatesInEconomy(player)) ShadySystem.RunMonth(c, state, player);
                 BubbleSystem.RunMonth(c, state);

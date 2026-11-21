@@ -76,7 +76,7 @@ namespace AiLabs.Rules.Systems
     public static void Apply(GameConfig c, GameState state, LabState buyer, LabState target)
     {
       AcquisitionQuote q = Quote(c, state, buyer, target);
-      Finance.Spend(buyer, LedgerLine.Hardware, q.Total);
+      Finance.Spend(buyer, LedgerLine.Acquisition, q.Total);
       long cash = target.Cash;
       if (cash > 0)
       {
@@ -84,7 +84,7 @@ namespace AiLabs.Rules.Systems
         Finance.Spend(target, LedgerLine.CapitalIn, cash);
       }
       else if (cash < 0)
-        Finance.Spend(buyer, LedgerLine.Hardware, -cash);
+        Finance.Spend(buyer, LedgerLine.Acquisition, -cash);
       target.Cash = 0;
       TransferModels(c, state, buyer, target);
       TransferStaff(c, buyer, target);
@@ -173,19 +173,33 @@ namespace AiLabs.Rules.Systems
     public static void RunMonth(GameConfig c, GameState state)
     {
       if (!BubbleSystem.InCrash(state)) return;
-      if (c.Acquisitions == null) return;
+      AcquisitionConfig cfg = c.Acquisitions;
+      if (cfg == null || cfg.RivalRollupChancePermille <= 0) return;
+      var buyers = new List<LabState>();
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState buyer = state.Labs[i];
         if (buyer.Controller != LabController.Plan || buyer.Bankrupt || buyer.AbsorbedByLabId >= 0) continue;
+        buyers.Add(buyer);
+      }
+      buyers.Sort((a, b) => b.Cash.CompareTo(a.Cash));
+      for (int i = 0; i < buyers.Count; i++)
+      {
+        LabState buyer = buyers[i];
+        var targets = new List<LabState>();
         for (int k = 0; k < state.Labs.Count; k++)
         {
           LabState target = state.Labs[k];
           if (target.Id == buyer.Id || target.Controller != LabController.Plan || target.Bankrupt || target.AbsorbedByLabId >= 0) continue;
-          if (target.AbsorbedByLabId >= 0 || !IsDistressed(c, state, target)) continue;
+          if (!IsDistressed(c, state, target)) continue;
           if (!CanAcquire(c, state, buyer, target, out _)) continue;
-          if (!state.Rng.Rivals.Chance(60)) continue;
-          Apply(c, state, buyer, target);
+          targets.Add(target);
+        }
+        targets.Sort((a, b) => a.Cash.CompareTo(b.Cash));
+        for (int k = 0; k < targets.Count; k++)
+        {
+          if (!state.Rng.Rivals.Chance(cfg.RivalRollupChancePermille)) continue;
+          Apply(c, state, buyer, targets[k]);
           return;
         }
       }

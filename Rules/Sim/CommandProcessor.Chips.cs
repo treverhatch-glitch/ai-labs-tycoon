@@ -210,7 +210,7 @@ namespace AiLabs.Rules.Sim
             // A trade with the player warms a rival up to them, whichever way the chips go.
             LabState rival = lab.Id == state.Player.Id ? seller : seller.Id == state.Player.Id ? lab : null;
             if (rival != null) RivalSystem.Feel(c, rival, c.Rivalry.Feelings.ChipOrderPermille);
-            BubbleSystem.OnListedChipTrade(c, state);
+            BubbleSystem.OnListedChipTrade(c, state, price);
             return CommandResult.Done(order.Id);
         }
     }

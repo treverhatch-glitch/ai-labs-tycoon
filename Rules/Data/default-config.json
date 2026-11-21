@@ -4335,6 +4335,9 @@
     "handcuffsShadyLockWeeks": 240,
     "handcuffsSuccessor": "The Interim CEO",
     "secondPlaceRunnerUpYears": 3,
+    "nationalisedHomeLevelMin": 4,
+    "treatyForeignLevelMin": 3,
+    "treatyForeignBlocCount": 2,
     "superintelligence": {
       "releasedCapabilityMin": 900,
       "paperclipMaxAlignment": 150,
@@ -6018,7 +6021,9 @@
     "crashCustomerSpendPermille": 780,
     "crashFundingCashPermille": 620,
     "crashGpuPricePermille": 860,
-    "crashFloatCutPpm": 35000
+    "crashFloatCutPpm": 35000,
+    "popWarningMarginPermille": 50,
+    "resetCapitalRaisedAfterCrash": true
   },
   "acquisitions": {
     "capabilityValuePerPoint": 8000,
@@ -6029,13 +6034,15 @@
     "crashDistressPricePermille": 450,
     "minInstalledModels": 1,
     "regulatorDealRevenue": 5000000,
-    "regulatorAttention": 80
+    "regulatorAttention": 80,
+    "rivalRollupChancePermille": 600
   },
   "modelSales": {
     "unprofitableSalePermille": 350,
     "earningsMultipleWeeks": 52,
     "sectorReputationHit": 25,
-    "minOffer": 1000
+    "minOffer": 1000,
+    "incomeSmoothingPermille": 500
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

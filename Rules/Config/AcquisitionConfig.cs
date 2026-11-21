@@ -13,6 +13,8 @@ namespace AiLabs.Rules.Config
     public int MinInstalledModels;
     public long RegulatorDealRevenue;
     public int RegulatorAttention;
+    /// <summary>Chance per distressed pair that a rival rollup happens during a crash, permille out of 1000.</summary>
+    public int RivalRollupChancePermille;
 
     public void Sync(Syncer s)
     {
@@ -25,6 +27,7 @@ namespace AiLabs.Rules.Config
       s.Int("minInstalledModels", ref MinInstalledModels);
       s.Long("regulatorDealRevenue", ref RegulatorDealRevenue);
       s.Int("regulatorAttention", ref RegulatorAttention);
+      s.Int("rivalRollupChancePermille", ref RivalRollupChancePermille);
     }
   }
 }
