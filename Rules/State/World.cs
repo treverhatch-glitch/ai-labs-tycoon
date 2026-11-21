@@ -65,6 +65,8 @@ namespace AiLabs.Rules.State
         public int Attention;
         /// <summary>0 none, 1 Letter, 2 Hearing, 3 Audit, 4 Freeze. Stored so each step fires once on the way up.</summary>
         public int Level;
+        /// <summary>The tick before which this government cannot be lobbied again.</summary>
+        public int LobbyUntilTick;
 
         public const int Letter = 1;
         public const int Hearing = 2;
@@ -76,6 +78,7 @@ namespace AiLabs.Rules.State
             s.Str("blocId", ref BlocId);
             s.Int("attention", ref Attention);
             s.Int("level", ref Level);
+            s.Int("lobbyUntilTick", ref LobbyUntilTick);
         }
     }
 }

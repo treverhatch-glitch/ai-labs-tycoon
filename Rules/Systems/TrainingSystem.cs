@@ -124,6 +124,7 @@ namespace AiLabs.Rules.Systems
 
                 long effective = MathI.MulPermille(allotted, speed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);
+                TrainingRuns.RunWeek(c, state, lab, model);
                 model.ProgressCompute += effective - alignmentPart;
                 model.AlignmentCompute += MathI.MulPermille(alignmentPart, alignmentWork);
 
@@ -154,6 +155,7 @@ namespace AiLabs.Rules.Systems
             model.TrainedTick = state.Tick;
             Events.Add(state, EventKind.TrainingFinished, lab.Id, model.Id, model.Capability, model.Name);
             TrainingObjectives.OnTrained(c, lab, model);
+            TrainingRuns.OnTrained(c, model);
             SuccessorDesign.OnTrained(c, lab, model);
             ResearchLeads.OnTrained(c, state, lab, model, luck);
         }

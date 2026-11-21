@@ -254,6 +254,60 @@ public class OfficeEventTests
     }
 
     [Fact]
+    public void Attention_moves_the_home_governments_attention_inside_its_bounds()
+    {
+        Game g = Posed(("up", OfficeEffectKind.Attention, 100), ("down", OfficeEffectKind.Attention, -1000));
+        BlocStanding home = g.Me.Bloc(g.Me.HomeBlocId);
+        BlocStanding other = g.Me.Blocs.First(b => b.BlocId != g.Me.HomeBlocId);
+        home.Attention = 300;
+        other.Attention = 300;
+        g.Do(Command.AnswerOfficeEvent(g.Id, "up"));
+        Assert.Equal(400, home.Attention);
+        Assert.Equal(300, other.Attention);
+
+        g = Posed(("up", OfficeEffectKind.Attention, 1000), ("down", OfficeEffectKind.Attention, -1000));
+        g.Me.Bloc(g.Me.HomeBlocId).Attention = 900;
+        g.Do(Command.AnswerOfficeEvent(g.Id, "up"));
+        Assert.Equal(1000, g.Me.Bloc(g.Me.HomeBlocId).Attention);
+
+        g = Posed(("up", OfficeEffectKind.Attention, 1000), ("down", OfficeEffectKind.Attention, -1000));
+        g.Me.Bloc(g.Me.HomeBlocId).Attention = 250;
+        g.Do(Command.AnswerOfficeEvent(g.Id, "down"));
+        Assert.Equal(0, g.Me.Bloc(g.Me.HomeBlocId).Attention);
+    }
+
+    [Fact]
+    public void The_bibles_later_event_ideas_are_in_the_data_with_the_right_needs()
+    {
+        GameConfig c = TestData.Config();
+        Assert.True(c.Office.Events.Count >= 19);
+        var needs = new Dictionary<string, OfficeRequires>
+        {
+            { "poetry-prize", OfficeRequires.ReleasedModel }, { "model-essay", OfficeRequires.ReleasedModel }, { "honest-chatbot", OfficeRequires.ReleasedModel },
+            { "cloud-or-phone", OfficeRequires.AnyStaff }, { "chip-baron", OfficeRequires.Nothing }, { "rival-demo", OfficeRequires.Nothing },
+            { "safety-ask", OfficeRequires.SafetyStaff }, { "why-safety", OfficeRequires.SafetyStaff }
+        };
+        foreach (KeyValuePair<string, OfficeRequires> n in needs)
+        {
+            OfficeEventConfig e = c.Office.Events.First(x => x.IdValue == n.Key);
+            Assert.Equal(n.Value, e.Requires);
+            Assert.Equal(3, e.Choices.Count);
+        }
+    }
+
+    [Fact]
+    public void The_safety_events_wait_until_there_is_a_safety_team()
+    {
+        GameConfig c = TestData.Config();
+        var g = new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 1, StartEraId = "agents", RivalIds = new List<string>() }));
+        g.WithStarterLab(safety: 0);
+        Assert.DoesNotContain(OfficeEvents.Eligible(g.C, g.Me, out _), e => e.IdValue == "safety-ask" || e.IdValue == "why-safety");
+        g.Hire("safety", 1);
+        Assert.Contains(OfficeEvents.Eligible(g.C, g.Me, out _), e => e.IdValue == "safety-ask");
+        Assert.Contains(OfficeEvents.Eligible(g.C, g.Me, out _), e => e.IdValue == "why-safety");
+    }
+
+    [Fact]
     public void Culture_moves_the_safety_culture()
     {
         Game g = Posed(("up", OfficeEffectKind.Culture, 25), ("down", OfficeEffectKind.Culture, -25));

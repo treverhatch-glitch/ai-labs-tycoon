@@ -123,6 +123,10 @@ namespace AiLabs.Rules.Systems
                 case OfficeEffectKind.ResearchWeeks:
                     lab.ResearchPoints = MathI.Max(0, lab.ResearchPoints + effect.Amount * TrainingSystem.ResearchPerWeek(c, lab, state.Tick));
                     break;
+                case OfficeEffectKind.Attention:
+                    BlocStanding home = lab.Bloc(lab.HomeBlocId);
+                    if (home != null) home.Attention = (int)MathI.Clamp((long)home.Attention + effect.Amount, 0, MathI.Permille);
+                    break;
                 case OfficeEffectKind.CashWeeks:
                     long cash = effect.Amount * WeekCost(c, state, lab);
                     if (cash >= 0) Finance.Earn(lab, LedgerLine.Grants, cash);

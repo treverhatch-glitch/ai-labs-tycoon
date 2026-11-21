@@ -49,6 +49,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 34) MigrateTo34(root);
             if (fromSchema < 35) MigrateTo35(root);
             if (fromSchema < 36) MigrateTo36(root);
+            if (fromSchema < 37) MigrateTo37(root);
+            if (fromSchema < 38) MigrateTo38(root);
+            if (fromSchema < 39) MigrateTo39(root);
+            if (fromSchema < 40) MigrateTo40(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -398,6 +402,38 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 40: every run was built the known way with checkpoints now and then.</summary>
+        static void MigrateTo40(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
+            }));
+        }
+
+        /// <summary>Schema 39: no era had been scored.</summary>
+        static void MigrateTo39(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 38: no lab had pivoted.</summary>
+        static void MigrateTo38(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 37: no government had been lobbied.</summary>
+        static void MigrateTo37(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.AddIfMissing(b, "lobbyUntilTick", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 36: every launch so far was a tested one.</summary>

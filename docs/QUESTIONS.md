@@ -1239,6 +1239,66 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Nothing is saved; the golden did not move.
 - Why: everything on the ticker already exists in the event log (which is bounded) or the date. Storing it would duplicate the log and need a migration for no gain.
 
+### Q258. What can the player lobby for, and what does it cost? DECIDED: a quiet word or a subsidy push, priced in weeks of running the lab, once per government per half-year
+- Options: (a) one lobbying slider that does everything; (b) two named goals, "quiet" and "subsidy", each with its own price and result; (c) let the player pick which law to nudge.
+- Recommendation and choice: **(b)**. A quiet word costs 6 weeks of running the lab and takes 150 off a government's attention. A subsidy push costs 4 weeks and, if it wins, pays 8. A government can be lobbied again after 26 weeks; backfires (12% before policy staff, 2% at best) add 200 attention and take 40 reputation. Policy staff cut the backfire chance and lift the subsidy chance (40% up to 80%).
+- Why: attention and grants are the two government levers that already exist, so the player gets something to do about a hearing that is coming without a new law system. Pricing in weeks of running costs keeps it relevant from the first year to the last. Letting the player pick the law (c) needs the law system to take a nudge; it is listed as open. The chance is a hash of the week, not a shared die, so the push cannot move anyone else's dice.
+
+### Q259. Is a save change needed, and does the golden move? DECIDED: yes, schema 37; the golden moved with a verified cause
+- Options: (a) a lab-wide cooldown; (b) a cooldown per government, stored on its standing.
+- Recommendation and choice: **(b)**. `lobbyUntilTick` on every `BlocStanding` (`MigrateTo37` sets 0).
+- Why: the bible lets labs work every government, and one cooldown for all would make lobbying a once-a-year button. The golden moved because every standing carries the field; with the sync line, the schema number and the data removed, the previous golden returned exactly.
+
+### Q260. What does a pivot cost? DECIDED: 8 weeks of running the lab, 15% of the staff (the unhappiest first), and -12% appeal for a year
+- Options: (a) money only; (b) money, people and a year of confused customers; (c) also drop the lab's reputation.
+- Recommendation and choice: **(b)**. `costWeeks` 8, `staffLossPermille` 150 (rounded down, at least one), `confusionAppealPermille` 120 for `confusionWeeks` 52. The leavers are the lowest morale, ties to the earlier hire, so the result is the same every time.
+- Why: the bible names exactly two costs, "loses some staff" and "confuses customers for a year", and money is the tycoon's price for anything. The confusion is a line of its own in the appeal breakdown, so the player can see what the pivot is costing. Reputation is left alone: the staff and customers are already paying. Choosing who leaves by morale avoids a die and gives a reason to keep the staff happy before a pivot.
+
+### Q261. How often, and what is saved? DECIDED: once per era, `pivotEraId` and `pivotUntilTick` on the lab (schema 38); the golden moved with a verified cause
+- Options: (a) once per game; (b) once per era, stored as the era's id; (c) a cooldown in weeks.
+- Recommendation and choice: **(b)**. The lab stores the era id of its last pivot and the tick its customers stop being confused (`MigrateTo38` sets empty and 0).
+- Why: the bible says once per era, and the era id is the thing the data already names. A cooldown in weeks would let two pivots straddle an era boundary and none in a long era. The golden moved because every lab carries the two fields; with the sync lines, the schema number and the data removed the previous golden returned exactly.
+
+### Q262. Which ideas from the bible come next, and what is new in the data? DECIDED: eight more events and one new effect, the home government's attention
+- Options: (a) only use the existing five effects; (b) add an `Attention` effect so the senator and the regulator can be answered; (c) add a rule for each event.
+- Recommendation and choice: **(b)**. Poetry prize, the refusal essay and the honest chatbot (each needs a model on sale), the senator's "cloud or phone", the signed GPU, the rival's demo (a person in another room), and from the "more events" list the safety team's request for five per cent of the compute and the investor who asks why safety exists (each needs a safety team). `OfficeEffectKind.Attention` moves the player's home government's attention by points, inside 0 to 1000.
+- Why: the bible says an event with a consequence becomes a system, and a government's attention is the system a senator or a regulator should move. Everything else uses the effects that exist, so no event needs code. Two of them need a safety team so a lab without one never hears about it; the list still goes round once all eligible events have been seen.
+
+### Q263. Does this need a save change, and does the golden move? DECIDED: no, and it did not move
+- Options: (a) none; (b) a new field for the effect.
+- Recommendation and choice: **(a)**. Events are data, and the effect uses the standing the lab already saves. No schema change; the golden is the same.
+- Why: the autopilot never answers an office event, so a longer list changes nothing it does, and no new field is stored.
+
+### Q264. What is an era goal, and how many are there? DECIDED: a metric and a target in the data, three per era, 100 points each and 50 for all three
+- Options: (a) hard-coded goals in code; (b) data: a metric from a fixed list, a target and points; (c) free-form conditions.
+- Recommendation and choice: **(b)**. Eight metrics (releases, sectors served, crowns, reputation, staff, techs, lifetime revenue, best alignment), all read off the lab's state, so a goal needs no new saved number. Every era asks for lifetime revenue and two others; the targets are cumulative and climb with the era's starting money.
+- Why: the bible says the campaign "sets goals for each era", which is data a designer will keep tuning. A fixed list of metrics keeps the rules simple and testable, and cumulative targets mean a missed goal in one era can still be caught up in the next.
+
+### Q265. When is the score taken, and for whom? DECIDED: when the next era begins, for the player only, once per era
+- Options: (a) read the score live and never save it; (b) save a mark when the era ends; (c) mark continuously.
+- Recommendation and choice: **(b)**, plus a live query for the run's total (`RunScore`) that adds the current era as it stands. A game that starts in a later era has no marks for earlier ones (the player's founding tick is compared to the era's start), and a bankrupt lab is not marked.
+- Why: a live score would let a player cash in a goal and then drop below the target; a mark taken at the era's end is what "goals for each era" means. Only the player is marked because rivals have no campaign, and a late start should not be punished for eras it never played.
+
+### Q266. Is a save change needed, and does the golden move? DECIDED: yes, schema 39; the golden moved with a verified cause
+- Options: (a) save the marks; (b) rebuild them from the event log.
+- Recommendation and choice: **(a)**. `eraScores` on every lab (`MigrateTo39` sets an empty list). The event log is bounded, so it cannot rebuild a whole run's score.
+- Why: the golden run crosses eras, so it now carries a mark and an event for each. With the sync line, the era hook, the schema number and the data removed, the previous golden returned exactly. Nothing in the sim reads a mark, so no decision, price or dice roll moved.
+
+### Q267. What can the player choose, and what do the choices do? DECIDED: an approach (known or your own variant) and a checkpoint habit (now and then or often), both while the run trains
+- Options: (a) every run can fail by default; (b) failure only for what the player opts into; (c) an architecture tree of its own.
+- Recommendation and choice: **(b)**. A variant adds 8% to the finished capability and fails 1.5% of training weeks; checkpointing often drops what a failure costs from half the run to a tenth, for 4% of a week of running costs each training week. The defaults change nothing.
+- Why: the bible ties higher ceilings to "fail more often", which is a risk the player picks. Making every run fail (a) would change what the autopilot and rivals do and move the economy guards (Q182); (b) leaves them exactly as they were. A tree (c) needs the research side of architecture, which is its own job.
+
+### Q268. What does a failure do? DECIDED: it throws away the habit's share of progress and safety work, from a hash of the week
+- Options: (a) the run is lost; (b) a share of the progress is lost; (c) the run is delayed a fixed number of weeks.
+- Recommendation and choice: **(b)**, and the same share of the safety work, so the run does not end up with safety that outruns its progress. The chance is a hash of the seed, the week, the lab and the model, so no shared die is used, and a failure with nothing to lose is skipped.
+- Why: the bible's example, "a data bug found in week nine", is about lost weeks, and checkpoints are what decide how many. Losing the whole run (a) makes the experimental choice a trap; a flat delay (c) would not be changed by checkpoints.
+
+### Q269. Is a save change needed, and does the golden move? DECIDED: yes, schema 40; the golden moved with a verified cause
+- Options: (a) two strings per model; (b) pack them into one.
+- Recommendation and choice: **(a)**. `approach` and `checkpoints` on every model (`MigrateTo40` sets both empty).
+- Why: two ids, two fields, in the same shape as the objective. The golden moved because every model carries them; with the sync lines, the hooks, the schema number and the data removed the previous golden returned exactly.
+
 ## Open
 
 None.

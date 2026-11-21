@@ -29,7 +29,11 @@ namespace AiLabs.Rules.Sim
         AnswerOfficeEvent,
         SetTrainingObjective,
         DesignWithModel,
-        RushRelease
+        RushRelease,
+        Lobby,
+        PivotStyle,
+        SetRunApproach,
+        SetCheckpoints
     }
 
     /// <summary>
@@ -302,6 +306,23 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Pays for a push on one government (<paramref name="goal"/> is "quiet" or "subsidy"). It can land, miss or backfire as a scandal.</summary>
+        public static Command Lobby(int labId, string blocId, string goal)
+        {
+            Command c = Make(CommandKind.Lobby, labId);
+            c.Id = blocId;
+            c.Ids.Add(goal);
+            return c;
+        }
+
+        /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
+        public static Command PivotStyle(int labId, string styleId)
+        {
+            Command c = Make(CommandKind.PivotStyle, labId);
+            c.Id = styleId;
+            return c;
+        }
+
         public static Command ResearchFrontier(int labId)
         {
             return Make(CommandKind.ResearchFrontier, labId);
@@ -435,6 +456,24 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Chooses how a model still in training is built. <see cref="Command.Id"/> is the approach.</summary>
+        public static Command SetRunApproach(int labId, int modelId, string approachId)
+        {
+            Command c = Make(CommandKind.SetRunApproach, labId);
+            c.TargetId = modelId;
+            c.Id = approachId;
+            return c;
+        }
+
+        /// <summary>Chooses how often a model still in training is checkpointed. <see cref="Command.Id"/> is the habit.</summary>
+        public static Command SetCheckpoints(int labId, int modelId, string checkpointId)
+        {
+            Command c = Make(CommandKind.SetCheckpoints, labId);
+            c.TargetId = modelId;
+            c.Id = checkpointId;
+            return c;
+        }
+
         /// <summary>Answers the office event on the desk. <see cref="Command.Id"/> is the choice.</summary>
         public static Command AnswerOfficeEvent(int labId, string choiceId)
         {
@@ -521,7 +560,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent
     }
 
     public struct CommandResult
