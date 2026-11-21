@@ -4057,6 +4057,7 @@
     "moralePoachWitnessDrop": 25,
     "poachChancePermille": 80,
     "starHirePermille": 120,
+    "moraleResearchPermillePerPoint": 4,
     "traits": [
       {
         "id": "steady",

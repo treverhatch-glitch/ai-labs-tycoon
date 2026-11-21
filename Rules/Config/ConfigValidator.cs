@@ -707,6 +707,7 @@ namespace AiLabs.Rules.Config
             if (s.MoralePoachWitnessDrop < 0) p.Add("staffPeople.moralePoachWitnessDrop is negative");
             Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
+            if (s.MoraleResearchPermillePerPoint < 0) p.Add("staffPeople.moraleResearchPermillePerPoint is negative");
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
             UniqueIds(p, "staffPeople.traits", s.Traits);
             bool hasStar = false;

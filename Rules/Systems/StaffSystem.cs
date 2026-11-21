@@ -105,6 +105,23 @@ namespace AiLabs.Rules.Systems
             return best;
         }
 
+        public static int AverageMorale(LabState lab)
+        {
+            if (lab.Staff.Count < 1) return 0;
+            long sum = 0;
+            for (int i = 0; i < lab.Staff.Count; i++) sum += lab.Staff[i].Morale;
+            return (int)(sum / lab.Staff.Count);
+        }
+
+        /// <summary>Research gain permille from average morale versus baseline (negative when the team is unhappy).</summary>
+        public static int MoraleResearchPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoraleResearchPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            return delta * cfg.MoraleResearchPermillePerPoint;
+        }
+
         public static string DefaultTrait(StaffPeopleConfig cfg)
         {
             for (int i = 0; i < cfg.Traits.Count; i++) if (!cfg.Traits[i].Star) return cfg.Traits[i].Id;

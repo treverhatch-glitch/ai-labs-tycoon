@@ -386,6 +386,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q80. Staff morale research hook? DECIDED: `moraleResearchPermillePerPoint`
+
+- Why: Staff people slice had morale drift and poaching but research output ignored morale (DESIGN “staff as people”).
+- Choice: `StaffSystem.AverageMorale` / `MoraleResearchPermille`; scales `TrainingSystem.RunResearch` weekly gain.
+- Thirteen `StaffMoraleResearchTests`. Golden unchanged.
+
 ### Q77. Model mood cuts market quality? DECIDED: overworked + corrupted permilles in `DisplayQueries`
 
 - Why: Unity mascots were presentation-only; starving GPUs should hurt quality scores the market uses (DESIGN mood fiction).

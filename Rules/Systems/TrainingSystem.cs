@@ -31,6 +31,9 @@ namespace AiLabs.Rules.Systems
                 int bonus = trait == null ? 0 : trait.ResearchPermille;
                 gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
             }
+            int moraleBonus = StaffSystem.MoraleResearchPermille(c, lab);
+            if (moraleBonus != 0 && gained > 0)
+                gained = MathI.MulPermille(gained, MathI.Permille + moraleBonus);
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }
