@@ -162,6 +162,16 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The sector of the current or last marketing campaign, empty when there is none (running or being forgiven).</summary>
+        public string CampaignSector = "";
+        /// <summary>The budget level of that campaign.</summary>
+        public int CampaignLevel;
+        /// <summary>The weeks the campaign still has to run, 0 when none is on.</summary>
+        public int CampaignWeeks;
+        /// <summary>The weeks customers still feel let down after a campaign ended.</summary>
+        public int HangoverWeeks;
+        /// <summary>The next campaign cannot start before this tick.</summary>
+        public int CampaignLockedUntil;
         /// <summary>The level of inference optimisation, 0 for none. Only the player's lab does it.</summary>
         public int OptimiseLevel;
         /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
@@ -349,6 +359,11 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Str("campaignSector", ref CampaignSector);
+            s.Int("campaignLevel", ref CampaignLevel);
+            s.Int("campaignWeeks", ref CampaignWeeks);
+            s.Int("hangoverWeeks", ref HangoverWeeks);
+            s.Int("campaignLockedUntil", ref CampaignLockedUntil);
             s.Int("optimiseLevel", ref OptimiseLevel);
             s.Int("ethicsLevel", ref EthicsLevel);
             s.Int("ethicsLockedUntil", ref EthicsLockedUntil);

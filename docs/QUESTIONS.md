@@ -1614,6 +1614,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 55, `MigrateTo55`): `optimiseLevel`. Player only and opt-in. The golden digest moved to d28b97b5 because of the lab field and the schema number only; reverting them brought 87b45766 back.
 - Alternatives: a weekly fee instead of a setup fee (rejected: compliance and the board already work that way, and this one is about a one-off project); a cut of the power bill too (rejected: a second benefit would make the first irrelevant); a fixed demand cut with no engineers (rejected: no link to who is on the payroll).
 
+### Q322. Can the player advertise a model into a sector for a while? DECIDED: yes, a funded burst with a hangover and a backlash risk
+- New `marketing` data, command `RunCampaign(sector, level)`, `MarketingCampaign` system, event `CampaignRun` (appended), `CampaignLocked` error. Each level adds 12% to the appeal of the lab's models in one sector for 8 weeks, scaled down to nothing as the lab's share nears 60%; then an 8-week hangover takes 5% a level off; a new campaign needs 26 weeks. It costs $40000 a level and a sales person.
+- An incident in the campaign sector while it runs costs 15 reputation extra and ends it at once. That is the decision: a bigger budget pays more but loses more if the model is not safe, and a lab that is already large gets almost nothing from it.
+- New state on the lab (schema 55, `MigrateTo55`, extended): `campaignSector`, `campaignLevel`, `campaignWeeks`, `hangoverWeeks`, `campaignLockedUntil`. Player only and opt-in. The golden digest moved to dcfb9d2c; reverting the five fields brought d28b97b5 back.
+- Alternatives: a permanent brand level bought once (rejected: no timing decision and nothing to lose); a boost that does not shrink with share (rejected: it would be a strict upgrade for the biggest lab); a campaign in every sector at once (rejected: one choice of sector is the decision).
+
 ## Open
 
 None.

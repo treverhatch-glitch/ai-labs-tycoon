@@ -85,6 +85,7 @@ namespace AiLabs.Rules.Config
             ChiefsProblems(p, c);
             BoardProblems(p, c);
             OptimiseProblems(p, c);
+            MarketingProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -890,6 +891,22 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void MarketingProblems(List<string> p, GameConfig c)
+        {
+            MarketingConfig k = c.Marketing;
+            if (k == null) { p.Add("marketing is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("marketing.maxLevel must be from 0 to 10");
+            if (k.CostPerLevel < 0) p.Add("marketing.costPerLevel is negative");
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("marketing.weeks must be from 0 to 52");
+            if (k.AppealPermillePerLevel < 0 || k.AppealPermillePerLevel * (long)k.MaxLevel > 2000) p.Add("marketing.appealPermillePerLevel must be 0 or more, and every level together at most 2000");
+            if (k.ShareCeilingPermille < 1 || k.ShareCeilingPermille > MathI.Permille) p.Add("marketing.shareCeilingPermille must be from 1 to 1000");
+            if (k.HangoverWeeks < 0 || k.HangoverWeeks > 52) p.Add("marketing.hangoverWeeks must be from 0 to 52");
+            if (k.HangoverPermillePerLevel < 0 || k.HangoverPermillePerLevel * (long)k.MaxLevel > 900) p.Add("marketing.hangoverPermillePerLevel must be 0 or more, and every level together at most 900, so a hangover never ends sales");
+            if (k.BacklashReputation < 0 || k.BacklashReputation > 100) p.Add("marketing.backlashReputation must be from 0 to 100");
+            if (k.CooldownWeeks < k.Weeks + k.HangoverWeeks || k.CooldownWeeks > 520) p.Add("marketing.cooldownWeeks must be from weeks plus hangoverWeeks to 520, so one cannot start while another is on");
+            if (k.MinSales < 0 || k.MinSales > 1000) p.Add("marketing.minSales must be from 0 to 1000");
         }
 
         static void OptimiseProblems(List<string> p, GameConfig c)

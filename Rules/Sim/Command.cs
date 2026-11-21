@@ -53,7 +53,8 @@ namespace AiLabs.Rules.Sim
         RetrainStaff,
         AppointChief,
         SetEthicsBoard,
-        SetOptimisation
+        SetOptimisation,
+        RunCampaign
     }
 
     /// <summary>
@@ -398,6 +399,15 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Runs a marketing campaign in a sector the lab sells in, at a budget level from 1 to the data's highest.</summary>
+        public static Command RunCampaign(int labId, string sectorId, int level)
+        {
+            Command c = Make(CommandKind.RunCampaign, labId);
+            c.Id = sectorId;
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Sets the level of inference optimisation, from 0 (none) to the data's highest. Raising pays a setup fee and needs engineers; lowering is free.</summary>
         public static Command SetOptimisation(int labId, int level)
         {
@@ -734,7 +744,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked
     }
 
     public struct CommandResult

@@ -89,6 +89,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetSublet: return SetSublet(c, state, lab, cmd);
                 case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
                 case CommandKind.RetrainStaff: return RetrainStaff(c, state, lab, cmd);
+                case CommandKind.RunCampaign: return RunCampaign(c, state, lab, cmd);
                 case CommandKind.SetOptimisation: return SetOptimisation(c, state, lab, cmd);
                 case CommandKind.SetEthicsBoard: return SetEthicsBoard(c, state, lab, cmd);
                 case CommandKind.AppointChief: return AppointChief(c, state, lab, cmd);

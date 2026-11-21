@@ -212,6 +212,10 @@ namespace AiLabs.Rules.Sim
                 case EventKind.HackWeek:
                     return e.Pick == 1 ? who + " started a hack week for " + e.SubjectId + " weeks. It cost $" + e.Amount + " and the roadmap is on hold."
                         : who + "'s hack week is over and the team is back on the roadmap.";
+                case EventKind.CampaignRun:
+                    return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
+                        : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
+                        : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
                 case EventKind.OptimisationSet:
                     return e.Pick == 1 ? who + " raised inference optimisation to level " + e.SubjectId + " for $" + e.Amount + "." : who + " backed inference optimisation down to level " + e.SubjectId + ".";
                 case EventKind.EthicsBoardChanged:

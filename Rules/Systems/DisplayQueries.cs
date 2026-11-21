@@ -34,8 +34,10 @@ namespace AiLabs.Rules.Systems
             public long LaunchEffect;
             /// <summary>Zero or negative: customers still confused by the lab's last change of style.</summary>
             public long PivotConfusion;
+            /// <summary>Positive while a marketing campaign runs in the sector, negative in the hangover after it; zero otherwise.</summary>
+            public long CampaignEffect;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion + CampaignEffect; } }
         }
 
         public struct IncidentBreakdown
@@ -142,6 +144,8 @@ namespace AiLabs.Rules.Systems
             b.LaunchEffect = MathI.MulPermille(beforeLaunch, RushedLaunch.LaunchAppealPermille(c, state.Tick, model)) - beforeLaunch;
             long beforePivot = beforeLaunch + b.LaunchEffect;
             b.PivotConfusion = MathI.MulPermille(beforePivot, Pivot.AppealPermille(c, state, lab)) - beforePivot;
+            long beforeCampaign = beforePivot + b.PivotConfusion;
+            b.CampaignEffect = MathI.MulPermille(beforeCampaign, MarketingCampaign.AppealPermille(c, state, lab, sector.Id)) - beforeCampaign;
             return b;
         }
 

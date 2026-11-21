@@ -5586,6 +5586,18 @@
     "demandCutPermillePerLevel": 100,
     "incidentPermillePerLevel": 8
   },
+  "marketing": {
+    "maxLevel": 3,
+    "costPerLevel": 40000,
+    "weeks": 8,
+    "appealPermillePerLevel": 120,
+    "shareCeilingPermille": 600,
+    "hangoverWeeks": 8,
+    "hangoverPermillePerLevel": 50,
+    "backlashReputation": 15,
+    "cooldownWeeks": 26,
+    "minSales": 1
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,
