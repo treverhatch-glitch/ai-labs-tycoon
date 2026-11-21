@@ -249,6 +249,8 @@ The player can hire a firm of policy consultants for twelve weeks. They count as
 
 After an incident the player can publish a post-mortem within six weeks. A summary wins back a share of the lost reputation; a full write-up wins back more and tells the public the model's real alignment, which takes away the appeal a gap was borrowing.
 
+The player can pledge a service level to customers. It earns a premium on revenue while the lab keeps up with demand and has no incident. A week that breaks it refunds part of the revenue and costs reputation, and a run of broken weeks drops the pledge a level.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

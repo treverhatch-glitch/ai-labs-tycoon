@@ -178,7 +178,11 @@ namespace AiLabs.Rules.State
         /// <summary>A firm of policy consultants came in or left. LabId is the lab, SubjectId the level, Amount the fee (0 when they leave). Pick is 1 when they start, 0 when they leave.</summary>
         ConsultantsHired,
         /// <summary>The player published a post-mortem of a model's last incident. LabId is the lab, SubjectId the model, Amount the reputation won back, Ref the model's name. Pick is 0 for a summary, 1 for a full write-up.</summary>
-        PostMortemPublished
+        PostMortemPublished,
+        /// <summary>The player changed the service-level pledge, or a run of broken weeks dropped it. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
+        SlaPledged,
+        /// <summary>A week broke the service-level pledge. LabId is the lab, SubjectId the level, Amount the refund. Pick is 0 for too little serving compute, 1 for an incident.</summary>
+        SlaBroken
     }
 
     /// <summary>

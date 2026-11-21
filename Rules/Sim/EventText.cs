@@ -216,6 +216,10 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.SlaPledged:
+                    return e.Pick == 1 ? who + " pledged a level " + e.SubjectId + " service level to its customers." : who + " backed its service-level pledge down to level " + e.SubjectId + ".";
+                case EventKind.SlaBroken:
+                    return who + " broke its level " + e.SubjectId + " service-level pledge " + (e.Pick == 1 ? "with an incident" : "by not keeping up with demand") + " and refunded $" + e.Amount + ".";
                 case EventKind.PostMortemPublished:
                     return e.Pick == 1 ? who + " published a full post-mortem of " + e.Ref + " and told the public its real alignment. It won back " + e.Amount + " reputation."
                         : who + " published a summary of what went wrong with " + e.Ref + ". It won back " + e.Amount + " reputation.";

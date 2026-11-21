@@ -5608,6 +5608,16 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "sla": {
+    "maxLevel": 3,
+    "premiumPermillePerLevel": 40,
+    "breachBelowPermille": 900,
+    "refundPermillePerLevel": 120,
+    "breachReputationPerLevel": 8,
+    "minReputation": 300,
+    "lockWeeks": 8,
+    "strikeWeeks": 3
+  },
   "postMortem": {
     "windowWeeks": 6,
     "summaryCost": 20000,

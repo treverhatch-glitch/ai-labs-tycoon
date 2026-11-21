@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 58;
+        public const int CurrentSchema = 59;
 
         public int Schema;
         public string ConfigVersion;
@@ -178,6 +178,12 @@ namespace AiLabs.Rules.State
         public int OnCallLevel;
         /// <summary>The rota cannot be changed before this tick.</summary>
         public int OnCallLockedUntil;
+        /// <summary>The service-level pledge (0 is none).</summary>
+        public int SlaLevel;
+        /// <summary>The week the pledge can next be changed.</summary>
+        public int SlaLockedUntil;
+        /// <summary>Broken weeks in a row.</summary>
+        public int SlaStrikes;
         /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
         public int ConsultantLevel;
         /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
@@ -377,6 +383,9 @@ namespace AiLabs.Rules.State
             s.Int("optimiseLevel", ref OptimiseLevel);
             s.Int("onCallLevel", ref OnCallLevel);
             s.Int("onCallLockedUntil", ref OnCallLockedUntil);
+            s.Int("slaLevel", ref SlaLevel);
+            s.Int("slaLockedUntil", ref SlaLockedUntil);
+            s.Int("slaStrikes", ref SlaStrikes);
             s.Int("consultantLevel", ref ConsultantLevel);
             s.Int("consultantWeeks", ref ConsultantWeeks);
             s.Int("consultantLockedUntil", ref ConsultantLockedUntil);

@@ -57,7 +57,8 @@ namespace AiLabs.Rules.Sim
         RunCampaign,
         SetOnCall,
         HireConsultants,
-        PublishPostMortem
+        PublishPostMortem,
+        SetSla
     }
 
     /// <summary>
@@ -407,6 +408,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.RunCampaign, labId);
             c.Id = sectorId;
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the lab's service-level pledge (0 to the data's top level). Revenue premium each week, refunds and reputation loss in a week the promise breaks. A change locks it for some weeks.</summary>
+        public static Command SetSla(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetSla, labId);
             c.Count = level;
             return c;
         }
@@ -772,7 +781,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked
     }
 
     public struct CommandResult

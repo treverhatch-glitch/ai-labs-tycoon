@@ -89,6 +89,7 @@ namespace AiLabs.Rules.Config
             OnCallProblems(p, c);
             ConsultantsProblems(p, c);
             PostMortemProblems(p, c);
+            SlaProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -895,6 +896,20 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void SlaProblems(List<string> p, GameConfig c)
+        {
+            SlaConfig k = c.Sla;
+            if (k == null) { p.Add("sla is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("sla.maxLevel must be from 0 to 10");
+            if (k.PremiumPermillePerLevel < 0 || k.PremiumPermillePerLevel * (long)k.MaxLevel > 300) p.Add("sla.premiumPermillePerLevel must be 0 or more, and every level together at most 300");
+            if (k.BreachBelowPermille < 1 || k.BreachBelowPermille > MathI.Permille) p.Add("sla.breachBelowPermille must be from 1 to 1000");
+            if (k.RefundPermillePerLevel < k.PremiumPermillePerLevel || k.RefundPermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("sla.refundPermillePerLevel must be at least the premium, and every level together at most 1000, so a pledge that is always broken never pays");
+            if (k.BreachReputationPerLevel < 0 || k.BreachReputationPerLevel * (long)k.MaxLevel > 200) p.Add("sla.breachReputationPerLevel must be 0 or more, and every level together at most 200");
+            if (k.MinReputation < 0 || k.MinReputation > MathI.Permille) p.Add("sla.minReputation must be from 0 to 1000");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("sla.lockWeeks must be from 0 to 104");
+            if (k.StrikeWeeks < 0 || k.StrikeWeeks > 52) p.Add("sla.strikeWeeks must be from 0 to 52");
         }
 
         static void PostMortemProblems(List<string> p, GameConfig c)
