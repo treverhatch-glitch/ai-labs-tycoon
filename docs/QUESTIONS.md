@@ -664,6 +664,38 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**; incident load and fines are the era's risk dial for now.
 - Why: a risk class needs per-model state (and a save schema step after 17), and incident rungs 1 to 6 already carry the ladder; it should land with the risk-class design, not as a side effect of item 13.
 
+## Economy bounds (the "runaway economy" report)
+
+### Q111. Is the economy running away? DECIDED: no, cash tops out near $450 billion; the report was a column overflow in `simcli`
+
+- Options: (a) cut sector pools or revenue; (b) leave the economy alone, widen the `simcli` table, and pin the bounds with a soak.
+- Recommendation and choice: **(b)**. Across 70 seeds the richest lab ends 40 years with $360 to 450 billion (about 4e11, never the 4e21 first read), and no lab earns more in a week than every sector pays together.
+- Why: `simcli` printed cash in a 12-wide column, so a lab's cash ran into its weekly revenue and read as one number a billion times bigger. Pools are the design (a world market worth billions a week by 2030), and the existing $1 trillion ceiling in `ContentFlowTests` holds.
+
+### Q112. What did go wrong? DECIDED: a rival that lost its market waited for debt to cut, then went bankrupt
+
+- Options: (a) bail rivals out with funding rounds (ties to the bubble meter, which the rivals thread owns); (b) let the planner cut earlier and not cut what earns money; (c) nudge OpenAye's personality in the data.
+- Recommendation and choice: **(b)**. On the stack before this change OpenAye went bankrupt in 3 of 30 seeds (1999 to 2001): its revenue fell under its payroll, it could never afford its next run (runway 3 to 6 weeks against a reserve of 8), and the planner only cut once in debt, one person a month.
+- Why: it needs no new state or save change, stays out of bubble and crash code, and is the same rule for every plan, the player's autopilot included.
+
+### Q113. When does a plan retrench? DECIDED: running costs over 125% of revenue and cash under 4 weeks of costs
+
+- Options: (a) any loss; (b) the thresholds above, set in `rivalry.retrenchCostPermille` and `rivalry.retrenchRunwayWeeks`; (c) only once in debt (the old rule).
+- Recommendation and choice: **(b)**. In the first year every starting lab loses money (costs 115% of revenue) with about 8 weeks of cash, which must not trip it.
+- Why: with (a) a healthy start shrinks; with (c) the lab dies before the cuts bite. Thresholds in config keep it tunable and validated.
+
+### Q114. What does retrenching cut? DECIDED: one person in six, and only GPUs the customers are not using
+
+- Options: (a) one person a month (old rule); (b) one in six each plan, from the biggest team, never the last of a role; give back at most a quarter of the rented GPUs and none while the lab cannot serve its demand.
+- Recommendation and choice: **(b)**.
+- Why: the first try handed back GPUs the customers needed, revenue fell with them, and seed 4's OpenAye died faster than before. Whether a lab is short comes from last week's served share and compute, so nothing new is saved.
+
+### Q115. What does the soak pin? DECIDED: nobody bankrupt, cash between -$1 billion and $1 trillion, revenue under the total pools
+
+- Options: (a) only the existing seeds 1, 3 and 4 and the $1 trillion ceiling; (b) 8 seeds for 40 years from 1995 (including every seed that went bankrupt on the way: 2, 24, 27, and 4, 20, 1 from intermediate tries) and 2 seeds for 26 years from 2009.
+- Recommendation and choice: **(b)** in `EconomyBoundsTests`; the sweep over seeds 1 to 70 was run by hand and is not a test.
+- Why: each seed costs about 3 seconds, so the soak stays inside the suite; the floor, ceiling and revenue-under-pools checks catch both a runaway and a collapse.
+
 ## Open
 
 None.

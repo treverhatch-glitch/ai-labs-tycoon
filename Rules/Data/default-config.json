@@ -3716,6 +3716,8 @@
     "fastBuildWeeks": 8,
     "gateBoostPermille": 100,
     "replaceTierGap": 2,
+    "retrenchRunwayWeeks": 4,
+    "retrenchCostPermille": 1250,
     "feelings": {
       "crownPermille": -30,
       "secondPlacePermille": -60,

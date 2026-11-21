@@ -532,6 +532,8 @@ namespace AiLabs.Rules.Config
             if (r.BoardDramaWeeks < 1) p.Add("rivalry.boardDramaWeeks must be at least 1");
             if (r.FastBuildWeeks < 1) p.Add("rivalry.fastBuildWeeks must be at least 1");
             if (r.ReplaceTierGap < 1) p.Add("rivalry.replaceTierGap must be at least 1");
+            if (r.RetrenchRunwayWeeks < 1) p.Add("rivalry.retrenchRunwayWeeks must be at least 1");
+            if (r.RetrenchCostPermille < MathI.Permille) p.Add("rivalry.retrenchCostPermille must be at least 1000: a plan that breaks even is not losing money");
 
             FeelingsConfig f = r.Feelings;
             if (f.DriftPerMonth < 0) p.Add("rivalry.feelings.driftPerMonth is negative");
