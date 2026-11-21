@@ -5566,6 +5566,19 @@
     "poachPenaltyPermille": 40,
     "shockMorale": 100
   },
+  "ethicsBoard": {
+    "maxLevel": 2,
+    "setupCostPerLevel": 40000,
+    "weeklyCostPerLevel": 2500,
+    "safetyStaffPerLevel": 1,
+    "scandalCutPermillePerLevel": 150,
+    "hearingPointsPerLevel": 3,
+    "attentionPermillePerLevel": 50,
+    "vetoLevel": 2,
+    "vetoAlignment": 400,
+    "resignationReputation": 20,
+    "lockWeeks": 52
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,

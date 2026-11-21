@@ -419,11 +419,13 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>Schema 51: no model was ever audited from outside.</summary>
-        /// <summary>Schema 54: no lab has named a chief.</summary>
+        /// <summary>Schema 54: no lab has named a chief or seated an ethics board.</summary>
         static void MigrateTo54(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
+                JsonPatch.AddIfMissing(lab, "ethicsLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ethicsLockedUntil", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "chiefScientistId", JsonValue.Of(-1L));
                 JsonPatch.AddIfMissing(lab, "chiefSafetyId", JsonValue.Of(-1L));
             });

@@ -51,7 +51,8 @@ namespace AiLabs.Rules.Sim
         HoldHackWeek,
         GrantStaffEquity,
         RetrainStaff,
-        AppointChief
+        AppointChief,
+        SetEthicsBoard
     }
 
     /// <summary>
@@ -396,6 +397,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Sets the level of the ethics board, from 0 (none) to the data's highest. Seating levels costs cash and needs safety staff; stepping down costs reputation and locks the board out for a year.</summary>
+        public static Command SetEthicsBoard(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetEthicsBoard, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Names a person to a chief title ("scientist" or "safety") for a fee, or steps the sitting chief down when the person id is -1.</summary>
         public static Command AppointChief(int labId, string title, int personId)
         {
@@ -716,7 +725,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto
     }
 
     public struct CommandResult

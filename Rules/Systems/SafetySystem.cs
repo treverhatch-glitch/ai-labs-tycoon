@@ -118,6 +118,7 @@ namespace AiLabs.Rules.Systems
             if (risk != null) repLoss = (int)MathI.MulPermille(repLoss, risk.ReputationPermille);
             if (flavour != null) repLoss = (int)MathI.MulPermille(repLoss, flavour.ReputationPermille);
             repLoss = PressSystem.Damp(c, lab, repLoss);
+            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - EthicsBoard.ScandalCutPermille(c, lab));
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine + makeGood);
 

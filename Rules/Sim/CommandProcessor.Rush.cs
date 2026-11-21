@@ -16,6 +16,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a model that has not been on sale can be rushed out.");
             if (cmd.Count < 1 || cmd.Count > c.Rush.MaxWeeks)
                 return Fail(CommandError.InvalidArgument, "Skip from 1 to " + c.Rush.MaxWeeks + " weeks of testing.");
+            if (EthicsBoard.BlocksRush(c, lab)) return Fail(CommandError.BoardVeto, "The ethics board will not sit through a rushed launch.");
             CommandResult released = ReleaseModel(c, state, lab, cmd);
             if (!released.Ok) return released;
             model.RushWeeks = cmd.Count;

@@ -83,6 +83,7 @@ namespace AiLabs.Rules.Config
             HackProblems(p, c);
             EquityProblems(p, c);
             ChiefsProblems(p, c);
+            BoardProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -888,6 +889,23 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void BoardProblems(List<string> p, GameConfig c)
+        {
+            EthicsBoardConfig k = c.Board;
+            if (k == null) { p.Add("ethicsBoard is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("ethicsBoard.maxLevel must be from 0 to 5");
+            if (k.SetupCostPerLevel < 0) p.Add("ethicsBoard.setupCostPerLevel is negative");
+            if (k.WeeklyCostPerLevel < 0) p.Add("ethicsBoard.weeklyCostPerLevel is negative");
+            if (k.SafetyStaffPerLevel < 0 || k.SafetyStaffPerLevel > 100) p.Add("ethicsBoard.safetyStaffPerLevel must be from 0 to 100");
+            if (k.ScandalCutPermillePerLevel < 0 || k.ScandalCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("ethicsBoard.scandalCutPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.HearingPointsPerLevel < 0 || k.HearingPointsPerLevel > 100) p.Add("ethicsBoard.hearingPointsPerLevel must be from 0 to 100");
+            if (k.AttentionPermillePerLevel < 0 || k.AttentionPermillePerLevel * (long)k.MaxLevel > 900) p.Add("ethicsBoard.attentionPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.VetoLevel < 0 || k.VetoLevel > k.MaxLevel) p.Add("ethicsBoard.vetoLevel must be from 0 (no veto) to maxLevel");
+            if (k.VetoAlignment < 0 || k.VetoAlignment > MathI.Permille) p.Add("ethicsBoard.vetoAlignment must be from 0 to 1000");
+            if (k.ResignationReputation < 0 || k.ResignationReputation > 100) p.Add("ethicsBoard.resignationReputation must be from 0 to 100");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("ethicsBoard.lockWeeks must be from 0 to 520");
         }
 
         static void ChiefsProblems(List<string> p, GameConfig c)

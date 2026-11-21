@@ -162,6 +162,10 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
+        public int EthicsLevel;
+        /// <summary>No board can be seated before this tick (set when one is stepped down or resigns).</summary>
+        public int EthicsLockedUntil;
         /// <summary>The person named chief scientist, or -1 for nobody. Only the player's lab names one.</summary>
         public int ChiefScientistId = -1;
         /// <summary>The person named chief safety officer, or -1 for nobody.</summary>
@@ -343,6 +347,8 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("ethicsLevel", ref EthicsLevel);
+            s.Int("ethicsLockedUntil", ref EthicsLockedUntil);
             s.Int("chiefScientistId", ref ChiefScientistId);
             s.Int("chiefSafetyId", ref ChiefSafetyId);
             s.Int("equityLevel", ref EquityLevel);

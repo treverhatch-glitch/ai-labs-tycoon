@@ -1602,6 +1602,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 54, `MigrateTo54`): `chiefScientistId` and `chiefSafetyId`, -1 for nobody. Player only and opt-in. The golden digest moved to 0990de6e because of the two lab fields and the schema number only; reverting them brought the previous digest (b16cb924) back.
 - Alternatives: a chief that is a separate hire (rejected: the point is to pick someone you already have and risk losing them); effects that grow with the person's morale (rejected: a second moving part with no new choice); an empty seat that stays until filled and holds the lab's morale down (rejected: one shock at the loss is the cleaner rule).
 
+### Q320. Can the player seat an ethics board that can say no? DECIDED: yes, two levels, and walking away from it is public
+- New `ethicsBoard` data, command `SetEthicsBoard(level)`, `EthicsBoard` system, events `EthicsBoardChanged` and `EthicsBoardResigned` (appended), errors `EthicsLocked` and `BoardVeto`. Level 1 refuses `RushRelease`, takes 15% off an incident's reputation loss, adds 3 hearing points and 5% off attention gains; level 2 doubles those and vetoes a first release whose true alignment is under 400.
+- A level costs $40000 to seat and $2500 a week, and needs a safety person. Stepping down, or losing the safety staff behind it, costs 20 reputation and locks any board out for 52 weeks, so a board is a promise the lab has to keep. The veto reads true alignment, not the displayed one, which is the point of having outsiders.
+- New state on the lab (schema 54, extended): `ethicsLevel` and `ethicsLockedUntil` (`MigrateTo54`). Player only and opt-in. The golden digest moved to 87b45766 because of the two lab fields only; removing them brought 0990de6e back.
+- Alternatives: a board that can be overruled for a price (rejected: the release gate already is a gate you can change); a veto on the displayed alignment (rejected: sandbagging would walk straight past it); a one-off board per release (rejected: the weekly cost and the lock are what make it a decision).
+
 ## Open
 
 None.
