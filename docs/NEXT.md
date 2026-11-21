@@ -251,6 +251,7 @@ and says why in the commit message.
 68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 50, `MigrateTo50`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
 69. **Headlines and chat for the office, papers and the sublet (news, chat).** ~~Done~~: three headlines and four chat lines, `OfficePapersSubletNewsChatTests`, `news-ticker.md`, `company-chat-and-glow.md` (Q310).
 70. **The office, papers and the sublet together (tests).** ~~Done~~: `OfficePapersSubletTogetherTests` (Q311).
+71. **External safety audit (safety, reputation).** ~~Done~~: `CommissionAudit`, `SafetyAudit`, `audit` data, model `auditedUntil` (schema 51, `MigrateTo51`), `SafetyAuditTests`, `docs/content/safety-audit.md` (Q312).
 
 ## Rules: later
 

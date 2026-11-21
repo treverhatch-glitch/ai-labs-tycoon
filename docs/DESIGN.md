@@ -217,6 +217,8 @@ The player can spend research points to publish a paper. It adds a little reputa
 
 The player can let up to half of the lab's general compute to outside customers for half of what the same GPUs would rent for. The compute leaves training and serving, so runs take longer and the lab can be overloaded. A change needs four weeks' notice.
 
+The player can pay outside auditors to check one model. They publish its real alignment, which ends any gap between what the lab shows and what is true. A small gap earns a year-long certificate and some reputation; a large one is a scandal. While a certificate stands, governments take less interest in the lab and hearings go a little better, but an incident on that model pulls it.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

@@ -1551,6 +1551,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Tests only: a game with the office, papers, the sublet, a pay level and the offsite used together stays solvent on three seeds, the books balance, the save is sound and a load plays on identically; the journal replays on two more seeds (the office needs no policy staff in those tests, because hired staff are not in the journal); at least one seed opens an office, publishes and lets compute; and an unused set of tools changes nothing against a game without them.
 - Finding: with the office started at week 0 and kept on, seed 2's thin lab went bankrupt (a $12,000 retainer from the first week). The test opens the office only when the lab holds over $1M, and closes it below $300K. That is the tool's cost, like pay.
 
+### Q312. Can the player pay for an outside audit of a model's safety claims? DECIDED: yes, one model at a time; honest numbers earn a certificate, a hidden gap is a scandal
+- New `audit` data, command `CommissionAudit(modelId)`, `SafetyAudit` system, events `AuditDone` and `AuditRevoked` (appended). Needs two safety people; the bill is the larger of $25,000 and three weeks of the model's sales, on the training line.
+- The shown alignment is replaced by the real one. A hidden gap of 20 or less gives a 52 week certificate and +15 reputation; 60 or more is a scandal (-25 reputation, softened by press standing); in between the score is only published. Culture moves by 4 points either way.
+- A certificate takes 15% off the attention governments gain each month (on top of a compliance office) and adds 5 reputation points to a hearing. Several certificates do not stack. An incident on a certified model pulls its certificate.
+- New state on the model (schema 51, `MigrateTo51`): `auditedUntil`. Player only and opt-in; the golden digest moved to 5204c5ee because of the field and the schema number only, and reverting them brought the previous digest (1b97826c) back.
+- Alternatives: publishing the real score only when it is higher than the shown one (rejected: an audit that can quietly keep a flattering number is not an audit); a certificate for the whole lab (rejected: it would hide a risky model behind a safe one); percent-of-fine relief (rejected, same reason as the compliance office).
+
 ## Open
 
 None.

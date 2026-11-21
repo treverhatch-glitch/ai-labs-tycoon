@@ -184,6 +184,7 @@ namespace AiLabs.Rules.Sim
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
+                    if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

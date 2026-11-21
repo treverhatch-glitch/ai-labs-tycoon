@@ -78,6 +78,7 @@ namespace AiLabs.Rules.Config
             ComplianceProblems(p, c);
             PrestigeProblems(p, c);
             SubletProblems(p, c);
+            AuditProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -852,6 +853,23 @@ namespace AiLabs.Rules.Config
             if (k.MaxPermille < 0 || k.MaxPermille > 900) p.Add("sublet.maxPermille must be from 0 to 900, so the lab keeps at least a tenth of its compute");
             if (k.RevenuePermille < 0 || k.RevenuePermille > MathI.Permille) p.Add("sublet.revenuePermille must be from 0 to 1000, so subletting never beats renting out the same GPUs at full price");
             if (k.NoticeWeeks < 0 || k.NoticeWeeks > 520) p.Add("sublet.noticeWeeks must be from 0 to 520");
+        }
+
+        static void AuditProblems(List<string> p, GameConfig c)
+        {
+            SafetyAuditConfig k = c.Audit;
+            if (k == null) { p.Add("audit is missing"); return; }
+            if (k.Weeks < 0 || k.Weeks > 520) p.Add("audit.weeks must be from 0 to 520");
+            if (k.MinSafetyStaff < 0 || k.MinSafetyStaff > 1000) p.Add("audit.minSafetyStaff must be from 0 to 1000");
+            if (k.RevenueWeeks < 0 || k.RevenueWeeks > 520) p.Add("audit.revenueWeeks must be from 0 to 520");
+            if (k.MinCost < 0) p.Add("audit.minCost is negative");
+            if (k.CleanGap < 0 || k.CleanGap > MathI.Permille) p.Add("audit.cleanGap must be from 0 to 1000");
+            if (k.ShameGap < k.CleanGap || k.ShameGap > MathI.Permille) p.Add("audit.shameGap must be from cleanGap to 1000");
+            if (k.CleanReputation < 0 || k.CleanReputation > 200) p.Add("audit.cleanReputation must be from 0 to 200");
+            if (k.ShameReputation < 0 || k.ShameReputation > 200) p.Add("audit.shameReputation must be from 0 to 200");
+            if (k.CulturePoints < 0 || k.CulturePoints > 100) p.Add("audit.culturePoints must be from 0 to 100");
+            if (k.AttentionReliefPermille < 0 || k.AttentionReliefPermille > 500) p.Add("audit.attentionReliefPermille must be from 0 to 500");
+            if (k.HearingPoints < 0 || k.HearingPoints > 100) p.Add("audit.hearingPoints must be from 0 to 100");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)

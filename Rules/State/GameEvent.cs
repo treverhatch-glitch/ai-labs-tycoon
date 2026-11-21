@@ -148,7 +148,11 @@ namespace AiLabs.Rules.State
         /// <summary>The player published a paper. LabId is the lab, SubjectId the prestige now, Amount the research points it cost. Pick is always 1.</summary>
         PaperPublished,
         /// <summary>The player changed the share of compute let to outside customers. LabId is the lab, SubjectId the new share in permille, Amount what it earns in a week at today's fleet.</summary>
-        SubletChanged
+        SubletChanged,
+        /// <summary>Outside auditors tested a model. LabId is the lab, SubjectId the model, Amount the fee, Ref the model's name. Pick is 1 when the numbers held up and a certificate was given, 0 when the published score embarrassed the lab, -1 for anything in between.</summary>
+        AuditDone,
+        /// <summary>An incident pulled a model's audit certificate. LabId is the lab, SubjectId the model, Ref its name.</summary>
+        AuditRevoked
     }
 
     /// <summary>

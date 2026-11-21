@@ -37,7 +37,7 @@ namespace AiLabs.Rules.Systems
         public long FromDominance;
         /// <summary>What policy staff take off (zero or negative).</summary>
         public long PolicySaving;
-        /// <summary>What the compliance office takes off what policy staff left (zero or negative).</summary>
+        /// <summary>What the compliance office and any audit certificate take off what policy staff left (zero or negative).</summary>
         public long ComplianceSaving;
         public long Total { get { return FromFootprint + FromIncidents + FromDominance + PolicySaving + ComplianceSaving; } }
     }
@@ -270,7 +270,7 @@ namespace AiLabs.Rules.Systems
             long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaff(c, lab) * a.PolicySavingPermillePerStaff);
             gain.PolicySaving = MathI.MulPermille(before, MathI.Permille - saving) - before;
             long afterPolicy = before + gain.PolicySaving;
-            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab)) - afterPolicy;
+            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab) - SafetyAudit.AttentionReliefPermille(c, state, lab)) - afterPolicy;
             return gain;
         }
     }

@@ -63,6 +63,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 48) MigrateTo48(root);
             if (fromSchema < 49) MigrateTo49(root);
             if (fromSchema < 50) MigrateTo50(root);
+            if (fromSchema < 51) MigrateTo51(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -412,6 +413,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 51: no model was ever audited from outside.</summary>
+        static void MigrateTo51(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "auditedUntil", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 50: no lab sublet compute, so every ledger has an empty sublet line.</summary>

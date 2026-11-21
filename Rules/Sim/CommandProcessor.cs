@@ -87,6 +87,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetCompliance: return SetCompliance(c, state, lab, cmd);
                 case CommandKind.PublishPaper: return PublishPaper(c, state, lab);
                 case CommandKind.SetSublet: return SetSublet(c, state, lab, cmd);
+                case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);

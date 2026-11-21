@@ -45,7 +45,8 @@ namespace AiLabs.Rules.Sim
         SetPayLevel,
         SetCompliance,
         PublishPaper,
-        SetSublet
+        SetSublet,
+        CommissionAudit
     }
 
     /// <summary>
@@ -385,6 +386,14 @@ namespace AiLabs.Rules.Sim
         public static Command RedTeamModel(int labId, int modelId)
         {
             Command c = Make(CommandKind.RedTeamModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Pays outside auditors to test one model (trained or on sale). They publish its real alignment.</summary>
+        public static Command CommissionAudit(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CommissionAudit, labId);
             c.TargetId = modelId;
             return c;
         }

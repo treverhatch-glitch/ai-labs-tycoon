@@ -5522,6 +5522,19 @@
     "revenuePermille": 500,
     "noticeWeeks": 4
   },
+  "audit": {
+    "weeks": 52,
+    "minSafetyStaff": 2,
+    "revenueWeeks": 3,
+    "minCost": 25000,
+    "cleanGap": 20,
+    "cleanReputation": 15,
+    "shameGap": 60,
+    "shameReputation": 25,
+    "culturePoints": 4,
+    "attentionReliefPermille": 150,
+    "hearingPoints": 5
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,

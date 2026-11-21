@@ -74,6 +74,7 @@ namespace AiLabs.Rules.Config
         public ComplianceConfig Compliance = new ComplianceConfig();
         public PrestigeConfig Prestige = new PrestigeConfig();
         public SubletConfig Sublet = new SubletConfig();
+        public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
@@ -141,6 +142,7 @@ namespace AiLabs.Rules.Config
             s.Obj("compliance", ref Compliance);
             s.Obj("prestige", ref Prestige);
             s.Obj("sublet", ref Sublet);
+            s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);
