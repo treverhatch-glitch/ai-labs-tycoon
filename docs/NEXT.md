@@ -305,6 +305,8 @@ and says why in the commit message.
 122. **Internships (a cohort with a stipend and a job offer at the end).** ~~Done~~: `internships` data, `StartInternships`, `EndInternships`, `Internships`, schema 77, `InternshipsTests`, `docs/content/internships.md` (Q365).
 123. **Customer support desk (engineers against a ticket backlog that costs trust).** ~~Done~~: `support` data, `StaffSupportDesk`, `SupportDesk`, schema 78, `SupportDeskTests`, `docs/content/support-desk.md` (Q366).
 124. **Sabbaticals (send a person away on pay; the worn-down return refreshed, the happy restless).** ~~Done~~: `sabbatical` data, `SendOnSabbatical`, `RecallFromSabbatical`, `Sabbatical`, schema 79, `SabbaticalTests`, `docs/content/sabbatical.md` (Q367).
+125. **Open requisitions (order people for later at a locked price; seats and cash must be ready).** ~~Done~~: `requisitions` data, `OpenRequisition`, `CancelRequisition`, `Requisitions`, schema 80, `RequisitionsTests`, `docs/content/requisitions.md` (Q368).
+126. **Visiting scholars (outside researchers at researchers' desks; prestige when they leave on schedule).** ~~Done~~: `scholars` data, `HostScholars`, `SendScholarsHome`, `Scholars`, schema 80, `ScholarsTests`, `docs/content/visiting-scholars.md` (Q369).
 
 ## Rules: later
 

@@ -92,6 +92,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 77) MigrateTo77(root);
             if (fromSchema < 78) MigrateTo78(root);
             if (fromSchema < 79) MigrateTo79(root);
+            if (fromSchema < 80) MigrateTo80(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -455,6 +456,18 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 80: nobody has open orders or visiting scholars.</summary>
+        static void MigrateTo80(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "requisitions", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "scholarCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarDue", JsonValue.Of(0L));
             });
         }
 

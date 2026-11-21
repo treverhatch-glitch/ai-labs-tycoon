@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 79;
+        public const int CurrentSchema = 80;
 
         public int Schema;
         public string ConfigVersion;
@@ -262,6 +262,12 @@ namespace AiLabs.Rules.State
         public int SupportPeople;
         /// <summary>Tickets the desk has not cleared.</summary>
         public int SupportBacklog;
+        /// <summary>Open orders for people, soonest first.</summary>
+        public List<Requisition> Requisitions = new List<Requisition>();
+        /// <summary>Visiting scholars in the lab now, and the week they leave.</summary>
+        public int ScholarCount;
+        public int ScholarStart;
+        public int ScholarDue;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -510,6 +516,10 @@ namespace AiLabs.Rules.State
             s.Int("internDue", ref InternDue);
             s.Int("supportPeople", ref SupportPeople);
             s.Int("supportBacklog", ref SupportBacklog);
+            s.ObjList("requisitions", ref Requisitions);
+            s.Int("scholarCount", ref ScholarCount);
+            s.Int("scholarStart", ref ScholarStart);
+            s.Int("scholarDue", ref ScholarDue);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

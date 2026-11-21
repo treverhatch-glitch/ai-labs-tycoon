@@ -53,7 +53,7 @@ namespace AiLabs.Rules.Systems
                 person.RoleId = role.Id;
                 person.TraitId = StaffSystem.DefaultTrait(c.StaffPeople);
                 person.Morale = (int)MathI.Clamp((long)Traits.RestingMorale(c, lab, person) + c.Internships.ConvertMorale, 0, MathI.Permille);
-                bool seat = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id) > 0;
+                bool seat = LabQueries.FreeSeats(c, lab, role.Id) > 0;
                 if (!early && seat && lab.Cash >= fee)
                 {
                     Finance.Spend(lab, LedgerLine.Hiring, fee);

@@ -80,6 +80,12 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
+        /// <summary>Desks for a role that nobody holds: seats less the people in it, and less the visiting scholars who sit with the researchers.</summary>
+        public static int FreeSeats(GameConfig c, LabState lab, string roleId)
+        {
+            return Seats(c, lab, roleId) - StaffCount(lab, roleId) - (roleId == Scholars.RoleId ? lab.ScholarCount : 0);
+        }
+
         public static int GpuSlotsInRoom(GameConfig c, RoomState room)
         {
             RoomTypeConfig type = c.RoomType(room.TypeId);

@@ -90,7 +90,11 @@ namespace AiLabs.Rules.Sim
         EndInternships,
         StaffSupportDesk,
         SendOnSabbatical,
-        RecallFromSabbatical
+        RecallFromSabbatical,
+        OpenRequisition,
+        CancelRequisition,
+        HostScholars,
+        SendScholarsHome
     }
 
     /// <summary>
@@ -821,6 +825,37 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RecallFromSabbatical, labId);
             c.TargetId = personId;
             return c;
+        }
+
+        /// <summary>Orders people in a role for a future date (Id the role, Count the people). A deposit is paid now; the price is locked below the hiring fee of today. On the day each needs a free seat and the rest of the price, and anyone who cannot be seated or paid for is lost with their deposit.</summary>
+        public static Command OpenRequisition(int labId, string roleId, int count)
+        {
+            Command c = Make(CommandKind.OpenRequisition, labId);
+            c.Id = roleId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Cancels an open order (TargetId is its place in the lab's list, from 0). The deposit is lost.</summary>
+        public static Command CancelRequisition(int labId, int index)
+        {
+            Command c = Make(CommandKind.CancelRequisition, labId);
+            c.TargetId = index;
+            return c;
+        }
+
+        /// <summary>Hosts a group of visiting scholars (Count) at free researcher seats. They are paid a stipend, add research points each week and, when they leave on schedule, add prestige.</summary>
+        public static Command HostScholars(int labId, int count)
+        {
+            Command c = Make(CommandKind.HostScholars, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Sends the scholars home early. No prestige is earned.</summary>
+        public static Command SendScholarsHome(int labId)
+        {
+            return Make(CommandKind.SendScholarsHome, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

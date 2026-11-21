@@ -155,6 +155,15 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has interns (" + lab.InternCount + " in " + lab.InternRole + ", weeks " + lab.InternStart + " to " + lab.InternDue + ") that the data does not allow");
                 if (lab.SupportPeople < 0 || lab.SupportBacklog < 0 || lab.SupportPeople > c.Support.MaxPeople || lab.SupportBacklog > c.Support.MaxBacklog || ((lab.SupportPeople > 0 || lab.SupportBacklog > 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a support desk (" + lab.SupportPeople + " people, backlog " + lab.SupportBacklog + ") that the data does not allow");
+                {
+                    if (lab.Requisitions.Count > c.Requisitions.MaxOpen || (lab.Requisitions.Count > 0 && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has more open orders for people than the data allows");
+                    foreach (Requisition order in lab.Requisitions)
+                        if (c.Role(order.RoleId) == null || order.Count < 1 || order.Count > c.Requisitions.MaxCount || order.Due < 1 || order.Fee < 1)
+                            p.Add(who + " has an order for people (" + order.Count + " " + order.RoleId + " due week " + order.Due + ") that the data does not allow");
+                    if (lab.ScholarCount < 0 || lab.ScholarStart < 0 || lab.ScholarDue < 0 || lab.ScholarCount > c.Scholars.MaxScholars || (lab.ScholarCount > 0) != (lab.ScholarDue > 0) || (lab.ScholarCount > 0 && (lab.ScholarDue <= lab.ScholarStart || lab.Id != state.PlayerLabId)) || (lab.ScholarCount == 0 && lab.ScholarStart != 0))
+                        p.Add(who + " has visiting scholars (" + lab.ScholarCount + ", weeks " + lab.ScholarStart + " to " + lab.ScholarDue + ") that the data does not allow");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -270,7 +270,15 @@ namespace AiLabs.Rules.State
         /// <summary>A person went on sabbatical. SubjectId is the person, Amount the weeks, Ref the role id.</summary>
         SabbaticalStarted,
         /// <summary>A person came back. SubjectId is the person, Amount their morale now, Pick 2 refreshed, 1 rested, 0 restless, -1 called back early, Ref the role id.</summary>
-        SabbaticalEnded
+        SabbaticalEnded,
+        /// <summary>An order for people was placed. Amount is the people, Pick the weeks until they arrive, Ref the role id.</summary>
+        RequisitionOpened,
+        /// <summary>An order ended. SubjectId is the people ordered, Amount how many came, Pick 1 when all came, 0 when some or all were lost and -1 when it was cancelled, Ref the role id.</summary>
+        RequisitionClosed,
+        /// <summary>A group of visiting scholars arrived. Amount is how many, Pick the weeks they stay.</summary>
+        ScholarsArrived,
+        /// <summary>The scholars left. SubjectId is how many, Amount the prestige they added, Pick 1 when they left on schedule and 0 when they were sent home.</summary>
+        ScholarsLeft
     }
 
     /// <summary>

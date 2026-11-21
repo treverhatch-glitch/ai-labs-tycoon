@@ -112,6 +112,8 @@ namespace AiLabs.Rules.Config
             InternshipsProblems(p, c);
             SupportProblems(p, c);
             SabbaticalProblems(p, c);
+            RequisitionsProblems(p, c);
+            ScholarsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1190,6 +1192,30 @@ namespace AiLabs.Rules.Config
             if (k.BurnoutBelow < 0 || k.BurnoutBelow > k.RestlessAbove || k.RestlessAbove > MathI.Permille) p.Add("sabbatical.burnoutBelow must be from 0 to restlessAbove, and restlessAbove at most 1000");
             if (k.RefreshedMorale < 0 || k.RefreshedMorale > MathI.Permille || k.RestlessMorale < 0 || k.RestlessMorale > MathI.Permille || k.RefreshedMorale <= k.RestlessMorale) p.Add("sabbatical.refreshedMorale and restlessMorale must be from 0 to 1000, with refreshedMorale above restlessMorale");
             if (k.RestedBonus < -500 || k.RestedBonus > 500) p.Add("sabbatical.restedBonus must be from -500 to 500");
+        }
+
+        static void RequisitionsProblems(List<string> p, GameConfig c)
+        {
+            RequisitionsConfig k = c.Requisitions;
+            if (k == null) { p.Add("requisitions is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("requisitions.enabled must be 0 or 1");
+            if (k.MaxOpen < 1 || k.MaxOpen > 20) p.Add("requisitions.maxOpen must be from 1 to 20");
+            if (k.MaxCount < 1 || k.MaxCount > 20) p.Add("requisitions.maxCount must be from 1 to 20");
+            if (k.LeadWeeks < 1 || k.LeadWeeks > 104) p.Add("requisitions.leadWeeks must be from 1 to 104");
+            if (k.FeePermille < 1 || k.FeePermille >= MathI.Permille) p.Add("requisitions.feePermille must be from 1 to 999, a price lower than hiring on the day");
+            if (k.DepositPermille < 0 || k.DepositPermille > MathI.Permille) p.Add("requisitions.depositPermille must be from 0 to 1000");
+        }
+
+        static void ScholarsProblems(List<string> p, GameConfig c)
+        {
+            ScholarsConfig k = c.Scholars;
+            if (k == null) { p.Add("scholars is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scholars.enabled must be 0 or 1");
+            if (k.MaxScholars < 1 || k.MaxScholars > 20) p.Add("scholars.maxScholars must be from 1 to 20");
+            if (k.Weeks < 1 || k.Weeks > 104) p.Add("scholars.weeks must be from 1 to 104");
+            if (k.StipendPermille < 0 || k.StipendPermille > MathI.Permille) p.Add("scholars.stipendPermille must be from 0 to 1000");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > MathI.Permille) p.Add("scholars.researchPermille must be from 0 to 1000, no more than a researcher");
+            if (k.PrestigeEach < 0 || k.PrestigeEach > 200) p.Add("scholars.prestigeEach must be from 0 to 200");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

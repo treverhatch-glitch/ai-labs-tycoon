@@ -289,6 +289,14 @@ namespace AiLabs.Rules.Sim
                     return who + " sent a " + c.Role(e.Ref).Name.ToLowerInvariant() + " on a " + e.Amount + "-week sabbatical.";
                 case EventKind.SabbaticalEnded:
                     return "A " + c.Role(e.Ref).Name.ToLowerInvariant() + " at " + who + " came back from sabbatical " + (e.Pick == 2 ? "refreshed." : e.Pick == 1 ? "rested." : e.Pick == 0 ? "restless." : "early.");
+                case EventKind.RequisitionOpened:
+                    return who + " ordered " + e.Amount + " " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Amount == 1 ? "" : "s") + " for " + e.Pick + " weeks ahead.";
+                case EventKind.RequisitionClosed:
+                    return e.Pick == 1 ? who + "'s order of " + e.SubjectId + " " + c.Role(e.Ref).Name.ToLowerInvariant() + "s arrived." : e.Pick == 0 ? who + "'s order of " + e.SubjectId + " " + c.Role(e.Ref).Name.ToLowerInvariant() + "s arrived short: " + e.Amount + " came." : who + " cancelled an order of " + e.SubjectId + " " + c.Role(e.Ref).Name.ToLowerInvariant() + "s.";
+                case EventKind.ScholarsArrived:
+                    return who + " hosted " + e.Amount + " visiting " + (e.Amount == 1 ? "scholar" : "scholars") + " for " + e.Pick + " weeks.";
+                case EventKind.ScholarsLeft:
+                    return e.Pick == 1 ? who + "'s visiting scholars left, adding " + e.Amount + " prestige." : who + " sent its visiting scholars home early.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

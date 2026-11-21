@@ -1884,6 +1884,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Reads morale and the same away check the skunkworks, account teams and support desk use; no random numbers; only the player's lab. The golden moved 743d4496 -> 067ec37f only through the new saved fields and the schema number (verified by taking them out).
 - Alternatives: a flat morale boost for pay (rejected: a pay-for-stat knob), sabbaticals that never end badly (rejected: no wrong choice).
 
+### Q368. Can the lab order people for later? DECIDED: open requisitions with a locked price, a deposit and seats that must be ready
+- New `requisitions` data, commands `OpenRequisition` and `CancelRequisition`, `Requisitions` system, events `RequisitionOpened` and `RequisitionClosed` and a saved list on the lab (schema 80, shared with Q369). Up to 3 orders of up to 3 people; the price is locked at 70% of the day's hiring fee, a 20% deposit is paid now and the people arrive 8 weeks later.
+- On the day each needs a free seat and the rest of the price; whoever cannot be seated or paid for is lost with their deposit; cancelling forfeits it. The choice is a cheaper hire against planning the seats and the cash two months ahead.
+- Reads hiring fees, seats and cash; the people are hired as normal. Only the player's lab.
+- Alternatives: a refundable deposit (rejected: no cost to over-ordering), people who wait for a seat (rejected: no seat decision).
+
+### Q369. Can outside scholars come to the lab? DECIDED: visiting scholars who sit at researchers' desks and add prestige when they leave on schedule
+- New `scholars` data, commands `HostScholars` and `SendScholarsHome`, `Scholars` system, events `ScholarsArrived` and `ScholarsLeft` and three saved lab fields (schema 80). A group of up to 3 sits at free researcher seats for 12 weeks (seats other hires cannot take), is paid a stipend, adds research points at 60% of a researcher's rate each and adds 20 prestige each when they leave on schedule; going home early earns none.
+- Reads seats, research points and prestige (Q308); no random numbers; only the player's lab. A new `LabQueries.FreeSeats` counts the scholars' seats and hiring, rehiring, internships and requisitions use it. The golden moved 067ec37f -> 1bbc3845 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: scholars who may be hired (rejected: internships are that road), prestige each week (rejected: it would reward keeping them for ever).
+
 ## Open
 
 None.
