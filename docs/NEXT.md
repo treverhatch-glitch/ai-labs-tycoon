@@ -300,6 +300,8 @@ and says why in the commit message.
 117. **Sector account teams (salespeople on a sector, familiarity over weeks, shared cap with enterprise seats).** ~~Done~~: `accounts` data, `AssignAccountTeam`, `AccountTeams`, schema 74, `AccountTeamsTests`, `docs/content/account-teams.md` (Q360).
 118. **Conference submissions (venue tiers, review dates, acceptance by prestige and effort; no dice).** ~~Done~~: `conference` data, `SubmitPaper`, `WithdrawPaper`, `Conference`, schema 75, `ConferenceTests`, `docs/content/conference.md` (Q361).
 119. **Alumni network (leavers stay in a pool, boomerang rehires carry trait and morale).** ~~Done~~: `alumni` data, `RehireAlumnus`, `Alumni`, schema 76, `AlumniTests`, `docs/content/alumni.md` (Q362).
+120. **Headlines and chat for labour, retirement notices, account teams, papers and alumni.** ~~Done~~: 20 headlines, 19 chat lines, `LabourSunsetAccountsConferenceAlumniNewsChatTests` (Q363).
+121. **Labour, retirement notices, account teams, papers and alumni together.** ~~Done~~: `LabourSunsetAccountsConferenceAlumniTogetherTests` (Q364).
 
 ## Rules: later
 

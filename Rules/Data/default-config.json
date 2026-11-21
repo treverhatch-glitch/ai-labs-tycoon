@@ -9327,6 +9327,126 @@
         "kind": "SkunkworksDone",
         "pick": 0,
         "text": "{lab} wraps a skunkworks project up early. 'We learned what we needed,' says {lab}"
+      },
+      {
+        "id": "labour-drive",
+        "kind": "LabourDrive",
+        "pick": -1,
+        "text": "Staff at {lab} are organising. {lab} has a few weeks to 'listen'"
+      },
+      {
+        "id": "labour-recognised",
+        "kind": "LabourRecognised",
+        "pick": 1,
+        "text": "{lab} recognises its staff union. The all-hands is 'constructive'"
+      },
+      {
+        "id": "labour-recognised-forced",
+        "kind": "LabourRecognised",
+        "pick": 0,
+        "text": "{lab} is forced to recognise its staff union after a strike. 'We were always open to dialogue,' says {lab}"
+      },
+      {
+        "id": "labour-resisted-lawyers",
+        "kind": "LabourResisted",
+        "pick": 1,
+        "text": "{lab} hires lawyers to resist its staff drive. The lawyers are 'very reasonable'"
+      },
+      {
+        "id": "labour-resisted-quiet",
+        "kind": "LabourResisted",
+        "pick": 0,
+        "text": "{lab} lets its staff drive go unanswered and calls it 'a misunderstanding'"
+      },
+      {
+        "id": "labour-held",
+        "kind": "LabourHeld",
+        "pick": -1,
+        "text": "The staff drive at {lab} fizzles out. {lab} calls it 'a healthy conversation'"
+      },
+      {
+        "id": "labour-strike",
+        "kind": "LabourStrike",
+        "pick": -1,
+        "text": "Staff at {lab} walk out for {amount} weeks. The servers carry on without them"
+      },
+      {
+        "id": "sunset-announced",
+        "kind": "SunsetAnnounced",
+        "pick": -1,
+        "text": "{lab} announces that {model} will be retired in {amount} weeks. Customers 'have options'"
+      },
+      {
+        "id": "sunset-done",
+        "kind": "SunsetDone",
+        "pick": -1,
+        "text": "{lab} retires {model}. {amount} sectors are told to move on"
+      },
+      {
+        "id": "sunset-called-off",
+        "kind": "SunsetCalledOff",
+        "pick": 1,
+        "text": "{lab} calls off the retirement of {model}. 'We heard you,' says {lab}"
+      },
+      {
+        "id": "sunset-withdrawn",
+        "kind": "SunsetCalledOff",
+        "pick": 0,
+        "text": "{lab} withdraws the retirement of {model} because its successor is gone"
+      },
+      {
+        "id": "account-team-formed",
+        "kind": "AccountTeamChanged",
+        "pick": 1,
+        "text": "{lab} puts {amount} salespeople on its {ref} account team. Lunch is on {lab}"
+      },
+      {
+        "id": "account-team-changed",
+        "kind": "AccountTeamChanged",
+        "pick": -1,
+        "text": "{lab} reshuffles its {ref} account team. The sector 'will be fine'"
+      },
+      {
+        "id": "paper-submitted",
+        "kind": "PaperSubmitted",
+        "pick": -1,
+        "text": "{lab} sends a paper to a {ref}. Reviewers 'will be kind'"
+      },
+      {
+        "id": "paper-accepted",
+        "kind": "PaperDecided",
+        "pick": 1,
+        "text": "A {ref} accepts a paper from {lab}. The poster is already printed"
+      },
+      {
+        "id": "paper-rejected",
+        "kind": "PaperDecided",
+        "pick": 0,
+        "text": "A {ref} rejects a paper from {lab}. 'Reviewer two did not read it,' says {lab}"
+      },
+      {
+        "id": "paper-withdrawn",
+        "kind": "PaperDecided",
+        "pick": -1,
+        "text": "{lab} withdraws a paper from a {ref} before the verdict"
+      },
+      {
+        "id": "alumni-rehired-good",
+        "kind": "AlumniRehired",
+        "pick": 1,
+        "text": "{lab} rehires a former colleague who left on good terms. 'The door was always open'"
+      },
+      {
+        "id": "alumni-rehired-laid-off",
+        "kind": "AlumniRehired",
+        "pick": 0,
+        "text": "{lab} rehires someone it laid off. The all-hands is awkward"
+      },
+      {
+        "id": "alumni-rehired-quit",
+        "kind": "AlumniRehired",
+        "pick": -1,
+        "text": "{lab} rehires someone who quit. The farewell post is still up"
       }
     ],
     "filler": [
@@ -11322,6 +11442,215 @@
         "pick": 1,
         "about": "lab",
         "text": "The project team is back. They have a look about them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-drive-chat",
+        "kind": "LabourDrive",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "There is a spreadsheet going round. It is not a budget.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-recognised-chat",
+        "kind": "LabourRecognised",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We have a union now. The kettle has a rota.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-forced-chat",
+        "kind": "LabourRecognised",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "After the strike they signed. Nobody is gloating, loudly.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-resisted-chat",
+        "kind": "LabourResisted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Management has opinions about our organising. They have also hired people to have them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-held-chat",
+        "kind": "LabourHeld",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The drive petered out. Someone made a sad cake.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-strike-chat",
+        "kind": "LabourStrike",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The cluster is running and nobody is at their desk. It is quite peaceful.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "labour-strike-chat-any",
+        "kind": "LabourStrike",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "I am on the picket line. It is cold. The coffee is worse.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sunset-announced-chat",
+        "kind": "SunsetAnnounced",
+        "roles": ["engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a date to turn the old model off. I am told the migration guide is 'nearly done'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sunset-announced-chat-any",
+        "kind": "SunsetAnnounced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The old model has an end date. Customers are already writing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sunset-done-chat",
+        "kind": "SunsetDone",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The old model is off. We put a little notice up.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sunset-off-chat",
+        "kind": "SunsetCalledOff",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The sunset is off. I had already deleted the runbook.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "account-team-chat",
+        "kind": "AccountTeamChanged",
+        "roles": ["sales"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a standing team for one sector now. I know their receptionist.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "account-team-chat-any",
+        "kind": "AccountTeamChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Sales moved people onto a single sector. I hope they know what a token is.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-submitted-chat",
+        "kind": "PaperSubmitted",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The paper is in. We are not refreshing the page. We are refreshing the page.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-submitted-chat-any",
+        "kind": "PaperSubmitted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The researchers sent a paper off. They are very quiet.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-accepted-chat",
+        "kind": "PaperDecided",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The paper got in! The poster has been printed twice.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-rejected-chat",
+        "kind": "PaperDecided",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The paper was rejected. Reviewer two apparently wanted more baselines.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "paper-withdrawn-chat",
+        "kind": "PaperDecided",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We pulled the paper. 'Strategic,' says the team.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "alumni-rehired-chat",
+        "kind": "AlumniRehired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A familiar face is back at their old desk. The plant survived, barely.",
         "fromYear": 0,
         "toYear": 0
       }

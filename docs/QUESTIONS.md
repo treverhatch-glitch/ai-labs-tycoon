@@ -1855,6 +1855,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It reads layoffs, quits, poaching and hiring, and adds no random numbers; only the player's lab. The golden moved 3ed3c0a0 -> ef0b282a only through the new saved list and the schema number (verified by taking it back out).
 - Alternatives: alumni who send referrals or lower hiring fees (rejected: a pay-for-stat knob), a pool that never expires (rejected: no pressure to decide), rehiring at a flat price (rejected: how someone left should matter).
 
+### Q363. Do labour relations, end-of-life notices, account teams, papers and alumni show up in the news and the chat? DECIDED: twenty headlines and nineteen chat lines, data only
+- 20 headlines (106 to 125) and 19 chat lines (161 to 179) in the data: a staff drive starting, being recognised (willingly or after a strike), resisted (with lawyers or by silence) and fizzling out, a strike; a model retirement announced, carried out and called off or withdrawn; an account team formed or reshuffled; a paper sent, accepted, rejected or withdrawn; and a former colleague coming back (good terms, laid off, quit).
+- The account-team reshuffle and the withdrawn paper use the wildcard pick (placed last), because headline and chat picks are limited to -1, 0 or 1 by the validator and the events use pick 2 and above for those.
+- The researcher, engineer and sales voices get their own lines for a strike, a retirement notice, an account team and a paper; the plain lines catch the rest.
+- Data only, so the golden does not move (verified).
+
+### Q364. Do labour, retirement notices, account teams, papers and alumni hold together with each other and with the older systems? DECIDED: interactions pinned in six tests
+- `LabourSunsetAccountsConferenceAlumniTogetherTests`: a layoff fills the pool with laid-off people and adds labour pressure, and taking one back leaves the pressure alone; a retirement moves its sectors to the successor and the account teams stay with them; an account team and an outside bonus share one cap and the outside hook is zero here; a paper is decided while the lab is in turmoil and layoffs go on filling the pool; a save with all five in flight is sound, loads and plays on identically; and a save from before them loads with all five idle.
+- This is a set of pinned interactions, not a 260-week play-through over seeds: that was done for the previous batch and is left for the next one.
+
 ## Open
 
 None.
