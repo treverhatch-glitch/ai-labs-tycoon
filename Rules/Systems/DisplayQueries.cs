@@ -130,6 +130,16 @@ namespace AiLabs.Rules.Systems
             return b;
         }
 
+        public static AcquisitionSystem.AcquisitionQuote AcquisitionQuoteParts(GameConfig c, GameState state, LabState buyer, LabState target)
+        {
+            return AcquisitionSystem.Quote(c, state, buyer, target);
+        }
+
+        public static ModelSalesSystem.ModelSaleQuote ModelSaleParts(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            return ModelSalesSystem.Quote(c, state, lab, model);
+        }
+
         public static BubbleMeterBreakdown BubbleMeterParts(GameConfig c, GameState state)
         {
             BubbleConfig b = c.Bubble;
