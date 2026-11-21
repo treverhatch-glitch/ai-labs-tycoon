@@ -156,7 +156,9 @@ namespace AiLabs.Rules.State
         /// <summary>The player changed the lab's research focus. LabId is the lab, Amount the cost, Ref the focus id (empty when dropped). Pick is 1 for a new focus, 0 for none.</summary>
         FocusChanged,
         /// <summary>A hack week started or ended. LabId is the lab, SubjectId its length in weeks, Amount the cost (0 at the end). Pick is 1 when it starts and 0 when it ends.</summary>
-        HackWeek
+        HackWeek,
+        /// <summary>The player gave the team another level of equity. LabId is the lab, SubjectId the level now, Amount the share of the company the people own, in permille.</summary>
+        EquityGranted
     }
 
     /// <summary>

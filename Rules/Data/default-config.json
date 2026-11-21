@@ -5548,6 +5548,14 @@
     "switchCost": 50000,
     "lockWeeks": 26
   },
+  "equity": {
+    "maxLevel": 3,
+    "dilutionPermille": 40,
+    "salaryCutPermille": 60,
+    "moraleStep": 20,
+    "poachStepPermille": 50,
+    "minStaff": 3
+  },
   "hack": {
     "weeks": 2,
     "minResearchers": 2,

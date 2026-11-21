@@ -1570,6 +1570,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 52, same `MigrateTo52` as the research focus): `hackWeeks` and `hackLockedUntil`. Player only and opt-in. The golden digest moved to 7f191f56 because of the two lab fields; with only those two sync lines reverted the previous digest (43a606be) came back.
 - Alternatives: a one-off payout of research points (rejected: a cost that falls on training is what makes it a choice); letting it overlap crunch time (rejected: two big research bonuses and a morale lift would stack into the best week of the game); a morale cost (rejected: the point is the opposite of crunch).
 
+### Q315. Can the founder give the team equity? DECIDED: yes, up to three levels out of the founder's stake, for cheaper and steadier staff and a smaller sale price
+- New `equity` data, command `GrantStaffEquity`, `StaffEquity` system, event `EquityGranted` (appended), `CommandError.WouldLoseControl`. Each level moves 4% of the founder's current stake to the people. It needs three people and is refused if it would take the founder to the board's control line.
+- Each level takes 6% off every salary (after the pay policy), adds 20 to where morale settles and takes 5% off a rival's chance to poach. It cannot be taken back.
+- It costs the founder's stake and the people share in the sale: funding rounds dilute the people's stake like the founder's, and the exit price breakdown has a `StaffShare` taken off the total (zero without equity, so the old breakdown test still holds). Selling clears the old lab's equity.
+- New state on the lab (schema 53, `MigrateTo53`): `equityLevel` and `equityPermille`. Player only and opt-in. The golden digest moved to b16cb924 because of the two lab fields and the schema number only; reverting them brought the previous digest (7f191f56) back.
+- Alternatives: a per-person grant (rejected: it needs a vesting list and a screen for each person); equity that can be bought back (rejected: it turns it into a loan); letting the people's stake stay put when a round dilutes the founder (rejected: the two would add up to more than the company).
+
 ## Open
 
 None.

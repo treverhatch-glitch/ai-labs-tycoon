@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 52;
+        public const int CurrentSchema = 53;
 
         public int Schema;
         public string ConfigVersion;
@@ -162,6 +162,10 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The levels of staff equity the lab has granted, 0 for none. Only the player's lab grants it.</summary>
+        public int EquityLevel;
+        /// <summary>The share of the company the people own, in permille of the company. Funding rounds dilute it.</summary>
+        public int EquityPermille;
         /// <summary>The weeks of hack week still to run, 0 when none is on. Only the player's lab holds one.</summary>
         public int HackWeeks;
         /// <summary>The next hack week cannot be held before this tick.</summary>
@@ -335,6 +339,8 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("equityLevel", ref EquityLevel);
+            s.Int("equityPermille", ref EquityPermille);
             s.Int("hackWeeks", ref HackWeeks);
             s.Int("hackLockedUntil", ref HackLockedUntil);
             s.Int("payLevel", ref PayLevel);

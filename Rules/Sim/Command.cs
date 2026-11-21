@@ -48,7 +48,8 @@ namespace AiLabs.Rules.Sim
         SetSublet,
         CommissionAudit,
         SetResearchFocus,
-        HoldHackWeek
+        HoldHackWeek,
+        GrantStaffEquity
     }
 
     /// <summary>
@@ -384,6 +385,12 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Gives the team the next level of equity out of the founder's stake. It cannot be taken back.</summary>
+        public static Command GrantStaffEquity(int labId)
+        {
+            return Make(CommandKind.GrantStaffEquity, labId);
+        }
+
         /// <summary>Lets the researchers build what they like for the data's weeks: happier, more research, slower training, then a cooldown.</summary>
         public static Command HoldHackWeek(int labId)
         {
@@ -689,7 +696,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl
     }
 
     public struct CommandResult

@@ -81,6 +81,7 @@ namespace AiLabs.Rules.Config
             AuditProblems(p, c);
             FocusProblems(p, c);
             HackProblems(p, c);
+            EquityProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -874,6 +875,18 @@ namespace AiLabs.Rules.Config
                 foreach (string kind in o.Kinds)
                     if (!System.Enum.TryParse(kind, out TechEffectKind parsed) || !System.Enum.IsDefined(typeof(TechEffectKind), parsed)) p.Add("focus option " + o.Id + " names the unknown tech effect \"" + kind + "\"");
             }
+        }
+
+        static void EquityProblems(List<string> p, GameConfig c)
+        {
+            EquityConfig k = c.Equity;
+            if (k == null) { p.Add("equity is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("equity.maxLevel must be from 0 to 10");
+            if (k.DilutionPermille < 1 || k.DilutionPermille > 300) p.Add("equity.dilutionPermille must be from 1 to 300");
+            if (k.SalaryCutPermille < 0 || k.SalaryCutPermille * (long)k.MaxLevel > 600) p.Add("equity.salaryCutPermille must be 0 or more, and every level together must leave at least 40% of a salary");
+            if (k.MoraleStep < 0 || k.MoraleStep * (long)k.MaxLevel > 300) p.Add("equity.moraleStep must be 0 or more, and every level together at most 300");
+            if (k.PoachStepPermille < 0 || k.PoachStepPermille * (long)k.MaxLevel > 600) p.Add("equity.poachStepPermille must be 0 or more, and every level together at most 600");
+            if (k.MinStaff < 0 || k.MinStaff > 1000) p.Add("equity.minStaff must be from 0 to 1000");
         }
 
         static void HackProblems(List<string> p, GameConfig c)

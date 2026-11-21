@@ -438,7 +438,7 @@ namespace AiLabs.Rules.Systems
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
                 if (role != null) total += role.WeeklySalary;
             }
-            return MathI.MulPermille(total, MathI.Permille + Pay.SalaryPermille(c, lab));
+            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab)));
         }
 
         public static long WeeklyRoomUpkeep(GameConfig c, LabState lab)
