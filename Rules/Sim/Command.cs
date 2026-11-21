@@ -154,7 +154,9 @@ namespace AiLabs.Rules.Sim
         OpenWaitlist,
         CloseWaitlist,
         OpenCareersPage,
-        AnswerReview
+        AnswerReview,
+        OpenFreeTier,
+        CloseFreeTier
     }
 
     /// <summary>
@@ -1340,6 +1342,20 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerReview, labId);
             c.Count = stance;
             return c;
+        }
+
+        /// <summary>Opens a free tier of the lab's best released model at a level, 1 to 3. A higher level reaches more and costs more to serve.</summary>
+        public static Command OpenFreeTier(int labId, int level)
+        {
+            Command c = Make(CommandKind.OpenFreeTier, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Shuts the free tier. The people who built on it are upset by its reach.</summary>
+        public static Command CloseFreeTier(int labId)
+        {
+            return Make(CommandKind.CloseFreeTier, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

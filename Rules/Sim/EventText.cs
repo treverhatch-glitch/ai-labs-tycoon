@@ -465,6 +465,10 @@ namespace AiLabs.Rules.Sim
                     return "An anonymous review of " + who + " as a place to work went around.";
                 case EventKind.ReviewAnswered:
                     return who + (e.Pick == 1 ? " owned up to a bad review and fixed it." : e.Pick == 2 ? " publicly rebutted a bad review." : " let a bad review stand.");
+                case EventKind.FreeTierOpened:
+                    return who + " opened a free tier (level " + e.Amount + ").";
+                case EventKind.FreeTierClosed:
+                    return who + (e.Pick == 1 ? " shut its free tier." : " lost the model behind its free tier.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

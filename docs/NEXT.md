@@ -339,6 +339,7 @@ and says why in the commit message.
 156. **Tech bets.** ~~Done~~: `BetOnTech`, `WithdrawTechBet`, schema 100, `TechBetsTests` (Q400).
 157. **Waitlist.** ~~Done~~: `OpenWaitlist`, `CloseWaitlist`, schema 101, `WaitlistTests` (Q401).
 158. **Employer brand.** ~~Done~~: `OpenCareersPage`, `AnswerReview`, schema 102, `BrandTests` (Q402).
+159. **Free tier.** ~~Done~~: `OpenFreeTier`, `CloseFreeTier`, schema 103, `FreeTierTests` (Q403).
 
 ## Rules: later
 

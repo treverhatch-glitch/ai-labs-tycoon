@@ -270,6 +270,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.BrandReview > 0 && lab.BrandLow != 1)
                     || ((lab.BrandOn != 0 || lab.BrandReviews != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has an employer brand (on " + lab.BrandOn + ", score " + lab.BrandScore + ", review " + lab.BrandReview + ") in a way the data does not allow");
+                if (lab.FtLevel < 0 || lab.FtLevel > 3 || lab.FtReach < 0 || lab.FtReach > 1000 || lab.FtWeeks < 0 || lab.FtSpent < 0 || lab.FtEarned < 0
+                    || (lab.FtLevel == 0 && (lab.FtReach != 0 || lab.FtWeeks != 0))
+                    || ((lab.FtLevel != 0 || lab.FtSpent != 0 || lab.FtEarned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a free tier (level " + lab.FtLevel + ", reach " + lab.FtReach + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

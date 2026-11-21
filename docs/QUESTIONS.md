@@ -2061,6 +2061,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It starts when the lab sets up a careers page, so games that never do are unchanged.
 - Alternatives: a free score from the start (rejected: changes every old hire), a cash payment for score (rejected: pay-for-stat; here the cost is repairing a real problem), random reviews (rejected: nothing to plan for).
 
+### Q403. Can the lab give a model away to grow? DECIDED: yes, a free tier at three levels that costs more as it reaches more
+- Revenue has been all about the paid line. A free tier trades a weekly bill for revenue that grows with reach: a small level is cheap and slow, a big one reaches fast but costs a lot to serve and the bill rises as it succeeds. Shutting it upsets the people who built on it, so it is a real commitment, not a switch to flick.
+- Nothing is paid up front and nothing is unlocked by paying: the only thing the lab can choose is how much of its own revenue to risk.
+- Alternatives: a fixed ratio of revenue (rejected: no cost growth, always right), free access for rivals too (rejected: rivals' behaviour belongs to the rivals work), a one-off launch discount (rejected: no state).
+
 ## Open
 
 None.

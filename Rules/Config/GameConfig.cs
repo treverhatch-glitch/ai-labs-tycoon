@@ -132,6 +132,7 @@ namespace AiLabs.Rules.Config
         public TechBetsConfig TechBets = new TechBetsConfig();
         public WaitlistConfig Waitlist = new WaitlistConfig();
         public BrandConfig Brand = new BrandConfig();
+        public FreeTierConfig FreeTier = new FreeTierConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -262,6 +263,7 @@ namespace AiLabs.Rules.Config
             s.Obj("techBets", ref TechBets);
             s.Obj("waitlist", ref Waitlist);
             s.Obj("brand", ref Brand);
+            s.Obj("freeTier", ref FreeTier);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

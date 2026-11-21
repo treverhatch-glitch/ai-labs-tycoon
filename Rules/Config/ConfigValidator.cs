@@ -137,6 +137,7 @@ namespace AiLabs.Rules.Config
             TechBetsProblems(p, c);
             WaitlistProblems(p, c);
             BrandProblems(p, c);
+            FreeTierProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1549,6 +1550,15 @@ namespace AiLabs.Rules.Config
             if (k.OpenCost < 0 || k.RepairCostPerStaff < 0) p.Add("brand.openCost and repairCostPerStaff must not be negative");
             if (k.Start < 0 || k.Start > 1000 || k.LowBar < 0 || k.LowBar > 1000 || k.MaxFeePermille < 0 || k.MaxFeePermille > 900) p.Add("brand.start and lowBar must be from 0 to 1000 and maxFeePermille from 0 to 900");
             if (k.KeptPoints < 0 || k.BrokenPoints < 0 || k.RepairPoints < 0 || k.IgnorePoints < 0 || k.ReviewWeeks < 1 || k.RebutReputation < 0 || k.RebutReputation > 500) p.Add("brand points must not be negative, reviewWeeks at least 1 and rebutReputation from 0 to 500");
+        }
+
+        static void FreeTierProblems(List<string> p, GameConfig c)
+        {
+            FreeTierConfig k = c.FreeTier;
+            if (k == null) { p.Add("freeTier is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("freeTier.enabled must be 0 or 1");
+            if (k.LiftA < 0 || k.LiftB < k.LiftA || k.LiftC < k.LiftB || k.LiftC > 900) p.Add("freeTier.liftA, liftB and liftC must not fall and liftC be at most 900");
+            if (k.StepA < 0 || k.StepB < 0 || k.StepC < 0 || k.CostA < 0 || k.CostB < 0 || k.CostC < 0 || k.CloseLoss < 0 || k.CloseLoss > 500) p.Add("freeTier steps and costs must not be negative and closeLoss from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

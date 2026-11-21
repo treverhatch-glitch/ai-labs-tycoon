@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 102;
+        public const int CurrentSchema = 103;
 
         public int Schema;
         public string ConfigVersion;
@@ -450,6 +450,12 @@ namespace AiLabs.Rules.State
         public int BrandReview;
         public int BrandLow;
         public int BrandReviews;
+        /// <summary>The level of the free tier (0 none), its reach (0 to 1000), the weeks it has run, and the cash it has cost and brought in.</summary>
+        public int FtLevel;
+        public int FtReach;
+        public int FtWeeks;
+        public long FtSpent;
+        public long FtEarned;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -847,6 +853,11 @@ namespace AiLabs.Rules.State
             s.Int("brandReview", ref BrandReview);
             s.Int("brandLow", ref BrandLow);
             s.Int("brandReviews", ref BrandReviews);
+            s.Int("ftLevel", ref FtLevel);
+            s.Int("ftReach", ref FtReach);
+            s.Int("ftWeeks", ref FtWeeks);
+            s.Long("ftSpent", ref FtSpent);
+            s.Long("ftEarned", ref FtEarned);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

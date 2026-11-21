@@ -115,6 +115,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 100) MigrateTo100(root);
             if (fromSchema < 101) MigrateTo101(root);
             if (fromSchema < 102) MigrateTo102(root);
+            if (fromSchema < 103) MigrateTo103(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -478,6 +479,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 103: no lab runs a free tier.</summary>
+        static void MigrateTo103(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "ftLevel", "ftReach", "ftWeeks", "ftSpent", "ftEarned" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

@@ -6205,6 +6205,19 @@
     "rebutReputation": 12,
     "ignorePoints": 60
   },
+  "freeTier": {
+    "enabled": 1,
+    "liftA": 80,
+    "liftB": 150,
+    "liftC": 210,
+    "stepA": 40,
+    "stepB": 80,
+    "stepC": 120,
+    "costA": 15000,
+    "costB": 45000,
+    "costC": 110000,
+    "closeLoss": 30
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

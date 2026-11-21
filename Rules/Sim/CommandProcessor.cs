@@ -105,6 +105,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.OpenFreeTier: return OpenFreeTier(c, state, lab, cmd);
+                case CommandKind.CloseFreeTier: return CloseFreeTier(c, state, lab, cmd);
                 case CommandKind.OpenCareersPage: return OpenCareersPage(c, state, lab, cmd);
                 case CommandKind.AnswerReview: return AnswerReview(c, state, lab, cmd);
                 case CommandKind.OpenWaitlist: return OpenWaitlist(c, state, lab, cmd);

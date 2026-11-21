@@ -446,7 +446,11 @@ namespace AiLabs.Rules.State
         /// <summary>A bad review of the lab as an employer appeared. Amount is the score.</summary>
         BadReview,
         /// <summary>A bad review was answered. Amount is the score change, Pick 1 fixed, 2 rebutted, 3 left, 0 nobody answered in time.</summary>
-        ReviewAnswered
+        ReviewAnswered,
+        /// <summary>The lab opened a free tier. Amount is the level.</summary>
+        FreeTierOpened,
+        /// <summary>The free tier closed. Amount is the reputation lost, SubjectId the weeks it ran, Pick 1 shut by the lab, 0 the model went.</summary>
+        FreeTierClosed
     }
 
     /// <summary>
