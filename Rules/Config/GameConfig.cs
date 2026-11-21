@@ -42,6 +42,10 @@ namespace AiLabs.Rules.Config
         public List<RoomTypeConfig> RoomTypes;
         /// <summary>What rooms do beyond seating people or holding GPUs.</summary>
         public List<RoomPerkConfig> RoomPerks = new List<RoomPerkConfig>();
+        /// <summary>Who the player can be at the start: a lasting edge and cost each.</summary>
+        public List<FounderConfig> Founders = new List<FounderConfig>();
+        /// <summary>How the lab can be good at the start: appeal in a few sectors against the rest.</summary>
+        public List<StyleConfig> Styles = new List<StyleConfig>();
         public ComputeConfig Compute;
         public WorldConfig World;
         public ResearchConfig Research;
@@ -80,6 +84,8 @@ namespace AiLabs.Rules.Config
             s.ObjList("rolePerks", ref RolePerks);
             s.ObjList("roomTypes", ref RoomTypes);
             s.ObjList("roomPerks", ref RoomPerks);
+            s.ObjList("founders", ref Founders);
+            s.ObjList("styles", ref Styles);
             s.Obj("compute", ref Compute);
             s.Obj("world", ref World);
             s.Obj("research", ref Research);
@@ -126,6 +132,8 @@ namespace AiLabs.Rules.Config
         public ModelLineConfig Line(string id) { return Find(Training.Lines, id); }
         public SectorConfig Sector(string id) { return Find(Market.Sectors, id); }
         public RivalConfig Rival(string id) { return Find(Rivals, id); }
+        public FounderConfig Founder(string id) { return Find(Founders, id); }
+        public StyleConfig Style(string id) { return Find(Styles, id); }
         public WorldEventConfig WorldEvent(string id) { return Find(WorldEvents, id); }
 
         static T Find<T>(List<T> list, string id) where T : class, IHasId

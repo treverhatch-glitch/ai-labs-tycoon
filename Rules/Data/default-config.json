@@ -1532,6 +1532,107 @@
       "blurb": "Every tile of robotics arena makes the lab's robots and devices 0.3% more appealing, up to 25%."
     }
   ],
+  "founders": [
+    {
+      "id": "professor",
+      "name": "The Professor",
+      "blurb": "Starts with research credibility and grants. Better early techniques, terrible at sales.",
+      "cashPermille": 1000,
+      "reputationDelta": 150,
+      "grantPermille": 1500,
+      "researchPermille": 100,
+      "appealPermille": -100,
+      "hireFeePermille": 0,
+      "enemyRivalId": "",
+      "enemyFeeling": 0
+    },
+    {
+      "id": "dropout",
+      "name": "The Dropout",
+      "blurb": "Starts with hype and a pitch deck. Cheap early funding, and people take a little longer to believe the research.",
+      "cashPermille": 1300,
+      "reputationDelta": 250,
+      "grantPermille": 1000,
+      "researchPermille": -50,
+      "appealPermille": 50,
+      "hireFeePermille": 0,
+      "enemyRivalId": "",
+      "enemyFeeling": 0
+    },
+    {
+      "id": "defector",
+      "name": "The Defector",
+      "blurb": "Left a giant with secrets and a non-compete lawsuit. Strong start, one powerful enemy.",
+      "cashPermille": 1200,
+      "reputationDelta": 100,
+      "grantPermille": 1000,
+      "researchPermille": 60,
+      "appealPermille": 0,
+      "hireFeePermille": 0,
+      "enemyRivalId": "openaye",
+      "enemyFeeling": -600
+    },
+    {
+      "id": "heir",
+      "name": "The Heir",
+      "blurb": "Starts with money and no ideas. Can buy compute on day one. Researchers do not respect you.",
+      "cashPermille": 3000,
+      "reputationDelta": -50,
+      "grantPermille": 1000,
+      "researchPermille": 0,
+      "appealPermille": 0,
+      "hireFeePermille": 150,
+      "enemyRivalId": "",
+      "enemyFeeling": 0
+    }
+  ],
+  "styles": [
+    {
+      "id": "sniper",
+      "name": "The Sniper",
+      "blurb": "All points in coding, reasoning and enterprise trust. Win a rich market outright; have nothing else if it turns.",
+      "focusSectors": [
+        "expert-systems",
+        "doc-reading",
+        "code-completion",
+        "coding-agents",
+        "enterprise-knowledge",
+        "agent-workforce"
+      ],
+      "focusAppealPermille": 250,
+      "otherAppealPermille": -80
+    },
+    {
+      "id": "shotgun",
+      "name": "The Shotgun",
+      "blurb": "Points spread across chat, image, video and voice. First to every launch, second best everywhere.",
+      "focusSectors": [
+        "voice-assistants",
+        "image-recognition",
+        "writing-tools",
+        "consumer-assistant",
+        "image-design",
+        "video-film",
+        "music-audio",
+        "companionship"
+      ],
+      "focusAppealPermille": 80,
+      "otherAppealPermille": -20
+    },
+    {
+      "id": "wildcard",
+      "name": "The Wildcard",
+      "blurb": "An odd pairing, security and science. Small markets that later become huge; you may be right five years too early.",
+      "focusSectors": [
+        "fraud-detection",
+        "cybersecurity",
+        "science-medicine",
+        "machine-science"
+      ],
+      "focusAppealPermille": 350,
+      "otherAppealPermille": -100
+    }
+  ],
   "compute": {
     "vendorName": "Envydia",
     "vendorBoss": "Jensun Hwang",

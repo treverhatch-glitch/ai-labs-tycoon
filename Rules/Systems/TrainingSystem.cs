@@ -30,7 +30,7 @@ namespace AiLabs.Rules.Systems
                 int bonus = trait == null ? 0 : trait.ResearchPermille;
                 gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
             }
-            gained = MathI.MulPermille(gained, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed));
+            gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)));
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }

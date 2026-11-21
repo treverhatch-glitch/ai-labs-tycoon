@@ -826,6 +826,30 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Research speed multiplies the points after the era's research share and the researchers' traits; training speed is added into `SpeedPermille` beside techs and engineers; the wing's catch is added to the red-teamers' before the 900 cap; the arena's appeal joins the specialists' as `RoleBoost`.
 - Why: additive terms are what the existing speed and boost lines already do, and the validator keeps every cap at or below 900 so a perk never makes a chance certain.
 
+### Q137. Do founders and styles live in config, and what do they save? DECIDED: two config tables and two ids per lab, save schema 22
+
+- Options: (a) hard-code four founders; (b) a `founders` and a `styles` table in the config, the choice saved as two ids on the lab, everything else read from the config each time; (c) save the founder's effects as numbers on the lab.
+- Recommendation and choice: **(b)**. `LabState.FounderId` and `StyleId` (empty for none, and for every rival), `MigrateTo22` adds them as empty, `NewGameOptions.FounderId/StyleId/HomeBlocId` choose them, `simcli --founder/--style/--home` too.
+- Why: same shape as role and room perks (nothing derived is saved). Schema 22 chains after 21; if another thread takes 22 first, renumber on merge. The golden digest is re-recorded because the two new fields enter every lab's save.
+
+### Q138. What does each founder do? DECIDED: a start change plus one lasting edge and one lasting cost, from the bible's four
+
+- Options: (a) start changes only; (b) start changes plus lasting terms; (c) also seat starting staff ("two loyal students").
+- Recommendation and choice: **(b)**. Professor: reputation +150, grant 1.5x, research +10%, appeal -10%. Dropout: cash 1.3x, hype +250, appeal +5%, research -5% (the board's growing distrust has no hook yet, so it is a research cost). Defector: cash 1.2x, reputation +100, research +6%, and `openaye` starts at -600 toward the player (a feud). Heir: cash 3x, reputation -50, every hire 15% dearer.
+- Why: (c) is left out because staff need seats and the start has no rooms; a lasting term is the honest version of "loyal". Every term is signed and bounded by the validator so no founder is a free win.
+
+### Q139. What do the styles do? DECIDED: appeal up in a focus set of sectors and down everywhere else
+
+- Options: (a) per-domain capability ceilings (the bible's speciality points); (b) a sector-appeal term, since appeal is what wins share and is already explained in parts.
+- Recommendation and choice: **(b)**. Sniper (coding, enterprise, documents): +25% in six sectors, -8% elsewhere. Shotgun (chat, image, video, voice): +8% in eight, -2% elsewhere. Wildcard (security and science): +35% in four, -10% elsewhere. Founder and style add into `RoleBoost` beside role and room perks, floored at -50%.
+- Why: capability ceilings per domain would need new model state; appeal gives the same sniper-or-shotgun choice with no more state. Hardware Baron, Open-Weights Rebel and Garage Hacker wait for chips, open weights (rules-side-items) and shady offers.
+
+### Q140. What does choosing the home base do, and what happens when the lab is sold? DECIDED: it sets the bloc, and a sold lab loses the choices while a re-founded lab keeps them
+
+- Options: (a) no home-base option; (b) `NewGameOptions.HomeBlocId` picks any world-map bloc; (c) bloc-specific founding bonuses.
+- Recommendation and choice: **(b)** for the option; (c) is not needed because blocs already carry their own rules on the map. A lab sold to new owners (found-again or spectate) loses its founder and style so the successor is no longer "you"; `FoundAgain` hands both to the new player lab.
+- Why: the founder is the person, not the company.
+
 ## Open
 
 None.

@@ -36,6 +36,8 @@ namespace AiLabs.Rules.Config
             UniqueIds(p, "roles", c.Roles);
             UniqueIds(p, "rolePerks", c.RolePerks);
             UniqueIds(p, "roomPerks", c.RoomPerks);
+            UniqueIds(p, "founders", c.Founders);
+            UniqueIds(p, "styles", c.Styles);
             UniqueIds(p, "roomTypes", c.RoomTypes);
             UniqueIds(p, "research.techs", c.Research.Techs);
             UniqueIds(p, "training.lines", c.Training.Lines);
@@ -61,6 +63,7 @@ namespace AiLabs.Rules.Config
 
             RolePerkProblems(p, c);
             RoomPerkProblems(p, c);
+            FoundingProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -389,6 +392,36 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrEmpty(perk.Blurb)) p.Add(who + " has no blurb");
                 foreach (string sector in perk.Sectors)
                     if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
+            }
+        }
+
+        static void FoundingProblems(List<string> p, GameConfig c)
+        {
+            foreach (FounderConfig f in c.Founders)
+            {
+                string who = "founder " + f.Id;
+                if (string.IsNullOrEmpty(f.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(f.Blurb)) p.Add(who + " has no blurb");
+                if (f.CashPermille < 100 || f.CashPermille > 10000) p.Add(who + " needs cashPermille from 100 to 10000");
+                if (f.GrantPermille < 0 || f.GrantPermille > 10000) p.Add(who + " needs grantPermille from 0 to 10000");
+                if (f.ReputationDelta < -500 || f.ReputationDelta > 500) p.Add(who + " needs reputationDelta from -500 to 500");
+                if (f.ResearchPermille < -500 || f.ResearchPermille > 500) p.Add(who + " needs researchPermille from -500 to 500");
+                if (f.AppealPermille < -400 || f.AppealPermille > 400) p.Add(who + " needs appealPermille from -400 to 400");
+                if (f.HireFeePermille < -500 || f.HireFeePermille > 1000) p.Add(who + " needs hireFeePermille from -500 to 1000");
+                if (!string.IsNullOrEmpty(f.EnemyRivalId) && c.Rival(f.EnemyRivalId) == null) p.Add(who + " names the unknown enemy rival \"" + f.EnemyRivalId + "\"");
+                if (f.EnemyFeeling < -1000 || f.EnemyFeeling > 0) p.Add(who + " needs enemyFeeling from -1000 to 0");
+                if (string.IsNullOrEmpty(f.EnemyRivalId) && f.EnemyFeeling != 0) p.Add(who + " has an enemyFeeling but no enemy");
+            }
+            foreach (StyleConfig st in c.Styles)
+            {
+                string who = "style " + st.Id;
+                if (string.IsNullOrEmpty(st.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(st.Blurb)) p.Add(who + " has no blurb");
+                if (st.FocusSectors.Count == 0) p.Add(who + " has no focus sectors");
+                foreach (string sector in st.FocusSectors)
+                    if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
+                if (st.FocusAppealPermille < 0 || st.FocusAppealPermille > 600) p.Add(who + " needs focusAppealPermille from 0 to 600");
+                if (st.OtherAppealPermille > 0 || st.OtherAppealPermille < -400) p.Add(who + " needs otherAppealPermille from -400 to 0");
             }
         }
 

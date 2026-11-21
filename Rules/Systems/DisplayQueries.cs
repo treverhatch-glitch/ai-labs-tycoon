@@ -104,7 +104,7 @@ namespace AiLabs.Rules.Systems
             b.ReputationBoost = afterRep - b.Core;
             long afterSales = MathI.MulPermille(afterRep, MarketSystem.SalesPermille(c, lab));
             b.SalesBoost = afterSales - afterRep;
-            long afterRole = MathI.MulPermille(afterSales, MathI.Permille + RolePerks.SectorAppealPermille(c, lab, sector.Id));
+            long afterRole = MathI.MulPermille(afterSales, (int)MathI.Max(1, MathI.Permille + RolePerks.SectorAppealPermille(c, lab, sector.Id) + Founding.AppealPermille(c, lab, sector.Id)));
             b.RoleBoost = afterRole - afterSales;
             if (sectorState.ChampionLabId == lab.Id)
             {

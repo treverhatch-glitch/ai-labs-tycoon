@@ -36,6 +36,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 19) MigrateTo19(root);
             if (fromSchema < 20) MigrateTo20(root);
             if (fromSchema < 21) MigrateTo21(root);
+            if (fromSchema < 22) MigrateTo22(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -324,6 +325,16 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo21(JsonValue root)
         {
             JsonPatch.ForEach(root, "events", e => JsonPatch.AddIfMissing(e, "riskClass", JsonValue.Of("")));
+        }
+
+        /// <summary>Founding choices (Q137): every lab has a founder and a style; saves from before chose neither.</summary>
+        static void MigrateTo22(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "founderId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "styleId", JsonValue.Of(""));
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

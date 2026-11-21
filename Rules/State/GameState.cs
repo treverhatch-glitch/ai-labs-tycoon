@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 21;
+        public const int CurrentSchema = 22;
 
         public int Schema;
         public string ConfigVersion;
@@ -152,6 +152,10 @@ namespace AiLabs.Rules.State
         public int ChinaDealDeclinedUntilTick = -1;
         /// <summary>When bankrupt after acquisition, names the buyer lab id, or -1.</summary>
         public int AbsorbedByLabId = -1;
+        /// <summary>Who the player chose to be at the start (a founder id), or empty for none. Parody rivals have none.</summary>
+        public string FounderId = "";
+        /// <summary>How the player chose to be good at the start (a style id), or empty for none.</summary>
+        public string StyleId = "";
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
 
@@ -262,6 +266,8 @@ namespace AiLabs.Rules.State
             s.Bool("chinaDealPending", ref ChinaDealPending);
             s.Int("chinaDealDeclinedUntilTick", ref ChinaDealDeclinedUntilTick);
             s.Int("absorbedByLabId", ref AbsorbedByLabId);
+            s.Str("founderId", ref FounderId);
+            s.Str("styleId", ref StyleId);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);

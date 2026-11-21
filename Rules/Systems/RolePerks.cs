@@ -65,7 +65,8 @@ namespace AiLabs.Rules.Systems
         {
             long eraFee = EraRules.HireFee(c, role, tick);
             int discount = (int)MathI.Min(Permille(c, lab, RolePerkKind.HireDiscount), MathI.Permille);
-            return MathI.MulPermille(eraFee, MathI.Permille - discount);
+            long fee = MathI.MulPermille(eraFee, MathI.Permille - discount);
+            return MathI.MulPermille(fee, (int)MathI.Max(1, MathI.Permille + Founding.HireFeePermille(c, lab)));
         }
 
         /// <summary>A model's weekly incident odds taken apart: before the lab's red-teamers, what they catch, and what is left. All in permille.</summary>

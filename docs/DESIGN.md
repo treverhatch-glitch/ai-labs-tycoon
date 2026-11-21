@@ -110,6 +110,11 @@ control rooms and launch control speed research, an agent ops room speeds traini
 red-teamers, and a robotics arena lifts the appeal of robots and devices. Every tile adds a small share under a cap, read from the
 rooms the lab has.
 
+Who you are is a choice made when the game starts ([content/founding.md](content/founding.md)): a founder (the Professor, the
+Dropout, the Defector, the Heir) changes the start and carries a lasting edge and cost, a style (Sniper, Shotgun, Wildcard) lifts
+appeal in its sectors and lowers it elsewhere, and the home base is any bloc. The founder and style are two ids on the lab; their
+effects are read from the config each time.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.
