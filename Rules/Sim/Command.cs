@@ -79,7 +79,9 @@ namespace AiLabs.Rules.Sim
         StartSkunkworks,
         WrapUpSkunkworks,
         RecogniseUnion,
-        ResistUnion
+        ResistUnion,
+        AnnounceSunset,
+        CancelSunset
     }
 
     /// <summary>
@@ -720,6 +722,23 @@ namespace AiLabs.Rules.Sim
         public static Command ResistUnion(int labId)
         {
             return Make(CommandKind.ResistUnion, labId);
+        }
+
+        /// <summary>Gives a released model an end-of-life notice of Count weeks (TargetId is the model). On the day its customers move to the successor it helped design, and the model is retired. Needs such a successor on sale, and costs the lab support while the notice runs.</summary>
+        public static Command AnnounceSunset(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.AnnounceSunset, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Calls a model's end-of-life notice off. It costs the lab some reputation.</summary>
+        public static Command CancelSunset(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CancelSunset, labId);
+            c.TargetId = modelId;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

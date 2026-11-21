@@ -257,6 +257,12 @@ namespace AiLabs.Rules.Sim
                     return "The staff drive at " + who + " fizzled out.";
                 case EventKind.LabourStrike:
                     return "Staff at " + who + " went on strike for " + e.Amount + " weeks.";
+                case EventKind.SunsetAnnounced:
+                    return who + " announced that " + e.Ref + " will be retired in " + e.Amount + " weeks" + (e.Pick == 1 ? ", with the model it helped design as its successor." : ".");
+                case EventKind.SunsetDone:
+                    return who + " retired " + e.Ref + "; " + e.Amount + (e.Amount == 1 ? " sector moved" : " sectors moved") + " to its successor" + (e.Pick == 1 ? "." : " and the rest were dropped.");
+                case EventKind.SunsetCalledOff:
+                    return e.Pick == 1 ? who + " called off the retirement of " + e.Ref + "." : who + " withdrew the retirement of " + e.Ref + " because its successor was gone.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -5711,6 +5711,18 @@
     "researchPermille": 50,
     "hardResearchPermille": 0
   },
+  "sunset": {
+    "enabled": 1,
+    "minWeeks": 4,
+    "maxWeeks": 26,
+    "supportPermille": 100,
+    "trustDropShort": 150,
+    "trustDropLong": 20,
+    "assistedCutPermille": 500,
+    "droppedPermille": 2000,
+    "cancelReputation": 20,
+    "brokenReputation": 40
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

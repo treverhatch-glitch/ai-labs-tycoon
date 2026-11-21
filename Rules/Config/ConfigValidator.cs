@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Config
             MentoringProblems(p, c);
             SkunkworksProblems(p, c);
             LabourProblems(p, c);
+            SunsetProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1090,6 +1091,19 @@ namespace AiLabs.Rules.Config
             if (k.PayPermille < 0 || k.PayPermille > 500 || k.HardPayPermille < k.PayPermille || k.HardPayPermille > 1000) p.Add("labour.payPermille must be from 0 to 500 and hardPayPermille from payPermille to 1000");
             if (k.SeverancePermille < MathI.Permille || k.HardSeverancePermille < k.SeverancePermille || k.HardSeverancePermille > 10000) p.Add("labour.severancePermille must be at least 1000 and hardSeverancePermille from severancePermille to 10000");
             if (k.ResearchPermille < 0 || k.ResearchPermille > 500 || k.HardResearchPermille < 0 || k.HardResearchPermille > k.ResearchPermille) p.Add("labour.researchPermille must be from 0 to 500 and hardResearchPermille from 0 to researchPermille");
+        }
+
+        static void SunsetProblems(List<string> p, GameConfig c)
+        {
+            SunsetConfig k = c.Sunset;
+            if (k == null) { p.Add("sunset is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sunset.enabled must be 0 or 1");
+            if (k.MinWeeks < 1 || k.MaxWeeks <= k.MinWeeks || k.MaxWeeks > 104) p.Add("sunset.minWeeks and maxWeeks must be from 1 to 104 with maxWeeks above minWeeks");
+            if (k.SupportPermille < 0 || k.SupportPermille > MathI.Permille) p.Add("sunset.supportPermille must be from 0 to 1000");
+            if (k.TrustDropLong < 0 || k.TrustDropShort < k.TrustDropLong || k.TrustDropShort > MathI.Permille) p.Add("sunset.trustDropShort must be from trustDropLong to 1000, so a short notice never hurts less than a long one");
+            if (k.AssistedCutPermille < 0 || k.AssistedCutPermille > MathI.Permille) p.Add("sunset.assistedCutPermille must be from 0 to 1000");
+            if (k.DroppedPermille < MathI.Permille || k.DroppedPermille > 5000) p.Add("sunset.droppedPermille must be from 1000 to 5000, so losing a sector never hurts less than moving it");
+            if (k.CancelReputation < 0 || k.CancelReputation > 200 || k.BrokenReputation < k.CancelReputation || k.BrokenReputation > 400) p.Add("sunset.cancelReputation must be from 0 to 200 and brokenReputation from cancelReputation to 400");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

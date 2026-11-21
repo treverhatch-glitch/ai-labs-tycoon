@@ -244,7 +244,13 @@ namespace AiLabs.Rules.State
         /// <summary>A resisted drive collapsed because pressure was back under the drive level. Amount is the pressure left.</summary>
         LabourHeld,
         /// <summary>The staff went on strike. Amount is the weeks, SubjectId the morale lost.</summary>
-        LabourStrike
+        LabourStrike,
+        /// <summary>An end-of-life notice was given. SubjectId is the model, Amount the weeks, Pick 1 when the successor was designed with its help, Ref the model.</summary>
+        SunsetAnnounced,
+        /// <summary>A model left the market. SubjectId is the successor, Amount the sectors that moved over, Pick 1 when none was dropped, Ref the model.</summary>
+        SunsetDone,
+        /// <summary>A notice was withdrawn. SubjectId is the model, Amount the reputation it cost, Pick 1 when the player called it off and 0 when the successor was gone, Ref the model.</summary>
+        SunsetCalledOff
     }
 
     /// <summary>

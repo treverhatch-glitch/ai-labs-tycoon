@@ -296,6 +296,7 @@ and says why in the commit message.
 113. **Headlines and chat for the reserve, the pledge, the roadmap, mentoring and skunkworks.** ~~Done~~: 14 headlines, 14 chat lines, `ReservePledgeRoadmapMentoringSkunkworksNewsChatTests` (Q354).
 114. **The reserve, the pledge, the roadmap, mentoring and skunkworks together.** ~~Done~~: `ReservePledgeRoadmapMentoringSkunkworksTogetherTests` (Q355).
 115. **Labour relations (pressure from layoffs, crunch and morale; recognise, resist or let it run; strike).** ~~Done~~: `labour` data, `RecogniseUnion`, `ResistUnion`, `Labour`, schema 72, `LabourTests`, `docs/content/labour.md` (Q358).
+116. **Model end-of-life notice (retire a model on a date, customers move to the successor it helped design).** ~~Done~~: `sunset` data, `AnnounceSunset`, `CancelSunset`, `Sunset`, schema 73, `SunsetTests`, `docs/content/sunset.md` (Q359).
 
 ## Rules: later
 

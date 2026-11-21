@@ -244,6 +244,9 @@ namespace AiLabs.Rules.Sim
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
+                    if (model.SunsetStart < 0 || model.SunsetTick < 0 || (model.SunsetTick == 0 && model.SunsetStart != 0)
+                        || (model.SunsetTick > 0 && (model.SunsetTick <= model.SunsetStart || lab.Id != state.PlayerLabId)))
+                        p.Add(model.Name + " has an end-of-life notice (given week " + model.SunsetStart + ", leaves week " + model.SunsetTick + ") that the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

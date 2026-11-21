@@ -1828,6 +1828,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It reads Layoffs, Crunch and morale, and writes into the pay bill, severance and the research and training sums; it adds no random numbers and only the player's lab is organised. The golden moved 557a13a9 -> 49e4eb09 only through the four new saved fields and the schema number (verified by taking them back out).
 - Alternatives: a dial that buys loyalty (rejected: a pay-for-stat knob), a union for rivals (rejected: it would touch the rivals' planners), random drives (rejected: the pressure is visible and the player can act on it).
 
+### Q359. Can a model be retired on a date? DECIDED: an end-of-life notice that moves customers to the successor the model helped design
+- New `sunset` data, commands `AnnounceSunset` and `CancelSunset`, `Sunset` system, three events and two saved model fields (schema 73). The player gives a released model 4 to 26 weeks' notice. On the day the sectors it sells in move to its successor and it retires.
+- It builds on successor design and adds no successor logic: the successor is the released model whose `designerId` is the old model (at least as capable), read when it is needed and never saved. A model nobody helped design cannot be retired this way, and a successor that is gone on the day means the lab breaks its word (reputation) and the model stays on sale.
+- Real trade-offs over time: a short notice costs more trust on the day, a long one costs the lab weekly support (10% of what the model earns) for longer; a successor the old model helped design spares half the trust loss. A sector the successor cannot serve is dropped at double the loss.
+- The golden moved 49e4eb09 -> 3ab439c4 only through the two new saved fields and the schema number (verified by taking them back out). No random numbers; only the player's lab.
+- Alternatives: any model as the successor (rejected: a second successor rule beside the design one), customers drifting away over the notice (rejected: it would reach into the market share maths), a refund for the early cancel (rejected: a notice should cost something to take back).
+
 ## Open
 
 None.
