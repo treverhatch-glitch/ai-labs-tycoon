@@ -1965,6 +1965,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Going back to expensing writes the whole pool off at once. A change of policy is locked for 48 weeks. Only the player's lab. The default (expense) changes nothing for a lab that never chooses.
 - Alternatives: a fixed schedule of years for each asset (rejected: a pool needs one number, not a list), a deduction for rented compute (rejected: it is already an expense).
 
+### Q384. Do the five new systems make the news and the chat? DECIDED: yes, 29 headlines and 18 chat lines for 18 event kinds
+- Tax (structure, payment, credit, audit opened and closed), standards (drafted, ratified, adopted, lapsed), GPU failures (lost, swapped, sent back, replacements arriving, warranty, spares), covenants (breach, cure, waiver, called loans) and the capital policy. Counts are pinned at 203 headlines and 237 chat lines in the ten tests that pin them; `TaxStandardsReliabilityCovenantsAllowancesNewsChatTests` checks each pick. Data picks stay -1, 0 or 1, so the picks of 2 and 3 fall to the line for any pick, which is written last.
+
 ## Open
 
 None.

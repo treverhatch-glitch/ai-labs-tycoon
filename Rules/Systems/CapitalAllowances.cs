@@ -24,7 +24,7 @@ namespace AiLabs.Rules.Systems
             long flushed = policy == Expense ? lab.CapPool : 0;
             lab.CapPolicy = policy;
             lab.CapSwitchTick = state.Tick + 1;
-            Events.Add(state, EventKind.CapitalPolicySet, lab.Id, (int)MathI.Min(flushed, int.MaxValue), policy, "");
+            Events.Add(state, EventKind.CapitalPolicySet, lab.Id, (int)MathI.Min(flushed, int.MaxValue), policy, "").Pick = policy;
         }
 
         /// <summary>What to add to the week's taxable profit: the spend added back and the write-off taken off, or the whole pool taken off when expensing.</summary>

@@ -9946,6 +9946,180 @@
         "kind": "PolicyChanged",
         "pick": -1,
         "text": "{lab} changes its scaling policy to level {amount}. The blog post is long"
+      },
+      {
+        "id": "tax-structure",
+        "kind": "TaxStructureBuilt",
+        "pick": -1,
+        "text": "{lab} opens a new corporate structure. Its accountants call it 'purely administrative'"
+      },
+      {
+        "id": "tax-paid-structured",
+        "kind": "TaxPaid",
+        "pick": 1,
+        "text": "{lab} pays {amount} in tax 'after careful structuring'"
+      },
+      {
+        "id": "tax-paid",
+        "kind": "TaxPaid",
+        "pick": 0,
+        "text": "{lab} pays {amount} in tax. The accountants breathe out"
+      },
+      {
+        "id": "tax-credit",
+        "kind": "TaxCreditClaimed",
+        "pick": -1,
+        "text": "{lab} claims a research credit of {amount}. Every training run is now 'qualifying activity'"
+      },
+      {
+        "id": "tax-audit-offshore",
+        "kind": "TaxAuditOpened",
+        "pick": 1,
+        "text": "The tax office opens an audit of {lab} over {amount}. The offshore structure draws questions"
+      },
+      {
+        "id": "tax-audit",
+        "kind": "TaxAuditOpened",
+        "pick": -1,
+        "text": "The tax office opens an audit of {lab} over {amount}. A polite letter is attached"
+      },
+      {
+        "id": "tax-audit-paid",
+        "kind": "TaxAuditClosed",
+        "pick": 0,
+        "text": "{lab} pays back {amount} to the tax office and promises to be less creative"
+      },
+      {
+        "id": "tax-audit-settled",
+        "kind": "TaxAuditClosed",
+        "pick": 1,
+        "text": "{lab} settles a tax audit for {amount}. No one admits anything"
+      },
+      {
+        "id": "tax-audit-closed",
+        "kind": "TaxAuditClosed",
+        "pick": -1,
+        "text": "{lab}'s tax audit ends in court or in silence. The auditors take the long way out"
+      },
+      {
+        "id": "standard-drafted",
+        "kind": "StandardDrafted",
+        "pick": -1,
+        "text": "The industry starts drafting a level {amount} standard. Everyone has opinions on the font"
+      },
+      {
+        "id": "standard-ratified",
+        "kind": "StandardRatified",
+        "pick": -1,
+        "text": "A level {amount} industry standard is ratified. {lab} has read the executive summary"
+      },
+      {
+        "id": "standard-adopted",
+        "kind": "StandardAdopted",
+        "pick": -1,
+        "text": "{lab} adopts the industry standards up to level {amount}. Compliance gets a banner"
+      },
+      {
+        "id": "standard-lapsed",
+        "kind": "StandardLapsed",
+        "pick": -1,
+        "text": "{lab} releases a model without meeting the standards and is fined {amount}"
+      },
+      {
+        "id": "gpus-lost",
+        "kind": "GpusFailed",
+        "pick": 0,
+        "text": "{lab} loses {amount} GPUs to failure. There was no warranty and no spare"
+      },
+      {
+        "id": "gpus-swapped",
+        "kind": "GpusFailed",
+        "pick": 1,
+        "text": "{lab} swaps {amount} failed GPUs for spares and nobody notices"
+      },
+      {
+        "id": "gpus-sent-back",
+        "kind": "GpusFailed",
+        "pick": -1,
+        "text": "{lab} ships {amount} failed GPUs back under its warranty. The courier is thanked"
+      },
+      {
+        "id": "gpus-rushed",
+        "kind": "ReplacementsArrived",
+        "pick": 1,
+        "text": "{lab} has {amount} replacement GPUs rushed in by courier. The invoice is also rushed"
+      },
+      {
+        "id": "gpus-returned",
+        "kind": "ReplacementsArrived",
+        "pick": -1,
+        "text": "{lab}'s {amount} replacement GPUs arrive. They are newer than the ones that left"
+      },
+      {
+        "id": "warranty-changed",
+        "kind": "WarrantyChanged",
+        "pick": -1,
+        "text": "{lab} changes its GPU warranty to tier {amount}. The small print grows"
+      },
+      {
+        "id": "spares-stocked",
+        "kind": "SparesStocked",
+        "pick": -1,
+        "text": "{lab} buys {amount} spare GPUs. They live in a cupboard marked 'do not touch'"
+      },
+      {
+        "id": "covenant-breached",
+        "kind": "CovenantBreached",
+        "pick": -1,
+        "text": "{lab}'s chips no longer cover its loans as promised. The lender 'wants a word'"
+      },
+      {
+        "id": "covenant-cured-paid",
+        "kind": "CovenantCured",
+        "pick": 1,
+        "text": "{lab} pays its loans down and is back within its covenant"
+      },
+      {
+        "id": "covenant-cured",
+        "kind": "CovenantCured",
+        "pick": -1,
+        "text": "{lab} drifts back within its loan covenant. Nobody asks how"
+      },
+      {
+        "id": "covenant-waived",
+        "kind": "CovenantWaived",
+        "pick": -1,
+        "text": "{lab} pays {amount} to have its loan covenant waived. The lender looks away, professionally"
+      },
+      {
+        "id": "loans-called-cash",
+        "kind": "LoansCalled",
+        "pick": 1,
+        "text": "The lender calls {lab}'s loans. {lab} pays {amount} out of cash"
+      },
+      {
+        "id": "loans-called",
+        "kind": "LoansCalled",
+        "pick": -1,
+        "text": "The lender calls {lab}'s loans and takes chips for the {amount} owed"
+      },
+      {
+        "id": "capital-expensed",
+        "kind": "CapitalPolicySet",
+        "pick": 0,
+        "text": "{lab} goes back to writing off its hardware at once. 'Simpler,' says the accountant"
+      },
+      {
+        "id": "capital-capitalised",
+        "kind": "CapitalPolicySet",
+        "pick": 1,
+        "text": "{lab} spreads its hardware spend over the years. The spreadsheet gains a tab"
+      },
+      {
+        "id": "capital-enhanced",
+        "kind": "CapitalPolicySet",
+        "pick": -1,
+        "text": "{lab} claims an enhanced capital allowance. The tax office takes note"
       }
     ],
     "filler": [
@@ -12590,6 +12764,204 @@
         "pick": -1,
         "about": "lab",
         "text": "The scaling policy has been updated. Please re-read it. There will be a quiz.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tax-structure-chat",
+        "kind": "TaxStructureBuilt",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Finance asked us to stop calling the new company 'the mailbox'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tax-paid-chat",
+        "kind": "TaxPaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Tax is paid. Finance has gone quiet, which is how we know.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tax-credit-chat",
+        "kind": "TaxCreditClaimed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Finance says our training runs are 'qualifying activity'. We have been doing it wrong by calling it fun.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tax-audit-chat",
+        "kind": "TaxAuditOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A letter from the tax office. Finance is reading it standing up.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tax-audit-closed-chat",
+        "kind": "TaxAuditClosed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The audit is over. Finance has taken the afternoon off.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "standard-drafted-chat",
+        "kind": "StandardDrafted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A new industry standard is being drafted. The working group has a working group.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "standard-ratified-chat",
+        "kind": "StandardRatified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The standard is ratified. It is forty pages and mostly definitions.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "standard-adopted-chat",
+        "kind": "StandardAdopted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We comply now. There is a checklist and, somehow, a second checklist.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "standard-lapsed-chat",
+        "kind": "StandardLapsed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We shipped without meeting the standard. The fine arrived before the launch party ended.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpus-failed-chat",
+        "kind": "GpusFailed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Another GPU fell over. Someone put a sticky note on it that says 'sorry'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpus-returned-chat",
+        "kind": "ReplacementsArrived",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The replacement GPUs came. They are suspiciously shiny.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "warranty-changed-chat",
+        "kind": "WarrantyChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We changed the GPU warranty. Nobody has read it, including us.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "spares-stocked-chat",
+        "kind": "SparesStocked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "There are spare GPUs in the cupboard. We are not allowed to look at them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "covenant-breached-chat",
+        "kind": "CovenantBreached",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The lender called. Finance said we were 'in a meeting' for the whole week.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "covenant-cured-chat",
+        "kind": "CovenantCured",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are back within the covenant. The lender sent a nice email, which is worse.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "covenant-waived-chat",
+        "kind": "CovenantWaived",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We paid the lender to look away. They were very good at it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loans-called-chat",
+        "kind": "LoansCalled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The loans were called. The cupboard of spare chips is lighter.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "capital-policy-chat",
+        "kind": "CapitalPolicySet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Finance changed how we deduct hardware. We asked for a summary and received a diagram.",
         "fromYear": 0,
         "toYear": 0
       }
