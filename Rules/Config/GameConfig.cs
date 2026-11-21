@@ -470,6 +470,8 @@ namespace AiLabs.Rules.Config
         public int ReputationPerActivePatent;
         /// <summary>Research points granted each week per non-expired patent.</summary>
         public long ResearchPerActivePatent;
+        /// <summary>Cash granted each week per non-expired patent.</summary>
+        public long CashPerActivePatent;
 
         public void Sync(Syncer s)
         {
@@ -477,6 +479,7 @@ namespace AiLabs.Rules.Config
             s.Int("filingCostPermille", ref FilingCostPermille);
             s.Int("reputationPerActivePatent", ref ReputationPerActivePatent);
             s.Long("researchPerActivePatent", ref ResearchPerActivePatent);
+            s.Long("cashPerActivePatent", ref CashPerActivePatent);
         }
     }
 
@@ -860,6 +863,10 @@ namespace AiLabs.Rules.Config
         public long LeaderResearchPerWeek;
         /// <summary>Research points granted weekly to the near runner-up lab.</summary>
         public long ChallengerResearchPerWeek;
+        /// <summary>Cash granted weekly to the domain leader lab.</summary>
+        public long LeaderCashPerWeek;
+        /// <summary>Cash granted weekly to the near runner-up lab.</summary>
+        public long ChallengerCashPerWeek;
 
         public string Id { get { return IdValue; } }
 
@@ -875,6 +882,8 @@ namespace AiLabs.Rules.Config
             s.Int("challengerReputationPerWeek", ref ChallengerReputationPerWeek);
             s.Long("leaderResearchPerWeek", ref LeaderResearchPerWeek);
             s.Long("challengerResearchPerWeek", ref ChallengerResearchPerWeek);
+            s.Long("leaderCashPerWeek", ref LeaderCashPerWeek);
+            s.Long("challengerCashPerWeek", ref ChallengerCashPerWeek);
         }
     }
 

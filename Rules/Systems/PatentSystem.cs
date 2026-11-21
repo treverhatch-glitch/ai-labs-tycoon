@@ -42,6 +42,9 @@ namespace AiLabs.Rules.Systems
                 long rpEach = c.Research.Patents.ResearchPerActivePatent;
                 if (rpEach > 0)
                     lab.ResearchPoints += rpEach * active;
+                long cashEach = c.Research.Patents.CashPerActivePatent;
+                if (cashEach > 0)
+                    Finance.Earn(lab, LedgerLine.Grants, cashEach * active);
             }
         }
     }

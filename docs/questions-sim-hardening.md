@@ -386,6 +386,15 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q116. Challenger cash stipend? DECIDED: `challengerCashPerWeek`
+- Choice: **(a)** — runner-up lab `Grants` in `GrantWeeklyStipends`.
+
+### Q115. Domain leader cash stipend? DECIDED: `leaderCashPerWeek`
+- Choice: **(a)** — leader lab weekly `Grants` beside Q102/Q96 stipends.
+
+### Q114. Patent weekly cash? DECIDED: `cashPerActivePatent`
+- Choice: **(a)** — multiply by active count in `PatentSystem.RunWeek`; `LedgerLine.Grants`.
+
 ### Q113. Morale debt drift mitigation? DECIDED: `moraleDebtMitigationPermillePerPoint`
 - Choice: **(a)** — scales `MoraleDebtDriftPerWeek` in `StaffSystem.RunWeek`.
 

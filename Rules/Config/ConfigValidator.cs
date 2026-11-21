@@ -312,6 +312,8 @@ namespace AiLabs.Rules.Config
                 if (d.ChallengerReputationPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerReputationPerWeek is negative");
                 if (d.LeaderResearchPerWeek < 0) p.Add("capability domain " + d.IdValue + " leaderResearchPerWeek is negative");
                 if (d.ChallengerResearchPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerResearchPerWeek is negative");
+                if (d.LeaderCashPerWeek < 0) p.Add("capability domain " + d.IdValue + " leaderCashPerWeek is negative");
+                if (d.ChallengerCashPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerCashPerWeek is negative");
             }
         }
 
@@ -803,6 +805,7 @@ namespace AiLabs.Rules.Config
                 if (c.Research.Patents.FilingCostPermille < 0) p.Add("research.patents.filingCostPermille is negative");
                 if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
                 if (c.Research.Patents.ResearchPerActivePatent < 0) p.Add("research.patents.researchPerActivePatent is negative");
+                if (c.Research.Patents.CashPerActivePatent < 0) p.Add("research.patents.cashPerActivePatent is negative");
             }
             UniqueIds(p, "research.forks", c.Research.Forks);
             var forkCount = new Dictionary<string, int>();

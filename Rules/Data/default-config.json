@@ -3187,7 +3187,8 @@
       "durationWeeks": 52,
       "filingCostPermille": 800,
       "reputationPerActivePatent": 3,
-      "researchPerActivePatent": 8
+      "researchPerActivePatent": 8,
+      "cashPerActivePatent": 40
     },
     "forks": [
       {
@@ -3518,6 +3519,8 @@
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
         "challengerResearchPerWeek": 3,
+        "leaderCashPerWeek": 1500,
+        "challengerCashPerWeek": 750,
         "sectorIds": [
           "code-completion",
           "coding-agents",
@@ -3534,6 +3537,8 @@
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
         "challengerResearchPerWeek": 3,
+        "leaderCashPerWeek": 1500,
+        "challengerCashPerWeek": 750,
         "sectorIds": [
           "image-recognition",
           "image-design",
@@ -3550,6 +3555,8 @@
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
         "challengerResearchPerWeek": 3,
+        "leaderCashPerWeek": 1500,
+        "challengerCashPerWeek": 750,
         "sectorIds": [
           "expert-systems",
           "spam-search"
