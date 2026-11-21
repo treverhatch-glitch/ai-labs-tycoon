@@ -185,8 +185,11 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.OfficeEventLapsed:
                     {
-                        OfficeEventConfig gone = c.Office.Event(e.Ref);
-                        return who + " did nothing about '" + (gone == null ? e.Ref : gone.Name) + "' and it blew over.";
+                        string[] parts = e.Ref.Split('|');
+                        OfficeEventConfig gone = c.Office.Event(parts[0]);
+                        OfficeChoiceConfig taken = parts.Length == 2 && gone != null ? gone.Choice(parts[1]) : null;
+                        if (taken != null) return who + " left '" + gone.Name + "' unanswered, so: " + taken.Text + ".";
+                        return who + " did nothing about '" + (gone == null ? parts[0] : gone.Name) + "' and it blew over.";
                     }
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";

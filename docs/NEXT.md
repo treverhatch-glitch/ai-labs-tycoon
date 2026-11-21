@@ -221,6 +221,8 @@ and says why in the commit message.
     `EventKind.StaffQuit`, buzz and scandal sums in `TraitReport`, `interestingPermille` in the research sum (Q275-Q277), `MoreTraitsTests`, `docs/content/staff-traits.md`; no schema; golden moved with a verified cause.
 42. **Chip-backed loans (bible ch. 9 funding ladder).** ~~Done~~: `loans` in the data, `Command.TakeLoan` / `RepayLoan`, `Loans` system (room, weekly payments, misses, default and repossession),
     `Loan` on the lab, `EventKind.LoanTaken` / `LoanRepaid` / `LoanMissed` / `LoanDefaulted`, save schema 41 (Q278-Q280), `LoanTests`, `docs/content/loans.md`. Still open: loans against own chips, a margin call, exit prices that count debt, a screen (Unity).
+43. **The escape-attempt crisis (bible ch. 10 incident ladder, rung 5).** ~~Done~~: `OfficeTrigger.Escape`, `OfficeEventConfig.lapseChoice`, `OfficeEffectKind.Corruption`, `OfficeEvents.OnEscape`,
+    the `escape-attempt` event with three answers (Q281-Q283), `EscapeCrisisTests`, `docs/content/escape-crisis.md`; no schema, golden unchanged. Still open: a real gamble, a rung-6 crisis, one-site shutdowns.
 
 ## Rules: later
 

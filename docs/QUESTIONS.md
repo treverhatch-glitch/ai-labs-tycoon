@@ -1354,6 +1354,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, with payments as negative capital. One list of loans per lab (`MigrateTo41` gives every lab an empty one). The golden moved only because every lab now carries the list: with the sync line and the schema number reverted, the previous golden returned exactly.
 - Why: a new ledger line touches every total and every display (Q182 practice); a loan is capital in and out, so the capital line says what happened.
 
+### Q281. How is the escape attempt made a timed crisis? DECIDED: an office event with an Escape trigger, posed by a rung-5 incident, that takes a default answer if it lapses
+- Options: (a) a new crisis state and command; (b) the existing office-event machinery with a trigger and a lapse choice.
+- Recommendation and choice: **(b)**. `OfficeTrigger.Escape`, and `lapseChoice` on the event: when nobody answers in time that choice is taken for the player. Every other event has none and still just blows over.
+- Why: the crisis is a choice with effects on a clock, which is what an office event already is, and it needs no save field and no new command. "Timed" only means something if running out of time costs something, hence the default.
+
+### Q282. What are the answers? DECIDED: pull the plug (costly, clean), gamble on the sandbox (cheaper, half clean, noticed), watch (free, worse)
+- Options: (a) a real dice gamble on containment; (b) three sure answers that trade money against corruption.
+- Recommendation and choice: **(b)**, with a new `Corruption` effect on every model on sale. The default for a lapse is "watch", which raises corruption by 200 and takes 10 safety culture.
+- Why: a dice gamble would need its own chance rules and a way to show them. Three sure answers are readable and each costs something real: ten weeks of running costs for the clean break, a night of rebuilding and bad press for the middle, and a more likely Loose ending for doing nothing. The gamble is listed as open.
+
+### Q283. Is a save change needed, and does it reach the economy? DECIDED: no save change; rung 5 only follows from corruption the shady path builds
+- Options: (a) store the model that tried to escape; (b) apply the effects to every model on sale.
+- Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move.
+- Why: rung 5 needs corruption of 450 or more, which only comes from shady contracts, so labs that never choose them see none of this. For labs that do, the answers are the choice the bible asks for.
+
 ## Open
 
 None.

@@ -59,3 +59,5 @@ The last eight are the second batch (QUESTIONS Q262 and Q263), from the bible's 
 ## Hearing questions
 
 An event with `trigger: "Hearing"` is never drawn by the weekly chance. A hearing at the home government poses one instead (see [hearing-questions.md](hearing-questions.md)).
+
+An event with `trigger: "Escape"` is posed by a rung-5 incident instead (see [escape-crisis.md](escape-crisis.md)), and may name a `lapseChoice` that is taken for the player when time runs out.

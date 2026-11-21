@@ -720,6 +720,7 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
                 if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
                 if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
+                if (!string.IsNullOrEmpty(e.LapseChoice) && e.Choice(e.LapseChoice) == null) p.Add(who + " lapses into the unknown choice \"" + e.LapseChoice + "\"");
                 UniqueIds(p, who + " choices", e.Choices);
                 for (int k = 0; k < e.Choices.Count; k++)
                 {
