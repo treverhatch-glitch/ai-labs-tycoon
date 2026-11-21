@@ -5622,6 +5622,13 @@
     "prestigeFloor": 120,
     "minResearchers": 3
   },
+  "bugBounty": {
+    "maxLevel": 3,
+    "setupPerLevel": 40000,
+    "weeklyPerLevel": 2000,
+    "cutPerLevel": 100,
+    "cooldownWeeks": 13
+  },
   "whistle": {
     "enabled": 1,
     "roleId": "safety",

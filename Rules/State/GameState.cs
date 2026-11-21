@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 65;
+        public const int CurrentSchema = 66;
 
         public int Schema;
         public string ConfigVersion;
@@ -208,6 +208,10 @@ namespace AiLabs.Rules.State
         public int WhistleDue;
         /// <summary>Silences bought and not yet leaked. Each makes the next dearer and the leak worse.</summary>
         public int Silenced;
+        /// <summary>The level of the lab's bug bounty, 0 when none. Only the player's lab runs one.</summary>
+        public int BountyLevel;
+        /// <summary>The week the level can next change.</summary>
+        public int BountyLockedUntil;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -428,6 +432,8 @@ namespace AiLabs.Rules.State
             s.Int("whistleModel", ref WhistleModel);
             s.Int("whistleDue", ref WhistleDue);
             s.Int("silenced", ref Silenced);
+            s.Int("bountyLevel", ref BountyLevel);
+            s.Int("bountyLockedUntil", ref BountyLockedUntil);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -208,7 +208,9 @@ namespace AiLabs.Rules.State
         /// <summary>The concern was answered. SubjectId is the model, Amount what it cost, Pick 0 when the lab came clean and 1 when it paid for silence.</summary>
         WhistleAnswered,
         /// <summary>The concern leaked. SubjectId is the model, Amount the reputation lost, Pick 1 when a person resigned over it.</summary>
-        WhistleLeaked
+        WhistleLeaked,
+        /// <summary>The lab changed its bug bounty. SubjectId is the new level, Amount the fee, Pick 1 when it was raised.</summary>
+        BountySet
     }
 
     /// <summary>

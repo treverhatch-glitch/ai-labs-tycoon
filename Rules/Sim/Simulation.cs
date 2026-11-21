@@ -164,6 +164,7 @@ namespace AiLabs.Rules.Sim
                     ResearchGrants.RunWeek(c, state, state.Labs[i]);
                     RevenueTargets.RunWeek(c, state, state.Labs[i]);
                     Whistle.RunWeek(c, state, state.Labs[i]);
+                    BugBounty.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     Traits.RunQuits(c, state, state.Labs[i]);
                     TalentSystem.RunWeek(c, state, state.Labs[i]);

@@ -238,6 +238,9 @@ namespace AiLabs.Rules.Sim
                         : who + " paid $" + e.Amount + " to keep the concern about " + e.Ref + " quiet.";
                 case EventKind.WhistleLeaked:
                     return "The concern about " + e.Ref + " leaked and " + who + " lost " + e.Amount + " reputation" + (e.Pick == 1 ? "; a safety person resigned." : ".");
+                case EventKind.BountySet:
+                    return e.SubjectId == 0 ? who + " closed its bug bounty."
+                        : who + (e.Pick == 1 ? " raised" : " lowered") + " its bug bounty to level " + e.SubjectId + (e.Amount > 0 ? " for $" + e.Amount + "." : ".");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

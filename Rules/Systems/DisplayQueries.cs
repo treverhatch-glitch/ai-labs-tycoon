@@ -58,8 +58,10 @@ namespace AiLabs.Rules.Systems
             public int FromRedTeam;
             /// <summary>What a sitting chief safety officer takes off the weekly chance: zero or negative.</summary>
             public int FromChief;
+            /// <summary>What the lab's bug bounty takes off the weekly chance: zero or negative.</summary>
+            public int FromBounty;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromDebt + FromOptimisation + FromRedTeam + FromChief; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromDebt + FromOptimisation + FromRedTeam + FromChief + FromBounty; } }
         }
 
         public struct ExitPriceBreakdown
@@ -181,7 +183,9 @@ namespace AiLabs.Rules.Systems
             b.FromCrunch = Crunch.IncidentPermille(c, lab);
             b.FromDebt = TechDebt.IncidentPermille(c, lab);
             b.FromOptimisation = Optimisation.IncidentPermille(c, lab);
-            b.FromChief = Chiefs.IncidentChange(c, lab, b.Total);
+            long uncut = b.Total;
+            b.FromChief = Chiefs.IncidentChange(c, lab, uncut);
+            b.FromBounty = BugBounty.IncidentChange(c, lab, uncut);
             return b;
         }
 

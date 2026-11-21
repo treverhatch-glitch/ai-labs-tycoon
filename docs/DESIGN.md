@@ -271,6 +271,8 @@ The player can endow university chairs: each is a big one-off payment for resear
 
 A launch that claims more alignment than the model has can be raised by an unhappy safety person; the player comes clean, pays for ever-dearer silence or lets it leak.
 
+The player can run a bug bounty at three levels: a fee to raise, a weekly bill for each model on sale and a share off the incident chance, with the level locked for weeks after a change.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

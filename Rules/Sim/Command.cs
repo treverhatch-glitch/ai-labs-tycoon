@@ -66,7 +66,8 @@ namespace AiLabs.Rules.Sim
         PromoteStaff,
         SetRevenueTarget,
         EndowChair,
-        AnswerWhistle
+        AnswerWhistle,
+        SetBugBounty
     }
 
     /// <summary>
@@ -474,6 +475,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Sets the bug bounty level, 0 to the data's top. Raising it costs a fee per level, every level costs a bill every week for each released model, and it takes a share off the weekly incident chance; a change locks the level for some weeks.</summary>
+        public static Command SetBugBounty(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetBugBounty, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>
         public static Command ApplyForGrant(int labId, int tier)
         {
@@ -851,7 +860,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked
     }
 
     public struct CommandResult

@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Config
             RevenueTargetsProblems(p, c);
             ChairsProblems(p, c);
             WhistleProblems(p, c);
+            BugBountyProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -966,6 +967,17 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void BugBountyProblems(List<string> p, GameConfig c)
+        {
+            BugBountyConfig k = c.BugBounty;
+            if (k == null) { p.Add("bugBounty is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("bugBounty.maxLevel must be from 0 to 5 (0 turns the bounty off)");
+            if (k.SetupPerLevel < 0) p.Add("bugBounty.setupPerLevel must not be negative");
+            if (k.WeeklyPerLevel < 1) p.Add("bugBounty.weeklyPerLevel must be at least 1, so the programme is never free to run");
+            if (k.CutPerLevel < 0 || k.CutPerLevel * (long)k.MaxLevel > 900) p.Add("bugBounty.cutPerLevel times maxLevel must not pass 900, so a bounty never ends incidents");
+            if (k.CooldownWeeks < 0 || k.CooldownWeeks > 104) p.Add("bugBounty.cooldownWeeks must be from 0 to 104");
         }
 
         static void WhistleProblems(List<string> p, GameConfig c)

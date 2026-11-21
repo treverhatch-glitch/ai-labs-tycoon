@@ -1739,6 +1739,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every lab now saves four more numbers. Taking them and the schema number back out reproduces the previous digest (0691ee37), so no behaviour moved; the new digest is 3f832830.
 - Alternatives: a random leak chance each week (rejected: unreadable, and a replay-sensitive draw), a bounty to the whistleblower (rejected: more state for a minor variant), safety staff who quit at once (rejected: no decision).
 
+### Q343. Can a lab pay to make incidents rarer for as long as it keeps paying? DECIDED: a bug bounty level with a fee, a weekly bill per model on sale and a lock
+- New `bugBounty` data, lab fields `bountyLevel` and `bountyLockedUntil` (schema 66), command `SetBugBounty`, `BugBounty` system, event `BountySet` and a `FromBounty` term in the incident breakdown. Each level takes 10% off the weekly incident chance (3 levels, so at most 30%) for a fee of 40000 a level and 2000 a week a level for every released model.
+- The bill is per model on sale, so the programme is dearest for the lab that ships the most, which is the lab that most needs it, and nothing for a lab that has shipped nothing. The decision is whether the cut is worth more than the bill: it is for a model with a large weekly chance or a large fine, and not for a model that is already safe.
+- A change locks the level for 13 weeks. That is not a timed modifier: the level stays until the player changes it. The lock is only there so the programme cannot be switched on for the weeks the risk is high and off for the rest.
+- It joins the other cuts as one more term next to a chief safety officer's and the era's incident floor still holds under the whole sum. The validator keeps the largest cut under 90%.
+- Golden: the digest moves only because every lab now saves two more numbers. Taking them and the schema number back out reproduces the previous digest (3f832830), so no behaviour moved; the new digest is 44241b20.
+- Alternatives: a pay-per-bug payout (rejected: needs a random find rate), a flat cost not tied to the models (rejected: no reason to hold back), a bounty that also pays down technical debt (rejected: one lever per system).
+
 ## Open
 
 None.

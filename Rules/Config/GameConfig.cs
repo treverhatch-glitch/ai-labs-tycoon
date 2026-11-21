@@ -93,6 +93,7 @@ namespace AiLabs.Rules.Config
         public RevenueTargetsConfig RevenueTargets = new RevenueTargetsConfig();
         public ChairsConfig Chairs = new ChairsConfig();
         public WhistleConfig Whistle = new WhistleConfig();
+        public BugBountyConfig BugBounty = new BugBountyConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
@@ -182,6 +183,7 @@ namespace AiLabs.Rules.Config
             s.Obj("revenueTargets", ref RevenueTargets);
             s.Obj("chairs", ref Chairs);
             s.Obj("whistle", ref Whistle);
+            s.Obj("bugBounty", ref BugBounty);
             s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);
