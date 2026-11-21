@@ -376,6 +376,12 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Choice: **(b)** — language/vision sector lists; read-only aggregates on released models.
 - Why: explainable domain scores for planner/UI without gauntlet changes.
 
+### Q67. Language domain breadth? DECIDED: add `coding-agents` sector
+
+- Options: (a) third domain; (b) extend language `sectorIds`; (c) UI only.
+- Choice: **(b)** — config only; leaders and appeal follow Q65 automatically.
+- Why: bible coding-agents row fits language without new schema.
+
 ### Q66. Optical chip cooling? DECIDED: `optical` cooling option
 
 - Options: (a) tech-only effect; (b) `optical` cooling option gated on `optical-interconnect`; (c) new node.

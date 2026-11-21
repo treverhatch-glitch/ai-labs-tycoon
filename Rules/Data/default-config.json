@@ -3496,6 +3496,7 @@
         "leaderAppealPermille": 120,
         "sectorIds": [
           "code-completion",
+          "coding-agents",
           "doc-reading"
         ]
       },

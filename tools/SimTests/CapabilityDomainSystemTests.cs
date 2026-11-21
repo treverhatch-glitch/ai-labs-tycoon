@@ -141,4 +141,14 @@ public class CapabilityDomainSystemTests
         Assert.NotNull(CapabilityDomainSystem.Leader(g.State, "language"));
         Assert.NotNull(CapabilityDomainSystem.Leader(g.State, "vision"));
     }
+
+    [Fact]
+    public void Coding_agents_sector_counts_in_language_domain()
+    {
+        Game g = At(2030);
+        ModelState m = ExpansionTestSupport.AddReleasedModel(g, 60_000, "coding-agents");
+        CapabilityDomainSystem.RunWeek(g.C, g.State);
+        Assert.Equal(m.Capability, CapabilityDomainQueries.BestCapability(g.C, g.Me, "language"));
+        Assert.True(CapabilityDomainSystem.LeaderAppealPermille(g.C, g.State, g.Me, "coding-agents") > 0);
+    }
 }
