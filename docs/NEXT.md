@@ -97,7 +97,7 @@ and says why in the commit message.
 - Incident rungs 4 to 6, containment rooms, the superintelligence endings.
 - ~~Specialist model lines, data sources, open weights, pricing.~~ Done on `cursor/rules-side-items`: sector price (schema 12), open weights (13), code-specialist, data sources (14), image-specialist, market/world/training breakdown queries (Q9–Q15 in `docs/questions-sim-hardening.md`).
 - ~~Real Bodies and Upward expansions~~ Done on `cursor/rules-side-items`: expansion appeal kits + room gates (`expansions` config); art/mechanics beyond appeal still open for a future pass.
-- **Explain every number (tail):** power/attention/capability breakdowns landed; chip-compute and shady-odds breakdowns already exist — optional hardening only.
+- **Explain every number (tail):** Q12–Q17 breakdowns on `cursor/rules-side-items` (pushed through Q16 @ `a4f16dd`; Q17 frontier cost local); chip derive + shady odds — optional hardening only.
 
 ## Unity
 
