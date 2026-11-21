@@ -13,6 +13,12 @@ namespace AiLabs.Rules.Systems
         /// <summary>The weekly chance, in permille, that a released model has an incident.</summary>
         public static int IncidentChancePermille(GameConfig c, int tick, ModelState model)
         {
+            return (int)MathI.Min(MathI.Permille, IncidentChanceWithoutRush(c, tick, model) + RushedLaunch.IncidentPermille(c, tick, model));
+        }
+
+        /// <summary>The weekly chance before a rushed launch adds to it.</summary>
+        public static int IncidentChanceWithoutRush(GameConfig c, int tick, ModelState model)
+        {
             int eraLoad = EraSystem.AtTick(c, tick).IncidentLoadPermille;
             if (eraLoad < 1) eraLoad = MathI.Permille;
             long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);

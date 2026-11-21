@@ -63,6 +63,18 @@ namespace AiLabs.Rules.Sim
                     TechConfig tech = c.Tech(e.Ref);
                     return who + " researched " + (tech == null ? e.Ref : tech.Name) + ".";
                 case EventKind.TrainingStarted: return who + " started training " + e.Ref + ".";
+                case EventKind.ObjectiveSet:
+                    {
+                        ObjectiveConfig objective = c.Objectives.Objective(string.IsNullOrEmpty(e.Ref) ? c.Objectives.DefaultId : e.Ref);
+                        return who + " set " + (objective == null ? e.Ref : objective.Name) + " as what the next version is trained for.";
+                    }
+                case EventKind.SuccessorDesigned:
+                    {
+                        ModelState helper = state.Lab(e.LabId) == null ? null : state.Lab(e.LabId).Model((int)e.Amount);
+                        return who + " put " + (helper == null ? "an older model" : helper.Name) + " to work on designing " + e.Ref + ".";
+                    }
+                case EventKind.ModelRushed:
+                    return who + " rushed " + e.Ref + " out with " + e.Amount + (e.Amount == 1 ? " week" : " weeks") + " of testing skipped.";
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";

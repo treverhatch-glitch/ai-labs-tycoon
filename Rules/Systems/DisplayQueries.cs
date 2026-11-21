@@ -28,8 +28,12 @@ namespace AiLabs.Rules.Systems
             public long ChampionBoost;
             /// <summary>Zero or negative: customers who cannot tell the lab's models apart.</summary>
             public long NamingConfusion;
+            /// <summary>Positive for a model trained to be engaging, negative for one trained to be careful; zero for the default.</summary>
+            public long ObjectiveEffect;
+            /// <summary>Positive while the launch window of a rushed release is open; zero otherwise.</summary>
+            public long LaunchEffect;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect; } }
         }
 
         public struct IncidentBreakdown
@@ -37,8 +41,10 @@ namespace AiLabs.Rules.Systems
             public int FromConfig;
             public int FromAlignment;
             public int FromCorruption;
+            /// <summary>Extra chance from skipping testing before launch; zero for a tested launch.</summary>
+            public int FromRush;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush; } }
         }
 
         public struct ExitPriceBreakdown
@@ -118,6 +124,9 @@ namespace AiLabs.Rules.Systems
                 long afterCrown = MathI.MulPermille(afterNames, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
                 b.ChampionBoost = afterCrown - afterNames;
             }
+            b.ObjectiveEffect = MathI.MulPermille(b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost, TrainingObjectives.AppealPermille(c, model)) - (b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost);
+            long beforeLaunch = b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost + b.ObjectiveEffect;
+            b.LaunchEffect = MathI.MulPermille(beforeLaunch, RushedLaunch.LaunchAppealPermille(c, state.Tick, model)) - beforeLaunch;
             return b;
         }
 
@@ -135,8 +144,9 @@ namespace AiLabs.Rules.Systems
             b.FromConfig = scaledConfig;
             long baseChance = MathI.MulPermille(scaledConfig, MathI.Permille - model.Alignment);
             b.FromAlignment = (int)(baseChance - scaledConfig);
-            int total = SafetySystem.IncidentChancePermille(c, tick, model);
-            b.FromCorruption = total - (int)baseChance;
+            int withoutRush = SafetySystem.IncidentChanceWithoutRush(c, tick, model);
+            b.FromCorruption = withoutRush - (int)baseChance;
+            b.FromRush = SafetySystem.IncidentChancePermille(c, tick, model) - withoutRush;
             return b;
         }
 

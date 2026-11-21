@@ -153,6 +153,8 @@ namespace AiLabs.Rules.Systems
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;
             Events.Add(state, EventKind.TrainingFinished, lab.Id, model.Id, model.Capability, model.Name);
+            TrainingObjectives.OnTrained(c, lab, model);
+            SuccessorDesign.OnTrained(c, lab, model);
             ResearchLeads.OnTrained(c, state, lab, model, luck);
         }
 

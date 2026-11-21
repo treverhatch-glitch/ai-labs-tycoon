@@ -72,6 +72,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
                 case CommandKind.FollowLead: return FollowLead(c, state, lab, cmd);
+                case CommandKind.RushRelease: return RushRelease(c, state, lab, cmd);
+                case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
+                case CommandKind.SetTrainingObjective: return SetTrainingObjective(c, state, lab, cmd);
                 case CommandKind.AnswerOfficeEvent: return AnswerOfficeEvent(c, state, lab, cmd);
                 case CommandKind.FineTuneModel: return FineTuneModel(c, state, lab, cmd);
                 case CommandKind.RollBackModel: return RollBackModel(c, state, lab, cmd);

@@ -26,7 +26,10 @@ namespace AiLabs.Rules.Sim
         FollowLead,
         FineTuneModel,
         RollBackModel,
-        AnswerOfficeEvent
+        AnswerOfficeEvent,
+        SetTrainingObjective,
+        DesignWithModel,
+        RushRelease
     }
 
     /// <summary>
@@ -290,6 +293,15 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>A first release with <paramref name="weeksSkipped"/> weeks of testing skipped: it sells better for a quarter and is likelier to have an incident for half a year.</summary>
+        public static Command RushRelease(int labId, int modelId, int weeksSkipped, params string[] sectorIds)
+        {
+            Command c = ReleaseModel(labId, modelId, 0, sectorIds);
+            c.Kind = CommandKind.RushRelease;
+            c.Count = weeksSkipped;
+            return c;
+        }
+
         public static Command ResearchFrontier(int labId)
         {
             return Make(CommandKind.ResearchFrontier, labId);
@@ -402,6 +414,24 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LeakStory, labId);
             c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Puts a finished model to work on the design of a model still in training. <see cref="Command.TargetId"/> is the run and <see cref="Command.Count"/> the helper.</summary>
+        public static Command DesignWithModel(int labId, int runId, int helperId)
+        {
+            Command c = Make(CommandKind.DesignWithModel, labId);
+            c.TargetId = runId;
+            c.Count = helperId;
+            return c;
+        }
+
+        /// <summary>Chooses what a model still in training is for. <see cref="Command.Id"/> is the objective.</summary>
+        public static Command SetTrainingObjective(int labId, int modelId, string objectiveId)
+        {
+            Command c = Make(CommandKind.SetTrainingObjective, labId);
+            c.TargetId = modelId;
+            c.Id = objectiveId;
             return c;
         }
 
