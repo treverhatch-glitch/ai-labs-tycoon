@@ -22,7 +22,11 @@ namespace AiLabs.Rules.Sim
         AnswerComplaint,
         SetReleaseGate,
         CleanUpNaming,
-        RefurbishRoom
+        RefurbishRoom,
+        FollowLead,
+        FineTuneModel,
+        RollBackModel,
+        AnswerOfficeEvent
     }
 
     /// <summary>
@@ -401,6 +405,38 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Answers the office event on the desk. <see cref="Command.Id"/> is the choice.</summary>
+        public static Command AnswerOfficeEvent(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.AnswerOfficeEvent, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
+        /// <summary>Pays to end a glitch on a model that is on sale now. <see cref="Command.TargetId"/> is the model.</summary>
+        public static Command FineTuneModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.FineTuneModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Withdraws a glitching model and puts the previous version of its line back on sale. <see cref="Command.TargetId"/> is the model.</summary>
+        public static Command RollBackModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.RollBackModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts an investigation into a lucky run. <see cref="Command.TargetId"/> is the lead.</summary>
+        public static Command FollowLead(int labId, int leadId)
+        {
+            Command c = Make(CommandKind.FollowLead, labId);
+            c.TargetId = leadId;
+            return c;
+        }
+
         /// <summary>Answers a customer's complaint.</summary>
         public static Command AnswerComplaint(int labId, int complaintId, string responseId)
         {
@@ -455,7 +491,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent
     }
 
     public struct CommandResult

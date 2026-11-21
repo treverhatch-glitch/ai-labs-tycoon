@@ -1125,6 +1125,60 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** for the roles in `culture.listeningRoles` (safety, red-teamer, alignment-fellow): `control.firedListenerPoints` 15 each, so letting a team of three go costs 45 on top of the weekly gain it stops. Letting anyone else go costs nothing. Culture stays in 0 to 1000, and a refused firing changes nothing.
 - Why: the bible lists "firing or ignoring the safety team" as something that erodes control. Ignoring was already the weekly drift of Q191; firing is a decision, so it gets a visible price. Economy and golden: no player-only revenue or cost changed. The golden run did not move (the pinned game never has the player researching safety and then crossing eras), and EconomyBounds, ContentFlow and the soak stayed green at the first values, so nothing was tuned.
 
+## Research leads (NEXT item 27)
+
+### Q236. What counts as a lucky run, and what does it leave? DECIDED: luck of 6% or more leaves a lead on the player's desk, up to three at a time, cold after a year
+- Options: (a) a lead for every run; (b) only runs above a luck bar; (c) a dice roll on top of the luck.
+- Recommendation and choice: **(b)**. Training already rolls luck of up to plus or minus 8% (`training.luckPermille` 80). A run at or above `leads.minLuckPermille` (60) leaves a `ResearchLead` for that model (`LeadFound`), about one run in eight. The desk holds `maxOpen` 3; a new lead is not found while it is full. An unfollowed lead goes cold after `expireWeeks` 52 (`LeadWentCold`). Only the player's labs find leads.
+- Why: the bible says a model sometimes "is better than it has any right to be and nobody knows why"; the luck number is already that. No second dice roll is needed, so no new random stream and no change to anyone's rolls. Rivals have none (Q182).
+
+### Q237. What does following a lead cost, and what comes of it? DECIDED: six weeks of the lab's research output, eight weeks of waiting, then one of five outcomes chosen from the lead itself
+- Options: (a) a fixed price; (b) a price in weeks of the lab's own research; (c) a price in cash.
+- Recommendation and choice: **(b)**. `FollowLead` costs `followCostWeeks` 6 times the lab's research per week (never under `minCost` 100), so it scales with the era and the team. One lead at a time. After `followWeeks` 8 it ends in one of `leads.outcomes`, picked by weight from a hash of the lead (so the same lead always ends the same way, and no dice are used): a real insight (weight 4, 20 weeks of research back), a training trick (3, +3% training speed for good, all tricks capped at +15%), a data quirk (2, 8 weeks back), the cat (1, nothing) or Tuesday (1, nothing). Following a lead that is not there is refused (`LeadGone`), as is a second at once, or too few research points; a refusal changes nothing.
+- Why: following a lead is a gamble on research you pay for in the same currency, which fits the bible's "mystery becomes a research lead"; the two nothing outcomes are the joke the bible asks for. The expected return (about 9 weeks of research on a 6 week price, plus the speed trick) is mildly positive, never decisive. The autopilot never follows leads, so the economy guards see only the lead list, not the rewards.
+
+### Q238. Is a save change needed, and what did the id counter do? DECIDED: yes, schema 32: a lead list and one number per lab; a lead's id is its model's id
+- Options: (a) take a fresh id for each lead; (b) reuse the model's id.
+- Recommendation and choice: **(b)**. `researchLeads` and `leadSpeedPermille` per lab; an older save migrates with an empty list and 0, so nothing in an old game changes. The golden digest moved and the cause was checked: with the two new fields removed, the schema set back to 31 and the lead-finding hook switched off, the digest of the pinned game equals the old golden `df0a8d9e`. So the move is the new fields, the schema number and the leads found in that game year.
+- Why (b): the first build took a fresh id from the shared counter, which shifted the ids of everything made later and nudged the eight-year soak's "careful" preset from 45.8% to 62.5% of crowns for one lab, over the 60% bar. It is the Q182 knife-edge again (a harmless-looking change moves a trajectory, not a rule), and the cure is not to touch shared counters: a lead is at most one per model, so the model's id is already unique. Logged here, nothing tuned.
+
+## Fine-tune and rollback (NEXT item 28)
+
+### Q239. How does a player mend a glitching model? DECIDED: two commands, a fine-tune that pays to end it and a rollback that swaps the old version back in
+- Options: (a) nothing, the glitch just runs out; (b) one "fix" command; (c) the bible's two: fine-tune or rollback.
+- Recommendation and choice: **(c)**. The bible's state table says a glitching model is "recent incident or bad data; fix with fine-tune or rollback". `FineTuneModel` and `RollBackModel` both need a model on sale that is glitching (an incident, and fewer weeks since it than the longest glitch of the sectors it sells in); otherwise they are refused and change nothing.
+- Why: the glitch already costs quality (30% in the shipped data) for weeks, so a way to end it early is a real decision, and two ways with different prices is the choice the bible describes.
+
+### Q240. What do they cost? DECIDED: a fine-tune is a week of the model's sales and buys 40 alignment; a rollback is free in cash and costs 20 reputation
+- Options: (a) fine-tune at two weeks of sales; (b) one week; (c) a flat price.
+- Recommendation and choice: **(b)** (`repair.fineTuneRevenueWeeks` 1, never under `fineTuneMinCost` 1000), paid on the training ledger line. It ends the glitch now and adds `fineTuneAlignment` 40 to the real and shown meters (never past 1000), so it also helps the next release gate and the glow. A rollback withdraws the model from all its sectors (it goes back to Trained, so it can be put on sale again after a look) and puts back the newest retired earlier version of the same line in those sectors, losing `rollbackReputationLoss` 20. It is refused when there is no earlier version, or when the older one would not pass the lab's own gate or the law's bar today.
+- Why: at 30% quality loss, a week of sales pays for itself within about three weeks of a six-week glitch, and longer glitches (a self-driving model is grounded for sixteen weeks) pay far more, so a fine-tune is a good buy early and a poor one late; a rollback costs reputation instead of cash and gives up the newer model's capability. An incident's date is reset by a fine-tune, so rivals trying to leak that incident see old news (a rival's leak window counts from the same date).
+
+### Q241. Is a save change needed? DECIDED: no
+- Options: (a) store a "repaired until" date; (b) move the incident date back and use the model and sector fields that already exist.
+- Recommendation and choice: **(b)**. A fine-tune sets the last incident date back by the glitch length, which turns the glitch off through the existing rule; a rollback only changes a model's status and sector list and the sector entry's model. Nothing is added to the save and the golden digest did not move (the autopilot never mends models).
+- Why: the existing glitch rule already reads those fields; a second date would have to be kept in step with them. The player-only effect keeps the economy guards untouched, and all five hold at 1455 tests.
+
+### Q242. How do office events arrive? DECIDED: a weekly chance worked out from the date, one at a time, on the player's lab only
+- Options: (a) roll the game's dice each week; (b) a fixed calendar of events; (c) a chance worked out from the week, the lab and the seed, one event waiting at a time.
+- Recommendation and choice: **(c)**. `office.chancePermille` 30 a week once game week `firstAfterWeeks` 26 has passed and nothing is waiting. The pick is also worked out from the date and seed, among events whose needs the lab meets and that it has not had this round; when all have been had the round starts again.
+- Why: a dice roll would shift every later draw in a game and move the economy guards (Q182); a worked-out chance is as steady as a dice stream to a player and touches nothing else. The seed keeps two games different. Only the player's lab has them, as with leads and ageing.
+
+### Q243. What do the answers do, and what if nobody answers? DECIDED: small effects in five kinds; an unanswered event lapses with no effect
+- Options: (a) effects in dollars; (b) effects in weeks of the lab's own output and costs; (c) also let a lapse cost something.
+- Recommendation and choice: **(b) and not (c)**. Reputation points, culture points, morale for all staff, weeks of research output and weeks of weekly running costs. A cash loss is never more than the cash the lab has. An event waits `expireWeeks` 8 weeks, then blows over with a line in the log and no effect.
+- Why: weeks scale with the lab, so the same event is a nuisance to a big lab and a decision to a small one. Because a lapse costs nothing, the autopilot (which never answers) and a player who ignores the desk both keep the numbers the balance tests were tuned on; answering is the only way to gain or lose.
+
+### Q244. Which events, and what do they need? DECIDED: eleven from the bible's list, four needing a model, safety staff or anyone
+- Options: (a) only the six the bible names; (b) the bible's list in full; (c) invent more.
+- Recommendation and choice: **(b)**: the public repository, the cat, the wrapper, the leaked report, the town vote, the open letter, the earnings question, the mascot's drawings, Tuesday, the union joke and the fake video (the bible's "event ideas" list, ch. 14). The wrapper, drawings and Tuesday need a model on sale; the leaked report needs somebody in safety; the cat, town vote and union joke need anyone on the payroll. Every event has three answers, one of which can be to do nothing much.
+- Why: events that mention a model or a safety team make no sense without one. Each answer trades two things (reputation against culture, cash against research) so there is no best row.
+
+### Q245. Is a save change needed, and does the golden move? DECIDED: yes, schema 33; the golden moved with a verified cause
+- Options: (a) store nothing and derive the event from the date; (b) save the event waiting, its deadline and the round's seen list.
+- Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo33` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
+- Why: the answer must survive a save, and an event picked by date would be lost on an older save. Nothing derived is stored; `OfficeEvents.Waiting` is a view. All guards hold at 1481 tests.
+
 ## Open
 
 None.

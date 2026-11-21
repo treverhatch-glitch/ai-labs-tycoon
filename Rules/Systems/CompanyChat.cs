@@ -99,6 +99,7 @@ namespace AiLabs.Rules.Systems
             RoleConfig role = c.Role(e.Ref);
             RoomTypeConfig roomType = c.RoomType(e.Ref);
             TechConfig techConfig = c.Tech(e.Ref);
+            OfficeEventConfig officeEvent = c.Office.Event(first);
             return text
                 .Replace("{model}", model)
                 .Replace("{amount}", e.Amount.ToString())
@@ -107,6 +108,7 @@ namespace AiLabs.Rules.Systems
                 .Replace("{role}", role == null ? e.Ref : role.Name)
                 .Replace("{room}", roomType == null ? e.Ref : roomType.Name)
                 .Replace("{tech}", techConfig == null ? e.Ref : techConfig.Name)
+                .Replace("{event}", officeEvent == null ? first : officeEvent.Name)
                 .Replace("{lab}", lab.Name);
         }
 

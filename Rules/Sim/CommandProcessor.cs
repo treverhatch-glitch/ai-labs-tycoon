@@ -71,6 +71,10 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.LeakStory: return LeakStory(c, state, lab, cmd);
                 case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
+                case CommandKind.FollowLead: return FollowLead(c, state, lab, cmd);
+                case CommandKind.AnswerOfficeEvent: return AnswerOfficeEvent(c, state, lab, cmd);
+                case CommandKind.FineTuneModel: return FineTuneModel(c, state, lab, cmd);
+                case CommandKind.RollBackModel: return RollBackModel(c, state, lab, cmd);
                 case CommandKind.SetReleaseGate: return SetReleaseGate(c, state, lab, cmd);
                 case CommandKind.CleanUpNaming: return CleanUpNaming(c, state, lab, cmd);
                 case CommandKind.RefurbishRoom: return RefurbishRoom(c, state, lab, cmd);
