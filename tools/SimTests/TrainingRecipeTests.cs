@@ -179,6 +179,7 @@ public class TrainingRecipeTests
         g.Me.Cash += 2_000_000;
         g.Refused(Command.StartTrainingRecipe(g.Id, "web-scrape-sprint"), CommandError.EraLocked);
         g.Years(5);
+        ExpansionTestSupport.EnsureDataLicense(g, "scrape");
         g.Do(Command.StartTrainingRecipe(g.Id, "web-scrape-sprint"));
     }
 

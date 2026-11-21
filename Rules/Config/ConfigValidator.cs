@@ -235,6 +235,7 @@ namespace AiLabs.Rules.Config
             FundingProblems(p, c);
             ReleaseReviewProblems(p, c);
             EnterpriseDealsProblems(p, c);
+            DataLicensesProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
@@ -844,6 +845,30 @@ namespace AiLabs.Rules.Config
                 Permille(p, who + " slaServedPermille", t.SlaServedPermille);
                 if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
                 if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
+            }
+        }
+
+        static void DataLicensesProblems(List<string> p, GameConfig c)
+        {
+            DataLicensesConfig e = c.DataLicenses;
+            if (e == null) { p.Add("dataLicenses is missing"); return; }
+            if (e.Tiers.Count < 1) p.Add("dataLicenses.tiers is empty");
+            UniqueIds(p, "dataLicenses.tiers", e.Tiers);
+            if (e.LicenseableSourceIds.Count < 1) p.Add("dataLicenses.licenseableSourceIds is empty");
+            for (int i = 0; i < e.LicenseableSourceIds.Count; i++)
+            {
+                string id = e.LicenseableSourceIds[i];
+                if (c.Training.DataSource(id) == null)
+                    p.Add("dataLicenses.licenseableSourceIds names unknown source \"" + id + "\"");
+            }
+            if (e.ProspectWindowWeeks < 1) p.Add("dataLicenses.prospectWindowWeeks must be at least 1");
+            for (int i = 0; i < e.Tiers.Count; i++)
+            {
+                DataLicenseTierConfig t = e.Tiers[i];
+                string who = "dataLicenses.tiers[" + t.Id + "]";
+                if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
+                if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
+                Permille(p, who + " prepDiscountPermille", t.PrepDiscountPermille);
             }
         }
 

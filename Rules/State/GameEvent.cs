@@ -68,7 +68,14 @@ namespace AiLabs.Rules.State
         EnterpriseSeatChurned,
         EnterpriseSeatCompleted,
         EnterpriseSeatRenewed,
-        EnterpriseSeatTerminated
+        EnterpriseSeatTerminated,
+        DataLicensePursued,
+        DataLicenseSigned,
+        DataLicenseMissed,
+        DataLicenseRevoked,
+        DataLicenseCompleted,
+        DataLicenseRenewed,
+        DataLicenseTerminated
     }
 
     /// <summary>

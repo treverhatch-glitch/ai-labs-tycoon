@@ -6130,6 +6130,38 @@
     "maxLevel": 0,
     "breachBelowPermille": 900
   },
+  "dataLicenses": {
+    "opensYear": 2000,
+    "prospectWindowWeeks": 16,
+    "revokedReputationPenalty": 15,
+    "minResearchers": 1,
+    "licenseableSourceIds": [
+      "licensed",
+      "scrape"
+    ],
+    "tiers": [
+      {
+        "id": "standard",
+        "termWeeks": 48,
+        "strikeLimit": 3,
+        "prepDiscountPermille": 120,
+        "weeklyResearchBonus": 500,
+        "pursuitCash": 25000,
+        "signCash": 80000,
+        "breakPenalty": 50000
+      },
+      {
+        "id": "premium",
+        "termWeeks": 96,
+        "strikeLimit": 2,
+        "prepDiscountPermille": 200,
+        "weeklyResearchBonus": 1200,
+        "pursuitCash": 45000,
+        "signCash": 150000,
+        "breakPenalty": 90000
+      }
+    ]
+  },
   "enterpriseDeals": {
     "opensYear": 2018,
     "prospectWindowWeeks": 24,

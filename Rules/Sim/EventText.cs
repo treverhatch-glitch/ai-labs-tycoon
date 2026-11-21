@@ -99,6 +99,29 @@ namespace AiLabs.Rules.Sim
                 case EventKind.EnterpriseSeatCompleted: return who + " finished an enterprise seat term in " + c.Sector(e.Ref).Name + ".";
                 case EventKind.EnterpriseSeatRenewed: return who + " renewed the enterprise seat in " + c.Sector(e.Ref).Name + ".";
                 case EventKind.EnterpriseSeatTerminated: return who + " walked away from the enterprise seat in " + c.Sector(e.Ref).Name + " (penalty $" + e.Amount + ").";
+                case EventKind.DataLicensePursued:
+                    {
+                        DataSourceConfig src = c.Training.DataSource(e.Ref);
+                        return who + " opened talks for a " + (src == null ? e.Ref : src.Name) + " license.";
+                    }
+                case EventKind.DataLicenseSigned:
+                    {
+                        DataSourceConfig src = c.Training.DataSource(e.Ref);
+                        return who + " signed a " + (src == null ? e.Ref : src.Name) + " license for " + e.Amount + " weeks.";
+                    }
+                case EventKind.DataLicenseMissed: return who + " did not train on licensed data (" + e.Ref + "); strike " + e.Amount + ".";
+                case EventKind.DataLicenseRevoked: return who + " lost the " + e.Ref + " data license.";
+                case EventKind.DataLicenseCompleted:
+                    {
+                        DataSourceConfig src = c.Training.DataSource(e.Ref);
+                        return who + " completed a " + (src == null ? e.Ref : src.Name) + " license term.";
+                    }
+                case EventKind.DataLicenseRenewed:
+                    {
+                        DataSourceConfig src = c.Training.DataSource(e.Ref);
+                        return who + " renewed the " + (src == null ? e.Ref : src.Name) + " license.";
+                    }
+                case EventKind.DataLicenseTerminated: return who + " terminated the " + e.Ref + " license early (penalty $" + e.Amount + ").";
                 case EventKind.StaffPoached:
                     {
                         LabState victim = state.Lab(e.SubjectId);

@@ -77,6 +77,15 @@ static class ExpansionTestSupport
         return DisplayQueries.AppealParts(g.C, g.State, sector, sectorState, g.Me, model).ExpansionBoost;
     }
 
+    public static void EnsureDataLicense(Game g, string sourceId, string tierId = "standard")
+    {
+        if (!DataLicenseSystem.SourceRequiresLicense(g.C, sourceId)) return;
+        if (!DataLicenseSystem.Enabled(g.C, g.State, g.Me)) return;
+        if (DataLicenseSystem.MayTrainOnSource(g.C, g.State, g.Me, sourceId)) return;
+        g.Do(Command.PursueDataLicense(g.Id, sourceId, tierId));
+        g.Do(Command.SignDataLicense(g.Id, sourceId, tierId));
+    }
+
     public static long SectorRevenueAfterWeek(Game g, string sectorId)
     {
         g.Sim.Step();

@@ -116,6 +116,7 @@ public class SyntheticLabTrainingSpeedTests
         g.Do(Command.SetTrainingDataSource(g.Id, Synthetic));
         ModelState syn = g.Train("mini", 0);
         g.Do(Command.SetTrainingDataSource(g.Id, "licensed"));
+        ExpansionTestSupport.EnsureDataLicense(g, "licensed");
         ModelState lic = g.Train("mini", 0);
         g.Weeks(4);
         Assert.True(syn.ProgressCompute > lic.ProgressCompute);
@@ -151,6 +152,7 @@ public class SyntheticLabTrainingSpeedTests
         Game g = Harness(2028);
         g.C.Training.DataSource("scrape").OpensYear = 0;
         g.Do(Command.SetTrainingDataSource(g.Id, "scrape"));
+        ExpansionTestSupport.EnsureDataLicense(g, "scrape");
         ModelState m = g.Train("mini", 0);
         g.Weeks(4);
         long beforeRoom = m.ProgressCompute;

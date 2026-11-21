@@ -160,6 +160,7 @@ namespace AiLabs.Rules.Sim
                     LiquidCoolingPodSystem.RunWeek(c, state, state.Labs[i]);
                     SectorChampionSystem.RunWeek(c, state, state.Labs[i]);
                     EnterpriseDealSystem.RunWeek(c, state, state.Labs[i]);
+                    DataLicenseSystem.RunWeek(c, state, state.Labs[i]);
                     VendorSystem.RunWeek(c, state, state.Labs[i]);
                     HeatwavePowerSystem.RunWeek(c, state, state.Labs[i]);
                     StashStorageSystem.RunWeek(c, state, state.Labs[i]);

@@ -185,6 +185,8 @@ namespace AiLabs.Rules.State
         public int ServedPermille;
         public long Revenue;
         public long ResearchGained;
+        /// <summary>Data sources with at least one active training run this week (Q215).</summary>
+        public System.Collections.Generic.List<string> TrainingSourceIds = new System.Collections.Generic.List<string>();
 
         public void Sync(Syncer s)
         {
@@ -195,6 +197,7 @@ namespace AiLabs.Rules.State
             s.Int("servedPermille", ref ServedPermille);
             s.Long("revenue", ref Revenue);
             s.Long("researchGained", ref ResearchGained);
+            s.StrList("trainingSourceIds", ref TrainingSourceIds);
         }
     }
 }

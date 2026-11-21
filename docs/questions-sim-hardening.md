@@ -593,6 +593,30 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) embed in sector state; (b) per-lab list; (c) no save (session only).
 - Choice: **(b)** — `MigrateTo31`.
 
+### Q215. Data license scope? DECIDED: player-only; config `licenseableSourceIds`
+- Options: (a) all labs; (b) player only after `opensYear`; (c) auto-license rivals.
+- Choice: **(b)** — rivals unchanged; before `opensYear` gate off (legacy scrape path).
+
+### Q216. License-use metric? DECIDED: active training run on source this week
+- Options: (a) any research points; (b) `TrainingSourceIds` on `WeekReport`; (c) finished run only.
+- Choice: **(b)** — `TrainingSystem.RunWeek` records sources; crosses training obligation test.
+
+### Q217. Training gate? DECIDED: refuse licenseable mix without Active license
+- Options: (a) soft warning; (b) hard refuse on `StartTraining`; (c) auto pursue.
+- Choice: **(b)** — `DataLicenseSystem.MayTrainOnSource` in `BeginTraining`.
+
+### Q218. Reward on comply? DECIDED: tier `weeklyResearchBonus` + `prepDiscountPermille`
+- Options: (a) cash only; (b) RP bonus and prep discount; (c) capability bump.
+- Choice: **(b)** — bonus on compliant `RunWeek`; discount at train start.
+
+### Q219. Strike ladder? DECIDED: same pattern as enterprise seats
+- Options: (a) instant revoke; (b) weekly strikes / AtRisk; (c) monthly.
+- Choice: **(b)** — `strikeLimit` per tier.
+
+### Q220. Schema save field? DECIDED: schema **32** `dataLicenses` array
+- Options: (a) embed in model; (b) per-lab list; (c) global state.
+- Choice: **(b)** — `MigrateTo32`; `WeekReport.trainingSourceIds` for license-use reads.
+
 ### Q214. Enterprise seat vs era service-level pledge (PR #20 / Q329)? DECIDED: suppress deal strike on shared served miss
 - Options: (a) independent — same week can strike both; (b) cap — pledge served breach suppresses deal strike/rep/slip; (c) merge systems.
 - Choice: **(b)** — `ServiceLevelOverlap.PledgeServedBreachSuppressesDealStrike`; deal still misses bonus; incident pledge breaks do not suppress; merge runs `Sla` before `EnterpriseDealSystem`.

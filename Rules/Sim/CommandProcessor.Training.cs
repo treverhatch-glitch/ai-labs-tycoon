@@ -42,6 +42,12 @@ namespace AiLabs.Rules.Sim
             int maxRuns = LabQueries.MaxConcurrentRuns(c, state, lab);
             if (LabQueries.ActiveRuns(lab) >= maxRuns)
                 return Fail(CommandError.TooManyRuns, "The lab can train " + maxRuns + " models at once.");
+            if (lab.Controller == LabController.Player && !DataLicenseSystem.MayTrainOnSource(c, state, lab, sourceId))
+            {
+                DataSourceConfig need = c.Training.DataSource(sourceId);
+                string name = need == null ? sourceId : need.Name;
+                return Fail(CommandError.InvalidArgument, "Sign a data license before training on " + name + ".");
+            }
             if (!TrainingQueries.SourceUsable(c, state, lab, sourceId, line.Id, out string sourceMessage))
             {
                 DataSourceConfig source = c.Training.DataSource(sourceId);
@@ -61,6 +67,9 @@ namespace AiLabs.Rules.Sim
             int syntheticCut = SyntheticDataLabSystem.PrepCostCutPermille(c, state, lab, mix.Id);
             if (syntheticCut > 0)
                 prepCost = MathI.MulPermille(prepCost, MathI.Permille - syntheticCut);
+            int licenseCut = DataLicenseSystem.PrepDiscountPermille(c, state, lab, mix.Id);
+            if (licenseCut > 0)
+                prepCost = MathI.MulPermille(prepCost, MathI.Permille - licenseCut);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
             var model = new ModelState();

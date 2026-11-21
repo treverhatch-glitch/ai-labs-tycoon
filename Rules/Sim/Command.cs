@@ -24,7 +24,8 @@ namespace AiLabs.Rules.Sim
         FundLobbyDefense, ExtendGrantRunway, RequestDebtForbearance,
         ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach,
         SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview,
-        PursueEnterpriseSeat, SignEnterpriseSeat, WalkEnterpriseSeat, TerminateEnterpriseSeat, RenewEnterpriseSeat
+        PursueEnterpriseSeat, SignEnterpriseSeat, WalkEnterpriseSeat, TerminateEnterpriseSeat, RenewEnterpriseSeat,
+        PursueDataLicense, SignDataLicense, WalkDataLicense, TerminateDataLicense, RenewDataLicense
     }
 
     /// <summary>
@@ -672,6 +673,44 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.RenewEnterpriseSeat, labId);
             c.Id = sectorId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command PursueDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.PursueDataLicense, labId);
+            c.Id = sourceId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command SignDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.SignDataLicense, labId);
+            c.Id = sourceId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command WalkDataLicense(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.WalkDataLicense, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command TerminateDataLicense(int labId, int dealIndex)
+        {
+            Command c = Make(CommandKind.TerminateDataLicense, labId);
+            c.Count = dealIndex;
+            return c;
+        }
+
+        public static Command RenewDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.RenewDataLicense, labId);
+            c.Id = sourceId;
             if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
             return c;
         }

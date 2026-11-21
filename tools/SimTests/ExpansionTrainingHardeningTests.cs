@@ -120,6 +120,7 @@ public class ExpansionTrainingHardeningTests
         Game g = BodiesLab();
         ExpansionTestSupport.BuildExpansionRoom(g, Arena);
         g.Do(Command.SetTrainingDataSource(g.Id, "licensed"));
+        ExpansionTestSupport.EnsureDataLicense(g, "licensed");
         ModelState model = g.Train("mini", 200);
         g.UntilTrained(model);
         var parts = DisplayQueries.TrainedCapabilityParts(model);

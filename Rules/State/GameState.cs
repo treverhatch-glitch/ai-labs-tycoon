@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 31;
+        public const int CurrentSchema = 32;
 
         public int Schema;
         public string ConfigVersion;
@@ -227,6 +227,8 @@ namespace AiLabs.Rules.State
         public int SlaLevel;
         public int SlaLockedUntil = -1;
         public int SlaStrikes;
+        /// <summary>Data source license deals (player pipeline, Q215).</summary>
+        public List<DataLicenseState> DataLicenses = new List<DataLicenseState>();
 
         public LedgerState Ledger = new LedgerState();
         public WeekReport LastWeek = new WeekReport();
@@ -351,6 +353,7 @@ namespace AiLabs.Rules.State
             s.Int("slaLevel", ref SlaLevel);
             s.Int("slaLockedUntil", ref SlaLockedUntil);
             s.Int("slaStrikes", ref SlaStrikes);
+            s.ObjList("dataLicenses", ref DataLicenses);
             s.Obj("ledger", ref Ledger);
             s.Obj("lastWeek", ref LastWeek);
         }

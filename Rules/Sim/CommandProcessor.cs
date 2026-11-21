@@ -116,6 +116,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.WalkEnterpriseSeat: return WalkEnterpriseSeat(c, state, lab, cmd);
                 case CommandKind.TerminateEnterpriseSeat: return TerminateEnterpriseSeat(c, state, lab, cmd);
                 case CommandKind.RenewEnterpriseSeat: return RenewEnterpriseSeat(c, state, lab, cmd);
+                case CommandKind.PursueDataLicense: return PursueDataLicense(c, state, lab, cmd);
+                case CommandKind.SignDataLicense: return SignDataLicense(c, state, lab, cmd);
+                case CommandKind.WalkDataLicense: return WalkDataLicense(c, state, lab, cmd);
+                case CommandKind.TerminateDataLicense: return TerminateDataLicense(c, state, lab, cmd);
+                case CommandKind.RenewDataLicense: return RenewDataLicense(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }

@@ -46,6 +46,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
+            if (fromSchema < 32) MigrateTo32(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -441,6 +442,17 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "slaLevel", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "slaLockedUntil", JsonValue.Of(-1L));
                 JsonPatch.AddIfMissing(lab, "slaStrikes", JsonValue.Of(0L));
+            });
+        }
+
+        static void MigrateTo32(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "dataLicenses", JsonValue.Array());
+                JsonValue week = lab.Get("lastWeek");
+                if (week != null && week.Kind == JsonKind.Object)
+                    JsonPatch.AddIfMissing(week, "trainingSourceIds", JsonValue.Array());
             });
         }
 

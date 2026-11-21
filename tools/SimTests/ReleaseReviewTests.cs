@@ -311,6 +311,7 @@ public class ReleaseReviewTests
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
         Assert.Single(loaded.Player.ReleaseReviews);
         Assert.Empty(loaded.Player.EnterpriseDeals);
+        Assert.Empty(loaded.Player.DataLicenses);
     }
 
     [Fact]

@@ -110,11 +110,13 @@ public class DeviceWorkshopPrepCostTests
         Game g = HarnessLab();
         g.C.Training.DataSource("scrape").OpensYear = 0;
         g.Do(Command.SetTrainingDataSource(g.Id, "scrape"));
+        ExpansionTestSupport.EnsureDataLicense(g, "scrape");
         ExpansionTestSupport.BuildExpansionRoom(g, Workshop);
         ExpansionTestSupport.AddReleasedModel(g, 120_000, Devices);
         Game plain = HarnessLab();
         plain.C.Training.DataSource("scrape").OpensYear = 0;
         plain.Do(Command.SetTrainingDataSource(plain.Id, "scrape"));
+        ExpansionTestSupport.EnsureDataLicense(plain, "scrape");
         long a = plain.Me.Cash;
         plain.Do(Command.StartTraining(plain.Id, "mini", 50));
         long b = g.Me.Cash;

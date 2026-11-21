@@ -132,6 +132,11 @@ namespace AiLabs.Rules.Systems
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Training) continue;
 
+                if (!string.IsNullOrEmpty(model.DataSourceId)
+                    && lab.LastWeek.TrainingSourceIds != null
+                    && !lab.LastWeek.TrainingSourceIds.Contains(model.DataSourceId))
+                    lab.LastWeek.TrainingSourceIds.Add(model.DataSourceId);
+
                 // The oldest run gets what does not divide evenly, so no compute is lost.
                 long allotted = each + spare;
                 spare = 0;
