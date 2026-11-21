@@ -70,6 +70,7 @@ namespace AiLabs.Rules.Config
             CultureProblems(p, c);
             NamingProblems(p, c);
             AgeingProblems(p, c);
+            ControlProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -499,6 +500,16 @@ namespace AiLabs.Rules.Config
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
             }
+        }
+
+        static void ControlProblems(List<string> p, GameConfig c)
+        {
+            ControlConfig k = c.Control;
+            if (k == null) { p.Add("control is missing"); return; }
+            if (k.GraceEras < 0 || k.GraceEras > 20) p.Add("control.graceEras must be from 0 to 20");
+            if (k.LossPerEraPermille < 0 || k.LossPerEraPermille > MathI.Permille) p.Add("control.lossPerEraPermille must be from 0 to 1000");
+            if (k.MaxLossPermille < 0 || k.MaxLossPermille > MathI.Permille) p.Add("control.maxLossPermille must be from 0 to 1000");
+            if (k.FiredListenerPoints < 0 || k.FiredListenerPoints > MathI.Permille) p.Add("control.firedListenerPoints must be from 0 to 1000");
         }
 
         static void AgeingProblems(List<string> p, GameConfig c)

@@ -5319,6 +5319,12 @@
       {"id": "museum-piece", "name": "Museum piece", "minEras": 5, "upkeepExtraPermille": 500, "moralePenalty": 60, "blurb": "Visitors ask whether it is a recreation. The model has started to feel sorry for it."}
     ]
   },
+  "control": {
+    "graceEras": 1,
+    "lossPerEraPermille": 100,
+    "maxLossPermille": 500,
+    "firedListenerPoints": 15
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -5388,6 +5394,29 @@
       "pick": -1,
       "about": "lab",
       "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time."
+    },
+      {
+      "id": "control-stale",
+      "kind": "ControlStale",
+      "roles": [
+        "safety"
+      ],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates."
+    },
+      {
+      "id": "control-refreshed",
+      "kind": "ControlRefreshed",
+      "roles": [
+        "safety",
+        "researcher"
+      ],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have."
     },
       {
       "id": "room-refurbished",

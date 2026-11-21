@@ -176,6 +176,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
             StaffSystem.Fire(lab, role.Id, cmd.Count);
+            ControlStale.OnFired(c, lab, role.Id, cmd.Count);
             TalentSystem.DropGoneOffers(lab);
             Finance.Spend(lab, LedgerLine.Hiring, role.Severance * cmd.Count);
             Events.Add(state, EventKind.Fired, lab.Id, -1, cmd.Count, role.Id);
@@ -292,9 +293,11 @@ namespace AiLabs.Rules.Sim
             if (lab.ResearchPoints < cost)
                 return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + cost + " research points and the lab has " + lab.ResearchPoints + ".");
 
+            int lossBefore = ControlStale.LossNow(c, lab, state.Tick);
             lab.ResearchPoints -= cost;
             lab.Techs.Add(tech.Id);
             Events.Add(state, EventKind.TechResearched, lab.Id, -1, cost, tech.Id);
+            ControlStale.OnResearched(c, state, lab, lossBefore, tech);
             return CommandResult.Done(-1);
         }
 

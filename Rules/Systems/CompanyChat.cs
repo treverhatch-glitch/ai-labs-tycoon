@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Systems
             SectorConfig sector = c.Sector(first);
             RoleConfig role = c.Role(e.Ref);
             RoomTypeConfig roomType = c.RoomType(e.Ref);
+            TechConfig techConfig = c.Tech(e.Ref);
             return text
                 .Replace("{model}", model)
                 .Replace("{amount}", e.Amount.ToString())
@@ -105,6 +106,7 @@ namespace AiLabs.Rules.Systems
                 .Replace("{sector}", sector == null ? first : sector.Name)
                 .Replace("{role}", role == null ? e.Ref : role.Name)
                 .Replace("{room}", roomType == null ? e.Ref : roomType.Name)
+                .Replace("{tech}", techConfig == null ? e.Ref : techConfig.Name)
                 .Replace("{lab}", lab.Name);
         }
 

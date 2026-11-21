@@ -113,6 +113,16 @@ namespace AiLabs.Rules.Sim
                         RoomTypeConfig dated = c.RoomType(e.Ref);
                         return who + "'s " + (dated == null ? e.Ref : dated.Name) + " is now " + RoomAge.Stage(c, (int)e.Amount).Name.ToLowerInvariant() + ", " + e.Amount + (e.Amount == 1 ? " era" : " eras") + " behind. Staff are complaining.";
                     }
+                case EventKind.ControlStale:
+                    {
+                        TechConfig newest = c.Tech(e.Ref);
+                        return who + "'s safety techniques are going stale: its newest is " + (newest == null ? e.Ref : newest.Name) + ", and they now count for " + (1000 - e.Amount) / 10 + "% of what they did. New safety research would help.";
+                    }
+                case EventKind.ControlRefreshed:
+                    {
+                        TechConfig fresh = c.Tech(e.Ref);
+                        return who + " did new safety research (" + (fresh == null ? e.Ref : fresh.Name) + ") and won back " + e.Amount / 10 + "% of its techniques' strength.";
+                    }
                 case EventKind.RoomRefurbished:
                     {
                         RoomTypeConfig done = c.RoomType(e.Ref);

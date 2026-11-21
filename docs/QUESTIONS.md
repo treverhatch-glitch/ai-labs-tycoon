@@ -1108,6 +1108,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**: `eraAge` per room. An older save migrates with 0 on every room (fresh), so nothing in an old game changes until the next era change. (The first draft of NEXT said `builtTick`; the age is what a refurbish resets, so the age is what is saved.)
 - Why: a derived age would need the era history, and a refurbish would need a second field anyway. The golden digest moved and the cause was checked: with the ageing stages set to 0 upkeep and 0 morale, the saved number removed and the schema set back to 30, the digest of the pinned game equals the old golden `6b8ed8f9`. So the move is the new field, the schema number and the ageing itself (the pinned game crosses eras, so upkeep and morale changed).
 
+## Control goes stale (NEXT item 26)
+
+### Q233. What makes control stale, and what puts it right? DECIDED: eras since the lab's newest safety tech; any new safety tech resets it for all of them
+- Options: (a) each tech decays by its own age; (b) every safety tech decays by the age of the lab's newest one; (c) a saved "last refreshed" date.
+- Recommendation and choice: **(b)**. Stale eras = the era now minus the era of the newest tech the lab owns that has an alignment effect. The first `control.graceEras` (1) are free; each era after costs `lossPerEraPermille` (100, a tenth) of the safety techs' summed bonus, never more than `maxLossPermille` (500). So the whole safety stack counts for 90% two eras after the newest piece of safety research, and half at six. Researching any new safety tech makes the newest one this era's, which puts every older one back to full strength.
+- Why: the bible says techniques "go stale as models change" and that new research is the cure. Per-tech decay (a) would punish a lab for owning a fine old tech next to a fresh one; the lab-wide reading rewards keeping up. Nothing needs saving: it is worked out from the techs and the date, so there is no schema change. Only player labs go stale (the Q182 knife-edge: a rival's safety is part of its economy).
+
+### Q234. What does a stale control actually change, and how is the player told? DECIDED: the alignment work in training runs; two events and two chat lines
+- Options: (a) lower the displayed alignment of finished models; (b) lower the alignment work a run gets; (c) raise the incident chance.
+- Recommendation and choice: **(b)**. `TrainingSystem.AlignmentWorkPermille` now takes the date and uses the stale bonus instead of the full one (the other parts, staff, containment, role perks and traits, are unchanged). Models already finished keep what they got. When a new era leaves a lab further behind, a `ControlStale` event says so (once per era until the cap, then no more); a safety tech that wins ground back writes `ControlRefreshed` with how much. Both have plain-English log text and a chat line from the safety people. `ControlStale.Of` gives a screen the era, the newest tech, the stale eras, the loss and the bonus before and after.
+- Why: new runs are where the techniques are used, so that is where staleness bites, and it asks for the thing the bible asks for (new safety research) rather than a new button. Not touching finished models avoids rewriting history and keeps the displayed meter stable.
+
+### Q235. What does firing the safety team cost? DECIDED: 15 culture a head for the roles that listen
+- Options: (a) nothing beyond the lost weekly gain from Q191; (b) a one-off culture hit per person let go; (c) a hit for every role.
+- Recommendation and choice: **(b)** for the roles in `culture.listeningRoles` (safety, red-teamer, alignment-fellow): `control.firedListenerPoints` 15 each, so letting a team of three go costs 45 on top of the weekly gain it stops. Letting anyone else go costs nothing. Culture stays in 0 to 1000, and a refused firing changes nothing.
+- Why: the bible lists "firing or ignoring the safety team" as something that erodes control. Ignoring was already the weekly drift of Q191; firing is a decision, so it gets a visible price. Economy and golden: no player-only revenue or cost changed. The golden run did not move (the pinned game never has the player researching safety and then crossing eras), and EconomyBounds, ContentFlow and the soak stayed green at the first values, so nothing was tuned.
+
 ## Open
 
 None.

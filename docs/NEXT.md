@@ -157,7 +157,10 @@ and says why in the commit message.
     extra upkeep and a morale penalty from the dated stage, save schema 31 (`eraAge` per room; Q230-Q232), `RoomAgeTests`,
     `docs/content/room-ageing.md`. Player labs only. Still open: a refurbish button and a room tint (Unity), rivals with old rooms, room redesigns on refurbish.
 26. **Control goes stale (bible ch. 10, "what erodes it").** Each new era, the control techniques of older eras count for less until the
-    lab does new safety research; ignoring or firing the safety team shows up in the lab's culture. Player labs only; no schema expected.
+    lab does new safety research; ignoring or firing the safety team shows up in the lab's culture. ~~Done~~: `control` in the data,
+    `ControlStale`, alignment work uses the stale bonus, `ControlStale`/`ControlRefreshed` events, a culture cost for firing the listeners,
+    no schema change (Q233-Q235), `ControlStaleTests`, `docs/content/control-stale.md`. Player labs only. Still open: a screen for it (Unity),
+    rivals going stale, the stale readout on finished models.
 
 ## Rules: later
 

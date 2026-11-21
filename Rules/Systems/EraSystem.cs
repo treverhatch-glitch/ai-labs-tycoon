@@ -78,7 +78,11 @@ namespace AiLabs.Rules.Systems
                 if (StartTick(c, c.Eras[i]) == tick)
                 {
                     Events.Add(state, EventKind.EraBegan, -1, -1, c.Eras[i].StartYear, c.Eras[i].Id);
-                    if (tick > 0) RoomAge.OnEraBegan(c, state);
+                    if (tick > 0)
+                    {
+                        RoomAge.OnEraBegan(c, state);
+                        ControlStale.OnEraBegan(c, state);
+                    }
                 }
 
             for (int i = 0; i < c.WorldEvents.Count; i++)

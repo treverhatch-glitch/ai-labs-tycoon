@@ -58,10 +58,10 @@ public class CompanyChatTests
     // ---- the table
 
     [Fact]
-    public void The_table_has_thirty_seven_lines_and_validates()
+    public void The_table_has_thirty_nine_lines_and_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(37, c.Chat.Lines.Count);
+        Assert.Equal(39, c.Chat.Lines.Count);
         Assert.Equal(12, c.Chat.DefaultLines);
         Assert.Empty(ConfigValidator.Problems(c));
     }

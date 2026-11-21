@@ -80,7 +80,11 @@ namespace AiLabs.Rules.State
         /// <summary>A room slipped into a worse stage of age as a new era began. LabId is the lab, SubjectId the room, Amount its age in eras, Ref the room type.</summary>
         RoomDated,
         /// <summary>The player refurbished a room. LabId is the lab, SubjectId the room, Amount the cost, Ref the room type.</summary>
-        RoomRefurbished
+        RoomRefurbished,
+        /// <summary>A player lab's safety techs lost more ground as a new era began. LabId is the lab, Amount the permille of their bonus now lost, Ref the lab's newest safety tech.</summary>
+        ControlStale,
+        /// <summary>New safety research won back ground. LabId is the lab, Amount the permille won back, Ref the tech.</summary>
+        ControlRefreshed
     }
 
     /// <summary>
