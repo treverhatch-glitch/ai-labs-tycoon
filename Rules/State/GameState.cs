@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 89;
+        public const int CurrentSchema = 90;
 
         public int Schema;
         public string ConfigVersion;
@@ -339,6 +339,19 @@ namespace AiLabs.Rules.State
         public long CapPool;
         public int CapSwitchTick;
         public long CapWritten;
+        /// <summary>Whether the lab is listed, the share price (1000 at the listing), the guidance level set for the quarter (0 none), the revenue it promises and the revenue so far.</summary>
+        public int Listed;
+        public int ListPrice;
+        public int ListGuidance;
+        public long ListTarget;
+        public long ListQuarter;
+        /// <summary>The lab's smoothed weekly revenue, the week the quarter ends, the share of the lab still held in permille, the quarters in a row that met guidance, the week of the last follow-on offering and the activist's steps.</summary>
+        public long ListBase;
+        public int ListNext;
+        public int ListKeep;
+        public int ListStreak;
+        public int ListFollowOn;
+        public int ListActivist;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -648,6 +661,17 @@ namespace AiLabs.Rules.State
             s.Long("capPool", ref CapPool);
             s.Int("capSwitchTick", ref CapSwitchTick);
             s.Long("capWritten", ref CapWritten);
+            s.Int("listed", ref Listed);
+            s.Int("listPrice", ref ListPrice);
+            s.Int("listGuidance", ref ListGuidance);
+            s.Long("listTarget", ref ListTarget);
+            s.Long("listQuarter", ref ListQuarter);
+            s.Long("listBase", ref ListBase);
+            s.Int("listNext", ref ListNext);
+            s.Int("listKeep", ref ListKeep);
+            s.Int("listStreak", ref ListStreak);
+            s.Int("listFollowOn", ref ListFollowOn);
+            s.Int("listActivist", ref ListActivist);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

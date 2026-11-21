@@ -369,6 +369,18 @@ namespace AiLabs.Rules.Sim
                     return "The lender called " + who + "'s loans, " + e.Amount + " owed" + (e.Pick == 1 ? ", paid from cash." : ", taken from its chips.");
                 case EventKind.CapitalPolicySet:
                     return who + " now " + (e.Amount == 0 ? "expenses its hardware and building spend." : e.Amount == 1 ? "capitalises its hardware and building spend." : "claims an enhanced capital allowance.");
+                case EventKind.CompanyListed:
+                    return who + " listed on the market and raised " + e.Amount + ".";
+                case EventKind.EarningsReported:
+                    return who + (e.Pick == 2 ? " beat its guidance" : e.Pick == 1 ? " met its guidance" : " missed its guidance") + "; the share price is " + e.Amount + ".";
+                case EventKind.FollowOnSold:
+                    return who + " sold more shares and raised " + e.Amount + ".";
+                case EventKind.SharesBoughtBack:
+                    return who + " bought back " + e.Amount + " of its shares.";
+                case EventKind.ActivistArrived:
+                    return "An activist investor took a step toward " + who + "'s board (" + e.Amount + ").";
+                case EventKind.CompanyDelisted:
+                    return who + " went private again for " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

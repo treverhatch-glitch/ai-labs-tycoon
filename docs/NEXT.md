@@ -322,6 +322,7 @@ and says why in the commit message.
 139. **Hardware reliability (failures, spares and warranties).** ~~Done~~: `reliability` data, `SetWarranty`, `StockSpares`, `ExpediteReplacements`, `HardwareReliability`, schema 87, `ReliabilityTests`, `docs/content/reliability.md` (Q381).
 140. **Loan covenants (cover, cure, waiver or a call).** ~~Done~~: `covenants` data, `WaiveCovenant`, `CureCovenant`, `Covenants`, schema 88, `CovenantTests`, `docs/content/covenants.md` (Q382).
 141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
+142. **Public listing and guidance.** ~~Done~~: `listing` data, `ListCompany`, `SetGuidance`, `FollowOn`, `BuyBackShares`, `TakePrivate`, `Listing`, schema 90, `ListingTests`, `docs/content/listing.md` (Q386).
 
 ## Rules: later
 

@@ -124,6 +124,7 @@ namespace AiLabs.Rules.Config
             ReliabilityProblems(p, c);
             CovenantsProblems(p, c);
             AllowancesProblems(p, c);
+            ListingProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1387,6 +1388,22 @@ namespace AiLabs.Rules.Config
             if (k.EnhancedPermille < 0 || k.EnhancedPermille > 2000) p.Add("allowances.enhancedPermille must be from 0 to 2000");
             if (k.EnhancedExposure < 0 || k.EnhancedExposure > 1000) p.Add("allowances.enhancedExposure must be from 0 to 1000");
             if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("allowances.lockWeeks must be from 0 to 520");
+        }
+
+        static void ListingProblems(List<string> p, GameConfig c)
+        {
+            ListingConfig k = c.Listing;
+            if (k == null) { p.Add("listing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("listing.enabled must be 0 or 1");
+            if (k.MinReputation < 0 || k.MinWeeklyRevenue < 0 || k.ValuationWeeks < 1 || k.ValuationWeeks > 1000) p.Add("listing.minReputation and minWeeklyRevenue must not be negative and valuationWeeks from 1 to 1000");
+            if (k.FloatPermille < 1 || k.FloatPermille > 600 || k.FollowOnPermille < 1 || k.FollowOnPermille > 300 || k.ListingFeePermille < 0 || k.ListingFeePermille > 500) p.Add("listing.floatPermille must be from 1 to 600, followOnPermille from 1 to 300 and listingFeePermille from 0 to 500");
+            if (k.ReportingCost < 0 || k.QuarterWeeks < 4 || k.QuarterWeeks > 52 || k.GuidanceWindow < 1 || k.GuidanceWindow >= k.QuarterWeeks) p.Add("listing.quarterWeeks must be from 4 to 52, guidanceWindow below it and reportingCost not negative");
+            if (k.Conservative < 100 || k.Base < k.Conservative || k.Stretch < k.Base || k.Stretch > 5000) p.Add("listing.stretch must be at least base, base at least conservative, and all from 100 to 5000");
+            if (k.BeatMargin < 0 || k.BeatMove < 0 || k.MeetMove < 0 || k.MissMove < 0 || k.NoGuidanceMove < 0 || k.BeatMove > 500 || k.MissMove > 300) p.Add("listing.beatMargin, beatMove, meetMove, missMove and noGuidanceMove must not be negative, beatMove at most 500 and missMove at most 300");
+            if (k.PriceFloor < 1 || k.PriceCap < 1000 || k.PriceFloor > 1000) p.Add("listing.priceFloor must be from 1 to 1000 and priceCap at least 1000");
+            if (k.FollowOnWeeks < 0 || k.BuybackImpact < 0 || k.BuybackImpact > 5000) p.Add("listing.followOnWeeks must not be negative and buybackImpact from 0 to 5000");
+            if (k.ActivistBelow < 0 || k.ActivistReputation < 0 || k.ActivistReputation > 500 || k.MaxActivist < 1 || k.MaxActivist > 10) p.Add("listing.activistBelow and activistReputation must not be negative (reputation up to 500) and maxActivist from 1 to 10");
+            if (k.TakePrivatePermille < MathI.Permille || k.TakePrivatePermille > 5000) p.Add("listing.takePrivatePermille must be from 1000 to 5000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -118,7 +118,12 @@ namespace AiLabs.Rules.Sim
         ExpediteReplacements,
         WaiveCovenant,
         CureCovenant,
-        SetCapitalPolicy
+        SetCapitalPolicy,
+        ListCompany,
+        SetGuidance,
+        FollowOn,
+        BuyBackShares,
+        TakePrivate
     }
 
     /// <summary>
@@ -1048,6 +1053,40 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetCapitalPolicy, labId);
             c.Count = policy;
             return c;
+        }
+
+        /// <summary>Lists the company: sells a slice of it to the public for cash, pays a fee, and from then on reports every quarter. Needs reputation and revenue, and not a nonprofit.</summary>
+        public static Command ListCompany(int labId)
+        {
+            return Make(CommandKind.ListCompany, labId);
+        }
+
+        /// <summary>Sets the guidance for the quarter (1 conservative, 2 base, 3 stretch) in its first weeks. The quarter is judged against it.</summary>
+        public static Command SetGuidance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetGuidance, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sells more shares at the current price for cash, which dilutes the founders again. Not often.</summary>
+        public static Command FollowOn(int labId)
+        {
+            return Make(CommandKind.FollowOn, labId);
+        }
+
+        /// <summary>Spends cash, in thousands, to buy shares back: the price rises and the founders own more of the lab again.</summary>
+        public static Command BuyBackShares(int labId, int thousands)
+        {
+            Command c = Make(CommandKind.BuyBackShares, labId);
+            c.Count = thousands;
+            return c;
+        }
+
+        /// <summary>Buys all the public's shares back and ends the listing.</summary>
+        public static Command TakePrivate(int labId)
+        {
+            return Make(CommandKind.TakePrivate, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

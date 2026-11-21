@@ -119,6 +119,7 @@ namespace AiLabs.Rules.Config
         public ReliabilityConfig Reliability = new ReliabilityConfig();
         public CovenantsConfig Covenants = new CovenantsConfig();
         public AllowancesConfig Allowances = new AllowancesConfig();
+        public ListingConfig Listing = new ListingConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -236,6 +237,7 @@ namespace AiLabs.Rules.Config
             s.Obj("reliability", ref Reliability);
             s.Obj("covenants", ref Covenants);
             s.Obj("allowances", ref Allowances);
+            s.Obj("listing", ref Listing);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

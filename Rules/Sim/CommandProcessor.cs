@@ -105,6 +105,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.ListCompany: return ListCompany(c, state, lab, cmd);
+                case CommandKind.SetGuidance: return SetGuidance(c, state, lab, cmd);
+                case CommandKind.FollowOn: return FollowOn(c, state, lab, cmd);
+                case CommandKind.BuyBackShares: return BuyBackShares(c, state, lab, cmd);
+                case CommandKind.TakePrivate: return TakePrivate(c, state, lab, cmd);
                 case CommandKind.SetCapitalPolicy: return SetCapitalPolicy(c, state, lab, cmd);
                 case CommandKind.WaiveCovenant: return WaiveCovenant(c, state, lab, cmd);
                 case CommandKind.CureCovenant: return CureCovenant(c, state, lab, cmd);

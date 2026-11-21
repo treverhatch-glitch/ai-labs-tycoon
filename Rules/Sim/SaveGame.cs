@@ -207,6 +207,11 @@ namespace AiLabs.Rules.Sim
                 if (lab.CapPolicy < 0 || lab.CapPolicy > 2 || lab.CapPool < 0 || lab.CapSwitchTick < 0 || lab.CapWritten < 0
                     || ((lab.CapPolicy != 0 || lab.CapPool != 0 || lab.CapSwitchTick != 0 || lab.CapWritten != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a capital allowance policy or pool (policy " + lab.CapPolicy + ", pool " + lab.CapPool + ") that the data does not allow");
+                if (lab.Listed < 0 || lab.Listed > 1 || lab.ListPrice < 0 || lab.ListGuidance < 0 || lab.ListGuidance > 3 || lab.ListTarget < 0 || lab.ListQuarter < 0 || lab.ListBase < 0 || lab.ListNext < 0 || lab.ListKeep < 0 || lab.ListKeep > 1000 || lab.ListStreak < 0 || lab.ListFollowOn < 0 || lab.ListActivist < 0 || lab.ListActivist > c.Listing.MaxActivist
+                    || (lab.Listed == 1 && (lab.ListPrice < c.Listing.PriceFloor || lab.ListPrice > c.Listing.PriceCap || lab.ListKeep < 1 || lab.ListNext < 1))
+                    || (lab.Listed == 0 && (lab.ListPrice != 0 || lab.ListGuidance != 0 || lab.ListTarget != 0 || lab.ListQuarter != 0 || lab.ListNext != 0 || lab.ListKeep != 0 || lab.ListStreak != 0 || lab.ListActivist != 0))
+                    || ((lab.Listed != 0 || lab.ListBase != 0 || lab.ListFollowOn != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " is listed (price " + lab.ListPrice + ", guidance " + lab.ListGuidance + ", activist " + lab.ListActivist + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

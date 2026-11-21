@@ -350,7 +350,19 @@ namespace AiLabs.Rules.State
         /// <summary>The lender called the loans after the cure weeks. Amount is what was owed, Pick 1 when the lab paid it from cash.</summary>
         LoansCalled,
         /// <summary>The capital allowance policy changed. Amount is the new policy, SubjectId the pool written off at once when going back to expensing.</summary>
-        CapitalPolicySet
+        CapitalPolicySet,
+        /// <summary>The lab listed. Amount is the proceeds after the fee.</summary>
+        CompanyListed,
+        /// <summary>A quarter was reported. Amount is the share price now, Pick 0 a miss, 1 met guidance, 2 a beat.</summary>
+        EarningsReported,
+        /// <summary>The lab sold more shares. Amount is the proceeds.</summary>
+        FollowOnSold,
+        /// <summary>The lab bought shares back. Amount is what it spent.</summary>
+        SharesBoughtBack,
+        /// <summary>An activist moved closer. Amount is the step.</summary>
+        ActivistArrived,
+        /// <summary>The lab went private. Amount is what it paid.</summary>
+        CompanyDelisted
     }
 
     /// <summary>
