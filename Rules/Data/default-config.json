@@ -9282,6 +9282,116 @@
         "text": "They left anyway. The farewell email was nine paragraphs long.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "chip-taped-out-eng",
+        "kind": "ChipTapedOut",
+        "roles": ["chip-architect", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is at the foundry. Nobody is allowed to look at the mask set, in case it gets worried.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-taped-out",
+        "kind": "ChipTapedOut",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We just paid for a very small piece of silicon. I am told it is an investment.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-respin-eng",
+        "kind": "ChipRespin",
+        "roles": ["chip-architect", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "It was a one-line bug. It is now a very expensive one-line bug.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-respin",
+        "kind": "ChipRespin",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Respin. I did not know that was a word until this morning.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-yield-crash",
+        "kind": "ChipYieldCrash",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Only {amount} chips came out. The rest, I am told, are 'theoretical'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chips-delivered",
+        "kind": "ChipsDelivered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{amount} chips arrived. They are warm and slightly smug.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-snub",
+        "kind": "ChipSlotSnubbed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundry moved us back {amount} weeks. They were very nice about it, which was worse.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-taken",
+        "kind": "LoanTaken",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a loan now. I have been asked to call it 'runway'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-missed",
+        "kind": "LoanMissed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The cheque is in the post. I know because I wrote that on a sticky note.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-repaid",
+        "kind": "LoanRepaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We paid it off. The bank sent a card. It is the only thing in the building that is not a liability.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },

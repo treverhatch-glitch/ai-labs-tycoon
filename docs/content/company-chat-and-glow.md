@@ -10,6 +10,7 @@ The bible's chapter 14 asks for "a company chat feed where staff react to your d
 - A line reacts to one kind of event, and for yes-or-no events to one pick (a counter that worked or one that did not).
 - A line can be limited to some roles, and to people with a trait. The first line in the data that fits the event and has someone to say it wins, so the lines for traits come before the plain ones.
 - A line can also name `fromYear` and `toYear` (0 for no limit): it is only said for events from those calendar years, judged by the event's own tick. Seven lines use it (Q294): hires in the dial-up days, the chat boom and the upward era, releases early on and in the agent era, and finished models early on and in the harness era. They sit after the trait lines and before the plain line of their kind.
+- Ten lines (Q296) cover the chip business and the bank: a tapeout and a respin (a chip architect or engineer first, anyone else the plain line), a yield crash, a delivery and a foundry snub (these three say how many chips or weeks), and a loan taken, missed or repaid.
 - The speaker is picked from the people who fit by a hash of the event: the same event always gets the same speaker while that person is on the payroll.
 - An event kind with no line is not in the feed, and a lab with nobody on the payroll is silent.
 - A poach is about the lab it was done to, not the one that did it.

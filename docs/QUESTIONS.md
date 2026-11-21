@@ -1439,6 +1439,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Every lab's events reach the ticker, so a rival's tapeout or default makes the paper too. The ticker is never saved and rolls no shared dice, so the golden digest did not move and the economy is untouched.
 - Alternatives: also headline `ModelSold`, `StaffQuit` and `GauntletAward` (rejected for now: they would crowd out the release and incident lines the player cares about).
 
+### Q296. How do the people react to chips and loans? DECIDED: ten chat lines for eight event kinds
+- Ten new lines: `ChipTapedOut` and `ChipRespin` each have a line for chip architects and engineers and a plain line for anyone else; `ChipYieldCrash`, `ChipsDelivered` and `ChipSlotSnubbed` have a plain line that says the chip or week count; `LoanTaken`, `LoanMissed` and `LoanRepaid` have a plain line each.
+- Chat is read off the event log and never saved: the golden digest did not move and the economy is untouched. One chat test that counted the table now expects 72 lines.
+- Alternatives: lines for `LoanDefaulted` (rejected: the `InDebt` and bankruptcy lines already speak for it and a default is the end of a conversation, not the start).
+
 ## Open
 
 None.
