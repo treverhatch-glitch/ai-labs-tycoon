@@ -134,6 +134,7 @@ namespace AiLabs.Rules.Config
             CreedProblems(p, c);
             ShocksProblems(p, c);
             ReplicationProblems(p, c);
+            TechBetsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1518,6 +1519,15 @@ namespace AiLabs.Rules.Config
             if (k.PendingMax < 1 || k.PendingWeeks < 1 || k.Weeks < 1 || k.MaxEffort < 0 || k.MaxEffort > 12 || k.EffortPoints < 0) p.Add("replication.pendingMax, pendingWeeks and weeks must be at least 1, maxEffort from 0 to 12 and effortPoints not negative");
             if (k.RigorBase < 0 || k.RigorStep < 0 || k.RigorPerWriter < 0 || k.BarBase < 0 || k.BarBase > MathI.Permille || k.BarPerPrestige < 0 || k.BarPerPrestige > MathI.Permille) p.Add("replication.rigorBase, rigorStep and rigorPerWriter must not be negative, barBase and barPerPrestige from 0 to 1000");
             if (k.WinPrestige < 0 || k.LossPrestige < 0 || k.WithholdPrestige < 0 || k.WinReputation < 0 || k.LossReputation < 0 || k.WinReputation > 500 || k.LossReputation > 500) p.Add("replication.winPrestige, lossPrestige and withholdPrestige must not be negative and winReputation and lossReputation from 0 to 500");
+        }
+
+        static void TechBetsProblems(List<string> p, GameConfig c)
+        {
+            TechBetsConfig k = c.TechBets;
+            if (k == null) { p.Add("techBets is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("techBets.enabled must be 0 or 1");
+            if (k.Weeks < 1 || k.MinCost < 0) p.Add("techBets.weeks must be at least 1 and minCost not negative");
+            if (k.WinReputation < 0 || k.WinReputation > 500 || k.LossReputation < 0 || k.LossReputation > 500 || k.WithdrawReputation < 0 || k.WithdrawReputation > 500 || k.WinPrestige < 0) p.Add("techBets.winReputation, lossReputation and withdrawReputation must be from 0 to 500 and winPrestige not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

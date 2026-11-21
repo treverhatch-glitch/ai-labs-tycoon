@@ -451,6 +451,10 @@ namespace AiLabs.Rules.Sim
                     return who + " kept a paper's code and data back.";
                 case EventKind.PaperReplicated:
                     return e.Pick == 1 ? "Another lab reproduced " + who + "'s paper." : "Another lab could not reproduce " + who + "'s paper.";
+                case EventKind.TechBetMade:
+                    return who + " promised the world it would get " + e.Ref + " working.";
+                case EventKind.TechBetEnded:
+                    return who + (e.Pick == 1 ? " kept its promise on " : e.Pick == 2 ? " quietly took back its promise on " : " missed its promise on ") + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

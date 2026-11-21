@@ -148,7 +148,9 @@ namespace AiLabs.Rules.Sim
         OwnUp,
         AnswerShock,
         ReleaseCode,
-        WithholdCode
+        WithholdCode,
+        BetOnTech,
+        WithdrawTechBet
     }
 
     /// <summary>
@@ -1291,6 +1293,20 @@ namespace AiLabs.Rules.Sim
         public static Command WithholdCode(int labId)
         {
             return Make(CommandKind.WithholdCode, labId);
+        }
+
+        /// <summary>Publicly bets that the lab will research a tech (by id) within the data's weeks. One bet at a time.</summary>
+        public static Command BetOnTech(int labId, string techId)
+        {
+            Command c = Make(CommandKind.BetOnTech, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        /// <summary>Takes the public bet back. It costs a little reputation.</summary>
+        public static Command WithdrawTechBet(int labId)
+        {
+            return Make(CommandKind.WithdrawTechBet, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

@@ -2045,6 +2045,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Shocks are on by default, so a lab that never answers takes its hits. Seven old tests that ran across the dates of world events (five morale tests in `WorkplaceTests`, and one older-save replay each in `RushedLaunchTests` and `TrainingObjectiveTests`) now turn shocks off in their own config, because a pretend older save drops a shock still waiting; a conference test turns replication off in its own config (a paper left waiting on its code decision costs prestige while it is in review), and the "newer version" save test now uses the current schema plus one instead of a fixed 99, which the ninety-ninth schema made an ordinary save; the rest of the suite needed nothing.
 - Alternatives: shocks off by default (rejected: the news would never reach the player), the values observer reading only its own systems (rejected: the player expects every act to count).
 
+### Q400. Can the lab promise a tech before it has it? DECIDED: yes, a public bet on one reachable tech, kept or missed
+- Research is a queue the player works through in private. A bet makes the order public: pick one tech that is reachable now, and the world is watching. Keeping the promise earns reputation and prestige; missing it costs reputation, and taking it back costs less, so the real choice is how big a tech to promise and when to give up.
+- It uses the research the lab does anyway, so there is nothing to buy: the player must plan the research points (and the weeks) to keep it, which makes the tree's depth matter more than before.
+- Alternatives: a cash prize for finishing early (rejected: pay-for-progress), several bets at once (rejected: no choice of which), a bet on a tech not yet reachable (rejected: just luck).
+
 ## Open
 
 None.

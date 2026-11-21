@@ -432,7 +432,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab kept a paper's code back. Amount is the prestige it cost, Pick 0 the lab chose to, 1 it waited too long.</summary>
         CodeWithheld,
         /// <summary>Another lab tried to reproduce a paper. Amount is the prestige it changed, SubjectId how reproducible the paper was, Pick 1 it replicated and 0 it did not.</summary>
-        PaperReplicated
+        PaperReplicated,
+        /// <summary>The lab made a public bet on a tech. SubjectId is its place in the data, Ref the tech.</summary>
+        TechBetMade,
+        /// <summary>A bet ended. Amount is the reputation it changed, Ref the tech, Pick 1 kept, 0 the weeks ran out, 2 taken back.</summary>
+        TechBetEnded
     }
 
     /// <summary>

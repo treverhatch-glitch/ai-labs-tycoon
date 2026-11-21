@@ -336,6 +336,7 @@ and says why in the commit message.
 153. **Replication.** ~~Done~~: `ReleaseCode`, `WithholdCode`, schema 99, `ReplicationTests` (Q397).
 154. **News and chat for the sixth batch.** ~~Done~~: 22 headlines and 18 chat lines, `DevicesPlatformsCreedShocksReplicationNewsChatTests`, pins at 255 and 278 (Q398).
 155. **How the sixth batch meets.** ~~Done~~: values read the other systems, a creed shields or exposes a lab to a backlash, `DevicesPlatformsCreedShocksReplicationTogetherTests` (Q399).
+156. **Tech bets.** ~~Done~~: `BetOnTech`, `WithdrawTechBet`, schema 100, `TechBetsTests` (Q400).
 
 ## Rules: later
 

@@ -257,6 +257,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.ReplLeft == 0 && lab.ReplRigor != 0)
                     || ((lab.ReplPending != 0 || lab.ReplLeft != 0 || lab.ReplWins != 0 || lab.ReplFails != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has " + lab.ReplPending + " papers waiting on their code and one being replicated (" + lab.ReplLeft + " weeks) in a way the data does not allow");
+                if (lab.TbRef < 0 || lab.TbRef > c.Research.Techs.Count || lab.TbLeft < 0 || lab.TbWins < 0 || lab.TbLosses < 0
+                    || (lab.TbRef > 0 && lab.TbLeft < 1) || (lab.TbRef == 0 && lab.TbLeft != 0)
+                    || ((lab.TbRef != 0 || lab.TbWins != 0 || lab.TbLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a public tech bet " + lab.TbRef + " (" + lab.TbLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

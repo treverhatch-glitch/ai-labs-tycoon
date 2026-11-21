@@ -6173,6 +6173,15 @@
     "lossReputation": 40,
     "withholdPrestige": 40
   },
+  "techBets": {
+    "enabled": 1,
+    "weeks": 48,
+    "winReputation": 25,
+    "winPrestige": 60,
+    "lossReputation": 30,
+    "withdrawReputation": 10,
+    "minCost": 100
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

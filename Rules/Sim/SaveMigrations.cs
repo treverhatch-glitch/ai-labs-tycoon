@@ -112,6 +112,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 97) MigrateTo97(root);
             if (fromSchema < 98) MigrateTo98(root);
             if (fromSchema < 99) MigrateTo99(root);
+            if (fromSchema < 100) MigrateTo100(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -475,6 +476,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 100: no lab has a public bet on a tech.</summary>
+        static void MigrateTo100(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "tbRef", "tbLeft", "tbWins", "tbLosses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
