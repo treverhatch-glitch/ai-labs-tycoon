@@ -9167,6 +9167,90 @@
         "kind": "LoanRestructured",
         "pick": 1,
         "text": "{lab} restructures a loan it had stopped paying. The lender 'values the relationship'"
+      },
+      {
+        "id": "reserve-set",
+        "kind": "ReserveMoved",
+        "pick": 1,
+        "text": "{lab} sets {money} aside 'for a rainy day'. Its accountant has never been happier"
+      },
+      {
+        "id": "reserve-drawn",
+        "kind": "ReserveMoved",
+        "pick": 0,
+        "text": "{lab} takes {money} back out of its reserve. 'Planned,' says {lab}"
+      },
+      {
+        "id": "reserve-cover",
+        "kind": "ReserveCovered",
+        "pick": -1,
+        "text": "{lab}'s reserve covers a debt of {money}. The auditors 'were not alarmed'"
+      },
+      {
+        "id": "pledge-made",
+        "kind": "PledgeSet",
+        "pick": 1,
+        "text": "{lab} pledges publicly to launch only safe models. The pledge 'has a logo'"
+      },
+      {
+        "id": "pledge-walked-back",
+        "kind": "PledgeSet",
+        "pick": 0,
+        "text": "{lab} walks back its safety pledge. 'We are evolving,' says the statement"
+      },
+      {
+        "id": "pledge-broken",
+        "kind": "PledgeBroken",
+        "pick": -1,
+        "text": "{lab} breaks its safety pledge with {model}. The pledge page 'is being updated'"
+      },
+      {
+        "id": "roadmap-announced",
+        "kind": "RoadmapAnnounced",
+        "pick": -1,
+        "text": "{lab} publishes a roadmap: capability {amount} 'by the deadline'. A slide is very confident"
+      },
+      {
+        "id": "roadmap-delivered",
+        "kind": "RoadmapSettled",
+        "pick": 1,
+        "text": "{lab} delivers its roadmap. A slide is 'finally true'"
+      },
+      {
+        "id": "roadmap-missed",
+        "kind": "RoadmapSettled",
+        "pick": 0,
+        "text": "{lab} misses its roadmap. 'Timelines were directional,' says {lab}"
+      },
+      {
+        "id": "mentoring-graduated",
+        "kind": "MentoringEnded",
+        "pick": 0,
+        "text": "{lab} graduates a junior to senior after months of mentoring. The mentor 'barely sighed'"
+      },
+      {
+        "id": "mentoring-broke-up",
+        "kind": "MentoringEnded",
+        "pick": 1,
+        "text": "{lab}'s mentoring pair breaks up. Both 'learned a lot about each other'"
+      },
+      {
+        "id": "skunkworks-started",
+        "kind": "SkunkworksStarted",
+        "pick": -1,
+        "text": "{lab} puts {amount} people on a skunkworks project. They are 'not available for meetings'"
+      },
+      {
+        "id": "skunkworks-done",
+        "kind": "SkunkworksDone",
+        "pick": 1,
+        "text": "{lab}'s skunkworks team resurfaces with results. Nobody remembers asking"
+      },
+      {
+        "id": "skunkworks-early",
+        "kind": "SkunkworksDone",
+        "pick": 0,
+        "text": "{lab} wraps a skunkworks project up early. 'We learned what we needed,' says {lab}"
       }
     ],
     "filler": [
@@ -11008,6 +11092,160 @@
         "pick": -1,
         "about": "lab",
         "text": "The loan has a longer term now. The lender sent a very polite email.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "reserve-set-chat",
+        "kind": "ReserveMoved",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We have a reserve now. I am told it is not for snacks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "reserve-cover-chat",
+        "kind": "ReserveCovered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The reserve paid the bill. It took a big cut for doing it. I will not be mentioning that to anyone.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pledge-made-chat-safety",
+        "kind": "PledgeSet",
+        "roles": ["safety"],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "There is a pledge now, in writing, with our name on it. Every launch gets measured against it. I love it and I am afraid.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pledge-made-chat",
+        "kind": "PledgeSet",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We pledged something publicly. Legal has been in the room for two hours.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pledge-broken-chat",
+        "kind": "PledgeBroken",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} shipped under the pledge. The pledge page is down 'for maintenance'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "roadmap-announced-chat-researcher",
+        "kind": "RoadmapAnnounced",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The roadmap says a number and a date. I did not pick either of them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "roadmap-announced-chat",
+        "kind": "RoadmapAnnounced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We told people when the next model is coming. People have written it down.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "roadmap-delivered-chat",
+        "kind": "RoadmapSettled",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We shipped what the roadmap said, when it said. I am keeping a copy of that slide.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "roadmap-missed-chat",
+        "kind": "RoadmapSettled",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We missed the roadmap. Somebody is drafting the word 'iterating'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "mentoring-started-chat",
+        "kind": "MentoringStarted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "I am mentoring someone now. Half of my job is explaining the other half.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "mentoring-graduated-chat",
+        "kind": "MentoringEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Our junior made senior. The mentor looks tired and proud.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "skunkworks-started-chat-researcher",
+        "kind": "SkunkworksStarted",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Some of us are on a secret project. The rest of us are on everything else.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "skunkworks-started-chat",
+        "kind": "SkunkworksStarted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A team vanished into a project. I am told they will be back in a while.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "skunkworks-done-chat",
+        "kind": "SkunkworksDone",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The project team is back. They have a look about them.",
         "fromYear": 0,
         "toYear": 0
       }
