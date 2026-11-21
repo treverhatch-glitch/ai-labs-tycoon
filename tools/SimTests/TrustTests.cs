@@ -185,7 +185,7 @@ public class TrustTests
         var low = DisplayQueries.AppealParts(g.C, g.State, sector, state, g.Me, m);
         Assert.True(low.TrustBoost < 0);
         foreach (var parts in new[] { neutral, high, low })
-            Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
+            Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost + parts.NamingConfusion, parts.Total);
         Assert.True(high.Total > neutral.Total && neutral.Total > low.Total);
     }
 
@@ -290,7 +290,7 @@ public class TrustTests
     [Fact]
     public void An_incident_costs_trust_in_every_sector_the_model_is_on_sale_in()
     {
-        Game g = Hit(null, Chat, Support);
+        Game g = Hit(c => c.Safety.SectorFlavours.Clear(), Chat, Support);
         Assert.Equal(1, Count(g, EventKind.Incident));
         Assert.Equal(500 - 60, Trust(g, g.Me, Chat));
         Assert.Equal(500 - 60, Trust(g, g.Me, Support));

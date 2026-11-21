@@ -124,7 +124,7 @@ namespace AiLabs.Rules.Systems
         {
             int n = model.Sectors.Count;
             var lost = new int[n];
-            for (int i = 0; i < n; i++) lost[i] = -Shift(c, state, lab, model.Sectors[i], -c.Trust.IncidentDrop, true);
+            for (int i = 0; i < n; i++) lost[i] = -Shift(c, state, lab, model.Sectors[i], -(int)MathI.MulPermille(c.Trust.IncidentDrop, SectorFlavours.TrustPermille(c, state, lab, model.Sectors[i])), true);
 
             if (lab.Id != state.PlayerLabId) return;
             string worstSector = "";
@@ -175,7 +175,11 @@ namespace AiLabs.Rules.Systems
                 if (rec.Trust == t.BaselineTrust) lab.SectorTrust.RemoveAt(i);
             }
             for (int i = lab.Complaints.Count - 1; i >= 0; i--)
-                if (state.Tick >= lab.Complaints[i].ExpiresTick) lab.Complaints.RemoveAt(i);
+                if (state.Tick >= lab.Complaints[i].ExpiresTick)
+                {
+                    lab.Complaints.RemoveAt(i);
+                    SafetyCulture.OnComplaintLapsed(c, lab);
+                }
         }
     }
 }

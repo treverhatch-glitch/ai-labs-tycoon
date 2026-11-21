@@ -73,9 +73,12 @@ namespace AiLabs.Rules.Systems
             long fine = MathI.Max(c.Safety.IncidentFineMin, MarketSystem.ModelRevenue(state, lab.Id, model.Id) * c.Safety.IncidentFineRevenueWeeks);
             if (def != null) fine = MathI.MulPermille(fine, def.FinePermille);
             fine = MathI.Max(c.Safety.IncidentFineMin, fine);
+            SectorFlavourConfig flavour = SectorFlavours.Leading(c, state, lab, model);
+            if (flavour != null) fine = MathI.MulPermille(fine, flavour.FinePermille);
             RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
+            long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
 
             model.Incidents++;
             model.LastIncidentRung = rung;
@@ -84,9 +87,10 @@ namespace AiLabs.Rules.Systems
 
             int repLoss = def == null ? c.Safety.IncidentReputationLoss : def.ReputationLoss;
             if (risk != null) repLoss = (int)MathI.MulPermille(repLoss, risk.ReputationPermille);
+            if (flavour != null) repLoss = (int)MathI.MulPermille(repLoss, flavour.ReputationPermille);
             repLoss = PressSystem.Damp(c, lab, repLoss);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
-            Finance.Spend(lab, LedgerLine.Fines, fine);
+            Finance.Spend(lab, LedgerLine.Fines, fine + makeGood);
 
             if (def != null && def.ClosesGap)
                 model.DisplayedAlignment = EffectiveAlignment(c, model);
@@ -94,7 +98,7 @@ namespace AiLabs.Rules.Systems
             StaffSystem.OnIncident(c, lab);
             TrustSystem.OnIncident(c, state, lab, model);
 
-            GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
+            GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);
             if (risk != null)
             {
                 e.RiskClass = risk.Id;

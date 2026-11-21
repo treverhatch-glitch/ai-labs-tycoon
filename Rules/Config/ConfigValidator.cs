@@ -67,6 +67,8 @@ namespace AiLabs.Rules.Config
             TalentProblems(p, c);
             PressProblems(p, c);
             TrustProblems(p, c);
+            CultureProblems(p, c);
+            NamingProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -153,6 +155,7 @@ namespace AiLabs.Rules.Config
                     p.Add("safety rung4/5/6 corruption thresholds must rise from 1");
             }
             RiskClassProblems(p, c);
+            SectorFlavourProblems(p, c);
             ContainmentConfig cont = c.Safety.Containment;
             if (cont != null)
             {
@@ -385,6 +388,27 @@ namespace AiLabs.Rules.Config
             }
         }
 
+        static void SectorFlavourProblems(List<string> p, GameConfig c)
+        {
+            SafetyConfig safety = c.Safety;
+            UniqueIds(p, "safety.sectorFlavours", safety.SectorFlavours);
+            for (int i = 0; i < safety.SectorFlavours.Count; i++)
+            {
+                SectorFlavourConfig f = safety.SectorFlavours[i];
+                string who = "sector flavour " + f.Id;
+                if (c.Sector(f.Sector) == null) p.Add(who + " belongs to the unknown sector \"" + f.Sector + "\"");
+                for (int k = 0; k < i; k++)
+                    if (safety.SectorFlavours[k].Sector == f.Sector) p.Add(who + " is the second flavour of sector " + f.Sector);
+                if (string.IsNullOrEmpty(f.Failure)) p.Add(who + " has no failure line");
+                if (f.FinePermille < 250 || f.FinePermille > 5000) p.Add(who + " has finePermille " + f.FinePermille + ": it must be from 250 to 5000");
+                if (f.ReputationPermille < 250 || f.ReputationPermille > 5000) p.Add(who + " has reputationPermille " + f.ReputationPermille + ": it must be from 250 to 5000");
+                if (f.TrustPermille < 250 || f.TrustPermille > 5000) p.Add(who + " has trustPermille " + f.TrustPermille + ": it must be from 250 to 5000");
+                if (f.MakeGoodWeeks < 0 || f.MakeGoodWeeks > 26) p.Add(who + " has makeGoodWeeks " + f.MakeGoodWeeks + ": it must be from 0 to 26");
+                if (f.GlitchWeeks < 0 || f.GlitchWeeks > 52) p.Add(who + " has glitchWeeks " + f.GlitchWeeks + ": it must be from 0 to 52 (0 = the lab-wide value)");
+                if (f.GlitchQualityPermille < 0 || f.GlitchQualityPermille > MathI.Permille) p.Add(who + " has glitchQualityPermille " + f.GlitchQualityPermille + ": it must be from 0 to 1000 (0 = the lab-wide value)");
+            }
+        }
+
         static void RolePerkProblems(List<string> p, GameConfig c)
         {
             foreach (RolePerkConfig perk in c.RolePerks)
@@ -426,6 +450,55 @@ namespace AiLabs.Rules.Config
                 if (k.MoraleSlopePermille < -2000 || k.MoraleSlopePermille > 2000) p.Add(who + " needs moraleSlopePermille from -2000 to 2000");
                 if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
                 if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
+            }
+        }
+
+        static void NamingProblems(List<string> p, GameConfig c)
+        {
+            NamingConfig n = c.Naming;
+            if (n == null) { p.Add("naming is missing"); return; }
+            if (n.MaxMess < 1 || n.MaxMess > MathI.Permille) p.Add("naming.maxMess must be from 1 to 1000");
+            if (n.MessPerVersion < 0 || n.MessPerVersion > MathI.Permille) p.Add("naming.messPerVersion must be from 0 to 1000");
+            if (n.SuffixEveryPoints < 1 || n.SuffixEveryPoints > MathI.Permille) p.Add("naming.suffixEveryPoints must be from 1 to 1000");
+            if (n.ConfusionPermille < 0 || n.ConfusionPermille > 900) p.Add("naming.confusionPermille must be from 0 to 900, or full mess would erase a model's appeal");
+            if (n.CleanPoints < 0 || n.CleanPoints > MathI.Permille) p.Add("naming.cleanPoints must be from 0 to 1000");
+            if (n.CleanFeeHireFees < 0 || n.CleanFeeHireFees > 1000) p.Add("naming.cleanFeeHireFees must be from 0 to 1000");
+            if (n.Suffixes.Count == 0) p.Add("naming.suffixes is empty");
+            for (int i = 0; i < n.Suffixes.Count; i++)
+                if (string.IsNullOrWhiteSpace(n.Suffixes[i])) p.Add("naming.suffixes has an empty word at position " + i);
+        }
+
+        static void CultureProblems(List<string> p, GameConfig c)
+        {
+            CultureConfig u = c.Culture;
+            if (u == null) { p.Add("culture is missing"); return; }
+            if (u.Start < 0 || u.Start > MathI.Permille) p.Add("culture.start must be from 0 to 1000");
+            if (u.NeutralLevel < 0 || u.NeutralLevel > MathI.Permille) p.Add("culture.neutralLevel must be from 0 to 1000");
+            if (u.CatchSlopePermille < 0 || u.CatchSlopePermille > MathI.Permille) p.Add("culture.catchSlopePermille must be from 0 to 1000");
+            if (u.StaffGainPerPerson < 0 || u.StaffGainPerPerson > 100) p.Add("culture.staffGainPerPerson must be from 0 to 100");
+            if (u.MaxStaffGain < 0 || u.MaxStaffGain > 1000) p.Add("culture.maxStaffGain must be from 0 to 1000");
+            if (u.DriftPerWeek < 0 || u.DriftPerWeek > 100) p.Add("culture.driftPerWeek must be from 0 to 100");
+            if (u.RushBelowAlignment < 0 || u.RushBelowAlignment > MathI.Permille) p.Add("culture.rushBelowAlignment must be from 0 to 1000");
+            if (u.RushPoints < 0 || u.RushPoints > MathI.Permille) p.Add("culture.rushPoints must be from 0 to 1000");
+            if (u.GateKeptPoints < 0 || u.GateKeptPoints > MathI.Permille) p.Add("culture.gateKeptPoints must be from 0 to 1000");
+            if (u.GateLoweredPoints < 0 || u.GateLoweredPoints > MathI.Permille) p.Add("culture.gateLoweredPoints must be from 0 to 1000");
+            if (u.ComplaintAnsweredPoints < 0 || u.ComplaintAnsweredPoints > MathI.Permille) p.Add("culture.complaintAnsweredPoints must be from 0 to 1000");
+            if (u.ComplaintLapsedPoints < 0 || u.ComplaintLapsedPoints > MathI.Permille) p.Add("culture.complaintLapsedPoints must be from 0 to 1000");
+            if (u.MaxGate < 0 || u.MaxGate > MathI.Permille) p.Add("culture.maxGate must be from 0 to 1000");
+            if (u.GateLockWeeks < 0 || u.GateLockWeeks > 520) p.Add("culture.gateLockWeeks must be from 0 to 520");
+            foreach (string role in u.ListeningRoles)
+                if (c.Role(role) == null) p.Add("culture.listeningRoles names the unknown role \"" + role + "\"");
+            if (u.Bands.Count == 0) p.Add("culture.bands is empty");
+            UniqueIds(p, "culture.bands", u.Bands);
+            for (int i = 0; i < u.Bands.Count; i++)
+            {
+                CultureBandConfig b = u.Bands[i];
+                string who = "culture band " + b.Id;
+                if (string.IsNullOrEmpty(b.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(b.Blurb)) p.Add(who + " has no blurb");
+                if (b.Min < 0 || b.Min > MathI.Permille) p.Add(who + " has min " + b.Min + ": it must be from 0 to 1000");
+                if (i == 0 && b.Min != 0) p.Add("the first culture band must start at 0 so every level has a name");
+                if (i > 0 && b.Min <= u.Bands[i - 1].Min) p.Add(who + " does not start above the band before it");
             }
         }
 
