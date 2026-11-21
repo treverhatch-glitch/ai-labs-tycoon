@@ -61,7 +61,7 @@ public class ExitPriceBreakdownLaterTests
         g.Me.Cash = 10_000;
         var b = DisplayQueries.ExitPriceParts(g.C, g.State, g.Me);
         Assert.Equal(0, b.RevenueYears);
-        Assert.True(b.Total >= 10_000);
+        Assert.Equal(b.CashOnHand + b.FleetResale, b.Total);
     }
 
     [Fact]
@@ -128,15 +128,10 @@ public class ExitPriceBreakdownLaterTests
     {
         var g = Game.Solo();
         g.Me.Ledger.ThisMonth.Revenue = 0;
-        long before = DisplayQueries.ExitPriceParts(g.C, g.State, g.Me).RevenueYears;
-        MarketSystem.RunWeek(g.C, g.State);
-        Finance.CloseWeek(g.Me);
-        if (GameDate.IsMonthEnd(g.C.Calendar, g.Tick))
-        {
-            Finance.CloseMonth(g.C, g.State, g.Me);
-        }
+        Finance.Earn(g.Me, LedgerLine.Revenue, 50_000);
+        Finance.CloseMonth(g.C, g.State, g.Me);
         long after = DisplayQueries.ExitPriceParts(g.C, g.State, g.Me).RevenueYears;
-        Assert.True(after >= before);
+        Assert.Equal(50_000 * g.C.Endings.ExitRevenueYears, after);
     }
 
     [Fact]

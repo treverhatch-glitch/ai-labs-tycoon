@@ -118,8 +118,32 @@ public class SecondPlaceEndingLaterTests
         Assert.Contains(g.State.Endings, e => e.EndingId == EndingSystem.SecondPlaceId);
         string json = g.Sim.Save();
         Simulation loaded = Simulation.Load(g.C, json);
-        Assert.Equal(g.Me.CrownRunnerUpStreak, loaded.Player.CrownRunnerUpStreak);
+        Assert.Equal(0, loaded.Player.CrownRunnerUpStreak);
         Assert.Contains(loaded.State.Endings, e => e.EndingId == EndingSystem.SecondPlaceId);
+    }
+
+    [Fact]
+    public void Second_place_does_not_fire_again_after_acknowledge_even_with_high_streak()
+    {
+        var g = Game.New(seed: 14, tweak: c => c.Endings.SecondPlaceRunnerUpYears = 1);
+        g.Me.CrownRunnerUpStreak = 0;
+        CrownRace(g, 100, 800);
+        GauntletSystem.RunYear(g.C, g.State);
+        int idx = g.State.Endings.FindIndex(e => e.EndingId == EndingSystem.SecondPlaceId);
+        g.Do(Command.ContinueAfterEnding(g.Id, idx, "acknowledge"));
+        g.Me.CrownRunnerUpStreak = 5;
+        EndingSystem.TrySecondPlace(g.C, g.State, g.Me);
+        Assert.Single(g.State.Endings, e => e.EndingId == EndingSystem.SecondPlaceId);
+    }
+
+    [Fact]
+    public void Firing_second_place_resets_runner_up_streak()
+    {
+        var g = Game.New(seed: 15, tweak: c => c.Endings.SecondPlaceRunnerUpYears = 1);
+        g.Me.CrownRunnerUpStreak = 0;
+        CrownRace(g, 100, 800);
+        GauntletSystem.RunYear(g.C, g.State);
+        Assert.Equal(0, g.Me.CrownRunnerUpStreak);
     }
 
     [Fact]

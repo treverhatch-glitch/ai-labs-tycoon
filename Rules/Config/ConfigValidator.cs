@@ -429,6 +429,7 @@ namespace AiLabs.Rules.Config
                 if (china.MinInstalledKw < 0) p.Add("world.chinaDeals.minInstalledKw is negative");
                 Permille(p, "world.chinaDeals.activePowerPermille", china.ActivePowerPermille);
                 if (china.AcceptAttention < 0 || china.DeclineAttention < 0) p.Add("world.chinaDeals attention must be non-negative");
+                if (china.DeclineCooldownMonths < 0) p.Add("world.chinaDeals.declineCooldownMonths is negative");
             }
 
             foreach (ExportRuleConfig rule in w.ExportRules)

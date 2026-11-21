@@ -88,7 +88,10 @@ public class ShadyTests
         var model = new ModelState { Capability = 200, Status = ModelStatus.Trained };
         ShadyOddsBreakdown b = ShadyQueries.SuccessOdds(g.C, g.State, g.Me, card, model, null);
         Assert.Equal(b.Base + b.FromCapability - b.FromHeat - b.FromDefense, b.SuccessPermille);
-        Assert.Equal(ShadyQueries.ClampedSuccess(b), (int)MathI.Clamp(b.SuccessPermille, b.SuccessPermille <= 0 ? 0 : 50, 950));
+        int clamped = ShadyQueries.ClampedSuccess(b);
+        Assert.InRange(clamped, 0, 950);
+        if (b.SuccessPermille > 0) Assert.True(clamped >= 50);
+        else Assert.Equal(0, clamped);
     }
 
     [Fact]

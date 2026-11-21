@@ -25,7 +25,7 @@ public class ContainmentSuperintelLaterTests
 
     static void Wing(Game g, int tiles)
     {
-        int side = tiles >= 16 ? 4 : 4;
+        int side = 4;
         int other = tiles / side;
         g.Me.Rooms.Add(new RoomState { Id = g.State.TakeId(), TypeId = "containment-wing", X = 8, Y = 0, Width = side, Height = other });
     }

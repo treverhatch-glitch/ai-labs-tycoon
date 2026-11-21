@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 17;
+        public const int CurrentSchema = 18;
 
         public int Schema;
         public string ConfigVersion;
@@ -139,6 +139,8 @@ namespace AiLabs.Rules.State
         public bool ChinaDealActive;
         /// <summary>A state request is waiting for accept or decline.</summary>
         public bool ChinaDealPending;
+        /// <summary>No new China offer until this tick, or -1.</summary>
+        public int ChinaDealDeclinedUntilTick = -1;
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
         public List<string> FundingRounds = new List<string>();
 
@@ -247,6 +249,7 @@ namespace AiLabs.Rules.State
             s.Int("publicFloatPpm", ref PublicFloatPpm);
             s.Bool("chinaDealActive", ref ChinaDealActive);
             s.Bool("chinaDealPending", ref ChinaDealPending);
+            s.Int("chinaDealDeclinedUntilTick", ref ChinaDealDeclinedUntilTick);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);

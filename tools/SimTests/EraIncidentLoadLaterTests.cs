@@ -145,11 +145,18 @@ public class EraIncidentLoadLaterTests
     [Fact]
     public void Gauntlet_reputation_prize_and_era_load_both_apply_in_the_same_year_end_week()
     {
-        var g = Game.Solo();
+        var g = Game.Solo(tweak: c =>
+        {
+            c.Era("dial-up-days").IncidentLoadPermille = 800;
+            c.Era("agents").IncidentLoadPermille = 1200;
+        });
         g.Me.Models.Add(new ModelState { Id = 1, Capability = 800, Status = ModelStatus.Released, Alignment = 600, Name = "Solo" });
         int repBefore = g.Me.Reputation;
         GauntletSystem.RunYear(g.C, g.State);
-        Assert.True(g.Me.Reputation >= repBefore);
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, Released(600)) > 0);
+        Assert.True(g.Me.Reputation > repBefore);
+        var model = Released(600);
+        int dial = SafetySystem.IncidentChancePermille(g.C, GameDate.TickOfYear(g.C.Calendar, 1998), model);
+        int agents = SafetySystem.IncidentChancePermille(g.C, GameDate.TickOfYear(g.C.Calendar, 2028), model);
+        Assert.True(agents > dial);
     }
 }

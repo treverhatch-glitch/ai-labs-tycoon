@@ -32,6 +32,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 15) MigrateTo15(root);
             if (fromSchema < 16) MigrateTo16(root);
             if (fromSchema < 17) MigrateTo17(root);
+            if (fromSchema < 18) MigrateTo18(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -294,6 +295,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo17(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crownRunnerUpStreak", JsonValue.Of(0L)));
+        }
+
+        /// <summary>China deal decline cooldown (Opus review).</summary>
+        static void MigrateTo18(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chinaDealDeclinedUntilTick", JsonValue.Of(-1L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

@@ -127,10 +127,9 @@ public class LongHorizonSoakLaterTests
         g.Me.ResearchPoints = 50_000_000;
         foreach (TechConfig t in g.C.Research.Techs)
             if (EraSystem.TechOpen(g.C, t, g.Tick)) g.Me.Techs.Add(t.Id);
-        g.Do(Command.ResearchFrontier(g.Id));
         int start = g.Me.FrontierLevel;
-        g.Sim.StepMany(20 * g.C.Calendar.WeeksPerYear);
-        Assert.True(g.Me.FrontierLevel >= start);
+        g.Do(Command.ResearchFrontier(g.Id));
+        Assert.Equal(start + 1, g.Me.FrontierLevel);
     }
 
     [Fact]

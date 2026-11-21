@@ -1357,7 +1357,8 @@
       "minInstalledKw": 400,
       "activePowerPermille": 850,
       "acceptAttention": 120,
-      "declineAttention": 80
+      "declineAttention": 80,
+      "declineCooldownMonths": 24
     }
   },
   "research": {

@@ -14,6 +14,8 @@ namespace AiLabs.Rules.Config
         public int AcceptAttention;
         /// <summary>Attention added when you decline or ignore the request.</summary>
         public int DeclineAttention;
+        /// <summary>Months before another offer after a decline or ignored request.</summary>
+        public int DeclineCooldownMonths;
 
         public void Sync(Syncer s)
         {
@@ -22,6 +24,7 @@ namespace AiLabs.Rules.Config
             s.Int("activePowerPermille", ref ActivePowerPermille);
             s.Int("acceptAttention", ref AcceptAttention);
             s.Int("declineAttention", ref DeclineAttention);
+            s.Int("declineCooldownMonths", ref DeclineCooldownMonths);
         }
     }
 }

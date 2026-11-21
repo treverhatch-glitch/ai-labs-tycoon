@@ -554,7 +554,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q101. 60-year headless soak? DECIDED: step sixty years in tests
 
-- Options: (a) CI only; (b) one ForwardQueueLaterTests year step with Problems check.
+- Options: (a) CI only; (b) one `LongHorizonSoakLaterTests` year step with Problems check.
 - Recommendation and choice: **(b)**.
 - Why: systems-design 5.6 soak tail without balance-soak runtime cost.
 
@@ -607,6 +607,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Options: (a) defer until funding shares UI; (b) plan-run `publicFloatPpm`, monthly IPO when bubble hot, regulator attention on dominance and monopoly.
 - Recommendation and choice: **(b)**. Schema 13; `SharesRegulatorsLaterTests.cs` at 12 facts; golden digest re-recorded for share/regulator month hooks.
 - Why: systems design circular financing and monopoly antitrust (§5).
+
+### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
+
+- Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
+- Recommendation and choice: **(b)**. Default 24 months; `ShadyChinaLaterTests` regression.
+- Why: Opus review — monthly decline was a permanent attention ratchet.
 
 ## Open
 

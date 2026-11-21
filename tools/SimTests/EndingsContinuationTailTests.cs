@@ -49,8 +49,27 @@ public class EndingsContinuationTailTests
         g.Me.Models.Add(SuperRelease(g, 50));
         EndingSystem.TrySuperintelligence(g.C, g.State);
         int idx = g.State.Endings.FindIndex(e => e.EndingId == EndingSystem.PaperclippedId);
+        int labId = g.Id;
         g.Do(Command.ContinueAfterEnding(g.Id, idx, "spectate"));
         Assert.Equal(-1, g.State.PlayerLabId);
+        LabState former = g.State.Lab(labId);
+        Assert.Equal(LabController.Plan, former.Controller);
+        Assert.Equal("successor", former.RivalId);
+    }
+
+    [Fact]
+    public void Paperclipped_spectate_save_round_trips_without_problems()
+    {
+        var g = Game.Solo();
+        g.Me.Models.Add(SuperRelease(g, 50));
+        EndingSystem.TrySuperintelligence(g.C, g.State);
+        int idx = g.State.Endings.FindIndex(e => e.EndingId == EndingSystem.PaperclippedId);
+        g.Do(Command.ContinueAfterEnding(g.Id, idx, "spectate"));
+        string json = g.Sim.Save();
+        Simulation loaded = Simulation.Load(g.C, json);
+        Assert.Empty(SaveGame.Problems(g.C, loaded.State));
+        Assert.Equal(-1, loaded.State.PlayerLabId);
+        SaveSchemaPretend.AssertRoundTrip(loaded);
     }
 
     [Fact]
@@ -88,11 +107,15 @@ public class EndingsContinuationTailTests
     }
 
     [Fact]
-    public void A_recorded_monopoly_keeps_choice_empty_until_continue()
+    public void Paperclipped_does_not_fire_again_after_keep_going()
     {
         var g = Game.Solo();
-        g.State.Endings.Add(new EndingRecord { EndingId = "monopoly", LabId = g.Id, Tick = g.Tick });
-        Assert.Equal("", g.State.Endings.Last().Choice);
+        g.Me.Models.Add(SuperRelease(g, 50));
+        EndingSystem.TrySuperintelligence(g.C, g.State);
+        int idx = g.State.Endings.FindIndex(e => e.EndingId == EndingSystem.PaperclippedId);
+        g.Do(Command.ContinueAfterEnding(g.Id, idx, "keep-going"));
+        EndingSystem.TrySuperintelligence(g.C, g.State);
+        Assert.Single(g.State.Endings, e => e.EndingId == EndingSystem.PaperclippedId);
     }
 
     [Fact]

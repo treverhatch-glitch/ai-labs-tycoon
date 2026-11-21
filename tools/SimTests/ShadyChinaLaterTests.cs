@@ -177,6 +177,48 @@ public class ShadyChinaLaterTests
         Assert.Equal(before + g.C.World.ChinaDeals.DeclineAttention, g.Me.Bloc("china").Attention);
     }
 
+    static void ChinaFootprint(Game g)
+    {
+        g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2006);
+        string chinaSite = g.C.World.Sites.First(s => s.BlocId == "china").Id;
+        int hall = g.Do(Command.BuyLand(g.Id, chinaSite)).CreatedId;
+        g.Me.Holding(hall).HallKw = 500;
+        Finance.Earn(g.Me, LedgerLine.CapitalIn, 2_000_000);
+        g.Do(Command.BuyGpus(g.Id, 8, hall));
+    }
+
+    [Fact]
+    public void Declined_China_deal_stays_quiet_until_cooldown_ends()
+    {
+        var g = Game.Solo(tweak: c =>
+        {
+            c.World.ChinaDeals.MinInstalledKw = 8;
+            c.World.ChinaDeals.DeclineCooldownMonths = 2;
+        });
+        ChinaFootprint(g);
+        ChinaSystem.RunMonth(g.C, g.State, g.Me);
+        Assert.True(g.Me.ChinaDealPending);
+        g.Do(Command.DeclineChinaDeal(g.Id));
+        int wpMonth = g.C.Calendar.WeeksPerMonth;
+        g.Weeks(wpMonth);
+        if (GameDate.IsMonthEnd(g.C.Calendar, g.Tick - 1)) ChinaSystem.RunMonth(g.C, g.State, g.Me);
+        Assert.False(g.Me.ChinaDealPending);
+        while (g.Tick < g.Me.ChinaDealDeclinedUntilTick) g.Weeks(wpMonth);
+        ChinaSystem.RunMonth(g.C, g.State, g.Me);
+        Assert.True(g.Me.ChinaDealPending);
+    }
+
+    [Fact]
+    public void Schema_18_migration_adds_china_decline_cooldown_tick()
+    {
+        var g = Game.Solo();
+        string old = SaveSchemaPretend.At(g.C, 17, g.Sim.Save());
+        Simulation sim = Simulation.Load(g.C, old);
+        Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
+        Assert.Equal(-1, sim.Player.ChinaDealDeclinedUntilTick);
+        SaveSchemaPretend.AssertRoundTrip(sim);
+    }
+
     [Fact]
     public void Schema_14_migration_adds_china_deal_flags()
     {

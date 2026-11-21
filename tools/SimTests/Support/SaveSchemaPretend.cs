@@ -15,6 +15,12 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 18) StripChinaDeclineCooldown(root);
+            if (schema < 17) StripCrownRunnerUpStreak(root);
+            if (schema < 16) StripBoardLockedUntilTick(root);
+            if (schema < 14) StripChinaDealFlags(root);
+            if (schema < 13) StripPublicFloatPpm(root);
+            if (schema < 12) StripBubblePermille(root);
             if (schema < 11) StripReservedAndQueue(root);
             if (schema < 10) RevertStaffToPools(root);
             if (schema < 9) StripAlignmentGapFields(root);
@@ -70,6 +76,37 @@ public static class SaveSchemaPretend
             }
             lab.Set("staff", arr);
         });
+    }
+
+    static void StripBubblePermille(JsonValue root) => JsonPatch.Remove(root, "bubblePermille");
+
+    static void StripPublicFloatPpm(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "publicFloatPpm"));
+    }
+
+    static void StripChinaDealFlags(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonPatch.Remove(lab, "chinaDealActive");
+            JsonPatch.Remove(lab, "chinaDealPending");
+        });
+    }
+
+    static void StripBoardLockedUntilTick(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "boardLockedUntilTick"));
+    }
+
+    static void StripCrownRunnerUpStreak(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "crownRunnerUpStreak"));
+    }
+
+    static void StripChinaDeclineCooldown(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "chinaDealDeclinedUntilTick"));
     }
 
     static void StripReservedAndQueue(JsonValue root)

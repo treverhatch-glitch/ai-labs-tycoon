@@ -74,7 +74,7 @@ namespace AiLabs.Rules.Systems
 
             if (model.Alignment <= cfg.PaperclipMaxAlignment)
             {
-                if (!HasOpen(state, PaperclippedId))
+                if (!HasOpen(state, PaperclippedId) && !HasRecorded(state, PaperclippedId))
                 {
                     Add(state, player.Id, PaperclippedId);
                     Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, PaperclippedId);
@@ -83,7 +83,7 @@ namespace AiLabs.Rules.Systems
             }
             if (model.Alignment >= cfg.LongSummerMinAlignment && player.FrontierLevel >= cfg.LongSummerMinFrontier)
             {
-                if (!HasOpen(state, LongSummerId))
+                if (!HasOpen(state, LongSummerId) && !HasRecorded(state, LongSummerId))
                 {
                     Add(state, player.Id, LongSummerId);
                     Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LongSummerId);
@@ -92,7 +92,7 @@ namespace AiLabs.Rules.Systems
             }
             if (cfg.LooseRequiresZeroContainment && LabQueries.ContainmentTiles(c, player) <= 0)
             {
-                if (!HasOpen(state, LooseId))
+                if (!HasOpen(state, LooseId) && !HasRecorded(state, LooseId))
                 {
                     Add(state, player.Id, LooseId);
                     Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LooseId);
@@ -156,6 +156,13 @@ namespace AiLabs.Rules.Systems
         {
             for (int i = 0; i < state.Endings.Count; i++)
                 if (state.Endings[i].EndingId == endingId && state.Endings[i].Choice == "") return true;
+            return false;
+        }
+
+        static bool HasRecorded(GameState state, string endingId)
+        {
+            for (int i = 0; i < state.Endings.Count; i++)
+                if (state.Endings[i].EndingId == endingId) return true;
             return false;
         }
 
@@ -224,8 +231,11 @@ namespace AiLabs.Rules.Systems
             int need = c.Endings.SecondPlaceRunnerUpYears;
             if (need < 1 || player.CrownRunnerUpStreak < need) return;
             if (HasOpen(state, SecondPlaceId)) return;
+            if (HasRecorded(state, SecondPlaceId)) return;
+            int streak = player.CrownRunnerUpStreak;
             Add(state, player.Id, SecondPlaceId);
-            Events.Add(state, EventKind.EndingReached, player.Id, -1, player.CrownRunnerUpStreak, SecondPlaceId);
+            player.CrownRunnerUpStreak = 0;
+            Events.Add(state, EventKind.EndingReached, player.Id, -1, streak, SecondPlaceId);
         }
 
         public static void ApplyContinue(GameConfig c, GameState state, LabState lab, EndingRecord record, string mode)
@@ -237,6 +247,12 @@ namespace AiLabs.Rules.Systems
             }
             if (mode == "spectate" && (record.EndingId == PaperclippedId || record.EndingId == LongSummerId || record.EndingId == LooseId))
             {
+                if (c.Rival("successor") != null)
+                {
+                    lab.Controller = LabController.Plan;
+                    lab.RivalId = "successor";
+                    if (!lab.Name.Contains("(new owners)")) lab.Name += " (new owners)";
+                }
                 state.PlayerLabId = -1;
                 return;
             }
