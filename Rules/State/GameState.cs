@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 56;
+        public const int CurrentSchema = 57;
 
         public int Schema;
         public string ConfigVersion;
@@ -178,6 +178,12 @@ namespace AiLabs.Rules.State
         public int OnCallLevel;
         /// <summary>The rota cannot be changed before this tick.</summary>
         public int OnCallLockedUntil;
+        /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
+        public int ConsultantLevel;
+        /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
+        public int ConsultantWeeks;
+        /// <summary>The next firm cannot start before this tick.</summary>
+        public int ConsultantLockedUntil;
         /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
         public int EthicsLevel;
         /// <summary>No board can be seated before this tick (set when one is stepped down or resigns).</summary>
@@ -371,6 +377,9 @@ namespace AiLabs.Rules.State
             s.Int("optimiseLevel", ref OptimiseLevel);
             s.Int("onCallLevel", ref OnCallLevel);
             s.Int("onCallLockedUntil", ref OnCallLockedUntil);
+            s.Int("consultantLevel", ref ConsultantLevel);
+            s.Int("consultantWeeks", ref ConsultantWeeks);
+            s.Int("consultantLockedUntil", ref ConsultantLockedUntil);
             s.Int("ethicsLevel", ref EthicsLevel);
             s.Int("ethicsLockedUntil", ref EthicsLockedUntil);
             s.Int("chiefScientistId", ref ChiefScientistId);

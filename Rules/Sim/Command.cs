@@ -55,7 +55,8 @@ namespace AiLabs.Rules.Sim
         SetEthicsBoard,
         SetOptimisation,
         RunCampaign,
-        SetOnCall
+        SetOnCall,
+        HireConsultants
     }
 
     /// <summary>
@@ -409,6 +410,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Hires a firm of policy consultants (level 1 to the data's highest) for a few weeks. Costs a fee and a weekly bill, and the next firm has to wait.</summary>
+        public static Command HireConsultants(int labId, int level)
+        {
+            Command c = Make(CommandKind.HireConsultants, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Sets the level of the on-call rota, from 0 (none) to the data's highest. Raising needs safety people and engineers; any change locks the rota for some weeks.</summary>
         public static Command SetOnCall(int labId, int level)
         {
@@ -753,7 +762,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked
     }
 
     public struct CommandResult

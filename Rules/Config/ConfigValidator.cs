@@ -87,6 +87,7 @@ namespace AiLabs.Rules.Config
             OptimiseProblems(p, c);
             MarketingProblems(p, c);
             OnCallProblems(p, c);
+            ConsultantsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -893,6 +894,18 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void ConsultantsProblems(List<string> p, GameConfig c)
+        {
+            ConsultantsConfig k = c.Consultants;
+            if (k == null) { p.Add("consultants is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("consultants.maxLevel must be from 0 to 10");
+            if (k.FeePerLevel < 0) p.Add("consultants.feePerLevel is negative");
+            if (k.WeeklyPerLevel < 0) p.Add("consultants.weeklyPerLevel is negative");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 50) p.Add("consultants.staffPerLevel must be from 0 to 50");
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("consultants.weeks must be from 0 to 52");
+            if (k.CooldownWeeks < k.Weeks || k.CooldownWeeks > 104) p.Add("consultants.cooldownWeeks must be at least weeks and at most 104, so a firm is never in all the time");
         }
 
         static void IncidentFloorProblems(List<string> p, GameConfig c)

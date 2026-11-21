@@ -69,6 +69,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 54) MigrateTo54(root);
             if (fromSchema < 55) MigrateTo55(root);
             if (fromSchema < 56) MigrateTo56(root);
+            if (fromSchema < 57) MigrateTo57(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -432,6 +433,17 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 57: no lab has hired policy consultants.</summary>
+        static void MigrateTo57(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "consultantLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantLockedUntil", JsonValue.Of(0L));
             });
         }
 

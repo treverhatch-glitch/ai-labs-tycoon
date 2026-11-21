@@ -30,7 +30,7 @@ namespace AiLabs.Rules.Systems
         public static int BackfireChancePermille(GameConfig c, LabState lab)
         {
             LobbyConfig l = c.Lobbying;
-            long chance = l.BackfirePermille - (long)WorldQueries.PolicyStaff(c, lab) * l.BackfireSavingPermillePerStaff;
+            long chance = l.BackfirePermille - (long)WorldQueries.PolicyStaffWithConsultants(c, lab) * l.BackfireSavingPermillePerStaff;
             return (int)MathI.Max(l.BackfireFloorPermille, chance);
         }
 
@@ -38,7 +38,7 @@ namespace AiLabs.Rules.Systems
         public static int SubsidyChancePermille(GameConfig c, LabState lab)
         {
             LobbyConfig l = c.Lobbying;
-            long chance = l.SubsidyChancePermille + (long)WorldQueries.PolicyStaff(c, lab) * l.SubsidyChancePermillePerStaff;
+            long chance = l.SubsidyChancePermille + (long)WorldQueries.PolicyStaffWithConsultants(c, lab) * l.SubsidyChancePermillePerStaff;
             return (int)MathI.Min(l.SubsidyChanceCapPermille, chance);
         }
 

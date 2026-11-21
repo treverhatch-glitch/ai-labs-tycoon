@@ -5608,6 +5608,14 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "consultants": {
+    "maxLevel": 2,
+    "feePerLevel": 30000,
+    "weeklyPerLevel": 2000,
+    "staffPerLevel": 3,
+    "weeks": 12,
+    "cooldownWeeks": 26
+  },
   "incidentFloor": {
     "fineFloorPermille": 150,
     "chanceFloorPermille": 400

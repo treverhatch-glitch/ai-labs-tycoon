@@ -80,13 +80,19 @@ namespace AiLabs.Rules.Systems
             return level == BlocStanding.Freeze ? a.FreezeExitBelow : a.EntryPoint(level) - a.DropMargin;
         }
 
+        /// <summary>Whether the lab has enough policy people (consultants count) to be ready for a hearing.</summary>
+        public static bool HearingPrepared(GameConfig c, LabState lab)
+        {
+            return WorldQueries.PolicyStaffWithConsultants(c, lab) >= c.World.Attention.PreparedPolicyStaff;
+        }
+
         static void Reached(GameConfig c, GameState state, LabState lab, BlocStanding standing)
         {
             AttentionConfig a = c.World.Attention;
             long amount = 0;
             if (standing.Level == BlocStanding.Hearing)
             {
-                amount = WorldQueries.PolicyStaff(c, lab) >= a.PreparedPolicyStaff ? a.HearingReputationPrepared : a.HearingReputation;
+                amount = HearingPrepared(c, lab) ? a.HearingReputationPrepared : a.HearingReputation;
                 amount += Compliance.HearingPoints(c, lab) + SafetyAudit.HearingPoints(c, state, lab) + EthicsBoard.HearingPoints(c, lab);
                 if (amount < 0) amount = -PressSystem.Damp(c, lab, (int)-amount);
                 lab.Reputation = (int)MathI.Clamp(lab.Reputation + amount, 0, MathI.Permille);

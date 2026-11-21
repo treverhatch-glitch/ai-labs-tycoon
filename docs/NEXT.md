@@ -266,6 +266,7 @@ and says why in the commit message.
 83. **Headlines and chat for chiefs, the board, campaigns, optimisation and the rota.** ~~Done~~: ten headlines and eleven chat lines, data only, `ChiefsBoardCampaignNewsChatTests` (Q324).
 84. **Chiefs, the board, optimisation, campaigns and the rota together (tests).** ~~Done~~: `ChiefsBoardOptimiseCampaignOnCallTogetherTests` (Q325).
 86. **Incident floors (safety).** ~~Done~~: `incidentFloor` data, `IncidentFloor`, an insurer payout cap, `IncidentFloorTests`, `docs/content/incident-floors.md` (Q327). No state.
+85. **Policy consultants (government, staff).** ~~Done~~: `HireConsultants`, `PolicyConsultants`, `consultants` data, lab `consultantLevel`, `consultantWeeks`, `consultantLockedUntil` (schema 57, `MigrateTo57`), `WorldQueries.PolicyStaffWithConsultants`, `ConsultantsTests`, `docs/content/policy-consultants.md` (Q326). Early audit settlement was considered and left out (Q326).
 
 ## Rules: later
 
