@@ -152,6 +152,9 @@ namespace AiLabs.Rules.Config
             Permille(p, "safety.incidentChancePermille", c.Safety.IncidentChancePermille);
             Permille(p, "safety.glitchQualityPermille", c.Safety.GlitchQualityPermille);
             Permille(p, "safety.overworkedQualityPermille", c.Safety.OverworkedQualityPermille);
+            Permille(p, "safety.overworkedAppealPermille", c.Safety.OverworkedAppealPermille);
+            Permille(p, "safety.corruptedMoodAppealPermille", c.Safety.CorruptedMoodAppealPermille);
+            Permille(p, "safety.overworkedTrainingSpeedPermille", c.Safety.OverworkedTrainingSpeedPermille);
             Permille(p, "safety.corruptedMoodQualityPermille", c.Safety.CorruptedMoodQualityPermille);
             Permille(p, "safety.reputationBaseline", c.Safety.ReputationBaseline);
             Permille(p, "safety.sandbagGapPermille", c.Safety.SandbagGapPermille);
@@ -276,6 +279,7 @@ namespace AiLabs.Rules.Config
             if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
             Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
             Permille(p, "market.deviceWorkshop.revenueBonusPermille", w.RevenueBonusPermille);
+            Permille(p, "market.deviceWorkshop.prepCostCutPermille", w.PrepCostCutPermille);
         }
 
         static void CapabilityDomainProblems(List<string> p, GameConfig c)
@@ -778,6 +782,7 @@ namespace AiLabs.Rules.Config
                 if (c.Research.Patents.DurationWeeks < 0) p.Add("research.patents.durationWeeks is negative");
                 if (c.Research.Patents.FilingCostPermille < 0) p.Add("research.patents.filingCostPermille is negative");
                 if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
+                if (c.Research.Patents.ResearchPerActivePatent < 0) p.Add("research.patents.researchPerActivePatent is negative");
             }
             UniqueIds(p, "research.forks", c.Research.Forks);
             var forkCount = new Dictionary<string, int>();

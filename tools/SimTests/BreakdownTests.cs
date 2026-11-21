@@ -38,7 +38,7 @@ public class BreakdownTests
         DisplayQueries.AppealBreakdown b = DisplayQueries.AppealParts(g.C, g.State, sector, sectorState, g.Me, model);
         long appeal = MarketSystem.Appeal(g.C, g.State, sector, sectorState, g.Me, model);
         Assert.Equal(appeal, b.Total);
-        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.ChampionBoost + b.ExpansionBoost + b.WorkshopBoost + b.DomainLeaderBoost + b.DomainChallengerBoost, appeal);
+        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.ChampionBoost + b.ExpansionBoost + b.WorkshopBoost + b.DomainLeaderBoost + b.DomainChallengerBoost + b.MoodBoost, appeal);
     }
 
     [Fact]

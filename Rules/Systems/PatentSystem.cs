@@ -33,12 +33,15 @@ namespace AiLabs.Rules.Systems
                 lab.Patents.Remove(expired[i]);
                 Events.Add(state, EventKind.PatentExpired, lab.Id, -1, 0, expired[i].TechId);
             }
-            int repEach = c.Research.Patents == null ? 0 : c.Research.Patents.ReputationPerActivePatent;
-            if (repEach > 0)
+            int active = ActivePatentCount(lab, state.Tick);
+            if (active > 0 && c.Research.Patents != null)
             {
-                int active = ActivePatentCount(lab, state.Tick);
-                if (active > 0)
+                int repEach = c.Research.Patents.ReputationPerActivePatent;
+                if (repEach > 0)
                     lab.Reputation = (int)MathI.Clamp(lab.Reputation + repEach * active, 0, MathI.Permille);
+                long rpEach = c.Research.Patents.ResearchPerActivePatent;
+                if (rpEach > 0)
+                    lab.ResearchPoints += rpEach * active;
             }
         }
     }

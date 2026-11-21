@@ -30,8 +30,16 @@ namespace AiLabs.Rules.Systems
             public long WorkshopBoost;
             public long DomainLeaderBoost;
             public long DomainChallengerBoost;
+            public long MoodBoost;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost + DomainLeaderBoost + DomainChallengerBoost; } }
+            public long Total
+            {
+                get
+                {
+                    return Core + ReputationBoost + SalesBoost + ChampionBoost + ExpansionBoost + WorkshopBoost
+                        + DomainLeaderBoost + DomainChallengerBoost + MoodBoost;
+                }
+            }
         }
 
         public struct IncidentBreakdown
@@ -109,6 +117,18 @@ namespace AiLabs.Rules.Systems
             long quality = Quality(c, sector, model, state.Tick, lab);
             var b = new AppealBreakdown();
             b.Core = quality * quality;
+            ModelMood mood = LabQueries.Mood(c, lab, model, state.Tick);
+            int moodPermille = MathI.Permille;
+            if (mood == ModelMood.Overworked && c.Safety.OverworkedAppealPermille > 0)
+                moodPermille = c.Safety.OverworkedAppealPermille;
+            else if (mood == ModelMood.Corrupted && c.Safety.CorruptedMoodAppealPermille > 0)
+                moodPermille = c.Safety.CorruptedMoodAppealPermille;
+            if (moodPermille < MathI.Permille)
+            {
+                long afterMood = MathI.MulPermille(b.Core, moodPermille);
+                b.MoodBoost = afterMood - b.Core;
+                b.Core = afterMood;
+            }
             long afterRep = MathI.MulPermille(b.Core, c.Safety.ReputationBaseline + lab.Reputation);
             b.ReputationBoost = afterRep - b.Core;
             long afterSales = MathI.MulPermille(afterRep, MarketSystem.SalesPermille(c, lab));

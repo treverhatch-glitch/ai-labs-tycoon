@@ -3186,7 +3186,8 @@
     "patents": {
       "durationWeeks": 52,
       "filingCostPermille": 800,
-      "reputationPerActivePatent": 3
+      "reputationPerActivePatent": 3,
+      "researchPerActivePatent": 8
     },
     "forks": [
       {
@@ -3422,6 +3423,9 @@
     "glitchQualityPermille": 700,
     "overworkedQualityPermille": 900,
     "corruptedMoodQualityPermille": 650,
+    "overworkedAppealPermille": 880,
+    "corruptedMoodAppealPermille": 700,
+    "overworkedTrainingSpeedPermille": 850,
     "reputationBaseline": 500,
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
@@ -3493,7 +3497,8 @@
       "roomTypeId": "device-workshop",
       "sectorId": "devices",
       "appealBonusPermille": 100,
-      "revenueBonusPermille": 80
+      "revenueBonusPermille": 80,
+      "prepCostCutPermille": 100
     },
     "capabilityDomains": [
       {

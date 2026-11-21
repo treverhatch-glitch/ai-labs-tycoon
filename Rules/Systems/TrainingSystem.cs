@@ -49,6 +49,11 @@ namespace AiLabs.Rules.Systems
             FrontierConfig frontier = c.Endings?.Frontier;
             if (frontier != null && frontier.TrainingSpeedPermillePerLevel > 0 && lab.FrontierLevel > 0)
                 total += frontier.TrainingSpeedPermillePerLevel * lab.FrontierLevel;
+            if (c.Safety.OverworkedTrainingSpeedPermille > 0
+                && c.Safety.OverworkedTrainingSpeedPermille < MathI.Permille
+                && lab.LastWeek.ServingDemand > 0
+                && lab.LastWeek.ServedPermille < MathI.Permille)
+                total = (int)MathI.MulPermille(total, c.Safety.OverworkedTrainingSpeedPermille);
             return total;
         }
 

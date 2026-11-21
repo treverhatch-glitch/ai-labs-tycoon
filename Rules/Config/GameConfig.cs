@@ -468,12 +468,15 @@ namespace AiLabs.Rules.Config
         public int FilingCostPermille = 800;
         /// <summary>Reputation gained each week per non-expired patent held by the lab.</summary>
         public int ReputationPerActivePatent;
+        /// <summary>Research points granted each week per non-expired patent.</summary>
+        public long ResearchPerActivePatent;
 
         public void Sync(Syncer s)
         {
             s.Int("durationWeeks", ref DurationWeeks);
             s.Int("filingCostPermille", ref FilingCostPermille);
             s.Int("reputationPerActivePatent", ref ReputationPerActivePatent);
+            s.Long("researchPerActivePatent", ref ResearchPerActivePatent);
         }
     }
 
@@ -721,6 +724,12 @@ namespace AiLabs.Rules.Config
         public int OverworkedQualityPermille;
         /// <summary>Market quality permille while corruption has pushed the mascot to Corrupted.</summary>
         public int CorruptedMoodQualityPermille;
+        /// <summary>Appeal permille while the model mascot is Overworked.</summary>
+        public int OverworkedAppealPermille;
+        /// <summary>Appeal permille while the mascot is Corrupted.</summary>
+        public int CorruptedMoodAppealPermille;
+        /// <summary>Lab-wide training speed permille while serving demand outstrips compute.</summary>
+        public int OverworkedTrainingSpeedPermille;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
@@ -750,6 +759,9 @@ namespace AiLabs.Rules.Config
             s.Int("glitchQualityPermille", ref GlitchQualityPermille);
             s.Int("overworkedQualityPermille", ref OverworkedQualityPermille);
             s.Int("corruptedMoodQualityPermille", ref CorruptedMoodQualityPermille);
+            s.Int("overworkedAppealPermille", ref OverworkedAppealPermille);
+            s.Int("corruptedMoodAppealPermille", ref CorruptedMoodAppealPermille);
+            s.Int("overworkedTrainingSpeedPermille", ref OverworkedTrainingSpeedPermille);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
@@ -844,6 +856,8 @@ namespace AiLabs.Rules.Config
         public int AppealBonusPermille = 100;
         /// <summary>Extra revenue permille in <see cref="SectorId"/> when the workshop gate is satisfied.</summary>
         public int RevenueBonusPermille;
+        /// <summary>Cut applied to training prep cost when the workshop gate is satisfied (permille off list).</summary>
+        public int PrepCostCutPermille;
 
         public void Sync(Syncer s)
         {
@@ -852,6 +866,7 @@ namespace AiLabs.Rules.Config
             s.Str("sectorId", ref SectorId);
             s.Int("appealBonusPermille", ref AppealBonusPermille);
             s.Int("revenueBonusPermille", ref RevenueBonusPermille);
+            s.Int("prepCostCutPermille", ref PrepCostCutPermille);
         }
     }
 

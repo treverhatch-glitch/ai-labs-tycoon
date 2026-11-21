@@ -386,6 +386,18 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q93. Overworked lab training speed? DECIDED: `overworkedTrainingSpeedPermille`
+- Choice: **(a)** — multiply `SpeedPermille` when last week left serving demand unserved.
+
+### Q92. Patent weekly research? DECIDED: `researchPerActivePatent`
+- Choice: **(a)** — `PatentSystem.RunWeek` beside Q81 reputation.
+
+### Q91. Device workshop prep cut? DECIDED: `deviceWorkshop.prepCostCutPermille`
+- Choice: **(a)** — same gate as appeal/revenue; `BeginTraining` prep spend.
+
+### Q90. Mood cuts appeal? DECIDED: `overworkedAppealPermille` + `corruptedMoodAppealPermille`
+- Choice: **(a)** — `AppealParts.MoodBoost` mirrors Q77 quality hook.
+
 ### Q89. Museum full-line research stipend? DECIDED: `researchPointsPerFullLine`
 - Choice: **(a)** — weekly flat RP per line at retirement cap, beside Q79 reputation.
 

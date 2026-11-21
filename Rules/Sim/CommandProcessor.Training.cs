@@ -54,6 +54,9 @@ namespace AiLabs.Rules.Sim
             DataSourceConfig mix = c.Training.DataSource(sourceId);
             long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
             prepCost = MathI.MulPermille(prepCost, mix.PrepCostPermille);
+            int workshopCut = DeviceWorkshopSystem.PrepCostCutPermille(c, state, lab);
+            if (workshopCut > 0)
+                prepCost = MathI.MulPermille(prepCost, MathI.Permille - workshopCut);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
             var model = new ModelState();

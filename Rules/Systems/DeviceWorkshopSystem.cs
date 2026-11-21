@@ -35,6 +35,14 @@ namespace AiLabs.Rules.Systems
             return WorkshopBonusPermille(c, state, lab, sectorId, c.Market.DeviceWorkshop?.RevenueBonusPermille ?? 0);
         }
 
+        /// <summary>Training prep discount when the lab runs a consumer-devices programme.</summary>
+        public static int PrepCostCutPermille(GameConfig c, GameState state, LabState lab)
+        {
+            DeviceWorkshopConfig workshop = c.Market.DeviceWorkshop;
+            if (workshop == null) return 0;
+            return WorkshopBonusPermille(c, state, lab, workshop.SectorId, workshop.PrepCostCutPermille);
+        }
+
         static int WorkshopBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId, int bonus)
         {
             if (lab.Bankrupt || bonus <= 0) return 0;
