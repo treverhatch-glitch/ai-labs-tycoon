@@ -1792,6 +1792,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Only the player's lab announces. No random numbers. The golden moved 2baf0743 -> 1f5f681c only through the four new saved fields (verified by taking them and the schema back out).
 - Alternatives: a promise on revenue (that is the board target of Q338), a promise a rival can break for the lab (rejected: stays out of rivals), cancelling a roadmap for a fee (rejected: a promise that can be dropped for a fee is a loan of hype).
 
+### Q352. Can a lab buy trust in one sector with something other than waiting? DROPPED (knob): a customer case study that costs weeks of that sector's revenue
+- Proposed and not built: pay a few weeks of one sector's revenue for a one-off lump of trust, held under a ceiling.
+- It is a pay-for-stat knob. It has no state of its own (trust was already saved), no decision over time and no branching beyond "is it worth the price now", so it is not one of the systems this batch is for. It was written, tested and then removed before the branch was pushed (the batch was rebuilt without it); nothing of it is in the code, the data or the saves.
+- If trust in a sector is ever worth a dedicated system, it should have state over time (customers who remember, a reference that ages) and not a price list.
+
+### Q353. What can a lab do for one person who is about to leave? DROPPED (knob): a retention bonus of weeks of their pay that lifts morale
+- Proposed and not built: pay one unhappy person weeks of salary for a lump of morale, up to a ceiling.
+- It is a pay-for-stat knob with no state and no decision over time: the same shape as a bounty on morale. It was written, tested and removed before the branch was pushed; nothing of it is in the code, the data or the saves. Mentoring (Q356) is the staff system that replaced it: a pairing with state over weeks and a real cost in output.
+
 ### Q356. Can a senior bring a junior along? DECIDED: mentoring pairs that trade output for a free promotion
 - New `mentoring` data, commands `AssignMentor` and `EndMentoring`, `Mentoring` system, events `MentoringStarted` and `MentoringEnded`, and two saved fields on a person (schema 70). A senior and a junior in the same function can be paired, two pairs at most. While the pair holds the mentor counts as a plain person (not the senior weight) and the junior counts for 80%, in research and in the engineering, safety and sales head counts; the junior's morale climbs 4 a week to 800. After 26 weeks, when the function has a senior seat free, the junior is promoted for nothing and both gain morale.
 - The choice is the point. Who to pair (a function's senior is its best output), whether to start now or wait for a seat (a pair waiting for a seat keeps costing output), and when to give up on a pair whose seat never opens. A paid promotion is quick and costs a fee; mentoring is free in cash but costs output for half a year, so it suits a lab that is short of cash rather than output.
