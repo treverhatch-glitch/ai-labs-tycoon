@@ -171,7 +171,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 // Each hire costs the fee now and raises the reserve the lab wants to keep, so count both.
-                long perHire = role.HireCost + role.WeeklySalary * plan.ReserveWeeks;
+                long perHire = EraRules.HireFee(c, role, x.State.Tick) + role.WeeklySalary * plan.ReserveWeeks;
                 long spare = lab.Cash - Reserve(x);
                 int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
                 int hire = Math.Min(Math.Min(target - have, seats - have), affordable);
@@ -517,6 +517,15 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) continue;
+                if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
+                {
+                    if (model.Status == ModelStatus.Trained)
+                        Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
+                            Reason.Of(ReasonCode.AlignmentBelowGate, model.Alignment),
+                            Reason.Of(ReasonCode.ReleaseGate, EraRules.ReleaseBar(c, state.Tick)),
+                            Reason.Of(ReasonCode.CultureAlignmentPermille, plan.AlignmentSharePermille));
+                    continue;
+                }
                 if (model.Status == ModelStatus.Trained && model.Alignment < plan.MinReleaseAlignment)
                 {
                     Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,

@@ -84,8 +84,10 @@ and says why in the commit message.
 
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
     a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
-13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
-    "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
+13. ~~**Make each era feel different.**~~ Done (Q103 to Q109): `EraRules`, five era rules beside incident load (talent-war
+    hiring fees, chip prices, customer appetite, fine size, and a release law on displayed alignment), the briefing
+    and shifts queries, a rules line on the era banner, no save change. Still open: new *risk classes* per era and
+    per-era mechanics that need new state (they ride on items 7 and 8).
 
 ## Rules: later
 

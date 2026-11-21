@@ -614,6 +614,56 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. Default 24 months; `ShadyChinaLaterTests` regression.
 - Why: Opus review — monthly decline was a permanent attention ratchet.
 
+## Era rules (NEXT item 13)
+
+### Q103. What does "the rules shift" mean in data? DECIDED: five era multipliers and one law, beside `incidentLoadPermille`
+
+- Options: (a) a free-form rules list per era; (b) typed fields on `EraConfig`; (c) per-era code branches.
+- Recommendation and choice: **(b)** `hireFeePermille`, `chipPricePermille`, `adoptionPermille`, `finePermille`, `minReleaseAlignment`; `EraRules` is the one place every system asks.
+- Why: typed fields validate and round-trip like the rest of the config, need no save change, and the first era must stay at baseline so old balance and the 1995 golden run hold.
+
+### Q104. Do salaries rise with the talent war? DECIDED: only the one-off hiring fee
+
+- Options: (a) hire fee and weekly salary; (b) hire fee only.
+- Recommendation and choice: **(b)** x1.5 in It Sees up to x3.5 in Agents, easing to x2.5.
+- Why: `WeeklySalaries` has no calendar in its signature (14 call sites and the planners' reserve maths); a fee needs only the hiring tick. Salary scaling is a later change to the same table.
+
+### Q105. Which alignment does the release law read? DECIDED: displayed alignment
+
+- Options: (a) true alignment; (b) the alignment a lab can show (`DisplayedAlignment`).
+- Recommendation and choice: **(b)**; the floor is 0, 80, 120, 160, 200, 250 from 2022 on and never falls.
+- Why: a regulator audits what it is shown, so sandbagging passes on paper and incidents that close the gap are what catch it; this gives the shady path a reason to exist.
+
+### Q106. What does the law do to models already on sale? DECIDED: nothing
+
+- Options: (a) pull them from sale when the law arrives; (b) check only new releases and upgrades (`ReleaseModel`).
+- Recommendation and choice: **(b)**, with `CommandError.BelowEraSafetyBar` and a message naming the era and the bar.
+- Why: no stored "retired by law" state is needed, saves are unchanged, and a lab that ships a bad model into a new era still feels it at its next release.
+
+### Q107. How do rivals meet the law? DECIDED: the planner holds a model back and logs it
+
+- Options: (a) rivals bump alignment spend to the bar; (b) a model below the bar is `HeldBack` with `ReleaseGate` and `AlignmentBelowGate` reasons, logged at most once a quarter.
+- Recommendation and choice: **(b)**.
+- Why: a careless rival (OpenAye) is then visibly squeezed by the law while careful ones ship, with no new planning code and the reasons already in the decision log.
+
+### Q108. Where is the chip shortage applied? DECIDED: the vendor's list price
+
+- Options: (a) allocation supply too; (b) price only, in `VendorSystem.PricePerGpu`.
+- Recommendation and choice: **(b)** (x1.1 in It Writes, x1.6 in the Chat Boom, easing to x1).
+- Why: one line reaches every buying path (command, planner, queue); allocation already has its own standing rules, and changing both at once would double-count the shortage.
+
+### Q109. Customer appetite and fines? DECIDED: scale adoption (capped) and the final fine
+
+- Options: (a) leave the market alone; (b) `adoptionPermille` multiplies a sector's adoption (still capped at 1000), `finePermille` multiplies the incident fine after rung scaling.
+- Recommendation and choice: **(b)** (appetite up to x1.4 in the Chat Boom; fines x1.5 in 2022, x2 in 2024, x3 from 2026).
+- Why: the Chat Boom should feel like a rush and later years like a regulated industry; both are one multiplier at one call site, and the era banner lists what changed so the shift is explained.
+
+### Q110. New risk classes per era? DECIDED: not in this item
+
+- Options: (a) add era-specific incident kinds now; (b) leave them for the funding ladder and alignment-gap rungs.
+- Recommendation and choice: **(b)**; incident load and fines are the era's risk dial for now.
+- Why: a risk class needs per-model state (and a save schema step after 17), and incident rungs 1 to 6 already carry the ladder; it should land with the risk-class design, not as a side effect of item 13.
+
 ## Open
 
 None.

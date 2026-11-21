@@ -36,7 +36,7 @@ namespace AiLabs.Rules.Systems
                 ModelState model = state.Lab(entry.LabId).Model(entry.ModelId);
                 best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick));
             }
-            return (int)MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability);
+            return EraRules.Adoption(c, MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability), state.Tick);
         }
 
         public static void RunWeek(GameConfig c, GameState state)

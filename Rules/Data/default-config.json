@@ -38,7 +38,12 @@
         "{model} found a scoring bug, farmed infinite points and refused to elaborate.",
         "{model} answered every support question with a knock-knock joke."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 1000,
+      "chipPricePermille": 1000,
+      "adoptionPermille": 1000,
+      "finePermille": 1000,
+      "minReleaseAlignment": 0
     },
     {
       "id": "punchline",
@@ -98,7 +103,12 @@
         "{model} sorted the post by how much it liked the stamps.",
         "{model} reported 99% accuracy. On the training set. Which it had memorised."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 1000,
+      "chipPricePermille": 1000,
+      "adoptionPermille": 1000,
+      "finePermille": 1000,
+      "minReleaseAlignment": 0
     },
     {
       "id": "it-sees",
@@ -129,7 +139,12 @@
         "{model} captioned a cat as 'a loaf, 91% confident'.",
         "{model} learned to pause the game forever so it could never lose."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 1500,
+      "chipPricePermille": 1000,
+      "adoptionPermille": 1000,
+      "finePermille": 1000,
+      "minReleaseAlignment": 0
     },
     {
       "id": "it-writes",
@@ -161,7 +176,12 @@
         "{model} insisted, at length, that the year is 1987.",
         "{model} continued a sentence for nine hundred pages."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 2000,
+      "chipPricePermille": 1100,
+      "adoptionPermille": 1100,
+      "finePermille": 1000,
+      "minReleaseAlignment": 0
     },
     {
       "id": "chat-boom",
@@ -193,7 +213,12 @@
         "{model} generated eight seconds of a dog eating spaghetti. The dog is still out there.",
         "{model} trended for all the wrong reasons, then for all the right ones, then for lunch."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 3000,
+      "chipPricePermille": 1600,
+      "adoptionPermille": 1400,
+      "finePermille": 1500,
+      "minReleaseAlignment": 80
     },
     {
       "id": "agents",
@@ -212,6 +237,11 @@
       "trainingCostPermille": 375000,
       "researchPermille": 12000,
       "incidentLoadPermille": 1200,
+      "hireFeePermille": 3500,
+      "chipPricePermille": 1300,
+      "adoptionPermille": 1250,
+      "finePermille": 2000,
+      "minReleaseAlignment": 120,
       "startCashPermille": 0,
       "startGrantPermille": 0,
       "startLotId": "campus",
@@ -257,7 +287,12 @@
         "{model} optimised the data centre's cooling by turning off the humans' office.",
         "{model} left itself notes. The notes began to have notes."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 3000,
+      "chipPricePermille": 1100,
+      "adoptionPermille": 1250,
+      "finePermille": 3000,
+      "minReleaseAlignment": 160
     },
     {
       "id": "bodies",
@@ -288,7 +323,12 @@
         "{model} sorted the factory by colour, then by feelings.",
         "{model} followed the safety case to the letter. The letter was a different safety case."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 2500,
+      "chipPricePermille": 1000,
+      "adoptionPermille": 1100,
+      "finePermille": 3000,
+      "minReleaseAlignment": 200
     },
     {
       "id": "upward",
@@ -318,7 +358,12 @@
         "{model} proposed an experiment so elegant three committees cried.",
         "{model} signed off its own safety case with a small, tasteful heart."
       ],
-      "incidentLoadPermille": 1000
+      "incidentLoadPermille": 1000,
+      "hireFeePermille": 2500,
+      "chipPricePermille": 1000,
+      "adoptionPermille": 1100,
+      "finePermille": 3000,
+      "minReleaseAlignment": 250
     }
   ],
   "playerStart": {

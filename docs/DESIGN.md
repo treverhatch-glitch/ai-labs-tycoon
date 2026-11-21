@@ -90,6 +90,11 @@ works (x1 up to x60). Hardware generations now do the work the bible gives to "t
 multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Two eras can
 be chosen at the start: 1995 and 2009 (the quick start, with its own money, lot and researched techs).
 
+Each era also turns a few rules (`EraRules`, the `Era rules` table in [content/eras.md](content/eras.md)): the talent
+war (hiring fees from 2012), chip shortages (prices peak in the Chat Boom), customer appetite, incident chance and
+fines, and from 2022 a law: a model must *show* a minimum alignment before it can go on sale. Existing customers are
+not lost when a law arrives; only new releases are checked. None of it is saved: the year picks the era.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

@@ -182,6 +182,16 @@ namespace AiLabs.Rules.Config
         public List<string> IncidentHeadlines;
         /// <summary>Multiplies the base weekly incident chance while this era is active (1000 = unchanged).</summary>
         public int IncidentLoadPermille;
+        /// <summary>The talent war: multiplies the one-off hiring fee while this era is active (1000 = unchanged). Salaries stay as listed.</summary>
+        public int HireFeePermille;
+        /// <summary>Chip shortages and gluts: multiplies the vendor's price for a GPU or chip while this era is active (1000 = unchanged).</summary>
+        public int ChipPricePermille;
+        /// <summary>How eagerly sectors take AI up: multiplies a sector's adoption (still capped at 1000) while this era is active.</summary>
+        public int AdoptionPermille;
+        /// <summary>The law's bite: multiplies the fine for an incident while this era is active (1000 = unchanged).</summary>
+        public int FinePermille;
+        /// <summary>The law's floor: a model whose displayed alignment is below this cannot be put on sale in this era. 0 means no rule. Never falls from one era to the next.</summary>
+        public int MinReleaseAlignment;
 
         public string Id { get { return IdValue; } }
 
@@ -203,6 +213,11 @@ namespace AiLabs.Rules.Config
             s.StrList("startTechs", ref StartTechs);
             s.StrList("incidentHeadlines", ref IncidentHeadlines);
             s.Int("incidentLoadPermille", ref IncidentLoadPermille);
+            s.Int("hireFeePermille", ref HireFeePermille);
+            s.Int("chipPricePermille", ref ChipPricePermille);
+            s.Int("adoptionPermille", ref AdoptionPermille);
+            s.Int("finePermille", ref FinePermille);
+            s.Int("minReleaseAlignment", ref MinReleaseAlignment);
         }
     }
 
