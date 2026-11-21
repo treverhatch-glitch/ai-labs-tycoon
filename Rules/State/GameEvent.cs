@@ -134,7 +134,9 @@ namespace AiLabs.Rules.State
         /// <summary>The insurer paid part of an incident's fine. Subject is the model, Amount what it paid, Ref the model's name.</summary>
         InsuranceClaimPaid,
         /// <summary>The insurer ended the policy after too many claims. Amount is how many it remembered.</summary>
-        InsuranceDropped
+        InsuranceDropped,
+        /// <summary>The team went on an offsite. Subject is how many people it lifted, Amount what it cost.</summary>
+        OffsiteHeld
     }
 
     /// <summary>

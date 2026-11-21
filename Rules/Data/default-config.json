@@ -4866,6 +4866,10 @@
     "crunchMinMorale": 450,
     "crunchBreakMorale": 250,
     "crunchMaxWeeks": 26,
+    "offsiteSalaryPermille": 1000,
+    "offsiteMoraleLift": 80,
+    "offsiteMaxAboveResting": 100,
+    "offsiteCultureLift": 15,
     "traitRollSalt": 15,
     "starHirePermille": 120,
     "traits": [

@@ -1439,6 +1439,10 @@ namespace AiLabs.Rules.Config
             if (s.CrunchBreakMorale < 0 || s.CrunchBreakMorale > MathI.Permille) p.Add("staffPeople.crunchBreakMorale needs 0 to 1000");
             if (s.CrunchBreakMorale > s.CrunchMinMorale) p.Add("staffPeople.crunchBreakMorale is above crunchMinMorale, so crunch would end the week it starts");
             if (s.CrunchMaxWeeks < 0 || s.CrunchMaxWeeks > 520) p.Add("staffPeople.crunchMaxWeeks needs 0 to 520");
+            if (s.OffsiteSalaryPermille < 0 || s.OffsiteSalaryPermille > 52000) p.Add("staffPeople.offsiteSalaryPermille needs 0 to 52000");
+            if (s.OffsiteMoraleLift < 0 || s.OffsiteMoraleLift > MathI.Permille) p.Add("staffPeople.offsiteMoraleLift needs 0 to 1000");
+            if (s.OffsiteMaxAboveResting < 0 || s.OffsiteMaxAboveResting > MathI.Permille) p.Add("staffPeople.offsiteMaxAboveResting needs 0 to 1000");
+            if (s.OffsiteCultureLift < 0 || s.OffsiteCultureLift > MathI.Permille) p.Add("staffPeople.offsiteCultureLift needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");

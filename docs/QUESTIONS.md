@@ -1465,6 +1465,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest moved to e1ea850c because of the three lab fields, the ledger field and the schema number only; reverting them brought the previous digest (691a1ad0) back.
 - Alternatives: a flat premium (rejected: a rich lab would never feel it); covering reputation loss (rejected: insurance pays money, not trust); a one-off deductible instead of a share (rejected: a share scales with the fine).
 
+### Q300. Can the player take the team on an offsite? DECIDED: yes, a week of salaries for +80 morale (never more than 100 above resting) and +15 culture, with no cooldown state
+- New command `HoldOffsite`, `Offsite` system, event `OffsiteHeld`, `staffPeople.offsite*` data. No new saved state (so no schema and the golden digest did not move): the limit is the ceiling, resting morale plus 100, so a second offsite gives only what room is left and a third is refused.
+- It costs one week of salaries on the hiring ledger line, lifts everyone with room to rise, and adds 15 safety culture points (the player's lab only). Refused when there is no one to take, no cash, nothing to gain, no offsites in the data, or the lab is not the player's or is bankrupt.
+- It is how a tired team gets over crunch time's start line (average morale 450) and how a person who would quit by blog post is kept; both are tested.
+- The worry was a permanent research bonus from chained offsites. With the ceiling at resting plus 100 the extra research is about 4% and decays at the drift, so it is capped and not a loop.
+- Alternatives: a cooldown (rejected: it needs saved state and the ceiling already limits it); a flat morale set to the maximum (rejected: that would be the exploit).
+
 ## Open
 
 None.

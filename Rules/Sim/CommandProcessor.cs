@@ -80,6 +80,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
                 case CommandKind.SetCrunch: return SetCrunch(c, state, lab, cmd);
                 case CommandKind.SetInsurance: return SetInsurance(c, state, lab, cmd);
+                case CommandKind.HoldOffsite: return HoldOffsite(c, state, lab);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
@@ -312,6 +313,18 @@ namespace AiLabs.Rules.Sim
             if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
                 return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");
             lab.CrunchWeeks = 1;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult HoldOffsite(GameConfig c, GameState state, LabState lab)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab takes its team on an offsite.");
+            if (c.StaffPeople.OffsiteMoraleLift <= 0) return Fail(CommandError.InvalidArgument, "There are no offsites in this game.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to take away.");
+            if (Offsite.Lifted(c, lab) == 0) return Fail(CommandError.InvalidArgument, "No one has room left to rise: everyone is as high as an offsite can take them.");
+            long cost = Offsite.Cost(c, lab);
+            if (lab.Cash < cost) return NeedCash(lab, cost);
+            Offsite.Hold(c, state, lab, cost);
             return CommandResult.Done(-1);
         }
 

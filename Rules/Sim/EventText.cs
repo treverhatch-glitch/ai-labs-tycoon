@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Sim
                         CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
                         return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
                     }
+                case EventKind.OffsiteHeld: return who + " took the team on an offsite for $" + e.Amount + ". " + e.SubjectId + (e.SubjectId == 1 ? " person" : " people") + " came back happier.";
                 case EventKind.InsuranceClaimPaid: return "The insurer paid $" + e.Amount + " of " + who + "'s fine for " + e.Ref + ".";
                 case EventKind.InsuranceDropped: return "The insurer ended " + who + "'s policy after " + e.Amount + " claims.";
                 case EventKind.CrunchEnded:

@@ -38,7 +38,8 @@ namespace AiLabs.Rules.Sim
         RepayLoan,
         SetResearchShare,
         SetCrunch,
-        SetInsurance
+        SetInsurance,
+        HoldOffsite
     }
 
     /// <summary>
@@ -334,6 +335,12 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetInsurance, labId);
             c.Count = level;
             return c;
+        }
+
+        /// <summary>Takes the whole team away for a day: morale up for everyone who has room to rise, for about a week of salaries.</summary>
+        public static Command HoldOffsite(int labId)
+        {
+            return Make(CommandKind.HoldOffsite, labId);
         }
 
         /// <summary>Starts crunch time (on) or ends it (off).</summary>

@@ -56,6 +56,14 @@ namespace AiLabs.Rules.Config
         public int CrunchBreakMorale;
         /// <summary>Crunch ends by itself after this many weeks.</summary>
         public int CrunchMaxWeeks;
+        /// <summary>What an offsite costs, as a share of one week of salaries, in permille.</summary>
+        public int OffsiteSalaryPermille;
+        /// <summary>Morale each person gains at an offsite; 0 means there are no offsites in the game.</summary>
+        public int OffsiteMoraleLift;
+        /// <summary>An offsite never lifts anyone higher than this many points above their resting morale.</summary>
+        public int OffsiteMaxAboveResting;
+        /// <summary>Safety culture points an offsite adds, for the player's lab.</summary>
+        public int OffsiteCultureLift;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -93,6 +101,10 @@ namespace AiLabs.Rules.Config
             s.Int("crunchMinMorale", ref CrunchMinMorale);
             s.Int("crunchBreakMorale", ref CrunchBreakMorale);
             s.Int("crunchMaxWeeks", ref CrunchMaxWeeks);
+            s.Int("offsiteSalaryPermille", ref OffsiteSalaryPermille);
+            s.Int("offsiteMoraleLift", ref OffsiteMoraleLift);
+            s.Int("offsiteMaxAboveResting", ref OffsiteMaxAboveResting);
+            s.Int("offsiteCultureLift", ref OffsiteCultureLift);
             s.ObjList("traits", ref Traits);
         }
     }
