@@ -133,6 +133,7 @@ namespace AiLabs.Rules.Systems
 
         static bool MaybeFail(GameConfig c, GameState state, LabState lab, ModelState model)
         {
+            if (lab.Controller == LabController.Plan) return false;
             if (model.RequiredCompute <= 0) return false;
             long progress = model.ProgressCompute * MathI.Permille;
             if (progress < model.RequiredCompute * c.Training.FailAfterProgressPermille) return false;
@@ -148,6 +149,14 @@ namespace AiLabs.Rules.Systems
         {
             model.Status = ModelStatus.Failed;
             Events.Add(state, EventKind.TrainingFailed, lab.Id, model.Id, model.ProgressCompute, model.Name);
+        }
+
+        /// <summary>Plan-run labs drop failed runs so the planner can retry; the player uses <see cref="CommandKind.ScrapFailedRun"/>.</summary>
+        public static void ClearFailedRunsForPlans(LabState lab)
+        {
+            if (lab.Controller != LabController.Plan) return;
+            for (int i = lab.Models.Count - 1; i >= 0; i--)
+                if (lab.Models[i].Status == ModelStatus.Failed) lab.Models.RemoveAt(i);
         }
 
         static void Finish(GameConfig c, GameState state, LabState lab, ModelState model)

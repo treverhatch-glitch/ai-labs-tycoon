@@ -518,7 +518,8 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) continue;
-                if (model.Status == ModelStatus.Trained && model.Alignment < plan.MinReleaseAlignment)
+                if (model.Capability < 1) continue;
+                if (model.Alignment < plan.MinReleaseAlignment)
                 {
                     Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
                         Reason.Of(ReasonCode.AlignmentBelowGate, model.Alignment),

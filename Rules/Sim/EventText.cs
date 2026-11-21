@@ -38,6 +38,8 @@ namespace AiLabs.Rules.Sim
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.TrainingFailed:
                     return who + "'s training run " + e.Ref + " collapsed after " + e.Amount + " units of compute. The weights are unusable.";
+                case EventKind.DistillTargetSet:
+                    return who + " will distill the next rival-distill run from " + e.Ref + ".";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";
                 case EventKind.Incident:

@@ -135,6 +135,7 @@ namespace AiLabs.Rules.Sim
                 TrainingSystem.RunResearch(c, lab, tick);
                 ChipSystem.RunWeek(c, state, lab);
                 TrainingSystem.RunWeek(c, state, lab);
+                TrainingSystem.ClearFailedRunsForPlans(lab);
             }
 
             MarketSystem.RunWeek(c, state);

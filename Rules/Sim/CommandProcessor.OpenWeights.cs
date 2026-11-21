@@ -29,7 +29,12 @@ namespace AiLabs.Rules.Sim
             if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
                 return Fail(CommandError.PermitFrozen, c.World.Bloc(lab.HomeBlocId).Agency + " has frozen " + lab.Name + "'s permits at home.");
             if (string.IsNullOrEmpty(cmd.Id)) return Fail(CommandError.InvalidArgument, "Name the data source.");
-            if (c.Training.DataSource(cmd.Id) == null) return Fail(CommandError.UnknownId, "There is no data source \"" + cmd.Id + "\".");
+            DataSourceConfig source = c.Training.DataSource(cmd.Id);
+            if (source == null) return Fail(CommandError.UnknownId, "There is no data source \"" + cmd.Id + "\".");
+            if (!TrainingQueries.DataSourceOpen(c, source, state.Tick))
+                return Fail(CommandError.EraLocked, source.Name + " is not available until " + source.OpensYear + ".");
+            if (source.RequiresDistillTarget && lab.DistillTargetLabId < 0)
+                return Fail(CommandError.DistillTargetRequired, "Pick a rival to distill from before choosing " + source.Name + ".");
             lab.TrainingDataSourceId = cmd.Id;
             return CommandResult.Done(-1);
         }
