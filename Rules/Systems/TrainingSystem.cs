@@ -47,10 +47,10 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
-        public static int AlignmentWorkPermille(GameConfig c, LabState lab)
+        public static int AlignmentWorkPermille(GameConfig c, LabState lab, int tick)
         {
             long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
-            return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
+            return MathI.Permille + ControlStale.AlignmentBonusPermille(c, lab, tick)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
                 + LabQueries.ContainmentAlignmentBonus(c, lab)
                 + RolePerks.Permille(c, lab, RolePerkKind.AlignmentWork)
@@ -101,7 +101,7 @@ namespace AiLabs.Rules.Systems
             if (runs == 0) return;
 
             int speed = SpeedPermille(c, lab);
-            int alignmentWork = AlignmentWorkPermille(c, lab);
+            int alignmentWork = AlignmentWorkPermille(c, lab, state.Tick);
             long each = training / runs;
             long spare = training - each * runs;
 

@@ -131,6 +131,12 @@ Safety culture and the release gate ([content/safety-culture.md](content/safety-
 
 Version naming ([content/version-naming.md](content/version-naming.md)) is the bible's joke that is also a system. Every training run adds to the player lab's naming mess, new models are named with more stacked words (Pro, Max, Turbo...), customers who cannot tell the models apart give up to 8% of appeal, and the marketing team can tidy the names for four sales hiring fees. Save schema 30.
 
+Rooms that age ([content/room-ageing.md](content/room-ageing.md)) is how the world moving on shows in the building. Every era change makes each of the player lab's rooms one era older; from the third stage (dated) a room costs extra upkeep and staff in it are less happy, until a refurbish for a quarter of the build cost makes it fresh. Save schema 31.
+
+Control goes stale ([content/control-stale.md](content/control-stale.md)) is the bible's "each new era, control techniques go stale". A player lab's safety techs lose a tenth of their bonus for every era past the first since its newest safety research (never more than half), new safety research puts them all back, and letting go of the people who listen costs culture. Nothing is saved.
+
+The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
+
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
 
 The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.

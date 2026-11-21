@@ -108,6 +108,26 @@ namespace AiLabs.Rules.Sim
                             ? who + " answered the complaint from " + where + " with a " + how + ": trust +" + e.Amount + "."
                             : who + "'s " + how + " went down badly in " + where + ": trust " + e.Amount + ".";
                     }
+                case EventKind.RoomDated:
+                    {
+                        RoomTypeConfig dated = c.RoomType(e.Ref);
+                        return who + "'s " + (dated == null ? e.Ref : dated.Name) + " is now " + RoomAge.Stage(c, (int)e.Amount).Name.ToLowerInvariant() + ", " + e.Amount + (e.Amount == 1 ? " era" : " eras") + " behind. Staff are complaining.";
+                    }
+                case EventKind.ControlStale:
+                    {
+                        TechConfig newest = c.Tech(e.Ref);
+                        return who + "'s safety techniques are going stale: its newest is " + (newest == null ? e.Ref : newest.Name) + ", and they now count for " + (1000 - e.Amount) / 10 + "% of what they did. New safety research would help.";
+                    }
+                case EventKind.ControlRefreshed:
+                    {
+                        TechConfig fresh = c.Tech(e.Ref);
+                        return who + " did new safety research (" + (fresh == null ? e.Ref : fresh.Name) + ") and won back " + e.Amount / 10 + "% of its techniques' strength.";
+                    }
+                case EventKind.RoomRefurbished:
+                    {
+                        RoomTypeConfig done = c.RoomType(e.Ref);
+                        return who + " refurbished its " + (done == null ? e.Ref : done.Name) + " for $" + e.Amount + ".";
+                    }
                 case EventKind.GauntletSafest: return who + " is named the safest lab of the year.";
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";

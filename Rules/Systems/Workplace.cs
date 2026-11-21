@@ -30,7 +30,7 @@ namespace AiLabs.Rules.Systems
 
         public static int RestingMorale(GameConfig c, LabState lab)
         {
-            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab);
+            return c.StaffPeople.MoraleBaseline + MoraleLift(c, lab) - RoomAge.MoralePenalty(c, lab);
         }
 
         public static int PoachDefencePermille(GameConfig c, LabState lab)
@@ -60,7 +60,7 @@ namespace AiLabs.Rules.Systems
         {
             var r = new WorkplaceReport();
             r.MoraleLift = MoraleLift(c, lab);
-            r.RestingMorale = c.StaffPeople.MoraleBaseline + r.MoraleLift;
+            r.RestingMorale = RestingMorale(c, lab);
             r.PoachDefencePermille = PoachDefencePermille(c, lab);
             r.PoachChancePermille = PoachChancePermille(c, lab);
             long morale = 0;

@@ -43,6 +43,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 27) MigrateTo27(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
+            if (fromSchema < 31) MigrateTo31(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -392,6 +393,17 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 31: rooms start fresh, as if built this era.</summary>
+        static void MigrateTo31(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonValue rooms = lab.Get("rooms");
+                if (rooms == null) return;
+                JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

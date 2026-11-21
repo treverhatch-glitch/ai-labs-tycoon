@@ -21,7 +21,8 @@ namespace AiLabs.Rules.Sim
         SetGauntletTuning,
         AnswerComplaint,
         SetReleaseGate,
-        CleanUpNaming
+        CleanUpNaming,
+        RefurbishRoom
     }
 
     /// <summary>
@@ -421,6 +422,14 @@ namespace AiLabs.Rules.Sim
         public static Command CleanUpNaming(int labId)
         {
             return Make(CommandKind.CleanUpNaming, labId);
+        }
+
+        /// <summary>Pays to bring one room up to date, so it is as new as the era (age zero).</summary>
+        public static Command RefurbishRoom(int labId, int roomId)
+        {
+            Command c = Make(CommandKind.RefurbishRoom, labId);
+            c.TargetId = roomId;
+            return c;
         }
 
         /// <summary>Sets how hard the lab tunes its entries for the next Gauntlet, in permille. 0 turns it off.</summary>

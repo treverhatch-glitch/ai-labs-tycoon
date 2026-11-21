@@ -348,8 +348,8 @@ public class RolePerksTests
         RolePerkConfig perk = RolePerks.Of(with.C, "alignment-fellow")[0];
         Assert.Equal(3 * perk.PerStaffPermille, RolePerks.Permille(with.C, with.Me, RolePerkKind.AlignmentWork));
         Assert.Equal(0, RolePerks.Permille(without.C, without.Me, RolePerkKind.AlignmentWork));
-        Assert.Equal(TrainingSystem.AlignmentWorkPermille(without.C, without.Me) + 3 * perk.PerStaffPermille,
-            TrainingSystem.AlignmentWorkPermille(with.C, with.Me));
+        Assert.Equal(TrainingSystem.AlignmentWorkPermille(without.C, without.Me, without.State.Tick) + 3 * perk.PerStaffPermille,
+            TrainingSystem.AlignmentWorkPermille(with.C, with.Me, with.State.Tick));
     }
 
     [Fact]
@@ -400,9 +400,9 @@ public class RolePerksTests
     public void Letting_the_fellows_go_takes_the_perk_with_them_the_same_week()
     {
         var (g, _) = Aligning(4);
-        int withFellows = TrainingSystem.AlignmentWorkPermille(g.C, g.Me);
+        int withFellows = TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick);
         g.Do(Command.Fire(g.Id, "alignment-fellow", 4));
-        int without = TrainingSystem.AlignmentWorkPermille(g.C, g.Me);
+        int without = TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick);
         Assert.True(withFellows - without >= 4 * RolePerks.Of(g.C, "alignment-fellow")[0].PerStaffPermille);
         Assert.Equal(0, RolePerks.Permille(g.C, g.Me, RolePerkKind.AlignmentWork));
     }
@@ -414,7 +414,7 @@ public class RolePerksTests
         int wing = LabQueries.ContainmentAlignmentBonus(g.C, g.Me);
         Assert.True(wing > 0);
         int perk = RolePerks.Permille(g.C, g.Me, RolePerkKind.AlignmentWork);
-        Assert.True(TrainingSystem.AlignmentWorkPermille(g.C, g.Me) >= 1000 + wing + perk);
+        Assert.True(TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick) >= 1000 + wing + perk);
     }
 
     // ---- the product lead and the specialists
