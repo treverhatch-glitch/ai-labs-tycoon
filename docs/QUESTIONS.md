@@ -1511,6 +1511,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Nothing about the rules changes and the pinned golden game has none of these events, so the golden digest did not move.
 - Alternatives: a new `ref` filter on chat lines (rejected: a config change for two events, when the pick does it); a line for every crunch reason (rejected: the pick only holds -1 to 1).
 
+### Q306. Do the six care tools hold up together? DECIDED: yes, one long-game test covers them; no rule changes
+- `CareToolsTogetherTests` plays autopilot games from a fresh start for 60 weeks, then uses crunch, the offsite, insurance, red teams, the interpretability programme and the pay policy for 200 to 260 weeks on three seeds: not bankrupt, the books balance (cash minus lifetime net is unchanged), the save is sound, a load plays on the same, the journal replays, and morale, crunch weeks, pay level, interpretability level, red-team weeks and the alignment gap stay in range.
+- The test only raises pay while the lab has over $1M (or is already paying more), as a sensible player would: always raising it on a thin autopilot lab on seed 2 does bankrupt it, which is the cost of the tool, not a bug.
+- No rules, data or saves change, so the golden digest did not move.
+
 ## Open
 
 None.
