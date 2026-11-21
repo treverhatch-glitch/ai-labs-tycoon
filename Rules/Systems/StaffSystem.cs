@@ -128,6 +128,19 @@ namespace AiLabs.Rules.Systems
         public static int MoraleAlignmentPermille(GameConfig c, LabState lab) =>
             MoraleDeltaPermille(c, lab, c.StaffPeople?.MoraleAlignmentPermillePerPoint ?? 0);
 
+        public static int MoraleTrainingPermille(GameConfig c, LabState lab) =>
+            MoraleDeltaPermille(c, lab, c.StaffPeople?.MoraleTrainingPermillePerPoint ?? 0);
+
+        /// <summary>Flat permille cut to weekly collapse risk from happy staff (points, not a multiplier).</summary>
+        public static int MoraleFailCutPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoraleFailCutPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            if (delta <= 0) return 0;
+            return delta * cfg.MoraleFailCutPermillePerPoint;
+        }
+
         public static string DefaultTrait(StaffPeopleConfig cfg)
         {
             for (int i = 0; i < cfg.Traits.Count; i++) if (!cfg.Traits[i].Star) return cfg.Traits[i].Id;

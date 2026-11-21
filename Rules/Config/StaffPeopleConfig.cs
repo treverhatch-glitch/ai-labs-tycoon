@@ -20,6 +20,10 @@ namespace AiLabs.Rules.Config
         public int MoraleResearchPermillePerPoint;
         /// <summary>Alignment work permille per point of average morale above baseline.</summary>
         public int MoraleAlignmentPermillePerPoint;
+        /// <summary>Training speed permille per point of average morale above baseline.</summary>
+        public int MoraleTrainingPermillePerPoint;
+        /// <summary>Each point of morale above baseline cuts weekly training-fail risk by this much (permille points).</summary>
+        public int MoraleFailCutPermillePerPoint;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -39,6 +43,8 @@ namespace AiLabs.Rules.Config
             s.Int("starHirePermille", ref StarHirePermille);
             s.Int("moraleResearchPermillePerPoint", ref MoraleResearchPermillePerPoint);
             s.Int("moraleAlignmentPermillePerPoint", ref MoraleAlignmentPermillePerPoint);
+            s.Int("moraleTrainingPermillePerPoint", ref MoraleTrainingPermillePerPoint);
+            s.Int("moraleFailCutPermillePerPoint", ref MoraleFailCutPermillePerPoint);
             s.ObjList("traits", ref Traits);
         }
     }

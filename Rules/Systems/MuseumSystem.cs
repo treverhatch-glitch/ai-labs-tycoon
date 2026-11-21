@@ -26,13 +26,19 @@ namespace AiLabs.Rules.Systems
                 Events.Add(state, EventKind.TechResearched, lab.Id, -1, salvaged, "museum-salvage");
             }
             int repEach = c.Endings.Museum.ReputationPerFullLine;
-            if (repEach > 0 && cap > 0)
+            long rpEach = c.Endings.Museum.ResearchPointsPerFullLine;
+            if ((repEach > 0 || rpEach > 0) && cap > 0)
             {
                 int full = 0;
                 for (int l = 0; l < lines.Count; l++)
                     if (RetiredOnLine(lab, lines[l]) >= cap) full++;
                 if (full > 0)
-                    lab.Reputation = (int)MathI.Clamp(lab.Reputation + repEach * full, 0, MathI.Permille);
+                {
+                    if (repEach > 0)
+                        lab.Reputation = (int)MathI.Clamp(lab.Reputation + repEach * full, 0, MathI.Permille);
+                    if (rpEach > 0)
+                        lab.ResearchPoints += rpEach * full;
+                }
             }
         }
 

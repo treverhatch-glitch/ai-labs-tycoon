@@ -11,6 +11,9 @@ namespace AiLabs.SimTests;
 
 public class MuseumSalvageResearchTests
 {
+    static Game SoloMuseumSalvageOnly() =>
+        Game.Solo(1, c => c.Endings.Museum.ResearchPointsPerFullLine = 0);
+
     static void AddRetired(Game g, string line, int capability, int version)
     {
         int when = g.State.Tick - 10_000 + version * 10;
@@ -25,7 +28,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Prune_grants_research_from_oldest_retired_models()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", 100, v);
         long before = g.Me.ResearchPoints;
         MuseumSystem.RunWeek(g.C, g.State, g.Me);
@@ -37,7 +40,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Zero_salvage_permille_prunes_without_research()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", 200, v);
         g.C.Endings.Museum.ResearchPermillePerCapability = 0;
         long before = g.Me.ResearchPoints;
@@ -49,7 +52,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Salvage_emits_world_news_with_total_granted()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 7; v++) AddRetired(g, "mini", 80, v);
         MuseumSystem.RunWeek(g.C, g.State, g.Me);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.TechResearched && e.Ref == "museum-salvage" && e.Amount > 0);
@@ -58,7 +61,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Each_line_pruned_independently()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 8; v++)
         {
             AddRetired(g, "mini", 50, v);
@@ -72,7 +75,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void No_prune_when_at_or_below_cap_leaves_research_unchanged()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 6; v++) AddRetired(g, "mini", 90, v);
         long before = g.Me.ResearchPoints;
         MuseumSystem.RunWeek(g.C, g.State, g.Me);
@@ -82,7 +85,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Higher_capability_retirees_yield_more_salvage_per_model()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", v == 0 ? 300 : 100, v);
         long before = g.Me.ResearchPoints;
         MuseumSystem.RunWeek(g.C, g.State, g.Me);
@@ -94,7 +97,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Salvage_survives_save_load_round_trip()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", 100, v);
         MuseumSystem.RunWeek(g.C, g.State, g.Me);
         long points = g.Me.ResearchPoints;
@@ -107,7 +110,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Museum_salvage_can_fund_frontier_after_endgame_tech_done()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         g.State.Tick = GameDate.TickOfYear(g.C.Calendar, 2045);
         foreach (TechConfig tech in g.C.Research.Techs)
             if (EraSystem.TechOpen(g.C, tech, g.Tick) && !g.Me.Techs.Contains(tech.Id)) g.Me.Techs.Add(tech.Id);
@@ -123,7 +126,7 @@ public class MuseumSalvageResearchTests
     [Fact]
     public void Released_models_are_not_pruned_or_salvaged()
     {
-        var g = Game.Solo();
+        var g = SoloMuseumSalvageOnly();
         ModelState released = ExpansionTestSupport.AddReleasedModel(g, 150, "game-ai");
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", 60, v);
         long before = g.Me.ResearchPoints;

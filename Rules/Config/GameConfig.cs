@@ -544,6 +544,8 @@ namespace AiLabs.Rules.Config
         public int EngineerBonusCapPermille;
         /// <summary>Rival must lead the lab by at least this much (permille of the lab's best) to distill.</summary>
         public int DistillMinLeadPermille;
+        /// <summary>Capability multiplier applied when a run finishes on a rival-distill mix.</summary>
+        public int DistillFinishCapabilityPermille;
         public SyntheticDataLabConfig SyntheticDataLab = new SyntheticDataLabConfig();
         public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
         public List<TrainingRecipeConfig> Recipes = new List<TrainingRecipeConfig>();
@@ -568,6 +570,7 @@ namespace AiLabs.Rules.Config
             s.Int("engineerBonusPermille", ref EngineerBonusPermille);
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
             s.Int("distillMinLeadPermille", ref DistillMinLeadPermille);
+            s.Int("distillFinishCapabilityPermille", ref DistillFinishCapabilityPermille);
             s.Obj("syntheticDataLab", ref SyntheticDataLab);
             s.ObjList("dataSources", ref DataSources);
             s.ObjList("recipes", ref Recipes);
@@ -584,6 +587,8 @@ namespace AiLabs.Rules.Config
         public int CorruptionCutPermille = 350;
         /// <summary>Cut applied to <see cref="DataSourceConfig.WeeklyFailRiskPermille"/> when the room is live.</summary>
         public int FailRiskCutPermille = 400;
+        /// <summary>Extra training speed while a run uses the synthetic mix and the room is live.</summary>
+        public int TrainingSpeedBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -592,6 +597,7 @@ namespace AiLabs.Rules.Config
             s.Str("dataSourceId", ref DataSourceId);
             s.Int("corruptionCutPermille", ref CorruptionCutPermille);
             s.Int("failRiskCutPermille", ref FailRiskCutPermille);
+            s.Int("trainingSpeedBonusPermille", ref TrainingSpeedBonusPermille);
         }
     }
 

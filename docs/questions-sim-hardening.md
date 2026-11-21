@@ -386,6 +386,24 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q89. Museum full-line research stipend? DECIDED: `researchPointsPerFullLine`
+- Choice: **(a)** — weekly flat RP per line at retirement cap, beside Q79 reputation.
+
+### Q88. Morale cuts training collapse risk? DECIDED: `moraleFailCutPermillePerPoint`
+- Choice: **(a)** — `TrainingQueries.WeeklyFailParts.MoraleReduction`.
+
+### Q87. Distill finish capability bump? DECIDED: `distillFinishCapabilityPermille`
+- Choice: **(a)** — extra permille on finish when `DistillSourceLabId` is set.
+
+### Q86. Frontier training speed? DECIDED: `trainingSpeedPermillePerLevel`
+- Choice: **(a)** — stacks in `TrainingSystem.SpeedPermille`.
+
+### Q85. Synthetic lab training speed? DECIDED: `syntheticDataLab.trainingSpeedBonusPermille`
+- Choice: **(a)** — per-run bonus in `RunWeek` when lab active on synthetic mix.
+
+### Q84. Morale training speed? DECIDED: `moraleTrainingPermillePerPoint`
+- Choice: **(a)** — stacks in `TrainingSystem.SpeedPermille`.
+
 ### Q83. Device workshop revenue? DECIDED: `revenueBonusPermille`
 
 - Why: Q54 workshop only scaled appeal; consumer hardware should also lift cash in `devices`.

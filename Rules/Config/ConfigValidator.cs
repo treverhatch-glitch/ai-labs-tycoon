@@ -111,6 +111,7 @@ namespace AiLabs.Rules.Config
             Permille(p, "training.failAfterProgressPermille", c.Training.FailAfterProgressPermille);
             SyntheticDataLabProblems(p, c);
             Permille(p, "training.distillMinLeadPermille", c.Training.DistillMinLeadPermille);
+            Permille(p, "training.distillFinishCapabilityPermille", c.Training.DistillFinishCapabilityPermille);
             UniqueIds(p, "training.recipes", c.Training.Recipes);
             foreach (TrainingRecipeConfig recipe in c.Training.Recipes)
             {
@@ -262,6 +263,8 @@ namespace AiLabs.Rules.Config
             if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
             Permille(p, "endings.museum.researchPermillePerCapability", c.Endings.Museum.ResearchPermillePerCapability);
             if (c.Endings.Museum.ReputationPerFullLine < 0) p.Add("endings.museum.reputationPerFullLine must not be negative");
+            if (c.Endings.Museum.ResearchPointsPerFullLine < 0) p.Add("endings.museum.researchPointsPerFullLine must not be negative");
+            if (c.Endings.Frontier.TrainingSpeedPermillePerLevel < 0) p.Add("endings.frontier.trainingSpeedPermillePerLevel is negative");
         }
 
         static void DeviceWorkshopProblems(List<string> p, GameConfig c)
@@ -303,6 +306,7 @@ namespace AiLabs.Rules.Config
                 p.Add("training.syntheticDataLab names an unknown data source");
             Permille(p, "training.syntheticDataLab.corruptionCutPermille", lab.CorruptionCutPermille);
             Permille(p, "training.syntheticDataLab.failRiskCutPermille", lab.FailRiskCutPermille);
+            if (lab.TrainingSpeedBonusPermille < 0) p.Add("training.syntheticDataLab.trainingSpeedBonusPermille is negative");
         }
 
         static void ExpansionsProblems(List<string> p, GameConfig c)
@@ -710,6 +714,8 @@ namespace AiLabs.Rules.Config
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
             if (s.MoraleResearchPermillePerPoint < 0) p.Add("staffPeople.moraleResearchPermillePerPoint is negative");
             if (s.MoraleAlignmentPermillePerPoint < 0) p.Add("staffPeople.moraleAlignmentPermillePerPoint is negative");
+            if (s.MoraleTrainingPermillePerPoint < 0) p.Add("staffPeople.moraleTrainingPermillePerPoint is negative");
+            if (s.MoraleFailCutPermillePerPoint < 0) p.Add("staffPeople.moraleFailCutPermillePerPoint is negative");
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
             UniqueIds(p, "staffPeople.traits", s.Traits);
             bool hasStar = false;

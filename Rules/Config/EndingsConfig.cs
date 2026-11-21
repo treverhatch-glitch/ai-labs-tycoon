@@ -75,6 +75,8 @@ namespace AiLabs.Rules.Config
         public int GrowthPermille;
         public int MaxLevel;
         public int CapabilityPermillePerLevel;
+        /// <summary>Training speed permille gained per frontier level researched.</summary>
+        public int TrainingSpeedPermillePerLevel;
 
         public void Sync(Syncer s)
         {
@@ -82,6 +84,7 @@ namespace AiLabs.Rules.Config
             s.Int("growthPermille", ref GrowthPermille);
             s.Int("maxLevel", ref MaxLevel);
             s.Int("capabilityPermillePerLevel", ref CapabilityPermillePerLevel);
+            s.Int("trainingSpeedPermillePerLevel", ref TrainingSpeedPermillePerLevel);
         }
     }
 
@@ -92,12 +95,15 @@ namespace AiLabs.Rules.Config
         public int ResearchPermillePerCapability;
         /// <summary>Reputation gained each week for each model line kept at the retirement cap (museum full).</summary>
         public int ReputationPerFullLine;
+        /// <summary>Flat research points each week for each model line at the retirement cap.</summary>
+        public long ResearchPointsPerFullLine;
 
         public void Sync(Syncer s)
         {
             s.Int("perLine", ref PerLine);
             s.Int("researchPermillePerCapability", ref ResearchPermillePerCapability);
             s.Int("reputationPerFullLine", ref ReputationPerFullLine);
+            s.Long("researchPointsPerFullLine", ref ResearchPointsPerFullLine);
         }
     }
 }

@@ -111,12 +111,13 @@ namespace AiLabs.Rules.Systems
             public int DataSource;
             public int EngineerReduction;
             public int AlignmentReduction;
+            public int MoraleReduction;
 
             public int Effective
             {
                 get
                 {
-                    int risk = Base + DataSource - EngineerReduction - AlignmentReduction;
+                    int risk = Base + DataSource - EngineerReduction - AlignmentReduction - MoraleReduction;
                     return (int)MathI.Clamp(risk, 0, 950);
                 }
             }
@@ -130,6 +131,7 @@ namespace AiLabs.Rules.Systems
             b.DataSource = source == null ? 0 : SyntheticDataLabSystem.EffectiveWeeklyFailRiskPermille(c, state, lab, source);
             b.EngineerReduction = LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.FailEngineerCutPermille;
             b.AlignmentReduction = model.AlignmentSharePermille / 100 * c.Training.FailAlignmentCutPermille;
+            b.MoraleReduction = StaffSystem.MoraleFailCutPermille(c, lab);
             return b;
         }
     }

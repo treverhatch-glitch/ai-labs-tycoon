@@ -3209,12 +3209,14 @@
     "engineerBonusPermille": 50,
     "engineerBonusCapPermille": 600,
     "distillMinLeadPermille": 80,
+    "distillFinishCapabilityPermille": 60,
     "syntheticDataLab": {
       "eraId": "harnesses",
       "roomTypeId": "synthetic-data-lab",
       "dataSourceId": "synthetic",
       "corruptionCutPermille": 350,
-      "failRiskCutPermille": 400
+      "failRiskCutPermille": 400,
+      "trainingSpeedBonusPermille": 120
     },
     "dataSources": [
       {
@@ -4061,6 +4063,8 @@
     "starHirePermille": 120,
     "moraleResearchPermillePerPoint": 4,
     "moraleAlignmentPermillePerPoint": 3,
+    "moraleTrainingPermillePerPoint": 2,
+    "moraleFailCutPermillePerPoint": 1,
     "traits": [
       {
         "id": "steady",
@@ -4819,12 +4823,14 @@
       "baseCost": 5000,
       "growthPermille": 1400,
       "maxLevel": 60,
-      "capabilityPermillePerLevel": 50
+      "capabilityPermillePerLevel": 50,
+      "trainingSpeedPermillePerLevel": 8
     },
     "museum": {
       "perLine": 6,
       "researchPermillePerCapability": 500,
-      "reputationPerFullLine": 2
+      "reputationPerFullLine": 2,
+      "researchPointsPerFullLine": 25
     }
   },
   "shady": {

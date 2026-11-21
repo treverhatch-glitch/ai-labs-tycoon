@@ -42,9 +42,14 @@ namespace AiLabs.Rules.Systems
         public static int SpeedPermille(GameConfig c, GameState state, LabState lab)
         {
             long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
-            return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
+            int total = MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
-                + ExpansionSystem.TrainingSpeedBonusPermille(c, state, lab);
+                + ExpansionSystem.TrainingSpeedBonusPermille(c, state, lab)
+                + StaffSystem.MoraleTrainingPermille(c, lab);
+            FrontierConfig frontier = c.Endings?.Frontier;
+            if (frontier != null && frontier.TrainingSpeedPermillePerLevel > 0 && lab.FrontierLevel > 0)
+                total += frontier.TrainingSpeedPermillePerLevel * lab.FrontierLevel;
+            return total;
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
@@ -103,6 +108,7 @@ namespace AiLabs.Rules.Systems
 
             int speed = SpeedPermille(c, state, lab);
             int alignmentWork = AlignmentWorkPermille(c, lab);
+            SyntheticDataLabConfig syntheticCfg = c.Training.SyntheticDataLab;
             long each = training / runs;
             long spare = training - each * runs;
 
@@ -115,7 +121,11 @@ namespace AiLabs.Rules.Systems
                 long allotted = each + spare;
                 spare = 0;
 
-                long effective = MathI.MulPermille(allotted, speed);
+                int runSpeed = speed;
+                if (syntheticCfg != null && syntheticCfg.TrainingSpeedBonusPermille > 0
+                    && SyntheticDataLabSystem.Active(c, state, lab, model.DataSourceId))
+                    runSpeed += syntheticCfg.TrainingSpeedBonusPermille;
+                long effective = MathI.MulPermille(allotted, runSpeed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);
                 model.ProgressCompute += effective - alignmentPart;
                 model.AlignmentCompute += MathI.MulPermille(alignmentPart, alignmentWork);
@@ -179,6 +189,8 @@ namespace AiLabs.Rules.Systems
             DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
             if (source != null && source.CapabilityBonusPermille != 0)
                 model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + source.CapabilityBonusPermille);
+            if (model.DistillSourceLabId >= 0 && c.Training.DistillFinishCapabilityPermille > 0)
+                model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + c.Training.DistillFinishCapabilityPermille);
 
             int expansionCap = ExpansionSystem.CapabilityBonusPermille(c, state, lab, model.LineId);
             if (expansionCap > 0)
