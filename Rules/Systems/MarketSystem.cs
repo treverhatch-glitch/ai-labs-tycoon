@@ -107,6 +107,7 @@ namespace AiLabs.Rules.Systems
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
+                revenue[i] += Platforms.Lift(c, state, state.Labs[i], revenue[i]);
                 state.Labs[i].LastWeek.Revenue = revenue[i];
                 Finance.Earn(state.Labs[i], LedgerLine.Revenue, revenue[i]);
             }

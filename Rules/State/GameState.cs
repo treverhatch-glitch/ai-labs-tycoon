@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 95;
+        public const int CurrentSchema = 96;
 
         public int Schema;
         public string ConfigVersion;
@@ -397,6 +397,16 @@ namespace AiLabs.Rules.State
         public int DevTier;
         public long DevSold;
         public long DevBase;
+        /// <summary>The platform the lab has a deal with (1 phone, 2 browser, 3 office suite, 0 none), the weeks left of the term and the cut it takes, in permille.</summary>
+        public int PlatPlat;
+        public int PlatLeft;
+        public int PlatCut;
+        /// <summary>Renewals so far, how much of the lab's users come through the platform (permille), whether it has raised its price this term (0 or 1), and what the deal has paid the platform and left the lab, in all.</summary>
+        public int PlatRenewals;
+        public int PlatReliance;
+        public int PlatHoldup;
+        public long PlatPaid;
+        public long PlatKept;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -752,6 +762,14 @@ namespace AiLabs.Rules.State
             s.Int("devTier", ref DevTier);
             s.Long("devSold", ref DevSold);
             s.Long("devBase", ref DevBase);
+            s.Int("platPlat", ref PlatPlat);
+            s.Int("platLeft", ref PlatLeft);
+            s.Int("platCut", ref PlatCut);
+            s.Int("platRenewals", ref PlatRenewals);
+            s.Int("platReliance", ref PlatReliance);
+            s.Int("platHoldup", ref PlatHoldup);
+            s.Long("platPaid", ref PlatPaid);
+            s.Long("platKept", ref PlatKept);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -130,6 +130,7 @@ namespace AiLabs.Rules.Config
             LeasebackProblems(p, c);
             NotesProblems(p, c);
             DevicesProblems(p, c);
+            PlatformsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1469,6 +1470,18 @@ namespace AiLabs.Rules.Config
             if (k.LaunchBar < 0 || k.LaunchBar > MathI.Permille || k.RecallBar < 0 || k.RecallBar > MathI.Permille || k.FlopReputation < 0 || k.HitReputation < 0 || k.FlopReputation > 500 || k.HitReputation > 500) p.Add("devices.launchBar and recallBar must be from 0 to 1000, flopReputation and hitReputation from 0 to 500");
             if (k.FlopDemand < 0 || k.FlopDemand > MathI.Permille || k.FadePermille < 0 || k.FadePermille > 500 || k.RecallWeeks < 1 || k.RecallCost < 0) p.Add("devices.flopDemand must be from 0 to 1000, fadePermille from 0 to 500, recallWeeks at least 1 and recallCost not negative");
             if (k.LowPrice < 100 || k.LowPrice > MathI.Permille || k.HighPrice < MathI.Permille || k.HighPrice > 5000 || k.LowDemand < MathI.Permille || k.LowDemand > 5000 || k.HighDemand < 0 || k.HighDemand > MathI.Permille) p.Add("devices.lowPrice must be from 100 to 1000, highPrice from 1000 to 5000, lowDemand from 1000 to 5000 and highDemand from 0 to 1000");
+        }
+
+        static void PlatformsProblems(List<string> p, GameConfig c)
+        {
+            PlatformsConfig k = c.Platforms;
+            if (k == null) { p.Add("platforms is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("platforms.enabled must be 0 or 1");
+            if (k.MinCapability < 0 || k.MinReputation < 0 || k.MinReputation > MathI.Permille || k.EraA < 0 || k.EraB < 0 || k.EraC < 0) p.Add("platforms.minCapability, eraA, eraB and eraC must not be negative and minReputation from 0 to 1000");
+            if (k.LiftA < 0 || k.LiftB < 0 || k.LiftC < 0 || k.LiftA > 2000 || k.LiftB > 2000 || k.LiftC > 2000) p.Add("platforms.liftA, liftB and liftC must be from 0 to 2000");
+            if (k.CutA < 0 || k.CutB < 0 || k.CutC < 0 || k.MaxCut < k.CutA || k.MaxCut < k.CutB || k.MaxCut < k.CutC || k.MaxCut > 950) p.Add("platforms.cutA, cutB and cutC must not be negative and no more than maxCut, which is at most 950");
+            if (k.TermWeeks < 2 || k.WindowWeeks < 1 || k.WindowWeeks >= k.TermWeeks) p.Add("platforms.termWeeks must be at least 2 and windowWeeks at least 1 and under termWeeks");
+            if (k.RelianceStep < 0 || k.RelianceStep > MathI.Permille || k.HoldupBar < 0 || k.HoldupBar > MathI.Permille || k.HoldupCut < 0 || k.RenewCutStep < 0 || k.WalkReputation < 0 || k.WalkReputation > 500) p.Add("platforms.relianceStep and holdupBar must be from 0 to 1000, holdupCut and renewCutStep not negative and walkReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

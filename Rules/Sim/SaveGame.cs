@@ -237,6 +237,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.DevLine == 0 && (lab.DevStage != 0 || lab.DevWeeks != 0 || lab.DevQuality != 0 || lab.DevTier != 0 || lab.DevSold != 0 || lab.DevBase != 0))
                     || (lab.DevLine != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a device line " + lab.DevLine + " (stage " + lab.DevStage + ", quality " + lab.DevQuality + ") in a way the data does not allow");
+                if (lab.PlatPlat < 0 || lab.PlatPlat > 3 || lab.PlatLeft < 0 || lab.PlatCut < 0 || lab.PlatRenewals < 0 || lab.PlatReliance < 0 || lab.PlatReliance > MathI.Permille || lab.PlatHoldup < 0 || lab.PlatHoldup > 1 || lab.PlatPaid < 0 || lab.PlatKept < 0
+                    || (lab.PlatPlat > 0 && lab.PlatLeft < 1)
+                    || (lab.PlatPlat == 0 && (lab.PlatLeft != 0 || lab.PlatCut != 0 || lab.PlatRenewals != 0 || lab.PlatReliance != 0 || lab.PlatHoldup != 0 || lab.PlatPaid != 0 || lab.PlatKept != 0))
+                    || (lab.PlatPlat != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a deal with platform " + lab.PlatPlat + " (" + lab.PlatLeft + " weeks left, cut " + lab.PlatCut + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

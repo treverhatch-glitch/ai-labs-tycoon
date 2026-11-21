@@ -125,6 +125,7 @@ namespace AiLabs.Rules.Config
         public LeasebackConfig Leaseback = new LeasebackConfig();
         public NotesConfig ConvertibleNotes = new NotesConfig();
         public DevicesConfig Devices = new DevicesConfig();
+        public PlatformsConfig Platforms = new PlatformsConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -248,6 +249,7 @@ namespace AiLabs.Rules.Config
             s.Obj("leaseback", ref Leaseback);
             s.Obj("convertibleNotes", ref ConvertibleNotes);
             s.Obj("devices", ref Devices);
+            s.Obj("platforms", ref Platforms);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

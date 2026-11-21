@@ -6096,6 +6096,28 @@
     "lowDemand": 1300,
     "highDemand": 750
   },
+  "platforms": {
+    "enabled": 1,
+    "minCapability": 200,
+    "minReputation": 300,
+    "eraA": 3,
+    "eraB": 4,
+    "eraC": 5,
+    "liftA": 200,
+    "liftB": 150,
+    "liftC": 250,
+    "cutA": 350,
+    "cutB": 300,
+    "cutC": 400,
+    "termWeeks": 96,
+    "windowWeeks": 12,
+    "relianceStep": 8,
+    "holdupBar": 500,
+    "holdupCut": 150,
+    "renewCutStep": 50,
+    "maxCut": 800,
+    "walkReputation": 120
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

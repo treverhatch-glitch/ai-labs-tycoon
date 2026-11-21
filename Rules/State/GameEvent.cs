@@ -404,7 +404,15 @@ namespace AiLabs.Rules.State
         /// <summary>A poor device was recalled. Amount is what the recall cost, SubjectId the line.</summary>
         DeviceRecalled,
         /// <summary>The lab ended its device line. Amount is the units sold in all, SubjectId the line.</summary>
-        DeviceWithdrawn
+        DeviceWithdrawn,
+        /// <summary>The lab signed a distribution deal. Amount is the platform's cut in permille, SubjectId the platform.</summary>
+        PlatformSigned,
+        /// <summary>A platform raised its price in the renewal window. Amount is the new cut, SubjectId the platform.</summary>
+        PlatformHoldup,
+        /// <summary>The lab renewed a deal. Amount is the cut, SubjectId the platform.</summary>
+        PlatformRenewed,
+        /// <summary>A deal ended. Amount is the reputation lost, SubjectId the platform, Pick 0 the lab walked, 1 the term ran out.</summary>
+        PlatformEnded
     }
 
     /// <summary>

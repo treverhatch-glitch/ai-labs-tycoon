@@ -423,6 +423,14 @@ namespace AiLabs.Rules.Sim
                     return who + " recalled its device at a cost of " + e.Amount + ".";
                 case EventKind.DeviceWithdrawn:
                     return who + " ended its device line after " + e.Amount + " units.";
+                case EventKind.PlatformSigned:
+                    return who + " signed a distribution deal, the platform taking " + e.Amount / 10 + "% of the lift.";
+                case EventKind.PlatformHoldup:
+                    return "The platform raised its cut on " + who + " to " + e.Amount / 10 + "% as the deal came up.";
+                case EventKind.PlatformRenewed:
+                    return who + " renewed its distribution deal at a " + e.Amount / 10 + "% cut.";
+                case EventKind.PlatformEnded:
+                    return who + (e.Pick == 1 ? "'s distribution deal ran out." : " walked from its distribution deal.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

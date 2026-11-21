@@ -2013,6 +2013,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The cost of the design goes through the chip-development line, the sales through the revenue line (so the tax and the covenants see them), and the recall through fines.
 - Alternatives: devices as a one-click revenue boost (rejected: no decision), a model-per-device pipeline (rejected: too big for a side line), letting rivals ship them too (rejected: rivals have no saved lines).
 
+### Q394. Can the lab sign a distribution deal? DECIDED: yes, with a phone maker, a browser or an office suite, and the platform raises its price as the lab comes to rely on it
+- From the bible's distribution lane. A deal lifts the lab's market revenue and the platform keeps a cut of the lift, so the lab is always better off in cash while it lasts. The cost is dependence: each week more of the lab's users come through the platform, and in the renewal window a platform the lab relies on raises its cut. The lab then renews at the worse price (the cut also steps up each time) or walks, and walking loses reputation by how much of the lab came through the platform. Letting the term run out is the same as walking. Only the player's lab, and only through commands.
+- The lift goes in at the market (`MarketSystem.RunWeek`) before the revenue is booked, so the books, the tax and the covenants see it as revenue; the platform's cut never reaches the lab's books.
+- Alternatives: a flat revenue bonus (rejected: no decision and no cost), a fee paid up front (rejected: nothing to lose later), letting rivals sign too (rejected: rivals have no saved deals).
+
 ## Open
 
 None.

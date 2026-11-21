@@ -139,7 +139,10 @@ namespace AiLabs.Rules.Sim
         ExtendNote,
         DesignDevice,
         SetDevicePrice,
-        WithdrawDevice
+        WithdrawDevice,
+        SignPlatform,
+        RenewPlatform,
+        WalkFromPlatform
     }
 
     /// <summary>
@@ -1219,6 +1222,26 @@ namespace AiLabs.Rules.Sim
         public static Command WithdrawDevice(int labId)
         {
             return Make(CommandKind.WithdrawDevice, labId);
+        }
+
+        /// <summary>Signs a distribution deal with a platform (1 phone maker, 2 browser, 3 office suite). One at a time.</summary>
+        public static Command SignPlatform(int labId, int platform)
+        {
+            Command c = Make(CommandKind.SignPlatform, labId);
+            c.TargetId = platform;
+            return c;
+        }
+
+        /// <summary>Renews the deal in its last weeks, at the price the platform has named.</summary>
+        public static Command RenewPlatform(int labId)
+        {
+            return Make(CommandKind.RenewPlatform, labId);
+        }
+
+        /// <summary>Ends the deal now. The users who came through the platform go with it.</summary>
+        public static Command WalkFromPlatform(int labId)
+        {
+            return Make(CommandKind.WalkFromPlatform, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

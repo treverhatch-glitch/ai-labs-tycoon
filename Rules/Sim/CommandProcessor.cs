@@ -105,6 +105,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SignPlatform: return SignPlatform(c, state, lab, cmd);
+                case CommandKind.RenewPlatform: return RenewPlatform(c, state, lab, cmd);
+                case CommandKind.WalkFromPlatform: return WalkFromPlatform(c, state, lab, cmd);
                 case CommandKind.DesignDevice: return DesignDevice(c, state, lab, cmd);
                 case CommandKind.SetDevicePrice: return SetDevicePrice(c, state, lab, cmd);
                 case CommandKind.WithdrawDevice: return WithdrawDevice(c, state, lab, cmd);
