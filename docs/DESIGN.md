@@ -283,6 +283,8 @@ The five systems of this batch are exercised together over three seeds and years
 
 A lab can set cash aside in a reserve that earns a little each week, costs a fee to take back and pays a debt the weekly bill would leave, at a steeper fee.
 
+The player can make a public safety pledge at three levels: customers trust the lab a little more each week while it holds, and a launch that shows less alignment than it asks breaks it at a cost.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

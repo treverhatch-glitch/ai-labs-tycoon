@@ -107,6 +107,8 @@ namespace AiLabs.Rules.Sim
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
                     p.Add(who + " has a revenue target (level " + lab.RevenueTargetLevel + ", goal " + lab.RevenueTargetGoal + ") that the data does not allow");
+                if (lab.PledgeLevel < 0 || lab.PledgeLevel > c.Pledge.MaxLevel || lab.PledgeLockedUntil < 0 || ((lab.PledgeLevel > 0 || lab.PledgeLockedUntil > 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a safety pledge at level " + lab.PledgeLevel + " (locked until " + lab.PledgeLockedUntil + "), which the data does not allow");
                 if (lab.Reserve < 0 || (lab.Reserve > 0 && lab.Id != state.PlayerLabId))
                     p.Add(who + " keeps a reserve of $" + lab.Reserve + ", which the data does not allow");
                 if (lab.BountyLevel < 0 || lab.BountyLevel > c.BugBounty.MaxLevel || lab.BountyLockedUntil < 0 || ((lab.BountyLevel > 0 || lab.BountyLockedUntil > 0) && lab.Id != state.PlayerLabId))

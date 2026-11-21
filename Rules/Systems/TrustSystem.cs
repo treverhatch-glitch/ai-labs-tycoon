@@ -164,7 +164,7 @@ namespace AiLabs.Rules.Systems
             for (int s = 0; s < state.Sectors.Count; s++)
             {
                 string id = state.Sectors[s].Id;
-                if (state.Sectors[s].Entry(lab.Id) != null) Move(c, lab, id, t.GainPerWeek);
+                if (state.Sectors[s].Entry(lab.Id) != null) Move(c, lab, id, t.GainPerWeek + Pledge.TrustBonus(c, lab));
             }
             for (int i = lab.SectorTrust.Count - 1; i >= 0; i--)
             {

@@ -1780,6 +1780,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Only the player's lab keeps a reserve, an empty one does nothing, and there are no random numbers. The golden moved ed987f26 only through the new saved field (verified by taking the field and the schema back out, which gave 44241b20 again).
 - Alternatives: a bigger yield (rejected: free money), a cover with no fee (rejected: it would make debt harmless), counting the reserve as cash for loans (rejected: a hidden second balance).
 
+### Q350. Can a lab promise customers it will launch safely? DECIDED: a public pledge with a floor for every launch, a little weekly trust and a price for breaking it
+- New `pledge` data, command `SetPledge`, `Pledge` system, events `PledgeSet` and `PledgeBroken`, error `PledgeLocked` and two saved lab fields (schema 68). Levels 1 to 3 ask a launch to show at least 450, 600 or 750 alignment. While the pledge holds, every sector the lab sells in trusts it one extra point a week for each level. Making or raising one is free and locks the level for 26 weeks; walking it back costs 15 reputation.
+- A first release that shows less than the floor breaks the pledge: the level falls to nothing, the lab loses 40 reputation and 120 trust in every sector it sells in, and it cannot pledge again for 26 weeks. The pledge is judged on the alignment a launch SHOWS, not the one it has, so a lab can keep a pledge by overstating, and then the whistleblower (Q342) is the check on it. That is deliberate: the pledge and the claim are two halves of the same temptation.
+- Only the player's lab pledges and a lab at level 0 is as it always was. No random numbers. The golden moved ed987f26 -> 2baf0743 only through the two new saved fields (verified by taking them and the schema back out).
+- Alternatives: judging on the true alignment (rejected: customers cannot see it, and the whistleblower already covers the gap), blocking the launch (rejected: the lab's own release gate does that and a pledge that can never be broken is no pledge), a pledge that decays (rejected: a standing promise should need an act to end).
+
 ## Open
 
 None.

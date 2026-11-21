@@ -226,6 +226,11 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " set $" + e.Amount + " aside in its reserve."
                         : e.Pick == 2 ? who + "'s reserve paid out $" + e.Amount + " to cover a debt, at a steep fee."
                         : who + " took $" + e.Amount + " back out of its reserve.";
+                case EventKind.PledgeSet:
+                    return e.Pick == 1 ? who + " pledged publicly that its launches will show at least " + Pledge.Floor(c, e.SubjectId) + " alignment (level " + e.SubjectId + ")."
+                        : e.SubjectId == 0 ? who + " dropped its public safety pledge." : who + " walked its safety pledge back to level " + e.SubjectId + ".";
+                case EventKind.PledgeBroken:
+                    return who + " broke its public safety pledge: " + e.Ref + " launched showing less than the " + e.Amount + " alignment it had promised.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

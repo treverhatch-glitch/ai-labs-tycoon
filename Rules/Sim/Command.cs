@@ -71,7 +71,8 @@ namespace AiLabs.Rules.Sim
         PullOutOfSector,
         RestructureLoan,
         SetAsideReserve,
-        DrawReserve
+        DrawReserve,
+        SetPledge
     }
 
     /// <summary>
@@ -652,6 +653,14 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Makes a public safety pledge, level 1 to the data's top, or 0 to walk it back. While it holds, customers trust the lab a little more every week; a launch that shows less alignment than the pledge asks breaks it. Lowering it costs reputation, and a change locks it for weeks.</summary>
+        public static Command SetPledge(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPledge, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
         public static Command PivotStyle(int labId, string styleId)
         {
@@ -897,7 +906,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked, PledgeLocked
     }
 
     public struct CommandResult

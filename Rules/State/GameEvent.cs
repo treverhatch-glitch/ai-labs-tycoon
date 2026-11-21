@@ -216,7 +216,11 @@ namespace AiLabs.Rules.State
         /// <summary>A loan was restructured. SubjectId is the loan, Amount the fee added to what is owed, Pick 1 when it cleared missed payments.</summary>
         LoanRestructured,
         /// <summary>Cash moved into or out of the treasury reserve. Amount is the sum moved before any fee, Pick 1 when set aside, 0 when drawn on purpose and 2 when it covered a debt.</summary>
-        ReserveMoved
+        ReserveMoved,
+        /// <summary>The lab changed its safety pledge. SubjectId is the new level, Amount the reputation lost walking it back, Pick 1 when it was raised.</summary>
+        PledgeSet,
+        /// <summary>A launch broke the pledge. SubjectId is the model, Amount the alignment the pledge asked, Pick the level that was broken.</summary>
+        PledgeBroken
     }
 
     /// <summary>

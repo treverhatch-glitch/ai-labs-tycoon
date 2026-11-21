@@ -80,6 +80,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 65) MigrateTo65(root);
             if (fromSchema < 66) MigrateTo66(root);
             if (fromSchema < 67) MigrateTo67(root);
+            if (fromSchema < 68) MigrateTo68(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -443,6 +444,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 68: no lab has made a safety pledge.</summary>
+        static void MigrateTo68(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pledgeLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "pledgeLockedUntil", JsonValue.Of(0L));
             });
         }
 
