@@ -332,7 +332,15 @@ namespace AiLabs.Rules.State
         /// <summary>The lab adopted the standards. Amount is the level it now complies with.</summary>
         StandardAdopted,
         /// <summary>The lab released a capable model without complying. SubjectId is the model, Amount the fine and Pick the levels it lacked.</summary>
-        StandardLapsed
+        StandardLapsed,
+        /// <summary>GPUs failed in a week. Amount is the units, Pick 0 lost, 1 swapped for spares, 2 sent for replacement under the warranty.</summary>
+        GpusFailed,
+        /// <summary>Units came back under the warranty. Amount is the units, Pick 1 when they were rushed.</summary>
+        ReplacementsArrived,
+        /// <summary>The warranty tier changed. Amount is the new tier.</summary>
+        WarrantyChanged,
+        /// <summary>Spares were bought. Amount is how many, SubjectId the spares held now.</summary>
+        SparesStocked
     }
 
     /// <summary>

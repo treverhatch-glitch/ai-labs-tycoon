@@ -105,6 +105,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SetWarranty: return SetWarranty(c, state, lab, cmd);
+                case CommandKind.StockSpares: return StockSpares(c, state, lab, cmd);
+                case CommandKind.ExpediteReplacements: return ExpediteReplacements(c, state, lab, cmd);
                 case CommandKind.TakeStandardsRole: return TakeStandardsRole(c, state, lab, cmd);
                 case CommandKind.AdoptStandards: return AdoptStandards(c, state, lab, cmd);
                 case CommandKind.DropStandards: return DropStandards(c, state, lab, cmd);

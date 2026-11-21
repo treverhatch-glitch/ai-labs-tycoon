@@ -112,7 +112,10 @@ namespace AiLabs.Rules.Sim
         AnswerTaxAudit,
         TakeStandardsRole,
         AdoptStandards,
-        DropStandards
+        DropStandards,
+        SetWarranty,
+        StockSpares,
+        ExpediteReplacements
     }
 
     /// <summary>
@@ -1000,6 +1003,28 @@ namespace AiLabs.Rules.Sim
         public static Command DropStandards(int labId)
         {
             return Make(CommandKind.DropStandards, labId);
+        }
+
+        /// <summary>Sets the GPU warranty tier: 0 none, 1 or 2. A failed unit under a warranty is replaced with the current generation after some weeks (fewer at tier 2) instead of being lost. A fee for each unit every week; raising the tier costs a switch fee.</summary>
+        public static Command SetWarranty(int labId, int tier)
+        {
+            Command c = Make(CommandKind.SetWarranty, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Buys spare GPUs of the current generation to hold. A spare takes the place of a failed unit at once, for upkeep every week.</summary>
+        public static Command StockSpares(int labId, int count)
+        {
+            Command c = Make(CommandKind.StockSpares, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Pays to have the units waiting on a warranty replacement delivered now.</summary>
+        public static Command ExpediteReplacements(int labId)
+        {
+            return Make(CommandKind.ExpediteReplacements, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

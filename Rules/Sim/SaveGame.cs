@@ -198,6 +198,9 @@ namespace AiLabs.Rules.Sim
                 if (lab.StdLevel < 0 || lab.StdLevel > c.Standards.MaxLevel || lab.StdDraft < 0 || (lab.StdDraft != 0 && lab.StdDraft != lab.StdLevel + 1) || lab.StdDraft > c.Standards.MaxLevel || lab.StdSupport < 0 || (lab.StdDraft == 0 && lab.StdSupport != 0) || lab.StdRole < 0 || lab.StdRole > 3 || lab.StdNext < 0 || lab.StdAdopted < 0 || lab.StdAdopted > lab.StdLevel || lab.StdLapses < 0
                     || ((lab.StdLevel != 0 || lab.StdDraft != 0 || lab.StdRole != 0 || lab.StdNext != 0 || lab.StdLapses != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a part in the industry standards (level " + lab.StdLevel + ", draft " + lab.StdDraft + ", adopted " + lab.StdAdopted + ") that the data does not allow");
+                if (lab.WarrantyTier < 0 || lab.WarrantyTier > 2 || lab.Spares < 0 || lab.Spares > c.Reliability.MaxSpares || lab.FailCarry < 0 || lab.FailCarry >= 1000000 || lab.RmaUnits < 0 || (lab.RmaUnits == 0) != (lab.RmaDue == 0) || lab.RmaDue < 0 || lab.GpuFailures < 0
+                    || ((lab.WarrantyTier != 0 || lab.Spares != 0 || lab.FailCarry != 0 || lab.RmaUnits != 0 || lab.GpuFailures != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " keeps a warranty or spares (tier " + lab.WarrantyTier + ", spares " + lab.Spares + ", waiting " + lab.RmaUnits + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

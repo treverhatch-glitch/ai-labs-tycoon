@@ -5937,6 +5937,20 @@
     "claimStrength": 30,
     "safetyRelief": 1
   },
+  "reliability": {
+    "enabled": 1,
+    "baseFailPpm": 400,
+    "agePpm": 300,
+    "heatwavePermille": 2000,
+    "feeTier1": 10,
+    "feeTier2": 30,
+    "rmaWeeksTier1": 8,
+    "rmaWeeksTier2": 2,
+    "switchFee": 15000,
+    "maxSpares": 40,
+    "spareUpkeep": 5,
+    "expeditePermille": 150
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

@@ -121,6 +121,7 @@ namespace AiLabs.Rules.Config
             ScalingProblems(p, c);
             TaxProblems(p, c);
             StandardsProblems(p, c);
+            ReliabilityProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1346,6 +1347,20 @@ namespace AiLabs.Rules.Config
             if (k.LapseReputation < 0 || k.LapseReputation > 500) p.Add("standards.lapseReputation must be from 0 to 500");
             if (k.ClaimStrength < 0 || k.ClaimStrength * k.MaxLevel > MathI.Permille) p.Add("standards.claimStrength times maxLevel must be from 0 to 1000");
             if (k.SafetyRelief < 0 || k.SafetyRelief > 20) p.Add("standards.safetyRelief must be from 0 to 20");
+        }
+
+        static void ReliabilityProblems(List<string> p, GameConfig c)
+        {
+            ReliabilityConfig k = c.Reliability;
+            if (k == null) { p.Add("reliability is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("reliability.enabled must be 0 or 1");
+            if (k.BaseFailPpm < 0 || k.BaseFailPpm > 1000000 || k.AgePpm < 0 || k.AgePpm > 1000000) p.Add("reliability.baseFailPpm and agePpm must be from 0 to 1000000");
+            if (k.HeatwavePermille < MathI.Permille || k.HeatwavePermille > 20000) p.Add("reliability.heatwavePermille must be from 1000 to 20000");
+            if (k.FeeTier1 < 0 || k.FeeTier2 < k.FeeTier1) p.Add("reliability.feeTier2 must be at least feeTier1 and fees must not be negative");
+            if (k.RmaWeeksTier1 < 1 || k.RmaWeeksTier2 < 1 || k.RmaWeeksTier2 > k.RmaWeeksTier1 || k.RmaWeeksTier1 > 520) p.Add("reliability.rmaWeeksTier2 must be from 1 to rmaWeeksTier1, and rmaWeeksTier1 no more than 520");
+            if (k.SwitchFee < 0 || k.SpareUpkeep < 0) p.Add("reliability.switchFee and spareUpkeep must not be negative");
+            if (k.MaxSpares < 0 || k.MaxSpares > 10000) p.Add("reliability.maxSpares must be from 0 to 10000");
+            if (k.ExpeditePermille < 0 || k.ExpeditePermille > MathI.Permille) p.Add("reliability.expeditePermille must be from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

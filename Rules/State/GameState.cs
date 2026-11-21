@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 86;
+        public const int CurrentSchema = 87;
 
         public int Schema;
         public string ConfigVersion;
@@ -322,6 +322,13 @@ namespace AiLabs.Rules.State
         public int StdNext;
         public int StdAdopted;
         public int StdLapses;
+        /// <summary>The warranty tier, the spare GPUs held, the part-failures carried over in millionths of a unit, the units waiting to be replaced, the week they come and the failures so far.</summary>
+        public int WarrantyTier;
+        public int Spares;
+        public long FailCarry;
+        public int RmaUnits;
+        public int RmaDue;
+        public int GpuFailures;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -617,6 +624,12 @@ namespace AiLabs.Rules.State
             s.Int("stdNext", ref StdNext);
             s.Int("stdAdopted", ref StdAdopted);
             s.Int("stdLapses", ref StdLapses);
+            s.Int("warrantyTier", ref WarrantyTier);
+            s.Int("spares", ref Spares);
+            s.Long("failCarry", ref FailCarry);
+            s.Int("rmaUnits", ref RmaUnits);
+            s.Int("rmaDue", ref RmaDue);
+            s.Int("gpuFailures", ref GpuFailures);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

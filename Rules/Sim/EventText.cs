@@ -351,6 +351,14 @@ namespace AiLabs.Rules.Sim
                     return who + " adopted the standards up to level " + e.Amount + ".";
                 case EventKind.StandardLapsed:
                     return who + " released a model that lacked " + e.Pick + " levels of the standards and was fined " + e.Amount + ".";
+                case EventKind.GpusFailed:
+                    return who + " lost " + e.Amount + " GPUs to failure" + (e.Pick == 1 ? ", swapped for spares." : e.Pick == 2 ? ", sent back under the warranty." : ".");
+                case EventKind.ReplacementsArrived:
+                    return who + " got " + e.Amount + " replacement GPUs back" + (e.Pick == 1 ? " in a rush." : ".");
+                case EventKind.WarrantyChanged:
+                    return who + " set its GPU warranty to tier " + e.Amount + ".";
+                case EventKind.SparesStocked:
+                    return who + " bought " + e.Amount + " spare GPUs.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

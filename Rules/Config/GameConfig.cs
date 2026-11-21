@@ -116,6 +116,7 @@ namespace AiLabs.Rules.Config
         public ScalingConfig Scaling = new ScalingConfig();
         public TaxConfig Tax = new TaxConfig();
         public StandardsConfig Standards = new StandardsConfig();
+        public ReliabilityConfig Reliability = new ReliabilityConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -230,6 +231,7 @@ namespace AiLabs.Rules.Config
             s.Obj("scaling", ref Scaling);
             s.Obj("tax", ref Tax);
             s.Obj("standards", ref Standards);
+            s.Obj("reliability", ref Reliability);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

@@ -1950,6 +1950,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The lab takes a part in a draft: observer (free), member (+2 a week for 500 dues), sponsor (+6 a week for 2,500 dues and a 20,000 fee) or obstructor (-3 a week, so the draft stalls, for 2,000 dues and reputation every 13 weeks). Once a level is ratified, a first release of a model of capability 200 or more without the lab having adopted it is fined 25,000 and 15 reputation for each missing level. Adopting costs 30,000 a level and 400 a week a level; dropping stops the upkeep. Each adopted level takes 30 off the strength of a negligence claim (Q371) and stands in for one safety person in a scaling policy's safeguards (Q375).
 - No random numbers; only the player's lab. Alternatives: standards that bind with no say in them (rejected: no choice), a standard per topic (rejected: more state than decisions).
 
+### Q381. Do the GPUs the lab owns ever fail? DECIDED: they do, and the lab chooses how to be covered: lose the unit, hold spares or buy a warranty
+- New `reliability` data, commands `SetWarranty`, `StockSpares` and `ExpediteReplacements`, `HardwareReliability` system, events `GpusFailed`, `ReplacementsArrived`, `WarrantyChanged` and `SparesStocked` and six saved lab fields (schema 87). Each week the owned GPUs (not rented, not the lab's chips) are at risk by 400 in a million a unit-week plus 300 for each year of the generation's age, doubled at a site in a heatwave. The chances are added into a carried total and a unit fails when it reaches a whole one, so there are no random numbers; the oldest generation goes first.
+- A failed unit is lost unless covered. A spare (bought at the current generation's price, upkeep 5 a week, at most 40) takes its place at once with a current-generation unit. A warranty (tier 1 for 10 a unit a week, tier 2 for 30; raising it costs 15,000) sends it back and a current-generation unit arrives 8 weeks later (2 at tier 2); the waiting units can be rushed for 15% of their price. Only the player's lab.
+- Alternatives: failures as a random incident (rejected: it would need dice and give no choice), a repair crew of engineers (rejected: it would tie into the staff away list).
+
 ## Open
 
 None.

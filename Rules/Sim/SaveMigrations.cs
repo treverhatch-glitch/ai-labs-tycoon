@@ -99,6 +99,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 84) MigrateTo84(root);
             if (fromSchema < 85) MigrateTo85(root);
             if (fromSchema < 86) MigrateTo86(root);
+            if (fromSchema < 87) MigrateTo87(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -462,6 +463,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 87: no lab has a warranty or spares and no GPU has failed.</summary>
+        static void MigrateTo87(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "warrantyTier", "spares", "failCarry", "rmaUnits", "rmaDue", "gpuFailures" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
