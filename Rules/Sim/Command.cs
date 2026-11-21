@@ -117,7 +117,8 @@ namespace AiLabs.Rules.Sim
         StockSpares,
         ExpediteReplacements,
         WaiveCovenant,
-        CureCovenant
+        CureCovenant,
+        SetCapitalPolicy
     }
 
     /// <summary>
@@ -1039,6 +1040,14 @@ namespace AiLabs.Rules.Sim
         public static Command CureCovenant(int labId)
         {
             return Make(CommandKind.CureCovenant, labId);
+        }
+
+        /// <summary>Sets how hardware and building spend is deducted for tax: 0 expense it now, 1 capitalise and write it off over time, 2 an enhanced allowance that deducts more than was spent for audit exposure. Locked for a time after a change.</summary>
+        public static Command SetCapitalPolicy(int labId, int policy)
+        {
+            Command c = Make(CommandKind.SetCapitalPolicy, labId);
+            c.Count = policy;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

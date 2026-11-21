@@ -321,6 +321,7 @@ and says why in the commit message.
 138. **Industry standards (a draft the lab shapes, then complies with or is fined).** ~~Done~~: `standards` data, `TakeStandardsRole`, `AdoptStandards`, `DropStandards`, `Standards`, schema 86, `StandardsTests`, `docs/content/standards.md` (Q380).
 139. **Hardware reliability (failures, spares and warranties).** ~~Done~~: `reliability` data, `SetWarranty`, `StockSpares`, `ExpediteReplacements`, `HardwareReliability`, schema 87, `ReliabilityTests`, `docs/content/reliability.md` (Q381).
 140. **Loan covenants (cover, cure, waiver or a call).** ~~Done~~: `covenants` data, `WaiveCovenant`, `CureCovenant`, `Covenants`, schema 88, `CovenantTests`, `docs/content/covenants.md` (Q382).
+141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
 
 ## Rules: later
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 88;
+        public const int CurrentSchema = 89;
 
         public int Schema;
         public string ConfigVersion;
@@ -334,6 +334,11 @@ namespace AiLabs.Rules.State
         public int CovWaiverUntil;
         public int CovWaivers;
         public int CovCalls;
+        /// <summary>The capital allowance policy (0 expense, 1 capitalise, 2 enhanced), the pool still to write off, the week it was last changed and the total written off.</summary>
+        public int CapPolicy;
+        public long CapPool;
+        public int CapSwitchTick;
+        public long CapWritten;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -639,6 +644,10 @@ namespace AiLabs.Rules.State
             s.Int("covWaiverUntil", ref CovWaiverUntil);
             s.Int("covWaivers", ref CovWaivers);
             s.Int("covCalls", ref CovCalls);
+            s.Int("capPolicy", ref CapPolicy);
+            s.Long("capPool", ref CapPool);
+            s.Int("capSwitchTick", ref CapSwitchTick);
+            s.Long("capWritten", ref CapWritten);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

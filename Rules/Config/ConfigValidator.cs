@@ -123,6 +123,7 @@ namespace AiLabs.Rules.Config
             StandardsProblems(p, c);
             ReliabilityProblems(p, c);
             CovenantsProblems(p, c);
+            AllowancesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1375,6 +1376,17 @@ namespace AiLabs.Rules.Config
             if (k.WaiverFeePermille < 0 || k.WaiverFeePermille > MathI.Permille) p.Add("covenants.waiverFeePermille must be from 0 to 1000");
             if (k.WaiverWeeks < 1 || k.WaiverWeeks > 520) p.Add("covenants.waiverWeeks must be from 1 to 520");
             if (k.MaxWaivers < 0 || k.MaxWaivers > 100) p.Add("covenants.maxWaivers must be from 0 to 100");
+        }
+
+        static void AllowancesProblems(List<string> p, GameConfig c)
+        {
+            AllowancesConfig k = c.Allowances;
+            if (k == null) { p.Add("allowances is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("allowances.enabled must be 0 or 1");
+            if (k.WriteOffPermille < 1 || k.WriteOffPermille > MathI.Permille) p.Add("allowances.writeOffPermille must be from 1 to 1000");
+            if (k.EnhancedPermille < 0 || k.EnhancedPermille > 2000) p.Add("allowances.enhancedPermille must be from 0 to 2000");
+            if (k.EnhancedExposure < 0 || k.EnhancedExposure > 1000) p.Add("allowances.enhancedExposure must be from 0 to 1000");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("allowances.lockWeeks must be from 0 to 520");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

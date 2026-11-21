@@ -348,7 +348,9 @@ namespace AiLabs.Rules.State
         /// <summary>The lender looked away for a fee. Amount is the fee.</summary>
         CovenantWaived,
         /// <summary>The lender called the loans after the cure weeks. Amount is what was owed, Pick 1 when the lab paid it from cash.</summary>
-        LoansCalled
+        LoansCalled,
+        /// <summary>The capital allowance policy changed. Amount is the new policy, SubjectId the pool written off at once when going back to expensing.</summary>
+        CapitalPolicySet
     }
 
     /// <summary>

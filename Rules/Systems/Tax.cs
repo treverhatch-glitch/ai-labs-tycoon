@@ -127,7 +127,7 @@ namespace AiLabs.Rules.Systems
                 lab.TaxDue = 0;
                 Events.Add(state, EventKind.TaxStructureBuilt, lab.Id, -1, lab.TaxStructure, "");
             }
-            long taxable = lab.Ledger.LastWeek.Net - lab.Ledger.LastWeek.Fines - lab.Ledger.LastWeek.CapitalIn - c.Tax.AllowancePerWeek;
+            long taxable = lab.Ledger.LastWeek.Net - lab.Ledger.LastWeek.Fines - lab.Ledger.LastWeek.CapitalIn - c.Tax.AllowancePerWeek + CapitalAllowances.Adjust(c, state, lab);
             if (taxable > 0)
             {
                 long gross = MathI.MulPermille(taxable, c.Tax.RatePermille);

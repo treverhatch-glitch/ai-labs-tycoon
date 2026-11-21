@@ -1957,8 +1957,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q382. Does the lender mind if the chips stop covering the debt? DECIDED: yes, a loan covenant with a cure or a waiver, or the loans are called
 - New `covenants` data, commands `WaiveCovenant` and `CureCovenant`, `Covenants` system, events `CovenantBreached`, `CovenantCured`, `CovenantWaived` and `LoansCalled` and four saved lab fields (schema 88). While the player's lab owes on loans against chips the lender compares what the chips would fetch to what is owed. Below 1,500 per mille is a breach: the lender adds 0.5% of what is owed to the first loan each week, and after 8 weeks in breach it calls the loans.
-- A called loan is paid from cash if the lab has enough, otherwise the lender takes the chips as in a default (Q-loans). The lab can pay the loans down just enough to restore the cover (`CureCovenant`), or pay a waiver fee of 1.5% of what is owed to be left alone for 26 weeks (`WaiverCovenant`; three times in all). A breach that ends by itself (more chips, a smaller debt) is logged as cured. Only the player's lab.
+- A called loan is paid from cash if the lab has enough, otherwise the lender takes the chips as in a default. The lab can pay the loans down just enough to restore the cover (`CureCovenant`), or pay a waiver fee of 1.5% of what is owed to be left alone for 26 weeks (`WaiveCovenant`; three times in all). A breach that ends by itself (more chips, a smaller debt) is logged as cured. Only the player's lab.
 - Alternatives: a covenant on cash or revenue (rejected: there is no steady figure to test), a covenant for each loan (rejected: more state than decisions).
+
+### Q383. Does the lab choose how its hardware and building spend is deducted from tax? DECIDED: yes, expense it, capitalise it, or claim an enhanced allowance
+- New `allowances` data, command `SetCapitalPolicy`, `CapitalAllowances` system, event `CapitalPolicySet` and four saved lab fields (schema 89), working inside the tax (Q379), so it needs the tax on. By default hardware and building spend is deducted the week it is spent. Capitalising adds it back to the week's taxable profit and puts it in a pool written off 4% a week. The enhanced allowance does the same with 30% more in the pool, which saves tax (counted as saved in an audit, Q379) but adds 8 audit exposure in each week it claims something extra.
+- Going back to expensing writes the whole pool off at once. A change of policy is locked for 48 weeks. Only the player's lab. The default (expense) changes nothing for a lab that never chooses.
+- Alternatives: a fixed schedule of years for each asset (rejected: a pool needs one number, not a list), a deduction for rented compute (rejected: it is already an expense).
 
 ## Open
 

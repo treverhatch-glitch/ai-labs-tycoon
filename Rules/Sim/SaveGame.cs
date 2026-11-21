@@ -204,6 +204,9 @@ namespace AiLabs.Rules.Sim
                 if (lab.CovBreach < 0 || lab.CovWaiverUntil < 0 || lab.CovWaivers < 0 || lab.CovWaivers > c.Covenants.MaxWaivers || lab.CovCalls < 0 || (lab.CovBreach > 0 && lab.Loans.Count == 0)
                     || ((lab.CovBreach != 0 || lab.CovWaiverUntil != 0 || lab.CovWaivers != 0 || lab.CovCalls != 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " is in breach of a loan covenant or has a waiver (breach " + lab.CovBreach + ", waivers " + lab.CovWaivers + ") that the data does not allow");
+                if (lab.CapPolicy < 0 || lab.CapPolicy > 2 || lab.CapPool < 0 || lab.CapSwitchTick < 0 || lab.CapWritten < 0
+                    || ((lab.CapPolicy != 0 || lab.CapPool != 0 || lab.CapSwitchTick != 0 || lab.CapWritten != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a capital allowance policy or pool (policy " + lab.CapPolicy + ", pool " + lab.CapPool + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

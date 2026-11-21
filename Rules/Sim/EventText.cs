@@ -367,6 +367,8 @@ namespace AiLabs.Rules.Sim
                     return who + " paid " + e.Amount + " to have its loan covenant waived.";
                 case EventKind.LoansCalled:
                     return "The lender called " + who + "'s loans, " + e.Amount + " owed" + (e.Pick == 1 ? ", paid from cash." : ", taken from its chips.");
+                case EventKind.CapitalPolicySet:
+                    return who + " now " + (e.Amount == 0 ? "expenses its hardware and building spend." : e.Amount == 1 ? "capitalises its hardware and building spend." : "claims an enhanced capital allowance.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
