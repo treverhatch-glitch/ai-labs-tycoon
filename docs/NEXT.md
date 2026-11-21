@@ -294,6 +294,7 @@ and says why in the commit message.
 111. **Mentoring (senior and junior pairs, lost output, a free promotion when a seat opens).** ~~Done~~: `mentoring` data, `AssignMentor`, `EndMentoring`, `Mentoring`, schema 70, `MentoringTests`, `docs/content/mentoring.md` (Q356).
 112. **Skunkworks (a team out of a function for a project, paid by person-weeks, wrap up early at half).** ~~Done~~: `skunkworks` data, `StartSkunkworks`, `WrapUpSkunkworks`, `Skunkworks`, schema 71, `SkunkworksTests`, `docs/content/skunkworks.md` (Q357).
 113. **Headlines and chat for the reserve, the pledge, the roadmap, mentoring and skunkworks.** ~~Done~~: 14 headlines, 14 chat lines, `ReservePledgeRoadmapMentoringSkunkworksNewsChatTests` (Q354).
+114. **The reserve, the pledge, the roadmap, mentoring and skunkworks together.** ~~Done~~: `ReservePledgeRoadmapMentoringSkunkworksTogetherTests` (Q355).
 
 ## Rules: later
 
