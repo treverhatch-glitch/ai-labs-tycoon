@@ -29,6 +29,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 12) MigrateTo12(root);
             if (fromSchema < 13) MigrateTo13(root);
             if (fromSchema < 14) MigrateTo14(root);
+            if (fromSchema < 15) MigrateTo15(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -279,6 +280,13 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "trainingDataSourceId", JsonValue.Of("internal"));
                 JsonPatch.ForEach(lab, "models", model => JsonPatch.AddIfMissing(model, "dataSourceId", JsonValue.Of("internal")));
             });
+        }
+
+        /// <summary>Schema 15: expansion training capability part on finished models.</summary>
+        static void MigrateTo15(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+                JsonPatch.ForEach(lab, "models", model => JsonPatch.AddIfMissing(model, "capExpansion", JsonValue.Of(0L))));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

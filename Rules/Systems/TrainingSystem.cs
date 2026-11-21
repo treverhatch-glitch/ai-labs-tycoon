@@ -35,11 +35,12 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>How much training work a unit of compute does: techs plus engineers, who keep the runs from crashing.</summary>
-        public static int SpeedPermille(GameConfig c, LabState lab)
+        public static int SpeedPermille(GameConfig c, GameState state, LabState lab)
         {
             long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
-                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille);
+                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
+                + ExpansionSystem.TrainingSpeedBonusPermille(c, state, lab);
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
@@ -75,7 +76,7 @@ namespace AiLabs.Rules.Systems
         {
             int runs = LabQueries.ActiveRuns(lab) + 1;
             long training = LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false)) / runs;
-            long effective = MathI.MulPermille(training, SpeedPermille(c, lab));
+            long effective = MathI.MulPermille(training, SpeedPermille(c, state, lab));
             long progress = effective - MathI.MulPermille(effective, alignmentSharePermille);
             if (progress <= 0) return -1;
             return (int)((EraSystem.RunCompute(c, line, state.Tick) + progress - 1) / progress);
@@ -93,7 +94,7 @@ namespace AiLabs.Rules.Systems
             int runs = LabQueries.ActiveRuns(lab);
             if (runs == 0) return;
 
-            int speed = SpeedPermille(c, lab);
+            int speed = SpeedPermille(c, state, lab);
             int alignmentWork = AlignmentWorkPermille(c, lab);
             long each = training / runs;
             long spare = training - each * runs;
@@ -131,6 +132,14 @@ namespace AiLabs.Rules.Systems
             DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
             if (source != null && source.CapabilityBonusPermille != 0)
                 model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + source.CapabilityBonusPermille);
+
+            int expansionCap = ExpansionSystem.CapabilityBonusPermille(c, state, lab);
+            if (expansionCap > 0)
+            {
+                int before = model.Capability;
+                model.Capability = (int)MathI.MulPermille(model.Capability, MathI.Permille + expansionCap);
+                model.CapExpansion = model.Capability - before;
+            }
 
             model.Alignment = AlignmentFor(c, model.RequiredCompute, model.AlignmentCompute);
             model.DisplayedAlignment = model.Alignment;

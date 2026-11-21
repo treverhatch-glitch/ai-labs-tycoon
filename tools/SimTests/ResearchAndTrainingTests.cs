@@ -123,7 +123,7 @@ public class ResearchAndTrainingTests
     {
         Game slow = Game.Solo().WithStarterLab(engineers: 0);
         Game fast = Game.Solo().WithStarterLab(engineers: 4);
-        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.Me));
+        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.State, slow.Me));
 
         int before = TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0);
         fast.GrantResearch(2000);
@@ -132,7 +132,7 @@ public class ResearchAndTrainingTests
 
         // Engineers help up to a cap: a hundred of them are no faster than the cap allows.
         while (LabQueries.StaffCount(fast.Me, "engineer") < 100) fast.Me.Staff.Add(new StaffMember { Id = fast.State.TakeId(), RoleId = "engineer", TraitId = "steady", Morale = 500 });
-        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.Me));
+        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me));
     }
 
     [Fact]

@@ -152,8 +152,9 @@ namespace AiLabs.Rules.Systems
             public int FromCarryover;
             public int FromLuck;
             public int FromDataSource;
+            public int FromExpansion;
 
-            public int Total { get { return FromBase + FromTech + FromCarryover + FromLuck + FromDataSource; } }
+            public int Total { get { return FromBase + FromTech + FromCarryover + FromLuck + FromDataSource + FromExpansion; } }
         }
 
         public static TrainedCapabilityBreakdown TrainedCapabilityParts(ModelState model)
@@ -164,7 +165,8 @@ namespace AiLabs.Rules.Systems
             b.FromTech = model.CapTech;
             b.FromCarryover = model.CapCarryover;
             b.FromLuck = model.CapLuck;
-            int beforeSource = b.FromBase + b.FromTech + b.FromCarryover + b.FromLuck;
+            b.FromExpansion = model.CapExpansion;
+            int beforeSource = b.FromBase + b.FromTech + b.FromCarryover + b.FromLuck + b.FromExpansion;
             b.FromDataSource = model.Capability - beforeSource;
             return b;
         }

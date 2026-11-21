@@ -236,6 +236,8 @@ namespace AiLabs.Rules.Config
             else for (int i = 0; i < kit.SectorIds.Count; i++)
                 if (c.Sector(kit.SectorIds[i]) == null) p.Add(path + " names unknown sector " + kit.SectorIds[i]);
             Permille(p, path + ".appealBonusPermille", kit.AppealBonusPermille);
+            Permille(p, path + ".capabilityBonusPermille", kit.CapabilityBonusPermille);
+            Permille(p, path + ".trainingSpeedBonusPermille", kit.TrainingSpeedBonusPermille);
         }
 
         static void ShadyProblems(List<string> p, GameConfig c)

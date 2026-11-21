@@ -23,6 +23,10 @@ namespace AiLabs.Rules.Config
         public List<string> SectorIds = new List<string>();
         /// <summary>Extra appeal in permille when the lab has the room and the sector matches.</summary>
         public int AppealBonusPermille;
+        /// <summary>Finished runs on this kit get capability ×(1000 + this)‰ once the era is live and the room is built.</summary>
+        public int CapabilityBonusPermille;
+        /// <summary>Training speed permille added while the era is live and the room is built (orbital uplink).</summary>
+        public int TrainingSpeedBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -30,6 +34,8 @@ namespace AiLabs.Rules.Config
             s.Str("roomTypeId", ref RoomTypeId);
             s.StrList("sectorIds", ref SectorIds);
             s.Int("appealBonusPermille", ref AppealBonusPermille);
+            s.Int("capabilityBonusPermille", ref CapabilityBonusPermille);
+            s.Int("trainingSpeedBonusPermille", ref TrainingSpeedBonusPermille);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 14;
+        public const int CurrentSchema = 15;
 
         public int Schema;
         public string ConfigVersion;
@@ -317,6 +317,8 @@ namespace AiLabs.Rules.State
         public int CapTech;
         public int CapCarryover;
         public int CapLuck;
+        /// <summary>Capability gained from an expansion room at train time. Zero when none applied.</summary>
+        public int CapExpansion;
 
         /// <summary>The safety meter, 0 to 1000. Zero while training.</summary>
         public int Alignment;
@@ -353,6 +355,7 @@ namespace AiLabs.Rules.State
             s.Int("capTech", ref CapTech);
             s.Int("capCarryover", ref CapCarryover);
             s.Int("capLuck", ref CapLuck);
+            s.Int("capExpansion", ref CapExpansion);
             s.Int("alignment", ref Alignment);
             s.Int("displayedAlignment", ref DisplayedAlignment);
             s.Int("lastIncidentRung", ref LastIncidentRung);

@@ -18,7 +18,7 @@ public class TrainingCapabilityBreakdownTests
         g.UntilTrained(model);
         var parts = DisplayQueries.TrainedCapabilityParts(model);
         Assert.Equal(model.Capability, parts.Total);
-        Assert.Equal(parts.FromBase + parts.FromTech + parts.FromCarryover + parts.FromLuck + parts.FromDataSource, parts.Total);
+        Assert.Equal(parts.FromBase + parts.FromTech + parts.FromCarryover + parts.FromLuck + parts.FromDataSource + parts.FromExpansion, parts.Total);
         Assert.Equal(0, parts.FromDataSource);
     }
 
