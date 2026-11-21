@@ -1715,6 +1715,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every lab now saves the four fields. Taking them and the schema number back out reproduces the previous digest (8955b95f), so no behaviour moved; the new digest is 5779f67f.
 - Alternatives: a cash bonus for a met target (rejected: reputation is the board's currency and cash would need balancing against the stretch); a timed boost while a target is active (rejected: a timed modifier); a target on profit or share instead of revenue (rejected: revenue is the number the market already produces each week, with no new draws).
 
+### Q339. Do the new decisions show up in the news and the office? DECIDED: ten headlines and ten chat lines, data only
+- Ten headlines (79 in all) and ten chat lines (132 in all) cover a scrapped run (late or early), a layoff round (deep or ordinary), technical debt (cleared or paid down), a promotion and a board target (set, met, missed). A salesperson has their own line when a target is set and an engineer their own when debt is paid; the specific lines sit before the generic ones in the data because the first line that fits wins.
+- No state and no golden change: the lines are data only and never saved. The content tests that pin the counts now say 79 and 132.
+- Alternatives: a headline for a target being set only when it is a hard one (rejected: every commitment is public to the board); chat for an unhappy promotion refusal (rejected: refusals change nothing and leave no event).
+
+### Q340. Do the five new tools hold up when used together over years? DECIDED: a three-seed 260-week play-through plus replay, load and no-change checks
+- `ScrapLayoffDebtPromotionTargetTogetherTests` plays three seeds for 260 weeks with the autopilot while a script scraps runs, runs layoff rounds, crunches (to build debt), pays debt down, promotes people and sets board targets. It checks that the books balance, the save is sound, a load plays on the same, two seeds replay from the journal, a lab that uses none of the tools plays exactly as one with them all switched off, and that debt, a promotion and a layoff pull the right ways in one lab.
+- No state and no golden change.
+
 ## Open
 
 None.

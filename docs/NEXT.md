@@ -277,6 +277,8 @@ and says why in the commit message.
 94. **Technical debt (safety, cash, engineers).** ~~Done~~: `techDebt` data, `PayDownDebt`, `TechDebt`, schema 61, `TechDebtTests`, `docs/content/technical-debt.md` (Q336).
 95. **Promotions (staff, cash, seats).** ~~Done~~: `seniority` data, `PromoteStaff`, `Seniority`, schema 62, `PromotionsTests`, `docs/content/promotions.md` (Q337).
 96. **Board targets (finance, reputation).** ~~Done~~: `revenueTargets` data, `SetRevenueTarget`, `RevenueTargets`, schema 63, `RevenueTargetsTests`, `docs/content/board-targets.md` (Q338).
+97. **News and chat for scrapped runs, layoffs, debt, promotions and targets.** ~~Done~~: ten headlines and ten chat lines (79 and 132 in all), `ScrapLayoffDebtPromotionTargetNewsChatTests` (Q339).
+98. **Scrapping, layoffs, debt, promotions and targets together (tests).** ~~Done~~: `ScrapLayoffDebtPromotionTargetTogetherTests` (Q340).
 
 ## Rules: later
 

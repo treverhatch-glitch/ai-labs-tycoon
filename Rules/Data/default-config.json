@@ -8941,6 +8941,66 @@
         "kind": "StaffRetrained",
         "pick": -1,
         "text": "{lab} retrains a person for a new role. HR calls it 'a journey'"
+      },
+      {
+        "id": "run-scrapped-late",
+        "kind": "RunScrapped",
+        "pick": 1,
+        "text": "{lab} scraps the training run of {ref} well into it. The compute 'has been repurposed as lessons'"
+      },
+      {
+        "id": "run-scrapped-early",
+        "kind": "RunScrapped",
+        "pick": 0,
+        "text": "{lab} cancels the training run of {ref} early. Nobody had named the cluster yet"
+      },
+      {
+        "id": "layoff-deep",
+        "kind": "LayoffRound",
+        "pick": 1,
+        "text": "{lab} lays off {amount} people in a deep cut. The all-hands email used the word 'rightsizing'"
+      },
+      {
+        "id": "layoff-round",
+        "kind": "LayoffRound",
+        "pick": 0,
+        "text": "{lab} lays off {amount} people. HR calls it 'a realignment of focus'"
+      },
+      {
+        "id": "debt-cleared",
+        "kind": "DebtPaid",
+        "pick": 1,
+        "text": "{lab} clears its technical debt. The engineers were 'cautiously hopeful' for a whole sprint"
+      },
+      {
+        "id": "debt-paid",
+        "kind": "DebtPaid",
+        "pick": 0,
+        "text": "{lab} pays down technical debt. The backlog 'remains healthy'"
+      },
+      {
+        "id": "staff-promoted",
+        "kind": "StaffPromoted",
+        "pick": -1,
+        "text": "{lab} promotes a {ref} to senior. The new title came with a larger monitor"
+      },
+      {
+        "id": "target-set",
+        "kind": "TargetSet",
+        "pick": -1,
+        "text": "{lab} promises the board {money} for the quarter. The slide had an upward arrow"
+      },
+      {
+        "id": "target-met",
+        "kind": "TargetSettled",
+        "pick": 1,
+        "text": "{lab} hits its revenue target with {money}. The board 'always believed'"
+      },
+      {
+        "id": "target-missed",
+        "kind": "TargetSettled",
+        "pick": 0,
+        "text": "{lab} misses its revenue target, making {money}. The board 'will be circling back'"
       }
     ],
     "filler": [
@@ -10518,6 +10578,116 @@
         "pick": -1,
         "about": "lab",
         "text": "They moved me to a new role. The training was a PDF and a pat on the back, but the new desk is nice.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "run-scrapped-chat-late",
+        "kind": "RunScrapped",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "They scrapped the run weeks into it. We kept the research notes and the nice cluster name.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "run-scrapped-chat-early",
+        "kind": "RunScrapped",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The run was cancelled early. I never got attached; the name was still a placeholder.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "layoff-chat-deep",
+        "kind": "LayoffRound",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Half the floor is quiet today. We are told this is 'focus'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "layoff-chat",
+        "kind": "LayoffRound",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "A few desks emptied this week. Lunch was very polite.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "debt-paid-chat-engineer",
+        "kind": "DebtPaid",
+        "roles": ["engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We finally paid down some tech debt. I deleted a file called temp_final_v2 and felt only joy.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "debt-paid-chat",
+        "kind": "DebtPaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone paid down the technical debt. The incident dashboard is a little less red.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "staff-promoted-chat",
+        "kind": "StaffPromoted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "I have been made senior. The raise is real and so is the extra pager.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "target-set-chat-sales",
+        "kind": "TargetSet",
+        "roles": ["sales"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We told the board a number. Sales has stopped answering questions about it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "target-met-chat",
+        "kind": "TargetSettled",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We hit the target. Somebody printed it out and stuck it on the fridge.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "target-missed-chat",
+        "kind": "TargetSettled",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We missed the number. The board meeting has a new agenda item called 'learnings'.",
         "fromYear": 0,
         "toYear": 0
       }
