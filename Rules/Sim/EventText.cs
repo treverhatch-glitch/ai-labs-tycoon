@@ -241,6 +241,8 @@ namespace AiLabs.Rules.Sim
                 case EventKind.BountySet:
                     return e.SubjectId == 0 ? who + " closed its bug bounty."
                         : who + (e.Pick == 1 ? " raised" : " lowered") + " its bug bounty to level " + e.SubjectId + (e.Amount > 0 ? " for $" + e.Amount + "." : ".");
+                case EventKind.SectorPulledOut:
+                    return who + " pulled out of " + e.Ref + (e.Amount > 0 ? ", paying $" + e.Amount + " to its customers" : "") + (e.Pick == 1 ? " and retired the model." : ".");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

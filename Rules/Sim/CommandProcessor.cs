@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndowChair: return EndowChair(c, state, lab, cmd);
                 case CommandKind.AnswerWhistle: return AnswerWhistle(c, state, lab, cmd);
                 case CommandKind.SetBugBounty: return SetBugBounty(c, state, lab, cmd);
+                case CommandKind.PullOutOfSector: return PullOutOfSector(c, state, lab, cmd);
                 case CommandKind.ApplyForGrant: return ApplyForGrant(c, state, lab, cmd);
                 case CommandKind.SetSla: return SetSla(c, state, lab, cmd);
                 case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);

@@ -67,7 +67,8 @@ namespace AiLabs.Rules.Sim
         SetRevenueTarget,
         EndowChair,
         AnswerWhistle,
-        SetBugBounty
+        SetBugBounty,
+        PullOutOfSector
     }
 
     /// <summary>
@@ -480,6 +481,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetBugBounty, labId);
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Pulls a model on sale out of one sector: a break fee of some weeks of what it earned there, lost trust and reputation, and the share it had built. A model with no sector left is retired.</summary>
+        public static Command PullOutOfSector(int labId, int modelId, string sectorId)
+        {
+            Command c = Make(CommandKind.PullOutOfSector, labId);
+            c.TargetId = modelId;
+            c.Ids.Add(sectorId);
             return c;
         }
 

@@ -210,7 +210,9 @@ namespace AiLabs.Rules.State
         /// <summary>The concern leaked. SubjectId is the model, Amount the reputation lost, Pick 1 when a person resigned over it.</summary>
         WhistleLeaked,
         /// <summary>The lab changed its bug bounty. SubjectId is the new level, Amount the fee, Pick 1 when it was raised.</summary>
-        BountySet
+        BountySet,
+        /// <summary>The lab pulled a model out of a sector. SubjectId is the model, Amount the break fee, Pick 1 when it was the last sector and the model was retired. Ref is the sector.</summary>
+        SectorPulledOut
     }
 
     /// <summary>

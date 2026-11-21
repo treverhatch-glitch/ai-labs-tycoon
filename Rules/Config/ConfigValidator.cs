@@ -99,6 +99,7 @@ namespace AiLabs.Rules.Config
             ChairsProblems(p, c);
             WhistleProblems(p, c);
             BugBountyProblems(p, c);
+            PulloutProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -967,6 +968,16 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void PulloutProblems(List<string> p, GameConfig c)
+        {
+            PulloutConfig k = c.Pullout;
+            if (k == null) { p.Add("pullout is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pullout.enabled must be 0 or 1");
+            if (k.FeeWeeks < 0 || k.FeeWeeks > 52) p.Add("pullout.feeWeeks must be from 0 to 52");
+            if (k.TrustDrop < 0 || k.TrustDrop > 1000) p.Add("pullout.trustDrop must be from 0 to 1000");
+            if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("pullout.reputationLoss must be from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

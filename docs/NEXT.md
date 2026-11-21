@@ -282,6 +282,7 @@ and says why in the commit message.
 99. **Endowed chairs (research, prestige, cash).** ~~Done~~: `chairs` data, `EndowChair`, `Chairs`, schema 64, `ChairsTests`, `docs/content/endowed-chairs.md` (Q341).
 100. **The whistleblower (alignment claims, safety staff).** ~~Done~~: `whistle` data, `AnswerWhistle`, `Whistle`, schema 65, `WhistleTests`, `docs/content/whistleblower.md` (Q342).
 101. **The bug bounty (incident cut for a standing bill).** ~~Done~~: `bugBounty` data, `SetBugBounty`, `BugBounty`, schema 66, `BugBountyTests`, `docs/content/bug-bounty.md` (Q343).
+102. **Sector pullout (leave a sector, keep the model).** ~~Done~~: `pullout` data, `PullOutOfSector`, `Pullout`, `PulloutTests`, `docs/content/sector-pullout.md` (Q344).
 
 ## Rules: later
 

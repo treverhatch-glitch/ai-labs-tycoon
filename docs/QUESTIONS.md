@@ -1747,6 +1747,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Golden: the digest moves only because every lab now saves two more numbers. Taking them and the schema number back out reproduces the previous digest (3f832830), so no behaviour moved; the new digest is 44241b20.
 - Alternatives: a pay-per-bug payout (rejected: needs a random find rate), a flat cost not tied to the models (rejected: no reason to hold back), a bounty that also pays down technical debt (rejected: one lever per system).
 
+### Q344. Can a lab leave a sector it is losing in without scrapping the model? DECIDED: a pullout with a break fee, lost trust and lost share
+- New `pullout` data, command `PullOutOfSector`, `Pullout` system and event `SectorPulledOut`. A released model could only leave a sector by being replaced there. A pullout removes the lab's entry in that sector: it pays 4 weeks of what the model last earned there as a break fee, loses 100 trust in that sector (not carried to its family) and 10 reputation, and loses the share it had built, so going back starts from nothing. The model stays on sale elsewhere, and is retired when its last sector goes.
+- The reason to leave is load and exposure: a sector's customers load the lab's compute (so a lab that cannot serve them runs overloaded) and the model's incident fines are against what it earns, and both leave with the entry. The cost is a month of what it earned, a dent in trust and the share, which makes it a real choice and not a free reset.
+- No new saved state and no random numbers, so the golden does not move (verified). The player's lab only.
+- Alternatives: leaving for free (rejected: a free exit makes entry free, so a launch is never a bet), a lock on going back in (rejected: the lost share is already the lock), pulling a sector out for every lab (rejected: that is the rivals' planner, left alone).
+
 ## Open
 
 None.
