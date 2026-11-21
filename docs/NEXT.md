@@ -272,6 +272,7 @@ and says why in the commit message.
 89. **Research grants (research, funding).** ~~Done~~: `ApplyForGrant`, `ResearchGrants`, `researchGrants` data, five lab fields (schema 60, `MigrateTo60`), `ResearchGrantsTests`, `docs/content/research-grants.md` (Q333). The recruiting drive was rejected as a priced timed modifier (Q330).
 90. **Headlines and chat for consultants, post-mortems, the pledge and grants.** ~~Done~~: twelve headlines and twelve chat lines, data only, `ConsultantsPostMortemSlaNewsChatTests` (Q331).
 91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
+92. **Scrap a training run (research, compute).** ~~Done~~: `ScrapRun`, `Abandon`, `abandon` data, no new state, `AbandonTests`, `docs/content/scrapping-a-run.md` (Q334).
 
 ## Rules: later
 

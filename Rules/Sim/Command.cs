@@ -59,7 +59,8 @@ namespace AiLabs.Rules.Sim
         HireConsultants,
         PublishPostMortem,
         SetSla,
-        ApplyForGrant
+        ApplyForGrant,
+        ScrapRun
     }
 
     /// <summary>
@@ -410,6 +411,14 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RunCampaign, labId);
             c.Id = sectorId;
             c.Count = level;
+            return c;
+        }
+
+        /// <summary>Scraps a training run that is still going: its compute is gone, part of it comes back as research points, the press and the team mind in proportion to how far along it was.</summary>
+        public static Command ScrapRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ScrapRun, labId);
+            c.TargetId = modelId;
             return c;
         }
 

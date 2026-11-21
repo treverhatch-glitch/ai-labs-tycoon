@@ -1684,6 +1684,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `ConsultantsPostMortemSlaTogetherTests` runs three seeds for 260 weeks with firms, pledges, the rota, insurance, papers, grant applications and post-mortems used on a timetable. It checks the books balance, the save is sound, a load plays on the same, the journal replays, an unused set of tools changes nothing, every tool is used across the seeds, and an incident with insurance, the rota and a top pledge cannot be free (the fine floors still hold) while a full write-up never wins back more than the incident cost.
 - Alternatives: separate play-throughs for each system (rejected: the interactions are the point, the same reason as Q325).
 
+### Q334. Can the player scrap a training run, and what does it cost? DECIDED: yes, an immediate command with partial research salvage and costs that grow with progress
+- New `abandon` data, command `ScrapRun(model)`, `Abandon` system and event `RunScrapped`. There was no way to cancel a run once it started, so a run that was going badly (the era moved, cash ran low, a better design arrived) had to be finished. Scrapping keeps 200 permille of the compute already spent as research points, and costs reputation (20 at full progress) and every person's morale (60 at full progress) in proportion to how far along the run was. The decision is when to cut a loss: early is nearly free, late is painful and keeps more research.
+- No new state and no schema change: the model is removed from the lab, as the museum already does for old retired models, so there is nothing to migrate and the golden digest does not move. A scrapped run leaves no sector entry because only trained models sell.
+- Caps: the salvage is at most 500 permille (the validator checks it), so scrapping never beats finishing; reputation and morale floor at 0. Only the player's lab can scrap; rivals' plans are untouched.
+- Alternatives: refunding part of the prep cash (rejected: the prep cost is the price of starting; salvage as research is the real learning); keeping the run as a retired model (rejected: a model with no capability would show up in the museum and the version list); a cooldown (rejected: the costs already deter repeats and a timer would need new state).
+
 ## Open
 
 None.

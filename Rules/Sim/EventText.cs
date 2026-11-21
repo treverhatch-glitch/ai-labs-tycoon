@@ -216,6 +216,8 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.RunScrapped:
+                    return who + " scrapped the training run of " + e.Ref + (e.Pick == 1 ? " well into it" : " early") + " and kept " + e.Amount + " research points.";
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

@@ -86,6 +86,7 @@ namespace AiLabs.Rules.Config
         public PostMortemConfig PostMortem = new PostMortemConfig();
         public SlaConfig Sla = new SlaConfig();
         public ResearchGrantsConfig ResearchGrants = new ResearchGrantsConfig();
+        public AbandonConfig Abandon = new AbandonConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
@@ -168,6 +169,7 @@ namespace AiLabs.Rules.Config
             s.Obj("postMortem", ref PostMortem);
             s.Obj("sla", ref Sla);
             s.Obj("researchGrants", ref ResearchGrants);
+            s.Obj("abandon", ref Abandon);
             s.Obj("incidentFloor", ref IncidentFloor);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);

@@ -5608,6 +5608,12 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "abandon": {
+    "enabled": 1,
+    "salvagePermille": 200,
+    "reputationAtFull": 20,
+    "moraleAtFull": 60
+  },
   "researchGrants": {
     "maxTier": 3,
     "minResearchers": 2,

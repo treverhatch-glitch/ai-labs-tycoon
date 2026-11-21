@@ -91,6 +91,7 @@ namespace AiLabs.Rules.Config
             PostMortemProblems(p, c);
             SlaProblems(p, c);
             ResearchGrantsProblems(p, c);
+            AbandonProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -897,6 +898,16 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void AbandonProblems(List<string> p, GameConfig c)
+        {
+            AbandonConfig k = c.Abandon;
+            if (k == null) { p.Add("abandon is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("abandon.enabled must be 0 or 1");
+            if (k.SalvagePermille < 0 || k.SalvagePermille > 500) p.Add("abandon.salvagePermille must be from 0 to 500, so scrapping a run never pays better than finishing it");
+            if (k.ReputationAtFull < 0 || k.ReputationAtFull > 200) p.Add("abandon.reputationAtFull must be from 0 to 200");
+            if (k.MoraleAtFull < 0 || k.MoraleAtFull > 500) p.Add("abandon.moraleAtFull must be from 0 to 500");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)
