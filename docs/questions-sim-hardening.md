@@ -386,6 +386,30 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q113. Morale debt drift mitigation? DECIDED: `moraleDebtMitigationPermillePerPoint`
+- Choice: **(a)** — scales `MoraleDebtDriftPerWeek` in `StaffSystem.RunWeek`.
+
+### Q112. Synthetic fail-risk cut? DECIDED: `syntheticDataLab.failRiskCutPermille` (coverage)
+- Choice: **(a)** — `EffectiveWeeklyFailRiskPermille` when room active on synthetic mix.
+
+### Q111. Corrupted mood appeal? DECIDED: `corruptedMoodAppealPermille` (coverage)
+- Choice: **(a)** — dedicated tests beside Q90 `AppealParts`.
+
+### Q110. Overworked alignment work? DECIDED: `overworkedAlignmentPermille`
+- Choice: **(a)** — multiply `AlignmentWorkPermille` when demand unserved (same gate as Q93).
+
+### Q109. Frontier weekly cash? DECIDED: `frontier.cashPerLevel`
+- Choice: **(a)** — `MuseumSystem.RunWeek` beside Q98 research stipend.
+
+### Q108. Safety staff incident cut? DECIDED: `safetyStaffIncidentCutPermillePerStaff`
+- Choice: **(a)** — multiply down `IncidentChancePermille` when lab passed.
+
+### Q107. Morale poach witness mitigation? DECIDED: `moralePoachWitnessMitigationPermillePerPoint`
+- Choice: **(a)** — scales witness drop after a successful poach.
+
+### Q106. Challenger research stipend? DECIDED: `challengerResearchPerWeek`
+- Choice: **(a)** — runner-up lab in `GrantWeeklyStipends`.
+
 ### Q105. Sales staff reputation recovery? DECIDED: `salesReputationRecoveryPermillePerStaff`
 - Choice: **(a)** — add to weekly drift step in `SafetySystem.RunWeek`.
 

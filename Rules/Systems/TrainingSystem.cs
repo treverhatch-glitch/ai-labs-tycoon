@@ -69,6 +69,11 @@ namespace AiLabs.Rules.Systems
             int total = MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille);
             total += StaffSystem.MoraleAlignmentPermille(c, lab);
+            if (c.Safety.OverworkedAlignmentPermille > 0
+                && c.Safety.OverworkedAlignmentPermille < MathI.Permille
+                && lab.LastWeek.ServingDemand > 0
+                && lab.LastWeek.ServedPermille < MathI.Permille)
+                total = (int)MathI.MulPermille(total, c.Safety.OverworkedAlignmentPermille);
             return total;
         }
 

@@ -739,6 +739,10 @@ namespace AiLabs.Rules.Config
         public int GlitchingTrainingSpeedPermille;
         /// <summary>Extra reputation recovery per sales staff member each week.</summary>
         public int SalesReputationRecoveryPermillePerStaff;
+        /// <summary>Each safety staff member cuts released-model incident chance by this many permille points.</summary>
+        public int SafetyStaffIncidentCutPermillePerStaff;
+        /// <summary>Alignment work permille while last week left serving demand unserved.</summary>
+        public int OverworkedAlignmentPermille;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
@@ -774,6 +778,8 @@ namespace AiLabs.Rules.Config
             s.Int("glitchingAppealPermille", ref GlitchingAppealPermille);
             s.Int("glitchingTrainingSpeedPermille", ref GlitchingTrainingSpeedPermille);
             s.Int("salesReputationRecoveryPermillePerStaff", ref SalesReputationRecoveryPermillePerStaff);
+            s.Int("safetyStaffIncidentCutPermillePerStaff", ref SafetyStaffIncidentCutPermillePerStaff);
+            s.Int("overworkedAlignmentPermille", ref OverworkedAlignmentPermille);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
@@ -852,6 +858,8 @@ namespace AiLabs.Rules.Config
         public int ChallengerReputationPerWeek;
         /// <summary>Research points granted weekly to the domain leader lab.</summary>
         public long LeaderResearchPerWeek;
+        /// <summary>Research points granted weekly to the near runner-up lab.</summary>
+        public long ChallengerResearchPerWeek;
 
         public string Id { get { return IdValue; } }
 
@@ -866,6 +874,7 @@ namespace AiLabs.Rules.Config
             s.Int("leaderReputationPerWeek", ref LeaderReputationPerWeek);
             s.Int("challengerReputationPerWeek", ref ChallengerReputationPerWeek);
             s.Long("leaderResearchPerWeek", ref LeaderResearchPerWeek);
+            s.Long("challengerResearchPerWeek", ref ChallengerResearchPerWeek);
         }
     }
 

@@ -3430,6 +3430,8 @@
     "glitchingAppealPermille": 750,
     "glitchingTrainingSpeedPermille": 900,
     "salesReputationRecoveryPermillePerStaff": 1,
+    "safetyStaffIncidentCutPermillePerStaff": 15,
+    "overworkedAlignmentPermille": 900,
     "reputationBaseline": 500,
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
@@ -3515,6 +3517,7 @@
         "leaderReputationPerWeek": 2,
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
+        "challengerResearchPerWeek": 3,
         "sectorIds": [
           "code-completion",
           "coding-agents",
@@ -3530,6 +3533,7 @@
         "leaderReputationPerWeek": 2,
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
+        "challengerResearchPerWeek": 3,
         "sectorIds": [
           "image-recognition",
           "image-design",
@@ -3545,6 +3549,7 @@
         "leaderReputationPerWeek": 2,
         "challengerReputationPerWeek": 1,
         "leaderResearchPerWeek": 5,
+        "challengerResearchPerWeek": 3,
         "sectorIds": [
           "expert-systems",
           "spam-search"
@@ -4086,6 +4091,8 @@
     "moraleFailCutPermillePerPoint": 1,
     "moralePoachResistPermillePerPoint": 1,
     "moraleIncidentMitigationPermillePerPoint": 2,
+    "moralePoachWitnessMitigationPermillePerPoint": 2,
+    "moraleDebtMitigationPermillePerPoint": 3,
     "traits": [
       {
         "id": "steady",
@@ -4846,7 +4853,8 @@
       "maxLevel": 60,
       "capabilityPermillePerLevel": 50,
       "trainingSpeedPermillePerLevel": 8,
-      "researchPointsPerLevel": 12
+      "researchPointsPerLevel": 12,
+      "cashPerLevel": 200
     },
     "museum": {
       "perLine": 6,

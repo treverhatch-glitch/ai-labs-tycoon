@@ -44,8 +44,13 @@ namespace AiLabs.Rules.Systems
                 }
             }
             FrontierConfig frontier = c.Endings?.Frontier;
-            if (frontier != null && frontier.ResearchPointsPerLevel > 0 && lab.FrontierLevel > 0)
-                lab.ResearchPoints += frontier.ResearchPointsPerLevel * lab.FrontierLevel;
+            if (frontier != null && lab.FrontierLevel > 0)
+            {
+                if (frontier.ResearchPointsPerLevel > 0)
+                    lab.ResearchPoints += frontier.ResearchPointsPerLevel * lab.FrontierLevel;
+                if (frontier.CashPerLevel > 0)
+                    Finance.Earn(lab, LedgerLine.Grants, frontier.CashPerLevel * lab.FrontierLevel);
+            }
         }
 
         public static int RetiredOnLine(LabState lab, string lineId)

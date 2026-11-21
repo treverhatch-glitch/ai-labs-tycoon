@@ -136,12 +136,14 @@ namespace AiLabs.Rules.Systems
                     leader.Reputation = (int)MathI.Clamp(leader.Reputation + domain.LeaderReputationPerWeek, 0, MathI.Permille);
                 if (domain.LeaderResearchPerWeek > 0)
                     leader.ResearchPoints += domain.LeaderResearchPerWeek;
-                if (domain.ChallengerReputationPerWeek < 1) continue;
                 int runnerUp = RunnerUpLabId(c, state, row);
                 if (runnerUp < 0) continue;
                 LabState challenger = state.Lab(runnerUp);
                 if (challenger == null || challenger.Bankrupt) continue;
-                challenger.Reputation = (int)MathI.Clamp(challenger.Reputation + domain.ChallengerReputationPerWeek, 0, MathI.Permille);
+                if (domain.ChallengerReputationPerWeek > 0)
+                    challenger.Reputation = (int)MathI.Clamp(challenger.Reputation + domain.ChallengerReputationPerWeek, 0, MathI.Permille);
+                if (domain.ChallengerResearchPerWeek > 0)
+                    challenger.ResearchPoints += domain.ChallengerResearchPerWeek;
             }
         }
 

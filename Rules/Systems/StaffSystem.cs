@@ -57,7 +57,12 @@ namespace AiLabs.Rules.Systems
                 if (p.Morale < baseline) p.Morale = (int)MathI.Min(baseline, p.Morale + drift);
                 else if (p.Morale > baseline) p.Morale = (int)MathI.Max(baseline, p.Morale - drift);
                 if (lab.WeeksInDebt > 0 && debtDrift > 0)
-                    p.Morale = (int)MathI.Max(0, p.Morale - debtDrift);
+                {
+                    int debtStep = debtDrift;
+                    int mit = MoraleDebtMitigationPermille(c, lab);
+                    if (mit > 0) debtStep = (int)MathI.MulPermille(debtStep, MathI.Permille - mit);
+                    if (debtStep > 0) p.Morale = (int)MathI.Max(0, p.Morale - debtStep);
+                }
             }
         }
 
@@ -76,6 +81,9 @@ namespace AiLabs.Rules.Systems
         {
             int drop = c.StaffPeople.MoralePoachWitnessDrop;
             if (drop <= 0) return;
+            int mit = MoralePoachWitnessMitigationPermille(c, lab);
+            if (mit > 0) drop = (int)MathI.MulPermille(drop, MathI.Permille - mit);
+            if (drop < 1) return;
             for (int i = 0; i < lab.Staff.Count; i++)
                 lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - drop);
         }
@@ -162,6 +170,24 @@ namespace AiLabs.Rules.Systems
             int delta = AverageMorale(lab) - cfg.MoraleBaseline;
             if (delta <= 0) return 0;
             return (int)MathI.Min(MathI.Permille, delta * cfg.MoraleIncidentMitigationPermillePerPoint);
+        }
+
+        public static int MoralePoachWitnessMitigationPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoralePoachWitnessMitigationPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            if (delta <= 0) return 0;
+            return (int)MathI.Min(MathI.Permille, delta * cfg.MoralePoachWitnessMitigationPermillePerPoint);
+        }
+
+        public static int MoraleDebtMitigationPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoraleDebtMitigationPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            if (delta <= 0) return 0;
+            return (int)MathI.Min(MathI.Permille, delta * cfg.MoraleDebtMitigationPermillePerPoint);
         }
 
         public static string DefaultTrait(StaffPeopleConfig cfg)

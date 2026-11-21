@@ -26,6 +26,10 @@ namespace AiLabs.Rules.Config
         public int MoraleFailCutPermillePerPoint;
         public int MoralePoachResistPermillePerPoint;
         public int MoraleIncidentMitigationPermillePerPoint;
+        /// <summary>Mitigates <see cref="MoralePoachWitnessDrop"/> when morale is above baseline.</summary>
+        public int MoralePoachWitnessMitigationPermillePerPoint;
+        /// <summary>Cuts <see cref="MoraleDebtDriftPerWeek"/> when morale is above baseline.</summary>
+        public int MoraleDebtMitigationPermillePerPoint;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -49,6 +53,8 @@ namespace AiLabs.Rules.Config
             s.Int("moraleFailCutPermillePerPoint", ref MoraleFailCutPermillePerPoint);
             s.Int("moralePoachResistPermillePerPoint", ref MoralePoachResistPermillePerPoint);
             s.Int("moraleIncidentMitigationPermillePerPoint", ref MoraleIncidentMitigationPermillePerPoint);
+            s.Int("moralePoachWitnessMitigationPermillePerPoint", ref MoralePoachWitnessMitigationPermillePerPoint);
+            s.Int("moraleDebtMitigationPermillePerPoint", ref MoraleDebtMitigationPermillePerPoint);
             s.ObjList("traits", ref Traits);
         }
     }

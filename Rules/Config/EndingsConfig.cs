@@ -79,6 +79,8 @@ namespace AiLabs.Rules.Config
         public int TrainingSpeedPermillePerLevel;
         /// <summary>Flat research points granted weekly per frontier level.</summary>
         public long ResearchPointsPerLevel;
+        /// <summary>Cash granted weekly per frontier level (museum stipend hook).</summary>
+        public long CashPerLevel;
 
         public void Sync(Syncer s)
         {
@@ -88,6 +90,7 @@ namespace AiLabs.Rules.Config
             s.Int("capabilityPermillePerLevel", ref CapabilityPermillePerLevel);
             s.Int("trainingSpeedPermillePerLevel", ref TrainingSpeedPermillePerLevel);
             s.Long("researchPointsPerLevel", ref ResearchPointsPerLevel);
+            s.Long("cashPerLevel", ref CashPerLevel);
         }
     }
 

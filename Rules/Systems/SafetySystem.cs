@@ -11,10 +11,22 @@ namespace AiLabs.Rules.Systems
     public static class SafetySystem
     {
         /// <summary>The weekly chance, in permille, that a released model has an incident.</summary>
-        public static int IncidentChancePermille(GameConfig c, ModelState model)
+        public static int IncidentChancePermille(GameConfig c, ModelState model, LabState lab = null)
         {
             long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
-            return (int)MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+            int chance = (int)MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+            if (lab != null) chance = ApplySafetyStaffCut(c, lab, chance);
+            return chance;
+        }
+
+        static int ApplySafetyStaffCut(GameConfig c, LabState lab, int chance)
+        {
+            int each = c.Safety.SafetyStaffIncidentCutPermillePerStaff;
+            if (each < 1) return chance;
+            int staff = LabQueries.StaffByFunction(c, lab, RoleFunction.Safety);
+            if (staff < 1) return chance;
+            int cut = (int)MathI.Min(MathI.Permille, staff * each);
+            return (int)MathI.MulPermille(chance, MathI.Permille - cut);
         }
 
         public static int EffectiveAlignment(GameConfig c, ModelState model)
@@ -53,7 +65,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Released) continue;
-                if (state.Rng.Safety.Chance(IncidentChancePermille(c, model))) Incident(c, state, lab, model);
+                if (state.Rng.Safety.Chance(IncidentChancePermille(c, model, lab))) Incident(c, state, lab, model);
             }
         }
 
