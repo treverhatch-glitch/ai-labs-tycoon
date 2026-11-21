@@ -5,7 +5,7 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 
 ## What makes a headline
 
-22 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
+27 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
 
 | Event | Headline (shown in capitals) |
 |---|---|
@@ -31,6 +31,11 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | A loan | {lab} borrows {money}. The bank calls the lab 'confident' |
 | A missed payment | {lab} misses a loan payment. A spokesperson says the cheque is in the post |
 | A default | {lab} defaults on a loan, {money} owed. The bank 'remains optimistic' |
+| A leak that runs (pick 1) | A story about {subject}'s {ref} reaches the press. {subject} suspects {lab}. {lab} suspects a coincidence |
+| A leak that backfires (pick 0) | {lab} leaks a story about {subject}'s {ref} and it turns out to be about {lab}. Nobody is surprised |
+| Poached staff | {lab} hires away {subject}'s {ref}. {subject} wishes them well, through a lawyer |
+| Exposed Gauntlet scores | {lab}'s Gauntlet scores are exposed. {lab} calls it 'a different methodology' |
+| A launch buzz | {model} launches to a gust of buzz. {lab} says it planned that |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 

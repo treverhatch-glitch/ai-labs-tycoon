@@ -8381,6 +8381,36 @@
         "kind": "LoanDefaulted",
         "pick": -1,
         "text": "{lab} defaults on a loan, {money} owed. The bank 'remains optimistic'"
+      },
+      {
+        "id": "story-leaked",
+        "kind": "StoryLeaked",
+        "pick": 1,
+        "text": "A story about {subject}'s {ref} reaches the press. {subject} suspects {lab}. {lab} suspects a coincidence"
+      },
+      {
+        "id": "story-backfired",
+        "kind": "StoryLeaked",
+        "pick": 0,
+        "text": "{lab} leaks a story about {subject}'s {ref} and it turns out to be about {lab}. Nobody is surprised"
+      },
+      {
+        "id": "staff-poached",
+        "kind": "StaffPoached",
+        "pick": -1,
+        "text": "{lab} hires away {subject}'s {ref}. {subject} wishes them well, through a lawyer"
+      },
+      {
+        "id": "gauntlet-exposed",
+        "kind": "GauntletExposed",
+        "pick": -1,
+        "text": "{lab}'s Gauntlet scores are exposed. {lab} calls it 'a different methodology'"
+      },
+      {
+        "id": "launch-buzz",
+        "kind": "LaunchBuzz",
+        "pick": -1,
+        "text": "{model} launches to a gust of buzz. {lab} says it planned that"
       }
     ],
     "filler": [

@@ -1444,6 +1444,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Chat is read off the event log and never saved: the golden digest did not move and the economy is untouched. One chat test that counted the table now expects 72 lines.
 - Alternatives: lines for `LoanDefaulted` (rejected: the `InDebt` and bankruptcy lines already speak for it and a default is the end of a conversation, not the start).
 
+### Q297. Which press and talent events make the news? DECIDED: leaks (both ways), poached staff, exposed Gauntlet scores and launch buzz
+- Five new headline lines: `StoryLeaked` (pick 1 for a leak that ran, pick 0 for one that backfired), `StaffPoached`, `GauntletExposed` and `LaunchBuzz`. A poach by no particular lab reads "A LAB HIRES AWAY...".
+- Left out on purpose: `TrustLost` (one event per sector, many with no loss) and `ChinaDealOffered` (an offer, not an event the paper would run).
+- The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing in the economy changed.
+
 ## Open
 
 None.
