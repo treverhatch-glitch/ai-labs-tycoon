@@ -40,5 +40,13 @@ namespace AiLabs.Rules.Systems
             if (!Active(c, state, lab, source.Id) || cfg == null || cfg.FailRiskCutPermille < 1) return risk;
             return (int)Core.MathI.MulPermille(risk, Core.MathI.Permille - cfg.FailRiskCutPermille);
         }
+
+        public static int PrepCostCutPermille(GameConfig c, GameState state, LabState lab, string dataSourceId)
+        {
+            SyntheticDataLabConfig cfg = c.Training.SyntheticDataLab;
+            if (cfg == null || cfg.PrepCostCutPermille < 1) return 0;
+            if (!Active(c, state, lab, dataSourceId)) return 0;
+            return cfg.PrepCostCutPermille;
+        }
     }
 }

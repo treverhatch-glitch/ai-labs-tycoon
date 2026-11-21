@@ -98,14 +98,15 @@ public class ModelMoodAppealTests
     }
 
     [Fact]
-    public void Glitching_does_not_double_apply_mood_on_appeal()
+    public void Glitching_uses_glitching_appeal_not_overworked()
     {
         Game g = WithReleasedMini(out ModelState model);
         model.LastIncidentTick = g.Tick;
         model.Incidents = 1;
         Assert.Equal(ModelMood.Glitching, LabQueries.Mood(g.C, g.Me, model, g.Tick));
         var parts = DisplayQueries.AppealParts(g.C, g.State, g.C.Sector("game-ai"), g.State.Sector("game-ai"), g.Me, model);
-        Assert.Equal(0, parts.MoodBoost);
+        Assert.True(parts.MoodBoost < 0);
+        Assert.Equal(750, g.C.Safety.GlitchingAppealPermille);
     }
 
     [Fact]

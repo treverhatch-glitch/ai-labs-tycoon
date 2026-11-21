@@ -43,7 +43,9 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             int baseline = c.Safety.ReputationBaseline;
-            int step = c.Safety.ReputationRecoveryPerWeek;
+            int sales = LabQueries.StaffByFunction(c, lab, RoleFunction.Sales);
+            int step = c.Safety.ReputationRecoveryPerWeek
+                + sales * c.Safety.SalesReputationRecoveryPermillePerStaff;
             if (lab.Reputation < baseline) lab.Reputation = (int)MathI.Min(baseline, lab.Reputation + step);
             else if (lab.Reputation > baseline) lab.Reputation = (int)MathI.Max(baseline, lab.Reputation - step);
 

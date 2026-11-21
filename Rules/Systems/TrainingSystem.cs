@@ -45,7 +45,8 @@ namespace AiLabs.Rules.Systems
             int total = MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
                 + ExpansionSystem.TrainingSpeedBonusPermille(c, state, lab)
-                + StaffSystem.MoraleTrainingPermille(c, lab);
+                + StaffSystem.MoraleTrainingPermille(c, lab)
+                + DeviceWorkshopSystem.TrainingSpeedBonusPermille(c, state, lab);
             FrontierConfig frontier = c.Endings?.Frontier;
             if (frontier != null && frontier.TrainingSpeedPermillePerLevel > 0 && lab.FrontierLevel > 0)
                 total += frontier.TrainingSpeedPermillePerLevel * lab.FrontierLevel;
@@ -54,6 +55,10 @@ namespace AiLabs.Rules.Systems
                 && lab.LastWeek.ServingDemand > 0
                 && lab.LastWeek.ServedPermille < MathI.Permille)
                 total = (int)MathI.MulPermille(total, c.Safety.OverworkedTrainingSpeedPermille);
+            if (c.Safety.GlitchingTrainingSpeedPermille > 0
+                && c.Safety.GlitchingTrainingSpeedPermille < MathI.Permille
+                && LabHasGlitchingReleased(c, lab, state.Tick))
+                total = (int)MathI.MulPermille(total, c.Safety.GlitchingTrainingSpeedPermille);
             return total;
         }
 
@@ -138,6 +143,17 @@ namespace AiLabs.Rules.Systems
                 if (MaybeFail(c, state, lab, model)) continue;
                 if (model.ProgressCompute >= model.RequiredCompute) Finish(c, state, lab, model);
             }
+        }
+
+        public static bool LabHasGlitchingReleased(GameConfig c, LabState lab, int tick)
+        {
+            for (int i = 0; i < lab.Models.Count; i++)
+            {
+                ModelState m = lab.Models[i];
+                if (m.Status != ModelStatus.Released) continue;
+                if (LabQueries.IsGlitching(c, m, tick)) return true;
+            }
+            return false;
         }
 
         /// <summary>Weekly chance a run collapses after early progress. Engineers and alignment share cut the odds.</summary>

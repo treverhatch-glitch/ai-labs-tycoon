@@ -27,7 +27,8 @@ namespace AiLabs.Rules.Systems
             }
             int repEach = c.Endings.Museum.ReputationPerFullLine;
             long rpEach = c.Endings.Museum.ResearchPointsPerFullLine;
-            if ((repEach > 0 || rpEach > 0) && cap > 0)
+            long cashEach = c.Endings.Museum.CashPerFullLine;
+            if ((repEach > 0 || rpEach > 0 || cashEach > 0) && cap > 0)
             {
                 int full = 0;
                 for (int l = 0; l < lines.Count; l++)
@@ -38,8 +39,13 @@ namespace AiLabs.Rules.Systems
                         lab.Reputation = (int)MathI.Clamp(lab.Reputation + repEach * full, 0, MathI.Permille);
                     if (rpEach > 0)
                         lab.ResearchPoints += rpEach * full;
+                    if (cashEach > 0)
+                        Finance.Earn(lab, LedgerLine.Grants, cashEach * full);
                 }
             }
+            FrontierConfig frontier = c.Endings?.Frontier;
+            if (frontier != null && frontier.ResearchPointsPerLevel > 0 && lab.FrontierLevel > 0)
+                lab.ResearchPoints += frontier.ResearchPointsPerLevel * lab.FrontierLevel;
         }
 
         public static int RetiredOnLine(LabState lab, string lineId)

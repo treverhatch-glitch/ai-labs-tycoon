@@ -119,7 +119,9 @@ namespace AiLabs.Rules.Systems
             b.Core = quality * quality;
             ModelMood mood = LabQueries.Mood(c, lab, model, state.Tick);
             int moodPermille = MathI.Permille;
-            if (mood == ModelMood.Overworked && c.Safety.OverworkedAppealPermille > 0)
+            if (mood == ModelMood.Glitching && c.Safety.GlitchingAppealPermille > 0)
+                moodPermille = c.Safety.GlitchingAppealPermille;
+            else if (mood == ModelMood.Overworked && c.Safety.OverworkedAppealPermille > 0)
                 moodPermille = c.Safety.OverworkedAppealPermille;
             else if (mood == ModelMood.Corrupted && c.Safety.CorruptedMoodAppealPermille > 0)
                 moodPermille = c.Safety.CorruptedMoodAppealPermille;

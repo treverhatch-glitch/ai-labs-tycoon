@@ -65,6 +65,9 @@ namespace AiLabs.Rules.Systems
         {
             int drop = c.StaffPeople.MoraleIncidentDrop;
             if (drop <= 0) return;
+            int mit = MoraleIncidentMitigationPermille(c, lab);
+            if (mit > 0) drop = (int)MathI.MulPermille(drop, MathI.Permille - mit);
+            if (drop < 1) return;
             for (int i = 0; i < lab.Staff.Count; i++)
                 lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - drop);
         }
@@ -81,7 +84,9 @@ namespace AiLabs.Rules.Systems
         {
             if (player == null || player.Bankrupt || player.Staff.Count == 0) return;
             if (!RivalSystem.IsFeud(c, rival)) return;
-            if (!state.Rng.Rivals.Chance(c.StaffPeople.PoachChancePermille)) return;
+            int chance = c.StaffPeople.PoachChancePermille - MoralePoachResistPermille(c, player);
+            if (chance < 1) return;
+            if (!state.Rng.Rivals.Chance(chance)) return;
 
             StaffMember target = BestPoachTarget(c, player);
             if (target == null) return;
@@ -139,6 +144,24 @@ namespace AiLabs.Rules.Systems
             int delta = AverageMorale(lab) - cfg.MoraleBaseline;
             if (delta <= 0) return 0;
             return delta * cfg.MoraleFailCutPermillePerPoint;
+        }
+
+        public static int MoralePoachResistPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoralePoachResistPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            if (delta <= 0) return 0;
+            return delta * cfg.MoralePoachResistPermillePerPoint;
+        }
+
+        public static int MoraleIncidentMitigationPermille(GameConfig c, LabState lab)
+        {
+            StaffPeopleConfig cfg = c.StaffPeople;
+            if (cfg == null || cfg.MoraleIncidentMitigationPermillePerPoint < 1 || lab.Staff.Count < 1) return 0;
+            int delta = AverageMorale(lab) - cfg.MoraleBaseline;
+            if (delta <= 0) return 0;
+            return (int)MathI.Min(MathI.Permille, delta * cfg.MoraleIncidentMitigationPermillePerPoint);
         }
 
         public static string DefaultTrait(StaffPeopleConfig cfg)

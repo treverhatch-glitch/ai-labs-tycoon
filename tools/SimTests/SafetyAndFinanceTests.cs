@@ -75,7 +75,10 @@ public class SafetyAndFinanceTests
         GameEvent incident = g.State.Events.Last(e => e.Kind == EventKind.Incident);
         Assert.Equal(g.Sim.Tick - 1, model.LastIncidentTick);
         // The week's healing toward normal comes first, then the incident takes its bite.
-        int healed = reputationBefore + System.Math.Sign(g.C.Safety.ReputationBaseline - reputationBefore) * g.C.Safety.ReputationRecoveryPerWeek;
+        int sales = LabQueries.StaffByFunction(g.C, g.Me, RoleFunction.Sales);
+        int healStep = g.C.Safety.ReputationRecoveryPerWeek
+            + sales * g.C.Safety.SalesReputationRecoveryPermillePerStaff;
+        int healed = reputationBefore + System.Math.Sign(g.C.Safety.ReputationBaseline - reputationBefore) * healStep;
         IncidentRungConfig rung = g.C.Safety.IncidentRung(model.LastIncidentRung);
         int repLoss = rung == null ? g.C.Safety.IncidentReputationLoss : rung.ReputationLoss;
         Assert.Equal(healed - repLoss, g.Me.Reputation);

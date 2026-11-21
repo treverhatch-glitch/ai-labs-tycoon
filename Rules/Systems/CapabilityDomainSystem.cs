@@ -120,6 +120,55 @@ namespace AiLabs.Rules.Systems
                 if (priorLeader != leaderId)
                     Events.Add(state, EventKind.DomainLeaderChanged, leaderId, priorLeader, bestFoot, domain.Id);
             }
+            GrantWeeklyStipends(c, state);
+        }
+
+        static void GrantWeeklyStipends(GameConfig c, GameState state)
+        {
+            for (int i = 0; i < state.DomainLeaders.Count; i++)
+            {
+                CapabilityDomainLeaderState row = state.DomainLeaders[i];
+                CapabilityDomainConfig domain = c.Market.Domain(row.DomainId);
+                if (domain == null) continue;
+                LabState leader = state.Lab(row.LeaderLabId);
+                if (leader == null || leader.Bankrupt) continue;
+                if (domain.LeaderReputationPerWeek > 0)
+                    leader.Reputation = (int)MathI.Clamp(leader.Reputation + domain.LeaderReputationPerWeek, 0, MathI.Permille);
+                if (domain.LeaderResearchPerWeek > 0)
+                    leader.ResearchPoints += domain.LeaderResearchPerWeek;
+                if (domain.ChallengerReputationPerWeek < 1) continue;
+                int runnerUp = RunnerUpLabId(c, state, row);
+                if (runnerUp < 0) continue;
+                LabState challenger = state.Lab(runnerUp);
+                if (challenger == null || challenger.Bankrupt) continue;
+                challenger.Reputation = (int)MathI.Clamp(challenger.Reputation + domain.ChallengerReputationPerWeek, 0, MathI.Permille);
+            }
+        }
+
+        static int RunnerUpLabId(GameConfig c, GameState state, CapabilityDomainLeaderState leaderRow)
+        {
+            CapabilityDomainConfig domain = c.Market.Domain(leaderRow.DomainId);
+            if (domain == null) return -1;
+            int runnerUpId = -1;
+            long bestFoot = 0;
+            int bestCap = 0;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState rival = state.Labs[i];
+                if (rival.Bankrupt || rival.Id == leaderRow.LeaderLabId) continue;
+                long rivalFoot = CapabilityDomainQueries.DomainFootprint(c, state, rival, leaderRow.DomainId);
+                if (rivalFoot < 1) continue;
+                if (rivalFoot < MathI.MulPermille(leaderRow.Footprint, domain.ChallengerNearLeaderPermille)) continue;
+                int cap = CapabilityDomainQueries.BestCapability(c, rival, leaderRow.DomainId);
+                bool better = rivalFoot > bestFoot
+                    || (rivalFoot == bestFoot && cap > bestCap)
+                    || (rivalFoot == bestFoot && cap == bestCap && (runnerUpId < 0 || rival.Id < runnerUpId));
+                if (!better) continue;
+                bestFoot = rivalFoot;
+                bestCap = cap;
+                runnerUpId = rival.Id;
+            }
+            return runnerUpId;
         }
     }
 }

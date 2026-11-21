@@ -24,6 +24,8 @@ namespace AiLabs.Rules.Config
         public int MoraleTrainingPermillePerPoint;
         /// <summary>Each point of morale above baseline cuts weekly training-fail risk by this much (permille points).</summary>
         public int MoraleFailCutPermillePerPoint;
+        public int MoralePoachResistPermillePerPoint;
+        public int MoraleIncidentMitigationPermillePerPoint;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -45,6 +47,8 @@ namespace AiLabs.Rules.Config
             s.Int("moraleAlignmentPermillePerPoint", ref MoraleAlignmentPermillePerPoint);
             s.Int("moraleTrainingPermillePerPoint", ref MoraleTrainingPermillePerPoint);
             s.Int("moraleFailCutPermillePerPoint", ref MoraleFailCutPermillePerPoint);
+            s.Int("moralePoachResistPermillePerPoint", ref MoralePoachResistPermillePerPoint);
+            s.Int("moraleIncidentMitigationPermillePerPoint", ref MoraleIncidentMitigationPermillePerPoint);
             s.ObjList("traits", ref Traits);
         }
     }

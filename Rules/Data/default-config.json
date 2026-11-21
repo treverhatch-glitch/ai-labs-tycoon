@@ -3217,7 +3217,8 @@
       "dataSourceId": "synthetic",
       "corruptionCutPermille": 350,
       "failRiskCutPermille": 400,
-      "trainingSpeedBonusPermille": 120
+      "trainingSpeedBonusPermille": 120,
+      "prepCostCutPermille": 80
     },
     "dataSources": [
       {
@@ -3426,6 +3427,9 @@
     "overworkedAppealPermille": 880,
     "corruptedMoodAppealPermille": 700,
     "overworkedTrainingSpeedPermille": 850,
+    "glitchingAppealPermille": 750,
+    "glitchingTrainingSpeedPermille": 900,
+    "salesReputationRecoveryPermillePerStaff": 1,
     "reputationBaseline": 500,
     "reputationRecoveryPerWeek": 1,
     "rung2BelowAlignment": 500,
@@ -3498,7 +3502,8 @@
       "sectorId": "devices",
       "appealBonusPermille": 100,
       "revenueBonusPermille": 80,
-      "prepCostCutPermille": 100
+      "prepCostCutPermille": 100,
+      "trainingSpeedBonusPermille": 60
     },
     "capabilityDomains": [
       {
@@ -3507,6 +3512,9 @@
         "leaderAppealPermille": 120,
         "challengerAppealPermille": 60,
         "challengerNearLeaderPermille": 900,
+        "leaderReputationPerWeek": 2,
+        "challengerReputationPerWeek": 1,
+        "leaderResearchPerWeek": 5,
         "sectorIds": [
           "code-completion",
           "coding-agents",
@@ -3519,6 +3527,9 @@
         "leaderAppealPermille": 120,
         "challengerAppealPermille": 60,
         "challengerNearLeaderPermille": 900,
+        "leaderReputationPerWeek": 2,
+        "challengerReputationPerWeek": 1,
+        "leaderResearchPerWeek": 5,
         "sectorIds": [
           "image-recognition",
           "image-design",
@@ -3531,6 +3542,9 @@
         "leaderAppealPermille": 100,
         "challengerAppealPermille": 50,
         "challengerNearLeaderPermille": 900,
+        "leaderReputationPerWeek": 2,
+        "challengerReputationPerWeek": 1,
+        "leaderResearchPerWeek": 5,
         "sectorIds": [
           "expert-systems",
           "spam-search"
@@ -4070,6 +4084,8 @@
     "moraleAlignmentPermillePerPoint": 3,
     "moraleTrainingPermillePerPoint": 2,
     "moraleFailCutPermillePerPoint": 1,
+    "moralePoachResistPermillePerPoint": 1,
+    "moraleIncidentMitigationPermillePerPoint": 2,
     "traits": [
       {
         "id": "steady",
@@ -4829,13 +4845,15 @@
       "growthPermille": 1400,
       "maxLevel": 60,
       "capabilityPermillePerLevel": 50,
-      "trainingSpeedPermillePerLevel": 8
+      "trainingSpeedPermillePerLevel": 8,
+      "researchPointsPerLevel": 12
     },
     "museum": {
       "perLine": 6,
       "researchPermillePerCapability": 500,
       "reputationPerFullLine": 2,
-      "researchPointsPerFullLine": 25
+      "researchPointsPerFullLine": 25,
+      "cashPerFullLine": 5000
     }
   },
   "shady": {

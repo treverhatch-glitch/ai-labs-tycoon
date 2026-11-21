@@ -57,6 +57,9 @@ namespace AiLabs.Rules.Sim
             int workshopCut = DeviceWorkshopSystem.PrepCostCutPermille(c, state, lab);
             if (workshopCut > 0)
                 prepCost = MathI.MulPermille(prepCost, MathI.Permille - workshopCut);
+            int syntheticCut = SyntheticDataLabSystem.PrepCostCutPermille(c, state, lab, mix.Id);
+            if (syntheticCut > 0)
+                prepCost = MathI.MulPermille(prepCost, MathI.Permille - syntheticCut);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
             var model = new ModelState();

@@ -592,6 +592,8 @@ namespace AiLabs.Rules.Config
         public int FailRiskCutPermille = 400;
         /// <summary>Extra training speed while a run uses the synthetic mix and the room is live.</summary>
         public int TrainingSpeedBonusPermille;
+        /// <summary>Cut applied to training prep when starting a run on the synthetic mix with the room live.</summary>
+        public int PrepCostCutPermille;
 
         public void Sync(Syncer s)
         {
@@ -601,6 +603,7 @@ namespace AiLabs.Rules.Config
             s.Int("corruptionCutPermille", ref CorruptionCutPermille);
             s.Int("failRiskCutPermille", ref FailRiskCutPermille);
             s.Int("trainingSpeedBonusPermille", ref TrainingSpeedBonusPermille);
+            s.Int("prepCostCutPermille", ref PrepCostCutPermille);
         }
     }
 
@@ -728,8 +731,14 @@ namespace AiLabs.Rules.Config
         public int OverworkedAppealPermille;
         /// <summary>Appeal permille while the mascot is Corrupted.</summary>
         public int CorruptedMoodAppealPermille;
+        /// <summary>Appeal permille while the mascot is Glitching after an incident.</summary>
+        public int GlitchingAppealPermille;
         /// <summary>Lab-wide training speed permille while serving demand outstrips compute.</summary>
         public int OverworkedTrainingSpeedPermille;
+        /// <summary>Training speed permille while any released model is in the Glitching state.</summary>
+        public int GlitchingTrainingSpeedPermille;
+        /// <summary>Extra reputation recovery per sales staff member each week.</summary>
+        public int SalesReputationRecoveryPermillePerStaff;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
@@ -762,6 +771,9 @@ namespace AiLabs.Rules.Config
             s.Int("overworkedAppealPermille", ref OverworkedAppealPermille);
             s.Int("corruptedMoodAppealPermille", ref CorruptedMoodAppealPermille);
             s.Int("overworkedTrainingSpeedPermille", ref OverworkedTrainingSpeedPermille);
+            s.Int("glitchingAppealPermille", ref GlitchingAppealPermille);
+            s.Int("glitchingTrainingSpeedPermille", ref GlitchingTrainingSpeedPermille);
+            s.Int("salesReputationRecoveryPermillePerStaff", ref SalesReputationRecoveryPermillePerStaff);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
@@ -834,6 +846,12 @@ namespace AiLabs.Rules.Config
         public int ChallengerAppealPermille;
         /// <summary>Runner-up must reach this share of the leader's footprint (permille) to earn <see cref="ChallengerAppealPermille"/>.</summary>
         public int ChallengerNearLeaderPermille = 900;
+        /// <summary>Reputation granted weekly to the domain leader lab.</summary>
+        public int LeaderReputationPerWeek;
+        /// <summary>Reputation granted weekly to the near runner-up lab.</summary>
+        public int ChallengerReputationPerWeek;
+        /// <summary>Research points granted weekly to the domain leader lab.</summary>
+        public long LeaderResearchPerWeek;
 
         public string Id { get { return IdValue; } }
 
@@ -845,6 +863,9 @@ namespace AiLabs.Rules.Config
             s.Int("leaderAppealPermille", ref LeaderAppealPermille);
             s.Int("challengerAppealPermille", ref ChallengerAppealPermille);
             s.Int("challengerNearLeaderPermille", ref ChallengerNearLeaderPermille);
+            s.Int("leaderReputationPerWeek", ref LeaderReputationPerWeek);
+            s.Int("challengerReputationPerWeek", ref ChallengerReputationPerWeek);
+            s.Long("leaderResearchPerWeek", ref LeaderResearchPerWeek);
         }
     }
 
@@ -858,6 +879,8 @@ namespace AiLabs.Rules.Config
         public int RevenueBonusPermille;
         /// <summary>Cut applied to training prep cost when the workshop gate is satisfied (permille off list).</summary>
         public int PrepCostCutPermille;
+        /// <summary>Training speed bonus while the workshop gate is satisfied and runs are active.</summary>
+        public int TrainingSpeedBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -867,6 +890,7 @@ namespace AiLabs.Rules.Config
             s.Int("appealBonusPermille", ref AppealBonusPermille);
             s.Int("revenueBonusPermille", ref RevenueBonusPermille);
             s.Int("prepCostCutPermille", ref PrepCostCutPermille);
+            s.Int("trainingSpeedBonusPermille", ref TrainingSpeedBonusPermille);
         }
     }
 

@@ -386,6 +386,42 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 
 - Config extension only; reuses Q65 leader/appeal path.
 
+### Q105. Sales staff reputation recovery? DECIDED: `salesReputationRecoveryPermillePerStaff`
+- Choice: **(a)** — add to weekly drift step in `SafetySystem.RunWeek`.
+
+### Q104. Morale incident mitigation? DECIDED: `moraleIncidentMitigationPermillePerPoint`
+- Choice: **(a)** — scales down `MoraleIncidentDrop` in `StaffSystem.OnIncident`.
+
+### Q103. Museum cash per full line? DECIDED: `cashPerFullLine`
+- Choice: **(a)** — weekly `Grants` ledger when a line hits retirement cap.
+
+### Q102. Domain leader research? DECIDED: `leaderResearchPerWeek`
+- Choice: **(a)** — flat RP in `CapabilityDomainSystem.GrantWeeklyStipends`.
+
+### Q101. Glitching training speed? DECIDED: `glitchingTrainingSpeedPermille`
+- Choice: **(a)** — multiply `SpeedPermille` when any released model is glitching.
+
+### Q100. Challenger reputation stipend? DECIDED: `challengerReputationPerWeek`
+- Choice: **(a)** — runner-up lab via `RunnerUpLabId`, same weekly pass as Q96.
+
+### Q99. Workshop training speed? DECIDED: `deviceWorkshop.trainingSpeedBonusPermille`
+- Choice: **(a)** — stacks in `TrainingSystem.SpeedPermille` with same gate as prep cut.
+
+### Q98. Frontier weekly research? DECIDED: `frontier.researchPointsPerLevel`
+- Choice: **(a)** — `MuseumSystem.RunWeek` beside salvage/stipends.
+
+### Q97. Morale poach resist? DECIDED: `moralePoachResistPermillePerPoint`
+- Choice: **(a)** — subtract from `PoachChancePermille` in `TryPoach`.
+
+### Q96. Domain leader reputation? DECIDED: `leaderReputationPerWeek`
+- Choice: **(a)** — weekly stipend after domain leader refresh.
+
+### Q95. Synthetic prep cut? DECIDED: `syntheticDataLab.prepCostCutPermille`
+- Choice: **(a)** — `BeginTraining` prep spend when room active on that mix.
+
+### Q94. Glitching appeal cut? DECIDED: `glitchingAppealPermille`
+- Choice: **(a)** — third mood branch in `AppealParts` beside overworked/corrupted.
+
 ### Q93. Overworked lab training speed? DECIDED: `overworkedTrainingSpeedPermille`
 - Choice: **(a)** — multiply `SpeedPermille` when last week left serving demand unserved.
 

@@ -43,6 +43,13 @@ namespace AiLabs.Rules.Systems
             return WorkshopBonusPermille(c, state, lab, workshop.SectorId, workshop.PrepCostCutPermille);
         }
 
+        public static int TrainingSpeedBonusPermille(GameConfig c, GameState state, LabState lab)
+        {
+            DeviceWorkshopConfig workshop = c.Market.DeviceWorkshop;
+            if (workshop == null) return 0;
+            return WorkshopBonusPermille(c, state, lab, workshop.SectorId, workshop.TrainingSpeedBonusPermille);
+        }
+
         static int WorkshopBonusPermille(GameConfig c, GameState state, LabState lab, string sectorId, int bonus)
         {
             if (lab.Bankrupt || bonus <= 0) return 0;
