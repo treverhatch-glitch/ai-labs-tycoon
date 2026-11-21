@@ -119,7 +119,7 @@ public class IncidentRungsLaterTests
         var g = Game.Solo();
         var honest = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 0, Status = ModelStatus.Released };
         var dirty = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 200, Status = ModelStatus.Released };
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, dirty) > SafetySystem.IncidentChancePermille(g.C, honest));
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, dirty) > SafetySystem.IncidentChancePermille(g.C, g.Tick, honest));
         Assert.Equal(1, SafetySystem.PickIncidentRung(g.C, dirty));
     }
 }

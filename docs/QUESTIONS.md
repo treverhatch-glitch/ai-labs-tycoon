@@ -552,6 +552,38 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
 - Why: bible safety ladder; pairs with corruption incident weight (Q74).
 
+### Q101. 60-year headless soak? DECIDED: step sixty years in tests
+
+- Options: (a) CI only; (b) one ForwardQueueLaterTests year step with Problems check.
+- Recommendation and choice: **(b)**.
+- Why: systems-design 5.6 soak tail without balance-soak runtime cost.
+
+### Q100. Era incident load? DECIDED: era `incidentLoadPermille`
+
+- Options: (a) flat forever; (b) per-era multiplier on weekly incident chance.
+- Recommendation and choice: **(b)**; default 1000, agents 1200.
+- Why: NEXT item 13 "rules shift" lite; `IncidentParts` and `SafetySystem` take tick.
+
+### Q99. Exit sell-price breakdown? DECIDED: `ExitPriceParts`
+
+- Options: (a) prose only; (b) breakdown query matching `SellPrice`.
+- Recommendation and choice: **(b)**. Revenue years, fleet, cash on hand.
+
+### Q98. Second Place ending? DECIDED: crown runner-up streak
+
+- Options: (a) never; (b) `crownRunnerUpStreak` after Gauntlet crown rank; `secondPlaceRunnerUpYears: 3`.
+- Recommendation and choice: **(b)**. Schema 17; continue `acknowledge`.
+
+### Q97. The Pop ending? DECIDED: player haircut on bubble pop
+
+- Options: (a) news only; (b) record `the-pop` when weak player takes bubble haircut.
+- Recommendation and choice: **(b)**. `BubbleConfig.thePopEndingForPlayer`.
+
+### Q96. Endings continuation tail? DECIDED: continue modes on monopoly + superintelligence
+
+- Options: (a) host-only; (b) config `continueModes` + `ApplyContinue` for spectate on worst endings.
+- Recommendation and choice: **(b)**. Item 11 closed; no golden move.
+
 ### Q95. Funding ladder follow-ons? DECIDED: down rounds, player board drama, investor events
 
 - Options: (a) defer until UI; (b) hot-bubble down-round cash/dilution on raise; (c) investor seats trigger monthly board lock; (d) after two rounds, investor board visits nudge rep and bubble.

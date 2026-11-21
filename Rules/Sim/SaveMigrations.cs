@@ -31,6 +31,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 14) MigrateTo14(root);
             if (fromSchema < 15) MigrateTo15(root);
             if (fromSchema < 16) MigrateTo16(root);
+            if (fromSchema < 17) MigrateTo17(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -287,6 +288,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo16(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "boardLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Q98 gauntlet runner-up streak (stack2).</summary>
+        static void MigrateTo17(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crownRunnerUpStreak", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

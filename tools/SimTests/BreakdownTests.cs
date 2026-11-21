@@ -46,8 +46,8 @@ public class BreakdownTests
     {
         var g = Game.Solo();
         var model = new ModelState { Alignment = 400, Corruption = 200, Status = ModelStatus.Released };
-        DisplayQueries.IncidentBreakdown b = DisplayQueries.IncidentParts(g.C, model);
-        Assert.Equal(b.Total, SafetySystem.IncidentChancePermille(g.C, model));
+        DisplayQueries.IncidentBreakdown b = DisplayQueries.IncidentParts(g.C, g.Tick, model);
+        Assert.Equal(b.Total, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(b.FromConfig + b.FromAlignment + b.FromCorruption, b.Total);
     }
 

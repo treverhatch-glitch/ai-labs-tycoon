@@ -16,6 +16,8 @@ namespace AiLabs.Rules.Systems
         public const string PaperclippedId = "paperclipped";
         public const string LongSummerId = "long-summer";
         public const string LooseId = "loose";
+        public const string ThePopId = "the-pop";
+        public const string SecondPlaceId = "second-place";
 
         public static void RecordBankrupt(GameConfig c, GameState state, LabState lab)
         {
@@ -206,6 +208,24 @@ namespace AiLabs.Rules.Systems
             long cost = f.BaseCost;
             for (int i = 0; i < lab.FrontierLevel; i++) cost = MathI.MulPermille(cost, f.GrowthPermille);
             return cost;
+        }
+
+        public static void RecordThePop(GameConfig c, GameState state, LabState player)
+        {
+            if (player == null || player.Bankrupt) return;
+            if (HasOpen(state, ThePopId)) return;
+            Add(state, player.Id, ThePopId);
+            Events.Add(state, EventKind.EndingReached, player.Id, -1, 0, ThePopId);
+        }
+
+        public static void TrySecondPlace(GameConfig c, GameState state, LabState player)
+        {
+            if (player == null || player.Bankrupt) return;
+            int need = c.Endings.SecondPlaceRunnerUpYears;
+            if (need < 1 || player.CrownRunnerUpStreak < need) return;
+            if (HasOpen(state, SecondPlaceId)) return;
+            Add(state, player.Id, SecondPlaceId);
+            Events.Add(state, EventKind.EndingReached, player.Id, -1, player.CrownRunnerUpStreak, SecondPlaceId);
         }
 
         public static void ApplyContinue(GameConfig c, GameState state, LabState lab, EndingRecord record, string mode)

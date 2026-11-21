@@ -50,6 +50,7 @@ namespace AiLabs.Rules.Sim
             player.TrainingSharePermille = start.TrainingSharePermille;
             player.FounderSharePermille = c.Funding.FounderStartPermille;
             player.BoardInvestorSeats = 0;
+            player.CrownRunnerUpStreak = 0;
             state.Labs.Add(player);
             state.PlayerLabId = player.Id;
             state.Endings = new List<EndingRecord>();
@@ -105,6 +106,7 @@ namespace AiLabs.Rules.Sim
             lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
             lab.FounderSharePermille = c.Funding.FounderStartPermille;
             lab.BoardInvestorSeats = 0;
+            lab.CrownRunnerUpStreak = 0;
             if (c.Shares != null) lab.PublicFloatPpm = c.Shares.RivalStartPublicFloatPpm;
             lab.PlanPausedUntilTick = -1;
             lab.BoardLockedUntilTick = -1;
@@ -185,6 +187,7 @@ namespace AiLabs.Rules.Sim
             fresh.TrainingSharePermille = start.TrainingSharePermille;
             fresh.FounderSharePermille = c.Funding.FounderStartPermille;
             fresh.BoardInvestorSeats = 0;
+            fresh.CrownRunnerUpStreak = 0;
             fresh.FundingRounds = new List<string>();
             fresh.PlanPausedUntilTick = -1;
             fresh.BoardLockedUntilTick = -1;

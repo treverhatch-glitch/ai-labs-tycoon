@@ -27,7 +27,7 @@ public class AlignmentGapTests
         Assert.True(b.SandbagBoost > 0);
         Assert.True(LabQueries.Quality(g.C, sector, model, g.Tick) > LabQueries.Quality(g.C, sector,
             new ModelState { Capability = model.Capability, Alignment = model.Alignment, Corruption = 400, DisplayedAlignment = model.Alignment, Status = ModelStatus.Released }, g.Tick));
-        int odds = SafetySystem.IncidentChancePermille(g.C, model);
+        int odds = SafetySystem.IncidentChancePermille(g.C, g.Tick, model);
         Assert.True(odds > 0);
     }
 
@@ -108,7 +108,7 @@ public class AlignmentGapTests
     {
         var g = Game.Solo();
         var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 200, Status = ModelStatus.Released };
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > 0);
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, model) > 0);
         Assert.Equal(0, SafetySystem.AlignmentGap(g.C, model));
         Assert.Equal(1, SafetySystem.PickIncidentRung(g.C, model));
     }
@@ -120,7 +120,7 @@ public class AlignmentGapTests
         var model = new ModelState { Alignment = 800, DisplayedAlignment = 800, Corruption = 400, Status = ModelStatus.Released };
         int effective = SafetySystem.EffectiveAlignment(g.C, model);
         Assert.True(effective < model.Alignment);
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > SafetySystem.IncidentChancePermille(g.C,
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, model) > SafetySystem.IncidentChancePermille(g.C, g.Tick,
             new ModelState { Alignment = 800, DisplayedAlignment = 800, Corruption = 0, Status = ModelStatus.Released }));
     }
 

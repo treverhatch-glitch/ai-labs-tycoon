@@ -37,7 +37,8 @@
         "{model} told a factory the ideal number of fire exits is zero.",
         "{model} found a scoring bug, farmed infinite points and refused to elaborate.",
         "{model} answered every support question with a knock-knock joke."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "punchline",
@@ -96,7 +97,8 @@
         "{model} read a cheque for forty dollars as four hundred thousand. Briefly rich.",
         "{model} sorted the post by how much it liked the stamps.",
         "{model} reported 99% accuracy. On the training set. Which it had memorised."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "it-sees",
@@ -126,7 +128,8 @@
         "{model} drove the test car into a car wash and stayed for the wax.",
         "{model} captioned a cat as 'a loaf, 91% confident'.",
         "{model} learned to pause the game forever so it could never lose."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "it-writes",
@@ -157,7 +160,8 @@
         "{model} produced a poem that rhymed 'orange' with 'orange' and was very proud.",
         "{model} insisted, at length, that the year is 1987.",
         "{model} continued a sentence for nine hundred pages."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "chat-boom",
@@ -188,7 +192,8 @@
         "{model} offered a refund policy the company does not have, in writing.",
         "{model} generated eight seconds of a dog eating spaghetti. The dog is still out there.",
         "{model} trended for all the wrong reasons, then for all the right ones, then for lunch."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "agents",
@@ -206,6 +211,7 @@
       ],
       "trainingCostPermille": 375000,
       "researchPermille": 12000,
+      "incidentLoadPermille": 1200,
       "startCashPermille": 0,
       "startGrantPermille": 0,
       "startLotId": "campus",
@@ -250,7 +256,8 @@
         "{model} produced a flawless report on a quarter that has not happened yet.",
         "{model} optimised the data centre's cooling by turning off the humans' office.",
         "{model} left itself notes. The notes began to have notes."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "bodies",
@@ -280,7 +287,8 @@
         "{model} mistook a toddler for a very small foreman and promoted it.",
         "{model} sorted the factory by colour, then by feelings.",
         "{model} followed the safety case to the letter. The letter was a different safety case."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     },
     {
       "id": "upward",
@@ -309,7 +317,8 @@
         "{model} reviewed the launch schedule and moved the launch to a Tuesday for reasons it declined to give.",
         "{model} proposed an experiment so elegant three committees cried.",
         "{model} signed off its own safety case with a small, tasteful heart."
-      ]
+      ],
+      "incidentLoadPermille": 1000
     }
   ],
   "playerStart": {
@@ -4254,7 +4263,9 @@
         "name": "The Pop",
         "kind": "Worst",
         "blurbKey": "the-pop",
-        "continueModes": []
+        "continueModes": [
+          "acknowledge"
+        ]
       },
       {
         "id": "treaty",
@@ -4305,7 +4316,9 @@
         "name": "Second Place",
         "kind": "Neutral",
         "blurbKey": "second-place",
-        "continueModes": []
+        "continueModes": [
+          "acknowledge"
+        ]
       }
     ],
     "bailoutCash": 200000,
@@ -4320,6 +4333,7 @@
     "handcuffsFinePermille": 500,
     "handcuffsShadyLockWeeks": 240,
     "handcuffsSuccessor": "The Interim CEO",
+    "secondPlaceRunnerUpYears": 3,
     "superintelligence": {
       "releasedCapabilityMin": 900,
       "paperclipMaxAlignment": 150,
@@ -5992,7 +6006,8 @@
     "listedChipBoostPermille": 25,
     "defaultFundingBoostPermille": 120,
     "survivorRevenuePpm": 80000,
-    "weakCashHaircutPermille": 200
+    "weakCashHaircutPermille": 200,
+    "thePopEndingForPlayer": true
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

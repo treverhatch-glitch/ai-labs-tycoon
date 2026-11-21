@@ -67,12 +67,23 @@ namespace AiLabs.Rules.Systems
                 record.CrownModelId = crown[0].ModelId;
                 AddReputation(state.Lab(record.CrownLabId), c.Gauntlet.CrownReputation);
                 Events.Add(state, EventKind.GauntletCrown, record.CrownLabId, record.CrownModelId, crown[0].Score, crown[0].ModelName);
-                if (state.PlayerLabId >= 0 && record.CrownLabId == state.PlayerLabId)
+                int runnerUp = crown.Count > 1 ? crown[1].LabId : -1;
+                if (state.PlayerLabId >= 0)
                 {
-                    int runnerUp = crown.Count > 1 ? crown[1].LabId : -1;
-                    for (int i = 0; i < state.Labs.Count; i++)
-                        if (!state.Labs[i].Bankrupt)
-                            RivalSystem.Feel(c, state.Labs[i], state.Labs[i].Id == runnerUp ? c.Rivalry.Feelings.SecondPlacePermille : c.Rivalry.Feelings.CrownPermille);
+                    LabState player = state.Player;
+                    if (record.CrownLabId == player.Id)
+                    {
+                        player.CrownRunnerUpStreak = 0;
+                        for (int i = 0; i < state.Labs.Count; i++)
+                            if (!state.Labs[i].Bankrupt)
+                                RivalSystem.Feel(c, state.Labs[i], state.Labs[i].Id == runnerUp ? c.Rivalry.Feelings.SecondPlacePermille : c.Rivalry.Feelings.CrownPermille);
+                    }
+                    else if (runnerUp == player.Id)
+                    {
+                        player.CrownRunnerUpStreak++;
+                        EndingSystem.TrySecondPlace(c, state, player);
+                    }
+                    else player.CrownRunnerUpStreak = 0;
                 }
             }
             if (record.SafestLabId >= 0)

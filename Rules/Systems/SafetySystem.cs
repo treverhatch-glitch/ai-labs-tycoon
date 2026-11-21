@@ -11,10 +11,13 @@ namespace AiLabs.Rules.Systems
     public static class SafetySystem
     {
         /// <summary>The weekly chance, in permille, that a released model has an incident.</summary>
-        public static int IncidentChancePermille(GameConfig c, ModelState model)
+        public static int IncidentChancePermille(GameConfig c, int tick, ModelState model)
         {
+            int eraLoad = EraSystem.AtTick(c, tick).IncidentLoadPermille;
+            if (eraLoad < 1) eraLoad = MathI.Permille;
             long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
-            return (int)MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+            long withCorruption = MathI.MulPermille(baseChance, MathI.Permille + model.Corruption * c.Shady.CorruptionIncidentWeight / MathI.Permille);
+            return (int)MathI.Min(MathI.Permille, MathI.MulPermille(withCorruption, eraLoad));
         }
 
         public static int EffectiveAlignment(GameConfig c, ModelState model)
@@ -54,7 +57,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Released) continue;
-                if (state.Rng.Safety.Chance(IncidentChancePermille(c, model))) Incident(c, state, lab, model);
+                if (state.Rng.Safety.Chance(IncidentChancePermille(c, state.Tick, model))) Incident(c, state, lab, model);
             }
         }
 

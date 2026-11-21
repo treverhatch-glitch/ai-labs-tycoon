@@ -180,6 +180,8 @@ namespace AiLabs.Rules.Config
         public List<string> StartTechs;
         /// <summary>Incident headlines for this era; <c>{model}</c> is the model's name.</summary>
         public List<string> IncidentHeadlines;
+        /// <summary>Multiplies the base weekly incident chance while this era is active (1000 = unchanged).</summary>
+        public int IncidentLoadPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -200,6 +202,7 @@ namespace AiLabs.Rules.Config
             s.Str("startLotId", ref StartLotId);
             s.StrList("startTechs", ref StartTechs);
             s.StrList("incidentHeadlines", ref IncidentHeadlines);
+            s.Int("incidentLoadPermille", ref IncidentLoadPermille);
         }
     }
 

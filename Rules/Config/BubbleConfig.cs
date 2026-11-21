@@ -16,6 +16,8 @@ namespace AiLabs.Rules.Config
         /// <summary>On pop: labs with revenue share at or above this survive; weaker labs lose cash.</summary>
         public int SurvivorRevenuePpm;
         public int WeakCashHaircutPermille;
+        /// <summary>When true, a player lab that takes a pop haircut gets a the-pop ending record.</summary>
+        public bool ThePopEndingForPlayer;
 
         public void Sync(Syncer s)
         {
@@ -26,6 +28,7 @@ namespace AiLabs.Rules.Config
             s.Int("defaultFundingBoostPermille", ref DefaultFundingBoostPermille);
             s.Int("survivorRevenuePpm", ref SurvivorRevenuePpm);
             s.Int("weakCashHaircutPermille", ref WeakCashHaircutPermille);
+            s.Bool("thePopEndingForPlayer", ref ThePopEndingForPlayer);
         }
     }
 }

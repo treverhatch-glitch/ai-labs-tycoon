@@ -79,7 +79,7 @@ public class EndingsContinuationTests
     public void Stub_endings_are_in_config_for_later_triggers()
     {
         GameConfig c = TestData.Config();
-        string[] stubs = { "the-pop", "treaty", "nationalised", "long-summer", "loose", "paperclipped", "second-place" };
+        string[] stubs = { "treaty", "nationalised" };
         foreach (string id in stubs)
         {
             EndingDefConfig def = c.Endings.Def(id);

@@ -39,8 +39,8 @@ public class ShadyTests
     {
         var g = Game.Solo();
         var model = new ModelState { Alignment = 500, Corruption = 500, Status = ModelStatus.Released };
-        int plain = SafetySystem.IncidentChancePermille(g.C, new ModelState { Alignment = 500, Corruption = 0, Status = ModelStatus.Released });
-        int corrupt = SafetySystem.IncidentChancePermille(g.C, model);
+        int plain = SafetySystem.IncidentChancePermille(g.C, g.Tick, new ModelState { Alignment = 500, Corruption = 0, Status = ModelStatus.Released });
+        int corrupt = SafetySystem.IncidentChancePermille(g.C, g.Tick, model);
         Assert.True(corrupt >= plain * 2 - 1);
         model.Corruption = g.C.Shady.CorruptedMood;
         Assert.Equal(ModelMood.Corrupted, LabQueries.Mood(g.C, g.Me, model, g.Tick));

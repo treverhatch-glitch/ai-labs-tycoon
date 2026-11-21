@@ -47,6 +47,7 @@ namespace AiLabs.Rules.Systems
     {
       BubbleConfig b = c.Bubble;
       if (b == null || state.BubblePermille <= 0) return;
+      bool playerHaircut = false;
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState lab = state.Labs[i];
@@ -54,10 +55,16 @@ namespace AiLabs.Rules.Systems
         int share = GovernmentSystem.RevenueSharePpm(state, lab);
         if (share >= b.SurvivorRevenuePpm) continue;
         long cut = MathI.MulPermille(lab.Cash, b.WeakCashHaircutPermille);
-        if (cut > 0) Finance.Spend(lab, LedgerLine.Fines, cut);
+        if (cut > 0)
+        {
+          Finance.Spend(lab, LedgerLine.Fines, cut);
+          if (lab.Id == state.PlayerLabId) playerHaircut = true;
+        }
       }
       state.BubblePermille = 0;
       Events.Add(state, EventKind.WorldNews, -1, -1, 0, "bubble-crash");
+      if (b.ThePopEndingForPlayer && playerHaircut && state.PlayerLabId >= 0)
+        EndingSystem.RecordThePop(c, state, state.Player);
     }
   }
 }

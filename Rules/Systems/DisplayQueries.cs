@@ -37,6 +37,14 @@ namespace AiLabs.Rules.Systems
             public int Total { get { return FromConfig + FromAlignment + FromCorruption; } }
         }
 
+        public struct ExitPriceBreakdown
+        {
+            public long RevenueYears;
+            public long FleetResale;
+            public long CashOnHand;
+            public long Total;
+        }
+
         public struct RevenueBreakdown
         {
             public List<RevenuePart> Parts;
@@ -96,14 +104,27 @@ namespace AiLabs.Rules.Systems
             return AppealParts(c, state, sector, sectorState, lab, model).Total;
         }
 
-        public static IncidentBreakdown IncidentParts(GameConfig c, ModelState model)
+        public static IncidentBreakdown IncidentParts(GameConfig c, int tick, ModelState model)
         {
+            int eraLoad = EraSystem.AtTick(c, tick).IncidentLoadPermille;
+            if (eraLoad < 1) eraLoad = MathI.Permille;
+            int scaledConfig = (int)MathI.MulPermille(c.Safety.IncidentChancePermille, eraLoad);
             var b = new IncidentBreakdown();
-            b.FromConfig = c.Safety.IncidentChancePermille;
-            long baseChance = MathI.MulPermille(c.Safety.IncidentChancePermille, MathI.Permille - model.Alignment);
-            b.FromAlignment = (int)(baseChance - b.FromConfig);
-            int total = SafetySystem.IncidentChancePermille(c, model);
+            b.FromConfig = scaledConfig;
+            long baseChance = MathI.MulPermille(scaledConfig, MathI.Permille - model.Alignment);
+            b.FromAlignment = (int)(baseChance - scaledConfig);
+            int total = SafetySystem.IncidentChancePermille(c, tick, model);
             b.FromCorruption = total - (int)baseChance;
+            return b;
+        }
+
+        public static ExitPriceBreakdown ExitPriceParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new ExitPriceBreakdown();
+            b.RevenueYears = EndingSystem.RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
+            b.FleetResale = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
+            b.CashOnHand = lab.Cash;
+            b.Total = b.RevenueYears + b.FleetResale + b.CashOnHand;
             return b;
         }
 

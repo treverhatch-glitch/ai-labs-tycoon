@@ -27,7 +27,7 @@ public class SafetyAndFinanceTests
     {
         Game g = SellOneMini(seed: 1, alignmentShare: 300, years: 10, out ModelState model);
         Assert.Equal(1000, model.Alignment);
-        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, model));
+        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(0, model.Incidents);
         Assert.Equal(0, g.Me.Ledger.Lifetime.Fines);
     }

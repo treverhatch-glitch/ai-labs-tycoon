@@ -23,6 +23,8 @@ namespace AiLabs.Rules.Config
         public FrontierConfig Frontier = new FrontierConfig();
         public MuseumConfig Museum = new MuseumConfig();
         public SuperintelligenceConfig Superintelligence;
+        /// <summary>Crown runner-up years in a row before the Second Place ending fires.</summary>
+        public int SecondPlaceRunnerUpYears;
 
         public EndingDefConfig Def(string id)
         {
@@ -48,6 +50,7 @@ namespace AiLabs.Rules.Config
             s.Obj("frontier", ref Frontier);
             s.Obj("museum", ref Museum);
             s.Obj("superintelligence", ref Superintelligence);
+            s.Int("secondPlaceRunnerUpYears", ref SecondPlaceRunnerUpYears);
         }
     }
 
