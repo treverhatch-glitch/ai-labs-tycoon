@@ -448,10 +448,32 @@ namespace AiLabs.Rules.Systems
             return total;
         }
 
+        public struct RunningCostBreakdown
+        {
+            public long Salaries;
+            public long Rooms;
+            public long GpuRent;
+            public long GpuUpkeep;
+            public long Power;
+
+            public long Total { get { return Salaries + Rooms + GpuRent + GpuUpkeep + Power; } }
+        }
+
+        public static RunningCostBreakdown RunningCostParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new RunningCostBreakdown();
+            b.Salaries = WeeklySalaries(c, lab);
+            b.Rooms = WeeklyRoomUpkeep(c, lab);
+            b.GpuRent = WeeklyGpuRent(c, state, lab);
+            b.GpuUpkeep = WeeklyGpuUpkeep(c, lab);
+            b.Power = WorldQueries.WeeklyPowerBill(c, state, lab);
+            return b;
+        }
+
         /// <summary>What the lab pays every week just to stand still.</summary>
         public static long WeeklyRunningCost(GameConfig c, GameState state, LabState lab)
         {
-            return WeeklySalaries(c, lab) + WeeklyRoomUpkeep(c, lab) + WeeklyGpuRent(c, state, lab) + WeeklyGpuUpkeep(c, lab) + WorldQueries.WeeklyPowerBill(c, state, lab);
+            return RunningCostParts(c, state, lab).Total;
         }
 
         public static bool SectorOpen(GameConfig c, SectorConfig sector, int tick)

@@ -333,3 +333,33 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 - Options: (a) UI guesswork; (b) four-line breakdown (vendor, reserved, cloud, peer); (c) new ledger lines.
 - Choice: **(b)** — `GpuRentBreakdown` mirrors `WeeklyGpuRent`; pairs Q52 peer and Q55 cloud.
 - Why: hardening bar for compute spend transparency; no gameplay change.
+
+### Q57. Synthetic data lab room? DECIDED: `training.syntheticDataLab`
+
+- Options: (a) decor only; (b) cuts synthetic finish corruption and weekly collapse risk; (c) new data source.
+- Choice: **(b)** — Harness-era `synthetic-data-lab`; `SyntheticDataLabSystem`; no new schema.
+- Why: bible synthetic-data row; pairs device workshop room pattern (Q54).
+
+### Q58. Weekly running-cost breakdown? DECIDED: `LabQueries.RunningCostParts`
+
+- Options: (a) HUD only; (b) salaries / rooms / GPU rent / upkeep / power lines; (c) per-ledger export.
+- Choice: **(b)** — sums to `WeeklyRunningCost`; peer rent stays outside (billed separately).
+- Why: DESIGN “explain every number” tail.
+
+### Q59. Peer landlord revenue query? DECIDED: `PeerComputeSystem.WeeklyLandlordRevenue`
+
+- Options: (a) renter bill only (Q56 peer line); (b) landlord revenue matching `RunWeek` payouts; (c) new ledger.
+- Choice: **(b)** — read-only mirror of `Finance.Earn` from peer leases; no schema.
+- Why: landlord side of Q52 for UI and planner hints.
+
+### Q60. Training collapse risk breakdown? DECIDED: `TrainingQueries.WeeklyFailParts`
+
+- Options: (a) single permille only; (b) base / data / engineer / alignment parts with clamped effective; (c) separate rival stream.
+- Choice: **(b)** — `TrainingSystem.WeeklyFailPermille` delegates; respects Q57 synthetic lab cuts on data line.
+- Why: pairs Q45–Q49 training failure hardening.
+
+### Q61. Protest permit revolt (lite)? DECIDED: `world.attention.protestRevolt*`
+
+- Options: (a) full permit state machine; (b) amplify protest events when attention ≥ threshold; (c) skip.
+- Choice: **(b)** — bonus permille on `ProtestSystem` bump; no schema (Q50 extension).
+- Why: world-map protest depth without audit/freeze state machine (rules-forward owns audit).

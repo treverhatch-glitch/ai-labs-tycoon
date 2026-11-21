@@ -21,7 +21,12 @@ namespace AiLabs.Rules.Systems
                 BlocStanding standing = lab.Bloc(blocId);
                 if (standing == null) continue;
                 int before = standing.Attention;
-                standing.Attention = (int)MathI.Min(MathI.Permille, before + e.ProtestAttentionPermille);
+                int bump = e.ProtestAttentionPermille;
+                AttentionConfig attention = c.World.Attention;
+                if (attention != null && attention.ProtestRevoltBonusPermille > 0 && attention.ProtestRevoltAttentionAt > 0
+                    && before >= attention.ProtestRevoltAttentionAt)
+                    bump += (int)MathI.MulPermille(bump, attention.ProtestRevoltBonusPermille);
+                standing.Attention = (int)MathI.Min(MathI.Permille, before + bump);
                 if (standing.Attention > before)
                     Events.Add(state, EventKind.AttentionRose, lab.Id, -1, standing.Attention - before, blocId);
             }

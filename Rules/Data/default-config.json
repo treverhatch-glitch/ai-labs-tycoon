@@ -1312,7 +1312,9 @@
       "hearingReputation": -20,
       "hearingReputationPrepared": 10,
       "preparedPolicyStaff": 2,
-      "auditFineRevenueWeeks": 2
+      "auditFineRevenueWeeks": 2,
+      "protestRevoltAttentionAt": 600,
+      "protestRevoltBonusPermille": 500
     },
     "exportRules": [
       {
@@ -3193,6 +3195,13 @@
     "engineerBonusPermille": 50,
     "engineerBonusCapPermille": 600,
     "distillMinLeadPermille": 80,
+    "syntheticDataLab": {
+      "eraId": "harnesses",
+      "roomTypeId": "synthetic-data-lab",
+      "dataSourceId": "synthetic",
+      "corruptionCutPermille": 350,
+      "failRiskCutPermille": 400
+    },
     "dataSources": [
       {
         "id": "internal",

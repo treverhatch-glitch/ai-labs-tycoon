@@ -541,6 +541,7 @@ namespace AiLabs.Rules.Config
         public int EngineerBonusCapPermille;
         /// <summary>Rival must lead the lab by at least this much (permille of the lab's best) to distill.</summary>
         public int DistillMinLeadPermille;
+        public SyntheticDataLabConfig SyntheticDataLab = new SyntheticDataLabConfig();
         public List<DataSourceConfig> DataSources = new List<DataSourceConfig>();
         public List<TrainingRecipeConfig> Recipes = new List<TrainingRecipeConfig>();
         public List<ModelLineConfig> Lines;
@@ -564,9 +565,30 @@ namespace AiLabs.Rules.Config
             s.Int("engineerBonusPermille", ref EngineerBonusPermille);
             s.Int("engineerBonusCapPermille", ref EngineerBonusCapPermille);
             s.Int("distillMinLeadPermille", ref DistillMinLeadPermille);
+            s.Obj("syntheticDataLab", ref SyntheticDataLab);
             s.ObjList("dataSources", ref DataSources);
             s.ObjList("recipes", ref Recipes);
             s.ObjList("lines", ref Lines);
+        }
+    }
+
+    public sealed class SyntheticDataLabConfig : ISync
+    {
+        public string EraId = "harnesses";
+        public string RoomTypeId = "synthetic-data-lab";
+        public string DataSourceId = "synthetic";
+        /// <summary>Cut applied to <see cref="DataSourceConfig.FinishCorruption"/> when the room is live (permille of the source amount).</summary>
+        public int CorruptionCutPermille = 350;
+        /// <summary>Cut applied to <see cref="DataSourceConfig.WeeklyFailRiskPermille"/> when the room is live.</summary>
+        public int FailRiskCutPermille = 400;
+
+        public void Sync(Syncer s)
+        {
+            s.Str("eraId", ref EraId);
+            s.Str("roomTypeId", ref RoomTypeId);
+            s.Str("dataSourceId", ref DataSourceId);
+            s.Int("corruptionCutPermille", ref CorruptionCutPermille);
+            s.Int("failRiskCutPermille", ref FailRiskCutPermille);
         }
     }
 

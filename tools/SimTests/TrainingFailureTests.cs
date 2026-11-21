@@ -35,7 +35,7 @@ public class TrainingFailureTests
     {
         Game g = Game.Solo();
         var m = new ModelState { DataSourceId = "synthetic", AlignmentSharePermille = 0 };
-        int risk = TrainingSystem.WeeklyFailPermille(g.C, g.Me, m);
+        int risk = TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, m);
         Assert.Equal(g.C.Training.BaseFailPermille + 8, risk);
     }
 
@@ -44,7 +44,7 @@ public class TrainingFailureTests
     {
         Game g = Game.Solo();
         var m = new ModelState { DataSourceId = "internal", AlignmentSharePermille = 0 };
-        Assert.Equal(g.C.Training.BaseFailPermille, TrainingSystem.WeeklyFailPermille(g.C, g.Me, m));
+        Assert.Equal(g.C.Training.BaseFailPermille, TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, m));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class TrainingFailureTests
     {
         Game g = Game.Solo().WithStarterLab(engineers: 4);
         var m = new ModelState { DataSourceId = "internal", AlignmentSharePermille = 0 };
-        int bare = TrainingSystem.WeeklyFailPermille(g.C, g.Me, m);
+        int bare = TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, m);
         Assert.True(bare < g.C.Training.BaseFailPermille);
     }
 
@@ -62,7 +62,7 @@ public class TrainingFailureTests
         Game g = Game.Solo();
         var low = new ModelState { DataSourceId = "internal", AlignmentSharePermille = 0 };
         var high = new ModelState { DataSourceId = "internal", AlignmentSharePermille = 800 };
-        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.Me, high) < TrainingSystem.WeeklyFailPermille(g.C, g.Me, low));
+        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, high) < TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, low));
     }
 
     [Fact]
@@ -273,7 +273,7 @@ public class TrainingFailureTests
         Game g = Game.Solo();
         var syn = new ModelState { DataSourceId = "synthetic", AlignmentSharePermille = 0 };
         var lic = new ModelState { DataSourceId = "licensed", AlignmentSharePermille = 0 };
-        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.Me, syn) > TrainingSystem.WeeklyFailPermille(g.C, g.Me, lic));
+        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, syn) > TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, lic));
     }
 
     [Fact]
@@ -286,7 +286,7 @@ public class TrainingFailureTests
                 if (s.Id == "synthetic") s.WeeklyFailRiskPermille = 200;
         });
         var m = new ModelState { DataSourceId = "synthetic", AlignmentSharePermille = 0 };
-        Assert.Equal(950, TrainingSystem.WeeklyFailPermille(g.C, g.Me, m));
+        Assert.Equal(950, TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, m));
     }
 
     [Fact]
@@ -377,7 +377,7 @@ public class TrainingFailureTests
         Game g = Game.Solo();
         var low = new ModelState { DataSourceId = "synthetic", AlignmentSharePermille = 0 };
         var high = new ModelState { DataSourceId = "synthetic", AlignmentSharePermille = 900 };
-        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.Me, low) > TrainingSystem.WeeklyFailPermille(g.C, g.Me, high));
+        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, low) > TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, high));
     }
 
     [Fact]

@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Config
             if (c.Training.FailEngineerCutPermille < 0) p.Add("training.failEngineerCutPermille is negative");
             if (c.Training.FailAlignmentCutPermille < 0) p.Add("training.failAlignmentCutPermille is negative");
             Permille(p, "training.failAfterProgressPermille", c.Training.FailAfterProgressPermille);
+            SyntheticDataLabProblems(p, c);
             Permille(p, "training.distillMinLeadPermille", c.Training.DistillMinLeadPermille);
             UniqueIds(p, "training.recipes", c.Training.Recipes);
             foreach (TrainingRecipeConfig recipe in c.Training.Recipes)
@@ -267,6 +268,18 @@ namespace AiLabs.Rules.Config
             if (string.IsNullOrEmpty(w.RoomTypeId) || c.RoomType(w.RoomTypeId) == null) p.Add("market.deviceWorkshop names an unknown room type");
             if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
             Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
+        }
+
+        static void SyntheticDataLabProblems(List<string> p, GameConfig c)
+        {
+            SyntheticDataLabConfig lab = c.Training.SyntheticDataLab;
+            if (lab == null) { p.Add("training.syntheticDataLab is missing"); return; }
+            if (string.IsNullOrEmpty(lab.EraId) || c.Era(lab.EraId) == null) p.Add("training.syntheticDataLab names an unknown era");
+            if (string.IsNullOrEmpty(lab.RoomTypeId) || c.RoomType(lab.RoomTypeId) == null) p.Add("training.syntheticDataLab names an unknown room type");
+            if (string.IsNullOrEmpty(lab.DataSourceId) || c.Training.DataSource(lab.DataSourceId) == null)
+                p.Add("training.syntheticDataLab names an unknown data source");
+            Permille(p, "training.syntheticDataLab.corruptionCutPermille", lab.CorruptionCutPermille);
+            Permille(p, "training.syntheticDataLab.failRiskCutPermille", lab.FailRiskCutPermille);
         }
 
         static void ExpansionsProblems(List<string> p, GameConfig c)
@@ -448,6 +461,8 @@ namespace AiLabs.Rules.Config
             if (a.FreezeExitBelow >= a.FreezeAt || a.FreezeExitBelow < 1) p.Add("world.attention.freezeExitBelow must be under the freeze level");
             if (a.DropMargin < 0) p.Add("world.attention.dropMargin is negative");
             if (a.AuditFineRevenueWeeks < 0) p.Add("world.attention.auditFineRevenueWeeks is negative");
+            if (a.ProtestRevoltAttentionAt < 0) p.Add("world.attention.protestRevoltAttentionAt is negative");
+            Permille(p, "world.attention.protestRevoltBonusPermille", a.ProtestRevoltBonusPermille);
 
             foreach (ExportRuleConfig rule in w.ExportRules)
             {

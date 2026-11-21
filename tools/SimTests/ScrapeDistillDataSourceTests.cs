@@ -127,7 +127,7 @@ public class ScrapeDistillDataSourceTests
         Game g = Ready();
         var scrape = new ModelState { DataSourceId = "scrape", AlignmentSharePermille = 0 };
         var internalMix = new ModelState { DataSourceId = "internal", AlignmentSharePermille = 0 };
-        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.Me, scrape) > TrainingSystem.WeeklyFailPermille(g.C, g.Me, internalMix));
+        Assert.True(TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, scrape) > TrainingSystem.WeeklyFailPermille(g.C, g.State, g.Me, internalMix));
     }
 
     [Fact]

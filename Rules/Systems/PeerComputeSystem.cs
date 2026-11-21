@@ -58,6 +58,21 @@ namespace AiLabs.Rules.Systems
             return total;
         }
 
+        /// <summary>Rent other labs owe this landlord this week (matches <see cref="RunWeek"/> revenue).</summary>
+        public static long WeeklyLandlordRevenue(GameConfig c, GameState state, LabState landlord)
+        {
+            if (landlord.Bankrupt) return 0;
+            long total = 0;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState renter = state.Labs[i];
+                if (renter.Bankrupt || renter.Id == landlord.Id) continue;
+                PeerComputeLease lease = LeaseFrom(renter, landlord.Id);
+                if (lease != null && lease.GpuCount > 0) total += WeeklyRent(c, state, lease.GpuCount);
+            }
+            return total;
+        }
+
         public static long WeeklyRent(GameConfig c, GameState state, int gpuCount)
         {
             if (gpuCount < 1) return 0;

@@ -104,5 +104,33 @@ namespace AiLabs.Rules.Systems
             if (computePermille <= 0 || computePermille == MathI.Permille) return need;
             return MathI.MulPermille(need, computePermille);
         }
+
+        public struct TrainingFailBreakdown
+        {
+            public int Base;
+            public int DataSource;
+            public int EngineerReduction;
+            public int AlignmentReduction;
+
+            public int Effective
+            {
+                get
+                {
+                    int risk = Base + DataSource - EngineerReduction - AlignmentReduction;
+                    return (int)MathI.Clamp(risk, 0, 950);
+                }
+            }
+        }
+
+        public static TrainingFailBreakdown WeeklyFailParts(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            var b = new TrainingFailBreakdown();
+            b.Base = c.Training.BaseFailPermille;
+            DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
+            b.DataSource = source == null ? 0 : SyntheticDataLabSystem.EffectiveWeeklyFailRiskPermille(c, state, lab, source);
+            b.EngineerReduction = LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.FailEngineerCutPermille;
+            b.AlignmentReduction = model.AlignmentSharePermille / 100 * c.Training.FailAlignmentCutPermille;
+            return b;
+        }
     }
 }

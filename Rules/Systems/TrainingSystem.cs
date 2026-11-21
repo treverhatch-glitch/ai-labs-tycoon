@@ -121,14 +121,9 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>Weekly chance a run collapses after early progress. Engineers and alignment share cut the odds.</summary>
-        public static int WeeklyFailPermille(GameConfig c, LabState lab, ModelState model)
+        public static int WeeklyFailPermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            DataSourceConfig source = c.Training.DataSource(model.DataSourceId);
-            int risk = c.Training.BaseFailPermille + (source == null ? 0 : source.WeeklyFailRiskPermille);
-            int engineers = LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering);
-            risk -= engineers * c.Training.FailEngineerCutPermille;
-            risk -= model.AlignmentSharePermille / 100 * c.Training.FailAlignmentCutPermille;
-            return (int)MathI.Clamp(risk, 0, 950);
+            return TrainingQueries.WeeklyFailParts(c, state, lab, model).Effective;
         }
 
         /// <summary>Player runs use <see cref="RngSet.TrainingCollapse"/>; plan-run rivals use <see cref="RngSet.Rivals"/> so collapse never interferes with player dice.</summary>
@@ -142,7 +137,7 @@ namespace AiLabs.Rules.Systems
             if (model.RequiredCompute <= 0) return false;
             long progress = model.ProgressCompute * MathI.Permille;
             if (progress < model.RequiredCompute * c.Training.FailAfterProgressPermille) return false;
-            int risk = WeeklyFailPermille(c, lab, model);
+            int risk = WeeklyFailPermille(c, state, lab, model);
             if (risk <= 0) return false;
             int roll = CollapseRng(state, lab).Range(0, MathI.Permille - 1);
             if (roll >= risk) return false;
@@ -195,8 +190,9 @@ namespace AiLabs.Rules.Systems
                 model.Corruption = (int)MathI.MulPermille(previous.Corruption, c.Shady.CarryCorruptionPermille);
             if (source != null)
             {
-                if (source.FinishCorruption > 0)
-                    model.Corruption = (int)MathI.Min(MathI.Permille, model.Corruption + source.FinishCorruption);
+                int corruption = SyntheticDataLabSystem.EffectiveFinishCorruption(c, state, lab, source);
+                if (corruption > 0)
+                    model.Corruption = (int)MathI.Min(MathI.Permille, model.Corruption + corruption);
                 if (source.FinishHeat > 0)
                     lab.Heat = (int)MathI.Min(MathI.Permille, lab.Heat + source.FinishHeat);
                 if (source.HomeAttentionPermille > 0)
