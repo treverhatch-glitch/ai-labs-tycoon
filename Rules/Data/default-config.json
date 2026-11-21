@@ -7165,6 +7165,199 @@
             ]
           }
         ]
+      },
+      {
+        "id": "notes-changelog",
+        "name": "The release notes",
+        "text": "The release notes are due. Marketing wants a changelog full of verbs, engineering wants the truth, and the model has offered to write them itself.",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "marketing",
+            "text": "Let marketing write them",
+            "result": "Every line starts with a verb. Nothing in them has been checked, and the press is delighted.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "honest",
+            "text": "Publish the honest version",
+            "result": "The notes say what changed and what broke. A journalist quotes the second half.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              },
+              {
+                "kind": "Reputation",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "model",
+            "text": "Let the model write them",
+            "result": "They are warm, funny and slightly too confident. Someone asks who approved the line about the weekend.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              },
+              {
+                "kind": "Corruption",
+                "amount": 30
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "notes-known-issues",
+        "name": "Known issues",
+        "text": "The release notes have a section called Known Issues. It has forty items. The first is \"the model sometimes disagrees with the first item\".",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "all",
+            "text": "Publish all forty",
+            "result": "Customers read all forty. Several write in to say they like the honesty and have found a forty-first.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "three",
+            "text": "Publish the top three",
+            "result": "A tidy, believable list. The other thirty-seven wait for a quiet Friday.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "cut",
+            "text": "Cut the section",
+            "result": "The notes now have no known issues. The support queue finds them all in the first hour.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "notes-joke",
+        "name": "The joke in the notes",
+        "text": "Somebody slipped a joke into the changelog at the last minute. It is on line nine and it is about the model.",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "keep",
+            "text": "Keep it",
+            "result": "It is quoted everywhere by lunchtime. The model asks to see the line and then asks for more.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          },
+          {
+            "id": "remove",
+            "text": "Take it out",
+            "result": "The notes are clean and nobody mentions them. The author does not speak at stand-up.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "feature",
+            "text": "Turn it into a feature",
+            "result": "The joke is now a setting. It has a toggle and a help page and a regulator's question.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          }
+        ]
       }
     ]
   },

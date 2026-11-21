@@ -177,6 +177,8 @@ The foundry can snub a lab Envydia thinks little of: the player's own new chip o
 
 An overloaded player lab (it cannot serve its demand) adds to its models' weekly incident chance, shown in the incident breakdown ([content/overload.md](content/overload.md); Q289).
 
+The first release of a model asks how the release notes should read: a small choice with a small effect, three events in turn (Q290).
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

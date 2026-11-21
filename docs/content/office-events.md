@@ -54,6 +54,16 @@ Six more events from the bible's list (Q287); they are drawn like the others and
 
 Changing the subject when the model asks what off means adds corruption to every model on sale; telling it the truth takes some away.
 
+## Release notes
+
+When one of the player's models goes on sale for the first time, the lab is asked how the release notes should read (bible ch. 14, "let the model be funny: its mistakes, its release notes"; Q290). The three events have `trigger` `Release`, so the weekly chance never draws them; they come round in turn. Putting an already-released model into another sector poses nothing, an event already waiting is never replaced (unlike hearings and the escape crisis), and rivals have none.
+
+| Event | Answers |
+|---|---|
+| The release notes (`notes-changelog`) | let marketing write them; publish the honest version; let the model write them (it adds corruption) |
+| Known issues (`notes-known-issues`) | publish all forty; publish the top three; cut the section |
+| The joke in the notes (`notes-joke`) | keep it; take it out; turn it into a feature |
+
 ## Notes
 
 - Saved per lab: the event waiting, its deadline and the events seen in this round (schema 33).

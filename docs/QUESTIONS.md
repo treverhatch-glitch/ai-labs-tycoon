@@ -1403,6 +1403,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `safety.overloadIncidentPermille` 60 times the unserved share of last week's demand, added at the weekly roll (`SafetySystem.WeeklyChancePermille`), shown as `FromOverload` in the incident breakdown. Player labs only (`safety.overloadForRivals` false): the rivals' incident counts feed the knife-edge guards (Q182, Q190), so rivals keep rolling exactly as before.
 - Why: the bible's "overworked" state says reliability drops. The mood already exists and a quality hit would need a new term in the appeal breakdown; the incident chance already has a breakdown and is where "reliable" lives. Nothing is saved, no schema change.
 
+### Q290. Do the release notes need an answer? DECIDED: yes, a small event on a model's first release, never replacing one already waiting
+
+- Options: (a) flavour text in the log only; (b) a choice event on the first release; (c) a choice on the release command itself.
+- Recommendation and choice: **(b)**. A new office trigger, `Release` (like `Hearing` and `Escape`), three events (the changelog, known issues, a joke), posed by `OfficeEvents.OnRelease` when a model first goes on sale. Unlike hearings and the escape crisis it does not replace an event that is waiting, so a release never wipes out something the player has not answered. Player labs only. Small effects (reputation, attention, culture, morale; letting the model write them adds 30 corruption).
+- Why: the bible's tone rule says a joke without a consequence is flavour text and one with a consequence is a system. A new field on the release command would change `Command` and every caller for a few points of reputation; the event machinery already has the answer, expiry and lapse. No schema change. The pinned golden game moved: the golden player releases a model, so the log now has a posed (and lapsed) release note; moving the three events to another trigger gave the old digest back, so that is the whole cause.
+
 ## Open
 
 None.

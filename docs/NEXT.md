@@ -229,6 +229,7 @@ and says why in the commit message.
 46. **More office events, round three (bible ch. 14 "event ideas", v0.2 headlines).** ~~Done~~: six events (a goodbye, a rival's Friday, what "off" means, the reply, the first chip benchmark, the landlord's note), `OfficeRequires.OwnChip` and `RentedCompute` (Q287), `MoreOfficeEventsTests`, `docs/content/office-events.md`. No schema.
 47. **Foundry snub (bible ch. 7 chip risk events).** ~~Done~~: `chips.snubStandingBelow`/`snubChancePermille`/`snubWeeks`, `ChipSystem.SnubWeeks`, `EventKind.ChipSlotSnubbed`, `FoundrySnubTests`, `docs/content/chips.md` (Q288). No schema.
 48. **Overload costs reliability (bible ch. 6 model states, "overworked: serving load too high; reliability drops").** ~~Done~~: `safety.overloadIncidentPermille` / `overloadForRivals`, `SafetySystem.OverloadPermille` and `WeeklyChancePermille`, `IncidentBreakdown.FromOverload`, `OverloadTests`, `docs/content/overload.md` (Q289). No schema.
+49. **Release notes (bible ch. 14 "its release notes").** ~~Done~~: `OfficeTrigger.Release`, `OfficeEvents.OnRelease`, three events, `ReleaseNotesTests`, `docs/content/office-events.md` (Q290). No schema.
 
 ## Rules: later
 

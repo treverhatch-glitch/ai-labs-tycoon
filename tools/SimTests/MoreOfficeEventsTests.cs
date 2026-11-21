@@ -175,8 +175,8 @@ public class MoreOfficeEventsTests
     {
         GameConfig c = TestData.Config();
         Assert.Equal("intern-repo", c.Office.Events[0].IdValue);
-        Assert.Equal("escape-attempt", c.Office.Events[c.Office.Events.Count - 7].IdValue);
-        Assert.Equal(NewIds, c.Office.Events.Skip(c.Office.Events.Count - 6).Select(e => e.IdValue).ToArray());
+        int escape = c.Office.Events.FindIndex(e => e.IdValue == "escape-attempt");
+        Assert.Equal(NewIds, c.Office.Events.Skip(escape + 1).Take(NewIds.Length).Select(e => e.IdValue).ToArray());
     }
 
     [Fact]

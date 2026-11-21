@@ -119,6 +119,13 @@ namespace AiLabs.Rules.Systems
             PoseTriggered(c, state, lab, OfficeTrigger.Escape);
         }
 
+        /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>
+        public static void OnRelease(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab) || IsPending(lab)) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Release);
+        }
+
         static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger)
         {
             List<OfficeEventConfig> all = WithTrigger(c, trigger);

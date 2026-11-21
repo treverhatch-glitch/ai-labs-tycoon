@@ -391,6 +391,7 @@ namespace AiLabs.Rules.Sim
                 if (!model.Sectors.Contains(sectorState.Id)) model.Sectors.Add(sectorState.Id);
             }
 
+            bool firstRelease = model.Status != ModelStatus.Released;
             if (model.Status != ModelStatus.Released)
             {
                 model.Status = ModelStatus.Released;
@@ -403,6 +404,7 @@ namespace AiLabs.Rules.Sim
                     model.DisplayedAlignment = model.Alignment;
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
+            if (firstRelease) OfficeEvents.OnRelease(c, state, lab);
 
             for (int i = 0; i < replaced.Count; i++)
             {
