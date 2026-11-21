@@ -24,6 +24,8 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
             if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
                 return Fail(CommandError.UnknownLab, "That is not the player's lab.");
+            if (cmd.Kind != CommandKind.ContinueAfterEnding && FundingSystem.PlayerCommandLocked(state, lab))
+                return Fail(CommandError.BoardLocked, lab.Name + "'s board is in emergency session.");
 
             switch (cmd.Kind)
             {

@@ -30,6 +30,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 13) MigrateTo13(root);
             if (fromSchema < 14) MigrateTo14(root);
             if (fromSchema < 15) MigrateTo15(root);
+            if (fromSchema < 16) MigrateTo16(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -281,6 +282,12 @@ namespace AiLabs.Rules.Sim
 
         /// <summary>Q94 containment + superintelligence endings (stack2, config-only; no new save keys).</summary>
         static void MigrateTo15(JsonValue root) { }
+
+        /// <summary>Q95 player board lock after investor drama (stack2).</summary>
+        static void MigrateTo16(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "boardLockedUntilTick", JsonValue.Of(-1L)));
+        }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
         {

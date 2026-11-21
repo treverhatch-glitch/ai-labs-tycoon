@@ -42,7 +42,11 @@ namespace AiLabs.Rules.State
         StaffPoached,
         /// <summary>The vendor could not fulfil a GPU purchase queue. Amount is GPUs left; Ref holds the reason tag.</summary>
         GpuQueueStalled,
-        ChinaDealOffered, ChinaDealAccepted, ChinaDealDeclined
+        ChinaDealOffered, ChinaDealAccepted, ChinaDealDeclined,
+        /// <summary>Closed a funding round. Ref is the round id; Pick is 1 when terms were a down round.</summary>
+        FundingClosed,
+        /// <summary>Board update after venture capital. Amount is reputation gained.</summary>
+        InvestorBoardVisit
     }
 
     /// <summary>

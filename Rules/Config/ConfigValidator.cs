@@ -658,6 +658,15 @@ namespace AiLabs.Rules.Config
                 Permille(p, who + " minReputation", r.MinReputation);
                 if (r.BoardSeats < 0) p.Add(who + " boardSeats is negative");
             }
+            FundingFollowOnConfig fo = f.FollowOn;
+            if (fo != null)
+            {
+                Permille(p, "funding.followOn.downRoundBubblePermille", fo.DownRoundBubblePermille);
+                Permille(p, "funding.followOn.downRoundCashPermille", fo.DownRoundCashPermille);
+                Permille(p, "funding.followOn.downRoundExtraDilutionPermille", fo.DownRoundExtraDilutionPermille);
+                if (fo.BoardDramaWeeks < 0) p.Add("funding.followOn.boardDramaWeeks is negative");
+                if (fo.InvestorEventMinRounds < 0) p.Add("funding.followOn.investorEventMinRounds is negative");
+            }
         }
 
         static void Permille(List<string> p, string what, int value)

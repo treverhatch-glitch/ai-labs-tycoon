@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 15;
+        public const int CurrentSchema = 16;
 
         public int Schema;
         public string ConfigVersion;
@@ -146,6 +146,8 @@ namespace AiLabs.Rules.State
         public int FeelingToPlayer;
         /// <summary>The first tick the plan acts again after a board fit, or -1.</summary>
         public int PlanPausedUntilTick;
+        /// <summary>Player commands are frozen until this tick after investor board drama, or -1.</summary>
+        public int BoardLockedUntilTick;
         /// <summary>Until this tick the vendor's keynote has upstaged the lab's new chip and it will not buy lists, or -1.</summary>
         public int ChipAmbushUntilTick;
         /// <summary>Why the lab did what it did, newest last, capped at the config's rivalry.logMax.</summary>
@@ -246,6 +248,7 @@ namespace AiLabs.Rules.State
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
             s.Int("planPausedUntilTick", ref PlanPausedUntilTick);
+            s.Int("boardLockedUntilTick", ref BoardLockedUntilTick);
             s.Int("chipAmbushUntilTick", ref ChipAmbushUntilTick);
             s.ObjList("log", ref Log);
             s.ObjList("chipDesigns", ref ChipDesigns);

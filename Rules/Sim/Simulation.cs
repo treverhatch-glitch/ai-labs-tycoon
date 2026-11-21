@@ -113,6 +113,7 @@ namespace AiLabs.Rules.Sim
             if (GameDate.IsMonthStart(c.Calendar, tick))
             {
                 RivalSystem.RunMonth(c, state);
+                FundingSystem.RunMonth(c, state);
                 VendorSystem.RunMonth(c, state);
                 ChipSystem.RunMonth(c, state);
                 SiteSystem.RollHeatwaves(c, state);

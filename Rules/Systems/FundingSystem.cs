@@ -27,14 +27,79 @@ namespace AiLabs.Rules.Systems
       return true;
     }
 
+    public static bool IsDownRound(GameConfig c, GameState state)
+    {
+      FundingFollowOnConfig f = c.Funding.FollowOn;
+      if (f == null || f.DownRoundBubblePermille < 1) return false;
+      return state.BubblePermille >= f.DownRoundBubblePermille;
+    }
+
+    public static long EffectiveCash(GameConfig c, GameState state, FundingRoundConfig round)
+    {
+      FundingFollowOnConfig f = c.Funding.FollowOn;
+      if (!IsDownRound(c, state) || f == null || f.DownRoundCashPermille < 1) return round.Cash;
+      return MathI.MulPermille(round.Cash, f.DownRoundCashPermille);
+    }
+
+    public static int EffectiveDilution(GameConfig c, GameState state, FundingRoundConfig round)
+    {
+      FundingFollowOnConfig f = c.Funding.FollowOn;
+      if (!IsDownRound(c, state) || f == null || f.DownRoundExtraDilutionPermille <= 0) return round.DilutionPermille;
+      return MathI.Clamp(round.DilutionPermille + f.DownRoundExtraDilutionPermille, 0, MathI.Permille);
+    }
+
+    public static bool PlayerCommandLocked(GameState state, LabState lab)
+    {
+      return lab != null && lab.Id == state.PlayerLabId && state.Tick < lab.BoardLockedUntilTick;
+    }
+
     public static void ApplyRaise(GameConfig c, GameState state, LabState lab, FundingRoundConfig round)
     {
+      bool down = IsDownRound(c, state);
+      long cash = EffectiveCash(c, state, round);
+      int dilution = EffectiveDilution(c, state, round);
       lab.FundingRounds.Add(round.Id);
-      Finance.Earn(lab, LedgerLine.CapitalIn, round.Cash);
+      Finance.Earn(lab, LedgerLine.CapitalIn, cash);
       BubbleSystem.OnFundingRaise(c, state, round);
-      lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - round.DilutionPermille);
+      lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - dilution);
       lab.BoardInvestorSeats += round.BoardSeats;
+      GameEvent closed = Events.Add(state, EventKind.FundingClosed, lab.Id, -1, cash, round.Id);
+      closed.Pick = down ? 1 : 0;
       TryOust(c, state, lab);
+    }
+
+  public static void RunMonth(GameConfig c, GameState state)
+    {
+      if (state.PlayerLabId < 0) return;
+      LabState player = state.Player;
+      if (player == null || player.Bankrupt) return;
+      FundingFollowOnConfig f = c.Funding.FollowOn;
+      if (f == null) return;
+      TryPlayerBoardDrama(c, state, player, f);
+      TryInvestorEvent(c, state, player, f);
+    }
+
+    static void TryPlayerBoardDrama(GameConfig c, GameState state, LabState lab, FundingFollowOnConfig f)
+    {
+      if (f.BoardDramaMinInvestorSeats < 1 || lab.BoardInvestorSeats < f.BoardDramaMinInvestorSeats) return;
+      if (f.BoardDramaPermillePerYear <= 0) return;
+      if (state.Tick < lab.BoardLockedUntilTick) return;
+      if (!state.Rng.Rivals.Chance(f.BoardDramaPermillePerYear / c.Calendar.MonthsPerYear)) return;
+      int weeks = f.BoardDramaWeeks > 0 ? f.BoardDramaWeeks : c.Rivalry.BoardDramaWeeks;
+      lab.BoardLockedUntilTick = state.Tick + weeks;
+      Events.Add(state, EventKind.BoardDrama, lab.Id, -1, weeks, "");
+    }
+
+    static void TryInvestorEvent(GameConfig c, GameState state, LabState lab, FundingFollowOnConfig f)
+    {
+      if (f.InvestorEventMinRounds < 1 || lab.FundingRounds.Count < f.InvestorEventMinRounds) return;
+      if (f.InvestorEventPermillePerMonth <= 0) return;
+      if (!state.Rng.Rivals.Chance(f.InvestorEventPermillePerMonth)) return;
+      if (f.InvestorEventReputation > 0)
+        lab.Reputation = MathI.Clamp(lab.Reputation + f.InvestorEventReputation, 0, MathI.Permille);
+      if (f.InvestorEventBubblePermille > 0)
+        BubbleSystem.Boost(c, state, f.InvestorEventBubblePermille);
+      Events.Add(state, EventKind.InvestorBoardVisit, lab.Id, -1, f.InvestorEventReputation, "");
     }
 
     public static void TryOust(GameConfig c, GameState state, LabState lab)

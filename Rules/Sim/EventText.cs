@@ -102,6 +102,12 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ShadyAcquitted: return who + " was acquitted.";
                 case EventKind.ShadySideJob: return e.Ref + " did a little job on the side. It left you a tip.";
                 case EventKind.ShadyTemptation: return "Runway is short. " + c.Shady.Card(e.Ref).Name + " is on the table.";
+                case EventKind.FundingClosed:
+                    return downRound(e)
+                        ? who + " closed " + e.Ref + " on down-round terms ($" + e.Amount + ")."
+                        : who + " closed " + e.Ref + " ($" + e.Amount + ").";
+                case EventKind.InvestorBoardVisit:
+                    return who + "'s investors held a board update. Reputation +" + e.Amount + ".";
                 default: return who + ": " + e.Kind + ".";
             }
         }
@@ -118,6 +124,8 @@ namespace AiLabs.Rules.Sim
                 default: return bloc.Agency + " froze " + who + "'s permits in " + bloc.Name + ".";
             }
         }
+
+        static bool downRound(GameEvent e) { return e.Pick == 1; }
 
         static string WithArticle(string name)
         {

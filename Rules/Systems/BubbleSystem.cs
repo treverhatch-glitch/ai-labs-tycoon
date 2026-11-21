@@ -6,6 +6,12 @@ namespace AiLabs.Rules.Systems
 {
   public static class BubbleSystem
   {
+    public static void Boost(GameConfig c, GameState state, int permille)
+    {
+      if (permille <= 0) return;
+      state.BubblePermille = (int)MathI.Min(MathI.Permille, state.BubblePermille + permille);
+    }
+
     public static void OnFundingRaise(GameConfig c, GameState state, FundingRoundConfig round)
     {
       BubbleConfig b = c.Bubble;

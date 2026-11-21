@@ -3599,6 +3599,18 @@
     "founderStartPermille": 1000,
     "controlPermille": 450,
     "oustedSuccessor": "The Board's Choice",
+    "followOn": {
+      "downRoundBubblePermille": 650,
+      "downRoundCashPermille": 700,
+      "downRoundExtraDilutionPermille": 80,
+      "boardDramaMinInvestorSeats": 1,
+      "boardDramaPermillePerYear": 120,
+      "boardDramaWeeks": 4,
+      "investorEventMinRounds": 2,
+      "investorEventPermillePerMonth": 35,
+      "investorEventReputation": 8,
+      "investorEventBubblePermille": 12
+    },
     "rounds": [
       {
         "id": "angel",

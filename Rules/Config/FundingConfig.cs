@@ -10,6 +10,7 @@ namespace AiLabs.Rules.Config
     /// <summary>At or below this, investors control the board and can oust the founder.</summary>
     public int ControlPermille;
     public string OustedSuccessor = "";
+    public FundingFollowOnConfig FollowOn;
     public List<FundingRoundConfig> Rounds = new List<FundingRoundConfig>();
 
     public FundingRoundConfig Round(string id)
@@ -23,6 +24,7 @@ namespace AiLabs.Rules.Config
       s.Int("founderStartPermille", ref FounderStartPermille);
       s.Int("controlPermille", ref ControlPermille);
       s.Str("oustedSuccessor", ref OustedSuccessor);
+      s.Obj("followOn", ref FollowOn);
       s.ObjList("rounds", ref Rounds);
     }
   }

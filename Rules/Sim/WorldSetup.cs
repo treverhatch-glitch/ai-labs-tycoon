@@ -36,6 +36,7 @@ namespace AiLabs.Rules.Sim
             player.Controller = LabController.Player;
             player.PlanStartTick = startTick;
             player.PlanPausedUntilTick = -1;
+            player.BoardLockedUntilTick = -1;
             player.ChipAmbushUntilTick = -1;
             player.RivalId = "";
             player.Cash = MathI.MulPermille(start.Cash, era.StartCashPermille);
@@ -106,6 +107,7 @@ namespace AiLabs.Rules.Sim
             lab.BoardInvestorSeats = 0;
             if (c.Shares != null) lab.PublicFloatPpm = c.Shares.RivalStartPublicFloatPpm;
             lab.PlanPausedUntilTick = -1;
+            lab.BoardLockedUntilTick = -1;
             lab.ChipAmbushUntilTick = -1;
             state.Labs.Add(lab);
             if (arrival)
@@ -185,6 +187,7 @@ namespace AiLabs.Rules.Sim
             fresh.BoardInvestorSeats = 0;
             fresh.FundingRounds = new List<string>();
             fresh.PlanPausedUntilTick = -1;
+            fresh.BoardLockedUntilTick = -1;
             fresh.ChipAmbushUntilTick = -1;
             for (int k = 0; k < c.World.Blocs.Count; k++) fresh.Blocs.Add(NewStanding(c.World.Blocs[k].Id));
             VendorSystem.EnsureStanding(c, state, fresh.Id);

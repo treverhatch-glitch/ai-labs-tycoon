@@ -552,6 +552,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `IncidentRungsLaterTests.cs` at 12 facts; honest models stay on rung 1 below 250 corruption; golden digest re-recorded.
 - Why: bible safety ladder; pairs with corruption incident weight (Q74).
 
+### Q95. Funding ladder follow-ons? DECIDED: down rounds, player board drama, investor events
+
+- Options: (a) defer until UI; (b) hot-bubble down-round cash/dilution on raise; (c) investor seats trigger monthly board lock; (d) after two rounds, investor board visits nudge rep and bubble.
+- Recommendation and choice: **(b)+(c)+(d)**. `FundingFollowOnLaterTests.cs` at 12 facts; schema 16 `boardLockedUntilTick`; golden digest moved because `FundingSystem.RunMonth` runs at month start on the autopilot year.
+- Why: DESIGN.md bubble and board fiction; rivals already had board drama on plans only.
+
 ### Q94. Containment rooms and superintelligence endings? DECIDED: wing bonus + three gates
 
 - Options: (a) containment as cosmetic room only; (b) tiles add capped alignment-work permille in training; (c) endings on year-end when best released model crosses capability bar.
