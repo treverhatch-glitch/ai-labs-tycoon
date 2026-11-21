@@ -20,13 +20,13 @@ public class SalvageMuseumLineCommandTests
         g.Me.Models.Add(new ModelState
         {
             Id = g.State.TakeId(), LineId = line, Version = version, Name = "v" + version,
-            Status = ModelStatus.Retired, Capability = 100, CapBase = 100,
+            Status = ModelStatus.Retired, Capability = cap, CapBase = 100,
             StartedTick = when, TrainedTick = when, ReleasedTick = when,
         });
     }
 
     [Fact]
-    public void Salvage_removes_one_and_grants_research()
+    public void Q149_main_salvage_removes_one_and_grants_research()
     {
         var g = G();
         for (int v = 0; v < 8; v++) AddRetired(g, "mini", 100, v);
@@ -37,7 +37,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_spends_config_cash()
+    public void Q149_main_salvage_spends_config_cash()
     {
         var g = G();
         for (int v = 0; v < 7; v++) AddRetired(g, "mini", 100, v);
@@ -47,7 +47,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_refused_at_cap()
+    public void Q149_zero_refused_at_cap()
     {
         var g = G();
         for (int v = 0; v < 6; v++) AddRetired(g, "mini", 100, v);
@@ -55,7 +55,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_zero_permille_still_prunes()
+    public void Q149_zero_permille_still_prunes_one_model()
     {
         var g = G();
         g.C.Endings.Museum.ResearchPermillePerCapability = 0;
@@ -65,7 +65,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_bankrupt_refused()
+    public void Q149_bankrupt_refused()
     {
         var g = G();
         for (int v = 0; v < 7; v++) AddRetired(g, "mini", 100, v);
@@ -74,7 +74,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_save_load()
+    public void Q149_save_load_counts_and_rp()
     {
         var g = G();
         for (int v = 0; v < 7; v++) AddRetired(g, "mini", 100, v);
@@ -86,7 +86,21 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Salvage_needs_cash_when_configured()
+    public void Q149_max_capability_grant_uses_permille()
+    {
+        var g = Game.Solo(1, c => c.Endings.Museum.ResearchPermillePerCapability = 800);
+        g.Me.Models.Clear();
+        const string line = "mid";
+        for (int v = 0; v < 7; v++) AddRetired(g, line, 100_000, v);
+        long before = g.Me.ResearchPoints;
+        g.Do(Command.SalvageMuseumLine(g.Id, line));
+        long gain = g.Me.ResearchPoints - before;
+        Assert.True(g.Me.Models.Count(m => m.LineId == line && m.Status == ModelStatus.Retired) == 6);
+        Assert.Equal(MathI.MulPermille(100_000, 800), gain);
+    }
+
+    [Fact]
+    public void Q149_needs_cash_when_configured()
     {
         var g = G();
         for (int v = 0; v < 7; v++) AddRetired(g, "mini", 100, v);
@@ -95,7 +109,7 @@ public class SalvageMuseumLineCommandTests
     }
 
     [Fact]
-    public void Cross_salvage_then_weekly_auto_prune()
+    public void Q149_cross_salvage_then_weekly_auto_prune()
     {
         var g = G();
         for (int v = 0; v < 10; v++) AddRetired(g, "mini", 80, v);

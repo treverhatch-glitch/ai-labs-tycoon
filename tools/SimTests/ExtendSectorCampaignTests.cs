@@ -8,7 +8,7 @@ namespace AiLabs.SimTests;
 /// <summary>Q150: pay to extend an active product-studio sector campaign.</summary>
 public class ExtendSectorCampaignTests
 {
-    static Game At() => ExpansionTestSupport.SoloAtYear(2024, 2_000_000).WithStarterLab(gpus: 16);
+    static Game At(int year = 2024) => ExpansionTestSupport.SoloAtYear(year, 2_000_000).WithStarterLab(gpus: 16);
 
     static void Studio(Game g)
     {
@@ -17,7 +17,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_adds_weeks_to_timer()
+    public void Q150_main_extend_adds_weeks_to_timer()
     {
         Game g = At();
         Studio(g);
@@ -28,7 +28,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_keeps_appeal_active()
+    public void Q150_main_extend_keeps_appeal_active()
     {
         Game g = At();
         Studio(g);
@@ -38,7 +38,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_refused_without_campaign()
+    public void Q150_zero_refused_without_campaign()
     {
         Game g = At();
         Studio(g);
@@ -46,7 +46,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_bankrupt_inert()
+    public void Q150_bankrupt_refused()
     {
         Game g = At();
         Studio(g);
@@ -56,7 +56,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_zero_weeks_disabled()
+    public void Q150_zero_weeks_extension_disabled()
     {
         Game g = ExpansionTestSupport.SoloAtYear(2024, tweak: c => c.RoomPrograms.ProductStudio.ExtendCampaignWeeks = 0).WithStarterLab();
         Studio(g);
@@ -65,7 +65,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_save_load()
+    public void Q150_save_load_extended_timer()
     {
         Game g = At();
         Studio(g);
@@ -77,7 +77,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Cross_extend_then_end_campaign()
+    public void Q150_cross_extend_then_end_campaign()
     {
         Game g = At();
         Studio(g);
@@ -88,7 +88,7 @@ public class ExtendSectorCampaignTests
     }
 
     [Fact]
-    public void Extend_spends_cash()
+    public void Q150_main_extend_spends_cash()
     {
         Game g = At();
         Studio(g);
@@ -96,5 +96,32 @@ public class ExtendSectorCampaignTests
         long cash = g.Me.Cash;
         g.Do(Command.ExtendSectorCampaign(g.Id));
         Assert.Equal(cash - g.C.RoomPrograms.ProductStudio.ExtendCampaignCashCost, g.Me.Cash);
+    }
+
+    [Fact]
+    public void Q150_max_double_extend_stacks_weeks()
+    {
+        Game g = At();
+        Studio(g);
+        g.Do(Command.LaunchSectorCampaign(g.Id, "code-completion"));
+        int baseUntil = g.Me.SectorCampaignUntilTick;
+        g.Do(Command.ExtendSectorCampaign(g.Id));
+        g.Do(Command.ExtendSectorCampaign(g.Id));
+        int weeks = g.C.RoomPrograms.ProductStudio.ExtendCampaignWeeks;
+        Assert.Equal(baseUntil + weeks * 2, g.Me.SectorCampaignUntilTick);
+    }
+
+    [Fact]
+    public void Q150_cross_campaign_and_device_workshop_devices_sector()
+    {
+        Game g = At(2028);
+        Studio(g);
+        ExpansionTestSupport.BuildExpansionRoom(g, "device-workshop", 4, 4);
+        ExpansionTestSupport.AddReleasedModel(g, 120_000, "devices");
+        g.Do(Command.LaunchSectorCampaign(g.Id, "devices"));
+        g.Do(Command.ExtendSectorCampaign(g.Id));
+        int workshop = DeviceWorkshopSystem.AppealBonusPermille(g.C, g.State, g.Me, "devices");
+        int campaign = ProductStudioSystem.CampaignAppealPermille(g.C, g.State, g.Me, "devices");
+        Assert.True(workshop + campaign > 0);
     }
 }
