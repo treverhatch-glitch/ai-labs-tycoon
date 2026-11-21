@@ -1626,6 +1626,19 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - New state on the lab (schema 56, `MigrateTo56`): `onCallLevel`, `onCallLockedUntil`. Player only and opt-in. The golden digest moved to fc8f4202; reverting the two fields and the schema number brought dcfb9d2c back.
 - Alternatives: a setup fee instead of a weekly bill (rejected: optimisation already works that way, and this is about a standing cost); no lock (rejected: free to toggle makes the choice meaningless); no morale penalty (rejected: a strict upgrade for any lab with the staff).
 
+### Q324. What do people say about chiefs, the ethics board, campaigns, optimisation and the on-call rota? DECIDED: ten headlines and eleven chat lines, data only
+- Ten headlines (a chief named, stepping back or walking out; a board seated, stepped down or resigned; a campaign starting or ending; optimisation raised; a rota set) and eleven chat lines for the same, with role lines for a researcher (chief named), safety people (board seated), sales (campaign starting) and an engineer (optimisation raised). Only data and the test counts moved (57 headlines, 110 chat lines). Nothing is saved, so no schema bump and no golden change.
+- A campaign cut short by an incident (pick 2) has no headline or chat line of its own: the data allows only picks -1, 0 and 1, and the validator tests that on purpose. The incident already has its own headline and chat.
+- Stepping optimisation or the rota down, and a chief stepping down, have no chat line: they are decisions, not news.
+- Alternatives: widening the pick range to 2 (rejected: an existing test pins it and a new range would touch every other kind); making the collapse its own event kind (rejected: two events for one thing).
+
+### Q325. Do chiefs, the board, optimisation, campaigns and the on-call rota work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- A play-through helper uses all five on a schedule gated on cash (chiefs at weeks 10 and 90, a board at week 20 and dropped at 140, optimisation at 30, a campaign every year, a rota every 60 weeks). Over 260 weeks on seeds 1 to 3 the books balance, the save has no problems, a load plays on the same, the journal replays, and each tool was used at least once. A lab that uses none plays exactly like the same game without the tools.
+- One test combines a chief safety officer, optimisation, a board and a rota on one model: the chief lowers the incident chance, optimisation raises it, both show in the breakdown and its total matches, and an incident then costs less reputation and a smaller fine than the tools-free lab.
+- The test game relaxes the staffing rules (the autopilot's staff are not shaped for them), the same way the earlier together tests do.
+- No code or data changed; this is a tests-only entry.
+- Alternatives: gating none of the tools (rejected: the board and the rota are weekly costs that bankrupt the thin seed, as with Q311 and Q318).
+
 ## Open
 
 None.

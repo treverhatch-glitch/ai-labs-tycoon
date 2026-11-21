@@ -263,6 +263,8 @@ and says why in the commit message.
 80. **Inference optimisation (engineering, compute).** ~~Done~~: `SetOptimisation`, `Optimisation`, `optimise` data, lab `optimiseLevel` (schema 55, `MigrateTo55`), `FromOptimisation` in the incident breakdown, `OptimisationTests`, `docs/content/inference-optimisation.md` (Q321).
 81. **Marketing campaign (sales, reputation).** ~~Done~~: `RunCampaign`, `MarketingCampaign`, `marketing` data, lab campaign fields (schema 55, `MigrateTo55`), `CampaignEffect` in the appeal breakdown, `MarketingCampaignTests`, `docs/content/marketing-campaign.md` (Q322).
 82. **Incident response / on-call (safety, staff).** ~~Done~~: `SetOnCall`, `OnCall`, `onCall` data, lab `onCallLevel` and `onCallLockedUntil` (schema 56, `MigrateTo56`), `OnCallTests`, `docs/content/incident-response.md` (Q323).
+83. **Headlines and chat for chiefs, the board, campaigns, optimisation and the rota.** ~~Done~~: ten headlines and eleven chat lines, data only, `ChiefsBoardCampaignNewsChatTests` (Q324).
+84. **Chiefs, the board, optimisation, campaigns and the rota together (tests).** ~~Done~~: `ChiefsBoardOptimiseCampaignOnCallTogetherTests` (Q325).
 
 ## Rules: later
 
