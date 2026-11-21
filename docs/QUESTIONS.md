@@ -1690,6 +1690,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Caps: the salvage is at most 500 permille (the validator checks it), so scrapping never beats finishing; reputation and morale floor at 0. Only the player's lab can scrap; rivals' plans are untouched.
 - Alternatives: refunding part of the prep cash (rejected: the prep cost is the price of starting; salvage as research is the real learning); keeping the run as a retired model (rejected: a model with no capability would show up in the museum and the version list); a cooldown (rejected: the costs already deter repeats and a timer would need new state).
 
+### Q335. Can the player cut the whole lab at once, and what does it cost? DECIDED: a layoff round on a collective package, paid for in morale and reputation
+- New `layoffs` data, command `Layoff(permille)`, `Layoffs` system and event `LayoffRound`. Letting people go was one function at a time at full severance and with no social cost at all. A round cuts the same share (up to 300 permille) of every function at once on half the severance, and the people who stay lose morale and the press loses some respect, in proportion to the share of the whole staff let go. The decision is how much to cut when cash is short: it is cheap and fast, but a deep cut leaves a sullen, smaller lab.
+- No new state and no schema change: the round uses the same removal, culture and severance code as letting people go one by one. It is self-limiting (cut shares round down, a lone person is safe, and morale and reputation fall), so there is no cooldown.
+- Caps: the validator keeps the package between 100 and 1000 permille, the cap at 500, and the losses bounded. Only the player's lab can run a round.
+- Alternatives: a morale hit on every ordinary firing (rejected: it moves the baseline for labs that never run a round and the golden with it); picking the roles per round (rejected: that is the existing one-by-one command); a timed morale slump (rejected: a timed modifier, which the data avoids).
+
 ## Open
 
 None.

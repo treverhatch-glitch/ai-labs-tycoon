@@ -92,6 +92,7 @@ namespace AiLabs.Rules.Config
             SlaProblems(p, c);
             ResearchGrantsProblems(p, c);
             AbandonProblems(p, c);
+            LayoffsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -908,6 +909,18 @@ namespace AiLabs.Rules.Config
             if (k.SalvagePermille < 0 || k.SalvagePermille > 500) p.Add("abandon.salvagePermille must be from 0 to 500, so scrapping a run never pays better than finishing it");
             if (k.ReputationAtFull < 0 || k.ReputationAtFull > 200) p.Add("abandon.reputationAtFull must be from 0 to 200");
             if (k.MoraleAtFull < 0 || k.MoraleAtFull > 500) p.Add("abandon.moraleAtFull must be from 0 to 500");
+        }
+
+        static void LayoffsProblems(List<string> p, GameConfig c)
+        {
+            LayoffsConfig k = c.Layoffs;
+            if (k == null) { p.Add("layoffs is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("layoffs.enabled must be 0 or 1");
+            if (k.MaxPermille < 0 || k.MaxPermille > 500) p.Add("layoffs.maxPermille must be from 0 to 500, so a round never empties the lab");
+            if (k.SeverancePermille < 100 || k.SeverancePermille > MathI.Permille) p.Add("layoffs.severancePermille must be from 100 to 1000, so a round is cheaper than letting people go one by one but never free");
+            if (k.ReputationAtAll < 0 || k.ReputationAtAll > 200) p.Add("layoffs.reputationAtAll must be from 0 to 200");
+            if (k.MoraleAtAll < 0 || k.MoraleAtAll > 500) p.Add("layoffs.moraleAtAll must be from 0 to 500");
+            if (k.DeepPermille < 1 || k.DeepPermille > MathI.Permille) p.Add("layoffs.deepPermille must be from 1 to 1000");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

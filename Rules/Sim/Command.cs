@@ -60,7 +60,8 @@ namespace AiLabs.Rules.Sim
         PublishPostMortem,
         SetSla,
         ApplyForGrant,
-        ScrapRun
+        ScrapRun,
+        Layoff
     }
 
     /// <summary>
@@ -419,6 +420,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.ScrapRun, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Lets go of a share (permille, up to the data's cap) of every function at once, on a reduced package. The people who stay and the press mind it.</summary>
+        public static Command Layoff(int labId, int permille)
+        {
+            Command c = Make(CommandKind.Layoff, labId);
+            c.Permille = permille;
             return c;
         }
 

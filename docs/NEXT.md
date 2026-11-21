@@ -273,6 +273,7 @@ and says why in the commit message.
 90. **Headlines and chat for consultants, post-mortems, the pledge and grants.** ~~Done~~: twelve headlines and twelve chat lines, data only, `ConsultantsPostMortemSlaNewsChatTests` (Q331).
 91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
 92. **Scrap a training run (research, compute).** ~~Done~~: `ScrapRun`, `Abandon`, `abandon` data, no new state, `AbandonTests`, `docs/content/scrapping-a-run.md` (Q334).
+93. **Layoff rounds (staff, cash).** ~~Done~~: `Layoff`, `Layoffs`, `layoffs` data, no new state, `LayoffsTests`, `docs/content/layoff-rounds.md` (Q335).
 
 ## Rules: later
 

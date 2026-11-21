@@ -5614,6 +5614,14 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "layoffs": {
+    "enabled": 1,
+    "maxPermille": 300,
+    "severancePermille": 500,
+    "reputationAtAll": 40,
+    "moraleAtAll": 200,
+    "deepPermille": 200
+  },
   "researchGrants": {
     "maxTier": 3,
     "minResearchers": 2,

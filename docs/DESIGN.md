@@ -257,6 +257,8 @@ Twelve new headlines and twelve chat lines cover policy consultants, post-mortem
 
 The player can scrap a run that is still training. Part of the compute spent comes back as research points; the press and the team mind in proportion to how far along it was.
 
+The player can run a layoff round: the same share of every function goes on a cheaper collective package, and the people who stay and the press mind it in proportion to the share.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

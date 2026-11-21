@@ -190,7 +190,9 @@ namespace AiLabs.Rules.State
         /// <summary>A research grant was settled. LabId is the lab, SubjectId the tier, Amount the cash paid back. Pick is 1 when the papers were delivered, 0 when they were not.</summary>
         GrantSettled,
         /// <summary>The player scrapped a training run. LabId is the lab, SubjectId the model's id, Amount the research points kept, Ref the model's name. Pick is 1 when the run was at least half done, 0 when it was less.</summary>
-        RunScrapped
+        RunScrapped,
+        /// <summary>A layoff round. Amount is the people let go, SubjectId the share of the staff in permille, Pick 1 when it was a deep cut.</summary>
+        LayoffRound
     }
 
     /// <summary>
