@@ -1583,6 +1583,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No new state, so no schema bump and the golden digest did not move. The morale floor is the only limit on repeating it.
 - Alternatives: a per-person cooldown (rejected: it needs a saved field and a schema number); a retrain that keeps all morale (rejected: then firing and hiring would never be worth it); letting a person move to a role with no seat (rejected: seats are what limits every role).
 
+### Q317. What do people say about audits, the research focus, hack weeks, equity and retraining? DECIDED: ten headlines and nine chat lines, data only
+- Headlines for the three audit outcomes (clean, embarrassing, published only), a pulled certificate, a new and a dropped research focus, the start and end of a hack week, staff equity and a retrained person. Chat lines for an audit (clean and embarrassing), a pulled certificate, a focus change, hack week (a researcher line, a general line and an end line), equity and retraining.
+- Only data and the test counts moved (47 headlines, 99 chat lines). Nothing is saved, so no schema bump and no golden change.
+- The audit headlines use `pick` for the outcome and the model name in `{ref}`; the other lines match any pick except hack week, which splits start (1) and end (0).
+- Alternatives: one headline per kind (rejected: an audit that embarrasses the lab is a different story from a clean one); naming the retrained role in the headline (rejected: the placeholders have no way to name a role without a new one).
+
 ## Open
 
 None.

@@ -73,3 +73,4 @@ The bible's chapter 10: the models' presence shows as a light running through th
 | `quiet` | Quiet | - | 6 |
 
 The report also carries a second reading, what the dashboard's own numbers would suggest: the same calculation on the displayed alignment with no corruption. When the room is higher than the chart, `ChartIsMisleading` is true. Brightness (0 to 1000) is the combined capability of the latest model of each line, reaching 1000 at 10000.
+- Nine lines (Q317) cover the newer tools: an audit (clean or embarrassing), a certificate pulled, a new research focus, a hack week (a researcher has their own line; it starts with pick 1 and ends with pick 0), staff equity and a retrained person.

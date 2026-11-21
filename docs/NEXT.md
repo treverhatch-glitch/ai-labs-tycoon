@@ -256,6 +256,7 @@ and says why in the commit message.
 73. **Hack week (research, staff).** ~~Done~~: `HoldHackWeek`, `HackWeek`, `hack` data, lab `hackWeeks` and `hackLockedUntil` (schema 52), `HackWeekTests`, `docs/content/hack-week.md` (Q314).
 74. **Staff equity (pay, funding).** ~~Done~~: `GrantStaffEquity`, `StaffEquity`, `equity` data, lab `equityLevel` and `equityPermille` (schema 53, `MigrateTo53`), `StaffEquityTests`, `docs/content/staff-equity.md` (Q315).
 75. **Retrain a person (staff).** ~~Done~~: `RetrainStaff`, `Retraining`, `retrain` data, no new state, `RetrainTests`, `docs/content/retraining.md` (Q316).
+76. **Headlines and chat for audits, focus, hack week, equity and retraining.** ~~Done~~: `ResearchAndStaffToolsNewsChatTests`, news and chat data (Q317).
 
 ## Rules: later
 

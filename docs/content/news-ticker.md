@@ -5,7 +5,7 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 
 ## What makes a headline
 
-37 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
+47 headline lines in the data, one per kind of public event, each with placeholders (`{lab}`, `{subject}`, `{model}`, `{money}`, `{amount}`, `{ref}`, `{sector}`, `{era}`, `{world}`, `{generation}`, `{rival}`, `{ending}`) and an optional `pick` for events that come in two kinds. The first line that fits wins. The result is upper-cased.
 
 | Event | Headline (shown in capitals) |
 |---|---|
@@ -46,6 +46,16 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | A lapsed compliance office | {lab}'s compliance office loses its policy staff and drops from level {amount}. A spokesperson is 'fully compliant with the idea of it' |
 | A paper | {lab} publishes a paper. Reviewers 'have notes' |
 | A sublet change | {lab} changes how much compute it lets to outsiders. It now brings in {money} a week |
+| An audit with a certificate | {lab} gets an outside safety certificate for {ref}. The auditors 'could not find the rest of it' |
+| An audit that embarrassed the lab | Outside auditors publish the real safety score of {ref}. It is not the one on {lab}'s website |
+| An audit that only published the score | Auditors publish the real score of {ref}. {lab} calls it 'a data point' |
+| A certificate pulled | {lab} loses the safety certificate of {ref} after an incident. The sticker is being 'repurposed' |
+| A new research focus | {lab} announces a new research focus. The old one is 'still in the building' |
+| A dropped research focus | {lab} drops its research focus and will 'follow the science, wherever it is' |
+| A hack week starting | {lab} puts its roadmap on hold for a hack week. Someone has built a toaster that files bug reports |
+| A hack week ending | {lab}'s hack week ends. The toaster is 'a priority for v2' |
+| Staff equity | {lab} gives its staff equity. Employees are 'cautiously optimistic about a number they cannot sell' |
+| A retrained person | {lab} retrains a person for a new role. HR calls it 'a journey' |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 
