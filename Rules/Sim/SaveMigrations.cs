@@ -35,6 +35,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 18) MigrateTo18(root);
             if (fromSchema < 19) MigrateTo19(root);
             if (fromSchema < 20) MigrateTo20(root);
+            if (fromSchema < 21) MigrateTo21(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -317,6 +318,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo20(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "absorbedByLabId", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Risk classes (Q125): an incident event names its class; old events were the plain mishap.</summary>
+        static void MigrateTo21(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "events", e => JsonPatch.AddIfMissing(e, "riskClass", JsonValue.Of("")));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

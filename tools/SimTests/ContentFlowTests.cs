@@ -105,7 +105,7 @@ public class ContentFlowTests
     {
         Run run = FullLife.Value;
         GameConfig c = run.Game.C;
-        string[] landed = run.Seen.Where(e => e.Kind == EventKind.WorldNews).Select(e => e.Ref).ToArray();
+        string[] landed = run.Seen.Where(e => e.Kind == EventKind.WorldNews && c.WorldEvent(e.Ref) != null).Select(e => e.Ref).ToArray();
         int lastYear = run.FirstYear + Years - 1;
         string[] expected = c.WorldEvents.Where(w => w.Year <= lastYear).Select(w => w.Id).ToArray();
         foreach (string id in expected) Assert.Contains(id, landed);
@@ -244,7 +244,7 @@ public class ContentFlowTests
         Assert.All(run.Game.State.Labs, lab => Assert.False(lab.Bankrupt, lab.Name + " went bankrupt"));
         Assert.True(run.Game.Me.Techs.Count >= c.Research.Techs.Count * 85 / 100, "the player owns " + run.Game.Me.Techs.Count + " techs");
         Assert.Equal(c.Eras.Skip(1).Select(e => e.Id).ToArray(), run.Seen.Where(e => e.Kind == EventKind.EraBegan).Select(e => e.Ref).ToArray());
-        Assert.DoesNotContain(run.Seen, e => e.Kind == EventKind.WorldNews && c.WorldEvent(e.Ref).Year < 2009);
+        Assert.DoesNotContain(run.Seen, e => e.Kind == EventKind.WorldNews && c.WorldEvent(e.Ref) != null && c.WorldEvent(e.Ref).Year < 2009);
         Assert.True(run.MaxCash < 1000000000000L);
         Assert.True(run.Game.Me.LastWeek.Revenue > 100000);
     }

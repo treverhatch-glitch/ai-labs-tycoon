@@ -714,6 +714,62 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** in `EconomyBoundsTests`; the sweep over seeds 1 to 70 was run by hand and is not a test.
 - Why: each seed costs about 3 seconds, so the soak stays inside the suite; the floor, ceiling and revenue-under-pools checks catch both a runaway and a collapse.
 
+## Start eras and risk classes (NEXT item 12 rules half, and Q110 revisited)
+
+### Q118. Which eras can a game start in? DECIDED: all nine
+
+- Options: (a) keep 1995 and 2009 only; (b) add a few mid eras; (c) every era, including the two expansions.
+- Recommendation and choice: **(c)**. `startable` is true for every era; the two expansion eras are marked in the offer so a picker can say so.
+- Why: starting is data (`startCashPermille`, `startGrantPermille`, `startLotId`, `startTechs`), so one more era costs a row, and the soak test plays a start in each of them.
+
+### Q119. What does a later start hand the player? DECIDED: every tech of the eras before, and cash that grows with the era
+
+- Options: (a) the same kit as 2009 scaled; (b) all techs of earlier eras (`RivalSystem.CatchUpTechs`, which also pulls in prerequisites) and cash from x30 (2012) to x15000 (2033) of the 1995 start, a grant only up to 2017, and the biggest lot from 2017.
+- Recommendation and choice: **(b)**. It is $6M in 2012, $25M in 2017, $100M in 2022, $250M in 2024, $750M in 2026, $1.5B in 2029 and $3B in 2033.
+- Why: a 2022 lab should not research the basics again, and the cash tracks what a training run and a GPU fleet cost then (training cost x10 in 2022, x120 in 2033, plus the era rules). The validator rejects a startable era with no cash or a missing earlier tech, so the data cannot drift.
+
+### Q120. Who is in the world at the start? DECIDED: every rival whose join year has come; later ones are pending
+
+- Options: (a) all rivals at once; (b) those with `joinsYear` at or before the start year, the rest arrive on their year as in a normal game.
+- Recommendation and choice: **(b)** (`StartEras.Offer` lists the cast and who is present).
+- Why: it is what a game played through to that year would look like, and no new arrival code is needed.
+
+### Q121. How much cash does a rival start with in a later era? DECIDED: founders take the era's share, veterans take a grown figure held near the player's
+
+- Options: (a) everyone gets their own start cash (macrosoft and goggle went bankrupt in every start from 2022 on, because a few million cannot meet era costs); (b) founders (`joinsYear` 0) take their start cash times the era's share; a rival that joined later takes its start cash grown by the training-cost multiplier since it joined, clamped to half to double the player's kit (`WorldSetup.EstablishedCash`); one that arrives later keeps its own start cash.
+- Recommendation and choice: **(b)**. Over 9 eras and 3 seeds nobody went bankrupt. One change to an existing start: a later joiner already present in 2009 (Metta) now gets the established figure, which is the reason the 2009 start digest differs.
+- Why: it is a rule from existing data, not a table per era, and it keeps the cast able to play.
+
+### Q122. Is there a picker? DECIDED: only the list for one
+
+- Options: (a) build a screen; (b) `StartEras.Offers(config)` returns era, year, tagline, what models can do, cash, grant, lot, tech count and the cast with their cash; `NewGameOptions.StartEraId` starts the game.
+- Recommendation and choice: **(b)**. No UI in this item.
+- Why: the rules half is done and tested; a screen needs only this list. The offer restates what `NewGame` does, and a test checks every era's offer against the game it starts.
+
+### Q123. How do risk classes work? DECIDED: a class opens with its era, bites by sector, and replaces the plain mishap in an incident
+
+- Options: (a) a class per model line; (b) a class per era and sector list; the class is drawn when an incident happens, weighted against the plain mishap (`safety.genericRiskWeight` 1000).
+- Recommendation and choice: **(b)**: bias and autonomous crash (2012), misuse (2017), data leak (2022), agent mishap (2024), runaway agents (2026), physical harm (2029), loss of control (2033), eight in `safety.riskClasses`.
+- Why: what a lab sells then decides what can go wrong, which a flat incident rate could not say. This answers Q110 (which put it off until it had its own design). The plain mishap always stays possible; with no class biting, the dice are not touched, so a game before 2012 plays as before.
+
+### Q124. What does a class change? DECIDED: the fine and the reputation lost, then the headline
+
+- Options: (a) only the headline; (b) fine times `finePermille` (after the rung fine, before the era's fine rule) and reputation lost times `reputationPermille`.
+- Recommendation and choice: **(b)**, from x1 (bias, with x1.5 reputation) up to x5 (loss of control, x3 reputation).
+- Why: a driving crash or a leaked database should cost more than a bad answer, and the later classes more than the earlier. The rung ladder (1 to 6) stays as it is.
+
+### Q125. Where is the class stored? DECIDED: on the incident event, save schema 21
+
+- Options: (a) not stored, drawn again from the sector when read; (b) a text id on `GameEvent` (`riskClass`, empty for the plain mishap), a schema step 20 to 21 that adds an empty one to every old event.
+- Recommendation and choice: **(b)**.
+- Why: a headline is picked once at the incident and must read the same later, even after the model changes sector. It adds one key per event and nothing else. The golden digest moved for this reason alone (checked: with schema 20 and the field removed, the digest `507debe1` before this change comes back), so the new constant is `71b44460`.
+
+### Q126. What does the validator insist on? DECIDED: ranges, known ids, oldest first, and a `{model}` in every headline
+
+- Options: (a) trust the data; (b) weight 1 to 100000 (so the draw cannot overflow), fine and reputation 250 to 10000 per mille, known sectors and eras, never the first era, listed oldest first, three or more headlines each with `{model}`, `genericRiskWeight` 1 to 100000.
+- Recommendation and choice: **(b)**, with missing or unknown JSON keys an error as everywhere else.
+- Why: a typo in a class should fail when the config loads, not as a crash in the middle of a game.
+
 ## Open
 
 None.

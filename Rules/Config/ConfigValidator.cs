@@ -141,6 +141,7 @@ namespace AiLabs.Rules.Config
                     || c.Safety.Rung6CorruptionMin <= c.Safety.Rung5CorruptionMin)
                     p.Add("safety rung4/5/6 corruption thresholds must rise from 1");
             }
+            RiskClassProblems(p, c);
             ContainmentConfig cont = c.Safety.Containment;
             if (cont != null)
             {
@@ -343,6 +344,45 @@ namespace AiLabs.Rules.Config
             }
         }
 
+        static void RiskClassProblems(List<string> p, GameConfig c)
+        {
+            SafetyConfig safety = c.Safety;
+            if (safety.GenericRiskWeight < 1 || safety.GenericRiskWeight > 100000) p.Add("safety.genericRiskWeight must be from 1 to 100000: the era's plain mishap always stays possible");
+            UniqueIds(p, "safety.riskClasses", safety.RiskClasses);
+            for (int i = 0; i < safety.RiskClasses.Count; i++)
+            {
+                RiskClassConfig r = safety.RiskClasses[i];
+                string who = "risk class " + r.Id;
+                if (string.IsNullOrEmpty(r.Name)) p.Add(who + " has no name");
+                EraConfig opens = c.Era(r.Era);
+                if (opens == null) p.Add(who + " opens in the unknown era \"" + r.Era + "\"");
+                else if (c.Eras.IndexOf(opens) == 0) p.Add(who + " opens in the first era: the first era's trouble is the plain mishap");
+                if (r.Weight < 1 || r.Weight > 100000) p.Add(who + " needs a weight from 1 to 100000");
+                if (r.FinePermille < 250 || r.FinePermille > 10000) p.Add(who + " has finePermille " + r.FinePermille + ": it must be from 250 to 10000");
+                if (r.ReputationPermille < 250 || r.ReputationPermille > 10000) p.Add(who + " has reputationPermille " + r.ReputationPermille + ": it must be from 250 to 10000");
+                if (r.Headlines.Count == 0) p.Add(who + " has no headlines");
+                foreach (string h in r.Headlines)
+                    if (h.IndexOf("{model}", StringComparison.Ordinal) < 0) p.Add(who + " has a headline without {model}: \"" + h + "\"");
+                foreach (string sectorId in r.Sectors)
+                    if (c.Sector(sectorId) == null) p.Add(who + " bites the unknown sector \"" + sectorId + "\"");
+                if (i > 0 && opens != null)
+                {
+                    EraConfig before = c.Era(safety.RiskClasses[i - 1].Era);
+                    if (before != null && c.Eras.IndexOf(opens) < c.Eras.IndexOf(before)) p.Add(who + " is listed before a class that opens in an earlier era: list them oldest first");
+                }
+            }
+        }
+
+        static IEnumerable<string> StartTechsMissing(GameConfig c, int eraIndex)
+        {
+            EraConfig era = c.Eras[eraIndex];
+            foreach (TechConfig tech in c.Research.Techs)
+            {
+                EraConfig techEra = c.Era(tech.Era);
+                if (techEra != null && c.Eras.IndexOf(techEra) < eraIndex && !era.StartTechs.Contains(tech.Id)) yield return tech.Id;
+            }
+        }
+
         static void EraRulePermille(List<string> p, string who, string name, int value)
         {
             if (value < 250 || value > 5000) p.Add(who + " has " + name + " " + value + ": an era rule moves a cost or a chance between x0.25 and x5");
@@ -374,6 +414,11 @@ namespace AiLabs.Rules.Config
                 if (era.TrainingCostPermille < 1) p.Add(who + " needs trainingCostPermille of at least 1");
                 if (era.StartCashPermille < 0 || era.StartGrantPermille < 0) p.Add(who + " has a negative start money share");
                 if (c.Lot(era.StartLotId) == null) p.Add(who + " starts on the unknown lot \"" + era.StartLotId + "\"");
+                if (era.Startable && i > 0)
+                {
+                    if (era.StartCashPermille < 1) p.Add(who + " is a starting era but gives no start cash");
+                    foreach (string missing in StartTechsMissing(c, i)) p.Add(who + " is a starting era but does not start with \"" + missing + "\", a tech of the eras before it");
+                }
                 if (era.IncidentHeadlines.Count == 0) p.Add(who + " has no incident headlines");
                 foreach (string h in era.IncidentHeadlines)
                     if (h.IndexOf("{model}", StringComparison.Ordinal) < 0) p.Add(who + " has an incident headline without {model}: \"" + h + "\"");
