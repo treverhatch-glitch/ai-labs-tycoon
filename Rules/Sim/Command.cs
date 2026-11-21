@@ -82,7 +82,9 @@ namespace AiLabs.Rules.Sim
         ResistUnion,
         AnnounceSunset,
         CancelSunset,
-        AssignAccountTeam
+        AssignAccountTeam,
+        SubmitPaper,
+        WithdrawPaper
     }
 
     /// <summary>
@@ -748,6 +750,23 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AssignAccountTeam, labId);
             c.Id = sectorId;
             c.Count = people;
+            return c;
+        }
+
+        /// <summary>Sends a paper to a venue (TargetId 1 workshop, 2 main conference, 3 flagship) with an effort of Count (1 to 3). The research points are paid now; the decision comes after the venue's review weeks and depends only on the lab's prestige that day plus the effort.</summary>
+        public static Command SubmitPaper(int labId, int venue, int effort)
+        {
+            Command c = Make(CommandKind.SubmitPaper, labId);
+            c.TargetId = venue;
+            c.Count = effort;
+            return c;
+        }
+
+        /// <summary>Takes a paper out of review (TargetId is its place in the lab's list, from 0) for part of the points back.</summary>
+        public static Command WithdrawPaper(int labId, int index)
+        {
+            Command c = Make(CommandKind.WithdrawPaper, labId);
+            c.TargetId = index;
             return c;
         }
 

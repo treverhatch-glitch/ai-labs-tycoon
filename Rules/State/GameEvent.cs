@@ -252,7 +252,11 @@ namespace AiLabs.Rules.State
         /// <summary>A notice was withdrawn. SubjectId is the model, Amount the reputation it cost, Pick 1 when the player called it off and 0 when the successor was gone, Ref the model.</summary>
         SunsetCalledOff,
         /// <summary>An account team changed. Ref is the sector name, SubjectId the weeks of familiarity left, Amount the people now on it. Pick 1 for a new team, 0 for a changed one, 2 when it was disbanded, 3 when losing salespeople thinned it and 4 when the lab lost the sector.</summary>
-        AccountTeamChanged
+        AccountTeamChanged,
+        /// <summary>A paper went out for review. SubjectId is the venue (1 workshop, 2 main, 3 flagship), Amount the research points, Pick the effort, Ref the venue name.</summary>
+        PaperSubmitted,
+        /// <summary>A paper was decided. SubjectId is the venue, Amount the prestige it added (accepted) or the points given back (rejected or withdrawn), Pick 1 accepted, 0 rejected, 2 withdrawn, Ref the venue name.</summary>
+        PaperDecided
     }
 
     /// <summary>

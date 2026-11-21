@@ -5732,6 +5732,22 @@
     "maxWeeks": 52,
     "comboCapPermille": 150
   },
+  "conference": {
+    "enabled": 1,
+    "maxPending": 3,
+    "mainCost": 2,
+    "flagshipCost": 4,
+    "workshopWeeks": 6,
+    "mainWeeks": 12,
+    "flagshipWeeks": 24,
+    "mainBar": 300,
+    "flagshipBar": 600,
+    "effortPrestige": 100,
+    "acceptPrestige": 150,
+    "acceptReputation": 20,
+    "refundPermille": 500,
+    "withdrawPermille": 800
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

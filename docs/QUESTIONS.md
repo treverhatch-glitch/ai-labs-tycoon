@@ -1842,6 +1842,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden moved 3ab439c4 -> f8ed11f8 only through the new saved list and the schema number (verified by taking it back out). No random numbers; only the player's lab.
 - Alternatives: a team that raises revenue directly (rejected: would sit on top of the enterprise deal bonus with no shared cap), assigning named people (rejected: more commands for the same choice), familiarity that never decays on resize (rejected: no cost to reshuffling).
 
+### Q361. Can a paper be sent to a conference? DECIDED: submissions with venue tiers, review dates and a decision set by prestige and effort
+- New `conference` data, commands `SubmitPaper` and `WithdrawPaper`, `Conference` system, events `PaperSubmitted` and `PaperDecided` and a saved list on the lab (schema 75). The player sends a paper to a workshop, a main conference or a flagship venue with an effort of 1 to 3, paying research points up front (more for a better venue and more effort) and waiting 6, 12 or 24 weeks. Up to 3 papers wait at once.
+- No random numbers: on decision day the paper is accepted when the lab's prestige that day plus 100 per step of effort reaches the venue's bar (0, 300, 600). Prestige fades 4 a week, so a flagship paper submitted at 400 prestige is rejected 24 weeks later unless the effort covers the slide. Rejected papers give half the points back; accepted ones add prestige and reputation by venue and count toward a grant owed.
+- Real decisions over time: which venue the lab can reach, how much effort to pay for, keeping prestige up while a paper is in review, and when to withdraw. It reads the existing prestige and paper cost and adds nothing to the instant paper.
+- The golden moved f8ed11f8 -> 3ed3c0a0 only through the new saved list and the schema number (verified by taking it back out). Only the player's lab.
+- Alternatives: a chance of acceptance (rejected: the brief asks for no random numbers and a visible rule is more fun), a venue per paper chosen by id (rejected: three tiers say the same), a reward that scales with prestige (rejected: prestige already pays through hiring and morale).
+
 ## Open
 
 None.

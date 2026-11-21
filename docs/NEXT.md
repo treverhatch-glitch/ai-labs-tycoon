@@ -298,6 +298,7 @@ and says why in the commit message.
 115. **Labour relations (pressure from layoffs, crunch and morale; recognise, resist or let it run; strike).** ~~Done~~: `labour` data, `RecogniseUnion`, `ResistUnion`, `Labour`, schema 72, `LabourTests`, `docs/content/labour.md` (Q358).
 116. **Model end-of-life notice (retire a model on a date, customers move to the successor it helped design).** ~~Done~~: `sunset` data, `AnnounceSunset`, `CancelSunset`, `Sunset`, schema 73, `SunsetTests`, `docs/content/sunset.md` (Q359).
 117. **Sector account teams (salespeople on a sector, familiarity over weeks, shared cap with enterprise seats).** ~~Done~~: `accounts` data, `AssignAccountTeam`, `AccountTeams`, schema 74, `AccountTeamsTests`, `docs/content/account-teams.md` (Q360).
+118. **Conference submissions (venue tiers, review dates, acceptance by prestige and effort; no dice).** ~~Done~~: `conference` data, `SubmitPaper`, `WithdrawPaper`, `Conference`, schema 75, `ConferenceTests`, `docs/content/conference.md` (Q361).
 
 ## Rules: later
 

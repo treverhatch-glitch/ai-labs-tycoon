@@ -133,6 +133,13 @@ namespace AiLabs.Rules.Sim
                     if (lab.AccountTeams.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has account teams, which only the player's lab can have");
                     if (assigned > c.Accounts.MaxPeople * c.Market.Sectors.Count) p.Add(who + " has more people on account teams than the data allows");
                 }
+                {
+                    foreach (Submission paper in lab.Submissions)
+                        if (paper.Tier < 1 || paper.Tier > 3 || paper.Effort < 1 || paper.Effort > 3 || paper.Cost < 1 || paper.Due < 1)
+                            p.Add(who + " has a paper out for review (venue " + paper.Tier + ", effort " + paper.Effort + ", due week " + paper.Due + ") that the data does not allow");
+                    if (lab.Submissions.Count > c.Conference.MaxPending) p.Add(who + " has more papers out for review than the data allows");
+                    if (lab.Submissions.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has papers out for review, which only the player's lab can have");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
