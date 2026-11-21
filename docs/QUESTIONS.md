@@ -634,7 +634,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ## Era rules (NEXT item 13)
 
-### Q103. What does "the rules shift" mean in data? DECIDED: five era multipliers and one law, beside `incidentLoadPermille`
+### Q127. What does "the rules shift" mean in data? DECIDED: five era multipliers and one law, beside `incidentLoadPermille`
 
 - Options: (a) a free-form rules list per era; (b) typed fields on `EraConfig`; (c) per-era code branches.
 - Recommendation and choice: **(b)** `hireFeePermille`, `chipPricePermille`, `adoptionPermille`, `finePermille`, `minReleaseAlignment`; `EraRules` is the one place every system asks.

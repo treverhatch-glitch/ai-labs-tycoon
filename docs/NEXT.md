@@ -91,7 +91,7 @@ and says why in the commit message.
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Start-era
     selection is in (rules half, Q118 to Q122): every era is startable with an era-appropriate cast, cash, lot and techs, and
     `StartEras.Offers` feeds a picker. Still open: the picker screen itself.
-13. ~~**Make each era feel different.**~~ Done (Q103 to Q109): `EraRules`, five era rules beside incident load (talent-war
+13. ~~**Make each era feel different.**~~ Done (Q104 to Q109 and Q127): `EraRules`, five era rules beside incident load (talent-war
     hiring fees, chip prices, customer appetite, fine size, and a release law on displayed alignment), the briefing
     and shifts queries, a rules line on the era banner, no save change. Risk classes per era are in (Q110 superseded by
     Q123 to Q126, save schema 21). Still open: per-era mechanics that need new state (they ride on items 7 and 8).
