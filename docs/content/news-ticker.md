@@ -29,7 +29,7 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 ## The ticker
 
 - `Headlines(config, state, max)` gives the newest headlines first, up to `max` (8 unless the screen asks for another number, `defaultHeadlines`).
-- When fewer than **5** (`minHeadlines`) real headlines exist it is padded with filler: eight lines such as "LOCAL DATA CENTRE NOW USES MORE POWER THAN LOCAL COUNTRY" (from 2018) and "AI WILL TAKE ALL JOBS, SAYS CEO HIRING 4,000 PEOPLE". A filler line runs from its `fromYear`, is never repeated on one ticker and is picked from the date, so the same week gives the same ticker.
+- When fewer than **5** (`minHeadlines`) real headlines exist it is padded with filler: 26 lines (eight from the bible and 18 for the eras, Q293) such as "LOCAL DATA CENTRE NOW USES MORE POWER THAN LOCAL COUNTRY" (from 2018) and "AI WILL TAKE ALL JOBS, SAYS CEO HIRING 4,000 PEOPLE". A filler line runs from its `fromYear` to its `toYear` (0 for no end; the modem queue ends in 2003, the orbital launch delay never does), and every year from 1995 has at least five open, is never repeated on one ticker and is picked from the date, so the same week gives the same ticker.
 - `NewsTicker.About` gives the headline for one event, for a screen that wants to flash a headline the moment it happens.
 
 ## Notes

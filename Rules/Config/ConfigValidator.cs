@@ -543,6 +543,7 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrWhiteSpace(f.Text)) p.Add(who + " has no text");
                 if (f.Text != null && f.Text.IndexOf('{') >= 0) p.Add(who + " has a placeholder, and filler is not about an event");
                 if (f.FromYear < 1000 || f.FromYear > 3000) p.Add(who + " needs a fromYear from 1000 to 3000");
+                if (f.ToYear != 0 && f.ToYear < f.FromYear) p.Add(who + " ends (" + f.ToYear + ") before it starts (" + f.FromYear + ")");
             }
         }
 

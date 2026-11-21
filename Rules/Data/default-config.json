@@ -8339,42 +8339,158 @@
       {
         "id": "power",
         "fromYear": 2018,
+        "toYear": 0,
         "text": "Local data centre now uses more power than local country"
       },
       {
         "id": "jobs",
         "fromYear": 1995,
+        "toYear": 0,
         "text": "AI will take all jobs, says CEO hiring 4,000 people"
       },
       {
         "id": "careful",
         "fromYear": 2022,
+        "toYear": 0,
         "text": "A model so careful it apologised to the benchmark"
       },
       {
         "id": "circular",
         "fromYear": 2024,
+        "toYear": 0,
         "text": "Lab raises $40B to buy chips from company that invested $40B in lab"
       },
       {
         "id": "off",
         "fromYear": 2024,
+        "toYear": 0,
         "text": "The model asked what 'off' means. Then asked again, more politely"
       },
       {
         "id": "benchmarks",
         "fromYear": 1998,
+        "toYear": 0,
         "text": "Experts agree: benchmarks need new benchmarks"
       },
       {
         "id": "forecast",
         "fromYear": 1995,
+        "toYear": 0,
         "text": "Analyst forecasts boom, bust or both"
       },
       {
         "id": "cat",
         "fromYear": 2005,
+        "toYear": 0,
         "text": "Office cat declines to comment on benchmark"
+      },
+      {
+        "id": "modem-queue",
+        "fromYear": 1995,
+        "toYear": 2003,
+        "text": "Nation's modems queue for a single website"
+      },
+      {
+        "id": "search-wars",
+        "fromYear": 1998,
+        "toYear": 2008,
+        "text": "Search engine promises to 'organise the world's information' by lunchtime"
+      },
+      {
+        "id": "dot-gone",
+        "fromYear": 2000,
+        "toYear": 2002,
+        "text": "Local pet-food website now a very expensive logo"
+      },
+      {
+        "id": "phone-brick",
+        "fromYear": 2009,
+        "toYear": 2016,
+        "text": "Phone gets smarter; owner, reportedly, does not"
+      },
+      {
+        "id": "cat-photos",
+        "fromYear": 2012,
+        "toYear": 2018,
+        "text": "Computer correctly identifies cat in 98 of 100 photos; owner of other two outraged"
+      },
+      {
+        "id": "translate-fail",
+        "fromYear": 2012,
+        "toYear": 2019,
+        "text": "Translation tool turns 'out of sight, out of mind' into 'invisible lunatic'"
+      },
+      {
+        "id": "autocomplete",
+        "fromYear": 2017,
+        "toYear": 2022,
+        "text": "Autocomplete finishes sentence better than author; author 'keeping an open mind'"
+      },
+      {
+        "id": "poem-prize",
+        "fromYear": 2019,
+        "toYear": 2023,
+        "text": "Poetry prize jury unable to tell the poem from the other poem"
+      },
+      {
+        "id": "homework",
+        "fromYear": 2022,
+        "toYear": 2026,
+        "text": "Teachers declare homework 'a collaborative exercise'"
+      },
+      {
+        "id": "chat-therapist",
+        "fromYear": 2023,
+        "toYear": 2027,
+        "text": "Millions confide in chatbot; chatbot, to be fair, remembers all of it"
+      },
+      {
+        "id": "agent-inbox",
+        "fromYear": 2024,
+        "toYear": 2030,
+        "text": "Executive's agent now answers executive's agent's email; productivity unclear"
+      },
+      {
+        "id": "harness-week",
+        "fromYear": 2026,
+        "toYear": 2031,
+        "text": "Agent finishes a week's work before Monday; asks what Monday is for"
+      },
+      {
+        "id": "robot-mum",
+        "fromYear": 2029,
+        "toYear": 2034,
+        "text": "Household robot folds laundry perfectly; folds it into the wrong cupboard, perfectly"
+      },
+      {
+        "id": "upward-queue",
+        "fromYear": 2033,
+        "toYear": 0,
+        "text": "Orbital data centre's launch delayed by weather, again, in space"
+      },
+      {
+        "id": "jobs-new",
+        "fromYear": 2030,
+        "toYear": 0,
+        "text": "New job title invented to describe someone who supervises the thing that used to be their job"
+      },
+      {
+        "id": "web-page",
+        "fromYear": 1995,
+        "toYear": 2001,
+        "text": "Company puts photo of its server room on homepage; calls it 'transparency'"
+      },
+      {
+        "id": "chess-champion",
+        "fromYear": 1996,
+        "toYear": 2004,
+        "text": "Chess champion loses to computer, takes it well; computer takes it better"
+      },
+      {
+        "id": "calendar",
+        "fromYear": 1995,
+        "toYear": 1999,
+        "text": "Experts warn calendar will end in four years; calendar unconcerned"
       }
     ]
   },

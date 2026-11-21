@@ -54,6 +54,8 @@ namespace AiLabs.Rules.Config
         public string IdValue = "";
         /// <summary>The first year it can run.</summary>
         public int FromYear;
+        /// <summary>The last year it can run; 0 for no end.</summary>
+        public int ToYear;
         public string Text = "";
 
         public string Id { get { return IdValue; } }
@@ -62,6 +64,7 @@ namespace AiLabs.Rules.Config
         {
             s.Str("id", ref IdValue);
             s.Int("fromYear", ref FromYear);
+            s.Int("toYear", ref ToYear);
             s.Str("text", ref Text);
         }
     }

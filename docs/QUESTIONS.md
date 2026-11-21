@@ -1422,6 +1422,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The golden digest did not move: the draw is only for the player and the golden run sees none of the new events. Rivals have no office, so the economy is untouched.
 - Alternatives: era ids instead of years (rejected: scenarios can move era dates); a separate `requires` kind (rejected: a requirement is about the lab, not the calendar).
 
+### Q293. Can filler headlines belong to an era? DECIDED: yes, `toYear` joins `fromYear`, and 18 new lines use it
+- A filler line may now name a last year (`toYear`, 0 for no end), the same way an office event names its years (Q292). `NewsTicker.PickFiller` skips a line after its last year; the validator rejects a line that ends before it starts.
+- 18 new lines cover the dial-up days (modems, a homepage, a calendar, a chess match), the dot-com bust, the phone and cat-photo years, autocomplete and the poem prize, homework, the chatbot therapist, agent inboxes, harnesses, household robots and the orbital launch delay. The older eight keep `toYear: 0`.
+- Every calendar year from 1995 has at least five lines open (a test checks 1995 to 2045), so the ticker is never padded short.
+- The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing about the economy changed.
+
 ## Open
 
 None.
