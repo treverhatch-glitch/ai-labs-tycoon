@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 100;
+        public const int CurrentSchema = 101;
 
         public int Schema;
         public string ConfigVersion;
@@ -438,6 +438,12 @@ namespace AiLabs.Rules.State
         public int TbLeft;
         public int TbWins;
         public int TbLosses;
+        /// <summary>The model the lab has opened a public waitlist for (0 none), the hype built so far, the weeks left of the promise, and how many lists paid off and lapsed.</summary>
+        public int WlModel;
+        public int WlHype;
+        public int WlLeft;
+        public int WlWins;
+        public int WlFlops;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -825,6 +831,11 @@ namespace AiLabs.Rules.State
             s.Int("tbLeft", ref TbLeft);
             s.Int("tbWins", ref TbWins);
             s.Int("tbLosses", ref TbLosses);
+            s.Int("wlModel", ref WlModel);
+            s.Int("wlHype", ref WlHype);
+            s.Int("wlLeft", ref WlLeft);
+            s.Int("wlWins", ref WlWins);
+            s.Int("wlFlops", ref WlFlops);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

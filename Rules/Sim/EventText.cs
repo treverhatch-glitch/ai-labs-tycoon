@@ -455,6 +455,10 @@ namespace AiLabs.Rules.Sim
                     return who + " promised the world it would get " + e.Ref + " working.";
                 case EventKind.TechBetEnded:
                     return who + (e.Pick == 1 ? " kept its promise on " : e.Pick == 2 ? " quietly took back its promise on " : " missed its promise on ") + e.Ref + ".";
+                case EventKind.WaitlistOpened:
+                    return who + " opened a public waitlist and promised the model in " + e.Amount + " weeks.";
+                case EventKind.WaitlistEnded:
+                    return who + (e.Pick == 1 ? " shipped to a waiting list in time." : e.Pick == 2 ? " closed its waitlist." : " let its waitlist promise lapse.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

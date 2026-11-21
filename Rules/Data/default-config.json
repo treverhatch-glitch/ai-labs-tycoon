@@ -6182,6 +6182,15 @@
     "withdrawReputation": 10,
     "minCost": 100
   },
+  "waitlist": {
+    "enabled": 1,
+    "minWeeks": 4,
+    "maxWeeks": 40,
+    "hypeStep": 25,
+    "winPerThousand": 40,
+    "lossPerThousand": 80,
+    "closePerThousand": 25
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

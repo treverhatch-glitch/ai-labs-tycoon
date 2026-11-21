@@ -150,7 +150,9 @@ namespace AiLabs.Rules.Sim
         ReleaseCode,
         WithholdCode,
         BetOnTech,
-        WithdrawTechBet
+        WithdrawTechBet,
+        OpenWaitlist,
+        CloseWaitlist
     }
 
     /// <summary>
@@ -1307,6 +1309,21 @@ namespace AiLabs.Rules.Sim
         public static Command WithdrawTechBet(int labId)
         {
             return Make(CommandKind.WithdrawTechBet, labId);
+        }
+
+        /// <summary>Opens a public waitlist for a model that is training or trained but not out, promising it in the given weeks.</summary>
+        public static Command OpenWaitlist(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.OpenWaitlist, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Closes the waitlist early. It costs reputation by the hype it built.</summary>
+        public static Command CloseWaitlist(int labId)
+        {
+            return Make(CommandKind.CloseWaitlist, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

@@ -2050,6 +2050,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It uses the research the lab does anyway, so there is nothing to buy: the player must plan the research points (and the weeks) to keep it, which makes the tree's depth matter more than before.
 - Alternatives: a cash prize for finishing early (rejected: pay-for-progress), several bets at once (rejected: no choice of which), a bet on a tech not yet reachable (rejected: just luck).
 
+### Q401. Can the lab take names for a model before it ships? DECIDED: yes, a public waitlist with a promised date
+- A launch is more than a release. A waitlist builds anticipation each week it stays open, so promising a long wait could pay more, but the lab then has to ship inside the promise or the hype is spent against it. Closing early is cheaper than lapsing.
+- It reads the model's own status, so training, release and retirement did not change: shipping is the same decision it always was, now with a date attached.
+- Alternatives: paid pre-orders (rejected: pay-for-cash), hype that decays (rejected: no promise to keep), a waitlist for any model including released ones (rejected: nothing left to promise).
+
 ## Open
 
 None.

@@ -436,7 +436,11 @@ namespace AiLabs.Rules.State
         /// <summary>The lab made a public bet on a tech. SubjectId is its place in the data, Ref the tech.</summary>
         TechBetMade,
         /// <summary>A bet ended. Amount is the reputation it changed, Ref the tech, Pick 1 kept, 0 the weeks ran out, 2 taken back.</summary>
-        TechBetEnded
+        TechBetEnded,
+        /// <summary>The lab opened a waitlist. SubjectId is the model, Amount the weeks promised.</summary>
+        WaitlistOpened,
+        /// <summary>A waitlist ended. Amount is the reputation it changed, SubjectId the model, Pick 1 shipped in time, 0 the promise lapsed, 2 closed early.</summary>
+        WaitlistEnded
     }
 
     /// <summary>

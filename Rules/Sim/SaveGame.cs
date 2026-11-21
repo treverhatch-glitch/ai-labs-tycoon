@@ -261,6 +261,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.TbRef > 0 && lab.TbLeft < 1) || (lab.TbRef == 0 && lab.TbLeft != 0)
                     || ((lab.TbRef != 0 || lab.TbWins != 0 || lab.TbLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a public tech bet " + lab.TbRef + " (" + lab.TbLeft + " weeks left) in a way the data does not allow");
+                if (lab.WlModel < 0 || lab.WlHype < 0 || lab.WlHype > 1000 || lab.WlLeft < 0 || lab.WlWins < 0 || lab.WlFlops < 0
+                    || (lab.WlModel > 0 && lab.WlLeft < 1) || (lab.WlModel == 0 && (lab.WlLeft != 0 || lab.WlHype != 0))
+                    || ((lab.WlModel != 0 || lab.WlWins != 0 || lab.WlFlops != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a waitlist " + lab.WlModel + " (hype " + lab.WlHype + ", " + lab.WlLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
