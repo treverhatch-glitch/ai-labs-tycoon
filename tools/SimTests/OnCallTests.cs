@@ -24,6 +24,9 @@ public class OnCallTests
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Scaling.Enabled = 0;
             if (tweak != null) tweak(c);
         }).WithStarterLab(researchers: 2, engineers: engineers, safety: safety, gpus: 6);
@@ -407,6 +410,9 @@ public class OnCallTests
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Scaling.Enabled = 0;
         });
         g.Autopilot(60);

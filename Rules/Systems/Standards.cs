@@ -78,7 +78,6 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             if (!Enabled(c) || lab.Id != state.PlayerLabId) return;
-            if (lab.StdNext == 0) lab.StdNext = state.Tick + c.Standards.FirstWeeks;
             if (lab.StdAdopted > 0) Finance.Spend(lab, LedgerLine.Insurance, Upkeep(c, lab));
             if (Drafting(lab))
             {
@@ -97,7 +96,7 @@ namespace AiLabs.Rules.Systems
                     lab.StdNext = state.Tick + c.Standards.EveryWeeks;
                 }
             }
-            else if (lab.StdLevel < c.Standards.MaxLevel && state.Tick + 1 >= lab.StdNext)
+            else if (lab.StdLevel < c.Standards.MaxLevel && state.Tick + 1 >= (lab.StdNext == 0 ? c.Standards.FirstWeeks : lab.StdNext))
             {
                 lab.StdDraft = lab.StdLevel + 1;
                 lab.StdSupport = 0;

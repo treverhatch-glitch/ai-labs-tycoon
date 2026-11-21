@@ -23,7 +23,7 @@ public class FoundingTests
 
     static Game Start(NewGameOptions options, Action<GameConfig> tweak = null)
     {
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.RoomPerks.Clear(); if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.RoomPerks.Clear(); c.Tax.Enabled = 0; c.Standards.Enabled = 0; c.Reliability.Enabled = 0; if (tweak != null) tweak(c); }), options));
         return g;
     }
 

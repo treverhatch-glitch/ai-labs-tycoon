@@ -165,7 +165,7 @@ namespace AiLabs.Rules.Sim
                         p.Add(who + " has visiting scholars (" + lab.ScholarCount + ", weeks " + lab.ScholarStart + " to " + lab.ScholarDue + ") that the data does not allow");
                 }
                 {
-                    if (lab.Cases.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has claims against it but is not the player's lab");
+                    if (lab.Cases.Count > 0 && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(who + " has claims against it but is not the player's lab");
                     if (lab.Cases.Count > c.Litigation.MaxOpen) p.Add(who + " has more claims open than the data allows");
                     foreach (LawCase lawCase in lab.Cases)
                         if (lawCase.Id < 1 || lawCase.Id > lab.CaseSeq || lawCase.Kind < 0 || lawCase.Kind > 4 || lawCase.Claim < 1 || lawCase.Strength < 1 || lawCase.Strength > MathI.Permille || lawCase.Stage < 0 || lawCase.Stage > 1 || lawCase.Counsel < 0 || lawCase.Counsel > 1 || lawCase.Appealed < 0 || lawCase.Appealed > 1 || lawCase.Due < 1 || (lawCase.Appealed == 1 && lawCase.Stage != 1))
@@ -173,7 +173,7 @@ namespace AiLabs.Rules.Sim
                     if (lab.CaseSeq < 0 || lab.Cases.Count > lab.CaseSeq) p.Add(who + " has a claim count that does not add up");
                     if (lab.SecurityTier < 0 || lab.SecurityTier > c.Security.MaxTier || lab.SecurityBuilding < 0 || lab.SecurityBuilding > c.Security.MaxTier || lab.SecurityDue < 0 || (lab.SecurityBuilding > 0) != (lab.SecurityDue > 0) || (lab.SecurityBuilding > 0 && lab.SecurityBuilding != lab.SecurityTier + 1))
                         p.Add(who + " has security (tier " + lab.SecurityTier + ", building " + lab.SecurityBuilding + ", week " + lab.SecurityDue + ") that the data does not allow");
-                    if (lab.Exposure < 0 || lab.BreachDue < 0 || lab.Ransoms < 0 || ((lab.SecurityTier > 0 || lab.SecurityBuilding > 0 || lab.Exposure > 0 || lab.BreachDue > 0 || lab.Ransoms > 0) && lab.Id != state.PlayerLabId))
+                    if (lab.Exposure < 0 || lab.BreachDue < 0 || lab.Ransoms < 0 || ((lab.SecurityTier > 0 || lab.SecurityBuilding > 0 || lab.Exposure > 0 || lab.BreachDue > 0 || lab.Ransoms > 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                         p.Add(who + " has security exposure (" + lab.Exposure + ", breach week " + lab.BreachDue + ", ransoms " + lab.Ransoms + ") that the data does not allow");
                 }
                 {
@@ -185,27 +185,27 @@ namespace AiLabs.Rules.Sim
                         p.Add(who + " has contract dates but no contract");
                     if (offer && (contract || c.GovContracts.Kind(lab.OfferKind) == null || lab.OfferDue < 1)) p.Add(who + " has an offer (" + lab.OfferKind + ") that the data does not allow");
                     if (!offer && lab.OfferDue != 0) p.Add(who + " has an offer date but no offer");
-                    if (lab.OfferSeq < 0 || lab.ContractNext < 0 || ((contract || offer || lab.OfferSeq > 0 || lab.ContractNext > 0) && lab.Id != state.PlayerLabId))
+                    if (lab.OfferSeq < 0 || lab.ContractNext < 0 || ((contract || offer || lab.OfferSeq > 0 || lab.ContractNext > 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                         p.Add(who + " has government contract state that the data does not allow");
                 }
-                if (lab.Charter < 0 || lab.Charter > 2 || lab.CharterTo < 0 || lab.CharterTo > 3 || lab.CharterDue < 0 || (lab.CharterTo > 0) != (lab.CharterDue > 0) || (lab.CharterTo > 0 && lab.CharterTo - 1 == lab.Charter) || lab.CapPaid < 0 || ((lab.Charter != 0 || lab.CharterTo != 0 || lab.CapPaid != 0) && lab.Id != state.PlayerLabId))
+                if (lab.Charter < 0 || lab.Charter > 2 || lab.CharterTo < 0 || lab.CharterTo > 3 || lab.CharterDue < 0 || (lab.CharterTo > 0) != (lab.CharterDue > 0) || (lab.CharterTo > 0 && lab.CharterTo - 1 == lab.Charter) || lab.CapPaid < 0 || ((lab.Charter != 0 || lab.CharterTo != 0 || lab.CapPaid != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a charter (" + lab.Charter + ", under review " + lab.CharterTo + ", week " + lab.CharterDue + ", investors paid " + lab.CapPaid + ") that the data does not allow");
-                if (lab.PolicyLevel < 0 || lab.PolicyLevel > c.Scaling.MaxLevel || lab.PolicyLockedUntil < 0 || lab.PolicyHold < 0 || lab.PolicyHold > lab.PolicyLevel || lab.PolicyBreaks < 0 || ((lab.PolicyLevel != 0 || lab.PolicyLockedUntil != 0 || lab.PolicyBreaks != 0) && lab.Id != state.PlayerLabId))
+                if (lab.PolicyLevel < 0 || lab.PolicyLevel > c.Scaling.MaxLevel || lab.PolicyLockedUntil < 0 || lab.PolicyHold < 0 || lab.PolicyHold > lab.PolicyLevel || lab.PolicyBreaks < 0 || ((lab.PolicyLevel != 0 || lab.PolicyLockedUntil != 0 || lab.PolicyBreaks != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a scaling policy (level " + lab.PolicyLevel + ", hold " + lab.PolicyHold + ", locked until " + lab.PolicyLockedUntil + ") that the data does not allow");
                 if (lab.TaxStructure < 0 || lab.TaxStructure > 2 || lab.TaxBuilding < 0 || lab.TaxBuilding > 2 || (lab.TaxBuilding != 0 && lab.TaxBuilding <= lab.TaxStructure) || (lab.TaxBuilding == 0) != (lab.TaxDue == 0) || lab.TaxAccrued < 0 || lab.TaxSaved < 0 || lab.TaxResearch < 0 || lab.TaxCredit < 0 || lab.TaxClaimed < 0 || lab.TaxExposure < 0 || lab.TaxAuditDue < 0 || lab.TaxAuditOwed < 0 || (lab.TaxAuditDue == 0) != (lab.TaxAuditOwed == 0)
-                    || ((lab.TaxStructure != 0 || lab.TaxBuilding != 0 || lab.TaxAccrued != 0 || lab.TaxSaved != 0 || lab.TaxResearch != 0 || lab.TaxCredit != 0 || lab.TaxClaimed != 0 || lab.TaxExposure != 0 || lab.TaxAuditDue != 0) && lab.Id != state.PlayerLabId))
+                    || ((lab.TaxStructure != 0 || lab.TaxBuilding != 0 || lab.TaxAccrued != 0 || lab.TaxSaved != 0 || lab.TaxResearch != 0 || lab.TaxCredit != 0 || lab.TaxClaimed != 0 || lab.TaxExposure != 0 || lab.TaxAuditDue != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " keeps tax books (structure " + lab.TaxStructure + ", building " + lab.TaxBuilding + ", audit due " + lab.TaxAuditDue + ") that the data does not allow");
                 if (lab.StdLevel < 0 || lab.StdLevel > c.Standards.MaxLevel || lab.StdDraft < 0 || (lab.StdDraft != 0 && lab.StdDraft != lab.StdLevel + 1) || lab.StdDraft > c.Standards.MaxLevel || lab.StdSupport < 0 || (lab.StdDraft == 0 && lab.StdSupport != 0) || lab.StdRole < 0 || lab.StdRole > 3 || lab.StdNext < 0 || lab.StdAdopted < 0 || lab.StdAdopted > lab.StdLevel || lab.StdLapses < 0
-                    || ((lab.StdLevel != 0 || lab.StdDraft != 0 || lab.StdRole != 0 || lab.StdNext != 0 || lab.StdLapses != 0) && lab.Id != state.PlayerLabId))
+                    || ((lab.StdLevel != 0 || lab.StdDraft != 0 || lab.StdRole != 0 || lab.StdNext != 0 || lab.StdLapses != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a part in the industry standards (level " + lab.StdLevel + ", draft " + lab.StdDraft + ", adopted " + lab.StdAdopted + ") that the data does not allow");
                 if (lab.WarrantyTier < 0 || lab.WarrantyTier > 2 || lab.Spares < 0 || lab.Spares > c.Reliability.MaxSpares || lab.FailCarry < 0 || lab.FailCarry >= 1000000 || lab.RmaUnits < 0 || (lab.RmaUnits == 0) != (lab.RmaDue == 0) || lab.RmaDue < 0 || lab.GpuFailures < 0
-                    || ((lab.WarrantyTier != 0 || lab.Spares != 0 || lab.FailCarry != 0 || lab.RmaUnits != 0 || lab.GpuFailures != 0) && lab.Id != state.PlayerLabId))
+                    || ((lab.WarrantyTier != 0 || lab.Spares != 0 || lab.FailCarry != 0 || lab.RmaUnits != 0 || lab.GpuFailures != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " keeps a warranty or spares (tier " + lab.WarrantyTier + ", spares " + lab.Spares + ", waiting " + lab.RmaUnits + ") that the data does not allow");
                 if (lab.CovBreach < 0 || lab.CovWaiverUntil < 0 || lab.CovWaivers < 0 || lab.CovWaivers > c.Covenants.MaxWaivers || lab.CovCalls < 0 || (lab.CovBreach > 0 && lab.Loans.Count == 0)
-                    || ((lab.CovBreach != 0 || lab.CovWaiverUntil != 0 || lab.CovWaivers != 0 || lab.CovCalls != 0) && lab.Id != state.PlayerLabId))
+                    || ((lab.CovBreach != 0 || lab.CovWaiverUntil != 0 || lab.CovWaivers != 0 || lab.CovCalls != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " is in breach of a loan covenant or has a waiver (breach " + lab.CovBreach + ", waivers " + lab.CovWaivers + ") that the data does not allow");
                 if (lab.CapPolicy < 0 || lab.CapPolicy > 2 || lab.CapPool < 0 || lab.CapSwitchTick < 0 || lab.CapWritten < 0
-                    || ((lab.CapPolicy != 0 || lab.CapPool != 0 || lab.CapSwitchTick != 0 || lab.CapWritten != 0) && lab.Id != state.PlayerLabId))
+                    || ((lab.CapPolicy != 0 || lab.CapPool != 0 || lab.CapSwitchTick != 0 || lab.CapWritten != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a capital allowance policy or pool (policy " + lab.CapPolicy + ", pool " + lab.CapPool + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))

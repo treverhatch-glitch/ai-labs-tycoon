@@ -1968,6 +1968,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q384. Do the five new systems make the news and the chat? DECIDED: yes, 29 headlines and 18 chat lines for 18 event kinds
 - Tax (structure, payment, credit, audit opened and closed), standards (drafted, ratified, adopted, lapsed), GPU failures (lost, swapped, sent back, replacements arriving, warranty, spares), covenants (breach, cure, waiver, called loans) and the capital policy. Counts are pinned at 203 headlines and 237 chat lines in the ten tests that pin them; `TaxStandardsReliabilityCovenantsAllowancesNewsChatTests` checks each pick. Data picks stay -1, 0 or 1, so the picks of 2 and 3 fall to the line for any pick, which is written last.
 
+### Q385. How do the five new systems meet? DECIDED: through the books, the docket, the chips and the scaling policy
+- A contested tax audit files a tax claim on the docket (Q379, Q371). An enhanced capital allowance raises the tax saved and the audit exposure, so it is what an audit is about (Q383). Spares and building spend go into the pool of a capitalising policy; a waiver fee and the warranty fees are deductible, paying a loan down is not (it is on the capital line). Failed chips shrink the collateral behind the loans, which is how a covenant breach can start (Q381, Q382). Adopted standards cut the strength of a claim and stand in for safety people in a scaling policy (Q380, Q375).
+- Two fixes found on the way. A lab that goes bankrupt and spectates is no longer the player's, so the checks on state only the player may have now stand down when there is no player (this also covers the litigation, security, contract, charter and policy checks of the third batch). And the first standard no longer seeds a week into the lab on its first run: an untouched lab keeps the field at zero, so a save from before the system still plays on the same.
+- The older fixed-script and autopilot tests now switch the tax, the standards and the GPU failures off where they compare exact money, a save from before a system, or an owned fleet. The tests are named in the pull request.
+
 ## Open
 
 None.
