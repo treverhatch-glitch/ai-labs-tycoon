@@ -61,13 +61,6 @@ namespace AiLabs.Rules.Systems
             IncidentRungConfig def = c.Safety.IncidentRung(rung);
             if (def == null) def = c.Safety.IncidentRungs.Count > 0 ? c.Safety.IncidentRungs[0] : null;
 
-            int catchRoll = SandboxSystem.CatchPermille(c, state, lab);
-            if (catchRoll > 0 && SandboxSystem.MayCatchRung(c, rung) && state.Rng.Safety.Chance(catchRoll))
-            {
-                SandboxSystem.ApplyCaught(c, state, lab, model, rung, def);
-                return;
-            }
-
             long fine = MathI.Max(c.Safety.IncidentFineMin, MarketSystem.ModelRevenue(state, lab.Id, model.Id) * c.Safety.IncidentFineRevenueWeeks);
             if (def != null) fine = MathI.MulPermille(fine, def.FinePermille);
             fine = MathI.Max(c.Safety.IncidentFineMin, fine);
