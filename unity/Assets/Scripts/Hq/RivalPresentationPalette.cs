@@ -12,6 +12,9 @@ namespace AiLabs.Unity.Hq
             { "anthoptics", CampusUiTokens.Hex("#F2808C") },
             { "xay", CampusUiTokens.Hex("#E85D4A") },
             { "envydia", CampusUiTokens.Hex("#76B900") },
+            { "macrosoft", CampusUiTokens.Hex("#00A4EF") },
+            { "palantear", CampusUiTokens.Hex("#6E6E6E") },
+            { "metta", CampusUiTokens.Hex("#1877F2") },
         };
 
         public static Color AccentFor(string labId)

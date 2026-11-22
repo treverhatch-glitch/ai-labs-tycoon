@@ -248,6 +248,26 @@ def elevator_core() -> Mesh:
     return merge(shaft, door)
 
 
+def cafeteria_table() -> Mesh:
+    top = box(1.4, 0.08, 0.8, oy=0.74)
+    leg = box(0.1, 0.74, 0.1, 0.0, 0.37, 0.0)
+    return merge(top, leg)
+
+
+def vending_machine() -> Mesh:
+    body = box(0.55, 1.6, 0.5, oy=0.8)
+    glass = box(0.45, 0.7, 0.04, oy=1.0, oz=0.23)
+    return merge(body, glass)
+
+
+def hallway_bench() -> Mesh:
+    seat = box(1.5, 0.1, 0.45, oy=0.45)
+    back = box(1.5, 0.5, 0.08, oy=0.7, oz=-0.18)
+    leg_l = box(0.08, 0.45, 0.35, -0.65, 0.225)
+    leg_r = box(0.08, 0.45, 0.35, 0.65, 0.225)
+    return merge(seat, back, leg_l, leg_r)
+
+
 MESH_BUILDERS: dict[str, callable] = {
     "prop-desk": desk,
     "prop-chair": chair,
@@ -274,6 +294,9 @@ MESH_BUILDERS: dict[str, callable] = {
     "exterior-solar-shade": solar_shade,
     "prop-water-cooler": water_cooler,
     "building-elevator-core": elevator_core,
+    "prop-cafeteria-table": cafeteria_table,
+    "prop-vending-machine": vending_machine,
+    "exterior-hallway-bench": hallway_bench,
 }
 
 

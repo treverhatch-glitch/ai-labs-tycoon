@@ -12,6 +12,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [SCREEN-KITS.md](SCREEN-KITS.md) | Per-screen prop and icon kits (batch 2) |
 | [MATERIAL-TOKENS.json](MATERIAL-TOKENS.json) | URP colour/smoothness tokens |
 | [WORLD-MAP-PANEL.md](WORLD-MAP-PANEL.md) | World map overlay mock (batch 4) |
+| [RESEARCH-PANEL.md](RESEARCH-PANEL.md) / [TRAINING-PANEL.md](TRAINING-PANEL.md) | Screen panel specs (batch 5) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

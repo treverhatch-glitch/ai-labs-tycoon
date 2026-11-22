@@ -91,3 +91,7 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 **+5 OBJ:** `prop-lounge-sofa`, `exterior-fence-segment`, `exterior-solar-shade`, `prop-water-cooler`, `building-elevator-core` (**25** total).
 
 **Code:** campus camera in grid + CI capture; `CampusTabRailMock`; `validate_unity_meta_guids.py`; `world-bloc-tints.json`; `MATERIAL-CampusFallback.md`.
+
+## Batch 5 (local, awaiting GO atop `6986731`)
+
+**+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
