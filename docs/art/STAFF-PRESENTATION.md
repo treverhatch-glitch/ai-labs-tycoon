@@ -8,4 +8,6 @@ Rules: `StaffMember` rows drive hire panels; graphics defines **placeholder scal
 | Avatar | capsule primitive, height 1.6m |
 | Trait icon | `icon-staff.svg` (batch 15) |
 
+Hire list rows: [STAFF-ROW-PRESENTATION.md](STAFF-ROW-PRESENTATION.md) + `CampusStaffRowPresentationSpec`.
+
 Unity thread: no staff meshes in repo until Hatch PC art pass.

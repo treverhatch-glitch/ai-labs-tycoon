@@ -111,7 +111,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`68dbbb0` (batch 24: Gauntlet overlay HUD); batch 25 (research breakdown drawer) staged locally after prepush.
+`a8517af` (batch 25: research breakdown drawer); batch 26 (staff roster rows) staged locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
@@ -121,7 +121,8 @@ start-era picker (items 12–13 below) stays rules/Unity presentation, not new r
 | --- | --- |
 | PR #41 graphics batches | Spaced squashes on `cursor/graphics-pipeline-5032`; gate `./tools/art/prepush.sh` |
 | Unity import (`bc-93b5443a`) | `UNITY-INTEGRATION.md`, prop placement hints, tab icons |
-| Explainable HUD | `DisplayQueries` in rules; HQ drawer (batch 20), research drawer (batch 25) |
+| Explainable HUD | `DisplayQueries` in rules; HQ (batch 20), research (batch 25) drawers |
+| Hire / staff UI | Staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
 | Seasonal overlays | Gauntlet stage chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
 
 ## Studio and CI

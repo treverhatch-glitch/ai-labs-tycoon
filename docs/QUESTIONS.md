@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q475. Staff roster row chrome? DECIDED: `CampusStaffRowPresentationSpec`
+
+- Options: (a) STAFF-PRESENTATION prose only; (b) row spec + doc; (c) wait for rigged staff meshes.
+- Recommendation and choice: **(b)** — hire panel can size rows before PC art pass (STAFF-ROW-PRESENTATION.md).
+- Why: Morale bar and `icon-staff` are presentation-only; rules keep `StaffMember` data.
+
 ### Q474. Research breakdown drawer layout? DECIDED: `CampusResearchBreakdownPresentationSpec`
 
 - Options: (a) reuse breakdown spec only; (b) research-specific constants + doc; (c) merge with RESEARCH-PANEL fractions in UI Toolkit.

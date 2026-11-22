@@ -13,7 +13,8 @@
 | 19–22 | `f0478d4`…`a2999d9` | Handoff verify, breakdown/rival/world-freeze presentation specs |
 | 23 | `5af83e0` | Training incident rings, NEXT refill |
 | 24 | `68dbbb0` | Gauntlet stage HUD |
-| 25 | (local GO) | Research breakdown drawer |
+| 25 | `a8517af` | Research breakdown drawer |
+| 26 | (local GO) | Staff roster rows |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
