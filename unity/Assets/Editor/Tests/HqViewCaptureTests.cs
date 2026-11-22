@@ -29,8 +29,8 @@ namespace AiLabs.Unity.Editor.Tests
             var cam = camGo.AddComponent<Camera>();
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.55f, 0.65f, 0.72f);
-            cam.orthographic = false;
-            cam.fieldOfView = 55f;
+            LotConfig lot = config.Lot(host.Simulation.Player.LotId);
+            CampusPresentationSpec.ApplyCaptureCamera(cam, lot);
 
             var lightGo = new GameObject("Light");
             var light = lightGo.AddComponent<Light>();

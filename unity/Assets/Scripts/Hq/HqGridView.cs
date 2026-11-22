@@ -149,10 +149,7 @@ namespace AiLabs.Unity.Hq
         {
             var cam = Camera.main;
             if (cam == null) return;
-            float cx = lot.Width * HqGridLayout.TileSize * 0.5f;
-            float cz = lot.Height * HqGridLayout.TileSize * 0.5f;
-            cam.transform.position = new Vector3(cx, 8.5f, cz - 6f);
-            cam.transform.rotation = Quaternion.Euler(52f, 0f, 0f);
+            CampusPresentationSpec.ApplyGameplayCamera(cam, lot.Width, lot.Height);
         }
 
         static void ClearChildren(Transform root)
