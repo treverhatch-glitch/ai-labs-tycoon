@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q471. World map freeze overlay tokens? DECIDED: `CampusWorldMapFreezePresentationSpec`
+
+- Options: (a) duplicate constants in UI; (b) spec class + doc; (c) extend `world-bloc-tints.json`.
+- Recommendation and choice: **(b)** — freeze is rules-driven; JSON stays palette-only (WORLD-MAP-FREEZE-PRESENTATION).
+- Why: matches Q454/Q16 config boundary and batch 21 rival meter pattern.
+
 ### Q470. Rival feeling bar thresholds? DECIDED: `CampusRivalFeelingPresentationSpec`
 
 - Options: (a) hard-code in UI; (b) shared spec class + doc bands; (c) ScriptableObject theme.

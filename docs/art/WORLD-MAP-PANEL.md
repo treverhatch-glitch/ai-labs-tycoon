@@ -13,7 +13,7 @@ Presentation overlay using `world-bloc-tints.json` and campus kit props.
 
 ## Interaction (Unity thread)
 
-- Click pin → right panel shows `DisplayQueries` power breakdown (rules); art shows freeze badge (`ui-danger`) when bloc frozen.
+- Click pin → right panel shows `DisplayQueries` power breakdown (rules); frozen blocs use [WORLD-MAP-FREEZE-PRESENTATION.md](WORLD-MAP-FREEZE-PRESENTATION.md).
 - No satellite imagery; country names from rules config only (Q16, Q454).
 
 ## Rival accents on map
