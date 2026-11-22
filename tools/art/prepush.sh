@@ -11,6 +11,7 @@ python3 tools/art/validate_unity_meta_guids.py
 python3 tools/art/check_catalog_manifest.py
 python3 tools/art/check_ui_icons_manifest.py
 python3 tools/art/check_silhouette_manifest.py
+python3 tools/art/verify_handoff_lists.py
 python3 tools/art/check_bloc_tints.py
 python3 tools/art/check_era_skin_tokens.py
 echo "art prepush OK"

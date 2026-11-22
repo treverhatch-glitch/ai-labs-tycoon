@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q468. Handoff list smoke test? DECIDED: `verify_handoff_lists.py` in prepush
+
+- Options: (a) manual; (b) count check on list_* stdout; (c) CI job only.
+- Recommendation and choice: **(b)** — catches partial catalog edits before Unity import.
+- Why: complements manifest sync checks with human-paste sanity.
+
 ### Q467. Silhouette manifest sync check? DECIDED: `check_silhouette_manifest.py` in prepush
 
 - Options: (a) manual; (b) prepush check like props/icons; (c) Unity-only.
