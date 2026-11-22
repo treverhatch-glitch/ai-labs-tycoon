@@ -2190,6 +2190,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Opt-in collects less and is free of trouble. Default collects all it can and builds a corpus that is then exposed: complaints fine it and cost trust, and a lab that backs off loses most of what it built. The data is raw units, so it still needs cleaning and counts toward the same stock cap and corpus as the other sources.
 - Alternatives: a bonus for collecting (rejected: no downside), complaints by chance (rejected: not plannable).
 
+### Q429. Who controls the company? DECIDED: dual-class or a non-profit parent chosen early at a price in later rounds, plus independent directors found over weeks and paid weekly
+- The founders can buy control only early, permanently, and by giving investors a worse deal on every round after. Directors are a slow, paid way to a calmer board, and walk if the lab cannot pay.
+- Alternatives: control as a free setting (rejected: no price), a reversible structure (rejected: no commitment).
+
 ## Open
 
 None.

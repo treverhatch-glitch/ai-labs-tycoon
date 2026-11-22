@@ -321,6 +321,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.UserPolicy == 0 && lab.UserSince == 0 && lab.UserBanked != 0)
                     || ((lab.UserPolicy != 0 || lab.UserTotal != 0 || lab.UserComplaints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " collects its users' data (policy " + lab.UserPolicy + ", " + lab.UserBanked + " since the last complaint) in a way the data does not allow");
+                if (lab.GovForm < 0 || lab.GovForm > 2 || lab.GovSince < 0 || lab.GovDirectors < 0 || lab.GovDirectors > 9 || lab.GovSearch < 0 || lab.GovResigned < 0
+                    || (lab.GovForm == 0 && lab.GovSince != 0 && lab.GovDirectors == 0 && lab.GovResigned == 0 && lab.GovSearch == 0)
+                    || ((lab.GovForm != 0 || lab.GovDirectors != 0 || lab.GovSearch != 0 || lab.GovResigned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " is governed (form " + lab.GovForm + ", " + lab.GovDirectors + " directors) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

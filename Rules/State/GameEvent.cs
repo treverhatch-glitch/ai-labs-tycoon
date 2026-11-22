@@ -528,7 +528,13 @@ namespace AiLabs.Rules.State
         /// <summary>A privacy complaint landed. Amount is the fine, SubjectId the units collected since the last one.</summary>
         UserDataComplaint,
         /// <summary>Users' data was deleted when the lab moved off a default policy. Amount is the units lost.</summary>
-        UserDataDeleted
+        UserDataDeleted,
+        /// <summary>The lab changed how it is controlled. SubjectId is the form (1 dual-class, 2 non-profit parent).</summary>
+        GovernanceChanged,
+        /// <summary>An independent director joined. SubjectId is how many there are now.</summary>
+        DirectorSeated,
+        /// <summary>An independent director resigned because the lab could not pay. SubjectId is how many are left.</summary>
+        DirectorResigned
     }
 
     /// <summary>

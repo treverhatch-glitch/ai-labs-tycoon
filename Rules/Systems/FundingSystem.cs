@@ -60,7 +60,7 @@ namespace AiLabs.Rules.Systems
     public static void ApplyRaise(GameConfig c, GameState state, LabState lab, FundingRoundConfig round)
     {
       bool down = IsDownRound(c, state);
-      long cash = Charter.FundingCash(c, lab, EffectiveCash(c, state, round));
+      long cash = Governance.RaiseCash(c, lab, Charter.FundingCash(c, lab, EffectiveCash(c, state, round)));
       int dilution = Notes.OnRaise(c, state, lab, cash, EffectiveDilution(c, state, round));
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
@@ -89,7 +89,7 @@ namespace AiLabs.Rules.Systems
       if (f.BoardDramaMinInvestorSeats < 1 || lab.BoardInvestorSeats < f.BoardDramaMinInvestorSeats) return;
       if (f.BoardDramaPermillePerYear <= 0) return;
       if (state.Tick < lab.BoardLockedUntilTick) return;
-      if (!state.Rng.Rivals.Chance(f.BoardDramaPermillePerYear / c.Calendar.MonthsPerYear)) return;
+      if (!state.Rng.Rivals.Chance(Governance.DramaChance(c, lab, f.BoardDramaPermillePerYear) / c.Calendar.MonthsPerYear)) return;
       int weeks = f.BoardDramaWeeks > 0 ? f.BoardDramaWeeks : c.Rivalry.BoardDramaWeeks;
       lab.BoardLockedUntilTick = state.Tick + weeks;
       Events.Add(state, EventKind.BoardDrama, lab.Id, -1, weeks, "");
@@ -110,7 +110,7 @@ namespace AiLabs.Rules.Systems
     public static void TryOust(GameConfig c, GameState state, LabState lab)
     {
       if (lab.Id != state.PlayerLabId) return;
-      if (lab.FounderSharePermille > c.Funding.ControlPermille) return;
+      if (Governance.ControlShare(c, lab) > c.Funding.ControlPermille) return;
       EndingSystem.RecordOusted(c, state, lab);
     }
   }

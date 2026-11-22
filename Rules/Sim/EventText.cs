@@ -547,6 +547,12 @@ namespace AiLabs.Rules.Sim
                     return who + " drew a privacy complaint over how it collects data.";
                 case EventKind.UserDataDeleted:
                     return who + " deleted the users' data it had collected.";
+                case EventKind.GovernanceChanged:
+                    return who + " changed who controls the company.";
+                case EventKind.DirectorSeated:
+                    return who + " seated an independent director.";
+                case EventKind.DirectorResigned:
+                    return "An independent director resigned from " + who + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

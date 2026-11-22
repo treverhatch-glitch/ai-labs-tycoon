@@ -188,7 +188,9 @@ namespace AiLabs.Rules.Sim
         AcquireData,
         CleanData,
         LicenseScraped,
-        SetUserData
+        SetUserData,
+        SetGovernance,
+        SeatDirector
     }
 
     /// <summary>
@@ -1633,6 +1635,20 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetUserData, labId);
             c.Count = policy;
             return c;
+        }
+
+        /// <summary>Changes how the company is controlled: 1 dual-class shares, 2 a non-profit parent. Each is permanent, only early, and costs cash from later rounds.</summary>
+        public static Command SetGovernance(int labId, int form)
+        {
+            Command c = Make(CommandKind.SetGovernance, labId);
+            c.Count = form;
+            return c;
+        }
+
+        /// <summary>Starts the search for an independent director. One search at a time.</summary>
+        public static Command SeatDirector(int labId)
+        {
+            return Make(CommandKind.SeatDirector, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

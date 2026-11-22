@@ -6437,6 +6437,20 @@
     "complaintTrust": 15,
     "keepPermille": 300
   },
+  "governance": {
+    "enabled": 1,
+    "dualMaxRounds": 1,
+    "dualVoteMult": 4000,
+    "dualCashCut": 150,
+    "nonprofitMaxRounds": 0,
+    "nonprofitCashCut": 400,
+    "directorWeeks": 12,
+    "maxDirectors": 3,
+    "directorFee": 150000,
+    "directorWeekly": 3000,
+    "directorMinRep": 300,
+    "dramaCut": 250
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

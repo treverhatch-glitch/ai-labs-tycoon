@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 116;
+        public const int CurrentSchema = 117;
 
         public int Schema;
         public string ConfigVersion;
@@ -540,6 +540,12 @@ namespace AiLabs.Rules.State
         public int UserBanked;
         public int UserTotal;
         public int UserComplaints;
+        /// <summary>How the company is controlled (0 ordinary, 1 dual-class shares, 2 non-profit parent), one more than the week it was set, seated independent directors, weeks left on the search for the next, and how many have resigned.</summary>
+        public int GovForm;
+        public int GovSince;
+        public int GovDirectors;
+        public int GovSearch;
+        public int GovResigned;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1014,6 +1020,11 @@ namespace AiLabs.Rules.State
             s.Int("userBanked", ref UserBanked);
             s.Int("userTotal", ref UserTotal);
             s.Int("userComplaints", ref UserComplaints);
+            s.Int("govForm", ref GovForm);
+            s.Int("govSince", ref GovSince);
+            s.Int("govDirectors", ref GovDirectors);
+            s.Int("govSearch", ref GovSearch);
+            s.Int("govResigned", ref GovResigned);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

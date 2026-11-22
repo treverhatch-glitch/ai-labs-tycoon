@@ -356,6 +356,7 @@ and says why in the commit message.
 173. **Incident register.** ~~Done~~: `JoinRegister`, `LeaveRegister`, `FileReport`, schema 114, `DisclosureTests` (Q421).
 174. **Training-data pipeline.** ~~Done~~: `AcquireData`, `CleanData`, `LicenseScraped`, schema 115, `DatasetsTests` (Q427).
 175. **User data.** ~~Done~~: `SetUserData`, schema 116, `UserDataTests` (Q428).
+176. **Governance.** ~~Done~~: `SetGovernance`, `SeatDirector`, schema 117, `GovernanceTests` (Q429).
 
 ## Rules: later
 

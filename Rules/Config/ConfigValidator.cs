@@ -151,6 +151,7 @@ namespace AiLabs.Rules.Config
             DisclosureProblems(p, c);
             DatasetsProblems(p, c);
             UserDataProblems(p, c);
+            GovernanceProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1708,6 +1709,16 @@ namespace AiLabs.Rules.Config
             if (k.RevenuePerUnit < 1 || k.LockWeeks < 0 || k.ComplaintWeeks < 1 || k.ComplaintMin < 1) p.Add("userData.revenuePerUnit, complaintWeeks and complaintMin must be at least 1 and lockWeeks not negative");
             if (k.OptInPermille < 0 || k.OptInPermille > 1000 || k.DefaultPermille < k.OptInPermille || k.DefaultPermille > 1000 || k.KeepPermille < 0 || k.KeepPermille > 1000) p.Add("userData.optInPermille must not be above defaultPermille and shares must be from 0 to 1000");
             if (k.ComplaintFine < 0 || k.ComplaintTrust < 0) p.Add("userData fines and trust losses must not be negative");
+        }
+
+        static void GovernanceProblems(List<string> p, GameConfig c)
+        {
+            GovernanceConfig k = c.Governance;
+            if (k == null) { p.Add("governance is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("governance.enabled must be 0 or 1");
+            if (k.DualMaxRounds < 0 || k.NonprofitMaxRounds < 0 || k.DualVoteMult < 1000 || k.DirectorWeeks < 1 || k.MaxDirectors < 0 || k.MaxDirectors > 9) p.Add("governance rounds must not be negative, dualVoteMult at least 1000, directorWeeks at least 1 and maxDirectors from 0 to 9");
+            if (k.DualCashCut < 0 || k.DualCashCut > 900 || k.NonprofitCashCut < 0 || k.NonprofitCashCut > 900 || k.DramaCut < 0 || k.DramaCut > 1000) p.Add("governance cuts must be from 0 to 900 and dramaCut from 0 to 1000");
+            if (k.DirectorFee < 0 || k.DirectorWeekly < 0 || k.DirectorMinRep < 0 || k.DirectorMinRep > 1000) p.Add("governance fees must not be negative and directorMinRep must be from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
