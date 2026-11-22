@@ -849,9 +849,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsIntegrateLaterTests` (35):** distressed acquire with listings and pending `BuyListedChips` orders; `TransferChipOrders` / holdings; refused absorbed commands; acquisition quote parts (cash, chips, staff, crash discount); planner retrench with foreign orders; chip month reset on transferred listings; delivery tick stability; save/schema **29**; ledger balance after acquire.
 
-### Q366–Q400. Chips tail closure after M&amp;A? DECIDED: test-only bar (batch 11, local)
+### Q366–Q400. Chips tail closure after M&amp;A? DECIDED: test-only bar (batch 11, pushed @ `31e6c2a`)
 
 - **`HatchRivalsChipsTailLaterTests` (35):** post-acquire delivery and fleet; ledger `ChipSales`; listing caps and dual designs; feelings/vendor/compute; rollup chip-order transfer; refused commands; save/schema **29**; regulator attention; global order counts.
+
+### Q401–Q465. Grouped capstone chip × M&amp;A bar? DECIDED: test-only (batch 12, local)
+
+- **`HatchRivalsChipsCapstoneLaterTests` (95):** multi-lab orders; pipeline buy→acquire→deliver; hall/cloud remap; feelings/ledger/bubble; rollup; refused cmd sweep; epilogue hooks; save/schema **29**.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
