@@ -123,7 +123,8 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 14**~~ **pushed @ `3454140` (GO #3, Nov 22 ~15:12 UTC)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100**); parent `3b3019e`; gate **1269/0** / **1267/0** WT.
 - ~~**Hatch rivals/chips batch 15**~~ **pushed @ `6827a12` (Nov 22 ≥15:42 UTC)** — Q666–Q735 (`HatchRivalsChipsFinisherLaterTests`, **70**); gate **1339/0** in-repo; parent `3454140`.
 - ~~**Hatch rivals/chips batch 16**~~ **pushed @ `6f60391` (Nov 22 ~16:31 UTC)** — Q736–Q805 (`HatchRivalsChipsDenouementLaterTests`, **70**); parent `6827a12`; gate **1409/0** / **1407/0** WT.
-- **Hatch rivals/chips batch 17 (local only, push not before ~17:01 UTC)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100** grown); parent `6f60391`; sequel **100/100** filter green on disk.
+- ~~**Hatch rivals/chips batch 17**~~ **pushed @ `c90e29b` (≥17:01 UTC GO)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100**); gate **1509/0** / **1507/0** WT.
+- **Hatch rivals/chips batch 18 (local, ≥30m after `c90e29b`)** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70** WIP on disk).
 
 ## Rules: forward queue (from bible / systems-design)
 
