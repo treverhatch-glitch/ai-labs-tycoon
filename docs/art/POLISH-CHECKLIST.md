@@ -2,6 +2,12 @@
 
 Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 
+## Mascots (batch 8)
+
+- [ ] Bob amplitudes from `CampusMascotPresentationSpec` in `ModelMascotView`
+- [ ] Strip respects `MaxVisibleMascots` + scroll
+- [ ] Glitching mood uses `GlowSpreadMap` pulse on strip (optional)
+
 ## Scene
 
 - [x] `CampusPresentationSpec.ApplyGameplayCamera` in `HqGridView` (batch 3)

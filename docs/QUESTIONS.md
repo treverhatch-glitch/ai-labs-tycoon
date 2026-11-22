@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q457. Mascot bob amplitudes in code? DECIDED: `CampusMascotPresentationSpec` + `ModelMascotPresentation`
+
+- Options: (a) magic numbers in `ModelMascotRow`; (b) shared spec constants; (c) animation clips only.
+- Recommendation and choice: **(b)** — document in `MASCOT-PRESENTATION.md`; row keeps procedural bob.
+- Why: aligns with `GlowSpreadMap` presentation-only pattern (NEXT.md Unity §4).
+
 ### Q456. Tab rail v1 art binding? DECIDED: SVG icons + plaque prop stub
 
 - Options: (a) text-only tabs; (b) SVG sprites + `CampusTabIconBindings`; (c) full 3D plaques only.

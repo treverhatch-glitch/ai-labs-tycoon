@@ -12,6 +12,7 @@ namespace AiLabs.Unity.Hq
             public Color Glow;
             public float Scale;
             public float BobSpeed;
+            public float BobAmplitude;
         }
 
         public static MascotLook ForMood(ModelMood mood)
@@ -24,7 +25,8 @@ namespace AiLabs.Unity.Hq
                         Body = new Color(0.95f, 0.65f, 0.35f),
                         Glow = new Color(0.9f, 0.5f, 0.2f),
                         Scale = 0.85f,
-                        BobSpeed = 2.5f
+                        BobSpeed = 2.5f,
+                        BobAmplitude = CampusMascotPresentationSpec.OverworkedBobMeters,
                     };
                 case ModelMood.Glitching:
                     return new MascotLook
@@ -32,7 +34,8 @@ namespace AiLabs.Unity.Hq
                         Body = new Color(0.95f, 0.3f, 0.55f),
                         Glow = new Color(1f, 0.1f, 0.4f),
                         Scale = 0.95f,
-                        BobSpeed = 6f
+                        BobSpeed = 6f,
+                        BobAmplitude = CampusMascotPresentationSpec.GlitchingBobMeters,
                     };
                 default:
                     return new MascotLook
@@ -40,7 +43,8 @@ namespace AiLabs.Unity.Hq
                         Body = new Color(0.45f, 0.85f, 0.95f),
                         Glow = new Color(0.35f, 0.75f, 1f),
                         Scale = 1f,
-                        BobSpeed = 1.2f
+                        BobSpeed = 1.2f,
+                        BobAmplitude = CampusMascotPresentationSpec.HealthyBobMeters,
                     };
             }
         }

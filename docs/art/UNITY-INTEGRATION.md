@@ -2,7 +2,12 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
-## Batch 7 (local, unpushed atop `a4a7d54`)
+## Batch 8 (local, unpushed atop `5a99b2d`)
+
+- `CampusMascotPresentationSpec` → `ModelMascotPresentation.BobAmplitude`
+- `MASCOT-PRESENTATION.md`, `GLOW-PRESENTATION.md`, Q457
+
+## Batch 7 on branch (`5a99b2d`)
 
 - `CampusTabIconBindings`, `CampusWorldMapTokens`, `TAB-RAIL-INTEGRATION.md`
 - `world-bloc-tints.json` under `Assets/Art/Generated/` (prepush copy)

@@ -16,7 +16,8 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [RIVALS-PANEL.md](RIVALS-PANEL.md) / [GAUNTLET-STAGE.md](GAUNTLET-STAGE.md) | Rivals + gauntlet overlay (batch 6 draft) |
 | [PROP-PLACEMENT-HINTS.md](PROP-PLACEMENT-HINTS.md) | Default props per room purpose (Unity wire-up) |
 | [BATCH-6-PLAN.md](BATCH-6-PLAN.md) | Batch 6 checklist (GO `a4a7d54`) |
-| [TAB-RAIL-INTEGRATION.md](TAB-RAIL-INTEGRATION.md) / [BATCH-7-PLAN.md](BATCH-7-PLAN.md) | Tab rail + world map hooks (batch 7 draft) |
+| [TAB-RAIL-INTEGRATION.md](TAB-RAIL-INTEGRATION.md) / [BATCH-7-PLAN.md](BATCH-7-PLAN.md) | Tab rail + world map (batch 7) |
+| [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md) / [GLOW-PRESENTATION.md](GLOW-PRESENTATION.md) | Mascot + glow (batch 8) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
