@@ -554,7 +554,13 @@ namespace AiLabs.Rules.State
         /// <summary>The vendor was audited. Amount is the exposure left.</summary>
         VendorAudited,
         /// <summary>A labour scandal about the vendor broke. SubjectId is the vendor, Amount the fine.</summary>
-        VendorScandal
+        VendorScandal,
+        /// <summary>A tuning run started. SubjectId is the model, Amount the kind.</summary>
+        PostTrainingStarted,
+        /// <summary>A tuning run finished. SubjectId is the model, Pick is the kind, Amount the number of runs of that kind it now has.</summary>
+        PostTrainingDone,
+        /// <summary>A tuning run was abandoned. SubjectId is the model.</summary>
+        PostTrainingAbandoned
     }
 
     /// <summary>

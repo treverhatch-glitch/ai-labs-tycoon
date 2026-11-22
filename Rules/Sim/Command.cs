@@ -196,7 +196,9 @@ namespace AiLabs.Rules.Sim
         SetAutonomy,
         ContractAnnotators,
         EndAnnotators,
-        AuditVendor
+        AuditVendor,
+        PostTrain,
+        AbandonPostTraining
     }
 
     /// <summary>
@@ -1700,6 +1702,23 @@ namespace AiLabs.Rules.Sim
         public static Command AuditVendor(int labId)
         {
             return Make(CommandKind.AuditVendor, labId);
+        }
+
+        /// <summary>Starts tuning a trained model: Count 1 preference tuning, 2 safety tuning. TargetId is the model.</summary>
+        public static Command PostTrain(int labId, int modelId, int kind)
+        {
+            Command c = Make(CommandKind.PostTrain, labId);
+            c.TargetId = modelId;
+            c.Count = kind;
+            return c;
+        }
+
+        /// <summary>Stops the tuning run of a model. The data it used is gone.</summary>
+        public static Command AbandonPostTraining(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AbandonPostTraining, labId);
+            c.TargetId = modelId;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

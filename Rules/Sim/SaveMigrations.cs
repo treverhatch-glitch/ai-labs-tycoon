@@ -134,6 +134,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 119) MigrateTo119(root);
             if (fromSchema < 120) MigrateTo120(root);
             if (fromSchema < 121) MigrateTo121(root);
+            if (fromSchema < 122) MigrateTo122(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -497,6 +498,19 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 122: no model has been tuned after training.</summary>
+        static void MigrateTo122(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "postKind", "postLeft", "postPref", "postSafety" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

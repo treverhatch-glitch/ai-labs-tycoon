@@ -480,6 +480,10 @@ namespace AiLabs.Rules.Sim
                         || (model.AgentLevel == 0 && (model.AgentSince != 0 || model.AgentStreak != 0))
                         || ((model.AgentLevel != 0 || model.AgentBlowups != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                         p.Add(model.Name + " has agents (level " + model.AgentLevel + ", streak " + model.AgentStreak + ", blow-ups " + model.AgentBlowups + ") in a way the data does not allow");
+                    if (model.PostKind < 0 || model.PostKind > 2 || model.PostLeft < 0 || model.PostPref < 0 || model.PostSafety < 0
+                        || (model.PostKind == 0 && model.PostLeft != 0) || (model.PostKind != 0 && (model.PostLeft < 1 || model.Status != ModelStatus.Trained))
+                        || ((model.PostKind != 0 || model.PostPref != 0 || model.PostSafety != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " is being tuned (kind " + model.PostKind + ", " + model.PostLeft + " weeks, " + model.PostPref + " preference and " + model.PostSafety + " safety runs) in a way the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

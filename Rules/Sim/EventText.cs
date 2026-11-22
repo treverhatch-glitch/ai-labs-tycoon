@@ -573,6 +573,12 @@ namespace AiLabs.Rules.Sim
                     return who + " audited its annotation vendor.";
                 case EventKind.VendorScandal:
                     return "A labour scandal about the annotators of " + who + " broke and cost $" + e.Amount + ".";
+                case EventKind.PostTrainingStarted:
+                    return who + " began tuning " + e.Ref + ".";
+                case EventKind.PostTrainingDone:
+                    return who + " finished tuning " + e.Ref + ".";
+                case EventKind.PostTrainingAbandoned:
+                    return who + " abandoned the tuning of " + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -6521,6 +6521,21 @@
     "exposeTrust": 15,
     "exposeReset": 150
   },
+  "postTraining": {
+    "enabled": 1,
+    "minEra": 4,
+    "weeks": 3,
+    "cost": 30000,
+    "units": 40,
+    "maxPasses": 3,
+    "prefLift": 70,
+    "prefDecay": 350,
+    "syco": 14,
+    "safetyGain": 110,
+    "safetyDecay": 300,
+    "refuse": 35,
+    "minLift": -500
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

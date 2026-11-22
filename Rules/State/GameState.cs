@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 121;
+        public const int CurrentSchema = 122;
 
         public int Schema;
         public string ConfigVersion;
@@ -1267,6 +1267,11 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Post-training: the kind of run going on (0 none, 1 preference tuning, 2 safety tuning), weeks left of it, and how many of each kind the model has had.</summary>
+        public int PostKind;
+        public int PostLeft;
+        public int PostPref;
+        public int PostSafety;
         /// <summary>Autonomy level of the model agents (0 none, 1 supervised, 2 delegated, 3 autonomous), one more than the week it was set, weeks since the last blow-up, and blow-ups.</summary>
         public int AgentLevel;
         public int AgentSince;
@@ -1319,6 +1324,10 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("postKind", ref PostKind);
+            s.Int("postLeft", ref PostLeft);
+            s.Int("postPref", ref PostPref);
+            s.Int("postSafety", ref PostSafety);
             s.Int("agentLevel", ref AgentLevel);
             s.Int("agentSince", ref AgentSince);
             s.Int("agentStreak", ref AgentStreak);

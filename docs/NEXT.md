@@ -362,6 +362,7 @@ and says why in the commit message.
 179. **Batch ten news, chat and combination rules.** ~~Done~~: headlines and chat (Q432), directors and data suits (Q433), complaints and directors (Q434), waves and cleaning (Q435), waves and buyback votes (Q436).
 180. **Agent autonomy.** ~~Done~~: `SetAutonomy`, schema 120, `AgencyTests` (Q437).
 181. **Annotation vendors.** ~~Done~~: `ContractAnnotators`, `EndAnnotators`, `AuditVendor`, schema 121, `AnnotationTests` (Q438).
+182. **Post-training.** ~~Done~~: `PostTrain`, `AbandonPostTraining`, schema 122, `PostTrainingTests` (Q439).
 
 ## Rules: later
 

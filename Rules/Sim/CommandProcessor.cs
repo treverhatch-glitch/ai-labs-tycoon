@@ -105,6 +105,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.PostTrain: return PostTrain(c, state, lab, cmd);
+                case CommandKind.AbandonPostTraining: return AbandonPostTraining(c, state, lab, cmd);
                 case CommandKind.ContractAnnotators: return ContractAnnotators(c, state, lab, cmd);
                 case CommandKind.EndAnnotators: return EndAnnotators(c, state, lab, cmd);
                 case CommandKind.AuditVendor: return AuditVendor(c, state, lab, cmd);
@@ -572,6 +574,7 @@ namespace AiLabs.Rules.Sim
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released)
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
             if (ScalingPolicy.Holds(c, lab, model)) return Fail(CommandError.InvalidArgument, model.Name + " reached a tripwire of the lab's scaling policy and the safeguards for it are not in place.");
+            if (model.PostKind != 0) return Fail(CommandError.InvalidArgument, model.Name + " is still being tuned and cannot go on sale until that run is over or abandoned.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
             if (SafetyCulture.GateBlocks(lab, model))
                 return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");

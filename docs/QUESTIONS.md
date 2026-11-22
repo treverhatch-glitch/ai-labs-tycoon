@@ -2231,6 +2231,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The cheap vendor gives the widest yield for the least money, but its exposure builds unseen and the lab has to audit it (or pay the early fee to leave) before the scandal rolls. The dearer vendors are safe but only for small jobs, so the choice follows the size of the cleaning runs.
 - Alternatives: a fee per job (rejected: no commitment), a quality stat on the dataset (rejected: nothing to manage over time).
 
+### Q439. What does a lab do to a model before it goes on sale? DECIDED: preference tuning on user data lifts revenue and teaches the model to please, safety tuning on licensed data lifts alignment and makes it refuse, each pass worth less and a limited number of passes, and the model waits while it runs
+- The two kinds pull in opposite directions on revenue and on incidents, use different data, and the release waits for the run, so a lab with a model below the era safety bar has a real reason to tune and a real price for it.
+- Alternatives: a flat fee for alignment (rejected: a pay-for-stat knob with no state), a tuning that never stops giving (rejected: nothing to decide).
+
 ## Open
 
 None.

@@ -151,6 +151,7 @@ namespace AiLabs.Rules.Config
         public SpotConfig Spot = new SpotConfig();
         public AgencyConfig Agency = new AgencyConfig();
         public AnnotationConfig Annotation = new AnnotationConfig();
+        public PostTrainingConfig PostTraining = new PostTrainingConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -300,6 +301,7 @@ namespace AiLabs.Rules.Config
             s.Obj("spot", ref Spot);
             s.Obj("agency", ref Agency);
             s.Obj("annotation", ref Annotation);
+            s.Obj("postTraining", ref PostTraining);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

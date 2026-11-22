@@ -156,6 +156,7 @@ namespace AiLabs.Rules.Config
             SpotProblems(p, c);
             AgencyProblems(p, c);
             AnnotationProblems(p, c);
+            PostTrainingProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1769,6 +1770,15 @@ namespace AiLabs.Rules.Config
             if (k.Weekly1 < 0 || k.Weekly2 < 0 || k.Weekly3 < 0 || k.Bonus1 < 0 || k.Bonus2 < 0 || k.Bonus3 < 0 || k.Bonus1 > 500 || k.Bonus2 > 500 || k.Bonus3 > 500 || k.Cap1 < 1 || k.Cap2 < 1 || k.Cap3 < 1) p.Add("annotation fees and bonuses must not be negative, bonuses at most 500, and sizes at least 1");
             if (k.Risk1 < 0 || k.Risk2 < 0 || k.Risk3 < 0 || k.Risk1 > 1000 || k.Term < 1 || k.EarlyPermille < 0 || k.EarlyPermille > 1000 || k.AuditCost < 0 || k.AuditCut < 0 || k.AuditCut > 1000 || k.AuditWeeks < 0) p.Add("annotation risks from 0 to 1000, term at least 1, early and audit cut from 0 to 1000, and costs not negative");
             if (k.ExposeDiv < 1 || k.ExposeFine < 0 || k.ExposeTrust < 0 || k.ExposeReset < 0 || k.ExposeReset > 1000) p.Add("annotation exposeDiv must be at least 1, fine and trust not negative and exposeReset from 0 to 1000");
+        }
+
+        static void PostTrainingProblems(List<string> p, GameConfig c)
+        {
+            PostTrainingConfig k = c.PostTraining;
+            if (k == null) { p.Add("postTraining is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("postTraining.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Weeks < 1 || k.Cost < 0 || k.Units < 1 || k.MaxPasses < 1 || k.MaxPasses > 8) p.Add("postTraining minEra and cost must not be negative, weeks and units at least 1 and maxPasses from 1 to 8");
+            if (k.PrefLift < 0 || k.PrefLift > 1000 || k.PrefDecay < 0 || k.PrefDecay > 1000 || k.Syco < 0 || k.Syco > 1000 || k.SafetyGain < 0 || k.SafetyGain > 1000 || k.SafetyDecay < 0 || k.SafetyDecay > 1000 || k.Refuse < 0 || k.Refuse > 1000 || k.MinLift > 0 || k.MinLift < -1000) p.Add("postTraining lifts, decays, syco, safetyGain and refuse from 0 to 1000 and minLift from -1000 to 0");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
