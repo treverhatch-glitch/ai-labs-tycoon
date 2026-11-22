@@ -34,6 +34,7 @@ namespace AiLabs.Rules.Systems
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
             long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab) + TechDebt.IncidentPermille(c, lab) + Agency.IncidentPermille(c, model) + PostTraining.IncidentPermille(c, model) + Knowledge.IncidentPermille(c, model);
+            before = (long)MathI.Max(0, before - Drills.IncidentCutPermille(c, lab));
             long chance = IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before) + BugBounty.IncidentChange(c, lab, before));
             return (int)MathI.MulPermille(chance, MathI.Permille - Conformity.ChanceCutPermille(c, model));
         }
@@ -123,7 +124,7 @@ namespace AiLabs.Rules.Systems
             if (flavour != null) repLoss = (int)MathI.MulPermille(repLoss, flavour.ReputationPermille);
             repLoss = PressSystem.Damp(c, lab, repLoss);
             repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - EthicsBoard.ScandalCutPermille(c, lab));
-            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - OnCall.ReputationCutPermille(c, lab));
+            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - OnCall.ReputationCutPermille(c, lab) - Drills.ReputationCutPermille(c, lab));
             int repBefore = lab.Reputation;
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             model.IncidentRepLoss = repBefore - lab.Reputation;

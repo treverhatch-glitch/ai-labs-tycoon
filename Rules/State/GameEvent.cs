@@ -578,7 +578,11 @@ namespace AiLabs.Rules.State
         /// <summary>A commitment reached its deadline. SubjectId is the kind, Pick 1 kept, 0 broken.</summary>
         MotionJudged,
         /// <summary>The board forced a vote on the founders. Amount is the tension.</summary>
-        BoardForcedVote
+        BoardForcedVote,
+        /// <summary>A drill started. Amount is the weeks it will run.</summary>
+        DrillStarted,
+        /// <summary>A drill finished. Pick 1 passed, 0 failed, Amount is the new preparedness.</summary>
+        DrillFinished
     }
 
     /// <summary>

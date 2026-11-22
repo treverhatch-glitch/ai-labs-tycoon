@@ -159,6 +159,7 @@ namespace AiLabs.Rules.Config
             PostTrainingProblems(p, c);
             KnowledgeProblems(p, c);
             BoardAgendaProblems(p, c);
+            DrillsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1804,6 +1805,14 @@ namespace AiLabs.Rules.Config
             if (k.MinSeats < 1 || k.MeetingWeeks < 1 || k.AnswerWeeks < 1 || k.CommitWeeks < 1 || k.MeetingWeeks < k.AnswerWeeks) p.Add("boardAgenda minSeats, meetingWeeks, answerWeeks and commitWeeks must be at least 1 and a meeting no sooner than the answer");
             if (k.AcceptRelief < 0 || k.KeptRelief < 0 || k.DeclineTension < 0 || k.IgnoreTension < 0 || k.BrokenTension < 0 || k.DirectorCut < 0 || k.DirectorCut > 1000 || k.OustAt < 1 || k.OustAt > 1000 || k.OustMargin < 0 || k.OustMargin > 1000 || k.CalmBelow < 0 || k.CalmBelow > 1000) p.Add("boardAgenda tensions must not be negative, directorCut, oustMargin and calmBelow from 0 to 1000 and oustAt from 1 to 1000");
             if (k.RaiseBonus < 0 || k.RaiseBonus > 1000 || k.RunwayStretch < 0 || k.RunwayFloor < 0 || k.SafetyAdd < 1) p.Add("boardAgenda raiseBonus from 0 to 1000, runway values not negative and safetyAdd at least 1");
+        }
+
+        static void DrillsProblems(List<string> p, GameConfig c)
+        {
+            DrillsConfig k = c.Drills;
+            if (k == null) { p.Add("drills is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("drills.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Interval < 1 || k.Staff < 1 || k.PassGain < 0 || k.FailLoss < 0 || k.Decay < 0 || k.IdleDecay < 0 || k.IncidentCut < 0 || k.IncidentCut > 1000 || k.RepCut < 0 || k.RepCut > 1000) p.Add("drills minEra, cost and decays must not be negative, weeks and interval and staff at least 1, and cuts from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

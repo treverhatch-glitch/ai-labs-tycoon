@@ -137,6 +137,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 122) MigrateTo122(root);
             if (fromSchema < 123) MigrateTo123(root);
             if (fromSchema < 124) MigrateTo124(root);
+            if (fromSchema < 125) MigrateTo125(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -500,6 +501,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 125: no lab has run an incident drill.</summary>
+        static void MigrateTo125(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "drillPrep", "drillLeft", "drillDue", "drillPassed", "drillFailed" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

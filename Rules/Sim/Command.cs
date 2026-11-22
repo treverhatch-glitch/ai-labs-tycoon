@@ -202,7 +202,8 @@ namespace AiLabs.Rules.Sim
         AssignOwner,
         WriteDocs,
         HoldBoardMeetings,
-        AnswerMotion
+        AnswerMotion,
+        StartDrill
     }
 
     /// <summary>
@@ -1756,6 +1757,12 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerMotion, labId);
             c.Count = accept;
             return c;
+        }
+
+        /// <summary>Starts an incident drill at the lab.</summary>
+        public static Command StartDrill(int labId)
+        {
+            return Make(CommandKind.StartDrill, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

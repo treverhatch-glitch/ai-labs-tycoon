@@ -597,6 +597,10 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? "The board of " + who + " saw a commitment kept." : "The board of " + who + " saw a commitment broken.";
                 case EventKind.BoardForcedVote:
                     return "The board of " + who + " forced a vote on the founders.";
+                case EventKind.DrillStarted:
+                    return who + " started an incident drill.";
+                case EventKind.DrillFinished:
+                    return who + " finished its incident drill.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

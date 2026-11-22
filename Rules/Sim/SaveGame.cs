@@ -345,6 +345,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.MeetingsOn == 0 && lab.MotionNext != 0)
                     || ((lab.MeetingsOn != 0 || lab.BoardTension != 0 || lab.MotionsTabled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a board agenda (tension " + lab.BoardTension + ", motion " + lab.MotionPend + ", commitment " + lab.MotionKind + ") in a way the data does not allow");
+                if (lab.DrillPrep < 0 || lab.DrillPrep > 1000 || lab.DrillLeft < 0 || lab.DrillDue < 0 || lab.DrillPassed < 0 || lab.DrillFailed < 0
+                    || (lab.DrillLeft != 0 && lab.DrillLeft < 1)
+                    || ((lab.DrillPrep != 0 || lab.DrillLeft != 0 || lab.DrillDue != 0 || lab.DrillPassed != 0 || lab.DrillFailed != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has drill state (prep " + lab.DrillPrep + ", " + lab.DrillLeft + " weeks left) the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

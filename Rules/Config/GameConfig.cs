@@ -154,6 +154,7 @@ namespace AiLabs.Rules.Config
         public PostTrainingConfig PostTraining = new PostTrainingConfig();
         public KnowledgeConfig Knowledge = new KnowledgeConfig();
         public BoardAgendaConfig BoardAgenda = new BoardAgendaConfig();
+        public DrillsConfig Drills = new DrillsConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -306,6 +307,7 @@ namespace AiLabs.Rules.Config
             s.Obj("postTraining", ref PostTraining);
             s.Obj("knowledge", ref Knowledge);
             s.Obj("boardAgenda", ref BoardAgenda);
+            s.Obj("drills", ref Drills);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

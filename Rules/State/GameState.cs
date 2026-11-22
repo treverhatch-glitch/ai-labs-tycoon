@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 124;
+        public const int CurrentSchema = 125;
 
         public int Schema;
         public string ConfigVersion;
@@ -584,6 +584,12 @@ namespace AiLabs.Rules.State
         public int MotionsKept;
         public int MotionsBroken;
         public int MotionsDeclined;
+        /// <summary>Drill preparedness (out of 1000), weeks left of the current drill, the week the next drill is due, and how many drills passed and failed.</summary>
+        public int DrillPrep;
+        public int DrillLeft;
+        public int DrillDue;
+        public int DrillPassed;
+        public int DrillFailed;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1094,6 +1100,11 @@ namespace AiLabs.Rules.State
             s.Int("motionsKept", ref MotionsKept);
             s.Int("motionsBroken", ref MotionsBroken);
             s.Int("motionsDeclined", ref MotionsDeclined);
+            s.Int("drillPrep", ref DrillPrep);
+            s.Int("drillLeft", ref DrillLeft);
+            s.Int("drillDue", ref DrillDue);
+            s.Int("drillPassed", ref DrillPassed);
+            s.Int("drillFailed", ref DrillFailed);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

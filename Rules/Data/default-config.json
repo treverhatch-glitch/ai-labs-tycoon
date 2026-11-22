@@ -6572,6 +6572,20 @@
     "safetyAdd": 1,
     "blowupTension": 100
   },
+  "drills": {
+    "enabled": 1,
+    "minEra": 4,
+    "cost": 25000,
+    "weeks": 2,
+    "interval": 26,
+    "staff": 2,
+    "passGain": 120,
+    "failLoss": 80,
+    "decay": 6,
+    "idleDecay": 20,
+    "incidentCut": 400,
+    "repCut": 300
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
