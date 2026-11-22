@@ -2299,6 +2299,25 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Metrics are marketing with teeth; batch thirteen news uses the same pick pattern as batch twelve.
 - Alternatives: metrics without incidents (rejected: `SafetySystem` ties the story).
 
+### Q457. What does a specialist line buy? DECIDED: fork a trained mini/mid/flagship into image, video, code or security (`BranchSpecialist`, schema 135); higher appeal in mapped sectors, lower elsewhere, extra training cost — not a rename.
+- Specialists outscore the flagship only in-sector (DESIGN.md model table).
+- Alternatives: fifth parallel line from new game (rejected: branches from existing runs).
+
+### Q458. What do data sources add beyond the pipeline? DECIDED: named sources with weekly upkeep and expiry (`AcquireDataSource`, `RenewDataSource`, schema 136); quality permille on training and flavour-tagged incidents when a source lapses.
+- Complements `Datasets` stock counts; does not replace `AcquireData`/`CleanData`.
+- Alternatives: infinite scrape knob (rejected: licensing spine).
+
+### Q459. What does opening weights change? DECIDED: per-model open vs closed (`SetWeightsPolicy`, schema 137); trust bonus in some sectors, copy risk and regulator scrutiny, rivals gain appetite permille.
+- Matches market row in DESIGN.md (pricing, open weights, trust).
+- Alternatives: lab-wide switch only (rejected: per-model story).
+
+### Q460. How does sector pricing work? DECIDED: per-sector tier commands (`SetSectorPrice`, schema 138); revenue permille vs overload/incident permille — distinct from stack2 bubble schema-12 pricing.
+- Player desk only; planners keep automatic pricing.
+- Alternatives: single global price (rejected: sector flavours already differ).
+
+### Q461. Batch fourteen news, chat and combos. PLANNED: nine headlines + five chat lines; together tests (specialist with role perks, sources with datasets, open weights with metrics, pricing with trust).
+- Pin counts in validator tests like batch twelve/thirteen.
+
 ## Open
 
 None.
