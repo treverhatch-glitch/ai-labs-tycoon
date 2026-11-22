@@ -132,6 +132,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 117) MigrateTo117(root);
             if (fromSchema < 118) MigrateTo118(root);
             if (fromSchema < 119) MigrateTo119(root);
+            if (fromSchema < 120) MigrateTo120(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -495,6 +496,20 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 120: no model has agent autonomy.</summary>
+        static void MigrateTo120(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "agentEarned", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "agentLevel", "agentSince", "agentStreak", "agentBlowups" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

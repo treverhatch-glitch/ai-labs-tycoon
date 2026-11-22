@@ -540,7 +540,13 @@ namespace AiLabs.Rules.State
         /// <summary>A training run was preempted and lost progress. SubjectId is the model, Amount the compute lost, Ref the model name.</summary>
         SpotPreempted,
         /// <summary>The board voted on buying a round back. Pick is 1 passed or 0 refused, Amount the yes votes in permille of all, Ref the round.</summary>
-        BoardVoted
+        BoardVoted,
+        /// <summary>The autonomy of a model changed. SubjectId is the model, Amount the level.</summary>
+        AutonomySet,
+        /// <summary>An agent run went wrong. SubjectId is the model, Amount the revenue refunded, Ref the model name.</summary>
+        AgentBlowup,
+        /// <summary>A model kept its agents clean for a long streak. SubjectId is the model, Ref the model name.</summary>
+        AgentStreak
     }
 
     /// <summary>

@@ -6475,6 +6475,28 @@
     "changeWeeks": 4,
     "reclaimWeeks": 2
   },
+  "agency": {
+    "enabled": 1,
+    "minEra": 5,
+    "setupCost": 40000,
+    "lift1": 80,
+    "lift2": 180,
+    "lift3": 320,
+    "incident1": 10,
+    "incident2": 30,
+    "incident3": 70,
+    "rooms2": 1,
+    "rooms3": 2,
+    "minAlign3": 600,
+    "blowup2": 40,
+    "blowup3": 90,
+    "roomCut": 250,
+    "refundWeeks": 2,
+    "blowupTrust": 12,
+    "streakWeeks": 26,
+    "streakTrust": 8,
+    "cooldown": 4
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

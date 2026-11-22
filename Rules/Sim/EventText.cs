@@ -559,6 +559,12 @@ namespace AiLabs.Rules.Sim
                     return who + " lost part of " + e.Ref + " when spot capacity was taken back.";
                 case EventKind.BoardVoted:
                     return "The board of " + who + (e.Pick == 1 ? " passed" : " refused") + " buying out the " + e.Ref + " investors.";
+                case EventKind.AutonomySet:
+                    return who + " changed how much freedom the agents of a model have.";
+                case EventKind.AgentBlowup:
+                    return "An agent run of " + e.Ref + " went wrong at " + who + " and customers were refunded $" + e.Amount + ".";
+                case EventKind.AgentStreak:
+                    return "The agents of " + e.Ref + " have run clean for a long while at " + who + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

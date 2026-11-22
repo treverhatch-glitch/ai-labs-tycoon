@@ -192,7 +192,8 @@ namespace AiLabs.Rules.Sim
         SetGovernance,
         SeatDirector,
         BuyBackRound,
-        SetSpotShare
+        SetSpotShare,
+        SetAutonomy
     }
 
     /// <summary>
@@ -1666,6 +1667,15 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetSpotShare, labId);
             c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Sets how much freedom a released model gives its agents: 0 none, 1 supervised, 2 delegated, 3 autonomous. TargetId is the model.</summary>
+        public static Command SetAutonomy(int labId, int modelId, int level)
+        {
+            Command c = Make(CommandKind.SetAutonomy, labId);
+            c.TargetId = modelId;
+            c.Count = level;
             return c;
         }
 

@@ -333,6 +333,8 @@ namespace AiLabs.Rules.Sim
                 if (lab.SpotPermille < 0 || lab.SpotPermille > 1000 || lab.SpotSince < 0 || lab.SpotSaved < 0 || lab.SpotPreempts < 0 || lab.SpotLost < 0 || lab.SpotOut < 0 || lab.SpotOut > c.Spot.ReclaimWeeks || lab.SpotWaves < 0
                     || ((lab.SpotPermille != 0 || lab.SpotSince != 0 || lab.SpotSaved != 0 || lab.SpotPreempts != 0 || lab.SpotLost != 0 || lab.SpotOut != 0 || lab.SpotWaves != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " runs spot capacity in a way the data does not allow");
+                if (lab.AgentEarned < 0 || (lab.AgentEarned != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has agent earnings (" + lab.AgentEarned + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -470,6 +472,10 @@ namespace AiLabs.Rules.Sim
                     if (model.SunsetStart < 0 || model.SunsetTick < 0 || (model.SunsetTick == 0 && model.SunsetStart != 0)
                         || (model.SunsetTick > 0 && (model.SunsetTick <= model.SunsetStart || lab.Id != state.PlayerLabId)))
                         p.Add(model.Name + " has an end-of-life notice (given week " + model.SunsetStart + ", leaves week " + model.SunsetTick + ") that the data does not allow");
+                    if (model.AgentLevel < 0 || model.AgentLevel > 3 || model.AgentSince < 0 || model.AgentStreak < 0 || model.AgentBlowups < 0
+                        || (model.AgentLevel == 0 && (model.AgentSince != 0 || model.AgentStreak != 0))
+                        || ((model.AgentLevel != 0 || model.AgentBlowups != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has agents (level " + model.AgentLevel + ", streak " + model.AgentStreak + ", blow-ups " + model.AgentBlowups + ") in a way the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

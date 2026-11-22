@@ -2223,6 +2223,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It makes the timing of a buyback depend on compute, as a prudent board would see it.
 - Alternatives: the wave raises the price (rejected: the price already follows the bubble).
 
+### Q437. How free should the agents of a model be? DECIDED: three levels that lift revenue and risk, gated by containment and alignment, with blow-ups the wings make rarer and a streak that earns trust
+- The lift is worth having, so the lab wants level 3, but it needs rooms and a well-aligned model, and every week at level 2 or 3 is a roll that the wings make safer. A blow-up costs a refund and trust and starts the streak again.
+- Alternatives: a flat fee for more revenue (rejected: no risk), a random incident only (rejected: nothing to plan with rooms).
+
 ## Open
 
 None.

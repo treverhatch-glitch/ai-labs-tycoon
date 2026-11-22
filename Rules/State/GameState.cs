@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 119;
+        public const int CurrentSchema = 120;
 
         public int Schema;
         public string ConfigVersion;
@@ -561,6 +561,8 @@ namespace AiLabs.Rules.State
         /// <summary>Weeks left in the current reclaim wave, and how many waves the cloud has called.</summary>
         public int SpotOut;
         public int SpotWaves;
+        /// <summary>Revenue the lab has earned from agent autonomy.</summary>
+        public long AgentEarned;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1051,6 +1053,7 @@ namespace AiLabs.Rules.State
             s.Long("spotLost", ref SpotLost);
             s.Int("spotOut", ref SpotOut);
             s.Int("spotWaves", ref SpotWaves);
+            s.Long("agentEarned", ref AgentEarned);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1251,6 +1254,11 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Autonomy level of the model agents (0 none, 1 supervised, 2 delegated, 3 autonomous), one more than the week it was set, weeks since the last blow-up, and blow-ups.</summary>
+        public int AgentLevel;
+        public int AgentSince;
+        public int AgentStreak;
+        public int AgentBlowups;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -1298,6 +1306,10 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("agentLevel", ref AgentLevel);
+            s.Int("agentSince", ref AgentSince);
+            s.Int("agentStreak", ref AgentStreak);
+            s.Int("agentBlowups", ref AgentBlowups);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

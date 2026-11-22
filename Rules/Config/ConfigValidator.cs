@@ -154,6 +154,7 @@ namespace AiLabs.Rules.Config
             GovernanceProblems(p, c);
             BuybackProblems(p, c);
             SpotProblems(p, c);
+            AgencyProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1747,6 +1748,16 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("spot.enabled must be 0 or 1");
             if (k.ReclaimWeeks < 1) p.Add("spot.reclaimWeeks must be at least 1");
             if (k.MaxPermille < 0 || k.MaxPermille > 1000 || k.DiscountPermille < 0 || k.DiscountPermille > 900 || k.PreemptPermille < 0 || k.PreemptPermille > 1000 || k.DefaultLossPermille < 0 || k.DefaultLossPermille > 1000 || k.ChangeWeeks < 0) p.Add("spot shares must be from 0 to 1000 (discount to 900) and changeWeeks not negative");
+        }
+
+        static void AgencyProblems(List<string> p, GameConfig c)
+        {
+            AgencyConfig k = c.Agency;
+            if (k == null) { p.Add("agency is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("agency.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SetupCost < 0 || k.Rooms2 < 0 || k.Rooms3 < k.Rooms2 || k.MinAlign3 < 0 || k.MinAlign3 > 1000 || k.Cooldown < 0) p.Add("agency minEra, setupCost and cooldown must not be negative, rooms3 at least rooms2 and minAlign3 from 0 to 1000");
+            if (k.Lift1 < 0 || k.Lift2 < k.Lift1 || k.Lift3 < k.Lift2 || k.Lift3 > 2000 || k.Incident1 < 0 || k.Incident2 < k.Incident1 || k.Incident3 < k.Incident2 || k.Incident3 > 1000) p.Add("agency lifts and incident chances must rise with the level, lift3 at most 2000 and incident3 at most 1000");
+            if (k.Blowup2 < 0 || k.Blowup3 < k.Blowup2 || k.Blowup3 > 1000 || k.RoomCut < 0 || k.RoomCut > 1000 || k.RefundWeeks < 0 || k.BlowupTrust < 0 || k.StreakWeeks < 1 || k.StreakTrust < 0) p.Add("agency blow-up chances must rise with the level and not pass 1000, roomCut from 0 to 1000, streakWeeks at least 1 and the rest not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
