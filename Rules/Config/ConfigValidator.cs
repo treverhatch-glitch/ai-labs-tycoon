@@ -155,6 +155,7 @@ namespace AiLabs.Rules.Config
             BuybackProblems(p, c);
             SpotProblems(p, c);
             AgencyProblems(p, c);
+            AnnotationProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1758,6 +1759,16 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.SetupCost < 0 || k.Rooms2 < 0 || k.Rooms3 < k.Rooms2 || k.MinAlign3 < 0 || k.MinAlign3 > 1000 || k.Cooldown < 0) p.Add("agency minEra, setupCost and cooldown must not be negative, rooms3 at least rooms2 and minAlign3 from 0 to 1000");
             if (k.Lift1 < 0 || k.Lift2 < k.Lift1 || k.Lift3 < k.Lift2 || k.Lift3 > 2000 || k.Incident1 < 0 || k.Incident2 < k.Incident1 || k.Incident3 < k.Incident2 || k.Incident3 > 1000) p.Add("agency lifts and incident chances must rise with the level, lift3 at most 2000 and incident3 at most 1000");
             if (k.Blowup2 < 0 || k.Blowup3 < k.Blowup2 || k.Blowup3 > 1000 || k.RoomCut < 0 || k.RoomCut > 1000 || k.RefundWeeks < 0 || k.BlowupTrust < 0 || k.StreakWeeks < 1 || k.StreakTrust < 0) p.Add("agency blow-up chances must rise with the level and not pass 1000, roomCut from 0 to 1000, streakWeeks at least 1 and the rest not negative");
+        }
+
+        static void AnnotationProblems(List<string> p, GameConfig c)
+        {
+            AnnotationConfig k = c.Annotation;
+            if (k == null) { p.Add("annotation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("annotation.enabled must be 0 or 1");
+            if (k.Weekly1 < 0 || k.Weekly2 < 0 || k.Weekly3 < 0 || k.Bonus1 < 0 || k.Bonus2 < 0 || k.Bonus3 < 0 || k.Bonus1 > 500 || k.Bonus2 > 500 || k.Bonus3 > 500 || k.Cap1 < 1 || k.Cap2 < 1 || k.Cap3 < 1) p.Add("annotation fees and bonuses must not be negative, bonuses at most 500, and sizes at least 1");
+            if (k.Risk1 < 0 || k.Risk2 < 0 || k.Risk3 < 0 || k.Risk1 > 1000 || k.Term < 1 || k.EarlyPermille < 0 || k.EarlyPermille > 1000 || k.AuditCost < 0 || k.AuditCut < 0 || k.AuditCut > 1000 || k.AuditWeeks < 0) p.Add("annotation risks from 0 to 1000, term at least 1, early and audit cut from 0 to 1000, and costs not negative");
+            if (k.ExposeDiv < 1 || k.ExposeFine < 0 || k.ExposeTrust < 0 || k.ExposeReset < 0 || k.ExposeReset > 1000) p.Add("annotation exposeDiv must be at least 1, fine and trust not negative and exposeReset from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

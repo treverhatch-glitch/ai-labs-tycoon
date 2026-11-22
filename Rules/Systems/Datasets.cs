@@ -135,7 +135,8 @@ namespace AiLabs.Rules.Systems
                 if (lab.DataJobLeft == 0)
                 {
                     int kind = lab.DataJobKind;
-                    int good = (int)MathI.MulPermille(lab.DataJobUnits, Yield(c, kind));
+                    int good = (int)MathI.MulPermille(lab.DataJobUnits, MathI.Min(MathI.Permille, Yield(c, kind) + Annotation.Bonus(c, lab, lab.DataJobUnits)));
+                    if (Annotation.Bonus(c, lab, lab.DataJobUnits) > 0) lab.AnnCleaned += lab.DataJobUnits;
                     AddClean(lab, kind, good);
                     lab.DataJobKind = 0;
                     lab.DataJobUnits = 0;

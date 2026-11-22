@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 120;
+        public const int CurrentSchema = 121;
 
         public int Schema;
         public string ConfigVersion;
@@ -563,6 +563,13 @@ namespace AiLabs.Rules.State
         public int SpotWaves;
         /// <summary>Revenue the lab has earned from agent autonomy.</summary>
         public long AgentEarned;
+        /// <summary>Vendor under contract (0 none, 1 volume, 2 licensed, 3 expert), weeks left, hidden exposure (permille), scandals so far, one more than the week of the last audit, and units cleaned with the vendor.</summary>
+        public int AnnVendor;
+        public int AnnLeft;
+        public int AnnExposure;
+        public int AnnStrikes;
+        public int AnnAuditWeek;
+        public int AnnCleaned;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1054,6 +1061,12 @@ namespace AiLabs.Rules.State
             s.Int("spotOut", ref SpotOut);
             s.Int("spotWaves", ref SpotWaves);
             s.Long("agentEarned", ref AgentEarned);
+            s.Int("annVendor", ref AnnVendor);
+            s.Int("annLeft", ref AnnLeft);
+            s.Int("annExposure", ref AnnExposure);
+            s.Int("annStrikes", ref AnnStrikes);
+            s.Int("annAuditWeek", ref AnnAuditWeek);
+            s.Int("annCleaned", ref AnnCleaned);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

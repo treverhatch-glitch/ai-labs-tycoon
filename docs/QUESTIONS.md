@@ -2227,6 +2227,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The lift is worth having, so the lab wants level 3, but it needs rooms and a well-aligned model, and every week at level 2 or 3 is a roll that the wings make safer. A blow-up costs a refund and trust and starts the streak again.
 - Alternatives: a flat fee for more revenue (rejected: no risk), a random incident only (rejected: nothing to plan with rooms).
 
+### Q438. Who should label the data? DECIDED: a contracted vendor with a weekly take-or-pay fee, a yield bonus on jobs within its size, a hidden exposure that only the cheap vendor builds, an audit, and a scandal that ends the contract
+- The cheap vendor gives the widest yield for the least money, but its exposure builds unseen and the lab has to audit it (or pay the early fee to leave) before the scandal rolls. The dearer vendors are safe but only for small jobs, so the choice follows the size of the cleaning runs.
+- Alternatives: a fee per job (rejected: no commitment), a quality stat on the dataset (rejected: nothing to manage over time).
+
 ## Open
 
 None.

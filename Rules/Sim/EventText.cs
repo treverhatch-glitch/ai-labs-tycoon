@@ -565,6 +565,14 @@ namespace AiLabs.Rules.Sim
                     return "An agent run of " + e.Ref + " went wrong at " + who + " and customers were refunded $" + e.Amount + ".";
                 case EventKind.AgentStreak:
                     return "The agents of " + e.Ref + " have run clean for a long while at " + who + ".";
+                case EventKind.AnnotatorsContracted:
+                    return who + " contracted an annotation vendor.";
+                case EventKind.AnnotatorsEnded:
+                    return who + " ended its annotation contract.";
+                case EventKind.VendorAudited:
+                    return who + " audited its annotation vendor.";
+                case EventKind.VendorScandal:
+                    return "A labour scandal about the annotators of " + who + " broke and cost $" + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

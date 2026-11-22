@@ -361,6 +361,7 @@ and says why in the commit message.
 178. **Spot capacity.** ~~Done~~: `SetSpotShare`, schema 119, `SpotTests` (Q431).
 179. **Batch ten news, chat and combination rules.** ~~Done~~: headlines and chat (Q432), directors and data suits (Q433), complaints and directors (Q434), waves and cleaning (Q435), waves and buyback votes (Q436).
 180. **Agent autonomy.** ~~Done~~: `SetAutonomy`, schema 120, `AgencyTests` (Q437).
+181. **Annotation vendors.** ~~Done~~: `ContractAnnotators`, `EndAnnotators`, `AuditVendor`, schema 121, `AnnotationTests` (Q438).
 
 ## Rules: later
 

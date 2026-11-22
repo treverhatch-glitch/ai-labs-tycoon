@@ -193,7 +193,10 @@ namespace AiLabs.Rules.Sim
         SeatDirector,
         BuyBackRound,
         SetSpotShare,
-        SetAutonomy
+        SetAutonomy,
+        ContractAnnotators,
+        EndAnnotators,
+        AuditVendor
     }
 
     /// <summary>
@@ -1677,6 +1680,26 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             c.Count = level;
             return c;
+        }
+
+        /// <summary>Contracts an annotation vendor for a term: 1 volume, 2 licensed, 3 expert. Count is the vendor.</summary>
+        public static Command ContractAnnotators(int labId, int vendor)
+        {
+            Command c = Make(CommandKind.ContractAnnotators, labId);
+            c.Count = vendor;
+            return c;
+        }
+
+        /// <summary>Ends the vendor contract early, paying most of the fees still to run.</summary>
+        public static Command EndAnnotators(int labId)
+        {
+            return Make(CommandKind.EndAnnotators, labId);
+        }
+
+        /// <summary>Audits the vendor, taking most of the hidden exposure away.</summary>
+        public static Command AuditVendor(int labId)
+        {
+            return Make(CommandKind.AuditVendor, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

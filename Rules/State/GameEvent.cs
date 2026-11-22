@@ -546,7 +546,15 @@ namespace AiLabs.Rules.State
         /// <summary>An agent run went wrong. SubjectId is the model, Amount the revenue refunded, Ref the model name.</summary>
         AgentBlowup,
         /// <summary>A model kept its agents clean for a long streak. SubjectId is the model, Ref the model name.</summary>
-        AgentStreak
+        AgentStreak,
+        /// <summary>A vendor was contracted. SubjectId is the vendor.</summary>
+        AnnotatorsContracted,
+        /// <summary>The vendor contract ended. SubjectId is the vendor, Pick 1 ran its term, 0 ended early, 2 ended by a scandal.</summary>
+        AnnotatorsEnded,
+        /// <summary>The vendor was audited. Amount is the exposure left.</summary>
+        VendorAudited,
+        /// <summary>A labour scandal about the vendor broke. SubjectId is the vendor, Amount the fine.</summary>
+        VendorScandal
     }
 
     /// <summary>

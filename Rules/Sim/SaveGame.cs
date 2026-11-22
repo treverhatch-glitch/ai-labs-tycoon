@@ -335,6 +335,10 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " runs spot capacity in a way the data does not allow");
                 if (lab.AgentEarned < 0 || (lab.AgentEarned != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has agent earnings (" + lab.AgentEarned + ") that the data does not allow");
+                if (lab.AnnVendor < 0 || lab.AnnVendor > 3 || lab.AnnLeft < 0 || lab.AnnExposure < 0 || lab.AnnExposure > 1000 || lab.AnnStrikes < 0 || lab.AnnAuditWeek < 0 || lab.AnnCleaned < 0
+                    || (lab.AnnVendor == 0 && lab.AnnLeft != 0) || (lab.AnnVendor != 0 && lab.AnnLeft < 1)
+                    || ((lab.AnnVendor != 0 || lab.AnnExposure != 0 || lab.AnnStrikes != 0 || lab.AnnAuditWeek != 0 || lab.AnnCleaned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has an annotation vendor (" + lab.AnnVendor + ", " + lab.AnnLeft + " weeks, exposure " + lab.AnnExposure + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
