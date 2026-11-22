@@ -14,7 +14,8 @@
 | 23 | `5af83e0` | Training incident rings, NEXT refill |
 | 24 | `68dbbb0` | Gauntlet stage HUD |
 | 25 | `a8517af` | Research breakdown drawer |
-| 26 | (local GO) | Staff roster rows |
+| 26 | `e2cf84c` | Staff roster rows |
+| 27 | (local GO) | HQ cash readout |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q476. HQ cash readout tokens? DECIDED: `CampusHqCashDisplayPresentationSpec`
+
+- Options: (a) duplicate font sizes in HUD prefab; (b) spec + doc; (c) bind only from IMGUI.
+- Recommendation and choice: **(b)** — cash/grant are always visible; grant line opacity is presentation-only.
+- Why: Matches DESIGN cash+grant model without investor UI in graphics.
+
 ### Q475. Staff roster row chrome? DECIDED: `CampusStaffRowPresentationSpec`
 
 - Options: (a) STAFF-PRESENTATION prose only; (b) row spec + doc; (c) wait for rigged staff meshes.
