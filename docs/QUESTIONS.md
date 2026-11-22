@@ -2119,6 +2119,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Pins: 298 headlines and 300 chat lines.
 - Alternatives: one generic line per system (rejected: the branches are the story).
 
+### Q413. Does a good team speed up research? DECIDED: a sharp pod shortens programme stages by a week
+- A pod whose chemistry reaches the sharp mark (700) takes a week off a programme stage that starts while it exists, never going under a week. A blunt or absent pod changes nothing. The pod costs a kick-off per person and its chemistry can fall, so the saving is only there while the people fit.
+- Alternatives: more points per stage (rejected: it is already the pod's own job), a pod assigned to a programme (rejected: needs more state for no new decision).
+
+### Q414. Is a rushed model as safe as a careful one? DECIDED: a rush-priority run counts as less aligned for the licence bar
+- A run set to the rush level, which took the cluster from the others, counts 60 less aligned when the review or a renewal checks the best released model. Rushing a model to beat a licence date can cost the licence. Background and normal runs count in full. The model's real alignment is untouched.
+- Alternatives: no link (rejected: priority would be free), a penalty to real alignment (rejected: it would change how training works for a lab that has no licence).
+
+### Q415. Is a broken promise only a support matter? DECIDED: breaking a pledge, or losing one, while licensed is a strike
+- A lab that holds a licence and walks away from a support pledge, or lets a pledged model leave sale, takes a strike against the licence. At two strikes it is suspended. `licence.breachStrike` can switch this off. A lab with no licence is not affected.
+- Alternatives: a fine only (rejected: pledges and licences would not touch each other).
+
+### Q416. Is support cheaper with a good team? DECIDED: a sharp pod takes a quarter off the weekly support cost
+- While a pod is sharp, pledged models cost 25% less each week to keep supported. The lab still has to want a pod: it costs a kick-off and its chemistry can fall.
+- Alternatives: a flat cut (rejected: no choice), a pod bound to each model (rejected: more state than the saving is worth).
+
 ## Open
 
 None.

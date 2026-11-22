@@ -28,6 +28,8 @@ namespace AiLabs.Rules.Config
         public int BreachTrust;
         /// <summary>Reputation lost (damped) when a pledge is broken.</summary>
         public int BreachReputation;
+        /// <summary>Share a sharp pod takes off the weekly support cost of pledged models (permille).</summary>
+        public int PodCutPermille;
 
         public void Sync(Syncer s)
         {
@@ -42,6 +44,7 @@ namespace AiLabs.Rules.Config
             s.Int("breachWeeks", ref BreachWeeks);
             s.Int("breachTrust", ref BreachTrust);
             s.Int("breachReputation", ref BreachReputation);
+            s.Int("podCutPermille", ref PodCutPermille);
         }
     }
 }

@@ -32,6 +32,10 @@ namespace AiLabs.Rules.Config
         public int MoraleShare;
         /// <summary>Weeks between swaps of a member.</summary>
         public int SwapCooldown;
+        /// <summary>Chemistry from which a pod counts as sharp: it speeds up research programmes and makes support pledges cheaper.</summary>
+        public int SharpChem;
+        /// <summary>Weeks a sharp pod takes off each research programme stage (never below one week).</summary>
+        public int ProgrammeWeeksSaved;
 
         public void Sync(Syncer s)
         {
@@ -48,6 +52,8 @@ namespace AiLabs.Rules.Config
             s.Int("tenureCap", ref TenureCap);
             s.Int("moraleShare", ref MoraleShare);
             s.Int("swapCooldown", ref SwapCooldown);
+            s.Int("sharpChem", ref SharpChem);
+            s.Int("programmeWeeksSaved", ref ProgrammeWeeksSaved);
         }
     }
 }

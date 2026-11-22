@@ -72,6 +72,7 @@ namespace AiLabs.Rules.Systems
             model.LtsLeft = 0;
             lab.LtsBroken++;
             Events.Add(state, EventKind.SupportPledgeEnded, lab.Id, model.Id, fee, model.Name).Pick = 0;
+            if (c.Licence.BreachStrike > 0) Licence.Strike(c, state, lab);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
@@ -87,6 +88,7 @@ namespace AiLabs.Rules.Systems
                     continue;
                 }
                 long support = MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), c.Pledges.SupportPermille);
+                if (Pods.Sharp(c, lab)) support = MathI.MulPermille(support, MathI.Permille - c.Pledges.PodCutPermille);
                 if (support > 0) Finance.Spend(lab, LedgerLine.Salaries, support);
                 m.LtsLeft--;
                 if (m.LtsLeft > 0) continue;

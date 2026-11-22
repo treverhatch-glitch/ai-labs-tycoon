@@ -17,3 +17,5 @@ Regulation that arrives with the eras and that the lab chooses whether to join (
 When the review ends the lab's best released model is checked against the regime's bar. Passing grants the licence for its term; failing refuses it, keeps the fee, and starts a 26 week cool-down. A held licence takes its share off every incident fine, but each incident while licensed is a strike: at 2 strikes the licence is suspended, which costs twice the fee, 40 reputation (damped) and a 26 week cool-down. A licence that is not renewed lapses at the end of its term.
 
 The fee and the suspension penalty go on the fines line of the books. Events: `LicenceApplied`, `LicenceDecided` (Pick 1 granted, 0 refused), `LicenceStrike`, `LicenceEnded` (Pick 0 lapsed, 1 surrendered, 2 suspended).
+
+A best model whose training run was rushed (run queue level 3) counts as 60 less aligned when a review or renewal checks the bar (`licence.rushPenalty`; Q414). Breaking a support pledge, or losing one because the model left sale, while the licence is held is a strike (`licence.breachStrike`; Q415).

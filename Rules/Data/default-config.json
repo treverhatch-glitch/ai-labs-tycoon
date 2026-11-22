@@ -6264,7 +6264,9 @@
     "tenureStep": 12,
     "tenureCap": 240,
     "moraleShare": 200,
-    "swapCooldown": 8
+    "swapCooldown": 8,
+    "sharpChem": 700,
+    "programmeWeeksSaved": 1
   },
   "licence": {
     "enabled": 1,
@@ -6287,7 +6289,9 @@
     "cooldownWeeks": 26,
     "strikeLimit": 2,
     "suspendReputation": 40,
-    "renewWindow": 12
+    "renewWindow": 12,
+    "rushPenalty": 60,
+    "breachStrike": 1
   },
   "pledges": {
     "enabled": 1,
@@ -6300,7 +6304,8 @@
     "keptTrust": 25,
     "breachWeeks": 8,
     "breachTrust": 60,
-    "breachReputation": 25
+    "breachReputation": 25,
+    "podCutPermille": 250
   },
   "bugBounty": {
     "maxLevel": 3,

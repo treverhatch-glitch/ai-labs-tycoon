@@ -32,7 +32,7 @@ namespace AiLabs.Rules.Systems
         public static bool MeetsBar(GameConfig c, LabState lab, int regime)
         {
             ModelState best = LabQueries.BestReleased(lab);
-            return best != null && best.Alignment >= Bar(c, regime);
+            return best != null && best.Alignment - (best.QueueLevel == 3 ? c.Licence.RushPenalty : 0) >= Bar(c, regime);
         }
 
         /// <summary>The share a held licence takes off an incident fine, in permille.</summary>
@@ -72,6 +72,12 @@ namespace AiLabs.Rules.Systems
 
         /// <summary>An incident on a model of a licensed lab: a strike, and at the limit the licence is suspended with a penalty.</summary>
         public static void OnIncident(GameConfig c, GameState state, LabState lab)
+        {
+            Strike(c, state, lab);
+        }
+
+        /// <summary>One strike against a held licence; at the limit it is suspended.</summary>
+        public static void Strike(GameConfig c, GameState state, LabState lab)
         {
             if (!Enabled(c) || lab.Id != state.PlayerLabId || !Held(lab)) return;
             lab.LicStrikes++;

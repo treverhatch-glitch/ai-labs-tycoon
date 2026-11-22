@@ -14,3 +14,5 @@ Three stages. Careful: 35% of the tech's cost, 6 weeks, always works. Bold: 25% 
 On average a bold stage costs about 45% with retries, against 35% careful, less the 15% paid back: a small edge with a lot of variance, and a lab short of points cannot afford a run of failures.
 
 Events: `ProgrammeStarted`, `ProgrammeStageDone` (Pick 1 careful, 2 bold), `ProgrammeStageFailed`, `ProgrammeEnded` (Pick 1 finished, 0 given up; Amount the points paid back or refunded).
+
+A stage that starts while the lab has a sharp pod runs a week shorter (Q413).

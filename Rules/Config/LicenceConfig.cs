@@ -48,6 +48,10 @@ namespace AiLabs.Rules.Config
         public int SuspendReputation;
         /// <summary>Weeks before the end of a licence in which it can be renewed.</summary>
         public int RenewWindow;
+        /// <summary>Alignment taken off a best model whose training run was rushed when the review or renewal checks the bar.</summary>
+        public int RushPenalty;
+        /// <summary>1 when breaking or losing a support pledge counts as a strike against a held licence.</summary>
+        public int BreachStrike;
 
         public void Sync(Syncer s)
         {
@@ -72,6 +76,8 @@ namespace AiLabs.Rules.Config
             s.Int("strikeLimit", ref StrikeLimit);
             s.Int("suspendReputation", ref SuspendReputation);
             s.Int("renewWindow", ref RenewWindow);
+            s.Int("rushPenalty", ref RushPenalty);
+            s.Int("breachStrike", ref BreachStrike);
         }
     }
 }

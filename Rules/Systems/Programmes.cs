@@ -42,6 +42,7 @@ namespace AiLabs.Rules.Systems
             lab.PgSpent += cost;
             lab.PgBold = bold ? 1 : 0;
             lab.PgLeft = bold ? c.Programmes.BoldWeeks : c.Programmes.SafeWeeks;
+            if (Pods.Sharp(c, lab)) lab.PgLeft = (int)MathI.Max(1, lab.PgLeft - c.Pods.ProgrammeWeeksSaved);
             lab.PgPhase = Running;
         }
 

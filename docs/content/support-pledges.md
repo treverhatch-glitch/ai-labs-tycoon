@@ -16,3 +16,5 @@ While a pledge stands:
 A pledge that reaches its end is kept: the lab gains 25 trust in each sector of the model. A pledged model that leaves sale is treated as a breach the next week.
 
 Events: `SupportPledged`, `SupportPledgeEnded` (Pick 1 kept, 0 broken; Amount the fee for a breach).
+
+A sharp pod takes a quarter off the weekly support cost (Q416). Breaking a pledge while licensed is a strike on the licence (Q415).

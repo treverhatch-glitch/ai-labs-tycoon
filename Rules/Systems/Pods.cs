@@ -14,6 +14,9 @@ namespace AiLabs.Rules.Systems
 
         public static bool Active(LabState lab) { return lab.PodIds.Count > 0; }
 
+        /// <summary>True when the lab has a pod whose chemistry is at least the sharp mark.</summary>
+        public static bool Sharp(GameConfig c, LabState lab) { return c.Pods.Enabled > 0 && lab.PodIds.Count > 0 && lab.PodChem >= c.Pods.SharpChem; }
+
         public static StaffMember Person(LabState lab, int id)
         {
             for (int i = 0; i < lab.Staff.Count; i++)
