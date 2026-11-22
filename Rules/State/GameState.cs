@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 112;
+        public const int CurrentSchema = 113;
 
         public int Schema;
         public string ConfigVersion;
@@ -504,6 +504,13 @@ namespace AiLabs.Rules.State
         public int OrgSince;
         public int OrgDisrupt;
         public int OrgReorgs;
+        /// <summary>The fabric tier the lab has (0 none), the tier being built (0 none), the weeks left to build it, the GPUs the cost was worked out on, and how many tiers were delivered and cancelled.</summary>
+        public int FabTier;
+        public int FabBuild;
+        public int FabLeft;
+        public int FabGpus;
+        public int FabBuilt;
+        public int FabCancelled;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -946,6 +953,12 @@ namespace AiLabs.Rules.State
             s.Int("orgSince", ref OrgSince);
             s.Int("orgDisrupt", ref OrgDisrupt);
             s.Int("orgReorgs", ref OrgReorgs);
+            s.Int("fabTier", ref FabTier);
+            s.Int("fabBuild", ref FabBuild);
+            s.Int("fabLeft", ref FabLeft);
+            s.Int("fabGpus", ref FabGpus);
+            s.Int("fabBuilt", ref FabBuilt);
+            s.Int("fabCancelled", ref FabCancelled);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

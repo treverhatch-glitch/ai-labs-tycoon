@@ -125,6 +125,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 110) MigrateTo110(root);
             if (fromSchema < 111) MigrateTo111(root);
             if (fromSchema < 112) MigrateTo112(root);
+            if (fromSchema < 113) MigrateTo113(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -488,6 +489,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 113: no lab has a fabric or is building one.</summary>
+        static void MigrateTo113(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "fabTier", "fabBuild", "fabLeft", "fabGpus", "fabBuilt", "fabCancelled" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

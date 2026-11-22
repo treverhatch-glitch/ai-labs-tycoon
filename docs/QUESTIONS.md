@@ -2150,6 +2150,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It reads staff and seniority as they are, so promotions, hiring, layoffs and quitting all change the answer without a hook of their own.
 - Alternatives: a flat bonus per structure (rejected: no tension), paying for a structure (rejected: a fee), a leader per team named by the player (rejected: promotions already name them).
 
+### Q420. How does a lab turn a pile of GPUs into one fast cluster? DECIDED: a three tier fabric with lead times, a cutover outage and a deposit
+- Each tier is bought for every GPU owned, so it is cheap for a small fleet and dear for a large one, and it opens with an era. The order takes weeks; the last weeks take the cluster down. Cancelling loses the deposit. The balance is paid at delivery, so a lab that spent its cash waits with the cluster still down.
+- It is separate from buying GPUs (`BuyGpus`, the queue of purchases) and from building sites: those add or house GPUs, this makes the ones owned faster.
+- Alternatives: buying speed per GPU (rejected: a pay-for-stat), no outage (rejected: no timing decision), refund on cancel (rejected: no cost to changing your mind).
+
 ## Open
 
 None.

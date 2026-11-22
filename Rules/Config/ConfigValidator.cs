@@ -147,6 +147,7 @@ namespace AiLabs.Rules.Config
             IntegrationsProblems(p, c);
             ConformityProblems(p, c);
             OrgProblems(p, c);
+            FabricProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1660,6 +1661,16 @@ namespace AiLabs.Rules.Config
             if (k.FlatCap < 0 || k.FlatStep < 0 || k.SpanSize < 1 || k.SpanStep < 0 || k.LeadlessLoss < 0 || k.FuncResearchBonus < 0) p.Add("org.spanSize must be at least 1 and the flat, span and function values not negative");
             if (k.SquadSize < 2 || k.SquadMinRoles < 1 || k.SquadLeadLoss < 0 || k.SquadTrainingBonus < 0 || k.CrossTeam < 0) p.Add("org.squadSize must be at least 2, squadMinRoles at least 1 and the squad values not negative");
             if (k.LossCap < 0 || k.LossCap > 900 || k.ReorgWeeks < 0 || k.DisruptLoss < 0 || k.CooldownWeeks < 0) p.Add("org.lossCap must be from 0 to 900 and the reorganisation values not negative");
+        }
+
+        static void FabricProblems(List<string> p, GameConfig c)
+        {
+            FabricConfig k = c.Fabric;
+            if (k == null) { p.Add("fabric is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("fabric.enabled must be 0 or 1");
+            if (k.MinGpus < 1 || k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB || k.EraC >= c.Eras.Count) p.Add("fabric.minGpus must be at least 1 and the eras must not fall and the last must be a real era");
+            if (k.LeadA < 1 || k.LeadB < 1 || k.LeadC < 1 || k.CostA < 0 || k.CostB < k.CostA || k.CostC < k.CostB || k.GainA < 0 || k.GainB < k.GainA || k.GainC < k.GainB) p.Add("fabric leads must be at least 1 and costs and gains must not fall from tier to tier");
+            if (k.DepositPermille < 0 || k.DepositPermille > 1000 || k.CutoverWeeks < 0 || k.CutoverWeeks > k.LeadA || k.CutoverLoss < 0 || k.CutoverLoss > 900) p.Add("fabric.depositPermille must be from 0 to 1000, cutoverWeeks no more than leadA and cutoverLoss from 0 to 900");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

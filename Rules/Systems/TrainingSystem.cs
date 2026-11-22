@@ -64,6 +64,7 @@ namespace AiLabs.Rules.Systems
                 + Crunch.TrainingPermille(c, lab)
                 + Labour.TrainingPermille(c, lab)
                 + Org.TrainingPermille(c, lab)
+                + Fabric.Permille(c, lab)
                 - HackWeek.TrainingCutPermille(c, lab);
         }
 

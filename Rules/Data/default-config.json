@@ -6360,6 +6360,25 @@
     "disruptLoss": 250,
     "cooldownWeeks": 26
   },
+  "fabric": {
+    "enabled": 1,
+    "minGpus": 8,
+    "eraA": 3,
+    "eraB": 4,
+    "eraC": 6,
+    "leadA": 8,
+    "leadB": 14,
+    "leadC": 22,
+    "costA": 80,
+    "costB": 150,
+    "costC": 250,
+    "gainA": 60,
+    "gainB": 130,
+    "gainC": 210,
+    "depositPermille": 400,
+    "cutoverWeeks": 3,
+    "cutoverLoss": 300
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

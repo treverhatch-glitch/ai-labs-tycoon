@@ -519,6 +519,12 @@ namespace AiLabs.Rules.Sim
                     return who + " reorganised how it works.";
                 case EventKind.OrgStrained:
                     return who + " is feeling the strain of its structure.";
+                case EventKind.FabricOrdered:
+                    return who + " ordered a faster cluster fabric.";
+                case EventKind.FabricDelivered:
+                    return who + " finished building its cluster fabric.";
+                case EventKind.FabricCancelled:
+                    return who + " cancelled its cluster fabric order.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

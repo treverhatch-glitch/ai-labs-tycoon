@@ -105,6 +105,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.OrderFabric: return OrderFabric(c, state, lab, cmd);
+                case CommandKind.CancelFabric: return CancelFabric(c, state, lab, cmd);
                 case CommandKind.SetOrg: return SetOrg(c, state, lab, cmd);
                 case CommandKind.StartConformity: return StartConformity(c, state, lab, cmd);
                 case CommandKind.SubmitEvidence: return SubmitEvidence(c, state, lab, cmd);

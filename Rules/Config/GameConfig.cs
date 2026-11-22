@@ -142,6 +142,7 @@ namespace AiLabs.Rules.Config
         public IntegrationsConfig Integrations = new IntegrationsConfig();
         public ConformityConfig Conformity = new ConformityConfig();
         public OrgConfig Org = new OrgConfig();
+        public FabricConfig Fabric = new FabricConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -282,6 +283,7 @@ namespace AiLabs.Rules.Config
             s.Obj("integrations", ref Integrations);
             s.Obj("conformity", ref Conformity);
             s.Obj("org", ref Org);
+            s.Obj("fabric", ref Fabric);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

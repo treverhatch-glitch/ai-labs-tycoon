@@ -179,7 +179,9 @@ namespace AiLabs.Rules.Sim
         StartConformity,
         SubmitEvidence,
         WithdrawConformity,
-        SetOrg
+        SetOrg,
+        OrderFabric,
+        CancelFabric
     }
 
     /// <summary>
@@ -1558,6 +1560,18 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetOrg, labId);
             c.Count = form;
             return c;
+        }
+
+        /// <summary>Orders the next tier of the training-cluster fabric. A deposit now, the rest at delivery; the cluster is down for the last weeks.</summary>
+        public static Command OrderFabric(int labId)
+        {
+            return Make(CommandKind.OrderFabric, labId);
+        }
+
+        /// <summary>Cancels the tier being built. The deposit is lost.</summary>
+        public static Command CancelFabric(int labId)
+        {
+            return Make(CommandKind.CancelFabric, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

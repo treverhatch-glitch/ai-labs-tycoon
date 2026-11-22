@@ -303,6 +303,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.OrgForm == 0 && (lab.OrgSince != 0 || lab.OrgDisrupt != 0))
                     || ((lab.OrgForm != 0 || lab.OrgReorgs != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a structure (" + lab.OrgForm + ", disruption " + lab.OrgDisrupt + ", " + lab.OrgReorgs + " changes) the data does not allow");
+                if (lab.FabTier < 0 || lab.FabTier > 3 || lab.FabBuild < 0 || lab.FabBuild > 3 || lab.FabLeft < 0 || lab.FabGpus < 0 || lab.FabBuilt < 0 || lab.FabCancelled < 0
+                    || (lab.FabBuild != 0 && lab.FabBuild != lab.FabTier + 1) || (lab.FabBuild == 0 && (lab.FabLeft != 0 || lab.FabGpus != 0))
+                    || ((lab.FabTier != 0 || lab.FabBuild != 0 || lab.FabBuilt != 0 || lab.FabCancelled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a fabric (tier " + lab.FabTier + ", building " + lab.FabBuild + ", " + lab.FabLeft + " weeks) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
