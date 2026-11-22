@@ -92,6 +92,10 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **Code:** campus camera in grid + CI capture; `CampusTabRailMock`; `validate_unity_meta_guids.py`; `world-bloc-tints.json`; `MATERIAL-CampusFallback.md`.
 
-## Batch 5 (local, awaiting GO atop `6986731`)
+## Batch 5 on branch (`fe3c00d`)
 
 **+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
+
+## Batch 6 (local, awaiting GO ≥12:59 UTC atop `fe3c00d`)
+
+**Code:** `CampusSilhouetteCatalog`, rivals/gauntlet HUD fractions, silhouette tests; **docs:** rivals + gauntlet + prop placement; **Q455** gauntlet overlay decision.

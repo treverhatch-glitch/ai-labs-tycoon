@@ -11,5 +11,11 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.AreEqual(72f, CampusHudLayoutSpec.TopBarHeight);
             Assert.Greater(CampusHudLayoutSpec.AdvanceWeekWidth, 44f);
         }
+
+        [Test]
+        public void Rivals_split_matches_layout_doc()
+        {
+            Assert.AreEqual(1f, CampusHudLayoutSpec.RivalsListWidthFraction + CampusHudLayoutSpec.RivalsLogWidthFraction, 0.001f);
+        }
     }
 }

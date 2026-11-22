@@ -10,7 +10,7 @@ Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 
 ## Props
 
-- [ ] Manifest has 25 OBJ ids; missing import logs error in editor once
+- [ ] Manifest has 28 OBJ ids; missing import logs error in editor once
 - [ ] Compute rooms: rack + 2–4 `prop-gpu-blade` instances
 - [ ] Campus lots: trees + bike rack on border strip
 
@@ -23,7 +23,7 @@ Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 ## CI
 
 - [ ] `HqViewCaptureTests` still writes `unity/artifacts/hq-view.png` > 4 KB
-- [ ] New Edit Mode tests green: `CampusPresentationSpecTests`, `CampusUiTokensTests`, `CampusTabRailMockTests`
+- [ ] New Edit Mode tests green: `CampusPresentationSpecTests`, `CampusUiTokensTests`, `CampusTabRailMockTests`, `CampusSilhouetteCatalogTests`, `CampusPropPlacementHintsTests`
 - [ ] Pre-push: `python3 tools/art/validate_unity_meta_guids.py`
 
 ## Out of scope until Hatch PC

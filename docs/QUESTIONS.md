@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q455. Gauntlet reveal overlay? DECIDED: seasonal HQ overlay, not separate scene
+
+- Options: (a) full-screen gauntlet scene; (b) HQ overlay with lectern + mascots; (c) text-only modal.
+- Recommendation and choice: **(b)** — see `docs/art/GAUNTLET-STAGE.md`; build panel hidden, global chrome kept.
+- Why: reuses `HqGridView` and mascot row; avoids new scene graph before tab rail ships.
+
 ## Open
 
 None.

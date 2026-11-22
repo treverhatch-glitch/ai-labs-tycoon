@@ -2,7 +2,18 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
-## Batch 4 (local, unpushed)
+## Batch 6 (local, unpushed atop `fe3c00d`)
+
+- `CampusSilhouetteCatalog` — SVG paths for `rival-silhouettes-manifest.json`
+- `RIVALS-PANEL.md`, `GAUNTLET-STAGE.md`, `PROP-PLACEMENT-HINTS.md`
+- `CampusHudLayoutSpec` rivals split + gauntlet fade constants
+
+## Batch 5 on branch (`fe3c00d`)
+
+- `CampusHudLayoutSpec`, `CampusPropLoader`, panel tokens + research/training specs
+- 28 OBJ props, 4 rival silhouettes, extended `RivalPresentationPalette`
+
+## Batch 4
 
 - `CampusPropCatalog` / `CampusIconCatalog` — import paths for all generated assets
 - `RivalPresentationPalette.AccentFor(labId)` on rival badges

@@ -4,7 +4,7 @@ No portraits or real logos. Each lab gets:
 
 1. **`ui-rival-badge.obj`** instance
 2. **`RivalPresentationPalette.AccentFor(labId)`** tint
-3. **Abstract silhouette** — rounded rectangle, diamond, or hex (procedural SVG later, not in batch 4)
+3. **`CampusSilhouetteCatalog.PathFor(labId)`** → `silhouette-{labId}.svg` (4 curated labs in manifest)
 
 | Lab id | Shape (v1) | Notes |
 | --- | --- | --- |
