@@ -113,6 +113,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetRouteShare: return SetRouteShare(c, state, lab, cmd);
                 case CommandKind.PublishMetrics: return PublishMetrics(c, state, lab, cmd);
                 case CommandKind.StopMetrics: return StopMetrics(c, state, lab, cmd);
+                case CommandKind.BranchSpecialist: return BranchSpecialist(c, state, lab, cmd);
+                case CommandKind.AcquireDataSource: return AcquireDataSource(c, state, lab, cmd);
+                case CommandKind.RenewDataSource: return RenewDataSource(c, state, lab, cmd);
+                case CommandKind.SetWeightsPolicy: return SetWeightsPolicy(c, state, lab, cmd);
+                case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
                 case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
                 case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
                 case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);

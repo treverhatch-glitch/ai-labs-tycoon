@@ -177,6 +177,8 @@ namespace AiLabs.Rules.Sim
                     RunawayPlaybook.RunWeek(c, state, state.Labs[i]);
                     OrchestrationBudget.RunWeek(c, state, state.Labs[i]);
                     PublicMetrics.RunWeek(c, state, state.Labs[i]);
+                    DataSources.RunWeek(c, state, state.Labs[i]);
+                    OpenWeights.RunWeek(c, state, state.Labs[i]);
                     BoardMotions.RunWeek(c, state, state.Labs[i]);
                     Knowledge.RunWeek(c, state, state.Labs[i]);
                     PostTraining.RunWeek(c, state, state.Labs[i]);

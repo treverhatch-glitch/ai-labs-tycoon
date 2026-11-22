@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 134;
+        public const int CurrentSchema = 138;
 
         public int Schema;
         public string ConfigVersion;
@@ -602,6 +602,14 @@ namespace AiLabs.Rules.State
         /// <summary>Orchestration budget level and overrun accrual.</summary>
         public int OrchLevel;
         public int OrchOver;
+        /// <summary>Weeks left on named data sources 0–3 (schema 136).</summary>
+        public int SrcWeeks0;
+        public int SrcWeeks1;
+        public int SrcWeeks2;
+        public int SrcWeeks3;
+        /// <summary>Per-sector price tiers (schema 138).</summary>
+        public List<string> PriceSectors = new List<string>();
+        public List<int> PriceTiers = new List<int>();
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1126,6 +1134,12 @@ namespace AiLabs.Rules.State
             s.Int("playArmUntil", ref PlayArmUntil);
             s.Int("orchLevel", ref OrchLevel);
             s.Int("orchOver", ref OrchOver);
+            s.Int("srcWeeks0", ref SrcWeeks0);
+            s.Int("srcWeeks1", ref SrcWeeks1);
+            s.Int("srcWeeks2", ref SrcWeeks2);
+            s.Int("srcWeeks3", ref SrcWeeks3);
+            s.StrList("priceSectors", ref PriceSectors);
+            s.IntList("priceTiers", ref PriceTiers);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1362,6 +1376,9 @@ namespace AiLabs.Rules.State
         public int PubOn;
         public int PubScore;
         public int PubMiss;
+        /// <summary>Specialist kind index + 1 (schema 135), open weights 0/1 (137).</summary>
+        public int SpecKind;
+        public int WgtOpen;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -1436,6 +1453,8 @@ namespace AiLabs.Rules.State
             s.Int("pubOn", ref PubOn);
             s.Int("pubScore", ref PubScore);
             s.Int("pubMiss", ref PubMiss);
+            s.Int("specKind", ref SpecKind);
+            s.Int("wgtOpen", ref WgtOpen);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

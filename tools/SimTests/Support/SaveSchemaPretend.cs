@@ -15,6 +15,10 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 138) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "priceSectors"); JsonPatch.Remove(lab, "priceTiers"); });
+            if (schema < 137) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "wgtOpen")));
+            if (schema < 136) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "srcWeeks0", "srcWeeks1", "srcWeeks2", "srcWeeks3" }) JsonPatch.Remove(lab, key); });
+            if (schema < 135) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "specKind")));
             if (schema < 134) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "pubOn", "pubScore", "pubMiss" }) JsonPatch.Remove(m, key); }));
             if (schema < 133) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "routePpm" }) JsonPatch.Remove(m, key); }));
             if (schema < 132) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "orchLevel", "orchOver" }) JsonPatch.Remove(lab, key); });

@@ -169,6 +169,10 @@ namespace AiLabs.Rules.Config
             OrchestrationBudgetProblems(p, c);
             TrafficRouterProblems(p, c);
             PublicMetricsProblems(p, c);
+            SpecialistLinesProblems(p, c);
+            DataSourcesProblems(p, c);
+            OpenWeightsProblems(p, c);
+            SectorPricingProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1894,6 +1898,42 @@ namespace AiLabs.Rules.Config
             if (k == null) { p.Add("publicMetrics is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetrics.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.PublishCost < 0 || k.Bar < 0 || k.Bar > 1000 || k.ConformityPush < 0) p.Add("publicMetrics costs and bar in range");
+        }
+
+        static void SpecialistLinesProblems(List<string> p, GameConfig c)
+        {
+            SpecialistLinesConfig k = c.SpecialistLines;
+            if (k == null) { p.Add("specialistLines is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistLines.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0) p.Add("specialistLines minEra and cost not negative");
+            if (k.BoostPermille < 0 || k.PenaltyPermille < 0) p.Add("specialistLines appeal permille not negative");
+            for (int i = 0; i < k.Kinds.Count; i++) if (string.IsNullOrEmpty(k.Kinds[i].Id)) p.Add("specialistLines.kinds[" + i + "].id is empty");
+        }
+
+        static void DataSourcesProblems(List<string> p, GameConfig c)
+        {
+            DataSourcesConfig k = c.DataSources;
+            if (k == null) { p.Add("dataSources is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSources.enabled must be 0 or 1");
+            if (k.Sources.Count > 4) p.Add("dataSources.sources at most 4");
+            for (int i = 0; i < k.Sources.Count; i++)
+                if (string.IsNullOrEmpty(k.Sources[i].Id) || k.Sources[i].DurationWeeks < 1) p.Add("dataSources.sources[" + i + "] needs id and duration");
+        }
+
+        static void OpenWeightsProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsConfig k = c.OpenWeights;
+            if (k == null) { p.Add("openWeights is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeights.enabled must be 0 or 1");
+            if (k.CopyChancePermille < 0 || k.CopyChancePermille > MathI.Permille) p.Add("openWeights.copyChancePermille out of range");
+        }
+
+        static void SectorPricingProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingConfig k = c.SectorPricing;
+            if (k == null) { p.Add("sectorPricing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricing.enabled must be 0 or 1");
+            if (k.MaxTier < 0 || k.MaxTier > 5) p.Add("sectorPricing.maxTier from 0 to 5");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

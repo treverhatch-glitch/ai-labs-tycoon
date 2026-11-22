@@ -73,10 +73,11 @@ namespace AiLabs.Rules.Systems
                     entry.SharePpm += (int)MathI.FloorDiv((target - entry.SharePpm) * c.Market.SwitchRatePermille, MathI.Permille);
 
                     long potential = served * entry.SharePpm / MathI.Ppm;
-                    entry.LastRevenue = potential;
-
                     int labIndex = IndexOfLab(state, entry.LabId);
                     LabState demandLab = state.Labs[labIndex];
+                    if (SectorPricing.Enabled(c) && demandLab.Id == state.PlayerLabId)
+                        potential = MathI.MulPermille(potential, SectorPricing.RevenuePermille(c, demandLab, sector.Id));
+                    entry.LastRevenue = potential;
                     ModelState demandModel = demandLab.Model(entry.ModelId);
                     ModelLineConfig line = c.Line(demandModel.LineId);
                     long piece = ServingDemand(sector, line, potential);

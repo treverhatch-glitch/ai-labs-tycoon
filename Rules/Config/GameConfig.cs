@@ -164,6 +164,10 @@ namespace AiLabs.Rules.Config
         public OrchestrationBudgetConfig OrchestrationBudget = new OrchestrationBudgetConfig();
         public TrafficRouterConfig TrafficRouter = new TrafficRouterConfig();
         public PublicMetricsConfig PublicMetrics = new PublicMetricsConfig();
+        public SpecialistLinesConfig SpecialistLines = new SpecialistLinesConfig();
+        public DataSourcesConfig DataSources = new DataSourcesConfig();
+        public OpenWeightsConfig OpenWeights = new OpenWeightsConfig();
+        public SectorPricingConfig SectorPricing = new SectorPricingConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -326,6 +330,10 @@ namespace AiLabs.Rules.Config
             s.Obj("orchestrationBudget", ref OrchestrationBudget);
             s.Obj("trafficRouter", ref TrafficRouter);
             s.Obj("publicMetrics", ref PublicMetrics);
+            s.Obj("specialistLines", ref SpecialistLines);
+            s.Obj("dataSources", ref DataSources);
+            s.Obj("openWeights", ref OpenWeights);
+            s.Obj("sectorPricing", ref SectorPricing);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

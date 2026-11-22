@@ -380,10 +380,10 @@ and says why in the commit message.
 197. **Public metrics.** ~~Done~~: `PublishMetrics`, `StopMetrics`, schema 134, `PublicMetricsTests` (Q456).
 198. **Batch thirteen news and chat** for sandbox, playbook, budget, routes and metrics. ~~Done~~: `SandboxPlaybookOrchRouteMetricsNewsChatTests` (Q456).
 199. **Batch thirteen combination rules** (sandbox with tools, playbook with blowups, budget with queue, routes with overload, metrics with eval). ~~Done~~: `SandboxPlaybookOrchRouteMetricsTogetherTests` (Q452–Q456).
-200. **Specialist lines.** Planned: `BranchSpecialist`, schema 135, `SpecialistLinesTests` (Q457).
-201. **Data sources.** Planned: `AcquireDataSource`, `RenewDataSource`, schema 136, `DataSourcesTests` (Q458).
-202. **Open weights.** Planned: `SetWeightsPolicy`, schema 137, `OpenWeightsTests` (Q459).
-203. **Sector pricing desk.** Planned: `SetSectorPrice`, schema 138, `SectorPricingTests` (Q460).
+200. **Specialist lines.** ~~Done (local)~~: `BranchSpecialist`, schema 135, `SpecialistLinesTests` (Q457).
+201. **Data sources.** ~~Done (local)~~: `AcquireDataSource`, `RenewDataSource`, schema 136, `DataSourcesTests` (Q458).
+202. **Open weights.** ~~Done (local)~~: `SetWeightsPolicy`, schema 137, `OpenWeightsTests` (Q459).
+203. **Sector pricing desk.** ~~Done (local)~~: `SetSectorPrice`, schema 138, `SectorPricingTests` (Q460).
 204. **Batch fourteen news, chat and combination rules.** Planned: Q461.
 
 ## Rules: later

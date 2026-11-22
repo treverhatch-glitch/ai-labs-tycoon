@@ -630,6 +630,22 @@ namespace AiLabs.Rules.Sim
                     return who + " published customer metrics for a model (score " + e.Amount + ").";
                 case EventKind.MetricsStopped:
                     return who + " stopped publishing customer metrics for a model.";
+                case EventKind.SpecialistBranched:
+                    return who + " branched a model into a specialist line.";
+                case EventKind.DataSourceAcquired:
+                    return who + " acquired a data source.";
+                case EventKind.DataSourceRenewed:
+                    return who + " renewed a data source.";
+                case EventKind.DataSourceLapsed:
+                    return who + " let a data source lapse.";
+                case EventKind.WeightsOpened:
+                    return who + " released a model's weights.";
+                case EventKind.WeightsClosed:
+                    return who + " closed a model's weights.";
+                case EventKind.WeightsCopied:
+                    return who + " saw competitors copy open weights.";
+                case EventKind.SectorPriceSet:
+                    return who + " set a sector price tier.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -18551,5 +18551,72 @@
     "scrutinyRevenuePpm": 200000,
     "scrutinyAttentionPerMonth": 25,
     "monopolyRegulatorAttention": 150
+  },
+  "specialistLines": {
+    "enabled": 1,
+    "minEra": 3,
+    "cost": 40000,
+    "boostPermille": 180,
+    "penaltyPermille": 120,
+    "kinds": [
+      {
+        "id": "image",
+        "sectors": [
+          "image-design",
+          "image-recognition"
+        ]
+      },
+      {
+        "id": "video",
+        "sectors": [
+          "video-film"
+        ]
+      },
+      {
+        "id": "code",
+        "sectors": [
+          "code-completion",
+          "code-models"
+        ]
+      },
+      {
+        "id": "security",
+        "sectors": [
+          "cybersecurity"
+        ]
+      }
+    ]
+  },
+  "dataSources": {
+    "enabled": 1,
+    "minEra": 2,
+    "sources": [
+      {
+        "id": "licensed-corpus",
+        "weeklyCost": 8000,
+        "durationWeeks": 12,
+        "qualityPermille": 80
+      },
+      {
+        "id": "expert-labels",
+        "weeklyCost": 12000,
+        "durationWeeks": 8,
+        "qualityPermille": 120
+      }
+    ]
+  },
+  "openWeights": {
+    "enabled": 1,
+    "minEra": 4,
+    "trustGain": 25,
+    "copyTrustLoss": 40,
+    "copyChancePermille": 15
+  },
+  "sectorPricing": {
+    "enabled": 1,
+    "minEra": 2,
+    "maxTier": 3,
+    "revenuePerTier": 80,
+    "overloadPerTier": 12
   }
 }

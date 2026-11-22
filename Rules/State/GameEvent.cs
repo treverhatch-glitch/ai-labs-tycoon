@@ -610,7 +610,15 @@ namespace AiLabs.Rules.State
         /// <summary>Public metrics were published. SubjectId is the model, Amount the score.</summary>
         MetricsPublished,
         /// <summary>Public metrics were stopped. SubjectId is the model.</summary>
-        MetricsStopped
+        MetricsStopped,
+        SpecialistBranched,
+        DataSourceAcquired,
+        DataSourceRenewed,
+        DataSourceLapsed,
+        WeightsOpened,
+        WeightsClosed,
+        WeightsCopied,
+        SectorPriceSet
     }
 
     /// <summary>

@@ -147,6 +147,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 132) MigrateTo132(root);
             if (fromSchema < 133) MigrateTo133(root);
             if (fromSchema < 134) MigrateTo134(root);
+            if (fromSchema < 135) MigrateTo135(root);
+            if (fromSchema < 136) MigrateTo136(root);
+            if (fromSchema < 137) MigrateTo137(root);
+            if (fromSchema < 138) MigrateTo138(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -511,6 +515,38 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 138: no per-sector price tiers.</summary>
+        static void MigrateTo138(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "priceSectors", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "priceTiers", JsonValue.Array());
+            });
+        }
+
+        /// <summary>Schema 137: weights closed.</summary>
+        static void MigrateTo137(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "wgtOpen", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 136: no active data sources.</summary>
+        static void MigrateTo136(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "srcWeeks0", "srcWeeks1", "srcWeeks2", "srcWeeks3" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 135: no specialist branch.</summary>
+        static void MigrateTo135(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "specKind", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 134: no model publishes public metrics.</summary>

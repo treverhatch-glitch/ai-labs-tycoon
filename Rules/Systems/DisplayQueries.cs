@@ -154,6 +154,13 @@ namespace AiLabs.Rules.Systems
             b.CampaignEffect = MathI.MulPermille(beforeCampaign, MarketingCampaign.AppealPermille(c, state, lab, sector.Id)) - beforeCampaign;
             long beforeAccount = beforeCampaign + b.CampaignEffect;
             b.AccountEffect = MathI.MulPermille(beforeAccount, MathI.Permille + AccountTeams.AppealPermille(c, state, lab, sector.Id)) - beforeAccount;
+            long beforeSpec = b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost + b.ObjectiveEffect + b.LaunchEffect + b.PivotConfusion + b.CampaignEffect + b.AccountEffect;
+            int spec = SpecialistLines.AppealPermille(c, model, sector.Id) + OpenWeights.AppealPermille(c, model, sector.Id);
+            if (spec != 0)
+            {
+                long afterSpec = MathI.MulPermille(beforeSpec, MathI.Permille + spec);
+                b.RoleBoost += afterSpec - beforeSpec;
+            }
             return b;
         }
 

@@ -215,7 +215,12 @@ namespace AiLabs.Rules.Sim
         SetOrchBudget,
         SetRouteShare,
         PublishMetrics,
-        StopMetrics
+        StopMetrics,
+        BranchSpecialist,
+        AcquireDataSource,
+        RenewDataSource,
+        SetWeightsPolicy,
+        SetSectorPrice
     }
 
     /// <summary>
@@ -1865,6 +1870,44 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.StopMetrics, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command BranchSpecialist(int labId, int modelId, string kindId)
+        {
+            Command c = Make(CommandKind.BranchSpecialist, labId);
+            c.TargetId = modelId;
+            c.Id = kindId;
+            return c;
+        }
+
+        public static Command AcquireDataSource(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.AcquireDataSource, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command RenewDataSource(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.RenewDataSource, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command SetWeightsPolicy(int labId, int modelId, int policy)
+        {
+            Command c = Make(CommandKind.SetWeightsPolicy, labId);
+            c.TargetId = modelId;
+            c.Permille = policy;
+            return c;
+        }
+
+        public static Command SetSectorPrice(int labId, string sectorId, int tier)
+        {
+            Command c = Make(CommandKind.SetSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = tier;
             return c;
         }
 
