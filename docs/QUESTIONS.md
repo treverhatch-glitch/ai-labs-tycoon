@@ -845,6 +845,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsCrossBarLaterTests` (38):** cloud acquire; bubble; vendor; sector champion; planner; rollup; ledger quote; dual acquire; schema 29; registry threshold; economy participation.
 
+### Q331–Q365. Chips × distress acquire × listings rollup? DECIDED: test-only bar (batch 10, local)
+
+- **`HatchRivalsChipsIntegrateLaterTests` (35):** distressed acquire with listings and pending `BuyListedChips` orders; `TransferChipOrders` / holdings; refused absorbed commands; acquisition quote parts (cash, chips, staff, crash discount); planner retrench with foreign orders; chip month reset on transferred listings; delivery tick stability; save/schema **29**; ledger balance after acquire.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
