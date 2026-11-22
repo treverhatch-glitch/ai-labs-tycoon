@@ -70,10 +70,18 @@ Scale: 1 Unity unit = 1 meter. Tile = `0.45m` (`HqGridLayout.TileSize`).
 | `ui-staff-gpu-panel` | HQ | ✓ | SK | FN | |
 | `ui-gauntlet-panel` | HQ | ✓ | SK | FN | Seasonal overlay |
 
-## Generated kit (batch 1 — committed)
+## Generated kit (batch 1 — committed on PR #41)
 
 Paths under `unity/Assets/Art/Generated/campus-kit/`:
 
 `prop-desk`, `prop-chair`, `prop-server-rack`, `prop-potted-plant`, `prop-whiteboard`, `building-module-1x1`, `exterior-quad-tree`, `exterior-sign-pole`, `ui-world-map-pin`, `ui-rival-badge`, `prop-gpu-blade`, `prop-coffee-cart`.
 
 Manifest: `unity/Assets/Art/Generated/manifest.json`.
+
+## Generated kit (batch 2 — local, HOLD push until ≥11:01 UTC)
+
+**+8 OBJ:** `prop-research-bench`, `prop-data-stack`, `prop-gauntlet-lectern`, `ui-bloc-tile`, `prop-safety-cone`, `prop-monitor-wall`, `exterior-bike-rack`, `ui-tab-rail-plaque`.
+
+**+8 SVG:** `unity/Assets/Art/Generated/ui-icons/` + `ui-icons-manifest.json`.
+
+**Code:** `CampusUiTokens`, `CampusPropIds`, HUD factories wired to tokens; `SCREEN-KITS.md`, `POLISH-CHECKLIST.md`.

@@ -47,7 +47,7 @@ namespace AiLabs.Unity.Hq
             var panel = new GameObject("TopBar");
             panel.transform.SetParent(canvasGo.transform, false);
             var panelImage = panel.AddComponent<Image>();
-            panelImage.color = new Color(0.08f, 0.09f, 0.12f, 0.92f);
+            panelImage.color = CampusUiTokens.UiSlate;
             var panelRect = panel.GetComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0f, 1f);
             panelRect.anchorMax = new Vector2(1f, 1f);
@@ -78,7 +78,7 @@ namespace AiLabs.Unity.Hq
             var text = go.AddComponent<Text>();
             text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.fontSize = 20;
-            text.color = Color.white;
+            text.color = CampusUiTokens.UiPaper;
             text.alignment = align;
             return text;
         }
@@ -95,7 +95,7 @@ namespace AiLabs.Unity.Hq
             rect.anchoredPosition = new Vector2(-24f, 24f);
 
             var image = go.AddComponent<Image>();
-            image.color = new Color(0.25f, 0.55f, 0.85f, 1f);
+            image.color = CampusUiTokens.Hex("#4088D9");
             var button = go.AddComponent<Button>();
             button.targetGraphic = image;
             button.onClick.AddListener(() => hud._host.StepWeek());
@@ -111,7 +111,7 @@ namespace AiLabs.Unity.Hq
             label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             label.fontSize = 18;
             label.alignment = TextAnchor.MiddleCenter;
-            label.color = Color.white;
+            label.color = CampusUiTokens.UiPaper;
             label.text = "Advance week";
             return button;
         }

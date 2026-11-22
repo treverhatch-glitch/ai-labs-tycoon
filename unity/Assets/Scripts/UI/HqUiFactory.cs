@@ -1,3 +1,4 @@
+using AiLabs.Unity.Hq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +19,7 @@ namespace AiLabs.Unity.UI
             rect.sizeDelta = size;
             rect.anchoredPosition = Vector2.zero;
             var img = go.AddComponent<Image>();
-            img.color = bg ?? new Color(0.08f, 0.09f, 0.12f, 0.94f);
+            img.color = bg ?? CampusUiTokens.UiSlate;
             return go;
         }
 
@@ -34,7 +35,7 @@ namespace AiLabs.Unity.UI
             var label = go.AddComponent<Text>();
             label.font = DefaultFont;
             label.fontSize = fontSize;
-            label.color = Color.white;
+            label.color = CampusUiTokens.UiPaper;
             label.alignment = align;
             label.text = text;
             return label;
@@ -47,7 +48,7 @@ namespace AiLabs.Unity.UI
             var rect = go.AddComponent<RectTransform>();
             rect.sizeDelta = new Vector2(180f, 32f);
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.22f, 0.35f, 0.55f, 1f);
+            img.color = CampusUiTokens.Hex("#38588C");
             var button = go.AddComponent<Button>();
             button.targetGraphic = img;
             button.onClick.AddListener(onClick);
