@@ -2186,6 +2186,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It feeds capability through the tech part of a new model's capability, so no model field was added and the capability identity holds.
 - Alternatives: a data quality knob (rejected: nothing to decide), claims by chance (rejected: not plannable), consuming data per run (rejected: bookkeeping with no choice).
 
+### Q428. Do the lab's own users feed its models? DECIDED: a policy that turns revenue into raw data, with complaints under a default policy and a deletion cost for backing off
+- Opt-in collects less and is free of trouble. Default collects all it can and builds a corpus that is then exposed: complaints fine it and cost trust, and a lab that backs off loses most of what it built. The data is raw units, so it still needs cleaning and counts toward the same stock cap and corpus as the other sources.
+- Alternatives: a bonus for collecting (rejected: no downside), complaints by chance (rejected: not plannable).
+
 ## Open
 
 None.
