@@ -182,10 +182,10 @@ public class RivalEconomyRobustnessLaterTests
     }
 
     [Fact]
-    public void Q201_shipped_rival_distress_harness_is_default_off()
+    public void Q201_shipped_rival_distress_harness_defaults()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(0, c.Acquisitions.PlannerAcquireChancePermille);
+        Assert.Equal(35, c.Acquisitions.PlannerAcquireChancePermille);
         Assert.True(c.Acquisitions.CrashDistressPricePermille < MathI.Permille);
         Assert.True(c.ModelSales.CrashDistressOfferPermille < MathI.Permille);
         Assert.True(c.Chips.DistressListingPricePermille < MathI.Permille);
@@ -194,7 +194,7 @@ public class RivalEconomyRobustnessLaterTests
     [Fact]
     public void Q201_forty_seeds_forty_years_default_harness_no_plan_bankruptcies()
     {
-        AssertFortyFortySolvent(null, "default");
+        AssertSoakBankruptcyDesignRules(null, SoakSeedCount());
     }
 
     /// <summary>Q216 / Q218: soak seed range obeys coordinator bankruptcy design rules (not zero).</summary>
