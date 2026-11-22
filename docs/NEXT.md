@@ -357,6 +357,7 @@ and says why in the commit message.
 174. **Training-data pipeline.** ~~Done~~: `AcquireData`, `CleanData`, `LicenseScraped`, schema 115, `DatasetsTests` (Q427).
 175. **User data.** ~~Done~~: `SetUserData`, schema 116, `UserDataTests` (Q428).
 176. **Governance.** ~~Done~~: `SetGovernance`, `SeatDirector`, schema 117, `GovernanceTests` (Q429).
+177. **Round buyback.** ~~Done~~: `BuyBackRound`, schema 118, `BuybackTests` (Q430).
 
 ## Rules: later
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 117;
+        public const int CurrentSchema = 118;
 
         public int Schema;
         public string ConfigVersion;
@@ -546,6 +546,8 @@ namespace AiLabs.Rules.State
         public int GovDirectors;
         public int GovSearch;
         public int GovResigned;
+        /// <summary>Ids of the funding rounds the lab has bought back.</summary>
+        public List<string> BoughtRounds = new List<string>();
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1025,6 +1027,7 @@ namespace AiLabs.Rules.State
             s.Int("govDirectors", ref GovDirectors);
             s.Int("govSearch", ref GovSearch);
             s.Int("govResigned", ref GovResigned);
+            s.StrList("boughtRounds", ref BoughtRounds);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

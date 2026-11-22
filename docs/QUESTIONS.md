@@ -2194,6 +2194,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The founders can buy control only early, permanently, and by giving investors a worse deal on every round after. Directors are a slow, paid way to a calmer board, and walk if the lab cannot pay.
 - Alternatives: control as a free setting (rejected: no price), a reversible structure (rejected: no commitment).
 
+### Q430. Can a lab pay its investors to leave? DECIDED: a round can be bought once at a multiple of what it brought, dearer in a bubble, returning the share and the seats
+- It is the way back from dilution that has a price and a window: waiting for a calm market is cheaper, but the board and the control line may not wait. A bought round cannot be raised again, so it is a one-way door.
+- Alternatives: buying a share on any day at a flat price (rejected: no timing), a vote of the investors (rejected: no state to decide on).
+
 ## Open
 
 None.

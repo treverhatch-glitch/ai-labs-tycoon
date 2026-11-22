@@ -152,6 +152,7 @@ namespace AiLabs.Rules.Config
             DatasetsProblems(p, c);
             UserDataProblems(p, c);
             GovernanceProblems(p, c);
+            BuybackProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1719,6 +1720,14 @@ namespace AiLabs.Rules.Config
             if (k.DualMaxRounds < 0 || k.NonprofitMaxRounds < 0 || k.DualVoteMult < 1000 || k.DirectorWeeks < 1 || k.MaxDirectors < 0 || k.MaxDirectors > 9) p.Add("governance rounds must not be negative, dualVoteMult at least 1000, directorWeeks at least 1 and maxDirectors from 0 to 9");
             if (k.DualCashCut < 0 || k.DualCashCut > 900 || k.NonprofitCashCut < 0 || k.NonprofitCashCut > 900 || k.DramaCut < 0 || k.DramaCut > 1000) p.Add("governance cuts must be from 0 to 900 and dramaCut from 0 to 1000");
             if (k.DirectorFee < 0 || k.DirectorWeekly < 0 || k.DirectorMinRep < 0 || k.DirectorMinRep > 1000) p.Add("governance fees must not be negative and directorMinRep must be from 0 to 1000");
+        }
+
+        static void BuybackProblems(List<string> p, GameConfig c)
+        {
+            BuybackConfig k = c.Buyback;
+            if (k == null) { p.Add("buyback is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("buyback.enabled must be 0 or 1");
+            if (k.PriceMult < 1000 || k.PriceMult > 20000 || k.BubblePrice < 0 || k.BubblePrice > 5000 || k.BuybackTrust < 0) p.Add("buyback priceMult must be from 1000 to 20000, bubblePrice from 0 to 5000 and buybackTrust not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

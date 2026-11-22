@@ -190,7 +190,8 @@ namespace AiLabs.Rules.Sim
         LicenseScraped,
         SetUserData,
         SetGovernance,
-        SeatDirector
+        SeatDirector,
+        BuyBackRound
     }
 
     /// <summary>
@@ -1649,6 +1650,14 @@ namespace AiLabs.Rules.Sim
         public static Command SeatDirector(int labId)
         {
             return Make(CommandKind.SeatDirector, labId);
+        }
+
+        /// <summary>Pays the investors of a funding round the lab has raised to leave, giving the founders back that round's dilution. Id is the round.</summary>
+        public static Command BuyBackRound(int labId, string roundId)
+        {
+            Command c = Make(CommandKind.BuyBackRound, labId);
+            c.Id = roundId;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

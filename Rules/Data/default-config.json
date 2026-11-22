@@ -6451,6 +6451,12 @@
     "directorMinRep": 300,
     "dramaCut": 250
   },
+  "buyback": {
+    "enabled": 1,
+    "priceMult": 2000,
+    "bubblePrice": 1000,
+    "buybackTrust": 2000
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

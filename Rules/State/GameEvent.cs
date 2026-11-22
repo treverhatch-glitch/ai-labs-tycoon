@@ -534,7 +534,9 @@ namespace AiLabs.Rules.State
         /// <summary>An independent director joined. SubjectId is how many there are now.</summary>
         DirectorSeated,
         /// <summary>An independent director resigned because the lab could not pay. SubjectId is how many are left.</summary>
-        DirectorResigned
+        DirectorResigned,
+        /// <summary>The lab bought a funding round back. Amount is the price, Text the round.</summary>
+        RoundBoughtBack
     }
 
     /// <summary>

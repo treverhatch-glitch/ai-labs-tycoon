@@ -130,6 +130,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 115) MigrateTo115(root);
             if (fromSchema < 116) MigrateTo116(root);
             if (fromSchema < 117) MigrateTo117(root);
+            if (fromSchema < 118) MigrateTo118(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -494,6 +495,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 118: no lab has bought a funding round back.</summary>
+        static void MigrateTo118(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "boughtRounds", JsonValue.Array()));
         }
 
         /// <summary>Schema 117: every lab is an ordinary company with no independent directors.</summary>
