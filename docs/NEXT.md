@@ -344,6 +344,7 @@ and says why in the commit message.
 161. **News and chat for the seventh batch.** ~~Done~~: 22 headlines and 12 chat lines, `TechBetsWaitlistBrandFreeTierLaunchWatchNewsChatTests` (Q405).
 162. **How the seventh batch meets.** ~~Done~~: the employer score reads bets and waitlists, a free tier cushions a rival launch, `TechBetsWaitlistBrandFreeTierLaunchWatchTogetherTests` (Q406).
 163. **Research programmes.** ~~Done~~: `StartProgramme`, `ChooseApproach`, `RecoverStage`, `AbandonProgramme`, schema 105, `ProgrammesTests` (Q407).
+164. **Training queue.** ~~Done~~: `SetRunPriority`, schema 106, `RunQueueTests` (Q408).
 
 ## Rules: later
 

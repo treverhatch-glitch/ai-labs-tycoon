@@ -405,6 +405,7 @@ namespace AiLabs.Rules.Sim
                 foreach (ModelState model in lab.Models)
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
+                    if (model.QueueLevel < 0 || model.QueueLevel > 3 || (model.QueueLevel != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(model.Name + " has a queue level " + model.QueueLevel + " the data does not allow");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);

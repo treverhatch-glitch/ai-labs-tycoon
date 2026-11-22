@@ -6243,6 +6243,14 @@
     "insightPrestige": 20,
     "refundPermille": 250
   },
+  "runQueue": {
+    "enabled": 1,
+    "weightBackground": 1,
+    "weightNormal": 2,
+    "weightRush": 4,
+    "switchCostPermille": 20,
+    "maxRush": 1
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

@@ -163,7 +163,8 @@ namespace AiLabs.Rules.Sim
         StartProgramme,
         ChooseApproach,
         RecoverStage,
-        AbandonProgramme
+        AbandonProgramme,
+        SetRunPriority
     }
 
     /// <summary>
@@ -1413,6 +1414,15 @@ namespace AiLabs.Rules.Sim
         public static Command AbandonProgramme(int labId)
         {
             return Make(CommandKind.AbandonProgramme, labId);
+        }
+
+        /// <summary>Sets the priority of a training run: 1 background, 2 normal, 3 rush. Changing it costs the run part of its progress.</summary>
+        public static Command SetRunPriority(int labId, int modelId, int level)
+        {
+            Command c = Make(CommandKind.SetRunPriority, labId);
+            c.TargetId = modelId;
+            c.Count = level;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

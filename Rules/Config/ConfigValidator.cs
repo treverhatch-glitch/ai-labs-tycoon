@@ -140,6 +140,7 @@ namespace AiLabs.Rules.Config
             FreeTierProblems(p, c);
             LaunchWatchProblems(p, c);
             ProgrammesProblems(p, c);
+            RunQueueProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1580,6 +1581,15 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("programmes.enabled must be 0 or 1");
             if (k.Stages < 1 || k.Stages > 6 || k.MinCost < 0 || k.SafeWeeks < 1 || k.BoldWeeks < 1) p.Add("programmes.stages must be from 1 to 6, minCost not negative and both weeks at least 1");
             if (k.SafeCostPermille < 0 || k.BoldCostPermille < 0 || k.BoldChancePermille < 1 || k.BoldChancePermille > 999 || k.InsightPermille < 0 || k.InsightPrestige < 0 || k.RefundPermille < 0 || k.RefundPermille > 1000) p.Add("programmes costs must not be negative, boldChancePermille from 1 to 999 and refundPermille from 0 to 1000");
+        }
+
+        static void RunQueueProblems(List<string> p, GameConfig c)
+        {
+            RunQueueConfig k = c.RunQueue;
+            if (k == null) { p.Add("runQueue is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("runQueue.enabled must be 0 or 1");
+            if (k.WeightBackground < 1 || k.WeightNormal < k.WeightBackground || k.WeightRush < k.WeightNormal || k.WeightRush > 100) p.Add("runQueue weights must be at least 1, rising from background to rush, and at most 100");
+            if (k.SwitchCostPermille < 0 || k.SwitchCostPermille > 500 || k.MaxRush < 1) p.Add("runQueue.switchCostPermille must be from 0 to 500 and maxRush at least 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

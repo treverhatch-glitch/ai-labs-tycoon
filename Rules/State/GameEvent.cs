@@ -464,7 +464,9 @@ namespace AiLabs.Rules.State
         /// <summary>A bold stage failed and waits for a decision. Amount is the stage number, Ref the tech.</summary>
         ProgrammeStageFailed,
         /// <summary>A programme ended. Amount is the research points paid back or refunded, Pick 1 finished, 0 given up, Ref the tech.</summary>
-        ProgrammeEnded
+        ProgrammeEnded,
+        /// <summary>A training run's priority changed. SubjectId is the model, Amount the compute of progress lost, Pick the new level.</summary>
+        RunPriorityChanged
     }
 
     /// <summary>

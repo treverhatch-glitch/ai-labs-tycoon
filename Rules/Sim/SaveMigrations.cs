@@ -118,6 +118,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 103) MigrateTo103(root);
             if (fromSchema < 104) MigrateTo104(root);
             if (fromSchema < 105) MigrateTo105(root);
+            if (fromSchema < 106) MigrateTo106(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -482,6 +483,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 106: no training run has a queue level.</summary>
+        static void MigrateTo106(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "queueLevel", JsonValue.Of(0L))));
         }
 
         /// <summary>Schema 105: no lab runs a research programme.</summary>

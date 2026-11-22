@@ -2090,6 +2090,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The numbers make bold a small edge on average (about 30% against 35% net) so it is a gamble worth taking only for a lab that can afford to lose.
 - Alternatives: a cash shortcut to the tech (rejected: pay-for-progress), a random programme result with no decisions (rejected: nothing to choose), stages with different tech payoffs (rejected: too many knobs for one tech).
 
+### Q408. Can the lab decide which training run comes first? DECIDED: yes, a priority queue with levels, a reload cost and a limit on rushing
+- Runs shared the training compute equally whatever they were for. A queue lets the player put the model that matters first and starve the one that does not, so a lab with two runs has a real scheduling problem: rushing one slows the others by exactly what it gains, and a lab that keeps changing its mind loses progress to reloads.
+- The queue moves compute and never creates it; there is no cash cost and no pay-for-speed. Only one run may be rushed at a time so a rush is always at the expense of something.
+- With no level set the old equal split is exactly what happens, so every older game and save is unchanged.
+- Alternatives: a cash rush that adds compute (rejected: pay-for-stat), a strict first-in first-out queue (rejected: nothing to decide), per-run compute amounts (rejected: too fiddly, weights say the same thing).
+
 ## Open
 
 None.

@@ -483,6 +483,8 @@ namespace AiLabs.Rules.Sim
                     return who + " lost a bold stage of its programme and has to decide what next.";
                 case EventKind.ProgrammeEnded:
                     return who + (e.Pick == 1 ? " finished its programme and has " + e.Ref + "." : " gave up its programme towards " + e.Ref + ".");
+                case EventKind.RunPriorityChanged:
+                    return who + (e.Pick == 3 ? " rushed " : e.Pick == 1 ? " put " : " put ") + e.Ref + (e.Pick == 3 ? " to the front of the training queue." : e.Pick == 1 ? " at the back of the training queue." : " back in the training queue.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
