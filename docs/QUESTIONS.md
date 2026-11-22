@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q469. Breakdown drawer layout tokens? DECIDED: `CampusBreakdownPresentationSpec`
+
+- Options: (a) Unity-only layout; (b) graphics constants + doc; (c) UI Toolkit theme file.
+- Recommendation and choice: **(b)** — aligns with `DISPLAY-BREAKDOWN-PRESENTATION.md` and DESIGN explainable-numbers rule.
+- Why: keeps drawer row height stable before DisplayQueries UI wiring.
+
 ### Q468. Handoff list smoke test? DECIDED: `verify_handoff_lists.py` in prepush
 
 - Options: (a) manual; (b) count check on list_* stdout; (c) CI job only.

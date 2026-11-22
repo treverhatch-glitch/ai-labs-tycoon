@@ -27,6 +27,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [HANDOFF-INDEX.md](HANDOFF-INDEX.md) | All list/check pairs (batch 18) |
 | [CATALOG-HANDOFF.md](CATALOG-HANDOFF.md) / [ICON-HANDOFF.md](ICON-HANDOFF.md) | Id paste lists (batch 16–17) |
 | [SILHOUETTE-HANDOFF.md](SILHOUETTE-HANDOFF.md) | Rival SVG ids (batch 18) |
+| [DISPLAY-BREAKDOWN-PRESENTATION.md](DISPLAY-BREAKDOWN-PRESENTATION.md) | Explainable UI (batch 20) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
