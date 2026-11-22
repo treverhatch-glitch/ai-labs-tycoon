@@ -96,7 +96,11 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
 
-## Batch 10 (local, awaiting GO ≥14:57 UTC atop `9763f7d`)
+## Batch 11 (local, awaiting GO ≥15:27 UTC atop `c17c67d`)
+
+Accessibility presentation spec + tests; no new assets.
+
+## Batch 10 on branch (`c17c67d`)
 
 `CampusMaterialTokens`, `MATERIAL-ERA-SKINS.md`, era skin sync check; no new meshes.
 

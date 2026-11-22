@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q460. Accessibility tokens in graphics? DECIDED: `CampusAccessibilitySpec` (presentation targets only)
+
+- Options: (a) Unity-only; (b) graphics docs + constants; (c) defer to UI Toolkit theme.
+- Recommendation and choice: **(b)** — see `ACCESSIBILITY-PRESENTATION.md`; no legal claims.
+- Why: keeps 44px CTA rule testable before full UI rebuild.
+
 ### Q459. Material smoothness constants? DECIDED: `CampusMaterialTokens` (not duplicated in `CampusUiTokens`)
 
 - Options: (a) only `CampusUiTokens`; (b) split material vs HUD tokens; (c) ShaderGraph only.

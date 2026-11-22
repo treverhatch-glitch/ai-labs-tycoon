@@ -2,7 +2,13 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
-## Batch 9 (local, unpushed atop `f185b20`)
+## Batch 11 (local, unpushed atop `c17c67d`)
+
+- `CampusAccessibilitySpec`, `ACCESSIBILITY-PRESENTATION.md`, Q460
+
+## Batch 10 on branch (`c17c67d`)
+
+## Batch 9 on branch (`9763f7d`)
 
 - `era-skin-tokens.json`, `CampusEraSkinTokens`, `ERA-SKIN-TOKENS.md`
 

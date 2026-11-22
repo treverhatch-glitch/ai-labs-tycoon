@@ -20,6 +20,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md) / [GLOW-PRESENTATION.md](GLOW-PRESENTATION.md) | Mascot + glow (batch 8) |
 | [ERA-SKIN-TOKENS.md](ERA-SKIN-TOKENS.md) / [era-skin-tokens.json](era-skin-tokens.json) | Era floor/accent (batch 9) |
 | [MATERIAL-ERA-SKINS.md](MATERIAL-ERA-SKINS.md) / [BATCH-10-PLAN.md](BATCH-10-PLAN.md) | P3 materials (batch 10) |
+| [ACCESSIBILITY-PRESENTATION.md](ACCESSIBILITY-PRESENTATION.md) / [BATCH-11-PLAN.md](BATCH-11-PLAN.md) | A11y tokens (batch 11) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
