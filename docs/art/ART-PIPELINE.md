@@ -45,7 +45,7 @@ Apply consistently when importing `Generated/**/*.obj`:
 ./tools/art/prepush.sh
 ```
 
-Regenerates campus kit (30 OBJ), UI icons, rival silhouettes, copies `world-bloc-tints.json`, validates `.meta` guids, and sync-checks catalog + bloc ids.
+Regenerates campus kit (30 OBJ), UI icons, rival silhouettes, copies JSON tokens, validates `.meta` guids, and sync-checks catalog, blocs, and era skins. Summary: `python3 tools/art/print_art_summary.py`.
 
 ## Review checklist (each batch)
 

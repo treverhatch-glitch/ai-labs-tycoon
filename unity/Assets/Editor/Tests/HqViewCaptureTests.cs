@@ -11,9 +11,6 @@ namespace AiLabs.Unity.Editor.Tests
     /// <summary>Rebuilds the procedural HQ view and writes a PNG for CI artifacts.</summary>
     public sealed class HqViewCaptureTests
     {
-        const int CaptureWidth = 960;
-        const int CaptureHeight = 540;
-
         [Test]
         public void Captures_hq_grid_for_ci_artifact()
         {
@@ -42,21 +39,23 @@ namespace AiLabs.Unity.Editor.Tests
             var grid = hqGo.AddComponent<HqGridView>();
             grid.Bind(host.Simulation);
 
-            var rt = new RenderTexture(CaptureWidth, CaptureHeight, 24);
+            int w = CampusCapturePresentationSpec.CaptureWidth;
+            int h = CampusCapturePresentationSpec.CaptureHeight;
+            var rt = new RenderTexture(w, h, 24);
             cam.targetTexture = rt;
             cam.Render();
             RenderTexture.active = rt;
 
-            var tex = new Texture2D(CaptureWidth, CaptureHeight, TextureFormat.RGB24, false);
-            tex.ReadPixels(new Rect(0, 0, CaptureWidth, CaptureHeight), 0, 0);
+            var tex = new Texture2D(w, h, TextureFormat.RGB24, false);
+            tex.ReadPixels(new Rect(0, 0, w, h), 0, 0);
             tex.Apply();
 
             string artifactsDir = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "artifacts");
             Directory.CreateDirectory(artifactsDir);
-            string capturePath = Path.Combine(artifactsDir, "hq-view.png");
+            string capturePath = Path.Combine(artifactsDir, CampusCapturePresentationSpec.ArtifactFileName);
             File.WriteAllBytes(capturePath, tex.EncodeToPNG());
             Assert.True(File.Exists(capturePath));
-            Assert.Greater(new FileInfo(capturePath).Length, 4096);
+            Assert.Greater(new FileInfo(capturePath).Length, CampusCapturePresentationSpec.MinArtifactBytes);
 
             RenderTexture.active = null;
             cam.targetTexture = null;

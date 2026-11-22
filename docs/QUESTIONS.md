@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q461. CI capture constants centralized? DECIDED: `CampusCapturePresentationSpec`
+
+- Options: (a) magic numbers in test only; (b) shared spec class; (c) drop PNG CI.
+- Recommendation and choice: **(b)** — `HqViewCaptureTests` reads spec; see `CAPTURE-REGRESSION.md`.
+- Why: graphics and Unity agree on artifact contract without duplicating 960×540.
+
 ### Q460. Accessibility tokens in graphics? DECIDED: `CampusAccessibilitySpec` (presentation targets only)
 
 - Options: (a) Unity-only; (b) graphics docs + constants; (c) defer to UI Toolkit theme.
