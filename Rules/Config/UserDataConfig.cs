@@ -27,6 +27,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Share of the data kept when the lab moves from a default policy to opt-in or none (permille).</summary>
         public int KeepPermille;
 
+        /// <summary>Independent directors who resign over a privacy complaint.</summary>
+        public int ComplaintResigns;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -39,6 +42,7 @@ namespace AiLabs.Rules.Config
             s.Int("complaintFine", ref ComplaintFine);
             s.Int("complaintTrust", ref ComplaintTrust);
             s.Int("keepPermille", ref KeepPermille);
+            s.Int("complaintResigns", ref ComplaintResigns);
         }
     }
 }

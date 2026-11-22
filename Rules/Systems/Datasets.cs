@@ -129,7 +129,7 @@ namespace AiLabs.Rules.Systems
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
         {
             if (!Enabled(c) || lab.Id != state.PlayerLabId) return;
-            if (lab.DataJobLeft > 0)
+            if (lab.DataJobLeft > 0 && !(c.Datasets.WaveStallsCleaning > 0 && Spot.Enabled(c) && lab.SpotOut > 0))
             {
                 lab.DataJobLeft--;
                 if (lab.DataJobLeft == 0)
@@ -147,6 +147,7 @@ namespace AiLabs.Rules.Systems
             int held = ScrapedHeld(lab);
             if (held <= 0) return;
             long fine = (long)held * c.Datasets.SuitFine;
+            if (lab.GovDirectors > 0 && Governance.Enabled(c)) fine = MathI.MulPermille(fine, MathI.Max(0, MathI.Permille - (long)lab.GovDirectors * c.Datasets.DirectorSuitPermille));
             lab.DataRaw1 = 0;
             lab.DataClean1 = 0;
             if (lab.DataJobKind == Scraped)

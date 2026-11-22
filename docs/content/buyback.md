@@ -11,3 +11,5 @@ Paying the investors of a funding round to leave, by a board vote (bible ch. 5, 
 - **Refused:** nothing is paid, and the board will not hear another buyback for 8 weeks.
 
 Events: `BoardVoted` (Pick 1 passed, 0 refused; Amount the yes votes in permille), `RoundBoughtBack`.
+
+Together with spot capacity: while a reclaim wave is on, the directors vote no (`buyback.waveBlocksDirectors`, Q436).

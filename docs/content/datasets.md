@@ -16,3 +16,5 @@ Only clean units count. Each is worth a share of a unit by source (scraped 80%, 
 - **Claims** (bible: "Free now. Lawsuits arrive two eras later"). From era 4 (chat boom) on, every 26 weeks a claim lands on a lab that holds any scraped units (raw, clean or in a job): a fine of 800 for each unit, and all of them are taken. Licensed, synthetic and users' units are never taken. Licensing scraped units before the claim is the way to keep them.
 
 Events: `DataAcquired`, `DataCleaned`, `DataLicensed`, `DataSuit`.
+
+Together with other systems: each independent director takes 10% off the fine of a data suit (`datasets.directorSuitPermille`, Q433); a spot reclaim wave holds a cleaning job for as many weeks as it lasts (`datasets.waveStallsCleaning`, Q435).

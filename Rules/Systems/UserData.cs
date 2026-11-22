@@ -51,6 +51,12 @@ namespace AiLabs.Rules.Systems
             int banked = lab.UserBanked;
             lab.UserBanked = 0;
             lab.UserComplaints++;
+            for (int r = 0; r < c.UserData.ComplaintResigns && lab.GovDirectors > 0 && Governance.Enabled(c); r++)
+            {
+                lab.GovDirectors--;
+                lab.GovResigned++;
+                Events.Add(state, EventKind.DirectorResigned, lab.Id, lab.GovDirectors, 0, "");
+            }
             if (fine > 0) Finance.Spend(lab, LedgerLine.Fines, fine);
             for (int i = 0; i < lab.Models.Count; i++)
             {

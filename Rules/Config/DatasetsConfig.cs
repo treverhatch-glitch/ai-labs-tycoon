@@ -61,6 +61,12 @@ namespace AiLabs.Rules.Config
         /// <summary>Cost of licensing a scraped unit after the fact.</summary>
         public int BackfillCost;
 
+        /// <summary>Share of a data suit fine each independent director takes off (permille).</summary>
+        public int DirectorSuitPermille;
+
+        /// <summary>Whether a cleaning job makes no progress in a week of a spot reclaim wave (1 yes, 0 no).</summary>
+        public int WaveStallsCleaning;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -90,6 +96,8 @@ namespace AiLabs.Rules.Config
             s.Int("suitWeeks", ref SuitWeeks);
             s.Int("suitFine", ref SuitFine);
             s.Int("backfillCost", ref BackfillCost);
+            s.Int("directorSuitPermille", ref DirectorSuitPermille);
+            s.Int("waveStallsCleaning", ref WaveStallsCleaning);
         }
     }
 }

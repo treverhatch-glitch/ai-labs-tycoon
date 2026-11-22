@@ -8,3 +8,5 @@ The flywheel from the lab's own users (bible ch. 6, "Your own users"; `userData.
 - Moving off a default policy to opt-in or none deletes 70% of the users' data held, raw and clean. Moving up to default keeps what is there.
 
 Events: `UserDataChanged`, `UserDataComplaint`, `UserDataDeleted`.
+
+Together with governance: a privacy complaint makes one independent director resign (`userData.complaintResigns`, Q434).

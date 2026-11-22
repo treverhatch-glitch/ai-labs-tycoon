@@ -40,7 +40,8 @@ namespace AiLabs.Rules.Systems
                 FundingRoundConfig r = c.Funding.Rounds[i];
                 if (r.Id != target.Id && Held(lab, r.Id) && !drains) yes += r.DilutionPermille;
             }
-            bool runway = lab.Cash - price >= (long)c.Buyback.RunwayWeeks * LabQueries.WeeklyRunningCost(c, state, lab);
+            bool runway = lab.Cash - price >= (long)c.Buyback.RunwayWeeks * LabQueries.WeeklyRunningCost(c, state, lab)
+                && !(c.Buyback.WaveBlocksDirectors > 0 && lab.SpotOut > 0);
             if (runway) yes += (long)lab.GovDirectors * c.Buyback.DirectorVote;
             return yes;
         }

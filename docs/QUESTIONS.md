@@ -2202,3 +2202,27 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It joins four things the lab already decides: rent, checkpoint habit, engineers and the run queue. A rushed run sits on reserved capacity, so the queue priority (which costs progress to change) decides which runs the cloud may hit.
 - Alternatives: a flat cheaper rent (rejected: no risk), a random loss per run (rejected: nothing to plan around).
 
+### Q432. What does the world say about the data, governance and compute systems? DECIDED: headlines for every event and chat for the ones that land
+- Data acquired, cleaned, licensed or sued over, users' data changed, fined or deleted, governance changed, a director seated or resigned, a buyback voted down or through, a round bought back and a spot reclaim each have a headline; the vote has one line for each result. Chat for the ones people would talk about.
+- Pins: 334 headlines and 316 chat lines.
+- Alternatives: one line for the whole batch (rejected: the branches are the story).
+
+### Q433. Do directors soften a data suit? DECIDED: each independent director takes 10% off the fine, so a board with three takes 30%
+- Directors cost money every week and can walk; this is one thing they are for.
+- Alternatives: directors stop the suit (rejected: the clock is the point of the pipeline).
+
+### Q434. What does a privacy complaint do to the board? DECIDED: one independent director resigns for each complaint
+- A default policy collects more and costs a seat. A lab with no directors loses none.
+- Alternatives: a bigger fine (rejected: the lab already pays by the unit).
+
+### Q435. Does a reclaim wave touch the data pipeline? DECIDED: a cleaning job makes no progress in a week of a wave
+- Cleaning runs on the same cloud. A lab on a large spot share can find its data late as well as its runs.
+- Alternatives: the wave destroys the job (rejected: the run already loses progress).
+
+### Q436. Do directors vote on a buyback in a wave? DECIDED: they vote no while a reclaim wave is on
+- It makes the timing of a buyback depend on compute, as a prudent board would see it.
+- Alternatives: the wave raises the price (rejected: the price already follows the bubble).
+
+## Open
+
+None.

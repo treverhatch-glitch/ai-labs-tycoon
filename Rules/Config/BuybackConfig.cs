@@ -30,6 +30,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Share of all votes a buyback needs to pass (permille).</summary>
         public int PassPermille;
 
+        /// <summary>Whether directors vote no on a buyback while a spot reclaim wave is on (1 yes, 0 no).</summary>
+        public int WaveBlocksDirectors;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -41,6 +44,7 @@ namespace AiLabs.Rules.Config
             s.Int("spendCapPermille", ref SpendCapPermille);
             s.Int("runwayWeeks", ref RunwayWeeks);
             s.Int("passPermille", ref PassPermille);
+            s.Int("waveBlocksDirectors", ref WaveBlocksDirectors);
         }
     }
 }
