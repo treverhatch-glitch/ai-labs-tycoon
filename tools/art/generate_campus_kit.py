@@ -268,6 +268,21 @@ def hallway_bench() -> Mesh:
     return merge(seat, back, leg_l, leg_r)
 
 
+def trophy_pedestal() -> Mesh:
+    plinth = box(0.5, 0.35, 0.5, oy=0.175)
+    cup = box(0.22, 0.35, 0.22, oy=0.52)
+    stem = box(0.08, 0.2, 0.08, oy=0.45)
+    return merge(plinth, stem, cup)
+
+
+def scoreboard_slab() -> Mesh:
+    frame = box(1.6, 1.0, 0.12, oy=0.95)
+    screen = box(1.4, 0.75, 0.04, oy=1.0, oz=0.05)
+    post_l = box(0.1, 0.5, 0.1, -0.7, 0.25)
+    post_r = box(0.1, 0.5, 0.1, 0.7, 0.25)
+    return merge(frame, screen, post_l, post_r)
+
+
 MESH_BUILDERS: dict[str, callable] = {
     "prop-desk": desk,
     "prop-chair": chair,
@@ -297,6 +312,8 @@ MESH_BUILDERS: dict[str, callable] = {
     "prop-cafeteria-table": cafeteria_table,
     "prop-vending-machine": vending_machine,
     "exterior-hallway-bench": hallway_bench,
+    "prop-trophy-pedestal": trophy_pedestal,
+    "prop-scoreboard-slab": scoreboard_slab,
 }
 
 

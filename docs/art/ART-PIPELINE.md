@@ -42,10 +42,10 @@ Apply consistently when importing `Generated/**/*.obj`:
 ## Pre-push (required)
 
 ```bash
-python3 tools/art/generate_campus_kit.py
-python3 tools/art/generate_ui_icons.py
-python3 tools/art/validate_unity_meta_guids.py
+./tools/art/prepush.sh
 ```
+
+Regenerates campus kit (30 OBJ), UI icons, rival silhouettes, copies `world-bloc-tints.json`, validates `.meta` guids, and sync-checks catalog + bloc ids.
 
 ## Review checklist (each batch)
 

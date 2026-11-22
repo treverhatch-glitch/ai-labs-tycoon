@@ -2,7 +2,13 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
-## Batch 6 (local, unpushed atop `fe3c00d`)
+## Batch 7 (local, unpushed atop `a4a7d54`)
+
+- `CampusTabIconBindings`, `CampusWorldMapTokens`, `TAB-RAIL-INTEGRATION.md`
+- `world-bloc-tints.json` under `Assets/Art/Generated/` (prepush copy)
+- 30 OBJ kit (+ trophy pedestal, scoreboard slab)
+
+## Batch 6 on branch (`a4a7d54`)
 
 - `CampusSilhouetteCatalog` — SVG paths for `rival-silhouettes-manifest.json`
 - `RIVALS-PANEL.md`, `GAUNTLET-STAGE.md`, `PROP-PLACEMENT-HINTS.md`

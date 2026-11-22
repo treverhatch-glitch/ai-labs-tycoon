@@ -253,6 +253,24 @@
       "faceCount": 24,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-trophy-pedestal",
+      "path": "Assets/Art/Generated/campus-kit/prop-trophy-pedestal.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-scoreboard-slab",
+      "path": "Assets/Art/Generated/campus-kit/prop-scoreboard-slab.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
     }
   ]
 }

@@ -96,6 +96,10 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
 
-## Batch 6 (local, awaiting GO ≥12:59 UTC atop `fe3c00d`)
+## Batch 7 (local, awaiting GO ≥13:29 UTC atop `a4a7d54`)
+
+Tab rail icon bindings, world map tokens, bloc tints in Generated, +2 gauntlet/score OBJ (**30** total).
+
+## Batch 6 on branch (`a4a7d54`)
 
 **Code:** `CampusSilhouetteCatalog`, rivals/gauntlet HUD fractions, silhouette tests; **docs:** rivals + gauntlet + prop placement; **Q455** gauntlet overlay decision.

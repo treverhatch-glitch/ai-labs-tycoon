@@ -17,6 +17,7 @@ namespace AiLabs.Unity.Hq
             "prop-monitor-wall", "exterior-bike-rack", "ui-tab-rail-plaque", "prop-lounge-sofa",
             "exterior-fence-segment", "exterior-solar-shade", "prop-water-cooler", "building-elevator-core",
             "prop-cafeteria-table", "prop-vending-machine", "exterior-hallway-bench",
+            "prop-trophy-pedestal", "prop-scoreboard-slab",
         };
 
         public static readonly IReadOnlyDictionary<string, string> ObjById =

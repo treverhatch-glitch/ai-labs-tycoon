@@ -8,7 +8,7 @@ namespace AiLabs.Unity.Editor.Tests
         [Test]
         public void Catalog_lists_25_props_with_paths()
         {
-            Assert.AreEqual(28, CampusPropCatalog.AllAssetIds.Count);
+            Assert.AreEqual(30, CampusPropCatalog.AllAssetIds.Count);
             foreach (string id in CampusPropCatalog.AllAssetIds)
             {
                 string path = CampusPropCatalog.PathFor(id);

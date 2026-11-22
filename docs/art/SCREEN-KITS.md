@@ -40,14 +40,15 @@ Prefab-less prop **groups** for Unity to instance when each screen opens. All pa
 | --- | --- |
 | `ui-rival-badge` | One per lab row (palette from rival id hash) |
 | `prop-gauntlet-lectern` | Gauntlet overlay only |
+| `prop-trophy-pedestal`, `prop-scoreboard-slab` | Gauntlet overlay flanks |
 
-**UI:** `icon-rivals.svg` on rivals sheet tab.
+**UI:** `icon-rivals.svg` via `CampusTabIconBindings.IconPathForTab("rivals")`.
 
 ## World map kit
 
 | Prop id | Placement |
 | --- | --- |
-| `ui-bloc-tile` | Bloc background cells (scale 2–4×, tint by `world.blocs`) |
+| `ui-bloc-tile` | Bloc background cells (scale 2–4×, tint `world-bloc-tints.json`) |
 | `ui-world-map-pin` | Site markers |
 | `exterior-sign-pole` | Selected site preview |
 
