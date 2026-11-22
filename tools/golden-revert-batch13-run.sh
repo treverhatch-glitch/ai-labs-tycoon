@@ -15,23 +15,36 @@ GOLDEN[133]=f111c38fcb33d15eebb60066db33414e9ca2e0c8fe958ecea1f689495970edb4
 GOLDEN[134]=bb9cea61b1c44d78d87355e6d856d444ecb3565767907d1fb6263abb1b554098
 
 PREV=$((N - 1))
-export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
-restore() { bash "$REPO/tools/restore-golden-tip.sh" >/dev/null; }
+BK="/tmp/b13-rev-bak-$N"
+mkdir -p "$BK"
+for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
+  Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
+  Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  cp "$f" "$BK/$(echo $f | tr '/' '_')"
+done
+restore() {
+  for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
+    Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
+    Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+    cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
+  done
+  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+}
 trap restore EXIT
-restore
 
 sed -i "s/CurrentSchema = [0-9]*;/CurrentSchema = $PREV;/" Rules/State/GameState.cs
 strip_sync() { sed -i -E "/$1/d" Rules/State/GameState.cs; }
 disable_cfg() {
   python3 -c "
 import json, os
-p=os.path.join(os.environ['REPO'], 'Rules/Data/default-config.json')
+p='Rules/Data/default-config.json'
 with open(p) as f: d=json.load(f)
 if '$1' in d: d['$1']['enabled']=0
-with open(p,'w') as f: json.dump(d,f,indent=2); f.write(chr(10))
+t=p+'.tmp'
+with open(t,'w') as f: json.dump(d,f,indent=2); f.write(chr(10))
+os.replace(t,p)
 "
 }
-export REPO
 comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim/Simulation.cs; }
 
 [ "$N" -le 134 ] && strip_sync 's\.Int\("pubOn"|s\.Int\("pubScore"|s\.Int\("pubMiss"'
@@ -58,7 +71,26 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
   sed -i '/AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1 &&/,+1 s|^|//|' Rules/Sim/CommandProcessor.ToolPolicy.cs; \
   sed -i '/if (AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1)/,/mask &= Web;/ s|^|//|' Rules/Systems/ToolPolicy.cs; }
 
+# batch fourteen must be off at tip when reverting batch thirteen
+for _b14 in specialistLines dataSources openWeights sectorPricing; do disable_cfg "$_b14"; done
+comment_hook 'DataSources.RunWeek'
+comment_hook 'OpenWeights.RunWeek'
+sed -i 's| + SectorPricing.LabOverloadPermille(c, lab)||' Rules/Systems/SafetySystem.cs
+sed -i '/if (SectorPricing.Enabled(c) && demandLab.Id == state.PlayerLabId)/,+1 s|^|//|' Rules/Systems/MarketSystem.cs
+sed -i 's|int src = DataSources.QualityPermille(c, lab) / 50;||' Rules/Systems/TrainingSystem.cs
+sed -i 's|model.CapLuck += src;||' Rules/Systems/TrainingSystem.cs
+
 EXP="${GOLDEN[$N]}"
+export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
+if [ -z "$EXP" ]; then
+  cd tools/SimTests
+  dotnet build -v q -nologo
+  OUT=$(dotnet test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
+  NEW=$(echo "$OUT" | sed -n 's/.*New digest: \([0-9a-f]*\).*/\1/p' | head -1)
+  if [ -z "$NEW" ]; then NEW=$(echo "$OUT" | sed -n 's/.*digest moved\. New digest: \([0-9a-f]*\).*/\1/p' | head -1); fi
+  echo "schema $N record digest: ${NEW:-unknown}"
+  exit 0
+fi
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"
 cd tools/SimTests
 dotnet build -v q -nologo

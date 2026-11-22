@@ -15,10 +15,23 @@ GOLDEN[128]=a6992081eb7717d178614724ee6ad8b61caa5ec56153c237ecd8a64c758ace28
 GOLDEN[129]=b508c30b01b4de7e20790cae7750df5793725a15ab001331e3340fcca840e071
 
 PREV=$((N - 1))
+BK="/tmp/b12-rev-bak-$N"
+mkdir -p "$BK"
+for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
+  Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
+  Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  cp "$f" "$BK/$(echo $f | tr '/' '_')"
+done
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
-restore() { bash "$REPO/tools/restore-golden-tip.sh" >/dev/null; }
+restore() {
+  for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
+    Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
+    Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+    cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
+  done
+  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) >/dev/null || true
+}
 trap restore EXIT
-restore
 
 sed -i "s/CurrentSchema = [0-9]*;/CurrentSchema = $PREV;/" Rules/State/GameState.cs
 strip_sync() { sed -i -E "/$1/d" Rules/State/GameState.cs; }
@@ -72,6 +85,15 @@ sed -i 's|TrustSystem.Shift(c, state, lab, m.Sectors\[s\], trust, false);|TrustS
 perl -0pi -e 's/if \(TrafficRouter\.Enabled\(c\) && demandLab\.Id == state\.PlayerLabId\) \{[^}]+\}\n\s+//ms' Rules/Systems/MarketSystem.cs
 sed -i '/AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1 &&/,+1 s|^|//|' Rules/Sim/CommandProcessor.ToolPolicy.cs
 sed -i '/AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1)/,+1 s/^/\\/\\//' Rules/Systems/ToolPolicy.cs 2>/dev/null || sed -i '/AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1)/,+1 s|^|//|' Rules/Systems/ToolPolicy.cs
+
+# batch fourteen must be off at tip when reverting batch twelve
+for _b14 in specialistLines dataSources openWeights sectorPricing; do disable_cfg "$_b14"; done
+comment_hook 'DataSources.RunWeek'
+comment_hook 'OpenWeights.RunWeek'
+sed -i 's| + SectorPricing.LabOverloadPermille(c, lab)||' Rules/Systems/SafetySystem.cs
+sed -i '/if (SectorPricing.Enabled(c) && demandLab.Id == state.PlayerLabId)/,+1 s|^|//|' Rules/Systems/MarketSystem.cs
+sed -i 's|int src = DataSources.QualityPermille(c, lab) / 50;||' Rules/Systems/TrainingSystem.cs
+sed -i 's|model.CapLuck += src;||' Rules/Systems/TrainingSystem.cs
 
 if [ "$N" -le 126 ]; then
   sed -i 's|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(lift, HumanQueue.LiftKeep(c, lab) \* ToolPolicy.LiftBonus(c, m) / 1000));|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(Lift(c, m.AgentLevel), MathI.Permille));|' Rules/Systems/Agency.cs
