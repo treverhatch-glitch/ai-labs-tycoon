@@ -297,6 +297,8 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has kept " + lab.LtsKept + " and broken " + lab.LtsBroken + " support pledges in a way the data does not allow");
                 if (lab.ApiMoved < 0 || lab.ApiLost < 0 || ((lab.ApiMoved != 0 || lab.ApiLost != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has moved " + lab.ApiMoved + " and lost " + lab.ApiLost + " integrations in a way the data does not allow");
+                if (lab.CfGranted < 0 || lab.CfFindings < 0 || lab.CfSuspended < 0 || ((lab.CfGranted != 0 || lab.CfFindings != 0 || lab.CfSuspended != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has conformity counts (" + lab.CfGranted + ", " + lab.CfFindings + ", " + lab.CfSuspended + ") the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -423,6 +425,11 @@ namespace AiLabs.Rules.Sim
                         || (model.ApiState == 0 && (model.Integrations != 0 || model.ApiLeft != 0 || model.ApiSuccessor != 0)) || (model.ApiState == 2 && model.ApiLeft < 1)
                         || (model.ApiState != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                         p.Add(model.Name + " has an API (state " + model.ApiState + ", " + model.Integrations + " integrations, " + model.ApiLeft + " weeks) in a way the data does not allow");
+                    if (model.CertStage < 0 || model.CertStage > 4 || model.CertLeft < 0 || model.CertScope < 0 || model.CertScope > 2 || model.CertTries < 0
+                        || (model.CertStage == 0 && (model.CertLeft != 0 || model.CertScope != 0 || model.CertTries != 0)) || (model.CertStage != 0 && model.CertScope == 0)
+                        || ((model.CertStage == 1 || model.CertStage == 3 || model.CertStage == 4) && model.CertLeft < 1)
+                        || (model.CertStage != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has a conformity assessment (stage " + model.CertStage + ", " + model.CertLeft + " weeks, scope " + model.CertScope + ") in a way the data does not allow");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);

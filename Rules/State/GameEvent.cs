@@ -490,7 +490,13 @@ namespace AiLabs.Rules.State
         /// <summary>The lab began retiring a model's API. Amount is the weeks.</summary>
         ApiDeprecated,
         /// <summary>A deprecation ended. Pick 1 when nothing was left behind, 0 when integrations were stranded; Amount is how many.</summary>
-        ApiEnded
+        ApiEnded,
+        /// <summary>The lab began a conformity assessment. Pick is the scope.</summary>
+        ConformityStarted,
+        /// <summary>A review ended. Pick 1 certified, 0 findings.</summary>
+        ConformityDecided,
+        /// <summary>An assessment or certificate ended. Pick 0 withdrawn, 1 expired, 2 suspended.</summary>
+        ConformityEnded
     }
 
     /// <summary>

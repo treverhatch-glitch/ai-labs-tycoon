@@ -123,6 +123,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 108) MigrateTo108(root);
             if (fromSchema < 109) MigrateTo109(root);
             if (fromSchema < 110) MigrateTo110(root);
+            if (fromSchema < 111) MigrateTo111(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -486,6 +487,21 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 111: no model is in a conformity assessment.</summary>
+        static void MigrateTo111(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "cfGranted", "cfFindings", "cfSuspended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "certStage", "certLeft", "certScope", "certTries" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

@@ -175,7 +175,10 @@ namespace AiLabs.Rules.Sim
         BreakSupportPledge,
         OpenApi,
         DeprecateApi,
-        CancelDeprecation
+        CancelDeprecation,
+        StartConformity,
+        SubmitEvidence,
+        WithdrawConformity
     }
 
     /// <summary>
@@ -1519,6 +1522,31 @@ namespace AiLabs.Rules.Sim
         public static Command CancelDeprecation(int labId, int modelId)
         {
             Command c = Make(CommandKind.CancelDeprecation, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts a conformity assessment of a released model. Scope 1 is narrow, 2 is broad. Compiles a dossier first, for research points.</summary>
+        public static Command StartConformity(int labId, int modelId, int scope)
+        {
+            Command c = Make(CommandKind.StartConformity, labId);
+            c.TargetId = modelId;
+            c.Count = scope;
+            return c;
+        }
+
+        /// <summary>Hands the assessor the evidence. The model needs a live red-team result, and for a broad scope a live external audit too.</summary>
+        public static Command SubmitEvidence(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.SubmitEvidence, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Drops the assessment, or gives up the certificate. Nothing is refunded.</summary>
+        public static Command WithdrawConformity(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawConformity, labId);
             c.TargetId = modelId;
             return c;
         }

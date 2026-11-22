@@ -6324,6 +6324,24 @@
     "strandTrustPer100": 12,
     "strandTrustCap": 60
   },
+  "conformity": {
+    "enabled": 1,
+    "maxActive": 2,
+    "dossierWeeks": 4,
+    "dossierPoints": 300,
+    "broadExtraPoints": 500,
+    "reviewWeeks": 8,
+    "termWeeks": 104,
+    "surveillanceAt": 52,
+    "resubmitWeeks": 6,
+    "barNarrow": 450,
+    "barBroad": 650,
+    "maxGap": 200,
+    "cutNarrow": 200,
+    "cutBroad": 350,
+    "trustGain": 20,
+    "suspendTrust": 30
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

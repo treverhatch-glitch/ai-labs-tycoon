@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 110;
+        public const int CurrentSchema = 111;
 
         public int Schema;
         public string ConfigVersion;
@@ -495,6 +495,10 @@ namespace AiLabs.Rules.State
         /// <summary>How many integrations the lab has moved to successor models, and how many it lost on the way or stranded.</summary>
         public int ApiMoved;
         public int ApiLost;
+        /// <summary>How many conformity certificates the lab was granted, how many reviews ended in findings, and how many certificates were suspended.</summary>
+        public int CfGranted;
+        public int CfFindings;
+        public int CfSuspended;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -930,6 +934,9 @@ namespace AiLabs.Rules.State
             s.Int("ltsBroken", ref LtsBroken);
             s.Int("apiMoved", ref ApiMoved);
             s.Int("apiLost", ref ApiLost);
+            s.Int("cfGranted", ref CfGranted);
+            s.Int("cfFindings", ref CfFindings);
+            s.Int("cfSuspended", ref CfSuspended);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1120,6 +1127,11 @@ namespace AiLabs.Rules.State
         public int ApiState;
         public int ApiLeft;
         public int ApiSuccessor;
+        /// <summary>Conformity assessment: the stage (0 none, 1 dossier, 2 evidence, 3 review, 4 certified), the weeks left in it, the scope (1 narrow, 2 broad) and how many reviews found problems.</summary>
+        public int CertStage;
+        public int CertLeft;
+        public int CertScope;
+        public int CertTries;
         public int AuditedUntil;
         /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
         public int SunsetStart;
@@ -1160,6 +1172,10 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("certStage", ref CertStage);
+            s.Int("certLeft", ref CertLeft);
+            s.Int("certScope", ref CertScope);
+            s.Int("certTries", ref CertTries);
             s.Int("integrations", ref Integrations);
             s.Int("apiState", ref ApiState);
             s.Int("apiLeft", ref ApiLeft);

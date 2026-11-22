@@ -350,6 +350,7 @@ and says why in the commit message.
 167. **Support pledges.** ~~Done~~: `PledgeSupport`, `BreakSupportPledge`, schema 109, `PledgesTests` (Q411).
 168. **Cross-system rules.** ~~Done~~: sharp pods and programmes and pledges, rush and licence bar, pledge breach and licence strikes, `ProgrammesRunQueuePodsLicencePledgesTogetherTests` (Q413 to Q416).
 169. **API integrations.** ~~Done~~: `OpenApi`, `DeprecateApi`, `CancelDeprecation`, schema 110, `IntegrationsTests` (Q417).
+170. **Conformity assessment.** ~~Done~~: `StartConformity`, `SubmitEvidence`, `WithdrawConformity`, schema 111, `ConformityTests` (Q418).
 
 ## Rules: later
 

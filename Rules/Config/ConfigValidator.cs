@@ -145,6 +145,7 @@ namespace AiLabs.Rules.Config
             LicenceProblems(p, c);
             PledgesProblems(p, c);
             IntegrationsProblems(p, c);
+            ConformityProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1638,6 +1639,16 @@ namespace AiLabs.Rules.Config
             if (k.MaxOpen < 1 || k.MaxIntegrations < 1 || k.SeedPerWeek < 1 || k.GrowthPermille < 0 || k.GrowthPermille > 1000) p.Add("integrations.maxOpen, maxIntegrations and seedPerWeek must be at least 1 and growthPermille from 0 to 1000");
             if (k.LiftPermillePer10 < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.UpkeepBasePermille < 0 || k.UpkeepPer10Permille < 0 || k.UpkeepBasePermille > 900) p.Add("integrations lift and upkeep must not be negative, the cap at most 1000 and upkeepBasePermille at most 900");
             if (k.MigratePermille < 1 || k.MigratePermille > 1000 || k.ChurnPermille < 0 || k.ChurnPermille > 1000 || k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.StrandTrustPer100 < 0 || k.StrandTrustCap < 0) p.Add("integrations.migratePermille must be from 1 to 1000, churnPermille from 0 to 1000, minWeeks at least 1, maxWeeks not below it, and the stranding trust not negative");
+        }
+
+        static void ConformityProblems(List<string> p, GameConfig c)
+        {
+            ConformityConfig k = c.Conformity;
+            if (k == null) { p.Add("conformity is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("conformity.enabled must be 0 or 1");
+            if (k.MaxActive < 1 || k.DossierWeeks < 1 || k.ReviewWeeks < 1 || k.TermWeeks < 2 || k.SurveillanceAt < 1 || k.SurveillanceAt >= k.TermWeeks || k.ResubmitWeeks < 0) p.Add("conformity.maxActive, dossierWeeks and reviewWeeks must be at least 1, termWeeks at least 2, surveillanceAt inside the term and resubmitWeeks not negative");
+            if (k.DossierPoints < 0 || k.BroadExtraPoints < 0 || k.BarNarrow < 0 || k.BarBroad < k.BarNarrow || k.BarBroad > 1000 || k.MaxGap < 0) p.Add("conformity costs must not be negative, barBroad not below barNarrow and at most 1000");
+            if (k.CutNarrow < 0 || k.CutBroad < k.CutNarrow || k.CutBroad > 900 || k.TrustGain < 0 || k.SuspendTrust < 0) p.Add("conformity cuts must not fall and cutBroad at most 900; trust values not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

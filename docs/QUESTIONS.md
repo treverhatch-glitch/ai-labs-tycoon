@@ -2140,6 +2140,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It is not a purchase: the lift has to be earned over many weeks and lost the day the version is left behind unless the lab does the moving.
 - Alternatives: integrations carried over free (rejected: no decision), a flat fee to migrate (rejected: a fee, not a choice), stranding with no trust cost (rejected: a deadline would have no teeth).
 
+### Q418. Is a safety audit the end of the story? DECIDED: a staged conformity pipeline that reads the evidence the lab has gathered
+- Red teams and audits each give a short-lived benefit. A conformity assessment joins them: a dossier, then evidence that has to be live on the day, then a review against a bar on the true alignment and the claim gap, then a term with a surveillance check. Findings loop the lab back to remediation and fresh evidence, so the order in which the lab does things matters and a model that is not really aligned cannot be certified however much is spent.
+- The research points for the dossier are the small part. The model has to be good.
+- Alternatives: a pass chance (rejected: honest models would fail by luck), a fee for a certificate (rejected: pay-for-stat), a lab-wide certificate (rejected: licensing already is lab-wide).
+
 ## Open
 
 None.

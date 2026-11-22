@@ -509,6 +509,12 @@ namespace AiLabs.Rules.Sim
                     return who + " announced the end of the API of " + e.Ref + ".";
                 case EventKind.ApiEnded:
                     return who + (e.Pick == 1 ? " retired the API of " : " cut off customers on the API of ") + e.Ref + ".";
+                case EventKind.ConformityStarted:
+                    return who + " began a conformity assessment of " + e.Ref + ".";
+                case EventKind.ConformityDecided:
+                    return who + (e.Pick == 1 ? " was certified for " : " had findings against ") + e.Ref + ".";
+                case EventKind.ConformityEnded:
+                    return who + (e.Pick == 2 ? " had its certificate for " : e.Pick == 1 ? " saw the certificate for " : " dropped the assessment of ") + e.Ref + (e.Pick == 2 ? " suspended." : e.Pick == 1 ? " expire." : ".");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
