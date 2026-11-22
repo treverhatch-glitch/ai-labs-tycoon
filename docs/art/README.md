@@ -23,6 +23,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [ACCESSIBILITY-PRESENTATION.md](ACCESSIBILITY-PRESENTATION.md) / [BATCH-11-PLAN.md](BATCH-11-PLAN.md) | A11y tokens (batch 11) |
 | [CAPTURE-REGRESSION.md](CAPTURE-REGRESSION.md) / [BATCH-12-PLAN.md](BATCH-12-PLAN.md) | CI capture (batch 12) |
 | [ALT-76-STATUS.md](ALT-76-STATUS.md) / [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | Rollup + GO template (batch 13) |
+| [STAFF-PRESENTATION.md](STAFF-PRESENTATION.md) / [BATCH-14-PLAN.md](BATCH-14-PLAN.md) | Staff placeholders (batch 14) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

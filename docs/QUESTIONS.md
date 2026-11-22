@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q463. Staff avatars v1? DECIDED: capsule placeholders + `CampusStaffPresentationSpec`
+
+- Options: (a) no staff meshes; (b) procedural placeholders; (c) rigged characters in repo.
+- Recommendation and choice: **(b)** — document in `STAFF-PRESENTATION.md`; rigs deferred to Hatch PC.
+- Why: P4 polish needs scale constants without scope creep.
+
 ### Q462. ALT-76 status doc in repo? DECIDED: `ALT-76-STATUS.md` + `GO-PACKET-TEMPLATE.md`
 
 - Options: (a) PR description only; (b) committed rollup in `docs/art/`; (c) external wiki.

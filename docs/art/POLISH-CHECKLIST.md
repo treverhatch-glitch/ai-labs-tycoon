@@ -2,6 +2,11 @@
 
 Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 
+## Staff (batch 14)
+
+- [ ] Capsule avatars at `CampusStaffPresentationSpec.AvatarHeightMeters`
+- [ ] Chair prop per seated slot
+
 ## Mascots (batch 8)
 
 - [ ] Bob amplitudes from `CampusMascotPresentationSpec` in `ModelMascotView`
