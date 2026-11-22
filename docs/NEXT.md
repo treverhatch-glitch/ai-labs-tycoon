@@ -120,8 +120,8 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 11**~~ **pushed @ `31e6c2a`** — Q366–Q400 (`HatchRivalsChipsTailLaterTests`, **35**).
 - ~~**Hatch rivals/chips batch 12**~~ **pushed @ `ee78b4e`** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only.
 - ~~**Hatch rivals/chips batch 13**~~ **pushed @ `3b3019e`** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70**); schema **29** only.
-- **Hatch rivals/chips batch 14 (local, GO #3 pending)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100** grown); parent `3b3019e`; schema **29** only; SolvencyHold **30** parked.
-- **Hatch rivals/chips batch 15 (WIP local)** — Q666+ finisher bar; unpushed after batch 14 GO.
+- ~~**Hatch rivals/chips batch 14**~~ **pushed @ `3454140` (GO #3, Nov 22 ~15:12 UTC)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100**); parent `3b3019e`; gate **1269/0** / **1267/0** WT.
+- **Hatch rivals/chips batch 15 (local, unpushed; GO not before ~15:42 UTC)** — Q666–Q735 (`HatchRivalsChipsFinisherLaterTests`, **70** grouped); parent `3454140`; schema **29**; finisher 70/70 filter green on disk.
 
 ## Rules: forward queue (from bible / systems-design)
 
