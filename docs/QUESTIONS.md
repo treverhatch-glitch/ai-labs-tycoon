@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q470. Rival feeling bar thresholds? DECIDED: `CampusRivalFeelingPresentationSpec`
+
+- Options: (a) hard-code in UI; (b) shared spec class + doc bands; (c) ScriptableObject theme.
+- Recommendation and choice: **(b)** — matches batch 20 breakdown pattern and DESIGN -1000…1000 range.
+- Why: Unity rivals list can bind fill width before rules wire `FeelingToPlayer`.
+
 ### Q469. Breakdown drawer layout tokens? DECIDED: `CampusBreakdownPresentationSpec`
 
 - Options: (a) Unity-only layout; (b) graphics constants + doc; (c) UI Toolkit theme file.
