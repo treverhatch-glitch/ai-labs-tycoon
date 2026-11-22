@@ -129,7 +129,8 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 20**~~ **pushed @ `a87d35b`** — Q1046–Q1115 (**70**); gate **1719/0** / **1717/0** WT; parent `a61660c`.
 - ~~**Hatch era/cast batch 21**~~ **pushed @ `eaa0701`** — Q1116–Q1185 (**70**); gate **1789/0** / **1787/0** WT; parent `a87d35b`.
 - ~~**Hatch era-feel batch 22**~~ **pushed @ `1a3b9db`** — Q1186–Q1255 (**70**); gate **1859/0** / **1857/0** WT; parent `eaa0701`.
-- **Hatch rival-arrival batch 23 (local only, ≥30m after `1a3b9db` push)** — Q1256–Q1325 (`HatchRivalArrivalLaterTests`, **70** WIP); `PendingRivals` / join-year data.
+- ~~**Hatch rival-arrival batch 23**~~ **pushed @ `b14e047`** — Q1256–Q1325 (**70**); gate **1929/0** / **1927/0** WT; parent `1a3b9db`.
+- **Hatch sector-rival batch 24 (local @ tip after commit, gate pending, push ≥~22:57 UTC)** — Q1326–Q1395 (`HatchSectorRivalLaterTests`, **70**).
 
 ## Rules: forward queue (from bible / systems-design)
 
