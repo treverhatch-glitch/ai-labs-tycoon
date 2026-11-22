@@ -244,6 +244,20 @@ public class SaveMigrationFuzzHardeningTests
         g.Weeks(4);
     }
 
+    static void TouchErasUpTo(int maxSchema, Game g)
+    {
+        if (maxSchema >= 81) TouchEraC(g);
+        if (maxSchema >= 85) TouchEraD(g);
+        if (maxSchema >= 90) TouchEraE(g);
+        if (maxSchema >= 95) TouchEraF(g);
+        if (maxSchema >= 100) TouchEraG(g);
+        if (maxSchema >= 105) TouchEraH(g);
+        if (maxSchema >= 110) TouchEraI(g);
+        if (maxSchema >= 115) TouchEraJ(g);
+        if (maxSchema >= 120) TouchEraK(g);
+        if (maxSchema >= 125) TouchEraL(g);
+    }
+
     static void TouchEraL(Game g)
     {
         g.C.Drills.MinEra = 0;
@@ -319,16 +333,7 @@ public class SaveMigrationFuzzHardeningTests
     {
         var c = TestData.Config();
         Game rich = RichSave();
-        if (GameState.CurrentSchema >= 81) TouchEraC(rich);
-        if (GameState.CurrentSchema >= 85) TouchEraD(rich);
-        if (GameState.CurrentSchema >= 90) TouchEraE(rich);
-        if (GameState.CurrentSchema >= 95) TouchEraF(rich);
-        if (GameState.CurrentSchema >= 100) TouchEraG(rich);
-        if (GameState.CurrentSchema >= 105) TouchEraH(rich);
-        if (GameState.CurrentSchema >= 110) TouchEraI(rich);
-        if (GameState.CurrentSchema >= 115) TouchEraJ(rich);
-        if (GameState.CurrentSchema >= 120) TouchEraK(rich);
-        if (GameState.CurrentSchema >= 125) TouchEraL(rich);
+        TouchErasUpTo(GameState.CurrentSchema, rich);
         string current = rich.Sim.Save();
         for (int schema = 77; schema <= GameState.CurrentSchema; schema++)
         {
