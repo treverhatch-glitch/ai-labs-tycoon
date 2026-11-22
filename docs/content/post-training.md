@@ -9,4 +9,6 @@ What a lab can do to a model between training and sale (bible ch. 6, preference 
 - A model takes three runs of each kind. The net change in revenue never falls below minus half.
 - Training also wants clean data (the data bonus), and so does the user-data trade: what a run uses is not there for those.
 
+- Every level of documentation takes 20% off the incident chance that preference tuning adds (Q446).
+
 Events: `PostTrainingStarted`, `PostTrainingDone`, `PostTrainingAbandoned`.

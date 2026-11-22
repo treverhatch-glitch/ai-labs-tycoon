@@ -33,6 +33,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Lowest the net revenue change of a model can fall (permille, negative).</summary>
         public int MinLift;
 
+        /// <summary>Share of the incident chance of preference tuning that each level of documentation takes away (permille).</summary>
+        public int DocsCutSyco;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -48,6 +51,7 @@ namespace AiLabs.Rules.Config
             s.Int("safetyDecay", ref SafetyDecay);
             s.Int("refuse", ref Refuse);
             s.Int("minLift", ref MinLift);
+            s.Int("docsCutSyco", ref DocsCutSyco);
         }
     }
 }

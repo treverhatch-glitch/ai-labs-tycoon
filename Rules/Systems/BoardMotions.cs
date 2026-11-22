@@ -61,6 +61,13 @@ namespace AiLabs.Rules.Systems
             lab.BoardTension = (int)MathI.Min(MathI.Permille, lab.BoardTension + Gain(c, lab, amount));
         }
 
+        /// <summary>Adds tension from outside the motions (a scandal, a blow-up), when the lab holds meetings.</summary>
+        public static void AddTension(GameConfig c, LabState lab, int amount)
+        {
+            if (!Enabled(c) || lab.MeetingsOn == 0 || amount <= 0) return;
+            Raise(c, lab, amount);
+        }
+
         static void Ease(LabState lab, int amount)
         {
             lab.BoardTension = (int)MathI.Max(0, lab.BoardTension - amount);
@@ -106,7 +113,7 @@ namespace AiLabs.Rules.Systems
                 lab.MotionAnswerBy = 0;
                 lab.MotionsDeclined++;
                 Raise(c, lab, c.BoardAgenda.IgnoreTension);
-                Events.Add(state, EventKind.MotionAnswered, lab.Id, kind, 0, "").Pick = 2;
+                Events.Add(state, EventKind.MotionIgnored, lab.Id, kind, 0, "");
             }
             if (lab.MotionKind != 0 && now >= lab.MotionDue)
             {

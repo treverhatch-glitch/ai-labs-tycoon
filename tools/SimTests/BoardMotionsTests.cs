@@ -110,7 +110,7 @@ public class BoardMotionsTests
         n.Weeks(n.C.BoardAgenda.AnswerWeeks);
         Assert.Equal(n.C.BoardAgenda.IgnoreTension, n.Me.BoardTension);
         Assert.Equal(0, n.Me.MotionPend);
-        Assert.Contains(n.State.Events, e => e.Kind == EventKind.MotionAnswered && e.Pick == 2);
+        Assert.Contains(n.State.Events, e => e.Kind == EventKind.MotionIgnored);
     }
 
     [Fact]

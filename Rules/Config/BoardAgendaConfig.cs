@@ -43,6 +43,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Safety staff a safety motion asks the lab to add.</summary>
         public int SafetyAdd;
 
+        /// <summary>Board tension an agent blow-up adds, when the lab holds board meetings.</summary>
+        public int BlowupTension;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -63,6 +66,7 @@ namespace AiLabs.Rules.Config
             s.Int("runwayStretch", ref RunwayStretch);
             s.Int("runwayFloor", ref RunwayFloor);
             s.Int("safetyAdd", ref SafetyAdd);
+            s.Int("blowupTension", ref BlowupTension);
         }
     }
 }

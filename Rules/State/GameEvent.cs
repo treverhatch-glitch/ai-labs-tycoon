@@ -549,7 +549,7 @@ namespace AiLabs.Rules.State
         AgentStreak,
         /// <summary>A vendor was contracted. SubjectId is the vendor.</summary>
         AnnotatorsContracted,
-        /// <summary>The vendor contract ended. SubjectId is the vendor, Pick 1 ran its term, 0 ended early, 2 ended by a scandal.</summary>
+        /// <summary>The vendor contract ended. SubjectId is the vendor, Pick 1 ran its term, 0 ended early; a scandal has its own event.</summary>
         AnnotatorsEnded,
         /// <summary>The vendor was audited. Amount is the exposure left.</summary>
         VendorAudited,
@@ -557,7 +557,7 @@ namespace AiLabs.Rules.State
         VendorScandal,
         /// <summary>A tuning run started. SubjectId is the model, Amount the kind.</summary>
         PostTrainingStarted,
-        /// <summary>A tuning run finished. SubjectId is the model, Pick is the kind, Amount the number of runs of that kind it now has.</summary>
+        /// <summary>A tuning run finished. SubjectId is the model, Pick 1 preference tuning, 0 safety tuning, Amount the number of runs of that kind it now has.</summary>
         PostTrainingDone,
         /// <summary>A tuning run was abandoned. SubjectId is the model.</summary>
         PostTrainingAbandoned,
@@ -571,8 +571,10 @@ namespace AiLabs.Rules.State
         DocsStale,
         /// <summary>The board tabled a motion. SubjectId is the kind (1 calm, 2 runway, 3 safety), Amount its goal.</summary>
         MotionTabled,
-        /// <summary>The lab answered a motion. SubjectId is the kind, Pick 1 accepted, 0 declined, 2 nobody answered.</summary>
+        /// <summary>The lab answered a motion. SubjectId is the kind, Pick 1 accepted, 0 declined.</summary>
         MotionAnswered,
+        /// <summary>A motion went unanswered. SubjectId is the kind.</summary>
+        MotionIgnored,
         /// <summary>A commitment reached its deadline. SubjectId is the kind, Pick 1 kept, 0 broken.</summary>
         MotionJudged,
         /// <summary>The board forced a vote on the founders. Amount is the tension.</summary>

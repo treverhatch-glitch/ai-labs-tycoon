@@ -56,6 +56,12 @@ namespace AiLabs.Rules.Systems
             Events.Add(state, EventKind.DocsWritten, lab.Id, model.Id, model.DocLevel, model.Name);
         }
 
+        /// <summary>A bankrupt lab has no staff left, so no model has an owner.</summary>
+        public static void OnBankrupt(LabState lab)
+        {
+            for (int i = 0; i < lab.Models.Count; i++) lab.Models[i].OwnerId = 0;
+        }
+
         public static void OnLeft(GameConfig c, GameState state, LabState lab, int staffId)
         {
             if (!Enabled(c) || lab.Id != state.PlayerLabId) return;

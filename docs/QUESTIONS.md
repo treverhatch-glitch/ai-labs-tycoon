@@ -2243,6 +2243,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Every answer costs something: accepting binds the lab to a goal it may miss, declining and ignoring add tension at once. A lab with dual-class shares can afford to decline, a lab with a lot of its equity sold cannot, and independent directors make all of it milder.
 - Alternatives: a board that only tables revenue targets (that exists already as the board targets), a tension that rises with the calendar (rejected: nothing for the lab to do about it).
 
+### Q442. What do the agent autonomy, annotation vendor, post-training, ownership and board motion events look like on the news and in the chat? DECIDED: a headline for each, the ones with two outcomes split by pick, and a chat line where the staff would talk about it
+- The pick of a headline is minus one, zero or one, so a scandal that ends a vendor contract has no second headline of its own: the scandal event already has one. Ignored motions and safety tunings take the zero pick or an event of their own.
+- 23 headlines and 11 chat lines, in the data, in the same voice as the others.
+
+### Q443. What does a knowledge gap do to agents? DECIDED: it adds to the blow-up chance of the model's agents, up to 6% at a full gap, scaled by the gap (`agency.gapBlowup`)
+- Agents run on what the people know; with the owner gone and little written down they go wrong more often. Letting a new owner close the gap, or writing the docs, is the way out.
+
+### Q444. What does a labour scandal at the annotation vendor do to the board? DECIDED: it adds 150 tension when the lab holds board meetings (`annotation.scandalTension`)
+- A scandal is exactly what the board's conduct motions are for. A lab that does not hold meetings is not affected, and the independent directors take their share off as they do for every addition.
+
+### Q445. What does an agent blow-up do to the board? DECIDED: it adds 100 tension when the lab holds board meetings (`boardAgenda.blowupTension`)
+- A blow-up already costs a refund and trust; with meetings on it also costs the board's patience, so running agents at the highest level has a cost in the board room too.
+
+### Q446. Does documentation help with the failures of a tuned model? DECIDED: each level takes 20% off the incident chance that preference tuning adds, at most 25% a level (`postTraining.docsCutSyco`)
+- A model that is written down is understood: the habits preference tuning taught it are known and handled. Safety tuning is not changed.
+
 ## Open
 
 None.

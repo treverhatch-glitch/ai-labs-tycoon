@@ -155,7 +155,7 @@ public class AnnotationTests
         Assert.Equal(fines - g.C.Annotation.ExposeFine, g.Me.Ledger.Lifetime.Fines);
         Assert.True(TrustSystem.Of(g.C, g.Me, m.Sectors[0]) < trust);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.VendorScandal);
-        Assert.Contains(g.State.Events, e => e.Kind == EventKind.AnnotatorsEnded && e.Pick == 2);
+        Assert.DoesNotContain(g.State.Events, e => e.Kind == EventKind.AnnotatorsEnded);
         Assert.Empty(SaveGame.Problems(g.C, g.State));
     }
 

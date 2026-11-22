@@ -10,4 +10,6 @@ How a board with investors holds the founders to their word (bible ch. 5, the bo
 - A calm board (tension at 200 or below) that has seen one commitment kept adds 10% to the cash of a funding round.
 - The meetings stop only when no motion or commitment is open.
 
-Events: `MotionTabled`, `MotionAnswered` (Pick 1 accepted, 0 declined, 2 ignored), `MotionJudged`, `BoardForcedVote`.
+- A vendor scandal adds 150 tension and an agent blow-up 100, each softened by directors (Q444, Q445).
+
+Events: `MotionTabled`, `MotionAnswered` (Pick 1 accepted, 0 declined), `MotionIgnored`, `MotionJudged`, `BoardForcedVote`.

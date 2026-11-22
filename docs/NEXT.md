@@ -365,6 +365,7 @@ and says why in the commit message.
 182. **Post-training.** ~~Done~~: `PostTrain`, `AbandonPostTraining`, schema 122, `PostTrainingTests` (Q439).
 183. **Owners and documentation.** ~~Done~~: `AssignOwner`, `WriteDocs`, schema 123, `KnowledgeTests` (Q440).
 184. **Board motions.** ~~Done~~: `HoldBoardMeetings`, `AnswerMotion`, schema 124, `BoardMotionsTests` (Q441).
+185. **Batch eleven news and chat** and four combination rules. ~~Done~~: Q442 to Q446, `AgencyAnnotationPostTrainingKnowledgeBoardNewsChatTests`, `AgencyAnnotationPostTrainingKnowledgeBoardTogetherTests`.
 
 ## Rules: later
 

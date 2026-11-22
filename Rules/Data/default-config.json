@@ -6495,7 +6495,8 @@
     "blowupTrust": 12,
     "streakWeeks": 26,
     "streakTrust": 8,
-    "cooldown": 4
+    "cooldown": 4,
+    "gapBlowup": 60
   },
   "annotation": {
     "enabled": 1,
@@ -6519,7 +6520,8 @@
     "exposeDiv": 10,
     "exposeFine": 60000,
     "exposeTrust": 15,
-    "exposeReset": 150
+    "exposeReset": 150,
+    "scandalTension": 150
   },
   "postTraining": {
     "enabled": 1,
@@ -6534,7 +6536,8 @@
     "safetyGain": 110,
     "safetyDecay": 300,
     "refuse": 35,
-    "minLift": -500
+    "minLift": -500,
+    "docsCutSyco": 200
   },
   "knowledge": {
     "enabled": 1,
@@ -6566,7 +6569,8 @@
     "raiseBonus": 100,
     "runwayStretch": 100,
     "runwayFloor": 100000,
-    "safetyAdd": 1
+    "safetyAdd": 1,
+    "blowupTension": 100
   },
   "bugBounty": {
     "maxLevel": 3,
@@ -11507,6 +11511,144 @@
         "kind": "SpotPreempted",
         "pick": -1,
         "text": "The cloud takes back {lab}'s spot capacity and {ref} loses a stretch of its run"
+      },
+      {
+        "id": "autonomy-set",
+        "kind": "AutonomySet",
+        "pick": -1,
+        "text": "{lab} gives the agents of {ref} more rope. The ops room keeps a screen on them"
+      },
+      {
+        "id": "agent-blowup",
+        "kind": "AgentBlowup",
+        "pick": -1,
+        "text": "An agent run at {lab} goes wrong and {ref} refunds its customers. The postmortem has a long timeline"
+      },
+      {
+        "id": "agent-streak",
+        "kind": "AgentStreak",
+        "pick": -1,
+        "text": "The agents of {ref} go half a year at {lab} without a blow-up. Customers start to trust them"
+      },
+      {
+        "id": "annotators-contracted",
+        "kind": "AnnotatorsContracted",
+        "pick": -1,
+        "text": "{lab} signs an annotation vendor. The first batches arrive by the weekend"
+      },
+      {
+        "id": "annotators-term",
+        "kind": "AnnotatorsEnded",
+        "pick": 1,
+        "text": "{lab}'s annotation contract runs out. The vendor sends a renewal quote"
+      },
+      {
+        "id": "annotators-early",
+        "kind": "AnnotatorsEnded",
+        "pick": 0,
+        "text": "{lab} ends its annotation contract early. The termination fee is not small"
+      },
+      {
+        "id": "vendor-audited",
+        "kind": "VendorAudited",
+        "pick": -1,
+        "text": "{lab} audits its annotation vendor. The auditors ask about the night shift"
+      },
+      {
+        "id": "vendor-scandal",
+        "kind": "VendorScandal",
+        "pick": -1,
+        "text": "Workers at {lab}'s annotation vendor go public about pay and hours. The fine is the least of it"
+      },
+      {
+        "id": "post-training-started",
+        "kind": "PostTrainingStarted",
+        "pick": -1,
+        "text": "{lab} sends {ref} into post-training. The launch waits"
+      },
+      {
+        "id": "post-training-preference",
+        "kind": "PostTrainingDone",
+        "pick": 1,
+        "text": "{lab} finishes tuning {ref} on what users liked. It is a lot more agreeable"
+      },
+      {
+        "id": "post-training-safety",
+        "kind": "PostTrainingDone",
+        "pick": 0,
+        "text": "{lab} finishes a safety tuning of {ref}. It now says no much more often"
+      },
+      {
+        "id": "post-training-abandoned",
+        "kind": "PostTrainingAbandoned",
+        "pick": -1,
+        "text": "{lab} abandons the tuning of {ref}. The data it used is gone"
+      },
+      {
+        "id": "owner-named",
+        "kind": "OwnerNamed",
+        "pick": -1,
+        "text": "{lab} puts a name next to {ref} on the wiki. At last somebody owns it"
+      },
+      {
+        "id": "owner-left",
+        "kind": "OwnerLeft",
+        "pick": -1,
+        "text": "The one person who knew {ref} leaves {lab}. The wiki has two pages on it"
+      },
+      {
+        "id": "docs-written",
+        "kind": "DocsWritten",
+        "pick": -1,
+        "text": "{lab} writes down how {ref} works. The new hires cheer"
+      },
+      {
+        "id": "docs-stale",
+        "kind": "DocsStale",
+        "pick": -1,
+        "text": "The docs for {ref} at {lab} are a year out of date. Everyone knows it"
+      },
+      {
+        "id": "motion-tabled",
+        "kind": "MotionTabled",
+        "pick": -1,
+        "text": "The board of {lab} tables a motion. The agenda is longer than the coffee break"
+      },
+      {
+        "id": "motion-accepted",
+        "kind": "MotionAnswered",
+        "pick": 1,
+        "text": "{lab} accepts a board motion. The minutes record a commitment"
+      },
+      {
+        "id": "motion-declined",
+        "kind": "MotionAnswered",
+        "pick": 0,
+        "text": "{lab} declines a board motion. The board notes it for later"
+      },
+      {
+        "id": "motion-ignored",
+        "kind": "MotionIgnored",
+        "pick": -1,
+        "text": "A board motion at {lab} goes unanswered. The chair is not amused"
+      },
+      {
+        "id": "motion-kept",
+        "kind": "MotionJudged",
+        "pick": 1,
+        "text": "{lab} keeps a board commitment. The investors send a thank-you"
+      },
+      {
+        "id": "motion-broken",
+        "kind": "MotionJudged",
+        "pick": 0,
+        "text": "{lab} breaks a board commitment. The next meeting will be a long one"
+      },
+      {
+        "id": "board-forced-vote",
+        "kind": "BoardForcedVote",
+        "pick": -1,
+        "text": "The board of {lab} forces a vote on the founders. The room is very quiet"
       }
     ],
     "filler": [
@@ -15218,6 +15360,127 @@
         "pick": -1,
         "about": "lab",
         "text": "The cloud took the spot machines back mid-run. People are checking the checkpoints.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "autonomy-set-chat",
+        "kind": "AutonomySet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The agents have been given more room. Somebody has set an alert on every one of their calls.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "agent-blowup-chat",
+        "kind": "AgentBlowup",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "An agent run just did something nobody asked for. The refund is already being worked out.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "agent-streak-chat",
+        "kind": "AgentStreak",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Half a year clean for the agents. Nobody dares say it out loud.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "vendor-scandal-chat",
+        "kind": "VendorScandal",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The labelling vendor is in the news and we are named in the second paragraph.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "annotators-ended-chat",
+        "kind": "AnnotatorsEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The labelling contract is over. Someone has to find out who held the spreadsheet.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "post-training-done-chat",
+        "kind": "PostTrainingDone",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The tuned model is back. Let us see whether it agrees with everything.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "owner-left-chat",
+        "kind": "OwnerLeft",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The only person who knew that model has gone. We are reading old pull requests.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "docs-stale-chat",
+        "kind": "DocsStale",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The docs are out of date again. Half of them describe a model we retired.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "motion-tabled-chat",
+        "kind": "MotionTabled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "There is a motion on the board agenda. Nobody wants to be the one who answers.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "motion-judged-chat",
+        "kind": "MotionJudged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board has checked our commitment. The mood in the corridor depends on which way it went.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "board-forced-vote-chat",
+        "kind": "BoardForcedVote",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board has called a vote on the founders. People are packing their desks as a precaution.",
         "fromYear": 0,
         "toYear": 0
       }

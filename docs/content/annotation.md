@@ -11,4 +11,6 @@ Who labels the data (bible ch. 6, labelling and human feedback; `annotation.*` i
 - `AuditVendor` costs 12,000 and takes 60% of the exposure away. It can be done every 8 weeks.
 - `EndAnnotators` ends the contract early for 60% of the fees still to run.
 
-Events: `AnnotatorsContracted`, `AnnotatorsEnded` (Pick 1 term, 0 early, 2 scandal), `VendorAudited`, `VendorScandal`.
+- A scandal adds 150 board tension when the lab holds board meetings (Q444).
+
+Events: `AnnotatorsContracted`, `AnnotatorsEnded` (Pick 1 term, 0 early; a scandal ends the contract with its own event), `VendorAudited`, `VendorScandal`.

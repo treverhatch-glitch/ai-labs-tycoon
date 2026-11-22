@@ -51,6 +51,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Exposure left after a scandal.</summary>
         public int ExposeReset;
 
+        /// <summary>Board tension a vendor scandal adds, when the lab holds board meetings.</summary>
+        public int ScandalTension;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -75,6 +78,7 @@ namespace AiLabs.Rules.Config
             s.Int("exposeFine", ref ExposeFine);
             s.Int("exposeTrust", ref ExposeTrust);
             s.Int("exposeReset", ref ExposeReset);
+            s.Int("scandalTension", ref ScandalTension);
         }
     }
 }

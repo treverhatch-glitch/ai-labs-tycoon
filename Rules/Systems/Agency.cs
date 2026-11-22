@@ -28,7 +28,9 @@ namespace AiLabs.Rules.Systems
         public static int BlowupChance(GameConfig c, LabState lab, ModelState model)
         {
             int cut = (int)MathI.Min(750, (long)Wings(lab) * c.Agency.RoomCut);
-            return (int)MathI.MulPermille(BlowupBase(c, model.AgentLevel), MathI.Permille - cut);
+            long baseChance = BlowupBase(c, model.AgentLevel);
+            if (Knowledge.Enabled(c)) baseChance += MathI.MulPermille(c.Agency.GapBlowup, model.KnowGap);
+            return (int)MathI.MulPermille(baseChance, MathI.Permille - cut);
         }
 
         public static int IncidentPermille(GameConfig c, ModelState model)
@@ -91,6 +93,7 @@ namespace AiLabs.Rules.Systems
                     m.AgentStreak = 0;
                     if (refund > 0) Finance.Spend(lab, LedgerLine.Fines, refund);
                     for (int s = 0; s < m.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, m.Sectors[s], -c.Agency.BlowupTrust, false);
+                    BoardMotions.AddTension(c, lab, c.BoardAgenda.BlowupTension);
                     Events.Add(state, EventKind.AgentBlowup, lab.Id, m.Id, refund, m.Name);
                     continue;
                 }

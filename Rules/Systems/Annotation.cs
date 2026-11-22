@@ -42,7 +42,7 @@ namespace AiLabs.Rules.Systems
             int vendor = lab.AnnVendor;
             lab.AnnVendor = 0;
             lab.AnnLeft = 0;
-            Events.Add(state, EventKind.AnnotatorsEnded, lab.Id, vendor, 0, "").Pick = pick;
+            if (pick != 2) Events.Add(state, EventKind.AnnotatorsEnded, lab.Id, vendor, 0, "").Pick = pick;
         }
 
         public static void EndEarly(GameConfig c, GameState state, LabState lab)
@@ -86,6 +86,7 @@ namespace AiLabs.Rules.Systems
                     if (m.Status != ModelStatus.Released) continue;
                     for (int s = 0; s < m.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, m.Sectors[s], -c.Annotation.ExposeTrust, false);
                 }
+                BoardMotions.AddTension(c, lab, c.Annotation.ScandalTension);
                 Events.Add(state, EventKind.VendorScandal, lab.Id, vendor, c.Annotation.ExposeFine, "");
                 End(c, state, lab, 2);
                 return;

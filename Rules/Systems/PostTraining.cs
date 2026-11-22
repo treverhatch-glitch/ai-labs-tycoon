@@ -37,7 +37,10 @@ namespace AiLabs.Rules.Systems
 
         public static int IncidentPermille(GameConfig c, ModelState m)
         {
-            return Enabled(c) ? m.PostPref * c.PostTraining.Syco : 0;
+            if (!Enabled(c)) return 0;
+            long syco = (long)m.PostPref * c.PostTraining.Syco;
+            if (Knowledge.Enabled(c)) syco = MathI.MulPermille(syco, MathI.Permille - MathI.Min(MathI.Permille, (long)m.DocLevel * c.PostTraining.DocsCutSyco));
+            return (int)syco;
         }
 
         public static long Lift(GameConfig c, GameState state, LabState lab)
@@ -108,7 +111,7 @@ namespace AiLabs.Rules.Systems
                     m.PostSafety++;
                     runs = m.PostSafety;
                 }
-                Events.Add(state, EventKind.PostTrainingDone, lab.Id, m.Id, runs, m.Name).Pick = kind;
+                Events.Add(state, EventKind.PostTrainingDone, lab.Id, m.Id, runs, m.Name).Pick = kind == Preference ? 1 : 0;
             }
         }
     }

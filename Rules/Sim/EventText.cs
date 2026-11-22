@@ -591,6 +591,8 @@ namespace AiLabs.Rules.Sim
                     return "The board of " + who + " tabled a motion.";
                 case EventKind.MotionAnswered:
                     return who + " answered a board motion.";
+                case EventKind.MotionIgnored:
+                    return "A motion at the board of " + who + " went unanswered.";
                 case EventKind.MotionJudged:
                     return e.Pick == 1 ? "The board of " + who + " saw a commitment kept." : "The board of " + who + " saw a commitment broken.";
                 case EventKind.BoardForcedVote:

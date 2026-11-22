@@ -12,4 +12,6 @@ How much freedom a released model gives its agents (bible ch. 6, "Agency: tools 
 - **Clean streak:** every 26 weeks without a blow-up earns 8 trust in each sector.
 - A model that leaves sale loses its agents.
 
+- **Knowledge gap:** a model with a knowledge gap adds up to 6% to the blow-up chance of its agents, scaled by the gap (Q443). A blow-up adds 100 tension to a board that meets (Q445).
+
 Events: `AutonomySet`, `AgentBlowup`, `AgentStreak`.

@@ -47,6 +47,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Weeks before the level of a model can be raised again.</summary>
         public int Cooldown;
 
+        /// <summary>Blow-up chance, in permille, that a model with a full knowledge gap adds to its agents (scaled by the gap).</summary>
+        public int GapBlowup;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -69,6 +72,7 @@ namespace AiLabs.Rules.Config
             s.Int("streakWeeks", ref StreakWeeks);
             s.Int("streakTrust", ref StreakTrust);
             s.Int("cooldown", ref Cooldown);
+            s.Int("gapBlowup", ref GapBlowup);
         }
     }
 }

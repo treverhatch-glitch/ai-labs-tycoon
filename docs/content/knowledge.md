@@ -8,4 +8,6 @@ Who knows the model (bible ch. 6, key-person risk and documentation; `knowledge.
 - The model's weekly chance of failing in front of customers rises by 9% of the gap. A new owner closes 25 of the gap each week; with no owner it stays.
 - From a gap of 300 nobody dares change the model: it cannot be handed to agents (raising its autonomy) or tuned until the gap has closed.
 
+- The gap makes agents blow up more often (Q443) and documentation softens what preference tuning teaches (Q446).
+
 Events: `OwnerNamed`, `OwnerLeft`, `DocsWritten`, `DocsStale`.
