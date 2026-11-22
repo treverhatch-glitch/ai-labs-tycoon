@@ -804,17 +804,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - Shipped `plannerAcquireChancePermille` 35 with `HatchEconomyBarLaterTests` Q207 soak (crash-only mass bankruptcy cap).
 
-### Q208. Acquisition cash ledger invariant through step? **CLAIMED**
+### Q208. Acquisition cash ledger invariant through step? DECIDED: quote equals `Acquisition` ledger; survives month close
 
-- Buyer cash delta equals quote; target cash zeroed; no silent GPU flip profit after Q202 lock.
+- `HatchEconomyBarLaterTests` Q208: buyer cash delta matches quote; closed month history keeps acquisition total.
 
-### Q209. Listed-chip trades during crash × retrenchment × roll-up? **CLAIMED**
+### Q209. Listed-chip trades during crash × retrenchment × roll-up? DECIDED: distress listing + buyer trade + month rollup + save/load
 
-- Cross bar: distress listing, rival `BuyListedChips`, roll-up month, save/load mid-crash (extends Q175/Q178).
+- `HatchEconomyBarLaterTests` Q209: distress-priced player listing, plan buyer `BuyListedChips`, `StepMonthEnd` crash rollup absorbs distressed rival, save/load round-trip.
 
-### Q210. Custom-chip fleet in M&A quotes (inventory batches)? **CLAIMED**
+### Q210. Custom-chip fleet in M&A quotes (inventory batches)? DECIDED: `ChipFleetBookValue` in quote subtotal
 
-- Include on-fleet chip batches in `FleetPart` or separate permille (after Q205 book value).
+- `HatchEconomyBarLaterTests` Q210; on-fleet ready batches raise `ChipsPart` after Q205 book designs.
+
+### Q219. Distress listed chips while buyer runway-tight in crash? DECIDED: trade after knife-edge retrench
+
+- `HatchRivalDistressLaterTests` Q219: seed-19 soak, crash, Goggle distress list, OpenAye knife-edge tighten then `BuyListedChips` without debt.
+
+### Q220. Save/load mid-crash preserves distress listing trade? DECIDED: yes
+
+- `HatchRivalDistressLaterTests` Q220: save after distress list, load, player buy at same price.
+
+### Q221. Acquired chip listings trade to third rival? DECIDED: listings transfer on `AcquireLab`; other plans can buy
+
+- `HatchRivalDistressLaterTests` Q221: listing moves to buyer lab; AntHoptics buys listed chips post-M&amp;A.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

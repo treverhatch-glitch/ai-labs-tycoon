@@ -210,18 +210,60 @@ public class HatchEconomyBarLaterTests
     }
 
     [Fact]
-    public void Q209_crash_month_end_keeps_plans_running_without_exception()
+    public void Q208_acquire_ledger_invariant_survives_month_close()
     {
-        var g = Game.New(seed: 909, tweak: c => c.Acquisitions.RivalRollupChancePermille = 800);
+        var g = Game.New(seed: 9082);
+        LabState rival = g.Rival("openaye");
+        rival.Models.Add(Released(g, 650));
+        rival.Cash = -35_000;
+        Finance.Earn(g.Me, LedgerLine.CapitalIn, 90_000_000);
+        long before = g.Me.Cash;
+        g.Do(Command.AcquireLab(g.Id, rival.Id));
+        long spent = before - g.Me.Cash;
+        Assert.Equal(spent, -g.Me.Ledger.ThisMonth.Acquisition);
+        StepMonthEnd(g);
+        Assert.Equal(spent, -g.Me.Ledger.Lifetime.Acquisition);
+        Assert.NotEmpty(g.Me.Ledger.History);
+        Assert.Equal(spent, -g.Me.Ledger.History[^1].Totals.Acquisition);
+    }
+
+    [Fact]
+    public void Q209_distress_listing_plan_buy_save_load_and_rollup_in_crash()
+    {
+        Game g = HatchFollowUpLaterTests.ChipListingSeller(7_000_000);
+        g.C.Acquisitions.RivalRollupChancePermille = 1000;
         g.State.BubbleCrashMonthsRemaining = 6;
-        foreach (LabState lab in g.State.Labs)
-        {
-            if (lab.Controller != LabController.Plan) continue;
-            lab.Cash = Math.Max(lab.Cash / 4, 1);
-        }
+        g.Me.Cash = -48_000;
+        g.Me.WeeksInDebt = 2;
+        g.Me.Models.Add(Released(g, 620));
+        g.Me.Models.Add(Released(g, 450));
+        ChipDesign d = HatchFollowUpLaterTests.ReadyInferenceListing(g);
+        long ppc = MathI.MulPermille(ChipQueries.CostPerGoodChip(ChipQueries.Spec(g.C, d), d.YieldPermille), g.C.Chips.DistressListingPricePermille);
+        g.Do(Command.SetChipListing(g.Id, d.Id, (int)Math.Min(int.MaxValue, ppc), 10));
+        LabState buyer = HatchFollowUpLaterTests.OpenAyeBuyer(g, 350_000_000);
+        buyer.PlanStartTick = 0;
+        LabState victim = WorldSetup.AddRival(g.C, g.State, g.C.Rival("anthoptics"), EraSystem.AtTick(g.C, g.Tick), true);
+        victim.PlanStartTick = 0;
+        victim.Models.Add(Released(g, 540));
+        victim.Models.Add(Released(g, 420));
+        victim.Cash = -75_000;
+        victim.WeeksInDebt = 3;
+        int trade = 2;
+        Finance.Earn(g.Me, LedgerLine.CapitalIn, ChipQueries.OrderCost(ChipQueries.Spec(g.C, d), d.YieldPermille, trade) + 5_000_000);
+        long cashBefore = buyer.Cash;
+        g.Do(Command.BuyListedChips(buyer.Id, g.Id, d.Id, HardwareBatch.Cloud, trade));
+        Assert.True(buyer.Cash < cashBefore);
+        Assert.True(g.Me.Listing(d.Id).SoldThisMonth >= trade);
+        Finance.Earn(buyer, LedgerLine.CapitalIn, 400_000_000);
+        buyer.Ledger.ThisMonth.Revenue = 5_000_000;
         StepMonthEnd(g);
         Assert.True(BubbleSystem.InCrash(g.State));
-        Assert.Contains(g.State.Labs, l => l.Controller == LabController.Plan);
+        Assert.True(victim.AbsorbedByLabId == buyer.Id, "crash month rollup should absorb distressed rival");
+        string save = g.Sim.Save();
+        var loaded = new Game(Simulation.Load(g.C, save));
+        SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
+        Assert.True(BubbleSystem.InCrash(loaded.State));
+        Assert.Contains(loaded.Me.ChipListings, l => l.DesignId == d.Id);
     }
 
     [Fact]

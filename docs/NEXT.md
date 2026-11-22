@@ -112,7 +112,8 @@ and says why in the commit message.
 - ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
 - ~~**Rival retrenchment soak**~~ **done (pushed)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests`; golden `15fc3234…`.
 - ~~**Rival economy robustness (stack2)**~~ **done (pushed @ `477c3d2`)** — Q201 full bar (`RivalEconomyRobustnessLaterTests`); era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201). **795** tests at PR #3 tip.
-- **Hatch economy bar batch 3 (local)** — Q202–Q205: M&amp;A GPU lock (schema **29**), bubble step cooling, survivor haircut, chip book in deals; `HatchEconomyBarLaterTests` (6). Golden `758743b8…` (closed-month revenue fallback). **Q207–Q210** claimed (planner acquire soak, ledger invariant, crash chip×rollup cross, chip fleet in quotes).
+- ~~**Hatch economy bar batch 3**~~ **done (pushed @ `308463e`)** — Q202–Q214 + Q216/Q218 rival soak; schema **29** only (era owns **21–27**; **30** reserved for parked SolvencyHold). Golden `55e673a0…`.
+- **Hatch rivals/chips cross-bar batch 4 (local, unpushed)** — Q208–Q210 hardened + **Q219–Q221** (ledger month-close, crash listed-chip × rollup × save/load, retrenching buyer trade, acquired listings); no new save schema.
 
 ## Rules: forward queue (from bible / systems-design)
 

@@ -555,4 +555,112 @@ public class HatchRivalDistressLaterTests
         Assert.Equal(buyer.Id, weak.AbsorbedByLabId);
         Assert.Contains(buyer.Log, e => e.Action == DecisionAction.AcquiredLab);
     }
+
+    // --- Q219–Q220 crash chip trades × retrenchment ---
+
+    static bool SawRunwayTightening(LabState lab) =>
+        lab.Log.Any(e => e.Action == DecisionAction.Tightened && e.Reasons.Any(r => r.Code == ReasonCode.RunwayWeeks));
+
+    static void StepMonthsWithPlans(Game g, int months)
+    {
+        int stepped = 0;
+        while (stepped < months)
+        {
+            if (GameDate.IsMonthStart(g.C.Calendar, g.Tick))
+            {
+                g.Sim.RunPlan(g.Id, g.C.Autopilot);
+                stepped++;
+            }
+            g.Sim.Step();
+        }
+    }
+
+    [Fact]
+    public void Q219_retrenching_plan_still_buys_distress_listed_chips()
+    {
+        var g = Game.New(seed: 19);
+        StepMonthsWithPlans(g, 24);
+        g.State.BubbleCrashMonthsRemaining = 6;
+        LabState seller = GoggleWithReadyChip(g);
+        WeakCashOnly(seller);
+        RunPlanner(g, seller, "goggle");
+        ChipDesign d = seller.ChipDesigns[0];
+        ChipListing listing = seller.Listing(d.Id);
+        Assert.NotNull(listing);
+        LabState buyer = g.Rival("openaye");
+        long weekly = LabQueries.WeeklyRunningCost(g.C, g.State, buyer);
+        int reserve = g.C.Rival("openaye").Plan.ReserveWeeks;
+        buyer.Cash = weekly * Math.Max(1, reserve / 2);
+        buyer.WeeksInDebt = 0;
+        int gpusBefore = buyer.RentedGpus;
+        g.Sim.RunPlan(buyer.Id, g.C.Rival("openaye").Plan);
+        Assert.True(SawRunwayTightening(buyer) || buyer.RentedGpus < gpusBefore, "runway retrench before debt");
+        int count = Math.Min(2, listing.MaxPerMonth - listing.SoldThisMonth);
+        Finance.Earn(seller, LedgerLine.CapitalIn, ChipQueries.OrderCost(ChipQueries.Spec(g.C, d), d.YieldPermille, count) + 1_000_000);
+        Finance.Earn(buyer, LedgerLine.CapitalIn, listing.PricePerChip * count + weekly * (reserve + 2));
+        long cash = buyer.Cash;
+        g.Do(Command.BuyListedChips(buyer.Id, seller.Id, d.Id, HardwareBatch.Cloud, count));
+        Assert.True(buyer.Cash < cash);
+        Assert.Equal(0, buyer.WeeksInDebt);
+    }
+
+    [Fact]
+    public void Q220_save_load_mid_crash_preserves_distress_listing_trade()
+    {
+        var g = Game.New(seed: 920);
+        LabState goggle = GoggleWithReadyChip(g);
+        ChipDesign d = goggle.ChipDesigns[0];
+        g.State.BubbleCrashMonthsRemaining = 7;
+        goggle.Cash = 6_000_000;
+        goggle.WeeksInDebt = 2;
+        RunPlanner(g, goggle, "goggle");
+        long price = goggle.Listing(d.Id).PricePerChip;
+        string save = g.Sim.Save();
+        var loaded = new Game(Simulation.Load(g.C, save));
+        SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
+        Assert.True(BubbleSystem.InCrash(loaded.State));
+        LabState lg = loaded.State.Labs.First(l => l.RivalId == "goggle");
+        Finance.Earn(loaded.Me, LedgerLine.CapitalIn, 60_000_000);
+        long cash = loaded.Me.Cash;
+        loaded.Do(Command.BuyListedChips(loaded.Id, lg.Id, d.Id, HardwareBatch.Cloud, 2));
+        Assert.True(loaded.Me.Cash < cash);
+        Assert.Equal(price, lg.Listing(d.Id).PricePerChip);
+    }
+
+    [Fact]
+    public void Q221_acquired_listing_stays_on_buyer_and_third_party_can_buy()
+    {
+        var g = Game.New(seed: 921);
+        LabState seller = g.Rival("openaye");
+        seller.Models.Add(Released(g, 560, "ChipCo"));
+        seller.Cash = -22_000;
+        int designId = g.State.TakeId();
+        seller.ChipDesigns.Add(new ChipDesign
+        {
+            Id = designId,
+            Status = ChipDesignStatus.Ready,
+            NodeId = g.C.Chips.Nodes[0].Id,
+            Target = "inference",
+            DieId = "medium",
+            FormatId = "fp16",
+            MemoryId = "ddr",
+            CoolingId = "air",
+            Version = 1,
+            YieldPermille = 800
+        });
+        seller.ChipListings.Add(new ChipListing { DesignId = designId, PricePerChip = 4500, MaxPerMonth = 6 });
+        Finance.Earn(g.Me, LedgerLine.CapitalIn, 80_000_000);
+        g.Do(Command.AcquireLab(g.Id, seller.Id));
+        Assert.Contains(g.Me.ChipListings, l => l.DesignId == designId);
+        Finance.Earn(g.Me, LedgerLine.CapitalIn, 30_000_000);
+        if (g.Me.SoftwarePermille == 0) g.Me.SoftwarePermille = g.C.Chips.SoftwareStart;
+        LabState anth = g.Rival("anthoptics");
+        Finance.Earn(anth, LedgerLine.CapitalIn, 40_000_000);
+        if (anth.SoftwarePermille == 0) anth.SoftwarePermille = g.C.Chips.SoftwareStart;
+        anth.PlanStartTick = 0;
+        long cash = anth.Cash;
+        g.Do(Command.BuyListedChips(anth.Id, g.Id, designId, HardwareBatch.Cloud, 2));
+        Assert.True(anth.Cash < cash);
+        Assert.Equal(2, g.Me.Listing(designId).SoldThisMonth);
+    }
 }
