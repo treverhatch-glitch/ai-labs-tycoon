@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q473. Gauntlet stage overlay tokens? DECIDED: `CampusGauntletStagePresentationSpec`
+
+- Options: (a) duplicate GAUNTLET-STAGE timings in UI code; (b) spec + HUD doc; (c) Timeline asset only.
+- Recommendation and choice: **(b)** — keeps fade/mascot scale with lectern prop ids for Unity cutscene wiring.
+- Why: Gauntlet is seasonal overlay; rules unchanged (GAUNTLET-STAGE-HUD.md).
+
 ### Q472. Training incident rung presentation? DECIDED: `CampusTrainingIncidentPresentationSpec`
 
 - Options: (a) TRAINING-PANEL prose only; (b) spec + doc rings; (c) per-rung SVG set.

@@ -11,7 +11,8 @@
 | 15–17 | `1160d80`…`e11a146` | HUD icons, catalog/icon handoff |
 | 18 | `879fb9c` | Silhouette sync + handoff index |
 | 19–22 | `f0478d4`…`a2999d9` | Handoff verify, breakdown/rival/world-freeze presentation specs |
-| 23 | (local GO) | Training incident rings |
+| 23 | `5af83e0` | Training incident rings, NEXT refill |
+| 24 | (local GO) | Gauntlet stage HUD |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

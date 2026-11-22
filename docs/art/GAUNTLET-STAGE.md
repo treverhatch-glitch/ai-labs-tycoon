@@ -10,4 +10,4 @@ Seasonal overlay on HQ — does not replace sim rules.
 | Mascots | existing `ModelMascotRow`, scale 1.2× during overlay |
 | Lighting | warm accent +10% on `CampusPresentationSpec` pitch |
 
-**Enter/exit:** fade 0.6s; HUD hides build panel, keeps cash/date.
+**Enter/exit:** fade 0.6s; HUD hides build panel, keeps cash/date. HUD detail: [GAUNTLET-STAGE-HUD.md](GAUNTLET-STAGE-HUD.md).
