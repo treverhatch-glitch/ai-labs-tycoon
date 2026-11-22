@@ -853,9 +853,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsTailLaterTests` (35):** post-acquire delivery and fleet; ledger `ChipSales`; listing caps and dual designs; feelings/vendor/compute; rollup chip-order transfer; refused commands; save/schema **29**; regulator attention; global order counts.
 
-### Q401–Q465. Grouped capstone chip × M&amp;A bar? DECIDED: test-only (batch 12, local)
+### Q401–Q495. Grouped capstone chip × M&amp;A bar? DECIDED: test-only (batch 12, pushed @ `ee78b4e`)
 
 - **`HatchRivalsChipsCapstoneLaterTests` (95):** multi-lab orders; pipeline buy→acquire→deliver; hall/cloud remap; feelings/ledger/bubble; rollup; refused cmd sweep; epilogue hooks; save/schema **29**.
+
+### Q496–Q565. Grouped coda chip × M&amp;A? DECIDED: test-only (batch 13, local)
+
+- **`HatchRivalsChipsCodaLaterTests` (70):** pipeline acquire; delivery; refused cmds; listings; rollup stub; save/schema **29**.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

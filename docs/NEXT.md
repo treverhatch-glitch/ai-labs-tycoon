@@ -118,7 +118,8 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 9**~~ **pushed @ `6c4d155`** — Q293–Q330 (`HatchRivalsChipsCrossBarLaterTests`, **38**).
 - ~~**Hatch rivals/chips batch 10**~~ **pushed @ `c58e395`** — Q331–Q365 (`HatchRivalsChipsIntegrateLaterTests`, **35**); schema **29** only; SolvencyHold **30** parked.
 - ~~**Hatch rivals/chips batch 11**~~ **pushed @ `31e6c2a`** — Q366–Q400 (`HatchRivalsChipsTailLaterTests`, **35**).
-- **Hatch rivals/chips batch 12 (local)** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only; SolvencyHold **30** parked.
+- ~~**Hatch rivals/chips batch 12**~~ **pushed @ `ee78b4e`** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only.
+- **Hatch rivals/chips batch 13 (local, GO-pending ≥13:26 UTC)** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70** grouped); schema **29** only; SolvencyHold **30** parked.
 
 ## Rules: forward queue (from bible / systems-design)
 
