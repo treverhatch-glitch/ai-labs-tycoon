@@ -10,4 +10,6 @@ Maps `CampusTabRailMock.TabIds` to HUD SVGs (`CampusIconCatalog`) and layout wid
 | `rivals` | `icon-rivals` | `RIVALS-PANEL.md` |
 | `world` | `icon-world` | `WORLD-MAP-PANEL.md` |
 
+**Active state:** [TAB-RAIL-ACTIVE-PRESENTATION.md](TAB-RAIL-ACTIVE-PRESENTATION.md).
+
 **Unity thread:** import SVGs as sprites; assign in tab rail when replacing `CampusTabRailMock` cubes.

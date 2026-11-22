@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q477. Tab rail active state tokens? DECIDED: `CampusTabRailActivePresentationSpec`
+
+- Options: (a) hard-code in tab rail prefab; (b) spec + doc; (c) animation-only with no constants.
+- Recommendation and choice: **(b)** — pairs with batch 7 `TAB-RAIL-INTEGRATION.md` and `ui-tab-rail-plaque`.
+- Why: Inactive affordance is presentation-only; selection stays in Unity host.
+
 ### Q476. HQ cash readout tokens? DECIDED: `CampusHqCashDisplayPresentationSpec`
 
 - Options: (a) duplicate font sizes in HUD prefab; (b) spec + doc; (c) bind only from IMGUI.
