@@ -143,6 +143,7 @@ namespace AiLabs.Rules.Config
             RunQueueProblems(p, c);
             PodsProblems(p, c);
             LicenceProblems(p, c);
+            PledgesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1613,6 +1614,16 @@ namespace AiLabs.Rules.Config
             if (k.FeeA < 0 || k.FeeB < k.FeeA || k.FeeC < k.FeeB || k.TermA < 1 || k.TermB < 1 || k.TermC < 1 || k.ReviewWeeks < 1 || k.CooldownWeeks < 0 || k.RenewWindow < 0) p.Add("licence fees must not fall, terms and reviewWeeks at least 1, cooldownWeeks and renewWindow not negative");
             if (k.BarA < 0 || k.BarB < k.BarA || k.BarC < k.BarB || k.BarC > 1000 || k.CutA < 0 || k.CutB < k.CutA || k.CutC < k.CutB || k.CutC > 900) p.Add("licence bars and cuts must not fall, bars at most 1000 and cuts at most 900");
             if (k.StrikeLimit < 1 || k.SuspendReputation < 0 || k.SuspendReputation > 500) p.Add("licence.strikeLimit must be at least 1 and suspendReputation from 0 to 500");
+        }
+
+        static void PledgesProblems(List<string> p, GameConfig c)
+        {
+            PledgesConfig k = c.Pledges;
+            if (k == null) { p.Add("pledges is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pledges.enabled must be 0 or 1");
+            if (k.MinWeeks < 26 || k.MaxWeeks < k.MinWeeks || k.MaxPledges < 1) p.Add("pledges.minWeeks must be at least 26, maxWeeks not below it and maxPledges at least 1");
+            if (k.LiftPermilleStep < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.SupportPermille < 0 || k.SupportPermille > 900) p.Add("pledges lift and support must not be negative, the cap at most 1000 and support at most 900");
+            if (k.KeptTrust < 0 || k.BreachTrust < 0 || k.BreachWeeks < 0 || k.BreachReputation < 0 || k.BreachReputation > 500) p.Add("pledges.keptTrust, breachTrust and breachWeeks must not be negative and breachReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

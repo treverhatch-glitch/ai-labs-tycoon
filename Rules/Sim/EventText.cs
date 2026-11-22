@@ -499,6 +499,10 @@ namespace AiLabs.Rules.Sim
                     return who + " took a strike against its licence.";
                 case EventKind.LicenceEnded:
                     return who + (e.Pick == 2 ? " had its licence suspended." : e.Pick == 1 ? " surrendered its licence." : " let its licence lapse.");
+                case EventKind.SupportPledged:
+                    return who + " promised to keep supporting " + e.Ref + ".";
+                case EventKind.SupportPledgeEnded:
+                    return who + (e.Pick == 1 ? " kept its support pledge for " : " broke its support pledge for ") + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

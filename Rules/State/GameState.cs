@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 108;
+        public const int CurrentSchema = 109;
 
         public int Schema;
         public string ConfigVersion;
@@ -489,6 +489,9 @@ namespace AiLabs.Rules.State
         public int LicGranted;
         public int LicRefused;
         public int LicSuspended;
+        /// <summary>How many support pledges the lab kept to their end, and how many it broke.</summary>
+        public int LtsKept;
+        public int LtsBroken;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -920,6 +923,8 @@ namespace AiLabs.Rules.State
             s.Int("licGranted", ref LicGranted);
             s.Int("licRefused", ref LicRefused);
             s.Int("licSuspended", ref LicSuspended);
+            s.Int("ltsKept", ref LtsKept);
+            s.Int("ltsBroken", ref LtsBroken);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1103,6 +1108,8 @@ namespace AiLabs.Rules.State
         /// <summary>The model holds an external audit certificate until this tick; 0 when it never had one, or it ran out or was pulled.</summary>
         /// <summary>The priority of the model's training run: 0 not set (a normal run), 1 background, 2 normal, 3 rush.</summary>
         public int QueueLevel;
+        /// <summary>Weeks left of the model's long-term support pledge, or 0 when it has none.</summary>
+        public int LtsLeft;
         public int AuditedUntil;
         /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
         public int SunsetStart;
@@ -1143,6 +1150,7 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("ltsLeft", ref LtsLeft);
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);

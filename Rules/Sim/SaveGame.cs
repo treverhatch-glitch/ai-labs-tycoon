@@ -293,6 +293,8 @@ namespace AiLabs.Rules.Sim
                     || (lab.LicRegime == 0 && (lab.LicPhase != 0 || lab.LicLeft != 0 || lab.LicStrikes != 0)) || (lab.LicRegime > 0 && (lab.LicPhase == 0 || lab.LicLeft < 1))
                     || ((lab.LicRegime != 0 || lab.LicGranted != 0 || lab.LicRefused != 0 || lab.LicSuspended != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a licence (regime " + lab.LicRegime + ", phase " + lab.LicPhase + ", " + lab.LicLeft + " weeks, " + lab.LicStrikes + " strikes) in a way the data does not allow");
+                if (lab.LtsKept < 0 || lab.LtsBroken < 0 || ((lab.LtsKept != 0 || lab.LtsBroken != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has kept " + lab.LtsKept + " and broken " + lab.LtsBroken + " support pledges in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -414,6 +416,7 @@ namespace AiLabs.Rules.Sim
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
                     if (model.QueueLevel < 0 || model.QueueLevel > 3 || (model.QueueLevel != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(model.Name + " has a queue level " + model.QueueLevel + " the data does not allow");
+                    if (model.LtsLeft < 0 || model.LtsLeft > c.Pledges.MaxWeeks || (model.LtsLeft != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(model.Name + " has a support pledge of " + model.LtsLeft + " weeks the data does not allow");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);

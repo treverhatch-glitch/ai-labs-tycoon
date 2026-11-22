@@ -480,7 +480,11 @@ namespace AiLabs.Rules.State
         /// <summary>An incident counted against the licence. Amount is the strikes now.</summary>
         LicenceStrike,
         /// <summary>A licence ended. Pick 0 lapsed, 1 surrendered, 2 suspended, SubjectId the regime.</summary>
-        LicenceEnded
+        LicenceEnded,
+        /// <summary>The lab pledged to support a model. Amount is the weeks.</summary>
+        SupportPledged,
+        /// <summary>A pledge ended. Pick 1 kept, 0 broken, Amount the fee paid for a breach.</summary>
+        SupportPledgeEnded
     }
 
     /// <summary>

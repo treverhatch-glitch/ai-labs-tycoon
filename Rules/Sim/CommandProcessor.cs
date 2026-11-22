@@ -105,6 +105,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.PledgeSupport: return PledgeSupport(c, state, lab, cmd);
+                case CommandKind.BreakSupportPledge: return BreakSupportPledge(c, state, lab, cmd);
                 case CommandKind.ApplyLicence: return ApplyLicence(c, state, lab, cmd);
                 case CommandKind.RenewLicence: return RenewLicence(c, state, lab, cmd);
                 case CommandKind.SurrenderLicence: return SurrenderLicence(c, state, lab, cmd);
@@ -563,6 +565,9 @@ namespace AiLabs.Rules.Sim
                     return Fail(CommandError.SectorClosed, sector.Name + " opens in " + sector.OpensYear + ".");
                 if (model.Capability < sector.MinCapability)
                     return Fail(CommandError.BelowSectorBar, sector.Name + " needs capability " + sector.MinCapability + " and " + model.Name + " has " + model.Capability + ".");
+                ModelState pledged = Pledges.Blocking(c, state, lab, model, sector.Id);
+                if (pledged != null)
+                    return Fail(CommandError.InvalidArgument, pledged.Name + " is under a support pledge in " + sector.Name + " for " + pledged.LtsLeft + " more weeks; keep it or break the pledge first.");
             }
 
             var replaced = new List<ModelState>();

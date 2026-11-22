@@ -6289,6 +6289,19 @@
     "suspendReputation": 40,
     "renewWindow": 12
   },
+  "pledges": {
+    "enabled": 1,
+    "minWeeks": 26,
+    "maxWeeks": 104,
+    "maxPledges": 2,
+    "liftPermilleStep": 40,
+    "liftCapPermille": 200,
+    "supportPermille": 60,
+    "keptTrust": 25,
+    "breachWeeks": 8,
+    "breachTrust": 60,
+    "breachReputation": 25
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

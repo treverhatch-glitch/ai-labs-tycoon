@@ -121,6 +121,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 106) MigrateTo106(root);
             if (fromSchema < 107) MigrateTo107(root);
             if (fromSchema < 108) MigrateTo108(root);
+            if (fromSchema < 109) MigrateTo109(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -484,6 +485,17 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 109: no model is under a support pledge.</summary>
+        static void MigrateTo109(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "ltsKept", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ltsBroken", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "ltsLeft", JsonValue.Of(0L)));
             });
         }
 

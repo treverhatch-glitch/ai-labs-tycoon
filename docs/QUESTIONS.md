@@ -2108,6 +2108,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - A refusal keeps the fee, so applying with a model that is not ready is a real loss, not a free roll.
 - Alternatives: a yearly levy (rejected: no choice), a licence needed to release at all (rejected: it would make the early game depend on it and touch release review), one regime that scales with the era (rejected: nothing to pick between).
 
+### Q411. What does it mean to stand behind an old version? DECIDED: a support pledge that pays only if the lab is willing to be stuck with the model
+- Releasing a new model quietly moves every customer to it. A pledge is the other choice: customers who value stability pay more for a version that will not be pulled, and the lab is held to it. The longer the promise the better it pays, and the worse it binds, because the newer model cannot take that sector over until the pledge ends or is broken.
+- It is not a purchase: a short pledge loses money, and the lift shrinks as weeks pass, so only a long promise on a model that really earns is worth making. Breaking one is dear in cash, trust and reputation, and keeping one pays a little trust at the end.
+- The lock is the whole point. Pledging the best seller in a sector locks the lab out of upgrading that sector, so the question is whether the next model is worth more than the pledge.
+- Alternatives: a pledge with no lock (rejected: free money), a flat bonus for old models (rejected: no choice), customers carried over only in part (rejected: it would change how every release works whether or not the player chose it).
+
 ## Open
 
 None.

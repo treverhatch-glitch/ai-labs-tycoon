@@ -170,7 +170,9 @@ namespace AiLabs.Rules.Sim
         DisbandPod,
         ApplyLicence,
         RenewLicence,
-        SurrenderLicence
+        SurrenderLicence,
+        PledgeSupport,
+        BreakSupportPledge
     }
 
     /// <summary>
@@ -1473,6 +1475,23 @@ namespace AiLabs.Rules.Sim
         public static Command SurrenderLicence(int labId)
         {
             return Make(CommandKind.SurrenderLicence, labId);
+        }
+
+        /// <summary>Promises to keep supporting a released model for this many weeks. It then cannot be replaced in a sector or given notice until the pledge ends or is broken.</summary>
+        public static Command PledgeSupport(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.PledgeSupport, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Breaks a support pledge now, for a fee, trust in the model's sectors and some reputation.</summary>
+        public static Command BreakSupportPledge(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.BreakSupportPledge, labId);
+            c.TargetId = modelId;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
