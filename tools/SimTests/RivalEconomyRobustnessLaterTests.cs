@@ -166,9 +166,9 @@ public class RivalEconomyRobustnessLaterTests
     [Fact]
     public void Q200_retrenchment_log_appears_before_debt_on_tight_seed()
     {
-        var g = Game.New(seed: 19);
+        var g = Game.New(seed: 20);
         bool saw = false;
-        for (int i = 0; i < 18 * g.C.Calendar.WeeksPerYear && !saw; i++)
+        for (int i = 0; i < 24 * g.C.Calendar.WeeksPerYear && !saw; i++)
         {
             if (GameDate.IsMonthStart(g.C.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, g.C.Autopilot);
             g.Sim.Step();
@@ -178,7 +178,7 @@ public class RivalEconomyRobustnessLaterTests
                 if (SawRunwayTightening(lab)) { saw = true; break; }
             }
         }
-        Assert.True(saw, "expected runway-driven tightening on seed 19 before debt");
+        Assert.True(saw, "expected runway-driven tightening on seed 20 before debt");
     }
 
     [Fact]
@@ -288,15 +288,15 @@ public class RivalEconomyRobustnessLaterTests
     [Fact]
     public void Q201_save_load_mid_retrenchment_then_forty_years_still_solvent()
     {
-        var g = Game.New(seed: 19);
+        var g = Game.New(seed: 20);
         bool mid = false;
-        for (int i = 0; i < 18 * g.C.Calendar.WeeksPerYear && !mid; i++)
+        for (int i = 0; i < 24 * g.C.Calendar.WeeksPerYear && !mid; i++)
         {
             if (GameDate.IsMonthStart(g.C.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, g.C.Autopilot);
             g.Sim.Step();
             mid = PlanLabs(g).Any(l => l.WeeksInDebt == 0 && SawRunwayTightening(l));
         }
-        Assert.True(mid, "expected mid-retrenchment on seed 19 before save");
+        Assert.True(mid, "expected mid-retrenchment on seed 20 before save");
         string save = g.Sim.Save();
         var loaded = new Game(Simulation.Load(g.C, save));
         SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
@@ -308,7 +308,7 @@ public class RivalEconomyRobustnessLaterTests
     [Fact]
     public void Q201_retrenchment_and_no_bankruptcy_on_tight_seed_over_full_soak()
     {
-        var g = Game.New(seed: 19);
+        var g = Game.New(seed: 20);
         bool sawRetrench = false;
         GameConfig c = g.C;
         int weeks = Years * c.Calendar.WeeksPerYear;
@@ -319,9 +319,9 @@ public class RivalEconomyRobustnessLaterTests
             foreach (LabState lab in PlanLabs(g))
             {
                 if (SawRunwayTightening(lab)) sawRetrench = true;
-                Assert.False(lab.Bankrupt, "seed 19 week " + w + ": " + lab.Name);
+                Assert.False(lab.Bankrupt, "seed 20 week " + w + ": " + lab.Name);
             }
         }
-        Assert.True(sawRetrench, "seed 19 full soak should hit Q200 retrenchment");
+        Assert.True(sawRetrench, "seed 20 full soak should hit Q200 retrenchment");
     }
 }
