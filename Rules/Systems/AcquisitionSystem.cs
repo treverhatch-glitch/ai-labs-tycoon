@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
+using AiLabs.Rules.Config;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -106,7 +106,8 @@ namespace AiLabs.Rules.Systems
       TransferStaff(c, buyer, target);
       TransferChipDesigns(buyer, target);
       TransferChipListings(buyer, target);
-      TransferHoldingsAndFleet(c, state, buyer, target);
+      Dictionary<int, int> holdingMap = TransferHoldingsAndFleet(c, state, buyer, target);
+      TransferChipOrders(buyer, target, holdingMap);
       for (int s = 0; s < state.Sectors.Count; s++)
       {
         SectorState sector = state.Sectors[s];
@@ -172,7 +173,7 @@ namespace AiLabs.Rules.Systems
       }
     }
 
-    static void TransferHoldingsAndFleet(GameConfig c, GameState state, LabState buyer, LabState target)
+    static Dictionary<int, int> TransferHoldingsAndFleet(GameConfig c, GameState state, LabState buyer, LabState target)
     {
       var holdingMap = new Dictionary<int, int>();
       for (int i = 0; i < target.Holdings.Count; i++)
@@ -192,9 +193,26 @@ namespace AiLabs.Rules.Systems
         if (b.HoldingId != HardwareBatch.Hq && holdingMap.TryGetValue(b.HoldingId, out int mapped)) b.HoldingId = mapped;
         else if (b.HoldingId != HardwareBatch.Hq) continue;
         b.Id = state.TakeId();
+        if (b.DesignLabId == target.Id) b.DesignLabId = buyer.Id;
         if (lockUntil >= 0 && !string.IsNullOrEmpty(b.GpuGenId) && b.ChipDesignId <= 0) b.ResaleLockedUntilTick = lockUntil;
         buyer.Fleet.Add(b);
       }
+      return holdingMap;
+    }
+
+    static void TransferChipOrders(LabState buyer, LabState target, Dictionary<int, int> holdingMap)
+    {
+      for (int i = 0; i < target.ChipOrders.Count; i++)
+      {
+        ChipOrder o = target.ChipOrders[i];
+        o.BuyerLabId = buyer.Id;
+        if (o.DesignLabId == target.Id) o.DesignLabId = buyer.Id;
+        if (o.HoldingId != HardwareBatch.Cloud && o.HoldingId != HardwareBatch.Hq
+            && holdingMap.TryGetValue(o.HoldingId, out int mapped))
+          o.HoldingId = mapped;
+        buyer.ChipOrders.Add(o);
+      }
+      target.ChipOrders.Clear();
     }
 
     static long ReadyChipBookValue(GameConfig c, LabState target, int bookPermille)

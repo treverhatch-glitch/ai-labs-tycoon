@@ -828,6 +828,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - `HatchRivalDistressLaterTests` Q221: listing moves to buyer lab; AntHoptics buys listed chips post-M&amp;A.
 
+### Q222–Q232. Chip orders and listings through crash M&amp;A? DECIDED: transfer orders; remap design lab; consolidation bar
+
+- **`AcquisitionSystem`:** `TransferChipOrders` before `SealAbsorbed`; chip fleet `DesignLabId` remapped to buyer (no save schema).
+- **`HatchRivalsChipsConsolidationLaterTests` (11):** in-flight listed-chip orders move on acquire; delivery metadata; fleet remap; distress list while in debt; planner acquire runway gate; listing month reset; feelings in crash; save/load orders; multi-listing transfer; absorbed seller refused; distress fire-sale cap per quarter.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
