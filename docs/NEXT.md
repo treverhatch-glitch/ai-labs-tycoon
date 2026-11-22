@@ -126,7 +126,8 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 17**~~ **pushed @ `c90e29b` (≥17:01 UTC GO)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100**); gate **1509/0** / **1507/0** WT.
 - ~~**Hatch rivals/chips batch 18**~~ **pushed @ `4460d60`** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70**); parent `c90e29b`; gate **1579/0** / **1577/0** WT.
 - ~~**Hatch rivals/chips batch 19**~~ **pushed @ `a61660c`** — Q976–Q1045 (`HatchRivalsChipsFinaleLaterTests`, **70**); parent `4460d60`; gate **1649/0** / **1647/0** WT.
-- **Hatch rivals/chips batch 20 (local, push hold ≥~19:33 UTC after `a61660c`)** — Q1046–Q1115 (`HatchRivalsChipsWinddownLaterTests`, **70**); full gate pending.
+- ~~**Hatch rivals/chips batch 20**~~ **pushed @ `a87d35b`** — Q1046–Q1115 (**70**); gate **1719/0** / **1717/0** WT; parent `a61660c`.
+- **Hatch era/cast batch 21 (local commit pending gate, push hold ≥~20:26 UTC)** — Q1116–Q1185 (`HatchEraCastPickerLaterTests`, **70**).
 
 ## Rules: forward queue (from bible / systems-design)
 
