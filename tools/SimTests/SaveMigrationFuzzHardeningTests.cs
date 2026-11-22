@@ -67,6 +67,7 @@ public class SaveMigrationFuzzHardeningTests
     static bool EraHBounds(int schema) => schema >= 105;
     static bool EraIBounds(int schema) => schema >= 110;
     static bool EraJBounds(int schema) => schema >= 115;
+    static bool EraKBounds(int schema) => schema >= 120;
 
     static void TouchEraE(Game g)
     {
@@ -213,6 +214,35 @@ public class SaveMigrationFuzzHardeningTests
         g.Weeks(2);
     }
 
+    static void TouchEraK(Game g)
+    {
+        g.C.PostTraining.MinEra = 0;
+        g.C.Agency.MinEra = 0;
+        g.Me.BoardInvestorSeats = Math.Max(1, g.Me.BoardInvestorSeats);
+        g.Try(Command.AcquireData(g.Id, 1, 80));
+        g.Try(Command.CleanData(g.Id, 1, 60));
+        ModelState m = g.Me.Models.FirstOrDefault(x => x.Status == ModelStatus.Trained);
+        if (m == null)
+        {
+            m = g.Train("mini", 600);
+            if (m != null) g.UntilTrained(m);
+        }
+        if (m != null)
+        {
+            g.Try(Command.ContractAnnotators(g.Id, 1));
+            g.Try(Command.PostTrain(g.Id, m.Id, 1));
+            StaffMember owner = g.Me.Staff.FirstOrDefault(s => s.RoleId == "researcher");
+            if (owner != null)
+            {
+                g.Try(Command.AssignOwner(g.Id, m.Id, owner.Id));
+                g.Try(Command.WriteDocs(g.Id, m.Id));
+            }
+            g.Try(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
+        }
+        g.Try(Command.HoldBoardMeetings(g.Id, 1));
+        g.Weeks(4);
+    }
+
     public static IEnumerable<object[]> SchemaRows()
     {
         for (int schema = 1; schema <= GameState.CurrentSchema; schema++)
@@ -246,13 +276,14 @@ public class SaveMigrationFuzzHardeningTests
             if (schema >= 105) TouchEraH(rich);
             if (schema >= 110) TouchEraI(rich);
             if (schema >= 115) TouchEraJ(rich);
+            if (schema >= 120) TouchEraK(rich);
             json = SaveSchemaPretend.At(c, schema, rich.Sim.Save());
         }
 
         Simulation sim = Simulation.Load(c, json);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
-        HardeningInvariants.AssertAllLabs(c, sim.State, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema));
-        HardeningInvariants.StepWeeksChecking(sim, PlayWeeks, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema));
+        HardeningInvariants.AssertAllLabs(c, sim.State, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema));
+        HardeningInvariants.StepWeeksChecking(sim, PlayWeeks, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema));
     }
 
     [Fact]
@@ -268,6 +299,7 @@ public class SaveMigrationFuzzHardeningTests
         if (GameState.CurrentSchema >= 105) TouchEraH(rich);
         if (GameState.CurrentSchema >= 110) TouchEraI(rich);
         if (GameState.CurrentSchema >= 115) TouchEraJ(rich);
+        if (GameState.CurrentSchema >= 120) TouchEraK(rich);
         string current = rich.Sim.Save();
         for (int schema = 77; schema <= GameState.CurrentSchema; schema++)
         {

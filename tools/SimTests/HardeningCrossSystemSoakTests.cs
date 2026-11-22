@@ -180,6 +180,27 @@ public class HardeningCrossSystemSoakTests
             }
             if (week % 35 == 9 && g.Me.SpotPermille == 0) g.Try(Command.SetSpotShare(g.Id, 200));
         }
+        if (week >= 360)
+        {
+            g.C.PostTraining.MinEra = 0;
+            g.C.Agency.MinEra = 0;
+            if (g.Me.BoardInvestorSeats == 0) g.Me.BoardInvestorSeats = 1;
+            if (week % 30 == 7 && g.Me.AnnVendor == 0 && g.Me.DataClean1 > 0)
+                g.Try(Command.ContractAnnotators(g.Id, 1 + week / 30 % 3));
+            if (week % 40 == 11 && g.Me.AnnVendor != 0) g.Try(Command.AuditVendor(g.Id));
+            ModelState tune = g.Me.Models.FirstOrDefault(m => m.Status == ModelStatus.Trained && m.PostKind == 0);
+            if (week % 45 == 13 && tune != null && g.Me.DataClean4 >= g.C.PostTraining.Units)
+                g.Try(Command.PostTrain(g.Id, tune.Id, 1 + week / 45 % 2));
+            ModelState owned = g.Me.Models.FirstOrDefault(m => m.Status != ModelStatus.Retired && m.OwnerId == 0);
+            StaffMember researcher = g.Me.Staff.FirstOrDefault(s => s.RoleId == "researcher");
+            if (week % 50 == 17 && owned != null && researcher != null)
+            {
+                g.Try(Command.AssignOwner(g.Id, owned.Id, researcher.Id));
+                g.Try(Command.WriteDocs(g.Id, owned.Id));
+            }
+            if (week % 55 == 19 && g.Me.MeetingsOn == 0) g.Try(Command.HoldBoardMeetings(g.Id, 1));
+            if (week % 52 == 21 && g.Me.MotionPend != 0) g.Try(Command.AnswerMotion(g.Id, week % 104 == 21 ? 1 : 0));
+        }
     }
 
     static Game Soak(long seed, int weeks)
@@ -191,7 +212,7 @@ public class HardeningCrossSystemSoakTests
         {
             UseEveryTool(g, week);
             g.Autopilot(1);
-            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true);
+            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true);
             Assert.Equal(gap, g.Me.Cash - g.Me.Ledger.Lifetime.Net);
         }
         return g;
@@ -208,7 +229,7 @@ public class HardeningCrossSystemSoakTests
         Game g = Soak(seed, TenYearsWeeks);
         Assert.False(double.IsNaN(g.Me.Cash));
         Assert.True(LabQueries.TotalStaff(g.Me) >= 0);
-        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true);
+        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true);
         Simulation back = Simulation.Load(g.C, g.Sim.Save());
         Assert.Equal(g.Sim.Digest(), back.Digest());
     }
@@ -237,7 +258,7 @@ public class HardeningCrossSystemSoakTests
     {
         Game g = Soak(seed, TenYearsWeeks);
         Assert.Empty(SaveGame.Problems(g.C, g.State));
-        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true);
+        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true);
         Simulation back = Simulation.Load(g.C, g.Sim.Save());
         Assert.Equal(g.Sim.Digest(), back.Digest());
     }

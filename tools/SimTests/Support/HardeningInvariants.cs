@@ -322,7 +322,51 @@ public static class HardeningInvariants
         }
     }
 
-    public static void AssertAllLabs(GameConfig c, GameState state, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false)
+    public static void AssertEraKStateBounds(GameConfig c, LabState lab)
+    {
+        if (c.Annotation.Enabled != 0)
+        {
+            Assert.InRange(lab.AnnVendor, 0, 3);
+            Assert.True(lab.AnnCleaned >= 0);
+        }
+        if (c.PostTraining.Enabled != 0)
+        {
+            foreach (ModelState m in lab.Models)
+            {
+                Assert.InRange(m.PostKind, 0, 2);
+                Assert.True(m.PostPref >= 0);
+                Assert.True(m.PostSafety >= 0);
+            }
+        }
+        if (c.Knowledge.Enabled != 0)
+        {
+            foreach (ModelState m in lab.Models)
+            {
+                Assert.True(m.OwnerId >= 0);
+                Assert.True(m.DocLevel >= 0);
+                Assert.True(m.KnowGap >= 0);
+                Assert.True(m.Handovers >= 0);
+            }
+        }
+        if (c.BoardAgenda.Enabled != 0)
+        {
+            Assert.InRange(lab.MeetingsOn, 0, 1);
+            Assert.True(lab.BoardTension >= 0);
+            Assert.InRange(lab.MotionPend, 0, BoardMotions.SafetyStaff);
+            Assert.True(lab.MotionPendGoal >= 0);
+            Assert.True(lab.MotionsTabled >= 0);
+            Assert.True(lab.MotionsKept >= 0);
+            Assert.True(lab.MotionsDeclined >= 0);
+            Assert.True(lab.MotionsBroken >= 0);
+        }
+        if (c.Agency.Enabled != 0)
+        {
+            foreach (ModelState m in lab.Models)
+                Assert.InRange(m.AgentLevel, 0, 3);
+        }
+    }
+
+    public static void AssertAllLabs(GameConfig c, GameState state, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false)
     {
         Assert.Empty(SaveGame.Problems(c, state));
         AssertBooksBalance(c, state);
@@ -340,15 +384,16 @@ public static class HardeningInvariants
             if (eraHBounds) AssertEraHStateBounds(c, lab);
             if (eraIBounds) AssertEraIStateBounds(c, lab);
             if (eraJBounds) AssertEraJStateBounds(c, lab);
+            if (eraKBounds) AssertEraKStateBounds(c, lab);
         }
     }
 
-    public static void StepWeeksChecking(Simulation sim, int weeks, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false)
+    public static void StepWeeksChecking(Simulation sim, int weeks, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false)
     {
         for (int w = 0; w < weeks; w++)
         {
             sim.Step();
-            AssertAllLabs(sim.Config, sim.State, eraBounds, eraBBounds, eraCBounds, eraDBounds, eraEBounds, eraFBounds, eraGBounds, eraHBounds, eraIBounds, eraJBounds);
+            AssertAllLabs(sim.Config, sim.State, eraBounds, eraBBounds, eraCBounds, eraDBounds, eraEBounds, eraFBounds, eraGBounds, eraHBounds, eraIBounds, eraJBounds, eraKBounds);
         }
     }
 }
