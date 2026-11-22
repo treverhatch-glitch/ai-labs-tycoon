@@ -146,6 +146,7 @@ namespace AiLabs.Rules.Config
             PledgesProblems(p, c);
             IntegrationsProblems(p, c);
             ConformityProblems(p, c);
+            OrgProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1649,6 +1650,16 @@ namespace AiLabs.Rules.Config
             if (k.MaxActive < 1 || k.DossierWeeks < 1 || k.ReviewWeeks < 1 || k.TermWeeks < 2 || k.SurveillanceAt < 1 || k.SurveillanceAt >= k.TermWeeks || k.ResubmitWeeks < 0) p.Add("conformity.maxActive, dossierWeeks and reviewWeeks must be at least 1, termWeeks at least 2, surveillanceAt inside the term and resubmitWeeks not negative");
             if (k.DossierPoints < 0 || k.BroadExtraPoints < 0 || k.BarNarrow < 0 || k.BarBroad < k.BarNarrow || k.BarBroad > 1000 || k.MaxGap < 0) p.Add("conformity costs must not be negative, barBroad not below barNarrow and at most 1000");
             if (k.CutNarrow < 0 || k.CutBroad < k.CutNarrow || k.CutBroad > 900 || k.TrustGain < 0 || k.SuspendTrust < 0) p.Add("conformity cuts must not fall and cutBroad at most 900; trust values not negative");
+        }
+
+        static void OrgProblems(List<string> p, GameConfig c)
+        {
+            OrgConfig k = c.Org;
+            if (k == null) { p.Add("org is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("org.enabled must be 0 or 1");
+            if (k.FlatCap < 0 || k.FlatStep < 0 || k.SpanSize < 1 || k.SpanStep < 0 || k.LeadlessLoss < 0 || k.FuncResearchBonus < 0) p.Add("org.spanSize must be at least 1 and the flat, span and function values not negative");
+            if (k.SquadSize < 2 || k.SquadMinRoles < 1 || k.SquadLeadLoss < 0 || k.SquadTrainingBonus < 0 || k.CrossTeam < 0) p.Add("org.squadSize must be at least 2, squadMinRoles at least 1 and the squad values not negative");
+            if (k.LossCap < 0 || k.LossCap > 900 || k.ReorgWeeks < 0 || k.DisruptLoss < 0 || k.CooldownWeeks < 0) p.Add("org.lossCap must be from 0 to 900 and the reorganisation values not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

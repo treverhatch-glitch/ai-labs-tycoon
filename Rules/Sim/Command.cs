@@ -178,7 +178,8 @@ namespace AiLabs.Rules.Sim
         CancelDeprecation,
         StartConformity,
         SubmitEvidence,
-        WithdrawConformity
+        WithdrawConformity,
+        SetOrg
     }
 
     /// <summary>
@@ -1548,6 +1549,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.WithdrawConformity, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Organises the lab: 1 flat, 2 by function, 3 in cross-functional squads. Changing it disrupts the lab for a while and cannot be repeated soon.</summary>
+        public static Command SetOrg(int labId, int form)
+        {
+            Command c = Make(CommandKind.SetOrg, labId);
+            c.Count = form;
             return c;
         }
 

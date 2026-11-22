@@ -496,7 +496,11 @@ namespace AiLabs.Rules.State
         /// <summary>A review ended. Pick 1 certified, 0 findings.</summary>
         ConformityDecided,
         /// <summary>An assessment or certificate ended. Pick 0 withdrawn, 1 expired, 2 suspended.</summary>
-        ConformityEnded
+        ConformityEnded,
+        /// <summary>The lab changed how it is organised. SubjectId is the new form (1 flat, 2 functional, 3 squads); Amount is the weeks of disruption.</summary>
+        OrgChanged,
+        /// <summary>The structure is costing the lab. Amount is the loss in permille, SubjectId the form. Logged when it first crosses a quarter of the cap and again after a change.</summary>
+        OrgStrained
     }
 
     /// <summary>

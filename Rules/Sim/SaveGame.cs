@@ -299,6 +299,10 @@ namespace AiLabs.Rules.Sim
                     p.Add(who + " has moved " + lab.ApiMoved + " and lost " + lab.ApiLost + " integrations in a way the data does not allow");
                 if (lab.CfGranted < 0 || lab.CfFindings < 0 || lab.CfSuspended < 0 || ((lab.CfGranted != 0 || lab.CfFindings != 0 || lab.CfSuspended != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has conformity counts (" + lab.CfGranted + ", " + lab.CfFindings + ", " + lab.CfSuspended + ") the data does not allow");
+                if (lab.OrgForm < 0 || lab.OrgForm > 3 || lab.OrgSince < 0 || lab.OrgDisrupt < 0 || lab.OrgDisrupt > c.Org.ReorgWeeks || lab.OrgReorgs < 0
+                    || (lab.OrgForm == 0 && (lab.OrgSince != 0 || lab.OrgDisrupt != 0))
+                    || ((lab.OrgForm != 0 || lab.OrgReorgs != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a structure (" + lab.OrgForm + ", disruption " + lab.OrgDisrupt + ", " + lab.OrgReorgs + " changes) the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

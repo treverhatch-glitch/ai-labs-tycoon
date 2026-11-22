@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 111;
+        public const int CurrentSchema = 112;
 
         public int Schema;
         public string ConfigVersion;
@@ -499,6 +499,11 @@ namespace AiLabs.Rules.State
         public int CfGranted;
         public int CfFindings;
         public int CfSuspended;
+        /// <summary>The lab structure (0 none, 1 flat, 2 functional, 3 squads), the week it was set, the weeks of disruption left and how many times it was changed.</summary>
+        public int OrgForm;
+        public int OrgSince;
+        public int OrgDisrupt;
+        public int OrgReorgs;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -937,6 +942,10 @@ namespace AiLabs.Rules.State
             s.Int("cfGranted", ref CfGranted);
             s.Int("cfFindings", ref CfFindings);
             s.Int("cfSuspended", ref CfSuspended);
+            s.Int("orgForm", ref OrgForm);
+            s.Int("orgSince", ref OrgSince);
+            s.Int("orgDisrupt", ref OrgDisrupt);
+            s.Int("orgReorgs", ref OrgReorgs);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

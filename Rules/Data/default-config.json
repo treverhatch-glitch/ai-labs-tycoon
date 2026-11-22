@@ -6342,6 +6342,24 @@
     "trustGain": 20,
     "suspendTrust": 30
   },
+  "org": {
+    "enabled": 1,
+    "flatCap": 12,
+    "flatStep": 15,
+    "spanSize": 8,
+    "spanStep": 10,
+    "leadlessLoss": 80,
+    "funcResearchBonus": 60,
+    "squadSize": 5,
+    "squadMinRoles": 3,
+    "squadLeadLoss": 50,
+    "squadTrainingBonus": 120,
+    "crossTeam": 10,
+    "lossCap": 450,
+    "reorgWeeks": 8,
+    "disruptLoss": 250,
+    "cooldownWeeks": 26
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

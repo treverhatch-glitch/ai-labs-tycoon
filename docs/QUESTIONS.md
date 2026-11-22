@@ -2145,6 +2145,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The research points for the dossier are the small part. The model has to be good.
 - Alternatives: a pass chance (rejected: honest models would fail by luck), a fee for a certificate (rejected: pay-for-stat), a lab-wide certificate (rejected: licensing already is lab-wide).
 
+### Q419. Does it matter how the lab is organised? DECIDED: three structures whose cost depends on how big the lab is and how many seniors it has
+- A flat lab is free until it outgrows its cap. A functional lab gains research when each function has a senior and loses where one does not, and starts to strain once functions are large. Squads gain training speed but need a senior each and 3 different roles. Which is best changes as the lab grows and promotes, so a reorganisation is a bet on the lab's next year; it is paid for in 8 weeks of disruption and a 26 week lock.
+- It reads staff and seniority as they are, so promotions, hiring, layoffs and quitting all change the answer without a hook of their own.
+- Alternatives: a flat bonus per structure (rejected: no tension), paying for a structure (rejected: a fee), a leader per team named by the player (rejected: promotions already name them).
+
 ## Open
 
 None.
