@@ -560,7 +560,15 @@ namespace AiLabs.Rules.State
         /// <summary>A tuning run finished. SubjectId is the model, Pick is the kind, Amount the number of runs of that kind it now has.</summary>
         PostTrainingDone,
         /// <summary>A tuning run was abandoned. SubjectId is the model.</summary>
-        PostTrainingAbandoned
+        PostTrainingAbandoned,
+        /// <summary>A person was named as the owner of a model. SubjectId is the model, Amount the staff id.</summary>
+        OwnerNamed,
+        /// <summary>The owner of a model left. SubjectId is the model, Amount the gap that was left.</summary>
+        OwnerLeft,
+        /// <summary>Documentation was written for a model. SubjectId is the model, Amount its level.</summary>
+        DocsWritten,
+        /// <summary>The documentation of a model went stale. SubjectId is the model, Amount its level now.</summary>
+        DocsStale
     }
 
     /// <summary>

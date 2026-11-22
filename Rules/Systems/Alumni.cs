@@ -26,6 +26,7 @@ namespace AiLabs.Rules.Systems
 
         public static void Record(GameConfig c, GameState state, LabState lab, StaffMember person, int terms)
         {
+            Knowledge.OnLeft(c, state, lab, person.Id);
             if (!Enabled(c) || lab.Id != state.PlayerLabId) return;
             var gone = new Alumnus();
             gone.Id = person.Id;

@@ -6536,6 +6536,18 @@
     "refuse": 35,
     "minLift": -500
   },
+  "knowledge": {
+    "enabled": 1,
+    "maxOwned": 2,
+    "maxDocs": 3,
+    "docCost": 12000,
+    "docCut": 250,
+    "docStale": 52,
+    "gapBase": 600,
+    "ramp": 25,
+    "gapIncident": 90,
+    "gapRiskAt": 300
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

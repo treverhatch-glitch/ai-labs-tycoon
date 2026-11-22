@@ -135,6 +135,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 120) MigrateTo120(root);
             if (fromSchema < 121) MigrateTo121(root);
             if (fromSchema < 122) MigrateTo122(root);
+            if (fromSchema < 123) MigrateTo123(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -498,6 +499,19 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 123: no model has an owner or documentation.</summary>
+        static void MigrateTo123(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "ownerId", "docLevel", "docAge", "knowGap", "handovers" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

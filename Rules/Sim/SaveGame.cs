@@ -484,6 +484,10 @@ namespace AiLabs.Rules.Sim
                         || (model.PostKind == 0 && model.PostLeft != 0) || (model.PostKind != 0 && (model.PostLeft < 1 || model.Status != ModelStatus.Trained))
                         || ((model.PostKind != 0 || model.PostPref != 0 || model.PostSafety != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                         p.Add(model.Name + " is being tuned (kind " + model.PostKind + ", " + model.PostLeft + " weeks, " + model.PostPref + " preference and " + model.PostSafety + " safety runs) in a way the data does not allow");
+                    if (model.OwnerId < 0 || model.DocLevel < 0 || model.DocAge < 0 || model.KnowGap < 0 || model.KnowGap > 1000 || model.Handovers < 0
+                        || (model.DocLevel == 0 && model.DocAge != 0) || (model.OwnerId != 0 && Knowledge.Person(lab, model.OwnerId) == null)
+                        || ((model.OwnerId != 0 || model.DocLevel != 0 || model.KnowGap != 0 || model.Handovers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has an owner or documentation (owner " + model.OwnerId + ", docs " + model.DocLevel + ", gap " + model.KnowGap + ") in a way the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

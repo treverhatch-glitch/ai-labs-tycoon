@@ -198,7 +198,9 @@ namespace AiLabs.Rules.Sim
         EndAnnotators,
         AuditVendor,
         PostTrain,
-        AbandonPostTraining
+        AbandonPostTraining,
+        AssignOwner,
+        WriteDocs
     }
 
     /// <summary>
@@ -1717,6 +1719,23 @@ namespace AiLabs.Rules.Sim
         public static Command AbandonPostTraining(int labId, int modelId)
         {
             Command c = Make(CommandKind.AbandonPostTraining, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Names the person who owns a model. TargetId is the model, Count the staff id; Count 0 takes the owner away.</summary>
+        public static Command AssignOwner(int labId, int modelId, int staffId)
+        {
+            Command c = Make(CommandKind.AssignOwner, labId);
+            c.TargetId = modelId;
+            c.Count = staffId;
+            return c;
+        }
+
+        /// <summary>Writes the next level of documentation for a model. TargetId is the model.</summary>
+        public static Command WriteDocs(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WriteDocs, labId);
             c.TargetId = modelId;
             return c;
         }

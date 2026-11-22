@@ -157,6 +157,7 @@ namespace AiLabs.Rules.Config
             AgencyProblems(p, c);
             AnnotationProblems(p, c);
             PostTrainingProblems(p, c);
+            KnowledgeProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1779,6 +1780,15 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("postTraining.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.Weeks < 1 || k.Cost < 0 || k.Units < 1 || k.MaxPasses < 1 || k.MaxPasses > 8) p.Add("postTraining minEra and cost must not be negative, weeks and units at least 1 and maxPasses from 1 to 8");
             if (k.PrefLift < 0 || k.PrefLift > 1000 || k.PrefDecay < 0 || k.PrefDecay > 1000 || k.Syco < 0 || k.Syco > 1000 || k.SafetyGain < 0 || k.SafetyGain > 1000 || k.SafetyDecay < 0 || k.SafetyDecay > 1000 || k.Refuse < 0 || k.Refuse > 1000 || k.MinLift > 0 || k.MinLift < -1000) p.Add("postTraining lifts, decays, syco, safetyGain and refuse from 0 to 1000 and minLift from -1000 to 0");
+        }
+
+        static void KnowledgeProblems(List<string> p, GameConfig c)
+        {
+            KnowledgeConfig k = c.Knowledge;
+            if (k == null) { p.Add("knowledge is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("knowledge.enabled must be 0 or 1");
+            if (k.MaxOwned < 1 || k.MaxDocs < 0 || k.MaxDocs > 4 || k.DocCost < 0 || k.DocStale < 1) p.Add("knowledge maxOwned and docStale must be at least 1, maxDocs from 0 to 4 and docCost not negative");
+            if (k.DocCut < 0 || k.DocCut * k.MaxDocs > 1000 || k.GapBase < 0 || k.GapBase > 1000 || k.Ramp < 0 || k.GapIncident < 0 || k.GapIncident > 1000 || k.GapRiskAt < 0 || k.GapRiskAt > 1000) p.Add("knowledge docCut times maxDocs at most 1000, gapBase, gapIncident and gapRiskAt from 0 to 1000 and ramp not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -17,6 +17,7 @@ namespace AiLabs.Rules.Sim
             if (c.Eras.IndexOf(EraSystem.AtTick(c, state.Tick)) < c.PostTraining.MinEra) return Fail(CommandError.EraLocked, "Models are not tuned in this era.");
             if (cmd.Count != PostTraining.Preference && cmd.Count != PostTraining.Safety) return Fail(CommandError.InvalidArgument, "Tuning is preference (1) or safety (2).");
             if (model.PostKind != 0) return Fail(CommandError.InvalidArgument, model.Name + " is already being tuned.");
+            if (Knowledge.Untouchable(c, model)) return Fail(CommandError.MissingPrerequisite, "Nobody understands " + model.Name + " well enough to tune it; name an owner and let the gap close.");
             int done = cmd.Count == PostTraining.Preference ? model.PostPref : model.PostSafety;
             if (done >= c.PostTraining.MaxPasses) return Fail(CommandError.InvalidArgument, model.Name + " has had all the tuning of this kind it can take.");
             if (PostTraining.Available(c, lab, cmd.Count) < c.PostTraining.Units)

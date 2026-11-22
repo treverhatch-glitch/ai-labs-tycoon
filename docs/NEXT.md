@@ -363,6 +363,7 @@ and says why in the commit message.
 180. **Agent autonomy.** ~~Done~~: `SetAutonomy`, schema 120, `AgencyTests` (Q437).
 181. **Annotation vendors.** ~~Done~~: `ContractAnnotators`, `EndAnnotators`, `AuditVendor`, schema 121, `AnnotationTests` (Q438).
 182. **Post-training.** ~~Done~~: `PostTrain`, `AbandonPostTraining`, schema 122, `PostTrainingTests` (Q439).
+183. **Owners and documentation.** ~~Done~~: `AssignOwner`, `WriteDocs`, schema 123, `KnowledgeTests` (Q440).
 
 ## Rules: later
 

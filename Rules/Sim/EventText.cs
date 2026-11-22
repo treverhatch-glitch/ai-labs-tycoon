@@ -579,6 +579,14 @@ namespace AiLabs.Rules.Sim
                     return who + " finished tuning " + e.Ref + ".";
                 case EventKind.PostTrainingAbandoned:
                     return who + " abandoned the tuning of " + e.Ref + ".";
+                case EventKind.OwnerNamed:
+                    return who + " named an owner for " + e.Ref + ".";
+                case EventKind.OwnerLeft:
+                    return "The owner of " + e.Ref + " left " + who + " and the gap is " + e.Amount + ".";
+                case EventKind.DocsWritten:
+                    return who + " wrote documentation for " + e.Ref + ".";
+                case EventKind.DocsStale:
+                    return "The documentation of " + e.Ref + " at " + who + " has gone stale.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

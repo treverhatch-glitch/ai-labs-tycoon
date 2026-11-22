@@ -20,6 +20,7 @@ namespace AiLabs.Rules.Sim
             if (c.Eras.IndexOf(EraSystem.AtTick(c, state.Tick)) < c.Agency.MinEra) return Fail(CommandError.EraLocked, "Agents are not ready in this era.");
             if (level > model.AgentLevel)
             {
+                if (Knowledge.Untouchable(c, model)) return Fail(CommandError.MissingPrerequisite, "Nobody understands " + model.Name + " well enough to hand it to agents; name an owner and let the gap close.");
                 if (model.AgentSince > 0 && state.Tick + 1 < model.AgentSince + c.Agency.Cooldown) return Fail(CommandError.InvalidArgument, "The level was changed too recently.");
                 int need = Agency.RoomsNeeded(c, level);
                 if (need > 0 && Agency.Wings(lab) < need) return Fail(CommandError.MissingPrerequisite, "Level " + level + " needs " + need + " containment wing(s).");

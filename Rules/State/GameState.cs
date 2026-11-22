@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 122;
+        public const int CurrentSchema = 123;
 
         public int Schema;
         public string ConfigVersion;
@@ -1267,6 +1267,12 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Knowledge: the staff id of the person who owns the model (0 none), the level of its documentation, weeks since the documentation was last written, the knowledge gap (out of 1000) and how many owners have left it.</summary>
+        public int OwnerId;
+        public int DocLevel;
+        public int DocAge;
+        public int KnowGap;
+        public int Handovers;
         /// <summary>Post-training: the kind of run going on (0 none, 1 preference tuning, 2 safety tuning), weeks left of it, and how many of each kind the model has had.</summary>
         public int PostKind;
         public int PostLeft;
@@ -1324,6 +1330,11 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("ownerId", ref OwnerId);
+            s.Int("docLevel", ref DocLevel);
+            s.Int("docAge", ref DocAge);
+            s.Int("knowGap", ref KnowGap);
+            s.Int("handovers", ref Handovers);
             s.Int("postKind", ref PostKind);
             s.Int("postLeft", ref PostLeft);
             s.Int("postPref", ref PostPref);

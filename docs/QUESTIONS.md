@@ -2235,6 +2235,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The two kinds pull in opposite directions on revenue and on incidents, use different data, and the release waits for the run, so a lab with a model below the era safety bar has a real reason to tune and a real price for it.
 - Alternatives: a flat fee for alignment (rejected: a pay-for-stat knob with no state), a tuning that never stops giving (rejected: nothing to decide).
 
+### Q440. Who knows the model? DECIDED: an owner for each model, documentation written a level at a time that goes stale, a gap that a departing owner leaves, closed week by week by the next owner, which raises incidents and stops agents and tuning until it is closed
+- Losing a person now costs something the lab can see and prepare for, and which people it can afford to lose depends on who owns what and how much of it is written down. The limit of two models per person is the bus factor.
+- Alternatives: a flat morale penalty when anyone leaves (rejected: no choice before it happens), documentation that never goes stale (rejected: one purchase solves it).
+
 ## Open
 
 None.

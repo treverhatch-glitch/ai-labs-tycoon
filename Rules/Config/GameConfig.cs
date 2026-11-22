@@ -152,6 +152,7 @@ namespace AiLabs.Rules.Config
         public AgencyConfig Agency = new AgencyConfig();
         public AnnotationConfig Annotation = new AnnotationConfig();
         public PostTrainingConfig PostTraining = new PostTrainingConfig();
+        public KnowledgeConfig Knowledge = new KnowledgeConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -302,6 +303,7 @@ namespace AiLabs.Rules.Config
             s.Obj("agency", ref Agency);
             s.Obj("annotation", ref Annotation);
             s.Obj("postTraining", ref PostTraining);
+            s.Obj("knowledge", ref Knowledge);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);
