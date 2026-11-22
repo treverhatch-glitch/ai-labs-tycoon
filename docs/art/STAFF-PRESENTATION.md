@@ -6,6 +6,6 @@ Rules: `StaffMember` rows drive hire panels; graphics defines **placeholder scal
 | --- | --- |
 | Desk seat | reuse `prop-chair` |
 | Avatar | capsule primitive, height 1.6m |
-| Trait icon | future `icon-staff.svg` |
+| Trait icon | `icon-staff.svg` (batch 15) |
 
 Unity thread: no staff meshes in repo until Hatch PC art pass.

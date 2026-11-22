@@ -31,6 +31,14 @@
     {
       "id": "icon-hq",
       "path": "Assets/Art/Generated/ui-icons/icon-hq.svg"
+    },
+    {
+      "id": "icon-staff",
+      "path": "Assets/Art/Generated/ui-icons/icon-staff.svg"
+    },
+    {
+      "id": "icon-danger",
+      "path": "Assets/Art/Generated/ui-icons/icon-danger.svg"
     }
   ]
 }

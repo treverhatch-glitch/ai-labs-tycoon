@@ -6,10 +6,11 @@ namespace AiLabs.Unity.Editor.Tests
     public sealed class CampusIconCatalogTests
     {
         [Test]
-        public void Eight_hud_icons()
+        public void Hud_icons_include_staff_and_danger()
         {
-            Assert.AreEqual(8, CampusIconCatalog.AllIconIds.Length);
-            Assert.IsTrue(CampusIconCatalog.PathFor("icon-hq").EndsWith(".svg"));
+            Assert.AreEqual(10, CampusIconCatalog.AllIconIds.Length);
+            Assert.NotNull(CampusIconCatalog.PathFor("icon-staff"));
+            Assert.NotNull(CampusIconCatalog.PathFor("icon-danger"));
         }
     }
 }

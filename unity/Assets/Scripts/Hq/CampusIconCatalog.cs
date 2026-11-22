@@ -8,7 +8,7 @@ namespace AiLabs.Unity.Hq
         public static readonly string[] AllIconIds =
         {
             "icon-cash", "icon-calendar", "icon-compute", "icon-research", "icon-rivals",
-            "icon-world", "icon-training", "icon-hq",
+            "icon-world", "icon-training", "icon-hq", "icon-staff", "icon-danger",
         };
 
         public static string PathFor(string iconId) => Root + iconId + ".svg";

@@ -90,6 +90,23 @@ def icon_hq() -> str:
     return svg_wrap(body, "hq")
 
 
+def icon_staff() -> str:
+    body = (
+        '  <circle cx="32" cy="22" r="8" fill="#F4F0E8"/>'
+        '  <path d="M18 50c0-10 28-10 28 0v4H18z" fill="#8C66F2"/>'
+    )
+    return svg_wrap(body, "staff")
+
+
+def icon_danger() -> str:
+    body = (
+        '  <polygon points="32,14 50,46 14,46" fill="none" stroke="#F2808C" stroke-width="3"/>'
+        '  <rect x="29" y="26" width="6" height="14" fill="#F2808C"/>'
+        '  <circle cx="32" cy="44" r="3" fill="#F2808C"/>'
+    )
+    return svg_wrap(body, "danger")
+
+
 ICONS = {
     "icon-cash": icon_cash,
     "icon-calendar": icon_calendar,
@@ -99,6 +116,8 @@ ICONS = {
     "icon-world": icon_world,
     "icon-training": icon_training,
     "icon-hq": icon_hq,
+    "icon-staff": icon_staff,
+    "icon-danger": icon_danger,
 }
 
 

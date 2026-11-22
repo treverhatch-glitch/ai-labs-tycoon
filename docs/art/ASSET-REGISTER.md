@@ -82,7 +82,7 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **+8 OBJ:** `prop-research-bench`, `prop-data-stack`, `prop-gauntlet-lectern`, `ui-bloc-tile`, `prop-safety-cone`, `prop-monitor-wall`, `exterior-bike-rack`, `ui-tab-rail-plaque`.
 
-**+8 SVG:** `unity/Assets/Art/Generated/ui-icons/` + `ui-icons-manifest.json`.
+**+10 SVG:** `unity/Assets/Art/Generated/ui-icons/` + `ui-icons-manifest.json` (batch 15 adds staff/danger).
 
 **Code:** `CampusUiTokens`, `CampusPropIds`, HUD factories wired to tokens; `SCREEN-KITS.md`, `POLISH-CHECKLIST.md`.
 
