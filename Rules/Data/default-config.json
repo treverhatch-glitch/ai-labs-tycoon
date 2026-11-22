@@ -1014,6 +1014,14 @@
       "hireCost": 3000,
       "weeklySalary": 1800,
       "severance": 3000
+    },
+    {
+      "id": "support",
+      "name": "Support Agent",
+      "function": "Sales",
+      "hireCost": 1200,
+      "weeklySalary": 700,
+      "severance": 1400
     }
   ],
   "rolePerks": [
@@ -1161,6 +1169,20 @@
       "minHeight": 3,
       "buildCostPerTile": 350,
       "upkeepPerTileWeek": 8
+    },
+    {
+      "id": "support-desk",
+      "era": "dial-up-days",
+      "requiresTech": "",
+      "name": "Support Desk",
+      "purpose": "Sales",
+      "seatsRole": "support",
+      "tilesPerSeat": 4,
+      "gpuSlotsPerTile": 0,
+      "minWidth": 3,
+      "minHeight": 3,
+      "buildCostPerTile": 300,
+      "upkeepPerTileWeek": 6
     },
     {
       "id": "server-closet",
@@ -6584,7 +6606,54 @@
     "decay": 6,
     "idleDecay": 20,
     "incidentCut": 400,
-    "repCut": 300
+    "repCut": 300,
+    "onCallRepStack": 150
+  },
+  "evalHarness": {
+    "enabled": 1,
+    "minEra": 5,
+    "cost": 15000,
+    "cadence": 13,
+    "points": 80,
+    "trustGain": 12,
+    "trustLoss": -8,
+    "barNarrow": 520,
+    "barBroad": 580,
+    "conformityPush": 2,
+    "failTension": 60
+  },
+  "toolPolicy": {
+    "enabled": 1,
+    "minEra": 5,
+    "setupCost": 12000,
+    "liftWeb": 60,
+    "liftCode": 90,
+    "liftData": 50,
+    "incidentWeb": 8,
+    "incidentCode": 12,
+    "incidentData": 18,
+    "blowupWeb": 15,
+    "blowupCode": 25,
+    "blowupData": 12,
+    "queueWeb": 1,
+    "queueCode": 2,
+    "queueData": 1
+  },
+  "humanQueue": {
+    "enabled": 1,
+    "minEra": 5,
+    "staffNeed": 2,
+    "capacity": 20,
+    "liftCut": 80,
+    "incidentPer": 15,
+    "clearCost": 6,
+    "busyWeeks": 5000
+  },
+  "releaseChecklist": {
+    "enabled": 1,
+    "minEra": 5,
+    "docBar": 1,
+    "missTrust": -3
   },
   "bugBounty": {
     "maxLevel": 3,
@@ -11663,6 +11732,72 @@
         "kind": "BoardForcedVote",
         "pick": -1,
         "text": "The board of {lab} forces a vote on the founders. The room is very quiet"
+      },
+      {
+        "id": "drill-started",
+        "kind": "DrillStarted",
+        "pick": -1,
+        "text": "{lab} rehearses what to do when a model fails in public. The safety team blocks a week on the calendar"
+      },
+      {
+        "id": "drill-passed",
+        "kind": "DrillFinished",
+        "pick": 1,
+        "text": "{lab} finishes its incident drill with a pass. Preparedness goes up on the wall chart"
+      },
+      {
+        "id": "drill-failed",
+        "kind": "DrillFinished",
+        "pick": 0,
+        "text": "{lab} finishes its incident drill with a stumble. The after-action notes are longer than the drill"
+      },
+      {
+        "id": "eval-registered",
+        "kind": "EvalRegistered",
+        "pick": -1,
+        "text": "{lab} puts {ref} on a public eval cadence. The leaderboard updates next quarter"
+      },
+      {
+        "id": "eval-beat",
+        "kind": "EvalPublished",
+        "pick": 1,
+        "text": "{lab} publishes a public eval score for {ref} that beats the bar. Customers quote it in procurement"
+      },
+      {
+        "id": "eval-miss",
+        "kind": "EvalPublished",
+        "pick": 0,
+        "text": "{lab} publishes a public eval score for {ref} below the bar. The forum thread is polite and cutting"
+      },
+      {
+        "id": "tool-policy-set",
+        "kind": "ToolPolicySet",
+        "pick": -1,
+        "text": "{lab} draws the line on which tools the agents of {ref} may call. The policy page gains three checkboxes"
+      },
+      {
+        "id": "human-queue-deep",
+        "kind": "HumanQueueDeep",
+        "pick": -1,
+        "text": "The human escalation queue at {lab} is out of hand. Support pings every row in the org chart"
+      },
+      {
+        "id": "human-queue-staff",
+        "kind": "HumanQueueCleared",
+        "pick": 1,
+        "text": "{lab} staffs down its human escalation queue. The agents wait a little longer for approval"
+      },
+      {
+        "id": "human-queue-paid",
+        "kind": "HumanQueueCleared",
+        "pick": 0,
+        "text": "{lab} pays to clear its human escalation queue. The invoice lands before the retro"
+      },
+      {
+        "id": "checklist-signed",
+        "kind": "ChecklistSigned",
+        "pick": -1,
+        "text": "{lab} signs off another release checklist item for {ref}. Legal initials the cover sheet"
       }
     ],
     "filler": [
@@ -15495,6 +15630,61 @@
         "pick": -1,
         "about": "lab",
         "text": "The board has called a vote on the founders. People are packing their desks as a precaution.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "drill-finished-chat",
+        "kind": "DrillFinished",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The drill is over. We know whether we would survive the headline.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-published-chat",
+        "kind": "EvalPublished",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The public score is out. Sales has already pasted it into a deck.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "human-queue-deep-chat",
+        "kind": "HumanQueueDeep",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The human queue is deep. Every agent action wants a person to bless it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "human-queue-cleared-chat",
+        "kind": "HumanQueueCleared",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone cleared part of the escalation queue. The agents noticed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "tool-policy-chat",
+        "kind": "ToolPolicySet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The tool policy changed. The agents have a shorter list of things they may touch.",
         "fromYear": 0,
         "toYear": 0
       }

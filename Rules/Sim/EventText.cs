@@ -601,6 +601,18 @@ namespace AiLabs.Rules.Sim
                     return who + " started an incident drill.";
                 case EventKind.DrillFinished:
                     return who + " finished its incident drill.";
+                case EventKind.EvalRegistered:
+                    return who + " put a model on a public eval schedule.";
+                case EventKind.EvalPublished:
+                    return who + " published a public eval score.";
+                case EventKind.ToolPolicySet:
+                    return who + " changed which tools the agents of a model may call.";
+                case EventKind.HumanQueueDeep:
+                    return who + " has a long human escalation queue.";
+                case EventKind.HumanQueueCleared:
+                    return who + " cleared its human escalation queue.";
+                case EventKind.ChecklistSigned:
+                    return who + " signed a release checklist item for a model.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -160,6 +160,10 @@ namespace AiLabs.Rules.Config
             KnowledgeProblems(p, c);
             BoardAgendaProblems(p, c);
             DrillsProblems(p, c);
+            EvalHarnessProblems(p, c);
+            ToolPolicyProblems(p, c);
+            HumanQueueProblems(p, c);
+            ReleaseChecklistProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1812,7 +1816,39 @@ namespace AiLabs.Rules.Config
             DrillsConfig k = c.Drills;
             if (k == null) { p.Add("drills is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("drills.enabled must be 0 or 1");
-            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Interval < 1 || k.Staff < 1 || k.PassGain < 0 || k.FailLoss < 0 || k.Decay < 0 || k.IdleDecay < 0 || k.IncidentCut < 0 || k.IncidentCut > 1000 || k.RepCut < 0 || k.RepCut > 1000) p.Add("drills minEra, cost and decays must not be negative, weeks and interval and staff at least 1, and cuts from 0 to 1000");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Interval < 1 || k.Staff < 1 || k.PassGain < 0 || k.FailLoss < 0 || k.Decay < 0 || k.IdleDecay < 0 || k.IncidentCut < 0 || k.IncidentCut > 1000 || k.RepCut < 0 || k.RepCut > 1000 || k.OnCallRepStack < 0 || k.OnCallRepStack > 1000) p.Add("drills minEra, cost and decays must not be negative, weeks and interval and staff at least 1, cuts from 0 to 1000, and onCallRepStack from 0 to 1000");
+        }
+
+        static void EvalHarnessProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessConfig k = c.EvalHarness;
+            if (k == null) { p.Add("evalHarness is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarness.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Cadence < 1 || k.Points < 0 || k.TrustGain < 0 || k.TrustLoss > 0 || k.BarNarrow < 0 || k.BarNarrow > 1000 || k.BarBroad < k.BarNarrow || k.BarBroad > 1000 || k.ConformityPush < 0 || k.FailTension < 0) p.Add("evalHarness minEra and costs not negative, cadence at least 1, trustLoss not positive, bars from 0 to 1000 with broad at least narrow, conformityPush and failTension not negative");
+        }
+
+        static void ToolPolicyProblems(List<string> p, GameConfig c)
+        {
+            ToolPolicyConfig k = c.ToolPolicy;
+            if (k == null) { p.Add("toolPolicy is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("toolPolicy.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SetupCost < 0 || k.LiftWeb < 0 || k.LiftCode < 0 || k.LiftData < 0 || k.IncidentWeb < 0 || k.IncidentCode < 0 || k.IncidentData < 0 || k.BlowupWeb < 0 || k.BlowupCode < 0 || k.BlowupData < 0 || k.QueueWeb < 0 || k.QueueCode < 0 || k.QueueData < 0) p.Add("toolPolicy costs and shares must not be negative");
+        }
+
+        static void HumanQueueProblems(List<string> p, GameConfig c)
+        {
+            HumanQueueConfig k = c.HumanQueue;
+            if (k == null) { p.Add("humanQueue is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("humanQueue.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.StaffNeed < 1 || k.Capacity < 0 || k.LiftCut < 0 || k.LiftCut > 1000 || k.IncidentPer < 0 || k.ClearCost < 0 || k.BusyWeeks < 1) p.Add("humanQueue minEra and costs not negative, staffNeed and busyWeeks at least 1, capacity not negative, liftCut from 0 to 1000 and incidentPer not negative");
+        }
+
+        static void ReleaseChecklistProblems(List<string> p, GameConfig c)
+        {
+            ReleaseChecklistConfig k = c.ReleaseChecklist;
+            if (k == null) { p.Add("releaseChecklist is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("releaseChecklist.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.DocBar < 0 || k.DocBar > 10 || k.MissTrust > 0) p.Add("releaseChecklist minEra and docBar from 0 to 10 and missTrust not positive");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

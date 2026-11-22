@@ -15,6 +15,10 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 129) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "chkDone", "chkMissed" }) JsonPatch.Remove(m, key); }));
+            if (schema < 128) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "humanQueue", "humanBusy", "humanCleared" }) JsonPatch.Remove(lab, key); });
+            if (schema < 127) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "toolMask" }) JsonPatch.Remove(m, key); }));
+            if (schema < 126) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "evalSuite", "evalLeft", "evalScore", "evalRuns", "evalStreak" }) JsonPatch.Remove(m, key); }));
             if (schema < 125) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "drillPrep", "drillLeft", "drillDue", "drillPassed", "drillFailed" }) JsonPatch.Remove(lab, key); });
             if (schema < 124) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "meetingsOn", "boardTension", "motionPend", "motionPendGoal", "motionAnswerBy", "motionKind", "motionGoal", "motionDue", "motionNext", "motionsTabled", "motionsKept", "motionsBroken", "motionsDeclined" }) JsonPatch.Remove(lab, key); });
             if (schema < 123) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "ownerId", "docLevel", "docAge", "knowGap", "handovers" }) JsonPatch.Remove(m, key); }));

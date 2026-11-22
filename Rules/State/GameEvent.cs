@@ -582,7 +582,19 @@ namespace AiLabs.Rules.State
         /// <summary>A drill started. Amount is the weeks it will run.</summary>
         DrillStarted,
         /// <summary>A drill finished. Pick 1 passed, 0 failed, Amount is the new preparedness.</summary>
-        DrillFinished
+        DrillFinished,
+        /// <summary>A model was registered on a public eval. SubjectId is the model, Pick is the suite, Amount the cadence in weeks.</summary>
+        EvalRegistered,
+        /// <summary>A public eval score was published. SubjectId is the model, Pick 1 beat the bar, 0 below, Amount the score.</summary>
+        EvalPublished,
+        /// <summary>The tool policy of a model changed. SubjectId is the model, Amount is the mask.</summary>
+        ToolPolicySet,
+        /// <summary>The human queue grew. Amount is the depth.</summary>
+        HumanQueueDeep,
+        /// <summary>The desk cleared queue items. Amount cleared, Pick 1 staffed, 0 paid.</summary>
+        HumanQueueCleared,
+        /// <summary>A release checklist item was signed. SubjectId is the model, Amount the item bit.</summary>
+        ChecklistSigned
     }
 
     /// <summary>

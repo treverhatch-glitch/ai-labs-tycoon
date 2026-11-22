@@ -203,7 +203,12 @@ namespace AiLabs.Rules.Sim
         WriteDocs,
         HoldBoardMeetings,
         AnswerMotion,
-        StartDrill
+        StartDrill,
+        RegisterEval,
+        SetToolPolicy,
+        StaffHumanQueue,
+        ClearHumanQueue,
+        SignChecklistItem
     }
 
     /// <summary>
@@ -1763,6 +1768,49 @@ namespace AiLabs.Rules.Sim
         public static Command StartDrill(int labId)
         {
             return Make(CommandKind.StartDrill, labId);
+        }
+
+        /// <summary>Registers a released model on a public eval suite: 1 narrow, 2 broad. TargetId is the model.</summary>
+        public static Command RegisterEval(int labId, int modelId, int suite)
+        {
+            Command c = Make(CommandKind.RegisterEval, labId);
+            c.TargetId = modelId;
+            c.Count = suite;
+            return c;
+        }
+
+        /// <summary>Sets the agent tool mask on a released model: Count 0 to 7 (bits 1 web, 2 code, 4 data). TargetId is the model.</summary>
+        public static Command SetToolPolicy(int labId, int modelId, int mask)
+        {
+            Command c = Make(CommandKind.SetToolPolicy, labId);
+            c.TargetId = modelId;
+            c.Count = mask;
+            return c;
+        }
+
+        /// <summary>Staffs the desk to drain up to Count items this week.</summary>
+        public static Command StaffHumanQueue(int labId, int count)
+        {
+            Command c = Make(CommandKind.StaffHumanQueue, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Pays to clear Count items from the queue now.</summary>
+        public static Command ClearHumanQueue(int labId, int count)
+        {
+            Command c = Make(CommandKind.ClearHumanQueue, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Signs a checklist item on a trained model: 1 red-team, 2 docs, 4 eval, 8 policy. TargetId is the model.</summary>
+        public static Command SignChecklistItem(int labId, int modelId, int item)
+        {
+            Command c = Make(CommandKind.SignChecklistItem, labId);
+            c.TargetId = modelId;
+            c.Count = item;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

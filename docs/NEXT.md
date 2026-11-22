@@ -367,6 +367,12 @@ and says why in the commit message.
 184. **Board motions.** ~~Done~~: `HoldBoardMeetings`, `AnswerMotion`, schema 124, `BoardMotionsTests` (Q441).
 185. **Batch eleven news and chat** and four combination rules. ~~Done~~: Q442 to Q446, `AgencyAnnotationPostTrainingKnowledgeBoardNewsChatTests`, `AgencyAnnotationPostTrainingKnowledgeBoardTogetherTests`.
 186. **Incident drills.** ~~Done~~: `StartDrill`, schema 125, `DrillsTests` (Q447).
+187. **Public eval harness.** ~~Done~~: `RegisterEval`, schema 126, `EvalHarnessTests` (Q448, Q450).
+188. **Tool policy for agents.** ~~Done~~: `SetToolPolicy`, schema 127, `ToolPolicyTests` (Q449).
+189. **Human escalation queue.** ~~Done~~: `StaffHumanQueue`, `ClearHumanQueue`, schema 128, `HumanQueueTests` (Q449).
+190. **Release checklist.** ~~Done~~: `SignChecklistItem`, schema 129, `ReleaseChecklistTests` (Q451).
+191. **Batch twelve news and chat** for drills, evals, tools, queue and checklist. ~~Done~~: `/tmp/f/news8.py`, `DrillsEvalToolHumanReleaseNewsChatTests` (Q451).
+192. **Batch twelve combination rules** (drills with on-call, tools with queue, eval with board, checklist trust). ~~Done~~: `DrillsEvalToolHumanReleaseTogetherTests` (Q448–Q451).
 
 ## Rules: later
 

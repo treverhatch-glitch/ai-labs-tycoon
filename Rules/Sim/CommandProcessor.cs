@@ -105,6 +105,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SignChecklistItem: return SignChecklistItem(c, state, lab, cmd);
+                case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
+                case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
+                case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);
+                case CommandKind.RegisterEval: return RegisterEval(c, state, lab, cmd);
                 case CommandKind.StartDrill: return StartDrill(c, state, lab, cmd);
                 case CommandKind.HoldBoardMeetings: return HoldBoardMeetings(c, state, lab, cmd);
                 case CommandKind.AnswerMotion: return AnswerMotion(c, state, lab, cmd);
@@ -580,6 +585,8 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
             if (ScalingPolicy.Holds(c, lab, model)) return Fail(CommandError.InvalidArgument, model.Name + " reached a tripwire of the lab's scaling policy and the safeguards for it are not in place.");
             if (model.PostKind != 0) return Fail(CommandError.InvalidArgument, model.Name + " is still being tuned and cannot go on sale until that run is over or abandoned.");
+            if (model.Status == ModelStatus.Trained && ReleaseChecklist.Blocks(c, state, model))
+                return Fail(CommandError.InvalidArgument, model.Name + " still has open release checklist items.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
             if (SafetyCulture.GateBlocks(lab, model))
                 return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");
@@ -637,6 +644,7 @@ namespace AiLabs.Rules.Sim
                 else if (model.DisplayedAlignment < model.Alignment)
                     model.DisplayedAlignment = model.Alignment;
                 Pledge.OnFirstRelease(c, state, lab, model);
+                ReleaseChecklist.OnFirstRelease(c, model);
                 Standards.OnFirstRelease(c, state, lab, model);
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);

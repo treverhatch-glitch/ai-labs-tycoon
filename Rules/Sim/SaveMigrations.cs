@@ -138,6 +138,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 123) MigrateTo123(root);
             if (fromSchema < 124) MigrateTo124(root);
             if (fromSchema < 125) MigrateTo125(root);
+            if (fromSchema < 126) MigrateTo126(root);
+            if (fromSchema < 127) MigrateTo127(root);
+            if (fromSchema < 128) MigrateTo128(root);
+            if (fromSchema < 129) MigrateTo129(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -501,6 +505,55 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 129: no model has a release checklist.</summary>
+        static void MigrateTo129(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "chkDone", "chkMissed" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 128: no lab has a human queue.</summary>
+        static void MigrateTo128(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "humanQueue", "humanBusy", "humanCleared" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 127: no model has a tool policy.</summary>
+        static void MigrateTo127(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "toolMask" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 126: no model is on a public eval cadence.</summary>
+        static void MigrateTo126(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "evalSuite", "evalLeft", "evalScore", "evalRuns", "evalStreak" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

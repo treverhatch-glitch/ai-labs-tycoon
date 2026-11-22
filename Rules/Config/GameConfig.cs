@@ -155,6 +155,10 @@ namespace AiLabs.Rules.Config
         public KnowledgeConfig Knowledge = new KnowledgeConfig();
         public BoardAgendaConfig BoardAgenda = new BoardAgendaConfig();
         public DrillsConfig Drills = new DrillsConfig();
+        public EvalHarnessConfig EvalHarness = new EvalHarnessConfig();
+        public ToolPolicyConfig ToolPolicy = new ToolPolicyConfig();
+        public HumanQueueConfig HumanQueue = new HumanQueueConfig();
+        public ReleaseChecklistConfig ReleaseChecklist = new ReleaseChecklistConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -308,6 +312,10 @@ namespace AiLabs.Rules.Config
             s.Obj("knowledge", ref Knowledge);
             s.Obj("boardAgenda", ref BoardAgenda);
             s.Obj("drills", ref Drills);
+            s.Obj("evalHarness", ref EvalHarness);
+            s.Obj("toolPolicy", ref ToolPolicy);
+            s.Obj("humanQueue", ref HumanQueue);
+            s.Obj("releaseChecklist", ref ReleaseChecklist);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

@@ -155,6 +155,7 @@ public class DrillsTests
             {
                 c.Drills.IncidentCut = 0;
                 c.Drills.RepCut = 400;
+                c.Drills.OnCallRepStack = 0;
                 c.OnCall.MaxLevel = 0;
             });
             ModelState m = Selling(g);

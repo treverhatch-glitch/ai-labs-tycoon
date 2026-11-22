@@ -30,6 +30,8 @@ namespace AiLabs.Rules.Config
         public int IncidentCut;
         /// <summary>Share of preparedness that cuts reputation loss from incidents (permille of prep).</summary>
         public int RepCut;
+        /// <summary>Extra on-call reputation-cut permille scaled by preparedness (stacks beside repCut).</summary>
+        public int OnCallRepStack;
 
         public void Sync(Syncer s)
         {
@@ -45,6 +47,7 @@ namespace AiLabs.Rules.Config
             s.Int("idleDecay", ref IdleDecay);
             s.Int("incidentCut", ref IncidentCut);
             s.Int("repCut", ref RepCut);
+            s.Int("onCallRepStack", ref OnCallRepStack);
         }
     }
 }

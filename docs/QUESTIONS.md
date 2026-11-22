@@ -2263,6 +2263,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q446. Does documentation help with the failures of a tuned model? DECIDED: each level takes 20% off the incident chance that preference tuning adds, at most 25% a level (`postTraining.docsCutSyco`)
 - A model that is written down is understood: the habits preference tuning taught it are known and handled. Safety tuning is not changed.
 
+### Q448. What do drills add beside on-call? DECIDED: high preparedness also stacks on the on-call reputation cut, scaled by prep (`drills.onCallRepStack`, capped with the rest at 900)
+- Drills and on-call both soften what an incident costs in reputation; prep that never gets used still helps the rota do its job.
+- Alternatives: one combined knob (rejected: two systems stay visible), prep that only cuts incident chance (rejected: `repCut` already does that).
+
+### Q449. How do tool policy and the human queue meet? DECIDED: each allowed tool at delegated autonomy or higher accrues queue items weekly, over-capacity queue cuts agent lift and raises incidents (`toolPolicy.queue*`, `humanQueue.*`)
+- More tools mean more revenue and more people to bless; the desk is the bottleneck.
+- Alternatives: a flat queue per agent level (rejected: mask is the choice), queue that only slows training (rejected: agents are the load).
+
+### Q450. What does a bad public eval do to the board? DECIDED: a score below the bar adds 60 tension when the lab holds board meetings (`evalHarness.failTension`)
+- Customers see the score; directors who already meet see it too. Quiet labs are unchanged, and directors soften it like any other addition.
+- Alternatives: trust loss only (rejected: already happens), tension every publish (rejected: beating the bar should not cost patience).
+
+### Q451. What do release headlines and batch-twelve combos cover? DECIDED: eleven headlines and five chat lines for drills, evals, tool policy, the human queue and checklist items; combo tests for prep with on-call, tools with the queue, eval tension and missed checklist trust (`DrillsEvalToolHumanReleaseNewsChatTests`, `DrillsEvalToolHumanReleaseTogetherTests`)
+- Batch twelve news uses picks -1, 0 and 1 only; `EvalRegistered` keeps the suite in the event pick but headlines use -1.
+- Alternatives: chat on every event (rejected: same voice as batch eleven).
+
 ## Open
 
 None.

@@ -43,7 +43,10 @@ namespace AiLabs.Rules.Systems
 
         public static int ReputationCutPermille(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(900, Effective(c, lab) * (long)c.OnCall.ReputationCutPermillePerLevel);
+            int cut = (int)MathI.Min(900, Effective(c, lab) * (long)c.OnCall.ReputationCutPermillePerLevel);
+            if (Drills.Enabled(c) && lab.DrillPrep > 0 && c.Drills.OnCallRepStack > 0)
+                cut = (int)MathI.Min(900, cut + MathI.MulPermille(c.Drills.OnCallRepStack, lab.DrillPrep));
+            return cut;
         }
 
         public static int MoraleDropCutPermille(GameConfig c, LabState lab)

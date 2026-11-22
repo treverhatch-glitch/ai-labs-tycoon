@@ -30,12 +30,14 @@ namespace AiLabs.Rules.Systems
             int cut = (int)MathI.Min(750, (long)Wings(lab) * c.Agency.RoomCut);
             long baseChance = BlowupBase(c, model.AgentLevel);
             if (Knowledge.Enabled(c)) baseChance += MathI.MulPermille(c.Agency.GapBlowup, model.KnowGap);
+            baseChance += ToolPolicy.BlowupExtra(c, model);
             return (int)MathI.MulPermille(baseChance, MathI.Permille - cut);
         }
 
         public static int IncidentPermille(GameConfig c, ModelState model)
         {
-            return Enabled(c) && model.AgentLevel > 0 ? Incident(c, model.AgentLevel) : 0;
+            if (!Enabled(c) || model.AgentLevel <= 0) return 0;
+            return Incident(c, model.AgentLevel) + ToolPolicy.IncidentExtra(c, model);
         }
 
         /// <summary>What the agents of the lab's models add to this week's revenue.</summary>
@@ -47,7 +49,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState m = lab.Models[i];
                 if (m.AgentLevel <= 0 || m.Status != ModelStatus.Released) continue;
-                total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), Lift(c, m.AgentLevel));
+                total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(Lift(c, m.AgentLevel), HumanQueue.LiftKeep(c, lab) * ToolPolicy.LiftBonus(c, m) / 1000));
             }
             lab.AgentEarned += total;
             return total;
@@ -78,6 +80,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState m = lab.Models[i];
                 if (m.AgentLevel <= 0) continue;
+                HumanQueue.Accrue(c, state, lab, m);
                 if (m.Status != ModelStatus.Released)
                 {
                     m.AgentLevel = 0;

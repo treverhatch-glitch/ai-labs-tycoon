@@ -349,6 +349,9 @@ namespace AiLabs.Rules.Sim
                     || (lab.DrillLeft != 0 && lab.DrillLeft < 1)
                     || ((lab.DrillPrep != 0 || lab.DrillLeft != 0 || lab.DrillDue != 0 || lab.DrillPassed != 0 || lab.DrillFailed != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has drill state (prep " + lab.DrillPrep + ", " + lab.DrillLeft + " weeks left) the data does not allow");
+                if (lab.HumanQueue < 0 || lab.HumanBusy < 0 || lab.HumanCleared < 0 || (lab.HumanBusy > 0 && lab.HumanQueue < 1)
+                    || ((lab.HumanQueue != 0 || lab.HumanCleared != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a human queue (" + lab.HumanQueue + " items, " + lab.HumanBusy + " weeks busy) the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -498,6 +501,17 @@ namespace AiLabs.Rules.Sim
                         || (model.DocLevel == 0 && model.DocAge != 0) || (model.OwnerId != 0 && Knowledge.Person(lab, model.OwnerId) == null)
                         || ((model.OwnerId != 0 || model.DocLevel != 0 || model.KnowGap != 0 || model.Handovers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                         p.Add(model.Name + " has an owner or documentation (owner " + model.OwnerId + ", docs " + model.DocLevel + ", gap " + model.KnowGap + ") in a way the data does not allow");
+                    if (model.EvalSuite < 0 || model.EvalSuite > 2 || model.EvalLeft < 0 || model.EvalScore < 0 || model.EvalScore > 1000 || model.EvalRuns < 0 || model.EvalStreak < 0
+                        || (model.EvalSuite == 0 && (model.EvalLeft != 0 || model.EvalRuns != 0)) || (model.EvalSuite != 0 && model.Status != ModelStatus.Released && model.Status != ModelStatus.Trained)
+                        || ((model.EvalSuite != 0 || model.EvalRuns != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has a public eval (suite " + model.EvalSuite + ", score " + model.EvalScore + ") in a way the data does not allow");
+                    if (model.ToolMask < 0 || model.ToolMask > 7 || (model.ToolMask != 0 && model.AgentLevel <= 0)
+                        || ((model.ToolMask != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has a tool mask of " + model.ToolMask + " in a way the data does not allow");
+                    if (model.ChkDone < 0 || model.ChkDone > 15 || model.ChkMissed < 0 || model.ChkMissed > 15 || ((model.ChkDone | model.ChkMissed) & ~15) != 0
+                        || (model.ChkMissed != 0 && model.Status != ModelStatus.Released)
+                        || ((model.ChkDone != 0 || model.ChkMissed != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                        p.Add(model.Name + " has checklist state (done " + model.ChkDone + ", missed " + model.ChkMissed + ") the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

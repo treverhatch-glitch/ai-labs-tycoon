@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 125;
+        public const int CurrentSchema = 129;
 
         public int Schema;
         public string ConfigVersion;
@@ -590,6 +590,10 @@ namespace AiLabs.Rules.State
         public int DrillDue;
         public int DrillPassed;
         public int DrillFailed;
+        /// <summary>Human escalation: backlog depth, weeks the desk is busy after a clear, and how many items were cleared.</summary>
+        public int HumanQueue;
+        public int HumanBusy;
+        public int HumanCleared;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1105,6 +1109,9 @@ namespace AiLabs.Rules.State
             s.Int("drillDue", ref DrillDue);
             s.Int("drillPassed", ref DrillPassed);
             s.Int("drillFailed", ref DrillFailed);
+            s.Int("humanQueue", ref HumanQueue);
+            s.Int("humanBusy", ref HumanBusy);
+            s.Int("humanCleared", ref HumanCleared);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1305,6 +1312,17 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Release checklist: done bits (1 red-team, 2 docs, 4 eval, 8 policy) and missed bits frozen at first release.</summary>
+        public int ChkDone;
+        public int ChkMissed;
+        /// <summary>Tool allow-list for agents as a bitmask: 1 web, 2 code, 4 data.</summary>
+        public int ToolMask;
+        /// <summary>Public eval: suite (0 none, 1 narrow, 2 broad), weeks until the next publish, last score (out of 1000), how many publishes ran, and consecutive beats of the bar.</summary>
+        public int EvalSuite;
+        public int EvalLeft;
+        public int EvalScore;
+        public int EvalRuns;
+        public int EvalStreak;
         /// <summary>Knowledge: the staff id of the person who owns the model (0 none), the level of its documentation, weeks since the documentation was last written, the knowledge gap (out of 1000) and how many owners have left it.</summary>
         public int OwnerId;
         public int DocLevel;
@@ -1368,6 +1386,14 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("chkDone", ref ChkDone);
+            s.Int("chkMissed", ref ChkMissed);
+            s.Int("toolMask", ref ToolMask);
+            s.Int("evalSuite", ref EvalSuite);
+            s.Int("evalLeft", ref EvalLeft);
+            s.Int("evalScore", ref EvalScore);
+            s.Int("evalRuns", ref EvalRuns);
+            s.Int("evalStreak", ref EvalStreak);
             s.Int("ownerId", ref OwnerId);
             s.Int("docLevel", ref DocLevel);
             s.Int("docAge", ref DocAge);
