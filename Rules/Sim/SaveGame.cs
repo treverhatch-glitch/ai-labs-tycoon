@@ -307,6 +307,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.FabBuild != 0 && lab.FabBuild != lab.FabTier + 1) || (lab.FabBuild == 0 && (lab.FabLeft != 0 || lab.FabGpus != 0))
                     || ((lab.FabTier != 0 || lab.FabBuild != 0 || lab.FabBuilt != 0 || lab.FabCancelled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a fabric (tier " + lab.FabTier + ", building " + lab.FabBuild + ", " + lab.FabLeft + " weeks) in a way the data does not allow");
+                if (lab.DiscOn < 0 || lab.DiscOn > 1 || lab.DiscOpen < 0 || lab.DiscLeft < 0 || lab.DiscPrep < 0 || lab.DiscFindings < 0 || lab.DiscFiled < 0 || lab.DiscInspect < 0 || lab.DiscModel < 0
+                    || (lab.DiscOn == 0 && (lab.DiscOpen != 0 || lab.DiscLeft != 0 || lab.DiscPrep != 0 || lab.DiscInspect != 0))
+                    || (lab.DiscOpen == 0 && lab.DiscLeft != 0)
+                    || ((lab.DiscOn != 0 || lab.DiscFindings != 0 || lab.DiscFiled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has an incident register (" + lab.DiscOpen + " waiting, " + lab.DiscFindings + " findings) the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

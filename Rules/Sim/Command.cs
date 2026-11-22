@@ -181,7 +181,10 @@ namespace AiLabs.Rules.Sim
         WithdrawConformity,
         SetOrg,
         OrderFabric,
-        CancelFabric
+        CancelFabric,
+        JoinRegister,
+        LeaveRegister,
+        FileReport
     }
 
     /// <summary>
@@ -1572,6 +1575,26 @@ namespace AiLabs.Rules.Sim
         public static Command CancelFabric(int labId)
         {
             return Make(CommandKind.CancelFabric, labId);
+        }
+
+        /// <summary>Joins the incident register: every incident must be reported within weeks, and inspections look at the findings.</summary>
+        public static Command JoinRegister(int labId)
+        {
+            return Make(CommandKind.JoinRegister, labId);
+        }
+
+        /// <summary>Leaves the register. Not while a report is waiting or being prepared.</summary>
+        public static Command LeaveRegister(int labId)
+        {
+            return Make(CommandKind.LeaveRegister, labId);
+        }
+
+        /// <summary>Files the oldest waiting report: 1 a summary now (leaves a finding), 2 a full report (weeks of safety people's time; clears a finding).</summary>
+        public static Command FileReport(int labId, int depth)
+        {
+            Command c = Make(CommandKind.FileReport, labId);
+            c.Count = depth;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

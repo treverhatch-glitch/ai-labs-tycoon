@@ -126,6 +126,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 111) MigrateTo111(root);
             if (fromSchema < 112) MigrateTo112(root);
             if (fromSchema < 113) MigrateTo113(root);
+            if (fromSchema < 114) MigrateTo114(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -489,6 +490,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 114: no lab has joined the register.</summary>
+        static void MigrateTo114(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "discOn", "discOpen", "discLeft", "discPrep", "discFindings", "discFiled", "discInspect", "discModel" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

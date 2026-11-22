@@ -138,6 +138,7 @@ namespace AiLabs.Rules.Systems
             TrustSystem.OnIncident(c, state, lab, model);
             SafetyAudit.OnIncident(state, lab, model);
             MarketingCampaign.OnIncident(c, state, lab, model);
+            Disclosure.OnIncident(c, lab, model);
 
             Litigation.OnIncident(c, state, lab, model, fine + makeGood);
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);

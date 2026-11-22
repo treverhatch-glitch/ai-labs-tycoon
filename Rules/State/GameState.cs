@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 113;
+        public const int CurrentSchema = 114;
 
         public int Schema;
         public string ConfigVersion;
@@ -511,6 +511,15 @@ namespace AiLabs.Rules.State
         public int FabGpus;
         public int FabBuilt;
         public int FabCancelled;
+        /// <summary>The incident register: joined (1), reports waiting, weeks left on the oldest, weeks left preparing a full report, findings on file, reports filed, weeks to the next inspection, and the model of the latest incident.</summary>
+        public int DiscOn;
+        public int DiscOpen;
+        public int DiscLeft;
+        public int DiscPrep;
+        public int DiscFindings;
+        public int DiscFiled;
+        public int DiscInspect;
+        public int DiscModel;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -959,6 +968,14 @@ namespace AiLabs.Rules.State
             s.Int("fabGpus", ref FabGpus);
             s.Int("fabBuilt", ref FabBuilt);
             s.Int("fabCancelled", ref FabCancelled);
+            s.Int("discOn", ref DiscOn);
+            s.Int("discOpen", ref DiscOpen);
+            s.Int("discLeft", ref DiscLeft);
+            s.Int("discPrep", ref DiscPrep);
+            s.Int("discFindings", ref DiscFindings);
+            s.Int("discFiled", ref DiscFiled);
+            s.Int("discInspect", ref DiscInspect);
+            s.Int("discModel", ref DiscModel);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

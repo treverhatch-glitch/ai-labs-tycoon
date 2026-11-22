@@ -148,6 +148,7 @@ namespace AiLabs.Rules.Config
             ConformityProblems(p, c);
             OrgProblems(p, c);
             FabricProblems(p, c);
+            DisclosureProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1671,6 +1672,15 @@ namespace AiLabs.Rules.Config
             if (k.MinGpus < 1 || k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB || k.EraC >= c.Eras.Count) p.Add("fabric.minGpus must be at least 1 and the eras must not fall and the last must be a real era");
             if (k.LeadA < 1 || k.LeadB < 1 || k.LeadC < 1 || k.CostA < 0 || k.CostB < k.CostA || k.CostC < k.CostB || k.GainA < 0 || k.GainB < k.GainA || k.GainC < k.GainB) p.Add("fabric leads must be at least 1 and costs and gains must not fall from tier to tier");
             if (k.DepositPermille < 0 || k.DepositPermille > 1000 || k.CutoverWeeks < 0 || k.CutoverWeeks > k.LeadA || k.CutoverLoss < 0 || k.CutoverLoss > 900) p.Add("fabric.depositPermille must be from 0 to 1000, cutoverWeeks no more than leadA and cutoverLoss from 0 to 900");
+        }
+
+        static void DisclosureProblems(List<string> p, GameConfig c)
+        {
+            DisclosureConfig k = c.Disclosure;
+            if (k == null) { p.Add("disclosure is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("disclosure.enabled must be 0 or 1");
+            if (k.MaxOpen < 1 || k.ReportWeeks < 1 || k.FullWeeks < 1 || k.FullStaff < 0 || k.InspectWeeks < 1 || k.InspectLimit < 1) p.Add("disclosure.maxOpen, reportWeeks, fullWeeks, inspectWeeks and inspectLimit must be at least 1 and fullStaff not negative");
+            if (k.TrustGain < 0 || k.TrustFull < k.TrustGain || k.LateFine < 0 || k.InspectFine < 0) p.Add("disclosure.trustFull must not be below trustGain and the fines must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

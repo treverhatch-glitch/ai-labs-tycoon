@@ -2155,6 +2155,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It is separate from buying GPUs (`BuyGpus`, the queue of purchases) and from building sites: those add or house GPUs, this makes the ones owned faster.
 - Alternatives: buying speed per GPU (rejected: a pay-for-stat), no outage (rejected: no timing decision), refund on cancel (rejected: no cost to changing your mind).
 
+### Q421. What does it cost to be open about incidents? DECIDED: a voluntary register with deadlines, findings and inspections
+- Joining is a choice with no fee. Each incident then starts a clock. A summary report is fast and earns a little trust but adds a finding; a full report needs safety people and weeks but clears one. Findings build up until an inspection fines them. Staying out costs nothing and gains nothing.
+- It is separate from the licence (a lab-level standing), the on-call rota (softening fines), conformity (certifying a model before it goes out) and post-mortems (learning after one). It is a duty that arrives with incidents, not a purchase.
+- Alternatives: trust for a fee (rejected: a pay-for-stat), automatic reporting (rejected: no decision), a fine cut for joining (rejected: the licence already does that).
+
 ## Open
 
 None.

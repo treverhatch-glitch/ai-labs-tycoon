@@ -6379,6 +6379,19 @@
     "cutoverWeeks": 3,
     "cutoverLoss": 300
   },
+  "disclosure": {
+    "enabled": 1,
+    "maxOpen": 4,
+    "reportWeeks": 4,
+    "fullWeeks": 3,
+    "fullStaff": 2,
+    "trustGain": 12,
+    "trustFull": 30,
+    "lateFine": 40000,
+    "inspectWeeks": 26,
+    "inspectLimit": 3,
+    "inspectFine": 60000
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

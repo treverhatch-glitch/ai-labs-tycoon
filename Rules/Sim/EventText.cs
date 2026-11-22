@@ -525,6 +525,14 @@ namespace AiLabs.Rules.Sim
                     return who + " finished building its cluster fabric.";
                 case EventKind.FabricCancelled:
                     return who + " cancelled its cluster fabric order.";
+                case EventKind.RegisterChanged:
+                    return e.Pick == 1 ? who + " joined the incident register." : who + " left the incident register.";
+                case EventKind.ReportFiled:
+                    return who + " filed an incident report.";
+                case EventKind.ReportLate:
+                    return who + " was late with an incident report.";
+                case EventKind.InspectionHeld:
+                    return e.Pick == 1 ? "The register's inspection found nothing to fine at " + who + "." : "The register's inspection fined " + who + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

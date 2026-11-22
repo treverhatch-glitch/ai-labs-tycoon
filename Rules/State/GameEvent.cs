@@ -506,7 +506,15 @@ namespace AiLabs.Rules.State
         /// <summary>A fabric tier was delivered. SubjectId is the tier, Amount the balance paid.</summary>
         FabricDelivered,
         /// <summary>A fabric order was cancelled. SubjectId is the tier, Amount the deposit lost.</summary>
-        FabricCancelled
+        FabricCancelled,
+        /// <summary>The lab joined or left the incident register. Pick 1 joined, 0 left.</summary>
+        RegisterChanged,
+        /// <summary>A report was filed. SubjectId is the model, Pick 1 a summary, 2 a full report; Amount the trust gained.</summary>
+        ReportFiled,
+        /// <summary>A report was late. SubjectId is the model, Amount the fine.</summary>
+        ReportLate,
+        /// <summary>An inspection of the register. Pick 1 clean, 0 fined; Amount the fine.</summary>
+        InspectionHeld
     }
 
     /// <summary>

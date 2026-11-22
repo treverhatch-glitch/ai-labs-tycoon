@@ -353,6 +353,7 @@ and says why in the commit message.
 170. **Conformity assessment.** ~~Done~~: `StartConformity`, `SubmitEvidence`, `WithdrawConformity`, schema 111, `ConformityTests` (Q418).
 171. **Organisation structure.** ~~Done~~: `SetOrg`, schema 112, `OrgTests` (Q419).
 172. **Cluster fabric.** ~~Done~~: `OrderFabric`, `CancelFabric`, schema 113, `FabricTests` (Q420).
+173. **Incident register.** ~~Done~~: `JoinRegister`, `LeaveRegister`, `FileReport`, schema 114, `DisclosureTests` (Q421).
 
 ## Rules: later
 
