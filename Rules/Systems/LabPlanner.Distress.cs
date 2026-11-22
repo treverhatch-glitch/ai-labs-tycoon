@@ -61,6 +61,7 @@ namespace AiLabs.Rules.Systems
         {
             AcquisitionConfig cfg = x.C.Acquisitions;
             if (cfg == null || cfg.PlannerAcquireChancePermille <= 0) return;
+            if (RunwayWeeks(x) < x.Plan.ReserveWeeks * 2) return;
             if (!x.State.Rng.Rivals.Chance(cfg.PlannerAcquireChancePermille)) return;
             int quarter = DecisionLog.QuarterOf(x.C, x.State.Tick);
             for (int i = x.Lab.Log.Count - 1; i >= 0; i--)

@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Systems
       }
 
       long revenue = MarketRevenueThisMonth(state);
+      if (revenue <= 0) revenue = MarketRevenueLastClosedMonth(state);
       if (state.BubblePermille >= b.HotPermille && b.GraceMonthsBeforeCrash > 0)
       {
         bool returnsOk = state.BubbleCapitalRaised <= 0

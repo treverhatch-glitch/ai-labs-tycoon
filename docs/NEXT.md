@@ -110,8 +110,9 @@ and says why in the commit message.
 - ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
 - ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
 - ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
-- ~~**Rival retrenchment soak**~~ **done (local)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests` (forty × forty).
-- ~~**Rival economy robustness (stack2)**~~ **done (local)** — Q201 perturbation soak; era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201).
+- ~~**Rival retrenchment soak**~~ **done (pushed)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests`; golden `15fc3234…`.
+- ~~**Rival economy robustness (stack2)**~~ **done (pushed @ `477c3d2`)** — Q201 full bar (`RivalEconomyRobustnessLaterTests`); era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201). **795** tests at PR #3 tip.
+- **Hatch economy bar batch 3 (local)** — Q202–Q205: M&amp;A GPU lock (schema **29**), bubble step cooling, survivor haircut, chip book in deals; `HatchEconomyBarLaterTests` (6). Golden `758743b8…` (closed-month revenue fallback). **Q207–Q210** claimed (planner acquire soak, ledger invariant, crash chip×rollup cross, chip fleet in quotes).
 
 ## Rules: forward queue (from bible / systems-design)
 

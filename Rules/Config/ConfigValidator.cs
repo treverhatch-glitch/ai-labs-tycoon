@@ -283,6 +283,9 @@ namespace AiLabs.Rules.Config
             if (a.RegulatorDealRevenue < 0) p.Add("acquisitions.regulatorDealRevenue is negative");
             if (a.RegulatorAttention < 0) p.Add("acquisitions.regulatorAttention is negative");
             Permille(p, "acquisitions.plannerAcquireChancePermille", a.PlannerAcquireChancePermille);
+            if (a.FleetResaleLockWeeks < 0) p.Add("acquisitions.fleetResaleLockWeeks is negative");
+            Permille(p, "acquisitions.readyChipBookPermille", a.ReadyChipBookPermille);
+            Permille(p, "acquisitions.chipFleetBookPermille", a.ChipFleetBookPermille);
         }
 
         static void ModelSalesProblems(List<string> p, GameConfig c)

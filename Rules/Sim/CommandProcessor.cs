@@ -252,6 +252,8 @@ namespace AiLabs.Rules.Sim
             foreach (HardwareBatch batch in Fleet.OldestFirst(c, lab, holdingId))
             {
                 if (left == 0) break;
+                if (batch.ResaleLockedUntilTick >= 0 && state.Tick < batch.ResaleLockedUntilTick)
+                    return Fail(CommandError.TargetNotEligible, "These GPUs are still tied up in post-acquisition integration.");
                 int take = left < batch.Count ? left : batch.Count;
                 proceeds += take * LabQueries.ResalePerUnit(c, c.Compute.Generation(batch.GpuGenId), state.Tick);
                 Fleet.Take(lab, batch, take);

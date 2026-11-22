@@ -42,6 +42,7 @@ namespace AiLabs.Rules.Systems
 
             if (lab.WeeksInDebt > 0)
             {
+                if (lab.WeeksInDebt >= 3) TryLiquidityModelSale(x);
                 Tighten(x);
                 return;
             }
@@ -102,7 +103,7 @@ namespace AiLabs.Rules.Systems
         {
             GameConfig c = x.C;
             long growth = (long)growthPermillePerYear * weeks / c.Calendar.WeeksPerYear;
-            if (x.Lab.Cash > 0 && !Retrenching(x))
+            if (x.Lab.Cash > 0 && !Retrenching(x) && !RunwaySaleGrowthPaused(x) && !Overstretched(x))
             {
                 long firstEraCash = x.Lab.Cash * c.Eras[0].TrainingCostPermille / EraSystem.AtTick(c, x.State.Tick).TrainingCostPermille;
                 growth += firstEraCash * x.Plan.WealthGrowthPermillePerMillion / 1000000;
@@ -124,17 +125,23 @@ namespace AiLabs.Rules.Systems
 
         static bool CanSpend(Ctx x, long cost)
         {
-            return x.Lab.Cash - cost >= Reserve(x);
+            long cushion = Reserve(x);
+            if (Overstretched(x)) cushion = cushion * 5 / 4;
+            return x.Lab.Cash - cost >= cushion;
         }
 
-        /// <summary>In debt: hand back a quarter of the rented GPUs and let one person go from the biggest team.</summary>
+        /// <summary>In debt: trim rent toward plan floor and fire one staff. Q171: skip GPU cut when peer-lease already left rent at plan floor.</summary>
         static void Tighten(Ctx x)
         {
             LabState lab = x.Lab;
-            if (lab.RentedGpus > 0)
+            int rentBefore = lab.RentedGpus;
+            int floor = x.Plan.Gpus;
+            if (rentBefore > floor)
             {
-                int give = (lab.RentedGpus + 3) / 4;
-                Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
+                int give = lab.WeeksInDebt >= 6 ? (rentBefore + 1) / 2 : (rentBefore + 3) / 4;
+                int rent = Math.Max(floor, rentBefore - give);
+                if (rent < rentBefore)
+                    Decide(x, Command.SetRentedGpus(lab.Id, rent), DecisionAction.Tightened, "", rentBefore - rent, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
             }
 
             string biggestRole = "";
@@ -188,9 +195,10 @@ namespace AiLabs.Rules.Systems
             GameState state = x.State;
             LabState lab = x.Lab;
             PlanConfig plan = x.Plan;
-            int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
+            int grown = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             int owned = LabQueries.OwnedUnits(lab);
+            int target = CapGrowthTarget(x, grown, owned + lab.RentedGpus, plan.Gpus);
             int ordered = LabQueries.ChipsOnOrder(lab);
 
             if (plan.OwnGpus && owned + ordered < target)
@@ -226,7 +234,7 @@ namespace AiLabs.Rules.Systems
                 int affordable = gen.RentPerGpuWeek <= 0 ? rent : (int)MathI.Clamp(weekly / gen.RentPerGpuWeek, 0, rent);
                 rent = Math.Max(lab.RentedGpus, affordable);
             }
-            if (Retrenching(x) && rent > lab.RentedGpus) rent = lab.RentedGpus;
+            if ((Retrenching(x) || RunwaySaleGrowthPaused(x)) && rent > lab.RentedGpus) rent = lab.RentedGpus;
             if (lab.RentedGpus >= plan.Gpus && Overstretched(x)) rent = Math.Min(rent, lab.RentedGpus);
             if (rent != lab.RentedGpus)
                 Decide(x, Command.SetRentedGpus(lab.Id, rent), DecisionAction.RentedGpus, "", rent, Reason.Of(ReasonCode.GpuTargetGap, Math.Max(0, target - owned)), Runway(x));
@@ -461,6 +469,7 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             PlanConfig plan = x.Plan;
             if (LabQueries.ActiveRuns(lab) > 0) return;
+            if (Retrenching(x) || RunwaySaleGrowthPaused(x)) return;
 
             int best = 0;
             for (int i = 0; i < lab.Models.Count; i++)
@@ -476,8 +485,8 @@ namespace AiLabs.Rules.Systems
                 if (!LabQueries.LineUnlocked(c, lab, line.Id)) continue;
                 bool report = first;
                 first = false;
-                // A run is how a lab earns its next dollar, so it may dip into half of the reserve.
-                if (lab.Cash - EraSystem.RunPrepCost(c, line, state.Tick) < Reserve(x) / 2)
+                long runReserve = Overstretched(x) ? Reserve(x) : Reserve(x) / 2;
+                if (lab.Cash - EraSystem.RunPrepCost(c, line, state.Tick) < runReserve)
                 {
                     if (report) Note(x, DecisionAction.SkippedRun, line.Id, 0, Runway(x));
                     continue;

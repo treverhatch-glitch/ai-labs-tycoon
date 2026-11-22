@@ -755,8 +755,66 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q201. Stack2 rival economy bar vs era sector flavours? DECIDED: fork — stack2 soak first; rivals pay flavours later on era chain
 
 - Options: (a) merge era PRs into stack2 and flip `safety.sectorFlavoursForRivals` here; (b) prove forty×forty solvent on stack2, defer flavours + `traitRollSalt` soak to era PRs #4–#10.
-- Recommendation and choice: **(b)**. Coordinator (Nov 21): do not merge `cursor/version-naming-af2f` into `cursor/later-rules-stack2-75cd` — it would stack all era work onto PR #3. Stack2 ships `RunwayRetrenchment`, rivalry retrench data when present, and `RivalEconomyRobustnessLaterTests` Q200–Q201. Era turns `sectorFlavoursForRivals` on after stack2 robustness lands.
+- Recommendation and choice: **(b)**. Coordinator (Nov 21): do not merge `cursor/version-naming-af2f` into `cursor/later-rules-stack2-75cd` — it would stack all era work onto PR #3. Stack2 ships `RunwayRetrenchment`, rivalry retrench data when present, and `RivalEconomyRobustnessLaterTests` Q200–Q201 (forty×forty default harness, max distress permille scale, zero-cash and knife-edge retrench, save/load mid-retrench, seed-19 Q200 interaction, era-0 research perturbation). Era turns `sectorFlavoursForRivals` on after stack2 robustness lands.
 - Why: review stacks stay separable; knife-edge rival economics are gated before flavoured incident costs hit plan labs.
+
+### Q202. Post-acquisition GPU resale lock? DECIDED: `fleetResaleLockWeeks` + `resaleLockedUntilTick` (schema 29)
+
+- Options: (a) price fleet at full resale in quotes only; (b) refuse `SellGpus` until integration weeks elapse on transferred Envydia batches.
+- Recommendation and choice: **(b)**. Default 52 weeks; `HatchEconomyBarLaterTests` Q202.
+- Why: Hatch review — buy-distressed-sell-GPU arbitrage must not print cash.
+
+### Q203. Bubble return cooling via real month close? DECIDED: step bar + closed-month fallback
+
+- Options: (a) keep hand-setting `ThisMonth.Revenue` in tests; (b) `Simulation.Step` at month end with ledger revenue; fall back to `MarketRevenueLastClosedMonth` when the open month reads zero.
+- Recommendation and choice: **(b)**. `HatchEconomyBarLaterTests` Q203; golden re-record for fallback tweak.
+- Why: Opus review — grace/cooling must survive the real tick order.
+
+### Q204. Survivor haircut vs market share at pop? DECIDED: skip when `SurvivorRevenuePpm` met
+
+- Recommendation and choice: use `ThisMonth` share at pop; `HatchEconomyBarLaterTests` Q204 (no `Fines` for revenue leader).
+- Why: real revenue survival is the Hatch fantasy.
+
+### Q205. Chip designs in acquisition quotes and transfer? DECIDED: `readyChipBookPermille` + transfer designs
+
+- Recommendation and choice: book ready tapeouts into quote subtotal; `TransferChipDesigns` on apply; `HatchEconomyBarLaterTests` Q205–Q206.
+- Why: custom silicon is part of distressed lab value; designs must not orphan on absorbed ids.
+
+### Q206. Chip designs transfer on acquire? DECIDED: yes (`TransferChipDesigns`)
+
+- Recommendation and choice: move `ChipDesigns` to buyer before `SealAbsorbed`; `HatchEconomyBarLaterTests` Q206.
+- Why: absorbed labs stop participating in the economy; IP must live on the buyer.
+
+### Q218. Occasional rival bankruptcy on 200×40 soak? DECIDED (coordinator, Nov 22)
+
+- **Choice:** A plan rival may bankrupt; bar over seeds **1–200** × forty years (`BALANCE_SOAK_FULL` in CI): **(a)** ≤**10** seeds with any plan bankruptcy (≤5%); **(b)** no bankruptcy before calendar **2005**; **(c)** at most **one** of `openaye` / `anthoptics` bankrupt per game; **(d)** ≥**3** active plan rivals at week 40×`. `RivalEconomyRobustnessLaterTests` Q216+Q218. Q200 (40×40) stays **zero** bankruptcies.
+- **Structural fix for (b):** modest **OpenAye** / **AntHoptics** `startCash` and `backerPerWeek` bump (Q218; not per-seed) so early-game failures land after 2005; retrench stack + wealthGrowth **50** unchanged.
+- **Known occasional seeds (≤10):** e.g. 42, 54, 121, 141, 160, 172, 187, 188 — all satisfy (b)–(d) after bump.
+
+### Q216. Two-hundred-seed rival economy soak on stack2? DECIDED: widen bar + runway-sale cooldown (no era merge)
+
+- Options: (a) forty seeds only; (b) seeds **1–200** × forty years behind `BALANCE_SOAK_FULL`; (c) merge era chain to repro.
+- Recommendation and choice: **(b)** + **Q218** design rules (not zero). Fixes: **3-month** growth pause after runway `SoldModel` until runway clears reserve; overstretched slow-bleed liquidity sales; GPU `CapGrowthTarget`; planner acquire runway gate; **OpenAye/AntHoptics** `wealthGrowthPermillePerMillion` **50** (was 75). Grace stays **12**.
+
+### Q217. Plan-lab `SolvencyHold` latch? **PARKED — out of PR #3 batch**
+
+- Implemented locally; **removed** because Q200 (incl. seed 16) failed with hold. Revisit on a side branch; schema **30** remap note in `claims.md` if revived.
+
+### Q207. Planner crash acquire conservative default after Q201? DECIDED: permille 35
+
+- Shipped `plannerAcquireChancePermille` 35 with `HatchEconomyBarLaterTests` Q207 soak (crash-only mass bankruptcy cap).
+
+### Q208. Acquisition cash ledger invariant through step? **CLAIMED**
+
+- Buyer cash delta equals quote; target cash zeroed; no silent GPU flip profit after Q202 lock.
+
+### Q209. Listed-chip trades during crash × retrenchment × roll-up? **CLAIMED**
+
+- Cross bar: distress listing, rival `BuyListedChips`, roll-up month, save/load mid-crash (extends Q175/Q178).
+
+### Q210. Custom-chip fleet in M&A quotes (inventory batches)? **CLAIMED**
+
+- Include on-fleet chip batches in `FleetPart` or separate permille (after Q205 book value).
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

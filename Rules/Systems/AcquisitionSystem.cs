@@ -10,6 +10,7 @@ namespace AiLabs.Rules.Systems
     public struct AcquisitionQuote
     {
       public long FleetPart;
+      public long ChipsPart;
       public long ModelsPart;
       public long StaffPart;
       public long CashPart;
@@ -49,7 +50,9 @@ namespace AiLabs.Rules.Systems
       }
       q.StaffPart = (long)target.Staff.Count * cfg.StaffValuePerHead;
       q.FleetPart = LabQueries.FleetResaleValue(c, state, target);
-      long distressedBundle = q.ModelsPart + q.StaffPart;
+      q.ChipsPart = ReadyChipBookValue(c, target, cfg.ReadyChipBookPermille)
+        + ChipFleetBookValue(c, state, target, cfg.ChipFleetBookPermille);
+      long distressedBundle = q.ModelsPart + q.StaffPart + q.ChipsPart;
       if (q.Distressed)
       {
         int permille = BubbleSystem.InCrash(state) ? cfg.CrashDistressPricePermille : cfg.DistressPricePermille;
@@ -101,6 +104,8 @@ namespace AiLabs.Rules.Systems
       target.Cash = 0;
       TransferModels(c, state, buyer, target);
       TransferStaff(c, buyer, target);
+      TransferChipDesigns(buyer, target);
+      TransferChipListings(buyer, target);
       TransferHoldingsAndFleet(c, state, buyer, target);
       for (int s = 0; s < state.Sectors.Count; s++)
       {
@@ -151,6 +156,11 @@ namespace AiLabs.Rules.Systems
       }
     }
 
+    static void TransferChipDesigns(LabState buyer, LabState target)
+    {
+      for (int i = 0; i < target.ChipDesigns.Count; i++) buyer.ChipDesigns.Add(target.ChipDesigns[i]);
+    }
+
     static void TransferStaff(GameConfig c, LabState buyer, LabState target)
     {
       int hit = c.StaffPeople.MoraleBaseline > 0 ? c.StaffPeople.MoraleBaseline / 4 : 15;
@@ -173,14 +183,59 @@ namespace AiLabs.Rules.Systems
         holdingMap[oldId] = h.Id;
         buyer.Holdings.Add(h);
       }
+      AcquisitionConfig acq = c.Acquisitions;
+      int lockUntil = -1;
+      if (acq != null && acq.FleetResaleLockWeeks > 0) lockUntil = state.Tick + acq.FleetResaleLockWeeks;
       for (int i = 0; i < target.Fleet.Count; i++)
       {
         HardwareBatch b = target.Fleet[i];
         if (b.HoldingId != HardwareBatch.Hq && holdingMap.TryGetValue(b.HoldingId, out int mapped)) b.HoldingId = mapped;
         else if (b.HoldingId != HardwareBatch.Hq) continue;
         b.Id = state.TakeId();
+        if (lockUntil >= 0 && !string.IsNullOrEmpty(b.GpuGenId) && b.ChipDesignId <= 0) b.ResaleLockedUntilTick = lockUntil;
         buyer.Fleet.Add(b);
       }
+    }
+
+    static long ReadyChipBookValue(GameConfig c, LabState target, int bookPermille)
+    {
+      if (bookPermille <= 0 || target.ChipDesigns.Count == 0) return 0;
+      long sum = 0;
+      for (int i = 0; i < target.ChipDesigns.Count; i++)
+      {
+        ChipDesign d = target.ChipDesigns[i];
+        if (d.Status != ChipDesignStatus.Ready) continue;
+        if (c.Chips == null || string.IsNullOrEmpty(d.NodeId)) continue;
+        ChipNodeConfig node = c.Chips.Node(d.NodeId);
+        if (node == null) continue;
+        sum += MathI.MulPermille(node.TapeoutCost, bookPermille);
+      }
+      return sum;
+    }
+
+    static long ChipFleetBookValue(GameConfig c, GameState state, LabState target, int bookPermille)
+    {
+      if (bookPermille <= 0 || target.Fleet.Count == 0) return 0;
+      long sum = 0;
+      for (int i = 0; i < target.Fleet.Count; i++)
+      {
+        HardwareBatch batch = target.Fleet[i];
+        if (batch.ChipDesignId <= 0 || batch.Count <= 0) continue;
+        ChipDesign d = target.Design(batch.ChipDesignId);
+        if (d == null || d.Status != ChipDesignStatus.Ready) continue;
+        ChipSpec spec = ChipQueries.Spec(c, d);
+        if (!spec.Valid) continue;
+        int yield = d.YieldPermille > 0 ? d.YieldPermille : MathI.Permille;
+        long cost = ChipQueries.OrderCost(spec, yield, batch.Count);
+        sum += MathI.MulPermille(cost, bookPermille);
+      }
+      return sum;
+    }
+
+    static void TransferChipListings(LabState buyer, LabState target)
+    {
+      for (int i = 0; i < target.ChipListings.Count; i++) buyer.ChipListings.Add(target.ChipListings[i]);
+      target.ChipListings.Clear();
     }
 
     public static void RunMonth(GameConfig c, GameState state)

@@ -85,6 +85,8 @@ public class HatchOpusReviewFixTests
         g.Do(Command.AcquireLab(g.Id, rival.Id));
         int owned = LabQueries.OwnedGpuUnits(g.Me, HardwareBatch.Hq);
         Assert.True(owned > 0);
+        g.Refused(Command.SellGpus(g.Id, owned), CommandError.TargetNotEligible);
+        g.Weeks(g.C.Acquisitions.FleetResaleLockWeeks);
         g.Do(Command.SellGpus(g.Id, owned));
         long delta = g.Me.Cash - before;
         Assert.True(delta <= 0, "acquire then sell netted " + delta);

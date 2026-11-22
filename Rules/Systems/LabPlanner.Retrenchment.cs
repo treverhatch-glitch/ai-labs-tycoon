@@ -10,6 +10,8 @@ namespace AiLabs.Rules.Systems
     /// <summary>Cash-aware growth caps so rivals retrench before debt spirals (Q200).</summary>
     public static partial class LabPlanner
     {
+        const int RunwaySaleGrowthCooldownMonths = 3;
+
         static int RunwayWeeks(Ctx x)
         {
             long cost = LabQueries.WeeklyRunningCost(x.C, x.State, x.Lab);
@@ -24,9 +26,37 @@ namespace AiLabs.Rules.Systems
             if (lab.WeeksInDebt > 0) return true;
             long reserve = Reserve(x);
             if (Overstretched(x) && lab.Cash < reserve * 2) return true;
+            if (Overstretched(x) && RunwayWeeks(x) <= x.Plan.ReserveWeeks) return true;
             if (lab.Cash < reserve / 2) return true;
             if (RunwayWeeks(x) <= x.Plan.ReserveWeeks / 2) return true;
             return false;
+        }
+
+        static int LastRunwayLiquiditySaleTick(Ctx x)
+        {
+            for (int i = x.Lab.Log.Count - 1; i >= 0; i--)
+            {
+                DecisionEntry e = x.Lab.Log[i];
+                if (e.Action != DecisionAction.SoldModel) continue;
+                if (e.Reasons.Any(r => r.Code == ReasonCode.RunwayWeeks)) return e.Tick;
+            }
+            return -1;
+        }
+
+        static int CalendarMonthsSince(Ctx x, int fromTick)
+        {
+            GameConfig c = x.C;
+            int fromMonth = GameDate.Month(c.Calendar, fromTick) + GameDate.Year(c.Calendar, fromTick) * c.Calendar.MonthsPerYear;
+            int atMonth = GameDate.Month(c.Calendar, x.State.Tick) + GameDate.Year(c.Calendar, x.State.Tick) * c.Calendar.MonthsPerYear;
+            return atMonth - fromMonth;
+        }
+
+        static bool RunwaySaleGrowthPaused(Ctx x)
+        {
+            int saleTick = LastRunwayLiquiditySaleTick(x);
+            if (saleTick < 0) return false;
+            if (CalendarMonthsSince(x, saleTick) < RunwaySaleGrowthCooldownMonths) return true;
+            return RunwayWeeks(x) <= x.Plan.ReserveWeeks;
         }
 
         /// <summary>Trim rent toward plan floor before cash goes negative.</summary>
@@ -38,7 +68,7 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             int floor = x.Plan.Gpus;
             int runway = RunwayWeeks(x);
-            if (runway <= Math.Max(1, x.Plan.ReserveWeeks / 2) && Overstretched(x))
+            if (runway <= x.Plan.ReserveWeeks && Overstretched(x))
                 TryTrimStaff(x);
             if (lab.RentedGpus > floor && lab.RentedGpus > 0)
             {
@@ -67,7 +97,7 @@ namespace AiLabs.Rules.Systems
                 if (pick == null || m.Capability < pick.Capability) pick = m;
             }
             if (pick == null) return;
-            bool urgent = runway <= Math.Max(1, reserveWindow / 2);
+            bool urgent = x.Lab.WeeksInDebt >= 3 || runway <= Math.Max(1, reserveWindow / 2);
             int period = urgent ? GameDate.Month(x.C.Calendar, x.State.Tick) : DecisionLog.QuarterOf(x.C, x.State.Tick);
             for (int i = lab.Log.Count - 1; i >= 0; i--)
             {
@@ -106,7 +136,7 @@ namespace AiLabs.Rules.Systems
 
         static int CapGrowthTarget(Ctx x, int grown, int have, int planBaseline)
         {
-            if (!Retrenching(x)) return grown;
+            if (!Retrenching(x) && !RunwaySaleGrowthPaused(x)) return grown;
             int cap = have > planBaseline ? have : planBaseline;
             return grown < cap ? grown : cap;
         }

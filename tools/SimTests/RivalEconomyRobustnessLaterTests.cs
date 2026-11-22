@@ -15,7 +15,13 @@ namespace AiLabs.SimTests;
 public class RivalEconomyRobustnessLaterTests
 {
     const int Years = 40;
-    const int SeedCount = 40;
+    const int DefaultSeedCount = 40;
+    const int FullSoakSeedCount = 200;
+    const int MaxBankruptSeeds = 10;
+    const int MinActivePlanRivals = 3;
+    const int NoBankruptBeforeYear = 2005;
+
+    static readonly string[] MajorRivalIds = { "openaye", "anthoptics" };
 
     static void StepYears(Game g, int years)
     {
@@ -42,26 +48,103 @@ public class RivalEconomyRobustnessLaterTests
         }
     }
 
-    static List<string> PlanBankruptciesAfterYears(Action<GameConfig> tweak, long seed, int years)
+    sealed class PlanBankruptRecord
+    {
+        public string Name;
+        public string RivalId;
+        public int Year;
+    }
+
+    sealed class SoakBankruptcyResult
+    {
+        public long Seed;
+        public List<PlanBankruptRecord> Bankrupts = new List<PlanBankruptRecord>();
+        public int ActivePlanRivals;
+    }
+
+    static SoakBankruptcyResult SimulateSeedBankruptcies(Action<GameConfig> tweak, long seed, int years)
     {
         var g = new Game(Simulation.NewGame(TestData.Config(tweak), seed));
-        StepYears(g, years);
-        var bankrupts = new List<string>();
+        GameConfig c = g.C;
+        var result = new SoakBankruptcyResult { Seed = seed };
+        var wasBankrupt = new Dictionary<int, bool>();
+        foreach (LabState lab in g.State.Labs) wasBankrupt[lab.Id] = lab.Bankrupt;
+
+        for (int w = 0; w < years * c.Calendar.WeeksPerYear; w++)
+        {
+            if (GameDate.IsMonthStart(c.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, c.Autopilot);
+            g.Sim.Step();
+            foreach (LabState lab in g.State.Labs)
+            {
+                if (lab.Controller != LabController.Plan) continue;
+                bool prev = wasBankrupt.TryGetValue(lab.Id, out bool b) && b;
+                if (!prev && lab.Bankrupt)
+                {
+                    wasBankrupt[lab.Id] = true;
+                    result.Bankrupts.Add(new PlanBankruptRecord
+                    {
+                        Name = lab.Name,
+                        RivalId = lab.RivalId,
+                        Year = GameDate.Year(c.Calendar, g.Tick)
+                    });
+                }
+                else if (!wasBankrupt.ContainsKey(lab.Id)) wasBankrupt[lab.Id] = lab.Bankrupt;
+            }
+        }
+
         foreach (LabState lab in g.State.Labs)
         {
             if (lab.Controller != LabController.Plan) continue;
-            if (lab.Bankrupt) bankrupts.Add("seed " + seed + ": " + lab.Name);
+            if (!lab.Bankrupt && lab.AbsorbedByLabId < 0) result.ActivePlanRivals++;
         }
-        return bankrupts;
+        return result;
     }
 
-    static void AssertFortyFortySolvent(Action<GameConfig> tweak, string label)
+    static List<string> PlanBankruptciesAfterYears(Action<GameConfig> tweak, long seed, int years) =>
+        SimulateSeedBankruptcies(tweak, seed, years).Bankrupts.Select(b => "seed " + seed + ": " + b.Name).ToList();
+
+  /// Q218 design bar (coordinator): occasional rival bankruptcy allowed on the 200×40 soak.
+    static void AssertSoakBankruptcyDesignRules(Action<GameConfig> tweak, int seedCount)
+    {
+        int seedsWithBankrupt = 0;
+        var failures = new List<string>();
+        for (long seed = 1; seed <= seedCount; seed++)
+        {
+            SoakBankruptcyResult r = SimulateSeedBankruptcies(tweak, seed, Years);
+            if (r.Bankrupts.Count > 0) seedsWithBankrupt++;
+
+            foreach (PlanBankruptRecord b in r.Bankrupts)
+            {
+                if (b.Year < NoBankruptBeforeYear)
+                    failures.Add("seed " + seed + " " + b.Name + " bankrupt year " + b.Year + " before " + NoBankruptBeforeYear);
+            }
+            int majorBankrupt = r.Bankrupts.Count(b => MajorRivalIds.Contains(b.RivalId));
+            if (majorBankrupt > 1)
+                failures.Add("seed " + seed + " has " + majorBankrupt + " major rival bankruptcies");
+            if (r.ActivePlanRivals < MinActivePlanRivals)
+                failures.Add("seed " + seed + " only " + r.ActivePlanRivals + " active plan rivals");
+        }
+        if (seedsWithBankrupt > MaxBankruptSeeds)
+            failures.Insert(0, seedsWithBankrupt + " seeds with plan bankruptcies exceeds max " + MaxBankruptSeeds);
+        Assert.Empty(failures);
+    }
+
+    static int SoakSeedCount()
+    {
+        string env = Environment.GetEnvironmentVariable("BALANCE_SOAK_FULL");
+        return env == "1" || string.Equals(env, "true", StringComparison.OrdinalIgnoreCase) ? FullSoakSeedCount : DefaultSeedCount;
+    }
+
+    static void AssertFortyYearSolvent(Action<GameConfig> tweak, string label, int seedCount)
     {
         var bankrupts = new List<string>();
-        for (long seed = 1; seed <= SeedCount; seed++)
+        for (long seed = 1; seed <= seedCount; seed++)
             bankrupts.AddRange(PlanBankruptciesAfterYears(tweak, seed, Years).Select(b => label + " " + b));
         Assert.Empty(bankrupts);
     }
+
+    static void AssertFortyFortySolvent(Action<GameConfig> tweak, string label) =>
+        AssertFortyYearSolvent(tweak, label, SoakSeedCount());
 
     static IEnumerable<LabState> PlanLabs(Game g)
     {
@@ -112,6 +195,32 @@ public class RivalEconomyRobustnessLaterTests
     public void Q201_forty_seeds_forty_years_default_harness_no_plan_bankruptcies()
     {
         AssertFortyFortySolvent(null, "default");
+    }
+
+    /// <summary>Q216 / Q218: soak seed range obeys coordinator bankruptcy design rules (not zero).</summary>
+    [Fact]
+    public void Q216_plan_rivals_solvent_across_soak_seed_range()
+    {
+        AssertSoakBankruptcyDesignRules(null, SoakSeedCount());
+    }
+
+    /// <summary>Q218: pins (a)–(d) on historical failure seeds (no pre-2005 / dual-major / &lt;3 rivals).</summary>
+    [Theory]
+    [InlineData(42)]
+    [InlineData(54)]
+    [InlineData(121)]
+    [InlineData(141)]
+    [InlineData(160)]
+    [InlineData(172)]
+    [InlineData(187)]
+    [InlineData(188)]
+    public void Q218_known_failure_seeds_obey_hard_bankruptcy_rules(long seed)
+    {
+        SoakBankruptcyResult r = SimulateSeedBankruptcies(null, seed, Years);
+        foreach (PlanBankruptRecord b in r.Bankrupts)
+            Assert.True(b.Year >= NoBankruptBeforeYear, seed + " " + b.Name + " year " + b.Year);
+        Assert.True(r.Bankrupts.Count(b => MajorRivalIds.Contains(b.RivalId)) <= 1);
+        Assert.True(r.ActivePlanRivals >= MinActivePlanRivals, "seed " + seed);
     }
 
     /// <summary>Q201: mild year-1 research permille shock must not bankrupt plan labs (stack2 bar; no sector flavours).</summary>

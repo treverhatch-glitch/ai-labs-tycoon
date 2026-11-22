@@ -43,6 +43,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
             if (fromSchema < 28) MigrateTo28(root);
+            if (fromSchema < 29) MigrateTo29(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -360,6 +361,12 @@ namespace AiLabs.Rules.Sim
                 {
                     foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
                 });
+        }
+
+        /// <summary>M&amp;A fleet resale lock on hardware batches (Q202).</summary>
+        static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
