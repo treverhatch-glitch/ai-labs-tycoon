@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q465. Prop id listing for handoff? DECIDED: `list_catalog_ids.py` (no codegen)
+
+- Options: (a) manual copy from manifest; (b) small list script; (c) generated C# enum.
+- Recommendation and choice: **(b)** — see `CATALOG-HANDOFF.md`; enums stay manual to avoid rules coupling.
+- Why: Unity import checklist only needs a pasteable list.
+
 ### Q464. HUD icon set size? DECIDED: 10 SVGs including staff + danger
 
 - Options: (a) keep 8; (b) add staff/danger; (c) per-screen packs only.
