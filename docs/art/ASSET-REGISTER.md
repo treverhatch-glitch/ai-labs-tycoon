@@ -85,3 +85,9 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 **+8 SVG:** `unity/Assets/Art/Generated/ui-icons/` + `ui-icons-manifest.json`.
 
 **Code:** `CampusUiTokens`, `CampusPropIds`, HUD factories wired to tokens; `SCREEN-KITS.md`, `POLISH-CHECKLIST.md`.
+
+## Batch 3 (local, awaiting GO atop `3e8987a`)
+
+**+5 OBJ:** `prop-lounge-sofa`, `exterior-fence-segment`, `exterior-solar-shade`, `prop-water-cooler`, `building-elevator-core` (**25** total).
+
+**Code:** campus camera in grid + CI capture; `CampusTabRailMock`; `validate_unity_meta_guids.py`; `world-bloc-tints.json`; `MATERIAL-CampusFallback.md`.

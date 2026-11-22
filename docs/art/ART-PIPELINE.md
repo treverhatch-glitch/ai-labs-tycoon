@@ -39,6 +39,14 @@ Apply consistently when importing `Generated/**/*.obj`:
 | Normals | Import / Calculate |
 | Materials | None (assign `Art/Materials/CampusFallback.mat`) |
 
+## Pre-push (required)
+
+```bash
+python3 tools/art/generate_campus_kit.py
+python3 tools/art/generate_ui_icons.py
+python3 tools/art/validate_unity_meta_guids.py
+```
+
 ## Review checklist (each batch)
 
 - [ ] Regenerated OBJ hashes match `manifest.json` vertex/face counts

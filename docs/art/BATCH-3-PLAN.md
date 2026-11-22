@@ -1,24 +1,23 @@
-# Graphics batch 3 (planned)
+# Graphics batch 3 — ready for GO (local)
 
-**Target:** materials + tab rail mock + validation guards. Local until GO ≥30m after Graphics-P2 (~11:24 UTC 2026-11-22).
+**Base on remote:** `3e8987aaf7e4280b282f69806b4ed9651993b846`
 
 ## Code
 
 - [x] `HqGridView.CenterCamera` → `CampusPresentationSpec.ApplyGameplayCamera`
-- [ ] `HqViewCaptureTests` camera aligned to presentation spec
-- [ ] `CampusTabRailMock.cs` — procedural left rail using `ui-tab-rail-plaque` ids (presentation only)
-- [ ] `CampusFallback.mat` spec documented; material file on Unity thread
+- [x] `HqViewCaptureTests` uses `CampusPresentationSpec.ApplyCaptureCamera`
+- [x] `CampusTabRailMock.cs` + `CampusTabRailMockTests`
+- [x] `MATERIAL-CampusFallback.md` (Unity thread creates `.mat`)
 
 ## Assets
 
-- [ ] 4–6 more OBJ: lounge sofa, fence segment, solar shade, water cooler, elevator core
-- [ ] Bloc tint table in `world-bloc-tints.json` (data-only colours)
+- [x] **+5 OBJ** → **25** campus kit meshes (sofa, fence, solar shade, water cooler, elevator core)
+- [x] `world-bloc-tints.json`
 
 ## Tooling
 
-- [x] `tools/art/validate_unity_meta_guids.py` — CI/local guard for 32-char guids
-- [ ] Hook into graphics batch pre-push checklist
+- [x] `validate_unity_meta_guids.py` (pre-push in `ART-PIPELINE.md`)
 
 ## Docs
 
-- Update `POLISH-CHECKLIST` when capture test changes
+- [x] `POLISH-CHECKLIST` updated for capture + meta guard

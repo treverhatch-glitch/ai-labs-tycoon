@@ -210,6 +210,44 @@ def tab_rail_plaque() -> Mesh:
     return box(0.56, 0.56, 0.04, oy=0.28)
 
 
+def lounge_sofa() -> Mesh:
+    seat = box(1.6, 0.45, 0.75, oy=0.225)
+    back = box(1.6, 0.55, 0.18, oy=0.5, oz=-0.28)
+    arm_l = box(0.12, 0.5, 0.75, -0.74, 0.25)
+    arm_r = box(0.12, 0.5, 0.75, 0.74, 0.25)
+    return merge(seat, back, arm_l, arm_r)
+
+
+def fence_segment() -> Mesh:
+    post_l = box(0.1, 1.0, 0.1, -1.0, 0.5)
+    post_r = box(0.1, 1.0, 0.1, 1.0, 0.5)
+    rail_t = box(2.1, 0.06, 0.06, oy=0.85)
+    rail_m = box(2.1, 0.06, 0.06, oy=0.45)
+    return merge(post_l, post_r, rail_t, rail_m)
+
+
+def solar_shade() -> Mesh:
+    canopy = box(1.8, 0.08, 1.2, oy=2.4)
+    leg_fl = box(0.08, 2.4, 0.08, -0.75, 1.2, -0.5)
+    leg_fr = box(0.08, 2.4, 0.08, 0.75, 1.2, -0.5)
+    leg_bl = box(0.08, 2.4, 0.08, -0.75, 1.2, 0.5)
+    leg_br = box(0.08, 2.4, 0.08, 0.75, 1.2, 0.5)
+    return merge(canopy, leg_fl, leg_fr, leg_bl, leg_br)
+
+
+def water_cooler() -> Mesh:
+    body = box(0.4, 0.9, 0.4, oy=0.45)
+    jug = box(0.28, 0.35, 0.28, oy=1.05)
+    drip = box(0.08, 0.12, 0.08, oy=0.06, oz=0.22)
+    return merge(body, jug, drip)
+
+
+def elevator_core() -> Mesh:
+    shaft = box(1.2, 2.8, 1.2, oy=1.4)
+    door = box(0.9, 2.0, 0.06, oy=1.0, oz=0.57)
+    return merge(shaft, door)
+
+
 MESH_BUILDERS: dict[str, callable] = {
     "prop-desk": desk,
     "prop-chair": chair,
@@ -231,6 +269,11 @@ MESH_BUILDERS: dict[str, callable] = {
     "prop-monitor-wall": monitor_wall,
     "exterior-bike-rack": bike_rack,
     "ui-tab-rail-plaque": tab_rail_plaque,
+    "prop-lounge-sofa": lounge_sofa,
+    "exterior-fence-segment": fence_segment,
+    "exterior-solar-shade": solar_shade,
+    "prop-water-cooler": water_cooler,
+    "building-elevator-core": elevator_core,
 }
 
 

@@ -181,6 +181,51 @@
       "faceCount": 6,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-lounge-sofa",
+      "path": "Assets/Art/Generated/campus-kit/prop-lounge-sofa.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "exterior-fence-segment",
+      "path": "Assets/Art/Generated/campus-kit/exterior-fence-segment.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "exterior-solar-shade",
+      "path": "Assets/Art/Generated/campus-kit/exterior-solar-shade.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 40,
+      "faceCount": 30,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-water-cooler",
+      "path": "Assets/Art/Generated/campus-kit/prop-water-cooler.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "building-elevator-core",
+      "path": "Assets/Art/Generated/campus-kit/building-elevator-core.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
     }
   ]
 }

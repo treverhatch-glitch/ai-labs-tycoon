@@ -4,13 +4,13 @@ Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 
 ## Scene
 
-- [ ] `CampusPresentationSpec.ApplyGameplayCamera` replaces `HqGridView.CenterCamera`
+- [x] `CampusPresentationSpec.ApplyGameplayCamera` in `HqGridView` (batch 3)
 - [ ] Floor smoothness = `CampusUiTokens.FloorSmoothness`; rooms = `DefaultSmoothness`
 - [ ] Era transition cross-fade on lot plate (0.8s)
 
 ## Props
 
-- [ ] Manifest has 20 OBJ ids; missing import logs error in editor once
+- [ ] Manifest has 25 OBJ ids; missing import logs error in editor once
 - [ ] Compute rooms: rack + 2–4 `prop-gpu-blade` instances
 - [ ] Campus lots: trees + bike rack on border strip
 
@@ -23,7 +23,8 @@ Use when wiring assets on Unity thread (`bc-93b5443a`) or graphics batch 3.
 ## CI
 
 - [ ] `HqViewCaptureTests` still writes `unity/artifacts/hq-view.png` > 4 KB
-- [ ] New Edit Mode tests green: `CampusPresentationSpecTests`, `CampusUiTokensTests`
+- [ ] New Edit Mode tests green: `CampusPresentationSpecTests`, `CampusUiTokensTests`, `CampusTabRailMockTests`
+- [ ] Pre-push: `python3 tools/art/validate_unity_meta_guids.py`
 
 ## Out of scope until Hatch PC
 
