@@ -877,9 +877,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsSequelLaterTests` (100):** hall/cloud buys; delivery tick; refuse absorbed; schema **29**; economy participation.
 
-### Q906–Q975. Coda2 rivals/chips bar? TBD: test-only (batch 18, local GO-pending)
+### Q906–Q975. Coda2 rivals/chips bar? DECIDED: test-only (batch 18, pushed @ `4460d60`)
 
 - **`HatchRivalsChipsCoda2LaterTests` (70):** pipeline acquire; refuse cmds; schema **29**; save roundtrip.
+
+### Q976–Q1045. Finale rivals/chips bar? TBD: test-only (batch 19, local)
+
+- **`HatchRivalsChipsFinaleLaterTests` (70):** acquire+listed; refuse cmds; quotes; schema **29**.
+
+### Q1046+. Series wind-down / era data? TBD: batch 20 planning (see NEXT.md bible queue)
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

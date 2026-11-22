@@ -124,7 +124,9 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 15**~~ **pushed @ `6827a12` (Nov 22 ≥15:42 UTC)** — Q666–Q735 (`HatchRivalsChipsFinisherLaterTests`, **70**); gate **1339/0** in-repo; parent `3454140`.
 - ~~**Hatch rivals/chips batch 16**~~ **pushed @ `6f60391` (Nov 22 ~16:31 UTC)** — Q736–Q805 (`HatchRivalsChipsDenouementLaterTests`, **70**); parent `6827a12`; gate **1409/0** / **1407/0** WT.
 - ~~**Hatch rivals/chips batch 17**~~ **pushed @ `c90e29b` (≥17:01 UTC GO)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100**); gate **1509/0** / **1507/0** WT.
-- **Hatch rivals/chips batch 18 (local, ≥30m after `c90e29b`)** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70** WIP on disk).
+- ~~**Hatch rivals/chips batch 18**~~ **pushed @ `4460d60`** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70**); parent `c90e29b`; gate **1579/0** / **1577/0** WT.
+- **Hatch rivals/chips batch 19 (local @ tip after commit, push hold ≥~18:41 UTC)** — Q976–Q1045 (`HatchRivalsChipsFinaleLaterTests`, **70**); parent `4460d60`; full gate pending.
+- **Hatch rivals/chips batch 20 (planning only)** — **Q1046–Q1115** target: last grouped rivals/chips bar (**~70**), then pivot to bible **§cast/era** (items 12–13: start-era picker **data** tests only; no Unity). Schema **29**; SolvencyHold **30** parked.
 
 ## Rules: forward queue (from bible / systems-design)
 
