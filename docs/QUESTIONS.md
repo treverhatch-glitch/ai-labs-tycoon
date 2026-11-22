@@ -2114,6 +2114,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The lock is the whole point. Pledging the best seller in a sector locks the lab out of upgrading that sector, so the question is whether the next model is worth more than the pledge.
 - Alternatives: a pledge with no lock (rejected: free money), a flat bonus for old models (rejected: no choice), customers carried over only in part (rejected: it would change how every release works whether or not the player chose it).
 
+### Q412. What does the world say about the new systems? DECIDED: headlines for every turn and chat for the big ones
+- Programmes, the run queue, pods, licences and support pledges each log their own events. Every kind has a headline, and each branch (a bold stage that works, a careful one, a licence granted, refused, suspended, surrendered or lapsed, a pledge kept or broken) has its own line. Chat lines follow the stages that matter. Headline picks above 1 fall back to the line with no pick, so bold stages and suspensions use that line and come after the specific ones in the list.
+- Pins: 298 headlines and 300 chat lines.
+- Alternatives: one generic line per system (rejected: the branches are the story).
+
 ## Open
 
 None.
