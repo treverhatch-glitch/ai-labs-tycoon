@@ -127,6 +127,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 112) MigrateTo112(root);
             if (fromSchema < 113) MigrateTo113(root);
             if (fromSchema < 114) MigrateTo114(root);
+            if (fromSchema < 115) MigrateTo115(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -490,6 +491,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 115: no lab has any data.</summary>
+        static void MigrateTo115(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "dataRaw1", "dataRaw2", "dataRaw3", "dataRaw4", "dataClean1", "dataClean2", "dataClean3", "dataClean4", "dataJobKind", "dataJobUnits", "dataJobLeft", "dataSuits", "dataBackfilled" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

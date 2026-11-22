@@ -184,7 +184,10 @@ namespace AiLabs.Rules.Sim
         CancelFabric,
         JoinRegister,
         LeaveRegister,
-        FileReport
+        FileReport,
+        AcquireData,
+        CleanData,
+        LicenseScraped
     }
 
     /// <summary>
@@ -1594,6 +1597,32 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.FileReport, labId);
             c.Count = depth;
+            return c;
+        }
+
+        /// <summary>Brings in raw data: 1 scraped from the web, 2 licensed archives, 3 synthetic (needs a model on sale). Units are in <paramref name="units"/>.</summary>
+        public static Command AcquireData(int labId, int kind, int units)
+        {
+            Command c = Make(CommandKind.AcquireData, labId);
+            c.TargetId = kind;
+            c.Count = units;
+            return c;
+        }
+
+        /// <summary>Starts a cleaning job on raw data of one source. One job at a time.</summary>
+        public static Command CleanData(int labId, int kind, int units)
+        {
+            Command c = Make(CommandKind.CleanData, labId);
+            c.TargetId = kind;
+            c.Count = units;
+            return c;
+        }
+
+        /// <summary>Licenses scraped units after the fact, so a claim can no longer take them.</summary>
+        public static Command LicenseScraped(int labId, int units)
+        {
+            Command c = Make(CommandKind.LicenseScraped, labId);
+            c.Count = units;
             return c;
         }
 

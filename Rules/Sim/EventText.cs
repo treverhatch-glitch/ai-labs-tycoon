@@ -533,6 +533,14 @@ namespace AiLabs.Rules.Sim
                     return who + " was late with an incident report.";
                 case EventKind.InspectionHeld:
                     return e.Pick == 1 ? "The register's inspection found nothing to fine at " + who + "." : "The register's inspection fined " + who + ".";
+                case EventKind.DataAcquired:
+                    return who + " brought in new training data.";
+                case EventKind.DataCleaned:
+                    return who + " finished cleaning a batch of training data.";
+                case EventKind.DataLicensed:
+                    return who + " licensed data it had already scraped.";
+                case EventKind.DataSuit:
+                    return who + " was hit by a claim over scraped training data.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -312,6 +312,11 @@ namespace AiLabs.Rules.Sim
                     || (lab.DiscOpen == 0 && lab.DiscLeft != 0)
                     || ((lab.DiscOn != 0 || lab.DiscFindings != 0 || lab.DiscFiled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has an incident register (" + lab.DiscOpen + " waiting, " + lab.DiscFindings + " findings) the data does not allow");
+                if (lab.DataRaw1 < 0 || lab.DataRaw2 < 0 || lab.DataRaw3 < 0 || lab.DataRaw4 < 0 || lab.DataClean1 < 0 || lab.DataClean2 < 0 || lab.DataClean3 < 0 || lab.DataClean4 < 0
+                    || lab.DataJobKind < 0 || lab.DataJobKind > 4 || lab.DataJobUnits < 0 || lab.DataJobLeft < 0 || lab.DataSuits < 0 || lab.DataBackfilled < 0
+                    || (lab.DataJobKind == 0) != (lab.DataJobUnits == 0) || (lab.DataJobUnits == 0) != (lab.DataJobLeft == 0)
+                    || ((lab.DataRaw1 + lab.DataRaw2 + lab.DataRaw3 + lab.DataRaw4 + lab.DataClean1 + lab.DataClean2 + lab.DataClean3 + lab.DataClean4 + lab.DataJobUnits + lab.DataSuits + lab.DataBackfilled) != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has data (" + lab.DataJobUnits + " in a job of kind " + lab.DataJobKind + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

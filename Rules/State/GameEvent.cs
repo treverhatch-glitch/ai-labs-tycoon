@@ -514,7 +514,15 @@ namespace AiLabs.Rules.State
         /// <summary>A report was late. SubjectId is the model, Amount the fine.</summary>
         ReportLate,
         /// <summary>An inspection of the register. Pick 1 clean, 0 fined; Amount the fine.</summary>
-        InspectionHeld
+        InspectionHeld,
+        /// <summary>Raw data came in. SubjectId is the source (1 scraped, 2 licensed, 3 synthetic, 4 users), Amount the units.</summary>
+        DataAcquired,
+        /// <summary>A cleaning job finished. SubjectId is the source, Amount the units that came through.</summary>
+        DataCleaned,
+        /// <summary>Scraped units were licensed after the fact. Amount is the units.</summary>
+        DataLicensed,
+        /// <summary>A claim landed over scraped data. SubjectId is the units purged, Amount the fine.</summary>
+        DataSuit
     }
 
     /// <summary>

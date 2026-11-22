@@ -2181,6 +2181,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Each incident on a model with integrations loses `integrations.incidentPermille` (60) of them, so the lift and the lock-in that integrations bring are exposed to the model's safety record. A model with none, and a lab with the integrations switched off, are unchanged. The loss is not counted in the stranded count, which is for closing an API.
 - Alternatives: lose trust only (rejected: integrations are the thing built up).
 
+### Q427. Where does a model's data come from? DECIDED: raw units from four sources, cleaning jobs, a legal clock on scraped data and a collapse limit on synthetic data
+- Scraping is cheap and loses the most in cleaning, and it is the only source that brings claims; licensing is dear and clean; synthetic is cheap but turns models strange past a share; users' data comes from the flywheel. Cleaning is a job that takes engineers and weeks, so the corpus has a pipeline. The claim is on a fixed cycle from a fixed era, so it is a clock to plan for, not dice.
+- It feeds capability through the tech part of a new model's capability, so no model field was added and the capability identity holds.
+- Alternatives: a data quality knob (rejected: nothing to decide), claims by chance (rejected: not plannable), consuming data per run (rejected: bookkeeping with no choice).
+
 ## Open
 
 None.

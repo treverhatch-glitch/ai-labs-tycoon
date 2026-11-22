@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 114;
+        public const int CurrentSchema = 115;
 
         public int Schema;
         public string ConfigVersion;
@@ -520,6 +520,20 @@ namespace AiLabs.Rules.State
         public int DiscFiled;
         public int DiscInspect;
         public int DiscModel;
+        /// <summary>Raw units of data by source (1 scraped, 2 licensed, 3 synthetic, 4 users), clean units by source, the source and units and weeks left of the cleaning job, and counts of claims and of units licensed after the fact.</summary>
+        public int DataRaw1;
+        public int DataRaw2;
+        public int DataRaw3;
+        public int DataRaw4;
+        public int DataClean1;
+        public int DataClean2;
+        public int DataClean3;
+        public int DataClean4;
+        public int DataJobKind;
+        public int DataJobUnits;
+        public int DataJobLeft;
+        public int DataSuits;
+        public int DataBackfilled;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -976,6 +990,19 @@ namespace AiLabs.Rules.State
             s.Int("discFiled", ref DiscFiled);
             s.Int("discInspect", ref DiscInspect);
             s.Int("discModel", ref DiscModel);
+            s.Int("dataRaw1", ref DataRaw1);
+            s.Int("dataRaw2", ref DataRaw2);
+            s.Int("dataRaw3", ref DataRaw3);
+            s.Int("dataRaw4", ref DataRaw4);
+            s.Int("dataClean1", ref DataClean1);
+            s.Int("dataClean2", ref DataClean2);
+            s.Int("dataClean3", ref DataClean3);
+            s.Int("dataClean4", ref DataClean4);
+            s.Int("dataJobKind", ref DataJobKind);
+            s.Int("dataJobUnits", ref DataJobUnits);
+            s.Int("dataJobLeft", ref DataJobLeft);
+            s.Int("dataSuits", ref DataSuits);
+            s.Int("dataBackfilled", ref DataBackfilled);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
