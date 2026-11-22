@@ -19,6 +19,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [TAB-RAIL-INTEGRATION.md](TAB-RAIL-INTEGRATION.md) / [BATCH-7-PLAN.md](BATCH-7-PLAN.md) | Tab rail + world map (batch 7) |
 | [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md) / [GLOW-PRESENTATION.md](GLOW-PRESENTATION.md) | Mascot + glow (batch 8) |
 | [ERA-SKIN-TOKENS.md](ERA-SKIN-TOKENS.md) / [era-skin-tokens.json](era-skin-tokens.json) | Era floor/accent (batch 9) |
+| [MATERIAL-ERA-SKINS.md](MATERIAL-ERA-SKINS.md) / [BATCH-10-PLAN.md](BATCH-10-PLAN.md) | P3 materials (batch 10) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

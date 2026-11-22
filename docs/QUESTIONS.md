@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q459. Material smoothness constants? DECIDED: `CampusMaterialTokens` (not duplicated in `CampusUiTokens`)
+
+- Options: (a) only `CampusUiTokens`; (b) split material vs HUD tokens; (c) ShaderGraph only.
+- Recommendation and choice: **(b)** — see `MATERIAL-ERA-SKINS.md`.
+- Why: floor vs prop smoothness differ; HUD tokens stay UI-only.
+
 ### Q458. Era skin data in repo? DECIDED: `era-skin-tokens.json` + `CampusEraSkinTokens`
 
 - Options: (a) only in `HqVisualPalette`; (b) JSON + presentation constants; (c) ScriptableObjects in Unity.

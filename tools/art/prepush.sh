@@ -10,4 +10,5 @@ cp -f docs/art/era-skin-tokens.json unity/Assets/Art/Generated/era-skin-tokens.j
 python3 tools/art/validate_unity_meta_guids.py
 python3 tools/art/check_catalog_manifest.py
 python3 tools/art/check_bloc_tints.py
+python3 tools/art/check_era_skin_tokens.py
 echo "art prepush OK"

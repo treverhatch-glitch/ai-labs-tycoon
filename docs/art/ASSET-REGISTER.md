@@ -96,7 +96,11 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
 
-## Batch 8 (local, awaiting GO ≥13:59 UTC atop `5a99b2d`)
+## Batch 10 (local, awaiting GO ≥14:57 UTC atop `9763f7d`)
+
+`CampusMaterialTokens`, `MATERIAL-ERA-SKINS.md`, era skin sync check; no new meshes.
+
+## Batch 9 on branch (`9763f7d`)
 
 Mascot bob + glow presentation docs; spec wired to `ModelMascotPresentation`; no new OBJ.
 
