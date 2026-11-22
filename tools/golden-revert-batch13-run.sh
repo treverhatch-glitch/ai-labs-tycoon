@@ -28,6 +28,7 @@ restore() {
     Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
+  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 }
 trap restore EXIT
 
