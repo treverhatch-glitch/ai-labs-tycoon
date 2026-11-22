@@ -96,7 +96,15 @@ Manifest: `unity/Assets/Art/Generated/manifest.json`.
 
 **+3 OBJ** → **28** total; `CampusHudLayoutSpec`, `CampusPropLoader`, `SCREEN-PANEL-TOKENS.json`; research/training panel docs; 4 rival silhouette SVGs; extended rival palette; layout/loader tests.
 
-## Batch 11 (local, awaiting GO ≥15:27 UTC atop `c17c67d`)
+## Batch 13 (local, awaiting GO ≥16:27 UTC atop `2deaeed`)
+
+Rollup `ALT-76-STATUS.md`, GO packet template; docs only.
+
+## Batch 12 on branch (`2deaeed`)
+
+Capture spec + `HqViewCaptureTests` contract.
+
+## Batch 11 on branch (`eb67bf8`)
 
 Accessibility presentation spec + tests; no new assets.
 

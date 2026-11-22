@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q462. ALT-76 status doc in repo? DECIDED: `ALT-76-STATUS.md` + `GO-PACKET-TEMPLATE.md`
+
+- Options: (a) PR description only; (b) committed rollup in `docs/art/`; (c) external wiki.
+- Recommendation and choice: **(b)** — updated each release batch for Unity + coordinator.
+- Why: PR #41 spans many squashed pushes; single pointer for handoff.
+
 ### Q461. CI capture constants centralized? DECIDED: `CampusCapturePresentationSpec`
 
 - Options: (a) magic numbers in test only; (b) shared spec class; (c) drop PNG CI.

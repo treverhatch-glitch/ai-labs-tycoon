@@ -21,6 +21,8 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [ERA-SKIN-TOKENS.md](ERA-SKIN-TOKENS.md) / [era-skin-tokens.json](era-skin-tokens.json) | Era floor/accent (batch 9) |
 | [MATERIAL-ERA-SKINS.md](MATERIAL-ERA-SKINS.md) / [BATCH-10-PLAN.md](BATCH-10-PLAN.md) | P3 materials (batch 10) |
 | [ACCESSIBILITY-PRESENTATION.md](ACCESSIBILITY-PRESENTATION.md) / [BATCH-11-PLAN.md](BATCH-11-PLAN.md) | A11y tokens (batch 11) |
+| [CAPTURE-REGRESSION.md](CAPTURE-REGRESSION.md) / [BATCH-12-PLAN.md](BATCH-12-PLAN.md) | CI capture (batch 12) |
+| [ALT-76-STATUS.md](ALT-76-STATUS.md) / [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | Rollup + GO template (batch 13) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

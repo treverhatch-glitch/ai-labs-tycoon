@@ -1,0 +1,13 @@
+# ALT-76 graphics status (PR #41)
+
+| Batch | Remote tip (examples) | Theme |
+| --- | --- | --- |
+| 5 | `fe3c00d` | HUD layout, props 28, rival silhouettes |
+| 6–7 | `a4a7d54`, `5a99b2d` | Rivals/gauntlet, tab rail, world map |
+| 8–9 | `f185b20`, `9763f7d` | Mascot/glow, era skins |
+| 10–11 | `c17c67d`, `eb67bf8` | Materials, accessibility |
+| 12 | `2deaeed` | CI capture contract |
+
+**Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
+
+**Gate:** `./tools/art/prepush.sh` or `python3 tools/art/print_art_summary.py`.
