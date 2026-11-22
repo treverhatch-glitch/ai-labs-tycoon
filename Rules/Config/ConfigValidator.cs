@@ -142,6 +142,7 @@ namespace AiLabs.Rules.Config
             ProgrammesProblems(p, c);
             RunQueueProblems(p, c);
             PodsProblems(p, c);
+            LicenceProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1601,6 +1602,17 @@ namespace AiLabs.Rules.Config
             if (k.MinSize < 2 || k.MaxSize < k.MinSize || k.MaxSize > 10) p.Add("pods.minSize must be at least 2, maxSize at least minSize and at most 10");
             if (k.KickoffCost < 0 || k.PointsPerMember < 0 || k.SwapCooldown < 0 || k.TenureStep < 0 || k.TenureCap < 0) p.Add("pods costs, points, steps and cooldown must not be negative");
             if (k.BaseChem < 0 || k.BaseChem > 1000 || k.RolePoints < 0 || k.MixPoints < 0 || k.ClashPoints < 0 || k.MoraleShare < 0 || k.MoraleShare > 1000) p.Add("pods chemistry values must not be negative, baseChem and moraleShare at most 1000");
+        }
+
+        static void LicenceProblems(List<string> p, GameConfig c)
+        {
+            LicenceConfig k = c.Licence;
+            if (k == null) { p.Add("licence is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("licence.enabled must be 0 or 1");
+            if (k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB || k.EraC >= c.Eras.Count) p.Add("licence eras must not fall and the last must be a real era");
+            if (k.FeeA < 0 || k.FeeB < k.FeeA || k.FeeC < k.FeeB || k.TermA < 1 || k.TermB < 1 || k.TermC < 1 || k.ReviewWeeks < 1 || k.CooldownWeeks < 0 || k.RenewWindow < 0) p.Add("licence fees must not fall, terms and reviewWeeks at least 1, cooldownWeeks and renewWindow not negative");
+            if (k.BarA < 0 || k.BarB < k.BarA || k.BarC < k.BarB || k.BarC > 1000 || k.CutA < 0 || k.CutB < k.CutA || k.CutC < k.CutB || k.CutC > 900) p.Add("licence bars and cuts must not fall, bars at most 1000 and cuts at most 900");
+            if (k.StrikeLimit < 1 || k.SuspendReputation < 0 || k.SuspendReputation > 500) p.Add("licence.strikeLimit must be at least 1 and suspendReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

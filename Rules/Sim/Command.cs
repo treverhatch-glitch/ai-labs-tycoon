@@ -167,7 +167,10 @@ namespace AiLabs.Rules.Sim
         SetRunPriority,
         FormPod,
         SwapPodMember,
-        DisbandPod
+        DisbandPod,
+        ApplyLicence,
+        RenewLicence,
+        SurrenderLicence
     }
 
     /// <summary>
@@ -1450,6 +1453,26 @@ namespace AiLabs.Rules.Sim
         public static Command DisbandPod(int labId)
         {
             return Make(CommandKind.DisbandPod, labId);
+        }
+
+        /// <summary>Files for a licence under a regime that is open this era (1 registry, 2 licence, 3 audit regime). The fee is paid now and is lost if the application is refused.</summary>
+        public static Command ApplyLicence(int labId, int regime)
+        {
+            Command c = Make(CommandKind.ApplyLicence, labId);
+            c.Count = regime;
+            return c;
+        }
+
+        /// <summary>Renews the licence in the last weeks of its term: the fee again and the same alignment bar. Clears the strikes.</summary>
+        public static Command RenewLicence(int labId)
+        {
+            return Make(CommandKind.RenewLicence, labId);
+        }
+
+        /// <summary>Gives the licence (or the application) up. Nothing is refunded.</summary>
+        public static Command SurrenderLicence(int labId)
+        {
+            return Make(CommandKind.SurrenderLicence, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

@@ -346,6 +346,7 @@ and says why in the commit message.
 163. **Research programmes.** ~~Done~~: `StartProgramme`, `ChooseApproach`, `RecoverStage`, `AbandonProgramme`, schema 105, `ProgrammesTests` (Q407).
 164. **Training queue.** ~~Done~~: `SetRunPriority`, schema 106, `RunQueueTests` (Q408).
 165. **Project pods.** ~~Done~~: `FormPod`, `SwapPodMember`, `DisbandPod`, schema 107, `PodsTests` (Q409).
+166. **Licensing regimes.** ~~Done~~: `ApplyLicence`, `RenewLicence`, `SurrenderLicence`, schema 108, `LicenceTests` (Q410).
 
 ## Rules: later
 

@@ -120,6 +120,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 105) MigrateTo105(root);
             if (fromSchema < 106) MigrateTo106(root);
             if (fromSchema < 107) MigrateTo107(root);
+            if (fromSchema < 108) MigrateTo108(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -483,6 +484,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 108: no lab holds or has applied for a licence.</summary>
+        static void MigrateTo108(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "licRegime", "licPhase", "licLeft", "licStrikes", "licCooldown", "licGranted", "licRefused", "licSuspended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

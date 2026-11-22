@@ -105,6 +105,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.ApplyLicence: return ApplyLicence(c, state, lab, cmd);
+                case CommandKind.RenewLicence: return RenewLicence(c, state, lab, cmd);
+                case CommandKind.SurrenderLicence: return SurrenderLicence(c, state, lab, cmd);
                 case CommandKind.FormPod: return FormPod(c, state, lab, cmd);
                 case CommandKind.SwapPodMember: return SwapPodMember(c, state, lab, cmd);
                 case CommandKind.DisbandPod: return DisbandPod(c, state, lab, cmd);

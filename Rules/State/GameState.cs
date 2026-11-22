@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 107;
+        public const int CurrentSchema = 108;
 
         public int Schema;
         public string ConfigVersion;
@@ -480,6 +480,15 @@ namespace AiLabs.Rules.State
         public int PodSwapAfter;
         public long PodPoints;
         public int PodsFormed;
+        /// <summary>The regime the lab has filed under (1 to 3, 0 none), the phase (1 in review, 2 licensed), the weeks left of the review or the term, the strikes against the licence, the week before which it may not apply again, and how many licences it was granted, refused and had suspended.</summary>
+        public int LicRegime;
+        public int LicPhase;
+        public int LicLeft;
+        public int LicStrikes;
+        public int LicCooldown;
+        public int LicGranted;
+        public int LicRefused;
+        public int LicSuspended;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -903,6 +912,14 @@ namespace AiLabs.Rules.State
             s.Int("podSwapAfter", ref PodSwapAfter);
             s.Long("podPoints", ref PodPoints);
             s.Int("podsFormed", ref PodsFormed);
+            s.Int("licRegime", ref LicRegime);
+            s.Int("licPhase", ref LicPhase);
+            s.Int("licLeft", ref LicLeft);
+            s.Int("licStrikes", ref LicStrikes);
+            s.Int("licCooldown", ref LicCooldown);
+            s.Int("licGranted", ref LicGranted);
+            s.Int("licRefused", ref LicRefused);
+            s.Int("licSuspended", ref LicSuspended);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

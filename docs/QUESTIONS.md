@@ -2102,6 +2102,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It reads the people's roles, seniority, quirks and morale as they stand each week, so the other staff systems (promotions, morale, quitting, layoffs) all change a pod without a single hook.
 - Alternatives: a fixed bonus for any team (rejected: no composition), a team of only one role (rejected: no mix), a long lockout after a swap (rejected: the weeks together already make swapping costly).
 
+### Q410. Does regulation arrive on its own schedule? DECIDED: yes, regimes open with the eras and the lab picks which to join
+- Regulation was a set of fines that arrive whatever the lab does. Regimes make it a choice: join an early, cheap, forgiving one, wait for a dearer and stricter one with a better cut, or stay out. The better regimes ask for a more aligned best model, so joining one is a bet on the lab's own safety record, and an incident while licensed is a strike that can cost the licence and a heavy penalty.
+- The cut applies to the incident fine along with the other cuts (on-call, insurance, the floor), so it helps most when incidents are expensive and costs most when they come in pairs.
+- A refusal keeps the fee, so applying with a model that is not ready is a real loss, not a free roll.
+- Alternatives: a yearly levy (rejected: no choice), a licence needed to release at all (rejected: it would make the early game depend on it and touch release review), one regime that scales with the era (rejected: nothing to pick between).
+
 ## Open
 
 None.

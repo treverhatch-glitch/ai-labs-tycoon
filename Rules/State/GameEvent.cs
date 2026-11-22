@@ -472,7 +472,15 @@ namespace AiLabs.Rules.State
         /// <summary>A pod member was swapped. Amount is the new chemistry.</summary>
         PodSwapped,
         /// <summary>A pod ended. Amount is the research points it added or took over its life, Pick 1 the lab disbanded it, 0 it broke up.</summary>
-        PodEnded
+        PodEnded,
+        /// <summary>The lab filed for a licence. Amount is the fee, Pick the regime.</summary>
+        LicenceApplied,
+        /// <summary>An application was decided. Pick 1 granted, 0 refused, SubjectId the regime.</summary>
+        LicenceDecided,
+        /// <summary>An incident counted against the licence. Amount is the strikes now.</summary>
+        LicenceStrike,
+        /// <summary>A licence ended. Pick 0 lapsed, 1 surrendered, 2 suspended, SubjectId the regime.</summary>
+        LicenceEnded
     }
 
     /// <summary>

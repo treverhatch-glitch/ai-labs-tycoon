@@ -491,6 +491,14 @@ namespace AiLabs.Rules.Sim
                     return who + " swapped a member of its project pod.";
                 case EventKind.PodEnded:
                     return who + (e.Pick == 1 ? " disbanded its project pod." : " lost its project pod when people left.");
+                case EventKind.LicenceApplied:
+                    return who + " applied for a licence.";
+                case EventKind.LicenceDecided:
+                    return who + (e.Pick == 1 ? " was granted its licence." : " was refused its licence.");
+                case EventKind.LicenceStrike:
+                    return who + " took a strike against its licence.";
+                case EventKind.LicenceEnded:
+                    return who + (e.Pick == 2 ? " had its licence suspended." : e.Pick == 1 ? " surrendered its licence." : " let its licence lapse.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

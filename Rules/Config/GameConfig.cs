@@ -137,6 +137,7 @@ namespace AiLabs.Rules.Config
         public ProgrammesConfig Programmes = new ProgrammesConfig();
         public RunQueueConfig RunQueue = new RunQueueConfig();
         public PodsConfig Pods = new PodsConfig();
+        public LicenceConfig Licence = new LicenceConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -272,6 +273,7 @@ namespace AiLabs.Rules.Config
             s.Obj("programmes", ref Programmes);
             s.Obj("runQueue", ref RunQueue);
             s.Obj("pods", ref Pods);
+            s.Obj("licence", ref Licence);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

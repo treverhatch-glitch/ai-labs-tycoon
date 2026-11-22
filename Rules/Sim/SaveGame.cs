@@ -289,6 +289,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.PodIds.Count == 0 && (lab.PodWeeks != 0 || lab.PodChem != 0))
                     || ((lab.PodIds.Count != 0 || lab.PodsFormed != 0 || lab.PodPoints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a project pod (" + lab.PodIds.Count + " people, " + lab.PodWeeks + " weeks, chemistry " + lab.PodChem + ") in a way the data does not allow");
+                if (lab.LicRegime < 0 || lab.LicRegime > 3 || lab.LicPhase < 0 || lab.LicPhase > 2 || lab.LicLeft < 0 || lab.LicStrikes < 0 || lab.LicStrikes >= c.Licence.StrikeLimit || lab.LicCooldown < 0 || lab.LicGranted < 0 || lab.LicRefused < 0 || lab.LicSuspended < 0
+                    || (lab.LicRegime == 0 && (lab.LicPhase != 0 || lab.LicLeft != 0 || lab.LicStrikes != 0)) || (lab.LicRegime > 0 && (lab.LicPhase == 0 || lab.LicLeft < 1))
+                    || ((lab.LicRegime != 0 || lab.LicGranted != 0 || lab.LicRefused != 0 || lab.LicSuspended != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a licence (regime " + lab.LicRegime + ", phase " + lab.LicPhase + ", " + lab.LicLeft + " weeks, " + lab.LicStrikes + " strikes) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
