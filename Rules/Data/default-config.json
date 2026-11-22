@@ -6425,6 +6425,18 @@
     "suitFine": 800,
     "backfillCost": 2500
   },
+  "userData": {
+    "enabled": 1,
+    "revenuePerUnit": 25000,
+    "optInPermille": 300,
+    "defaultPermille": 1000,
+    "lockWeeks": 13,
+    "complaintWeeks": 26,
+    "complaintMin": 40,
+    "complaintFine": 1500,
+    "complaintTrust": 15,
+    "keepPermille": 300
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

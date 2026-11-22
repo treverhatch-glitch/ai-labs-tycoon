@@ -187,7 +187,8 @@ namespace AiLabs.Rules.Sim
         FileReport,
         AcquireData,
         CleanData,
-        LicenseScraped
+        LicenseScraped,
+        SetUserData
     }
 
     /// <summary>
@@ -1623,6 +1624,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.LicenseScraped, labId);
             c.Count = units;
+            return c;
+        }
+
+        /// <summary>Sets what the lab does with its users' data: 0 none, 1 opt-in, 2 on by default. Moving off a default policy deletes most of what was collected.</summary>
+        public static Command SetUserData(int labId, int policy)
+        {
+            Command c = Make(CommandKind.SetUserData, labId);
+            c.Count = policy;
             return c;
         }
 

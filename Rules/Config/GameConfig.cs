@@ -145,6 +145,7 @@ namespace AiLabs.Rules.Config
         public FabricConfig Fabric = new FabricConfig();
         public DisclosureConfig Disclosure = new DisclosureConfig();
         public DatasetsConfig Datasets = new DatasetsConfig();
+        public UserDataConfig UserData = new UserDataConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -288,6 +289,7 @@ namespace AiLabs.Rules.Config
             s.Obj("fabric", ref Fabric);
             s.Obj("disclosure", ref Disclosure);
             s.Obj("datasets", ref Datasets);
+            s.Obj("userData", ref UserData);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

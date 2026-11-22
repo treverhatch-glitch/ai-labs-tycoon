@@ -522,7 +522,13 @@ namespace AiLabs.Rules.State
         /// <summary>Scraped units were licensed after the fact. Amount is the units.</summary>
         DataLicensed,
         /// <summary>A claim landed over scraped data. SubjectId is the units purged, Amount the fine.</summary>
-        DataSuit
+        DataSuit,
+        /// <summary>The lab changed what it does with its users' data. SubjectId is the policy (0 none, 1 opt-in, 2 default).</summary>
+        UserDataChanged,
+        /// <summary>A privacy complaint landed. Amount is the fine, SubjectId the units collected since the last one.</summary>
+        UserDataComplaint,
+        /// <summary>Users' data was deleted when the lab moved off a default policy. Amount is the units lost.</summary>
+        UserDataDeleted
     }
 
     /// <summary>

@@ -128,6 +128,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 113) MigrateTo113(root);
             if (fromSchema < 114) MigrateTo114(root);
             if (fromSchema < 115) MigrateTo115(root);
+            if (fromSchema < 116) MigrateTo116(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -491,6 +492,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 116: no lab collects its users data.</summary>
+        static void MigrateTo116(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "userPolicy", "userSince", "userBanked", "userTotal", "userComplaints" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

@@ -150,6 +150,7 @@ namespace AiLabs.Rules.Config
             FabricProblems(p, c);
             DisclosureProblems(p, c);
             DatasetsProblems(p, c);
+            UserDataProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1697,6 +1698,16 @@ namespace AiLabs.Rules.Config
             if (k.CostScrape < 0 || k.CostLicense < 0 || k.CostSynth < 0 || k.CleanCost < 0 || k.SuitFine < 0 || k.BackfillCost < 0 || k.BonusPer100 < 0 || k.CollapseSlope < 0) p.Add("datasets costs, fines and bonuses must not be negative");
             if (k.YieldScrape < 0 || k.YieldScrape > 1000 || k.YieldLicense < 0 || k.YieldLicense > 1000 || k.YieldSynth < 0 || k.YieldSynth > 1000 || k.YieldUsers < 0 || k.YieldUsers > 1000 || k.QScrape < 0 || k.QScrape > 1000 || k.QLicense < 0 || k.QLicense > 1000 || k.QSynth < 0 || k.QSynth > 1000 || k.QUsers < 0 || k.QUsers > 1000) p.Add("datasets yields and values must be from 0 to 1000");
             if (k.BonusCap < 0 || k.BonusCap > 900 || k.CollapseShare < 0 || k.CollapseShare > 1000 || k.CollapseCap < 0 || k.CollapseCap > 1000) p.Add("datasets.bonusCap must be from 0 to 900 and the collapse values from 0 to 1000");
+        }
+
+        static void UserDataProblems(List<string> p, GameConfig c)
+        {
+            UserDataConfig k = c.UserData;
+            if (k == null) { p.Add("userData is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("userData.enabled must be 0 or 1");
+            if (k.RevenuePerUnit < 1 || k.LockWeeks < 0 || k.ComplaintWeeks < 1 || k.ComplaintMin < 1) p.Add("userData.revenuePerUnit, complaintWeeks and complaintMin must be at least 1 and lockWeeks not negative");
+            if (k.OptInPermille < 0 || k.OptInPermille > 1000 || k.DefaultPermille < k.OptInPermille || k.DefaultPermille > 1000 || k.KeepPermille < 0 || k.KeepPermille > 1000) p.Add("userData.optInPermille must not be above defaultPermille and shares must be from 0 to 1000");
+            if (k.ComplaintFine < 0 || k.ComplaintTrust < 0) p.Add("userData fines and trust losses must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

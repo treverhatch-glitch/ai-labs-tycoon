@@ -317,6 +317,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.DataJobKind == 0) != (lab.DataJobUnits == 0) || (lab.DataJobUnits == 0) != (lab.DataJobLeft == 0)
                     || ((lab.DataRaw1 + lab.DataRaw2 + lab.DataRaw3 + lab.DataRaw4 + lab.DataClean1 + lab.DataClean2 + lab.DataClean3 + lab.DataClean4 + lab.DataJobUnits + lab.DataSuits + lab.DataBackfilled) != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has data (" + lab.DataJobUnits + " in a job of kind " + lab.DataJobKind + ") in a way the data does not allow");
+                if (lab.UserPolicy < 0 || lab.UserPolicy > 2 || lab.UserSince < 0 || lab.UserBanked < 0 || lab.UserTotal < lab.UserBanked || lab.UserComplaints < 0
+                    || (lab.UserPolicy == 0 && lab.UserSince == 0 && lab.UserBanked != 0)
+                    || ((lab.UserPolicy != 0 || lab.UserTotal != 0 || lab.UserComplaints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " collects its users' data (policy " + lab.UserPolicy + ", " + lab.UserBanked + " since the last complaint) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

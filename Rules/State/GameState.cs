@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 115;
+        public const int CurrentSchema = 116;
 
         public int Schema;
         public string ConfigVersion;
@@ -534,6 +534,12 @@ namespace AiLabs.Rules.State
         public int DataJobLeft;
         public int DataSuits;
         public int DataBackfilled;
+        /// <summary>The users-data policy (0 none, 1 opt-in, 2 on by default), one more than the week it was set, units collected since the last complaint, units collected in all and complaints so far.</summary>
+        public int UserPolicy;
+        public int UserSince;
+        public int UserBanked;
+        public int UserTotal;
+        public int UserComplaints;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1003,6 +1009,11 @@ namespace AiLabs.Rules.State
             s.Int("dataJobLeft", ref DataJobLeft);
             s.Int("dataSuits", ref DataSuits);
             s.Int("dataBackfilled", ref DataBackfilled);
+            s.Int("userPolicy", ref UserPolicy);
+            s.Int("userSince", ref UserSince);
+            s.Int("userBanked", ref UserBanked);
+            s.Int("userTotal", ref UserTotal);
+            s.Int("userComplaints", ref UserComplaints);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

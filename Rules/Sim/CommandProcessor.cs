@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SetUserData: return SetUserData(c, state, lab, cmd);
                 case CommandKind.AcquireData: return AcquireData(c, state, lab, cmd);
                 case CommandKind.CleanData: return CleanData(c, state, lab, cmd);
                 case CommandKind.LicenseScraped: return LicenseScraped(c, state, lab, cmd);
