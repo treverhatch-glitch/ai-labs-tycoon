@@ -285,6 +285,10 @@ namespace AiLabs.Rules.Sim
                     || (lab.PgTech > 0 && lab.PgPhase == 0) || (lab.PgPhase == 1 && lab.PgLeft < 1) || (lab.PgPhase != 1 && lab.PgLeft != 0)
                     || ((lab.PgTech != 0 || lab.PgWins != 0 || lab.PgLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a research programme (tech " + lab.PgTech + ", phase " + lab.PgPhase + ", stage " + lab.PgDone + ") in a way the data does not allow");
+                if (lab.PodIds.Count > c.Pods.MaxSize || new System.Collections.Generic.HashSet<int>(lab.PodIds).Count != lab.PodIds.Count || lab.PodIds.Exists(id => id < 0) || lab.PodWeeks < 0 || lab.PodChem < 0 || lab.PodChem > 1000 || lab.PodSwapAfter < 0 || lab.PodsFormed < 0
+                    || (lab.PodIds.Count == 0 && (lab.PodWeeks != 0 || lab.PodChem != 0))
+                    || ((lab.PodIds.Count != 0 || lab.PodsFormed != 0 || lab.PodPoints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a project pod (" + lab.PodIds.Count + " people, " + lab.PodWeeks + " weeks, chemistry " + lab.PodChem + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -2096,6 +2096,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - With no level set the old equal split is exactly what happens, so every older game and save is unchanged.
 - Alternatives: a cash rush that adds compute (rejected: pay-for-stat), a strict first-in first-out queue (rejected: nothing to decide), per-run compute amounts (rejected: too fiddly, weights say the same thing).
 
+### Q409. Does who works together matter? DECIDED: yes, a project pod whose chemistry comes from the mix of people
+- Staff were counted by role. A pod makes composition a real choice: mixing roles and putting seniors with juniors helps, putting two people with the same quirk together hurts, the weeks together build it up, and a swap costs half of them. A pod made of the wrong people is worse than none, because its chemistry can go under the line and then it takes research points away.
+- The pod uses the people the lab has: it costs a one-off kick-off per person, not a bonus bought with cash. Its weekly points come only from how well the people fit.
+- It reads the people's roles, seniority, quirks and morale as they stand each week, so the other staff systems (promotions, morale, quitting, layoffs) all change a pod without a single hook.
+- Alternatives: a fixed bonus for any team (rejected: no composition), a team of only one role (rejected: no mix), a long lockout after a swap (rejected: the weeks together already make swapping costly).
+
 ## Open
 
 None.

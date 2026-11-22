@@ -466,7 +466,13 @@ namespace AiLabs.Rules.State
         /// <summary>A programme ended. Amount is the research points paid back or refunded, Pick 1 finished, 0 given up, Ref the tech.</summary>
         ProgrammeEnded,
         /// <summary>A training run's priority changed. SubjectId is the model, Amount the compute of progress lost, Pick the new level.</summary>
-        RunPriorityChanged
+        RunPriorityChanged,
+        /// <summary>The lab formed a project pod. Amount is its chemistry, SubjectId the people in it.</summary>
+        PodFormed,
+        /// <summary>A pod member was swapped. Amount is the new chemistry.</summary>
+        PodSwapped,
+        /// <summary>A pod ended. Amount is the research points it added or took over its life, Pick 1 the lab disbanded it, 0 it broke up.</summary>
+        PodEnded
     }
 
     /// <summary>

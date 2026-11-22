@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 106;
+        public const int CurrentSchema = 107;
 
         public int Schema;
         public string ConfigVersion;
@@ -473,6 +473,13 @@ namespace AiLabs.Rules.State
         public long PgSpent;
         public int PgWins;
         public int PgLosses;
+        /// <summary>The people in the lab's project pod, the weeks they have been together, their chemistry (0 to 1000), the week a member may next be swapped, the research points the pod has added (or taken), and the pods formed.</summary>
+        public List<int> PodIds = new List<int>();
+        public int PodWeeks;
+        public int PodChem;
+        public int PodSwapAfter;
+        public long PodPoints;
+        public int PodsFormed;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -890,6 +897,12 @@ namespace AiLabs.Rules.State
             s.Long("pgSpent", ref PgSpent);
             s.Int("pgWins", ref PgWins);
             s.Int("pgLosses", ref PgLosses);
+            s.IntList("podIds", ref PodIds);
+            s.Int("podWeeks", ref PodWeeks);
+            s.Int("podChem", ref PodChem);
+            s.Int("podSwapAfter", ref PodSwapAfter);
+            s.Long("podPoints", ref PodPoints);
+            s.Int("podsFormed", ref PodsFormed);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

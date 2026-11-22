@@ -6251,6 +6251,21 @@
     "switchCostPermille": 20,
     "maxRush": 1
   },
+  "pods": {
+    "enabled": 1,
+    "minSize": 2,
+    "maxSize": 5,
+    "kickoffCost": 8000,
+    "pointsPerMember": 6,
+    "baseChem": 300,
+    "rolePoints": 100,
+    "mixPoints": 100,
+    "clashPoints": 90,
+    "tenureStep": 12,
+    "tenureCap": 240,
+    "moraleShare": 200,
+    "swapCooldown": 8
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

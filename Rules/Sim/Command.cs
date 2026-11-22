@@ -164,7 +164,10 @@ namespace AiLabs.Rules.Sim
         ChooseApproach,
         RecoverStage,
         AbandonProgramme,
-        SetRunPriority
+        SetRunPriority,
+        FormPod,
+        SwapPodMember,
+        DisbandPod
     }
 
     /// <summary>
@@ -1423,6 +1426,30 @@ namespace AiLabs.Rules.Sim
             c.TargetId = modelId;
             c.Count = level;
             return c;
+        }
+
+        /// <summary>Forms a project pod of the lab's own people (by staff id). It costs the data's cash for each person.</summary>
+        public static Command FormPod(int labId, params int[] staffIds)
+        {
+            Command c = Make(CommandKind.FormPod, labId);
+            c.Ids = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < staffIds.Length; i++) c.Ids.Add(staffIds[i].ToString());
+            return c;
+        }
+
+        /// <summary>Swaps one member of the pod (TargetId) for another person (Count). The pod's weeks together are halved.</summary>
+        public static Command SwapPodMember(int labId, int outId, int inId)
+        {
+            Command c = Make(CommandKind.SwapPodMember, labId);
+            c.TargetId = outId;
+            c.Count = inId;
+            return c;
+        }
+
+        /// <summary>Disbands the pod.</summary>
+        public static Command DisbandPod(int labId)
+        {
+            return Make(CommandKind.DisbandPod, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

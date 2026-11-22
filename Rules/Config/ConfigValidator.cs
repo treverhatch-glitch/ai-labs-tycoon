@@ -141,6 +141,7 @@ namespace AiLabs.Rules.Config
             LaunchWatchProblems(p, c);
             ProgrammesProblems(p, c);
             RunQueueProblems(p, c);
+            PodsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1590,6 +1591,16 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("runQueue.enabled must be 0 or 1");
             if (k.WeightBackground < 1 || k.WeightNormal < k.WeightBackground || k.WeightRush < k.WeightNormal || k.WeightRush > 100) p.Add("runQueue weights must be at least 1, rising from background to rush, and at most 100");
             if (k.SwitchCostPermille < 0 || k.SwitchCostPermille > 500 || k.MaxRush < 1) p.Add("runQueue.switchCostPermille must be from 0 to 500 and maxRush at least 1");
+        }
+
+        static void PodsProblems(List<string> p, GameConfig c)
+        {
+            PodsConfig k = c.Pods;
+            if (k == null) { p.Add("pods is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pods.enabled must be 0 or 1");
+            if (k.MinSize < 2 || k.MaxSize < k.MinSize || k.MaxSize > 10) p.Add("pods.minSize must be at least 2, maxSize at least minSize and at most 10");
+            if (k.KickoffCost < 0 || k.PointsPerMember < 0 || k.SwapCooldown < 0 || k.TenureStep < 0 || k.TenureCap < 0) p.Add("pods costs, points, steps and cooldown must not be negative");
+            if (k.BaseChem < 0 || k.BaseChem > 1000 || k.RolePoints < 0 || k.MixPoints < 0 || k.ClashPoints < 0 || k.MoraleShare < 0 || k.MoraleShare > 1000) p.Add("pods chemistry values must not be negative, baseChem and moraleShare at most 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
