@@ -200,7 +200,9 @@ namespace AiLabs.Rules.Sim
         PostTrain,
         AbandonPostTraining,
         AssignOwner,
-        WriteDocs
+        WriteDocs,
+        HoldBoardMeetings,
+        AnswerMotion
     }
 
     /// <summary>
@@ -1737,6 +1739,22 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.WriteDocs, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts (Count 1) or stops (Count 0) holding board meetings.</summary>
+        public static Command HoldBoardMeetings(int labId, int on)
+        {
+            Command c = Make(CommandKind.HoldBoardMeetings, labId);
+            c.Count = on;
+            return c;
+        }
+
+        /// <summary>Answers the motion on the table: Count 1 accepts it as a commitment, 0 declines it.</summary>
+        public static Command AnswerMotion(int labId, int accept)
+        {
+            Command c = Make(CommandKind.AnswerMotion, labId);
+            c.Count = accept;
             return c;
         }
 

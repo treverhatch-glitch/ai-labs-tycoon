@@ -136,6 +136,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 121) MigrateTo121(root);
             if (fromSchema < 122) MigrateTo122(root);
             if (fromSchema < 123) MigrateTo123(root);
+            if (fromSchema < 124) MigrateTo124(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -499,6 +500,16 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 124: no lab holds board meetings.</summary>
+        static void MigrateTo124(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "meetingsOn", "boardTension", "motionPend", "motionPendGoal", "motionAnswerBy", "motionKind", "motionGoal", "motionDue", "motionNext", "motionsTabled", "motionsKept", "motionsBroken", "motionsDeclined" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

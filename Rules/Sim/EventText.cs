@@ -587,6 +587,14 @@ namespace AiLabs.Rules.Sim
                     return who + " wrote documentation for " + e.Ref + ".";
                 case EventKind.DocsStale:
                     return "The documentation of " + e.Ref + " at " + who + " has gone stale.";
+                case EventKind.MotionTabled:
+                    return "The board of " + who + " tabled a motion.";
+                case EventKind.MotionAnswered:
+                    return who + " answered a board motion.";
+                case EventKind.MotionJudged:
+                    return e.Pick == 1 ? "The board of " + who + " saw a commitment kept." : "The board of " + who + " saw a commitment broken.";
+                case EventKind.BoardForcedVote:
+                    return "The board of " + who + " forced a vote on the founders.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

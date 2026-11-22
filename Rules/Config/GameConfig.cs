@@ -153,6 +153,7 @@ namespace AiLabs.Rules.Config
         public AnnotationConfig Annotation = new AnnotationConfig();
         public PostTrainingConfig PostTraining = new PostTrainingConfig();
         public KnowledgeConfig Knowledge = new KnowledgeConfig();
+        public BoardAgendaConfig BoardAgenda = new BoardAgendaConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -304,6 +305,7 @@ namespace AiLabs.Rules.Config
             s.Obj("annotation", ref Annotation);
             s.Obj("postTraining", ref PostTraining);
             s.Obj("knowledge", ref Knowledge);
+            s.Obj("boardAgenda", ref BoardAgenda);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

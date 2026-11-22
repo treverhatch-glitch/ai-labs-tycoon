@@ -339,6 +339,12 @@ namespace AiLabs.Rules.Sim
                     || (lab.AnnVendor == 0 && lab.AnnLeft != 0) || (lab.AnnVendor != 0 && lab.AnnLeft < 1)
                     || ((lab.AnnVendor != 0 || lab.AnnExposure != 0 || lab.AnnStrikes != 0 || lab.AnnAuditWeek != 0 || lab.AnnCleaned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has an annotation vendor (" + lab.AnnVendor + ", " + lab.AnnLeft + " weeks, exposure " + lab.AnnExposure + ") in a way the data does not allow");
+                if (lab.MeetingsOn < 0 || lab.MeetingsOn > 1 || lab.BoardTension < 0 || lab.BoardTension > 1000 || lab.MotionPend < 0 || lab.MotionPend > 3 || lab.MotionKind < 0 || lab.MotionKind > 3
+                    || lab.MotionPendGoal < 0 || lab.MotionGoal < 0 || lab.MotionAnswerBy < 0 || lab.MotionDue < 0 || lab.MotionNext < 0 || lab.MotionsTabled < 0 || lab.MotionsKept < 0 || lab.MotionsBroken < 0 || lab.MotionsDeclined < 0
+                    || (lab.MotionPend != 0 && (lab.MeetingsOn == 0 || lab.MotionAnswerBy < 1)) || (lab.MotionKind != 0 && (lab.MeetingsOn == 0 || lab.MotionDue < 1)) || (lab.MotionPend != 0 && lab.MotionKind != 0)
+                    || (lab.MeetingsOn == 0 && lab.MotionNext != 0)
+                    || ((lab.MeetingsOn != 0 || lab.BoardTension != 0 || lab.MotionsTabled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a board agenda (tension " + lab.BoardTension + ", motion " + lab.MotionPend + ", commitment " + lab.MotionKind + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

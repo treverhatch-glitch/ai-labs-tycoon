@@ -2239,6 +2239,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Losing a person now costs something the lab can see and prepare for, and which people it can afford to lose depends on who owns what and how much of it is written down. The limit of two models per person is the bus factor.
 - Alternatives: a flat morale penalty when anyone leaves (rejected: no choice before it happens), documentation that never goes stale (rejected: one purchase solves it).
 
+### Q441. How does the board hold the founders to their word? DECIDED: optional meetings where the board tables a motion each quarter, accepted as a commitment judged at its deadline or declined, with a tension that directors soften and that raises the control the founders need to survive a vote
+- Every answer costs something: accepting binds the lab to a goal it may miss, declining and ignoring add tension at once. A lab with dual-class shares can afford to decline, a lab with a lot of its equity sold cannot, and independent directors make all of it milder.
+- Alternatives: a board that only tables revenue targets (that exists already as the board targets), a tension that rises with the calendar (rejected: nothing for the lab to do about it).
+
 ## Open
 
 None.

@@ -158,6 +158,7 @@ namespace AiLabs.Rules.Config
             AnnotationProblems(p, c);
             PostTrainingProblems(p, c);
             KnowledgeProblems(p, c);
+            BoardAgendaProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1789,6 +1790,16 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("knowledge.enabled must be 0 or 1");
             if (k.MaxOwned < 1 || k.MaxDocs < 0 || k.MaxDocs > 4 || k.DocCost < 0 || k.DocStale < 1) p.Add("knowledge maxOwned and docStale must be at least 1, maxDocs from 0 to 4 and docCost not negative");
             if (k.DocCut < 0 || k.DocCut * k.MaxDocs > 1000 || k.GapBase < 0 || k.GapBase > 1000 || k.Ramp < 0 || k.GapIncident < 0 || k.GapIncident > 1000 || k.GapRiskAt < 0 || k.GapRiskAt > 1000) p.Add("knowledge docCut times maxDocs at most 1000, gapBase, gapIncident and gapRiskAt from 0 to 1000 and ramp not negative");
+        }
+
+        static void BoardAgendaProblems(List<string> p, GameConfig c)
+        {
+            BoardAgendaConfig k = c.BoardAgenda;
+            if (k == null) { p.Add("boardAgenda is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("boardAgenda.enabled must be 0 or 1");
+            if (k.MinSeats < 1 || k.MeetingWeeks < 1 || k.AnswerWeeks < 1 || k.CommitWeeks < 1 || k.MeetingWeeks < k.AnswerWeeks) p.Add("boardAgenda minSeats, meetingWeeks, answerWeeks and commitWeeks must be at least 1 and a meeting no sooner than the answer");
+            if (k.AcceptRelief < 0 || k.KeptRelief < 0 || k.DeclineTension < 0 || k.IgnoreTension < 0 || k.BrokenTension < 0 || k.DirectorCut < 0 || k.DirectorCut > 1000 || k.OustAt < 1 || k.OustAt > 1000 || k.OustMargin < 0 || k.OustMargin > 1000 || k.CalmBelow < 0 || k.CalmBelow > 1000) p.Add("boardAgenda tensions must not be negative, directorCut, oustMargin and calmBelow from 0 to 1000 and oustAt from 1 to 1000");
+            if (k.RaiseBonus < 0 || k.RaiseBonus > 1000 || k.RunwayStretch < 0 || k.RunwayFloor < 0 || k.SafetyAdd < 1) p.Add("boardAgenda raiseBonus from 0 to 1000, runway values not negative and safetyAdd at least 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

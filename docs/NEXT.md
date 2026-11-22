@@ -364,6 +364,7 @@ and says why in the commit message.
 181. **Annotation vendors.** ~~Done~~: `ContractAnnotators`, `EndAnnotators`, `AuditVendor`, schema 121, `AnnotationTests` (Q438).
 182. **Post-training.** ~~Done~~: `PostTrain`, `AbandonPostTraining`, schema 122, `PostTrainingTests` (Q439).
 183. **Owners and documentation.** ~~Done~~: `AssignOwner`, `WriteDocs`, schema 123, `KnowledgeTests` (Q440).
+184. **Board motions.** ~~Done~~: `HoldBoardMeetings`, `AnswerMotion`, schema 124, `BoardMotionsTests` (Q441).
 
 ## Rules: later
 

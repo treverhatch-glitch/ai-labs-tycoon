@@ -568,7 +568,15 @@ namespace AiLabs.Rules.State
         /// <summary>Documentation was written for a model. SubjectId is the model, Amount its level.</summary>
         DocsWritten,
         /// <summary>The documentation of a model went stale. SubjectId is the model, Amount its level now.</summary>
-        DocsStale
+        DocsStale,
+        /// <summary>The board tabled a motion. SubjectId is the kind (1 calm, 2 runway, 3 safety), Amount its goal.</summary>
+        MotionTabled,
+        /// <summary>The lab answered a motion. SubjectId is the kind, Pick 1 accepted, 0 declined, 2 nobody answered.</summary>
+        MotionAnswered,
+        /// <summary>A commitment reached its deadline. SubjectId is the kind, Pick 1 kept, 0 broken.</summary>
+        MotionJudged,
+        /// <summary>The board forced a vote on the founders. Amount is the tension.</summary>
+        BoardForcedVote
     }
 
     /// <summary>

@@ -60,7 +60,7 @@ namespace AiLabs.Rules.Systems
     public static void ApplyRaise(GameConfig c, GameState state, LabState lab, FundingRoundConfig round)
     {
       bool down = IsDownRound(c, state);
-      long cash = Governance.RaiseCash(c, lab, Charter.FundingCash(c, lab, EffectiveCash(c, state, round)));
+      long cash = BoardMotions.RaiseCash(c, lab, Governance.RaiseCash(c, lab, Charter.FundingCash(c, lab, EffectiveCash(c, state, round))));
       int dilution = Notes.OnRaise(c, state, lab, cash, EffectiveDilution(c, state, round));
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
@@ -107,10 +107,15 @@ namespace AiLabs.Rules.Systems
       Events.Add(state, EventKind.InvestorBoardVisit, lab.Id, -1, f.InvestorEventReputation, "");
     }
 
+    public static void TryOustForced(GameConfig c, GameState state, LabState lab)
+    {
+      EndingSystem.RecordOusted(c, state, lab);
+    }
+
     public static void TryOust(GameConfig c, GameState state, LabState lab)
     {
       if (lab.Id != state.PlayerLabId) return;
-      if (Governance.ControlShare(c, lab) > c.Funding.ControlPermille) return;
+      if (Governance.ControlShare(c, lab) > c.Funding.ControlPermille + BoardMotions.OustMargin(c, lab)) return;
       EndingSystem.RecordOusted(c, state, lab);
     }
   }

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 123;
+        public const int CurrentSchema = 124;
 
         public int Schema;
         public string ConfigVersion;
@@ -570,6 +570,20 @@ namespace AiLabs.Rules.State
         public int AnnStrikes;
         public int AnnAuditWeek;
         public int AnnCleaned;
+        /// <summary>Board agenda: meetings held (0 or 1), tension (out of 1000), the motion on the table (0 none, 1 calm, 2 runway, 3 safety), its goal and the week it must be answered by; the commitment accepted, its goal and its deadline; the week of the next meeting; and the motions tabled, kept, broken and declined.</summary>
+        public int MeetingsOn;
+        public int BoardTension;
+        public int MotionPend;
+        public long MotionPendGoal;
+        public int MotionAnswerBy;
+        public int MotionKind;
+        public long MotionGoal;
+        public int MotionDue;
+        public int MotionNext;
+        public int MotionsTabled;
+        public int MotionsKept;
+        public int MotionsBroken;
+        public int MotionsDeclined;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1067,6 +1081,19 @@ namespace AiLabs.Rules.State
             s.Int("annStrikes", ref AnnStrikes);
             s.Int("annAuditWeek", ref AnnAuditWeek);
             s.Int("annCleaned", ref AnnCleaned);
+            s.Int("meetingsOn", ref MeetingsOn);
+            s.Int("boardTension", ref BoardTension);
+            s.Int("motionPend", ref MotionPend);
+            s.Long("motionPendGoal", ref MotionPendGoal);
+            s.Int("motionAnswerBy", ref MotionAnswerBy);
+            s.Int("motionKind", ref MotionKind);
+            s.Long("motionGoal", ref MotionGoal);
+            s.Int("motionDue", ref MotionDue);
+            s.Int("motionNext", ref MotionNext);
+            s.Int("motionsTabled", ref MotionsTabled);
+            s.Int("motionsKept", ref MotionsKept);
+            s.Int("motionsBroken", ref MotionsBroken);
+            s.Int("motionsDeclined", ref MotionsDeclined);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
