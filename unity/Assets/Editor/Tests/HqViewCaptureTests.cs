@@ -24,6 +24,7 @@ namespace AiLabs.Unity.Editor.Tests
             var simGo = new GameObject("SimHarness");
             var host = new SimulationHost();
             host.StartNewGame(config, 42L);
+            HqLivedInCampus.Apply(host);
 
             var camGo = new GameObject("CaptureCamera");
             var cam = camGo.AddComponent<Camera>();
@@ -41,6 +42,7 @@ namespace AiLabs.Unity.Editor.Tests
             var hqGo = new GameObject("HQ");
             var grid = hqGo.AddComponent<HqGridView>();
             grid.Bind(host.Simulation);
+            HqGridView.AlignMainCamera(config.Lot(host.Simulation.Player.LotId), cam);
 
             var rt = new RenderTexture(CaptureWidth, CaptureHeight, 24);
             cam.targetTexture = rt;

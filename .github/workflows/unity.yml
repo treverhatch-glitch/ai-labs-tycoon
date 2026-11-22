@@ -1,5 +1,5 @@
 # GameCI compile gate for unity/ (Edit Mode). Secrets only on the test-runner step.
-# Unity 6000.0.58f1 LTS — docker tag ubuntu-6000.0.58f1-linux-il2cpp-3 (Q247).
+# Unity 6000.3.0f1 — ULF via UNITY_LICENSE only (no account activation); docker ubuntu-6000.3.0f1-linux-il2cpp-3.
 name: unity
 
 on:
@@ -50,11 +50,9 @@ jobs:
         id: unity
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           projectPath: unity
-          unityVersion: 6000.0.58f1
+          unityVersion: 6000.3.0f1
           testMode: editmode
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           cliVersion: v0.1.75
@@ -69,5 +67,7 @@ jobs:
         if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome == 'success'
         with:
           name: HQ view capture
-          path: unity/artifacts/hq-view.png
+          path: |
+            unity/artifacts/hq-view.png
+            unity/artifacts/hq-starter-office.png
           if-no-files-found: error

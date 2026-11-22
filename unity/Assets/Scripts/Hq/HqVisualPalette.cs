@@ -17,6 +17,14 @@ namespace AiLabs.Unity.Hq
             public Color Ambient;
         }
 
+        public static EraSkin PolishSkin(EraSkin skin, float polishPermille)
+        {
+            float t = Mathf.Clamp01(polishPermille / 1000f);
+            skin.Floor = Color.Lerp(skin.Floor, skin.Accent, t * 0.15f);
+            skin.Ambient = Color.Lerp(skin.Ambient, Color.white, t * 0.08f);
+            return skin;
+        }
+
         public static EraSkin EraSkinFor(string eraId)
         {
             if (eraId == "dial-up-days")

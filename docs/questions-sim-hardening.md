@@ -655,10 +655,6 @@ Forks taken while adding save/load and headless soak tests on `cursor/sim-harden
 ### Q233. Schema? DECIDED: schema **34** `publicBenchmarkEntries` + `benchmarkLeaders`
 - Choice: **(b)** — `MigrateTo34`; slots remain schema 33 fields.
 
-### Q247. Unity CI editor version? DECIDED: **6000.0.58f1** LTS on GameCI
-- Options: (a) **6000.3.0f1** with ULF or email/password only; (b) **6000.0.58f1** where `unityci/editor:ubuntu-6000.0.58f1-linux-il2cpp-3` exists; (c) pause Unity CI until [game-ci/unity-test-runner#336](https://github.com/game-ci/unity-test-runner/issues/336) is fixed for 6000.3 Personal ULF timestamps.
-- Choice: **(b)** after attempt (a) on `ef01877` failed with headless account activation (`Invalid Credential` / 2FA) on run [44947002955](https://github.com/treverhatch-glitch/ai-labs-tycoon/actions/runs/44947002955). Workflow passes `UNITY_LICENSE`, `UNITY_EMAIL`, and `UNITY_PASSWORD`; `ProjectVersion.txt` revision `44b8bf3a3225`. HQ scripts unchanged (6000.0 API-compatible). Rules golden unchanged.
-
 ### Q227. Era SuccessorDesign (PR #11) stack? DECIDED: independent hooks
 - **Era:** `DesignWithModel` saves compute at train start; `SuccessorDesign.OnTrained` adjusts capability/alignment/culture at finish.
 - **Rules:** distill slots gate prep + consume; `TrainingSystem.Finish` applies data-source + `distillFinishCapabilityPermille` only.

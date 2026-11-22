@@ -29,6 +29,34 @@ namespace AiLabs.Unity.Hq
             Rebuild();
         }
 
+        public void RefreshGlowFromTraining()
+        {
+            if (_simulation == null || _roomViews.Count == 0) return;
+            var glowMap = GlowSpreadMap.Compute(_simulation.Config, _simulation.Player, _simulation.Tick);
+            foreach (var pair in _roomViews)
+            {
+                int glow = glowMap.TryGetValue(pair.Key, out int g) ? g : 0;
+                pair.Value.SetGlowPermille(glow);
+            }
+        }
+
+        public bool AnyModelTraining()
+        {
+            if (_simulation == null) return false;
+            var models = _simulation.Player.Models;
+            for (int i = 0; i < models.Count; i++)
+            {
+                ModelStatus s = models[i].Status;
+                if (s == ModelStatus.Training) return true;
+            }
+            return false;
+        }
+
+        void Update()
+        {
+            if (AnyModelTraining()) RefreshGlowFromTraining();
+        }
+
         void EnsureRoots()
         {
             if (_floorRoot == null)
@@ -55,10 +83,22 @@ namespace AiLabs.Unity.Hq
             LotConfig lot = _simulation.Config.Lot(player.LotId);
             string eraId = _simulation.Era.Id;
             HqVisualPalette.EraSkin skin = HqVisualPalette.EraSkinFor(eraId);
+            skin = HqVisualPalette.PolishSkin(skin, HqFinancialHud.FloorPolishPermille(_simulation.Config, player, eraId));
 
             BuildFloor(lot, skin);
             BuildRooms(player, lot, skin, eraId);
-            CenterCamera(lot);
+            AlignMainCamera(lot);
+        }
+
+        /// <summary>Interim camera helper; graphics batch 1 replaces with <c>CampusPresentationSpec.ApplyGameplayCamera</c> (see docs/art/UNITY-INTEGRATION.md).</summary>
+        public static void AlignMainCamera(LotConfig lot, Camera cam = null)
+        {
+            if (cam == null) cam = Camera.main;
+            if (cam == null || lot == null) return;
+            float cx = lot.Width * HqGridLayout.TileSize * 0.5f;
+            float cz = lot.Height * HqGridLayout.TileSize * 0.5f;
+            cam.transform.position = new Vector3(cx, 8.5f, cz - 6f);
+            cam.transform.rotation = Quaternion.Euler(52f, 0f, 0f);
         }
 
         void BuildFloor(LotConfig lot, HqVisualPalette.EraSkin skin)
@@ -131,6 +171,10 @@ namespace AiLabs.Unity.Hq
                 view.Bind(room.Id, color);
                 if (glowMap.TryGetValue(room.Id, out int glow)) view.SetGlowPermille(glow);
                 _roomViews[room.Id] = view;
+
+                // Procedural props until cursor/graphics-pipeline-5032 OBJ kit is merged — see docs/art/UNITY-INTEGRATION.md.
+                int staffHere = HqStarterOfficeDressing.StaffForRoom(player, room, roomType);
+                HqStarterOfficeDressing.DressRoom(block.transform, room, roomType, staffHere, _floorMaterial);
             }
 
             // Placeholder accent column for the era skin (future: mascots / glow source).
@@ -143,16 +187,6 @@ namespace AiLabs.Unity.Hq
                 HqGridLayout.FloorY + 0.55f,
                 -0.35f);
             beacon.GetComponent<Renderer>().material = new Material(_floorMaterial) { color = skin.Accent };
-        }
-
-        void CenterCamera(LotConfig lot)
-        {
-            var cam = Camera.main;
-            if (cam == null) return;
-            float cx = lot.Width * HqGridLayout.TileSize * 0.5f;
-            float cz = lot.Height * HqGridLayout.TileSize * 0.5f;
-            cam.transform.position = new Vector3(cx, 8.5f, cz - 6f);
-            cam.transform.rotation = Quaternion.Euler(52f, 0f, 0f);
         }
 
         static void ClearChildren(Transform root)

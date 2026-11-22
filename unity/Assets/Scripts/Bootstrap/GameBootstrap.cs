@@ -37,6 +37,7 @@ namespace AiLabs.Unity.Bootstrap
             string json = RulesConfigLoader.LoadJsonText();
             GameConfig config = GameConfig.FromJson(json);
             _host.StartNewGame(config, DefaultSeed);
+            HqStarterLayout.ApplyIfEmpty(_host);
             _host.StateChanged += OnStateChanged;
 
             var hq = new GameObject("HQ");
@@ -62,7 +63,7 @@ namespace AiLabs.Unity.Bootstrap
         void OnStateChanged()
         {
             if (_grid != null && _host?.Simulation != null)
-                _grid.Bind(_host.Simulation);
+                _grid.Refresh();
             if (_mascots != null && _host?.Simulation != null)
                 _mascots.Bind(_host.Simulation);
         }

@@ -10,14 +10,30 @@ namespace AiLabs.Unity.Sim
         public Simulation Simulation { get; private set; }
         public CommandResult LastResult { get; private set; }
         public string StatusMessage { get; private set; }
+        GameConfig _config;
 
         public event Action StateChanged;
 
         public void StartNewGame(GameConfig config, long seed)
         {
+            _config = config;
             Simulation = Simulation.NewGame(config, seed);
             StatusMessage = "";
             StateChanged?.Invoke();
+        }
+
+        public string SaveJson()
+        {
+            return Simulation == null ? "" : Simulation.Save();
+        }
+
+        public bool LoadJson(string saveJson)
+        {
+            if (_config == null || string.IsNullOrEmpty(saveJson)) return false;
+            Simulation = Simulation.Load(_config, saveJson);
+            StatusMessage = "";
+            StateChanged?.Invoke();
+            return true;
         }
 
         public bool TryApply(Command command)
@@ -33,6 +49,14 @@ namespace AiLabs.Unity.Sim
         {
             if (Simulation == null) return;
             Simulation.Step();
+            StatusMessage = "";
+            StateChanged?.Invoke();
+        }
+
+        public void StepWeeks(int weeks)
+        {
+            if (Simulation == null || weeks <= 0) return;
+            Simulation.StepMany(weeks);
             StatusMessage = "";
             StateChanged?.Invoke();
         }
