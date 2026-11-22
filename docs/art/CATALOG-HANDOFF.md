@@ -7,3 +7,5 @@ python3 tools/art/list_catalog_ids.py
 ```
 
 Must match `CampusPropCatalog.AllAssetIds` and `manifest.json` (prepush `check_catalog_manifest.py`).
+
+Icons: see [ICON-HANDOFF.md](ICON-HANDOFF.md).

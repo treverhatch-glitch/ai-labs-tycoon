@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q466. Icon id listing mirror? DECIDED: `list_icon_ids.py` + `ICON-HANDOFF.md`
+
+- Options: (a) share one script; (b) parallel list scripts; (c) dump full manifest JSON only.
+- Recommendation and choice: **(b)** — symmetric with props (Q465).
+- Why: Unity paste lists stay one id per line.
+
 ### Q465. Prop id listing for handoff? DECIDED: `list_catalog_ids.py` (no codegen)
 
 - Options: (a) manual copy from manifest; (b) small list script; (c) generated C# enum.

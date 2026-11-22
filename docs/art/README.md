@@ -24,6 +24,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [CAPTURE-REGRESSION.md](CAPTURE-REGRESSION.md) / [BATCH-12-PLAN.md](BATCH-12-PLAN.md) | CI capture (batch 12) |
 | [ALT-76-STATUS.md](ALT-76-STATUS.md) / [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | Rollup + GO template (batch 13) |
 | [STAFF-PRESENTATION.md](STAFF-PRESENTATION.md) / [BATCH-14-PLAN.md](BATCH-14-PLAN.md) | Staff placeholders (batch 14) |
+| [CATALOG-HANDOFF.md](CATALOG-HANDOFF.md) / [ICON-HANDOFF.md](ICON-HANDOFF.md) | Id paste lists (batch 16–17) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
