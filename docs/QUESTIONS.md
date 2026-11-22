@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q458. Era skin data in repo? DECIDED: `era-skin-tokens.json` + `CampusEraSkinTokens`
+
+- Options: (a) only in `HqVisualPalette`; (b) JSON + presentation constants; (c) ScriptableObjects in Unity.
+- Recommendation and choice: **(b)** — Unity thread may still read `HqVisualPalette.EraSkin` until materials land.
+- Why: documents P3 skin targets without forking rules era ids.
+
 ### Q457. Mascot bob amplitudes in code? DECIDED: `CampusMascotPresentationSpec` + `ModelMascotPresentation`
 
 - Options: (a) magic numbers in `ModelMascotRow`; (b) shared spec constants; (c) animation clips only.

@@ -18,6 +18,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [BATCH-6-PLAN.md](BATCH-6-PLAN.md) | Batch 6 checklist (GO `a4a7d54`) |
 | [TAB-RAIL-INTEGRATION.md](TAB-RAIL-INTEGRATION.md) / [BATCH-7-PLAN.md](BATCH-7-PLAN.md) | Tab rail + world map (batch 7) |
 | [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md) / [GLOW-PRESENTATION.md](GLOW-PRESENTATION.md) | Mascot + glow (batch 8) |
+| [ERA-SKIN-TOKENS.md](ERA-SKIN-TOKENS.md) / [era-skin-tokens.json](era-skin-tokens.json) | Era floor/accent (batch 9) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
