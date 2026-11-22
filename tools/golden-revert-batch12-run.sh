@@ -15,16 +15,23 @@ GOLDEN[128]=a6992081eb7717d178614724ee6ad8b61caa5ec56153c237ecd8a64c758ace28
 GOLDEN[129]=b508c30b01b4de7e20790cae7750df5793725a15ab001331e3340fcca840e071
 
 PREV=$((N - 1))
-TIP_DIR="/tmp/ailabs-golden-tip-bc802e"
+BK="/tmp/b12-rev-bak-$N"
+mkdir -p "$BK"
+for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
+  Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
+  Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  cp "$f" "$BK/$(echo $f | tr '/' '_')"
+done
+export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 restore() {
   for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
     Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
     Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
-    cp "$TIP_DIR/$(echo $f | tr '/' '_')" "$REPO/$f"
+    cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
+  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) >/dev/null || true
 }
 trap restore EXIT
-restore
 
 sed -i "s/CurrentSchema = [0-9]*;/CurrentSchema = $PREV;/" Rules/State/GameState.cs
 strip_sync() { sed -i -E "/$1/d" Rules/State/GameState.cs; }
