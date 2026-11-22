@@ -142,6 +142,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 127) MigrateTo127(root);
             if (fromSchema < 128) MigrateTo128(root);
             if (fromSchema < 129) MigrateTo129(root);
+            if (fromSchema < 130) MigrateTo130(root);
+            if (fromSchema < 131) MigrateTo131(root);
+            if (fromSchema < 132) MigrateTo132(root);
+            if (fromSchema < 133) MigrateTo133(root);
+            if (fromSchema < 134) MigrateTo134(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -505,6 +510,61 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 134: no model publishes public metrics.</summary>
+        static void MigrateTo134(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "pubOn", "pubScore", "pubMiss" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 133: no model has a traffic route.</summary>
+        static void MigrateTo133(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "routePpm", JsonValue.Of(0L)));
+            });
+        }
+
+        /// <summary>Schema 132: no lab has an orchestration budget.</summary>
+        static void MigrateTo132(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "orchLevel", "orchOver" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 131: no lab has a runaway playbook.</summary>
+        static void MigrateTo131(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "playLevel", "playArmed", "playLeft", "playArmUntil" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 130: no model is in an agent sandbox.</summary>
+        static void MigrateTo130(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "sandLeft", "sandGrad" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 129;
+        public const int CurrentSchema = 134;
 
         public int Schema;
         public string ConfigVersion;
@@ -594,6 +594,14 @@ namespace AiLabs.Rules.State
         public int HumanQueue;
         public int HumanBusy;
         public int HumanCleared;
+        /// <summary>Runaway playbook level, armed flag, weeks left armed, and no arm before this tick.</summary>
+        public int PlayLevel;
+        public int PlayArmed;
+        public int PlayLeft;
+        public int PlayArmUntil;
+        /// <summary>Orchestration budget level and overrun accrual.</summary>
+        public int OrchLevel;
+        public int OrchOver;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1112,6 +1120,12 @@ namespace AiLabs.Rules.State
             s.Int("humanQueue", ref HumanQueue);
             s.Int("humanBusy", ref HumanBusy);
             s.Int("humanCleared", ref HumanCleared);
+            s.Int("playLevel", ref PlayLevel);
+            s.Int("playArmed", ref PlayArmed);
+            s.Int("playLeft", ref PlayLeft);
+            s.Int("playArmUntil", ref PlayArmUntil);
+            s.Int("orchLevel", ref OrchLevel);
+            s.Int("orchOver", ref OrchOver);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1339,6 +1353,15 @@ namespace AiLabs.Rules.State
         public int AgentSince;
         public int AgentStreak;
         public int AgentBlowups;
+        /// <summary>Agent sandbox weeks left and graduation (0 none, 1 passed).</summary>
+        public int SandLeft;
+        public int SandGrad;
+        /// <summary>Traffic route share in ppm across released models.</summary>
+        public int RoutePpm;
+        /// <summary>Public metrics on (0/1), last score (out of 1000), and incident misses while published.</summary>
+        public int PubOn;
+        public int PubScore;
+        public int PubMiss;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -1407,6 +1430,12 @@ namespace AiLabs.Rules.State
             s.Int("agentSince", ref AgentSince);
             s.Int("agentStreak", ref AgentStreak);
             s.Int("agentBlowups", ref AgentBlowups);
+            s.Int("sandLeft", ref SandLeft);
+            s.Int("sandGrad", ref SandGrad);
+            s.Int("routePpm", ref RoutePpm);
+            s.Int("pubOn", ref PubOn);
+            s.Int("pubScore", ref PubScore);
+            s.Int("pubMiss", ref PubMiss);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

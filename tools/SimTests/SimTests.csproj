@@ -22,6 +22,7 @@
   <!-- The rules do no file IO, so the host hands them the data. The tests read it from next to the test binary. -->
   <ItemGroup>
     <Content Include="../../Rules/Data/**/*.json" Link="Data/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

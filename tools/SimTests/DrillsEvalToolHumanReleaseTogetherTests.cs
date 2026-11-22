@@ -27,6 +27,11 @@ public class DrillsEvalToolHumanReleaseTogetherTests
         c.Reliability.Enabled = 0;
         c.GovContracts.Enabled = 0;
         c.Shocks.Enabled = 0;
+        c.AgentSandbox.Enabled = 0;
+        c.RunawayPlaybook.Enabled = 0;
+        c.OrchestrationBudget.Enabled = 0;
+        c.TrafficRouter.Enabled = 0;
+        c.PublicMetrics.Enabled = 0;
         c.Drills.MinEra = 0;
         c.EvalHarness.MinEra = 0;
         c.ToolPolicy.MinEra = 0;

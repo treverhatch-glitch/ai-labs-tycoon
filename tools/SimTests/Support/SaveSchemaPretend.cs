@@ -15,6 +15,11 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 134) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "pubOn", "pubScore", "pubMiss" }) JsonPatch.Remove(m, key); }));
+            if (schema < 133) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "routePpm" }) JsonPatch.Remove(m, key); }));
+            if (schema < 132) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "orchLevel", "orchOver" }) JsonPatch.Remove(lab, key); });
+            if (schema < 131) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "playLevel", "playArmed", "playLeft", "playArmUntil" }) JsonPatch.Remove(lab, key); });
+            if (schema < 130) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "sandLeft", "sandGrad" }) JsonPatch.Remove(m, key); }));
             if (schema < 129) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "chkDone", "chkMissed" }) JsonPatch.Remove(m, key); }));
             if (schema < 128) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "humanQueue", "humanBusy", "humanCleared" }) JsonPatch.Remove(lab, key); });
             if (schema < 127) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "toolMask" }) JsonPatch.Remove(m, key); }));

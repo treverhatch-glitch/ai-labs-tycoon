@@ -373,6 +373,13 @@ and says why in the commit message.
 190. **Release checklist.** ~~Done~~: `SignChecklistItem`, schema 129, `ReleaseChecklistTests` (Q451).
 191. **Batch twelve news and chat** for drills, evals, tools, queue and checklist. ~~Done~~: `/tmp/f/news8.py`, `DrillsEvalToolHumanReleaseNewsChatTests` (Q451).
 192. **Batch twelve combination rules** (drills with on-call, tools with queue, eval with board, checklist trust). ~~Done~~: `DrillsEvalToolHumanReleaseTogetherTests` (Q448–Q451).
+193. **Agent sandbox.** ~~Done~~: `StartSandbox`, schema 130, `AgentSandboxTests` (Q452).
+194. **Runaway playbook.** ~~Done~~: `SetPlaybook`, `ArmPlaybook`, schema 131, `RunawayPlaybookTests` (Q453).
+195. **Orchestration budget.** ~~Done~~: `SetOrchBudget`, schema 132, `OrchestrationBudgetTests` (Q454).
+196. **Traffic router.** ~~Done~~: `SetRouteShare`, schema 133, `TrafficRouterTests` (Q455).
+197. **Public metrics.** ~~Done~~: `PublishMetrics`, `StopMetrics`, schema 134, `PublicMetricsTests` (Q456).
+198. **Batch thirteen news and chat** for sandbox, playbook, budget, routes and metrics. ~~Done~~: `SandboxPlaybookOrchRouteMetricsNewsChatTests` (Q456).
+199. **Batch thirteen combination rules** (sandbox with tools, playbook with blowups, budget with queue, routes with overload, metrics with eval). ~~Done~~: `SandboxPlaybookOrchRouteMetricsTogetherTests` (Q452–Q456).
 
 ## Rules: later
 

@@ -613,6 +613,23 @@ namespace AiLabs.Rules.Sim
                     return who + " cleared its human escalation queue.";
                 case EventKind.ChecklistSigned:
                     return who + " signed a release checklist item for a model.";
+                case EventKind.SandboxStarted:
+                    return who + " put a model in the agent sandbox for " + e.Amount + " weeks.";
+                case EventKind.SandboxFinished:
+                    return e.Pick == 1 ? who + " graduated a model from the agent sandbox with score " + e.Amount + "."
+                        : who + " failed the agent sandbox with score " + e.Amount + ".";
+                case EventKind.PlaybookSet:
+                    return who + " set the runaway playbook to level " + e.Amount + ".";
+                case EventKind.PlaybookArmed:
+                    return who + " armed the runaway playbook for " + e.Amount + " weeks.";
+                case EventKind.OrchBudgetSet:
+                    return who + " set the orchestration budget to level " + e.Amount + ".";
+                case EventKind.RouteShareSet:
+                    return who + " set a route share for a model.";
+                case EventKind.MetricsPublished:
+                    return who + " published customer metrics for a model (score " + e.Amount + ").";
+                case EventKind.MetricsStopped:
+                    return who + " stopped publishing customer metrics for a model.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

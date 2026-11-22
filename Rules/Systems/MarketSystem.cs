@@ -76,8 +76,23 @@ namespace AiLabs.Rules.Systems
                     entry.LastRevenue = potential;
 
                     int labIndex = IndexOfLab(state, entry.LabId);
-                    ModelLineConfig line = c.Line(state.Labs[labIndex].Model(entry.ModelId).LineId);
-                    demand[labIndex] += ServingDemand(sector, line, potential);
+                    LabState demandLab = state.Labs[labIndex];
+                    ModelState demandModel = demandLab.Model(entry.ModelId);
+                    ModelLineConfig line = c.Line(demandModel.LineId);
+                    long piece = ServingDemand(sector, line, potential);
+                    if (TrafficRouter.Enabled(c) && demandLab.Id == state.PlayerLabId)
+                    {
+                        int routeTotal = TrafficRouter.RouteTotal(demandLab);
+                        if (routeTotal <= 0)
+                        {
+                            int n = 0;
+                            for (int ri = 0; ri < demandLab.Models.Count; ri++)
+                                if (demandLab.Models[ri].Status == ModelStatus.Released) n++;
+                            if (n > 0) piece /= n;
+                        }
+                        else piece = piece * demandModel.RoutePpm / routeTotal;
+                    }
+                    demand[labIndex] += piece;
                 }
             }
 

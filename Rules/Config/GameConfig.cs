@@ -159,6 +159,11 @@ namespace AiLabs.Rules.Config
         public ToolPolicyConfig ToolPolicy = new ToolPolicyConfig();
         public HumanQueueConfig HumanQueue = new HumanQueueConfig();
         public ReleaseChecklistConfig ReleaseChecklist = new ReleaseChecklistConfig();
+        public AgentSandboxConfig AgentSandbox = new AgentSandboxConfig();
+        public RunawayPlaybookConfig RunawayPlaybook = new RunawayPlaybookConfig();
+        public OrchestrationBudgetConfig OrchestrationBudget = new OrchestrationBudgetConfig();
+        public TrafficRouterConfig TrafficRouter = new TrafficRouterConfig();
+        public PublicMetricsConfig PublicMetrics = new PublicMetricsConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -316,6 +321,11 @@ namespace AiLabs.Rules.Config
             s.Obj("toolPolicy", ref ToolPolicy);
             s.Obj("humanQueue", ref HumanQueue);
             s.Obj("releaseChecklist", ref ReleaseChecklist);
+            s.Obj("agentSandbox", ref AgentSandbox);
+            s.Obj("runawayPlaybook", ref RunawayPlaybook);
+            s.Obj("orchestrationBudget", ref OrchestrationBudget);
+            s.Obj("trafficRouter", ref TrafficRouter);
+            s.Obj("publicMetrics", ref PublicMetrics);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

@@ -594,7 +594,23 @@ namespace AiLabs.Rules.State
         /// <summary>The desk cleared queue items. Amount cleared, Pick 1 staffed, 0 paid.</summary>
         HumanQueueCleared,
         /// <summary>A release checklist item was signed. SubjectId is the model, Amount the item bit.</summary>
-        ChecklistSigned
+        ChecklistSigned,
+        /// <summary>An agent sandbox started. SubjectId is the model, Amount the weeks.</summary>
+        SandboxStarted,
+        /// <summary>An agent sandbox finished. Pick 1 passed, 0 failed, Amount the score.</summary>
+        SandboxFinished,
+        /// <summary>The runaway playbook level changed. Amount is the level.</summary>
+        PlaybookSet,
+        /// <summary>The runaway playbook was armed. Amount is the weeks.</summary>
+        PlaybookArmed,
+        /// <summary>The orchestration budget level changed. Amount is the level.</summary>
+        OrchBudgetSet,
+        /// <summary>A model route share changed. SubjectId is the model, Amount ppm.</summary>
+        RouteShareSet,
+        /// <summary>Public metrics were published. SubjectId is the model, Amount the score.</summary>
+        MetricsPublished,
+        /// <summary>Public metrics were stopped. SubjectId is the model.</summary>
+        MetricsStopped
     }
 
     /// <summary>

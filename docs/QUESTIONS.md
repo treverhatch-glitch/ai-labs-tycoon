@@ -2279,6 +2279,26 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Batch twelve news uses picks -1, 0 and 1 only; `EvalRegistered` keeps the suite in the event pick but headlines use -1.
 - Alternatives: chat on every event (rejected: same voice as batch eleven).
 
+### Q452. What does agent sandbox buy the lab? DECIDED: a weekly sandbox budget that gates code and data tools until the player starts a run (`StartSandbox`, `agentSandbox.*`, `ToolPolicy` mask caps)
+- Sandboxes are cheap rehearsal; real runs burn budget and graduate trust slowly.
+- Alternatives: sandbox as pure incident sink (rejected: tools are the hook).
+
+### Q453. How do runaway playbooks work? DECIDED: set a level, arm for a window, blowups while armed cut agency harder and trust bleeds (`SetPlaybook`, `ArmPlaybook`, `Agency` blowup cut)
+- Players choose how paranoid the lab is before the next crisis window.
+- Alternatives: always-on escalation (rejected: `ArmPlaybook` is the beat).
+
+### Q454. What does orchestration budget limit? DECIDED: weekly queue capacity for parallel agent work; over budget cuts keep permille and stacks with human queue (`SetOrchBudget`, `orchestrationBudget.*`)
+- More agents without orchestration tax the queue twice.
+- Alternatives: only money cost (rejected: queue is the fantasy).
+
+### Q455. How does traffic routing hit revenue? DECIDED: rival share permille shifts demand weights in the market pass (`SetRouteShare`, `MarketSystem` demand)
+- Route share is a dial on whose product the world clicks.
+- Alternatives: pure reputation (rejected: market already models demand).
+
+### Q456. What do public metrics expose? DECIDED: publish a score window, miss windows add incidents and safety hooks, stop to go dark (`PublishMetrics`, `StopMetrics`, `PublicMetrics` + nine headlines and five chat lines, combo tests)
+- Metrics are marketing with teeth; batch thirteen news uses the same pick pattern as batch twelve.
+- Alternatives: metrics without incidents (rejected: `SafetySystem` ties the story).
+
 ## Open
 
 None.

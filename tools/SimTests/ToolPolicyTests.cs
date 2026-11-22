@@ -30,6 +30,7 @@ public class ToolPolicyTests
             c.Agency.MinEra = 0;
             c.ToolPolicy.MinEra = 0;
             c.HumanQueue.Enabled = 0;
+            c.AgentSandbox.Enabled = 0;
             if (tweak != null) tweak(c);
         }).WithStarterLab(researchers: 2, engineers: 3, safety: 2, sales: 2, gpus: 6);
         g.Me.Cash = 1_000_000_000_000;

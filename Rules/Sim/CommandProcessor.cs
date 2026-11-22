@@ -106,6 +106,13 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
                 case CommandKind.SignChecklistItem: return SignChecklistItem(c, state, lab, cmd);
+                case CommandKind.StartSandbox: return StartSandbox(c, state, lab, cmd);
+                case CommandKind.SetPlaybook: return SetPlaybook(c, state, lab, cmd);
+                case CommandKind.ArmPlaybook: return ArmPlaybook(c, state, lab, cmd);
+                case CommandKind.SetOrchBudget: return SetOrchBudget(c, state, lab, cmd);
+                case CommandKind.SetRouteShare: return SetRouteShare(c, state, lab, cmd);
+                case CommandKind.PublishMetrics: return PublishMetrics(c, state, lab, cmd);
+                case CommandKind.StopMetrics: return StopMetrics(c, state, lab, cmd);
                 case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
                 case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
                 case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);

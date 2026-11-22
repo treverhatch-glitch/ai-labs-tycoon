@@ -26,8 +26,13 @@ public class AgencyAnnotationPostTrainingKnowledgeBoardTogetherTests
         c.Standards.Enabled = 0;
         c.Reliability.Enabled = 0;
         c.GovContracts.Enabled = 0;
-        c.Shocks.Enabled = 0;
-        c.Agency.MinEra = 0;
+            c.Shocks.Enabled = 0;
+            c.AgentSandbox.Enabled = 0;
+            c.RunawayPlaybook.Enabled = 0;
+            c.OrchestrationBudget.Enabled = 0;
+            c.TrafficRouter.Enabled = 0;
+            c.PublicMetrics.Enabled = 0;
+            c.Agency.MinEra = 0;
         c.PostTraining.MinEra = 0;
         foreach (FundingRoundConfig r in c.Funding.Rounds) { r.OpensYear = 1995; r.MinReputation = 0; }
     }

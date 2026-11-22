@@ -208,7 +208,14 @@ namespace AiLabs.Rules.Sim
         SetToolPolicy,
         StaffHumanQueue,
         ClearHumanQueue,
-        SignChecklistItem
+        SignChecklistItem,
+        StartSandbox,
+        SetPlaybook,
+        ArmPlaybook,
+        SetOrchBudget,
+        SetRouteShare,
+        PublishMetrics,
+        StopMetrics
     }
 
     /// <summary>
@@ -1810,6 +1817,54 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SignChecklistItem, labId);
             c.TargetId = modelId;
             c.Count = item;
+            return c;
+        }
+
+        public static Command StartSandbox(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.StartSandbox, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command SetPlaybook(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPlaybook, labId);
+            c.Count = level;
+            return c;
+        }
+
+        public static Command ArmPlaybook(int labId)
+        {
+            return Make(CommandKind.ArmPlaybook, labId);
+        }
+
+        public static Command SetOrchBudget(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetOrchBudget, labId);
+            c.Count = level;
+            return c;
+        }
+
+        public static Command SetRouteShare(int labId, int modelId, int ppm)
+        {
+            Command c = Make(CommandKind.SetRouteShare, labId);
+            c.TargetId = modelId;
+            c.Count = ppm;
+            return c;
+        }
+
+        public static Command PublishMetrics(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.PublishMetrics, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command StopMetrics(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.StopMetrics, labId);
+            c.TargetId = modelId;
             return c;
         }
 

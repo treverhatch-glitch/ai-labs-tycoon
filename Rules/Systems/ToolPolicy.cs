@@ -57,6 +57,8 @@ namespace AiLabs.Rules.Systems
         public static void Set(GameConfig c, GameState state, LabState lab, ModelState model, int mask)
         {
             if (c.ToolPolicy.SetupCost > 0) Finance.Spend(lab, LedgerLine.Training, c.ToolPolicy.SetupCost);
+            if (AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1)
+                mask &= Web;
             model.ToolMask = mask;
             Events.Add(state, EventKind.ToolPolicySet, lab.Id, model.Id, mask, model.Name);
         }

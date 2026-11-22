@@ -164,6 +164,11 @@ namespace AiLabs.Rules.Config
             ToolPolicyProblems(p, c);
             HumanQueueProblems(p, c);
             ReleaseChecklistProblems(p, c);
+            AgentSandboxProblems(p, c);
+            RunawayPlaybookProblems(p, c);
+            OrchestrationBudgetProblems(p, c);
+            TrafficRouterProblems(p, c);
+            PublicMetricsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1849,6 +1854,46 @@ namespace AiLabs.Rules.Config
             if (k == null) { p.Add("releaseChecklist is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("releaseChecklist.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.DocBar < 0 || k.DocBar > 10 || k.MissTrust > 0) p.Add("releaseChecklist minEra and docBar from 0 to 10 and missTrust not positive");
+        }
+
+        static void AgentSandboxProblems(List<string> p, GameConfig c)
+        {
+            AgentSandboxConfig k = c.AgentSandbox;
+            if (k == null) { p.Add("agentSandbox is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("agentSandbox.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Staff < 0 || k.PassBar < 0 || k.PassBar > 1000) p.Add("agentSandbox weeks at least 1, costs not negative, passBar from 0 to 1000");
+        }
+
+        static void RunawayPlaybookProblems(List<string> p, GameConfig c)
+        {
+            RunawayPlaybookConfig k = c.RunawayPlaybook;
+            if (k == null) { p.Add("runawayPlaybook is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("runawayPlaybook.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MaxLevel < 0 || k.MaxLevel > 5 || k.SetupPerLevel < 0 || k.Staff < 0 || k.CooldownWeeks < 0 || k.ArmWeeks < 1 || k.BlowupCut < 0 || k.TrustKeep < 0 || k.TrustKeep > 1000) p.Add("runawayPlaybook level and timing fields in range");
+        }
+
+        static void OrchestrationBudgetProblems(List<string> p, GameConfig c)
+        {
+            OrchestrationBudgetConfig k = c.OrchestrationBudget;
+            if (k == null) { p.Add("orchestrationBudget is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("orchestrationBudget.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SetupPerLevel < 0 || k.Slots1 < 0 || k.Slots2 < 0 || k.Slots3 < 0 || k.Keep1 < 0 || k.Keep1 > 1000 || k.Keep2 < 0 || k.Keep2 > 1000 || k.Keep3 < 0 || k.Keep3 > 1000 || k.OverDecay < 0 || k.QueuePerOver < 0) p.Add("orchestrationBudget slots and keep permille in range");
+        }
+
+        static void TrafficRouterProblems(List<string> p, GameConfig c)
+        {
+            TrafficRouterConfig k = c.TrafficRouter;
+            if (k == null) { p.Add("trafficRouter is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("trafficRouter.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SkewBar < 0 || k.SkewBar > MathI.Ppm || k.OverloadAdd < 0 || k.ServedBelow < 0 || k.ServedBelow > 1000) p.Add("trafficRouter skew and serving bars in range");
+        }
+
+        static void PublicMetricsProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsConfig k = c.PublicMetrics;
+            if (k == null) { p.Add("publicMetrics is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetrics.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.PublishCost < 0 || k.Bar < 0 || k.Bar > 1000 || k.ConformityPush < 0) p.Add("publicMetrics costs and bar in range");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

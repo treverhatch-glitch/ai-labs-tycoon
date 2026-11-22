@@ -28,6 +28,15 @@ public class GoldenRevertBatchTwelveTests
         Xunit.Assert.Equal(0, p.ExitCode);
         Xunit.Assert.Contains("Passed!", stdout + stderr);
         Xunit.Assert.Contains($"schema {schema} revert: Passed!", stdout);
+        string restore = System.IO.Path.Combine(root, "tools", "restore-golden-tip.sh");
+        var pr = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("bash", restore)
+        {
+            WorkingDirectory = root,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        });
+        pr.WaitForExit(30_000);
+        Xunit.Assert.Equal(0, pr.ExitCode);
     }
 
     [Theory]

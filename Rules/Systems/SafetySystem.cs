@@ -33,7 +33,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The chance the weekly roll uses: the model's own plus what an overloaded lab adds.</summary>
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab) + TechDebt.IncidentPermille(c, lab) + Agency.IncidentPermille(c, model) + HumanQueue.IncidentAdd(c, lab) + PostTraining.IncidentPermille(c, model) + Knowledge.IncidentPermille(c, model);
+            long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + TrafficRouter.IncidentAdd(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab) + TechDebt.IncidentPermille(c, lab) + Agency.IncidentPermille(c, model) + HumanQueue.IncidentAdd(c, lab) + PostTraining.IncidentPermille(c, model) + Knowledge.IncidentPermille(c, model);
             before = (long)MathI.Max(0, before - Drills.IncidentCutPermille(c, lab));
             long chance = IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before) + BugBounty.IncidentChange(c, lab, before));
             return (int)MathI.MulPermille(chance, MathI.Permille - Conformity.ChanceCutPermille(c, model));
@@ -137,6 +137,7 @@ namespace AiLabs.Rules.Systems
             Licence.OnIncident(c, state, lab);
             StaffSystem.OnIncident(c, lab);
             TrustSystem.OnIncident(c, state, lab, model);
+            PublicMetrics.OnIncident(c, state, lab, model);
             SafetyAudit.OnIncident(state, lab, model);
             MarketingCampaign.OnIncident(c, state, lab, model);
             Disclosure.OnIncident(c, lab, model);

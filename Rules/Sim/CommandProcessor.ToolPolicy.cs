@@ -17,6 +17,8 @@ namespace AiLabs.Rules.Sim
             if (model.Status != ModelStatus.Released) return Fail(CommandError.WrongModelStatus, model.Name + " is not on sale.");
             if (model.AgentLevel <= 0) return Fail(CommandError.InvalidArgument, model.Name + " has no agents yet.");
             if (cmd.Count < 0 || cmd.Count > 7) return Fail(CommandError.InvalidArgument, "The mask is from 0 to 7.");
+            if (AgentSandbox.Enabled(c) && model.AgentLevel > 0 && model.SandGrad != 1 && (cmd.Count & (ToolPolicy.Code | ToolPolicy.Data)) != 0)
+                return Fail(CommandError.MissingPrerequisite, model.Name + " has not graduated the agent sandbox; only web tools are allowed.");
             if (lab.Cash < c.ToolPolicy.SetupCost) return NeedCash(lab, c.ToolPolicy.SetupCost);
             ToolPolicy.Set(c, state, lab, model, cmd.Count);
             return CommandResult.Done(model.Id);

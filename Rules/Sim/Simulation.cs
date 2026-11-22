@@ -173,6 +173,10 @@ namespace AiLabs.Rules.Sim
                     HumanQueue.RunWeek(c, state, state.Labs[i]);
                     EvalHarness.RunWeek(c, state, state.Labs[i]);
                     Drills.RunWeek(c, state, state.Labs[i]);
+                    AgentSandbox.RunWeek(c, state, state.Labs[i]);
+                    RunawayPlaybook.RunWeek(c, state, state.Labs[i]);
+                    OrchestrationBudget.RunWeek(c, state, state.Labs[i]);
+                    PublicMetrics.RunWeek(c, state, state.Labs[i]);
                     BoardMotions.RunWeek(c, state, state.Labs[i]);
                     Knowledge.RunWeek(c, state, state.Labs[i]);
                     PostTraining.RunWeek(c, state, state.Labs[i]);

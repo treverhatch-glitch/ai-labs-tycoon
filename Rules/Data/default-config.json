@@ -3932,7 +3932,12 @@
         "name": "Biased output",
         "era": "it-sees",
         "weight": 1000,
-        "sectors": ["fraud-detection", "doc-reading", "image-recognition", "voice-assistants"],
+        "sectors": [
+          "fraud-detection",
+          "doc-reading",
+          "image-recognition",
+          "voice-assistants"
+        ],
         "finePermille": 1000,
         "reputationPermille": 1500,
         "headlines": [
@@ -3946,7 +3951,9 @@
         "name": "Autonomous crash",
         "era": "it-sees",
         "weight": 1000,
-        "sectors": ["autonomous-driving"],
+        "sectors": [
+          "autonomous-driving"
+        ],
         "finePermille": 2500,
         "reputationPermille": 2000,
         "headlines": [
@@ -3960,7 +3967,14 @@
         "name": "Misuse",
         "era": "it-writes",
         "weight": 1000,
-        "sectors": ["writing-tools", "code-completion", "consumer-assistant", "image-design", "music-audio", "video-film"],
+        "sectors": [
+          "writing-tools",
+          "code-completion",
+          "consumer-assistant",
+          "image-design",
+          "music-audio",
+          "video-film"
+        ],
         "finePermille": 1200,
         "reputationPermille": 1000,
         "headlines": [
@@ -3974,7 +3988,13 @@
         "name": "Data leak",
         "era": "chat-boom",
         "weight": 1000,
-        "sectors": ["consumer-assistant", "customer-support", "legal-research", "enterprise-knowledge", "companionship"],
+        "sectors": [
+          "consumer-assistant",
+          "customer-support",
+          "legal-research",
+          "enterprise-knowledge",
+          "companionship"
+        ],
         "finePermille": 1800,
         "reputationPermille": 1200,
         "headlines": [
@@ -3988,7 +4008,14 @@
         "name": "Agent went off-script",
         "era": "agents",
         "weight": 1000,
-        "sectors": ["coding-agents", "enterprise-knowledge", "finance-trading", "cybersecurity", "government-services", "science-medicine"],
+        "sectors": [
+          "coding-agents",
+          "enterprise-knowledge",
+          "finance-trading",
+          "cybersecurity",
+          "government-services",
+          "science-medicine"
+        ],
         "finePermille": 2500,
         "reputationPermille": 1500,
         "headlines": [
@@ -4002,7 +4029,10 @@
         "name": "Runaway agents",
         "era": "harnesses",
         "weight": 1000,
-        "sectors": ["agent-workforce", "ai-research-services"],
+        "sectors": [
+          "agent-workforce",
+          "ai-research-services"
+        ],
         "finePermille": 3500,
         "reputationPermille": 2000,
         "headlines": [
@@ -4016,7 +4046,10 @@
         "name": "Physical harm",
         "era": "bodies",
         "weight": 1000,
-        "sectors": ["robotics-industry", "household-robots"],
+        "sectors": [
+          "robotics-industry",
+          "household-robots"
+        ],
         "finePermille": 4000,
         "reputationPermille": 2500,
         "headlines": [
@@ -4030,7 +4063,10 @@
         "name": "Loss of control",
         "era": "upward",
         "weight": 1000,
-        "sectors": ["machine-science", "space-compute"],
+        "sectors": [
+          "machine-science",
+          "space-compute"
+        ],
         "finePermille": 5000,
         "reputationPermille": 3000,
         "headlines": [
@@ -5238,7 +5274,11 @@
         "id": "nell-hype",
         "name": "Nell Hype",
         "outlet": "The Daily Parameter",
-        "beats": ["incident", "hearing", "launch"],
+        "beats": [
+          "incident",
+          "hearing",
+          "launch"
+        ],
         "chancePermille": -100,
         "backfirePermille": 1500,
         "blurb": "Tabloid. Loves a scandal and a superlative, and a gaffe in her paper is a big one."
@@ -5247,7 +5287,10 @@
         "id": "ravi-benchmark",
         "name": "Ravi Benchmark",
         "outlet": "Token & Tonic",
-        "beats": ["launch", "crown"],
+        "beats": [
+          "launch",
+          "crown"
+        ],
         "chancePermille": 100,
         "backfirePermille": 800,
         "blurb": "Trade press. Friendly to labs that ship, and forgiving when they trip."
@@ -5256,7 +5299,11 @@
         "id": "ada-fine-print",
         "name": "Ada Fine-Print",
         "outlet": "The Regulator's Ledger",
-        "beats": ["incident", "hearing", "crown"],
+        "beats": [
+          "incident",
+          "hearing",
+          "crown"
+        ],
         "chancePermille": 0,
         "backfirePermille": 1000,
         "blurb": "Reads the footnotes. Fair, thorough and hard to charm."
@@ -5452,7 +5499,18 @@
     "messPerVersion": 70,
     "maxMess": 1000,
     "suffixEveryPoints": 100,
-    "suffixes": ["Pro", "Max", "Turbo", "Ultra", "Plus", "v2", "Final", "(new)", "Final-FINAL", "Reborn"],
+    "suffixes": [
+      "Pro",
+      "Max",
+      "Turbo",
+      "Ultra",
+      "Plus",
+      "v2",
+      "Final",
+      "(new)",
+      "Final-FINAL",
+      "Reborn"
+    ],
     "confusionPermille": 80,
     "cleanPoints": 400,
     "cleanFeeHireFees": 4
@@ -5461,11 +5519,46 @@
     "refurbishCostPermille": 250,
     "maxMoralePenalty": 60,
     "stages": [
-      {"id": "fresh", "name": "Fresh", "minEras": 0, "upkeepExtraPermille": 0, "moralePenalty": 0, "blurb": "Built for this era. The computers are the colour computers should be."},
-      {"id": "settled", "name": "Settled", "minEras": 1, "upkeepExtraPermille": 0, "moralePenalty": 0, "blurb": "A little behind the times, and nobody minds yet."},
-      {"id": "dated", "name": "Dated", "minEras": 2, "upkeepExtraPermille": 150, "moralePenalty": 20, "blurb": "The whiteboards ghost and the chairs have opinions. Staff are starting to mention it."},
-      {"id": "beige", "name": "Beige", "minEras": 3, "upkeepExtraPermille": 300, "moralePenalty": 40, "blurb": "Beige computers, dusty racks, and a standing meeting about the carpet."},
-      {"id": "museum-piece", "name": "Museum piece", "minEras": 5, "upkeepExtraPermille": 500, "moralePenalty": 60, "blurb": "Visitors ask whether it is a recreation. The model has started to feel sorry for it."}
+      {
+        "id": "fresh",
+        "name": "Fresh",
+        "minEras": 0,
+        "upkeepExtraPermille": 0,
+        "moralePenalty": 0,
+        "blurb": "Built for this era. The computers are the colour computers should be."
+      },
+      {
+        "id": "settled",
+        "name": "Settled",
+        "minEras": 1,
+        "upkeepExtraPermille": 0,
+        "moralePenalty": 0,
+        "blurb": "A little behind the times, and nobody minds yet."
+      },
+      {
+        "id": "dated",
+        "name": "Dated",
+        "minEras": 2,
+        "upkeepExtraPermille": 150,
+        "moralePenalty": 20,
+        "blurb": "The whiteboards ghost and the chairs have opinions. Staff are starting to mention it."
+      },
+      {
+        "id": "beige",
+        "name": "Beige",
+        "minEras": 3,
+        "upkeepExtraPermille": 300,
+        "moralePenalty": 40,
+        "blurb": "Beige computers, dusty racks, and a standing meeting about the carpet."
+      },
+      {
+        "id": "museum-piece",
+        "name": "Museum piece",
+        "minEras": 5,
+        "upkeepExtraPermille": 500,
+        "moralePenalty": 60,
+        "blurb": "Visitors ask whether it is a recreation. The model has started to feel sorry for it."
+      }
     ]
   },
   "control": {
@@ -5483,11 +5576,46 @@
     "minCost": 100,
     "maxSpeedPermille": 150,
     "outcomes": [
-      {"id": "real-insight", "name": "A real insight", "weight": 4, "kind": "ResearchWeeks", "amount": 20, "blurb": "It was not luck. It was a good idea that nobody had written down."},
-      {"id": "training-trick", "name": "A training trick", "weight": 3, "kind": "TrainingSpeedPermille", "amount": 30, "blurb": "A learning-rate schedule that looks like a typo. It works. Nobody is allowed to fix the typo."},
-      {"id": "data-quirk", "name": "A data quirk", "weight": 2, "kind": "ResearchWeeks", "amount": 8, "blurb": "A mislabelled folder of very good data. It has been labelled correctly now, to everyone's regret."},
-      {"id": "the-cat", "name": "The cat", "weight": 1, "kind": "Nothing", "amount": 0, "blurb": "The office cat walked across a keyboard. The cat has been thanked and has not noticed."},
-      {"id": "tuesday", "name": "Tuesday", "weight": 1, "kind": "Nothing", "amount": 0, "blurb": "The model is nicer on Tuesdays. Nobody knows why. The dashboard has been asked to stop asking."}
+      {
+        "id": "real-insight",
+        "name": "A real insight",
+        "weight": 4,
+        "kind": "ResearchWeeks",
+        "amount": 20,
+        "blurb": "It was not luck. It was a good idea that nobody had written down."
+      },
+      {
+        "id": "training-trick",
+        "name": "A training trick",
+        "weight": 3,
+        "kind": "TrainingSpeedPermille",
+        "amount": 30,
+        "blurb": "A learning-rate schedule that looks like a typo. It works. Nobody is allowed to fix the typo."
+      },
+      {
+        "id": "data-quirk",
+        "name": "A data quirk",
+        "weight": 2,
+        "kind": "ResearchWeeks",
+        "amount": 8,
+        "blurb": "A mislabelled folder of very good data. It has been labelled correctly now, to everyone's regret."
+      },
+      {
+        "id": "the-cat",
+        "name": "The cat",
+        "weight": 1,
+        "kind": "Nothing",
+        "amount": 0,
+        "blurb": "The office cat walked across a keyboard. The cat has been thanked and has not noticed."
+      },
+      {
+        "id": "tuesday",
+        "name": "Tuesday",
+        "weight": 1,
+        "kind": "Nothing",
+        "amount": 0,
+        "blurb": "The model is nicer on Tuesdays. Nobody knows why. The dashboard has been asked to stop asking."
+      }
     ]
   },
   "repair": {
@@ -5550,19 +5678,29 @@
         "id": "frontier",
         "name": "Frontier push",
         "blurb": "Bigger is better, and nobody has proved otherwise yet.",
-        "kinds": [ "CapabilityPermille", "UnlockLine" ]
+        "kinds": [
+          "CapabilityPermille",
+          "UnlockLine"
+        ]
       },
       {
         "id": "alignment",
         "name": "Alignment first",
         "blurb": "Understand it before it understands you.",
-        "kinds": [ "AlignmentPermille" ]
+        "kinds": [
+          "AlignmentPermille"
+        ]
       },
       {
         "id": "efficiency",
         "name": "Efficiency",
         "blurb": "The same model for fewer GPUs, and a smaller power bill to explain.",
-        "kinds": [ "TrainingSpeedPermille", "CoolingPermille", "SoftwarePermille", "UnlockChipTarget" ]
+        "kinds": [
+          "TrainingSpeedPermille",
+          "CoolingPermille",
+          "SoftwarePermille",
+          "UnlockChipTarget"
+        ]
       }
     ],
     "discountPermille": 200,
@@ -5875,9 +6013,39 @@
     "keepFree": 1,
     "moraleRole": "safety",
     "kinds": [
-      { "id": "public-services", "name": "Public services", "clearance": 0, "weeks": 24, "pay": 90000, "people": 2, "morale": 0, "acceptReputation": 0, "doneReputation": 15 },
-      { "id": "intelligence", "name": "Intelligence analysis", "clearance": 2, "weeks": 26, "pay": 240000, "people": 3, "morale": 150, "acceptReputation": -10, "doneReputation": 10 },
-      { "id": "defence", "name": "Defence systems", "clearance": 3, "weeks": 30, "pay": 600000, "people": 4, "morale": 300, "acceptReputation": -30, "doneReputation": 5 }
+      {
+        "id": "public-services",
+        "name": "Public services",
+        "clearance": 0,
+        "weeks": 24,
+        "pay": 90000,
+        "people": 2,
+        "morale": 0,
+        "acceptReputation": 0,
+        "doneReputation": 15
+      },
+      {
+        "id": "intelligence",
+        "name": "Intelligence analysis",
+        "clearance": 2,
+        "weeks": 26,
+        "pay": 240000,
+        "people": 3,
+        "morale": 150,
+        "acceptReputation": -10,
+        "doneReputation": 10
+      },
+      {
+        "id": "defence",
+        "name": "Defence systems",
+        "clearance": 3,
+        "weeks": 30,
+        "pay": 600000,
+        "people": 4,
+        "morale": 300,
+        "acceptReputation": -30,
+        "doneReputation": 5
+      }
     ]
   },
   "charter": {
@@ -6654,6 +6822,55 @@
     "minEra": 99,
     "docBar": 1,
     "missTrust": -3
+  },
+  "agentSandbox": {
+    "enabled": 1,
+    "minEra": 5,
+    "cost": 20000,
+    "weeks": 4,
+    "staff": 1,
+    "passBar": 520
+  },
+  "runawayPlaybook": {
+    "enabled": 1,
+    "minEra": 5,
+    "maxLevel": 3,
+    "setupPerLevel": 30000,
+    "staff": 2,
+    "cooldownWeeks": 13,
+    "armWeeks": 8,
+    "blowupCut": 120,
+    "trustKeep": 400
+  },
+  "orchestrationBudget": {
+    "enabled": 1,
+    "minEra": 5,
+    "setupPerLevel": 25000,
+    "slots1": 1,
+    "slots2": 2,
+    "slots3": 4,
+    "keep1": 850,
+    "keep2": 920,
+    "keep3": 1000,
+    "overDecay": 8,
+    "queuePerOver": 2
+  },
+  "trafficRouter": {
+    "enabled": 1,
+    "minEra": 5,
+    "skewBar": 650000,
+    "overloadAdd": 35,
+    "servedBelow": 750
+  },
+  "publicMetrics": {
+    "enabled": 1,
+    "minEra": 5,
+    "publishCost": 8000,
+    "trustGain": 10,
+    "trustLoss": -6,
+    "missTrust": -4,
+    "bar": 700,
+    "conformityPush": 2
   },
   "bugBounty": {
     "maxLevel": 3,
@@ -11798,6 +12015,60 @@
         "kind": "ChecklistSigned",
         "pick": -1,
         "text": "{lab} signs off another release checklist item for {ref}. Legal initials the cover sheet"
+      },
+      {
+        "id": "sandbox-started",
+        "kind": "SandboxStarted",
+        "pick": -1,
+        "text": "{lab} puts {ref} in an agent sandbox. The tool calls get a smaller room with a guard"
+      },
+      {
+        "id": "sandbox-pass",
+        "kind": "SandboxFinished",
+        "pick": 1,
+        "text": "{lab} graduates {ref} from the agent sandbox. Code and data tools are on the table"
+      },
+      {
+        "id": "sandbox-fail",
+        "kind": "SandboxFinished",
+        "pick": 0,
+        "text": "{lab} fails {ref} in the agent sandbox. Web-only tools stay on the wall chart"
+      },
+      {
+        "id": "playbook-set",
+        "kind": "PlaybookSet",
+        "pick": -1,
+        "text": "{lab} updates its runaway playbook. The safety binders get colour tabs"
+      },
+      {
+        "id": "playbook-armed",
+        "kind": "PlaybookArmed",
+        "pick": -1,
+        "text": "{lab} arms its runaway playbook. Pagers chirp in the containment wing"
+      },
+      {
+        "id": "orch-set",
+        "kind": "OrchBudgetSet",
+        "pick": -1,
+        "text": "{lab} raises its orchestration budget. The agent scheduler gets a harder ceiling"
+      },
+      {
+        "id": "route-set",
+        "kind": "RouteShareSet",
+        "pick": -1,
+        "text": "{lab} shifts traffic toward {ref}. The load balancer diagram changes colour"
+      },
+      {
+        "id": "metrics-on",
+        "kind": "MetricsPublished",
+        "pick": -1,
+        "text": "{lab} publishes a customer uptime board for {ref}. Procurement asks for the raw numbers"
+      },
+      {
+        "id": "metrics-off",
+        "kind": "MetricsStopped",
+        "pick": -1,
+        "text": "{lab} takes {ref} off the public metrics page. The status dot goes grey"
       }
     ],
     "filler": [
@@ -12066,241 +12337,241 @@
         "toYear": 0
       },
       {
-      "id": "room-dated",
-      "kind": "RoomDated",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "room-dated",
+        "kind": "RoomDated",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "control-stale",
-      "kind": "ControlStale",
-      "roles": [
-        "safety"
-      ],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "control-stale",
+        "kind": "ControlStale",
+        "roles": [
+          "safety"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "control-refreshed",
-      "kind": "ControlRefreshed",
-      "roles": [
-        "safety",
-        "researcher"
-      ],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "control-refreshed",
+        "kind": "ControlRefreshed",
+        "roles": [
+          "safety",
+          "researcher"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "lead-found",
-      "kind": "LeadFound",
-      "roles": [
-        "researcher"
-      ],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "lead-found",
+        "kind": "LeadFound",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "lead-resolved-good",
-      "kind": "LeadResolved",
-      "roles": [
-        "researcher"
-      ],
-      "trait": "",
-      "pick": 1,
-      "about": "lab",
-      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "lead-resolved-good",
+        "kind": "LeadResolved",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "lead-resolved-nothing",
-      "kind": "LeadResolved",
-      "roles": [
-        "researcher"
-      ],
-      "trait": "",
-      "pick": 0,
-      "about": "lab",
-      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "lead-resolved-nothing",
+        "kind": "LeadResolved",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "model-fine-tuned",
-      "kind": "ModelFineTuned",
-      "roles": [
-        "engineer",
-        "researcher"
-      ],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "model-fine-tuned",
+        "kind": "ModelFineTuned",
+        "roles": [
+          "engineer",
+          "researcher"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "model-rolled-back",
-      "kind": "ModelRolledBack",
-      "roles": [
-        "engineer"
-      ],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "model-rolled-back",
+        "kind": "ModelRolledBack",
+        "roles": [
+          "engineer"
+        ],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "office-event-posed",
-      "kind": "OfficeEventPosed",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "office-event-posed",
+        "kind": "OfficeEventPosed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "office-event-answered",
-      "kind": "OfficeEventAnswered",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "office-event-answered",
+        "kind": "OfficeEventAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "objective-set",
-      "kind": "ObjectiveSet",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "objective-set",
+        "kind": "ObjectiveSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "successor-designed",
-      "kind": "SuccessorDesigned",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "successor-designed",
+        "kind": "SuccessorDesigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "model-rushed",
-      "kind": "ModelRushed",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "model-rushed",
+        "kind": "ModelRushed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "lobbied",
-      "kind": "Lobbied",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "lobbied",
+        "kind": "Lobbied",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "style-pivoted",
-      "kind": "StylePivoted",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "style-pivoted",
+        "kind": "StylePivoted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "era-scored",
-      "kind": "EraScored",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "era-scored",
+        "kind": "EraScored",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "training-failed",
-      "kind": "TrainingFailed",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "training-failed",
+        "kind": "TrainingFailed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "staff-quit",
-      "kind": "StaffQuit",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "staff-quit",
+        "kind": "StaffQuit",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "loan-defaulted",
-      "kind": "LoanDefaulted",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "loan-defaulted",
+        "kind": "LoanDefaulted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
-      "id": "room-refurbished",
-      "kind": "RoomRefurbished",
-      "roles": [],
-      "trait": "",
-      "pick": -1,
-      "about": "lab",
-      "text": "The {room} has been done up. The computers are, for once, the colour of computers.",
-      "fromYear": 0,
-      "toYear": 0
-    },
+        "id": "room-refurbished",
+        "kind": "RoomRefurbished",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The {room} has been done up. The computers are, for once, the colour of computers.",
+        "fromYear": 0,
+        "toYear": 0
+      },
       {
         "id": "tech-researched",
         "kind": "TechResearched",
@@ -12353,7 +12624,10 @@
       {
         "id": "trained-early",
         "kind": "TrainingFinished",
-        "roles": ["researcher", "engineer"],
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12364,7 +12638,10 @@
       {
         "id": "trained-harness",
         "kind": "TrainingFinished",
-        "roles": ["researcher", "engineer"],
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12400,7 +12677,10 @@
       {
         "id": "released-early",
         "kind": "ModelReleased",
-        "roles": ["sales", "product-lead"],
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12411,7 +12691,10 @@
       {
         "id": "released-agents",
         "kind": "ModelReleased",
-        "roles": ["sales", "product-lead"],
+        "roles": [
+          "sales",
+          "product-lead"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12703,7 +12986,10 @@
       {
         "id": "chip-taped-out-eng",
         "kind": "ChipTapedOut",
-        "roles": ["chip-architect", "engineer"],
+        "roles": [
+          "chip-architect",
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12725,7 +13011,10 @@
       {
         "id": "chip-respin-eng",
         "kind": "ChipRespin",
-        "roles": ["chip-architect", "engineer"],
+        "roles": [
+          "chip-architect",
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12813,7 +13102,10 @@
       {
         "id": "crunch-tired",
         "kind": "CrunchEnded",
-        "roles": ["researcher", "engineer"],
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
         "trait": "",
         "pick": 1,
         "about": "lab",
@@ -12868,7 +13160,10 @@
       {
         "id": "offsite-chat-eng",
         "kind": "OffsiteHeld",
-        "roles": ["researcher", "engineer"],
+        "roles": [
+          "researcher",
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12890,7 +13185,10 @@
       {
         "id": "red-team-chat-safety",
         "kind": "RedTeamRan",
-        "roles": ["red-teamer", "safety"],
+        "roles": [
+          "red-teamer",
+          "safety"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12912,7 +13210,10 @@
       {
         "id": "gap-found-chat-research",
         "kind": "GapFound",
-        "roles": ["researcher", "alignment-fellow"],
+        "roles": [
+          "researcher",
+          "alignment-fellow"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -12945,7 +13246,9 @@
       {
         "id": "pay-cut-chat-research",
         "kind": "PayChanged",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": 0,
         "about": "lab",
@@ -12967,7 +13270,9 @@
       {
         "id": "paper-published-chat-research",
         "kind": "PaperPublished",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": 1,
         "about": "lab",
@@ -13326,7 +13631,9 @@
       {
         "id": "hack-week-chat-research",
         "kind": "HackWeek",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": 1,
         "about": "lab",
@@ -13425,7 +13732,9 @@
       {
         "id": "debt-paid-chat-engineer",
         "kind": "DebtPaid",
-        "roles": ["engineer"],
+        "roles": [
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13458,7 +13767,9 @@
       {
         "id": "target-set-chat-sales",
         "kind": "TargetSet",
-        "roles": ["sales"],
+        "roles": [
+          "sales"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13491,7 +13802,9 @@
       {
         "id": "chair-endowed-chat-researcher",
         "kind": "ChairEndowed",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13513,7 +13826,9 @@
       {
         "id": "whistle-raised-chat-safety",
         "kind": "WhistleRaised",
-        "roles": ["safety"],
+        "roles": [
+          "safety"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13623,7 +13938,9 @@
       {
         "id": "loan-restructured-chat-sales",
         "kind": "LoanRestructured",
-        "roles": ["sales"],
+        "roles": [
+          "sales"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13667,7 +13984,9 @@
       {
         "id": "pledge-made-chat-safety",
         "kind": "PledgeSet",
-        "roles": ["safety"],
+        "roles": [
+          "safety"
+        ],
         "trait": "",
         "pick": 1,
         "about": "lab",
@@ -13700,7 +14019,9 @@
       {
         "id": "roadmap-announced-chat-researcher",
         "kind": "RoadmapAnnounced",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13766,7 +14087,9 @@
       {
         "id": "skunkworks-started-chat-researcher",
         "kind": "SkunkworksStarted",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13854,7 +14177,9 @@
       {
         "id": "labour-strike-chat",
         "kind": "LabourStrike",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13876,7 +14201,9 @@
       {
         "id": "sunset-announced-chat",
         "kind": "SunsetAnnounced",
-        "roles": ["engineer"],
+        "roles": [
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13920,7 +14247,9 @@
       {
         "id": "account-team-chat",
         "kind": "AccountTeamChanged",
-        "roles": ["sales"],
+        "roles": [
+          "sales"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -13942,7 +14271,9 @@
       {
         "id": "paper-submitted-chat",
         "kind": "PaperSubmitted",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -14041,7 +14372,9 @@
       {
         "id": "support-desk-chat",
         "kind": "SupportDeskSet",
-        "roles": ["engineer"],
+        "roles": [
+          "engineer"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -14151,7 +14484,9 @@
       {
         "id": "scholars-arrived-chat",
         "kind": "ScholarsArrived",
-        "roles": ["researcher"],
+        "roles": [
+          "researcher"
+        ],
         "trait": "",
         "pick": -1,
         "about": "lab",
@@ -15685,6 +16020,61 @@
         "pick": -1,
         "about": "lab",
         "text": "The tool policy changed. The agents have a shorter list of things they may touch.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sandbox-finished-pass-chat",
+        "kind": "SandboxFinished",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The sandbox graduated the model. Code and data tools are on the table.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "playbook-armed-chat",
+        "kind": "PlaybookArmed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Runaway playbook armed for the next few weeks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "orch-budget-chat",
+        "kind": "OrchBudgetSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Orchestration budget changed. Watch the agent queue.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "route-share-chat",
+        "kind": "RouteShareSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Traffic skewed toward one model; serving may creak.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-published-chat",
+        "kind": "MetricsPublished",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Public metrics are live. Uptime is on the record.",
         "fromYear": 0,
         "toYear": 0
       }
