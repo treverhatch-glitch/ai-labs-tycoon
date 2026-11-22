@@ -788,7 +788,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q218. Occasional rival bankruptcy on 200×40 soak? DECIDED (coordinator, Nov 22)
 
 - **Choice:** A plan rival may bankrupt; bar over seeds **1–200** × forty years (`BALANCE_SOAK_FULL` in CI): **(a)** ≤**10** seeds with any plan bankruptcy (≤5%); **(b)** no bankruptcy before calendar **2005**; **(c)** at most **one** of `openaye` / `anthoptics` bankrupt per game; **(d)** ≥**3** active plan rivals at week 40×`. `RivalEconomyRobustnessLaterTests` Q216+Q218. Q200 (40×40) stays **zero** bankruptcies.
-- **Structural fix for (b):** modest **OpenAye** / **AntHoptics** `startCash` and `backerPerWeek` bump (Q218; not per-seed) so early-game failures land after 2005; retrench stack + wealthGrowth **50** unchanged.
+- **Structural fix for (b):** **OpenAye** startCash **400k** / backer **5k**; **AntHoptics** startCash **450k** / backer **6k** (Q218; not per-seed) so early-game failures land after 2005; retrench stack + wealthGrowth **50** unchanged.
 - **Known occasional seeds (≤10):** e.g. 42, 54, 121, 141, 160, 172, 187, 188 — all satisfy (b)–(d) after bump.
 
 ### Q216. Two-hundred-seed rival economy soak on stack2? DECIDED: widen bar + runway-sale cooldown (no era merge)
