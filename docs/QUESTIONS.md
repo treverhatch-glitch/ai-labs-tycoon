@@ -2198,6 +2198,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It is the way back from dilution that has a price and a window: waiting for a calm market is cheaper, but the board and the control line may not wait. A bought round cannot be raised again, so it is a one-way door.
 - Alternatives: buying a share on any day at a flat price (rejected: no timing), a vote of the investors (rejected: no state to decide on).
 
+### Q431. Should rented compute come cheaper if it can be taken away? DECIDED: a spot share of the rented GPUs: a rent discount against a weekly chance each run is preempted, softened by checkpoints and engineers
+- It joins three things the lab already decides, rent, checkpoint habit and engineers, so a lab with cheap checkpoints can run mostly on spot and a lab with none should not.
+- Alternatives: a flat cheaper rent (rejected: no risk), preemption that stalls a week (rejected: nothing to plan around).
+
 ## Open
 
 None.

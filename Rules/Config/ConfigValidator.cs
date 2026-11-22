@@ -153,6 +153,7 @@ namespace AiLabs.Rules.Config
             UserDataProblems(p, c);
             GovernanceProblems(p, c);
             BuybackProblems(p, c);
+            SpotProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1728,6 +1729,14 @@ namespace AiLabs.Rules.Config
             if (k == null) { p.Add("buyback is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("buyback.enabled must be 0 or 1");
             if (k.PriceMult < 1000 || k.PriceMult > 20000 || k.BubblePrice < 0 || k.BubblePrice > 5000 || k.BuybackTrust < 0) p.Add("buyback priceMult must be from 1000 to 20000, bubblePrice from 0 to 5000 and buybackTrust not negative");
+        }
+
+        static void SpotProblems(List<string> p, GameConfig c)
+        {
+            SpotConfig k = c.Spot;
+            if (k == null) { p.Add("spot is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("spot.enabled must be 0 or 1");
+            if (k.MaxPermille < 0 || k.MaxPermille > 1000 || k.DiscountPermille < 0 || k.DiscountPermille > 900 || k.PreemptPermille < 0 || k.PreemptPermille > 1000 || k.DefaultLossPermille < 0 || k.DefaultLossPermille > 1000 || k.ChangeWeeks < 0) p.Add("spot shares must be from 0 to 1000 (discount to 900) and changeWeeks not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

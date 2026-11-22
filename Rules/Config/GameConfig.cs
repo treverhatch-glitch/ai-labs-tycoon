@@ -148,6 +148,7 @@ namespace AiLabs.Rules.Config
         public UserDataConfig UserData = new UserDataConfig();
         public GovernanceConfig Governance = new GovernanceConfig();
         public BuybackConfig Buyback = new BuybackConfig();
+        public SpotConfig Spot = new SpotConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -294,6 +295,7 @@ namespace AiLabs.Rules.Config
             s.Obj("userData", ref UserData);
             s.Obj("governance", ref Governance);
             s.Obj("buyback", ref Buyback);
+            s.Obj("spot", ref Spot);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

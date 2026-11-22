@@ -191,7 +191,8 @@ namespace AiLabs.Rules.Sim
         SetUserData,
         SetGovernance,
         SeatDirector,
-        BuyBackRound
+        BuyBackRound,
+        SetSpotShare
     }
 
     /// <summary>
@@ -1657,6 +1658,14 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.BuyBackRound, labId);
             c.Id = roundId;
+            return c;
+        }
+
+        /// <summary>Runs a share of the rented GPUs as spot capacity (permille): cheaper rent, and training runs may be preempted.</summary>
+        public static Command SetSpotShare(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetSpotShare, labId);
+            c.Permille = permille;
             return c;
         }
 

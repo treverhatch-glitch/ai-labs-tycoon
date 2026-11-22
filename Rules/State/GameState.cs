@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 118;
+        public const int CurrentSchema = 119;
 
         public int Schema;
         public string ConfigVersion;
@@ -548,6 +548,12 @@ namespace AiLabs.Rules.State
         public int GovResigned;
         /// <summary>Ids of the funding rounds the lab has bought back.</summary>
         public List<string> BoughtRounds = new List<string>();
+        /// <summary>Share of the rented GPUs on spot capacity (permille), one more than the week it was set, the rent saved so far, runs preempted, and compute they lost.</summary>
+        public int SpotPermille;
+        public int SpotSince;
+        public long SpotSaved;
+        public int SpotPreempts;
+        public long SpotLost;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1028,6 +1034,11 @@ namespace AiLabs.Rules.State
             s.Int("govSearch", ref GovSearch);
             s.Int("govResigned", ref GovResigned);
             s.StrList("boughtRounds", ref BoughtRounds);
+            s.Int("spotPermille", ref SpotPermille);
+            s.Int("spotSince", ref SpotSince);
+            s.Long("spotSaved", ref SpotSaved);
+            s.Int("spotPreempts", ref SpotPreempts);
+            s.Long("spotLost", ref SpotLost);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

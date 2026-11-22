@@ -6457,6 +6457,14 @@
     "bubblePrice": 1000,
     "buybackTrust": 2000
   },
+  "spot": {
+    "enabled": 1,
+    "maxPermille": 600,
+    "discountPermille": 400,
+    "preemptPermille": 120,
+    "defaultLossPermille": 500,
+    "changeWeeks": 4
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

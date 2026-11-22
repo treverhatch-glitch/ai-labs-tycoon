@@ -358,6 +358,7 @@ and says why in the commit message.
 175. **User data.** ~~Done~~: `SetUserData`, schema 116, `UserDataTests` (Q428).
 176. **Governance.** ~~Done~~: `SetGovernance`, `SeatDirector`, schema 117, `GovernanceTests` (Q429).
 177. **Round buyback.** ~~Done~~: `BuyBackRound`, schema 118, `BuybackTests` (Q430).
+178. **Spot capacity.** ~~Done~~: `SetSpotShare`, schema 119, `SpotTests` (Q431).
 
 ## Rules: later
 

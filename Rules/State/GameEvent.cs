@@ -536,7 +536,9 @@ namespace AiLabs.Rules.State
         /// <summary>An independent director resigned because the lab could not pay. SubjectId is how many are left.</summary>
         DirectorResigned,
         /// <summary>The lab bought a funding round back. Amount is the price, Text the round.</summary>
-        RoundBoughtBack
+        RoundBoughtBack,
+        /// <summary>A training run was preempted and lost progress. SubjectId is the model, Amount the compute lost, Ref the model name.</summary>
+        SpotPreempted
     }
 
     /// <summary>

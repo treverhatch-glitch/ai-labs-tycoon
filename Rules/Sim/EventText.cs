@@ -555,6 +555,8 @@ namespace AiLabs.Rules.Sim
                     return "An independent director resigned from " + who + ".";
                 case EventKind.RoundBoughtBack:
                     return who + " bought its " + e.Ref + " investors out.";
+                case EventKind.SpotPreempted:
+                    return who + " lost part of " + e.Ref + " when spot capacity was taken back.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
