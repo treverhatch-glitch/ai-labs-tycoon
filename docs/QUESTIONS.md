@@ -833,6 +833,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - **`AcquisitionSystem`:** `TransferChipOrders` before `SealAbsorbed`; chip fleet `DesignLabId` remapped to buyer (no save schema).
 - **`HatchRivalsChipsConsolidationLaterTests` (11):** in-flight listed-chip orders move on acquire; delivery metadata; fleet remap; distress list while in debt; planner acquire runway gate; listing month reset; feelings in crash; save/load orders; multi-listing transfer; absorbed seller refused; distress fire-sale cap per quarter.
 
+### Q233–Q262. Chip orders outside quote; post-acquire continuity? DECIDED: in-flight orders not in acquisition quote; pipeline survives acquire/save
+
+- **`HatchRivalsChipsConsolidationLaterTests` (+36 on `98ace5f`):** quote/foundry/holding remap; non-ready designs; dual-order transfer; hall save/load; own-design M&amp;A; crash seal; feelings; absorbed `OrderChips`; fleet on hall; distress discount with orders; rival rollup with orders (Q249–Q262); plus Q233–Q248 bar listed in prior batch.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
