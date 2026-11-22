@@ -869,7 +869,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsFinisherLaterTests` (70):** hall/cloud pipeline; refuse absorbed cmds; delivery/quotes; global orders; schema **29** close.
 
-### Q736–Q805. Denouement rivals/chips bar? TBD: test-only (batch 16, WIP local)
+### Q736–Q805. Denouement rivals/chips bar? DECIDED: test-only (batch 16, local GO-ready @ `6f60391`)
+
+- **`HatchRivalsChipsDenouementLaterTests` (70):** acquire+listed pipeline; refuse cmds; ledger/schema **29** closers.
+
+### Q806–Q905. Sequel rivals/chips bar? TBD: test-only (batch 17, grown local)
+
+- **`HatchRivalsChipsSequelLaterTests` (100):** hall/cloud buys; delivery tick; refuse absorbed; schema **29**; economy participation.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
