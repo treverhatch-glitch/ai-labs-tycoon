@@ -30,6 +30,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [DISPLAY-BREAKDOWN-PRESENTATION.md](DISPLAY-BREAKDOWN-PRESENTATION.md) | Explainable UI (batch 20) |
 | [RIVAL-FEELING-PRESENTATION.md](RIVAL-FEELING-PRESENTATION.md) | Rival meter bands (batch 21) |
 | [WORLD-MAP-FREEZE-PRESENTATION.md](WORLD-MAP-FREEZE-PRESENTATION.md) | Frozen bloc overlay (batch 22) |
+| [TRAINING-INCIDENT-PRESENTATION.md](TRAINING-INCIDENT-PRESENTATION.md) | Incident rung rings (batch 23) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

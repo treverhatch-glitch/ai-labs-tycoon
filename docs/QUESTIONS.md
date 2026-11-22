@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q472. Training incident rung presentation? DECIDED: `CampusTrainingIncidentPresentationSpec`
+
+- Options: (a) TRAINING-PANEL prose only; (b) spec + doc rings; (c) per-rung SVG set.
+- Recommendation and choice: **(b)** — matches freeze/rival meter pattern; rung source stays in rules.
+- Why: Unity training view can stage cone/icon before SafetySystem UI bind.
+
 ### Q471. World map freeze overlay tokens? DECIDED: `CampusWorldMapFreezePresentationSpec`
 
 - Options: (a) duplicate constants in UI; (b) spec class + doc; (c) extend `world-bloc-tints.json`.

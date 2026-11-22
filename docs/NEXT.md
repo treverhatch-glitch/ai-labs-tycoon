@@ -109,6 +109,19 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; graphics tokens in `docs/art/MASCOT-PRESENTATION.md` + `GLOW-PRESENTATION.md` (batch 8); mesh polish on PC.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
 
+**Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
+(4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs) through
+batch 22 remote tip `a2999d9`. Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host
+UI for the world map and start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
+
+## Art / presentation (active)
+
+| Track | Status |
+| --- | --- |
+| PR #41 graphics batches | Spaced squashes on `cursor/graphics-pipeline-5032`; gate `./tools/art/prepush.sh` |
+| Unity import (`bc-93b5443a`) | `UNITY-INTEGRATION.md`, prop placement hints, tab icons |
+| Explainable HUD | `DisplayQueries` breakdowns in rules; graphics docs batch 20+ for drawer chrome |
+
 ## Studio and CI
 
 - Create the studio on the PC and copy `studio/game.json` into it (SETUP-PC.md).

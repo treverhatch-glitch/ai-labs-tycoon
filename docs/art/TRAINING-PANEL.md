@@ -10,4 +10,4 @@
 
 **Props:** `prop-data-stack` near queue; `prop-server-rack` when compute-heavy run selected.
 
-**Danger:** tint cone `prop-safety-cone` with `CampusUiTokens.UiDanger` when incident rung ≥ 2.
+**Danger:** per [TRAINING-INCIDENT-PRESENTATION.md](TRAINING-INCIDENT-PRESENTATION.md) and `CampusTrainingIncidentPresentationSpec`.
