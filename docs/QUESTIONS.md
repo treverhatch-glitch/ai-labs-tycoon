@@ -837,6 +837,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsConsolidationLaterTests` (+36 on `98ace5f`):** quote/foundry/holding remap; non-ready designs; dual-order transfer; hall save/load; own-design M&amp;A; crash seal; feelings; absorbed `OrderChips`; fleet on hall; distress discount with orders; rival rollup with orders (Q249–Q262); plus Q233–Q248 bar listed in prior batch.
 
+### Q263–Q292. Chip delivery after crash M&amp;A? DECIDED: transfer before `SealAbsorbed`; deliver on buyer
+
+- **`HatchRivalsChipsDeliveryLaterTests` (30):** foundry/node/quote invariants; cloud/hall metadata; delivery events; save/schema 29; vendor standing; crash month roll; listings after acquire; compute split unchanged with pending orders.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.

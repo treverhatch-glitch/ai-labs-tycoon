@@ -113,7 +113,8 @@ and says why in the commit message.
 - ~~**Rival retrenchment soak**~~ **done (pushed)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests`; golden `15fc3234…`.
 - ~~**Rival economy robustness (stack2)**~~ **done (pushed @ `477c3d2`)** — Q201 full bar (`RivalEconomyRobustnessLaterTests`); era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201). **795** tests at PR #3 tip.
 - ~~**Hatch economy bar batch 3**~~ **done (pushed @ `308463e`)** — Q202–Q214 + Q216/Q218 rival soak; schema **29** only (era owns **21–27**; **30** reserved for parked SolvencyHold). Golden `55e673a0…`.
-- **Hatch rivals/chips batch 7 (local, unpushed)** — Q233–Q262 consolidation cross-bars (**41** tests in `HatchRivalsChipsConsolidationLaterTests`); **pushed @ `98ace5f`** Q208–Q232 + `TransferChipOrders`; no new save schema (SolvencyHold/schema **30** parked).
+- ~~**Hatch rivals/chips batch 7**~~ **pushed @ `28de997`** — Q233–Q262 consolidation cross-bars (**41** tests in `HatchRivalsChipsConsolidationLaterTests`).
+- **Hatch rivals/chips batch 8 (local)** — Q263–Q292 delivery / post-acquire lifecycle (**30** tests in `HatchRivalsChipsDeliveryLaterTests`); no new save schema (SolvencyHold/schema **30** parked).
 
 ## Rules: forward queue (from bible / systems-design)
 
