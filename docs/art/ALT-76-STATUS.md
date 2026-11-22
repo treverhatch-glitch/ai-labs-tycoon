@@ -8,7 +8,8 @@
 | 10–11 | `c17c67d`, `eb67bf8` | Materials, accessibility |
 | 12 | `2deaeed` | CI capture contract |
 | 13–14 | `f8123f5`, `bdd9427` | Rollup, staff placeholders |
-| 15 | (local) | +2 HUD icons |
+| 15–17 | `1160d80`…`e11a146` | HUD icons, catalog/icon handoff |
+| 18 | (local) | Silhouette sync + handoff index |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

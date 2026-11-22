@@ -1,7 +1,7 @@
-# Graphics batch 18 (draft)
+# Graphics batch 18 (GO candidate)
 
-**Parent:** (after P17 push) — GO **≥30m** spacing.
+**Parent:** `e11a146adb95b79177694e44e7f377ea3b821df6` — GO ask **≥18:52 UTC** (01:52 ICT).
 
-Silhouette handoff list (mirror props/icons).
-
-- [ ] `list_silhouette_ids.py` stub
+- [x] `list_silhouette_ids.py`, `SILHOUETTE-HANDOFF.md`
+- [x] `check_silhouette_manifest.py` in prepush
+- [x] `HANDOFF-INDEX.md`, Q467
