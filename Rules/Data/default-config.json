@@ -6230,6 +6230,19 @@
     "safetyGain": 10,
     "leadGain": 2
   },
+  "programmes": {
+    "enabled": 1,
+    "stages": 3,
+    "minCost": 400,
+    "safeWeeks": 6,
+    "boldWeeks": 4,
+    "safeCostPermille": 350,
+    "boldCostPermille": 250,
+    "boldChancePermille": 550,
+    "insightPermille": 150,
+    "insightPrestige": 20,
+    "refundPermille": 250
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,

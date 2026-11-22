@@ -159,7 +159,11 @@ namespace AiLabs.Rules.Sim
         CloseFreeTier,
         OpenWatchDesk,
         CloseWatchDesk,
-        AnswerLaunch
+        AnswerLaunch,
+        StartProgramme,
+        ChooseApproach,
+        RecoverStage,
+        AbandonProgramme
     }
 
     /// <summary>
@@ -1379,6 +1383,36 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.AnswerLaunch, labId);
             c.Count = answer;
             return c;
+        }
+
+        /// <summary>Starts a multi-stage research programme aimed at a costly tech (by id). Nothing is paid until the first approach is chosen.</summary>
+        public static Command StartProgramme(int labId, string techId)
+        {
+            Command c = Make(CommandKind.StartProgramme, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        /// <summary>Picks how the next stage is run: 1 carefully, 2 boldly. The stage's research points are paid now.</summary>
+        public static Command ChooseApproach(int labId, int approach)
+        {
+            Command c = Make(CommandKind.ChooseApproach, labId);
+            c.Count = approach;
+            return c;
+        }
+
+        /// <summary>Answers a failed bold stage: 1 retry it boldly, 2 fall back to the careful way, 3 give the programme up.</summary>
+        public static Command RecoverStage(int labId, int choice)
+        {
+            Command c = Make(CommandKind.RecoverStage, labId);
+            c.Count = choice;
+            return c;
+        }
+
+        /// <summary>Gives the programme up at any point and takes part of the points back.</summary>
+        public static Command AbandonProgramme(int labId)
+        {
+            return Make(CommandKind.AbandonProgramme, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

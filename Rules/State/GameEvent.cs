@@ -456,7 +456,15 @@ namespace AiLabs.Rules.State
         /// <summary>The desk saw a rival launch. SubjectId is the rival, Amount how far ahead of the lab it is in permille (0 when the lab already beats it), Pick 1 it beats the lab.</summary>
         RivalLaunchSeen,
         /// <summary>A rival launch was answered. SubjectId is the rival, Amount the reputation change, Pick 1 counter-programmed, 2 held, 3 owned the safety story, 0 nobody answered in time.</summary>
-        LaunchAnswered
+        LaunchAnswered,
+        /// <summary>The lab started a research programme. SubjectId is the tech's place in the data, Ref the tech.</summary>
+        ProgrammeStarted,
+        /// <summary>A programme stage worked. Amount is the stage number, Pick 1 careful, 2 bold, Ref the tech.</summary>
+        ProgrammeStageDone,
+        /// <summary>A bold stage failed and waits for a decision. Amount is the stage number, Ref the tech.</summary>
+        ProgrammeStageFailed,
+        /// <summary>A programme ended. Amount is the research points paid back or refunded, Pick 1 finished, 0 given up, Ref the tech.</summary>
+        ProgrammeEnded
     }
 
     /// <summary>

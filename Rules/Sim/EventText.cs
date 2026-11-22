@@ -475,6 +475,14 @@ namespace AiLabs.Rules.Sim
                     return who + (e.Pick == 1 ? " watched a rival launch overtake its best model." : " watched a rival launch it already beats.");
                 case EventKind.LaunchAnswered:
                     return who + (e.Pick == 1 ? " counter-programmed a rival launch." : e.Pick == 3 ? " answered a rival launch with its safety record." : " let a rival launch land.");
+                case EventKind.ProgrammeStarted:
+                    return who + " started a research programme towards " + e.Ref + ".";
+                case EventKind.ProgrammeStageDone:
+                    return who + (e.Pick == 2 ? " got a bold stage of its programme working." : " finished a careful stage of its programme.");
+                case EventKind.ProgrammeStageFailed:
+                    return who + " lost a bold stage of its programme and has to decide what next.";
+                case EventKind.ProgrammeEnded:
+                    return who + (e.Pick == 1 ? " finished its programme and has " + e.Ref + "." : " gave up its programme towards " + e.Ref + ".");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

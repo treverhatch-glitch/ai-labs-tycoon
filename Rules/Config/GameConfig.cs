@@ -134,6 +134,7 @@ namespace AiLabs.Rules.Config
         public BrandConfig Brand = new BrandConfig();
         public FreeTierConfig FreeTier = new FreeTierConfig();
         public LaunchWatchConfig LaunchWatch = new LaunchWatchConfig();
+        public ProgrammesConfig Programmes = new ProgrammesConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -266,6 +267,7 @@ namespace AiLabs.Rules.Config
             s.Obj("brand", ref Brand);
             s.Obj("freeTier", ref FreeTier);
             s.Obj("launchWatch", ref LaunchWatch);
+            s.Obj("programmes", ref Programmes);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

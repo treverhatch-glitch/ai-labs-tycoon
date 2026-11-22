@@ -139,6 +139,7 @@ namespace AiLabs.Rules.Config
             BrandProblems(p, c);
             FreeTierProblems(p, c);
             LaunchWatchProblems(p, c);
+            ProgrammesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1570,6 +1571,15 @@ namespace AiLabs.Rules.Config
             if (k.OpenCost < 0 || k.WeeklyCost < 0 || k.CounterPerStaff < 0 || k.WaitWeeks < 1) p.Add("launchWatch costs must not be negative and waitWeeks at least 1");
             if (k.CounterKeepPermille < 0 || k.CounterKeepPermille > 1000 || k.SafetyBar < 0 || k.SafetyBar > 1000) p.Add("launchWatch.counterKeepPermille and safetyBar must be from 0 to 1000");
             if (k.LossReputation < 0 || k.LossReputation > 500 || k.SafetyGain < 0 || k.SafetyGain > 500 || k.LeadGain < 0 || k.LeadGain > 500) p.Add("launchWatch reputation values must be from 0 to 500");
+        }
+
+        static void ProgrammesProblems(List<string> p, GameConfig c)
+        {
+            ProgrammesConfig k = c.Programmes;
+            if (k == null) { p.Add("programmes is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("programmes.enabled must be 0 or 1");
+            if (k.Stages < 1 || k.Stages > 6 || k.MinCost < 0 || k.SafeWeeks < 1 || k.BoldWeeks < 1) p.Add("programmes.stages must be from 1 to 6, minCost not negative and both weeks at least 1");
+            if (k.SafeCostPermille < 0 || k.BoldCostPermille < 0 || k.BoldChancePermille < 1 || k.BoldChancePermille > 999 || k.InsightPermille < 0 || k.InsightPrestige < 0 || k.RefundPermille < 0 || k.RefundPermille > 1000) p.Add("programmes costs must not be negative, boldChancePermille from 1 to 999 and refundPermille from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

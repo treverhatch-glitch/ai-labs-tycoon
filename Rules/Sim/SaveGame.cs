@@ -279,6 +279,12 @@ namespace AiLabs.Rules.Sim
                     || (lab.LwRival == 0 && (lab.LwLead != 0 || lab.LwWait != 0))
                     || ((lab.LwOn != 0 || lab.LwHits != 0 || lab.LwAnswers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a launch watch (on " + lab.LwOn + ", rival " + lab.LwRival + ", lead " + lab.LwLead + ") in a way the data does not allow");
+                if (lab.PgTech < 0 || lab.PgTech > c.Research.Techs.Count || lab.PgDone < 0 || lab.PgDone >= c.Programmes.Stages + (lab.PgTech == 0 ? 1 : 0) || lab.PgPhase < 0 || lab.PgPhase > 3 || lab.PgLeft < 0 || lab.PgBold < 0 || lab.PgBold > 1
+                    || lab.PgInsight < 0 || lab.PgInsight > lab.PgDone || lab.PgSpent < 0 || lab.PgWins < 0 || lab.PgLosses < 0
+                    || (lab.PgTech == 0 && (lab.PgPhase != 0 || lab.PgDone != 0 || lab.PgLeft != 0 || lab.PgBold != 0 || lab.PgInsight != 0 || lab.PgSpent != 0))
+                    || (lab.PgTech > 0 && lab.PgPhase == 0) || (lab.PgPhase == 1 && lab.PgLeft < 1) || (lab.PgPhase != 1 && lab.PgLeft != 0)
+                    || ((lab.PgTech != 0 || lab.PgWins != 0 || lab.PgLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a research programme (tech " + lab.PgTech + ", phase " + lab.PgPhase + ", stage " + lab.PgDone + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

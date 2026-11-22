@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 104;
+        public const int CurrentSchema = 105;
 
         public int Schema;
         public string ConfigVersion;
@@ -463,6 +463,16 @@ namespace AiLabs.Rules.State
         public int LwWait;
         public int LwHits;
         public int LwAnswers;
+        /// <summary>The tech a research programme aims at (its place in the data plus one, 0 none), the stages done, the phase (1 a stage running, 2 a failed stage waiting, 3 the next approach waiting), the weeks left, whether the running stage is bold, the bold stages that worked, the points spent, and the programmes finished and given up.</summary>
+        public int PgTech;
+        public int PgDone;
+        public int PgPhase;
+        public int PgLeft;
+        public int PgBold;
+        public int PgInsight;
+        public long PgSpent;
+        public int PgWins;
+        public int PgLosses;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -871,6 +881,15 @@ namespace AiLabs.Rules.State
             s.Int("lwWait", ref LwWait);
             s.Int("lwHits", ref LwHits);
             s.Int("lwAnswers", ref LwAnswers);
+            s.Int("pgTech", ref PgTech);
+            s.Int("pgDone", ref PgDone);
+            s.Int("pgPhase", ref PgPhase);
+            s.Int("pgLeft", ref PgLeft);
+            s.Int("pgBold", ref PgBold);
+            s.Int("pgInsight", ref PgInsight);
+            s.Long("pgSpent", ref PgSpent);
+            s.Int("pgWins", ref PgWins);
+            s.Int("pgLosses", ref PgLosses);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

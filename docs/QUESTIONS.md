@@ -2084,6 +2084,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - All five are inert until the player uses a command, so no old test needed a new switch (Q400 to Q404).
 - Alternatives: all five default-on (rejected: every old game would change), a free tier that also changes waitlist hype (rejected: two numbers moving together with no choice).
 
+### Q407. Can research be a route and not a single purchase? DECIDED: yes, a three-stage programme where each stage is run carefully or boldly
+- Researching a tech is one command. A programme makes the way to a big tech a sequence of decisions with real branching: the careful way is dear and certain, the bold way is cheaper, faster and pays a dividend, but may fail and then the player must retry (more points, more luck), fall back (the careful price on top of what was lost) or give up (most of the points gone).
+- Everything is paid in research points the lab earned, and nothing is bought with cash; a failure run is a real threat to a lab that is short of points, and the player can choose how much variance to take.
+- The numbers make bold a small edge on average (about 30% against 35% net) so it is a gamble worth taking only for a lab that can afford to lose.
+- Alternatives: a cash shortcut to the tech (rejected: pay-for-progress), a random programme result with no decisions (rejected: nothing to choose), stages with different tech payoffs (rejected: too many knobs for one tech).
+
 ## Open
 
 None.
