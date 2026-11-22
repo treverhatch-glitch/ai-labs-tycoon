@@ -122,6 +122,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 107) MigrateTo107(root);
             if (fromSchema < 108) MigrateTo108(root);
             if (fromSchema < 109) MigrateTo109(root);
+            if (fromSchema < 110) MigrateTo110(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -485,6 +486,21 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 110: no model has an open API or any integrations.</summary>
+        static void MigrateTo110(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "apiMoved", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "apiLost", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "integrations", "apiState", "apiLeft", "apiSuccessor" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
             });
         }
 

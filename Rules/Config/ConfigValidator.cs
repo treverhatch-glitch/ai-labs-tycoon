@@ -144,6 +144,7 @@ namespace AiLabs.Rules.Config
             PodsProblems(p, c);
             LicenceProblems(p, c);
             PledgesProblems(p, c);
+            IntegrationsProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1627,6 +1628,16 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeks < 26 || k.MaxWeeks < k.MinWeeks || k.MaxPledges < 1) p.Add("pledges.minWeeks must be at least 26, maxWeeks not below it and maxPledges at least 1");
             if (k.LiftPermilleStep < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.SupportPermille < 0 || k.SupportPermille > 900) p.Add("pledges lift and support must not be negative, the cap at most 1000 and support at most 900");
             if (k.KeptTrust < 0 || k.BreachTrust < 0 || k.BreachWeeks < 0 || k.BreachReputation < 0 || k.BreachReputation > 500) p.Add("pledges.keptTrust, breachTrust and breachWeeks must not be negative and breachReputation from 0 to 500");
+        }
+
+        static void IntegrationsProblems(List<string> p, GameConfig c)
+        {
+            IntegrationsConfig k = c.Integrations;
+            if (k == null) { p.Add("integrations is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("integrations.enabled must be 0 or 1");
+            if (k.MaxOpen < 1 || k.MaxIntegrations < 1 || k.SeedPerWeek < 1 || k.GrowthPermille < 0 || k.GrowthPermille > 1000) p.Add("integrations.maxOpen, maxIntegrations and seedPerWeek must be at least 1 and growthPermille from 0 to 1000");
+            if (k.LiftPermillePer10 < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.UpkeepBasePermille < 0 || k.UpkeepPer10Permille < 0 || k.UpkeepBasePermille > 900) p.Add("integrations lift and upkeep must not be negative, the cap at most 1000 and upkeepBasePermille at most 900");
+            if (k.MigratePermille < 1 || k.MigratePermille > 1000 || k.ChurnPermille < 0 || k.ChurnPermille > 1000 || k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.StrandTrustPer100 < 0 || k.StrandTrustCap < 0) p.Add("integrations.migratePermille must be from 1 to 1000, churnPermille from 0 to 1000, minWeeks at least 1, maxWeeks not below it, and the stranding trust not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

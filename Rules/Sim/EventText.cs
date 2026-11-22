@@ -503,6 +503,12 @@ namespace AiLabs.Rules.Sim
                     return who + " promised to keep supporting " + e.Ref + ".";
                 case EventKind.SupportPledgeEnded:
                     return who + (e.Pick == 1 ? " kept its support pledge for " : " broke its support pledge for ") + e.Ref + ".";
+                case EventKind.ApiOpened:
+                    return who + " opened the API of " + e.Ref + ".";
+                case EventKind.ApiDeprecated:
+                    return who + " announced the end of the API of " + e.Ref + ".";
+                case EventKind.ApiEnded:
+                    return who + (e.Pick == 1 ? " retired the API of " : " cut off customers on the API of ") + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

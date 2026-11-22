@@ -2135,6 +2135,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - While a pod is sharp, pledged models cost 25% less each week to keep supported. The lab still has to want a pod: it costs a kick-off and its chemistry can fall.
 - Alternatives: a flat cut (rejected: no choice), a pod bound to each model (rejected: more state than the saving is worth).
 
+### Q417. What happens to the people who built on the old version? DECIDED: integrations stay with a version and have to be moved by a deprecation with a deadline
+- Releasing a newer model moves the customers' spending to it, but not the integrations their engineers built. Integrations are a lock-in that grows with time and lifts revenue, and they belong to one version. Retiring a version is a plan: pick the successor, pick the deadline. A short one strands customers and costs trust, a long one keeps paying upkeep on two versions and loses a share of the movers anyway.
+- It is not a purchase: the lift has to be earned over many weeks and lost the day the version is left behind unless the lab does the moving.
+- Alternatives: integrations carried over free (rejected: no decision), a flat fee to migrate (rejected: a fee, not a choice), stranding with no trust cost (rejected: a deadline would have no teeth).
+
 ## Open
 
 None.

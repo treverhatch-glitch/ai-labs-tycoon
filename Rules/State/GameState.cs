@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 109;
+        public const int CurrentSchema = 110;
 
         public int Schema;
         public string ConfigVersion;
@@ -492,6 +492,9 @@ namespace AiLabs.Rules.State
         /// <summary>How many support pledges the lab kept to their end, and how many it broke.</summary>
         public int LtsKept;
         public int LtsBroken;
+        /// <summary>How many integrations the lab has moved to successor models, and how many it lost on the way or stranded.</summary>
+        public int ApiMoved;
+        public int ApiLost;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -925,6 +928,8 @@ namespace AiLabs.Rules.State
             s.Int("licSuspended", ref LicSuspended);
             s.Int("ltsKept", ref LtsKept);
             s.Int("ltsBroken", ref LtsBroken);
+            s.Int("apiMoved", ref ApiMoved);
+            s.Int("apiLost", ref ApiLost);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1110,6 +1115,11 @@ namespace AiLabs.Rules.State
         public int QueueLevel;
         /// <summary>Weeks left of the model's long-term support pledge, or 0 when it has none.</summary>
         public int LtsLeft;
+        /// <summary>Customer integrations built on the model, its API state (0 none, 1 open, 2 deprecating), weeks to the deprecation deadline and the successor model id.</summary>
+        public int Integrations;
+        public int ApiState;
+        public int ApiLeft;
+        public int ApiSuccessor;
         public int AuditedUntil;
         /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
         public int SunsetStart;
@@ -1150,6 +1160,10 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("integrations", ref Integrations);
+            s.Int("apiState", ref ApiState);
+            s.Int("apiLeft", ref ApiLeft);
+            s.Int("apiSuccessor", ref ApiSuccessor);
             s.Int("ltsLeft", ref LtsLeft);
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);

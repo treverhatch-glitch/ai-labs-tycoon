@@ -484,7 +484,13 @@ namespace AiLabs.Rules.State
         /// <summary>The lab pledged to support a model. Amount is the weeks.</summary>
         SupportPledged,
         /// <summary>A pledge ended. Pick 1 kept, 0 broken, Amount the fee paid for a breach.</summary>
-        SupportPledgeEnded
+        SupportPledgeEnded,
+        /// <summary>The lab opened a model's API.</summary>
+        ApiOpened,
+        /// <summary>The lab began retiring a model's API. Amount is the weeks.</summary>
+        ApiDeprecated,
+        /// <summary>A deprecation ended. Pick 1 when nothing was left behind, 0 when integrations were stranded; Amount is how many.</summary>
+        ApiEnded
     }
 
     /// <summary>

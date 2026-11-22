@@ -172,7 +172,10 @@ namespace AiLabs.Rules.Sim
         RenewLicence,
         SurrenderLicence,
         PledgeSupport,
-        BreakSupportPledge
+        BreakSupportPledge,
+        OpenApi,
+        DeprecateApi,
+        CancelDeprecation
     }
 
     /// <summary>
@@ -1490,6 +1493,32 @@ namespace AiLabs.Rules.Sim
         public static Command BreakSupportPledge(int labId, int modelId)
         {
             Command c = Make(CommandKind.BreakSupportPledge, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Opens a released model's API: customers start building on it. Costs upkeep every week and lifts the model's revenue as integrations grow.</summary>
+        public static Command OpenApi(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.OpenApi, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts to retire a model's API with a deadline in weeks. The successor is a model of the lab with an open API, or 0 for none.</summary>
+        public static Command DeprecateApi(int labId, int modelId, int successorId, int weeks)
+        {
+            Command c = Make(CommandKind.DeprecateApi, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            c.Id = successorId.ToString();
+            return c;
+        }
+
+        /// <summary>Calls off a deprecation. What was already lost stays lost.</summary>
+        public static Command CancelDeprecation(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CancelDeprecation, labId);
             c.TargetId = modelId;
             return c;
         }

@@ -110,6 +110,7 @@ namespace AiLabs.Rules.Systems
                 revenue[i] += Platforms.Lift(c, state, state.Labs[i], revenue[i]);
                 revenue[i] += FreeTier.RevenueLift(c, state, state.Labs[i], revenue[i]);
                 revenue[i] += Pledges.Lift(c, state, state.Labs[i]);
+                revenue[i] += Integrations.Lift(c, state, state.Labs[i]);
                 state.Labs[i].LastWeek.Revenue = revenue[i];
                 Finance.Earn(state.Labs[i], LedgerLine.Revenue, revenue[i]);
             }

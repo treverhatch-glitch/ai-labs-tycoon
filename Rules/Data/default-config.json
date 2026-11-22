@@ -6307,6 +6307,23 @@
     "breachReputation": 25,
     "podCutPermille": 250
   },
+  "integrations": {
+    "enabled": 1,
+    "maxOpen": 3,
+    "maxIntegrations": 600,
+    "seedPerWeek": 2,
+    "growthPermille": 40,
+    "liftPermillePer10": 6,
+    "liftCapPermille": 250,
+    "upkeepBasePermille": 15,
+    "upkeepPer10Permille": 2,
+    "migratePermille": 120,
+    "churnPermille": 80,
+    "minWeeks": 4,
+    "maxWeeks": 52,
+    "strandTrustPer100": 12,
+    "strandTrustCap": 60
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
