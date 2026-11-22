@@ -2160,6 +2160,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It is separate from the licence (a lab-level standing), the on-call rota (softening fines), conformity (certifying a model before it goes out) and post-mortems (learning after one). It is a duty that arrives with incidents, not a purchase.
 - Alternatives: trust for a fee (rejected: a pay-for-stat), automatic reporting (rejected: no decision), a fine cut for joining (rejected: the licence already does that).
 
+### Q422. What does the world say about the batch of systems? DECIDED: headlines for every turn and chat for the ones that land
+- API integrations, conformity, the lab structure, the cluster fabric and the incident register each log their own events. Every kind has a headline and each branch has its own line (an API closed clean or with customers stranded, a conformity mark passed, failed, expired, suspended or withdrawn, a register joined or left, a report filed in full or short, an inspection clean or fined). Chat follows the endings and the strains. Picks above 1 fall back to the line with no pick, listed last.
+- Pins: 320 headlines and 308 chat lines.
+- Alternatives: one generic line per system (rejected: the branches are the story).
+
 ## Open
 
 None.

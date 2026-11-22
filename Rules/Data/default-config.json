@@ -11115,6 +11115,138 @@
         "kind": "SupportPledgeEnded",
         "pick": 0,
         "text": "{lab} walks away from its support promise on {ref}. The forum thread is long"
+      },
+      {
+        "id": "api-opened",
+        "kind": "ApiOpened",
+        "pick": -1,
+        "text": "{lab} opens a public API for {ref}. The first integration arrives before the docs do"
+      },
+      {
+        "id": "api-deprecation",
+        "kind": "ApiDeprecated",
+        "pick": -1,
+        "text": "{lab} sets an end date for the API on {ref}. Developers open a lot of tabs"
+      },
+      {
+        "id": "api-closed-clean",
+        "kind": "ApiEnded",
+        "pick": 1,
+        "text": "{lab} closes the API on {ref} with nobody left on it. The migration guide gets a thank-you"
+      },
+      {
+        "id": "api-closed-stranded",
+        "kind": "ApiEnded",
+        "pick": 0,
+        "text": "{lab} turns off the API on {ref} with customers still on it. The status page is not a happy place"
+      },
+      {
+        "id": "conformity-started",
+        "kind": "ConformityStarted",
+        "pick": -1,
+        "text": "{lab} sends a conformity dossier on {ref} to the assessors. The binder is heavy"
+      },
+      {
+        "id": "conformity-passed",
+        "kind": "ConformityDecided",
+        "pick": 1,
+        "text": "{lab}'s {ref} passes its conformity assessment. The mark goes on the website"
+      },
+      {
+        "id": "conformity-failed",
+        "kind": "ConformityDecided",
+        "pick": 0,
+        "text": "{lab}'s {ref} fails its conformity review and goes back for more evidence. The assessor's list is long"
+      },
+      {
+        "id": "conformity-expired",
+        "kind": "ConformityEnded",
+        "pick": 1,
+        "text": "{lab}'s conformity mark on {ref} runs out its term. Renewal is in the diary"
+      },
+      {
+        "id": "conformity-withdrawn",
+        "kind": "ConformityEnded",
+        "pick": 0,
+        "text": "{lab} withdraws {ref} from conformity assessment. The binder goes in a cupboard"
+      },
+      {
+        "id": "conformity-suspended",
+        "kind": "ConformityEnded",
+        "pick": -1,
+        "text": "{lab}'s conformity mark on {ref} is suspended after surveillance. The website is quietly edited"
+      },
+      {
+        "id": "org-changed",
+        "kind": "OrgChanged",
+        "pick": -1,
+        "text": "{lab} announces a new way of organising itself. The org chart is redrawn on a very large whiteboard"
+      },
+      {
+        "id": "org-strained",
+        "kind": "OrgStrained",
+        "pick": -1,
+        "text": "People at {lab} say the structure is getting in the way. There is a meeting about the meetings"
+      },
+      {
+        "id": "fabric-ordered",
+        "kind": "FabricOrdered",
+        "pick": -1,
+        "text": "{lab} orders a faster fabric for its training cluster. The delivery date is optimistic"
+      },
+      {
+        "id": "fabric-delivered",
+        "kind": "FabricDelivered",
+        "pick": -1,
+        "text": "{lab} finishes the new fabric on its cluster. The racks hum a note higher"
+      },
+      {
+        "id": "fabric-cancelled",
+        "kind": "FabricCancelled",
+        "pick": -1,
+        "text": "{lab} cancels its cluster fabric order and loses the deposit. The supplier sends a polite email"
+      },
+      {
+        "id": "register-joined",
+        "kind": "RegisterChanged",
+        "pick": 1,
+        "text": "{lab} joins the voluntary incident register. The compliance team gets a new calendar"
+      },
+      {
+        "id": "register-left",
+        "kind": "RegisterChanged",
+        "pick": 0,
+        "text": "{lab} leaves the incident register. The calendar is cleared"
+      },
+      {
+        "id": "report-summary",
+        "kind": "ReportFiled",
+        "pick": 1,
+        "text": "{lab} files a short incident report. It is two pages and a chart"
+      },
+      {
+        "id": "report-full",
+        "kind": "ReportFiled",
+        "pick": -1,
+        "text": "{lab} files a full incident report. It has a root cause in it"
+      },
+      {
+        "id": "report-late",
+        "kind": "ReportLate",
+        "pick": -1,
+        "text": "{lab} is late with an incident report. The register notes it in red"
+      },
+      {
+        "id": "inspection-clean",
+        "kind": "InspectionHeld",
+        "pick": 1,
+        "text": "The incident register inspects {lab} and finds nothing to fine. A small cheer goes up"
+      },
+      {
+        "id": "inspection-fined",
+        "kind": "InspectionHeld",
+        "pick": 0,
+        "text": "The incident register inspects {lab} and fines it for what is on file. The list was long"
       }
     ],
     "filler": [
@@ -14650,6 +14782,94 @@
         "pick": -1,
         "about": "lab",
         "text": "The support pledge is over. Customers have views on how it went.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "api-ended-chat",
+        "kind": "ApiEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The old API is switched off. Support has the migration guide open in every tab.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "conformity-decided-chat",
+        "kind": "ConformityDecided",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The assessors have decided. The binder can finally be closed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "conformity-ended-chat",
+        "kind": "ConformityEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The mark is gone from the model. Someone has already asked about renewing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "org-changed-chat",
+        "kind": "OrgChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a new structure. Everyone is looking for their name on the chart.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "org-strained-chat",
+        "kind": "OrgStrained",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The structure is creaking. Three people have suggested a reorg.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "fabric-delivered-chat",
+        "kind": "FabricDelivered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The new fabric is in. The runs are faster and the data hall is louder.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "report-late-chat",
+        "kind": "ReportLate",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The report was late. We will not hear the end of it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "inspection-chat",
+        "kind": "InspectionHeld",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The inspector has been and gone. Safety is reading the findings.",
         "fromYear": 0,
         "toYear": 0
       }

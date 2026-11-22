@@ -50,8 +50,8 @@ public class ProgrammesRunQueuePodsLicencePledgesNewsChatTests
     public void The_new_headlines_and_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(298, c.News.Headlines.Count);
-        Assert.Equal(300, c.Chat.Lines.Count);
+        Assert.Equal(320, c.News.Headlines.Count);
+        Assert.Equal(308, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());
