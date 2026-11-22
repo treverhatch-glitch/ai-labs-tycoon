@@ -1642,6 +1642,7 @@ namespace AiLabs.Rules.Config
             if (k.MaxOpen < 1 || k.MaxIntegrations < 1 || k.SeedPerWeek < 1 || k.GrowthPermille < 0 || k.GrowthPermille > 1000) p.Add("integrations.maxOpen, maxIntegrations and seedPerWeek must be at least 1 and growthPermille from 0 to 1000");
             if (k.LiftPermillePer10 < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.UpkeepBasePermille < 0 || k.UpkeepPer10Permille < 0 || k.UpkeepBasePermille > 900) p.Add("integrations lift and upkeep must not be negative, the cap at most 1000 and upkeepBasePermille at most 900");
             if (k.MigratePermille < 1 || k.MigratePermille > 1000 || k.ChurnPermille < 0 || k.ChurnPermille > 1000 || k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.StrandTrustPer100 < 0 || k.StrandTrustCap < 0) p.Add("integrations.migratePermille must be from 1 to 1000, churnPermille from 0 to 1000, minWeeks at least 1, maxWeeks not below it, and the stranding trust not negative");
+            if (k.IncidentPermille < 0 || k.IncidentPermille > 1000) p.Add("integrations.incidentPermille must be from 0 to 1000");
         }
 
         static void ConformityProblems(List<string> p, GameConfig c)
@@ -1672,6 +1673,7 @@ namespace AiLabs.Rules.Config
             if (k.MinGpus < 1 || k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB || k.EraC >= c.Eras.Count) p.Add("fabric.minGpus must be at least 1 and the eras must not fall and the last must be a real era");
             if (k.LeadA < 1 || k.LeadB < 1 || k.LeadC < 1 || k.CostA < 0 || k.CostB < k.CostA || k.CostC < k.CostB || k.GainA < 0 || k.GainB < k.GainA || k.GainC < k.GainB) p.Add("fabric leads must be at least 1 and costs and gains must not fall from tier to tier");
             if (k.DepositPermille < 0 || k.DepositPermille > 1000 || k.CutoverWeeks < 0 || k.CutoverWeeks > k.LeadA || k.CutoverLoss < 0 || k.CutoverLoss > 900) p.Add("fabric.depositPermille must be from 0 to 1000, cutoverWeeks no more than leadA and cutoverLoss from 0 to 900");
+            if (k.SquadCutPermille < 0 || k.SquadCutPermille > 1000) p.Add("fabric.squadCutPermille must be from 0 to 1000");
         }
 
         static void DisclosureProblems(List<string> p, GameConfig c)
@@ -1681,6 +1683,8 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("disclosure.enabled must be 0 or 1");
             if (k.MaxOpen < 1 || k.ReportWeeks < 1 || k.FullWeeks < 1 || k.FullStaff < 0 || k.InspectWeeks < 1 || k.InspectLimit < 1) p.Add("disclosure.maxOpen, reportWeeks, fullWeeks, inspectWeeks and inspectLimit must be at least 1 and fullStaff not negative");
             if (k.TrustGain < 0 || k.TrustFull < k.TrustGain || k.LateFine < 0 || k.InspectFine < 0) p.Add("disclosure.trustFull must not be below trustGain and the fines must not be negative");
+            if (k.CertifiedFindings < 0) p.Add("disclosure.certifiedFindings must not be negative");
+            if (k.OrgFasterWeeks < 0) p.Add("disclosure.orgFasterWeeks must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -13,3 +13,5 @@ How the lab is organised, and what that costs and gains as it grows (`org.*` in 
 The loss is capped at 45%. The loss and gain apply to research points a week and to training speed. So a small lab does best flat, a middling one by function once it has promoted a lead for each function, and a large one in squads once it has seniors to spare, and a lab that grows past its structure pays for it every week.
 
 Events: `OrgChanged` (SubjectId the new form, Amount the weeks of disruption), `OrgStrained` (the loss is a quarter of the cap or more; logged every 13 weeks).
+
+Together: a functional lab with a senior safety person prepares full incident reports a week sooner (Q424); squads that are all led halve the cutover loss of a fabric build (Q425).

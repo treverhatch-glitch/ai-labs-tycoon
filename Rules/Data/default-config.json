@@ -6322,7 +6322,8 @@
     "minWeeks": 4,
     "maxWeeks": 52,
     "strandTrustPer100": 12,
-    "strandTrustCap": 60
+    "strandTrustCap": 60,
+    "incidentPermille": 60
   },
   "conformity": {
     "enabled": 1,
@@ -6377,7 +6378,8 @@
     "gainC": 210,
     "depositPermille": 400,
     "cutoverWeeks": 3,
-    "cutoverLoss": 300
+    "cutoverLoss": 300,
+    "squadCutPermille": 500
   },
   "disclosure": {
     "enabled": 1,
@@ -6390,7 +6392,9 @@
     "lateFine": 40000,
     "inspectWeeks": 26,
     "inspectLimit": 3,
-    "inspectFine": 60000
+    "inspectFine": 60000,
+    "certifiedFindings": 1,
+    "orgFasterWeeks": 1
   },
   "bugBounty": {
     "maxLevel": 3,

@@ -45,7 +45,9 @@ namespace AiLabs.Rules.Systems
         public static int Permille(GameConfig c, LabState lab)
         {
             if (!Enabled(c)) return 0;
-            return Gain(c, lab.FabTier) - (Cutover(c, lab) ? c.Fabric.CutoverLoss : 0);
+            int loss = Cutover(c, lab) ? c.Fabric.CutoverLoss : 0;
+            if (loss > 0 && Org.Active(c, lab) && lab.OrgForm == Org.Squads && Org.TrainingBonus(c, lab) > 0) loss = (int)MathI.MulPermille(loss, MathI.Permille - c.Fabric.SquadCutPermille);
+            return Gain(c, lab.FabTier) - loss;
         }
 
         public static void Order(GameConfig c, GameState state, LabState lab)

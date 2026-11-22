@@ -16,3 +16,5 @@ The interconnect and cooling that make many GPUs train as one cluster (`fabric.*
 - The outage is the cost of waiting for the cheaper deal: it falls on whatever the lab is training in those weeks, so the weeks to start a build are the quiet ones.
 
 Events: `FabricOrdered`, `FabricDelivered`, `FabricCancelled`.
+
+Together: squads in which every squad has a senior halve the cutover loss (`squadCutPermille` 500; Q425).

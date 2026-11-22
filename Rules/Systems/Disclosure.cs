@@ -32,6 +32,7 @@ namespace AiLabs.Rules.Systems
         {
             if (!Joined(c, lab) || lab.Id < 0) return;
             lab.DiscModel = model.Id;
+            if (model.CertStage == Conformity.Certified) lab.DiscFindings += c.Disclosure.CertifiedFindings;
             if (lab.DiscOpen >= c.Disclosure.MaxOpen)
             {
                 lab.DiscFindings++;
@@ -65,7 +66,10 @@ namespace AiLabs.Rules.Systems
                 CloseOne(c, state, lab, 1, c.Disclosure.TrustGain);
                 return;
             }
-            lab.DiscPrep = c.Disclosure.FullWeeks;
+            int weeks = c.Disclosure.FullWeeks;
+            if (lab.OrgForm == Org.Functional && lab.OrgDisrupt == 0 && Seniority.Seniors(c, lab, RoleFunction.Safety) > 0)
+                weeks = (int)MathI.Max(1, weeks - c.Disclosure.OrgFasterWeeks);
+            lab.DiscPrep = weeks;
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

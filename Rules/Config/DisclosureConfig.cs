@@ -29,6 +29,12 @@ namespace AiLabs.Rules.Config
         /// <summary>Fine for each finding when an inspection fines the lab.</summary>
         public int InspectFine;
 
+        /// <summary>Findings an incident on a model with a conformity mark leaves at once.</summary>
+        public int CertifiedFindings;
+
+        /// <summary>Weeks off a full report in a functional lab whose safety team has a senior.</summary>
+        public int OrgFasterWeeks;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -42,6 +48,8 @@ namespace AiLabs.Rules.Config
             s.Int("inspectWeeks", ref InspectWeeks);
             s.Int("inspectLimit", ref InspectLimit);
             s.Int("inspectFine", ref InspectFine);
+            s.Int("certifiedFindings", ref CertifiedFindings);
+            s.Int("orgFasterWeeks", ref OrgFasterWeeks);
         }
     }
 }

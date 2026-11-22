@@ -2165,6 +2165,22 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Pins: 320 headlines and 308 chat lines.
 - Alternatives: one generic line per system (rejected: the branches are the story).
 
+### Q423. Does a conformity mark make an incident worse? DECIDED: an incident on a certified model, with the lab on the register, leaves a finding at once
+- A lab that has put a model through assessment and joined the register has told two bodies the model is safe. An incident on it leaves one extra finding on file (`disclosure.certifiedFindings`) as well as opening its report. Labs not on the register, and models without a mark, are unchanged.
+- Alternatives: suspend the mark at once (rejected: surveillance already does that, with evidence), a bigger fine (rejected: a number, not a consequence).
+
+### Q424. Does the structure speed up the paperwork? DECIDED: a functional lab with a senior safety person prepares a full report a week sooner
+- Only in a settled functional lab (`org.form` 2, no reorganisation under way) with a senior in the safety function; never under a week (`disclosure.orgFasterWeeks`). A flat lab, a squad lab, a lab settling a reorganisation, and a lab with no senior safety lead prepare in the full 3 weeks.
+- Alternatives: a research bonus for registers (rejected: unrelated).
+
+### Q425. Do squads help with a cluster upgrade? DECIDED: squads, all led, halve the cutover loss
+- While the cluster is down for the cutover (the last 3 weeks of a fabric build), a squad lab in which every squad has a senior (the same test as the squads' training bonus) loses half as much training speed (`fabric.squadCutPermille`). Squads with a squad unled, and the other structures, lose the full amount.
+- Alternatives: a shorter lead time (rejected: lead times are the point).
+
+### Q426. Do customers on an API notice an incident? DECIDED: an incident on a model with integrations costs 6% of them
+- Each incident on a model with integrations loses `integrations.incidentPermille` (60) of them, so the lift and the lock-in that integrations bring are exposed to the model's safety record. A model with none, and a lab with the integrations switched off, are unchanged. The loss is not counted in the stranded count, which is for closing an API.
+- Alternatives: lose trust only (rejected: integrations are the thing built up).
+
 ## Open
 
 None.

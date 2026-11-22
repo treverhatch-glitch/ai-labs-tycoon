@@ -15,3 +15,5 @@ A certified model's weekly incident chance is cut by 20% (narrow) or 35% (broad)
 The red-team and audit windows are timed, so the order matters: a red-team result lasts 26 weeks and an audit certificate 104, and the evidence has to be live on the day it is submitted.
 
 Events: `ConformityStarted` (Pick the scope), `ConformityDecided` (Pick 1 certified, 0 findings), `ConformityEnded` (Pick 0 withdrawn, 1 expired, 2 suspended).
+
+Together: an incident on a model with a mark leaves a finding on the incident register when the lab has joined it (Q423).

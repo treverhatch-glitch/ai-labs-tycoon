@@ -37,6 +37,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Most trust a stranding can cost in one sector.</summary>
         public int StrandTrustCap;
 
+        /// <summary>Share of a model's integrations lost when it has an incident (permille).</summary>
+        public int IncidentPermille;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -54,6 +57,7 @@ namespace AiLabs.Rules.Config
             s.Int("maxWeeks", ref MaxWeeks);
             s.Int("strandTrustPer100", ref StrandTrustPer100);
             s.Int("strandTrustCap", ref StrandTrustCap);
+            s.Int("incidentPermille", ref IncidentPermille);
         }
     }
 }

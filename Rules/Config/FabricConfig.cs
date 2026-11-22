@@ -41,6 +41,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Training speed lost during the cutover (permille).</summary>
         public int CutoverLoss;
 
+        /// <summary>Share of the cutover loss that squads, all led, take away (permille).</summary>
+        public int SquadCutPermille;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -60,6 +63,7 @@ namespace AiLabs.Rules.Config
             s.Int("depositPermille", ref DepositPermille);
             s.Int("cutoverWeeks", ref CutoverWeeks);
             s.Int("cutoverLoss", ref CutoverLoss);
+            s.Int("squadCutPermille", ref SquadCutPermille);
         }
     }
 }

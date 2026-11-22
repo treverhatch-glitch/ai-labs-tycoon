@@ -16,3 +16,5 @@ A voluntary register of incidents (`disclosure.*` in the data; Q421). Eight save
 So a summary is quick and earns trust but stores up trouble; a full report is slow and needs staff but wipes a finding; and a lab that gets a string of incidents at once has to choose which to file how.
 
 Events: `RegisterChanged` (Pick 1 joined), `ReportFiled` (Pick 1 summary, 2 full; Amount the trust), `ReportLate`, `InspectionHeld` (Pick 1 clean, 0 fined).
+
+Together: an incident on a model with a conformity mark leaves one extra finding at once (`certifiedFindings` 1; Q423). In a settled functional lab with a senior safety person, a full report takes a week less (`orgFasterWeeks` 1; Q424).

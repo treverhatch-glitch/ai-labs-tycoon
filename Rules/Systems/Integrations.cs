@@ -41,6 +41,12 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Min(MathI.Permille, c.Integrations.UpkeepBasePermille + (long)(model.Integrations / 10) * c.Integrations.UpkeepPer10Permille);
         }
 
+        public static void OnIncident(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            if (!Enabled(c) || lab.Id != state.PlayerLabId || model.Integrations <= 0) return;
+            model.Integrations -= (int)MathI.MulPermille(model.Integrations, c.Integrations.IncidentPermille);
+        }
+
         public static void Open(GameConfig c, GameState state, LabState lab, ModelState model)
         {
             model.ApiState = 1;
