@@ -12069,6 +12069,60 @@
         "kind": "MetricsStopped",
         "pick": -1,
         "text": "{lab} takes {ref} off the public metrics page. The status dot goes grey"
+      },
+      {
+        "id": "spec-branch",
+        "kind": "SpecialistBranched",
+        "pick": -1,
+        "text": "{lab} forks {ref} into a domain specialist. Flagship fans feel ignored"
+      },
+      {
+        "id": "data-acquire",
+        "kind": "DataSourceAcquired",
+        "pick": -1,
+        "text": "{lab} licences a new data source. Legal smiles for once"
+      },
+      {
+        "id": "data-renew",
+        "kind": "DataSourceRenewed",
+        "pick": -1,
+        "text": "{lab} renews its data licence. The invoices continue"
+      },
+      {
+        "id": "data-lapse",
+        "kind": "DataSourceLapsed",
+        "pick": -1,
+        "text": "{lab} lets a data contract lapse. Quality reviewers notice"
+      },
+      {
+        "id": "weights-open",
+        "kind": "WeightsOpened",
+        "pick": -1,
+        "text": "{lab} releases {ref}'s weights. Cloners update their bookmarks"
+      },
+      {
+        "id": "weights-close",
+        "kind": "WeightsClosed",
+        "pick": -1,
+        "text": "{lab} pulls {ref}'s weights behind glass again"
+      },
+      {
+        "id": "weights-copy",
+        "kind": "WeightsCopied",
+        "pick": -1,
+        "text": "{lab}'s open weights show up in a rival's lab. Trust wobbles"
+      },
+      {
+        "id": "price-tier",
+        "kind": "SectorPriceSet",
+        "pick": -1,
+        "text": "{lab} raises prices in one sector. Customers do maths"
+      },
+      {
+        "id": "price-tier-2",
+        "kind": "SectorPriceSet",
+        "pick": 1,
+        "text": "{lab} cuts a sector price to buy share. Margins sulk"
       }
     ],
     "filler": [
@@ -16075,6 +16129,61 @@
         "pick": -1,
         "about": "lab",
         "text": "Public metrics are live. Uptime is on the record.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "spec-branch-chat",
+        "kind": "SpecialistBranched",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We branched a model into a specialist line. The flagship team is filing a complaint.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-lapse-chat",
+        "kind": "DataSourceLapsed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A data source expired. Training quality dipped before anyone admitted it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-open-chat",
+        "kind": "WeightsOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We published the weights. Legal and marketing are in the same room.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-copy-chat",
+        "kind": "WeightsCopied",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone forked our open weights. We are choosing a trust response.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "price-tier-chat",
+        "kind": "SectorPriceSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Sector pricing changed. Sales says brave, finance says bold.",
         "fromYear": 0,
         "toYear": 0
       }

@@ -1,0 +1,15 @@
+using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
+using AiLabs.Rules.Sim;
+using AiLabs.Rules.State;
+using AiLabs.Rules.Systems;
+using AiLabs.SimTests.Support;
+using Xunit;
+namespace AiLabs.SimTests;
+public class SpecialistDataOpenPriceTogetherTests {
+static void Quiet(GameConfig c){foreach(StaffTraitConfig t in c.StaffPeople.Traits)t.HirePermille=0;c.Office.ChancePermille=0;c.Safety.IncidentChancePermille=0;c.Chiefs.MinStaff=0;c.SpecialistLines.MinEra=0;c.DataSources.MinEra=0;c.OpenWeights.MinEra=0;c.SectorPricing.MinEra=0;c.PublicMetrics.MinEra=0;}
+static Game Lab(System.Action<GameConfig> more=null){Game g=Game.Solo(19,c=>{Quiet(c);more?.Invoke(c);}).WithStarterLab(researchers:3,engineers:4,safety:3,sales:0,gpus:8);g.Me.Cash=1_000_000_000_000;g.Me.ResearchPoints=1_000_000;return g;}
+[Fact] public void Specialist_sector_boost_stacks_with_role_sector_appeal(){Game bare=Lab();Game staffed=Lab();staffed.Build("sales-office",6,4);staffed.Hire("sales",4);foreach(Game g in new[]{bare,staffed}){ModelState m=g.Train("mini",0);g.UntilTrained(m);g.Do(Command.ReleaseModel(g.Id,m.Id,0,"game-ai"));g.Do(Command.BranchSpecialist(g.Id,m.Id,"code"));}string sector="code-completion";Assert.True(DisplayQueries.Appeal(staffed.C,staffed.State,staffed.C.Sector(sector),staffed.State.Sector(sector),staffed.Me,staffed.Me.Models[0])>DisplayQueries.Appeal(bare.C,bare.State,bare.C.Sector(sector),bare.State.Sector(sector),bare.Me,bare.Me.Models[0]));}
+[Fact] public void Data_sources_and_datasets_both_lift_training_finish_luck(){Game a=Lab(c=>c.DataSources.Sources[0].QualityPermille=400);Game b=Lab(c=>{c.DataSources.Sources[0].QualityPermille=400;c.Datasets.BonusPer100=120;});a.Do(Command.AcquireDataSource(a.Id,"licensed-corpus"));b.Do(Command.AcquireDataSource(b.Id,"licensed-corpus"));b.Me.DataClean1=200;Assert.True(Datasets.BonusPermille(b.C,b.Me)>0);var line=a.C.Line("mini");Assert.True(TrainingSystem.Forecast(b.C,b.Me,line).Tech>TrainingSystem.Forecast(a.C,a.Me,line).Tech);ModelState m0=a.Train("mini",0);ModelState m1=b.Train("mini",0);a.UntilTrained(m0);b.UntilTrained(m1);Assert.True(m1.CapLuck>=m0.CapLuck);}
+[Fact] public void Open_weights_and_public_metrics_both_shift_trust_after_release(){Game g=Lab(c=>{c.OpenWeights.CopyChancePermille=0;c.PublicMetrics.Bar=500;});ModelState m=g.Train("mini",0);g.UntilTrained(m);g.Do(Command.ReleaseModel(g.Id,m.Id,0,"game-ai"));int t0=TrustSystem.Of(g.C,g.Me,m.Sectors[0]);g.Do(Command.SetWeightsPolicy(g.Id,m.Id,1));int t1=TrustSystem.Of(g.C,g.Me,m.Sectors[0]);Assert.True(t1>t0);g.Do(Command.PublishMetrics(g.Id,m.Id));g.Me.LastWeek.ServedPermille=950;PublicMetrics.RunWeek(g.C,g.State,g.Me);Assert.True(TrustSystem.Of(g.C,g.Me,m.Sectors[0])>t1);}
+[Fact] public void High_sector_pricing_tier_adds_lab_overload_for_incidents(){Game g=Lab();ModelState m=g.Train("mini",0);g.UntilTrained(m);g.Do(Command.ReleaseModel(g.Id,m.Id,0,"game-ai"));int b=SectorPricing.LabOverloadPermille(g.C,g.Me);g.Do(Command.SetSectorPrice(g.Id,"game-ai",3));Assert.True(SectorPricing.LabOverloadPermille(g.C,g.Me)>b);}}

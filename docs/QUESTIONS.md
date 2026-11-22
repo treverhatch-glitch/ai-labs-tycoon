@@ -2315,7 +2315,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Player desk only; planners keep automatic pricing.
 - Alternatives: single global price (rejected: sector flavours already differ).
 
-### Q461. Batch fourteen news, chat and combos. OPEN (local systems landed): nine headlines + five chat lines; together tests (specialist with role perks, sources with datasets, open weights with metrics, pricing with trust).
+### Q461. Batch fourteen news, chat and combos. DECIDED: nine headlines + five chat lines (386/342 total); together tests — specialist appeal stacks with sales role perks, data sources lift training luck alongside dataset forecast tech, open weights and public metrics both shift trust, sector pricing tiers add lab overload.
 - Pin counts in validator tests like batch twelve/thirteen.
 
 ## Open
