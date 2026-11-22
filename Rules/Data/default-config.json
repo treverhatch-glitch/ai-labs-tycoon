@@ -6651,7 +6651,7 @@
   },
   "releaseChecklist": {
     "enabled": 1,
-    "minEra": 5,
+    "minEra": 99,
     "docBar": 1,
     "missTrust": -3
   },

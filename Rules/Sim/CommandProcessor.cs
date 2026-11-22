@@ -644,7 +644,7 @@ namespace AiLabs.Rules.Sim
                 else if (model.DisplayedAlignment < model.Alignment)
                     model.DisplayedAlignment = model.Alignment;
                 Pledge.OnFirstRelease(c, state, lab, model);
-                ReleaseChecklist.OnFirstRelease(c, model);
+                ReleaseChecklist.OnFirstRelease(c, state, model);
                 Standards.OnFirstRelease(c, state, lab, model);
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);

@@ -36,9 +36,9 @@ namespace AiLabs.Rules.Systems
             Events.Add(state, EventKind.ChecklistSigned, lab.Id, model.Id, item, model.Name);
         }
 
-        public static void OnFirstRelease(GameConfig c, ModelState model)
+        public static void OnFirstRelease(GameConfig c, GameState state, ModelState model)
         {
-            if (!Enabled(c)) return;
+            if (!Enabled(c) || c.Eras.IndexOf(EraSystem.AtTick(c, state.Tick)) < c.ReleaseChecklist.MinEra) return;
             model.ChkMissed = All & ~model.ChkDone;
         }
 
@@ -48,7 +48,12 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Models.Count; i++)
             {
                 ModelState m = lab.Models[i];
-                if (m.Status != ModelStatus.Released || m.ChkMissed == 0) continue;
+                if (m.Status != ModelStatus.Released)
+                {
+                    if (m.Status == ModelStatus.Retired) { m.ChkDone = 0; m.ChkMissed = 0; }
+                    continue;
+                }
+                if (m.ChkMissed == 0) continue;
                 int bits = 0;
                 for (int b = 1; b <= 8; b <<= 1) if ((m.ChkMissed & b) != 0) bits++;
                 int loss = bits * c.ReleaseChecklist.MissTrust;

@@ -98,6 +98,7 @@ Both chip rooms also need the tech `chip-team`, whatever the year (the room type
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `agent-ops-room` | Agent Ops Room | Engineering | `agent-wrangler` | 4 | - | 4 x 4 | $1.2k | $18 |
 | `containment-wing` | Containment Wing | Safety | `alignment-fellow` | 4 | - | 4 x 4 | $1.5k | $22 |
+| `support-desk` | Support Desk | Sales | `support` | 4 | - | 3 x 3 | $300 | $6 |
 
 ### Harnesses (2026)
 

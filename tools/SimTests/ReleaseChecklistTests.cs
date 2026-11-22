@@ -111,13 +111,17 @@ public class ReleaseChecklistTests
     [Fact]
     public void A_first_release_remembers_what_was_missed()
     {
-        Game g = Lab(c => c.ReleaseChecklist.MinEra = c.Eras.Count);
+        Game g = Lab();
         ModelState m = Trained(g);
         RedActive(g, m);
         g.Do(Command.SignChecklistItem(g.Id, m.Id, ReleaseChecklist.Red));
         m.DocLevel = g.C.ReleaseChecklist.DocBar;
         g.Do(Command.SignChecklistItem(g.Id, m.Id, ReleaseChecklist.Docs));
+        g.C.ReleaseChecklist.Enabled = 0;
         g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
+        g.C.ReleaseChecklist.MinEra = 0;
+        g.C.ReleaseChecklist.Enabled = 1;
+        ReleaseChecklist.OnFirstRelease(g.C, g.State, m);
         Assert.Equal(ReleaseChecklist.Eval | ReleaseChecklist.Policy, m.ChkMissed);
     }
 
