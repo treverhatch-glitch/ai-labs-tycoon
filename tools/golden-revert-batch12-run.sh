@@ -3,6 +3,9 @@ set -euo pipefail
 N="${1:?schema step 125-129}"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO"
+LOCK="${TMPDIR:-/tmp}/b12-golden-revert.lock"
+exec 9>"$LOCK"
+flock -x -w 600 9
 
 declare -A GOLDEN
 GOLDEN[125]=1f6f96b71f669ce3c0ef3a7efa141eed7e51b568a9f623b7d5afad295fed7194

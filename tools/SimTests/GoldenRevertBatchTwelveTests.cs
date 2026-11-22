@@ -3,7 +3,11 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
+[CollectionDefinition("GoldenRevertBatch12", DisableParallelization = true)]
+public sealed class GoldenRevertBatchTwelveCollection;
+
 /// <summary>Batch-12 save steps 125-129 recover the previous golden at tip while new config blocks remain loaded.</summary>
+[Collection("GoldenRevertBatch12")]
 public class GoldenRevertBatchTwelveTests
 {
     static void Revert(int schema)
