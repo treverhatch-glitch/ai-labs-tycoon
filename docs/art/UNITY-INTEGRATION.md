@@ -2,6 +2,13 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
+## Batch 4 (local, unpushed)
+
+- `CampusPropCatalog` / `CampusIconCatalog` — import paths for all generated assets
+- `RivalPresentationPalette.AccentFor(labId)` on rival badges
+- `WORLD-MAP-PANEL.md` for bloc tiles + pins
+- Pre-push: `./tools/art/prepush.sh`
+
 ## Batch 2 (local, unpushed)
 
 - 8 more campus OBJ (research bench, data stack, lectern, bloc tile, etc.) — regenerate `generate_campus_kit.py`
