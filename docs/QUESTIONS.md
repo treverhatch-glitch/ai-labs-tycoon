@@ -889,11 +889,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsWinddownLaterTests` (70):** listings/buys/acquire; refuse absorbed; schema **29**; roundtrip.
 
-### Q1116–Q1185. Era/cast picker data bar? TBD: test-only (batch 21, local)
+### Q1116–Q1185. Era/cast picker data bar? DECIDED: test-only (batch 21, pushed @ `eaa0701`)
 
 - **`HatchEraCastPickerLaterTests` (70):** era taglines; startable gate; rival join years; schema **29**.
 
-### Q1186+. Era feel / bible item 13? TBD: see NEXT.md
+### Q1186–Q1255. Era feel / incident-load bar? TBD: test-only (batch 22, local)
+
+- **`HatchEraFeelLaterTests` (70):** era incident load vs dial-up baseline; headlines; parts total.
+
+### Q1256+. Bible forward queue? TBD: see NEXT.md
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
