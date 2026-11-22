@@ -162,6 +162,54 @@ def coffee_cart() -> Mesh:
     return merge(base, post, umbrella)
 
 
+def research_bench() -> Mesh:
+    table = box(1.0, 0.75, 0.6, oy=0.375)
+    scope = box(0.12, 0.35, 0.12, 0.25, 0.95, 0.0)
+    lens = box(0.18, 0.08, 0.18, 0.25, 1.15, 0.0)
+    return merge(table, scope, lens)
+
+
+def data_stack() -> Mesh:
+    disks = merge()
+    for i in range(4):
+        disks = merge(disks, box(0.5, 0.08, 0.5, oy=0.04 + i * 0.1))
+    return disks
+
+
+def gauntlet_lectern() -> Mesh:
+    podium = box(0.55, 1.0, 0.45, oy=0.5)
+    screen = box(0.7, 0.45, 0.05, oy=1.15, oz=-0.2)
+    return merge(podium, screen)
+
+
+def bloc_tile() -> Mesh:
+    return box(1.0, 0.15, 1.0, oy=0.075)
+
+
+def safety_cone() -> Mesh:
+    # stacked boxes approximate a cone for low-poly style
+    parts = merge()
+    for i in range(4):
+        w = 0.5 - i * 0.1
+        parts = merge(parts, box(w, 0.12, w, oy=0.06 + i * 0.12))
+    return parts
+
+
+def monitor_wall() -> Mesh:
+    return box(2.0, 1.2, 0.08, oy=0.6)
+
+
+def bike_rack() -> Mesh:
+    rail = box(1.4, 0.08, 0.25, oy=0.5)
+    post_a = box(0.08, 1.0, 0.08, -0.6, 0.5, 0)
+    post_b = box(0.08, 1.0, 0.08, 0.6, 0.5, 0)
+    return merge(rail, post_a, post_b)
+
+
+def tab_rail_plaque() -> Mesh:
+    return box(0.56, 0.56, 0.04, oy=0.28)
+
+
 MESH_BUILDERS: dict[str, callable] = {
     "prop-desk": desk,
     "prop-chair": chair,
@@ -175,6 +223,14 @@ MESH_BUILDERS: dict[str, callable] = {
     "ui-rival-badge": rival_badge,
     "prop-gpu-blade": gpu_blade,
     "prop-coffee-cart": coffee_cart,
+    "prop-research-bench": research_bench,
+    "prop-data-stack": data_stack,
+    "prop-gauntlet-lectern": gauntlet_lectern,
+    "ui-bloc-tile": bloc_tile,
+    "prop-safety-cone": safety_cone,
+    "prop-monitor-wall": monitor_wall,
+    "exterior-bike-rack": bike_rack,
+    "ui-tab-rail-plaque": tab_rail_plaque,
 }
 
 

@@ -2,7 +2,13 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
-## What landed in this batch
+## Batch 2 (local, unpushed)
+
+- 8 more campus OBJ (research bench, data stack, lectern, bloc tile, etc.) — regenerate `generate_campus_kit.py`
+- 8 procedural SVG HUD icons — `generate_ui_icons.py`
+- `SCREEN-KITS.md`, `MATERIAL-TOKENS.json`, `CampusUiTokens.cs`
+
+## What landed in batch 1
 
 | Path | Purpose |
 | --- | --- |

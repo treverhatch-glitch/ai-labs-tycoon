@@ -109,6 +109,78 @@
       "faceCount": 18,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-research-bench",
+      "path": "Assets/Art/Generated/campus-kit/prop-research-bench.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-data-stack",
+      "path": "Assets/Art/Generated/campus-kit/prop-data-stack.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-gauntlet-lectern",
+      "path": "Assets/Art/Generated/campus-kit/prop-gauntlet-lectern.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "ui-bloc-tile",
+      "path": "Assets/Art/Generated/campus-kit/ui-bloc-tile.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 8,
+      "faceCount": 6,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-safety-cone",
+      "path": "Assets/Art/Generated/campus-kit/prop-safety-cone.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-monitor-wall",
+      "path": "Assets/Art/Generated/campus-kit/prop-monitor-wall.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 8,
+      "faceCount": 6,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "exterior-bike-rack",
+      "path": "Assets/Art/Generated/campus-kit/exterior-bike-rack.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "ui-tab-rail-plaque",
+      "path": "Assets/Art/Generated/campus-kit/ui-tab-rail-plaque.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 8,
+      "faceCount": 6,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
     }
   ]
 }

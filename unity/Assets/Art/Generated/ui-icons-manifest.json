@@ -1,0 +1,36 @@
+{
+  "icons": [
+    {
+      "id": "icon-cash",
+      "path": "Assets/Art/Generated/ui-icons/icon-cash.svg"
+    },
+    {
+      "id": "icon-calendar",
+      "path": "Assets/Art/Generated/ui-icons/icon-calendar.svg"
+    },
+    {
+      "id": "icon-compute",
+      "path": "Assets/Art/Generated/ui-icons/icon-compute.svg"
+    },
+    {
+      "id": "icon-research",
+      "path": "Assets/Art/Generated/ui-icons/icon-research.svg"
+    },
+    {
+      "id": "icon-rivals",
+      "path": "Assets/Art/Generated/ui-icons/icon-rivals.svg"
+    },
+    {
+      "id": "icon-world",
+      "path": "Assets/Art/Generated/ui-icons/icon-world.svg"
+    },
+    {
+      "id": "icon-training",
+      "path": "Assets/Art/Generated/ui-icons/icon-training.svg"
+    },
+    {
+      "id": "icon-hq",
+      "path": "Assets/Art/Generated/ui-icons/icon-hq.svg"
+    }
+  ]
+}
