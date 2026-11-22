@@ -1,0 +1,114 @@
+{
+  "generator": "tools/art/generate_campus_kit.py",
+  "tileSizeMeters": 0.45,
+  "assets": [
+    {
+      "id": "prop-desk",
+      "path": "Assets/Art/Generated/campus-kit/prop-desk.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 56,
+      "faceCount": 42,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-chair",
+      "path": "Assets/Art/Generated/campus-kit/prop-chair.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 48,
+      "faceCount": 36,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-server-rack",
+      "path": "Assets/Art/Generated/campus-kit/prop-server-rack.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 56,
+      "faceCount": 42,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-potted-plant",
+      "path": "Assets/Art/Generated/campus-kit/prop-potted-plant.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-whiteboard",
+      "path": "Assets/Art/Generated/campus-kit/prop-whiteboard.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 40,
+      "faceCount": 30,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "building-module-1x1",
+      "path": "Assets/Art/Generated/campus-kit/building-module-1x1.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 40,
+      "faceCount": 30,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "exterior-quad-tree",
+      "path": "Assets/Art/Generated/campus-kit/exterior-quad-tree.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "exterior-sign-pole",
+      "path": "Assets/Art/Generated/campus-kit/exterior-sign-pole.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "ui-world-map-pin",
+      "path": "Assets/Art/Generated/campus-kit/ui-world-map-pin.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "ui-rival-badge",
+      "path": "Assets/Art/Generated/campus-kit/ui-rival-badge.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 8,
+      "faceCount": 6,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-gpu-blade",
+      "path": "Assets/Art/Generated/campus-kit/prop-gpu-blade.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 8,
+      "faceCount": 6,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "prop-coffee-cart",
+      "path": "Assets/Art/Generated/campus-kit/prop-coffee-cart.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "pivot": "base-centre unless noted",
+      "scaleMeters": 1.0
+    }
+  ]
+}

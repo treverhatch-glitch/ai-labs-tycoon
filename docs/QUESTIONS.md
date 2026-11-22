@@ -540,6 +540,38 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — `pull_request` with paths `unity/**` and `.github/workflows/unity.yml`, keep `workflow_dispatch` and `cancel-in-progress`, no `push` or `schedule`, drop the main-only job guard so PRs run Edit Mode tests; secrets only on the test-runner step.
 - Why: owner's assistant decision (2026-11-20): Hatch cannot verify compiles daily during batched pushes (~once per day); GameCI Edit Mode is the gate before more Unity screens land.
 
+## Graphics and presentation (batch 1)
+
+### Q450. HQ camera: true isometric or cozy perspective? DECIDED: cozy perspective on a tile grid
+
+- Options: (a) locked orthographic isometric; (b) perspective 3/4 “campus” camera on the existing tile sim; (c) full free orbit.
+- Recommendation and choice: **(b)** — `CampusPresentationSpec` (yaw 38°, pitch 32°, FOV 52°); rules stay top-down tile logic via `HqGridLayout`.
+- Why: matches the “late-campus office” art direction without rewriting room placement; MGT2 cutaway rooms remain authoritative.
+
+### Q451. Committed 3D assets in v1? DECIDED: procedural OBJ kit only
+
+- Options: (a) Asset Store kits; (b) Blender hand-authoring only; (c) in-repo procedural meshes.
+- Recommendation and choice: **(c)** `tools/art/generate_campus_kit.py` → `unity/Assets/Art/Generated/`, CC0/original geometry.
+- Why: public repo license safety; regen is one command and CI-friendly.
+
+### Q452. Screen navigation model for Research / Training / Rivals / World? DECIDED: HQ hub + panels now, left tab rail later
+
+- Options: (a) five equal scenes from day one; (b) HQ hub with modal/side panels until tab rail lands; (c) single scene only forever.
+- Recommendation and choice: **(b)** — layouts spec’d in `docs/art/UI-HUD-LAYOUTS.md`; Unity thread keeps `TrainingRunPanel`, `RoomBuildPanel`, etc., until a tab shell exists.
+- Why: starter office ships on existing `GameBootstrap`; avoids blocking on full navigation code.
+
+### Q453. Rivals on map: portraits or abstract badges? DECIDED: abstract badges and palette
+
+- Options: (a) illustrated parody portraits; (b) abstract badge + colour per lab; (c) text-only.
+- Recommendation and choice: **(b)** `ui-rival-badge.obj` and future silhouette textures; no likenesses.
+- Why: bible parody cast without celebrity art risk; matches `docs/content/rivals.md`.
+
+### Q454. World map rendering v1? DECIDED: stylised plane + pins, not satellite
+
+- Options: (a) real map tiles; (b) abstract bloc-coloured heightfield; (c) list-only UI.
+- Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
+- Why: scope fits first playable; keeps attention on power/freeze gameplay.
+
 ## Open
 
 None.

@@ -20,3 +20,5 @@ folder only draws state and sends commands.
 - **Mascots** (`ModelMascotRow`) show each model's `ModelMood` via `ModelMascotPresentation`.
 
 Open and verify on the owner's PC: [docs/SETUP-PC.md](../docs/SETUP-PC.md) §2.
+
+Art specs and the campus OBJ kit: [docs/art/README.md](../docs/art/README.md).
