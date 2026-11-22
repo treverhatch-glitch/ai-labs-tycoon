@@ -841,6 +841,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalsChipsDeliveryLaterTests` (30):** foundry/node/quote invariants; cloud/hall metadata; delivery events; save/schema 29; vendor standing; crash month roll; listings after acquire; compute split unchanged with pending orders.
 
+### Q293–Q330. M&amp;A × planner/vendor/cloud chip cross-bars? DECIDED: test-only bar (batch 9, local)
+
+- **`HatchRivalsChipsCrossBarLaterTests` (38):** cloud acquire; bubble; vendor; sector champion; planner; rollup; ledger quote; dual acquire; schema 29; registry threshold; economy participation.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
