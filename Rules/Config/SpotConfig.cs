@@ -3,7 +3,7 @@ using AiLabs.Rules.Core;
 namespace AiLabs.Rules.Config
 {
     /// <summary>
-    /// Spot capacity. The player can run a share of the rented GPUs as cheap spot capacity that the cloud may take back (bible ch. 6, compute). The rent of that share falls, and each week every training run may be preempted: it loses what a failure would, by the run's checkpoint habit, and engineers cut the chance as they do for failed runs. A lab that never sets a share pays full rent and is never preempted. Only the player's lab. Zero in <c>Enabled</c> turns it off.
+    /// Spot capacity. The player can run a share of the rented GPUs as cheap spot capacity that the cloud may take back (bible ch. 6, compute). The rent of that share falls. Each week the cloud may call a reclaim wave, less likely with engineers: every run that is not rushed in the run queue is interrupted and loses what a failure would by its checkpoint habit, and for the weeks the wave lasts the spot share of those runs does no work. A rushed run sits on reserved capacity and is neither interrupted nor slowed. A lab that never sets a share pays full rent and is never preempted. Only the player's lab. Zero in <c>Enabled</c> turns it off.
     /// </summary>
     public sealed class SpotConfig : ISync
     {
@@ -19,6 +19,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Weeks before the spot share can be changed again.</summary>
         public int ChangeWeeks;
 
+        /// <summary>Weeks a reclaim wave lasts: the spot share of every run that is not rushed does no work.</summary>
+        public int ReclaimWeeks;
+
         public void Sync(Syncer s)
         {
             s.Int("enabled", ref Enabled);
@@ -27,6 +30,7 @@ namespace AiLabs.Rules.Config
             s.Int("preemptPermille", ref PreemptPermille);
             s.Int("defaultLossPermille", ref DefaultLossPermille);
             s.Int("changeWeeks", ref ChangeWeeks);
+            s.Int("reclaimWeeks", ref ReclaimWeeks);
         }
     }
 }

@@ -101,14 +101,80 @@ public class BuybackTests
         Assert.Empty(g.Me.BoughtRounds);
     }
 
-    [Fact]
-    public void Buying_back_lifts_a_lab_out_of_danger_of_being_ousted()
+    static Game Crowded(Action<GameConfig> tweak = null)
     {
-        Game g = Lab();
+        Game g = Lab(tweak);
         g.Do(Command.RaiseFunding(g.Id, "angel"));
-        g.Me.FounderSharePermille = g.C.Funding.ControlPermille + 10;
+        g.Do(Command.RaiseFunding(g.Id, "series-a"));
+        return g;
+    }
+
+    [Fact]
+    public void Votes_follow_the_equity_and_a_passed_buyback_changes_the_next_vote()
+    {
+        Game g = Crowded();
+        FundingRoundConfig angel = g.C.Funding.Round("angel");
+        FundingRoundConfig a = g.C.Funding.Round("series-a");
+        long total = Buyback.TotalVotes(g.C, g.Me);
+        Assert.Equal(g.Me.FounderSharePermille + angel.DilutionPermille + a.DilutionPermille, total);
         g.Do(Command.BuyBackRound(g.Id, "angel"));
-        Assert.True(g.Me.FounderSharePermille > g.C.Funding.ControlPermille + 10);
+        Assert.Equal(1, g.Me.BoardWon);
+        Assert.Equal(g.Me.FounderSharePermille + a.DilutionPermille, Buyback.TotalVotes(g.C, g.Me));
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.BoardVoted && e.Pick == 1 && e.Ref == "angel");
+    }
+
+    [Fact]
+    public void A_board_of_investors_refuses_when_it_drains_the_cash_and_shuts_for_weeks()
+    {
+        Game g = Crowded(c => { c.Funding.Round("angel").DilutionPermille = 400; c.Funding.Round("series-a").DilutionPermille = 400; });
+        g.Me.FounderSharePermille = 300;
+        FundingRoundConfig angel = g.C.Funding.Round("angel");
+        g.Me.Cash = Buyback.Price(g.C, g.State, angel) * 2;
+        Assert.False(Buyback.Passes(g.C, g.State, g.Me, angel));
+        long cash = g.Me.Cash;
+        g.Do(Command.BuyBackRound(g.Id, "angel"));
+        Assert.Equal(cash, g.Me.Cash);
+        Assert.Empty(g.Me.BoughtRounds);
+        Assert.Equal(1, g.Me.BoardLost);
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.BoardVoted && e.Pick == 0);
+        g.Refused(Command.BuyBackRound(g.Id, "angel"), CommandError.InvalidArgument);
+        g.Weeks(g.C.Buyback.VoteCooldown);
+        g.Me.Cash = Buyback.Price(g.C, g.State, angel) * 100;
+        g.Do(Command.BuyBackRound(g.Id, "angel"));
+        Assert.Contains("angel", g.Me.BoughtRounds);
+    }
+
+    [Fact]
+    public void Dual_class_shares_let_the_founders_carry_a_vote_the_investors_would_lose()
+    {
+        Action<GameConfig> hostile = c => { c.Funding.Round("angel").DilutionPermille = 400; c.Funding.Round("series-a").DilutionPermille = 400; };
+        Game plain = Crowded(hostile);
+        Game dual = Lab(hostile);
+        dual.Do(Command.RaiseFunding(dual.Id, "angel"));
+        dual.Do(Command.SetGovernance(dual.Id, 1));
+        dual.Do(Command.RaiseFunding(dual.Id, "series-a"));
+        foreach (Game g in new[] { plain, dual })
+        {
+            g.Me.FounderSharePermille = 300;
+            g.Me.Cash = Buyback.Price(g.C, g.State, g.C.Funding.Round("angel")) * 2;
+        }
+        Assert.False(Buyback.Passes(plain.C, plain.State, plain.Me, plain.C.Funding.Round("angel")));
+        Assert.True(Buyback.Passes(dual.C, dual.State, dual.Me, dual.C.Funding.Round("angel")));
+    }
+
+    [Fact]
+    public void Directors_vote_yes_only_while_the_lab_keeps_its_runway()
+    {
+        Game g = Crowded(c => { c.Funding.Round("angel").DilutionPermille = 400; c.Funding.Round("series-a").DilutionPermille = 400; c.Buyback.DirectorVote = 300; });
+        g.Me.FounderSharePermille = 300;
+        g.Me.GovDirectors = 2;
+        FundingRoundConfig angel = g.C.Funding.Round("angel");
+        long price = Buyback.Price(g.C, g.State, angel);
+        g.Me.Cash = price + 1;
+        long without = Buyback.YesVotes(g.C, g.State, g.Me, angel);
+        g.Me.Cash = price + (long)g.C.Buyback.RunwayWeeks * LabQueries.WeeklyRunningCost(g.C, g.State, g.Me) + 1;
+        long with = Buyback.YesVotes(g.C, g.State, g.Me, angel);
+        Assert.Equal(without + 2 * g.C.Buyback.DirectorVote, with);
     }
 
     [Fact]
@@ -125,6 +191,7 @@ public class BuybackTests
         Game g = Lab();
         g.Do(Command.RaiseFunding(g.Id, "angel"));
         g.Do(Command.BuyBackRound(g.Id, "angel"));
+        Assert.Equal(1, g.Me.BoardWon);
         g.Weeks(2);
         Simulation back = Simulation.Load(g.C, g.Sim.Save());
         Assert.Equal(g.Sim.Digest(), back.Digest());

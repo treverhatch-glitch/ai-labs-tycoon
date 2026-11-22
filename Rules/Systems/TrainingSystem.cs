@@ -133,7 +133,7 @@ namespace AiLabs.Rules.Systems
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Training) continue;
 
-                long allotted = shares[run++];
+                long allotted = Spot.Allotted(c, lab, model, shares[run++]);
 
                 long effective = MathI.MulPermille(allotted, speed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);

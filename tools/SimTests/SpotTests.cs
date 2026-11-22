@@ -76,28 +76,79 @@ public class SpotTests
         off.Refused(Command.SetSpotShare(off.Id, 100), CommandError.InvalidArgument);
     }
 
-    [Fact]
-    public void A_preemption_throws_away_what_the_checkpoint_habit_loses()
+    static Game Stormy()
     {
-        Game g = Lab(c => { c.Spot.PreemptPermille = 1000; c.Spot.MaxPermille = 1000; });
-        ModelState m = g.Train("mini", 0);
-        g.Do(Command.SetCheckpoints(g.Id, m.Id, "often"));
+        return Lab(c => { c.Spot.PreemptPermille = 1000; c.Spot.MaxPermille = 1000; c.RunQueue.MaxRush = 1; });
+    }
+
+    [Fact]
+    public void A_reclaim_wave_interrupts_the_runs_that_are_not_rushed_by_their_checkpoint_habit()
+    {
+        Game g = Stormy();
+        ModelState normal = g.Train("mini", 0);
+        ModelState rushed = g.Train("mini", 0);
+        g.Do(Command.SetCheckpoints(g.Id, normal.Id, "often"));
+        g.Do(Command.SetRunPriority(g.Id, rushed.Id, 3));
         g.Weeks(2);
         g.Do(Command.SetSpotShare(g.Id, 1000));
-        long before = m.ProgressCompute;
+        long before = normal.ProgressCompute;
+        long rushedBefore = rushed.ProgressCompute;
         Assert.True(before > 0);
         Spot.RunWeek(g.C, g.State, g.Me);
         long share = g.C.Runs.Checkpoint("often").LossPermille;
-        Assert.Equal(before - before * share / 1000, m.ProgressCompute);
+        Assert.Equal(before - before * share / 1000, normal.ProgressCompute);
+        Assert.Equal(rushedBefore, rushed.ProgressCompute);
+        Assert.Equal(1, g.Me.SpotWaves);
+        Assert.Equal(g.C.Spot.ReclaimWeeks, g.Me.SpotOut);
         Assert.Equal(1, g.Me.SpotPreempts);
         Assert.Equal(before * share / 1000, g.Me.SpotLost);
-        Assert.Contains(g.State.Events, e => e.Kind == EventKind.SpotPreempted && e.Amount == before * share / 1000);
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.SpotPreempted && e.SubjectId == normal.Id);
+        Assert.DoesNotContain(g.State.Events, e => e.Kind == EventKind.SpotPreempted && e.SubjectId == rushed.Id);
+    }
+
+    [Fact]
+    public void During_a_wave_the_spot_share_of_a_run_does_no_work_but_a_rushed_run_keeps_all_of_it()
+    {
+        long[] Week(int share, bool wave)
+        {
+            Game g = Lab(c => { c.Spot.PreemptPermille = 0; c.RunQueue.MaxRush = 1; });
+            ModelState a = g.Train("mini", 0);
+            ModelState b = g.Train("mini", 0);
+            g.Do(Command.SetRunPriority(g.Id, b.Id, 3));
+            g.Weeks(1);
+            g.Do(Command.SetSpotShare(g.Id, share));
+            if (wave) g.Me.SpotOut = 2;
+            long a0 = a.ProgressCompute, b0 = b.ProgressCompute;
+            g.Weeks(1);
+            return new[] { a.ProgressCompute - a0, b.ProgressCompute - b0 };
+        }
+        long[] calm = Week(0, false);
+        long[] storm = Week(500, true);
+        Assert.Equal(calm[1], storm[1]);
+        Assert.True(storm[0] * 100 < calm[0] * 55);
+        Assert.True(storm[0] * 100 > calm[0] * 45);
+    }
+
+    [Fact]
+    public void A_wave_is_not_called_with_nothing_training_or_on_top_of_another()
+    {
+        Game g = Stormy();
+        g.Do(Command.SetSpotShare(g.Id, 1000));
+        g.Weeks(5);
+        Assert.Equal(0, g.Me.SpotWaves);
+        g.Train("mini", 0);
+        g.Weeks(1);
+        Assert.Equal(1, g.Me.SpotWaves);
+        Assert.Equal(g.C.Spot.ReclaimWeeks, g.Me.SpotOut);
+        g.Weeks(1);
+        Assert.Equal(1, g.Me.SpotWaves);
+        Assert.Equal(g.C.Spot.ReclaimWeeks - 1, g.Me.SpotOut);
     }
 
     [Fact]
     public void Without_a_habit_set_the_default_loss_applies_and_often_loses_less()
     {
-        Game g = Lab(c => { c.Spot.PreemptPermille = 1000; c.Spot.MaxPermille = 1000; });
+        Game g = Stormy();
         ModelState m = g.Train("mini", 0);
         Assert.Equal(g.C.Spot.DefaultLossPermille, Spot.LossShare(g.C, m));
         g.Do(Command.SetCheckpoints(g.Id, m.Id, "often"));
@@ -140,7 +191,7 @@ public class SpotTests
         Assert.Equal(g.Sim.Digest(), back.Digest());
         Simulation older = Simulation.Load(g.C, SaveSchemaPretend.At(g.C, 118, g.Sim.Save()));
         LabState lab = older.State.Labs.First(l => l.Id == g.Id);
-        Assert.Equal(0, lab.SpotPermille + lab.SpotSaved + lab.SpotPreempts);
+        Assert.Equal(0, lab.SpotPermille + lab.SpotSaved + lab.SpotPreempts + lab.SpotOut + lab.SpotWaves);
         Assert.Empty(SaveGame.Problems(g.C, older.State));
     }
 }

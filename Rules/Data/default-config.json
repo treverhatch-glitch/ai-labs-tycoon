@@ -6455,7 +6455,12 @@
     "enabled": 1,
     "priceMult": 2000,
     "bubblePrice": 1000,
-    "buybackTrust": 2000
+    "buybackTrust": 2000,
+    "voteCooldown": 8,
+    "directorVote": 60,
+    "spendCapPermille": 400,
+    "runwayWeeks": 26,
+    "passPermille": 500
   },
   "spot": {
     "enabled": 1,
@@ -6463,7 +6468,8 @@
     "discountPermille": 400,
     "preemptPermille": 120,
     "defaultLossPermille": 500,
-    "changeWeeks": 4
+    "changeWeeks": 4,
+    "reclaimWeeks": 2
   },
   "bugBounty": {
     "maxLevel": 3,

@@ -325,11 +325,13 @@ namespace AiLabs.Rules.Sim
                     || (lab.GovForm == 0 && lab.GovSince != 0 && lab.GovDirectors == 0 && lab.GovResigned == 0 && lab.GovSearch == 0)
                     || ((lab.GovForm != 0 || lab.GovDirectors != 0 || lab.GovSearch != 0 || lab.GovResigned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " is governed (form " + lab.GovForm + ", " + lab.GovDirectors + " directors) in a way the data does not allow");
+                if (lab.BoardVoteWeek < 0 || lab.BoardWon < 0 || lab.BoardLost < 0 || lab.BoardWon != lab.BoughtRounds.Count)
+                    p.Add(who + " has a board vote record that does not match its buybacks");
                 for (int br = 0; br < lab.BoughtRounds.Count; br++)
                     if (!lab.FundingRounds.Contains(lab.BoughtRounds[br]) || lab.BoughtRounds.IndexOf(lab.BoughtRounds[br]) != br)
                         p.Add(who + " bought back round " + lab.BoughtRounds[br] + " which it never raised, or twice");
-                if (lab.SpotPermille < 0 || lab.SpotPermille > 1000 || lab.SpotSince < 0 || lab.SpotSaved < 0 || lab.SpotPreempts < 0 || lab.SpotLost < 0
-                    || ((lab.SpotPermille != 0 || lab.SpotSince != 0 || lab.SpotSaved != 0 || lab.SpotPreempts != 0 || lab.SpotLost != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                if (lab.SpotPermille < 0 || lab.SpotPermille > 1000 || lab.SpotSince < 0 || lab.SpotSaved < 0 || lab.SpotPreempts < 0 || lab.SpotLost < 0 || lab.SpotOut < 0 || lab.SpotOut > c.Spot.ReclaimWeeks || lab.SpotWaves < 0
+                    || ((lab.SpotPermille != 0 || lab.SpotSince != 0 || lab.SpotSaved != 0 || lab.SpotPreempts != 0 || lab.SpotLost != 0 || lab.SpotOut != 0 || lab.SpotWaves != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " runs spot capacity in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))

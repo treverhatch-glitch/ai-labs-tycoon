@@ -548,12 +548,19 @@ namespace AiLabs.Rules.State
         public int GovResigned;
         /// <summary>Ids of the funding rounds the lab has bought back.</summary>
         public List<string> BoughtRounds = new List<string>();
+        /// <summary>One more than the week the board last voted a buyback down (0 never), buybacks it passed, and buybacks it refused.</summary>
+        public int BoardVoteWeek;
+        public int BoardWon;
+        public int BoardLost;
         /// <summary>Share of the rented GPUs on spot capacity (permille), one more than the week it was set, the rent saved so far, runs preempted, and compute they lost.</summary>
         public int SpotPermille;
         public int SpotSince;
         public long SpotSaved;
         public int SpotPreempts;
         public long SpotLost;
+        /// <summary>Weeks left in the current reclaim wave, and how many waves the cloud has called.</summary>
+        public int SpotOut;
+        public int SpotWaves;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1034,11 +1041,16 @@ namespace AiLabs.Rules.State
             s.Int("govSearch", ref GovSearch);
             s.Int("govResigned", ref GovResigned);
             s.StrList("boughtRounds", ref BoughtRounds);
+            s.Int("boardVoteWeek", ref BoardVoteWeek);
+            s.Int("boardWon", ref BoardWon);
+            s.Int("boardLost", ref BoardLost);
             s.Int("spotPermille", ref SpotPermille);
             s.Int("spotSince", ref SpotSince);
             s.Long("spotSaved", ref SpotSaved);
             s.Int("spotPreempts", ref SpotPreempts);
             s.Long("spotLost", ref SpotLost);
+            s.Int("spotOut", ref SpotOut);
+            s.Int("spotWaves", ref SpotWaves);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

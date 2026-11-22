@@ -17,7 +17,8 @@ namespace AiLabs.Rules.Sim
             if (Buyback.Bought(lab, round.Id)) return Fail(CommandError.InvalidArgument, "The " + round.Name + " investors are already gone.");
             long price = Buyback.Price(c, state, round);
             if (lab.Cash < price) return NeedCash(lab, price);
-            Buyback.Do(c, state, lab, round);
+            if (Buyback.Locked(c, state, lab)) return Fail(CommandError.InvalidArgument, "The board will not hear another buyback yet.");
+            Buyback.Vote(c, state, lab, round);
             return CommandResult.Done(-1);
         }
     }

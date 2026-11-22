@@ -538,7 +538,9 @@ namespace AiLabs.Rules.State
         /// <summary>The lab bought a funding round back. Amount is the price, Text the round.</summary>
         RoundBoughtBack,
         /// <summary>A training run was preempted and lost progress. SubjectId is the model, Amount the compute lost, Ref the model name.</summary>
-        SpotPreempted
+        SpotPreempted,
+        /// <summary>The board voted on buying a round back. Pick is 1 passed or 0 refused, Amount the yes votes in permille of all, Ref the round.</summary>
+        BoardVoted
     }
 
     /// <summary>

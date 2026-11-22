@@ -503,7 +503,7 @@ namespace AiLabs.Rules.Sim
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                foreach (string key in new[] { "spotPermille", "spotSince", "spotSaved", "spotPreempts", "spotLost" })
+                foreach (string key in new[] { "spotPermille", "spotSince", "spotSaved", "spotPreempts", "spotLost", "spotOut", "spotWaves" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
@@ -511,7 +511,12 @@ namespace AiLabs.Rules.Sim
         /// <summary>Schema 118: no lab has bought a funding round back.</summary>
         static void MigrateTo118(JsonValue root)
         {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "boughtRounds", JsonValue.Array()));
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "boughtRounds", JsonValue.Array());
+                foreach (string key in new[] { "boardVoteWeek", "boardWon", "boardLost" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
         }
 
         /// <summary>Schema 117: every lab is an ordinary company with no independent directors.</summary>

@@ -557,6 +557,8 @@ namespace AiLabs.Rules.Sim
                     return who + " bought its " + e.Ref + " investors out.";
                 case EventKind.SpotPreempted:
                     return who + " lost part of " + e.Ref + " when spot capacity was taken back.";
+                case EventKind.BoardVoted:
+                    return "The board of " + who + (e.Pick == 1 ? " passed" : " refused") + " buying out the " + e.Ref + " investors.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
