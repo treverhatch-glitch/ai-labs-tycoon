@@ -32,6 +32,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [WORLD-MAP-FREEZE-PRESENTATION.md](WORLD-MAP-FREEZE-PRESENTATION.md) | Frozen bloc overlay (batch 22) |
 | [TRAINING-INCIDENT-PRESENTATION.md](TRAINING-INCIDENT-PRESENTATION.md) | Incident rung rings (batch 23) |
 | [GAUNTLET-STAGE-HUD.md](GAUNTLET-STAGE-HUD.md) | Gauntlet overlay HUD (batch 24) |
+| [RESEARCH-PANEL-BREAKDOWN.md](RESEARCH-PANEL-BREAKDOWN.md) | Research explainable drawer (batch 25) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

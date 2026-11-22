@@ -1,0 +1,12 @@
+# Research panel breakdown drawer (presentation)
+
+Link research quality/appeal tooltips to [DISPLAY-BREAKDOWN-PRESENTATION.md](DISPLAY-BREAKDOWN-PRESENTATION.md).
+
+| Metric | Icon | Drawer |
+| --- | --- | --- |
+| Quality | `icon-research` | `DisplayQueries` quality parts |
+| Appeal | `icon-research` | appeal parts |
+
+Layout: `CampusResearchBreakdownPresentationSpec` (0.38 drawer width, 22px part rows; row rhythm matches `CampusBreakdownPresentationSpec`).
+
+Unity binds queries from rules; graphics supplies row layout only (batch 25 draft).

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q474. Research breakdown drawer layout? DECIDED: `CampusResearchBreakdownPresentationSpec`
+
+- Options: (a) reuse breakdown spec only; (b) research-specific constants + doc; (c) merge with RESEARCH-PANEL fractions in UI Toolkit.
+- Recommendation and choice: **(b)** — 0.38 drawer matches RESEARCH-PANEL; part row height aligns with batch 20.
+- Why: Research quality/appeal drawers share explainable-number UX with HQ HUD.
+
 ### Q473. Gauntlet stage overlay tokens? DECIDED: `CampusGauntletStagePresentationSpec`
 
 - Options: (a) duplicate GAUNTLET-STAGE timings in UI code; (b) spec + HUD doc; (c) Timeline asset only.
