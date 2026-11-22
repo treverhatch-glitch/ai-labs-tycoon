@@ -119,7 +119,9 @@ and says why in the commit message.
 - ~~**Hatch rivals/chips batch 10**~~ **pushed @ `c58e395`** — Q331–Q365 (`HatchRivalsChipsIntegrateLaterTests`, **35**); schema **29** only; SolvencyHold **30** parked.
 - ~~**Hatch rivals/chips batch 11**~~ **pushed @ `31e6c2a`** — Q366–Q400 (`HatchRivalsChipsTailLaterTests`, **35**).
 - ~~**Hatch rivals/chips batch 12**~~ **pushed @ `ee78b4e`** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only.
-- **Hatch rivals/chips batch 13 (local, GO-pending ≥13:26 UTC)** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70** grouped); schema **29** only; SolvencyHold **30** parked.
+- ~~**Hatch rivals/chips batch 13**~~ **pushed @ `3b3019e`** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70**); schema **29** only.
+- **Hatch rivals/chips batch 14 (local, GO #3 pending)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100** grown); parent `3b3019e`; schema **29** only; SolvencyHold **30** parked.
+- **Hatch rivals/chips batch 15 (WIP local)** — Q666+ finisher bar; unpushed after batch 14 GO.
 
 ## Rules: forward queue (from bible / systems-design)
 
