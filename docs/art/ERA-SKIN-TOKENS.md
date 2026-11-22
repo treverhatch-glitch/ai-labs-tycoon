@@ -9,4 +9,4 @@
 | `2017` | slate `#788898` | cloud white |
 | `2035` | deep navy `#3A4550` | neon cyan |
 
-Cross-fade duration: 0.8s (see `POLISH-CHECKLIST` era transition).
+Cross-fade duration: 0.8s (see `POLISH-CHECKLIST` era transition). Settings preview: [ERA-SKIN-PREVIEW.md](ERA-SKIN-PREVIEW.md).

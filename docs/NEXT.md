@@ -84,6 +84,7 @@ and says why in the commit message.
 
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Still open:
     a start-era picker screen that shows each era's tagline and kit. Data and plans; no new systems.
+    Graphics batch 29 documents era swatch preview chrome (`ERA-SKIN-PREVIEW.md`) for that screen; rules/data unchanged.
 13. **Make each era feel different.** Today an era changes what is available and what things cost. The bible's
     "the rules shift" (new laws, new risk classes, per-era mechanics) comes with items 5, 7 and 8.
 
@@ -111,7 +112,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`a0dc2a5` (batch 27: HQ cash/grant readout); batch 28 (tab rail active state) staged locally after prepush.
+`bdc426a` (batch 28: tab rail active state); batch 29 (era skin preview for start-era picker UX) staged locally.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 

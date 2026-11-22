@@ -36,6 +36,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [STAFF-ROW-PRESENTATION.md](STAFF-ROW-PRESENTATION.md) | Staff roster rows (batch 26) |
 | [HQ-CASH-DISPLAY-PRESENTATION.md](HQ-CASH-DISPLAY-PRESENTATION.md) | Cash/grant readout (batch 27) |
 | [TAB-RAIL-ACTIVE-PRESENTATION.md](TAB-RAIL-ACTIVE-PRESENTATION.md) | Tab rail active state (batch 28) |
+| [ERA-SKIN-PREVIEW.md](ERA-SKIN-PREVIEW.md) | Era swatch preview (batch 29) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

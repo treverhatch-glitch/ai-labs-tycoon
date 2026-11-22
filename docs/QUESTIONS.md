@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q478. Era skin preview swatches? DECIDED: `CampusEraSkinPreviewPresentationSpec`
+
+- Options: (a) settings UI only; (b) spec + preview doc; (c) duplicate `ERA-SKIN-TOKENS.md` table in C#.
+- Recommendation and choice: **(b)** — path points at `era-skin-tokens.json`; era ids stay data.
+- Why: Start-era picker (NEXT item 12) needs swatch sizing before Unity settings screen.
+
 ### Q477. Tab rail active state tokens? DECIDED: `CampusTabRailActivePresentationSpec`
 
 - Options: (a) hard-code in tab rail prefab; (b) spec + doc; (c) animation-only with no constants.
