@@ -143,7 +143,7 @@ and says why in the commit message.
 - ~~**Hatch rival/plan batch 34**~~ **pushed @ `fc167aa`** — Q2026–Q2095 (`HatchRivalPlanBarLaterTests`, **70**); gate **2699/0** / **2697/0** WT; parent `2c15504` (+ `bae467b` test, `fc167aa` docs).
 - ~~**Hatch acquisition bar batch 35**~~ **pushed @ `ec6f1a9`** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa` (+ `4d1a26c` test, `ec6f1a9` docs).
 - ~~**Hatch distress/M&amp;A batch 36**~~ **pushed @ `ae38c65`** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); gate **2839/0** / **2837/0** WT; parent `ec6f1a9` (+ `62d23d9` test, `ae38c65` docs).
-- **Hatch bubble/distress batch 37 (local @ tip after commit, commit-ready — no push)** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); push ≥**09:43:00 UTC** + GO.
+- **Hatch bubble/distress batch 37 (commit-ready — no push)** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); gate **2909/0** / **2907/0** WT; parent `ae38c65` (+ `5e2aee5` test, docs @ tip); push ≥**09:43:01 UTC** + GO.
 - **Hatch capital/bubble batch 38 (queued untracked)** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); capital reset + funding neighbours.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
