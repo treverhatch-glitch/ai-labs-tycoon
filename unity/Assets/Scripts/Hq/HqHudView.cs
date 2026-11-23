@@ -778,6 +778,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekTrainingPower = HqDisplayQueriesHud.LastWeekTrainingPowerSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekTrainingPower))
                     status = string.IsNullOrEmpty(status) ? lastWeekTrainingPower : status + " · " + lastWeekTrainingPower;
+                string lifetimePatentRevenue = HqDisplayQueriesHud.LifetimePatentRevenueSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimePatentRevenue))
+                    status = string.IsNullOrEmpty(status) ? lifetimePatentRevenue : status + " · " + lifetimePatentRevenue;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
