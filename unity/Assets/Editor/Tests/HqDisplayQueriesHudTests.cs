@@ -7335,5 +7335,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("5,640").Or.Contain("650"));
         }
 
+        [Test]
+        public void lifetime_spend_patent_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Fines = -26_000;
+            lab.Ledger.Lifetime.Grants = 145_000;
+            string line = HqDisplayQueriesHud.LifetimeSpendPatentSummaryLine(lab);
+            Assert.That(line, Does.Contain("26,000").Or.Contain("145,000"));
+        }
+
     }
 }
