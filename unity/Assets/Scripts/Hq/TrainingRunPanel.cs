@@ -206,6 +206,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGreyNet = HqDisplayQueriesHud.ThisWeekGreyNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGreyNet))
                         _summary.text += " · " + thisWeekGreyNet;
+                    string lastWeekRoomHiring = HqDisplayQueriesHud.LastWeekRoomHiringSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekRoomHiring))
+                        _summary.text += " · " + lastWeekRoomHiring;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
