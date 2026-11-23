@@ -3485,5 +3485,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("2,150").Or.Contain("2,200"));
         }
 
+        [Test]
+        public void this_week_launder_room_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.Laundered = 2_600;
+            lab.Ledger.ThisWeek.RoomUpkeep = -2_220;
+            string line = HqDisplayQueriesHud.ThisWeekLaunderRoomSummaryLine(lab);
+            Assert.That(line, Does.Contain("2,600").Or.Contain("2,220"));
+        }
+
     }
 }
