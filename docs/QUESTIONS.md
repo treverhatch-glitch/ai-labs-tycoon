@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q487. Room build panel layout tokens? DECIDED: `CampusRoomBuildPresentationSpec`
+
+- Options: (a) `UI-HUD-LAYOUTS` prose only; (b) spec + ROOM-BUILD doc; (c) implement ghost/build UI in graphics PR.
+- Recommendation and choice: **(b)** — 70/28/40 fractions and `icon-hq`; links existing `CampusPropPlacementHints`.
+- Why: NEXT Unity item 3 presentation tail; no `RoomBuildController` changes on cloud agent.
+
 ### Q486. Start-era picker layout tokens? DECIDED: `CampusStartEraPickerPresentationSpec`
 
 - Options: (a) rely on ERA-SKIN-PREVIEW only; (b) picker spec + doc; (c) wire full new-game screen in graphics PR.

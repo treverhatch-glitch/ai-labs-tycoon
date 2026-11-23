@@ -13,3 +13,5 @@ Default props per `RoomPurpose` when wiring `HqGridView` (see `CampusPropCatalog
 | Policy | `prop-whiteboard`, `prop-water-cooler` |
 
 **Lot border (`campus`+):** `exterior-quad-tree`, `exterior-bike-rack`, `exterior-hallway-bench`.
+
+HQ layout: [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md) (batch 38).

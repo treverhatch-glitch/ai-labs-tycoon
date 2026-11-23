@@ -25,7 +25,8 @@
 | 34 | `e9ccf12` | Studio handoff |
 | 35 | `e8ebc83` | Capture HUD snapshot |
 | 36 | `6a558e1` | World map host shell |
-| 37 | (local GO) | Start-era picker |
+| 37 | `b4255a8` | Start-era picker |
+| 38 | (local GO) | Room build panel |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
