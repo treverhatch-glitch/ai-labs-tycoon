@@ -981,9 +981,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only.
 
-### Q2726–Q2795. Shady/china data bar coda? DECIDED: test-only (batch 44, WIP — HOLD push)
+### Q2726–Q2795. Shady/china data bar coda? DECIDED: test-only (batch 44, commit-ready — push ≥13:54 UTC + GO)
 
-- **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only.
+- **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only; gates **3399/0** / **3397/0** WT.
 
 ### Q2796–Q2865. Incident/safety data bar? TBD: test-only (batch 45, queued)
 
