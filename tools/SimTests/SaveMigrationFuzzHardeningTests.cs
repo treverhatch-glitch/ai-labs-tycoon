@@ -71,6 +71,7 @@ public class SaveMigrationFuzzHardeningTests
     static bool EraLBounds(int schema) => schema >= 125;
     static bool EraMBounds(int schema) => schema >= 130;
     static bool EraNBounds(int schema) => schema >= 135;
+    static bool EraOBounds(int schema) => schema >= 139;
 
     static void TouchEraE(Game g)
     {
@@ -260,6 +261,7 @@ public class SaveMigrationFuzzHardeningTests
         if (maxSchema >= 125) TouchEraL(g);
         if (maxSchema >= 130) TouchEraM(g);
         if (maxSchema >= 135) TouchEraN(g);
+        if (maxSchema >= 139) TouchEraO(g);
     }
 
     static void TouchEraL(Game g)
@@ -334,6 +336,20 @@ public class SaveMigrationFuzzHardeningTests
         g.Weeks(2);
     }
 
+    static void TouchEraO(Game g)
+    {
+        g.C.CampaignDeadline.MinEra = 0;
+        g.C.LawShaping.MinEra = 0;
+        g.C.TakeoffCrisis.MinEra = 0;
+        g.C.ScenarioBaggage.Enabled = 1;
+        g.C.Lobbying.BackfirePermille = 0;
+        g.Try(Command.SetCampaignDeadline(g.Id, g.Tick + 80));
+        string home = g.Me.HomeBlocId;
+        if (!string.IsNullOrEmpty(home)) g.Try(Command.ShapeLaw(g.Id, home, LawShaping.Loose));
+        g.Try(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        g.Weeks(2);
+    }
+
     public static IEnumerable<object[]> SchemaRows()
     {
         for (int schema = 1; schema <= GameState.CurrentSchema; schema++)
@@ -371,13 +387,14 @@ public class SaveMigrationFuzzHardeningTests
             if (schema >= 125) TouchEraL(rich);
             if (schema >= 130) TouchEraM(rich);
             if (schema >= 135) TouchEraN(rich);
+            if (schema >= 139) TouchEraO(rich);
             json = SaveSchemaPretend.At(c, schema, rich.Sim.Save());
         }
 
         Simulation sim = Simulation.Load(c, json);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
-        HardeningInvariants.AssertAllLabs(c, sim.State, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema), EraLBounds(schema), EraMBounds(schema), EraNBounds(schema));
-        HardeningInvariants.StepWeeksChecking(sim, PlayWeeks, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema), EraLBounds(schema), EraMBounds(schema), EraNBounds(schema));
+        HardeningInvariants.AssertAllLabs(c, sim.State, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema), EraLBounds(schema), EraMBounds(schema), EraNBounds(schema), EraOBounds(schema));
+        HardeningInvariants.StepWeeksChecking(sim, PlayWeeks, EraBounds(schema), EraBBounds(schema), EraCBounds(schema), EraDBounds(schema), EraEBounds(schema), EraFBounds(schema), EraGBounds(schema), EraHBounds(schema), EraIBounds(schema), EraJBounds(schema), EraKBounds(schema), EraLBounds(schema), EraMBounds(schema), EraNBounds(schema), EraOBounds(schema));
     }
 
     [Fact]

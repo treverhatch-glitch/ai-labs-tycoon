@@ -12,6 +12,8 @@ namespace AiLabs.Rules.Config
         public int BailoutReputation;
         public int ExitRevenueYears;
         public int ExitFleetPermille;
+        /// <summary>When covenants are breached, this permille of loan balance is taken off exit price.</summary>
+        public int ExitCovenantCallPermille;
         public int MonopolyCrownYears;
         public int MonopolyRevenuePpm;
         public int MonopolyComputePpm;
@@ -39,6 +41,7 @@ namespace AiLabs.Rules.Config
             s.Int("bailoutReputation", ref BailoutReputation);
             s.Int("exitRevenueYears", ref ExitRevenueYears);
             s.Int("exitFleetPermille", ref ExitFleetPermille);
+            s.Int("exitCovenantCallPermille", ref ExitCovenantCallPermille);
             s.Int("monopolyCrownYears", ref MonopolyCrownYears);
             s.Int("monopolyRevenuePpm", ref MonopolyRevenuePpm);
             s.Int("monopolyComputePpm", ref MonopolyComputePpm);

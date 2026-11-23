@@ -10,24 +10,24 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[130]=28acd5fd7edb3e71832d3e5bc5802d1196a56422773b66f8232bb2cd14e6f0cb
-GOLDEN[131]=a330926bf8220f93d1d947ef2c05da6aa2d3b27dc4d16fc18a4579a89e06d5fe
-GOLDEN[132]=1a9f3bf2c89fde0cb16a49a937d4bb8ffd23b82c5ed8a5cf6a94b83889822673
-GOLDEN[133]=098a6a6044e96cd07a1bed522dbfbc4d525ff4c0f383923f20f87298f92bd5de
-GOLDEN[134]=e1d461c85ff469c6d0077c4ad21202bfc3eaff972647ad483d76c5d0c9794d42
+GOLDEN[130]=bd7d126c0272ddff08c47bc5523ecf3e8f520678de85f5f8e6c1649de05c268a
+GOLDEN[131]=a79abfb143b30c93dc25e1ab8a7e3ae5ac67a1882603e6afb225e0340756d8af
+GOLDEN[132]=78602429454c12585dab5f4bbf7f542b7561bc3fbf212590eb35c36ce462ecc8
+GOLDEN[133]=67b5ab510bed62116c80ff1a73f68a497c337b50d2cee0f9397bd17fbeb75c70
+GOLDEN[134]=d8271ddd13cbb494082a00656e93c5ebac00aa7949181c78730d910660c54662
 
 PREV=$((N - 1))
 BK="/tmp/b13-rev-bak-$N"
 mkdir -p "$BK"
 for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
   Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
-  Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  Rules/Systems/TrainingSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
   cp "$f" "$BK/$(echo $f | tr '/' '_')"
 done
 restore() {
   for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.cs Rules/Systems/SafetySystem.cs \
     Rules/Systems/MarketSystem.cs Rules/Systems/ToolPolicy.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.ToolPolicy.cs \
-    Rules/Systems/TrainingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+    Rules/Systems/TrainingSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
   (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
@@ -81,6 +81,10 @@ sed -i 's| + SectorPricing.LabOverloadPermille(c, lab)||' Rules/Systems/SafetySy
 sed -i '/if (SectorPricing.Enabled(c) && demandLab.Id == state.PlayerLabId)/,+1 s|^|//|' Rules/Systems/MarketSystem.cs
 sed -i 's|int src = DataSources.QualityPermille(c, lab) / 50;||' Rules/Systems/TrainingSystem.cs
 sed -i 's|model.CapLuck += src;||' Rules/Systems/TrainingSystem.cs
+
+# shellcheck source=golden-revert-disable-batch15-tip.sh
+source "$REPO/tools/golden-revert-disable-batch15-tip.sh"
+disable_batch15_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"

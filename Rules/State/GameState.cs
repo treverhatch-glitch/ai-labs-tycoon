@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 138;
+        public const int CurrentSchema = 143;
 
         public int Schema;
         public string ConfigVersion;
@@ -610,6 +610,17 @@ namespace AiLabs.Rules.State
         /// <summary>Per-sector price tiers (schema 138).</summary>
         public List<string> PriceSectors = new List<string>();
         public List<int> PriceTiers = new List<int>();
+        /// <summary>Week when the campaign clock stops (0 sandbox), schema 139.</summary>
+        public int CampaignDeadlineTick;
+        /// <summary>Law shape waiting for the next era (schema 140).</summary>
+        public int LawShapePending;
+        public int LawShapeDelta;
+        public string LawShapeEra = "";
+        /// <summary>Takeoff crisis cannot repeat before this tick (schema 142).</summary>
+        public int TakeoffCooldownUntil;
+        /// <summary>Scenario baggage id and picked flag (schema 143).</summary>
+        public string BaggageId = "";
+        public int BaggagePicked;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1140,6 +1151,13 @@ namespace AiLabs.Rules.State
             s.Int("srcWeeks3", ref SrcWeeks3);
             s.StrList("priceSectors", ref PriceSectors);
             s.IntList("priceTiers", ref PriceTiers);
+            s.Int("campaignDeadlineTick", ref CampaignDeadlineTick);
+            s.Int("lawShapePending", ref LawShapePending);
+            s.Int("lawShapeDelta", ref LawShapeDelta);
+            s.Str("lawShapeEra", ref LawShapeEra);
+            s.Int("takeoffCooldownUntil", ref TakeoffCooldownUntil);
+            s.Str("baggageId", ref BaggageId);
+            s.Int("baggagePicked", ref BaggagePicked);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

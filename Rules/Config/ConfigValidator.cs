@@ -173,6 +173,10 @@ namespace AiLabs.Rules.Config
             DataSourcesProblems(p, c);
             OpenWeightsProblems(p, c);
             SectorPricingProblems(p, c);
+            CampaignDeadlineProblems(p, c);
+            LawShapingProblems(p, c);
+            TakeoffCrisisProblems(p, c);
+            ScenarioBaggageProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1934,6 +1938,45 @@ namespace AiLabs.Rules.Config
             if (k == null) { p.Add("sectorPricing is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricing.enabled must be 0 or 1");
             if (k.MaxTier < 0 || k.MaxTier > 5) p.Add("sectorPricing.maxTier from 0 to 5");
+        }
+
+        static void CampaignDeadlineProblems(List<string> p, GameConfig c)
+        {
+            CampaignDeadlineConfig k = c.CampaignDeadline;
+            if (k == null) { p.Add("campaignDeadline is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("campaignDeadline.enabled must be 0 or 1");
+            if (k.MinEra < 0) p.Add("campaignDeadline.minEra not negative");
+            if (k.ScoreBonusPermille < 0) p.Add("campaignDeadline.scoreBonusPermille not negative");
+            if (!string.IsNullOrEmpty(k.EndingId) && c.Endings.Def(k.EndingId) == null) p.Add("campaignDeadline.endingId \"" + k.EndingId + "\" is unknown");
+        }
+
+        static void LawShapingProblems(List<string> p, GameConfig c)
+        {
+            LawShapingConfig k = c.LawShaping;
+            if (k == null) { p.Add("lawShaping is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShaping.enabled must be 0 or 1");
+            if (k.StrictDelta < 0 || k.LooseDelta < 0) p.Add("lawShaping deltas not negative");
+        }
+
+        static void TakeoffCrisisProblems(List<string> p, GameConfig c)
+        {
+            TakeoffCrisisConfig k = c.TakeoffCrisis;
+            if (k == null) { p.Add("takeoffCrisis is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffCrisis.enabled must be 0 or 1");
+            if (k.CapabilityMin < 0 || k.CorruptionMin < 0) p.Add("takeoffCrisis bars not negative");
+            bool has = false;
+            for (int i = 0; i < c.Office.Events.Count; i++) if (c.Office.Events[i].Trigger == OfficeTrigger.Takeoff) has = true;
+            if (k.Enabled > 0 && !has) p.Add("takeoffCrisis needs an office event with trigger Takeoff");
+        }
+
+        static void ScenarioBaggageProblems(List<string> p, GameConfig c)
+        {
+            ScenarioBaggageConfig k = c.ScenarioBaggage;
+            if (k == null) { p.Add("scenarioBaggage is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioBaggage.enabled must be 0 or 1");
+            UniqueIds(p, "scenarioBaggage.items", k.Items);
+            for (int i = 0; i < k.Items.Count; i++)
+                if (string.IsNullOrEmpty(k.Items[i].Kind)) p.Add("scenarioBaggage.items[" + i + "].kind is empty");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

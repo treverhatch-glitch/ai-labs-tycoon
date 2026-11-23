@@ -168,6 +168,10 @@ namespace AiLabs.Rules.Config
         public DataSourcesConfig DataSources = new DataSourcesConfig();
         public OpenWeightsConfig OpenWeights = new OpenWeightsConfig();
         public SectorPricingConfig SectorPricing = new SectorPricingConfig();
+        public CampaignDeadlineConfig CampaignDeadline = new CampaignDeadlineConfig();
+        public LawShapingConfig LawShaping = new LawShapingConfig();
+        public TakeoffCrisisConfig TakeoffCrisis = new TakeoffCrisisConfig();
+        public ScenarioBaggageConfig ScenarioBaggage = new ScenarioBaggageConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -334,6 +338,10 @@ namespace AiLabs.Rules.Config
             s.Obj("dataSources", ref DataSources);
             s.Obj("openWeights", ref OpenWeights);
             s.Obj("sectorPricing", ref SectorPricing);
+            s.Obj("campaignDeadline", ref CampaignDeadline);
+            s.Obj("lawShaping", ref LawShaping);
+            s.Obj("takeoffCrisis", ref TakeoffCrisis);
+            s.Obj("scenarioBaggage", ref ScenarioBaggage);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

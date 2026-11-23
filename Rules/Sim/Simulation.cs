@@ -24,6 +24,8 @@ namespace AiLabs.Rules.Sim
         public string StyleId = "";
         /// <summary>The bloc the lab is incorporated in; empty for the config's default.</summary>
         public string HomeBlocId = "";
+        /// <summary>Scenario baggage id for a new game (schema 143); empty for none.</summary>
+        public string BaggageId = "";
     }
 
     /// <summary>
@@ -238,6 +240,8 @@ namespace AiLabs.Rules.Sim
                     SafetyCulture.RunWeek(c, state, state.Labs[i]);
                     ResearchLeads.RunWeek(c, state, state.Labs[i]);
                     OfficeEvents.RunWeek(c, state, state.Labs[i]);
+                    TakeoffCrisis.RunWeek(c, state, state.Labs[i]);
+                    CampaignDeadline.RunWeek(c, state, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }

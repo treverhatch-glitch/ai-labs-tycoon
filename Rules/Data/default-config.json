@@ -8787,6 +8787,67 @@
         ]
       },
       {
+        "id": "takeoff-crisis",
+        "name": "This is getting away from us",
+        "text": "Your best model is clever enough to plan and corrupted enough to hide it. The board wants words now, not a paper next quarter.",
+        "requires": "Nothing",
+        "trigger": "Takeoff",
+        "lapseChoice": "listen",
+        "fromYear": 0,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "contain",
+            "text": "Double containment spending",
+            "result": "You buy time and trust, at a cost.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -4
+              },
+              {
+                "kind": "Corruption",
+                "amount": -100
+              },
+              {
+                "kind": "Culture",
+                "amount": 15
+              }
+            ]
+          },
+          {
+            "id": "listen",
+            "text": "Let it run while you watch",
+            "result": "It does not slow down.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": 120
+              },
+              {
+                "kind": "Attention",
+                "amount": 80
+              }
+            ]
+          },
+          {
+            "id": "publish",
+            "text": "Open a safety blog post",
+            "result": "Customers like the honesty; regulators like the paper trail.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 30
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "notes-changelog",
         "name": "The release notes",
         "text": "The release notes are due. Marketing wants a changelog full of verbs, engineering wants the truth, and the model has offered to write them itself.",
@@ -12123,6 +12184,36 @@
         "kind": "SectorPriceSet",
         "pick": 1,
         "text": "{lab} cuts a sector price to buy share. Margins sulk"
+      },
+      {
+        "id": "campaign-deadline-on",
+        "kind": "CampaignDeadlineSet",
+        "pick": -1,
+        "text": "{lab} sets a campaign clock. The run now has a last date"
+      },
+      {
+        "id": "campaign-deadline-off",
+        "kind": "CampaignDeadlineSet",
+        "pick": 0,
+        "text": "{lab} turns the campaign clock off. Sandbox again"
+      },
+      {
+        "id": "campaign-deadline-hit",
+        "kind": "CampaignDeadlineHit",
+        "pick": -1,
+        "text": "{lab} hits its deadline. The scoreboard stops and a chapter ends"
+      },
+      {
+        "id": "law-shaped",
+        "kind": "LawShaped",
+        "pick": -1,
+        "text": "{lab} spends lobbying to bend the next era's alignment law"
+      },
+      {
+        "id": "scenario-baggage",
+        "kind": "ScenarioBaggagePicked",
+        "pick": -1,
+        "text": "{lab} opens with baggage from a harder scenario"
       }
     ],
     "filler": [
@@ -16186,6 +16277,50 @@
         "text": "Sector pricing changed. Sales says brave, finance says bold.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "campaign-deadline-chat",
+        "kind": "CampaignDeadlineSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We set a campaign deadline. Everyone knows when the sprint ends.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "campaign-hit-chat",
+        "kind": "CampaignDeadlineHit",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The deadline arrived. Score the era and decide whether to continue.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-shaped-chat",
+        "kind": "LawShaped",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We shaped the law for the next era. Lobbyists earned their retainer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "baggage-chat",
+        "kind": "ScenarioBaggagePicked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We chose starting baggage. The lab begins under a cloud.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -16931,6 +17066,17 @@
         "continueModes": [
           "acknowledge"
         ]
+      },
+      {
+        "id": "campaign-stop",
+        "name": "Campaign clock",
+        "kind": "Neutral",
+        "blurbKey": "campaign-stop",
+        "continueModes": [
+          "keep-going",
+          "spectate",
+          "acknowledge"
+        ]
       }
     ],
     "bailoutCash": 200000,
@@ -16961,7 +17107,8 @@
     },
     "museum": {
       "perLine": 6
-    }
+    },
+    "exitCovenantCallPermille": 200
   },
   "shady": {
     "cards": [
@@ -18727,5 +18874,67 @@
     "maxTier": 3,
     "revenuePerTier": 80,
     "overloadPerTier": 12
+  },
+  "campaignDeadline": {
+    "enabled": 1,
+    "minEra": 3,
+    "scoreBonusPermille": 100,
+    "endingId": "campaign-stop"
+  },
+  "lawShaping": {
+    "enabled": 1,
+    "minEra": 2,
+    "strictDelta": 40,
+    "looseDelta": 30,
+    "regulatorAttentionDampFrom": 700,
+    "regulatorDampPermille": 500
+  },
+  "takeoffCrisis": {
+    "enabled": 1,
+    "minEra": 4,
+    "capabilityMin": 850,
+    "corruptionMin": 400,
+    "cooldownWeeks": 48
+  },
+  "scenarioBaggage": {
+    "enabled": 1,
+    "items": [
+      {
+        "id": "early-lawsuit",
+        "name": "Lawsuit on day one",
+        "kind": "lawsuit",
+        "caseClaim": 500000,
+        "caseStrength": 400,
+        "reputationLoss": 0,
+        "trustLoss": 0,
+        "loanPrincipal": 0,
+        "notePrincipal": 0,
+        "rbfAdvance": 0
+      },
+      {
+        "id": "starter-debt",
+        "name": "Starter debt",
+        "kind": "debt",
+        "loanPrincipal": 200000,
+        "notePrincipal": 0,
+        "rbfAdvance": 0,
+        "caseClaim": 0,
+        "caseStrength": 0,
+        "reputationLoss": 0,
+        "trustLoss": 0
+      },
+      {
+        "id": "reputational-leak",
+        "name": "Reputational leak",
+        "kind": "leak",
+        "reputationLoss": 80,
+        "trustLoss": 40,
+        "loanPrincipal": 0,
+        "notePrincipal": 0,
+        "rbfAdvance": 0,
+        "caseClaim": 0,
+        "caseStrength": 0
+      }
+    ]
   }
 }

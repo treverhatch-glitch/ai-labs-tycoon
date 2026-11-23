@@ -248,6 +248,18 @@ public class HardeningCrossSystemSoakTests
             if (week % 40 == 12 && eraN != null)
                 g.Try(Command.SetSectorPrice(g.Id, eraN.Sectors.Count > 0 ? eraN.Sectors[0] : "game-ai", 2));
         }
+        if (week >= 460)
+        {
+            g.C.CampaignDeadline.MinEra = 0;
+            g.C.LawShaping.MinEra = 0;
+            g.C.ScenarioBaggage.Enabled = 1;
+            if (week % 46 == 7 && g.Me.CampaignDeadlineTick == 0)
+                g.Try(Command.SetCampaignDeadline(g.Id, g.Tick + 60));
+            if (week % 48 == 9 && g.Me.BaggagePicked == 0)
+                g.Try(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+            if (week % 50 == 11 && g.Me.LawShapePending == 0)
+                g.Try(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Loose));
+        }
     }
 
     static Game Soak(long seed, int weeks)
@@ -259,7 +271,7 @@ public class HardeningCrossSystemSoakTests
         {
             UseEveryTool(g, week);
             g.Autopilot(1);
-            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true);
+            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true, eraOBounds: true);
             Assert.Equal(gap, g.Me.Cash - g.Me.Ledger.Lifetime.Net);
         }
         return g;
@@ -276,7 +288,7 @@ public class HardeningCrossSystemSoakTests
         Game g = Soak(seed, TenYearsWeeks);
         Assert.False(double.IsNaN(g.Me.Cash));
         Assert.True(LabQueries.TotalStaff(g.Me) >= 0);
-        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true);
+            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true, eraOBounds: true);
         Simulation back = Simulation.Load(g.C, g.Sim.Save());
         Assert.Equal(g.Sim.Digest(), back.Digest());
     }
@@ -305,7 +317,7 @@ public class HardeningCrossSystemSoakTests
     {
         Game g = Soak(seed, TenYearsWeeks);
         Assert.Empty(SaveGame.Problems(g.C, g.State));
-        HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true);
+            HardeningInvariants.AssertAllLabs(g.C, g.State, eraBounds: true, eraBBounds: true, eraCBounds: true, eraDBounds: true, eraEBounds: true, eraFBounds: true, eraGBounds: true, eraHBounds: true, eraIBounds: true, eraJBounds: true, eraKBounds: true, eraLBounds: true, eraMBounds: true, eraNBounds: true, eraOBounds: true);
         Simulation back = Simulation.Load(g.C, g.Sim.Save());
         Assert.Equal(g.Sim.Digest(), back.Digest());
     }

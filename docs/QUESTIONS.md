@@ -2318,6 +2318,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q461. Batch fourteen news, chat and combos. DECIDED: nine headlines + five chat lines (386/342 total); together tests — specialist appeal stacks with sales role perks, data sources lift training luck alongside dataset forecast tech, open weights and public metrics both shift trust, sector pricing tiers add lab overload.
 - Pin counts in validator tests like batch twelve/thirteen.
 
+### Q462. What does a campaign deadline do? DECIDED: optional run stop tick on the player lab (`SetCampaignDeadline`, schema 139); at deadline, mark the current era, record `Campaign.RunScore`, grant a configured score bonus permille, fire a continuing ending, sandbox keeps deadline 0.
+- Player-only; rivals ignore deadlines.
+
+### Q463. How does law shaping extend lobbying? DECIDED: spend lobbying cooldown to bias which alignment-law tier advances next era (`ShapeLaw`, schema 140); quiet vs subsidy pushes differ; regulators can dampen stacked nudges.
+- Structural, not Unity law picker.
+
+### Q464. How should exit price treat debt? DECIDED: `ExitPriceParts` lists gross, loan balance, notes, RBF, covenant calls; `SellLab` uses net cash to buyer (schema 141); breakdown test sums to exit offer.
+- No new finance instruments.
+
+### Q465. What is the takeoff crisis? DECIDED: player office crisis when corruption and released capability cross `takeoff` bar (`RespondTakeoff`, schema 142); answers shift loose / paperclip / continue tracks; timed like escape crisis.
+- Rivals do not get takeoff prompts.
+
+### Q466. What is scenario baggage? DECIDED: optional starting flags on new game (`PickScenarioBaggage`, schema 143): lawsuit in progress, starter debt, or reputational leak; each toggles initial state/events once.
+- Full founding presets (Baron/Rebel/Hacker) stay a later slice.
+
+### Q467. Batch fifteen news, chat and combos. DECIDED: five headline kinds + four chat lines (391/346 total); together tests — deadline with era score, law shape with alignment bar, exit with loans, takeoff with containment room, baggage with trust/reputation.
+
 ## Open
 
-None.
+None (batch-fifteen Q462–Q467 decided).
