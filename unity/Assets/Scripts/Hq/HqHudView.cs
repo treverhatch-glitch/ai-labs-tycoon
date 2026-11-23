@@ -2290,6 +2290,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeHardwareGrant = HqDisplayQueriesHud.LifetimeHardwareGrantSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeHardwareGrant))
                     status = string.IsNullOrEmpty(status) ? lifetimeHardwareGrant : status + " · " + lifetimeHardwareGrant;
+                string thisWeekConstructionGrant = HqDisplayQueriesHud.ThisWeekConstructionGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekConstructionGrant))
+                    status = string.IsNullOrEmpty(status) ? thisWeekConstructionGrant : status + " · " + thisWeekConstructionGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
