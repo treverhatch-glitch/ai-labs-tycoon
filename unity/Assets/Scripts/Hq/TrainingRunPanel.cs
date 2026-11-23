@@ -392,6 +392,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekConstructionNet = HqDisplayQueriesHud.ThisWeekConstructionNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekConstructionNet))
                         _summary.text += " · " + thisWeekConstructionNet;
+                    string lastWeekRoomGrey = HqDisplayQueriesHud.LastWeekRoomGreySummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekRoomGrey))
+                        _summary.text += " · " + lastWeekRoomGrey;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
