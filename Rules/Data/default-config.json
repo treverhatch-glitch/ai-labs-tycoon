@@ -9415,6 +9415,67 @@
             ]
           }
         ]
+      },
+      {
+        "id": "rung-six-shutdown",
+        "name": "Turn off one site",
+        "text": "Safety wants a hard shutdown of the worst site until the models cool off.",
+        "requires": "Nothing",
+        "trigger": "RungSix",
+        "lapseChoice": "delay",
+        "fromYear": 0,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "shutdown",
+            "text": "Shut the site",
+            "result": "Compute idles.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Corruption",
+                "amount": -80
+              },
+              {
+                "kind": "Attention",
+                "amount": 40
+              }
+            ]
+          },
+          {
+            "id": "delay",
+            "text": "Delay and hedge",
+            "result": "Heat rises.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": 60
+              },
+              {
+                "kind": "Reputation",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "audit",
+            "text": "Open books",
+            "result": "Trust buys time.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 30
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -9780,7 +9841,9 @@
         "labName": "Ivory Tower Labs",
         "leader": "Prof. Okafor",
         "familyName": "Ivory",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "ten-staff",
+        "goalDeadlinePermille": 800
       },
       {
         "id": "dropouts-deck",
@@ -12214,6 +12277,48 @@
         "kind": "ScenarioBaggagePicked",
         "pick": -1,
         "text": "{lab} opens with baggage from a harder scenario"
+      },
+      {
+        "id": "margin-call",
+        "kind": "MarginCall",
+        "pick": -1,
+        "text": "{lab} gets a margin call on its chip-backed loans"
+      },
+      {
+        "id": "margin-satisfied",
+        "kind": "MarginCallSatisfied",
+        "pick": -1,
+        "text": "{lab} satisfies a margin call with cash or fleet sales"
+      },
+      {
+        "id": "margin-default",
+        "kind": "MarginCallDefaulted",
+        "pick": -1,
+        "text": "{lab} defaults after missing a margin call"
+      },
+      {
+        "id": "hearing-ticker",
+        "kind": "HearingShareNudged",
+        "pick": -1,
+        "text": "{lab} hearing answer moves the float lab ticker"
+      },
+      {
+        "id": "scenario-met",
+        "kind": "ScenarioGoalMet",
+        "pick": -1,
+        "text": "{lab} hits its scenario goal before the deadline"
+      },
+      {
+        "id": "scenario-miss",
+        "kind": "ScenarioGoalMissed",
+        "pick": -1,
+        "text": "{lab} misses its scenario goal at the deadline"
+      },
+      {
+        "id": "law-target",
+        "kind": "LawTargetSet",
+        "pick": -1,
+        "text": "{lab} picks strict or loose law before lobbying"
       }
     ],
     "filler": [
@@ -16321,6 +16426,72 @@
         "text": "We chose starting baggage. The lab begins under a cloud.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "margin-call-chat",
+        "kind": "MarginCall",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are under a margin call. Sell chips or pay down debt.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "margin-satisfied-chat",
+        "kind": "MarginCallSatisfied",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Margin call cleared. Lender backs off for now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hearing-ticker-chat",
+        "kind": "HearingShareNudged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The hearing moved our share price permille.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-met-chat",
+        "kind": "ScenarioGoalMet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Scenario goal met. We can claim the win ending.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-miss-chat",
+        "kind": "ScenarioGoalMissed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Scenario goal missed at the deadline.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-target-chat",
+        "kind": "LawTargetSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Law target set before the lobby push.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -17075,6 +17246,24 @@
         "continueModes": [
           "keep-going",
           "spectate",
+          "acknowledge"
+        ]
+      },
+      {
+        "id": "scenario-fail",
+        "name": "scenario-fail",
+        "kind": "Continuing",
+        "blurbKey": "scenario-fail",
+        "continueModes": [
+          "acknowledge"
+        ]
+      },
+      {
+        "id": "scenario-win",
+        "name": "scenario-win",
+        "kind": "Continuing",
+        "blurbKey": "scenario-win",
+        "continueModes": [
           "acknowledge"
         ]
       }
@@ -18936,5 +19125,48 @@
         "caseStrength": 0
       }
     ]
+  },
+  "marginCall": {
+    "enabled": 1,
+    "covenantPermille": 1200,
+    "cureWeeks": 4,
+    "payPermille": 1000
+  },
+  "hearingSharePrice": {
+    "enabled": 1,
+    "minFloatPpm": 50000,
+    "upPermille": 25,
+    "downPermille": 35
+  },
+  "rungSixCrisis": {
+    "enabled": 1,
+    "minEra": 3,
+    "corruptionMin": 650,
+    "arcWeeks": 24,
+    "cooldownWeeks": 52
+  },
+  "scenarioGoals": {
+    "enabled": 1,
+    "goals": [
+      {
+        "id": "ten-staff",
+        "name": "Ten on payroll",
+        "metric": "Staff",
+        "target": 10,
+        "failEndingId": "scenario-fail",
+        "winEndingId": "scenario-win"
+      },
+      {
+        "id": "first-million",
+        "name": "A million in revenue",
+        "metric": "LifetimeRevenue",
+        "target": 1000000,
+        "failEndingId": "scenario-fail",
+        "winEndingId": "scenario-win"
+      }
+    ]
+  },
+  "lawTarget": {
+    "enabled": 1
   }
 }
