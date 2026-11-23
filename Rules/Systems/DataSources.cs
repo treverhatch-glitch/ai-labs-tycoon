@@ -22,6 +22,7 @@ namespace AiLabs.Rules.Systems
             SetWeeks(lab, i, src.DurationWeeks);
             Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
             Events.Add(state, EventKind.DataSourceAcquired, lab.Id, i, src.DurationWeeks, sourceId);
+            DataSourceSpecialistPairing.OnAcquire(c, state, lab, sourceId);
         }
 
         public static void Renew(GameConfig c, GameState state, LabState lab, string sourceId)
@@ -54,6 +55,13 @@ namespace AiLabs.Rules.Systems
             int total = 0;
             for (int i = 0; i < c.DataSources.Sources.Count; i++)
                 if (Weeks(lab, i) > 0) total += c.DataSources.Sources[i].QualityPermille;
+            return total;
+        }
+
+        public static int QualityPermille(GameConfig c, GameState state, LabState lab)
+        {
+            int total = QualityPermille(c, lab);
+            if (state != null) total += DataSourceSpecialistPairing.BonusPermille(c, state, lab);
             return total;
         }
 

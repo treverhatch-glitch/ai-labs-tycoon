@@ -12381,6 +12381,18 @@
         "text": "{lab} pegs premium pricing on {ref}"
       },
       {
+        "id": "data-source-specialist-pair",
+        "kind": "DataSourceSpecialistPaired",
+        "pick": -1,
+        "text": "{lab} paired specialist training data with {ref}"
+      },
+      {
+        "id": "public-metrics-era-boost",
+        "kind": "PublicMetricsEraBoost",
+        "pick": -1,
+        "text": "{lab} published metrics with an era-load trust bump on {ref}"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16626,6 +16638,28 @@
         "toYear": 0
       },
       {
+        "id": "data-pair-chat",
+        "kind": "DataSourceSpecialistPaired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Our specialist line finally has a matching data contract.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-era-chat",
+        "kind": "PublicMetricsEraBoost",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Publishing metrics picked up an era-load trust bonus.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19354,5 +19388,26 @@
   "sectorPricingBreakdown": {
     "enabled": 1,
     "peakTierNotify": 1
+  },
+  "dataSourceSpecialistPairing": {
+    "enabled": 1,
+    "minEra": 3,
+    "pairs": [
+      {
+        "specialistKindId": "code",
+        "dataSourceId": "expert-labels",
+        "bonusPermille": 40
+      },
+      {
+        "specialistKindId": "image",
+        "dataSourceId": "licensed-corpus",
+        "bonusPermille": 35
+      }
+    ]
+  },
+  "publicMetricsEraLoad": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 15
   }
 }

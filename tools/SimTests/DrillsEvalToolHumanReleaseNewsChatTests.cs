@@ -56,8 +56,8 @@ public class DrillsEvalToolHumanReleaseNewsChatTests
     public void The_new_headlines_and_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(407, c.News.Headlines.Count);
-        Assert.Equal(360, c.Chat.Lines.Count);
+        Assert.Equal(409, c.News.Headlines.Count);
+        Assert.Equal(362, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());
