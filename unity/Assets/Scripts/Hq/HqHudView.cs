@@ -739,6 +739,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekChipDev = HqDisplayQueriesHud.ThisWeekChipDevSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekChipDev))
                     status = string.IsNullOrEmpty(status) ? thisWeekChipDev : status + " · " + thisWeekChipDev;
+                string lastWeekFinesGpu = HqDisplayQueriesHud.LastWeekFinesGpuSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekFinesGpu))
+                    status = string.IsNullOrEmpty(status) ? lastWeekFinesGpu : status + " · " + lastWeekFinesGpu;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
