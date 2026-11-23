@@ -2171,6 +2171,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeGreyPatent = HqDisplayQueriesHud.LifetimeGreyPatentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeGreyPatent))
                         _summary.text += " · " + lifetimeGreyPatent;
+                    string thisWeekSpendChip = HqDisplayQueriesHud.ThisWeekSpendChipSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekSpendChip))
+                        _summary.text += " · " + thisWeekSpendChip;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
