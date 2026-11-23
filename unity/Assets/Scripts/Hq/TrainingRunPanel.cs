@@ -626,6 +626,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekRoomPatent = HqDisplayQueriesHud.LastWeekRoomPatentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekRoomPatent))
                         _summary.text += " · " + lastWeekRoomPatent;
+                    string thisWeekPowerGrey = HqDisplayQueriesHud.ThisWeekPowerGreySummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekPowerGrey))
+                        _summary.text += " · " + thisWeekPowerGrey;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
