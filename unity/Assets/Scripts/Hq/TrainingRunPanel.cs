@@ -533,6 +533,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeHardwareTraining = HqDisplayQueriesHud.LifetimeHardwareTrainingSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeHardwareTraining))
                         _summary.text += " · " + lifetimeHardwareTraining;
+                    string thisWeekGreyGrant = HqDisplayQueriesHud.ThisWeekGreyGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekGreyGrant))
+                        _summary.text += " · " + thisWeekGreyGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
