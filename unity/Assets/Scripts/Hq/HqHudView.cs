@@ -709,6 +709,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekPatentLand = HqDisplayQueriesHud.LastWeekPatentLandSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekPatentLand))
                     status = string.IsNullOrEmpty(status) ? lastWeekPatentLand : status + " · " + lastWeekPatentLand;
+                string thisWeekPowerConstruction = HqDisplayQueriesHud.ThisWeekPowerConstructionSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekPowerConstruction))
+                    status = string.IsNullOrEmpty(status) ? thisWeekPowerConstruction : status + " · " + thisWeekPowerConstruction;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
