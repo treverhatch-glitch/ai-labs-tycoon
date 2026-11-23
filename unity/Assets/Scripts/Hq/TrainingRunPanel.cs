@@ -17,6 +17,7 @@ namespace AiLabs.Unity.Hq
         SimulationHost _host;
         Transform _activeRuns;
         Text _status;
+        Text _summary;
 
         public static TrainingRunPanel Create(Transform canvasParent, SimulationHost host)
         {
@@ -65,6 +66,9 @@ namespace AiLabs.Unity.Hq
             var runsLayout = _activeRuns.gameObject.AddComponent<VerticalLayoutGroup>();
             runsLayout.spacing = 2f;
 
+            _summary = HqUiFactory.Label(root, "Summary", "", 11, TextAnchor.UpperLeft);
+            _summary.rectTransform.anchorMin = new Vector2(0f, 0.22f);
+            _summary.rectTransform.anchorMax = new Vector2(1f, 0.38f);
             _status = HqUiFactory.Label(root, "Status", "", 11, TextAnchor.LowerLeft);
             _status.rectTransform.anchorMin = new Vector2(0f, 0f);
             _status.rectTransform.anchorMax = new Vector2(1f, 0.2f);
@@ -99,14 +103,17 @@ namespace AiLabs.Unity.Hq
                 empty.color = new Color(0.75f, 0.8f, 0.85f);
             }
 
-            string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
+            int training = 0;
+            for (int i = 0; i < lab.Models.Count; i++)
+                if (lab.Models[i].Status == ModelStatus.Training) training++;
+            _summary.text = training > 0 ? "Active runs: " + training + " · Models: " + lab.Models.Count : "No active runs";
+                    string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekLand))
-                        _status.text += " · " + lastWeekLand;
+                        _summary.text += " · " + lastWeekLand;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
-                        _status.text += " · " + weeklyCompute;
-
-                        _status.text = string.IsNullOrEmpty(_host.StatusMessage)
+                        _summary.text += " · " + weeklyCompute;
+            _status.text = string.IsNullOrEmpty(_host.StatusMessage)
                 ? "Start a run after researching the line."
                 : _host.StatusMessage;
         }
