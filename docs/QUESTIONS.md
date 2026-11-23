@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q483. Studio graphics land handoff? DECIDED: `CampusGraphicsStudioHandoffSpec` + doc
+
+- Options: (a) NEXT prose only; (b) spec constants + STUDIO-GRAPHICS-HANDOFF; (c) edit `studio/game.json` in graphics PR.
+- Recommendation and choice: **(b)** — documents branch/gate paths; studio thread still owns `game.json`.
+- Why: Aligns with NEXT Unity item 5 without crossing studio/graphics folder boundaries.
+
 ### Q482. Mascot row HUD tokens? DECIDED: `CampusMascotRowHudPresentationSpec`
 
 - Options: (a) only MASCOT-PRESENTATION table; (b) row spec + HUD doc; (c) duplicate `CampusHudLayoutSpec` in UI.

@@ -2,6 +2,8 @@
 
 Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change play-mode behaviour. Unity thread wires assets into existing views.
 
+**Studio land:** [STUDIO-GRAPHICS-HANDOFF.md](STUDIO-GRAPHICS-HANDOFF.md) (batch 34).
+
 ## Batch 11 (local, unpushed atop `c17c67d`)
 
 - `CampusAccessibilitySpec`, `ACCESSIBILITY-PRESENTATION.md`, Q460
