@@ -1,6 +1,6 @@
 # Research panel breakdown drawer (presentation)
 
-Link research quality/appeal tooltips to [DISPLAY-BREAKDOWN-PRESENTATION.md](DISPLAY-BREAKDOWN-PRESENTATION.md).
+Index: [EXPLAINABLE-HUD-INDEX.md](EXPLAINABLE-HUD-INDEX.md) (batch 56). Link research quality/appeal tooltips to [DISPLAY-BREAKDOWN-PRESENTATION.md](DISPLAY-BREAKDOWN-PRESENTATION.md).
 
 | Metric | Icon | Drawer |
 | --- | --- | --- |

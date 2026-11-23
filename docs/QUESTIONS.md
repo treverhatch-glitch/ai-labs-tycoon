@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q505. Explainable HUD index? DECIDED: `CampusExplainableHudIndexPresentationSpec`
+
+- Options: (a) per-drawer docs only; (b) index doc + drawer count + shared row height; (c) wire `DisplayQueries` in graphics PR.
+- Recommendation and choice: **(b)** — HQ breakdown (batch 20) + research drawer (batch 25); 22px row alias.
+- Why: Matches `docs/NEXT.md` explainable HUD row; no rules `DisplayQueries` on cloud agent.
+
 ### Q504. Training incident index? DECIDED: `CampusTrainingIncidentIndexPresentationSpec`
 
 - Options: (a) `TRAINING-INCIDENT-PRESENTATION` only; (b) index doc + tier count spec; (c) wire rung UI in graphics PR.
