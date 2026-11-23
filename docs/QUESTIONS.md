@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q488. Staff/GPU side panel tokens? DECIDED: `CampusStaffGpuPanelPresentationSpec`
+
+- Options: (a) staff row spec only; (b) panel band spec + doc; (c) wire `StaffGpuPanel` in graphics PR.
+- Recommendation and choice: **(b)** — 28×30% band reuses row height + staff/compute icons.
+- Why: HQ layout mid column in `UI-HUD-LAYOUTS`; hire/GPU rules unchanged.
+
 ### Q487. Room build panel layout tokens? DECIDED: `CampusRoomBuildPresentationSpec`
 
 - Options: (a) `UI-HUD-LAYOUTS` prose only; (b) spec + ROOM-BUILD doc; (c) implement ghost/build UI in graphics PR.

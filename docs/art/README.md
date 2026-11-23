@@ -46,6 +46,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md) | World map host shell (batch 36) |
 | [START-ERA-PICKER-PRESENTATION.md](START-ERA-PICKER-PRESENTATION.md) | Start-era picker (batch 37) |
 | [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md) | Room build panel (batch 38) |
+| [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) | Staff/GPU side panel (batch 39) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
