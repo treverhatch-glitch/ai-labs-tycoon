@@ -1999,6 +1999,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeConstructionPatentSpendIncome = HqDisplayQueriesHud.LifetimeConstructionPatentSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeConstructionPatentSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimeConstructionPatentSpendIncome : status + " · " + lifetimeConstructionPatentSpendIncome;
+                string thisWeekGpuNetSpendIncome = HqDisplayQueriesHud.ThisWeekGpuNetSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekGpuNetSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekGpuNetSpendIncome : status + " · " + thisWeekGpuNetSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
