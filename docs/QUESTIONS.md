@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q499. Full-screen layout index? DECIDED: `CampusFullScreenLayoutIndexPresentationSpec`
+
+- Options: (a) markdown index only; (b) index doc + count spec; (c) merge screen specs.
+- Recommendation and choice: **(b)** — documents 3 full-screen layouts (research, rivals, training).
+- Why: Navigation hub for Unity thread; HQ bands stay in `HQ-STAGE-STACK.md`.
+
 ### Q498. Training screen layout tokens? DECIDED: `CampusTrainingScreenPresentationSpec`
 
 - Options: (a) `TRAINING-PANEL` only; (b) 60/40 screen spec; (c) wire `TrainingRunPanel` in graphics PR.
