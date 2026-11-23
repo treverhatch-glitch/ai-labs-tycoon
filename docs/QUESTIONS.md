@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q515. World map host index? DECIDED: `CampusWorldMapHostIndexPresentationSpec`
+
+- Options: (a) host + panel docs only; (b) index + layer count + bloc alias; (c) implement world map UI in graphics PR.
+- Recommendation and choice: **(b)** — links batch 36 host shell with batch 4 panel mock; freeze via seasonal index.
+- Why: Store NEXT refill; rules world map commands unchanged on cloud agent.
+
 ### Q514. Studio handoff cross-link to index hub? DECIDED: extend `CampusGraphicsStudioHandoffSpec`
 
 - Options: (a) STUDIO doc prose only; (b) hub doc aliases on studio spec + test; (c) studio/game.json change.

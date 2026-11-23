@@ -78,5 +78,6 @@ python3 tools/art/generate_campus_kit.py
 | [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) | ALT-76 status rollup (batch 62) |
 | [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | GO packet + index lane (batch 63) |
 | *(UNITY-INTEGRATION § Index lane)* | Unity hub links (batch 64) |
+| [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) | World map host + panel (batch 66) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

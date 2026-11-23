@@ -11,7 +11,7 @@ Presentation overlay using `world-bloc-tints.json` and campus kit props.
 | Selected site preview | `exterior-sign-pole`, optional `building-elevator-core` for megasites |
 | HUD icon | `icon-world.svg` |
 
-Host shell: [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md).
+Index: [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) (batch 66). Host shell: [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md).
 
 ## Interaction (Unity thread)
 

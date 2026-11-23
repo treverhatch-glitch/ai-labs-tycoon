@@ -53,7 +53,8 @@
 | 62 | `d75f611` | ALT-76 rollup refresh |
 | 63 | `669a933` | GO packet template |
 | 64 | `d545341` | Unity integration hub |
-| 65 | *(this push)* | Studio handoff hub link |
+| 65 | `ef4f0d8` | Studio handoff hub link |
+| 66 | (LOCAL GREEN) | World map host index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 
