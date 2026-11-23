@@ -648,6 +648,7 @@ namespace AiLabs.Unity.Hq
                                  + " · " + HqDisplayQueriesHud.LastWeekHardwarePowerSpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqDisplayQueriesHud.LifetimeHardwarePowerSpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqDisplayQueriesHud.ThisWeekHiringGreySpendIncomeSummaryLine(_host.Simulation.Player)
+                                 + " · " + HqDisplayQueriesHud.LastWeekHiringGreySpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);
             }
             if (_status != null && !string.IsNullOrEmpty(_host.StatusMessage))
