@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q495. Advance week button tokens? DECIDED: `CampusAdvanceWeekPresentationSpec`
+
+- Options: (a) `CampusHudLayoutSpec` only; (b) advance-week doc + spec; (c) wire button in graphics PR.
+- Recommendation and choice: **(b)** — 200×48 constants + link to date row doc.
+- Why: Pairs global chrome table with batch 31 HUD date row.
+
 ### Q494. Safe area / reference resolution tokens? DECIDED: `CampusSafeAreaPresentationSpec`
 
 - Options: (a) `UI-HUD-LAYOUTS` prose; (b) safe-area spec + doc; (c) canvas scaler in graphics PR.

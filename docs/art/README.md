@@ -53,6 +53,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) | HQ stage band index (batch 43) |
 | [TAB-RAIL-FUTURE-PRESENTATION.md](TAB-RAIL-FUTURE-PRESENTATION.md) | Tab rail v2 (batch 44) |
 | [SAFE-AREA-PRESENTATION.md](SAFE-AREA-PRESENTATION.md) | Safe area + 1920×1080 (batch 45) |
+| [ADVANCE-WEEK-PRESENTATION.md](ADVANCE-WEEK-PRESENTATION.md) | Advance week button (batch 46) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

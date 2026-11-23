@@ -34,6 +34,7 @@
 | 43 | (local GO) | HQ stage stack |
 | 44 | `5d52a64` | Tab rail v2 |
 | 45 | (local GO) | Safe area |
+| 46 | (local GO) | Advance week |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
