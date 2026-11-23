@@ -3935,5 +3935,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("2,340").Or.Contain("7,220"));
         }
 
+        [Test]
+        public void lifetime_launder_fines_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Laundered = 30_000;
+                        lab.Ledger.Lifetime.Fines = -24_000;
+            string line = HqDisplayQueriesHud.LifetimeLaunderFinesSummaryLine(lab);
+            Assert.That(line, Does.Contain("30,000").Or.Contain("24,000"));
+        }
+
     }
 }
