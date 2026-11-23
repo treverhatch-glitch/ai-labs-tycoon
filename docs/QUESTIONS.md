@@ -997,9 +997,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only; gates **3609/0** / **3607/0** WT.
 
-### Q3006–Q3075. Era/incident data bar? DECIDED: test-only (batch 48, commit-ready — push with GO)
+### Q3006–Q3075. Era/incident data bar? DECIDED: test-only (batch 48, pushed @ `d0aca54`)
 
 - **`HatchEraIncidentBarLaterTests` (70):** `incidentLoadPermille` era table; schema **29** only; gates **3679/0** / **3677/0** WT.
+
+### Q3076–Q3145. Exit/sell data bar? DECIDED: test-only (batch 49, pushed @ `69e7282`)
+
+- **`HatchExitSellBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; schema **29** only; gate **3749/0** in-repo.
+
+### Q3146–Q3215. Bubble/acquire data bar? DECIDED: test-only (batch 50, pushed @ tip)
+
+- **`HatchBubbleAcquireBarLaterTests` (70):** `BubbleConfig` + `Acquisitions` stack2 neighbours; schema **29** only; gate **3819/0** in-repo.
+
+### Q3216–Q3285. Balance/soak data bar coda? TBD: test-only (batch 51, queued)
+
+- **`HatchBalanceSoakBarLaterTests2` (70):** `BalanceSoak.DefaultPresets`; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

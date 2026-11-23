@@ -155,8 +155,9 @@ and says why in the commit message.
 - ~~**Hatch containment/ending batch 46**~~ **pushed @ `77ff014`** — Q2866–Q2935 (`HatchContainmentEndingBarLaterTests2`, **70**); gate **3539/0** / **3537/0** WT; parent `6dbc3ac` (+ `63295a9` test, `77ff014` docs).
 - ~~**Hatch regulators/bubble batch 47**~~ **pushed @ `e0b3311`** — Q2936–Q3005 (`HatchRegulatorBubbleBarLaterTests`, **70**); gate **3609/0** / **3607/0** WT; parent `77ff014` (+ `2c53e0d` test, `e0b3311` docs); Q200+golden **13/0** at tip prepush.
 - ~~**Hatch era/incident batch 48**~~ **pushed @ `d0aca54`** — Q3006–Q3075 (`HatchEraIncidentBarLaterTests`, **70**); gate **3679/0** / **3677/0** WT.
-- **Hatch exit/sell batch 49 (commit-ready — push with GO ≥ 18:15 UTC)** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; WT pending; parent `d0aca54` (+ `d83d0ea` test, docs @ tip).
-- **Hatch bubble/acquire batch 50 (queued)** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); bubble + acquisition stack2 neighbours; schema **29** only.
+- ~~**Hatch exit/sell batch 49**~~ **pushed @ `69e7282`** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; landed ~19:11 UTC.
+- ~~**Hatch bubble/acquire batch 50**~~ **pushed @ tip** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); gate **3819/0** in-repo; parent `69e7282`.
+- **Hatch balance/soak batch 51 (LOCAL — HOLD ≥30m after batch 50 land)** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); soak presets + calendar neighbours; schema **29** only.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
