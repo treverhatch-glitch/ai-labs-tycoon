@@ -33,6 +33,8 @@ namespace AiLabs.Unity.Hq
             string lastWeekTrainingRevenuePart = string.IsNullOrEmpty(lastWeekTrainingRevenue) ? "" : " · " + lastWeekTrainingRevenue;
             string thisWeekPowerChip = HqDisplayQueriesHud.ThisWeekPowerChipSummaryLine(sim.Player);
             string thisWeekPowerChipPart = string.IsNullOrEmpty(thisWeekPowerChip) ? "" : " · " + thisWeekPowerChip;
+            string thisWeekGreyNet = HqDisplayQueriesHud.ThisWeekGreyNetSummaryLine(sim.Player);
+            string thisWeekGreyNetPart = string.IsNullOrEmpty(thisWeekGreyNet) ? "" : " · " + thisWeekGreyNet;
             string lastWeekFinesTraining = HqDisplayQueriesHud.LastWeekFinesTrainingSummaryLine(sim.Player);
             string lastWeekFinesTrainingPart = string.IsNullOrEmpty(lastWeekFinesTraining) ? "" : " · " + lastWeekFinesTraining;
             string lifetimeNetTraining = HqDisplayQueriesHud.LifetimeNetTrainingSummaryLine(sim.Player);
@@ -81,7 +83,7 @@ namespace AiLabs.Unity.Hq
             string lastWeekHiringPatentPart = string.IsNullOrEmpty(lastWeekHiringPatent) ? "" : " · " + lastWeekHiringPatent;
             string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(sim.Player);
             string thisWeekBuildPart = string.IsNullOrEmpty(thisWeekBuild) ? "" : " · " + thisWeekBuild;
-            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart + lastWeekChipDevLandPart + thisWeekGrantsFinesPart + lifetimePowerFinesPart + lastWeekGreyLaunderPart + thisWeekConstructionGrantsPart + lastWeekTrainingRevenuePart + thisWeekSalariesGpuPart + lastWeekHardwarePowerPart + lifetimeTrainingLaunderPart + lastWeekChipSalesGrantsPart + lastWeekHiringGreyPart + thisWeekPowerChipPart + lastWeekPatentSitePart + thisWeekTrainingChipPart + lifetimeNetTrainingPart + lastWeekFinesTrainingPart;
+            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart + lastWeekChipDevLandPart + thisWeekGrantsFinesPart + lifetimePowerFinesPart + lastWeekGreyLaunderPart + thisWeekConstructionGrantsPart + lastWeekTrainingRevenuePart + thisWeekSalariesGpuPart + lastWeekHardwarePowerPart + lifetimeTrainingLaunderPart + lastWeekChipSalesGrantsPart + lastWeekHiringGreyPart + thisWeekPowerChipPart + lastWeekPatentSitePart + thisWeekTrainingChipPart + lifetimeNetTrainingPart + lastWeekFinesTrainingPart + thisWeekGreyNetPart;
         }
     }
 }
