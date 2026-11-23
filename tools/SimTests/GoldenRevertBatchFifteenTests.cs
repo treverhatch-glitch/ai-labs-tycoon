@@ -4,6 +4,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
+[Collection("GoldenRevertBatch12")]
 public class GoldenRevertBatchFifteenTests
 {
     [Theory]
