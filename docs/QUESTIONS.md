@@ -937,7 +937,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
 
-### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, local)
+### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, local GO-ready @ `29d5c6c`)
 
 - **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
 
