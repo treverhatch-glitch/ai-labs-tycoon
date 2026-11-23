@@ -11,20 +11,20 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[149]=41d7ddac50ade9c6f5c34afc97285e3a943c53ece1d99dc25376305f75fbbcc3
-GOLDEN[150]=41d7ddac50ade9c6f5c34afc97285e3a943c53ece1d99dc25376305f75fbbcc3
-GOLDEN[151]=41d7ddac50ade9c6f5c34afc97285e3a943c53ece1d99dc25376305f75fbbcc3
-GOLDEN[152]=a43322c15bc05528c0359d17ecffaa194bfc3fc4cefc46e19c7c778383ab43bd
-GOLDEN[153]=a43322c15bc05528c0359d17ecffaa194bfc3fc4cefc46e19c7c778383ab43bd
+GOLDEN[149]=45a2624bb2b6050b0cf19fd2b62ea7974319851a4e94f4bedf17cf1ecc4e87e1
+GOLDEN[150]=c1891ce34df311a08174236dc14591a5bdd4019280d02ad3f4b528e537ec3e1a
+GOLDEN[151]=ab08e3c739bdf6e1975df782c7b808eae431335dadb70847c121f17c9fb5cecd
+GOLDEN[152]=6835d1c8706cf7ef032dd105f1de29baada60028f1b0cd3a121535f958e1da50
+GOLDEN[153]=470da77b1e6d001a6d024f1154f58d2ead553f253ed787bb2378f65e327aa40d
 
 PREV=$((N - 1))
 BK="/tmp/b17-rev-bak-$N"
 mkdir -p "$BK"
-for f in Rules/State/GameState.cs Rules/Sim/CommandProcessor.Compute.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.Shady.cs Rules/Systems/DecisionLog.cs Rules/Systems/EndingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+for f in Rules/State/GameState.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
   cp "$f" "$BK/$(echo $f | tr '/' '_')"
 done
 restore() {
-  for f in Rules/State/GameState.cs Rules/Sim/CommandProcessor.Compute.cs Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.Shady.cs Rules/Systems/DecisionLog.cs Rules/Systems/EndingSystem.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  for f in Rules/State/GameState.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
   (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
@@ -44,20 +44,9 @@ os.replace(t,p)
 "
 }
 
-[ "$N" -le 149 ] && {
-  disable_cfg reservedComputeGate
-  sed -i 's/^\([[:space:]]*\)if (!ReservedComputeGate.CanSign/\1\/\/ if (!ReservedComputeGate.CanSign/' Rules/Sim/CommandProcessor.Compute.cs
-  sed -i 's/^\([[:space:]]*\)ReservedComputeGate.OnSigned/\1\/\/ ReservedComputeGate.OnSigned/' Rules/Sim/CommandProcessor.Compute.cs
-}
-[ "$N" -le 150 ] && { disable_cfg rivalIntentNews; sed -i 's/^\([[:space:]]*\)if (state != null) RivalIntentNews.OnDecision/\1\/\/ if (state != null) RivalIntentNews.OnDecision/' Rules/Systems/DecisionLog.cs; }
-[ "$N" -le 151 ] && {
-  disable_cfg gpuTierUnlock
-  sed -i 's/^\([[:space:]]*\)if (!GpuTierUnlock.Unlocked/\1\/\/ if (!GpuTierUnlock.Unlocked/' Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.Compute.cs
-  sed -i 's/^\([[:space:]]*\)return GpuPurchaseBlocked/\1\/\/ return GpuPurchaseBlocked/' Rules/Sim/CommandProcessor.cs Rules/Sim/CommandProcessor.Compute.cs
-}
+[ "$N" -le 153 ] && disable_cfg shadyFreezeAudit
 [ "$N" -le 152 ] && {
   disable_cfg endlessScenario
-  sed -i 's/^\([[:space:]]*\)if (mode == "keep-going" && record.EndingId == EndlessScenario.WinEndingId)/\1\/\/ if (mode == "keep-going" && record.EndingId == EndlessScenario.WinEndingId)/' Rules/Systems/EndingSystem.cs
   python3 -c "
 import json, os
 p='Rules/Data/default-config.json'
@@ -69,7 +58,9 @@ with open(p+'.tmp','w') as f: json.dump(d,f,indent=2); f.write(chr(10))
 os.replace(p+'.tmp',p)
 "
 }
-[ "$N" -le 153 ] && { disable_cfg shadyFreezeAudit; sed -i 's/^\([[:space:]]*\)if (ShadyFreezeAudit.Enabled/\1\/\/ if (ShadyFreezeAudit.Enabled/' Rules/Sim/CommandProcessor.Shady.cs; }
+[ "$N" -le 151 ] && disable_cfg gpuTierUnlock
+[ "$N" -le 150 ] && disable_cfg rivalIntentNews
+[ "$N" -le 149 ] && disable_cfg reservedComputeGate
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"

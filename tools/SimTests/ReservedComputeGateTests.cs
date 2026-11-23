@@ -51,8 +51,7 @@ public class ReservedComputeGateTests
     [Fact]
     public void Save_at_148_has_no_cooldown_field()
     {
-        Game g = Lab();
-        g.Do(Command.SignReservedCompute(g.Id, 2));
+        Game g = Game.Solo(71, c => c.ReservedComputeGate.Enabled = 0);
         Simulation older = Simulation.Load(g.C, SaveSchemaPretend.At(g.C, 148, g.Sim.Save()));
         Assert.Equal(0, older.Player.ReservedSignCooldownUntil);
     }

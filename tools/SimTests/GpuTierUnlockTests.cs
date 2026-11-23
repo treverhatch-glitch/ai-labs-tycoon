@@ -15,12 +15,13 @@ public class GpuTierUnlockTests
         c.GpuTierUnlock.UnlockPermille = 900;
         c.GpuTierUnlock.MinEra = 0;
         c.GpuTierUnlock.TierMin = 0;
-    }).WithStarterLab(gpus: 2);
+    });
 
     [Fact]
     public void Low_reputation_blocks_buy()
     {
         Game g = Lab();
+        g.Build("server-closet", 2, 2);
         g.Me.Reputation = 100;
         g.Me.Cash = 1_000_000_000;
         g.Refused(Command.BuyGpus(g.Id, 2), CommandError.EraLocked);
@@ -31,6 +32,7 @@ public class GpuTierUnlockTests
     public void Unlocked_buy_succeeds()
     {
         Game g = Lab();
+        g.Build("server-closet", 2, 2);
         g.Me.Reputation = 950;
         g.Me.Cash = 1_000_000_000;
         g.Do(Command.BuyGpus(g.Id, 1));
@@ -42,6 +44,7 @@ public class GpuTierUnlockTests
     {
         Game g = Lab();
         g.Me.Reputation = 100;
+        g.Me.Cash = 1_000_000_000;
         g.Refused(Command.QueueGpuPurchase(g.Id, 1, HardwareBatch.Hq), CommandError.EraLocked);
     }
 }

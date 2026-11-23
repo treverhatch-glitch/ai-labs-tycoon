@@ -33,7 +33,9 @@ public class BatchSeventeenTogetherTests
             c.GpuTierUnlock.Enabled = 1;
             c.GpuTierUnlock.UnlockPermille = 800;
             c.GpuTierUnlock.MinEra = 0;
-        }).WithStarterLab(gpus: 2);
+        });
+        g.Build("server-closet", 2, 2);
+        g.Build("server-closet", 2, 2);
         g.Me.Reputation = 850;
         g.Me.Cash = 500_000_000;
         g.Do(Command.BuyGpus(g.Id, 1));

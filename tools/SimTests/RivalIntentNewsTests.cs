@@ -32,11 +32,11 @@ public class RivalIntentNewsTests
     {
         Game g = Game.New(14, c => { c.RivalIntentNews.Enabled = 1; c.RivalIntentNews.MinWeeksBetween = 8; });
         LabState rival = g.State.Labs.Find(l => l.Controller == LabController.Plan);
-        DecisionLog.Add(g.C, g.State, rival, g.Tick, DecisionAction.Paused, "", 0);
+        DecisionLog.Add(g.C, g.State, rival, g.Tick, DecisionAction.Paused, "x", 0);
         int n = g.State.Events.Count(e => e.Kind == EventKind.RivalIntentSurfaced);
-        DecisionLog.Add(g.C, g.State, rival, g.Tick + 2, DecisionAction.Paused, "", 0);
+        DecisionLog.Add(g.C, g.State, rival, g.Tick + 2, DecisionAction.Paused, "y", 0);
         Assert.Equal(n, g.State.Events.Count(e => e.Kind == EventKind.RivalIntentSurfaced));
-        DecisionLog.Add(g.C, g.State, rival, g.Tick + 8, DecisionAction.Paused, "", 0);
+        DecisionLog.Add(g.C, g.State, rival, g.Tick + 8, DecisionAction.Paused, "z", 0);
         Assert.True(g.State.Events.Count(e => e.Kind == EventKind.RivalIntentSurfaced) > n);
     }
 }
