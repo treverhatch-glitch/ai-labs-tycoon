@@ -25,6 +25,8 @@ namespace AiLabs.Unity.Hq
             var sim = _host.Simulation;
             string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(sim.Player);
             string lastWeekLandPart = string.IsNullOrEmpty(lastWeekLand) ? "" : " · " + lastWeekLand;
+            string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(sim.Player);
+            string thisWeekBuildPart = string.IsNullOrEmpty(thisWeekBuild) ? "" : " · " + thisWeekBuild;
             _line.text = "Mascots" + lastWeekLandPart;
         }
     }
