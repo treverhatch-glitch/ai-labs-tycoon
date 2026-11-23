@@ -981,13 +981,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only.
 
-### Q2726–Q2795. Shady/china data bar coda? DECIDED: test-only (batch 44, commit-ready — push ≥13:54 UTC + GO)
+### Q2726–Q2795. Shady/china data bar coda? DECIDED: test-only (batch 44, pushed @ `32fc117`)
 
-- **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only; gates **3399/0** / **3397/0** WT.
+- **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only.
 
-### Q2796–Q2865. Incident/safety data bar? TBD: test-only (batch 45, queued)
+### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, WIP — push with GO)
 
-- **`HatchIncidentSafetyBarLaterTests` (70):** `Shady` investigation + safety incident neighbours; schema **29** only.
+- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only.
+
+### Q2866–Q2935. Containment/ending data bar? TBD: test-only (batch 46, HOLD)
+
+- **`HatchContainmentEndingBarLaterTests2` (70):** containment + ending config neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
