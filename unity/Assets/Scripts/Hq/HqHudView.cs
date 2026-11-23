@@ -556,6 +556,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekUpkeepGpu = HqDisplayQueriesHud.LastWeekUpkeepGpuSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekUpkeepGpu))
                     status = string.IsNullOrEmpty(status) ? lastWeekUpkeepGpu : status + " · " + lastWeekUpkeepGpu;
+                string lastWeekTrainingSite = HqDisplayQueriesHud.LastWeekTrainingSiteSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekTrainingSite))
+                    status = string.IsNullOrEmpty(status) ? lastWeekTrainingSite : status + " · " + lastWeekTrainingSite;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
