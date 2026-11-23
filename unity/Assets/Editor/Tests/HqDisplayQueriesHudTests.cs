@@ -1065,5 +1065,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("120,000").Or.Contain("200,000"));
         }
 
+        [Test]
+        public void this_week_gpu_grey_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.GpuRent = -1_950;
+            lab.Ledger.ThisWeek.GreyRevenue = 1_300;
+            string line = HqDisplayQueriesHud.ThisWeekGpuGreySummaryLine(lab);
+            Assert.That(line, Does.Contain("1,950").Or.Contain("1,300"));
+        }
+
     }
 }
