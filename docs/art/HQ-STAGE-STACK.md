@@ -12,4 +12,6 @@ Single map for PR #41 batches 38–42 on the HQ office screen (`UI-HUD-LAYOUTS.m
 
 Tokens: `CampusHqStageStackPresentationSpec` (5 documented bands, lot viewport fraction alias).
 
+Rollup refresh: [HQ-STAGE-STACK-ROLLUP.md](HQ-STAGE-STACK-ROLLUP.md) (batch 69).
+
 No new rules; Unity thread uses this index for PC wiring.

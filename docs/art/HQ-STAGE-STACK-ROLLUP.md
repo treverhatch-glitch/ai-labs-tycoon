@@ -1,0 +1,15 @@
+# HQ stage stack rollup (presentation)
+
+Refresh navigation for batches 38–42 HQ office chrome; supersedes ad-hoc cross-links only.
+
+| Band | Batch | Doc |
+| --- | --- | --- |
+| Lot viewport | 42 | [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) |
+| Build panel | 38 / 68 | [ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md) |
+| Staff / GPU | 39 | [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) |
+| Training peek | 40 | [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) |
+| Mascot strip | 41 | [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) |
+
+Stack map: [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) (batch 42).
+
+Tokens: `CampusHqStageStackRollupPresentationSpec` (band count alias + build index layers). Batch 69.

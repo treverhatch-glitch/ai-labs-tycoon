@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q518. HQ stage stack rollup? DECIDED: `CampusHqStageStackRollupPresentationSpec`
+
+- Options: (a) refresh `HQ-STAGE-STACK.md` only; (b) rollup doc + band/build aliases; (c) implement HQ scene in graphics PR.
+- Recommendation and choice: **(b)** — links batches 38–42 with batch 68 build index; stack doc unchanged.
+- Why: Index-lane refill; HQ scene wiring stays Unity thread.
+
 ### Q517. Room build panel index? DECIDED: `CampusRoomBuildIndexPresentationSpec`
 
 - Options: (a) batch 38 doc only; (b) index + build/breakdown layers + fraction aliases; (c) implement `RoomBuildPanel` in graphics PR.

@@ -56,7 +56,8 @@
 | 65 | `ef4f0d8` | Studio handoff hub link |
 | 66 | `cc036a8` | World map host index |
 | 67 | `0607fca` | Tab rail integration index |
-| 68 | (LOCAL GREEN) | Room build panel index |
+| 68 | `1b8cf85` | Room build panel index |
+| 69 | (pushing) | HQ stage stack rollup |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 
