@@ -907,6 +907,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekLaunderChip = HqDisplayQueriesHud.ThisWeekLaunderChipSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekLaunderChip))
                     status = string.IsNullOrEmpty(status) ? thisWeekLaunderChip : status + " · " + thisWeekLaunderChip;
+                string lifetimeSiteTraining = HqDisplayQueriesHud.LifetimeSiteTrainingSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeSiteTraining))
+                    status = string.IsNullOrEmpty(status) ? lifetimeSiteTraining : status + " · " + lifetimeSiteTraining;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
