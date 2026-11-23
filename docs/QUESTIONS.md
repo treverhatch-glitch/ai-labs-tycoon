@@ -985,9 +985,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only.
 
-### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, WIP — push with GO)
+### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, commit-ready — push with GO)
 
-- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only.
+- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only; gates **3469/0** / **3467/0** WT.
 
 ### Q2866–Q2935. Containment/ending data bar? TBD: test-only (batch 46, HOLD)
 
