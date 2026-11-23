@@ -11,10 +11,10 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[139]=a765c4d62c0a8c9d35704860396e45148658f6703f0235985a26baffebae6aac
-GOLDEN[140]=8435b7e616126197d7c25e02e13e8d248c5789bd33191af083298f699704f594
-GOLDEN[141]=c07ea29311f9d746c5f527ae6aef3fb55f18d7a824b6a10609e6f4d099715097
-GOLDEN[142]=0d1501af776de2ceee41d6e4c46b64771a9db345adce4f23ecd1d993c1338914
+GOLDEN[139]=77f1bde8cae679206d4bb600086883d145c7616a1115975902bacdc65493ecb3
+GOLDEN[140]=65be48f66ab21d61f04be7ad153f56a03d82dd566effb41380f36f05f97412eb
+GOLDEN[141]=f6cf0bd5991e558d7380ea874050aa5c588766624701c2d08222fca98be420e0
+GOLDEN[142]=40e73e21752ded9a383ab197c4be0cca2cc70ea1f19f35e5367de212eb33fa21
 GOLDEN[143]=a2d0d0989bae77a01891a37609ae3f511a5dcc22e9d4bb546889461bfddb0e00
 
 PREV=$((N - 1))
@@ -46,11 +46,11 @@ os.replace(t,p)
 }
 comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim/Simulation.cs; }
 
-[ "$N" -eq 143 ] && { strip_sync 's\.Int\("baggagePicked"'; strip_sync 's\.Str\("baggageId"'; disable_cfg scenarioBaggage; comment_hook 'ScenarioBaggage'; }
-[ "$N" -eq 142 ] && { strip_sync 's\.Int\("takeoffCooldownUntil"'; disable_cfg takeoffCrisis; sed -i '/OfficeTrigger.Takeoff/d' Rules/Config/OfficeConfig.cs 2>/dev/null || true; comment_hook 'TakeoffCrisis.RunWeek'; }
-[ "$N" -eq 141 ] && { sed -i 's|b.Loans = ExitDebt.LoanBalance(lab)|b.Loans = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Notes = ExitDebt.NoteBalance(lab)|b.Notes = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Rbf = ExitDebt.RbfBalance(lab)|b.Rbf = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.CovenantCalls = ExitDebt.CovenantCalls(c, lab)|b.CovenantCalls = 0|' Rules/Systems/DisplayQueries.cs; }
-[ "$N" -eq 140 ] && { strip_sync 's\.Str\("lawShapeEra"'; strip_sync 's\.Int\("lawShape'; disable_cfg lawShaping; sed -i '/LawShaping.OnEraBegan/d' Rules/Systems/EraSystem.cs; }
-[ "$N" -eq 139 ] && { strip_sync 's\.Int\("campaignDeadlineTick"'; disable_cfg campaignDeadline; comment_hook 'CampaignDeadline.RunWeek'; }
+[ "$N" -le 143 ] && { strip_sync 's\.Int\("baggagePicked"'; strip_sync 's\.Str\("baggageId"'; disable_cfg scenarioBaggage; comment_hook 'ScenarioBaggage'; }
+[ "$N" -le 142 ] && { strip_sync 's\.Int\("takeoffCooldownUntil"'; disable_cfg takeoffCrisis; comment_hook 'TakeoffCrisis.RunWeek'; }
+[ "$N" -le 141 ] && { sed -i 's|b.Loans = ExitDebt.LoanBalance(lab)|b.Loans = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Notes = ExitDebt.NoteBalance(lab)|b.Notes = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Rbf = ExitDebt.RbfBalance(lab)|b.Rbf = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.CovenantCalls = ExitDebt.CovenantCalls(c, lab)|b.CovenantCalls = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Total = gross - b.StaffShare - b.Loans - b.Notes - b.Rbf - b.CovenantCalls;|b.Total = gross - b.StaffShare;|' Rules/Systems/DisplayQueries.cs; }
+[ "$N" -le 140 ] && { strip_sync 's\.Str\("lawShapeEra"'; strip_sync 's\.Int\("lawShape'; disable_cfg lawShaping; sed -i '/lab.Id == state.PlayerLabId)/,+1d' Rules/Systems/EraRules.cs; }
+[ "$N" -le 139 ] && { strip_sync 's\.Int\("campaignDeadlineTick"'; disable_cfg campaignDeadline; comment_hook 'CampaignDeadline.RunWeek'; }
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
