@@ -1019,6 +1019,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeHardwareRent = HqDisplayQueriesHud.LifetimeHardwareRentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeHardwareRent))
                         _summary.text += " · " + lifetimeHardwareRent;
+                    string lastWeekCapitalPower = HqDisplayQueriesHud.LastWeekCapitalPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekCapitalPower))
+                        _summary.text += " · " + lastWeekCapitalPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
