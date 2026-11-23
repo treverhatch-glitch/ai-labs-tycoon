@@ -53,4 +53,19 @@ public class EraNSystemsLimitsAndMidSaveHardeningTests
         Game g = Lab();
         g.Refused(Command.SetSectorPrice(g.Id, "not-a-sector", 2), CommandError.UnknownId);
     }
+
+    [Fact]
+    public void Bankrupt_lab_with_specialist_and_data_source_validates_save()
+    {
+        Game g = Lab(96);
+        ModelState m = Sold(g);
+        g.Do(Command.BranchSpecialist(g.Id, m.Id, "code"));
+        g.Do(Command.AcquireDataSource(g.Id, "licensed-corpus"));
+        g.Me.Cash = -20_000;
+        g.Me.WeeksInDebt = g.C.Finance.BankruptcyGraceWeeks;
+        g.Weeks(2);
+        Simulation back = Simulation.Load(g.C, g.Sim.Save());
+        back.StepMany(2);
+        Assert.NotNull(back.Player);
+    }
 }
