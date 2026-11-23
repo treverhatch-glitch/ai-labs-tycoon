@@ -14,7 +14,12 @@ Unity composite HUD / `SpendIncome` work is rebuilt on **`cursor/unity-hud-backu
 | `recovered/` | 100+ sprint runners extracted from bc-93b5443a transcript (was `/tmp` only). |
 | `extract_transcript_runners.py` | Re-extract from a fetched `transcript.json` if a slice is missing. |
 | `build_901_904_from_885.py` | Mirror builder for sprints 901–904 (needs `run_sprints_885_888.py` on disk). |
-| `run_batch_01.sh` | Batch 01: persisted toolchain only (this push). Batch 02+: genesis C# + sprint 3–12. |
+| `run_batch_01.sh` | Batch 01: persisted toolchain only (batch 01 push). |
+| `fix_staff_mascot_tail_chain.py` | Rebuild `*Part` concat tails in StaffGpuPanel / Mascot strip. |
+| `run_batch03.sh` | Batch 03: tail fix, sprint replay 4–12, golden test. |
+| `bootstrap_and_run_batch02.py` | Genesis HUD from transcript merge + sprint replay driver. |
+| `run_batch02_resume.sh` | Resume sprints 3–12 after genesis (safe empty commits). |
+| **Batch 02 tip** | `3a05178` — genesis + sprint 3–6 partial; golden OK. |
 
 ## Run hygiene
 

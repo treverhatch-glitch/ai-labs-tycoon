@@ -4,7 +4,8 @@ ROOT = Path("/agent/repos/ai-labs-tycoon")
 UNITY = ROOT / "unity/Assets"
 HUD, TRAIN = UNITY / "Scripts/Hq/HqHudView.cs", UNITY / "Scripts/Hq/TrainingRunPanel.cs"
 STAFF, MASCOT = UNITY / "Scripts/Hq/StaffGpuPanel.cs", UNITY / "Scripts/Hq/HqMascotStripHud.cs"
-BUILD, TESTS = UNITY / "Editor/Tests/HqDisplayQueriesHudTests.cs", UNITY / "Editor/Tests/HqDisplayQueriesHudTests.cs"
+BUILD = UNITY / "Scripts/Hq/RoomBuildPanel.cs"
+TESTS = UNITY / "Editor/Tests/HqDisplayQueriesHudTests.cs"
 SPRINT9 = [
     ("LastWeekGrantsRevenueSummaryLine", "lastWeekGrantsRevenue", "last week grants revenue",
      "last_week_grants_revenue_summary_line", "lab.Ledger.LastWeek.Grants = 7_000;\n            lab.Ledger.LastWeek.Revenue = 19_000;", "7,000", "19,000"),
@@ -38,6 +39,8 @@ SPRINT10 = [
 
 def git_commit(msg, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
