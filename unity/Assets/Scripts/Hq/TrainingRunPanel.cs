@@ -479,6 +479,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeRevenueLaunder = HqDisplayQueriesHud.LifetimeRevenueLaunderSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeRevenueLaunder))
                         _summary.text += " · " + lifetimeRevenueLaunder;
+                    string lastWeekConstructionPower = HqDisplayQueriesHud.LastWeekConstructionPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekConstructionPower))
+                        _summary.text += " · " + lastWeekConstructionPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
