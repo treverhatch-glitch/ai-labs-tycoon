@@ -28,7 +28,8 @@
 | 37 | `b4255a8` | Start-era picker |
 | 38 | `09cbb6c` | Room build panel |
 | 39 | `67e1fc8` | Staff/GPU panel |
-| 40 | (local GO) | Training peek |
+| 40 | `24a9ea1` | Training peek |
+| 41 | (local GO) | HQ mascot strip |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

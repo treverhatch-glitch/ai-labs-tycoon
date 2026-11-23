@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q490. HQ mascot strip band tokens? DECIDED: `CampusHqMascotStripPresentationSpec`
+
+- Options: (a) batch 33 row spec only; (b) band doc + layout alias spec; (c) wire `ModelMascotRow` in graphics PR.
+- Recommendation and choice: **(b)** — 0.18 band fraction + reuses row height/max mascots from batch 33.
+- Why: Documents bottom HQ band in `UI-HUD-LAYOUTS` without duplicating mood logic.
+
 ### Q489. Training peek band tokens? DECIDED: `CampusTrainingPeekPresentationSpec`
 
 - Options: (a) `COMPUTE-SPLIT` only; (b) peek band spec + doc; (c) wire collapsed `TrainingRunPanel` in graphics PR.
