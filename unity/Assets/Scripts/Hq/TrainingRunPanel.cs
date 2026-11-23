@@ -722,6 +722,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekGreyPatent = HqDisplayQueriesHud.LastWeekGreyPatentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekGreyPatent))
                         _summary.text += " · " + lastWeekGreyPatent;
+                    string lastWeekLandGrant = HqDisplayQueriesHud.LastWeekLandGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekLandGrant))
+                        _summary.text += " · " + lastWeekLandGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
