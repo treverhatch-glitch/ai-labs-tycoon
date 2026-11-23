@@ -22,7 +22,7 @@ namespace AiLabs.Rules.Systems
         {
             if (lab.Controller != LabController.Plan) return;
             lab.Log.Add(Entry(tick, action, reference, amount, reasons));
-            if (state != null) RivalIntentNews.OnDecision(c, state, lab, action, reference);
+            if (state != null) RivalIntentNews.OnDecision(c, state, lab, tick, action, reference);
             int extra = lab.Log.Count - c.Rivalry.LogMax;
             if (extra > 0) lab.Log.RemoveRange(0, extra);
         }
