@@ -9856,7 +9856,9 @@
         "labName": "Pitch Deck Labs",
         "leader": "Sam",
         "familyName": "Deck",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       },
       {
         "id": "defectors-lawsuit",
@@ -9869,7 +9871,9 @@
         "labName": "Second Chance AI",
         "leader": "Dr. Vale",
         "familyName": "Chance",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       },
       {
         "id": "heirs-gambit",
@@ -9882,7 +9886,9 @@
         "labName": "Old Money Labs",
         "leader": "Cordelia",
         "familyName": "Money",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       },
       {
         "id": "dial-up-prologue",
@@ -9895,7 +9901,9 @@
         "labName": "Cambridge Backroom",
         "leader": "You",
         "familyName": "Backroom",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       },
       {
         "id": "nordic-quiet",
@@ -9908,7 +9916,9 @@
         "labName": "Fjord Alignment Lab",
         "leader": "Dr. Lind",
         "familyName": "Fjord",
-        "rivalIds": []
+        "rivalIds": [],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       },
       {
         "id": "two-horse-race",
@@ -9924,7 +9934,9 @@
         "rivalIds": [
           "openaye",
           "deepsneak"
-        ]
+        ],
+        "goalId": "",
+        "goalDeadlinePermille": 0
       }
     ]
   },

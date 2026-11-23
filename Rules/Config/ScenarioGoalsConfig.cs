@@ -14,7 +14,11 @@ namespace AiLabs.Rules.Config
             return null;
         }
 
-        public void Sync(Syncer s) { s.ObjList("goals", ref Goals); }
+        public void Sync(Syncer s)
+        {
+            s.Int("enabled", ref Enabled);
+            s.ObjList("goals", ref Goals);
+        }
     }
 
   /// <summary>Win or lose check for a named scenario (Q471, schema 147).</summary>
