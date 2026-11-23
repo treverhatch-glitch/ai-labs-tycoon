@@ -8421,67 +8421,6 @@
         ]
       },
       {
-        "id": "takeoff-crisis",
-        "name": "This is getting away from us",
-        "text": "Your best model is clever enough to plan and corrupted enough to hide it. The board wants words now, not a paper next quarter.",
-        "requires": "Nothing",
-        "trigger": "Takeoff",
-        "lapseChoice": "listen",
-        "fromYear": 0,
-        "toYear": 0,
-        "choices": [
-          {
-            "id": "contain",
-            "text": "Double containment spending",
-            "result": "You buy time and trust, at a cost.",
-            "effects": [
-              {
-                "kind": "CashWeeks",
-                "amount": -4
-              },
-              {
-                "kind": "Corruption",
-                "amount": -100
-              },
-              {
-                "kind": "Culture",
-                "amount": 15
-              }
-            ]
-          },
-          {
-            "id": "listen",
-            "text": "Let it run while you watch",
-            "result": "It does not slow down.",
-            "effects": [
-              {
-                "kind": "Corruption",
-                "amount": 120
-              },
-              {
-                "kind": "Attention",
-                "amount": 80
-              }
-            ]
-          },
-          {
-            "id": "publish",
-            "text": "Open a safety blog post",
-            "result": "Customers like the honesty; regulators like the paper trail.",
-            "effects": [
-              {
-                "kind": "Reputation",
-                "amount": 15
-              },
-              {
-                "kind": "Culture",
-                "amount": 30
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "researcher-leaves",
         "name": "The goodbye",
         "text": "A researcher announces they are leaving to spend more time with a competing lab. The competing lab's logo is already on their lanyard.",
@@ -8842,6 +8781,67 @@
               {
                 "kind": "Attention",
                 "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "takeoff-crisis",
+        "name": "This is getting away from us",
+        "text": "Your best model is clever enough to plan and corrupted enough to hide it. The board wants words now, not a paper next quarter.",
+        "requires": "Nothing",
+        "trigger": "Takeoff",
+        "lapseChoice": "listen",
+        "fromYear": 0,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "contain",
+            "text": "Double containment spending",
+            "result": "You buy time and trust, at a cost.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -4
+              },
+              {
+                "kind": "Corruption",
+                "amount": -100
+              },
+              {
+                "kind": "Culture",
+                "amount": 15
+              }
+            ]
+          },
+          {
+            "id": "listen",
+            "text": "Let it run while you watch",
+            "result": "It does not slow down.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": 120
+              },
+              {
+                "kind": "Attention",
+                "amount": 80
+              }
+            ]
+          },
+          {
+            "id": "publish",
+            "text": "Open a safety blog post",
+            "result": "Customers like the honesty; regulators like the paper trail.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 30
               }
             ]
           }
