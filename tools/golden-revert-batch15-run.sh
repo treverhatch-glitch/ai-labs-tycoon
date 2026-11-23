@@ -57,6 +57,9 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"

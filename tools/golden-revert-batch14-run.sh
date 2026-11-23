@@ -59,6 +59,9 @@ disable_batch15_at_tip
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
