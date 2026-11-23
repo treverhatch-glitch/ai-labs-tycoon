@@ -8,4 +8,6 @@ Training panel lower band per `TRAINING-PANEL.md`.
 
 Tokens: `CampusComputeSplitPresentationSpec` (3 sliders, 8px bars, `icon-compute`).
 
-Graphics does not bind split values; rules thread only (batch 32 draft).
+HQ peek reuses split bar height: [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) (batch 40).
+
+Graphics does not bind split values; rules thread only (batch 32).

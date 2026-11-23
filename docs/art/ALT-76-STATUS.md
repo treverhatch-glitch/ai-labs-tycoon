@@ -27,7 +27,8 @@
 | 36 | `6a558e1` | World map host shell |
 | 37 | `b4255a8` | Start-era picker |
 | 38 | `09cbb6c` | Room build panel |
-| 39 | (local GO) | Staff/GPU panel |
+| 39 | `67e1fc8` | Staff/GPU panel |
+| 40 | (local GO) | Training peek |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

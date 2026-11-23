@@ -47,6 +47,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [START-ERA-PICKER-PRESENTATION.md](START-ERA-PICKER-PRESENTATION.md) | Start-era picker (batch 37) |
 | [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md) | Room build panel (batch 38) |
 | [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) | Staff/GPU side panel (batch 39) |
+| [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) | Training peek band (batch 40) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

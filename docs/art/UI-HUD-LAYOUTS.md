@@ -40,7 +40,7 @@ Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `Hq
 | Mascot strip | bottom 18%, full width | `ModelMascotRow` |
 | Build panel | right 28%, top 40% | `RoomBuildPanel` — [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md) (batch 38) |
 | Staff/GPU | right 28%, mid 30% | `StaffGpuPanel` — [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) (batch 39) |
-| Training peek | right 28%, bottom 22% | collapsed `TrainingRunPanel` summary |
+| Training peek | right 28%, bottom 22% | collapsed `TrainingRunPanel` — [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) (batch 40) |
 
 **Interaction:** click tile → `RoomBuildController` ghost; right-click cancel.
 

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q489. Training peek band tokens? DECIDED: `CampusTrainingPeekPresentationSpec`
+
+- Options: (a) `COMPUTE-SPLIT` only; (b) peek band spec + doc; (c) wire collapsed `TrainingRunPanel` in graphics PR.
+- Recommendation and choice: **(b)** — 28×22% band, `icon-training`, reuses 8px split bar constant.
+- Why: Completes HQ right-column stack in `UI-HUD-LAYOUTS`; training sim unchanged.
+
 ### Q488. Staff/GPU side panel tokens? DECIDED: `CampusStaffGpuPanelPresentationSpec`
 
 - Options: (a) staff row spec only; (b) panel band spec + doc; (c) wire `StaffGpuPanel` in graphics PR.
