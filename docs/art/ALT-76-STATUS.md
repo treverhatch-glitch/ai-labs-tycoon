@@ -18,7 +18,8 @@
 | 27 | `a0dc2a5` | HQ cash readout |
 | 28 | `bdc426a` | Tab rail active state |
 | 29 | `d8ad54d` | Era skin preview |
-| 30 | (local GO) | Focus ring / hit targets |
+| 30 | `33050c2` | Focus ring / hit targets |
+| 31 | (local GO) | HUD date/week row |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -26,7 +26,7 @@ Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `Hq
 | Cash label | top-left | 420×28 | `Simulation.Player.Cash` |
 | Date label | top-left, y−28 | 420×28 | `Simulation.DateLabel` |
 | Era label | top-right | 420×28 | `Simulation.Era.Name` |
-| Advance week | bottom-right | 200×48 | `SimulationHost.StepWeek()` |
+| Advance week | bottom-right | 200×48 | `SimulationHost.StepWeek()`; see [HUD-DATE-WEEK-PRESENTATION.md](HUD-DATE-WEEK-PRESENTATION.md) |
 
 **Future:** tab rail left (64px) for HQ / Research / Training / Rivals / World — v1 uses separate panels opened from HQ (`RoomBuildPanel`, `TrainingRunPanel`, etc.).
 

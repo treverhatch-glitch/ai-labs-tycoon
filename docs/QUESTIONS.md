@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q480. HUD date/week row tokens? DECIDED: `CampusHudDateWeekPresentationSpec`
+
+- Options: (a) only `CampusHudLayoutSpec`; (b) presentation spec + doc; (c) duplicate week button size in HUD doc only.
+- Recommendation and choice: **(b)** — ties 44px target to focus spec and documents date row height for restyle.
+- Why: `HqHudView` already places week button; graphics batch documents alignment with a11y batch 30.
+
 ### Q479. Focus ring / hit target tokens? DECIDED: `CampusFocusRingPresentationSpec`
 
 - Options: (a) only in ACCESSIBILITY doc; (b) spec class + focus doc; (c) UI Toolkit theme only.
