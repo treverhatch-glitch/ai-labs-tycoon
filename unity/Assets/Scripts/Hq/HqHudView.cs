@@ -922,6 +922,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeFinesLand = HqDisplayQueriesHud.LifetimeFinesLandSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeFinesLand))
                     status = string.IsNullOrEmpty(status) ? lifetimeFinesLand : status + " · " + lifetimeFinesLand;
+                string lastWeekChipRoom = HqDisplayQueriesHud.LastWeekChipRoomSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekChipRoom))
+                    status = string.IsNullOrEmpty(status) ? lastWeekChipRoom : status + " · " + lastWeekChipRoom;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
