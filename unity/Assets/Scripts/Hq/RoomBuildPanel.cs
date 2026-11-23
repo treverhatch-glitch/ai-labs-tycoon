@@ -41,12 +41,16 @@ namespace AiLabs.Unity.Hq
         void OnStateChanged()
         {
             RefreshTypes();
+            if (_buildSummary != null && _host?.Simulation != null)
+            {
+                _buildSummary.text = "Build"
+                                 + " · " + HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(_host.Simulation.Player)
+                                 + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);
+            }
             if (_status != null && !string.IsNullOrEmpty(_host.StatusMessage))
                 _status.text = _host.StatusMessage;
-            else if (_status != null && string.IsNullOrEmpty(_host.StatusMessage))
-                _buildSummary.text = "Build"
-                                 + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);
-            _status.text = "Drag on the lot to place a room.";
+            else if (_status != null)
+                _status.text = "Drag on the lot to place a room.";
         }
 
         void BuildUi(Transform root)
@@ -58,6 +62,10 @@ namespace AiLabs.Unity.Hq
             _selection = HqUiFactory.Label(root, "Selected", "", 14, TextAnchor.UpperLeft);
             _selection.rectTransform.offsetMin = new Vector2(8f, -36f);
             _selection.rectTransform.offsetMax = new Vector2(-8f, -56f);
+
+            _buildSummary = HqUiFactory.Label(root, "Summary", "Build", 11, TextAnchor.UpperLeft);
+            _buildSummary.rectTransform.offsetMin = new Vector2(8f, -58f);
+            _buildSummary.rectTransform.offsetMax = new Vector2(-8f, -74f);
 
             var list = new GameObject("TypeList");
             list.transform.SetParent(root, false);
