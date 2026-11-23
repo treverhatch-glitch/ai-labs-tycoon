@@ -707,6 +707,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGpuPower = HqDisplayQueriesHud.ThisWeekGpuPowerSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGpuPower))
                         _summary.text += " · " + thisWeekGpuPower;
+                    string lifetimePatentChip = HqDisplayQueriesHud.LifetimePatentChipSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimePatentChip))
+                        _summary.text += " · " + lifetimePatentChip;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
