@@ -67,6 +67,17 @@ public class EraOSystemsEdgeHardeningTests
     }
 
     [Fact]
+    public void Lobby_cooldown_mid_save_load_matches_left()
+    {
+        Game g = Lab(120);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
+        int left = Lobbying.CooldownLeft(g.State, g.Me.Bloc(g.Me.HomeBlocId));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.True(Lobbying.CooldownLeft(back.State, back.Player.Bloc(back.Player.HomeBlocId)) >= left - 1);
+    }
+
+    [Fact]
     public void Takeoff_cooldown_mid_save_load_matches_until()
     {
         Game g = Lab(121);

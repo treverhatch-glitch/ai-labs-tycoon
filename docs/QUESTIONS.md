@@ -2349,3 +2349,5 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q472. Pick law before lobby spend? DECIDED (schema 148): `SetLawTarget` required before `ShapeLaw` when enabled.
 
 ### Q473. Batch sixteen news, chat and combos. DECIDED: seven headline kinds, six chat lines (398/352); `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests`.
+
+### Q474. Post–era-16 hardening count: ship 410/0 or block for 446/0? DECIDED (2026-11-23, grouped P13 `2722044`): **accept 410/0** at post–era-16 rebuild; **−36** vs lost `754951a` parity recovered only in the **next grouped P13 batch** (exit-debt bridge, player-only refuses, extra EraO limits/fuzz — see project `internal/p13-phase0-hardening-rebuild-queue.md`). No single-item recovery push.

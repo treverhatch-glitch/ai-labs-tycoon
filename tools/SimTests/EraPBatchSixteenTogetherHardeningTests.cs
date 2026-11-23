@@ -56,6 +56,16 @@ public class EraPBatchSixteenTogetherHardeningTests
     }
 
     [Fact]
+    public void Scenario_id_mid_save_load_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(g.Me.ScenarioId, back.Player.ScenarioId);
+    }
+
+    [Fact]
     public void Margin_call_mid_save_still_allows_satisfy()
     {
         Game g = Lab();

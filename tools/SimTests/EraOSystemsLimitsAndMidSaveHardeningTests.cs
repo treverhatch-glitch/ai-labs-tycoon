@@ -54,4 +54,40 @@ public class EraOSystemsLimitsAndMidSaveHardeningTests
         back.StepMany(2);
         Assert.NotNull(back.Player);
     }
+
+    [Fact]
+    public void Campaign_deadline_refuses_tick_in_the_past()
+    {
+        Game g = Lab(125);
+        g.Weeks(10);
+        int now = g.Tick;
+        g.Refused(Command.SetCampaignDeadline(g.Id, now - 4), CommandError.InvalidArgument);
+    }
+
+    [Fact]
+    public void Respond_takeoff_refuses_without_pending_event()
+    {
+        Game g = Lab(126);
+        g.Me.OfficeEventId = "";
+        g.Refused(Command.RespondTakeoff(g.Id, "contain"), CommandError.NoOfficeEvent);
+    }
+
+    [Fact]
+    public void Campaign_deadline_turn_off_mid_save_sticks()
+    {
+        Game g = Lab(127);
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 25));
+        g.Do(Command.SetCampaignDeadline(g.Id, 0));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(0, back.Player.CampaignDeadlineTick);
+    }
+
+    [Fact]
+    public void Pick_baggage_refuses_after_baggage_already_chosen()
+    {
+        Game g = Lab(128);
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        g.Refused(Command.PickScenarioBaggage(g.Id, "reputational-leak"), CommandError.InvalidArgument);
+    }
 }

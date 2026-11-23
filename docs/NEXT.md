@@ -400,7 +400,8 @@ and says why in the commit message.
 
 ## Rules: later
 
-- **P13 hardening rebuild (LOCAL @ `6b59651`).** Post-era16 merge + EraP/O hardening: full SimTests **4050/4050**, hardening filter **410/0** (lost tip had **446/0** / **4086** — ~36 tests from phase0/c646261 not recovered after pod loss). **NO PUSH** until 4th-lane GO. Coordinator: accept **410/0** or re-implement gap (exit-debt bridge, player-only refuses, extra EraO limits/fuzz). Store: `internal/p13-hardening-count-gap.md`.
+- **P13 −36 recovery (LOCAL grouped squash on `2722044`, unpushed).** Hardening **446/0**, golden **55e4c4f0…**, Q474; full suite queued (`/tmp/p13-recovery-full-suite.log`). **NO PUSH** until coordinator GO, **≥30m** after last P13 push (`2722044`), full **EXIT:0**. Tip SHA: store `internal/p13-recovery-go-packet.md`.
+- **§217+ hardening polish (post-P13, rules unchanged).** Optional: rung-six **Respond** through mid-save arc steps; hearing pretends **chat** pins; cross-soak `@688` week hooks — see store `internal/p13-next-local-post-era16.md`.
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

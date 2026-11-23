@@ -23,6 +23,25 @@ public class EraPBatchSixteenNewsChatHardeningTests
     };
 
     [Fact]
+    public void Margin_call_headline_after_schema_144_round_trip()
+    {
+        Game g = Game.Solo(152, c => { c.MarginCall.Enabled = 1; c.Office.ChancePermille = 0; }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000;
+        Events.Add(g.State, EventKind.MarginCall, g.Id, -1, 0, "");
+        string mid = g.Sim.Save();
+        string lab = g.Me.Name.ToUpperInvariant();
+        for (int schema = 144; schema <= GameState.CurrentSchema; schema++)
+        {
+            string old = SaveSchemaPretend.At(g.C, schema, mid);
+            Simulation sim = Simulation.Load(g.C, old);
+            sim.State.Events.Clear();
+            Events.Add(sim.State, EventKind.MarginCall, sim.Player.Id, -1, 0, "");
+            List<Headline> ticker = NewsTicker.Headlines(g.C, sim.State, 1);
+            Assert.StartsWith(lab, ticker[0].Text.ToUpperInvariant());
+        }
+    }
+
+    [Fact]
     public void Batch_sixteen_counts_survive_mid_save()
     {
         Game g = Game.Solo(150, c => c.Office.ChancePermille = 0).WithStarterLab();

@@ -56,4 +56,36 @@ public class EraOBatchFifteenTogetherHardeningTests
         after.Me.LawShapeEra = nextEra;
         Assert.True(EraRules.ReleaseBar(c, after.State, after.Me, EraSystem.StartTick(c, c.Era(nextEra))) > before);
     }
+
+    [Fact]
+    public void Takeoff_mid_save_still_leaves_pending_answer()
+    {
+        Game g = Lab();
+        ModelState m = g.Train("mini", 0);
+        g.UntilTrained(m);
+        g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
+        m.Capability = 5000;
+        m.Corruption = 600;
+        TakeoffCrisis.RunWeek(g.C, g.State, g.Me);
+        if (!OfficeEvents.IsPending(g.Me)) return;
+        string eventId = g.Me.OfficeEventId;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(eventId, back.Player.OfficeEventId);
+        Assert.True(OfficeEvents.IsPending(back.Player));
+    }
+
+    [Fact]
+    public void Baggage_and_deadline_mid_save_still_carry_baggage_id()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        int stop = g.Tick + 20;
+        g.Do(Command.SetCampaignDeadline(g.Id, stop));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        back.StepMany(3);
+        Assert.Equal("reputational-leak", back.Player.BaggageId);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+    }
 }

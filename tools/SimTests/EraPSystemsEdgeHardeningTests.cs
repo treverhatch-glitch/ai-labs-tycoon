@@ -94,6 +94,26 @@ public class EraPSystemsEdgeHardeningTests
     }
 
     [Fact]
+    public void Public_float_ppm_mid_save_load_matches()
+    {
+        Game g = Lab(175);
+        g.Me.PublicFloatPpm = 75_000;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(75_000, back.Player.PublicFloatPpm);
+    }
+
+    [Fact]
+    public void Rung_six_arc_until_mid_save_load_matches()
+    {
+        Game g = Lab(176);
+        g.Me.RungSixArcUntil = g.Tick + 12;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(g.Tick + 12, back.Player.RungSixArcUntil);
+    }
+
+    [Fact]
     public void Schema_144_through_148_saves_round_trip_and_play_twenty_weeks()
     {
         Game g = Lab(174);

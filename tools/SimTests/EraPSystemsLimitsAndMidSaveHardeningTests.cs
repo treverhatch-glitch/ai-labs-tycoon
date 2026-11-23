@@ -82,4 +82,47 @@ public class EraPSystemsLimitsAndMidSaveHardeningTests
         Simulation back = Simulation.Load(g.C, mid);
         Assert.Equal(0, back.Player.MarginCallLeft);
     }
+
+    [Fact]
+    public void Respond_rung_six_refuses_without_pending_event()
+    {
+        Game g = Game.Solo(145, c => { c.RungSixCrisis.MinEra = 0; c.Office.ChancePermille = 0; }).WithStarterLab();
+        g.Me.OfficeEventId = "";
+        g.Refused(Command.RespondRungSix(g.Id, "hold"), CommandError.NoOfficeEvent);
+    }
+
+    [Fact]
+    public void Satisfy_margin_call_refuses_when_margin_calls_disabled()
+    {
+        Game g = Game.Solo(146, c => c.MarginCall.Enabled = 0).WithStarterLab();
+        g.Refused(Command.SatisfyMarginCall(g.Id, 0, 1000), CommandError.InvalidArgument);
+    }
+
+    [Fact]
+    public void Law_target_refuses_when_shaping_disabled()
+    {
+        Game g = Game.Solo(147, c => c.LawTarget.Enabled = 0).WithStarterLab();
+        g.Refused(Command.SetLawTarget(g.Id, LawShaping.Strict), CommandError.InvalidArgument);
+    }
+
+    [Fact]
+    public void Margin_call_left_mid_save_validates_bounds()
+    {
+        Game g = MarginLab(148);
+        TriggerMarginCall(g);
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.True(back.Player.MarginCallLeft > 0);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Set_law_target_mid_save_load_matches()
+    {
+        Game g = Game.Solo(149).WithStarterLab();
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Loose));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(LawShaping.Loose, back.Player.LawTarget);
+    }
 }
