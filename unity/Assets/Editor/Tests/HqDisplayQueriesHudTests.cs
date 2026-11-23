@@ -6165,5 +6165,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("4,040").Or.Contain("2,820"));
         }
 
+        [Test]
+        public void lifetime_chip_dev_land_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.ChipDevelopment = -95_500;
+            lab.Ledger.Lifetime.Land = -64_500;
+            string line = HqDisplayQueriesHud.LifetimeChipDevLandSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("95,500").Or.Contain("64,500"));
+        }
+
     }
 }
