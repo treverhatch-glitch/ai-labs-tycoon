@@ -965,13 +965,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only.
 
-### Q2446–Q2515. Model-sales/chip data bar? DECIDED: test-only (batch 40, commit-ready — push with GO)
+### Q2446–Q2515. Model-sales/chip data bar? DECIDED: test-only (batch 40, pushed @ `4fdf674`)
 
-- **`HatchModelSalesChipBarLaterTests` (70):** `CrashDistressOfferPermille`; `Chips.TapeoutWeeks`; income smoothing; schema **29** only; gates **3119/0** / **3117/0** WT.
+- **`HatchModelSalesChipBarLaterTests` (70):** `CrashDistressOfferPermille`; `Chips.TapeoutWeeks`; income smoothing; schema **29** only.
 
-### Q2516–Q2585. Acquisition/listing data bar? TBD: test-only (batch 41, queued)
+### Q2516–Q2585. Acquisition/listing data bar? DECIDED: test-only (batch 41, WIP — no push)
 
-- **`HatchAcquireListingBarLaterTests` (70):** acquisition crash quotes + listed-chip neighbours; schema **29** only.
+- **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only.
+
+### Q2586–Q2655. Rival/economy data bar? TBD: test-only (batch 42, HOLD)
+
+- **`HatchRivalEconomyBarLaterTests` (70):** rival rollup + planner acquire permilles; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
