@@ -44,6 +44,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [STUDIO-GRAPHICS-HANDOFF.md](STUDIO-GRAPHICS-HANDOFF.md) | Studio land PR #41 (batch 34) |
 | [CAPTURE-HUD-SNAPSHOT.md](CAPTURE-HUD-SNAPSHOT.md) | CI capture HUD regions (batch 35) |
 | [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md) | World map host shell (batch 36) |
+| [START-ERA-PICKER-PRESENTATION.md](START-ERA-PICKER-PRESENTATION.md) | Start-era picker (batch 37) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

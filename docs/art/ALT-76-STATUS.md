@@ -24,7 +24,8 @@
 | 33 | `843705d` | Mascot row HUD |
 | 34 | `e9ccf12` | Studio handoff |
 | 35 | `e8ebc83` | Capture HUD snapshot |
-| 36 | (local GO) | World map host shell |
+| 36 | `6a558e1` | World map host shell |
+| 37 | (local GO) | Start-era picker |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

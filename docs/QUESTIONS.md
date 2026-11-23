@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q486. Start-era picker layout tokens? DECIDED: `CampusStartEraPickerPresentationSpec`
+
+- Options: (a) rely on ERA-SKIN-PREVIEW only; (b) picker spec + doc; (c) wire full new-game screen in graphics PR.
+- Recommendation and choice: **(b)** — card width, tagline line cap, swatch size reuse; `StartEraId` unchanged.
+- Why: NEXT item 12 is UI-only; documents chrome for Unity without new rule systems.
+
 ### Q485. World map host shell tokens? DECIDED: `CampusWorldMapHostPresentationSpec`
 
 - Options: (a) NEXT prose only; (b) spec + host doc; (c) implement host UI in graphics PR.
