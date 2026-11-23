@@ -1040,6 +1040,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekFinesRoom = HqDisplayQueriesHud.LastWeekFinesRoomSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekFinesRoom))
                         _summary.text += " · " + lastWeekFinesRoom;
+                    string lastWeekLandChip = HqDisplayQueriesHud.LastWeekLandChipSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekLandChip))
+                        _summary.text += " · " + lastWeekLandChip;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
