@@ -1331,6 +1331,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGpuSpendIncome = HqDisplayQueriesHud.ThisWeekGpuSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGpuSpendIncome))
                         _summary.text += " · " + thisWeekGpuSpendIncome;
+                    string lastWeekGpuSpendIncome = HqDisplayQueriesHud.LastWeekGpuSpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekGpuSpendIncome))
+                        _summary.text += " · " + lastWeekGpuSpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
