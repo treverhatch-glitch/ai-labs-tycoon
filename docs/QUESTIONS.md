@@ -1017,13 +1017,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalPlanBarLaterTests2` (70):** rival cast + distress/plan neighbours; schema **29** only; gate **3959/0** in-repo.
 
-### Q3356–Q3425. Funding follow-on bar coda? DECIDED: test-only (batch 53, LOCAL — GO ≥ ~21:53 UTC)
+### Q3356–Q3425. Funding follow-on bar coda? DECIDED: test-only (batch 53, pushed @ `b661d1f`)
 
-- **`HatchFundingFollowOnBarLaterTests2` (70):** `Funding.FollowOn` + rounds table; schema **29** only; 70-bar filter green.
+- **`HatchFundingFollowOnBarLaterTests2` (70):** `Funding.FollowOn` + rounds table; schema **29** only; gate **4029/0** in-repo.
 
-### Q3426–Q3495. Model sales/chip bar coda? TBD: test-only (batch 54, queued)
+### Q3426–Q3495. Model sales/chip bar coda? DECIDED: test-only (batch 54, LOCAL — GO ≥ ~22:23 UTC)
 
-- **`HatchModelSalesChipBarLaterTests2` (70):** distress offers + tapeout weeks; schema **29** only.
+- **`HatchModelSalesChipBarLaterTests2` (70):** distress offers + tapeout weeks; schema **29** only; 70-bar filter green.
+
+### Q3496–Q3565. World map/economy bar coda? TBD: test-only (batch 55, queued)
+
+- **`HatchWorldMapEconomyBarLaterTests2` (70):** blocs/sites/attention heatwave; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
