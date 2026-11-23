@@ -38,7 +38,8 @@
 | 47 | `81fe8d1` | Research screen |
 | 48 | `6b1adc3` | Rivals screen |
 | 49 | `ad8db69` | Training screen |
-| 50 | (local GO) | Screen layout index |
+| 50 | `54f990b` | Screen layout index |
+| 51 | (local HOLD) | Top bar token index |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

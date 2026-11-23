@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q500. Global top bar token index? DECIDED: `CampusTopBarTokenIndexPresentationSpec`
+
+- Options: (a) extend `UI-HUD-LAYOUTS` only; (b) index doc + height/slot spec; (c) wire `HqHudView` in graphics PR.
+- Recommendation and choice: **(b)** — links cash (batch 27), date/week (batch 31), advance week (batch 46).
+- Why: Navigation hub for Unity chrome wiring; no sim or HUD code changes on cloud agent.
+
 ### Q499. Full-screen layout index? DECIDED: `CampusFullScreenLayoutIndexPresentationSpec`
 
 - Options: (a) markdown index only; (b) index doc + count spec; (c) merge screen specs.

@@ -1,6 +1,6 @@
 # UI / HUD layout specs
 
-Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `HqHudView`). Safe area: 24px inset — [SAFE-AREA-PRESENTATION.md](SAFE-AREA-PRESENTATION.md) (batch 45). Full screens: [SCREEN-LAYOUT-INDEX.md](SCREEN-LAYOUT-INDEX.md) (batch 50).
+Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `HqHudView`). Safe area: 24px inset — [SAFE-AREA-PRESENTATION.md](SAFE-AREA-PRESENTATION.md) (batch 45). Full screens: [SCREEN-LAYOUT-INDEX.md](SCREEN-LAYOUT-INDEX.md) (batch 50). Top bar tokens: [TOP-BAR-TOKEN-INDEX.md](TOP-BAR-TOKEN-INDEX.md) (batch 51).
 
 ## Global chrome (all screens)
 

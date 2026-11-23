@@ -65,5 +65,6 @@ python3 tools/art/generate_campus_kit.py
 | [RIVALS-SCREEN-PRESENTATION.md](RIVALS-SCREEN-PRESENTATION.md) | Rivals screen (batch 48) |
 | [TRAINING-SCREEN-PRESENTATION.md](TRAINING-SCREEN-PRESENTATION.md) | Training screen (batch 49) |
 | [SCREEN-LAYOUT-INDEX.md](SCREEN-LAYOUT-INDEX.md) | Full-screen layout index (batch 50) |
+| [TOP-BAR-TOKEN-INDEX.md](TOP-BAR-TOKEN-INDEX.md) | Global top bar chrome index (batch 51) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
