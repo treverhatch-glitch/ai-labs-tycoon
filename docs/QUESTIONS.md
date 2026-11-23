@@ -985,17 +985,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only.
 
-### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, commit-ready — push with GO)
+### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, pushed @ `6dbc3ac`)
 
-- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only; gates **3469/0** / **3467/0** WT.
+- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only.
 
-### Q2866–Q2935. Containment/ending data bar coda? DECIDED: test-only (batch 46, commit-ready — push with GO)
+### Q2866–Q2935. Containment/ending data bar coda? DECIDED: test-only (batch 46, pushed @ `77ff014`)
 
-- **`HatchContainmentEndingBarLaterTests2` (70):** `Endings`/`Superintelligence`; treaty/monopoly knobs; schema **29** only; gates **3539/0** / **3537/0** WT.
+- **`HatchContainmentEndingBarLaterTests2` (70):** `Endings`/`Superintelligence`; treaty/monopoly knobs; schema **29** only.
 
-### Q2936–Q3005. Regulator/bubble data bar? TBD: test-only (batch 47, HOLD)
+### Q2936–Q3005. Regulator/bubble data bar? DECIDED: test-only (batch 47, WIP — HOLD push ≥15:52 UTC)
 
-- **`HatchRegulatorBubbleBarLaterTests` (70):** regulators + bubble permille neighbours; schema **29** only.
+- **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only.
+
+### Q3006–Q3075. Era/incident data bar? TBD: test-only (batch 48, queued)
+
+- **`HatchEraIncidentBarLaterTests` (70):** `incidentLoadPermille` era table; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
