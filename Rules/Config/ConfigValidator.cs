@@ -191,6 +191,9 @@ namespace AiLabs.Rules.Config
             SectorPricingBreakdownProblems(p, c);
             DataSourceSpecialistPairingProblems(p, c);
             PublicMetricsEraLoadProblems(p, c);
+            OpenWeightsEraThrottleProblems(p, c);
+            EvalHarnessEraBoostProblems(p, c);
+            CampaignDeadlineEraGraceProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2142,6 +2145,33 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsEraLoad.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraLoad.minEra must be a valid era index");
             if (k.TrustBoostPermille < 0) p.Add("publicMetricsEraLoad.trustBoostPermille must not be negative");
+        }
+
+        static void OpenWeightsEraThrottleProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsEraThrottleConfig k = c.OpenWeightsEraThrottle;
+            if (k == null) { p.Add("openWeightsEraThrottle is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsEraThrottle.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsEraThrottle.minEra must be a valid era index");
+            if (k.CopyChanceCutPermille < 0) p.Add("openWeightsEraThrottle.copyChanceCutPermille must not be negative");
+        }
+
+        static void EvalHarnessEraBoostProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessEraBoostConfig k = c.EvalHarnessEraBoost;
+            if (k == null) { p.Add("evalHarnessEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarnessEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalHarnessEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0) p.Add("evalHarnessEraBoost.trustBoostPermille must not be negative");
+        }
+
+        static void CampaignDeadlineEraGraceProblems(List<string> p, GameConfig c)
+        {
+            CampaignDeadlineEraGraceConfig k = c.CampaignDeadlineEraGrace;
+            if (k == null) { p.Add("campaignDeadlineEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("campaignDeadlineEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("campaignDeadlineEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("campaignDeadlineEraGrace.graceWeeks must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

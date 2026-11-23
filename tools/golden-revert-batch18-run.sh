@@ -44,6 +44,9 @@ os.replace(t,p)
 
 [ "$N" -le 155 ] && disable_cfg sectorPricingBreakdown
 [ "$N" -le 154 ] && disable_cfg specialistEraHooks
+[ "$N" -le 160 ] && disable_cfg campaignDeadlineEraGrace
+[ "$N" -le 159 ] && disable_cfg evalHarnessEraBoost
+[ "$N" -le 158 ] && disable_cfg openWeightsEraThrottle
 [ "$N" -le 157 ] && disable_cfg publicMetricsEraLoad
 [ "$N" -le 156 ] && disable_cfg dataSourceSpecialistPairing
 

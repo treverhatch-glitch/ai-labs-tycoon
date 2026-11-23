@@ -10,8 +10,12 @@ namespace AiLabs.Rules.Systems
 
         public static void Set(GameConfig c, GameState state, LabState lab, int deadlineTick)
         {
-            lab.CampaignDeadlineTick = deadlineTick;
-            Events.Add(state, EventKind.CampaignDeadlineSet, lab.Id, deadlineTick, 0, deadlineTick <= 0 ? "off" : "on");
+            int raw = deadlineTick;
+            int adjusted = CampaignDeadlineEraGrace.AdjustDeadline(c, state, deadlineTick);
+            int grace = adjusted - raw;
+            lab.CampaignDeadlineTick = adjusted;
+            Events.Add(state, EventKind.CampaignDeadlineSet, lab.Id, adjusted, 0, adjusted <= 0 ? "off" : "on");
+            CampaignDeadlineEraGrace.OnSet(c, state, lab, adjusted, grace);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

@@ -12393,6 +12393,24 @@
         "text": "{lab} published metrics with an era-load trust bump on {ref}"
       },
       {
+        "id": "open-weights-era-throttle",
+        "kind": "OpenWeightsEraThrottled",
+        "pick": -1,
+        "text": "Rivals copied {lab}'s open weights despite an era throttle on {ref}"
+      },
+      {
+        "id": "eval-harness-era-boost",
+        "kind": "EvalHarnessEraBoosted",
+        "pick": -1,
+        "text": "{lab} registered {ref} on the public eval harness with era trust"
+      },
+      {
+        "id": "campaign-deadline-grace",
+        "kind": "CampaignDeadlineElongated",
+        "pick": -1,
+        "text": "{lab} won extra campaign deadline weeks in the {ref} era"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16660,6 +16678,39 @@
         "toYear": 0
       },
       {
+        "id": "weights-throttle-chat",
+        "kind": "OpenWeightsEraThrottled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A rival copy still landed despite our era throttle.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-era-chat",
+        "kind": "EvalHarnessEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Eval harness registration came with era trust.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "deadline-grace-chat",
+        "kind": "CampaignDeadlineElongated",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board gave us extra campaign runway.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19409,5 +19460,20 @@
     "enabled": 1,
     "minEra": 2,
     "trustBoostPermille": 15
+  },
+  "openWeightsEraThrottle": {
+    "enabled": 1,
+    "minEra": 4,
+    "copyChanceCutPermille": 8
+  },
+  "evalHarnessEraBoost": {
+    "enabled": 1,
+    "minEra": 3,
+    "trustBoostPermille": 20
+  },
+  "campaignDeadlineEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
   }
 }

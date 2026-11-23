@@ -412,9 +412,12 @@ and says why in the commit message.
 227. **Public metrics era load tail.** ~~Done (local)~~: `PublicMetricsEraLoad`, schema 157 (Q484).
 228. **Batch nineteen news, chat and combination rules.** ~~Done (local)~~: `BatchNineteenNewsChatTests`, `BatchNineteenTogetherTests` (Q485).
 
-### Era batch 20 (draft — LOCAL prep)
+### Era batch 20 (LOCAL prep on `t-af2f`, HOLD push)
 
-229. **TBD** — queue refill after P45 land.
+229. **Open weights era throttle tail.** ~~Done (local)~~: `OpenWeightsEraThrottle`, schema 158 (Q486).
+230. **Eval harness era trust tail.** ~~Done (local)~~: `EvalHarnessEraBoost`, schema 159 (Q487).
+231. **Campaign deadline era grace.** ~~Done (local)~~: `CampaignDeadlineEraGrace`, schema 160 (Q488).
+232. **Batch twenty news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyNewsChatTests`, `BatchTwentyTogetherTests` (Q489).
 
 ## Rules: later
 

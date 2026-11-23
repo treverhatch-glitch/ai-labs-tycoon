@@ -2373,3 +2373,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q484. Era-load trust boost on public metrics publish? DECIDED (schema 157): `publicMetricsEraLoad`; `PublicMetricsEraBoost`.
 
 ### Q485. Batch nineteen news, chat and combos. DECIDED: two headlines, two chat lines (409/362); `BatchNineteenNewsChatTests`, `BatchNineteenTogetherTests`.
+
+### Q486. Era throttle on open-weights copy chance? DECIDED (schema 158): `openWeightsEraThrottle`; `OpenWeightsEraThrottled`.
+
+### Q487. Era trust boost on eval harness registration? DECIDED (schema 159): `evalHarnessEraBoost`; `EvalHarnessEraBoosted`.
+
+### Q488. Era grace weeks on campaign deadline? DECIDED (schema 160): `campaignDeadlineEraGrace`; `CampaignDeadlineElongated`.
+
+### Q489. Batch twenty news, chat and combos. DECIDED: three headlines, three chat lines (412/365); `BatchTwentyNewsChatTests`, `BatchTwentyTogetherTests`.

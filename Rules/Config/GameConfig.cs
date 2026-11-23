@@ -186,6 +186,9 @@ namespace AiLabs.Rules.Config
         public SectorPricingBreakdownConfig SectorPricingBreakdown = new SectorPricingBreakdownConfig();
         public DataSourceSpecialistPairingConfig DataSourceSpecialistPairing = new DataSourceSpecialistPairingConfig();
         public PublicMetricsEraLoadConfig PublicMetricsEraLoad = new PublicMetricsEraLoadConfig();
+        public OpenWeightsEraThrottleConfig OpenWeightsEraThrottle = new OpenWeightsEraThrottleConfig();
+        public EvalHarnessEraBoostConfig EvalHarnessEraBoost = new EvalHarnessEraBoostConfig();
+        public CampaignDeadlineEraGraceConfig CampaignDeadlineEraGrace = new CampaignDeadlineEraGraceConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -370,6 +373,9 @@ namespace AiLabs.Rules.Config
             s.Obj("sectorPricingBreakdown", ref SectorPricingBreakdown);
             s.Obj("dataSourceSpecialistPairing", ref DataSourceSpecialistPairing);
             s.Obj("publicMetricsEraLoad", ref PublicMetricsEraLoad);
+            s.Obj("openWeightsEraThrottle", ref OpenWeightsEraThrottle);
+            s.Obj("evalHarnessEraBoost", ref EvalHarnessEraBoost);
+            s.Obj("campaignDeadlineEraGrace", ref CampaignDeadlineEraGrace);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

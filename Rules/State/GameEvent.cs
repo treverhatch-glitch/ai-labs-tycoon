@@ -637,7 +637,10 @@ namespace AiLabs.Rules.State
         SpecialistEraUnlocked,
         SectorPriceLadderPeak,
         DataSourceSpecialistPaired,
-        PublicMetricsEraBoost
+        PublicMetricsEraBoost,
+        OpenWeightsEraThrottled,
+        EvalHarnessEraBoosted,
+        CampaignDeadlineElongated
     }
 
     /// <summary>

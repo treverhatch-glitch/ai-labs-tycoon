@@ -38,10 +38,12 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[m];
                 if (model.WgtOpen != Open || model.Status != ModelStatus.Released) continue;
-                if ((int)(state.Rng.World.NextU64() % MathI.Permille) >= c.OpenWeights.CopyChancePermille) continue;
+                int chance = OpenWeightsEraThrottle.EffectiveCopyChancePermille(c, state);
+                if ((int)(state.Rng.World.NextU64() % MathI.Permille) >= chance) continue;
                 for (int i = 0; i < model.Sectors.Count; i++)
                     TrustSystem.Shift(c, state, lab, model.Sectors[i], -c.OpenWeights.CopyTrustLoss, false);
                 Events.Add(state, EventKind.WeightsCopied, lab.Id, model.Id, c.OpenWeights.CopyTrustLoss, model.Name);
+                OpenWeightsEraThrottle.OnCopied(c, state, lab, model);
             }
         }
     }
