@@ -189,6 +189,8 @@ namespace AiLabs.Rules.Config
             ShadyFreezeAuditProblems(p, c);
             SpecialistEraHooksProblems(p, c);
             SectorPricingBreakdownProblems(p, c);
+            DataSourceSpecialistPairingProblems(p, c);
+            PublicMetricsEraLoadProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2110,6 +2112,36 @@ namespace AiLabs.Rules.Config
             if (k == null) { p.Add("sectorPricingBreakdown is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingBreakdown.enabled must be 0 or 1");
             if (k.PeakTierNotify < 0 || k.PeakTierNotify > 1) p.Add("sectorPricingBreakdown.peakTierNotify must be 0 or 1");
+        }
+
+        static void DataSourceSpecialistPairingProblems(List<string> p, GameConfig c)
+        {
+            DataSourceSpecialistPairingConfig k = c.DataSourceSpecialistPairing;
+            if (k == null) { p.Add("dataSourceSpecialistPairing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceSpecialistPairing.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceSpecialistPairing.minEra must be a valid era index");
+            for (int i = 0; i < k.Pairs.Count; i++)
+            {
+                DataSourceSpecialistPairingItemConfig pair = k.Pairs[i];
+                if (pair.BonusPermille < 0) p.Add("dataSourceSpecialistPairing.pairs[" + i + "].bonusPermille must not be negative");
+                bool kindOk = false;
+                for (int j = 0; j < c.SpecialistLines.Kinds.Count; j++)
+                    if (c.SpecialistLines.Kinds[j].Id == pair.SpecialistKindId) { kindOk = true; break; }
+                if (!kindOk) p.Add("dataSourceSpecialistPairing.pairs[" + i + "] has unknown specialist kind \"" + pair.SpecialistKindId + "\"");
+                bool srcOk = false;
+                for (int j = 0; j < c.DataSources.Sources.Count; j++)
+                    if (c.DataSources.Sources[j].Id == pair.DataSourceId) { srcOk = true; break; }
+                if (!srcOk) p.Add("dataSourceSpecialistPairing.pairs[" + i + "] has unknown data source \"" + pair.DataSourceId + "\"");
+            }
+        }
+
+        static void PublicMetricsEraLoadProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsEraLoadConfig k = c.PublicMetricsEraLoad;
+            if (k == null) { p.Add("publicMetricsEraLoad is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsEraLoad.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraLoad.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0) p.Add("publicMetricsEraLoad.trustBoostPermille must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

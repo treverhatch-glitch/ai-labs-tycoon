@@ -404,11 +404,17 @@ and says why in the commit message.
 221. **Shady jobs under permit freeze.** ~~Done~~: `ShadyFreezeAudit`, schema 153 (Q478).
 222. **Batch seventeen news, chat and combination rules.** ~~Done~~: `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests` (Q479).
 
-### Era batch 18 (local — HOLD push)
+223. **Specialist and open-weights era hooks (bible tails lite).** ~~Done~~: `SpecialistEraHooks`, schema 154 (Q480); **PR [#52](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/52)** / land `2449d0d`.
+224. **Sector pricing breakdown for the player lab.** ~~Done~~: `SectorPricingBreakdown`, schema 155 (Q481).
+225. **Batch eighteen news, chat and combination rules.** ~~Done~~: `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests` (Q482).
 
-223. **Specialist and open-weights era hooks (bible tails lite).** ~~Done (local)~~: `SpecialistEraHooks`, schema 154 (Q480).
-224. **Sector pricing breakdown for the player lab.** ~~Done (local)~~: `SectorPricingBreakdown`, schema 155 (Q481).
-225. **Batch eighteen news, chat and combination rules.** ~~Done (local)~~: `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests` (Q482).
+226. **Specialist data-source pairing soak.** ~~Done (local)~~: `DataSourceSpecialistPairing`, schema 156 (Q483).
+227. **Public metrics era load tail.** ~~Done (local)~~: `PublicMetricsEraLoad`, schema 157 (Q484).
+228. **Batch nineteen news, chat and combination rules.** ~~Done (local)~~: `BatchNineteenNewsChatTests`, `BatchNineteenTogetherTests` (Q485).
+
+### Era batch 20 (draft — LOCAL prep)
+
+229. **TBD** — queue refill after P45 land.
 
 ## Rules: later
 

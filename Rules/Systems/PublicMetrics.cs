@@ -18,6 +18,7 @@ namespace AiLabs.Rules.Systems
             model.PubMiss = 0;
             model.PubScore = lab.LastWeek.ServedPermille;
             Events.Add(state, EventKind.MetricsPublished, lab.Id, model.Id, model.PubScore, model.Name);
+            PublicMetricsEraLoad.OnPublish(c, state, lab, model);
         }
 
         public static void Stop(GameConfig c, GameState state, LabState lab, ModelState model)

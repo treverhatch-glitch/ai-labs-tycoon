@@ -2367,3 +2367,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q481. Sector price ladder breakdown and peak notice? DECIDED (schema 155): `sectorPricingBreakdown`; `DisplayQueries.SectorPriceParts`; `SectorPriceLadderPeak`.
 
 ### Q482. Batch eighteen news, chat and combos. DECIDED: two headlines, two chat lines (407/360); `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests`.
+
+### Q483. Pair specialist kinds with data sources for training quality? DECIDED (schema 156): `dataSourceSpecialistPairing`; `DataSourceSpecialistPaired`.
+
+### Q484. Era-load trust boost on public metrics publish? DECIDED (schema 157): `publicMetricsEraLoad`; `PublicMetricsEraBoost`.
+
+### Q485. Batch nineteen news, chat and combos. DECIDED: two headlines, two chat lines (409/362); `BatchNineteenNewsChatTests`, `BatchNineteenTogetherTests`.

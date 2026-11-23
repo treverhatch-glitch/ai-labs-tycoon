@@ -680,6 +680,10 @@ namespace AiLabs.Rules.Sim
                     return "Specialist and open-weights hooks unlock in the " + e.Ref + " era.";
                 case EventKind.SectorPriceLadderPeak:
                     return who + " pegged premium pricing on \"" + e.Ref + "\" at tier " + e.SubjectId + ".";
+                case EventKind.DataSourceSpecialistPaired:
+                    return who + " paired data source \"" + e.Ref + "\" with a specialist line.";
+                case EventKind.PublicMetricsEraBoost:
+                    return who + " published metrics with an era-load trust boost of " + e.Amount + " on " + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

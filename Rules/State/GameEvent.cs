@@ -635,7 +635,9 @@ namespace AiLabs.Rules.State
         GpuTierLocked,
         ScenarioEndlessAck,
         SpecialistEraUnlocked,
-        SectorPriceLadderPeak
+        SectorPriceLadderPeak,
+        DataSourceSpecialistPaired,
+        PublicMetricsEraBoost
     }
 
     /// <summary>

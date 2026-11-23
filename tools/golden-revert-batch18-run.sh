@@ -44,6 +44,8 @@ os.replace(t,p)
 
 [ "$N" -le 155 ] && disable_cfg sectorPricingBreakdown
 [ "$N" -le 154 ] && disable_cfg specialistEraHooks
+[ "$N" -le 157 ] && disable_cfg publicMetricsEraLoad
+[ "$N" -le 156 ] && disable_cfg dataSourceSpecialistPairing
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"
