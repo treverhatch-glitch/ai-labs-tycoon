@@ -11341,6 +11341,199 @@ namespace AiLabs.Unity.Hq
             return line;
         }}
 
+
+        public static string ThisWeekGreyIncomeSummaryLine(LabState lab)
+        {
+            string grey = ThisWeekLedgerGreyRevenueLine(lab);
+            string income = ThisWeekLedgerIncomeSummaryLine(lab);
+            string revenue = ThisWeekLedgerRevenueLine(lab);
+            if (string.IsNullOrEmpty(grey) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(revenue))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grey)) line = grey;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            return line;
+        }}
+
+        public static string LastWeekGreyIncomeSummaryLine(LabState lab)
+        {
+            string grey = LastWeekLedgerGreyRevenueLine(lab);
+            string income = LastWeekLedgerIncomeSummaryLine(lab);
+            string grants = LastWeekLedgerGrantsLine(lab);
+            if (string.IsNullOrEmpty(grey) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(grants))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grey)) line = grey;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(grants))
+                line = string.IsNullOrEmpty(line) ? grants : line + " · " + grants;
+            return line;
+        }}
+
+        public static string LifetimeGreyIncomeSummaryLine(LabState lab)
+        {
+            string grey = LifetimeLedgerGreyRevenueLine(lab);
+            string revenue = LifetimeLedgerRevenueLine(lab);
+            string grants = LifetimeLedgerGrantsLine(lab);
+            if (string.IsNullOrEmpty(grey) && string.IsNullOrEmpty(revenue) && string.IsNullOrEmpty(grants))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grey)) line = grey;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            if (!string.IsNullOrEmpty(grants))
+                line = string.IsNullOrEmpty(line) ? grants : line + " · " + grants;
+            return line;
+        }}
+
+        public static string ThisWeekFinesIncomeSummaryLine(LabState lab)
+        {
+            string fines = ThisWeekLedgerFinesLine(lab);
+            string income = ThisWeekLedgerIncomeSummaryLine(lab);
+            string net = ThisWeekLedgerNetLine(lab);
+            if (string.IsNullOrEmpty(fines) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(net))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(fines)) line = fines;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(net))
+                line = string.IsNullOrEmpty(line) ? net : line + " · " + net;
+            return line;
+        }}
+
+        public static string LastWeekFinesIncomeSummaryLine(LabState lab)
+        {
+            string fines = LastWeekLedgerFinesLine(lab);
+            string income = LastWeekLedgerIncomeSummaryLine(lab);
+            string net = LastWeekLedgerNetLine(lab);
+            if (string.IsNullOrEmpty(fines) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(net))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(fines)) line = fines;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(net))
+                line = string.IsNullOrEmpty(line) ? net : line + " · " + net;
+            return line;
+        }}
+
+        public static string LifetimeFinesIncomeSummaryLine(LabState lab)
+        {
+            string fines = LifetimeLedgerFinesLine(lab);
+            string revenue = LifetimeLedgerRevenueLine(lab);
+            string grants = LifetimeLedgerGrantsLine(lab);
+            if (string.IsNullOrEmpty(fines) && string.IsNullOrEmpty(revenue) && string.IsNullOrEmpty(grants))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(fines)) line = fines;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            if (!string.IsNullOrEmpty(grants))
+                line = string.IsNullOrEmpty(line) ? grants : line + " · " + grants;
+            return line;
+        }}
+
+        public static string ThisWeekRentIncomeSummaryLine(LabState lab)
+        {
+            string gpuRent = ThisWeekLedgerGpuRentLine(lab);
+            string income = ThisWeekLedgerIncomeSummaryLine(lab);
+            string revenue = ThisWeekLedgerRevenueLine(lab);
+            if (string.IsNullOrEmpty(gpuRent) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(revenue))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(gpuRent)) line = gpuRent;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            return line;
+        }}
+
+        public static string LastWeekRentIncomeSummaryLine(LabState lab)
+        {
+            string gpuRent = LastWeekLedgerGpuRentLine(lab);
+            string income = LastWeekLedgerIncomeSummaryLine(lab);
+            string grants = LastWeekLedgerGrantsLine(lab);
+            if (string.IsNullOrEmpty(gpuRent) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(grants))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(gpuRent)) line = gpuRent;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(grants))
+                line = string.IsNullOrEmpty(line) ? grants : line + " · " + grants;
+            return line;
+        }}
+
+        public static string LifetimeRentIncomeSummaryLine(LabState lab)
+        {
+            string revenue = LifetimeLedgerRevenueLine(lab);
+            string grants = LifetimeLedgerGrantsLine(lab);
+            string net = LifetimeLedgerNetLine(lab);
+            if (string.IsNullOrEmpty(revenue) && string.IsNullOrEmpty(grants) && string.IsNullOrEmpty(net))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(revenue)) line = revenue;
+            if (!string.IsNullOrEmpty(grants))
+                line = string.IsNullOrEmpty(line) ? grants : line + " · " + grants;
+            if (!string.IsNullOrEmpty(net))
+                line = string.IsNullOrEmpty(line) ? net : line + " · " + net;
+            return line;
+        }}
+
+        public static string ThisWeekGrantIncomeSummaryLine(LabState lab)
+        {
+            string grants = ThisWeekLedgerGrantsLine(lab);
+            string income = ThisWeekLedgerIncomeSummaryLine(lab);
+            string net = ThisWeekLedgerNetLine(lab);
+            if (string.IsNullOrEmpty(grants) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(net))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grants)) line = grants;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(net))
+                line = string.IsNullOrEmpty(line) ? net : line + " · " + net;
+            return line;
+        }}
+
+        public static string LastWeekGrantIncomeSummaryLine(LabState lab)
+        {
+            string grants = LastWeekLedgerGrantsLine(lab);
+            string income = LastWeekLedgerIncomeSummaryLine(lab);
+            string revenue = LastWeekLedgerRevenueLine(lab);
+            if (string.IsNullOrEmpty(grants) && string.IsNullOrEmpty(income) && string.IsNullOrEmpty(revenue))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grants)) line = grants;
+            if (!string.IsNullOrEmpty(income))
+                line = string.IsNullOrEmpty(line) ? income : line + " · " + income;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            return line;
+        }}
+
+        public static string LifetimeGrantIncomeSummaryLine(LabState lab)
+        {
+            string grants = LifetimeLedgerGrantsLine(lab);
+            string revenue = LifetimeLedgerRevenueLine(lab);
+            string net = LifetimeLedgerNetLine(lab);
+            if (string.IsNullOrEmpty(grants) && string.IsNullOrEmpty(revenue) && string.IsNullOrEmpty(net))
+                return "";
+            string line = "";
+            if (!string.IsNullOrEmpty(grants)) line = grants;
+            if (!string.IsNullOrEmpty(revenue))
+                line = string.IsNullOrEmpty(line) ? revenue : line + " · " + revenue;
+            if (!string.IsNullOrEmpty(net))
+                line = string.IsNullOrEmpty(line) ? net : line + " · " + net;
+            return line;
+        }}
+
         public static string BankruptLine(LabState lab)
         {
             if (lab == null || !lab.Bankrupt) return "";
