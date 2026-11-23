@@ -5915,5 +5915,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("890").Or.Contain("1,250"));
         }
 
+        [Test]
+        public void last_week_gpu_upkeep_rent_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.GpuUpkeep = -870;
+            lab.Ledger.LastWeek.GpuRent = -1_230;
+            string line = HqDisplayQueriesHud.LastWeekGpuUpkeepRentSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("870").Or.Contain("1,230"));
+        }
+
     }
 }
