@@ -1732,6 +1732,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekSiteGrantSpendIncome = HqDisplayQueriesHud.ThisWeekSiteGrantSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekSiteGrantSpendIncome))
                     status = string.IsNullOrEmpty(status) ? thisWeekSiteGrantSpendIncome : status + " · " + thisWeekSiteGrantSpendIncome;
+                string lastWeekSiteGrantSpendIncome = HqDisplayQueriesHud.LastWeekSiteGrantSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekSiteGrantSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? lastWeekSiteGrantSpendIncome : status + " · " + lastWeekSiteGrantSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
