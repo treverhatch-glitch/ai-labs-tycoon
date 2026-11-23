@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q510. Presentation index hub? DECIDED: `CampusPresentationIndexHubPresentationSpec`
+
+- Options: (a) README links only; (b) hub doc + batch span spec; (c) generate hub from code.
+- Recommendation and choice: **(b)** — batches 50–60 (11 entries); table links index/rollup docs from this lane.
+- Why: Unity thread navigation after ALT-76 index rollout; batch 54 folded into seasonal index.
+
 ### Q509. Handoff rollup spec? DECIDED: `CampusHandoffRollupPresentationSpec`
 
 - Options: (a) `HANDOFF-INDEX` only; (b) rollup doc + expected count spec; (c) change prepush counts in graphics PR.

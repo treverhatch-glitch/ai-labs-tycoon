@@ -1,0 +1,20 @@
+# Presentation index hub (batches 50–60)
+
+Navigation hub for index/rollup docs added on PR #41 (`cursor/graphics-pipeline-5032`). Screen layouts and per-feature specs remain in their batch docs.
+
+| Batch | Doc | Spec |
+| --- | --- | --- |
+| 50 | [SCREEN-LAYOUT-INDEX.md](SCREEN-LAYOUT-INDEX.md) | `CampusFullScreenLayoutIndexPresentationSpec` |
+| 51 | [TOP-BAR-TOKEN-INDEX.md](TOP-BAR-TOKEN-INDEX.md) | `CampusTopBarTokenIndexPresentationSpec` |
+| 52 | [HUD-ERA-LABEL-PRESENTATION.md](HUD-ERA-LABEL-PRESENTATION.md) | `CampusHudEraLabelPresentationSpec` |
+| 53 | [SEASONAL-OVERLAY-INDEX.md](SEASONAL-OVERLAY-INDEX.md) | `CampusSeasonalOverlayIndexPresentationSpec` |
+| 55 | [TRAINING-INCIDENT-INDEX.md](TRAINING-INCIDENT-INDEX.md) | `CampusTrainingIncidentIndexPresentationSpec` |
+| 56 | [EXPLAINABLE-HUD-INDEX.md](EXPLAINABLE-HUD-INDEX.md) | `CampusExplainableHudIndexPresentationSpec` |
+| 57 | [STAFF-PRESENTATION-INDEX.md](STAFF-PRESENTATION-INDEX.md) | `CampusStaffPresentationIndexPresentationSpec` |
+| 58 | [RIVAL-FEELING-INDEX.md](RIVAL-FEELING-INDEX.md) | `CampusRivalFeelingIndexPresentationSpec` |
+| 59 | [A11Y-CHROME-INDEX.md](A11Y-CHROME-INDEX.md) | `CampusA11yChromeIndexPresentationSpec` |
+| 60 | [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | `CampusHandoffRollupPresentationSpec` |
+
+Batch 54 extended overlay index (world freeze slot); no separate hub row.
+
+Tokens: `CampusPresentationIndexHubPresentationSpec` (11 hub entries, batches 50–60). Batch 61.
