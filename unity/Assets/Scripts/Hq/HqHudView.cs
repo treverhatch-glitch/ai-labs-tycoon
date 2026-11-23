@@ -1171,6 +1171,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeRentChip = HqDisplayQueriesHud.LifetimeRentChipSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeRentChip))
                     status = string.IsNullOrEmpty(status) ? lifetimeRentChip : status + " · " + lifetimeRentChip;
+                string lifetimeGreyGrant = HqDisplayQueriesHud.LifetimeGreyGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeGreyGrant))
+                    status = string.IsNullOrEmpty(status) ? lifetimeGreyGrant : status + " · " + lifetimeGreyGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
