@@ -57,7 +57,8 @@
 | 66 | `cc036a8` | World map host index |
 | 67 | `0607fca` | Tab rail integration index |
 | 68 | `1b8cf85` | Room build panel index |
-| 69 | (pushing) | HQ stage stack rollup |
+| 69 | `f4f2e53` | HQ stage stack rollup |
+| 70 | (LOCAL GREEN) | Staff/GPU panel index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

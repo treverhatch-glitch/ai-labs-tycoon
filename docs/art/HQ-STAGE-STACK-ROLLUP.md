@@ -6,7 +6,7 @@ Refresh navigation for batches 38–42 HQ office chrome; supersedes ad-hoc cross
 | --- | --- | --- |
 | Lot viewport | 42 | [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) |
 | Build panel | 38 / 68 | [ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md) |
-| Staff / GPU | 39 | [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) |
+| Staff / GPU | 39 / 70 | [STAFF-GPU-PANEL-INDEX.md](STAFF-GPU-PANEL-INDEX.md) |
 | Training peek | 40 | [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) |
 | Mascot strip | 41 | [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) |
 

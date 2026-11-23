@@ -15,8 +15,9 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 | [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) | Tab rail layers (batches 7, 28, 44) |
 | [ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md) | Room build + explainable HUD (batches 38, 20) |
 | [HQ-STAGE-STACK-ROLLUP.md](HQ-STAGE-STACK-ROLLUP.md) | HQ bands 38–42 rollup (batch 69) |
+| [STAFF-GPU-PANEL-INDEX.md](STAFF-GPU-PANEL-INDEX.md) | Staff/GPU HQ band (batches 26, 39) |
 
-Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69). Gate unchanged: `./tools/art/prepush.sh`.
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70). Gate unchanged: `./tools/art/prepush.sh`.
 
 ## Batch 11 (local, unpushed atop `c17c67d`)
 

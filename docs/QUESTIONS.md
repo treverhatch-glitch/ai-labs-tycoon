@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q519. Staff/GPU panel index? DECIDED: `CampusStaffGpuPanelIndexPresentationSpec`
+
+- Options: (a) batch 57 staff index only; (b) HQ panel index for batches 26+39; (c) implement hire panel in graphics PR.
+- Recommendation and choice: **(b)** — HQ band rollup; batch 57 remains canonical staff index.
+- Why: Index-lane refill on PR #41; hire/GPU commands unchanged in rules.
+
 ### Q518. HQ stage stack rollup? DECIDED: `CampusHqStageStackRollupPresentationSpec`
 
 - Options: (a) refresh `HQ-STAGE-STACK.md` only; (b) rollup doc + band/build aliases; (c) implement HQ scene in graphics PR.
