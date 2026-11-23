@@ -2188,6 +2188,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekSitePatent = HqDisplayQueriesHud.ThisWeekSitePatentSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekSitePatent))
                     status = string.IsNullOrEmpty(status) ? thisWeekSitePatent : status + " · " + thisWeekSitePatent;
+                string lifetimeHardwarePatent = HqDisplayQueriesHud.LifetimeHardwarePatentSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeHardwarePatent))
+                    status = string.IsNullOrEmpty(status) ? lifetimeHardwarePatent : status + " · " + lifetimeHardwarePatent;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
