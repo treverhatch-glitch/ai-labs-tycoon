@@ -31,7 +31,7 @@
 | 40 | `24a9ea1` | Training peek |
 | 41 | `5798e49` | HQ mascot strip |
 | 42 | `3bd78b2` | HQ lot viewport |
-| 43 | (local GO) | HQ stage stack |
+| 43 | `8316759` | HQ stage stack |
 | 44 | `5d52a64` | Tab rail v2 |
 | 45 | `2801aa1` | Safe area (in `f44cd35` push) |
 | 46 | `f44cd35` | Advance week |
@@ -49,7 +49,10 @@
 | 58 | `5e6b64c` | Rival feeling index |
 | 59 | `11aa6cb` | A11y chrome index |
 | 60 | `6e3f97c` | Handoff rollup |
-| 61 | (stub HOLD) | Presentation index master |
+| 61 | `5eb9103` | Presentation index hub |
+| 62 | *(this push)* | ALT-76 rollup refresh |
+
+Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

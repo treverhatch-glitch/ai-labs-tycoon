@@ -1,3 +1,7 @@
-# Graphics batch 62 (stub — HOLD until GO)
+# Graphics batch 62
 
-- [ ] ALT-76 STATUS table refresh — remote tips batches 50–61 (Q511 draft)
+**Parent:** `5eb91033cc68462f076d6efa46271b389f4a2e61` (P61 @ 15:56:37 UTC)
+
+- [x] `ALT-76-ROLLUP.md`, `CampusAlt76RollupPresentationSpec` + tests
+- [x] Q511, ALT-76 batch 43 tip + row 62, README
+- PUSH at GO ≥16:26:37 UTC

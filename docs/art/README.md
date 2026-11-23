@@ -75,5 +75,6 @@ python3 tools/art/generate_campus_kit.py
 | [A11Y-CHROME-INDEX.md](A11Y-CHROME-INDEX.md) | Focus ring + capture HUD hub (batch 59) |
 | [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | Handoff expected counts (batch 60) |
 | [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) | Index hub batches 50–60 (batch 61) |
+| [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) | ALT-76 status rollup (batch 62) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q511. ALT-76 rollup spec? DECIDED: `CampusAlt76RollupPresentationSpec`
+
+- Options: (a) markdown-only status refresh; (b) rollup doc + last-batch spec tying to hub; (c) automate status from git.
+- Recommendation and choice: **(b)** — documents batch 43 remote tip + rows through 61; `LastRemoteDocumentedBatch` = 61.
+- Why: Coordinator/Unity thread read single Edit Mode anchor for PR #41 index lane completeness.
+
 ### Q510. Presentation index hub? DECIDED: `CampusPresentationIndexHubPresentationSpec`
 
 - Options: (a) README links only; (b) hub doc + batch span spec; (c) generate hub from code.
