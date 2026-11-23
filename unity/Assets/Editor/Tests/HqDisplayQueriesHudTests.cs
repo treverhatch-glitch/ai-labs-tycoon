@@ -2645,5 +2645,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("3,850").Or.Contain("9,600"));
         }
 
+        [Test]
+        public void lifetime_capital_grey_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.GreyRevenue = 45_000;
+            lab.Ledger.Lifetime.Laundered = 26_000;
+            string line = HqDisplayQueriesHud.LifetimeCapitalGreySummaryLine(lab);
+            Assert.That(line, Does.Contain("45,000").Or.Contain("26,000"));
+        }
+
     }
 }
