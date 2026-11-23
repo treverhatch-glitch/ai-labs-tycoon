@@ -554,6 +554,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekTrainingCapital = HqDisplayQueriesHud.LastWeekTrainingCapitalSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekTrainingCapital))
                         _summary.text += " · " + lastWeekTrainingCapital;
+                    string thisWeekGpuGrant = HqDisplayQueriesHud.ThisWeekGpuGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekGpuGrant))
+                        _summary.text += " · " + thisWeekGpuGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
