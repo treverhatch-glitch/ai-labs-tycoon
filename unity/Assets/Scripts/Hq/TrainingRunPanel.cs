@@ -1004,6 +1004,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekLaunderTraining = HqDisplayQueriesHud.LastWeekLaunderTrainingSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekLaunderTraining))
                         _summary.text += " · " + lastWeekLaunderTraining;
+                    string lifetimeNetRoom = HqDisplayQueriesHud.LifetimeNetRoomSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeNetRoom))
+                        _summary.text += " · " + lifetimeNetRoom;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
