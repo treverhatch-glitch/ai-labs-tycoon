@@ -1111,6 +1111,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeGrantLand = HqDisplayQueriesHud.LifetimeGrantLandSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeGrantLand))
                     status = string.IsNullOrEmpty(status) ? lifetimeGrantLand : status + " · " + lifetimeGrantLand;
+                string lastWeekRoomGrant = HqDisplayQueriesHud.LastWeekRoomGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekRoomGrant))
+                    status = string.IsNullOrEmpty(status) ? lastWeekRoomGrant : status + " · " + lastWeekRoomGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
