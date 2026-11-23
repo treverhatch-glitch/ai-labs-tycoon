@@ -182,6 +182,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekHardwarePower = HqDisplayQueriesHud.LastWeekHardwarePowerSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekHardwarePower))
                         _summary.text += " · " + lastWeekHardwarePower;
+                    string lifetimeTrainingLaunder = HqDisplayQueriesHud.LifetimeTrainingLaunderSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeTrainingLaunder))
+                        _summary.text += " · " + lifetimeTrainingLaunder;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
