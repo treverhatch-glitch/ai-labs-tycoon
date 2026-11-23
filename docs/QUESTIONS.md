@@ -1013,9 +1013,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBalanceSoakBarLaterTests2` (70):** `BalanceSoak.DefaultPresets`; calendar weeks; schema **29** only; gate **3889/0** in-repo.
 
-### Q3286–Q3355. Rival/plan data bar coda? TBD: test-only (batch 52, LOCAL stub)
+### Q3286–Q3355. Rival/plan data bar coda? DECIDED: test-only (batch 52, commit-ready — push with GO ≥ 21:15 UTC)
 
-- **`HatchRivalPlanBarLaterTests2` (70):** rival cast + `PlannerAcquireChancePermille`; schema **29** only.
+- **`HatchRivalPlanBarLaterTests2` (70):** rival cast + distress/plan neighbours; schema **29** only; 70-bar filter green.
 
 ### Q3356–Q3425. Funding follow-on bar coda? TBD: test-only (batch 53, queued)
 
