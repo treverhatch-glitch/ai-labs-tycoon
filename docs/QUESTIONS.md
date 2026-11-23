@@ -925,11 +925,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchContainmentEndingBarLaterTests` (70):** containment wing bonus; endings table; schema **29**.
 
-### Q1746–Q1815. Treaty/ending data bar? TBD: test-only (batch 30, local)
+### Q1746–Q1815. Treaty/ending data bar? DECIDED: test-only (batch 30, pushed @ `dee894f`)
 
-- **`HatchTreatyEndingBarLaterTests` (70):** treaty/nationalised config; endings table; schema **29**.
+- **`HatchTreatyEndingBarLaterTests` (70):** treaty/nationalised config; `monopoly`/`the-pop` neighbours; schema **29**; golden `55e673a0…` unchanged.
 
-### Q1816+. Bible queue? TBD: see NEXT.md
+### Q1816–Q1885. Pop/second-place data bar? DECIDED: test-only (batch 31, local)
+
+- **`HatchPopSecondPlaceBarLaterTests` (70):** `ThePopEndingForPlayer`; `second-place` ending; crown-runner-up years; rivalry `secondPlacePermille` (negative delta — assert non-zero, not &gt; 0); schema **29**.
+
+### Q1886–Q1955. Forward-queue data bar? TBD: test-only (batch 32, queued untracked)
+
+- **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries` exit breakdown; era `incidentLoadPermille`; long-horizon soak neighbours (Q99–Q101); schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
