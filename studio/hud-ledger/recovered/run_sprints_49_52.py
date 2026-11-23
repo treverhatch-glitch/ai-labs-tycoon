@@ -193,7 +193,7 @@ SPRINT52 = [
     ("LastWeekLaunderTrainingSummaryLine", "lastWeekLaunderTraining", "last week launder training", "last_week_launder_training_summary_line",
      "lab.Ledger.LastWeek.Laundered = 3_000;\n            lab.Ledger.LastWeek.Training = -8_700;", "3,000", "8,700"),
     ("LifetimeNetRoomSummaryLine", "lifetimeNetRoom", "lifetime net room", "lifetime_net_room_summary_line",
-     "lab.Ledger.Lifetime.Net = 55_000;\n            lab.Ledger.Lifetime.RoomUpkeep = -55_000;", "55,000"),
+     "lab.Ledger.Lifetime.Net = 55_000;\n            lab.Ledger.Lifetime.RoomUpkeep = -55_000;", "55,000", "55,000"),
 ]
 
 PA49 = '            string lastWeekNetGrantPart = string.IsNullOrEmpty(lastWeekNetGrant) ? "" : " · " + lastWeekNetGrant;'
@@ -247,6 +247,8 @@ def insert_formatters(batch):
 
 def git_commit(msg, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
@@ -294,6 +296,8 @@ def wire_staff(c, part_anchor, tail_token):
 """
     t = t.replace(part_anchor, part_anchor + "\n" + ins.rstrip("\n"), 1)
     m = re.search(rf"(\+ {tail_token}(?: \+ \w+Part)*)", t)
+    if not m:
+        return False
     t = t.replace(m.group(1), m.group(1) + f" + {c['var']}Part", 1)
     STAFF.write_text(t)
     return True
@@ -308,6 +312,8 @@ def wire_mascot(c, part_anchor, tail_token):
 """
     t = t.replace(part_anchor, part_anchor + "\n" + ins.rstrip("\n"), 1)
     m = re.search(rf"(\+ {tail_token}(?: \+ \w+Part)*);", t)
+    if not m:
+        return False
     t = t.replace(m.group(1) + ";", m.group(1) + f" + {c['var']}Part;", 1)
     MASCOT.write_text(t)
     return True
