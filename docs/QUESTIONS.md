@@ -905,11 +905,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchSectorRivalLaterTests` (70):** sector table; founding rivals; schema **29** roundtrip.
 
-### Q1396–Q1465. Funding/bubble data bar? TBD: test-only (batch 25, local)
+### Q1396–Q1465. Funding/bubble data bar? DECIDED: test-only (batch 25, pushed @ `5da29a0`)
 
 - **`HatchFundingBubbleLaterTests` (70):** `BubblePermille`; funding rounds; schema **29**.
 
-### Q1466+. Bible queue? TBD: see NEXT.md
+### Q1466–Q1535. Shady/china data bar? TBD: test-only (batch 26, local)
+
+- **`HatchShadyChinaBarLaterTests` (70):** shady cards; rival refuse; china deal config; schema **29**.
+
+### Q1536+. Bible queue? TBD: see NEXT.md
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
