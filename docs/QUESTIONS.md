@@ -957,11 +957,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBubbleDistressBarLaterTests` (70):** `BubbleConfig` crash permille; weak-player haircut; acquisition crash quote neighbours; schema **29** only.
 
-### Q2306–Q2375. Capital/bubble data bar? DECIDED: test-only (batch 38, commit-ready — no push)
+### Q2306–Q2375. Capital/bubble data bar? DECIDED: test-only (batch 38, pushed @ `b268afb`)
 
-- **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; crash/residual permilles; schema **29** only; gates **2979/0** / **2977/0** WT.
+- **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; crash/residual permilles; schema **29** only.
 
-### Q2376–Q2445. Funding follow-on data bar? TBD: test-only (batch 39, queued)
+### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, WIP — no push)
 
 - **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only.
 
