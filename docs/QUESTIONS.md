@@ -590,11 +590,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — navigation rollup for post-60 lane.
 - Why: Single manifest for batches 66–74; hub table unchanged.
 
-### Q525. ALT-76 refresh through manifest? DRAFT: `CampusAlt76RollupRefreshPresentationSpec`
+### Q525. ALT-76 refresh through manifest? DECIDED: `CampusAlt76RollupRefreshPresentationSpec`
 
 - Options: (a) STATUS rows only; (b) rollup doc refresh + last-batch alias; (c) regenerate all index specs.
-- Recommendation: **(b)** — extends batch 62 rollup through batch 75.
-- Status: stub batch 76 (local).
+- Recommendation and choice: **(b)** — extends batch 62 rollup through batch 75.
+- Why: STATUS + manifest navigation; no rules change.
+
+### Q526. GO packet index lane refresh? DRAFT: `CampusGoPacketIndexLaneRefreshPresentationSpec`
+
+- Options: (a) batch 63 template only; (b) refresh doc + post-60 batch range alias; (c) automate push tooling in graphics PR.
+- Recommendation: **(b)** — extends GO packet template for batches 66+.
+- Status: stub batch 77 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

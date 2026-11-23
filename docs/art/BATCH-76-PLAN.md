@@ -1,3 +1,6 @@
-# Graphics batch 76 (stub — HOLD until GO)
+# Graphics batch 76
 
-- [ ] ALT-76 refresh through batch 75 manifest (Q525 draft)
+**Parent:** `01b0286017e5bfdc21df6ea5a9d52a5521002549` (P75 @ 22:58:23 UTC)
+
+- [x] `ALT-76-ROLLUP-REFRESH.md`, `CampusAlt76RollupRefreshPresentationSpec` + tests
+- [x] Q525 DECIDED, cross-refs, ALT-76, NEXT

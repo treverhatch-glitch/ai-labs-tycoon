@@ -63,9 +63,10 @@
 | 72 | `745a159` | HQ mascot strip index |
 | 73 | `974aef2` | Compute split index |
 | 74 | `2429879` | HQ stack completion |
-| 75 | (pushing) | Index lane manifest |
+| 75 | `01b0286` | Index lane manifest |
+| 76 | (pushing) | ALT-76 rollup refresh |
 
-Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
+Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

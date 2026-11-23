@@ -76,6 +76,7 @@ python3 tools/art/generate_campus_kit.py
 | [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | Handoff expected counts (batch 60) |
 | [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) | Index hub batches 50–60 (batch 61) |
 | [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) | ALT-76 status rollup (batch 62) |
+| [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) | ALT-76 through batch 75 (batch 76) |
 | [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | GO packet + index lane (batch 63) |
 | *(UNITY-INTEGRATION § Index lane)* | Unity hub links (batch 64) |
 | [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) | World map host + panel (batch 66) |
