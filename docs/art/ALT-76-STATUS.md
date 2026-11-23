@@ -40,7 +40,8 @@
 | 49 | `ad8db69` | Training screen |
 | 50 | `54f990b` | Screen layout index |
 | 51 | `909fc96` | Top bar token index |
-| 52 | (local HOLD) | HUD era label |
+| 52 | `3a303b1` | HUD era label |
+| 53 | (local HOLD) | Seasonal overlay index |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

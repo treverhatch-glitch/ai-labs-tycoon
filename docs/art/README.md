@@ -67,5 +67,6 @@ python3 tools/art/generate_campus_kit.py
 | [SCREEN-LAYOUT-INDEX.md](SCREEN-LAYOUT-INDEX.md) | Full-screen layout index (batch 50) |
 | [TOP-BAR-TOKEN-INDEX.md](TOP-BAR-TOKEN-INDEX.md) | Global top bar chrome index (batch 51) |
 | [HUD-ERA-LABEL-PRESENTATION.md](HUD-ERA-LABEL-PRESENTATION.md) | Era name top-right (batch 52) |
+| [SEASONAL-OVERLAY-INDEX.md](SEASONAL-OVERLAY-INDEX.md) | Seasonal overlay hub (batch 53) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

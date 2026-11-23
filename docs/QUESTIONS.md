@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q502. Seasonal overlay index? DECIDED: `CampusSeasonalOverlayIndexPresentationSpec`
+
+- Options: (a) extend `GAUNTLET-STAGE-HUD` only; (b) index doc + count/fade spec; (c) implement overlay host in graphics PR.
+- Recommendation and choice: **(b)** — documents Gauntlet (batch 24); aliases fade from `CampusHudLayoutSpec`.
+- Why: Matches `docs/NEXT.md` seasonal overlays row; world freeze deferred to batch 54 index slot.
+
 ### Q501. HUD era label chrome? DECIDED: `CampusHudEraLabelPresentationSpec`
 
 - Options: (a) `UI-HUD-LAYOUTS` row only; (b) era label doc + spec + top-bar index slot; (c) wire `HqHudView` in graphics PR.
