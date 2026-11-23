@@ -1990,6 +1990,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeGreyLandSpendIncome = HqDisplayQueriesHud.LifetimeGreyLandSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeGreyLandSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimeGreyLandSpendIncome : status + " · " + lifetimeGreyLandSpendIncome;
+                string thisWeekConstructionPatentSpendIncome = HqDisplayQueriesHud.ThisWeekConstructionPatentSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekConstructionPatentSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekConstructionPatentSpendIncome : status + " · " + thisWeekConstructionPatentSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
