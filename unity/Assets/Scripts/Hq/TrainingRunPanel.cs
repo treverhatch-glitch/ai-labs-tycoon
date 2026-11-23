@@ -1268,6 +1268,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekLandGrant = HqDisplayQueriesHud.ThisWeekLandGrantSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekLandGrant))
                         _summary.text += " · " + thisWeekLandGrant;
+                    string thisWeekSalariesRent = HqDisplayQueriesHud.ThisWeekSalariesRentSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekSalariesRent))
+                        _summary.text += " · " + thisWeekSalariesRent;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
