@@ -23,7 +23,8 @@
 | 32 | `46bfc78` | Compute split bars |
 | 33 | `843705d` | Mascot row HUD |
 | 34 | `e9ccf12` | Studio handoff |
-| 35 | (local GO) | Capture HUD snapshot |
+| 35 | `e8ebc83` | Capture HUD snapshot |
+| 36 | (local GO) | World map host shell |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

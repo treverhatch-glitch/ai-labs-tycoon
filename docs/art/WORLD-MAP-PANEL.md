@@ -11,6 +11,8 @@ Presentation overlay using `world-bloc-tints.json` and campus kit props.
 | Selected site preview | `exterior-sign-pole`, optional `building-elevator-core` for megasites |
 | HUD icon | `icon-world.svg` |
 
+Host shell: [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md).
+
 ## Interaction (Unity thread)
 
 - Click pin → right panel shows `DisplayQueries` power breakdown (rules); frozen blocs use [WORLD-MAP-FREEZE-PRESENTATION.md](WORLD-MAP-FREEZE-PRESENTATION.md).

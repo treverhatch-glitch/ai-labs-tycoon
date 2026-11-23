@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q485. World map host shell tokens? DECIDED: `CampusWorldMapHostPresentationSpec`
+
+- Options: (a) NEXT prose only; (b) spec + host doc; (c) implement host UI in graphics PR.
+- Recommendation and choice: **(b)** — documents 0.38 drawer fraction and icon; rules/commands unchanged.
+- Why: Closes presentation gap called out in NEXT without Unity host wiring on cloud agent.
+
 ### Q484. Capture HUD snapshot regions? DECIDED: `CampusCaptureHudSnapshotPresentationSpec`
 
 - Options: (a) CAPTURE-REGRESSION only; (b) HUD snapshot doc + spec; (c) per-region PNG crops in CI.

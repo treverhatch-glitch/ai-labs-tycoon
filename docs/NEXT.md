@@ -28,7 +28,7 @@ Known limits of the slice, so nobody is surprised:
 - **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
 - **The world map is in and the plans use it.** xAy, Goggle DeepMined and DeepSneak build data centres, OpenAye and
   AntHopticsAI rent, and owning plans swap hardware two generations old for the current one (Q52). The player can
-  use every command; the host UI is the missing half.
+  use every command; the host UI is the missing half (graphics batch 36 documents shell chrome only).
 - **Staff are people** with traits and morale; feud poaching is in (schema 10).
 - **Endings continue the run** (bankrupt bailout, sell the lab, monopoly, handcuffs); alignment gap and rungs 1–3 are in; reserved compute and the Envydia queue are in (schema 11).
 - **The shady path is in** for the player (cards, launder, investigations); parody labs never take shady jobs (`shadyAppetite` 0).
@@ -112,7 +112,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`e9ccf12` (batch 34: studio handoff); batch 35 (capture HUD snapshot) staged locally after prepush.
+`e8ebc83` (batch 35: capture HUD); batch 36 (world map host shell) staged locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 

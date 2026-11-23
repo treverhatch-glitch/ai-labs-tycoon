@@ -43,6 +43,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [MASCOT-ROW-HUD.md](MASCOT-ROW-HUD.md) | Mascot strip row (batch 33) |
 | [STUDIO-GRAPHICS-HANDOFF.md](STUDIO-GRAPHICS-HANDOFF.md) | Studio land PR #41 (batch 34) |
 | [CAPTURE-HUD-SNAPSHOT.md](CAPTURE-HUD-SNAPSHOT.md) | CI capture HUD regions (batch 35) |
+| [WORLD-MAP-HOST-PRESENTATION.md](WORLD-MAP-HOST-PRESENTATION.md) | World map host shell (batch 36) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
