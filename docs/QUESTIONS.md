@@ -540,6 +540,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — `pull_request` with paths `unity/**` and `.github/workflows/unity.yml`, keep `workflow_dispatch` and `cancel-in-progress`, no `push` or `schedule`, drop the main-only job guard so PRs run Edit Mode tests; secrets only on the test-runner step.
 - Why: owner's assistant decision (2026-11-20): Hatch cannot verify compiles daily during batched pushes (~once per day); GameCI Edit Mode is the gate before more Unity screens land.
 
+### Q90. VM loss @904 and HUD backup branch? DECIDED: `cursor/unity-hud-backup`, rebuild from `1ee6a75`
+
+- Options: (a) replay 74 chained `/tmp` builders from store (incomplete); (b) persist transcript runners under `studio/hud-ledger/recovered/`, rebuild sprint stack on backup branch, promote to PR #2 only after Unity compile CI green; (c) wait for Hatch local ~33k tip.
+- Recommendation and choice: **(b)+(c)**. Store holds only `hud-run-sprints-901-904-builder-excerpt.py` (53 lines), not the full runner chain. **First backup push:** branch `cursor/unity-hud-backup` @ `1ee6a75` → first grouped batch adds `studio/hud-ledger/` (102 recovered runners + extract script). Ledger replay from sprint genesis is batch 02+; PR #2 stays on HOLD until ULF green.
+- Why: Grok/Hatch VM-loss policy (2026-11-24): no thread keeps >~one big batch unpushed on VM only; backup avoids Unity CI on every replay commit.
+
 ## Open
 
 None.

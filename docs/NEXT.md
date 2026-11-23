@@ -103,6 +103,8 @@ and says why in the commit message.
 
 Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
+**VM loss @904 / rebuild (2026-11-24):** ~33k HUD ledger commits were LOCAL on a lost VM, not on `origin`. **PR #2 (`cursor/rules-side-items`) stays LOCAL HOLD** until GameCI compile is green. All sprint replay and composite HUD work pushes to **`cursor/unity-hud-backup`** (no PR, no Unity workflow). Runners live in `studio/hud-ledger/recovered/` (transcript recovery); batch 02+ replays genesis → sprint 3–12, then stacks toward macro **905–908** per store backlog. If Hatch's PC still has the old tip, prefer `git push origin cursor/unity-hud-backup` from that stack instead of full cloud replay.
+
 1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
 2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3.
 3. ~~**Room building, hire/GPU, training, Gauntlet show.**~~ On `cursor/unity-hq-views` (local); editor verification in SETUP-PC §2.
