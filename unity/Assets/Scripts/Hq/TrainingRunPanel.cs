@@ -407,6 +407,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeNetLaunder = HqDisplayQueriesHud.LifetimeNetLaunderSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeNetLaunder))
                         _summary.text += " · " + lifetimeNetLaunder;
+                    string lastWeekSiteTraining = HqDisplayQueriesHud.LastWeekSiteTrainingSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekSiteTraining))
+                        _summary.text += " · " + lastWeekSiteTraining;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
