@@ -45,6 +45,7 @@ public class BatchFifteenTogetherTests
     {
         Game g = Lab();
         int before = EraRules.ReleaseBar(g.C, g.Tick);
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Strict));
         g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Strict));
         string nextEra = g.C.Eras[1].Id;
         LawShaping.OnEraBegan(g.C, g.State, g.Me, nextEra);
