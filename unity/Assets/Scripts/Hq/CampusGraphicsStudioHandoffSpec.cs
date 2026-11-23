@@ -6,5 +6,9 @@ namespace AiLabs.Unity.Hq
         public const string GraphicsBranch = "cursor/graphics-pipeline-5032";
         public const string PrepushScript = "tools/art/prepush.sh";
         public const string IntegrationDoc = "docs/art/UNITY-INTEGRATION.md";
+
+        public const string PresentationHubDoc = CampusUnityIntegrationHubPresentationSpec.PresentationHubDoc;
+
+        public const string HandoffRollupDoc = CampusUnityIntegrationHubPresentationSpec.HandoffRollupDoc;
     }
 }

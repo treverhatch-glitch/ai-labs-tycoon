@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q514. Studio handoff cross-link to index hub? DECIDED: extend `CampusGraphicsStudioHandoffSpec`
+
+- Options: (a) STUDIO doc prose only; (b) hub doc aliases on studio spec + test; (c) studio/game.json change.
+- Recommendation and choice: **(b)** — `PresentationHubDoc` / `HandoffRollupDoc` match `CampusUnityIntegrationHubPresentationSpec`.
+- Why: Studio land step references same index lane as Unity thread; no studio/ edits.
+
 ### Q513. Unity integration hub links? DECIDED: `CampusUnityIntegrationHubPresentationSpec`
 
 - Options: (a) edit UNITY-INTEGRATION prose only; (b) hub section + spec with handoff prop count; (c) Unity import script in graphics PR.
