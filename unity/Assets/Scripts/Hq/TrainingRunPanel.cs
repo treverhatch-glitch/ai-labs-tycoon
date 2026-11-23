@@ -917,6 +917,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGreyLand = HqDisplayQueriesHud.ThisWeekGreyLandSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGreyLand))
                         _summary.text += " · " + thisWeekGreyLand;
+                    string lastWeekLandNet = HqDisplayQueriesHud.LastWeekLandNetSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekLandNet))
+                        _summary.text += " · " + lastWeekLandNet;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
