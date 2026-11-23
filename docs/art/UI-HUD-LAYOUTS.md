@@ -1,6 +1,6 @@
 # UI / HUD layout specs
 
-Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `HqHudView`). Safe area: 24px inset on all edges.
+Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `HqHudView`). Safe area: 24px inset — [SAFE-AREA-PRESENTATION.md](SAFE-AREA-PRESENTATION.md) (batch 45).
 
 ## Global chrome (all screens)
 

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q494. Safe area / reference resolution tokens? DECIDED: `CampusSafeAreaPresentationSpec`
+
+- Options: (a) `UI-HUD-LAYOUTS` prose; (b) safe-area spec + doc; (c) canvas scaler in graphics PR.
+- Recommendation and choice: **(b)** — 1920×1080 + 24px inset alias to `CampusHudLayoutSpec`.
+- Why: Single Edit Mode anchor for HUD polish; no runtime changes on cloud agent.
+
 ### Q493. Future tab rail v2 tokens? DECIDED: `CampusTabRailFuturePresentationSpec`
 
 - Options: (a) batch 7/28 docs only; (b) future-rail spec + doc; (c) implement v2 shell in graphics PR.
