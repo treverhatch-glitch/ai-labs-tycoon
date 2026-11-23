@@ -2337,4 +2337,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ## Open
 
-None (batch-fifteen Q462–Q467 decided).
+### Q468. Margin call on chip-backed loans? OPEN (schema 144): weekly covenant check when fleet resale drops below loan-to-value; forced sell GPUs or early default — player-only; no world-site collateral.
+- Fork logged: closes Q278 tail "no margin call" if we ship this.
+
+### Q469. Hearing answers and share price? OPEN (schema 145): public-float labs get permille ticker nudge after hearing office answers; private labs unchanged.
+
+### Q470. Rung-6 crisis or one-site shutdown? OPEN (schema 146): timed office follow-on after takeoff/escape arc; prefer office trigger over new incident enum unless required.
+
+### Q471. Per-scenario goals? OPEN (schema 147): data-defined win/lose checks at campaign deadline; structural only (Unity picker out).
+
+### Q472. Pick law before lobby spend? OPEN (schema 148): `SetLawTarget` before `ShapeLaw`/lobby pushes; complements schema 140.
+
+### Q473. Batch sixteen news, chat and combos. OPEN: pin counts with systems above.
