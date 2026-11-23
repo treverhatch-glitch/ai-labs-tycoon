@@ -49,6 +49,12 @@ namespace AiLabs.Unity.Hq
             if (_statusLabel != null)
             {
                 string status = HqFinancialHud.StatusLine(lab);
+                string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekLand))
+                    status = string.IsNullOrEmpty(status) ? lastWeekLand : status + " · " + lastWeekLand;
+                string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
+                if (!string.IsNullOrEmpty(vendorCourt))
+                    status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
                 _statusLabel.text = status;
                 _statusLabel.gameObject.SetActive(!string.IsNullOrEmpty(status));
             }
