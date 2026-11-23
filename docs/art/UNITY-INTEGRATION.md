@@ -18,8 +18,9 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 | [STAFF-GPU-PANEL-INDEX.md](STAFF-GPU-PANEL-INDEX.md) | Staff/GPU HQ band (batches 26, 39) |
 | [TRAINING-PEEK-INDEX.md](TRAINING-PEEK-INDEX.md) | Training peek + screen (batches 40, 49) |
 | [HQ-MASCOT-STRIP-INDEX.md](HQ-MASCOT-STRIP-INDEX.md) | Mascot strip band (batches 41, 33) |
+| [COMPUTE-SPLIT-INDEX.md](COMPUTE-SPLIT-INDEX.md) | Compute split (batches 32, 40) |
 
-Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72). Gate unchanged: `./tools/art/prepush.sh`.
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72); `CampusComputeSplitIndexPresentationSpec` (batch 73). Gate unchanged: `./tools/art/prepush.sh`.
 
 ## Batch 11 (local, unpushed atop `c17c67d`)
 

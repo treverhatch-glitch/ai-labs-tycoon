@@ -572,6 +572,18 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q522. Compute split index? DECIDED: `CampusComputeSplitIndexPresentationSpec`
+
+- Options: (a) batch 32 doc only; (b) index + split/peek layers + bar aliases; (c) bind split values in graphics PR.
+- Recommendation and choice: **(b)** — links training chrome; rules thread owns values.
+- Why: Cross-link for training peek index (71) and split bars (32).
+
+### Q523. HQ stack index completion? DRAFT: `CampusHqStageStackCompletionPresentationSpec`
+
+- Options: (a) rollup doc only (69); (b) completion spec + band/index count aliases; (c) HQ scene in graphics PR.
+- Recommendation: **(b)** — marks HQ index lane complete for bands 38–42.
+- Status: stub batch 74 (local).
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.

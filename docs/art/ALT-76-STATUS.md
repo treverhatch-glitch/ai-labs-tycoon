@@ -60,7 +60,8 @@
 | 69 | `f4f2e53` | HQ stage stack rollup |
 | 70 | `3912cd7` | Staff/GPU panel index |
 | 71 | `2d4058b` | Training peek index |
-| 72 | (stub LOCAL) | HQ mascot strip index |
+| 72 | `745a159` | HQ mascot strip index |
+| 73 | (pushing) | Compute split index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

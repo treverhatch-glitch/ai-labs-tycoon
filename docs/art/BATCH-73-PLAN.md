@@ -1,3 +1,6 @@
-# Graphics batch 73 (stub — HOLD until GO)
+# Graphics batch 73
 
-- [ ] Compute split HQ index — batches 32, 40 (Q522 draft)
+**Parent:** `745a159bb3d73395d50a11c8bd27917162dd0ed4` (P72 @ 21:28:19 UTC)
+
+- [x] `COMPUTE-SPLIT-INDEX.md`, `CampusComputeSplitIndexPresentationSpec` + tests
+- [x] Q522 DECIDED, cross-refs, ALT-76, NEXT
