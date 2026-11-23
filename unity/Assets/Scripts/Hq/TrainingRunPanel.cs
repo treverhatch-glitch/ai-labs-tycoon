@@ -1289,6 +1289,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeLaunderFines = HqDisplayQueriesHud.LifetimeLaunderFinesSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeLaunderFines))
                         _summary.text += " · " + lifetimeLaunderFines;
+                    string thisWeekLaunderConstruction = HqDisplayQueriesHud.ThisWeekLaunderConstructionSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekLaunderConstruction))
+                        _summary.text += " · " + thisWeekLaunderConstruction;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
