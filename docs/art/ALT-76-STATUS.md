@@ -33,8 +33,9 @@
 | 42 | `3bd78b2` | HQ lot viewport |
 | 43 | (local GO) | HQ stage stack |
 | 44 | `5d52a64` | Tab rail v2 |
-| 45 | (local GO) | Safe area |
-| 46 | (local GO) | Advance week |
+| 45 | `2801aa1` | Safe area (in `f44cd35` push) |
+| 46 | `f44cd35` | Advance week |
+| 47 | (local GO) | Research screen |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

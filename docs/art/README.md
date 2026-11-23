@@ -54,6 +54,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [TAB-RAIL-FUTURE-PRESENTATION.md](TAB-RAIL-FUTURE-PRESENTATION.md) | Tab rail v2 (batch 44) |
 | [SAFE-AREA-PRESENTATION.md](SAFE-AREA-PRESENTATION.md) | Safe area + 1920×1080 (batch 45) |
 | [ADVANCE-WEEK-PRESENTATION.md](ADVANCE-WEEK-PRESENTATION.md) | Advance week button (batch 46) |
+| [RESEARCH-SCREEN-PRESENTATION.md](RESEARCH-SCREEN-PRESENTATION.md) | Research screen layout (batch 47) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

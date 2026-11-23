@@ -113,7 +113,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`5d52a64` (batch 44: tab rail v2); batch 45 (safe area) staged locally after prepush.
+`f44cd35` (batches 45–46: safe area + advance week); batch 47 (research screen) squashed locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
@@ -123,7 +123,7 @@ start-era picker (items 12–13 below) stays rules/Unity presentation, not new r
 | --- | --- |
 | PR #41 graphics batches | Spaced squashes on `cursor/graphics-pipeline-5032`; gate `./tools/art/prepush.sh` |
 | Unity import (`bc-93b5443a`) | `UNITY-INTEGRATION.md`, prop placement hints, tab icons |
-| Explainable HUD | `DisplayQueries` in rules; HQ (batch 20), research (batch 25) drawers |
+| Explainable HUD | `DisplayQueries` in rules; HQ (batch 20), research drawer (batch 25), research screen 62/38 (batch 47) |
 | Hire / staff UI | Staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
 | HQ chrome | Cash/grant (batch 27), date/week row (batch 31); breakdowns from `DisplayQueries` |
 | Seasonal overlays | Gauntlet stage chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |

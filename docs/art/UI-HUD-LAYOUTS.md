@@ -50,7 +50,7 @@ Band index: [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) (batch 43).
 
 ## Research screen
 
-Full-screen modal or dedicated scene (Unity thread chooses; layout spec is identical).
+Full-screen modal or dedicated scene (Unity thread chooses; layout spec is identical). Tokens: [RESEARCH-SCREEN-PRESENTATION.md](RESEARCH-SCREEN-PRESENTATION.md) (batch 47).
 
 ```
 ┌──────── TOP BAR (global) ────────┐

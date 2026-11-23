@@ -9,4 +9,6 @@ Link research quality/appeal tooltips to [DISPLAY-BREAKDOWN-PRESENTATION.md](DIS
 
 Layout: `CampusResearchBreakdownPresentationSpec` (0.38 drawer width, 22px part rows; row rhythm matches `CampusBreakdownPresentationSpec`).
 
-Unity binds queries from rules; graphics supplies row layout only (batch 25 draft).
+Screen layout: [RESEARCH-SCREEN-PRESENTATION.md](RESEARCH-SCREEN-PRESENTATION.md) (batch 47).
+
+Unity binds queries from rules; graphics supplies row layout only (batch 25).

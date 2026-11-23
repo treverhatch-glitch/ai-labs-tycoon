@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q496. Research screen layout tokens? DECIDED: `CampusResearchScreenPresentationSpec`
+
+- Options: (a) batch 25 breakdown only; (b) full-screen 62/38 split spec; (c) wire research scene in graphics PR.
+- Recommendation and choice: **(b)** — 62/38 + 120px leads band per `UI-HUD-LAYOUTS`.
+- Why: Matches research track in NEXT art table; no tech-tree rules on cloud agent.
+
 ### Q495. Advance week button tokens? DECIDED: `CampusAdvanceWeekPresentationSpec`
 
 - Options: (a) `CampusHudLayoutSpec` only; (b) advance-week doc + spec; (c) wire button in graphics PR.
