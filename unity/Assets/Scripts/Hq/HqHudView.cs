@@ -511,6 +511,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeSiteChip = HqDisplayQueriesHud.LifetimeSiteChipSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeSiteChip))
                     status = string.IsNullOrEmpty(status) ? lifetimeSiteChip : status + " · " + lifetimeSiteChip;
+                string thisWeekFinesGrey = HqDisplayQueriesHud.ThisWeekFinesGreySummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekFinesGrey))
+                    status = string.IsNullOrEmpty(status) ? thisWeekFinesGrey : status + " · " + thisWeekFinesGrey;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
