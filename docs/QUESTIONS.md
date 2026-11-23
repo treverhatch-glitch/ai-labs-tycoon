@@ -953,11 +953,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchDistressAcquireBarLaterTests` (70):** model-sales distress offers; acquisition crash quotes; schema **29** only.
 
-### Q2236–Q2305. Bubble/distress data bar? DECIDED: test-only (batch 37, commit-ready — no push)
+### Q2236–Q2305. Bubble/distress data bar? DECIDED: test-only (batch 37, pushed @ `0a9afc3`)
 
-- **`HatchBubbleDistressBarLaterTests` (70):** `BubbleConfig` crash permille; weak-player haircut; acquisition crash quote neighbours; schema **29** only; gates **2909/0** / **2907/0** WT.
+- **`HatchBubbleDistressBarLaterTests` (70):** `BubbleConfig` crash permille; weak-player haircut; acquisition crash quote neighbours; schema **29** only.
 
-### Q2306–Q2375. Capital/bubble data bar? TBD: test-only (batch 38, queued untracked)
+### Q2306–Q2375. Capital/bubble data bar? DECIDED: test-only (batch 38, WIP — no push)
 
 - **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; schema **29** only.
 
