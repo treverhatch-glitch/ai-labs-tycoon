@@ -77,5 +77,6 @@ python3 tools/art/generate_campus_kit.py
 | [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) | Index hub batches 50–60 (batch 61) |
 | [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) | ALT-76 status rollup (batch 62) |
 | [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | GO packet + index lane (batch 63) |
+| *(UNITY-INTEGRATION § Index lane)* | Unity hub links (batch 64) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

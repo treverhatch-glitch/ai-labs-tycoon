@@ -1,3 +1,6 @@
-# Graphics batch 64 (stub — HOLD until GO)
+# Graphics batch 64
 
-- [ ] `UNITY-INTEGRATION.md` cross-link presentation index hub + handoff rollup (Q513 draft)
+**Parent:** `669a93363154df2a88a8e83a51a94956e578ef95` (P63 @ 16:57:56 UTC)
+
+- [x] UNITY-INTEGRATION index lane, `CampusUnityIntegrationHubPresentationSpec` + tests
+- [x] Q513, README, NEXT — push ≥17:27:56 UTC

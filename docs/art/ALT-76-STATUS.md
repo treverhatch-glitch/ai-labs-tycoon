@@ -51,6 +51,8 @@
 | 60 | `6e3f97c` | Handoff rollup |
 | 61 | `5eb9103` | Presentation index hub |
 | 62 | `d75f611` | ALT-76 rollup refresh |
+| 63 | `669a933` | GO packet template |
+| 64 | (local GO) | Unity integration hub |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

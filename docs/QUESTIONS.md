@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q513. Unity integration hub links? DECIDED: `CampusUnityIntegrationHubPresentationSpec`
+
+- Options: (a) edit UNITY-INTEGRATION prose only; (b) hub section + spec with handoff prop count; (c) Unity import script in graphics PR.
+- Recommendation and choice: **(b)** — links presentation hub + handoff rollup for `bc-93b5443a`.
+- Why: Unity thread lands after index lane; no editor wiring on cloud agent.
+
 ### Q512. GO packet template for index lane? DECIDED: `CampusGoPacketTemplatePresentationSpec`
 
 - Options: (a) prose template only; (b) template doc + spacing/batch constants; (c) automate packets from CI.

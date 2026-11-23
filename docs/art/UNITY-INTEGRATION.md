@@ -4,6 +4,16 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 
 **Studio land:** [STUDIO-GRAPHICS-HANDOFF.md](STUDIO-GRAPHICS-HANDOFF.md) (batch 34).
 
+## Index lane (batches 50–63)
+
+| Doc | Purpose |
+| --- | --- |
+| [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) | Navigation for index/rollup specs |
+| [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | Expected kit counts (30 props, etc.) |
+| [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | Coordinator push spacing |
+
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64). Gate unchanged: `./tools/art/prepush.sh`.
+
 ## Batch 11 (local, unpushed atop `c17c67d`)
 
 - `CampusAccessibilitySpec`, `ACCESSIBILITY-PRESENTATION.md`, Q460
