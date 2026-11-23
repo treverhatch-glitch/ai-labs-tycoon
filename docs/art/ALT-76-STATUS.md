@@ -55,7 +55,8 @@
 | 64 | `d545341` | Unity integration hub |
 | 65 | `ef4f0d8` | Studio handoff hub link |
 | 66 | `cc036a8` | World map host index |
-| 67 | (LOCAL GREEN) | Tab rail integration index |
+| 67 | `0607fca` | Tab rail integration index |
+| 68 | (LOCAL GREEN) | Room build panel index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

@@ -17,6 +17,6 @@ Navigation hub for index/rollup docs added on PR #41 (`cursor/graphics-pipeline-
 
 Batch 54 extended overlay index (world freeze slot); no separate hub row.
 
-Post-60 index docs (same lane, not in hub table): world map host ([WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md), batch 66), tab rail ([TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md), batch 67).
+Post-60 index docs (same lane, not in hub table): world map host ([WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md), batch 66), tab rail ([TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md), batch 67), room build ([ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md), batch 68).
 
 Tokens: `CampusPresentationIndexHubPresentationSpec` (11 hub entries, batches 50–60). Batch 61.

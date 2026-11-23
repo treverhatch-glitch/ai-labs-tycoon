@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q517. Room build panel index? DECIDED: `CampusRoomBuildIndexPresentationSpec`
+
+- Options: (a) batch 38 doc only; (b) index + build/breakdown layers + fraction aliases; (c) implement `RoomBuildPanel` in graphics PR.
+- Recommendation and choice: **(b)** — ties build chrome (38) to explainable HUD (20); HQ stage stack (batch 42) unchanged.
+- Why: Index-lane refill; `RoomBuildController` wiring stays Unity thread.
+
 ### Q516. Tab rail integration index? DECIDED: `CampusTabRailIntegrationIndexPresentationSpec`
 
 - Options: (a) integration doc only (batch 7); (b) index + 3 layers + tab count alias; (c) wire tab rail in graphics PR.

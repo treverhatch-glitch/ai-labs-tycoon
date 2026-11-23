@@ -80,5 +80,6 @@ python3 tools/art/generate_campus_kit.py
 | *(UNITY-INTEGRATION § Index lane)* | Unity hub links (batch 64) |
 | [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) | World map host + panel (batch 66) |
 | [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) | Tab rail layers (batch 67) |
+| [ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md) | Room build + breakdown (batch 68) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
