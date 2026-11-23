@@ -1,6 +1,7 @@
-# Graphics batch 60 (stub — HOLD until GO)
+# Graphics batch 60
 
-**Parent (when squashed):** *(batch 59 tip after push)*
+**Parent:** `11aa6cbb3c8d8dd156bb77a2a8df33dab2e30f67` (P59 @ 14:56:33 UTC)
 
-- [ ] Handoff rollup — `HANDOFF-INDEX.md` sync with batch 18 lists (Q509 draft)
-- **Do not push** until GO + 30m after batch 59 push.
+- [x] `HANDOFF-ROLLUP.md`, `CampusHandoffRollupPresentationSpec` + tests
+- [x] Q509, README, HANDOFF-INDEX, FOCUS-RING cross-ref, ALT-76
+- PUSH at GO ≥15:26:33 UTC

@@ -73,5 +73,6 @@ python3 tools/art/generate_campus_kit.py
 | [STAFF-PRESENTATION-INDEX.md](STAFF-PRESENTATION-INDEX.md) | Staff row + panel hub (batch 57) |
 | [RIVAL-FEELING-INDEX.md](RIVAL-FEELING-INDEX.md) | Rival feeling + screen hub (batch 58) |
 | [A11Y-CHROME-INDEX.md](A11Y-CHROME-INDEX.md) | Focus ring + capture HUD hub (batch 59) |
+| [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | Handoff expected counts (batch 60) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

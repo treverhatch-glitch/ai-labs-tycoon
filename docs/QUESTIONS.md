@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q509. Handoff rollup spec? DECIDED: `CampusHandoffRollupPresentationSpec`
+
+- Options: (a) `HANDOFF-INDEX` only; (b) rollup doc + expected count spec; (c) change prepush counts in graphics PR.
+- Recommendation and choice: **(b)** — 5 kinds with 30/10/4/6/4 anchors for Unity thread.
+- Why: Pairs batch 18 index with Edit Mode constants; prepush remains source of truth.
+
 ### Q508. A11y chrome index? DECIDED: `CampusA11yChromeIndexPresentationSpec`
 
 - Options: (a) batch 11 ACCESSIBILITY doc only; (b) index + 44px hit + capture top-bar alias; (c) implement focus ring in graphics PR.

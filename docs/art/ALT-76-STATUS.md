@@ -47,7 +47,8 @@
 | 56 | `cf40d41` | Explainable HUD index |
 | 57 | `8b9e790` | Staff presentation index |
 | 58 | `5e6b64c` | Rival feeling index |
-| 59 | (local GO) | A11y chrome index |
+| 59 | `11aa6cb` | A11y chrome index |
+| 60 | (stub HOLD) | Handoff rollup |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -8,4 +8,4 @@
 | Map blocs | — | `world-bloc-tints.json` + `check_bloc_tints.py` |
 | Era skins | — | `era-skin-tokens.json` + `check_era_skin_tokens.py` |
 
-**Gate:** `./tools/art/prepush.sh` (includes `verify_handoff_lists.py`).
+**Gate:** `./tools/art/prepush.sh` (includes `verify_handoff_lists.py`). Rollup: [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) (batch 60).
