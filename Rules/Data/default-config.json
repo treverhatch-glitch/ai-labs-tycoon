@@ -19140,7 +19140,7 @@
   },
   "marginCall": {
     "enabled": 1,
-    "covenantPermille": 1200,
+    "covenantPermille": 900,
     "cureWeeks": 4,
     "payPermille": 1000
   },
