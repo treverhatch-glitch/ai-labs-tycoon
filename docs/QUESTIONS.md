@@ -989,9 +989,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only; gates **3469/0** / **3467/0** WT.
 
-### Q2866–Q2935. Containment/ending data bar? TBD: test-only (batch 46, HOLD)
+### Q2866–Q2935. Containment/ending data bar coda? DECIDED: test-only (batch 46, WIP — push with GO)
 
-- **`HatchContainmentEndingBarLaterTests2` (70):** containment + ending config neighbours; schema **29** only.
+- **`HatchContainmentEndingBarLaterTests2` (70):** `Endings`/`Superintelligence`; treaty/monopoly knobs; schema **29** only.
+
+### Q2936–Q3005. Regulator/bubble data bar? TBD: test-only (batch 47, HOLD)
+
+- **`HatchRegulatorBubbleBarLaterTests` (70):** regulators + bubble permille neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
