@@ -6,6 +6,7 @@ cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b17-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
+bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true

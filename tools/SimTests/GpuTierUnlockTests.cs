@@ -24,7 +24,9 @@ public class GpuTierUnlockTests
         g.Build("server-closet", 2, 2);
         g.Me.Reputation = 100;
         g.Me.Cash = 1_000_000_000;
-        g.Refused(Command.BuyGpus(g.Id, 2), CommandError.EraLocked);
+        CommandResult buy = g.Sim.Apply(Command.BuyGpus(g.Id, 2));
+        Assert.False(buy.Ok);
+        Assert.Equal(CommandError.EraLocked, buy.Error);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.GpuTierLocked);
     }
 
@@ -45,6 +47,9 @@ public class GpuTierUnlockTests
         Game g = Lab();
         g.Me.Reputation = 100;
         g.Me.Cash = 1_000_000_000;
-        g.Refused(Command.QueueGpuPurchase(g.Id, 1, HardwareBatch.Hq), CommandError.EraLocked);
+        CommandResult queue = g.Sim.Apply(Command.QueueGpuPurchase(g.Id, 1, HardwareBatch.Hq));
+        Assert.False(queue.Ok);
+        Assert.Equal(CommandError.EraLocked, queue.Error);
+        Assert.Contains(g.State.Events, e => e.Kind == EventKind.GpuTierLocked);
     }
 }
