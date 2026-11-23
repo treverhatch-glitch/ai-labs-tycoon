@@ -35,8 +35,10 @@ public class BatchSixteenTogetherTests
     public void Margin_call_with_loan_repay()
     {
         Game g = Lab();
-        g.Do(Command.TakeLoan(g.Id, 600));
-        Fleet.Take(g.Me, g.Me.Fleet[0], g.Me.Fleet[0].Count - 1);
+        Fleet.AddGpus(g.State, g.Me, 0, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 950));
+        int before = g.Me.Fleet.Sum(b => b.Count);
+        Fleet.Take(g.Me, g.Me.Fleet[0], before - 1);
         Finance.RunWeek(g.C, g.State, g.Me);
         Assert.True(g.Me.MarginCallLeft > 0 || g.State.Events.Any(e => e.Kind == EventKind.MarginCall));
     }
