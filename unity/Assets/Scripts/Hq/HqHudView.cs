@@ -817,6 +817,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeGreyRoom = HqDisplayQueriesHud.LifetimeGreyRoomSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeGreyRoom))
                     status = string.IsNullOrEmpty(status) ? lifetimeGreyRoom : status + " · " + lifetimeGreyRoom;
+                string lastWeekGrantRevenue = HqDisplayQueriesHud.LastWeekGrantRevenueSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekGrantRevenue))
+                    status = string.IsNullOrEmpty(status) ? lastWeekGrantRevenue : status + " · " + lastWeekGrantRevenue;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
