@@ -152,7 +152,7 @@ and says why in the commit message.
 - ~~**Hatch world-map economy batch 43**~~ **pushed @ `5937e90`** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); gate **3329/0** / **3327/0** WT; parent `38f5385` (+ `d01f62b` test, `5937e90` docs).
 - ~~**Hatch shady/china batch 44**~~ **pushed @ `32fc117`** — Q2726–Q2795 (`HatchShadyChinaBarLaterTests2`, **70**); gate **3399/0** / **3397/0** WT; parent `5937e90` (+ `53261ee` test, `32fc117` docs).
 - ~~**Hatch incident/safety batch 45**~~ **pushed @ `6dbc3ac`** — Q2796–Q2865 (`HatchIncidentSafetyBarLaterTests`, **70**); gate **3469/0** / **3467/0** WT; parent `32fc117` (+ `5d681e6` test, `6dbc3ac` docs).
-- **Hatch containment/ending batch 46 (WIP — push ≥15:00 UTC + GO)** — Q2866–Q2935 (`HatchContainmentEndingBarLaterTests2`, **70**); endings/treaty/neighbours; schema **29** only.
+- **Hatch containment/ending batch 46 (commit-ready — pushed with GO)** — Q2866–Q2935 (`HatchContainmentEndingBarLaterTests2`, **70**); gate **3539/0** / **3537/0** WT; parent `6dbc3ac` (+ `63295a9` test, docs @ tip).
 - **Hatch regulators/bubble batch 47 (HOLD ~30m)** — Q2936–Q3005 (`HatchRegulatorBubbleBarLaterTests`, **70**); bible refill.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
