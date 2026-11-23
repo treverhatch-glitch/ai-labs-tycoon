@@ -95,7 +95,9 @@ namespace AiLabs.Unity.Hq
             int owned = LabQueries.HqGpus(lab);
             int rented = lab.RentedGpus;
             var gen = LabQueries.CurrentGeneration(sim.Config, sim.Tick);
-            _gpuSummary.text = "GPUs: " + rented + " rented, " + owned + " owned (" + gen.Name + ")";
+                        string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
+            string lastWeekLandPart = string.IsNullOrEmpty(lastWeekLand) ? "" : " · " + lastWeekLand;
+            _gpuSummary.text = "GPUs: " + rented + " rented, " + owned + " owned (" + gen.Name + ")" + lastWeekLandPart;
 
             for (int i = _roleList.childCount - 1; i >= 0; i--)
                 Destroy(_roleList.GetChild(i).gameObject);
