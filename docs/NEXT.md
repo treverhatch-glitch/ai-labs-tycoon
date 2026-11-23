@@ -144,8 +144,8 @@ and says why in the commit message.
 - ~~**Hatch acquisition bar batch 35**~~ **pushed @ `ec6f1a9`** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa` (+ `4d1a26c` test, `ec6f1a9` docs).
 - ~~**Hatch distress/M&amp;A batch 36**~~ **pushed @ `ae38c65`** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); gate **2839/0** / **2837/0** WT; parent `ec6f1a9` (+ `62d23d9` test, `ae38c65` docs).
 - ~~**Hatch bubble/distress batch 37**~~ **pushed @ `0a9afc3`** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); gate **2909/0** / **2907/0** WT; parent `ae38c65` (+ `5e2aee5` test, `0a9afc3` docs).
-- **Hatch capital/bubble batch 38 (WIP — no push)** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); `ResetCapitalRaisedAfterCrash` + `FounderStartPermille`; next push ≥**10:15:31 UTC** + GO.
-- **Hatch batch 39 (queued)** — next **70**-test bar (`Rules: later` forks); schema **29** only.
+- **Hatch capital/bubble batch 38 (commit-ready — no push)** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); gate **2979/0** / **2977/0** WT; parent `0a9afc3` (+ `1f67dc0` test, docs @ tip); push ≥**10:15:32 UTC** + GO.
+- **Hatch funding follow-on batch 39 (queued)** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); `Funding.FollowOn` + rounds neighbours (bible refill); schema **29** only.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
