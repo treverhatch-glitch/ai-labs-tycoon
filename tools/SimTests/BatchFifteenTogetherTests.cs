@@ -62,7 +62,8 @@ public class BatchFifteenTogetherTests
         g.Do(Command.TakeLoan(g.Id, 500));
         var b = DisplayQueries.ExitPriceParts(g.C, g.State, g.Me);
         Assert.True(b.Loans > 0);
-        Assert.True(b.Total < b.RevenueYears + b.CashOnHand);
+        long gross = b.RevenueYears + b.FleetResale + b.CashOnHand - b.StaffShare;
+        Assert.Equal(gross - b.Loans - b.Notes - b.Rbf - b.CovenantCalls, b.Total);
     }
 
     [Fact]
