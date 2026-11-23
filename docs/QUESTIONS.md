@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q482. Mascot row HUD tokens? DECIDED: `CampusMascotRowHudPresentationSpec`
+
+- Options: (a) only MASCOT-PRESENTATION table; (b) row spec + HUD doc; (c) duplicate `CampusHudLayoutSpec` in UI.
+- Recommendation and choice: **(b)** — exposes 48px row + max 4 without changing layout fraction source.
+- Why: Unity mascot strip polish on PC can bind row chrome before rigged meshes land.
+
 ### Q481. Training compute split bars? DECIDED: `CampusComputeSplitPresentationSpec`
 
 - Options: (a) TRAINING-PANEL only; (b) spec + doc; (c) embed in rules ComputeSplit UI.

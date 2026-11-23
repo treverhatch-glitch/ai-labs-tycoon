@@ -8,4 +8,4 @@ Rules: `LabQueries.Mood` → Healthy / Overworked / Glitching. Graphics supplies
 | Overworked | −10% value | 0.08 m | faint warm rim |
 | Glitching | hue jitter ±8° | 0.12 m | `GlowSpreadMap` pulse |
 
-**Strip layout:** bottom `MascotStripHeightFraction` (see `CampusHudLayoutSpec`); max 4 visible mascots, overflow scroll.
+**Strip layout:** [MASCOT-ROW-HUD.md](MASCOT-ROW-HUD.md) + `CampusMascotRowHudPresentationSpec`; fraction from `CampusHudLayoutSpec`.

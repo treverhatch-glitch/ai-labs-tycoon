@@ -20,7 +20,8 @@
 | 29 | `d8ad54d` | Era skin preview |
 | 30 | `33050c2` | Focus ring / hit targets |
 | 31 | `58babaa` | HUD date/week row |
-| 32 | (local GO) | Compute split bars |
+| 32 | `46bfc78` | Compute split bars |
+| 33 | (local GO) | Mascot row HUD |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
