@@ -654,6 +654,20 @@ namespace AiLabs.Rules.Sim
                     return who + " shaped the law for next era.";
                 case EventKind.ScenarioBaggagePicked:
                     return who + " started with scenario baggage.";
+                case EventKind.MarginCall:
+                    return who + " got a margin call on $" + e.Amount + " of chip-backed debt.";
+                case EventKind.MarginCallSatisfied:
+                    return who + " satisfied a margin call (" + e.Ref + ").";
+                case EventKind.MarginCallDefaulted:
+                    return who + " defaulted after a margin call.";
+                case EventKind.HearingShareNudged:
+                    return who + "'s hearing answer moved the market bubble permille.";
+                case EventKind.ScenarioGoalMet:
+                    return who + " met scenario goal \"" + e.Ref + "\".";
+                case EventKind.ScenarioGoalMissed:
+                    return who + " missed scenario goal \"" + e.Ref + "\".";
+                case EventKind.LawTargetSet:
+                    return who + " set law target \"" + e.Ref + "\" before lobbying.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -172,6 +172,11 @@ namespace AiLabs.Rules.Config
         public LawShapingConfig LawShaping = new LawShapingConfig();
         public TakeoffCrisisConfig TakeoffCrisis = new TakeoffCrisisConfig();
         public ScenarioBaggageConfig ScenarioBaggage = new ScenarioBaggageConfig();
+        public MarginCallConfig MarginCall = new MarginCallConfig();
+        public HearingSharePriceConfig HearingSharePrice = new HearingSharePriceConfig();
+        public RungSixCrisisConfig RungSixCrisis = new RungSixCrisisConfig();
+        public ScenarioGoalsConfig ScenarioGoals = new ScenarioGoalsConfig();
+        public LawTargetConfig LawTarget = new LawTargetConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -342,6 +347,11 @@ namespace AiLabs.Rules.Config
             s.Obj("lawShaping", ref LawShaping);
             s.Obj("takeoffCrisis", ref TakeoffCrisis);
             s.Obj("scenarioBaggage", ref ScenarioBaggage);
+            s.Obj("marginCall", ref MarginCall);
+            s.Obj("hearingSharePrice", ref HearingSharePrice);
+            s.Obj("rungSixCrisis", ref RungSixCrisis);
+            s.Obj("scenarioGoals", ref ScenarioGoals);
+            s.Obj("lawTarget", ref LawTarget);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

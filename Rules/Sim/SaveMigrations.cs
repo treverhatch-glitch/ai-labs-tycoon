@@ -156,6 +156,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 141) MigrateTo141(root);
             if (fromSchema < 142) MigrateTo142(root);
             if (fromSchema < 143) MigrateTo143(root);
+            if (fromSchema < 144) MigrateTo144(root);
+            if (fromSchema < 145) MigrateTo145(root);
+            if (fromSchema < 146) MigrateTo146(root);
+            if (fromSchema < 147) MigrateTo147(root);
+            if (fromSchema < 148) MigrateTo148(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -566,6 +571,41 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "baggageId", JsonValue.Of(""));
                 JsonPatch.AddIfMissing(lab, "baggagePicked", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 144: no margin call clock.</summary>
+        static void MigrateTo144(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "marginCallLeft", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 145: hearing share nudge is stateless.</summary>
+        static void MigrateTo145(JsonValue root) { }
+
+        /// <summary>Schema 146: no rung-six arc.</summary>
+        static void MigrateTo146(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "rungSixArcUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "rungSixCooldownUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 147: no scenario goal.</summary>
+        static void MigrateTo147(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "scenarioId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "scenarioGoalResult", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 148: no law target.</summary>
+        static void MigrateTo148(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "lawTarget", JsonValue.Of("")));
         }
 
         /// <summary>Schema 137: weights closed.</summary>

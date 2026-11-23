@@ -622,7 +622,14 @@ namespace AiLabs.Rules.State
         CampaignDeadlineSet,
         CampaignDeadlineHit,
         LawShaped,
-        ScenarioBaggagePicked
+        ScenarioBaggagePicked,
+        MarginCall,
+        MarginCallSatisfied,
+        MarginCallDefaulted,
+        HearingShareNudged,
+        ScenarioGoalMet,
+        ScenarioGoalMissed,
+        LawTargetSet
     }
 
     /// <summary>

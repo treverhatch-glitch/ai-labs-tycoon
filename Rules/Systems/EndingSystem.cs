@@ -174,6 +174,13 @@ namespace AiLabs.Rules.Systems
             Events.Add(state, EventKind.EndingReached, lab.Id, runScore, bonus, id);
         }
 
+        public static void RecordScenario(GameConfig c, GameState state, LabState lab, string endingId)
+        {
+            if (string.IsNullOrEmpty(endingId) || HasOpen(state, endingId) || c.Endings.Def(endingId) == null) return;
+            Add(state, lab.Id, endingId);
+            Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, endingId);
+        }
+
         static bool HasRecorded(GameState state, string endingId)
         {
             for (int i = 0; i < state.Endings.Count; i++)

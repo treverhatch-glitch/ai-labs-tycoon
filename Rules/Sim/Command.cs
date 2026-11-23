@@ -224,7 +224,10 @@ namespace AiLabs.Rules.Sim
         SetCampaignDeadline,
         ShapeLaw,
         RespondTakeoff,
-        PickScenarioBaggage
+        PickScenarioBaggage,
+        SatisfyMarginCall,
+        RespondRungSix,
+        SetLawTarget
     }
 
     /// <summary>
@@ -1941,6 +1944,29 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.PickScenarioBaggage, labId);
             c.Id = baggageId;
+            return c;
+        }
+
+        /// <summary>Pays cash or sells GPUs to clear a margin call. Count sells that many units; pay uses Permille as cash when set.</summary>
+        public static Command SatisfyMarginCall(int labId, int gpuCount, int cash = 0)
+        {
+            Command c = Make(CommandKind.SatisfyMarginCall, labId);
+            c.Count = gpuCount;
+            c.Permille = cash;
+            return c;
+        }
+
+        public static Command RespondRungSix(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.RespondRungSix, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
+        public static Command SetLawTarget(int labId, string goal)
+        {
+            Command c = Make(CommandKind.SetLawTarget, labId);
+            c.Id = goal;
             return c;
         }
 

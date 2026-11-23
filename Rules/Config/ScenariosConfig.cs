@@ -34,6 +34,10 @@ namespace AiLabs.Rules.Config
         public string FamilyName = "";
         /// <summary>The rivals to play against; empty for all of them.</summary>
         public List<string> RivalIds = new List<string>();
+        /// <summary>Optional scenario goal id (schema 147).</summary>
+        public string GoalId = "";
+        /// <summary>When to judge the goal, as permille of campaign deadline span from plan start.</summary>
+        public int GoalDeadlinePermille;
 
         public string Id { get { return IdValue; } }
 
@@ -50,6 +54,8 @@ namespace AiLabs.Rules.Config
             s.Str("leader", ref Leader);
             s.Str("familyName", ref FamilyName);
             s.StrList("rivalIds", ref RivalIds);
+            s.Str("goalId", ref GoalId);
+            s.Int("goalDeadlinePermille", ref GoalDeadlinePermille);
         }
     }
 }

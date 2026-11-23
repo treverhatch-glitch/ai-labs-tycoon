@@ -24,10 +24,12 @@ namespace AiLabs.Rules.Sim
             if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player lab shapes law.");
             if (!LawShaping.Enabled(c)) return Fail(CommandError.InvalidArgument, "There is no law shaping in this game.");
             if (c.Eras.IndexOf(EraSystem.AtTick(c, state.Tick)) < c.LawShaping.MinEra) return Fail(CommandError.EraLocked, "Law shaping is not used in this era.");
-            BlocStanding standing = lab.Bloc(cmd.Id);
-            if (standing == null || c.World.Bloc(cmd.Id) == null) return Fail(CommandError.UnknownId, "There is no government \"" + cmd.Id + "\".");
             string goal = cmd.Ids.Count > 0 ? cmd.Ids[0] : "";
             if (!LawShaping.IsGoal(goal)) return Fail(CommandError.UnknownId, "Shape law toward \"strict\" or \"loose\", not \"" + goal + "\".");
+            if (LawTarget.Enabled(c) && lab.LawTarget != goal)
+                return Fail(CommandError.InvalidArgument, "Set the law target to \"" + goal + "\" before spending on lobby.");
+            BlocStanding standing = lab.Bloc(cmd.Id);
+            if (standing == null || c.World.Bloc(cmd.Id) == null) return Fail(CommandError.UnknownId, "There is no government \"" + cmd.Id + "\".");
             int left = Lobbying.CooldownLeft(state, standing);
             if (left > 0) return Fail(CommandError.LobbyCooling, "The lab lobbied recently. It can shape law again in " + left + (left == 1 ? " week." : " weeks."));
             long cost = Lobbying.Cost(c, state, lab, goal == LawShaping.Loose ? Lobbying.Subsidy : Lobbying.Quiet);

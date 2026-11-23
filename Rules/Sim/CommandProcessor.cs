@@ -122,6 +122,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.ShapeLaw: return ShapeLaw(c, state, lab, cmd);
                 case CommandKind.RespondTakeoff: return RespondTakeoff(c, state, lab, cmd);
                 case CommandKind.PickScenarioBaggage: return PickScenarioBaggage(c, state, lab, cmd);
+                case CommandKind.SatisfyMarginCall: return SatisfyMarginCall(c, state, lab, cmd);
+                case CommandKind.RespondRungSix: return RespondRungSix(c, state, lab, cmd);
+                case CommandKind.SetLawTarget: return SetLawTarget(c, state, lab, cmd);
                 case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
                 case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
                 case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);

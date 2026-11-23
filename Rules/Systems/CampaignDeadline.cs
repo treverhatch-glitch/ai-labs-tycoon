@@ -33,6 +33,7 @@ namespace AiLabs.Rules.Systems
             int runScore = Campaign.RunScore(c, state, lab);
             int bonus = (int)MathI.MulPermille(runScore, c.CampaignDeadline.ScoreBonusPermille);
             Events.Add(state, EventKind.CampaignDeadlineHit, lab.Id, runScore, bonus, eraId);
+            ScenarioGoals.Check(c, state, lab, deadline: true);
             EndingSystem.RecordCampaignStop(c, state, lab, runScore, bonus);
         }
     }
