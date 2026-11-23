@@ -20,8 +20,9 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 | [HQ-MASCOT-STRIP-INDEX.md](HQ-MASCOT-STRIP-INDEX.md) | Mascot strip band (batches 41, 33) |
 | [COMPUTE-SPLIT-INDEX.md](COMPUTE-SPLIT-INDEX.md) | Compute split (batches 32, 40) |
 | [HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md) | HQ band indexes complete (batch 74) |
+| [INDEX-LANE-MANIFEST.md](INDEX-LANE-MANIFEST.md) | Post-60 index lane manifest (batch 75) |
 
-Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72); `CampusComputeSplitIndexPresentationSpec` (batch 73); `CampusHqStageStackCompletionPresentationSpec` (batch 74). Gate unchanged: `./tools/art/prepush.sh`.
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72); `CampusComputeSplitIndexPresentationSpec` (batch 73); `CampusHqStageStackCompletionPresentationSpec` (batch 74); `CampusIndexLaneManifestPresentationSpec` (batch 75). Gate unchanged: `./tools/art/prepush.sh`.
 
 ## Batch 11 (local, unpushed atop `c17c67d`)
 

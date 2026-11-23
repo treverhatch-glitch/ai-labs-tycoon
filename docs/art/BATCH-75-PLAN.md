@@ -1,3 +1,6 @@
-# Graphics batch 75 (stub — HOLD until GO)
+# Graphics batch 75
 
-- [ ] Index lane manifest — batches 66–74 rollup doc (Q524 draft)
+**Parent:** `242987919900af2325ebe8a8aeee2fe9d8604190` (P74 @ 22:28:23 UTC)
+
+- [x] `INDEX-LANE-MANIFEST.md`, `CampusIndexLaneManifestPresentationSpec` + tests
+- [x] Q524 DECIDED, hub/UNITY cross-refs, ALT-76, NEXT

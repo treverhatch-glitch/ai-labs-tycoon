@@ -62,7 +62,8 @@
 | 71 | `2d4058b` | Training peek index |
 | 72 | `745a159` | HQ mascot strip index |
 | 73 | `974aef2` | Compute split index |
-| 74 | (pushing) | HQ stack completion |
+| 74 | `2429879` | HQ stack completion |
+| 75 | (pushing) | Index lane manifest |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

@@ -87,5 +87,6 @@ python3 tools/art/generate_campus_kit.py
 | [HQ-MASCOT-STRIP-INDEX.md](HQ-MASCOT-STRIP-INDEX.md) | Mascot strip band (batch 72) |
 | [COMPUTE-SPLIT-INDEX.md](COMPUTE-SPLIT-INDEX.md) | Compute split chrome (batch 73) |
 | [HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md) | HQ band indexes rollup (batch 74) |
+| [INDEX-LANE-MANIFEST.md](INDEX-LANE-MANIFEST.md) | Index lane 66–74 (batch 75) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
