@@ -1178,6 +1178,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekFinesRent = HqDisplayQueriesHud.ThisWeekFinesRentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekFinesRent))
                         _summary.text += " · " + thisWeekFinesRent;
+                    string lifetimeChipRoom = HqDisplayQueriesHud.LifetimeChipRoomSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeChipRoom))
+                        _summary.text += " · " + lifetimeChipRoom;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
