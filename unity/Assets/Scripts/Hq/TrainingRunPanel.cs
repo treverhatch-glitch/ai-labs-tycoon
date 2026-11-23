@@ -2075,6 +2075,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimePatentPowerSpendIncome = HqDisplayQueriesHud.LifetimePatentPowerSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimePatentPowerSpendIncome))
                         _summary.text += " · " + lifetimePatentPowerSpendIncome;
+                    string thisWeekFinesGreySpendIncome = HqDisplayQueriesHud.ThisWeekFinesGreySpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekFinesGreySpendIncome))
+                        _summary.text += " · " + thisWeekFinesGreySpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
