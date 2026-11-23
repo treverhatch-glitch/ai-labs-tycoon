@@ -2017,6 +2017,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimePatentPowerSpendIncome = HqDisplayQueriesHud.LifetimePatentPowerSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimePatentPowerSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimePatentPowerSpendIncome : status + " · " + lifetimePatentPowerSpendIncome;
+                string thisWeekFinesGreySpendIncome = HqDisplayQueriesHud.ThisWeekFinesGreySpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekFinesGreySpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekFinesGreySpendIncome : status + " · " + thisWeekFinesGreySpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
