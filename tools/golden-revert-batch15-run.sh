@@ -46,11 +46,11 @@ os.replace(t,p)
 }
 comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim/Simulation.cs; }
 
-[ "$N" -le 143 ] && { strip_sync 's\.Int\("baggagePicked"'; strip_sync 's\.Str\("baggageId"'; disable_cfg scenarioBaggage; comment_hook 'ScenarioBaggage'; }
-[ "$N" -le 142 ] && { strip_sync 's\.Int\("takeoffCooldownUntil"'; disable_cfg takeoffCrisis; sed -i '/OfficeTrigger.Takeoff/d' Rules/Config/OfficeConfig.cs 2>/dev/null || true; comment_hook 'TakeoffCrisis.RunWeek'; }
-[ "$N" -le 141 ] && { sed -i 's|b.Loans = ExitDebt|// b.Loans = ExitDebt|' Rules/Systems/DisplayQueries.cs; sed -i 's|return DisplayQueries.ExitPriceParts|// return DisplayQueries.ExitPriceParts|' Rules/Systems/EndingSystem.cs; }
-[ "$N" -le 140 ] && { strip_sync 's\.Str\("lawShapeEra"'; strip_sync 's\.Int\("lawShape'; disable_cfg lawShaping; sed -i '/LawShaping.OnEraBegan/d' Rules/Systems/EraSystem.cs; }
-[ "$N" -le 139 ] && { strip_sync 's\.Int\("campaignDeadlineTick"'; disable_cfg campaignDeadline; comment_hook 'CampaignDeadline.RunWeek'; }
+[ "$N" -eq 143 ] && { strip_sync 's\.Int\("baggagePicked"'; strip_sync 's\.Str\("baggageId"'; disable_cfg scenarioBaggage; comment_hook 'ScenarioBaggage'; }
+[ "$N" -eq 142 ] && { strip_sync 's\.Int\("takeoffCooldownUntil"'; disable_cfg takeoffCrisis; sed -i '/OfficeTrigger.Takeoff/d' Rules/Config/OfficeConfig.cs 2>/dev/null || true; comment_hook 'TakeoffCrisis.RunWeek'; }
+[ "$N" -eq 141 ] && { sed -i 's|b.Loans = ExitDebt.LoanBalance(lab)|b.Loans = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Notes = ExitDebt.NoteBalance(lab)|b.Notes = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.Rbf = ExitDebt.RbfBalance(lab)|b.Rbf = 0|' Rules/Systems/DisplayQueries.cs; sed -i 's|b.CovenantCalls = ExitDebt.CovenantCalls(c, lab)|b.CovenantCalls = 0|' Rules/Systems/DisplayQueries.cs; }
+[ "$N" -eq 140 ] && { strip_sync 's\.Str\("lawShapeEra"'; strip_sync 's\.Int\("lawShape'; disable_cfg lawShaping; sed -i '/LawShaping.OnEraBegan/d' Rules/Systems/EraSystem.cs; }
+[ "$N" -eq 139 ] && { strip_sync 's\.Int\("campaignDeadlineTick"'; disable_cfg campaignDeadline; comment_hook 'CampaignDeadline.RunWeek'; }
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
