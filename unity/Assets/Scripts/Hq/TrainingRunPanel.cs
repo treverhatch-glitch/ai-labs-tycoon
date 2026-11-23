@@ -2108,6 +2108,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeTrainingPatent = HqDisplayQueriesHud.LifetimeTrainingPatentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeTrainingPatent))
                         _summary.text += " · " + lifetimeTrainingPatent;
+                    string thisWeekSpendPower = HqDisplayQueriesHud.ThisWeekSpendPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekSpendPower))
+                        _summary.text += " · " + thisWeekSpendPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
