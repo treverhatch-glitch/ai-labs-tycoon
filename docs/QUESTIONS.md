@@ -913,11 +913,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchShadyChinaBarLaterTests` (70):** shady cards; rival refuse; china deal config; schema **29**.
 
-### Q1536–Q1605. Freeze/audit bar? TBD: test-only (batch 27, local)
+### Q1536–Q1605. Freeze/audit bar? DECIDED: test-only (batch 27, pushed @ `d05c9cc`)
 
 - **`HatchFreezeAuditBarLaterTests` (70):** permit freeze refuses; attention thresholds; schema **29**.
 
-### Q1606+. Bible queue? TBD: see NEXT.md
+### Q1606–Q1675. Incident/bubble bar? TBD: test-only (batch 28, local)
+
+- **`HatchIncidentBubbleBarLaterTests` (70):** rungs; bubble permille; schema **29**.
+
+### Q1676+. Bible queue? TBD: see NEXT.md
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

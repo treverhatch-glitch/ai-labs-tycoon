@@ -133,7 +133,9 @@ and says why in the commit message.
 - ~~**Hatch sector-rival batch 24**~~ **pushed @ `c98a033`** — Q1326–Q1395 (**70**); gate **1999/0** / **1997/0** WT; parent `b14e047`.
 - ~~**Hatch funding/bubble batch 25**~~ **pushed @ `5da29a0`** — Q1396–Q1465 (**70**); gate **2069/0** / **2067/0** WT; parent `c98a033`.
 - ~~**Hatch shady/china batch 26**~~ **pushed @ `f50900e`** — Q1466–Q1535 (**70**); gate **2139/0** / **2137/0** WT; parent `5da29a0`.
-- **Hatch freeze/audit batch 27 (local, gate pending, push ≥~01:20 UTC after `f50900e`)** — Q1536–Q1605 (`HatchFreezeAuditBarLaterTests`, **70**).
+- ~~**Hatch freeze/audit batch 27**~~ **pushed @ `d05c9cc`** — Q1536–Q1605 (**70**); gate **2209/0** / **2207/0** WT; parent `f50900e`.
+- **Hatch incident/bubble batch 28 (local @ tip, gate pending)** — Q1606–Q1675 (`HatchIncidentBubbleBarLaterTests`, **70**).
+- **Hatch containment/ending batch 29 (planning)** — Q1676–Q1745 (`HatchContainmentEndingBarLaterTests`, **70** WIP); Q94 neighbours.
 
 ## Rules: forward queue (from bible / systems-design)
 
