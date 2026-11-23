@@ -993,9 +993,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchContainmentEndingBarLaterTests2` (70):** `Endings`/`Superintelligence`; treaty/monopoly knobs; schema **29** only.
 
-### Q2936–Q3005. Regulator/bubble data bar? DECIDED: test-only (batch 47, WIP — HOLD push ≥15:52 UTC)
+### Q2936–Q3005. Regulator/bubble data bar? DECIDED: test-only (batch 47, commit-ready — push with GO)
 
-- **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only.
+- **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only; gates **3609/0** / **3607/0** WT.
 
 ### Q3006–Q3075. Era/incident data bar? TBD: test-only (batch 48, queued)
 
