@@ -15,6 +15,9 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 152) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "scenarioEndlessAck"));
+            if (schema < 149) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "reservedSignCooldownUntil"));
+            if (schema < 150) JsonPatch.Remove(root, "rivalIntentLastTick");
             if (schema < 148) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "lawTarget"));
             if (schema < 147) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "scenarioGoalResult"); JsonPatch.Remove(lab, "scenarioGoalId"); });
             if (schema < 144) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "marginCallLeft"));

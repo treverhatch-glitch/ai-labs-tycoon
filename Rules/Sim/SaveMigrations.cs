@@ -161,6 +161,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 146) MigrateTo146(root);
             if (fromSchema < 147) MigrateTo147(root);
             if (fromSchema < 148) MigrateTo148(root);
+            if (fromSchema < 149) MigrateTo149(root);
+            if (fromSchema < 150) MigrateTo150(root);
+            if (fromSchema < 151) MigrateTo151(root);
+            if (fromSchema < 152) MigrateTo152(root);
+            if (fromSchema < 153) MigrateTo153(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -607,6 +612,25 @@ namespace AiLabs.Rules.Sim
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "lawTarget", JsonValue.Of("")));
         }
+
+        static void MigrateTo149(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reservedSignCooldownUntil", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo150(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "rivalIntentLastTick", JsonValue.Of(-1L));
+        }
+
+        static void MigrateTo151(JsonValue root) { }
+
+        static void MigrateTo152(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "scenarioEndlessAck", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo153(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

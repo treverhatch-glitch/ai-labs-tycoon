@@ -12331,6 +12331,48 @@
         "kind": "LawTargetSet",
         "pick": -1,
         "text": "{lab} picks strict or loose law before lobbying"
+      },
+      {
+        "id": "reserved-signed",
+        "kind": "ReservedComputeSigned",
+        "pick": -1,
+        "text": "{lab} signs a reserved GPU block with Envydia"
+      },
+      {
+        "id": "reserved-blocked",
+        "kind": "ReservedComputeSigned",
+        "pick": 1,
+        "text": "{lab} is turned down for reserved compute on reputation"
+      },
+      {
+        "id": "rival-intent",
+        "kind": "RivalIntentSurfaced",
+        "pick": -1,
+        "text": "{lab} telegraphs its next move on the wire"
+      },
+      {
+        "id": "gpu-tier-buy",
+        "kind": "GpuTierLocked",
+        "pick": 0,
+        "text": "{lab} cannot buy {generation} yet under the era ladder"
+      },
+      {
+        "id": "gpu-tier-queue",
+        "kind": "GpuTierLocked",
+        "pick": 1,
+        "text": "{lab}'s Envydia queue stalls on a locked GPU tier"
+      },
+      {
+        "id": "scenario-endless",
+        "kind": "ScenarioEndlessAck",
+        "pick": -1,
+        "text": "{lab} keeps running after a scenario win"
+      },
+      {
+        "id": "rival-intent-lobby",
+        "kind": "RivalIntentSurfaced",
+        "pick": 1,
+        "text": "{lab} lobbies in the open, rivals read the tea leaves"
       }
     ],
     "filler": [
@@ -16504,6 +16546,72 @@
         "text": "Law target set before the lobby push.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "reserved-signed-chat",
+        "kind": "ReservedComputeSigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Envydia took our reserved deposit. Block is live.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rival-intent-chat",
+        "kind": "RivalIntentSurfaced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "subject",
+        "text": "Ticker picked up a rival plan from the decision log.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpu-tier-chat",
+        "kind": "GpuTierLocked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Hardware tier gate blocked our purchase.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-endless-chat",
+        "kind": "ScenarioEndlessAck",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We acknowledged the win and chose to keep going.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rival-lobby-chat",
+        "kind": "RivalIntentSurfaced",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "subject",
+        "text": "A rival's lobbying line hit the news wire.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpu-queue-chat",
+        "kind": "GpuTierLocked",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The vendor queue bounced on tier unlock rules.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -17276,7 +17384,8 @@
         "kind": "Neutral",
         "blurbKey": "scenario-win",
         "continueModes": [
-          "acknowledge"
+          "acknowledge",
+          "keep-going"
         ]
       }
     ],
@@ -19179,6 +19288,27 @@
     ]
   },
   "lawTarget": {
+    "enabled": 1
+  },
+  "reservedComputeGate": {
+    "enabled": 1,
+    "minReputationPermille": 400,
+    "cooldownWeeks": 8
+  },
+  "rivalIntentNews": {
+    "enabled": 1,
+    "minWeeksBetween": 4
+  },
+  "gpuTierUnlock": {
+    "enabled": 1,
+    "unlockPermille": 450,
+    "minEra": 2,
+    "tierMin": 3
+  },
+  "endlessScenario": {
+    "enabled": 1
+  },
+  "shadyFreezeAudit": {
     "enabled": 1
   }
 }

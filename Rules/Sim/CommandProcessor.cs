@@ -406,6 +406,8 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Buy at least one GPU.");
             int holdingId = cmd.TargetId;
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            if (!GpuTierUnlock.Unlocked(c, state, lab, gen))
+                return GpuPurchaseBlocked(c, state, lab, gen, 0, gen.Name + " is not on sale for " + lab.Name + " in " + EraSystem.AtTick(c, state.Tick).Name + " yet.");
             CommandResult place = CheckPlaceForHardware(c, state, lab, holdingId, gen, cmd.Count);
             if (!place.Ok) return place;
             int allocation = VendorSystem.AllocationLeft(state, lab);

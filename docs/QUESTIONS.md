@@ -2349,3 +2349,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q472. Pick law before lobby spend? DECIDED (schema 148): `SetLawTarget` required before `ShapeLaw` when enabled.
 
 ### Q473. Batch sixteen news, chat and combos. DECIDED: seven headline kinds, six chat lines (398/352); `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests`.
+
+### Q474. Gate reserved compute on reputation and cooldown? DECIDED (schema 149): `reservedComputeGate`; `reservedSignCooldownUntil`; `ReservedComputeSigned`.
+
+### Q475. Surface rival decision log on the ticker? DECIDED (schema 150): `rivalIntentNews`; `RivalIntentSurfaced` from `DecisionLog.Add` on plan-run rivals only.
+
+### Q476. Era-gated GPU tier purchases? DECIDED (schema 151): `gpuTierUnlock` on `BuyGpus` and `QueueGpuPurchase`; `GpuTierLocked`.
+
+### Q477. Keep playing after scenario win? DECIDED (schema 152): `scenario-win` adds `keep-going`; `scenarioEndlessAck`; `ScenarioEndlessAck`.
+
+### Q478. Block shady jobs when home permits are frozen? DECIDED (schema 153): `shadyFreezeAudit` in `StartShadyOp`.
+
+### Q479. Batch seventeen news, chat and combos. DECIDED: seven headlines, six chat lines (405/358); `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests`.

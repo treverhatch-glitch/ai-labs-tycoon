@@ -58,7 +58,7 @@ namespace AiLabs.Rules.Systems
             BlocStanding standing = player.Bloc(player.HomeBlocId);
             if (standing == null || player.Bankrupt) return;
             standing.Attention = MathI.Clamp(standing.Attention + c.Rivalry.Feelings.FeudAttentionPerMonth, 0, MathI.Permille);
-            DecisionLog.Add(c, lab, state.Tick, DecisionAction.Lobbied, player.HomeBlocId, c.Rivalry.Feelings.FeudAttentionPerMonth,
+            DecisionLog.Add(c, state, lab, state.Tick, DecisionAction.Lobbied, player.HomeBlocId, c.Rivalry.Feelings.FeudAttentionPerMonth,
                 Reason.Of(ReasonCode.FeelingTowardPlayer, lab.FeelingToPlayer));
         }
 
@@ -70,7 +70,7 @@ namespace AiLabs.Rules.Systems
             if (!state.Rng.Rivals.Chance(yearly / c.Calendar.MonthsPerYear)) return;
             lab.PlanPausedUntilTick = state.Tick + c.Rivalry.BoardDramaWeeks;
             Events.Add(state, EventKind.BoardDrama, lab.Id, -1, c.Rivalry.BoardDramaWeeks, "");
-            DecisionLog.Add(c, lab, state.Tick, DecisionAction.Paused, "", c.Rivalry.BoardDramaWeeks, Reason.Of(ReasonCode.BoardDrama, c.Rivalry.BoardDramaWeeks));
+            DecisionLog.Add(c, state, lab, state.Tick, DecisionAction.Paused, "", c.Rivalry.BoardDramaWeeks, Reason.Of(ReasonCode.BoardDrama, c.Rivalry.BoardDramaWeeks));
         }
 
         /// <summary>The best model any other lab has on sale, or 0.</summary>

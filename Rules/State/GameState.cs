@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 148;
+        public const int CurrentSchema = 153;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,6 +42,7 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        public int RivalIntentLastTick = -1;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -94,6 +95,7 @@ namespace AiLabs.Rules.State
             s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
             s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
             s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
+            s.Int("rivalIntentLastTick", ref RivalIntentLastTick);
             s.ObjList("endings", ref Endings);
         }
     }
@@ -627,6 +629,8 @@ namespace AiLabs.Rules.State
         public string ScenarioId = "";
         public int ScenarioGoalResult;
         public string LawTarget = "";
+        public int ReservedSignCooldownUntil;
+        public int ScenarioEndlessAck;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1170,6 +1174,8 @@ namespace AiLabs.Rules.State
             s.Str("scenarioId", ref ScenarioId);
             s.Int("scenarioGoalResult", ref ScenarioGoalResult);
             s.Str("lawTarget", ref LawTarget);
+            s.Int("reservedSignCooldownUntil", ref ReservedSignCooldownUntil);
+            s.Int("scenarioEndlessAck", ref ScenarioEndlessAck);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

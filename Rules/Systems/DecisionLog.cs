@@ -15,8 +15,14 @@ namespace AiLabs.Rules.Systems
         /// <summary>Only labs run by a plan keep a log: the player's own lab (or a bot driving it) is not written about, so a replay of its journal gives the same game.</summary>
         public static void Add(GameConfig c, LabState lab, int tick, DecisionAction action, string reference, long amount, params Reason[] reasons)
         {
+            Add(c, null, lab, tick, action, reference, amount, reasons);
+        }
+
+        public static void Add(GameConfig c, GameState state, LabState lab, int tick, DecisionAction action, string reference, long amount, params Reason[] reasons)
+        {
             if (lab.Controller != LabController.Plan) return;
             lab.Log.Add(Entry(tick, action, reference, amount, reasons));
+            if (state != null) RivalIntentNews.OnDecision(c, state, lab, action, reference);
             int extra = lab.Log.Count - c.Rivalry.LogMax;
             if (extra > 0) lab.Log.RemoveRange(0, extra);
         }

@@ -668,6 +668,14 @@ namespace AiLabs.Rules.Sim
                     return who + " missed scenario goal \"" + e.Ref + "\".";
                 case EventKind.LawTargetSet:
                     return who + " set law target \"" + e.Ref + "\" before lobbying.";
+                case EventKind.ReservedComputeSigned:
+                    return who + " signed a reserved compute block for " + e.Amount + " GPUs.";
+                case EventKind.RivalIntentSurfaced:
+                    return rivalName(c, state, e) + " tipped a rival move (" + e.Ref + ").";
+                case EventKind.GpuTierLocked:
+                    return who + " was refused " + e.Ref + " tier hardware (gate " + e.SubjectId + ").";
+                case EventKind.ScenarioEndlessAck:
+                    return who + " keeps playing after scenario \"" + e.Ref + "\" win.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
@@ -910,6 +918,12 @@ namespace AiLabs.Rules.Sim
         {
             bool vowel = name.Length > 0 && "AEIOUaeiou".IndexOf(name[0]) >= 0;
             return (vowel ? "an " : "a ") + name;
+        }
+
+        static string rivalName(GameConfig c, GameState state, GameEvent e)
+        {
+            LabState lab = state.Lab(e.LabId);
+            return lab == null ? "A rival" : lab.Name;
         }
     }
 }
