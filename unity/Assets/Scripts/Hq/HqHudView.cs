@@ -1063,6 +1063,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekRentTraining = HqDisplayQueriesHud.ThisWeekRentTrainingSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekRentTraining))
                     status = string.IsNullOrEmpty(status) ? thisWeekRentTraining : status + " · " + thisWeekRentTraining;
+                string lifetimeRoomChip = HqDisplayQueriesHud.LifetimeRoomChipSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeRoomChip))
+                    status = string.IsNullOrEmpty(status) ? lifetimeRoomChip : status + " · " + lifetimeRoomChip;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
