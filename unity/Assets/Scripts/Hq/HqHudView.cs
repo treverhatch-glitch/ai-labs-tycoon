@@ -1231,6 +1231,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeLaunderFines = HqDisplayQueriesHud.LifetimeLaunderFinesSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeLaunderFines))
                     status = string.IsNullOrEmpty(status) ? lifetimeLaunderFines : status + " · " + lifetimeLaunderFines;
+                string thisWeekLaunderConstruction = HqDisplayQueriesHud.ThisWeekLaunderConstructionSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekLaunderConstruction))
+                    status = string.IsNullOrEmpty(status) ? thisWeekLaunderConstruction : status + " · " + thisWeekLaunderConstruction;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
