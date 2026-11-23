@@ -969,13 +969,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchModelSalesChipBarLaterTests` (70):** `CrashDistressOfferPermille`; `Chips.TapeoutWeeks`; income smoothing; schema **29** only.
 
-### Q2516–Q2585. Acquisition/listing data bar? DECIDED: test-only (batch 41, commit-ready — push with GO)
+### Q2516–Q2585. Acquisition/listing data bar? DECIDED: test-only (batch 41, pushed @ `dcf79d8`)
 
-- **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only; gates **3189/0** / **3187/0** WT.
+- **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only.
 
-### Q2586–Q2655. Rival/economy data bar? TBD: test-only (batch 42, HOLD)
+### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, WIP — no push)
 
-- **`HatchRivalEconomyBarLaterTests` (70):** rival rollup + planner acquire permilles; schema **29** only.
+- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only.
+
+### Q2656–Q2725. World-map economy data bar? TBD: test-only (batch 43, queued)
+
+- **`HatchWorldMapEconomyBarLaterTests` (70):** world sites/blocs + economy config neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

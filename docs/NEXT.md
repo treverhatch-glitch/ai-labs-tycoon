@@ -147,8 +147,9 @@ and says why in the commit message.
 - ~~**Hatch capital/bubble batch 38**~~ **pushed @ `b268afb`** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); gate **2979/0** / **2977/0** WT; parent `0a9afc3` (+ `1f67dc0` test, `b268afb` docs).
 - ~~**Hatch funding follow-on batch 39**~~ **pushed @ `f4a7e4f`** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); gate **3049/0** / **3047/0** WT; parent `b268afb` (+ `d0e1303` test, `f4a7e4f` docs).
 - ~~**Hatch model-sales/chip batch 40**~~ **pushed @ `4fdf674`** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); gate **3119/0** / **3117/0** WT; parent `f4a7e4f` (+ `95bf36d` test, `4fdf674` docs).
-- **Hatch acquisition/listing batch 41 (commit-ready — push with GO)** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); gate **3189/0** / **3187/0** WT; parent `4fdf674` (+ `1507d5b` test, docs @ tip).
-- **Hatch rival/economy batch 42 (HOLD)** — Q2586–Q2655 (`HatchRivalEconomyBarLaterTests`, **70**); rival planner + economy forks; schema **29** only.
+- ~~**Hatch acquisition/listing batch 41**~~ **pushed @ `dcf79d8`** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); gate **3189/0** / **3187/0** WT; parent `4fdf674` (+ `1507d5b` test, `dcf79d8` docs).
+- **Hatch rival/economy batch 42 (WIP — no push)** — Q2586–Q2655 (`HatchRivalEconomyBarLaterTests`, **70**); rollup/planner permilles + wealth growth; push ≥**12:48:35 UTC** + GO.
+- **Hatch world-map economy batch 43 (queued)** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); sites/blocs + economy neighbours; schema **29** only.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
