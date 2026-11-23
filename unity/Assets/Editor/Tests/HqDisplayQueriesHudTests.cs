@@ -7065,5 +7065,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("6,130").Or.Contain("4,600"));
         }
 
+        [Test]
+        public void last_week_launder_patent_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.Laundered = 3_300;
+            lab.Ledger.LastWeek.GreyRevenue = 2_500;
+            string line = HqDisplayQueriesHud.LastWeekLaunderPatentSummaryLine(lab);
+            Assert.That(line, Does.Contain("3,300").Or.Contain("2,500"));
+        }
+
     }
 }
