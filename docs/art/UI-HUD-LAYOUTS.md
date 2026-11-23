@@ -74,6 +74,8 @@ Full-screen modal or dedicated scene (Unity thread chooses; layout spec is ident
 
 ## Training screen
 
+Layout: [TRAINING-SCREEN-PRESENTATION.md](TRAINING-SCREEN-PRESENTATION.md) (batch 49).
+
 ```
 ┌──────── TOP BAR ────────┐
 │ Run queue (60% W) │ Split │

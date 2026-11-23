@@ -113,7 +113,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`81fe8d1` (batch 47: research screen); batch 48 (rivals screen) squashed locally after prepush.
+`6b1adc3` (batch 48: rivals screen); batch 49 (training screen) squashed locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
@@ -127,6 +127,7 @@ start-era picker (items 12–13 below) stays rules/Unity presentation, not new r
 | Hire / staff UI | Staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
 | HQ chrome | Cash/grant (batch 27), date/week row (batch 31); breakdowns from `DisplayQueries` |
 | Seasonal overlays | Gauntlet stage chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
+| Screen layouts | Research (47), rivals (48), training (49) — `UI-HUD-LAYOUTS` + `Campus*ScreenPresentationSpec` |
 | A11y chrome | Focus ring tokens (batch 30); capture HUD regions (batch 35) + `CAPTURE-REGRESSION.md` |
 
 ## Studio and CI
