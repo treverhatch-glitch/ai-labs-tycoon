@@ -497,6 +497,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeGreyTraining = HqDisplayQueriesHud.LifetimeGreyTrainingSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeGreyTraining))
                         _summary.text += " · " + lifetimeGreyTraining;
+                    string lastWeekGrantLaunder = HqDisplayQueriesHud.LastWeekGrantLaunderSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekGrantLaunder))
+                        _summary.text += " · " + lastWeekGrantLaunder;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
