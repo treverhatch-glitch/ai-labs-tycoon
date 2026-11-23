@@ -157,8 +157,14 @@ and says why in the commit message.
 - ~~**Hatch era/incident batch 48**~~ **pushed @ `d0aca54`** — Q3006–Q3075 (`HatchEraIncidentBarLaterTests`, **70**); gate **3679/0** / **3677/0** WT.
 - ~~**Hatch exit/sell batch 49**~~ **pushed @ `69e7282`** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; landed ~19:11 UTC.
 - ~~**Hatch bubble/acquire batch 50**~~ **pushed @ `afd2f0a`** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); gate **3819/0** in-repo; parent `69e7282` (+ `386df26`, `afd2f0a`).
-- **Hatch balance/soak batch 51 (LOCAL — HOLD ≥30m after batch 50 land)** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); soak presets + calendar neighbours; schema **29** only.
-- **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
+- ~~**Hatch balance/soak batch 51**~~ **pushed @ tip** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); gate **3889/0** in-repo; parent `afd2f0a`.
+- **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
+  - **batch 52 (LOCAL — HOLD GO ≥30m after batch 51 land)** — Q3286–Q3355 `HatchRivalPlanBarLaterTests2` — rival cast + planner acquire neighbours.
+  - **batch 53 (queued)** — Q3356–Q3425 `HatchFundingFollowOnBarLaterTests2` — follow-on rounds + board drama knobs.
+  - **batch 54 (queued)** — Q3426–Q3495 `HatchModelSalesChipBarLaterTests2` — distress offers + tapeout weeks.
+  - **batch 55 (queued)** — Q3496–Q3565 `HatchWorldMapEconomyBarLaterTests2` — blocs/sites/attention heatwave.
+  - **batch 56 (queued)** — Q3566–Q3635 `HatchRegulatorBubbleBarLaterTests2` — scrutiny + listed-chip boost coda.
+- **Refill:** store mirror `internal/bible-systems-design-questions-backlog.md` + era P45 tails (`batch19-bible-systems-refill.md`); keep **70-test** bars; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
 
