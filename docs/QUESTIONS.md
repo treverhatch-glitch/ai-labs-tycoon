@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q507. Rival feeling index? DECIDED: `CampusRivalFeelingIndexPresentationSpec`
+
+- Options: (a) batch 21 meter only; (b) index doc + layer count + meter height alias; (c) wire rivals UI in graphics PR.
+- Recommendation and choice: **(b)** — links feeling meter (batch 21) to rivals screen (batch 48); 6px alias.
+- Why: Parody cast feelings from `docs/DESIGN.md`; no `LabState` in cloud graphics.
+
 ### Q506. Staff presentation index? DECIDED: `CampusStaffPresentationIndexPresentationSpec`
 
 - Options: (a) row + panel docs only; (b) index doc + layer count + shared row height; (c) wire `StaffGpuPanel` in graphics PR.

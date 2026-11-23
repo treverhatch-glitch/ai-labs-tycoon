@@ -11,4 +11,4 @@ Rules: `LabState.FeelingToPlayer` in **-1000…1000** (`docs/DESIGN.md`).
 
 Constants: `CampusRivalFeelingPresentationSpec` (`NormalizedFill`, band thresholds, 6px meter height).
 
-Place under rival list row in `RIVALS-PANEL.md`; no `LabState` reads in graphics batches.
+Index: [RIVAL-FEELING-INDEX.md](RIVAL-FEELING-INDEX.md) (batch 58). Place under rival list row in `RIVALS-PANEL.md`; no `LabState` reads in graphics batches.
