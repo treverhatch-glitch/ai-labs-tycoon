@@ -25,6 +25,11 @@ run_one() {
   if [ -z "$new" ]; then
     new=$(echo "$out" | sed -n 's/.*New digest: \([0-9a-f]*\).*/\1/p' | tail -1)
   fi
+  tip=$(sed -n 's/.*const string Golden = "\([0-9a-f]*\)".*/\1/p' "$REPO/tools/SimTests/SaveAndDeterminismTests.cs" | head -1)
+  if [ -n "$new" ] && [ -n "$tip" ] && [ "$new" = "$tip" ]; then
+    echo "SKIP digest equals tip (revert did not apply)"
+    return 1
+  fi
   if [ -z "$new" ]; then
     echo "FAILED: no digest"
     return 1
@@ -36,9 +41,11 @@ run_one() {
   echo "$out" | grep -q "schema $schema revert: Passed!"
 }
 
-for s in 125 126 127 128 129; do run_one "$REPO/tools/golden-revert-batch12-run.sh" "$s"; done
+for s in 126 127 128 129; do run_one "$REPO/tools/golden-revert-batch12-run.sh" "$s"; done
 for s in 130 131 132 133 134; do run_one "$REPO/tools/golden-revert-batch13-run.sh" "$s"; done
 for s in 135 136 137 138; do run_one "$REPO/tools/golden-revert-batch14-run.sh" "$s"; done
 for s in 139 140 141 142 143; do run_one "$REPO/tools/golden-revert-batch15-run.sh" "$s"; done
+for s in 144 145 146 147 148; do run_one "$REPO/tools/golden-revert-batch16-run.sh" "$s"; done
+for s in 149 150 151 152 153; do run_one "$REPO/tools/golden-revert-batch17-run.sh" "$s"; done
 
 echo "Done repin."
