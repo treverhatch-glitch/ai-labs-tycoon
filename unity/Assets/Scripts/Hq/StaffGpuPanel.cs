@@ -97,6 +97,8 @@ namespace AiLabs.Unity.Hq
             var gen = LabQueries.CurrentGeneration(sim.Config, sim.Tick);
                         string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
             string lastWeekLandPart = string.IsNullOrEmpty(lastWeekLand) ? "" : " · " + lastWeekLand;
+            string lifetimeGrantsNet = HqDisplayQueriesHud.LifetimeGrantsNetSummaryLine(lab);
+            string lifetimeGrantsNetPart = string.IsNullOrEmpty(lifetimeGrantsNet) ? "" : " · " + lifetimeGrantsNet;
             string thisWeekChipRevenue = HqDisplayQueriesHud.ThisWeekChipRevenueSummaryLine(lab);
             string thisWeekChipRevenuePart = string.IsNullOrEmpty(thisWeekChipRevenue) ? "" : " · " + thisWeekChipRevenue;
             string lastWeekConstructionPatent = HqDisplayQueriesHud.LastWeekConstructionPatentSummaryLine(lab);
