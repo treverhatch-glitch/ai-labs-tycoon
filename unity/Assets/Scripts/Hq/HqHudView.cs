@@ -970,6 +970,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekLaunderPower = HqDisplayQueriesHud.ThisWeekLaunderPowerSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekLaunderPower))
                     status = string.IsNullOrEmpty(status) ? thisWeekLaunderPower : status + " · " + thisWeekLaunderPower;
+                string lifetimeGreyChip = HqDisplayQueriesHud.LifetimeGreyChipSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeGreyChip))
+                    status = string.IsNullOrEmpty(status) ? lifetimeGreyChip : status + " · " + lifetimeGreyChip;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
