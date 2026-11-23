@@ -3185,5 +3185,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("7,100").Or.Contain("470"));
         }
 
+        [Test]
+        public void this_week_grant_patent_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.Grants = 4_150;
+            lab.Ledger.ThisWeek.ChipDevelopment = -5_300;
+            string line = HqDisplayQueriesHud.ThisWeekGrantPatentSummaryLine(lab);
+            Assert.That(line, Does.Contain("4,150").Or.Contain("5,300"));
+        }
+
     }
 }
