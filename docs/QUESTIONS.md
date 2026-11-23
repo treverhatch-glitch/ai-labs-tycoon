@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q512. GO packet template for index lane? DECIDED: `CampusGoPacketTemplatePresentationSpec`
+
+- Options: (a) prose template only; (b) template doc + spacing/batch constants; (c) automate packets from CI.
+- Recommendation and choice: **(b)** — 30m spacing, index lane from batch 50, store path prefix.
+- Why: Coordinator GO packets batches 50–62; single Edit Mode anchor for cloud agents.
+
 ### Q511. ALT-76 rollup spec? DECIDED: `CampusAlt76RollupPresentationSpec`
 
 - Options: (a) markdown-only status refresh; (b) rollup doc + last-batch spec tying to hub; (c) automate status from git.

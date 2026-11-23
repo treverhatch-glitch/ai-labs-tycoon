@@ -50,7 +50,7 @@
 | 59 | `11aa6cb` | A11y chrome index |
 | 60 | `6e3f97c` | Handoff rollup |
 | 61 | `5eb9103` | Presentation index hub |
-| 62 | *(this push)* | ALT-76 rollup refresh |
+| 62 | `d75f611` | ALT-76 rollup refresh |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 
