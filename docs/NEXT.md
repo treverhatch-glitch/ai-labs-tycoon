@@ -161,10 +161,10 @@ and says why in the commit message.
 - ~~**Hatch rival/plan batch 52**~~ **pushed @ `b5d8265`** — Q3286–Q3355 (`HatchRivalPlanBarLaterTests2`, **70**); gate **3959/0** in-repo; parent `b4186b0` (+ `3ca55e4`, `b5d8265`); landed ~21:23 UTC.
 - ~~**Hatch funding/follow-on batch 53**~~ **pushed @ `b661d1f`** — Q3356–Q3425 (`HatchFundingFollowOnBarLaterTests2`, **70**); gate **4029/0** in-repo; parent `b5d8265` (+ `ce6ace8`, `b661d1f`); landed ~21:53 UTC.
 - ~~**Hatch model-sales/chip batch 54**~~ **pushed @ `a62fc4a`** — Q3426–Q3495 (`HatchModelSalesChipBarLaterTests2`, **70**); gate **4099/0** in-repo; parent `b661d1f` (+ `230bfa8`, `b93c35f`, `a62fc4a`); landed ~22:42 UTC.
-- **Hatch world-map/economy batch 55 (LOCAL — NO PUSH until GO ≥ ~23:12 UTC)** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); parent `a62fc4a`; filter **70/0** green; schema **29** only.
+- **Hatch world-map/economy batch 55 (LOCAL commit-ready BIG — NO PUSH until GO ≥ 23:12 UTC / ~06:12 ICT)** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); parent `a62fc4a` (+ `8e17df7` test, docs @ tip); filter **70/0** green; five-slot bar (`World.Blocs`/`Sites`, bloc lookup, save round-trip + `Attention.FreezeAt`, `Heatwave.ThrottlePermille` + `PlayerStart.HomeBlocId`, site lookup); schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
   - **batch 56 (queued)** — Q3566–Q3635 `HatchRegulatorBubbleBarLaterTests2` — scrutiny + listed-chip boost coda.
-- **Refill:** store bible backlog + `batch19-bible-systems-refill.md`; batch **55** mirrors **P45** world heatwave / site attention (`Heatwave.ThrottlePermille`, `Attention.FreezeAt`, home bloc start); batch **54** **D3–D7** chips; rivals stack2 **52–56**; schema **29** only (**30** SolvencyHold parked).
+- **Refill:** `internal/bible-systems-design-questions-backlog.md` + `internal/batch19-bible-systems-refill.md` (**P45** landed `d4e65c9` on era-systems — public-metrics / site mirror arcs **829–832+**); batch **55** pins world-map economy coda for stack2 (**Q3496–Q3565**); batch **56** next = regulator/bubble **Q3566–Q3635** + **Q525** gov scrutiny tails; batch **54** **D3–D7** chips; rivals stack2 **52–56**; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
 
