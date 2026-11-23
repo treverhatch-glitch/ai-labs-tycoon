@@ -949,7 +949,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchAcquireGameplayBarLaterTests` (70):** `Acquisitions` quote fields; bubble/chip distress neighbours; schema **29** only.
 
-### Q2166–Q2235. Distress/acquire data bar? DECIDED: test-only (batch 36, local)
+### Q2166–Q2235. Distress/acquire data bar? DECIDED: test-only (batch 36, commit-ready @ `62d23d9`)
 
 - **`HatchDistressAcquireBarLaterTests` (70):** model-sales distress offers; acquisition crash quotes; schema **29** only.
 
