@@ -281,6 +281,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeGreyNet = HqDisplayQueriesHud.LifetimeGreyNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeGreyNet))
                         _summary.text += " · " + lifetimeGreyNet;
+                    string thisWeekConstructionPower = HqDisplayQueriesHud.ThisWeekConstructionPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekConstructionPower))
+                        _summary.text += " · " + thisWeekConstructionPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
