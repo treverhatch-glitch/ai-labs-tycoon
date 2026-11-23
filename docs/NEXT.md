@@ -426,6 +426,13 @@ and says why in the commit message.
 235. **Sector pricing era overload relief.** ~~Done (local)~~: `SectorPricingEraRelief`, schema 163 (Q492).
 236. **Batch twenty-one news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests` (Q493).
 
+### Era batch 22 (LOCAL prep on `v-af2f`, HOLD push)
+
+237. **Law target era amplify.** ~~Done (local)~~: `LawTargetEraAmplify`, schema 164 (Q494).
+238. **Specialist branch era discount.** ~~Done (local)~~: `SpecialistBranchEraDiscount`, schema 165 (Q495).
+239. **Margin call era grace weeks.** ~~Done (local)~~: `MarginCallEraGrace`, schema 166 (Q496).
+240. **Batch twenty-two news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests` (Q497).
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

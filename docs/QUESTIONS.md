@@ -2389,3 +2389,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q492. Cut sector-pricing overload once era unlocks relief? DECIDED (schema 163): `sectorPricingEraRelief`; `SectorPricingEraRelieved` when setting a priced tier.
 
 ### Q493. Batch twenty-one news, chat and combos. DECIDED: three headlines, three chat lines (415/368); `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests`.
+
+### Q494. Era amplify notice on law target? DECIDED (schema 164): `lawTargetEraAmplify`; `LawTargetEraAmplified` on `SetLawTarget`.
+
+### Q495. Era discount on specialist branch cost? DECIDED (schema 165): `specialistBranchEraDiscount`; `SpecialistBranchEraDiscounted` on `BranchSpecialist`.
+
+### Q496. Extra margin-call cure weeks in late era? DECIDED (schema 166): `marginCallEraGrace`; `MarginCallEraGraced` when a call fires.
+
+### Q497. Batch twenty-two news, chat and combos. DECIDED: three headlines, three chat lines (418/371); `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests`.

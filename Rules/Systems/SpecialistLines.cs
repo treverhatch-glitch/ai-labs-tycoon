@@ -35,9 +35,11 @@ namespace AiLabs.Rules.Systems
         public static void Branch(GameConfig c, GameState state, LabState lab, ModelState model, string kindId)
         {
             SpecialistKindConfig k = Kind(c, kindId);
-            if (c.SpecialistLines.Cost > 0) Finance.Spend(lab, LedgerLine.Training, c.SpecialistLines.Cost);
+            long cost = SpecialistBranchEraDiscount.BranchCost(c, state);
+            if (cost > 0) Finance.Spend(lab, LedgerLine.Training, cost);
             model.SpecKind = (int)(c.SpecialistLines.Kinds.IndexOf(k) + 1);
             Events.Add(state, EventKind.SpecialistBranched, lab.Id, model.Id, model.SpecKind, model.Name);
+            SpecialistBranchEraDiscount.OnBranch(c, state, lab, model, kindId, cost);
         }
     }
 }

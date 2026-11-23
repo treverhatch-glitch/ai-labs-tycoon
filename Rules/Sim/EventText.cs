@@ -696,6 +696,12 @@ namespace AiLabs.Rules.Sim
                     return who + " renewed data source \"" + e.Ref + "\" with +" + e.Amount + " era bonus weeks.";
                 case EventKind.SectorPricingEraRelieved:
                     return who + " set " + e.Ref + " pricing to tier " + e.SubjectId + " with era overload relief " + e.Amount + " permille.";
+                case EventKind.LawTargetEraAmplified:
+                    return who + " locked a " + e.Ref + " law target with era weight in era index " + e.SubjectId + ".";
+                case EventKind.SpecialistBranchEraDiscounted:
+                    return who + " branched specialist \"" + e.Ref + "\" with $" + e.Amount + " era discount on model " + e.SubjectId + ".";
+                case EventKind.MarginCallEraGraced:
+                    return who + " got a margin call with " + e.Amount + " extra cure weeks (" + e.SubjectId + " total).";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -43,8 +43,12 @@ namespace AiLabs.Rules.Systems
                 return;
             }
             if (!InBreach(c, state, lab)) return;
-            lab.MarginCallLeft = c.MarginCall.CureWeeks;
+            int baseCure = c.MarginCall.CureWeeks;
+            int cure = MarginCallEraGrace.CureWeeks(c, state);
+            int grace = cure - baseCure;
+            lab.MarginCallLeft = cure;
             Events.Add(state, EventKind.MarginCall, lab.Id, -1, owed, "");
+            MarginCallEraGrace.OnCall(c, state, lab, cure, grace);
         }
 
         public static long CashDue(GameConfig c, GameState state, LabState lab)

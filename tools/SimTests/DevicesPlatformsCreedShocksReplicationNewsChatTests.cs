@@ -51,8 +51,8 @@ public class DevicesPlatformsCreedShocksReplicationNewsChatTests
     public void The_new_headlines_and_chat_lines_are_in_the_data_and_it_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(415, c.News.Headlines.Count);
-        Assert.Equal(368, c.Chat.Lines.Count);
+        Assert.Equal(418, c.News.Headlines.Count);
+        Assert.Equal(371, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
             Assert.Contains(c.Chat.Lines, l => l.Kind == kind.ToString());
         foreach (EventKind kind in Kinds.Where(k => k != EventKind.ShockStruck))

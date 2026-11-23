@@ -643,7 +643,10 @@ namespace AiLabs.Rules.State
         CampaignDeadlineElongated,
         LawShapingCooldownShortened,
         DataSourceRenewEraBonused,
-        SectorPricingEraRelieved
+        SectorPricingEraRelieved,
+        LawTargetEraAmplified,
+        SpecialistBranchEraDiscounted,
+        MarginCallEraGraced
     }
 
     /// <summary>

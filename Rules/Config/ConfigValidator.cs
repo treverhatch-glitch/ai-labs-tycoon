@@ -197,6 +197,9 @@ namespace AiLabs.Rules.Config
             LawShapingEraCooldownProblems(p, c);
             DataSourceRenewEraBonusProblems(p, c);
             SectorPricingEraReliefProblems(p, c);
+            LawTargetEraAmplifyProblems(p, c);
+            SpecialistBranchEraDiscountProblems(p, c);
+            MarginCallEraGraceProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2202,6 +2205,32 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingEraRelief.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("sectorPricingEraRelief.minEra must be a valid era index");
             if (k.ReliefPermille < 0) p.Add("sectorPricingEraRelief.reliefPermille must not be negative");
+        }
+
+        static void LawTargetEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LawTargetEraAmplifyConfig k = c.LawTargetEraAmplify;
+            if (k == null) { p.Add("lawTargetEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTargetEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawTargetEraAmplify.minEra must be a valid era index");
+        }
+
+        static void SpecialistBranchEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            SpecialistBranchEraDiscountConfig k = c.SpecialistBranchEraDiscount;
+            if (k == null) { p.Add("specialistBranchEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistBranchEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("specialistBranchEraDiscount.discountPermille must be from 0 to 1000");
+        }
+
+        static void MarginCallEraGraceProblems(List<string> p, GameConfig c)
+        {
+            MarginCallEraGraceConfig k = c.MarginCallEraGrace;
+            if (k == null) { p.Add("marginCallEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginCallEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("marginCallEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("marginCallEraGrace.graceWeeks must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
