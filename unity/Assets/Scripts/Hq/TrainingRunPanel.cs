@@ -1895,6 +1895,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeTrainingRevenueSpendIncome = HqDisplayQueriesHud.LifetimeTrainingRevenueSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeTrainingRevenueSpendIncome))
                         _summary.text += " · " + lifetimeTrainingRevenueSpendIncome;
+                    string thisWeekChipSalesGrantsSpendIncome = HqDisplayQueriesHud.ThisWeekChipSalesGrantsSpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekChipSalesGrantsSpendIncome))
+                        _summary.text += " · " + thisWeekChipSalesGrantsSpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
