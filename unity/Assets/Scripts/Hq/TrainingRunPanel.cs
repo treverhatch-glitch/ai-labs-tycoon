@@ -776,6 +776,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGreySalaries = HqDisplayQueriesHud.ThisWeekGreySalariesSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGreySalaries))
                         _summary.text += " · " + thisWeekGreySalaries;
+                    string lifetimeNetGrant = HqDisplayQueriesHud.LifetimeNetGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeNetGrant))
+                        _summary.text += " · " + lifetimeNetGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
