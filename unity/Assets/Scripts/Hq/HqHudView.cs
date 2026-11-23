@@ -433,6 +433,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekHardwareSite = HqDisplayQueriesHud.LastWeekHardwareSiteSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekHardwareSite))
                     status = string.IsNullOrEmpty(status) ? lastWeekHardwareSite : status + " · " + lastWeekHardwareSite;
+                string thisWeekFinesConstruction = HqDisplayQueriesHud.ThisWeekFinesConstructionSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekFinesConstruction))
+                    status = string.IsNullOrEmpty(status) ? thisWeekFinesConstruction : status + " · " + thisWeekFinesConstruction;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
