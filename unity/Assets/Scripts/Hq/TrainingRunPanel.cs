@@ -1010,6 +1010,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimePowerGrant = HqDisplayQueriesHud.LifetimePowerGrantSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimePowerGrant))
                         _summary.text += " · " + lifetimePowerGrant;
+                    string lastWeekGreyGrant = HqDisplayQueriesHud.LastWeekGreyGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekGreyGrant))
+                        _summary.text += " · " + lastWeekGreyGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
