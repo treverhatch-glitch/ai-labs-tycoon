@@ -141,8 +141,10 @@ and says why in the commit message.
 - ~~**Hatch forward-queue batch 32**~~ **pushed @ `e3a5a6d`** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); gate **2559/0** / **2557/0** WT; parent `0e5e13d` (+ `26258c2` test, `e3a5a6d` docs).
 - ~~**Hatch balance/soak batch 33**~~ **pushed @ `2c15504`** — Q1956–Q2025 (`HatchBalanceSoakBarLaterTests`, **70**); gate **2629/0** / **2627/0** WT; parent `e3a5a6d` (+ `29d5c6c` test, `2c15504` docs).
 - ~~**Hatch rival/plan batch 34**~~ **pushed @ `fc167aa`** — Q2026–Q2095 (`HatchRivalPlanBarLaterTests`, **70**); gate **2699/0** / **2697/0** WT; parent `2c15504` (+ `bae467b` test, `fc167aa` docs).
-- **Hatch acquisition bar batch 35 (local @ `4d1a26c`, commit-ready — no push)** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa`; Q200 **2/2**; golden PASS; push earliest **≥08:45:54 UTC** + GO.
-- **Hatch distress/M&amp;A batch 36 (queued untracked)** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); model sales + chip distress neighbours.
+- ~~**Hatch acquisition bar batch 35**~~ **pushed @ `ec6f1a9`** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa` (+ `4d1a26c` test, `ec6f1a9` docs).
+- **Hatch distress/M&amp;A batch 36 (local @ tip after commit, GO-ready — no push)** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); hold push ≥**09:13:00 UTC** + GO.
+- **Hatch bubble/distress batch 37 (queued untracked)** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); crash bubble + model-sales neighbours.
+- **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
 

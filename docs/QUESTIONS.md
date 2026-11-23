@@ -945,13 +945,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
 
-### Q2096–Q2165. Acquisition gameplay data bar? DECIDED: test-only (batch 35, commit-ready @ `4d1a26c`)
+### Q2096–Q2165. Acquisition gameplay data bar? DECIDED: test-only (batch 35, pushed @ `ec6f1a9`)
 
 - **`HatchAcquireGameplayBarLaterTests` (70):** `Acquisitions` quote fields; bubble/chip distress neighbours; schema **29** only.
 
-### Q2166–Q2235. Distress/acquire data bar? TBD: test-only (batch 36, queued untracked)
+### Q2166–Q2235. Distress/acquire data bar? DECIDED: test-only (batch 36, local)
 
 - **`HatchDistressAcquireBarLaterTests` (70):** model-sales distress offers; acquisition crash quotes; schema **29** only.
+
+### Q2236–Q2305. Bubble/distress data bar? TBD: test-only (batch 37, queued untracked)
+
+- **`HatchBubbleDistressBarLaterTests` (70):** `BubbleConfig` crash permille; weak-player haircut; acquisition crash quote neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
