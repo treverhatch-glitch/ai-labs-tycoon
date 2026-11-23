@@ -1007,6 +1007,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeNetRoom = HqDisplayQueriesHud.LifetimeNetRoomSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeNetRoom))
                         _summary.text += " · " + lifetimeNetRoom;
+                    string lifetimePowerGrant = HqDisplayQueriesHud.LifetimePowerGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimePowerGrant))
+                        _summary.text += " · " + lifetimePowerGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
