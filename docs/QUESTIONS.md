@@ -933,13 +933,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchPopSecondPlaceBarLaterTests` (70):** `ThePopEndingForPlayer`; `second-place` ending; crown-runner-up years; rivalry `secondPlacePermille` (negative delta — assert non-zero, not &gt; 0); schema **29**.
 
-### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, local GO-ready @ `26258c2`)
+### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, pushed @ `e3a5a6d`)
 
 - **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
 
-### Q1956–Q2025. Balance/soak data bar? TBD: test-only (batch 33, queued untracked)
+### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, local)
 
-- **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets`; calendar weeks; rival retrenchment config neighbours; schema **29** only.
+- **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
+
+### Q2026–Q2095. Rival/plan data bar? TBD: test-only (batch 34, queued untracked)
+
+- **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

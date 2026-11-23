@@ -138,8 +138,9 @@ and says why in the commit message.
 - ~~**Hatch containment/ending batch 29**~~ **pushed @ `10f32fb`** — Q1676–Q1745 (**70**); gate **2349/0** / **2347/0** WT; parent `7fae71e`.
 - ~~**Hatch treaty/ending batch 30**~~ **pushed @ `dee894f`** — Q1746–Q1815 (`HatchTreatyEndingBarLaterTests`, **70**); gate **2419/0** / **2417/0** WT; parent `10f32fb`.
 - ~~**Hatch pop/second-place batch 31**~~ **pushed @ `0e5e13d`** — Q1816–Q1885 (`HatchPopSecondPlaceBarLaterTests`, **70**); gate **2489/0** / **2487/0** WT; parent `dee894f` (+ `c400fb5` test, `0e5e13d` docs).
-- **Hatch forward-queue batch 32 (local @ `26258c2`, GO-ready — no push)** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); gate **2559/0** clean / **2557/0** WT; parent `0e5e13d`; Q200 **2/2**; golden `55e673a0…`; spacing ≥30m after `0e5e13d` met (~06:22+ UTC).
-- **Hatch balance/soak batch 33 (queued local, untracked)** — Q1956–Q2025 (`HatchBalanceSoakBarLaterTests`, **70**); `BalanceSoak` presets; long-horizon / retrenchment neighbours; schema **29**.
+- ~~**Hatch forward-queue batch 32**~~ **pushed @ `e3a5a6d`** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); gate **2559/0** / **2557/0** WT; parent `0e5e13d` (+ `26258c2` test, `e3a5a6d` docs).
+- **Hatch balance/soak batch 33 (local @ tip after commit, GO-ready — no push)** — Q1956–Q2025 (`HatchBalanceSoakBarLaterTests`, **70**); hold push ≥30m after `e3a5a6d` (**~07:18:43 UTC**) + coordinator GO.
+- **Hatch rival/plan batch 34 (queued local, untracked)** — Q2026–Q2095 (`HatchRivalPlanBarLaterTests`, **70**); cast plans; distress/M&amp;A neighbours; schema **29**.
 
 ## Rules: forward queue (from bible / systems-design)
 
