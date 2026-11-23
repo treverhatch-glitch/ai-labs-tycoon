@@ -973,13 +973,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only.
 
-### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, commit-ready — no push)
+### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, pushed @ `38f5385`)
 
-- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only; gates **3259/0** / **3257/0** WT.
+- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only.
 
-### Q2656–Q2725. World-map economy data bar? TBD: test-only (batch 43, queued)
+### Q2656–Q2725. World-map economy data bar? DECIDED: test-only (batch 43, WIP — no push)
 
-- **`HatchWorldMapEconomyBarLaterTests` (70):** world sites/blocs + economy config neighbours; schema **29** only.
+- **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only.
+
+### Q2726–Q2795. Shady/china economy bar? TBD: test-only (batch 44, queued)
+
+- **`HatchShadyChinaBarLaterTests2` (70):** china deals + shady depth neighbours (bible refill); schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
