@@ -46,7 +46,8 @@
 | 55 | `e37f322` | Training incident index |
 | 56 | `cf40d41` | Explainable HUD index |
 | 57 | `8b9e790` | Staff presentation index |
-| 58 | (local HOLD) | Rival feeling index |
+| 58 | `5e6b64c` | Rival feeling index |
+| 59 | (local GO) | A11y chrome index |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

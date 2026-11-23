@@ -113,7 +113,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`8b9e790` (batch 57: staff presentation index); batch 58 (rival feeling index) squashed locally after prepush.
+`5e6b64c` (batch 58: rival feeling index); batch 59 (a11y chrome index) on push queue.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
@@ -128,7 +128,7 @@ start-era picker (items 12–13 below) stays rules/Unity presentation, not new r
 | HQ chrome | Cash/grant (batch 27), date/week row (batch 31); breakdowns from `DisplayQueries` |
 | Seasonal overlays | Index (`SEASONAL-OVERLAY-INDEX.md`, batch 53); Gauntlet chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
 | Screen layouts | Research (47), rivals (48), training (49) — `UI-HUD-LAYOUTS` + `Campus*ScreenPresentationSpec` |
-| A11y chrome | Focus ring tokens (batch 30); capture HUD regions (batch 35) + `CAPTURE-REGRESSION.md` |
+| A11y chrome | Index (`A11Y-CHROME-INDEX.md`, batch 59); focus ring (batch 30); capture HUD (batch 35) + `CAPTURE-REGRESSION.md` |
 
 ## Studio and CI
 
