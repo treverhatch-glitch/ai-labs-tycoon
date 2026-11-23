@@ -505,5 +505,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("2,400").Or.Contain("350"));
         }
 
+        [Test]
+        public void last_week_construction_grey_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.Construction = -5_500;
+            lab.Ledger.LastWeek.GreyRevenue = 1_700;
+            string line = HqDisplayQueriesHud.LastWeekConstructionGreySummaryLine(lab);
+            Assert.That(line, Does.Contain("5,500").Or.Contain("1,700"));
+        }
+
     }
 }
