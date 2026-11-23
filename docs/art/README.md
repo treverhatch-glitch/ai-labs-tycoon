@@ -37,6 +37,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [HQ-CASH-DISPLAY-PRESENTATION.md](HQ-CASH-DISPLAY-PRESENTATION.md) | Cash/grant readout (batch 27) |
 | [TAB-RAIL-ACTIVE-PRESENTATION.md](TAB-RAIL-ACTIVE-PRESENTATION.md) | Tab rail active state (batch 28) |
 | [ERA-SKIN-PREVIEW.md](ERA-SKIN-PREVIEW.md) | Era swatch preview (batch 29) |
+| [FOCUS-RING-PRESENTATION.md](FOCUS-RING-PRESENTATION.md) | Focus ring / hit targets (batch 30) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

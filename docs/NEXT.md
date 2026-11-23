@@ -112,7 +112,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`bdc426a` (batch 28: tab rail active state); batch 29 (era skin preview for start-era picker UX) staged locally.
+`d8ad54d` (batch 29: era skin preview); batch 30 (focus ring / 44px targets) staged locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
@@ -126,6 +126,7 @@ start-era picker (items 12–13 below) stays rules/Unity presentation, not new r
 | Hire / staff UI | Staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
 | HQ chrome | Cash/grant readout (batch 27); breakdown taps use `DisplayQueries` (rules) |
 | Seasonal overlays | Gauntlet stage chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
+| A11y chrome | Focus ring tokens (batch 30); capture guard in `CAPTURE-REGRESSION.md` |
 
 ## Studio and CI
 

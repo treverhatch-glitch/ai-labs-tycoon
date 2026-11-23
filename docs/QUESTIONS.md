@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q479. Focus ring / hit target tokens? DECIDED: `CampusFocusRingPresentationSpec`
+
+- Options: (a) only in ACCESSIBILITY doc; (b) spec class + focus doc; (c) UI Toolkit theme only.
+- Recommendation and choice: **(b)** — centralizes 44px target and 2px ring from batch 11 a11y doc.
+- Why: Tab rail, drawers, and hire rows share one keyboard focus treatment.
+
 ### Q478. Era skin preview swatches? DECIDED: `CampusEraSkinPreviewPresentationSpec`
 
 - Options: (a) settings UI only; (b) spec + preview doc; (c) duplicate `ERA-SKIN-TOKENS.md` table in C#.

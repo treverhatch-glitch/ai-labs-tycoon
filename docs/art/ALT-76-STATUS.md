@@ -17,7 +17,8 @@
 | 26 | `e2cf84c` | Staff roster rows |
 | 27 | `a0dc2a5` | HQ cash readout |
 | 28 | `bdc426a` | Tab rail active state |
-| 29 | (local GO) | Era skin preview |
+| 29 | `d8ad54d` | Era skin preview |
+| 30 | (local GO) | Focus ring / hit targets |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
