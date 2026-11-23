@@ -1207,6 +1207,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekGrantPower = HqDisplayQueriesHud.LastWeekGrantPowerSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekGrantPower))
                     status = string.IsNullOrEmpty(status) ? lastWeekGrantPower : status + " · " + lastWeekGrantPower;
+                string thisWeekLandGrant = HqDisplayQueriesHud.ThisWeekLandGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekLandGrant))
+                    status = string.IsNullOrEmpty(status) ? thisWeekLandGrant : status + " · " + thisWeekLandGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
