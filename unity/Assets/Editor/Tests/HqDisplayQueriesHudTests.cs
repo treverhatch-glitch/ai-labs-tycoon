@@ -2905,5 +2905,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("4,300").Or.Contain("3,750"));
         }
 
+        [Test]
+        public void lifetime_fines_land_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Fines = -22_000;
+            lab.Ledger.Lifetime.Land = -82_000;
+            string line = HqDisplayQueriesHud.LifetimeFinesLandSummaryLine(lab);
+            Assert.That(line, Does.Contain("22,000").Or.Contain("82,000"));
+        }
+
     }
 }
