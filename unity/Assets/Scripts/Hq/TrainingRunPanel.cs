@@ -2285,6 +2285,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekDevPatent = HqDisplayQueriesHud.LastWeekDevPatentSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekDevPatent))
                         _summary.text += " · " + lastWeekDevPatent;
+                    string lifetimeDevPatent = HqDisplayQueriesHud.LifetimeDevPatentSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeDevPatent))
+                        _summary.text += " · " + lifetimeDevPatent;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
