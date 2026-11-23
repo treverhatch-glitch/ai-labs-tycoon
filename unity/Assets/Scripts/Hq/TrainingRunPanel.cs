@@ -224,6 +224,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekConstructionLand = HqDisplayQueriesHud.LastWeekConstructionLandSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekConstructionLand))
                         _summary.text += " · " + lastWeekConstructionLand;
+                    string lifetimeFinesPower = HqDisplayQueriesHud.LifetimeFinesPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeFinesPower))
+                        _summary.text += " · " + lifetimeFinesPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
