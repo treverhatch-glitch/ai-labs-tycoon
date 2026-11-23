@@ -4835,5 +4835,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("8,240").Or.Contain("1,020"));
         }
 
+        [Test]
+        public void last_week_chip_fines_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.ChipSales = 7_930;
+            lab.Ledger.LastWeek.Fines = -1_030;
+            string line = HqDisplayQueriesHud.LastWeekChipFinesSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("7,930").Or.Contain("1,030"));
+        }
+
     }
 }
