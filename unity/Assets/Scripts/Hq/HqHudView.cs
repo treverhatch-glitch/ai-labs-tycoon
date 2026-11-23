@@ -2110,6 +2110,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekIncomeGrant = HqDisplayQueriesHud.ThisWeekIncomeGrantSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekIncomeGrant))
                     status = string.IsNullOrEmpty(status) ? thisWeekIncomeGrant : status + " · " + thisWeekIncomeGrant;
+                string lifetimeGreyPatent = HqDisplayQueriesHud.LifetimeGreyPatentSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeGreyPatent))
+                    status = string.IsNullOrEmpty(status) ? lifetimeGreyPatent : status + " · " + lifetimeGreyPatent;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
