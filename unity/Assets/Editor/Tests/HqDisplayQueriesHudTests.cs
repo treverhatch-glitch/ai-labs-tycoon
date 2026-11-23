@@ -6015,5 +6015,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("2,780").Or.Contain("3,160"));
         }
 
+        [Test]
+        public void lifetime_grey_launder_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.GreyRevenue = 55_000;
+            lab.Ledger.Lifetime.Laundered = 33_600;
+            string line = HqDisplayQueriesHud.LifetimeGreyLaunderSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("55,000").Or.Contain("33,600"));
+        }
+
     }
 }
