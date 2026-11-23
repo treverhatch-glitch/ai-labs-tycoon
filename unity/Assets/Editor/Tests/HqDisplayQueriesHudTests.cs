@@ -2665,5 +2665,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("2,200").Or.Contain("510"));
         }
 
+        [Test]
+        public void this_week_gpu_hardware_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.GpuRent = -2_050;
+            lab.Ledger.ThisWeek.Hardware = -4_100;
+            string line = HqDisplayQueriesHud.ThisWeekGpuHardwareSummaryLine(lab);
+            Assert.That(line, Does.Contain("2,050").Or.Contain("4,100"));
+        }
+
     }
 }
