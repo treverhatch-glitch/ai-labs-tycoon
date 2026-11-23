@@ -1037,6 +1037,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeSalariesPower = HqDisplayQueriesHud.LifetimeSalariesPowerSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeSalariesPower))
                         _summary.text += " · " + lifetimeSalariesPower;
+                    string lastWeekFinesRoom = HqDisplayQueriesHud.LastWeekFinesRoomSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekFinesRoom))
+                        _summary.text += " · " + lastWeekFinesRoom;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
