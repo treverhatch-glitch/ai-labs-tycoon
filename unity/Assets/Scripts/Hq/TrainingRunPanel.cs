@@ -872,6 +872,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekSiteChip = HqDisplayQueriesHud.LastWeekSiteChipSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekSiteChip))
                         _summary.text += " · " + lastWeekSiteChip;
+                    string lifetimeGreyRoom = HqDisplayQueriesHud.LifetimeGreyRoomSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeGreyRoom))
+                        _summary.text += " · " + lifetimeGreyRoom;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
