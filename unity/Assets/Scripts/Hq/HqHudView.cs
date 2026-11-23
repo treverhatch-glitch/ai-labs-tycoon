@@ -805,6 +805,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekGrantGpu = HqDisplayQueriesHud.LastWeekGrantGpuSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekGrantGpu))
                     status = string.IsNullOrEmpty(status) ? lastWeekGrantGpu : status + " · " + lastWeekGrantGpu;
+                string lifetimeNetPower = HqDisplayQueriesHud.LifetimeNetPowerSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeNetPower))
+                    status = string.IsNullOrEmpty(status) ? lifetimeNetPower : status + " · " + lifetimeNetPower;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
