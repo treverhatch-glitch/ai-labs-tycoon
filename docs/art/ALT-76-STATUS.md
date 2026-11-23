@@ -58,7 +58,8 @@
 | 67 | `0607fca` | Tab rail integration index |
 | 68 | `1b8cf85` | Room build panel index |
 | 69 | `f4f2e53` | HQ stage stack rollup |
-| 70 | (LOCAL GREEN) | Staff/GPU panel index |
+| 70 | `3912cd7` | Staff/GPU panel index |
+| 71 | (pushing) | Training peek index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

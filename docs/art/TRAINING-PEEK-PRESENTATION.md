@@ -6,6 +6,8 @@ HQ stage: collapsed `TrainingRunPanel` summary in right column bottom band (`UI-
 | --- | --- | --- |
 | Training peek | right 28%, bottom 22% | `icon-training`; full panel on training screen |
 
+Index: [TRAINING-PEEK-INDEX.md](TRAINING-PEEK-INDEX.md) (batch 71).
+
 Tokens: `CampusTrainingPeekPresentationSpec` (28×22% band, 8px split bar reuse from batch 32).
 
 Compute split detail: [COMPUTE-SPLIT-PRESENTATION.md](COMPUTE-SPLIT-PRESENTATION.md). No training rules in graphics.

@@ -83,5 +83,6 @@ python3 tools/art/generate_campus_kit.py
 | [ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md) | Room build + breakdown (batch 68) |
 | [HQ-STAGE-STACK-ROLLUP.md](HQ-STAGE-STACK-ROLLUP.md) | HQ bands 38–42 rollup (batch 69) |
 | [STAFF-GPU-PANEL-INDEX.md](STAFF-GPU-PANEL-INDEX.md) | Staff/GPU HQ band (batch 70) |
+| [TRAINING-PEEK-INDEX.md](TRAINING-PEEK-INDEX.md) | Training peek + screen (batch 71) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

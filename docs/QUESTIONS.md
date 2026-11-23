@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q520. Training peek index? DECIDED: `CampusTrainingPeekIndexPresentationSpec`
+
+- Options: (a) batch 40 peek doc only; (b) index + peek/screen layers + fraction aliases; (c) implement training panel in graphics PR.
+- Recommendation and choice: **(b)** — links HQ peek (40) with full screen (49); incident index via batch 55.
+- Why: Index-lane refill; training rules unchanged on cloud agent.
+
 ### Q519. Staff/GPU panel index? DECIDED: `CampusStaffGpuPanelIndexPresentationSpec`
 
 - Options: (a) batch 57 staff index only; (b) HQ panel index for batches 26+39; (c) implement hire panel in graphics PR.
