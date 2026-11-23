@@ -929,13 +929,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchTreatyEndingBarLaterTests` (70):** treaty/nationalised config; `monopoly`/`the-pop` neighbours; schema **29**; golden `55e673a0…` unchanged.
 
-### Q1816–Q1885. Pop/second-place data bar? DECIDED: test-only (batch 31, local)
+### Q1816–Q1885. Pop/second-place data bar? DECIDED: test-only (batch 31, pushed @ `0e5e13d`)
 
 - **`HatchPopSecondPlaceBarLaterTests` (70):** `ThePopEndingForPlayer`; `second-place` ending; crown-runner-up years; rivalry `secondPlacePermille` (negative delta — assert non-zero, not &gt; 0); schema **29**.
 
-### Q1886–Q1955. Forward-queue data bar? TBD: test-only (batch 32, queued untracked)
+### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, local)
 
-- **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries` exit breakdown; era `incidentLoadPermille`; long-horizon soak neighbours (Q99–Q101); schema **29** only.
+- **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
+
+### Q1956–Q2025. Balance/soak data bar? TBD: test-only (batch 33, queued untracked)
+
+- **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets`; calendar weeks; rival retrenchment config neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
