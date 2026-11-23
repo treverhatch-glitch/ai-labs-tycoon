@@ -1981,6 +1981,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimePatentSiteSpendIncome = HqDisplayQueriesHud.LifetimePatentSiteSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimePatentSiteSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimePatentSiteSpendIncome : status + " · " + lifetimePatentSiteSpendIncome;
+                string thisWeekGreyLandSpendIncome = HqDisplayQueriesHud.ThisWeekGreyLandSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekGreyLandSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekGreyLandSpendIncome : status + " · " + thisWeekGreyLandSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
