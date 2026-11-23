@@ -52,6 +52,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekLand))
                     status = string.IsNullOrEmpty(status) ? lastWeekLand : status + " · " + lastWeekLand;
+                string lastWeekSiteCapital = HqDisplayQueriesHud.LastWeekSiteCapitalSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekSiteCapital))
+                    status = string.IsNullOrEmpty(status) ? lastWeekSiteCapital : status + " · " + lastWeekSiteCapital;
                 string lifetimeGrantsNet = HqDisplayQueriesHud.LifetimeGrantsNetSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeGrantsNet))
                     status = string.IsNullOrEmpty(status) ? lifetimeGrantsNet : status + " · " + lifetimeGrantsNet;
