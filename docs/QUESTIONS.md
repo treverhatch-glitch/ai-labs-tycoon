@@ -973,9 +973,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only.
 
-### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, WIP — no push)
+### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, commit-ready — no push)
 
-- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only.
+- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only; gates **3259/0** / **3257/0** WT.
 
 ### Q2656–Q2725. World-map economy data bar? TBD: test-only (batch 43, queued)
 
