@@ -13,3 +13,5 @@ Spacing: ≥30m since last push on this branch
 Plain push: `git push -u origin cursor/graphics-pipeline-5032` (no force).
 
 **Index lane (batches 50+):** store packet `internal/graphics-batch{N}-go-packet.md`; hub [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md). Constants: `CampusGoPacketTemplatePresentationSpec` (batch 63).
+
+Post-60 refresh: [GO-PACKET-INDEX-LANE-REFRESH.md](GO-PACKET-INDEX-LANE-REFRESH.md) (batch 77).

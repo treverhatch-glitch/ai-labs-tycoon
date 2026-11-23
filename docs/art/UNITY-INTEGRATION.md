@@ -22,8 +22,9 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 | [HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md) | HQ band indexes complete (batch 74) |
 | [INDEX-LANE-MANIFEST.md](INDEX-LANE-MANIFEST.md) | Post-60 index lane manifest (batch 75) |
 | [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) | ALT-76 through batch 75 (batch 76) |
+| [GO-PACKET-INDEX-LANE-REFRESH.md](GO-PACKET-INDEX-LANE-REFRESH.md) | GO packets for index 66+ (batch 77) |
 
-Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72); `CampusComputeSplitIndexPresentationSpec` (batch 73); `CampusHqStageStackCompletionPresentationSpec` (batch 74); `CampusIndexLaneManifestPresentationSpec` (batch 75); `CampusAlt76RollupRefreshPresentationSpec` (batch 76). Gate unchanged: `./tools/art/prepush.sh`.
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67); `CampusRoomBuildIndexPresentationSpec` (batch 68); `CampusHqStageStackRollupPresentationSpec` (batch 69); `CampusStaffGpuPanelIndexPresentationSpec` (batch 70); `CampusTrainingPeekIndexPresentationSpec` (batch 71); `CampusHqMascotStripIndexPresentationSpec` (batch 72); `CampusComputeSplitIndexPresentationSpec` (batch 73); `CampusHqStageStackCompletionPresentationSpec` (batch 74); `CampusIndexLaneManifestPresentationSpec` (batch 75); `CampusAlt76RollupRefreshPresentationSpec` (batch 76); `CampusGoPacketIndexLaneRefreshPresentationSpec` (batch 77). Gate unchanged: `./tools/art/prepush.sh`.
 
 ## Batch 11 (local, unpushed atop `c17c67d`)
 

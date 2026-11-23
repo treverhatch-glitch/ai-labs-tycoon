@@ -64,7 +64,8 @@
 | 73 | `974aef2` | Compute split index |
 | 74 | `2429879` | HQ stack completion |
 | 75 | `01b0286` | Index lane manifest |
-| 76 | (pushing) | ALT-76 rollup refresh |
+| 76 | `3cd1fda` | ALT-76 rollup refresh |
+| 77 | (pushing) | GO packet index refresh |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

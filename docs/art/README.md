@@ -89,5 +89,6 @@ python3 tools/art/generate_campus_kit.py
 | [COMPUTE-SPLIT-INDEX.md](COMPUTE-SPLIT-INDEX.md) | Compute split chrome (batch 73) |
 | [HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md) | HQ band indexes rollup (batch 74) |
 | [INDEX-LANE-MANIFEST.md](INDEX-LANE-MANIFEST.md) | Index lane 66–74 (batch 75) |
+| [GO-PACKET-INDEX-LANE-REFRESH.md](GO-PACKET-INDEX-LANE-REFRESH.md) | GO packets 66+ (batch 77) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
