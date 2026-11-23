@@ -4155,5 +4155,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("6,200").Or.Contain("950"));
         }
 
+        [Test]
+        public void lifetime_grant_fines_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Grants = 187_000;
+            lab.Ledger.Lifetime.Fines = -28_300;
+            string line = HqDisplayQueriesHud.LifetimeGrantFinesSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("187,000").Or.Contain("28,300"));
+        }
+
     }
 }
