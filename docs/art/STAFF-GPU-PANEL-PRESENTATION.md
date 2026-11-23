@@ -1,6 +1,6 @@
 # Staff / GPU panel (presentation)
 
-HQ stage: right column mid band per `UI-HUD-LAYOUTS.md` (`StaffGpuPanel`).
+Index: [STAFF-PRESENTATION-INDEX.md](STAFF-PRESENTATION-INDEX.md) (batch 57). HQ stage: right column mid band per `UI-HUD-LAYOUTS.md` (`StaffGpuPanel`).
 
 | Zone | Fraction | Notes |
 | --- | --- | --- |

@@ -44,7 +44,8 @@
 | 53 | `e9d0381` | Seasonal overlay index |
 | 54 | `8e7a445` | World freeze in overlay index |
 | 55 | `e37f322` | Training incident index |
-| 56 | (local HOLD) | Explainable HUD index |
+| 56 | `cf40d41` | Explainable HUD index |
+| 57 | (local HOLD) | Staff presentation index |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q506. Staff presentation index? DECIDED: `CampusStaffPresentationIndexPresentationSpec`
+
+- Options: (a) row + panel docs only; (b) index doc + layer count + shared row height; (c) wire `StaffGpuPanel` in graphics PR.
+- Recommendation and choice: **(b)** — links roster rows (batch 26) to side panel (batch 39); 36px alias.
+- Why: Matches `docs/DESIGN.md` staff-as-people hire UI; rules `StaffSystem` unchanged on cloud agent.
+
 ### Q505. Explainable HUD index? DECIDED: `CampusExplainableHudIndexPresentationSpec`
 
 - Options: (a) per-drawer docs only; (b) index doc + drawer count + shared row height; (c) wire `DisplayQueries` in graphics PR.

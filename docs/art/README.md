@@ -70,5 +70,6 @@ python3 tools/art/generate_campus_kit.py
 | [SEASONAL-OVERLAY-INDEX.md](SEASONAL-OVERLAY-INDEX.md) | Seasonal overlay hub (batch 53) |
 | [TRAINING-INCIDENT-INDEX.md](TRAINING-INCIDENT-INDEX.md) | Training incident tiers (batch 55) |
 | [EXPLAINABLE-HUD-INDEX.md](EXPLAINABLE-HUD-INDEX.md) | Explainable drawer hub (batch 56) |
+| [STAFF-PRESENTATION-INDEX.md](STAFF-PRESENTATION-INDEX.md) | Staff row + panel hub (batch 57) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

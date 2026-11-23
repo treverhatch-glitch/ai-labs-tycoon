@@ -11,4 +11,4 @@ Tokens: `CampusStaffRowPresentationSpec` (36px row, 4px morale bar, 30% desatura
 
 Rules supply trait/morale; graphics defines row chrome only (batch 26).
 
-Panel band: [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) (batch 39).
+Index: [STAFF-PRESENTATION-INDEX.md](STAFF-PRESENTATION-INDEX.md) (batch 57). Panel band: [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) (batch 39).
