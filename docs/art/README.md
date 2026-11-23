@@ -51,6 +51,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) | HQ mascot strip (batch 41) |
 | [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) | HQ lot viewport (batch 42) |
 | [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) | HQ stage band index (batch 43) |
+| [TAB-RAIL-FUTURE-PRESENTATION.md](TAB-RAIL-FUTURE-PRESENTATION.md) | Tab rail v2 (batch 44) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

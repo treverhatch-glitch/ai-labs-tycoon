@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q493. Future tab rail v2 tokens? DECIDED: `CampusTabRailFuturePresentationSpec`
+
+- Options: (a) batch 7/28 docs only; (b) future-rail spec + doc; (c) implement v2 shell in graphics PR.
+- Recommendation and choice: **(b)** — 64px width + tab count; defers mock replacement to Unity thread.
+- Why: Documents UI-HUD future chrome without changing v1 HQ panels.
+
 ### Q492. HQ stage stack index? DECIDED: `CampusHqStageStackPresentationSpec`
 
 - Options: (a) markdown index only; (b) spec + `HQ-STAGE-STACK.md`; (c) merge all HQ specs into one class.

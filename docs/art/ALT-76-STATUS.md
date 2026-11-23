@@ -32,6 +32,7 @@
 | 41 | `5798e49` | HQ mascot strip |
 | 42 | `3bd78b2` | HQ lot viewport |
 | 43 | (local GO) | HQ stage stack |
+| 44 | (local) | Tab rail v2 |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
