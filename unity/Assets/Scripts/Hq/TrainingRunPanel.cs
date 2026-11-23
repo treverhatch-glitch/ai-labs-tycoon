@@ -638,6 +638,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeFinesChip = HqDisplayQueriesHud.LifetimeFinesChipSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeFinesChip))
                         _summary.text += " · " + lifetimeFinesChip;
+                    string lastWeekLaunderChip = HqDisplayQueriesHud.LastWeekLaunderChipSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekLaunderChip))
+                        _summary.text += " · " + lastWeekLaunderChip;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
