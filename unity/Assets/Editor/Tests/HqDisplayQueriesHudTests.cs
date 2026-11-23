@@ -2015,5 +2015,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("198,000").Or.Contain("655,000"));
         }
 
+        [Test]
+        public void last_week_net_construction_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.Net = 2_900;
+            lab.Ledger.LastWeek.Construction = -5_800;
+            string line = HqDisplayQueriesHud.LastWeekNetConstructionSummaryLine(lab);
+            Assert.That(line, Does.Contain("2,900").Or.Contain("5,800"));
+        }
+
     }
 }
