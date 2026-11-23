@@ -12,4 +12,4 @@ Tokens: `CampusMascotRowHudPresentationSpec` (48px row, max 4 visible, strip fra
 
 HQ band: [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) (batch 41).
 
-Rules: `LabQueries.Mood` + `GLOW-PRESENTATION.md`. Cross-ref [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md).
+Index: [HQ-MASCOT-STRIP-INDEX.md](HQ-MASCOT-STRIP-INDEX.md) (batch 72). Rules: `LabQueries.Mood` + `GLOW-PRESENTATION.md`. Cross-ref [MASCOT-PRESENTATION.md](MASCOT-PRESENTATION.md).

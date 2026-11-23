@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
+
+- Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
+- Recommendation and choice: **(b)** — HQ band rollup; batch 8 mesh tokens unchanged.
+- Why: Completes HQ stack index lane band for batches 38–42.
+
 ### Q520. Training peek index? DECIDED: `CampusTrainingPeekIndexPresentationSpec`
 
 - Options: (a) batch 40 peek doc only; (b) index + peek/screen layers + fraction aliases; (c) implement training panel in graphics PR.
