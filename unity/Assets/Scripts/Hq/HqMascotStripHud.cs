@@ -29,6 +29,8 @@ namespace AiLabs.Unity.Hq
             string lastWeekSiteCapitalPart = string.IsNullOrEmpty(lastWeekSiteCapital) ? "" : " · " + lastWeekSiteCapital;
             string thisWeekNetTraining = HqDisplayQueriesHud.ThisWeekNetTrainingSummaryLine(sim.Player);
             string thisWeekNetTrainingPart = string.IsNullOrEmpty(thisWeekNetTraining) ? "" : " · " + thisWeekNetTraining;
+            string lastWeekChipDevLand = HqDisplayQueriesHud.LastWeekChipDevLandSummaryLine(sim.Player);
+            string lastWeekChipDevLandPart = string.IsNullOrEmpty(lastWeekChipDevLand) ? "" : " · " + lastWeekChipDevLand;
             string lastWeekRevenueNet = HqDisplayQueriesHud.LastWeekRevenueNetSummaryLine(sim.Player);
             string lastWeekRevenueNetPart = string.IsNullOrEmpty(lastWeekRevenueNet) ? "" : " · " + lastWeekRevenueNet;
             string lastWeekGpuUpkeepRent = HqDisplayQueriesHud.LastWeekGpuUpkeepRentSummaryLine(sim.Player);
@@ -49,7 +51,7 @@ namespace AiLabs.Unity.Hq
             string lastWeekHiringPatentPart = string.IsNullOrEmpty(lastWeekHiringPatent) ? "" : " · " + lastWeekHiringPatent;
             string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(sim.Player);
             string thisWeekBuildPart = string.IsNullOrEmpty(thisWeekBuild) ? "" : " · " + thisWeekBuild;
-            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart;
+            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart + lastWeekChipDevLandPart;
         }
     }
 }
