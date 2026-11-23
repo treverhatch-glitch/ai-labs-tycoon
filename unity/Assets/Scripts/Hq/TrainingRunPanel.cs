@@ -2162,6 +2162,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekGrantDev = HqDisplayQueriesHud.ThisWeekGrantDevSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekGrantDev))
                         _summary.text += " · " + thisWeekGrantDev;
+                    string lifetimeSpendChip = HqDisplayQueriesHud.LifetimeSpendChipSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeSpendChip))
+                        _summary.text += " · " + lifetimeSpendChip;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
