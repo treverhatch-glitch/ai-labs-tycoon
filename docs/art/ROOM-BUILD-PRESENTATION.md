@@ -9,4 +9,6 @@ NEXT Unity item 3 tail: `RoomBuildPanel` layout on HQ stage (`UI-HUD-LAYOUTS.md`
 
 Tokens: `CampusRoomBuildPresentationSpec` (`icon-hq`, 70/28/40 fractions).
 
-Props per purpose: [PROP-PLACEMENT-HINTS.md](PROP-PLACEMENT-HINTS.md). No build rules in graphics batches.
+Props per purpose: [PROP-PLACEMENT-HINTS.md](PROP-PLACEMENT-HINTS.md). Lot viewport: [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) (batch 42).
+
+No build rules in graphics batches.

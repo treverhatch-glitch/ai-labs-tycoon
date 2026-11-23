@@ -36,7 +36,7 @@ Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `Hq
 
 | Zone | Rect (of main stage) | Content |
 | --- | --- | --- |
-| Lot viewport | 70% width, full height | `HqGridView` + props |
+| Lot viewport | 70% width, full height | `HqGridView` + props — [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) (batch 42) |
 | Mascot strip | bottom 18%, full width | `ModelMascotRow` — [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) (batch 41) |
 | Build panel | right 28%, top 40% | `RoomBuildPanel` — [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md) (batch 38) |
 | Staff/GPU | right 28%, mid 30% | `StaffGpuPanel` — [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) (batch 39) |

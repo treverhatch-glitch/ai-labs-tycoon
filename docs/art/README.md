@@ -49,6 +49,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [STAFF-GPU-PANEL-PRESENTATION.md](STAFF-GPU-PANEL-PRESENTATION.md) | Staff/GPU side panel (batch 39) |
 | [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) | Training peek band (batch 40) |
 | [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) | HQ mascot strip (batch 41) |
+| [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) | HQ lot viewport (batch 42) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

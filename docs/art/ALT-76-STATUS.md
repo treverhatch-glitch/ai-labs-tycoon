@@ -29,7 +29,8 @@
 | 38 | `09cbb6c` | Room build panel |
 | 39 | `67e1fc8` | Staff/GPU panel |
 | 40 | `24a9ea1` | Training peek |
-| 41 | (local GO) | HQ mascot strip |
+| 41 | `5798e49` | HQ mascot strip |
+| 42 | (local GO) | HQ lot viewport |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
