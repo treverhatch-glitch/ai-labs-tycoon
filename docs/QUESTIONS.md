@@ -544,7 +544,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - Options: (a) replay 74 chained `/tmp` builders from store (incomplete); (b) persist transcript runners under `studio/hud-ledger/recovered/`, rebuild sprint stack on backup branch, promote to PR #2 only after Unity compile CI green; (c) wait for Hatch local ~33k tip.
 - Recommendation and choice: **(b)+(c)**. Store holds only `hud-run-sprints-901-904-builder-excerpt.py` (53 lines), not the full runner chain. **First backup push:** branch `cursor/unity-hud-backup` @ `1ee6a75` → first grouped batch adds `studio/hud-ledger/` (102 recovered runners + extract script). Ledger replay from sprint genesis is batch 02+; PR #2 stays on HOLD until ULF green.
-- Why: Grok/Hatch VM-loss policy (2026-11-24): no thread keeps >~one big batch unpushed on VM only; backup avoids Unity CI on every replay commit.
+- Why: Grok/Hatch VM-loss policy (2026-11-24): no thread keeps >~one big batch unpushed on VM only; backup avoids Unity CI on every replay commit. **First backup SHA:** `2e52a5318a66fbc8b5bd1c69ec25555b6afcc5e9`.
 
 ## Open
 
