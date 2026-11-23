@@ -17,4 +17,9 @@ with open(t, 'w') as f:
     f.write(chr(10))
 os.replace(t, p)
 " 2>/dev/null || true
+  if [ -f "$(dirname "${BASH_SOURCE[0]}")/golden-revert-disable-batch18-tip.sh" ]; then
+    # shellcheck source=golden-revert-disable-batch18-tip.sh
+    source "$(dirname "${BASH_SOURCE[0]}")/golden-revert-disable-batch18-tip.sh"
+    disable_batch18_at_tip
+  fi
 }

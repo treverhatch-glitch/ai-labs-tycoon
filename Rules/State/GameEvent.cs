@@ -633,7 +633,9 @@ namespace AiLabs.Rules.State
         ReservedComputeSigned,
         RivalIntentSurfaced,
         GpuTierLocked,
-        ScenarioEndlessAck
+        ScenarioEndlessAck,
+        SpecialistEraUnlocked,
+        SectorPriceLadderPeak
     }
 
     /// <summary>

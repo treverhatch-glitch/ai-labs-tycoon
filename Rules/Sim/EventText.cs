@@ -676,6 +676,10 @@ namespace AiLabs.Rules.Sim
                     return who + " was refused " + e.Ref + " tier hardware (gate " + e.SubjectId + ").";
                 case EventKind.ScenarioEndlessAck:
                     return who + " keeps playing after scenario \"" + e.Ref + "\" win.";
+                case EventKind.SpecialistEraUnlocked:
+                    return "Specialist and open-weights hooks unlock in the " + e.Ref + " era.";
+                case EventKind.SectorPriceLadderPeak:
+                    return who + " pegged premium pricing on \"" + e.Ref + "\" at tier " + e.SubjectId + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

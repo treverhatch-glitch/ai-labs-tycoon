@@ -397,18 +397,18 @@ and says why in the commit message.
 214. **Per-scenario goals (bible ch. 15 tail).** ~~Done (local)~~: `ScenarioGoals`, schema 147 (Q471).
 215. **Targeted lobbying law (bible ch. 12 lobbying tail).** ~~Done (local)~~: `SetLawTarget`, schema 148 (Q472).
 216. **Batch sixteen news, chat and combination rules.** ~~Done (local)~~: `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests` (Q473).
-217. **Reserved compute reputation and cooldown.** ~~Done (local)~~: `ReservedComputeGate`, schema 149 (Q474).
-218. **Rival intent on the news ticker.** ~~Done (local)~~: `RivalIntentNews`, schema 150 (Q475).
-219. **GPU tier unlock permille.** ~~Done (local)~~: `GpuTierUnlock`, schema 151 (Q476).
-220. **Endless play after scenario win.** ~~Done (local)~~: `EndlessScenario`, schema 152 (Q477).
-221. **Shady jobs under permit freeze.** ~~Done (local)~~: `ShadyFreezeAudit`, schema 153 (Q478).
-222. **Batch seventeen news, chat and combination rules.** ~~Done (local)~~: `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests` (Q479).
+217. **Reserved compute reputation and cooldown.** ~~Done~~: `ReservedComputeGate`, schema 149 (Q474); **PR [#51](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/51)** / `q-af2f` @ `34dc995`.
+218. **Rival intent on the news ticker.** ~~Done~~: `RivalIntentNews`, schema 150 (Q475).
+219. **GPU tier unlock permille.** ~~Done~~: `GpuTierUnlock`, schema 151 (Q476).
+220. **Endless play after scenario win.** ~~Done~~: `EndlessScenario`, schema 152 (Q477).
+221. **Shady jobs under permit freeze.** ~~Done~~: `ShadyFreezeAudit`, schema 153 (Q478).
+222. **Batch seventeen news, chat and combination rules.** ~~Done~~: `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests` (Q479).
 
-### Era batch 18 (draft — not started)
+### Era batch 18 (local — HOLD push)
 
-223. **Specialist and open-weights era hooks (bible tails lite).** Draft: era permille on specialist sectors without new `Command` fields (store queue schema 154).
-224. **Sector pricing breakdown for the player lab.** Draft: permille ladder on top of `SectorPricing` (schema 155).
-225. **Batch eighteen news, chat and combination rules.** Draft: TBD after systems land.
+223. **Specialist and open-weights era hooks (bible tails lite).** ~~Done (local)~~: `SpecialistEraHooks`, schema 154 (Q480).
+224. **Sector pricing breakdown for the player lab.** ~~Done (local)~~: `SectorPricingBreakdown`, schema 155 (Q481).
+225. **Batch eighteen news, chat and combination rules.** ~~Done (local)~~: `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests` (Q482).
 
 ## Rules: later
 

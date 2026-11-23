@@ -187,6 +187,8 @@ namespace AiLabs.Rules.Config
             GpuTierUnlockProblems(p, c);
             EndlessScenarioProblems(p, c);
             ShadyFreezeAuditProblems(p, c);
+            SpecialistEraHooksProblems(p, c);
+            SectorPricingBreakdownProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2091,6 +2093,23 @@ namespace AiLabs.Rules.Config
             ShadyFreezeAuditConfig k = c.ShadyFreezeAudit;
             if (k == null) { p.Add("shadyFreezeAudit is missing"); return; }
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("shadyFreezeAudit.enabled must be 0 or 1");
+        }
+
+        static void SpecialistEraHooksProblems(List<string> p, GameConfig c)
+        {
+            SpecialistEraHooksConfig k = c.SpecialistEraHooks;
+            if (k == null) { p.Add("specialistEraHooks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistEraHooks.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistEraHooks.minEra must be a valid era index");
+            if (k.SpecialistPermille < 0 || k.OpenWeightsPermille < 0) p.Add("specialistEraHooks permille fields must not be negative");
+        }
+
+        static void SectorPricingBreakdownProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingBreakdownConfig k = c.SectorPricingBreakdown;
+            if (k == null) { p.Add("sectorPricingBreakdown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingBreakdown.enabled must be 0 or 1");
+            if (k.PeakTierNotify < 0 || k.PeakTierNotify > 1) p.Add("sectorPricingBreakdown.peakTierNotify must be 0 or 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

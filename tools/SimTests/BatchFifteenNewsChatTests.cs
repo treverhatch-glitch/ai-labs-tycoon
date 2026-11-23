@@ -21,8 +21,8 @@ public class BatchFifteenNewsChatTests
     public void Batch_fifteen_headlines_and_chat_validate()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(405, c.News.Headlines.Count);
-        Assert.Equal(358, c.Chat.Lines.Count);
+        Assert.Equal(407, c.News.Headlines.Count);
+        Assert.Equal(360, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());

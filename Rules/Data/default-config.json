@@ -12369,6 +12369,18 @@
         "text": "{lab} keeps running after a scenario win"
       },
       {
+        "id": "specialist-era-unlock",
+        "kind": "SpecialistEraUnlocked",
+        "pick": -1,
+        "text": "Specialist branches and open weights unlock in the {ref} era"
+      },
+      {
+        "id": "sector-price-peak",
+        "kind": "SectorPriceLadderPeak",
+        "pick": -1,
+        "text": "{lab} pegs premium pricing on {ref}"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16592,6 +16604,28 @@
         "toYear": 0
       },
       {
+        "id": "specialist-era-chat",
+        "kind": "SpecialistEraUnlocked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Specialist lanes and open weights finally match this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sector-price-peak-chat",
+        "kind": "SectorPriceLadderPeak",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We set sector pricing at the top ladder rung.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19310,5 +19344,15 @@
   },
   "shadyFreezeAudit": {
     "enabled": 1
+  },
+  "specialistEraHooks": {
+    "enabled": 1,
+    "minEra": 3,
+    "specialistPermille": 40,
+    "openWeightsPermille": 25
+  },
+  "sectorPricingBreakdown": {
+    "enabled": 1,
+    "peakTierNotify": 1
   }
 }

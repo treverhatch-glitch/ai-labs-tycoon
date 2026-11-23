@@ -2361,3 +2361,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q478. Block shady jobs when home permits are frozen? DECIDED (schema 153): `shadyFreezeAudit` in `StartShadyOp`.
 
 ### Q479. Batch seventeen news, chat and combos. DECIDED: seven headlines, six chat lines (405/358); `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests`.
+
+### Q480. Era-gated specialist and open-weights appeal? DECIDED (schema 154): `specialistEraHooks`; `SpecialistEraUnlocked`.
+
+### Q481. Sector price ladder breakdown and peak notice? DECIDED (schema 155): `sectorPricingBreakdown`; `DisplayQueries.SectorPriceParts`; `SectorPriceLadderPeak`.
+
+### Q482. Batch eighteen news, chat and combos. DECIDED: two headlines, two chat lines (407/360); `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests`.
