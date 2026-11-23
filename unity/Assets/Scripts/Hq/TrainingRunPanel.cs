@@ -1031,6 +1031,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeGreyChip = HqDisplayQueriesHud.LifetimeGreyChipSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeGreyChip))
                         _summary.text += " · " + lifetimeGreyChip;
+                    string lastWeekRentConstruction = HqDisplayQueriesHud.LastWeekRentConstructionSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekRentConstruction))
+                        _summary.text += " · " + lastWeekRentConstruction;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
