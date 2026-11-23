@@ -2525,5 +2525,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("4,500").Or.Contain("2,300"));
         }
 
+        [Test]
+        public void lifetime_net_power_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Net = 50_000;
+            lab.Ledger.Lifetime.Power = -130_000;
+            string line = HqDisplayQueriesHud.LifetimeNetPowerSummaryLine(lab);
+            Assert.That(line, Does.Contain("50,000").Or.Contain("130,000"));
+        }
+
     }
 }
