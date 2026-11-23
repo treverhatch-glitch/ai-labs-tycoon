@@ -15,7 +15,7 @@ public class MarginCallTests
         Game g = Game.Solo(51, c =>
         {
             c.MarginCall.Enabled = 1;
-            c.MarginCall.CovenantPermille = 2000;
+            c.MarginCall.CovenantPermille = 950;
             c.MarginCall.CureWeeks = 2;
             c.Loans.LoanToValuePermille = 800;
             c.Office.ChancePermille = 0;
@@ -29,7 +29,7 @@ public class MarginCallTests
     {
         Game g = Lab();
         Fleet.AddGpus(g.State, g.Me, 0, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
-        g.Do(Command.TakeLoan(g.Id, 200_000));
+        g.Do(Command.TakeLoan(g.Id, 800));
         int before = g.Me.Fleet.Sum(b => b.Count);
         Fleet.Take(g.Me, g.Me.Fleet[0], before - 1);
         Finance.RunWeek(g.C, g.State, g.Me);
@@ -42,7 +42,7 @@ public class MarginCallTests
     {
         Game g = Lab();
         Fleet.AddGpus(g.State, g.Me, 0, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 6);
-        g.Do(Command.TakeLoan(g.Id, 300_000));
+        g.Do(Command.TakeLoan(g.Id, 800));
         Fleet.Take(g.Me, g.Me.Fleet[0], g.Me.Fleet[0].Count - 1);
         Finance.RunWeek(g.C, g.State, g.Me);
         g.Do(Command.SatisfyMarginCall(g.Id, 0, (int)MarginCall.CashDue(g.C, g.State, g.Me)));

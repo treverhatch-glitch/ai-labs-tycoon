@@ -17,12 +17,13 @@ public class BatchSixteenTogetherTests
         Game g = Game.Solo(59, c =>
         {
             c.MarginCall.Enabled = 1;
-            c.MarginCall.CovenantPermille = 1500;
+            c.MarginCall.CovenantPermille = 950;
             c.HearingSharePrice.Enabled = 1;
             c.RungSixCrisis.MinEra = 0;
             c.RungSixCrisis.CorruptionMin = 100;
             c.LawShaping.MinEra = 0;
             c.Lobbying.BackfirePermille = 0;
+            c.Lobbying.BackfireFloorPermille = 0;
             c.CampaignDeadline.MinEra = 0;
             c.Office.ChancePermille = 0;
         }).WithStarterLab(gpus: 6);
@@ -34,7 +35,7 @@ public class BatchSixteenTogetherTests
     public void Margin_call_with_loan_repay()
     {
         Game g = Lab();
-        g.Do(Command.TakeLoan(g.Id, 50_000));
+        g.Do(Command.TakeLoan(g.Id, 600));
         Fleet.Take(g.Me, g.Me.Fleet[0], g.Me.Fleet[0].Count - 1);
         Finance.RunWeek(g.C, g.State, g.Me);
         Assert.True(g.Me.MarginCallLeft > 0 || g.State.Events.Any(e => e.Kind == EventKind.MarginCall));
@@ -53,9 +54,8 @@ public class BatchSixteenTogetherTests
     [Fact]
     public void Scenario_deadline_with_goal()
     {
-        GameConfig c = TestData.Config();
-        var options = new NewGameOptions { Seed = 59, ScenarioId = c.Scenarios.Scenarios[0].IdValue, RivalIds = new List<string>() };
-        Game g = new Game(Simulation.NewGame(c, options));
+        Game g = Game.Solo(59, c => { c.CampaignDeadline.MinEra = 0; }).WithStarterLab(researchers: 2, gpus: 4);
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
         g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 3));
         g.Weeks(3);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.CampaignDeadlineHit);

@@ -36,7 +36,7 @@ public class GoldenRevertBatchSixteenTests
             {
                 WorkingDirectory = root,
                 RedirectStandardError = true,
-                UseShellExecute = true,
+                UseShellExecute = false,
             });
             pr.WaitForExit(120_000);
             Xunit.Assert.Equal(0, pr.ExitCode);
@@ -44,6 +44,10 @@ public class GoldenRevertBatchSixteenTests
     }
 
     [Theory]
+    [InlineData(144)]
+    [InlineData(145)]
+    [InlineData(146)]
+    [InlineData(147)]
     [InlineData(148)]
     public void Golden_revert_at_tip_for_each_batch_sixteen_schema(int schema) => Revert(schema);
 }
