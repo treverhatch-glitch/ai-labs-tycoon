@@ -933,7 +933,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchPopSecondPlaceBarLaterTests` (70):** `ThePopEndingForPlayer`; `second-place` ending; crown-runner-up years; rivalry `secondPlacePermille` (negative delta — assert non-zero, not &gt; 0); schema **29**.
 
-### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, local)
+### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, local GO-ready @ `26258c2`)
 
 - **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
 
