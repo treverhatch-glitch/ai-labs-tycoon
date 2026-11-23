@@ -675,5 +675,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("9,000").Or.Contain("12,500"));
         }
 
+        [Test]
+        public void last_week_launder_fines_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.Laundered = 1_400;
+            lab.Ledger.LastWeek.Fines = -850;
+            string line = HqDisplayQueriesHud.LastWeekLaunderFinesSummaryLine(lab);
+            Assert.That(line, Does.Contain("1,400").Or.Contain("850"));
+        }
+
     }
 }
