@@ -86,6 +86,7 @@ PART_ANCHOR = '            string thisWeekPowerChipPart = string.IsNullOrEmpty(t
 
 def git_commit(msg, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0: return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 

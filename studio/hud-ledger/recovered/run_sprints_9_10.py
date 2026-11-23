@@ -130,7 +130,8 @@ PA10 = '            string thisWeekSalariesFinesPart = string.IsNullOrEmpty(this
 
 git_commit = git_commit  # noqa
 subprocess.check_call(["git", "add", str(UNITY / "Scripts/Hq/HqDisplayQueriesHud.cs")], cwd=ROOT)
-subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint9-10 twelve ledger summary formatters"], cwd=ROOT)
+if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+    subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint9-10 twelve ledger summary formatters"], cwd=ROOT)
 run_sprint(SPRINT9, PA9, "lastWeekConstructionLandPart")
 subprocess.check_call(["git", "commit", "--allow-empty", "-m", "docs: HUD HOLD sprint9 wire complete"], cwd=ROOT)
 run_sprint(SPRINT10, PA10, "thisWeekSalariesFinesPart")

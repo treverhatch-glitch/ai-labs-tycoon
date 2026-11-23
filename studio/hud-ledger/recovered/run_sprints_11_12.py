@@ -133,7 +133,9 @@ def run_sprint(cycles, part_anchor, tail_token):
 
 
 subprocess.check_call(["git", "add", str(UNITY / "Scripts/Hq/HqDisplayQueriesHud.cs")], cwd=ROOT)
-subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint11-12 twelve ledger summary formatters"], cwd=ROOT)
+subprocess.check_call(["git", "add", str(UNITY / "Scripts/Hq/HqDisplayQueriesHud.cs")], cwd=ROOT)
+if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+    subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint11-12 twelve ledger summary formatters"], cwd=ROOT)
 run_sprint(SPRINT11, PA11, "lastWeekChipGreyPart")
 run_sprint(SPRINT12, PA12, "lastWeekCapitalPatentPart")
 subprocess.check_call(["dotnet", "test", "tools/SimTests/SimTests.csproj", "--filter", "FullyQualifiedName~golden", "-v", "q"], cwd=ROOT)

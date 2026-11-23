@@ -86,6 +86,8 @@ TESTS = UNITY / "Editor/Tests/HqDisplayQueriesHudTests.cs"
 
 def git_commit(msg: str, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
@@ -184,7 +186,11 @@ def wire_build(cycle):
         f'                                 + " · " + HqDisplayQueriesHud.{cycle["method"]}(_host.Simulation.Player)\n'
         f'                                 + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);'
     )
+    if anchor not in text:
+        return False
     text = text.replace(anchor, insert, 1)
+    if f"{cycle['method']}(_host.Simulation.Player)" not in text:
+        return False
     BUILD.write_text(text)
     return True
 

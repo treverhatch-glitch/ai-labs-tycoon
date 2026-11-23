@@ -87,6 +87,7 @@ PART_ANCHOR = '            string thisWeekNetTrainingPart = string.IsNullOrEmpty
 
 def git_commit(msg: str, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0: return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
