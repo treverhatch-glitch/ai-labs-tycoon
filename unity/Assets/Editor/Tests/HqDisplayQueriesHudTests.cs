@@ -3345,5 +3345,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("5,150").Or.Contain("10,800"));
         }
 
+        [Test]
+        public void this_week_site_net_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.SiteBuild = -7_000;
+            lab.Ledger.ThisWeek.Net = 2_050;
+            string line = HqDisplayQueriesHud.ThisWeekSiteNetSummaryLine(lab);
+            Assert.That(line, Does.Contain("7,000").Or.Contain("2,050"));
+        }
+
     }
 }
