@@ -12,4 +12,6 @@ Refresh navigation for batches 38–42 HQ office chrome; supersedes ad-hoc cross
 
 Stack map: [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) (batch 42).
 
+Completion: [HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md) (batch 74).
+
 Tokens: `CampusHqStageStackRollupPresentationSpec` (band count alias + build index layers). Batch 69.

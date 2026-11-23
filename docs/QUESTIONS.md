@@ -578,11 +578,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — links training chrome; rules thread owns values.
 - Why: Cross-link for training peek index (71) and split bars (32).
 
-### Q523. HQ stack index completion? DRAFT: `CampusHqStageStackCompletionPresentationSpec`
+### Q523. HQ stack index completion? DECIDED: `CampusHqStageStackCompletionPresentationSpec`
 
 - Options: (a) rollup doc only (69); (b) completion spec + band/index count aliases; (c) HQ scene in graphics PR.
-- Recommendation: **(b)** — marks HQ index lane complete for bands 38–42.
-- Status: stub batch 74 (local).
+- Recommendation and choice: **(b)** — marks HQ index lane complete for bands 38–42.
+- Why: Lot viewport (42) stays presentation-only; four band indexes cover remainder.
+
+### Q524. Index lane manifest (66–74)? DRAFT: `CampusIndexLaneManifestPresentationSpec`
+
+- Options: (a) presentation hub only; (b) manifest doc + counted index entries; (c) merge index specs into one class.
+- Recommendation: **(b)** — navigation rollup for post-60 lane.
+- Status: stub batch 75 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

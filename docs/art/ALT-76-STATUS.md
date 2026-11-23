@@ -61,7 +61,8 @@
 | 70 | `3912cd7` | Staff/GPU panel index |
 | 71 | `2d4058b` | Training peek index |
 | 72 | `745a159` | HQ mascot strip index |
-| 73 | (pushing) | Compute split index |
+| 73 | `974aef2` | Compute split index |
+| 74 | (pushing) | HQ stack completion |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

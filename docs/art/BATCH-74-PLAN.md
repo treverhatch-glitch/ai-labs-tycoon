@@ -1,3 +1,6 @@
-# Graphics batch 74 (stub — HOLD until GO)
+# Graphics batch 74
 
-- [ ] HQ stack index completion rollup — tie batches 69 + 72 (Q523 draft)
+**Parent:** `974aef2fd639c2c028650f962304f3995b8f9d67` (P73 @ 21:58:21 UTC)
+
+- [x] `HQ-STAGE-STACK-COMPLETION.md`, `CampusHqStageStackCompletionPresentationSpec` + tests
+- [x] Q523 DECIDED, cross-refs, ALT-76, NEXT
