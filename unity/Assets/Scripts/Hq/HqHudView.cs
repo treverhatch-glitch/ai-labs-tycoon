@@ -2152,6 +2152,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekRentPatent = HqDisplayQueriesHud.LastWeekRentPatentSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekRentPatent))
                     status = string.IsNullOrEmpty(status) ? lastWeekRentPatent : status + " · " + lastWeekRentPatent;
+                string thisWeekRoomChip = HqDisplayQueriesHud.ThisWeekRoomChipSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekRoomChip))
+                    status = string.IsNullOrEmpty(status) ? thisWeekRoomChip : status + " · " + thisWeekRoomChip;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
