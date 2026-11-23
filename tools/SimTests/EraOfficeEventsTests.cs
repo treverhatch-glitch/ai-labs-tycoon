@@ -110,6 +110,7 @@ public class EraOfficeEventsTests
             c.Office.Events.RemoveAll(e => e.FromYear == 0 && e.ToYear == 0);
             c.TakeoffCrisis.Enabled = 0;
             c.RungSixCrisis.Enabled = 0;
+            c.Office.Events.RemoveAll(e => e.Trigger == OfficeTrigger.RungSix || e.Trigger == OfficeTrigger.ShutdownCompute);
             c.Safety.IncidentChancePermille = 0;
         }).WithStarterLab();
         g.Me.Cash = 1_000_000_000_000_000;
