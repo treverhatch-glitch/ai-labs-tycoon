@@ -135,7 +135,8 @@ and says why in the commit message.
 - ~~**Hatch shady/china batch 26**~~ **pushed @ `f50900e`** — Q1466–Q1535 (**70**); gate **2139/0** / **2137/0** WT; parent `5da29a0`.
 - ~~**Hatch freeze/audit batch 27**~~ **pushed @ `d05c9cc`** — Q1536–Q1605 (**70**); gate **2209/0** / **2207/0** WT; parent `f50900e`.
 - ~~**Hatch incident/bubble batch 28**~~ **pushed @ `7fae71e`** — Q1606–Q1675 (**70**); gate **2279/0** / **2277/0** WT; parent `d05c9cc`.
-- **Hatch containment/ending batch 29 (local @ tip after commit)** — Q1676–Q1745 (`HatchContainmentEndingBarLaterTests`, **70**); Q94 neighbours.
+- ~~**Hatch containment/ending batch 29**~~ **pushed @ `10f32fb`** — Q1676–Q1745 (**70**); gate **2349/0** / **2347/0** WT; parent `7fae71e`.
+- **Hatch treaty/ending batch 30 (local @ tip after commit)** — Q1746–Q1815 (`HatchTreatyEndingBarLaterTests`, **70**).
 
 ## Rules: forward queue (from bible / systems-design)
 

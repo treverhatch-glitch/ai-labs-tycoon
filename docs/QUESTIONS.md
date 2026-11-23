@@ -921,11 +921,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchIncidentBubbleBarLaterTests` (70):** rungs; bubble permille; schema **29**.
 
-### Q1676–Q1745. Containment/ending bar? TBD: test-only (batch 29, local)
+### Q1676–Q1745. Containment/ending bar? DECIDED: test-only (batch 29, pushed @ `10f32fb`)
 
 - **`HatchContainmentEndingBarLaterTests` (70):** containment wing bonus; endings table; schema **29**.
 
-### Q1746+. Bible queue? TBD: see NEXT.md
+### Q1746–Q1815. Treaty/ending data bar? TBD: test-only (batch 30, local)
+
+- **`HatchTreatyEndingBarLaterTests` (70):** treaty/nationalised config; endings table; schema **29**.
+
+### Q1816+. Bible queue? TBD: see NEXT.md
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
