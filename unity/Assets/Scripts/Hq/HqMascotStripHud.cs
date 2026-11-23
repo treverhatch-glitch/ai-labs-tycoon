@@ -27,6 +27,8 @@ namespace AiLabs.Unity.Hq
             string lastWeekLandPart = string.IsNullOrEmpty(lastWeekLand) ? "" : " · " + lastWeekLand;
             string lastWeekSiteCapital = HqDisplayQueriesHud.LastWeekSiteCapitalSummaryLine(sim.Player);
             string lastWeekSiteCapitalPart = string.IsNullOrEmpty(lastWeekSiteCapital) ? "" : " · " + lastWeekSiteCapital;
+            string thisWeekFinesPower = HqDisplayQueriesHud.ThisWeekFinesPowerSummaryLine(sim.Player);
+            string thisWeekFinesPowerPart = string.IsNullOrEmpty(thisWeekFinesPower) ? "" : " · " + thisWeekFinesPower;
             string lifetimeGrantsNet = HqDisplayQueriesHud.LifetimeGrantsNetSummaryLine(sim.Player);
             string lifetimeGrantsNetPart = string.IsNullOrEmpty(lifetimeGrantsNet) ? "" : " · " + lifetimeGrantsNet;
             string thisWeekChipRevenue = HqDisplayQueriesHud.ThisWeekChipRevenueSummaryLine(sim.Player);
@@ -37,7 +39,7 @@ namespace AiLabs.Unity.Hq
             string lastWeekHiringPatentPart = string.IsNullOrEmpty(lastWeekHiringPatent) ? "" : " · " + lastWeekHiringPatent;
             string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(sim.Player);
             string thisWeekBuildPart = string.IsNullOrEmpty(thisWeekBuild) ? "" : " · " + thisWeekBuild;
-            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart;
+            _line.text = "Mascots" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart;
         }
     }
 }
