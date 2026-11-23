@@ -1025,13 +1025,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchModelSalesChipBarLaterTests2` (70):** distress offers + tapeout weeks; schema **29** only; gate **4099/0** in-repo.
 
-### Q3496–Q3565. World map/economy bar coda? DECIDED: test-only (batch 55, commit-ready BIG — push with GO ≥ 23:12 UTC)
+### Q3496–Q3565. World map/economy bar coda? DECIDED: test-only (batch 55, pushed @ `14428ec`)
 
-- **`HatchWorldMapEconomyBarLaterTests2` (70):** stack2 coda on `HatchWorldMapEconomyBarLaterTests` (batch 43); pins `World.Blocs` (≥9), `World.Sites` (≥10), runtime bloc/site resolution, `Attention.FreezeAt`, `Heatwave.ThrottlePermille`, `PlayerStart.HomeBlocId`; schema **29** only; 70-bar filter green.
+- **`HatchWorldMapEconomyBarLaterTests2` (70):** stack2 coda on batch 43; gate **4169/0** in-repo; schema **29** only.
 
-### Q3566–Q3635. Regulator/bubble bar coda? TBD: test-only (batch 56, queued after 55 land)
+### Q3566–Q3635. Regulator/bubble bar coda? DECIDED: test-only (batch 56, LOCAL — GO ≥ ~23:57 UTC)
 
-- **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + listed-chip boost coda; bible **Q525** gov/China scrutiny neighbour; schema **29** only.
+- **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + `ListedChipBoostPermille` coda; bible **Q525** / **Q540** gov+containment tails from store; schema **29** only; 70-bar filter green.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
