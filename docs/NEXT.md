@@ -164,7 +164,7 @@ and says why in the commit message.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
   - **batch 55 (queued)** — Q3496–Q3565 `HatchWorldMapEconomyBarLaterTests2` — blocs/sites/attention heatwave.
   - **batch 56 (queued)** — Q3566–Q3635 `HatchRegulatorBubbleBarLaterTests2` — scrutiny + listed-chip boost coda.
-- **Refill:** store `internal/bible-systems-design-questions-backlog.md` (Q525 gov/China, Q540 containment HUD tails) + `batch19-bible-systems-refill.md` (P45 data pairing, public-metrics era load); rivals stack2 bars **52–56** fork bubble/acquire/funding/chips/world; schema **29** only (**30** SolvencyHold parked).
+- **Refill:** store `internal/bible-systems-design-questions-backlog.md` (Q525 gov/China, Q540 containment HUD tails) + `batch19-bible-systems-refill.md` (P45 data pairing, public-metrics era load); batch **54** ties **D3–D7** chips distress/listings (`CrashDistressOfferPermille`, `TapeoutWeeks`, `BuyListedChips` queue); rivals stack2 bars **52–56**; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
 
