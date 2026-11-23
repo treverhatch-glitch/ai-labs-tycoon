@@ -1414,6 +1414,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeSiteCapitalSpendIncome = HqDisplayQueriesHud.LifetimeSiteCapitalSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeSiteCapitalSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimeSiteCapitalSpendIncome : status + " · " + lifetimeSiteCapitalSpendIncome;
+                string thisWeekShadyLaunderSpendIncome = HqDisplayQueriesHud.ThisWeekShadyLaunderSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekShadyLaunderSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekShadyLaunderSpendIncome : status + " · " + thisWeekShadyLaunderSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
