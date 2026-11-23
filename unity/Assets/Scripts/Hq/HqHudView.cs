@@ -811,6 +811,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekCapitalTraining = HqDisplayQueriesHud.ThisWeekCapitalTrainingSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekCapitalTraining))
                     status = string.IsNullOrEmpty(status) ? thisWeekCapitalTraining : status + " · " + thisWeekCapitalTraining;
+                string lastWeekSiteChip = HqDisplayQueriesHud.LastWeekSiteChipSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekSiteChip))
+                    status = string.IsNullOrEmpty(status) ? lastWeekSiteChip : status + " · " + lastWeekSiteChip;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
