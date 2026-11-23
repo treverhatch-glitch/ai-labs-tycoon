@@ -2420,6 +2420,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekSpendIncome = HqDisplayQueriesHud.ThisWeekSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekSpendIncome))
                         _summary.text += " · " + thisWeekSpendIncome;
+                    string lastWeekSpendIncome = HqDisplayQueriesHud.LastWeekSpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekSpendIncome))
+                        _summary.text += " · " + lastWeekSpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
