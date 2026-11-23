@@ -3885,5 +3885,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("7,740").Or.Contain("2,080"));
         }
 
+        [Test]
+        public void lifetime_launder_land_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Laundered = 29_500;
+                        lab.Ledger.Lifetime.Land = -92_000;
+            string line = HqDisplayQueriesHud.LifetimeLaunderLandSummaryLine(lab);
+            Assert.That(line, Does.Contain("29,500").Or.Contain("92,000"));
+        }
+
     }
 }
