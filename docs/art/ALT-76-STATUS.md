@@ -30,7 +30,8 @@
 | 39 | `67e1fc8` | Staff/GPU panel |
 | 40 | `24a9ea1` | Training peek |
 | 41 | `5798e49` | HQ mascot strip |
-| 42 | (local GO) | HQ lot viewport |
+| 42 | `3bd78b2` | HQ lot viewport |
+| 43 | (local GO) | HQ stage stack |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

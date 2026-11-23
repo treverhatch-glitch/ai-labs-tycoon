@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q492. HQ stage stack index? DECIDED: `CampusHqStageStackPresentationSpec`
+
+- Options: (a) markdown index only; (b) spec + `HQ-STAGE-STACK.md`; (c) merge all HQ specs into one class.
+- Recommendation and choice: **(b)** — band count (5) and viewport alias; index links batches 38–42.
+- Why: Gives Unity thread one entry point without duplicating per-band specs.
+
 ### Q491. HQ lot viewport band tokens? DECIDED: `CampusHqLotViewportPresentationSpec`
 
 - Options: (a) `ROOM-BUILD` 70% fraction only; (b) viewport spec + doc; (c) wire `HqGridView` layout in graphics PR.

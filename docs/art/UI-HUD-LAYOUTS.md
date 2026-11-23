@@ -32,6 +32,8 @@ Reference resolution: **1920×1080** design, **Scale With Screen Size** (see `Hq
 
 ## HQ office (primary stage)
 
+Band index: [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) (batch 43).
+
 **Camera:** `CampusPresentationSpec` defaults; lot centred; garage 14×10 tiles visible without scroll.
 
 | Zone | Rect (of main stage) | Content |

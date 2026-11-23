@@ -50,6 +50,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [TRAINING-PEEK-PRESENTATION.md](TRAINING-PEEK-PRESENTATION.md) | Training peek band (batch 40) |
 | [HQ-MASCOT-STRIP-PRESENTATION.md](HQ-MASCOT-STRIP-PRESENTATION.md) | HQ mascot strip (batch 41) |
 | [HQ-LOT-VIEWPORT-PRESENTATION.md](HQ-LOT-VIEWPORT-PRESENTATION.md) | HQ lot viewport (batch 42) |
+| [HQ-STAGE-STACK.md](HQ-STAGE-STACK.md) | HQ stage band index (batch 43) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 
