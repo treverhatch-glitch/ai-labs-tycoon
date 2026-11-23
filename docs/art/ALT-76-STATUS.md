@@ -35,7 +35,9 @@
 | 44 | `5d52a64` | Tab rail v2 |
 | 45 | `2801aa1` | Safe area (in `f44cd35` push) |
 | 46 | `f44cd35` | Advance week |
-| 47 | (local GO) | Research screen |
+| 47 | `81fe8d1` | Research screen |
+| 48 | (local GO) | Rivals screen |
+| 48 | (local GO) | Rivals screen |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

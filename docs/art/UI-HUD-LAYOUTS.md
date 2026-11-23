@@ -97,6 +97,8 @@ Full-screen modal or dedicated scene (Unity thread chooses; layout spec is ident
 
 ## Rivals screen
 
+Layout: [RIVALS-SCREEN-PRESENTATION.md](RIVALS-SCREEN-PRESENTATION.md) (batch 48).
+
 ```
 ┌──────── TOP BAR ────────┐
 │ Lab picker tabs (top)    │

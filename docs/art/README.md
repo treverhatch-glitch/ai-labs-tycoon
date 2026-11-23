@@ -62,4 +62,6 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 python3 tools/art/generate_campus_kit.py
 ```
 
+| [RIVALS-SCREEN-PRESENTATION.md](RIVALS-SCREEN-PRESENTATION.md) | Rivals screen (batch 48) |
+
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

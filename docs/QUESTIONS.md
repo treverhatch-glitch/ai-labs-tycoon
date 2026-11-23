@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q497. Rivals screen layout tokens? DECIDED: `CampusRivalsScreenPresentationSpec`
+
+- Options: (a) batch 21 feeling meter only; (b) 35/65 screen spec + doc; (c) rivals UI in graphics PR.
+- Recommendation and choice: **(b)** — list/log fractions from `CampusHudLayoutSpec`.
+- Why: Completes rivals track in `UI-HUD-LAYOUTS`; rules feeling unchanged.
+
 ### Q496. Research screen layout tokens? DECIDED: `CampusResearchScreenPresentationSpec`
 
 - Options: (a) batch 25 breakdown only; (b) full-screen 62/38 split spec; (c) wire research scene in graphics PR.
