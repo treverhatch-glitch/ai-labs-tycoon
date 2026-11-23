@@ -3045,5 +3045,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("150,000").Or.Contain("98,000"));
         }
 
+        [Test]
+        public void last_week_capital_power_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.CapitalIn = 41_000;
+            lab.Ledger.LastWeek.Power = -3_500;
+            string line = HqDisplayQueriesHud.LastWeekCapitalPowerSummaryLine(lab);
+            Assert.That(line, Does.Contain("41,000").Or.Contain("3,500"));
+        }
+
     }
 }
