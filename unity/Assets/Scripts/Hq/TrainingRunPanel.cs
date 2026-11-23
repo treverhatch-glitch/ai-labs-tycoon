@@ -794,6 +794,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekRoomNet = HqDisplayQueriesHud.LastWeekRoomNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekRoomNet))
                         _summary.text += " · " + lastWeekRoomNet;
+                    string thisWeekChipDev = HqDisplayQueriesHud.ThisWeekChipDevSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekChipDev))
+                        _summary.text += " · " + thisWeekChipDev;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
