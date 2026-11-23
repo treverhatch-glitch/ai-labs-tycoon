@@ -17264,7 +17264,7 @@
       {
         "id": "scenario-fail",
         "name": "scenario-fail",
-        "kind": "Continuing",
+        "kind": "Neutral",
         "blurbKey": "scenario-fail",
         "continueModes": [
           "acknowledge"
@@ -17273,7 +17273,7 @@
       {
         "id": "scenario-win",
         "name": "scenario-win",
-        "kind": "Continuing",
+        "kind": "Neutral",
         "blurbKey": "scenario-win",
         "continueModes": [
           "acknowledge"

@@ -2337,15 +2337,15 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ## Open
 
-### Q468. Margin call on chip-backed loans? OPEN (schema 144): weekly covenant check when fleet resale drops below loan-to-value; forced sell GPUs or early default — player-only; no world-site collateral.
-- Fork logged: closes Q278 tail "no margin call" if we ship this.
+### Q468. Margin call on chip-backed loans? DECIDED (schema 144): `MarginCall` after loans; `SatisfyMarginCall`; closes Q278 tail "no margin call."
+- Fork logged: closes Q278 tail.
 
-### Q469. Hearing answers and share price? OPEN (schema 145): public-float labs get permille ticker nudge after hearing office answers; private labs unchanged.
+### Q469. Hearing answers and share price? DECIDED (schema 145): `HearingSharePrice` nudges bubble permille after hearing answers when float or listed.
 
-### Q470. Rung-6 crisis or one-site shutdown? OPEN (schema 146): timed office follow-on after takeoff/escape arc; prefer office trigger over new incident enum unless required.
+### Q470. Rung-6 crisis or one-site shutdown? DECIDED (schema 146): `RungSix` office trigger, arc after escape/takeoff; `RespondRungSix`.
 
-### Q471. Per-scenario goals? OPEN (schema 147): data-defined win/lose checks at campaign deadline; structural only (Unity picker out).
+### Q471. Per-scenario goals? DECIDED (schema 147): `scenarioGoals` data + `ScenarioGoals` at deadline; optional endings.
 
-### Q472. Pick law before lobby spend? OPEN (schema 148): `SetLawTarget` before `ShapeLaw`/lobby pushes; complements schema 140.
+### Q472. Pick law before lobby spend? DECIDED (schema 148): `SetLawTarget` required before `ShapeLaw` when enabled.
 
-### Q473. Batch sixteen news, chat and combos. OPEN: pin counts with systems above.
+### Q473. Batch sixteen news, chat and combos. DECIDED: seven headline kinds, six chat lines (398/352); `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests`.
