@@ -2144,6 +2144,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeHiringGrant = HqDisplayQueriesHud.LifetimeHiringGrantSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeHiringGrant))
                         _summary.text += " · " + lifetimeHiringGrant;
+                    string thisWeekDevLand = HqDisplayQueriesHud.ThisWeekDevLandSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekDevLand))
+                        _summary.text += " · " + thisWeekDevLand;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
