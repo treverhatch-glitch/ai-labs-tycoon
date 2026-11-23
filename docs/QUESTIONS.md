@@ -937,11 +937,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
 
-### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, local GO-ready @ `29d5c6c`)
+### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, pushed @ `2c15504`)
 
 - **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
 
-### Q2026–Q2095. Rival/plan data bar? TBD: test-only (batch 34, queued untracked)
+### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, local)
 
 - **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
 
