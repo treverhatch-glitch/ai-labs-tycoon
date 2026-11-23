@@ -910,6 +910,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeSiteTraining = HqDisplayQueriesHud.LifetimeSiteTrainingSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeSiteTraining))
                     status = string.IsNullOrEmpty(status) ? lifetimeSiteTraining : status + " · " + lifetimeSiteTraining;
+                string lastWeekGpuGrant = HqDisplayQueriesHud.LastWeekGpuGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekGpuGrant))
+                    status = string.IsNullOrEmpty(status) ? lastWeekGpuGrant : status + " · " + lastWeekGpuGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
