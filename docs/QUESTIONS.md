@@ -997,9 +997,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only; gates **3609/0** / **3607/0** WT.
 
-### Q3006–Q3075. Era/incident data bar? TBD: test-only (batch 48, queued)
+### Q3006–Q3075. Era/incident data bar? DECIDED: test-only (batch 48, commit-ready — push with GO)
 
-- **`HatchEraIncidentBarLaterTests` (70):** `incidentLoadPermille` era table; schema **29** only.
+- **`HatchEraIncidentBarLaterTests` (70):** `incidentLoadPermille` era table; schema **29** only; gates **3679/0** / **3677/0** WT.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
