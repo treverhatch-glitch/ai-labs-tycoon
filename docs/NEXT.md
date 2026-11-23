@@ -391,6 +391,12 @@ and says why in the commit message.
 208. **Takeoff crisis.** ~~Done (local)~~: `RespondTakeoff`, schema 142, `TakeoffCrisisTests` (Q465).
 209. **Scenario baggage.** ~~Done (local)~~: `PickScenarioBaggage`, schema 143, `ScenarioBaggageTests` (Q466).
 210. **Batch fifteen news, chat and combination rules.** ~~Done (local)~~: `BatchFifteenNewsChatTests`, `BatchFifteenTogetherTests` (Q467).
+211. **Margin call on loans (bible ch. 9 funding ladder tail).** Draft batch 16: covenant checks on GPU collateral; see store `batch-sixteen-queue.md` (Q468).
+212. **Hearing share-price effect (bible ch. 12 hearings tail).** Draft batch 16: float labs and ticker permille after hearings (Q469).
+213. **Rung-6 crisis or site shutdown (bible ch. 10 ladder tail).** Draft batch 16: follow-on to takeoff/escape office arc (Q470).
+214. **Per-scenario goals (bible ch. 15 tail).** Draft batch 16: scenario config goals + deadline checks (Q471).
+215. **Targeted lobbying law (bible ch. 12 lobbying tail).** Draft batch 16: pick law id before spend; pairs with law shaping (Q472).
+216. **Batch sixteen news, chat and combination rules.** Planned with batch 16 systems (Q473).
 
 ## Rules: later
 
