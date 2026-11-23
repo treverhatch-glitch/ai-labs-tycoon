@@ -7005,5 +7005,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("138,000").Or.Contain("25,500"));
         }
 
+        [Test]
+        public void last_week_rent_patent_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.GpuRent = -2_380;
+            lab.Ledger.LastWeek.Grants = 5_540;
+            string line = HqDisplayQueriesHud.LastWeekRentPatentSummaryLine(lab);
+            Assert.That(line, Does.Contain("2,380").Or.Contain("5,540"));
+        }
+
     }
 }
