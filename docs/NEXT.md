@@ -137,7 +137,7 @@ and says why in the commit message.
 - ~~**Hatch incident/bubble batch 28**~~ **pushed @ `7fae71e`** — Q1606–Q1675 (**70**); gate **2279/0** / **2277/0** WT; parent `d05c9cc`.
 - ~~**Hatch containment/ending batch 29**~~ **pushed @ `10f32fb`** — Q1676–Q1745 (**70**); gate **2349/0** / **2347/0** WT; parent `7fae71e`.
 - ~~**Hatch treaty/ending batch 30**~~ **pushed @ `dee894f`** — Q1746–Q1815 (`HatchTreatyEndingBarLaterTests`, **70**); gate **2419/0** / **2417/0** WT; parent `10f32fb`.
-- **Hatch pop/second-place batch 31 (local @ tip after commit)** — Q1816–Q1885 (`HatchPopSecondPlaceBarLaterTests`, **70**).
+- **Hatch pop/second-place batch 31 (local @ `c400fb5`, GO-ready — no push)** — Q1816–Q1885 (`HatchPopSecondPlaceBarLaterTests`, **70**); gate **2489/0** / **2487/0** WT; parent `dee894f`; Q200 **2/2**; golden `55e673a0…` unchanged.
 - **Hatch forward/soak batch 32 (queued local, untracked)** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); exit-price, era incident load, long-horizon anchors (Q99–Q101 neighbours).
 
 ## Rules: forward queue (from bible / systems-design)
