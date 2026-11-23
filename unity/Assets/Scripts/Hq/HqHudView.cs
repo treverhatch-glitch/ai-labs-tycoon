@@ -874,6 +874,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeTrainingGrant = HqDisplayQueriesHud.LifetimeTrainingGrantSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeTrainingGrant))
                     status = string.IsNullOrEmpty(status) ? lifetimeTrainingGrant : status + " · " + lifetimeTrainingGrant;
+                string lastWeekNetGrant = HqDisplayQueriesHud.LastWeekNetGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekNetGrant))
+                    status = string.IsNullOrEmpty(status) ? lastWeekNetGrant : status + " · " + lastWeekNetGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
