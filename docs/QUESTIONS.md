@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q481. Training compute split bars? DECIDED: `CampusComputeSplitPresentationSpec`
+
+- Options: (a) TRAINING-PANEL only; (b) spec + doc; (c) embed in rules ComputeSplit UI.
+- Recommendation and choice: **(b)** — three sliders are presentation; split math stays rules.
+- Why: `icon-compute` already in catalog; bar height stable for Unity training view.
+
 ### Q480. HUD date/week row tokens? DECIDED: `CampusHudDateWeekPresentationSpec`
 
 - Options: (a) only `CampusHudLayoutSpec`; (b) presentation spec + doc; (c) duplicate week button size in HUD doc only.

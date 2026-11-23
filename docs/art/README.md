@@ -39,6 +39,7 @@ Game rules stay in `Rules/`; everything here is **presentation-only** for Unity 
 | [ERA-SKIN-PREVIEW.md](ERA-SKIN-PREVIEW.md) | Era swatch preview (batch 29) |
 | [FOCUS-RING-PRESENTATION.md](FOCUS-RING-PRESENTATION.md) | Focus ring / hit targets (batch 30) |
 | [HUD-DATE-WEEK-PRESENTATION.md](HUD-DATE-WEEK-PRESENTATION.md) | Date + week row (batch 31) |
+| [COMPUTE-SPLIT-PRESENTATION.md](COMPUTE-SPLIT-PRESENTATION.md) | Training compute split (batch 32) |
 
 **Generated meshes:** `unity/Assets/Art/Generated/` (see `manifest.json`). Regenerate with:
 

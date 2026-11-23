@@ -19,7 +19,8 @@
 | 28 | `bdc426a` | Tab rail active state |
 | 29 | `d8ad54d` | Era skin preview |
 | 30 | `33050c2` | Focus ring / hit targets |
-| 31 | (local GO) | HUD date/week row |
+| 31 | `58babaa` | HUD date/week row |
+| 32 | (local GO) | Compute split bars |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 
