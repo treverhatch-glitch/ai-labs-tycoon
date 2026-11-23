@@ -242,6 +242,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekNetFines = HqDisplayQueriesHud.LastWeekNetFinesSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekNetFines))
                         _summary.text += " · " + lastWeekNetFines;
+                    string thisWeekGreyPower = HqDisplayQueriesHud.ThisWeekGreyPowerSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(thisWeekGreyPower))
+                        _summary.text += " · " + thisWeekGreyPower;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
