@@ -961,9 +961,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; crash/residual permilles; schema **29** only.
 
-### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, WIP — no push)
+### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, commit-ready — no push)
 
-- **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only.
+- **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only; gates **3049/0** / **3047/0** WT.
+
+### Q2446–Q2515. Model-sales/chip data bar? TBD: test-only (batch 40, WIP HOLD)
+
+- **`HatchModelSalesChipBarLaterTests` (70):** distress offers + chip market config; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
