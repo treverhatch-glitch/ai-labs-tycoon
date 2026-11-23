@@ -961,13 +961,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; crash/residual permilles; schema **29** only.
 
-### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, commit-ready — no push)
+### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, pushed @ `f4a7e4f`)
 
-- **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only; gates **3049/0** / **3047/0** WT.
+- **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only.
 
-### Q2446–Q2515. Model-sales/chip data bar? TBD: test-only (batch 40, WIP HOLD)
+### Q2446–Q2515. Model-sales/chip data bar? DECIDED: test-only (batch 40, WIP — no push)
 
-- **`HatchModelSalesChipBarLaterTests` (70):** distress offers + chip market config; schema **29** only.
+- **`HatchModelSalesChipBarLaterTests` (70):** `CrashDistressOfferPermille`; `Chips.TapeoutWeeks`; income smoothing; schema **29** only.
+
+### Q2516–Q2585. Acquisition/listing data bar? TBD: test-only (batch 41, queued)
+
+- **`HatchAcquireListingBarLaterTests` (70):** acquisition crash quotes + listed-chip neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

@@ -145,8 +145,9 @@ and says why in the commit message.
 - ~~**Hatch distress/M&amp;A batch 36**~~ **pushed @ `ae38c65`** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); gate **2839/0** / **2837/0** WT; parent `ec6f1a9` (+ `62d23d9` test, `ae38c65` docs).
 - ~~**Hatch bubble/distress batch 37**~~ **pushed @ `0a9afc3`** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); gate **2909/0** / **2907/0** WT; parent `ae38c65` (+ `5e2aee5` test, `0a9afc3` docs).
 - ~~**Hatch capital/bubble batch 38**~~ **pushed @ `b268afb`** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); gate **2979/0** / **2977/0** WT; parent `0a9afc3` (+ `1f67dc0` test, `b268afb` docs).
-- **Hatch funding follow-on batch 39 (commit-ready — no push)** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); gate **3049/0** / **3047/0** WT; parent `b268afb` (+ `d0e1303` test, docs @ tip); push ≥**10:44:32 UTC** + GO.
-- **Hatch model-sales/chip batch 40 (WIP HOLD)** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); `ModelSales` + chip listing neighbours; schema **29** only; untracked until batch 39 pushed.
+- ~~**Hatch funding follow-on batch 39**~~ **pushed @ `f4a7e4f`** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); gate **3049/0** / **3047/0** WT; parent `b268afb` (+ `d0e1303` test, `f4a7e4f` docs).
+- **Hatch model-sales/chip batch 40 (WIP — no push)** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); `ModelSales` + `Chips` tapeout neighbours; push ≥**11:14:35 UTC** + GO.
+- **Hatch acquisition/listing batch 41 (queued)** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); acquisition quotes + chip economy forks; schema **29** only.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
 ## Rules: forward queue (from bible / systems-design)
