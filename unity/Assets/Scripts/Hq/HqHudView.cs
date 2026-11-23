@@ -982,6 +982,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekFinesRoom = HqDisplayQueriesHud.LastWeekFinesRoomSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekFinesRoom))
                     status = string.IsNullOrEmpty(status) ? lastWeekFinesRoom : status + " · " + lastWeekFinesRoom;
+                string lastWeekLandChip = HqDisplayQueriesHud.LastWeekLandChipSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekLandChip))
+                    status = string.IsNullOrEmpty(status) ? lastWeekLandChip : status + " · " + lastWeekLandChip;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
