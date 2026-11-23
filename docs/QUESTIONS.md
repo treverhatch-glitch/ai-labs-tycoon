@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q516. Tab rail integration index? DECIDED: `CampusTabRailIntegrationIndexPresentationSpec`
+
+- Options: (a) integration doc only (batch 7); (b) index + 3 layers + tab count alias; (c) wire tab rail in graphics PR.
+- Recommendation and choice: **(b)** — rollup for batches 7, 28, 44; world tab panel via batch 66 host index.
+- Why: Index-lane refill on PR #41; `CampusTabRailMock` unchanged.
+
 ### Q515. World map host index? DECIDED: `CampusWorldMapHostIndexPresentationSpec`
 
 - Options: (a) host + panel docs only; (b) index + layer count + bloc alias; (c) implement world map UI in graphics PR.

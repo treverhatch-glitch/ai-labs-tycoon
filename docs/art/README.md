@@ -79,5 +79,6 @@ python3 tools/art/generate_campus_kit.py
 | [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | GO packet + index lane (batch 63) |
 | *(UNITY-INTEGRATION § Index lane)* | Unity hub links (batch 64) |
 | [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) | World map host + panel (batch 66) |
+| [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) | Tab rail layers (batch 67) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

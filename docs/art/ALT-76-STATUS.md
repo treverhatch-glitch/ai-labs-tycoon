@@ -54,7 +54,8 @@
 | 63 | `669a933` | GO packet template |
 | 64 | `d545341` | Unity integration hub |
 | 65 | `ef4f0d8` | Studio handoff hub link |
-| 66 | (LOCAL GREEN) | World map host index |
+| 66 | `cc036a8` | World map host index |
+| 67 | (LOCAL GREEN) | Tab rail integration index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62).
 

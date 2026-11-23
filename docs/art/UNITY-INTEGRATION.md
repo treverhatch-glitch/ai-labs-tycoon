@@ -12,8 +12,9 @@ Graphics batch 1 (branch `cursor/graphics-pipeline-5032`) does **not** change pl
 | [HANDOFF-ROLLUP.md](HANDOFF-ROLLUP.md) | Expected kit counts (30 props, etc.) |
 | [GO-PACKET-TEMPLATE.md](GO-PACKET-TEMPLATE.md) | Coordinator push spacing |
 | [WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md) | Host shell + panel mock (batches 36, 4) |
+| [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) | Tab rail layers (batches 7, 28, 44) |
 
-Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66). Gate unchanged: `./tools/art/prepush.sh`.
+Tokens: `CampusUnityIntegrationHubPresentationSpec` (batch 64); `CampusWorldMapHostIndexPresentationSpec` (batch 66); `CampusTabRailIntegrationIndexPresentationSpec` (batch 67). Gate unchanged: `./tools/art/prepush.sh`.
 
 ## Batch 11 (local, unpushed atop `c17c67d`)
 

@@ -14,4 +14,6 @@ Maps `CampusTabRailMock.TabIds` to HUD SVGs (`CampusIconCatalog`) and layout wid
 
 **Future v2 rail:** [TAB-RAIL-FUTURE-PRESENTATION.md](TAB-RAIL-FUTURE-PRESENTATION.md) (batch 44).
 
+Index: [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) (batch 67 stub).
+
 **Unity thread:** import SVGs as sprites; assign in tab rail when replacing `CampusTabRailMock` cubes.

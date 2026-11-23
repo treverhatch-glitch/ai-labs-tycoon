@@ -1,6 +1,6 @@
 # Tab rail active state (presentation)
 
-Per `TAB-RAIL-INTEGRATION.md`:
+Index: [TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md) (batch 67). Per `TAB-RAIL-INTEGRATION.md`:
 
 | State | Treatment |
 | --- | --- |
