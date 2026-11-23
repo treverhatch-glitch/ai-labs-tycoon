@@ -1510,6 +1510,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekShadyGreySpendIncome = HqDisplayQueriesHud.LastWeekShadyGreySpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekShadyGreySpendIncome))
                     status = string.IsNullOrEmpty(status) ? lastWeekShadyGreySpendIncome : status + " · " + lastWeekShadyGreySpendIncome;
+                string lifetimeShadyGreySpendIncome = HqDisplayQueriesHud.LifetimeShadyGreySpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeShadyGreySpendIncome))
+                    status = string.IsNullOrEmpty(status) ? lifetimeShadyGreySpendIncome : status + " · " + lifetimeShadyGreySpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
