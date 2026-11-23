@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q503. World freeze in overlay index? DECIDED: extend `CampusSeasonalOverlayIndexPresentationSpec`
+
+- Options: (a) separate world overlay index; (b) second slot in seasonal index + pin alpha alias; (c) wire freeze UI in graphics PR.
+- Recommendation and choice: **(b)** — documents batch 22 freeze chrome beside Gauntlet; count → 2.
+- Why: `docs/NEXT.md` world map host shell (batch 36) needs freeze cross-ref; no map rules on cloud agent.
+
 ### Q502. Seasonal overlay index? DECIDED: `CampusSeasonalOverlayIndexPresentationSpec`
 
 - Options: (a) extend `GAUNTLET-STAGE-HUD` only; (b) index doc + count/fade spec; (c) implement overlay host in graphics PR.
