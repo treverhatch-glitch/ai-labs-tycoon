@@ -107,6 +107,8 @@ namespace AiLabs.Unity.Hq
             string thisWeekPowerChipPart = string.IsNullOrEmpty(thisWeekPowerChip) ? "" : " · " + thisWeekPowerChip;
             string lastWeekRoomHiring = HqDisplayQueriesHud.LastWeekRoomHiringSummaryLine(lab);
             string lastWeekRoomHiringPart = string.IsNullOrEmpty(lastWeekRoomHiring) ? "" : " · " + lastWeekRoomHiring;
+            string lastWeekCapitalGrey = HqDisplayQueriesHud.LastWeekCapitalGreySummaryLine(lab);
+            string lastWeekCapitalGreyPart = string.IsNullOrEmpty(lastWeekCapitalGrey) ? "" : " · " + lastWeekCapitalGrey;
             string thisWeekGreyNet = HqDisplayQueriesHud.ThisWeekGreyNetSummaryLine(lab);
             string thisWeekGreyNetPart = string.IsNullOrEmpty(thisWeekGreyNet) ? "" : " · " + thisWeekGreyNet;
             string lastWeekFinesTraining = HqDisplayQueriesHud.LastWeekFinesTrainingSummaryLine(lab);
@@ -157,7 +159,7 @@ namespace AiLabs.Unity.Hq
             string lastWeekHiringPatentPart = string.IsNullOrEmpty(lastWeekHiringPatent) ? "" : " · " + lastWeekHiringPatent;
             string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(lab);
             string thisWeekBuildPart = string.IsNullOrEmpty(thisWeekBuild) ? "" : " · " + thisWeekBuild;
-            _gpuSummary.text = "GPUs: " + rented + " rented, " + owned + " owned (" + gen.Name + ")" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart + lastWeekChipDevLandPart + thisWeekGrantsFinesPart + lifetimePowerFinesPart + lastWeekGreyLaunderPart + thisWeekConstructionGrantsPart + lastWeekTrainingRevenuePart + thisWeekSalariesGpuPart + lastWeekHardwarePowerPart + lifetimeTrainingLaunderPart + lastWeekChipSalesGrantsPart + lastWeekHiringGreyPart + thisWeekPowerChipPart + lastWeekPatentSitePart + thisWeekTrainingChipPart + lifetimeNetTrainingPart + lastWeekFinesTrainingPart + thisWeekGreyNetPart + lastWeekRoomHiringPart;
+            _gpuSummary.text = "GPUs: " + rented + " rented, " + owned + " owned (" + gen.Name + ")" + lastWeekLandPart + lastWeekSiteCapitalPart + lifetimeGrantsNetPart + thisWeekChipRevenuePart + lastWeekConstructionPatentPart + lastWeekHiringPatentPart + thisWeekBuildPart + thisWeekFinesPowerPart + lastWeekSalariesRoomPart + lifetimeRevenueChipPart + lastWeekGpuUpkeepRentPart + lastWeekRevenueNetPart + thisWeekNetTrainingPart + lastWeekChipDevLandPart + thisWeekGrantsFinesPart + lifetimePowerFinesPart + lastWeekGreyLaunderPart + thisWeekConstructionGrantsPart + lastWeekTrainingRevenuePart + thisWeekSalariesGpuPart + lastWeekHardwarePowerPart + lifetimeTrainingLaunderPart + lastWeekChipSalesGrantsPart + lastWeekHiringGreyPart + thisWeekPowerChipPart + lastWeekPatentSitePart + thisWeekTrainingChipPart + lifetimeNetTrainingPart + lastWeekFinesTrainingPart + thisWeekGreyNetPart + lastWeekRoomHiringPart + lastWeekCapitalGreyPart;
 
             for (int i = _roleList.childCount - 1; i >= 0; i--)
                 Destroy(_roleList.GetChild(i).gameObject);
