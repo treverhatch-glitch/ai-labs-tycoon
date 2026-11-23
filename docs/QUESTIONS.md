@@ -977,9 +977,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only.
 
-### Q2656–Q2725. World-map economy data bar? DECIDED: test-only (batch 43, WIP — no push)
+### Q2656–Q2725. World-map economy data bar? DECIDED: test-only (batch 43, commit-ready — no push)
 
-- **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only.
+- **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only; gates **3329/0** / **3327/0** WT.
 
 ### Q2726–Q2795. Shady/china economy bar? TBD: test-only (batch 44, queued)
 

@@ -149,7 +149,7 @@ and says why in the commit message.
 - ~~**Hatch model-sales/chip batch 40**~~ **pushed @ `4fdf674`** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); gate **3119/0** / **3117/0** WT; parent `f4a7e4f` (+ `95bf36d` test, `4fdf674` docs).
 - ~~**Hatch acquisition/listing batch 41**~~ **pushed @ `dcf79d8`** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); gate **3189/0** / **3187/0** WT; parent `4fdf674` (+ `1507d5b` test, `dcf79d8` docs).
 - ~~**Hatch rival/economy batch 42**~~ **pushed @ `38f5385`** — Q2586–Q2655 (`HatchRivalEconomyBarLaterTests`, **70**); gate **3259/0** / **3257/0** WT; parent `dcf79d8` (+ `1e58224` test, `38f5385` docs).
-- **Hatch world-map economy batch 43 (WIP — no push)** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); blocs/sites/attention/heatwave; push ≥**13:21 UTC** + GO.
+- **Hatch world-map economy batch 43 (commit-ready — no push)** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); gate **3329/0** / **3327/0** WT; parent `38f5385` (+ `d01f62b` test, docs @ tip); push ≥**13:21 UTC** + GO.
 - **Hatch shady/china batch 44 (queued)** — Q2726–Q2795 (`HatchShadyChinaBarLaterTests2`, **70**); bible refill; schema **29** only.
 - **Refill:** keep **70-test** hatch bars through bible `Rules: later` + rival/chip/economy forks until Opus bar catches up; schema **29** only (**30** SolvencyHold parked).
 
