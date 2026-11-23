@@ -99,7 +99,14 @@ namespace AiLabs.Unity.Hq
                 empty.color = new Color(0.75f, 0.8f, 0.85f);
             }
 
-            _status.text = string.IsNullOrEmpty(_host.StatusMessage)
+            string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekLand))
+                        _status.text += " · " + lastWeekLand;
+                    string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
+                    if (!string.IsNullOrEmpty(weeklyCompute))
+                        _status.text += " · " + weeklyCompute;
+
+                        _status.text = string.IsNullOrEmpty(_host.StatusMessage)
                 ? "Start a run after researching the line."
                 : _host.StatusMessage;
         }
