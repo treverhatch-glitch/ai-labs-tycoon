@@ -462,7 +462,22 @@ public static class HardeningInvariants
             Assert.Equal(1, lab.BaggagePicked);
     }
 
-    public static void AssertAllLabs(GameConfig c, GameState state, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false, bool eraLBounds = false, bool eraMBounds = false, bool eraNBounds = false, bool eraOBounds = false)
+    public static void AssertEraPStateBounds(GameConfig c, LabState lab)
+    {
+        if (c.MarginCall.Enabled != 0)
+            Assert.True(lab.MarginCallLeft >= 0);
+        if (c.RungSixCrisis.Enabled != 0)
+        {
+            Assert.True(lab.RungSixArcUntil >= 0);
+            Assert.True(lab.RungSixCooldownUntil >= 0);
+        }
+        if (c.ScenarioGoals.Enabled != 0)
+            Assert.InRange(lab.ScenarioGoalResult, -1, 1);
+        if (c.LawTarget.Enabled != 0 && !string.IsNullOrEmpty(lab.LawTarget))
+            Assert.True(lab.LawTarget == LawShaping.Strict || lab.LawTarget == LawShaping.Loose);
+    }
+
+    public static void AssertAllLabs(GameConfig c, GameState state, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false, bool eraLBounds = false, bool eraMBounds = false, bool eraNBounds = false, bool eraOBounds = false, bool eraPBounds = false)
     {
         Assert.Empty(SaveGame.Problems(c, state));
         AssertBooksBalance(c, state);
@@ -485,15 +500,16 @@ public static class HardeningInvariants
             if (eraMBounds) AssertEraMStateBounds(c, lab);
             if (eraNBounds) AssertEraNStateBounds(c, lab);
             if (eraOBounds) AssertEraOStateBounds(c, lab);
+            if (eraPBounds) AssertEraPStateBounds(c, lab);
         }
     }
 
-    public static void StepWeeksChecking(Simulation sim, int weeks, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false, bool eraLBounds = false, bool eraMBounds = false, bool eraNBounds = false, bool eraOBounds = false)
+    public static void StepWeeksChecking(Simulation sim, int weeks, bool eraBounds, bool eraBBounds = false, bool eraCBounds = false, bool eraDBounds = false, bool eraEBounds = false, bool eraFBounds = false, bool eraGBounds = false, bool eraHBounds = false, bool eraIBounds = false, bool eraJBounds = false, bool eraKBounds = false, bool eraLBounds = false, bool eraMBounds = false, bool eraNBounds = false, bool eraOBounds = false, bool eraPBounds = false)
     {
         for (int w = 0; w < weeks; w++)
         {
             sim.Step();
-            AssertAllLabs(sim.Config, sim.State, eraBounds, eraBBounds, eraCBounds, eraDBounds, eraEBounds, eraFBounds, eraGBounds, eraHBounds, eraIBounds, eraJBounds, eraKBounds, eraLBounds, eraMBounds, eraNBounds, eraOBounds);
+            AssertAllLabs(sim.Config, sim.State, eraBounds, eraBBounds, eraCBounds, eraDBounds, eraEBounds, eraFBounds, eraGBounds, eraHBounds, eraIBounds, eraJBounds, eraKBounds, eraLBounds, eraMBounds, eraNBounds, eraOBounds, eraPBounds);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 143;
+        public const int CurrentSchema = 148;
 
         public int Schema;
         public string ConfigVersion;
@@ -621,6 +621,12 @@ namespace AiLabs.Rules.State
         /// <summary>Scenario baggage id and picked flag (schema 143).</summary>
         public string BaggageId = "";
         public int BaggagePicked;
+        public int MarginCallLeft;
+        public int RungSixArcUntil;
+        public int RungSixCooldownUntil;
+        public string ScenarioId = "";
+        public int ScenarioGoalResult;
+        public string LawTarget = "";
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1158,6 +1164,12 @@ namespace AiLabs.Rules.State
             s.Int("takeoffCooldownUntil", ref TakeoffCooldownUntil);
             s.Str("baggageId", ref BaggageId);
             s.Int("baggagePicked", ref BaggagePicked);
+            s.Int("marginCallLeft", ref MarginCallLeft);
+            s.Int("rungSixArcUntil", ref RungSixArcUntil);
+            s.Int("rungSixCooldownUntil", ref RungSixCooldownUntil);
+            s.Str("scenarioId", ref ScenarioId);
+            s.Int("scenarioGoalResult", ref ScenarioGoalResult);
+            s.Str("lawTarget", ref LawTarget);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

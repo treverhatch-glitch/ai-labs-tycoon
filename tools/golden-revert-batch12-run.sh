@@ -7,14 +7,16 @@ LOCK="${TMPDIR:-/tmp}/b12-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-(cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
+(cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[125]=f4e8bf370f79045e7e3a7b10b7e4a0eed3259d0b2adcd049ccb9f1aa3b0be22d
-GOLDEN[126]=5eda5fcb7b5fb9c707ed4dddf5f056977259773d65129254e236cf5fc78a17e0
-GOLDEN[127]=a389e118dbe74a3439cf424cb7dfaaba87661c071ad296bdc4a7016511e460fe
-GOLDEN[128]=ca1f2d9fc816fc0c971f8add3179894fd3984885123994689488dc34d01a816a
-GOLDEN[129]=3e3abb800c730f59b837478001dad49365a092ddf969af3016a0371071286770
+GOLDEN[125]=7bca2640577f0c9954f22149846a9b3b7794fd5c8870c1dc11652ebee8dacef9
+GOLDEN[126]=eecc0db327e7ea3eaee3a5cc61cdb6aa20ab21e5379ab518f0a019a17ad66af5
+GOLDEN[127]=c832b8661a7b954ca83a3fb3307112ca82944377cb88b404224f3df3661f9ef9
+GOLDEN[128]=0ccef113dd251ac8058f00835bc31149dfb1659ca4e0cde1ae39349e94b7c370
+GOLDEN[129]=65674cd8c06f2780cb32d4745a62b6aecb2de0654a7f1634d0a5561f6d870855
 
 PREV=$((N - 1))
 BK="/tmp/b12-rev-bak-$N"
@@ -31,7 +33,7 @@ restore() {
     Rules/Systems/TrainingSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
-  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) >/dev/null || true
+  (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) >/dev/null || true
 }
 trap restore EXIT
 
@@ -100,6 +102,9 @@ sed -i 's|model.CapLuck += src;||' Rules/Systems/TrainingSystem.cs
 # shellcheck source=golden-revert-disable-batch15-tip.sh
 source "$REPO/tools/golden-revert-disable-batch15-tip.sh"
 disable_batch15_at_tip
+# shellcheck source=golden-revert-disable-batch16-tip.sh
+source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
+disable_batch16_at_tip
 
 if [ "$N" -le 126 ]; then
   sed -i 's|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(lift, HumanQueue.LiftKeep(c, lab) \* ToolPolicy.LiftBonus(c, m) / 1000));|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(Lift(c, m.AgentLevel), MathI.Permille));|' Rules/Systems/Agency.cs
@@ -111,10 +116,9 @@ fi
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" tools/SimTests/SaveAndDeterminismTests.cs
-export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 cd tools/SimTests
-dotnet build -v q -nologo
-OUT=$(dotnet test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
+"$DOTNET" build -v q -nologo
+OUT=$("$DOTNET" test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
 echo "$OUT" | grep -E "Passed!|Failed!|New digest" | head -3
 if echo "$OUT" | grep -q "Passed!"; then
   echo "schema $N revert: Passed!"

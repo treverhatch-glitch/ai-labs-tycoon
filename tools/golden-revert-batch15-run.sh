@@ -8,14 +8,16 @@ exec 9>"$LOCK"
 flock -x -w 600 9
 # Pre-restore only after batch 15 is committed on this branch (restore-golden-tip checks out HEAD).
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-(cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
+(cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[139]=77f1bde8cae679206d4bb600086883d145c7616a1115975902bacdc65493ecb3
-GOLDEN[140]=65be48f66ab21d61f04be7ad153f56a03d82dd566effb41380f36f05f97412eb
-GOLDEN[141]=f6cf0bd5991e558d7380ea874050aa5c588766624701c2d08222fca98be420e0
-GOLDEN[142]=40e73e21752ded9a383ab197c4be0cca2cc70ea1f19f35e5367de212eb33fa21
-GOLDEN[143]=a2d0d0989bae77a01891a37609ae3f511a5dcc22e9d4bb546889461bfddb0e00
+GOLDEN[139]=1f0682f0aa551798ecdef465997fd0755849ae5f5e92b522f438ec00441cf011
+GOLDEN[140]=e04d8b4ee7ac4b0b3602f9443b1cb104bf1f67cbfec8e7103b7f459935bd931d
+GOLDEN[141]=3b9716d406562c7392bdf4e4f9322b11fd1f7bf8a3982c44847a399a19d3c81e
+GOLDEN[142]=2f9501ed2da362e40879ba8431c8b5c8331e4d3add317ed20f65011dfc3cf4a4
+GOLDEN[143]=46cee4075eb2581aa3e7789c9bf8232c1677afca02764a16c1cfd1abc25c0dfc
 
 PREV=$((N - 1))
 BK="/tmp/b15-rev-bak-$N"
@@ -27,7 +29,7 @@ restore() {
   for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EndingSystem.cs Rules/Systems/EraRules.cs Rules/Systems/OfficeEvents.cs Rules/Systems/EraSystem.cs Rules/Systems/TrustSystem.cs Rules/Sim/WorldSetup.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
-  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+  (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 }
 trap restore EXIT
 
@@ -52,12 +54,15 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 [ "$N" -le 140 ] && { strip_sync 's\.Str\("lawShapeEra"'; strip_sync 's\.Int\("lawShape'; disable_cfg lawShaping; sed -i '/lab.Id == state.PlayerLabId)/,+1d' Rules/Systems/EraRules.cs; }
 [ "$N" -le 139 ] && { strip_sync 's\.Int\("campaignDeadlineTick"'; disable_cfg campaignDeadline; comment_hook 'CampaignDeadline.RunWeek'; }
 
+# shellcheck source=golden-revert-disable-batch16-tip.sh
+source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
+disable_batch16_at_tip
+
 EXP="${GOLDEN[$N]}"
-export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"
 cd tools/SimTests
-dotnet build -v q -nologo
-OUT=$(dotnet test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
+"$DOTNET" build -v q -nologo
+OUT=$("$DOTNET" test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
 echo "$OUT" | grep -E "Passed!|Failed!|New digest" | head -3
 if echo "$OUT" | grep -q "Passed!"; then
   echo "schema $N revert: Passed!"

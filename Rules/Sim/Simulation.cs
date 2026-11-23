@@ -26,6 +26,7 @@ namespace AiLabs.Rules.Sim
         public string HomeBlocId = "";
         /// <summary>Scenario baggage id for a new game (schema 143); empty for none.</summary>
         public string BaggageId = "";
+        public string ScenarioId = "";
     }
 
     /// <summary>
@@ -241,6 +242,8 @@ namespace AiLabs.Rules.Sim
                     ResearchLeads.RunWeek(c, state, state.Labs[i]);
                     OfficeEvents.RunWeek(c, state, state.Labs[i]);
                     TakeoffCrisis.RunWeek(c, state, state.Labs[i]);
+                    RungSixCrisis.RunWeek(c, state, state.Labs[i]);
+                    ScenarioGoals.RunWeek(c, state, state.Labs[i]);
                     CampaignDeadline.RunWeek(c, state, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);

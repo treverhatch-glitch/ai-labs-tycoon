@@ -45,6 +45,7 @@ public class OfficeEventTests
             {
                 c.Office.Events = events.ToList();
                 c.TakeoffCrisis.Enabled = 0;
+                c.RungSixCrisis.Enabled = 0;
             }
             if (tweak != null) tweak(c);
         }), options));

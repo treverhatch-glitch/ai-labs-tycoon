@@ -48,7 +48,7 @@ public class EraOBatchFifteenTogetherHardeningTests
         Game g = Lab();
         GameConfig c = g.C;
         int before = EraRules.ReleaseBar(c, g.Tick);
-        g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Strict));
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
         string mid = g.Sim.Save();
         Game after = new Game(Simulation.Load(c, mid));
         string nextEra = c.Eras[1].Id;

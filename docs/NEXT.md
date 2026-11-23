@@ -391,14 +391,16 @@ and says why in the commit message.
 208. **Takeoff crisis.** ~~Done (local)~~: `RespondTakeoff`, schema 142, `TakeoffCrisisTests` (Q465).
 209. **Scenario baggage.** ~~Done (local)~~: `PickScenarioBaggage`, schema 143, `ScenarioBaggageTests` (Q466).
 210. **Batch fifteen news, chat and combination rules.** ~~Done (local)~~: `BatchFifteenNewsChatTests`, `BatchFifteenTogetherTests` (Q467).
-211. **Margin call on loans (bible ch. 9 funding ladder tail).** Draft batch 16: covenant checks on GPU collateral; see store `batch-sixteen-queue.md` (Q468).
-212. **Hearing share-price effect (bible ch. 12 hearings tail).** Draft batch 16: float labs and ticker permille after hearings (Q469).
-213. **Rung-6 crisis or site shutdown (bible ch. 10 ladder tail).** Draft batch 16: follow-on to takeoff/escape office arc (Q470).
-214. **Per-scenario goals (bible ch. 15 tail).** Draft batch 16: scenario config goals + deadline checks (Q471).
-215. **Targeted lobbying law (bible ch. 12 lobbying tail).** Draft batch 16: pick law id before spend; pairs with law shaping (Q472).
-216. **Batch sixteen news, chat and combination rules.** Planned with batch 16 systems (Q473).
+211. **Margin call on loans (bible ch. 9 funding ladder tail).** ~~Done (local)~~: `MarginCall`, `SatisfyMarginCall`, schema 144 (Q468).
+212. **Hearing share-price effect (bible ch. 12 hearings tail).** ~~Done (local)~~: `HearingSharePrice`, schema 145 (Q469).
+213. **Rung-6 crisis or site shutdown (bible ch. 10 ladder tail).** ~~Done (local)~~: `RungSixCrisis`, `RespondRungSix`, schema 146 (Q470).
+214. **Per-scenario goals (bible ch. 15 tail).** ~~Done (local)~~: `ScenarioGoals`, schema 147 (Q471).
+215. **Targeted lobbying law (bible ch. 12 lobbying tail).** ~~Done (local)~~: `SetLawTarget`, schema 148 (Q472).
+216. **Batch sixteen news, chat and combination rules.** ~~Done (local)~~: `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests` (Q473).
 
 ## Rules: later
+
+- **P13 hardening rebuild (LOCAL @ `6b59651`).** Post-era16 merge + EraP/O hardening: full SimTests **4050/4050**, hardening filter **410/0** (lost tip had **446/0** / **4086** — ~36 tests from phase0/c646261 not recovered after pod loss). **NO PUSH** until 4th-lane GO. Coordinator: accept **410/0** or re-implement gap (exit-debt bridge, player-only refuses, extra EraO limits/fuzz). Store: `internal/p13-hardening-count-gap.md`.
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

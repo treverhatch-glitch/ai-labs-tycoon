@@ -113,7 +113,7 @@ public class ScenarioTests
     {
         GameConfig c = TestData.Config();
         Simulation sim = Scenarios.Start(c, "heirs-gambit", 1);
-        Simulation plain = Simulation.NewGame(c, new NewGameOptions { Seed = 1, StartEraId = "chat-boom", FounderId = "heir", StyleId = "shotgun", HomeBlocId = "gulf", LabName = "Old Money Labs", Leader = "Cordelia", FamilyName = "Money" });
+        Simulation plain = Simulation.NewGame(c, new NewGameOptions { Seed = 1, StartEraId = "chat-boom", FounderId = "heir", StyleId = "shotgun", HomeBlocId = "gulf", LabName = "Old Money Labs", Leader = "Cordelia", FamilyName = "Money", ScenarioId = "heirs-gambit" });
         Assert.Equal(plain.Digest(), sim.Digest());
         Assert.True(sim.Player.Cash > Simulation.NewGame(c, new NewGameOptions { Seed = 1, StartEraId = "chat-boom" }).Player.Cash, "the heir has the money");
     }

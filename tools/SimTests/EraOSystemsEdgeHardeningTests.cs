@@ -46,7 +46,7 @@ public class EraOSystemsEdgeHardeningTests
     public void Law_shape_mid_save_load_matches_pending()
     {
         Game g = Lab();
-        g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Strict));
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
         string mid = g.Sim.Save();
         g.Weeks(3);
         Simulation back = Simulation.Load(g.C, mid);
@@ -92,7 +92,7 @@ public class EraOSystemsEdgeHardeningTests
     {
         Game g = Lab(122);
         g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 40));
-        g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Loose));
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
         g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
         string current = g.Sim.Save();
         for (int schema = 139; schema <= GameState.CurrentSchema; schema++)

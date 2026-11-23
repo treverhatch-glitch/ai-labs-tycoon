@@ -25,8 +25,8 @@ public class EraOBatchFifteenNewsChatHardeningTests
     {
         Game g = Game.Solo(130, c => { c.CampaignDeadline.MinEra = 0; c.Office.ChancePermille = 0; }).WithStarterLab();
         GameConfig c = TestData.Config();
-        Assert.Equal(391, c.News.Headlines.Count);
-        Assert.Equal(346, c.Chat.Lines.Count);
+        Assert.Equal(398, c.News.Headlines.Count);
+        Assert.Equal(352, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());
@@ -47,7 +47,7 @@ public class EraOBatchFifteenNewsChatHardeningTests
             c.Lobbying.BackfirePermille = 0;
             c.Lobbying.BackfireFloorPermille = 0;
         }).WithStarterLab();
-        g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Strict));
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
         string mid = g.Sim.Save();
         string lab = g.Me.Name.ToUpperInvariant();
         for (int schema = 139; schema <= GameState.CurrentSchema; schema++)

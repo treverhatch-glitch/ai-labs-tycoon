@@ -36,7 +36,8 @@ public class EraOSystemsLimitsAndMidSaveHardeningTests
     public void Law_shape_refuses_while_cooling()
     {
         Game g = Lab();
-        g.Do(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Loose));
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Strict));
         g.Refused(Command.ShapeLaw(g.Id, g.Me.HomeBlocId, LawShaping.Strict), CommandError.LobbyCooling);
     }
 

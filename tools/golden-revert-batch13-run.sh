@@ -10,11 +10,11 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[130]=bd7d126c0272ddff08c47bc5523ecf3e8f520678de85f5f8e6c1649de05c268a
-GOLDEN[131]=a79abfb143b30c93dc25e1ab8a7e3ae5ac67a1882603e6afb225e0340756d8af
-GOLDEN[132]=78602429454c12585dab5f4bbf7f542b7561bc3fbf212590eb35c36ce462ecc8
-GOLDEN[133]=67b5ab510bed62116c80ff1a73f68a497c337b50d2cee0f9397bd17fbeb75c70
-GOLDEN[134]=d8271ddd13cbb494082a00656e93c5ebac00aa7949181c78730d910660c54662
+GOLDEN[130]=79c884a443e5afcdc92da1aef7a8beb93fb5f9c3ec071dcc438661b8718ceef3
+GOLDEN[131]=e0034a43e1de579d73cb45fb40e8a9df84a8627100d368abb3e4ccae59de4726
+GOLDEN[132]=552209174d4760ff33788abb6b05fb50100d73876cc24dd6ebfc4b40d7ab66fe
+GOLDEN[133]=e3bd00836d106cbcce57d0407fbcbb93d5e6bb84cdcbf80ca146a1a3529d157b
+GOLDEN[134]=a85a40b134fb86dac4f0d45b9f215ec40e69f67b6d2900534c21f09ccebd0b6d
 
 PREV=$((N - 1))
 BK="/tmp/b13-rev-bak-$N"
@@ -85,6 +85,9 @@ sed -i 's|model.CapLuck += src;||' Rules/Systems/TrainingSystem.cs
 # shellcheck source=golden-revert-disable-batch15-tip.sh
 source "$REPO/tools/golden-revert-disable-batch15-tip.sh"
 disable_batch15_at_tip
+# shellcheck source=golden-revert-disable-batch16-tip.sh
+source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
+disable_batch16_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"

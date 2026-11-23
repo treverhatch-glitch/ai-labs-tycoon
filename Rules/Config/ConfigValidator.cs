@@ -177,6 +177,11 @@ namespace AiLabs.Rules.Config
             LawShapingProblems(p, c);
             TakeoffCrisisProblems(p, c);
             ScenarioBaggageProblems(p, c);
+            MarginCallProblems(p, c);
+            HearingSharePriceProblems(p, c);
+            RungSixCrisisProblems(p, c);
+            ScenarioGoalsProblems(p, c);
+            LawTargetProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1977,6 +1982,69 @@ namespace AiLabs.Rules.Config
             UniqueIds(p, "scenarioBaggage.items", k.Items);
             for (int i = 0; i < k.Items.Count; i++)
                 if (string.IsNullOrEmpty(k.Items[i].Kind)) p.Add("scenarioBaggage.items[" + i + "].kind is empty");
+        }
+
+        static void MarginCallProblems(List<string> p, GameConfig c)
+        {
+            MarginCallConfig k = c.MarginCall;
+            if (k == null) { p.Add("marginCall is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginCall.enabled must be 0 or 1");
+            if (k.CovenantPermille < 1 || k.CovenantPermille > MathI.Permille) p.Add("marginCall.covenantPermille must be from 1 to 1000");
+            if (k.CureWeeks < 1) p.Add("marginCall.cureWeeks must be at least 1");
+            if (k.PayPermille < 0 || k.PayPermille > MathI.Permille) p.Add("marginCall.payPermille must be from 0 to 1000");
+        }
+
+        static void HearingSharePriceProblems(List<string> p, GameConfig c)
+        {
+            HearingSharePriceConfig k = c.HearingSharePrice;
+            if (k == null) { p.Add("hearingSharePrice is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingSharePrice.enabled must be 0 or 1");
+            if (k.MinFloatPpm < 0) p.Add("hearingSharePrice.minFloatPpm not negative");
+        }
+
+        static void RungSixCrisisProblems(List<string> p, GameConfig c)
+        {
+            RungSixCrisisConfig k = c.RungSixCrisis;
+            if (k == null) { p.Add("rungSixCrisis is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixCrisis.enabled must be 0 or 1");
+            if (k.CorruptionMin < 0) p.Add("rungSixCrisis.corruptionMin not negative");
+            bool has = false;
+            for (int i = 0; i < c.Office.Events.Count; i++)
+            {
+                OfficeTrigger t = c.Office.Events[i].Trigger;
+                if (t == OfficeTrigger.RungSix || t == OfficeTrigger.ShutdownCompute) has = true;
+            }
+            if (k.Enabled > 0 && !has) p.Add("rungSixCrisis needs an office event with trigger RungSix or ShutdownCompute");
+        }
+
+        static void ScenarioGoalsProblems(List<string> p, GameConfig c)
+        {
+            ScenarioGoalsConfig k = c.ScenarioGoals;
+            if (k == null) { p.Add("scenarioGoals is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoals.enabled must be 0 or 1");
+            UniqueIds(p, "scenarioGoals.goals", k.Goals);
+            for (int i = 0; i < k.Goals.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(k.Goals[i].FailEndingId) && c.Endings.Def(k.Goals[i].FailEndingId) == null)
+                    p.Add("scenarioGoals.goals \"" + k.Goals[i].IdValue + "\" failEndingId unknown");
+                if (!string.IsNullOrEmpty(k.Goals[i].WinEndingId) && c.Endings.Def(k.Goals[i].WinEndingId) == null)
+                    p.Add("scenarioGoals.goals \"" + k.Goals[i].IdValue + "\" winEndingId unknown");
+            }
+            for (int i = 0; i < c.Scenarios.Scenarios.Count; i++)
+            {
+                ScenarioConfig sc = c.Scenarios.Scenarios[i];
+                if (string.IsNullOrEmpty(sc.GoalId)) continue;
+                if (k.Goal(sc.GoalId) == null) p.Add("scenarios \"" + sc.IdValue + "\" goalId \"" + sc.GoalId + "\" is unknown");
+                if (sc.GoalDeadlinePermille < 0 || sc.GoalDeadlinePermille > MathI.Permille)
+                    p.Add("scenarios \"" + sc.IdValue + "\" goalDeadlinePermille must be from 0 to 1000");
+            }
+        }
+
+        static void LawTargetProblems(List<string> p, GameConfig c)
+        {
+            LawTargetConfig k = c.LawTarget;
+            if (k == null) { p.Add("lawTarget is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTarget.enabled must be 0 or 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

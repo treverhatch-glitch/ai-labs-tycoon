@@ -29,6 +29,7 @@ public class LawShapingTests
     {
         Game g = Lab();
         int baseBar = EraRules.ReleaseBar(g.C, g.Tick);
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Strict));
         g.Do(Command.ShapeLaw(g.Id, Home(g), LawShaping.Strict));
         Assert.NotEqual(0, g.Me.LawShapePending);
         string eraId = EraSystem.AtTick(g.C, g.Tick).Id;
@@ -40,6 +41,7 @@ public class LawShapingTests
     public void Cooling_down_blocks_second_shape()
     {
         Game g = Lab();
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Loose));
         g.Do(Command.ShapeLaw(g.Id, Home(g), LawShaping.Loose));
         g.Refused(Command.ShapeLaw(g.Id, Home(g), LawShaping.Loose), CommandError.LobbyCooling);
     }
@@ -48,6 +50,7 @@ public class LawShapingTests
     public void Save_at_139_has_no_law_shape()
     {
         Game g = Lab();
+        g.Do(Command.SetLawTarget(g.Id, LawShaping.Strict));
         g.Do(Command.ShapeLaw(g.Id, Home(g), LawShaping.Strict));
         Simulation older = Simulation.Load(g.C, SaveSchemaPretend.At(g.C, 139, g.Sim.Save()));
         Assert.Equal(0, older.Player.LawShapePending);

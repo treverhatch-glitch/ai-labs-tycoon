@@ -10,10 +10,10 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[135]=23718345285dbcbcc19df91bf45eb8ea795f18b7b4d7d52e0f2957189f735527
-GOLDEN[136]=cb70363290193e36a6d228450e9b78aec229aec774a9aa638aa7d601cc6adec9
-GOLDEN[137]=ef5d70187a3d685f8e0b6f9fe9d3508f172636b9b18dd6e6e397105d89e66f32
-GOLDEN[138]=553fc69f1cc1cab4c5a055767a36889d7b7f8de3ee5d32a16b54aa2fefe23d99
+GOLDEN[135]=6e2a3e7d979e90c9c25a0d42656787acbfd20d14eb4c20106fa2d10c97901a4d
+GOLDEN[136]=11a5a356764ccd01249444e8f495115204de549ab6ab02bb61b57bed3ee6d9c4
+GOLDEN[137]=4d258e3b753cf07c4336218808204328725cdcfad601e70742f3c83a317897ea
+GOLDEN[138]=9d41ce1fff6f9b26f1055ce87bb9acd2df6883228fd5ca6e232dc664685c99d2
 
 PREV=$((N - 1))
 BK="/tmp/b14-rev-bak-$N"
@@ -54,6 +54,9 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 # shellcheck source=golden-revert-disable-batch15-tip.sh
 source "$REPO/tools/golden-revert-disable-batch15-tip.sh"
 disable_batch15_at_tip
+# shellcheck source=golden-revert-disable-batch16-tip.sh
+source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
+disable_batch16_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
