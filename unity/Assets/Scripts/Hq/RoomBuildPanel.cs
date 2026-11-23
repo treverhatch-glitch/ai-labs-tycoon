@@ -15,6 +15,7 @@ namespace AiLabs.Unity.Hq
         SimulationHost _host;
         string _selectedTypeId = "research-lab";
         Text _status;
+        Text _buildSummary;
         Text _selection;
         readonly List<string> _openTypes = new List<string>();
 
@@ -43,7 +44,9 @@ namespace AiLabs.Unity.Hq
             if (_status != null && !string.IsNullOrEmpty(_host.StatusMessage))
                 _status.text = _host.StatusMessage;
             else if (_status != null && string.IsNullOrEmpty(_host.StatusMessage))
-                _status.text = "Drag on the lot to place a room.";
+                _buildSummary.text = "Build"
+                                 + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);
+            _status.text = "Drag on the lot to place a room.";
         }
 
         void BuildUi(Transform root)
