@@ -1145,5 +1145,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("8,200").Or.Contain("3,900"));
         }
 
+        [Test]
+        public void last_week_chip_training_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.ChipSales = 7_800;
+            lab.Ledger.LastWeek.Training = -11_000;
+            string line = HqDisplayQueriesHud.LastWeekChipTrainingSummaryLine(lab);
+            Assert.That(line, Does.Contain("7,800").Or.Contain("11,000"));
+        }
+
     }
 }
