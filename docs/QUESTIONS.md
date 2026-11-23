@@ -941,7 +941,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
 
-### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, local)
+### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, pushed with `bae467b`)
 
 - **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
 
