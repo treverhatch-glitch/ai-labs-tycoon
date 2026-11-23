@@ -45,6 +45,8 @@ PA18 = '            string lastWeekFinesCapitalPart = string.IsNullOrEmpty(lastW
 
 def git_commit(msg, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
@@ -133,7 +135,8 @@ def run_sprint(cycles, part_anchor, tail_token):
 
 
 subprocess.check_call(["git", "add", str(UNITY / "Scripts/Hq/HqDisplayQueriesHud.cs")], cwd=ROOT)
-subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint17-18 twelve ledger summary formatters"], cwd=ROOT)
+if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+    subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint17-18 twelve ledger summary formatters"], cwd=ROOT)
 run_sprint(SPRINT17, PA17, "thisWeekNetChipPart")
 run_sprint(SPRINT18, PA18, "lastWeekFinesCapitalPart")
 subprocess.check_call(["dotnet", "test", "tools/SimTests/SimTests.csproj", "--filter", "FullyQualifiedName~golden", "-v", "q"], cwd=ROOT)

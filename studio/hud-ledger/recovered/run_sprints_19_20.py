@@ -45,6 +45,8 @@ PA20 = '            string lastWeekPowerNetPart = string.IsNullOrEmpty(lastWeekP
 
 def git_commit(msg, paths):
     subprocess.check_call(["git", "add", *map(str, paths)], cwd=ROOT)
+    if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode == 0:
+        return
     subprocess.check_call(["git", "commit", "-m", msg], cwd=ROOT)
 
 
@@ -153,9 +155,11 @@ def run_sprint(cycles, part_anchor, tail_token):
             )
 
 
-subprocess.check_call(["python3", "/tmp/gen_formatters_19_20.py"])
+GEN = Path(__file__).resolve().parent / "gen_formatters_19_20.py"
+subprocess.check_call(["python3", str(GEN)])
 subprocess.check_call(["git", "add", str(UNITY / "Scripts/Hq/HqDisplayQueriesHud.cs")], cwd=ROOT)
-subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint19-20 twelve ledger summary formatters"], cwd=ROOT)
+if subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=ROOT).returncode != 0:
+    subprocess.check_call(["git", "commit", "-m", "feat(hud): sprint19-20 twelve ledger summary formatters"], cwd=ROOT)
 run_sprint(SPRINT19, PA19, "thisWeekChipFinesPart")
 run_sprint(SPRINT20, PA20, "lastWeekPowerNetPart")
 subprocess.check_call(

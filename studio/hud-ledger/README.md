@@ -17,6 +17,7 @@ Unity composite HUD / `SpendIncome` work is rebuilt on **`cursor/unity-hud-backu
 | `run_batch_01.sh` | Batch 01: persisted toolchain only (batch 01 push). |
 | `fix_staff_mascot_tail_chain.py` | Rebuild `*Part` concat tails in StaffGpuPanel / Mascot strip. |
 | `run_batch03.sh` | Batch 03: tail fix, sprint replay 4–12, golden test. |
+| `run_batch04.sh` | Batch 04: sprint replay **13–20** (+ `gen_formatters_19_20.py`). |
 | `bootstrap_and_run_batch02.py` | Genesis HUD from transcript merge + sprint replay driver. |
 | `run_batch02_resume.sh` | Resume sprints 3–12 after genesis (safe empty commits). |
 | **Batch 02 tip** | `3a05178` — genesis + sprint 3–6 partial; golden OK. |
