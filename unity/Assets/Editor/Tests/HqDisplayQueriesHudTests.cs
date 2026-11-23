@@ -2995,5 +2995,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("3,000").Or.Contain("8,700"));
         }
 
+        [Test]
+        public void lifetime_net_room_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Net = 55_000;
+            lab.Ledger.Lifetime.RoomUpkeep = -55_000;
+            string line = HqDisplayQueriesHud.LifetimeNetRoomSummaryLine(lab);
+            Assert.That(line, Does.Contain("55,000").Or.Contain("55,000"));
+        }
+
     }
 }
