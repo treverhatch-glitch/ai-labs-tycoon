@@ -25,6 +25,8 @@ namespace AiLabs.Unity.Hq
             var sim = _host.Simulation;
             string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(sim.Player);
             string lastWeekLandPart = string.IsNullOrEmpty(lastWeekLand) ? "" : " · " + lastWeekLand;
+            string lastWeekConstructionPatent = HqDisplayQueriesHud.LastWeekConstructionPatentSummaryLine(sim.Player);
+            string lastWeekConstructionPatentPart = string.IsNullOrEmpty(lastWeekConstructionPatent) ? "" : " · " + lastWeekConstructionPatent;
             string lastWeekHiringPatent = HqDisplayQueriesHud.LastWeekHiringPatentSummaryLine(sim.Player);
             string lastWeekHiringPatentPart = string.IsNullOrEmpty(lastWeekHiringPatent) ? "" : " · " + lastWeekHiringPatent;
             string thisWeekBuild = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(sim.Player);
