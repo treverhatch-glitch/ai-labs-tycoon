@@ -968,6 +968,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeSiteTraining = HqDisplayQueriesHud.LifetimeSiteTrainingSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeSiteTraining))
                         _summary.text += " · " + lifetimeSiteTraining;
+                    string lastWeekGpuGrant = HqDisplayQueriesHud.LastWeekGpuGrantSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekGpuGrant))
+                        _summary.text += " · " + lastWeekGpuGrant;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
