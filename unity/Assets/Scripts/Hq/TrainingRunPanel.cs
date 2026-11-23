@@ -659,6 +659,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeRevenueNet = HqDisplayQueriesHud.LifetimeRevenueNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeRevenueNet))
                         _summary.text += " · " + lifetimeRevenueNet;
+                    string lastWeekGrantPatent = HqDisplayQueriesHud.LastWeekGrantPatentSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekGrantPatent))
+                        _summary.text += " · " + lastWeekGrantPatent;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
