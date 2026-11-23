@@ -404,6 +404,12 @@ and says why in the commit message.
 221. **Shady jobs under permit freeze.** ~~Done (local)~~: `ShadyFreezeAudit`, schema 153 (Q478).
 222. **Batch seventeen news, chat and combination rules.** ~~Done (local)~~: `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests` (Q479).
 
+### Era batch 18 (draft — not started)
+
+223. **Specialist and open-weights era hooks (bible tails lite).** Draft: era permille on specialist sectors without new `Command` fields (store queue schema 154).
+224. **Sector pricing breakdown for the player lab.** Draft: permille ladder on top of `SectorPricing` (schema 155).
+225. **Batch eighteen news, chat and combination rules.** Draft: TBD after systems land.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
