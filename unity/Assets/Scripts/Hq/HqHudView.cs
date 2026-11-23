@@ -523,6 +523,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekPatentPower = HqDisplayQueriesHud.LastWeekPatentPowerSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekPatentPower))
                     status = string.IsNullOrEmpty(status) ? lastWeekPatentPower : status + " · " + lastWeekPatentPower;
+                string thisWeekChipGrant = HqDisplayQueriesHud.ThisWeekChipGrantSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekChipGrant))
+                    status = string.IsNullOrEmpty(status) ? thisWeekChipGrant : status + " · " + thisWeekChipGrant;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
