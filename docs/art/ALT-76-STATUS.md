@@ -22,7 +22,8 @@
 | 31 | `58babaa` | HUD date/week row |
 | 32 | `46bfc78` | Compute split bars |
 | 33 | `843705d` | Mascot row HUD |
-| 34 | (local GO) | Studio handoff |
+| 34 | `e9ccf12` | Studio handoff |
+| 35 | (local GO) | Capture HUD snapshot |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q484. Capture HUD snapshot regions? DECIDED: `CampusCaptureHudSnapshotPresentationSpec`
+
+- Options: (a) CAPTURE-REGRESSION only; (b) HUD snapshot doc + spec; (c) per-region PNG crops in CI.
+- Recommendation and choice: **(b)** — documents what `hq-view.png` should include without new CI jobs yet.
+- Why: Batch 12 contract stays; a11y chrome batches 30–31 visible in future baselines.
+
 ### Q483. Studio graphics land handoff? DECIDED: `CampusGraphicsStudioHandoffSpec` + doc
 
 - Options: (a) NEXT prose only; (b) spec constants + STUDIO-GRAPHICS-HANDOFF; (c) edit `studio/game.json` in graphics PR.
