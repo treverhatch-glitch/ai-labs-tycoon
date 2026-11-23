@@ -200,6 +200,9 @@ namespace AiLabs.Unity.Hq
                     string lifetimeNetTraining = HqDisplayQueriesHud.LifetimeNetTrainingSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lifetimeNetTraining))
                         _summary.text += " · " + lifetimeNetTraining;
+                    string lastWeekFinesTraining = HqDisplayQueriesHud.LastWeekFinesTrainingSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekFinesTraining))
+                        _summary.text += " · " + lastWeekFinesTraining;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
