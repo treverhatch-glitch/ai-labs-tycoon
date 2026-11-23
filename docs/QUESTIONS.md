@@ -1013,13 +1013,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBalanceSoakBarLaterTests2` (70):** `BalanceSoak.DefaultPresets`; calendar weeks; schema **29** only; gate **3889/0** in-repo.
 
-### Q3286–Q3355. Rival/plan data bar coda? DECIDED: test-only (batch 52, commit-ready — push with GO ≥ 21:15 UTC)
+### Q3286–Q3355. Rival/plan data bar coda? DECIDED: test-only (batch 52, pushed @ `b5d8265`)
 
-- **`HatchRivalPlanBarLaterTests2` (70):** rival cast + distress/plan neighbours; schema **29** only; 70-bar filter green.
+- **`HatchRivalPlanBarLaterTests2` (70):** rival cast + distress/plan neighbours; schema **29** only; gate **3959/0** in-repo.
 
-### Q3356–Q3425. Funding follow-on bar coda? TBD: test-only (batch 53, queued)
+### Q3356–Q3425. Funding follow-on bar coda? DECIDED: test-only (batch 53, LOCAL — GO ≥ ~21:53 UTC)
 
-- **`HatchFundingFollowOnBarLaterTests2` (70):** `Funding.FollowOn` + rounds table; schema **29** only.
+- **`HatchFundingFollowOnBarLaterTests2` (70):** `Funding.FollowOn` + rounds table; schema **29** only; 70-bar filter green.
+
+### Q3426–Q3495. Model sales/chip bar coda? TBD: test-only (batch 54, queued)
+
+- **`HatchModelSalesChipBarLaterTests2` (70):** distress offers + tapeout weeks; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

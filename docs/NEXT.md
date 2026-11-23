@@ -158,9 +158,9 @@ and says why in the commit message.
 - ~~**Hatch exit/sell batch 49**~~ **pushed @ `69e7282`** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; landed ~19:11 UTC.
 - ~~**Hatch bubble/acquire batch 50**~~ **pushed @ `afd2f0a`** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); gate **3819/0** in-repo; parent `69e7282` (+ `386df26`, `afd2f0a`).
 - ~~**Hatch balance/soak batch 51**~~ **pushed @ `b4186b0`** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); gate **3889/0** in-repo; parent `afd2f0a` (+ `66ff0bd`, `b4186b0`).
-- **Hatch rival/plan batch 52 (LOCAL commit-ready — NO PUSH until GO ≥ 21:15 UTC)** — Q3286–Q3355 (`HatchRivalPlanBarLaterTests2`, **70**); parent `b4186b0` (+ `3ca55e4` test, docs @ tip); filter green; schema **29** only.
+- ~~**Hatch rival/plan batch 52**~~ **pushed @ `b5d8265`** — Q3286–Q3355 (`HatchRivalPlanBarLaterTests2`, **70**); gate **3959/0** in-repo; parent `b4186b0` (+ `3ca55e4`, `b5d8265`); landed ~21:23 UTC.
+- **Hatch funding/follow-on batch 53 (LOCAL — NO PUSH until GO ≥ ~21:53 UTC / 30m after batch 52)** — Q3356–Q3425 (`HatchFundingFollowOnBarLaterTests2`, **70**); parent `b5d8265`; filter **70/0** green; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 53 (queued)** — Q3356–Q3425 `HatchFundingFollowOnBarLaterTests2` — follow-on rounds + board drama knobs.
   - **batch 54 (queued)** — Q3426–Q3495 `HatchModelSalesChipBarLaterTests2` — distress offers + tapeout weeks.
   - **batch 55 (queued)** — Q3496–Q3565 `HatchWorldMapEconomyBarLaterTests2` — blocs/sites/attention heatwave.
   - **batch 56 (queued)** — Q3566–Q3635 `HatchRegulatorBubbleBarLaterTests2` — scrutiny + listed-chip boost coda.
