@@ -435,5 +435,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("7,700").Or.Contain("500"));
         }
 
+        [Test]
+        public void last_week_net_fines_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.LastWeek.Net = 2_800;
+            lab.Ledger.LastWeek.Fines = -900;
+            string line = HqDisplayQueriesHud.LastWeekNetFinesSummaryLine(lab);
+            Assert.That(line, Does.Contain("2,800").Or.Contain("900"));
+        }
+
     }
 }
