@@ -5,10 +5,11 @@ namespace AiLabs.Unity.Hq
     {
         public const float TopBarHeightPixels = CampusHudLayoutSpec.TopBarHeight;
 
-        public const int DocumentedChromeSlots = 3;
+        public const int DocumentedChromeSlots = 4;
 
         public const string CashDisplayDoc = "HQ-CASH-DISPLAY-PRESENTATION.md";
         public const string DateWeekDoc = "HUD-DATE-WEEK-PRESENTATION.md";
+        public const string EraLabelDoc = "HUD-ERA-LABEL-PRESENTATION.md";
         public const string AdvanceWeekDoc = "ADVANCE-WEEK-PRESENTATION.md";
     }
 }

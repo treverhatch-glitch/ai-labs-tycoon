@@ -39,7 +39,8 @@
 | 48 | `6b1adc3` | Rivals screen |
 | 49 | `ad8db69` | Training screen |
 | 50 | `54f990b` | Screen layout index |
-| 51 | (local HOLD) | Top bar token index |
+| 51 | `909fc96` | Top bar token index |
+| 52 | (local HOLD) | HUD era label |
 
 **Unity thread:** import kit, wire `CampusPropPlacementHints`, tab sprites, materials per `UNITY-INTEGRATION.md`.
 

@@ -14,7 +14,7 @@ namespace AiLabs.Unity.Editor.Tests
         [Test]
         public void Chrome_slot_count()
         {
-            Assert.AreEqual(3, CampusTopBarTokenIndexPresentationSpec.DocumentedChromeSlots);
+            Assert.AreEqual(4, CampusTopBarTokenIndexPresentationSpec.DocumentedChromeSlots);
         }
 
     }

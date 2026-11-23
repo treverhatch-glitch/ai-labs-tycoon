@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q501. HUD era label chrome? DECIDED: `CampusHudEraLabelPresentationSpec`
+
+- Options: (a) `UI-HUD-LAYOUTS` row only; (b) era label doc + spec + top-bar index slot; (c) wire `HqHudView` in graphics PR.
+- Recommendation and choice: **(b)** — 420×28 top-right; shares transition with `CampusEraSkinTokens`; top-bar index → 4 slots.
+- Why: Completes global chrome table from systems design era names; no era rules on cloud agent.
+
 ### Q500. Global top bar token index? DECIDED: `CampusTopBarTokenIndexPresentationSpec`
 
 - Options: (a) extend `UI-HUD-LAYOUTS` only; (b) index doc + height/slot spec; (c) wire `HqHudView` in graphics PR.
