@@ -13,9 +13,15 @@ public class ScenarioGoalsTests
     [Fact]
     public void Goal_met_before_deadline()
     {
-        Game g = Game.Solo(55, cfg => cfg.Scenarios.Scenarios[0].GoalDeadlinePermille = 0)
-            .WithStarterLab(researchers: 10, engineers: 0, safety: 0, sales: 0, gpus: 2);
-        g.Me.ScenarioId = sc.IdValue;
+        Game g = Game.Solo(55, cfg =>
+            {
+                cfg.Scenarios.Scenarios[0].GoalDeadlinePermille = 0;
+                cfg.ScenarioGoals.Enabled = 1;
+                ScenarioGoalConfig goal = cfg.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+                if (goal != null) goal.Target = 4;
+            })
+            .WithStarterLab(researchers: 2, engineers: 1, safety: 0, sales: 1, gpus: 2);
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
         ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
         Assert.Equal(1, g.Me.ScenarioGoalResult);
         Assert.Contains(g.State.Events, e => e.Kind == EventKind.ScenarioGoalMet);
