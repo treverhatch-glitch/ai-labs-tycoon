@@ -78,6 +78,8 @@ namespace AiLabs.Rules.Sim
 
             if (founder != null) Founding.ApplyStart(c, state, player, founder);
 
+            if (!string.IsNullOrEmpty(options.BaggageId)) ScenarioBaggage.ApplyNewGame(c, state, player, options.BaggageId);
+
             for (int i = 0; i < c.Market.Sectors.Count; i++) state.Sectors.Add(NewSector(c.Market.Sectors[i], GameDate.Year(c.Calendar, startTick)));
             for (int i = 0; i < c.World.Sites.Count; i++) state.Sites.Add(NewSite(c.World.Sites[i].Id));
             for (int i = 0; i < state.Labs.Count; i++)

@@ -181,5 +181,15 @@ namespace AiLabs.Rules.Systems
                     SafetyCulture.OnComplaintLapsed(c, lab);
                 }
         }
+
+        /// <summary>Reputational leak baggage: trust falls in every sector the lab serves.</summary>
+        public static void OnBaggageLeak(GameConfig c, GameState state, LabState lab, int loss)
+        {
+            for (int i = 0; i < c.Market.Sectors.Count; i++)
+            {
+                string id = c.Market.Sectors[i].Id;
+                if (Sells(state, lab, id) || Record(lab, id) != null) Shift(c, state, lab, id, -loss, true);
+            }
+        }
     }
 }

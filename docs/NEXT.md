@@ -385,12 +385,12 @@ and says why in the commit message.
 202. **Open weights.** ~~Done (local)~~: `SetWeightsPolicy`, schema 137, `OpenWeightsTests` (Q459).
 203. **Sector pricing desk.** ~~Done (local)~~: `SetSectorPrice`, schema 138, `SectorPricingTests` (Q460).
 204. **Batch fourteen news, chat and combination rules.** ~~Done~~: Q461; `SpecialistDataOpenPriceNewsChatTests`, `SpecialistDataOpenPriceTogetherTests`.
-205. **Campaign deadline.** Planned: `SetCampaignDeadline`, schema 139, `CampaignDeadlineTests` (Q462).
-206. **Law shaping.** Planned: `ShapeLaw`, schema 140, `LawShapingTests` (Q463).
-207. **Exit price net of debt.** Planned: exit breakdown + `SellLab` net, schema 141, `ExitDebtTests` (Q464).
-208. **Takeoff crisis.** Planned: `RespondTakeoff`, schema 142, `TakeoffCrisisTests` (Q465).
-209. **Scenario baggage.** Planned: `PickScenarioBaggage`, schema 143, `ScenarioBaggageTests` (Q466).
-210. **Batch fifteen news, chat and combination rules.** Planned: Q467.
+205. **Campaign deadline.** ~~Done (local)~~: `SetCampaignDeadline`, schema 139, `CampaignDeadlineTests` (Q462).
+206. **Law shaping.** ~~Done (local)~~: `ShapeLaw`, schema 140, `LawShapingTests` (Q463).
+207. **Exit price net of debt.** ~~Done (local)~~: exit breakdown + `SellLab` net, schema 141, `ExitDebtTests` (Q464).
+208. **Takeoff crisis.** ~~Done (local)~~: `RespondTakeoff`, schema 142, `TakeoffCrisisTests` (Q465).
+209. **Scenario baggage.** ~~Done (local)~~: `PickScenarioBaggage`, schema 143, `ScenarioBaggageTests` (Q466).
+210. **Batch fifteen news, chat and combination rules.** ~~Done (local)~~: `BatchFifteenNewsChatTests`, `BatchFifteenTogetherTests` (Q467).
 
 ## Rules: later
 

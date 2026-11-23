@@ -118,6 +118,10 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.RenewDataSource: return RenewDataSource(c, state, lab, cmd);
                 case CommandKind.SetWeightsPolicy: return SetWeightsPolicy(c, state, lab, cmd);
                 case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
+                case CommandKind.SetCampaignDeadline: return SetCampaignDeadline(c, state, lab, cmd);
+                case CommandKind.ShapeLaw: return ShapeLaw(c, state, lab, cmd);
+                case CommandKind.RespondTakeoff: return RespondTakeoff(c, state, lab, cmd);
+                case CommandKind.PickScenarioBaggage: return PickScenarioBaggage(c, state, lab, cmd);
                 case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
                 case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
                 case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);

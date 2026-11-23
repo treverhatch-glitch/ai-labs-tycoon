@@ -2333,8 +2333,8 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q466. What is scenario baggage? DECIDED: optional starting flags on new game (`PickScenarioBaggage`, schema 143): lawsuit in progress, starter debt, or reputational leak; each toggles initial state/events once.
 - Full founding presets (Baron/Rebel/Hacker) stay a later slice.
 
-### Q467. Batch fifteen news, chat and combos. PLANNED: headlines + chat for 139–143; together tests wiring deadline with era score, law shape with alignment, exit with loans, takeoff with containment, baggage with trust.
+### Q467. Batch fifteen news, chat and combos. DECIDED: five headline kinds + four chat lines (391/346 total); together tests — deadline with era score, law shape with alignment bar, exit with loans, takeoff with containment room, baggage with trust/reputation.
 
 ## Open
 
-None (batch-fifteen systems Q462–Q466 decided; Q467 content pending implementation).
+None (batch-fifteen Q462–Q467 decided).

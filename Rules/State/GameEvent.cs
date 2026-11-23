@@ -618,7 +618,11 @@ namespace AiLabs.Rules.State
         WeightsOpened,
         WeightsClosed,
         WeightsCopied,
-        SectorPriceSet
+        SectorPriceSet,
+        CampaignDeadlineSet,
+        CampaignDeadlineHit,
+        LawShaped,
+        ScenarioBaggagePicked
     }
 
     /// <summary>

@@ -127,6 +127,13 @@ namespace AiLabs.Rules.Systems
             PoseTriggered(c, state, lab, OfficeTrigger.Escape);
         }
 
+        /// <summary>Released capability and corruption crossed the takeoff bar. Rivals have none.</summary>
+        public static void OnTakeoff(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab)) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff);
+        }
+
         /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>
         public static void OnRelease(GameConfig c, GameState state, LabState lab)
         {

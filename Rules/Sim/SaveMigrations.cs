@@ -151,6 +151,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 136) MigrateTo136(root);
             if (fromSchema < 137) MigrateTo137(root);
             if (fromSchema < 138) MigrateTo138(root);
+            if (fromSchema < 139) MigrateTo139(root);
+            if (fromSchema < 140) MigrateTo140(root);
+            if (fromSchema < 141) MigrateTo141(root);
+            if (fromSchema < 142) MigrateTo142(root);
+            if (fromSchema < 143) MigrateTo143(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -524,6 +529,42 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "priceSectors", JsonValue.Array());
                 JsonPatch.AddIfMissing(lab, "priceTiers", JsonValue.Array());
+            });
+        }
+
+        /// <summary>Schema 139: sandbox deadline off.</summary>
+        static void MigrateTo139(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "campaignDeadlineTick", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 140: no law shaping.</summary>
+        static void MigrateTo140(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "lawShapePending", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "lawShapeDelta", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "lawShapeEra", JsonValue.Of(""));
+            });
+        }
+
+        /// <summary>Schema 141: exit debt display only.</summary>
+        static void MigrateTo141(JsonValue root) { }
+
+        /// <summary>Schema 142: no takeoff cooldown.</summary>
+        static void MigrateTo142(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "takeoffCooldownUntil", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 143: no baggage.</summary>
+        static void MigrateTo143(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "baggageId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "baggagePicked", JsonValue.Of(0L));
             });
         }
 

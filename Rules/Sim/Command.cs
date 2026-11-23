@@ -220,7 +220,11 @@ namespace AiLabs.Rules.Sim
         AcquireDataSource,
         RenewDataSource,
         SetWeightsPolicy,
-        SetSectorPrice
+        SetSectorPrice,
+        SetCampaignDeadline,
+        ShapeLaw,
+        RespondTakeoff,
+        PickScenarioBaggage
     }
 
     /// <summary>
@@ -1908,6 +1912,35 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetSectorPrice, labId);
             c.Id = sectorId;
             c.Permille = tier;
+            return c;
+        }
+
+        public static Command SetCampaignDeadline(int labId, int deadlineTick)
+        {
+            Command c = Make(CommandKind.SetCampaignDeadline, labId);
+            c.Permille = deadlineTick;
+            return c;
+        }
+
+        public static Command ShapeLaw(int labId, string blocId, string goal)
+        {
+            Command c = Make(CommandKind.ShapeLaw, labId);
+            c.Id = blocId;
+            c.Ids = new List<string> { goal };
+            return c;
+        }
+
+        public static Command RespondTakeoff(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.RespondTakeoff, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
+        public static Command PickScenarioBaggage(int labId, string baggageId)
+        {
+            Command c = Make(CommandKind.PickScenarioBaggage, labId);
+            c.Id = baggageId;
             return c;
         }
 

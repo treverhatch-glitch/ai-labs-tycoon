@@ -646,6 +646,14 @@ namespace AiLabs.Rules.Sim
                     return who + " saw competitors copy open weights.";
                 case EventKind.SectorPriceSet:
                     return who + " set a sector price tier.";
+                case EventKind.CampaignDeadlineSet:
+                    return who + " set a campaign deadline.";
+                case EventKind.CampaignDeadlineHit:
+                    return who + " reached its campaign deadline.";
+                case EventKind.LawShaped:
+                    return who + " shaped the law for next era.";
+                case EventKind.ScenarioBaggagePicked:
+                    return who + " started with scenario baggage.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -83,6 +83,8 @@ namespace AiLabs.Rules.Systems
                         RoomAge.OnEraBegan(c, state);
                         ControlStale.OnEraBegan(c, state);
                         Campaign.OnEraBegan(c, state, i);
+                        LabState player = state.Player;
+                        if (player != null) LawShaping.OnEraBegan(c, state, player, c.Eras[i].Id);
                     }
                 }
 
