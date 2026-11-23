@@ -15,5 +15,15 @@ namespace AiLabs.Unity.Editor.Tests
             string line = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
             Assert.That(line, Does.Contain("10,000").Or.Contain("2,000"));
         }
+        [Test]
+        public void this_week_construction_salaries_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.Construction = -3_000;
+            lab.Ledger.ThisWeek.Salaries = -4_000;
+            string line = HqDisplayQueriesHud.ThisWeekConstructionSalariesSummaryLine(lab);
+            Assert.That(line, Does.Contain("3,000").Or.Contain("4,000"));
+        }
+
     }
 }
