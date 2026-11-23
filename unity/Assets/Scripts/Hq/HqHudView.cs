@@ -52,6 +52,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekLand = HqDisplayQueriesHud.LastWeekLandHardwareSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekLand))
                     status = string.IsNullOrEmpty(status) ? lastWeekLand : status + " · " + lastWeekLand;
+                string thisWeekChipRevenue = HqDisplayQueriesHud.ThisWeekChipRevenueSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekChipRevenue))
+                    status = string.IsNullOrEmpty(status) ? thisWeekChipRevenue : status + " · " + thisWeekChipRevenue;
                 string lastWeekConstructionPatent = HqDisplayQueriesHud.LastWeekConstructionPatentSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekConstructionPatent))
                     status = string.IsNullOrEmpty(status) ? lastWeekConstructionPatent : status + " · " + lastWeekConstructionPatent;
