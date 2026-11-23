@@ -113,7 +113,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`e9d0381` (batch 53: seasonal overlay index); batch 54 (world freeze slot) squashed locally after prepush.
+`8e7a445` (batch 54: world freeze in overlay index); batch 55 (training incident index) squashed locally after prepush.
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 

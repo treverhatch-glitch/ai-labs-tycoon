@@ -572,6 +572,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** with `ui-world-map-pin.obj` markers; real country **names** only (Q16).
 - Why: scope fits first playable; keeps attention on power/freeze gameplay.
 
+### Q504. Training incident index? DECIDED: `CampusTrainingIncidentIndexPresentationSpec`
+
+- Options: (a) `TRAINING-INCIDENT-PRESENTATION` only; (b) index doc + tier count spec; (c) wire rung UI in graphics PR.
+- Recommendation and choice: **(b)** — links batch 23 rings to training screen (batch 49); pulse alias only.
+- Why: Matches systems design incident rungs; rules `SafetySystem` unchanged on cloud agent.
+
 ### Q503. World freeze in overlay index? DECIDED: extend `CampusSeasonalOverlayIndexPresentationSpec`
 
 - Options: (a) separate world overlay index; (b) second slot in seasonal index + pin alpha alias; (c) wire freeze UI in graphics PR.
