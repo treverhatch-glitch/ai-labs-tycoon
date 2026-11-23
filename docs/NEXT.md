@@ -419,6 +419,13 @@ and says why in the commit message.
 231. **Campaign deadline era grace.** ~~Done (local)~~: `CampaignDeadlineEraGrace`, schema 160 (Q488).
 232. **Batch twenty news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyNewsChatTests`, `BatchTwentyTogetherTests` (Q489).
 
+### Era batch 21 (LOCAL prep on `u-af2f`, HOLD push)
+
+233. **Law shaping era cooldown tail.** ~~Done (local)~~: `LawShapingEraCooldown`, schema 161 (Q490).
+234. **Data source renew era bonus weeks.** ~~Done (local)~~: `DataSourceRenewEraBonus`, schema 162 (Q491).
+235. **Sector pricing era overload relief.** ~~Done (local)~~: `SectorPricingEraRelief`, schema 163 (Q492).
+236. **Batch twenty-one news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests` (Q493).
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

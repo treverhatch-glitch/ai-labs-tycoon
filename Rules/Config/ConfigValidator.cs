@@ -194,6 +194,9 @@ namespace AiLabs.Rules.Config
             OpenWeightsEraThrottleProblems(p, c);
             EvalHarnessEraBoostProblems(p, c);
             CampaignDeadlineEraGraceProblems(p, c);
+            LawShapingEraCooldownProblems(p, c);
+            DataSourceRenewEraBonusProblems(p, c);
+            SectorPricingEraReliefProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2172,6 +2175,33 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("campaignDeadlineEraGrace.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("campaignDeadlineEraGrace.minEra must be a valid era index");
             if (k.GraceWeeks < 0) p.Add("campaignDeadlineEraGrace.graceWeeks must not be negative");
+        }
+
+        static void LawShapingEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            LawShapingEraCooldownConfig k = c.LawShapingEraCooldown;
+            if (k == null) { p.Add("lawShapingEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShapingEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawShapingEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("lawShapingEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void DataSourceRenewEraBonusProblems(List<string> p, GameConfig c)
+        {
+            DataSourceRenewEraBonusConfig k = c.DataSourceRenewEraBonus;
+            if (k == null) { p.Add("dataSourceRenewEraBonus is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceRenewEraBonus.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceRenewEraBonus.minEra must be a valid era index");
+            if (k.BonusWeeks < 0) p.Add("dataSourceRenewEraBonus.bonusWeeks must not be negative");
+        }
+
+        static void SectorPricingEraReliefProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingEraReliefConfig k = c.SectorPricingEraRelief;
+            if (k == null) { p.Add("sectorPricingEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("sectorPricingEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0) p.Add("sectorPricingEraRelief.reliefPermille must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

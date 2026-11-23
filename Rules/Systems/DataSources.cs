@@ -29,9 +29,12 @@ namespace AiLabs.Rules.Systems
         {
             int i = Index(c, sourceId);
             DataSourceItemConfig src = c.DataSources.Sources[i];
-            SetWeeks(lab, i, src.DurationWeeks);
+            int bonus = DataSourceRenewEraBonus.BonusWeeks(c, state);
+            int weeks = src.DurationWeeks + bonus;
+            SetWeeks(lab, i, weeks);
             Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
-            Events.Add(state, EventKind.DataSourceRenewed, lab.Id, i, src.DurationWeeks, sourceId);
+            Events.Add(state, EventKind.DataSourceRenewed, lab.Id, i, weeks, sourceId);
+            DataSourceRenewEraBonus.OnRenew(c, state, lab, sourceId, bonus);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

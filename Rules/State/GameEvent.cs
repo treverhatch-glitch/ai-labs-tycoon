@@ -640,7 +640,10 @@ namespace AiLabs.Rules.State
         PublicMetricsEraBoost,
         OpenWeightsEraThrottled,
         EvalHarnessEraBoosted,
-        CampaignDeadlineElongated
+        CampaignDeadlineElongated,
+        LawShapingCooldownShortened,
+        DataSourceRenewEraBonused,
+        SectorPricingEraRelieved
     }
 
     /// <summary>

@@ -29,8 +29,11 @@ namespace AiLabs.Rules.Systems
             int delta = goal == Strict ? cfg.StrictDelta : -cfg.LooseDelta;
             delta = (int)MathI.MulPermille(delta, DampPermille(c, lab));
             lab.LawShapePending = delta;
-            standing.LobbyUntilTick = state.Tick + c.Lobbying.CooldownWeeks;
+            int cd = LawShapingEraCooldown.EffectiveCooldownWeeks(c, state);
+            int cut = c.Lobbying.CooldownWeeks - cd;
+            standing.LobbyUntilTick = state.Tick + cd;
             Events.Add(state, EventKind.LawShaped, lab.Id, delta, goal == Strict ? 1 : 0, standing.BlocId);
+            LawShapingEraCooldown.OnShaped(c, state, lab, goal, cd, cut);
         }
 
         public static void OnEraBegan(GameConfig c, GameState state, LabState lab, string eraId)

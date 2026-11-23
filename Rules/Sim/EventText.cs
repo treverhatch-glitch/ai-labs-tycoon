@@ -690,6 +690,12 @@ namespace AiLabs.Rules.Sim
                     return who + " registered " + e.Ref + " in the eval harness with era trust +" + e.Amount + ".";
                 case EventKind.CampaignDeadlineElongated:
                     return who + " got " + e.Amount + " grace weeks on its campaign deadline.";
+                case EventKind.LawShapingCooldownShortened:
+                    return who + " shaped " + e.Ref + " law with a shorter lobby cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.DataSourceRenewEraBonused:
+                    return who + " renewed data source \"" + e.Ref + "\" with +" + e.Amount + " era bonus weeks.";
+                case EventKind.SectorPricingEraRelieved:
+                    return who + " set " + e.Ref + " pricing to tier " + e.SubjectId + " with era overload relief " + e.Amount + " permille.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

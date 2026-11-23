@@ -12411,6 +12411,24 @@
         "text": "{lab} won extra campaign deadline weeks in the {ref} era"
       },
       {
+        "id": "law-shaping-era-cooldown",
+        "kind": "LawShapingCooldownShortened",
+        "pick": -1,
+        "text": "{lab} shaped {ref} lobbying law with a shorter cooldown in the era"
+      },
+      {
+        "id": "data-renew-era-bonus",
+        "kind": "DataSourceRenewEraBonused",
+        "pick": -1,
+        "text": "{lab} renewed {ref} with extra licensed-data weeks"
+      },
+      {
+        "id": "sector-pricing-era-relief",
+        "kind": "SectorPricingEraRelieved",
+        "pick": -1,
+        "text": "{lab} eased overload on {ref} sector pricing"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16711,6 +16729,39 @@
         "toYear": 0
       },
       {
+        "id": "law-cooldown-chat",
+        "kind": "LawShapingCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Regulators let us lobby again sooner after shaping law.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "renew-bonus-chat",
+        "kind": "DataSourceRenewEraBonused",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Renewing the corpus came with bonus licensed weeks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sector-relief-chat",
+        "kind": "SectorPricingEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Premium pricing tier overload eased this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19475,5 +19526,20 @@
     "enabled": 1,
     "minEra": 2,
     "graceWeeks": 3
+  },
+  "lawShapingEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 4
+  },
+  "dataSourceRenewEraBonus": {
+    "enabled": 1,
+    "minEra": 3,
+    "bonusWeeks": 6
+  },
+  "sectorPricingEraRelief": {
+    "enabled": 1,
+    "minEra": 3,
+    "reliefPermille": 12
   }
 }
