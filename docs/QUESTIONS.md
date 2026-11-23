@@ -941,9 +941,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
 
-### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, pushed with `bae467b`)
+### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, pushed @ `fc167aa`)
 
 - **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
+
+### Q2096–Q2165. Acquisition gameplay data bar? DECIDED: test-only (batch 35, local)
+
+- **`HatchAcquireGameplayBarLaterTests` (70):** `Acquisitions` quote fields; bubble/chip distress neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
