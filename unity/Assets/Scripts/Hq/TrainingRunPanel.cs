@@ -269,6 +269,9 @@ namespace AiLabs.Unity.Hq
                     string thisWeekSalariesNet = HqDisplayQueriesHud.ThisWeekSalariesNetSummaryLine(lab);
                     if (!string.IsNullOrEmpty(thisWeekSalariesNet))
                         _summary.text += " · " + thisWeekSalariesNet;
+                    string lastWeekCapitalPatent = HqDisplayQueriesHud.LastWeekCapitalPatentSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lastWeekCapitalPatent))
+                        _summary.text += " · " + lastWeekCapitalPatent;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
