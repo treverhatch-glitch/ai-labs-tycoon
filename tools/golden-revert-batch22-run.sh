@@ -6,6 +6,7 @@ cd "$REPO"
 LOCK="${TMPDIR:-/tmp}/b22-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
+exec 9>&-
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
@@ -13,8 +14,8 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 
 declare -A GOLDEN
 GOLDEN[164]=a8cbcc4f428cccd1fbcde3eb203ae5d7ce2b121a55ec4133dfe223b6403f5a40
-GOLDEN[165]=PLACEHOLDER165
-GOLDEN[166]=PLACEHOLDER166
+GOLDEN[165]=5ca4ffbddea479986170350c645f0d2db71826f0d4c27c0352b8d7b50f11dee5
+GOLDEN[166]=93f897012e42e02d098d7b6347bf3c21436daddf9c8a7c1eaa0d1835dcf3793d
 
 PREV=$((N - 1))
 BK="/tmp/b22-rev-bak-$N"
