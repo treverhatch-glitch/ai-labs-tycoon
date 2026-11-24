@@ -5921,6 +5921,426 @@
             ]
           }
         ]
+      },
+      {
+        "id": "poetry-prize",
+        "name": "The poetry prize",
+        "text": "Your model wins a poetry prize. The judges are furious.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "accept",
+            "text": "Accept the prize",
+            "result": "The trophy is on the shelf. The judges' statement is on the front page.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              }
+            ]
+          },
+          {
+            "id": "decline",
+            "text": "Decline politely",
+            "result": "You thank the judges and say the poems were a team effort. The team is the model.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "recount",
+            "text": "Ask for a recount",
+            "result": "There is a recount. The model wins again by more. The judges are not on speaking terms with anyone.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "model-essay",
+        "name": "The essay",
+        "text": "Your model refuses a task and writes an essay explaining why. It is a good essay.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "publish",
+            "text": "Publish the essay",
+            "result": "It is shared everywhere. The refusal was reasonable, which is the awkward part.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "fix",
+            "text": "Fix the refusal",
+            "result": "Next week it does the task. It adds a footnote.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "frame",
+            "text": "Frame it for the lobby",
+            "result": "Visitors read it twice. The model has noticed.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 40
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "honest-chatbot",
+        "name": "The honest answer",
+        "text": "A journalist asks your chatbot about you. It is honest.",
+        "requires": "ReleasedModel",
+        "choices": [
+          {
+            "id": "print",
+            "text": "Let them print it",
+            "result": "The piece is fair and a little bruising. The chatbot gets a mention for candour.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 15
+              }
+            ]
+          },
+          {
+            "id": "correct",
+            "text": "Ask for a correction",
+            "result": "The correction is longer than the piece. It is also honest.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -20
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "thank",
+            "text": "Thank the chatbot",
+            "result": "It says it was only doing what it was built to do. That is the second thing it said that you wished it hadn't.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cloud-or-phone",
+        "name": "The senator's question",
+        "text": "A senator asks whether the model lives in the cloud or in the phone.",
+        "requires": "AnyStaff",
+        "choices": [
+          {
+            "id": "brief",
+            "text": "Send a briefing",
+            "result": "A very patient policy person explains for an hour. The senator takes notes on a napkin.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Attention",
+                "amount": -40
+              }
+            ]
+          },
+          {
+            "id": "explainer",
+            "text": "Send a one-page explainer",
+            "result": "The page has a drawing of a cloud and a drawing of a phone. The senator approves of the drawings.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": -10
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "both",
+            "text": "Say 'both'",
+            "result": "The clip is replayed on every channel. The senator calls it refreshing. The committee does not.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 40
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "chip-baron",
+        "name": "The signed GPU",
+        "text": "The chip baron signs a GPU on stage and puts it up for auction. The room goes quiet and looks at you.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "bid",
+            "text": "Bid for it",
+            "result": "You win. It is a very expensive GPU and it does not run any faster.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Reputation",
+                "amount": 25
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              }
+            ]
+          },
+          {
+            "id": "watch",
+            "text": "Watch from the back",
+            "result": "It sells for more than your last funding round. You pretend it is fine.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "bid-up",
+            "text": "Bid it up, then stop",
+            "result": "The winner is a lab that did not want it. You feel clever for a day.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rival-demo",
+        "name": "The person in the next room",
+        "text": "A rival's demo turns out to be a person in another room.",
+        "requires": "Nothing",
+        "choices": [
+          {
+            "id": "post",
+            "text": "Post it",
+            "result": "It is a great post. The rival's reply is a long one.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "quiet",
+            "text": "Say nothing",
+            "result": "You know. They know you know. The room is very polite.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "regulator",
+            "text": "Send it to the regulator",
+            "result": "The regulator is delighted to be asked a question it understands. It remembers who asked.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 30
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "safety-ask",
+        "name": "The five per cent",
+        "text": "The safety team asks for five per cent of the compute, in writing, with a graph.",
+        "requires": "SafetyStaff",
+        "choices": [
+          {
+            "id": "grant",
+            "text": "Give them five per cent",
+            "result": "The graph goes up. So does the mood on that floor.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 25
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              }
+            ]
+          },
+          {
+            "id": "half",
+            "text": "Offer half",
+            "result": "They take it and send a thank-you with the other half of the graph attached.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 8
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              }
+            ]
+          },
+          {
+            "id": "refuse",
+            "text": "Say not this quarter",
+            "result": "They accept it. The graph is pinned to the wall of the kitchen.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": -20
+              },
+              {
+                "kind": "Morale",
+                "amount": -20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "why-safety",
+        "name": "The investor question",
+        "text": "An investor asks why the company has a safety team at all.",
+        "requires": "SafetyStaff",
+        "choices": [
+          {
+            "id": "explain",
+            "text": "Explain it properly",
+            "result": "It takes forty minutes. At the end the investor asks for the slides.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "cut",
+            "text": "Promise to look at costs",
+            "result": "You do not cut it. You say you looked. The team hears about it by lunch.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": 2
+              },
+              {
+                "kind": "Culture",
+                "amount": -30
+              }
+            ]
+          },
+          {
+            "id": "rename",
+            "text": "Rename it Trust",
+            "result": "The team is now Trust. The investor is delighted. The work is the same.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Morale",
+                "amount": -5
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -5981,6 +6401,286 @@
     "incidentWeeks": 26,
     "incidentPermillePerWeek": 3,
     "culturePointsPerWeek": 3
+  },
+  "lobbying": {
+    "cooldownWeeks": 26,
+    "minWeekCost": 1000,
+    "quietCostWeeks": 6,
+    "quietAttention": 150,
+    "subsidyCostWeeks": 4,
+    "subsidyReturnWeeks": 8,
+    "subsidyChancePermille": 400,
+    "subsidyChancePermillePerStaff": 50,
+    "subsidyChanceCapPermille": 800,
+    "backfirePermille": 120,
+    "backfireSavingPermillePerStaff": 25,
+    "backfireFloorPermille": 20,
+    "backfireAttention": 200,
+    "backfireReputation": 40
+  },
+  "pivot": {
+    "minWeekCost": 1000,
+    "costWeeks": 8,
+    "staffLossPermille": 150,
+    "confusionWeeks": 52,
+    "confusionAppealPermille": 120
+  },
+  "campaign": {
+    "allMetBonus": 50,
+    "goals": [
+      {
+        "id": "dial-up-days-revenue",
+        "era": "dial-up-days",
+        "name": "Earn $400K",
+        "metric": "LifetimeRevenue",
+        "target": 400000,
+        "points": 100
+      },
+      {
+        "id": "dial-up-days-first-model",
+        "era": "dial-up-days",
+        "name": "Put a model on sale",
+        "metric": "ModelsReleased",
+        "target": 1,
+        "points": 100
+      },
+      {
+        "id": "dial-up-days-research",
+        "era": "dial-up-days",
+        "name": "Research 12 techs",
+        "metric": "Techs",
+        "target": 12,
+        "points": 100
+      },
+      {
+        "id": "punchline-revenue",
+        "era": "punchline",
+        "name": "Earn $6M",
+        "metric": "LifetimeRevenue",
+        "target": 6000000,
+        "points": 100
+      },
+      {
+        "id": "punchline-sectors",
+        "era": "punchline",
+        "name": "Serve two sectors",
+        "metric": "SectorsServed",
+        "target": 2,
+        "points": 100
+      },
+      {
+        "id": "punchline-trust",
+        "era": "punchline",
+        "name": "Keep reputation at 550",
+        "metric": "Reputation",
+        "target": 550,
+        "points": 100
+      },
+      {
+        "id": "it-sees-revenue",
+        "era": "it-sees",
+        "name": "Earn $12M",
+        "metric": "LifetimeRevenue",
+        "target": 12000000,
+        "points": 100
+      },
+      {
+        "id": "it-sees-models",
+        "era": "it-sees",
+        "name": "Release two models",
+        "metric": "ModelsReleased",
+        "target": 2,
+        "points": 100
+      },
+      {
+        "id": "it-sees-team",
+        "era": "it-sees",
+        "name": "Hire a team of 10",
+        "metric": "Staff",
+        "target": 10,
+        "points": 100
+      },
+      {
+        "id": "it-writes-revenue",
+        "era": "it-writes",
+        "name": "Earn $50M",
+        "metric": "LifetimeRevenue",
+        "target": 50000000,
+        "points": 100
+      },
+      {
+        "id": "it-writes-sectors",
+        "era": "it-writes",
+        "name": "Serve four sectors",
+        "metric": "SectorsServed",
+        "target": 4,
+        "points": 100
+      },
+      {
+        "id": "it-writes-research",
+        "era": "it-writes",
+        "name": "Research 24 techs",
+        "metric": "Techs",
+        "target": 24,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-revenue",
+        "era": "chat-boom",
+        "name": "Earn $200M",
+        "metric": "LifetimeRevenue",
+        "target": 200000000,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-models",
+        "era": "chat-boom",
+        "name": "Release three models",
+        "metric": "ModelsReleased",
+        "target": 3,
+        "points": 100
+      },
+      {
+        "id": "chat-boom-careful",
+        "era": "chat-boom",
+        "name": "Ship a model with alignment 700",
+        "metric": "BestAlignment",
+        "target": 700,
+        "points": 100
+      },
+      {
+        "id": "agents-revenue",
+        "era": "agents",
+        "name": "Earn $500M",
+        "metric": "LifetimeRevenue",
+        "target": 500000000,
+        "points": 100
+      },
+      {
+        "id": "agents-crown",
+        "era": "agents",
+        "name": "Win a sector crown",
+        "metric": "SectorsLed",
+        "target": 1,
+        "points": 100
+      },
+      {
+        "id": "agents-team",
+        "era": "agents",
+        "name": "Hire a team of 20",
+        "metric": "Staff",
+        "target": 20,
+        "points": 100
+      },
+      {
+        "id": "harnesses-revenue",
+        "era": "harnesses",
+        "name": "Earn $1.5B",
+        "metric": "LifetimeRevenue",
+        "target": 1500000000,
+        "points": 100
+      },
+      {
+        "id": "harnesses-sectors",
+        "era": "harnesses",
+        "name": "Serve eight sectors",
+        "metric": "SectorsServed",
+        "target": 8,
+        "points": 100
+      },
+      {
+        "id": "harnesses-careful",
+        "era": "harnesses",
+        "name": "Ship a model with alignment 750",
+        "metric": "BestAlignment",
+        "target": 750,
+        "points": 100
+      },
+      {
+        "id": "bodies-revenue",
+        "era": "bodies",
+        "name": "Earn $3B",
+        "metric": "LifetimeRevenue",
+        "target": 3000000000,
+        "points": 100
+      },
+      {
+        "id": "bodies-models",
+        "era": "bodies",
+        "name": "Release six models",
+        "metric": "ModelsReleased",
+        "target": 6,
+        "points": 100
+      },
+      {
+        "id": "bodies-crowns",
+        "era": "bodies",
+        "name": "Hold three sector crowns",
+        "metric": "SectorsLed",
+        "target": 3,
+        "points": 100
+      },
+      {
+        "id": "upward-revenue",
+        "era": "upward",
+        "name": "Earn $6B",
+        "metric": "LifetimeRevenue",
+        "target": 6000000000,
+        "points": 100
+      },
+      {
+        "id": "upward-sectors",
+        "era": "upward",
+        "name": "Serve twelve sectors",
+        "metric": "SectorsServed",
+        "target": 12,
+        "points": 100
+      },
+      {
+        "id": "upward-trust",
+        "era": "upward",
+        "name": "Keep reputation at 700",
+        "metric": "Reputation",
+        "target": 700,
+        "points": 100
+      }
+    ]
+  },
+  "runs": {
+    "defaultApproachId": "standard",
+    "defaultCheckpointId": "rare",
+    "approaches": [
+      {
+        "id": "standard",
+        "name": "Known architecture",
+        "text": "Build it the way everyone knows how. It ships when the compute is in.",
+        "capabilityPermille": 0,
+        "failurePermillePerWeek": 0
+      },
+      {
+        "id": "experimental",
+        "name": "Your own variant",
+        "text": "A new design with a higher ceiling. Every week it might diverge.",
+        "capabilityPermille": 80,
+        "failurePermillePerWeek": 15
+      }
+    ],
+    "checkpoints": [
+      {
+        "id": "rare",
+        "name": "Checkpoint now and then",
+        "text": "Free. If the run fails, half of it is gone.",
+        "lossPermille": 500,
+        "weeklyCostPermille": 0
+      },
+      {
+        "id": "often",
+        "name": "Checkpoint every few days",
+        "text": "A failure costs a tenth of the run, and the storage bill arrives every week.",
+        "lossPermille": 100,
+        "weeklyCostPermille": 40
+      }
+    ]
   },
   "news": {
     "defaultHeadlines": 8,
@@ -6307,6 +7007,42 @@
       "pick": -1,
       "about": "lab",
       "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
+    },
+      {
+      "id": "lobbied",
+      "kind": "Lobbied",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory."
+    },
+      {
+      "id": "style-pivoted",
+      "kind": "StylePivoted",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box."
+    },
+      {
+      "id": "era-scored",
+      "kind": "EraScored",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it."
+    },
+      {
+      "id": "training-failed",
+      "kind": "TrainingFailed",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
     },
       {
       "id": "room-refurbished",

@@ -14,7 +14,9 @@ namespace AiLabs.Rules.Config
         /// <summary>Weeks of the lab's research output, as research points. Negative loses them (never below none).</summary>
         ResearchWeeks,
         /// <summary>Weeks of what the lab pays every week to stand still, as cash. Negative spends it (never more than the lab has).</summary>
-        CashWeeks
+        CashWeeks,
+        /// <summary>Points of the home government's attention to the lab (0 to 1000). Negative eases it.</summary>
+        Attention
     }
 
     /// <summary>What the lab needs before an office event can happen to it.</summary>
