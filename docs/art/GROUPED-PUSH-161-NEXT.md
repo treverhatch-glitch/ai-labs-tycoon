@@ -1,3 +1,3 @@
-# Grouped 161–163 · GO ≥03:41 ICT
+# Grouped 161–163 (LANDED)
 
-Parent `bf47b0d`. Q610 rollup **139** · Q611 manifest **139** · Q612 GO **157**.
+**Remote:** `8938cce9ae342eca68438e4e3990922652a8d4d0` (~**03:42 ICT**). Prepush **368** meta; **174** tests. HOLD **≥~04:12 ICT**. Q613+ **164+** LOCAL.
