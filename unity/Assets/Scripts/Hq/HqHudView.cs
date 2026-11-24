@@ -3082,6 +3082,9 @@ namespace AiLabs.Unity.Hq
                 string thisWeekDevKindleSpendIncome = HqDisplayQueriesHud.ThisWeekDevKindleSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(thisWeekDevKindleSpendIncome))
                     status = string.IsNullOrEmpty(status) ? thisWeekDevKindleSpendIncome : status + " · " + thisWeekDevKindleSpendIncome;
+                string lastWeekDevKindleSpendIncome = HqDisplayQueriesHud.LastWeekDevKindleSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lastWeekDevKindleSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? lastWeekDevKindleSpendIncome : status + " · " + lastWeekDevKindleSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
