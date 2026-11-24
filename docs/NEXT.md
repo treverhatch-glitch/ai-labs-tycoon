@@ -164,11 +164,12 @@ and says why in the commit message.
 - ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
 - ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
 - ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
-- **Hatch rival/economy batch 58 (LOCAL commit-ready — NO PUSH until GO ≥ ~01:50 UTC / 30m after `8744e8f`)** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); push range **`8744e8f..29a97d3`** (4 commits, excludes batch **59**); filter **70/0**; expected gate **4449/0**; **Q44**; schema **29** only.
-- **Hatch shady/china batch 59 (LOCAL — hold until batch 58 lands)** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); parent after **58**; filter **70/0**; bible **Q102** decline cooldown; schema **29** only.
+- ~~**Hatch rival/economy batch 58**~~ **pushed @ `29a97d3`** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); gate **4449/0** in-repo; parent `8744e8f` (+4); landed ~02:17 UTC Nov 24.
+- **Hatch shady/china batch 59 (LOCAL commit-ready on `851172f` stack — NO PUSH until GO ≥ ~02:47 UTC)** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); proposed push **`29a97d3..d0ba48b0467da9be7db662148aa6bfdb3a1b9c9c`** (see tip after commit); filter **70/0**; expected prepush **4519/4519**; **Q102**; schema **29** only.
+- **Hatch incident/safety batch 60 (LOCAL — hold until batch 59 lands)** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); filter **70/0**; bible era incident load **Q100**; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 60+ (TBD)** — incident/safety, containment coda; SolvencyHold / schema **30** parked.
-- **Refill:** batch **58** **Q44** hardware; batch **59** **Q102** + **Q525** china deal tails; schema **29** only.
+  - **batch 61+ (TBD)** — containment ending coda; SolvencyHold / schema **30** parked.
+- **Refill:** batch **59** **Q102** cooldown; batch **60** **Q100** era incident load + safety rungs; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 
