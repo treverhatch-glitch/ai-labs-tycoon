@@ -462,8 +462,8 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Sell at least one GPU.");
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
-            int owned = LabQueries.OwnedGpuUnits(lab, holdingId) - (holdingId == HardwareBatch.Hq ? lab.LeaseUnits : 0);
-            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there" + (lab.LeaseUnits > 0 && holdingId == HardwareBatch.Hq ? " that are not leased back" : "") + ".");
+            int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
+            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there.");
 
             long proceeds = 0;
             int left = cmd.Count;

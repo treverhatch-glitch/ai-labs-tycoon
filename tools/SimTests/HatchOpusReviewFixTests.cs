@@ -87,7 +87,8 @@ public class HatchOpusReviewFixTests
         Assert.True(owned > 0);
         g.Refused(Command.SellGpus(g.Id, owned), CommandError.TargetNotEligible);
         g.Weeks(g.C.Acquisitions.FleetResaleLockWeeks);
-        g.Do(Command.SellGpus(g.Id, owned));
+        int sellable = LabQueries.OwnedGpuUnits(g.Me, HardwareBatch.Hq);
+        g.Do(Command.SellGpus(g.Id, sellable));
         long delta = g.Me.Cash - before;
         Assert.True(delta <= 0, "acquire then sell netted " + delta);
     }

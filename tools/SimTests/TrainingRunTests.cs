@@ -406,7 +406,7 @@ public class TrainingRunTests
         Game g = Lab();
         ModelState m = g.Train("mini", 600);
         g.Do(Command.SetRunApproach(g.Id, m.Id, "experimental"));
-        string old = SaveSchemaPretend.At(g.C, 40, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 39, g.Sim.Save());
         Assert.DoesNotContain("\"approach\"", old);
         Assert.DoesNotContain("\"checkpoints\"", old);
         Simulation loaded = Simulation.Load(g.C, old);
