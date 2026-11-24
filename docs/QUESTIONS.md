@@ -776,11 +776,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — pairs with STATUS 102.
 - Why: Ops rollup after grouped 103–104.
 
-### Q556. Index lane manifest tail refresh? DRAFT: `CampusIndexLaneManifestTailRefreshPresentationSpec`
+### Q556. Index lane manifest tail refresh? DECIDED: `CampusIndexLaneManifestTailRefreshPresentationSpec`
 
 - Options: (a) batch 79 only; (b) refresh through batch 104 tails; (c) full manifest regen.
-- Recommendation: **(b)** — manifest bible refill.
-- Status: stub batch 107 (local).
+- Recommendation and choice: **(b)** — through remote rollup 104.
+- Why: Manifest bible after grouped 105–106.
+
+### Q557. GO packet tail through batch 106? DECIDED: `CampusGoPacketTailRefreshThrough106PresentationSpec`
+
+- Options: (a) skip; (b) refresh through `c5371fe`; (c) spacing only.
+- Recommendation and choice: **(b)** — paired with manifest refresh 107.
+- Why: Coordinator GO packets.
+
+### Q558. ALT-76 STATUS sync through 104? DECIDED: `CampusAlt76StatusSyncThrough104PresentationSpec`
+
+- Options: (a) stop at 102; (b) sync through 104; (c) defer.
+- Recommendation and choice: **(b)** — closes ops trio 107–109.
+- Why: STATUS after tail rollup 103–104 remote.
+
+### Q559. ALT-76 rollup refresh through 106? DRAFT: `CampusAlt76RollupRefreshB106PresentationSpec`
+
+- Options: (a) batch 104 only; (b) through next remote grouped; (c) skip.
+- Recommendation: **(b)** — after 107–109 push.
+- Status: stub batch 110 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
