@@ -974,11 +974,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — closes 137–139.
 - Why: Coordinator packets.
 
-### Q589. ALT-76 STATUS sync through batch 130? DRAFT: `CampusAlt76StatusSyncThrough130PresentationSpec`
+### Q589. ALT-76 STATUS sync through batch 130? DECIDED: `CampusAlt76StatusSyncThrough130PresentationSpec`
 
 - Options: (a) stop at 127; (b) through 130; (c) defer.
-- Recommendation: **(b)** — post-push STATUS ladder.
-- Status: stub batch 140 (local, NO PUSH).
+- Recommendation and choice: **(b)** — grouped **140–142**.
+- Why: STATUS ladder off `4cecde7`.
+
+### Q590. Presentation tail rollup through batch 127? DECIDED: `CampusPresentationTailRollupRefreshThrough127PresentationSpec`
+
+- Options: (a) stop at 121; (b) through 127; (c) skip.
+- Recommendation and choice: **(b)** — 11 lanes.
+- Why: Batch **141**.
+
+### Q591. GO packet tail through batch 136? DECIDED: `CampusGoPacketTailRefreshThrough136PresentationSpec`
+
+- Options: (a) stop at 133; (b) through 136; (c) skip.
+- Recommendation and choice: **(b)** — closes **140–142**.
+- Why: Coordinator packets.
+
+### Q592. ALT-76 rollup refresh through batch 130? DRAFT: `CampusAlt76RollupRefreshB130PresentationSpec`
+
+- Options: (a) batch 127 only; (b) through 130; (c) skip.
+- Recommendation: **(b)** — post–140–142 ladder ([systems design](/docs/art/ALT-76-STATUS.md)).
+- Status: stub batch **143** (LOCAL, NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
