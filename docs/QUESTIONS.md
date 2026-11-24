@@ -1033,17 +1033,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + `ListedChipBoostPermille` coda; gate **4239/0** in-repo; schema **29** only.
 
-### Q3636–Q3705. Acquisition/listing bar coda? DECIDED: test-only (batch 57, commit-ready — GO ≥ 00:48 UTC on `3f88c5b`)
+### Q3636–Q3705. Acquisition/listing bar coda? DECIDED: test-only (batch 57, pushed @ `8744e8f`)
 
-- **`HatchAcquireListingBarLaterTests2` (70):** stack2 coda on batch 41; `CrashDistressPricePermille`, `ReadyChipBookPermille`, `FleetResaleLockWeeks`, chip sale knobs; bible **D7** `BuyListedChips`; schema **29** only; 70-bar filter green.
+- **`HatchAcquireListingBarLaterTests2` (70):** gate **4379/0** in-repo; schema **29** only.
 
-### Q3706–Q3775. Rival economy bar coda? DECIDED: test-only (batch 58, LOCAL stub after 57)
+### Q3706–Q3775. Rival economy bar coda? DECIDED: test-only (batch 58, commit-ready — GO ≥ ~01:50 UTC on `8744e8f`)
 
-- **`HatchRivalEconomyBarLaterTests2` (70):** rollup/planner acquire, rival plans, distress listing; bible **Q44** rivals replace obsolete hardware; schema **29** only; 70-bar filter green.
+- **`HatchRivalEconomyBarLaterTests2` (70):** rollup/planner, rival plans, distress listing; **Q44**; push **`8744e8f..0c12ed7`**; 70-bar filter green.
 
-### Q3776–Q3845. Shady/china bar coda? TBD: test-only (batch 59, queued)
+### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, LOCAL after 58)
 
-- **`HatchShadyChinaBarLaterTests3` (70):** china cooldown + re-offer tails; schema **29** only.
+- **`HatchShadyChinaBarLaterTests3` (70):** `DeclineCooldownMonths`, shady cards, china bloc; **Q102**; 70-bar filter green.
+
+### Q3846–Q3915. Incident/safety bar coda? TBD: test-only (batch 60, queued)
+
+- **`HatchIncidentSafetyBarLaterTests2` (70):** era incident load neighbours; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

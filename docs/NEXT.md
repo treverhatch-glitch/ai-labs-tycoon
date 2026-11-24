@@ -163,11 +163,12 @@ and says why in the commit message.
 - ~~**Hatch model-sales/chip batch 54**~~ **pushed @ `a62fc4a`** — Q3426–Q3495 (`HatchModelSalesChipBarLaterTests2`, **70**); gate **4099/0** in-repo; parent `b661d1f` (+ `230bfa8`, `b93c35f`, `a62fc4a`); landed ~22:42 UTC.
 - ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
 - ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
-- **Hatch acquisition/listing batch 57 (LOCAL commit-ready — NO PUSH until GO ≥ 00:48 UTC / ~07:48 ICT)** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); push range **`3f88c5b..8744e8f`** only (not batch **58** commits); filter **70/0**; expected full gate **4309/0**; schema **29** only.
-- **Hatch rival/economy batch 58 (LOCAL — NO PUSH until ≥30m after batch 57 land)** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); tip `926eba4` (+ `40db12f`, `926eba4` docs); stays **unpushed** while **57** GO clears first; filter **70/0**; **Q44**; schema **29** only.
+- ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
+- **Hatch rival/economy batch 58 (LOCAL commit-ready — NO PUSH until GO ≥ ~01:50 UTC / 30m after `8744e8f`)** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); push range **`8744e8f..0c12ed7`** (3 commits: `40db12f` test + docs); filter **70/0**; expected gate **4449/0**; **Q44**; schema **29** only.
+- **Hatch shady/china batch 59 (LOCAL — hold until batch 58 lands)** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); parent after **58**; filter **70/0**; bible **Q102** decline cooldown; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 59+ (TBD)** — shady/china coda, incident/safety, containment coda from backlog; SolvencyHold / schema **30** parked.
-- **Refill:** store bible backlog + batch19 refill; batch **57** **D7** listings; batch **58** **Q44** rival hardware refresh + crown rollup neighbours; batch **59+** shady/china Q102 tails; schema **29** only.
+  - **batch 60+ (TBD)** — incident/safety, containment coda; SolvencyHold / schema **30** parked.
+- **Refill:** batch **58** **Q44** hardware; batch **59** **Q102** + **Q525** china deal tails; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 
