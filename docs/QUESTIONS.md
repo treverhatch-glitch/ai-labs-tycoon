@@ -602,11 +602,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — extends GO packet template for batches 66+.
 - Why: Coordinator spacing unchanged; store packets remain manual.
 
-### Q527. HQ lot viewport index? DRAFT: `CampusHqLotViewportIndexPresentationSpec`
+### Q527. HQ lot viewport index? DECIDED: `CampusHqLotViewportIndexPresentationSpec`
 
 - Options: (a) batch 42 doc only; (b) index + viewport fraction + stack cross-link; (c) implement `HqGridView` in graphics PR.
-- Recommendation: **(b)** — completes HQ stack index tail (lot band).
-- Status: stub batch 78 (local).
+- Recommendation and choice: **(b)** — completes HQ stack index tail (lot band).
+- Why: Fifth HQ band now indexed; stack completion doc updated in batch 79 stub.
+
+### Q528. Index lane manifest tail refresh? DRAFT: `CampusIndexLaneManifestTailPresentationSpec`
+
+- Options: (a) edit manifest table only; (b) tail doc + entry count alias post batch 78; (c) renumber batches 66–78.
+- Recommendation: **(b)** — extends manifest navigation after lot viewport.
+- Status: stub batch 79 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

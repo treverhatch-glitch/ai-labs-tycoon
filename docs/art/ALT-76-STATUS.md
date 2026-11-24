@@ -65,7 +65,8 @@
 | 74 | `2429879` | HQ stack completion |
 | 75 | `01b0286` | Index lane manifest |
 | 76 | `3cd1fda` | ALT-76 rollup refresh |
-| 77 | (pushing) | GO packet index refresh |
+| 77 | `7bce909` | GO packet index refresh |
+| 78 | (pushing) | HQ lot viewport index |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

@@ -8,4 +8,6 @@ HQ main stage left band per `UI-HUD-LAYOUTS.md` (`HqGridView`).
 
 Tokens: `CampusHqLotViewportPresentationSpec` (0.70 width, 38° yaw).
 
-Build panel: [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md). Batch 42 draft.
+Index: [HQ-LOT-VIEWPORT-INDEX.md](HQ-LOT-VIEWPORT-INDEX.md) (batch 78).
+
+Build panel: [ROOM-BUILD-PRESENTATION.md](ROOM-BUILD-PRESENTATION.md). Batch 42.
