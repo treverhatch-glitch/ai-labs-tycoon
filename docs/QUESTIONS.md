@@ -1151,11 +1151,19 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **158–161** regulator (**Q102**), shady/china (**Q102**), incident (**Q91**), rival economy (**Q111–Q115**).
 
-### Q10976–Q11245. Batches 162–165 cross bars? DECIDED: test-only (LOCAL off **`12e765f6`**)
+### Q10976–Q11245. Batches 162–165 cross bars? DECIDED: test-only (**pushed @ `e5d2e62d`** in **162–169** packet)
 
 - **162–165** funding (**Q95**), world-map economy, listings, era (**Q100**).
 
-### Q11246+. Batch 166+ queue? OPEN
+### Q11246–Q11515. Batches 166–169 cross bars? DECIDED: test-only (**162–169** packet)
+
+- **166–169** pop (**Q97–Q98**), freeze (**Q89**), treaty (**Q150–Q153**), capital (**Q90**).
+
+### Q11516–Q11785. Batches 170–173 cross bars? DECIDED: test-only (LOCAL off **`e5d2e62d`**)
+
+- **170–173** model/chip (**Q99**), exit, bubble/acquire (**Q95**), soak (**Q101**).
+
+### Q11786+. Batch 174+ queue? OPEN
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
