@@ -1451,6 +1451,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, lowest morale first as before. The interviewing trait also raises the chance an offer arrives. The talent market's counters work on whoever is courted.
 - Why: otherwise the trait would do nothing in a lab with no star, and a poacher going for someone whose calendar says dentist is the joke.
 
+## CI and tooling
+
+### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`
+
+- Options: (a) keep raising the job cap as the era suite grows; (b) split or filter SimTests on pull requests (e.g. trait by era line); (c) both—headroom now, split later.
+- Recommendation and choice: **(a)** for now. Era/hardening merge refs run the full Release suite in about 36–40 minutes wall time (`internal/simtests-timing-2026-11-24.md`); a **40m** job cap cancelled green runs at the end of the suite, not a hung test. Bump `.github/workflows/rules.yml` `timeout-minutes` from **40** to **60** on `main` so PR heads that merge `main` inherit the budget; re-merge `main` into branches that timed out (e.g. **#48** @ `a2296efe`). Filtered PR CI remains a larger follow-up.
+- Why: cheap, matches measured runtime, and keeps one full-suite bar until the era line is trimmed or split.
+
 ## Open
 
 None.

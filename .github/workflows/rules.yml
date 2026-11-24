@@ -1,6 +1,6 @@
 name: rules
 
-# The rules tests: plain C#, no Unity. Full SimTests on large PR merge refs often takes 15–35 minutes.
+# The rules tests: plain C#, no Unity. Full SimTests on era-sized PR merge refs can take ~35–40 minutes; main-shaped branches are much faster.
 # Runs on pull requests and by hand only. No push trigger and no schedule, so a branch push never starts a run by
 # itself, and a new push to a pull request cancels the run before it.
 on:
@@ -17,7 +17,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
