@@ -18,6 +18,32 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 1) throw new SaveException("Save schema " + fromSchema + " is not known.");
             if (fromSchema < 2) MigrateTo2(c, root);
             if (fromSchema < 3) MigrateTo3(c, root);
+            if (fromSchema < 4) MigrateTo4(c, root);
+            if (fromSchema < 5) MigrateTo5(root);
+            if (fromSchema < 6) MigrateTo6(c, root);
+            if (fromSchema < 7) MigrateTo7(root);
+            if (fromSchema < 8) MigrateTo8(c, root);
+            if (fromSchema < 9) MigrateTo9(root);
+            if (fromSchema < 10) MigrateTo10(c, root);
+            if (fromSchema < 11) MigrateTo11(root);
+            if (fromSchema < 12) MigrateTo12(root);
+            if (fromSchema < 13) MigrateTo13(root);
+            if (fromSchema < 14) MigrateTo14(root);
+            if (fromSchema < 15) MigrateTo15(root);
+            if (fromSchema < 16) MigrateTo16(root);
+            if (fromSchema < 17) MigrateTo17(root);
+            if (fromSchema < 18) MigrateTo18(root);
+            if (fromSchema < 19) MigrateTo19(root);
+            if (fromSchema < 20) MigrateTo20(root);
+            if (fromSchema < 21) MigrateTo21(root);
+            if (fromSchema < 22) MigrateTo22(root);
+            if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 24) MigrateTo24(root);
+            if (fromSchema < 25) MigrateTo25(root);
+            if (fromSchema < 26) MigrateTo26(root);
+            if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 28) MigrateTo28(root);
+            if (fromSchema < 29) MigrateTo29(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -108,6 +134,275 @@ namespace AiLabs.Rules.Sim
                 }
                 JsonPatch.AddIfMissing(lab, "blocs", blocs);
             });
+        }
+
+        /// <summary>
+        /// Schema 4: rival depth. Every lab gets an empty decision log, no feeling about the player and no board fit or ambush. Every
+        /// hold gets a build start time of -1. The vendor appears with every lab at the starting standing and the month's supply split
+        /// evenly. A save that had rivals gets the later-joining rivals of the config as pending; a game with none (a solo game) stays empty.
+        /// </summary>
+        static void MigrateTo4(GameConfig c, JsonValue root)
+        {
+            long tick = JsonPatch.IntOr(root, "tick", 0);
+            int year = GameDate.Year(c.Calendar, (int)tick);
+            int supply = c.Vendor.SupplyInYear(year);
+            int labCount = 0;
+            bool hasRivals = false;
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                labCount++;
+                if (JsonPatch.StrOr(lab, "controller", "") == "Plan") hasRivals = true;
+            });
+
+            var standings = JsonValue.Array();
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "log", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "feelingToPlayer", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "planPausedUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "chipAmbushUntilTick", JsonValue.Of(-1L));
+                JsonPatch.ForEach(lab, "holdings", holding => JsonPatch.AddIfMissing(holding, "hallStartTick", JsonValue.Of(-1L)));
+
+                JsonValue s = JsonValue.Object();
+                s.Set("labId", JsonValue.Of(JsonPatch.IntOr(lab, "id", 0)));
+                s.Set("standing", JsonValue.Of((long)c.Vendor.StandingStart));
+                s.Set("boughtThisMonth", JsonValue.Of(0L));
+                s.Set("allocationThisMonth", JsonValue.Of((long)(supply / labCount)));
+                s.Set("sharePermille", JsonValue.Of(0L));
+                s.Set("fromBuying", JsonValue.Of(0L));
+                s.Set("fromChips", JsonValue.Of(0L));
+                s.Set("trainingChipSeen", JsonValue.Of(false));
+                standings.Add(s);
+            });
+
+            JsonValue vendor = JsonValue.Object();
+            vendor.Set("supplyThisMonth", JsonValue.Of((long)supply));
+            vendor.Set("standings", standings);
+            vendor.Set("log", JsonValue.Array());
+            JsonPatch.AddIfMissing(root, "vendor", vendor);
+
+            var pending = JsonValue.Array();
+            if (hasRivals)
+                foreach (RivalConfig rival in c.Rivals)
+                    if (rival.JoinsYear > year && rival.JoinsYear < RivalConfig.NeverJoins) pending.Add(JsonValue.Of(rival.Id));
+            JsonPatch.AddIfMissing(root, "pendingRivals", pending);
+        }
+
+        /// <summary>Schema 5: each lab gets an empty chip programme, the game an empty foundry, and every vendor standing the listing flag.</summary>
+        static void MigrateTo5(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "chipDesigns", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "softwarePermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "chipOrders", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "chipListings", JsonValue.Array());
+            });
+            JsonPatch.AddIfMissing(root, "foundry", JsonValue.Array());
+            JsonPatch.ForEach(root, "vendor.standings", s => JsonPatch.AddIfMissing(s, "listingSeen", JsonValue.Of(false)));
+        }
+
+        static void MigrateTo6(GameConfig c, JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "endings", JsonValue.Array());
+            long playerId = 0;
+            JsonValue labs = root.Get("labs");
+            if (labs != null && labs.Kind == JsonKind.Array && labs.Items.Count > 0)
+                playerId = JsonPatch.IntOr(labs.Items[0], "id", 0);
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "frontierLevel", JsonValue.Of(0L)));
+            JsonPatch.AddIfMissing(root, "playerLabId", JsonValue.Of(playerId));
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                if (JsonPatch.BoolOr(lab, "bankrupt", false) && JsonPatch.StrOr(lab, "controller", "") == "Player")
+                {
+                    JsonValue record = JsonValue.Object();
+                    record.Set("tick", JsonValue.Of(JsonPatch.IntOr(root, "tick", 0)));
+                    record.Set("endingId", JsonValue.Of("bankrupt"));
+                    record.Set("labId", JsonValue.Of(JsonPatch.IntOr(lab, "id", 0)));
+                    record.Set("choice", JsonValue.Of(""));
+                    record.Set("choiceTick", JsonValue.Of(-1L));
+                    root.Get("endings").Add(record);
+                }
+            });
+        }
+
+        static void MigrateTo7(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "heat", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "stash", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "shadyLockedUntilTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "caseEndsTick", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "shadyOps", JsonValue.Array());
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "corruption", JsonValue.Of(0L)));
+            });
+        }
+
+        static void MigrateTo8(GameConfig c, JsonValue root)
+        {
+            int start = c.Funding.FounderStartPermille;
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "founderSharePermille", JsonValue.Of((long)start));
+                JsonPatch.AddIfMissing(lab, "boardInvestorSeats", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "fundingRounds", JsonValue.Array());
+            });
+        }
+
+        static void MigrateTo9(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs.models", model =>
+            {
+                JsonValue align = model.Get("alignment");
+                int a = align == null ? 0 : (int)align.Int;
+                JsonPatch.AddIfMissing(model, "displayedAlignment", JsonValue.Of((long)a));
+                JsonPatch.AddIfMissing(model, "lastIncidentRung", JsonValue.Of(0L));
+            });
+        }
+
+        static void MigrateTo11(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reservedContracts", JsonValue.Array()));
+            JsonPatch.ForEach(root, "vendor.standings", s =>
+            {
+                JsonPatch.AddIfMissing(s, "queuedGpus", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(s, "queueHoldingId", JsonValue.Of((long)HardwareBatch.Hq));
+            });
+        }
+
+        /// <summary>Q90 bubble meter (stack2). NOTE: rules-side-items also uses schema 12 for sector pricing — renumber on merge.</summary>
+        static void MigrateTo12(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "bubblePermille", JsonValue.Of(0L));
+        }
+
+        /// <summary>Q92 rival public float (stack2).</summary>
+        static void MigrateTo13(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "publicFloatPpm", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Q93 China state deals (stack2).</summary>
+        static void MigrateTo14(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "chinaDealActive", JsonValue.Of(false));
+                JsonPatch.AddIfMissing(lab, "chinaDealPending", JsonValue.Of(false));
+            });
+        }
+
+        /// <summary>Q94 containment + superintelligence endings (stack2, config-only; no new save keys).</summary>
+        static void MigrateTo15(JsonValue root) { }
+
+        /// <summary>Q95 player board lock after investor drama (stack2).</summary>
+        static void MigrateTo16(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "boardLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Q98 gauntlet runner-up streak (stack2).</summary>
+        static void MigrateTo17(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crownRunnerUpStreak", JsonValue.Of(0L)));
+        }
+
+        /// <summary>China deal decline cooldown (Opus review).</summary>
+        static void MigrateTo18(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chinaDealDeclinedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Hatch bubble crash phase (Q103).</summary>
+        static void MigrateTo19(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "bubbleCapitalRaised", JsonValue.Of(0L));
+            JsonPatch.AddIfMissing(root, "bubbleGraceMonths", JsonValue.Of(0L));
+            JsonPatch.AddIfMissing(root, "bubbleCrashMonthsRemaining", JsonValue.Of(0L));
+        }
+
+        /// <summary>Lab acquisition flag (Hatch).</summary>
+        static void MigrateTo20(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "absorbedByLabId", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Reserved on stack2 for era merge (riskClass / founding / talent — schemas 21–23).</summary>
+        static void MigrateTo21(JsonValue root) { }
+
+        static void MigrateTo22(JsonValue root) { }
+
+        static void MigrateTo23(JsonValue root) { }
+
+        /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
+        static void MigrateTo24(JsonValue root)
+        {
+            bool hadCrash = JsonPatch.IntOr(root, "bubbleCrashMonthsRemaining", 0) > 0;
+            JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
+        }
+
+        /// <summary>Reserved on stack2 for era merge (press — schema 25).</summary>
+        static void MigrateTo25(JsonValue root) { }
+
+        /// <summary>Reserved on stack2 for era merge (Gauntlet depth — schema 26).</summary>
+        static void MigrateTo26(JsonValue root) { }
+
+        /// <summary>Reserved on stack2 for era merge (sector trust — schema 27).</summary>
+        static void MigrateTo27(JsonValue root) { }
+
+        static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
+
+        /// <summary>Acquisition and asset-sale ledger lines (Q170).</summary>
+        static void MigrateTo28(JsonValue root)
+        {
+            foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+                JsonPatch.ForEach(root, place, totals =>
+                {
+                    foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
+                });
+        }
+
+        /// <summary>M&amp;A fleet resale lock on hardware batches (Q202).</summary>
+        static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        static void MigrateTo10(GameConfig c, JsonValue root)
+        {
+            string trait = StaffSystem.DefaultTrait(c.StaffPeople);
+            if (string.IsNullOrEmpty(trait) && c.StaffPeople.Traits.Count > 0) trait = c.StaffPeople.Traits[0].Id;
+            int morale = c.StaffPeople.MoraleBaseline;
+            long nextId = JsonPatch.IntOr(root, "nextId", 1);
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonValue pools = lab.Get("staff");
+                var members = JsonValue.Array();
+                if (pools != null && pools.Kind == JsonKind.Array)
+                {
+                    for (int i = 0; i < pools.Items.Count; i++)
+                    {
+                        JsonValue pool = pools.Items[i];
+                        JsonValue roleNode = pool.Get("roleId");
+                        JsonValue countNode = pool.Get("count");
+                        if (roleNode == null || countNode == null) continue;
+                        string roleId = roleNode.Str;
+                        int count = (int)countNode.Int;
+                        for (int k = 0; k < count; k++)
+                        {
+                            JsonValue m = JsonValue.Object();
+                            m.Set("id", JsonValue.Of(nextId++));
+                            m.Set("roleId", JsonValue.Of(roleId));
+                            m.Set("traitId", JsonValue.Of(trait));
+                            m.Set("morale", JsonValue.Of((long)morale));
+                            members.Add(m);
+                        }
+                    }
+                }
+                lab.Set("staff", members);
+            });
+            root.Set("nextId", JsonValue.Of(nextId));
         }
 
         static JsonValue StreamAt(long state)

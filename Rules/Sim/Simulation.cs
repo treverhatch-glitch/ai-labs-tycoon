@@ -73,6 +73,8 @@ namespace AiLabs.Rules.Sim
         /// <summary>Gives a command. A refused command changes nothing and is not journaled.</summary>
         public CommandResult Apply(Command command)
         {
+            if (State.PlayerLabId < 0 && command.Kind != CommandKind.ContinueAfterEnding)
+                return new CommandResult { Ok = false, Error = CommandError.Spectating, Message = "The player is spectating." };
             CommandResult result = CommandProcessor.Apply(Config, State, command);
             if (result.Ok) Journal.Add(State.Tick, command);
             return result;
@@ -86,7 +88,12 @@ namespace AiLabs.Rules.Sim
         {
             LabState lab = State.Lab(labId);
             if (lab == null) throw new ArgumentException("There is no lab " + labId + ".");
-            LabPlanner.Run(Config, State, lab, plan, Apply);
+            LabPlanner.Run(Config, State, lab, plan, cmd =>
+            {
+                CommandResult result = CommandProcessor.Apply(Config, State, cmd);
+                if (result.Ok) Journal.Add(State.Tick, cmd);
+                return result;
+            });
         }
 
         public void StepMany(int weeks)
@@ -105,11 +112,15 @@ namespace AiLabs.Rules.Sim
 
             if (GameDate.IsMonthStart(c.Calendar, tick))
             {
+                RivalSystem.RunMonth(c, state);
+                FundingSystem.RunMonth(c, state);
+                VendorSystem.RunMonth(c, state);
+                ChipSystem.RunMonth(c, state);
                 SiteSystem.RollHeatwaves(c, state);
                 for (int i = 0; i < state.Labs.Count; i++)
                 {
                     LabState lab = state.Labs[i];
-                    if (lab.Controller != LabController.Plan || lab.Bankrupt) continue;
+                    if (lab.Controller != LabController.Plan || lab.Bankrupt || lab.AbsorbedByLabId >= 0) continue;
                     LabPlanner.Run(c, state, lab, c.Rival(lab.RivalId).Plan, ApplyInternal);
                 }
             }
@@ -120,33 +131,60 @@ namespace AiLabs.Rules.Sim
             {
                 LabState lab = state.Labs[i];
                 lab.LastWeek = new WeekReport();
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 TrainingSystem.RunResearch(c, lab, tick);
+                ChipSystem.RunWeek(c, state, lab);
                 TrainingSystem.RunWeek(c, state, lab);
             }
 
             MarketSystem.RunWeek(c, state);
 
             for (int i = 0; i < state.Labs.Count; i++)
-                if (!state.Labs[i].Bankrupt) SafetySystem.RunWeek(c, state, state.Labs[i]);
+            {
+                if (LabQueries.ParticipatesInEconomy(state.Labs[i]))
+                {
+                    SafetySystem.RunWeek(c, state, state.Labs[i]);
+                    StaffSystem.RunWeek(c, state.Labs[i]);
+                    ShadySystem.RunWeek(c, state, state.Labs[i]);
+                    MuseumSystem.RunWeek(c, state.Labs[i]);
+                }
+            }
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
-                if (!state.Labs[i].Bankrupt) Finance.RunWeek(c, state, state.Labs[i]);
+                if (LabQueries.ParticipatesInEconomy(state.Labs[i]))
+                {
+                    Finance.RunWeek(c, state, state.Labs[i]);
+                    ComputeContractSystem.RunWeek(c, state.Labs[i]);
+                }
                 Finance.CloseWeek(state.Labs[i]);
             }
 
             if (GameDate.IsMonthEnd(c.Calendar, tick))
             {
                 for (int i = 0; i < state.Labs.Count; i++)
-                    if (!state.Labs[i].Bankrupt) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
+                {
+                    LabState lab = state.Labs[i];
+                    if (LabQueries.ParticipatesInEconomy(lab)) GovernmentSystem.CloseMonth(c, state, lab);
+                }
+                EndingSystem.TryTreaty(c, state);
+                EndingSystem.TryNationalised(c, state);
+                LabState player = state.Player;
+                if (player != null && LabQueries.ParticipatesInEconomy(player)) ShadySystem.RunMonth(c, state, player);
+                BubbleSystem.RunMonth(c, state);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);
+                AcquisitionSystem.RunMonth(c, state);
+                ShareSystem.RunMonth(c, state);
+                RegulatorSystem.RunMonth(c, state);
+                if (player != null && !player.Bankrupt) ChinaSystem.RunMonth(c, state, player);
             }
 
             if (GameDate.IsYearEnd(c.Calendar, tick))
             {
                 GauntletSystem.RunYear(c, state);
                 MarketSystem.GrowYear(c, state);
+                EndingSystem.TryMonopoly(c, state);
+                EndingSystem.TrySuperintelligence(c, state);
             }
 
             state.Tick = tick + 1;

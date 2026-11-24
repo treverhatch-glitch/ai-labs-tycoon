@@ -20,7 +20,16 @@ namespace AiLabs.Rules.Systems
         public static void RunResearch(GameConfig c, LabState lab, int tick)
         {
             long perResearcher = MathI.MulPermille(c.Research.PointsPerResearcherWeek, EraSystem.AtTick(c, tick).ResearchPermille);
-            long gained = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Research) * perResearcher;
+            long gained = 0;
+            for (int i = 0; i < lab.Staff.Count; i++)
+            {
+                StaffMember person = lab.Staff[i];
+                RoleConfig role = c.Role(person.RoleId);
+                if (role == null || role.Function != RoleFunction.Research) continue;
+                StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
+                int bonus = trait == null ? 0 : trait.ResearchPermille;
+                gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
+            }
             lab.ResearchPoints += gained;
             lab.LastWeek.ResearchGained = gained;
         }
@@ -38,14 +47,15 @@ namespace AiLabs.Rules.Systems
         {
             long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
-                + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille);
+                + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
+                + LabQueries.ContainmentAlignmentBonus(c, lab);
         }
 
         /// <summary>This week's compute going to training. It is zero when nothing is training: idle GPUs serve customers.</summary>
         public static long TrainingCompute(GameConfig c, GameState state, LabState lab)
         {
             if (LabQueries.ActiveRuns(lab) == 0) return 0;
-            return MathI.MulPermille(LabQueries.WeeklyCompute(c, state, lab), lab.TrainingSharePermille);
+            return LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false));
         }
 
         public static CapabilityForecast Forecast(GameConfig c, LabState lab, ModelLineConfig line)
@@ -65,7 +75,7 @@ namespace AiLabs.Rules.Systems
         public static int EstimateWeeks(GameConfig c, GameState state, LabState lab, ModelLineConfig line, int alignmentSharePermille)
         {
             int runs = LabQueries.ActiveRuns(lab) + 1;
-            long training = MathI.MulPermille(LabQueries.WeeklyCompute(c, state, lab), lab.TrainingSharePermille) / runs;
+            long training = LabQueries.TrainingShareOf(c, lab, LabQueries.Split(c, state, lab, false)) / runs;
             long effective = MathI.MulPermille(training, SpeedPermille(c, lab));
             long progress = effective - MathI.MulPermille(effective, alignmentSharePermille);
             if (progress <= 0) return -1;
@@ -78,8 +88,8 @@ namespace AiLabs.Rules.Systems
             long training = TrainingCompute(c, state, lab);
             lab.LastWeek.Compute = total;
             lab.LastWeek.TrainingCompute = training;
-            long servingBase = LabQueries.WeeklyServingBase(c, state, lab);
-            lab.LastWeek.ServingCompute = servingBase - MathI.MulPermille(servingBase, training == 0 ? 0 : lab.TrainingSharePermille);
+            ComputeSplit toCustomers = LabQueries.Split(c, state, lab, true);
+            lab.LastWeek.ServingCompute = toCustomers.General - MathI.MulPermille(toCustomers.General, training == 0 ? 0 : lab.TrainingSharePermille) + toCustomers.Inference;
 
             int runs = LabQueries.ActiveRuns(lab);
             if (runs == 0) return;
@@ -121,6 +131,10 @@ namespace AiLabs.Rules.Systems
             model.Capability = f.Total + model.CapLuck;
 
             model.Alignment = AlignmentFor(c, model.RequiredCompute, model.AlignmentCompute);
+            model.DisplayedAlignment = model.Alignment;
+            ModelState previous = LabQueries.LatestOfLine(lab, model.LineId);
+            if (previous != null && previous.Id != model.Id)
+                model.Corruption = (int)MathI.MulPermille(previous.Corruption, c.Shady.CarryCorruptionPermille);
             model.ProgressCompute = model.RequiredCompute;
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;

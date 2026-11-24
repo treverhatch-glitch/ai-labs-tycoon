@@ -35,6 +35,9 @@ namespace AiLabs.Rules.Sim
             player.FamilyName = Or(options.FamilyName, start.FamilyName);
             player.Controller = LabController.Player;
             player.PlanStartTick = startTick;
+            player.PlanPausedUntilTick = -1;
+            player.BoardLockedUntilTick = -1;
+            player.ChipAmbushUntilTick = -1;
             player.RivalId = "";
             player.Cash = MathI.MulPermille(start.Cash, era.StartCashPermille);
             player.Ledger.StartCash = player.Cash;
@@ -45,32 +48,24 @@ namespace AiLabs.Rules.Sim
             player.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
             player.Techs.AddRange(era.StartTechs);
             player.TrainingSharePermille = start.TrainingSharePermille;
+            player.FounderSharePermille = c.Funding.FounderStartPermille;
+            player.BoardInvestorSeats = 0;
+            player.CrownRunnerUpStreak = 0;
             state.Labs.Add(player);
+            state.PlayerLabId = player.Id;
+            state.Endings = new List<EndingRecord>();
 
+            int startYear = GameDate.Year(c.Calendar, startTick);
             for (int i = 0; i < c.Rivals.Count; i++)
             {
                 RivalConfig rival = c.Rivals[i];
                 if (options.RivalIds != null && !options.RivalIds.Contains(rival.Id)) continue;
-
-                var lab = new LabState();
-                lab.Id = state.TakeId();
-                lab.Name = rival.Name;
-                lab.Leader = rival.Leader;
-                lab.FamilyName = rival.FamilyName;
-                lab.Controller = LabController.Plan;
-                lab.RivalId = rival.Id;
-                lab.PlanStartTick = startTick + rival.Plan.StartDelayWeeks
-                    + (rival.Plan.StartJitterWeeks > 0 ? state.Rng.Rivals.Range(0, rival.Plan.StartJitterWeeks) : 0);
-                lab.Cash = MathI.MulPermille(rival.StartCash, era.StartCashPermille);
-                lab.Ledger.StartCash = lab.Cash;
-                lab.Reputation = rival.Reputation;
-                lab.GrantPerWeek = MathI.MulPermille(rival.BackerPerWeek, era.StartGrantPermille);
-                lab.GrantEndsTick = -1;
-                lab.HomeBlocId = rival.HomeBlocId;
-                lab.LotId = IsFirst(c, era) ? rival.LotId : era.StartLotId;
-                lab.Techs.AddRange(era.StartTechs);
-                lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
-                state.Labs.Add(lab);
+                if (rival.JoinsYear > startYear)
+                {
+                    if (rival.JoinsYear < RivalConfig.NeverJoins) state.PendingRivals.Add(rival.Id);
+                    continue;
+                }
+                AddRival(c, state, rival, era, false);
             }
 
             if (options.RivalIds != null)
@@ -81,7 +76,48 @@ namespace AiLabs.Rules.Sim
             for (int i = 0; i < c.World.Sites.Count; i++) state.Sites.Add(NewSite(c.World.Sites[i].Id));
             for (int i = 0; i < state.Labs.Count; i++)
                 for (int k = 0; k < c.World.Blocs.Count; k++) state.Labs[i].Blocs.Add(NewStanding(c.World.Blocs[k].Id));
+            VendorSystem.NewState(c, state);
             return state;
+        }
+
+        /// <summary>
+        /// Makes a rival's lab. At the start of a game it gets the era's share of the starting money and the era's start techs. A lab that
+        /// joins later (<paramref name="arrival"/>) comes with its full starting cash, the era's lot and every tech of the eras before.
+        /// </summary>
+        public static LabState AddRival(GameConfig c, GameState state, RivalConfig rival, EraConfig era, bool arrival)
+        {
+            var lab = new LabState();
+            lab.Id = state.TakeId();
+            lab.Name = rival.Name;
+            lab.Leader = rival.Leader;
+            lab.FamilyName = rival.FamilyName;
+            lab.Controller = LabController.Plan;
+            lab.RivalId = rival.Id;
+            lab.PlanStartTick = state.Tick + rival.Plan.StartDelayWeeks
+                + (rival.Plan.StartJitterWeeks > 0 ? state.Rng.Rivals.Range(0, rival.Plan.StartJitterWeeks) : 0);
+            lab.Cash = arrival ? rival.StartCash : MathI.MulPermille(rival.StartCash, era.StartCashPermille);
+            lab.Ledger.StartCash = lab.Cash;
+            lab.Reputation = rival.Reputation;
+            lab.GrantPerWeek = arrival ? rival.BackerPerWeek : MathI.MulPermille(rival.BackerPerWeek, era.StartGrantPermille);
+            lab.GrantEndsTick = -1;
+            lab.HomeBlocId = rival.HomeBlocId;
+            lab.LotId = !arrival && IsFirst(c, era) ? rival.LotId : era.StartLotId;
+            lab.Techs.AddRange(arrival ? RivalSystem.CatchUpTechs(c, era) : era.StartTechs);
+            lab.TrainingSharePermille = rival.Plan.TrainingSharePermille;
+            lab.FounderSharePermille = c.Funding.FounderStartPermille;
+            lab.BoardInvestorSeats = 0;
+            lab.CrownRunnerUpStreak = 0;
+            if (c.Shares != null) lab.PublicFloatPpm = c.Shares.RivalStartPublicFloatPpm;
+            lab.PlanPausedUntilTick = -1;
+            lab.BoardLockedUntilTick = -1;
+            lab.ChipAmbushUntilTick = -1;
+            state.Labs.Add(lab);
+            if (arrival)
+            {
+                for (int k = 0; k < c.World.Blocs.Count; k++) lab.Blocs.Add(NewStanding(c.World.Blocs[k].Id));
+                VendorSystem.EnsureStanding(c, state, lab.Id);
+            }
+            return lab;
         }
 
         static bool IsFirst(GameConfig c, EraConfig era) { return c.Eras[0] == era; }
@@ -124,5 +160,41 @@ namespace AiLabs.Rules.Sim
         }
 
         static string Or(string value, string fallback) { return string.IsNullOrEmpty(value) ? fallback : value; }
+
+        /// <summary>A new player lab after selling the old one: garage start, era techs, vendor standing, sale cash on the ledger.</summary>
+        public static LabState FoundAgain(GameConfig c, GameState state, string name, string leader, string family, long price)
+        {
+            PlayerStartConfig start = c.PlayerStart;
+            EraConfig era = EraSystem.AtTick(c, state.Tick);
+            var fresh = new LabState();
+            fresh.Id = state.TakeId();
+            fresh.Name = name;
+            fresh.Leader = leader;
+            fresh.FamilyName = family;
+            fresh.Controller = LabController.Player;
+            fresh.PlanStartTick = state.Tick;
+            fresh.RivalId = "";
+            fresh.Cash = 0;
+            fresh.Ledger.StartCash = 0;
+            Finance.Earn(fresh, LedgerLine.CapitalIn, price);
+            fresh.Reputation = start.Reputation;
+            fresh.GrantPerWeek = start.GrantWeeks > 0 ? MathI.MulPermille(start.GrantPerWeek, era.StartGrantPermille) : 0;
+            fresh.GrantEndsTick = start.GrantWeeks > 0 ? state.Tick + start.GrantWeeks : -1;
+            fresh.HomeBlocId = start.HomeBlocId;
+            fresh.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
+            fresh.Techs.AddRange(RivalSystem.CatchUpTechs(c, era));
+            fresh.Techs.AddRange(era.StartTechs);
+            fresh.TrainingSharePermille = start.TrainingSharePermille;
+            fresh.FounderSharePermille = c.Funding.FounderStartPermille;
+            fresh.BoardInvestorSeats = 0;
+            fresh.CrownRunnerUpStreak = 0;
+            fresh.FundingRounds = new List<string>();
+            fresh.PlanPausedUntilTick = -1;
+            fresh.BoardLockedUntilTick = -1;
+            fresh.ChipAmbushUntilTick = -1;
+            for (int k = 0; k < c.World.Blocs.Count; k++) fresh.Blocs.Add(NewStanding(c.World.Blocs[k].Id));
+            VendorSystem.EnsureStanding(c, state, fresh.Id);
+            return fresh;
+        }
     }
 }

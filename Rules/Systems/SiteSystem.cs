@@ -22,7 +22,7 @@ namespace AiLabs.Rules.Systems
             for (int l = 0; l < state.Labs.Count; l++)
             {
                 LabState lab = state.Labs[l];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 for (int h = 0; h < lab.Holdings.Count; h++)
                 {
                     Holding holding = lab.Holdings[h];
@@ -30,8 +30,11 @@ namespace AiLabs.Rules.Systems
                     {
                         holding.HallKw += holding.HallBuildingKw;
                         Events.Add(state, EventKind.HallBuilt, lab.Id, holding.Id, holding.HallBuildingKw, holding.SiteId);
+                        if (holding.HallStartTick >= 0 && tick - holding.HallStartTick <= c.Rivalry.FastBuildWeeks)
+                            Events.Add(state, EventKind.FastBuild, lab.Id, holding.Id, tick - holding.HallStartTick, holding.SiteId);
                         holding.HallBuildingKw = 0;
                         holding.HallDoneTick = -1;
+                        holding.HallStartTick = -1;
                     }
                     if (holding.DealDoneTick >= 0 && tick >= holding.DealDoneTick)
                     {
@@ -66,7 +69,7 @@ namespace AiLabs.Rules.Systems
                 for (int l = 0; l < state.Labs.Count; l++)
                 {
                     LabState lab = state.Labs[l];
-                    if (lab.Bankrupt) continue;
+                    if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                     for (int h = 0; h < lab.Holdings.Count; h++)
                         if (lab.Holdings[h].SiteId == config.Id) { Events.Add(state, EventKind.Heatwave, lab.Id, lab.Holdings[h].Id, hw.Weeks, config.Id); break; }
                 }

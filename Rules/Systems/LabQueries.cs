@@ -4,16 +4,32 @@ using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
 {
+    /// <summary>One week's compute, split by how it can be used.</summary>
+    public struct ComputeSplit
+    {
+        /// <summary>Rented and owned GPUs and training chips: what a training run draws on.</summary>
+        public long General;
+        /// <summary>The part of <see cref="General"/> that is the lab's own training chips.</summary>
+        public long OwnChips;
+        /// <summary>Inference chips, which only serve customers.</summary>
+        public long Inference;
+
+        public long Total { get { return General + Inference; } }
+    }
+
     /// <summary>
     /// Read-only answers about a lab, worked out from the state every time they are asked.
     /// Nothing here is cached, so the state stays the single source of truth.
     /// </summary>
     public static class LabQueries
     {
+        /// <summary>False when the lab is bankrupt or absorbed into another — it should not trade, earn or spend.</summary>
+        public static bool ParticipatesInEconomy(LabState lab) => lab != null && !lab.Bankrupt && lab.AbsorbedByLabId < 0;
         public static int StaffCount(LabState lab, string roleId)
         {
-            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) return lab.Staff[i].Count;
-            return 0;
+            int n = 0;
+            for (int i = 0; i < lab.Staff.Count; i++) if (lab.Staff[i].RoleId == roleId) n++;
+            return n;
         }
 
         public static int StaffByFunction(GameConfig c, LabState lab, RoleFunction function)
@@ -22,17 +38,12 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
-                if (role != null && role.Function == function) n += lab.Staff[i].Count;
+                if (role != null && role.Function == function) n++;
             }
             return n;
         }
 
-        public static int TotalStaff(LabState lab)
-        {
-            int n = 0;
-            for (int i = 0; i < lab.Staff.Count; i++) n += lab.Staff[i].Count;
-            return n;
-        }
+        public static int TotalStaff(LabState lab) { return lab.Staff.Count; }
 
         public static int SeatsInRoom(GameConfig c, RoomState room)
         {
@@ -67,12 +78,67 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
+        public static int ContainmentTiles(GameConfig c, LabState lab)
+        {
+            ContainmentConfig cfg = c.Safety == null ? null : c.Safety.Containment;
+            if (cfg == null || string.IsNullOrEmpty(cfg.RoomId)) return 0;
+            int n = 0;
+            for (int i = 0; i < lab.Rooms.Count; i++)
+            {
+                if (lab.Rooms[i].TypeId == cfg.RoomId) n += lab.Rooms[i].Tiles;
+            }
+            return n;
+        }
+
+        public static int ContainmentAlignmentBonus(GameConfig c, LabState lab)
+        {
+            ContainmentConfig cfg = c.Safety == null ? null : c.Safety.Containment;
+            if (cfg == null || cfg.AlignmentPermillePerTile <= 0) return 0;
+            int bonus = ContainmentTiles(c, lab) * cfg.AlignmentPermillePerTile;
+            return cfg.AlignmentCapPermille > 0 ? (int)MathI.Min(cfg.AlignmentCapPermille, bonus) : bonus;
+        }
+
+        public static ModelState BestReleasedModel(LabState lab)
+        {
+            ModelState best = null;
+            for (int i = 0; i < lab.Models.Count; i++)
+            {
+                ModelState m = lab.Models[i];
+                if (m.Status != ModelStatus.Released) continue;
+                if (best == null || m.Capability > best.Capability) best = m;
+            }
+            return best;
+        }
+
         /// <summary>Hardware units the lab owns at one place: -1 for the HQ's racks, else a holding's id.</summary>
         public static int OwnedUnits(LabState lab, int holdingId)
         {
             int n = 0;
             for (int i = 0; i < lab.Fleet.Count; i++) if (lab.Fleet[i].HoldingId == holdingId) n += lab.Fleet[i].Count;
             return n;
+        }
+
+        /// <summary>GPUs the lab owns at one place, not counting its chips.</summary>
+        public static int OwnedGpuUnits(LabState lab, int holdingId)
+        {
+            int n = 0;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+                if (lab.Fleet[i].HoldingId == holdingId && lab.Fleet[i].ChipDesignId < 0) n += lab.Fleet[i].Count;
+            return n;
+        }
+
+        /// <summary>Chips the lab has on order at the foundry, not yet delivered.</summary>
+        public static int ChipsOnOrder(LabState lab)
+        {
+            int n = 0;
+            for (int i = 0; i < lab.ChipOrders.Count; i++) n += lab.ChipOrders[i].Count;
+            return n;
+        }
+
+        /// <summary>Whether the lab knows the tech a room type needs, if it needs one.</summary>
+        public static bool RoomUnlocked(LabState lab, RoomTypeConfig type)
+        {
+            return string.IsNullOrEmpty(type.RequiresTech) || HasTech(lab, type.RequiresTech);
         }
 
         /// <summary>Every hardware unit the lab owns, wherever it stands.</summary>
@@ -121,24 +187,40 @@ namespace AiLabs.Rules.Systems
         /// Compute the lab has this week: rented GPUs of the current generation plus every batch it owns, each at its own
         /// speed. Hardware at a site in a heatwave runs slower.
         /// </summary>
-        public static long WeeklyCompute(GameConfig c, GameState state, LabState lab) { return Compute(c, state, lab, false); }
+        public static long WeeklyCompute(GameConfig c, GameState state, LabState lab) { return Split(c, state, lab, false).Total; }
 
         /// <summary>
         /// The same compute as customers see it: hardware at a site loses the site's latency share on the way to them.
         /// Training is not served to anyone, so it never loses it.
         /// </summary>
-        public static long WeeklyServingBase(GameConfig c, GameState state, LabState lab) { return Compute(c, state, lab, true); }
+        public static long WeeklyServingBase(GameConfig c, GameState state, LabState lab) { return Split(c, state, lab, true).Total; }
 
-        static long Compute(GameConfig c, GameState state, LabState lab, bool forCustomers)
+        /// <summary>
+        /// The week's compute in the parts that train differently: general compute (GPUs, rented or owned, and training chips),
+        /// the part of it that is the lab's own training chips, and inference chips, which only ever serve.
+        /// </summary>
+        public static ComputeSplit Split(GameConfig c, GameState state, LabState lab, bool forCustomers)
         {
-            long total = (long)lab.RentedGpus * CurrentGeneration(c, state.Tick).ComputePerGpuWeek;
+            var split = new ComputeSplit();
+            GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
+            split.General = (long)lab.RentedGpus * gen.ComputePerGpuWeek;
+            split.General += (long)ComputeContractSystem.ReservedGpus(lab) * gen.ComputePerGpuWeek;
             int throttle = WorldQueries.HeatwaveThrottle(c, lab);
             for (int i = 0; i < lab.Fleet.Count; i++)
             {
                 HardwareBatch batch = lab.Fleet[i];
-                GpuGenerationConfig gen = c.Compute.Generation(batch.GpuGenId);
-                if (gen == null) continue;
-                long part = batch.Count * (long)gen.ComputePerGpuWeek;
+                long part;
+                bool chip = batch.ChipDesignId >= 0;
+                if (chip)
+                {
+                    part = ChipQueries.BatchCompute(c, state, batch);
+                }
+                else
+                {
+                    GpuGenerationConfig batchGen = c.Compute.Generation(batch.GpuGenId);
+                    if (batchGen == null) continue;
+                    part = batch.Count * (long)batchGen.ComputePerGpuWeek;
+                }
                 if (batch.HoldingId != HardwareBatch.Hq)
                 {
                     Holding holding = lab.Holding(batch.HoldingId);
@@ -149,9 +231,28 @@ namespace AiLabs.Rules.Systems
                         if (forCustomers) part = MathI.MulPermille(part, MathI.Permille - site.LatencyPermille);
                     }
                 }
-                total += part;
+                if (!chip || ChipQueries.BatchTrains(c, state, batch))
+                {
+                    split.General += part;
+                    if (chip && batch.DesignLabId == lab.Id) split.OwnChips += part;
+                }
+                else
+                {
+                    split.Inference += part;
+                }
             }
-            return total;
+            return split;
+        }
+
+        /// <summary>
+        /// What goes to training when a run is active: the share of general compute, with the part from the lab's own training
+        /// chips counting a little more (the models are tuned to them). Inference chips never train.
+        /// </summary>
+        public static long TrainingShareOf(GameConfig c, LabState lab, ComputeSplit split)
+        {
+            long bought = MathI.MulPermille(split.General - split.OwnChips, lab.TrainingSharePermille);
+            long own = MathI.MulPermille(split.OwnChips, lab.TrainingSharePermille);
+            return bought + MathI.MulPermille(own, MathI.Permille + c.Chips.InHouseTrainingBonusPermille);
         }
 
         /// <summary>
@@ -160,12 +261,17 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static bool ExportAllowed(GameConfig c, GameState state, LabState lab, int tier, string destBlocId)
         {
+            return ExportAllowedFrom(c, state, lab.HomeBlocId, tier, destBlocId);
+        }
+
+        public static bool ExportAllowedFrom(GameConfig c, GameState state, string homeBlocId, int tier, string destBlocId)
+        {
             int year = GameDate.Year(c.Calendar, state.Tick);
             for (int i = 0; i < c.World.ExportRules.Count; i++)
             {
                 ExportRuleConfig rule = c.World.ExportRules[i];
                 if (year < rule.FromYear || tier <= rule.MaxTier) continue;
-                if (rule.HomeBlocs.Contains(lab.HomeBlocId) && rule.DestBlocs.Contains(destBlocId)) return false;
+                if (rule.HomeBlocs.Contains(homeBlocId) && rule.DestBlocs.Contains(destBlocId)) return false;
             }
             return true;
         }
@@ -183,7 +289,33 @@ namespace AiLabs.Rules.Systems
                 for (int k = 0; k < tech.Effects.Count; k++)
                     if (tech.Effects[k].Kind == kind) total += tech.Effects[k].Amount;
             }
+            if (kind == TechEffectKind.CapabilityPermille)
+                total += lab.FrontierLevel * c.Endings.Frontier.CapabilityPermillePerLevel;
             return total;
+        }
+
+        /// <summary>A tech that makes the lab's alignment work count for more.</summary>
+        public static bool IsSafetyTech(TechConfig tech)
+        {
+            for (int i = 0; i < tech.Effects.Count; i++) if (tech.Effects[i].Kind == TechEffectKind.AlignmentPermille) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// What a tech costs this lab in research points. A safety tech that a lab publishing its safety research already has
+        /// costs everybody else less.
+        /// </summary>
+        public static long TechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
+        {
+            if (!IsSafetyTech(tech)) return tech.Cost;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState other = state.Labs[i];
+                if (other.Id == lab.Id || other.Controller != LabController.Plan || !HasTech(other, tech.Id)) continue;
+                RivalConfig rival = c.Rival(other.RivalId);
+                if (rival != null && rival.Plan.PublishesSafetyResearch) return MathI.MulPermille(tech.Cost, MathI.Permille - c.Rivalry.PublishedDiscountPermille);
+            }
+            return tech.Cost;
         }
 
         public static bool LineUnlocked(GameConfig c, LabState lab, string lineId)
@@ -264,6 +396,7 @@ namespace AiLabs.Rules.Systems
         {
             if (model.Status != ModelStatus.Released) return ModelMood.Healthy;
             if (IsGlitching(c, model, tick)) return ModelMood.Glitching;
+            if (model.Corruption >= c.Shady.CorruptedMood) return ModelMood.Corrupted;
             if (lab.LastWeek.ServingDemand > 0 && lab.LastWeek.ServedPermille < MathI.Permille) return ModelMood.Overworked;
             return ModelMood.Healthy;
         }
@@ -274,10 +407,7 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long Quality(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
-            long weight = sector.CapabilityWeightPermille + MathI.MulPermille(sector.SafetyWeightPermille, model.Alignment);
-            long quality = MathI.MulPermille(model.Capability, weight);
-            if (IsGlitching(c, model, tick)) quality = MathI.MulPermille(quality, c.Safety.GlitchQualityPermille);
-            return quality;
+            return DisplayQueries.Quality(c, sector, model, tick);
         }
 
         public static long WeeklySalaries(GameConfig c, LabState lab)
@@ -286,7 +416,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
-                if (role != null) total += role.WeeklySalary * lab.Staff[i].Count;
+                if (role != null) total += role.WeeklySalary;
             }
             return total;
         }
@@ -304,7 +434,9 @@ namespace AiLabs.Rules.Systems
 
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
-            return CurrentGeneration(c, state.Tick).RentPerGpuWeek * lab.RentedGpus;
+            GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
+            long rent = gen.RentPerGpuWeek * lab.RentedGpus;
+            return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab) + ChipQueries.WeeklyCloudChipRent(c, state, lab);
         }
 
         /// <summary>Upkeep of the hardware racked at the HQ, by each batch's own generation. Hardware at a site pays for power instead.</summary>
@@ -323,7 +455,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>What the lab pays every week just to stand still.</summary>
         public static long WeeklyRunningCost(GameConfig c, GameState state, LabState lab)
         {
-            return WeeklySalaries(c, lab) + WeeklyRoomUpkeep(c, lab) + WeeklyGpuRent(c, state, lab) + WeeklyGpuUpkeep(c, lab) + WorldQueries.WeeklyPowerBill(c, lab);
+            return WeeklySalaries(c, lab) + WeeklyRoomUpkeep(c, lab) + WeeklyGpuRent(c, state, lab) + WeeklyGpuUpkeep(c, lab) + WorldQueries.WeeklyPowerBill(c, state, lab);
         }
 
         public static bool SectorOpen(GameConfig c, SectorConfig sector, int tick)

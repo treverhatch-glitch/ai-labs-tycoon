@@ -143,10 +143,23 @@ Parody labs, each built on an archetype with its own plan, strengths and blind s
 | OpenAye | Jam Saltmen | First-to-market showman. Ships everything, burns cash, safety scandals. | ChatGBT |
 | AntHopticsAI | Durian Amodayo | Careful sniper. Trusted, publishes safety research, slow to ship. | Clause |
 | xAy | Elton Husk | Rocket billionaire. Limitless cash, builds a data centre in a weekend. | Grokk |
-| Envydia | Jensun Hwang | The chip baron in the leather jacket. | sells the GPUs |
+| Goggle DeepMined | Sunder Pitchai | The sleeping giant (joins 2010). Researcher-heavy, slow to ship, first to its own chips. | Gemeny |
+| DeepSneak | The Quiet Committee | The lean lab (joins 2023, home `china`). Engineer-heavy, short runs, lives under export rules. | Sneak |
+| Metta | Marka Zuckerg | The social graph (joins 2007). Rents, ships consumer-facing models fast. | Facehook |
+| Macrosoft | Taya Nadeva | The landlord (joins 2012). Owns halls, buys listings, enterprise sectors. | Copilot |
+| Palantear | K. Palant | The gov-tech bench (joins 2017). High release gate, publishes safety research. | Gotham |
+| Envydia | Jensun Hwang | The chip baron in the leather jacket. A vendor, not a lab: it rations the GPUs by standing. | sells the GPUs |
 
-More arrive with the eras (Goggle DeepMined, Macrosoft, Metta, DeepSneak, Palantear and others; see the bible,
-chapter 11).
+More arrivals may come with later expansions (see the bible, chapter 11). Rival detail is in
+[content/rivals.md](content/rivals.md).
+
+**Rivals explain themselves.** Each plan-run lab keeps a bounded log (60 lines) of what it did and the numbers behind it
+(`DecisionText` builds the sentence from config templates); decisions *not* to act (skipping a run, holding a model
+back) are logged once a quarter per line. Rivals have a feeling toward the player (-1000 to 1000) that falls when the
+player wins and drifts back; below -500 they lobby the player's home government a little each month. Each has a few
+signature behaviours as plan data (a release gate, published safety research, board drama, building halls fast).
+Envydia hands out GPUs by standing, charges by standing, holds a keynote each March a generation opens (that month's
+supply halves) and writes its own log. Rivals that own GPUs swap batches two generations old for the current one.
 
 **Parody guardrails.** Near-miss names only, never a real name. Original character designs, no real logos. A parody
 boss never commits a crime and no text puts invented words in a real person's mouth. A test keeps real names out of
@@ -212,18 +225,21 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Time | Weekly ticks from 1995 (or 2009), endless; nine eras as data (1995 to 2033) | Rules that shift per era, not just costs |
 | HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 24 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, press, device workshop) |
 | People | Role pools (17 roles across six functions: research, engineering, safety, sales, infrastructure, policy), each needing a desk in its own room | Named staff with traits, morale and poaching |
-| Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue, own chips |
-| World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze) | Chip-shortage events, protests, the Heat meter and investigations |
+| Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue |
+| World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze). Audit can open a shady investigation | Chip-shortage events, protests |
+| Chips | The chip design screen (`docs/content/chips.md`): ten techs, a design lab and a hardware test lab, one design at a time picked from a target (inference or training), a foundry node (28 to 3 nm), a die, a number format, memory and cooling; the derived compute, kilowatts, points and wafer cost are whole numbers (Q59). Architects finish the points, tape-out costs money and may need a respin, yield ramps after the first run, and every node has a shared monthly foundry room. Chips are delivered to halls only, feed compute through the maker's software level, and training chips run 15% faster in the lab that made them. Labs can list chips for others; Envydia takes standing for the first training chip, each delivery and the first listing, raises its price for a lab on its own training chips, ambushes at the keynote, and courts the others when one lab runs 30% on its own chips | Cloud deals for renting labs, chip shortages, chiplets and exotic nodes |
 | Research | Research points from researchers; 81 techs across nine eras, each opening with its era, with prerequisites | Branching trees, dead ends, patents |
 | Models | Mini, Mid and Flagship lines; versions; capability with visible parts; a safety meter per model; Healthy, Overworked, Glitching | Capability domains, qualities, disposition, specialists |
 | Training | A run needs compute over weeks; the share spent on alignment fills the safety meter and slows the run | Recipes, data mix, failed runs |
 | Sectors | 34 sectors from Game AI Licensing and Chess & Puzzle Bots (1995) to Space Compute (2034); a pool grows only after it opens and slows every year | Trust, sector-specific incidents, specialist lines |
 | Market | Customers move gradually toward the better, safer, better-sold model; serving customers needs compute | Pricing, open weights, trust |
-| Safety | Incidents by the safety meter: reputation loss, a fine, a glitching model | The six-rung ladder, the alignment gap, endings |
+| Safety | Incidents by the safety meter (corruption raises odds): reputation loss, a fine, Glitching and Corrupted mood | The six-rung ladder, the alignment gap |
+| Endings | Bankrupt bailout, sell the lab (found-again or spectate), monopoly, handcuffs; `PlayerLabId`; frontier research and museum prune | More ending stubs (ousted, paperclipped, …) |
+| Shady | Eight contract cards, stash, launder, Heat, monthly investigations, model corruption; player only | Escape rungs tied to corruption |
 | Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
-| Rivals | OpenAye, AntHopticsAI and xAy with their own plans (xAy builds data centres); Envydia sells the GPUs | The full cast with decision logs |
+| Rivals | OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak (2023) as arrivals; decision logs with reason codes, feelings toward the player, signature behaviours as plan data; Envydia as a vendor with monthly allocation by standing, a keynote and its own log | The rest of the cast, cloud deals for renting labs |
 | Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
-| Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 3 with migrations from 1 and 2 (fixtures in `tools/SimTests/Fixtures`) | The same |
+| Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 5 with migrations from 1, 2, 3 and 4 (fixtures in `tools/SimTests/Fixtures`) | The same |
 
 ### The bible's first-playable checks
 
@@ -236,5 +252,5 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Gap to incidents: the incident rate rises as the safety meter falls | Tested |
 | Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
 | Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
-| Bot balance over 200 games and 3 presets | A 40-world autopilot soak for now |
+| Bot balance over 200 games and 3 presets | `BalanceSoak` + `BalanceTests` (CI default 24/preset; `BALANCE_SOAK_FULL` for 200) |
 | Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |

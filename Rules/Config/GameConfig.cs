@@ -6,9 +6,9 @@ namespace AiLabs.Rules.Config
     // Every tunable number of the game lives in these classes and is loaded from Rules/Data/default-config.json.
     // Units: money in whole dollars, rates in permille (1000 = 100%), time in weeks (one tick is one week).
 
-    public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy }
+    public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy, ChipDesign }
 
-    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy }
+    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest }
 
     public enum TechEffectKind
     {
@@ -21,7 +21,11 @@ namespace AiLabs.Rules.Config
         /// <summary>Makes a model line available to train. <see cref="TechEffectConfig.Id"/> names the line.</summary>
         UnlockLine,
         /// <summary>Takes this much off the part of a power bill that cooling adds, and halves heatwave throttling at 300 or more.</summary>
-        CoolingPermille
+        CoolingPermille,
+        /// <summary>Lets the lab design chips for this target. <see cref="TechEffectConfig.Id"/> names the chip target.</summary>
+        UnlockChipTarget,
+        /// <summary>Adds to the maturity of the lab's chip software, in permille, on top of what its architects build.</summary>
+        SoftwarePermille
     }
 
     public sealed class GameConfig : ISync
@@ -41,7 +45,19 @@ namespace AiLabs.Rules.Config
         public SafetyConfig Safety;
         public MarketConfig Market;
         public FinanceConfig Finance;
+        public FundingConfig Funding;
+        public BubbleConfig Bubble;
+        public SharesConfig Shares;
+        public RegulatorsConfig Regulators;
+        public StaffPeopleConfig StaffPeople;
         public GauntletConfig Gauntlet;
+        public RivalryConfig Rivalry;
+        public VendorConfig Vendor;
+        public ChipsConfig Chips;
+        public EndingsConfig Endings;
+        public ShadyConfig Shady;
+        public AcquisitionConfig Acquisitions;
+        public ModelSalesConfig ModelSales;
         public List<RivalConfig> Rivals;
         /// <summary>A sensible standing plan for the player's lab: the autopilot the balance bots and the console tool use.</summary>
         public PlanConfig Autopilot;
@@ -65,7 +81,19 @@ namespace AiLabs.Rules.Config
             s.Obj("safety", ref Safety);
             s.Obj("market", ref Market);
             s.Obj("finance", ref Finance);
+            s.Obj("funding", ref Funding);
+            s.Obj("bubble", ref Bubble);
+            s.Obj("shares", ref Shares);
+            s.Obj("regulators", ref Regulators);
+            s.Obj("staffPeople", ref StaffPeople);
             s.Obj("gauntlet", ref Gauntlet);
+            s.Obj("rivalry", ref Rivalry);
+            s.Obj("vendor", ref Vendor);
+            s.Obj("chips", ref Chips);
+            s.Obj("endings", ref Endings);
+            s.Obj("shady", ref Shady);
+            s.Obj("acquisitions", ref Acquisitions);
+            s.Obj("modelSales", ref ModelSales);
             s.ObjList("rivals", ref Rivals);
             s.Obj("autopilot", ref Autopilot);
             s.ObjList("worldEvents", ref WorldEvents);
@@ -156,6 +184,8 @@ namespace AiLabs.Rules.Config
         public List<string> StartTechs;
         /// <summary>Incident headlines for this era; <c>{model}</c> is the model's name.</summary>
         public List<string> IncidentHeadlines;
+        /// <summary>Multiplies the base weekly incident chance while this era is active (1000 = unchanged).</summary>
+        public int IncidentLoadPermille;
 
         public string Id { get { return IdValue; } }
 
@@ -176,6 +206,7 @@ namespace AiLabs.Rules.Config
             s.Str("startLotId", ref StartLotId);
             s.StrList("startTechs", ref StartTechs);
             s.StrList("incidentHeadlines", ref IncidentHeadlines);
+            s.Int("incidentLoadPermille", ref IncidentLoadPermille);
         }
     }
 
@@ -296,6 +327,8 @@ namespace AiLabs.Rules.Config
         public int MinHeight;
         public long BuildCostPerTile;
         public long UpkeepPerTileWeek;
+        /// <summary>A tech the lab must know before it may build this room, or empty.</summary>
+        public string RequiresTech;
 
         public string Id { get { return IdValue; } }
 
@@ -304,6 +337,7 @@ namespace AiLabs.Rules.Config
             s.Str("id", ref IdValue);
             s.Str("name", ref Name);
             s.Str("era", ref Era);
+            s.Str("requiresTech", ref RequiresTech);
             s.Enum("purpose", ref Purpose);
             s.Str("seatsRole", ref SeatsRole);
             s.Int("tilesPerSeat", ref TilesPerSeat);
@@ -329,6 +363,10 @@ namespace AiLabs.Rules.Config
         public int GenerationDecayPermille;
         /// <summary>What it costs to move one unit of hardware between locations.</summary>
         public long MoveCostPerUnit;
+        /// <summary>Weekly rent on a reserved contract, as a share of the spot rental price.</summary>
+        public int ReservedRentPermille;
+        public int ReservedContractWeeks;
+        public int ReservedDepositWeeks;
         /// <summary>The vendor's line, oldest first.</summary>
         public List<GpuGenerationConfig> GpuGenerations;
 
@@ -339,6 +377,9 @@ namespace AiLabs.Rules.Config
             s.Int("resalePermille", ref ResalePermille);
             s.Int("generationDecayPermille", ref GenerationDecayPermille);
             s.Long("moveCostPerUnit", ref MoveCostPerUnit);
+            s.Int("reservedRentPermille", ref ReservedRentPermille);
+            s.Int("reservedContractWeeks", ref ReservedContractWeeks);
+            s.Int("reservedDepositWeeks", ref ReservedDepositWeeks);
             s.ObjList("gpuGenerations", ref GpuGenerations);
         }
 
@@ -509,6 +550,21 @@ namespace AiLabs.Rules.Config
         public int GlitchQualityPermille;
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
+        public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
+        /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
+        public int Rung2BelowAlignment;
+        /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
+        public int SandbagGapPermille;
+        public int Rung4CorruptionMin;
+        public int Rung5CorruptionMin;
+        public int Rung6CorruptionMin;
+        public ContainmentConfig Containment;
+
+        public IncidentRungConfig IncidentRung(int rung)
+        {
+            for (int i = 0; i < IncidentRungs.Count; i++) if (IncidentRungs[i].Rung == rung) return IncidentRungs[i];
+            return null;
+        }
 
         public void Sync(Syncer s)
         {
@@ -523,6 +579,13 @@ namespace AiLabs.Rules.Config
             s.Int("glitchQualityPermille", ref GlitchQualityPermille);
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
+            s.ObjList("incidentRungs", ref IncidentRungs);
+            s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
+            s.Int("sandbagGapPermille", ref SandbagGapPermille);
+            s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);
+            s.Int("rung5CorruptionMin", ref Rung5CorruptionMin);
+            s.Int("rung6CorruptionMin", ref Rung6CorruptionMin);
+            s.Obj("containment", ref Containment);
         }
     }
 
@@ -635,7 +698,12 @@ namespace AiLabs.Rules.Config
         /// <summary>Money from backers every week, for as long as the lab lives.</summary>
         public long BackerPerWeek;
         public string HomeBlocId;
+        /// <summary>The year the lab appears in the world. A lab with an earlier year than the game's start is there from the first week. <see cref="NeverJoins"/> is a lab kept in the data that never appears.</summary>
+        public int JoinsYear;
         public PlanConfig Plan;
+
+        /// <summary>A joinsYear that is never reached: a rival kept in the config as a spare, such as the successor that takes over when a lab fails.</summary>
+        public const int NeverJoins = 9999;
 
         public string Id { get { return IdValue; } }
 
@@ -651,6 +719,7 @@ namespace AiLabs.Rules.Config
             s.Int("reputation", ref Reputation);
             s.Long("backerPerWeek", ref BackerPerWeek);
             s.Str("homeBlocId", ref HomeBlocId);
+            s.Int("joinsYear", ref JoinsYear);
             s.Obj("plan", ref Plan);
         }
     }
@@ -684,6 +753,22 @@ namespace AiLabs.Rules.Config
         public int SiteAppetitePermille;
         /// <summary>The blocs the lab will build in.</summary>
         public List<string> SiteBlocs;
+        /// <summary>A trained model with less alignment than this is held back instead of released (0 releases everything).</summary>
+        public int MinReleaseAlignment;
+        /// <summary>The lab publishes its safety research: every other lab pays less for a safety tech the lab already has.</summary>
+        public bool PublishesSafetyResearch;
+        /// <summary>The chance, per year, that the board throws a fit and the plan stops for a few weeks.</summary>
+        public int DramaPermillePerYear;
+        /// <summary>The first year the lab designs its own chips (0 never).</summary>
+        public int ChipProgramYear;
+        /// <summary>The lab buys other labs' listed chips when they are cheaper per compute than the vendor's.</summary>
+        public bool BuysListedChips;
+        /// <summary>Rent-only labs buy listed chips into cloud deals instead of physical halls.</summary>
+        public bool UsesCloudDeals;
+        /// <summary>When above 0 the lab puts its own chips on sale at this mark-up over what they cost to make, in permille.</summary>
+        public int ListsChipsMarkupPermille;
+        /// <summary>How eagerly a plan-run lab takes shady jobs. Rival configs must be 0.</summary>
+        public int ShadyAppetite;
 
         public void Sync(Syncer s)
         {
@@ -703,6 +788,14 @@ namespace AiLabs.Rules.Config
             s.StrList("sectors", ref Sectors);
             s.Int("siteAppetitePermille", ref SiteAppetitePermille);
             s.StrList("siteBlocs", ref SiteBlocs);
+            s.Int("minReleaseAlignment", ref MinReleaseAlignment);
+            s.Bool("publishesSafetyResearch", ref PublishesSafetyResearch);
+            s.Int("dramaPermillePerYear", ref DramaPermillePerYear);
+            s.Int("chipProgramYear", ref ChipProgramYear);
+            s.Bool("buysListedChips", ref BuysListedChips);
+            s.Bool("usesCloudDeals", ref UsesCloudDeals);
+            s.Int("listsChipsMarkupPermille", ref ListsChipsMarkupPermille);
+            s.Int("shadyAppetite", ref ShadyAppetite);
         }
     }
 
@@ -710,11 +803,14 @@ namespace AiLabs.Rules.Config
     {
         public string RoleId;
         public int Count;
+        /// <summary>The first calendar year the plan hires this role (0 from the start), so a late team does not sink a young lab.</summary>
+        public int FromYear;
 
         public void Sync(Syncer s)
         {
             s.Str("roleId", ref RoleId);
             s.Int("count", ref Count);
+            s.Int("fromYear", ref FromYear);
         }
     }
 }

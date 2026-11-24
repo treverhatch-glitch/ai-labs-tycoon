@@ -1,4 +1,5 @@
 using System.Linq;
+using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -24,9 +25,19 @@ public class SafetyAndFinanceTests
     [Fact]
     public void A_model_with_a_full_safety_meter_never_has_an_incident()
     {
-        Game g = SellOneMini(seed: 1, alignmentShare: 300, years: 10, out ModelState model);
+        Game g = Game.Solo(1, tweak: c =>
+        {
+            c.Bubble.PopAtPermille = 1000;
+            c.Bubble.HotPermille = 1000;
+            c.Bubble.GraceMonthsBeforeCrash = 999;
+            c.Bubble.WeakCashHaircutPermille = 0;
+        }).WithStarterLab(gpus: 8);
+        ModelState model = g.Train("mini", 300);
+        g.UntilTrained(model);
+        g.Release(model, "game-ai", "game-bots");
+        g.Years(10);
         Assert.Equal(1000, model.Alignment);
-        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, model));
+        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(0, model.Incidents);
         Assert.Equal(0, g.Me.Ledger.Lifetime.Fines);
     }
@@ -75,7 +86,9 @@ public class SafetyAndFinanceTests
         Assert.Equal(g.Sim.Tick - 1, model.LastIncidentTick);
         // The week's healing toward normal comes first, then the incident takes its bite.
         int healed = reputationBefore + System.Math.Sign(g.C.Safety.ReputationBaseline - reputationBefore) * g.C.Safety.ReputationRecoveryPerWeek;
-        Assert.Equal(healed - g.C.Safety.IncidentReputationLoss, g.Me.Reputation);
+        IncidentRungConfig rung = g.C.Safety.IncidentRung(model.LastIncidentRung);
+        int repLoss = rung == null ? g.C.Safety.IncidentReputationLoss : rung.ReputationLoss;
+        Assert.Equal(healed - repLoss, g.Me.Reputation);
         Assert.True(incident.Amount >= g.C.Safety.IncidentFineMin);
         Assert.Equal(finesBefore - incident.Amount, g.Me.Ledger.Lifetime.Fines);
         Assert.Equal(ModelMood.Glitching, LabQueries.Mood(g.C, g.Me, model, g.Sim.Tick));

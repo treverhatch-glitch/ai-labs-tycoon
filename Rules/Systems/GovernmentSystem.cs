@@ -50,8 +50,34 @@ namespace AiLabs.Rules.Systems
         public static int RevenueSharePpm(GameState state, LabState lab)
         {
             long all = 0;
-            for (int i = 0; i < state.Labs.Count; i++) all += state.Labs[i].Ledger.ThisMonth.Revenue;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState other = state.Labs[i];
+                if (!LabQueries.ParticipatesInEconomy(other)) continue;
+                all += other.Ledger.ThisMonth.Revenue;
+            }
             return all <= 0 ? 0 : (int)(lab.Ledger.ThisMonth.Revenue * MathI.Ppm / all);
+        }
+
+        /// <summary>Revenue share from the month that just closed (for year-end checks after the books are rolled).</summary>
+        public static int RevenueShareLastClosedMonth(GameState state, LabState lab)
+        {
+            long mine = 0;
+            long all = 0;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState other = state.Labs[i];
+                long rev = LastClosedRevenue(other);
+                all += rev;
+                if (other.Id == lab.Id) mine = rev;
+            }
+            return all <= 0 ? 0 : (int)(mine * MathI.Ppm / all);
+        }
+
+        static long LastClosedRevenue(LabState lab)
+        {
+            if (lab.Ledger.History.Count > 0) return lab.Ledger.History[lab.Ledger.History.Count - 1].Totals.Revenue;
+            return lab.Ledger.ThisMonth.Revenue;
         }
 
         static int DropBelow(AttentionConfig a, int level)
@@ -72,6 +98,7 @@ namespace AiLabs.Rules.Systems
             {
                 amount = lab.LastWeek.Revenue * a.AuditFineRevenueWeeks;
                 Finance.Spend(lab, LedgerLine.Fines, amount);
+                if (lab.Id == state.PlayerLabId) ShadySystem.OnAuditOpen(c, state, lab);
             }
             Events.Add(state, EventKind.AttentionRose, lab.Id, standing.Level, amount, standing.BlocId);
         }

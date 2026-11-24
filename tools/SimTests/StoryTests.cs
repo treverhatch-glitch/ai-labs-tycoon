@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -159,7 +160,7 @@ public class StoryTests
     [Fact]
     public void A_rival_overtakes_a_lab_that_stops_investing()
     {
-        Game g = Game.New(seed: 7);
+        Game g = Game.New(seed: 7, tweak: c => c.PlayerStart.Cash = 400000);
         int shown = 0;
 
         // A strong first year: a bigger team and more compute than any rival starts with, and a new Mini every few weeks.
@@ -246,7 +247,7 @@ public class StoryTests
     [Fact]
     public void A_boss_who_spends_like_the_money_is_infinite_is_bankrupt_within_two_years()
     {
-        Game g = Game.New(seed: 13);
+        Game g = Game.New(seed: 13, tweak: c => c.PlayerStart.Cash = 450000);
         g.Do(Command.BuyLot(g.Id));
         g.Build("research-lab", 6, 6);
         g.Build("engineering-bay", 6, 6);
@@ -273,16 +274,22 @@ public class StoryTests
     [Fact]
     public void Across_forty_worlds_the_autopilot_stays_solvent_and_no_lab_always_wins()
     {
-        // A small balance soak: the bible's bot-balance check, sized for every test run.
+        // Six years, balanced preset only — kept for story output alongside BalanceTests.
         var crowns = new Dictionary<string, int>();
         int solvent = 0;
         int rivalsAlive = 0;
         const int Games = 40;
+        GameConfig c = TestData.Config();
+        BalanceSoak.Preset balanced = BalanceSoak.DefaultPresets(c)[0];
 
         for (long seed = 100; seed < 100 + Games; seed++)
         {
             Game g = Game.New(seed);
-            g.Autopilot(6 * 48);
+            for (int week = 0; week < 6 * c.Calendar.WeeksPerYear; week++)
+            {
+                if (GameDate.IsMonthStart(c.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, balanced.Plan);
+                g.Weeks(1);
+            }
             if (!g.Me.Bankrupt) solvent++;
             rivalsAlive += g.State.Labs.Skip(1).Count(l => !l.Bankrupt);
             string winner = g.CrownHolder().Name;

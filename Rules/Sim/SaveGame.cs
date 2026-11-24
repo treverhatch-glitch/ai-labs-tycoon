@@ -55,6 +55,7 @@ namespace AiLabs.Rules.Sim
             for (int i = 0; i < state.Labs.Count; i++)
                 for (int k = 0; k < c.World.Blocs.Count; k++)
                     if (state.Labs[i].Bloc(c.World.Blocs[k].Id) == null) state.Labs[i].Blocs.Add(WorldSetup.NewStanding(c.World.Blocs[k].Id));
+            for (int i = 0; i < state.Labs.Count; i++) VendorSystem.EnsureStanding(c, state, state.Labs[i].Id);
             state.ConfigVersion = c.Version;
         }
 
@@ -63,7 +64,21 @@ namespace AiLabs.Rules.Sim
         {
             var p = new List<string>();
             if (state.Labs.Count == 0) { p.Add("there are no labs"); return p; }
-            if (state.Labs[0].Controller != LabController.Player) p.Add("the first lab is not the player's");
+            if (state.PlayerLabId < 0)
+            {
+                for (int i = 0; i < state.Labs.Count; i++)
+                {
+                    LabState lab = state.Labs[i];
+                    if (lab.Controller == LabController.Player && !lab.Bankrupt)
+                        p.Add("playerLabId is -1 but a player lab still exists");
+                }
+            }
+            else
+            {
+                LabState player = state.Player;
+                if (player == null) p.Add("playerLabId " + state.PlayerLabId + " does not match any lab");
+                else if (player.Controller != LabController.Player) p.Add("the player's lab is not under player control");
+            }
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
@@ -73,7 +88,11 @@ namespace AiLabs.Rules.Sim
                 if (c.Lot(lab.LotId) == null) p.Add(who + " stands on the unknown lot \"" + lab.LotId + "\"");
                 if (lab.Controller == LabController.Plan && c.Rival(lab.RivalId) == null) p.Add(who + " follows the unknown rival plan \"" + lab.RivalId + "\"");
                 foreach (RoomState room in lab.Rooms) if (c.RoomType(room.TypeId) == null) p.Add(who + " has a room of the unknown type \"" + room.TypeId + "\"");
-                foreach (StaffPool pool in lab.Staff) if (c.Role(pool.RoleId) == null) p.Add(who + " employs the unknown role \"" + pool.RoleId + "\"");
+                foreach (StaffMember person in lab.Staff)
+                {
+                    if (c.Role(person.RoleId) == null) p.Add(who + " employs the unknown role \"" + person.RoleId + "\"");
+                    if (c.StaffPeople.Trait(person.TraitId) == null) p.Add(who + " has staff with unknown trait \"" + person.TraitId + "\"");
+                }
                 if (c.World.Bloc(lab.HomeBlocId) == null) p.Add(who + " is based in the unknown bloc \"" + lab.HomeBlocId + "\"");
                 foreach (BlocStanding standing in lab.Blocs) if (c.World.Bloc(standing.BlocId) == null) p.Add(who + " has a standing with the unknown bloc \"" + standing.BlocId + "\"");
                 foreach (Holding holding in lab.Holdings)
@@ -83,8 +102,30 @@ namespace AiLabs.Rules.Sim
                 }
                 foreach (HardwareBatch batch in lab.Fleet)
                 {
-                    if (batch.HoldingId != HardwareBatch.Hq && lab.Holding(batch.HoldingId) == null) p.Add(who + " has hardware in the holding " + batch.HoldingId + ", which does not exist");
+                    if (batch.HoldingId != HardwareBatch.Hq && batch.HoldingId != HardwareBatch.Cloud && lab.Holding(batch.HoldingId) == null) p.Add(who + " has hardware in the holding " + batch.HoldingId + ", which does not exist");
                     if (!string.IsNullOrEmpty(batch.GpuGenId) && c.Compute.Generation(batch.GpuGenId) == null) p.Add(who + " has hardware of the unknown generation \"" + batch.GpuGenId + "\"");
+                }
+                foreach (ChipDesign design in lab.ChipDesigns)
+                {
+                    if (c.Chips.Target(design.Target) == null || c.Chips.Node(design.NodeId) == null
+                        || c.Chips.Option(ChipOptionGroup.Die, design.DieId) == null || c.Chips.Option(ChipOptionGroup.Format, design.FormatId) == null
+                        || c.Chips.Option(ChipOptionGroup.Memory, design.MemoryId) == null || c.Chips.Option(ChipOptionGroup.Cooling, design.CoolingId) == null)
+                        p.Add(who + " has the chip design " + design.Name + " made of something the game does not know");
+                }
+                foreach (ChipOrder order in lab.ChipOrders)
+                {
+                    LabState designer = state.Lab(order.DesignLabId);
+                    if (designer == null || designer.Design(order.DesignId) == null) p.Add(who + " has chips on order of a design that does not exist");
+                    if (order.HoldingId != HardwareBatch.Cloud && lab.Holding(order.HoldingId) == null) p.Add(who + " has chips on order for the holding " + order.HoldingId + ", which does not exist");
+                    if (c.Chips.Node(order.NodeId) == null) p.Add(who + " has chips on order at the unknown process \"" + order.NodeId + "\"");
+                }
+                foreach (ChipListing listing in lab.ChipListings)
+                    if (lab.Design(listing.DesignId) == null) p.Add(who + " lists chips of a design that does not exist");
+                foreach (HardwareBatch batch in lab.Fleet)
+                {
+                    if (batch.ChipDesignId < 0) continue;
+                    LabState designer = state.Lab(batch.DesignLabId);
+                    if (designer == null || designer.Design(batch.ChipDesignId) == null) p.Add(who + " has chips of a design that does not exist");
                 }
                 foreach (string tech in lab.Techs) if (c.Tech(tech) == null) p.Add(who + " knows the unknown tech \"" + tech + "\"");
                 foreach (ModelState model in lab.Models)
@@ -93,6 +134,12 @@ namespace AiLabs.Rules.Sim
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }
             }
+
+            foreach (VendorStanding standing in state.Vendor.Standings)
+                if (state.Lab(standing.LabId) == null) p.Add("the vendor holds a standing for lab " + standing.LabId + ", which does not exist");
+            foreach (string id in state.PendingRivals) if (c.Rival(id) == null) p.Add("the unknown rival \"" + id + "\" is due to join");
+
+            foreach (FoundryMonth month in state.Foundry) if (c.Chips.Node(month.NodeId) == null) p.Add("the foundry has a booking at the unknown process \"" + month.NodeId + "\"");
 
             foreach (SiteState site in state.Sites) if (c.World.Site(site.SiteId) == null) p.Add("the unknown site \"" + site.SiteId + "\"");
 

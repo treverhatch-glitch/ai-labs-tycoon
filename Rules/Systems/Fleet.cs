@@ -31,11 +31,11 @@ namespace AiLabs.Rules.Systems
             return batch;
         }
 
-        /// <summary>The batches at a place, oldest generation first; the same generation by arrival, then by id.</summary>
+        /// <summary>The GPU batches at a place (chips are not sold with them), oldest generation first; the same generation by arrival, then by id.</summary>
         public static List<HardwareBatch> OldestFirst(GameConfig c, LabState lab, int holdingId)
         {
             var list = new List<HardwareBatch>();
-            for (int i = 0; i < lab.Fleet.Count; i++) if (lab.Fleet[i].HoldingId == holdingId) list.Add(lab.Fleet[i]);
+            for (int i = 0; i < lab.Fleet.Count; i++) if (lab.Fleet[i].HoldingId == holdingId && lab.Fleet[i].ChipDesignId < 0) list.Add(lab.Fleet[i]);
             list.Sort((a, b) =>
             {
                 int byTier = TierOf(c, a).CompareTo(TierOf(c, b));

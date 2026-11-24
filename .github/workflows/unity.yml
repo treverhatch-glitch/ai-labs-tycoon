@@ -1,72 +1,96 @@
-# GameCI compile gate for unity/ (Edit Mode). Secrets only on the test-runner step.
 name: unity
 
+# The Unity side: Edit Mode and Play Mode tests, then a Windows build, on GitHub's machines with GameCI.
+# By hand only (Actions > unity > Run workflow), from main. No push, pull_request or schedule trigger: a Unity run is
+# long, and a pull request from a fork must never get near the licence.
+#
+# It needs the repository secrets UNITY_LICENSE (the Unity Personal .ulf file's text), UNITY_EMAIL and UNITY_PASSWORD.
+# They are read from GitHub Actions secrets only, handed to the steps that start Unity and to no other step, and are
+# never written to the repo or to a log.
+# Until unity/ holds a project (unity/ProjectSettings/ProjectVersion.txt) or while a secret is missing, the run prints
+# a notice and passes without starting Unity.
+#
+# Never add a self-hosted runner to this workflow: the repo is public.
 on:
-  pull_request:
-    paths:
-      - 'unity/**'
-      - '.github/workflows/unity.yml'
   workflow_dispatch:
+    inputs:
+      build:
+        description: Also build the Windows player after the tests
+        type: boolean
+        default: false
 
 concurrency:
-  group: unity-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: unity-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  editmode:
-    name: Unity Edit Mode
+  unity:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
+    env:
+      PROJECT_PATH: unity
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           lfs: true
 
-      - name: Project present
-        id: project
+      - name: Is there anything to run?
+        id: ready
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         run: |
-          if [ -f unity/ProjectSettings/ProjectVersion.txt ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
+          ready=true
+          if [ ! -f "$PROJECT_PATH/ProjectSettings/ProjectVersion.txt" ]; then
+            echo "::notice::No Unity project in $PROJECT_PATH/ yet (docs/SETUP-PC.md), so nothing to test or build."
+            ready=false
           fi
-
-      - name: No Unity project yet
-        if: steps.project.outputs.ready != 'true'
-        run: echo "unity/ProjectSettings/ProjectVersion.txt missing; workflow passes without running Unity."
+          if [ -z "$UNITY_LICENSE" ] || [ -z "$UNITY_EMAIL" ] || [ -z "$UNITY_PASSWORD" ]; then
+            echo "::notice::A Unity secret is missing (UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD), so Unity is not started."
+            ready=false
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v4
-        if: steps.project.outputs.ready == 'true'
+        if: steps.ready.outputs.ready == 'true'
         with:
-          path: unity/Library
-          key: unity-Library-${{ hashFiles('unity/Assets/**', 'unity/Packages/**', 'unity/ProjectSettings/**', 'Rules/**') }}
-          restore-keys: |
-            unity-Library-
+          path: ${{ env.PROJECT_PATH }}/Library
+          key: Library-${{ hashFiles('unity/Packages/packages-lock.json', 'unity/ProjectSettings/ProjectVersion.txt') }}
 
-      - uses: game-ci/unity-test-runner@v4
-        if: steps.project.outputs.ready == 'true'
-        id: unity
+      - name: Edit Mode and Play Mode tests
+        if: steps.ready.outputs.ready == 'true'
+        uses: game-ci/unity-test-runner@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: unity
-          unityVersion: auto
-          testMode: editmode
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          cliVersion: v0.1.75
+          projectPath: ${{ env.PROJECT_PATH }}
+          testMode: all
+
+      - name: Windows build
+        if: steps.ready.outputs.ready == 'true' && inputs.build
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          targetPlatform: StandaloneWindows64
+          buildName: AiLabsTycoon
+          versioning: None
+          allowDirtyBuild: true
 
       - uses: actions/upload-artifact@v4
-        if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome != 'skipped'
+        if: steps.ready.outputs.ready == 'true' && inputs.build
         with:
-          name: Unity EditMode artifacts
-          path: ${{ steps.unity.outputs.artifactsPath }}
-
-      - uses: actions/upload-artifact@v4
-        if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome == 'success'
-        with:
-          name: HQ view capture
-          path: unity/artifacts/hq-view.png
-          if-no-files-found: error
+          name: ai-labs-tycoon-windows
+          path: build/StandaloneWindows64
+          if-no-files-found: warn
+          retention-days: 7

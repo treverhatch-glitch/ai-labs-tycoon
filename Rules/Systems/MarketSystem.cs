@@ -23,12 +23,7 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long Appeal(GameConfig c, GameState state, SectorConfig sector, SectorState sectorState, LabState lab, ModelState model)
         {
-            long quality = LabQueries.Quality(c, sector, model, state.Tick);
-            long appeal = quality * quality;
-            appeal = MathI.MulPermille(appeal, c.Safety.ReputationBaseline + lab.Reputation);
-            appeal = MathI.MulPermille(appeal, SalesPermille(c, lab));
-            if (sectorState.ChampionLabId == lab.Id) appeal = MathI.MulPermille(appeal, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
-            return appeal;
+            return DisplayQueries.Appeal(c, state, sector, sectorState, lab, model);
         }
 
         /// <summary>How much of a sector has a use for AI at all: the best model on sale against the sector's saturation bar.</summary>
@@ -69,6 +64,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 long served = MathI.MulPermille(sectorState.PoolPerWeek, sectorState.AdoptionPermille);
+                served = MathI.MulPermille(served, BubbleSystem.CustomerSpendPermille(c, state));
                 for (int i = 0; i < appeals.Length; i++)
                 {
                     SectorEntry entry = sectorState.Entries[i];
