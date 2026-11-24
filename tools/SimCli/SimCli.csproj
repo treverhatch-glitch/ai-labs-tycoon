@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- A headless console for the rules: play years without Unity and print what happened. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <RootNamespace>AiLabs.SimCli</RootNamespace>
+    <AssemblyName>simcli</AssemblyName>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Rules/AiLabs.Rules.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="../../Rules/Data/**/*.json" Link="Data/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
