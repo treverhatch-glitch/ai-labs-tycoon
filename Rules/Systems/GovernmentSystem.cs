@@ -50,7 +50,12 @@ namespace AiLabs.Rules.Systems
         public static int RevenueSharePpm(GameState state, LabState lab)
         {
             long all = 0;
-            for (int i = 0; i < state.Labs.Count; i++) all += state.Labs[i].Ledger.ThisMonth.Revenue;
+            for (int i = 0; i < state.Labs.Count; i++)
+            {
+                LabState other = state.Labs[i];
+                if (!LabQueries.ParticipatesInEconomy(other)) continue;
+                all += other.Ledger.ThisMonth.Revenue;
+            }
             return all <= 0 ? 0 : (int)(lab.Ledger.ThisMonth.Revenue * MathI.Ppm / all);
         }
 

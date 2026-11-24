@@ -134,14 +134,14 @@ namespace AiLabs.Rules.Systems
             VendorState vendor = state.Vendor;
             long total = 0;
             for (int i = 0; i < state.Labs.Count; i++)
-                if (!state.Labs[i].Bankrupt) total += v.AllocationBase + vendor.Standing(state.Labs[i].Id).Standing;
+                if (LabQueries.ParticipatesInEconomy(state.Labs[i])) total += v.AllocationBase + vendor.Standing(state.Labs[i].Id).Standing;
 
             long given = 0;
             VendorStanding top = null;
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 VendorStanding s = vendor.Standing(state.Labs[i].Id);
-                if (state.Labs[i].Bankrupt) { s.AllocationThisMonth = 0; continue; }
+                if (!LabQueries.ParticipatesInEconomy(state.Labs[i])) { s.AllocationThisMonth = 0; continue; }
                 s.AllocationThisMonth = (int)((long)vendor.SupplyThisMonth * (v.AllocationBase + s.Standing) / total);
                 given += s.AllocationThisMonth;
                 if (top == null || s.Standing > top.Standing || (s.Standing == top.Standing && s.LabId < top.LabId)) top = s;
