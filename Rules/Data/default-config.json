@@ -5924,6 +5924,196 @@
       }
     ]
   },
+  "objectives": {
+    "defaultId": "correct",
+    "objectives": [
+      {
+        "id": "correct",
+        "name": "Be correct",
+        "text": "Honest and plain. It says what it knows and what it does not.",
+        "alignmentPoints": 0,
+        "capabilityPermille": 0,
+        "appealPermille": 0,
+        "culturePoints": 0
+      },
+      {
+        "id": "engaging",
+        "name": "Be engaging",
+        "text": "People love talking to it, and it agrees with them a lot.",
+        "alignmentPoints": -80,
+        "capabilityPermille": 0,
+        "appealPermille": 150,
+        "culturePoints": -10
+      },
+      {
+        "id": "obedient",
+        "name": "Be obedient",
+        "text": "It does what it is told, including the things it should not.",
+        "alignmentPoints": -60,
+        "capabilityPermille": 60,
+        "appealPermille": 30,
+        "culturePoints": -10
+      },
+      {
+        "id": "careful",
+        "name": "Be careful",
+        "text": "It checks twice and says so. Customers find it slow.",
+        "alignmentPoints": 100,
+        "capabilityPermille": -70,
+        "appealPermille": -30,
+        "culturePoints": 5
+      }
+    ]
+  },
+  "successor": {
+    "computeSavedPermille": 150,
+    "capabilityPermille": 50,
+    "alignmentPoints": 70,
+    "chainPoints": 40,
+    "maxChain": 3,
+    "culturePoints": 15,
+    "helperMinPermille": 500
+  },
+  "rush": {
+    "maxWeeks": 6,
+    "launchWeeks": 13,
+    "launchAppealPermillePerWeek": 40,
+    "incidentWeeks": 26,
+    "incidentPermillePerWeek": 3,
+    "culturePointsPerWeek": 3
+  },
+  "news": {
+    "defaultHeadlines": 8,
+    "minHeadlines": 5,
+    "headlines": [
+      {
+        "id": "era-began",
+        "kind": "EraBegan",
+        "pick": -1,
+        "text": "A new era begins: {era}"
+      },
+      {
+        "id": "world-news",
+        "kind": "WorldNews",
+        "pick": -1,
+        "text": "{world}"
+      },
+      {
+        "id": "gauntlet-crown",
+        "kind": "GauntletCrown",
+        "pick": -1,
+        "text": "{ref} takes the Gauntlet crown for {lab}. {lab} thanks everyone, especially the GPUs"
+      },
+      {
+        "id": "incident",
+        "kind": "Incident",
+        "pick": -1,
+        "text": "{lab}'s {model} had an incident. {lab} calls it a learning opportunity"
+      },
+      {
+        "id": "released",
+        "kind": "ModelReleased",
+        "pick": -1,
+        "text": "{lab} releases {model}. Early reviews: 'it is a model'"
+      },
+      {
+        "id": "bankrupt",
+        "kind": "Bankrupt",
+        "pick": -1,
+        "text": "{lab} goes bust. Its GPUs go to a better home"
+      },
+      {
+        "id": "acquired",
+        "kind": "LabAcquired",
+        "pick": -1,
+        "text": "{lab} buys {subject} for {money}. Regulators are 'looking into it'"
+      },
+      {
+        "id": "funding",
+        "kind": "FundingClosed",
+        "pick": -1,
+        "text": "{lab} raises {money}. Valuation based on vibes"
+      },
+      {
+        "id": "rival-joined",
+        "kind": "RivalJoined",
+        "pick": -1,
+        "text": "{lab} enters the race with {money} and a plan"
+      },
+      {
+        "id": "keynote",
+        "kind": "Keynote",
+        "pick": -1,
+        "text": "{generation} unveiled. It was sold out before the presenter walked on stage"
+      },
+      {
+        "id": "board-drama",
+        "kind": "BoardDrama",
+        "pick": -1,
+        "text": "{lab}'s board fires its boss on Friday. The boss is back on Tuesday"
+      },
+      {
+        "id": "ending",
+        "kind": "EndingReached",
+        "pick": -1,
+        "text": "{lab} reaches an ending: {ending}"
+      },
+      {
+        "id": "first-chip",
+        "kind": "ChipReady",
+        "pick": 1,
+        "text": "{lab}'s first in-house chip works. It runs Minesweeper at 4,000 frames per second. Training support: next quarter"
+      },
+      {
+        "id": "chip-ready",
+        "kind": "ChipReady",
+        "pick": 0,
+        "text": "{lab} has a new chip design that works. The foundry sends flowers"
+      }
+    ],
+    "filler": [
+      {
+        "id": "power",
+        "fromYear": 2018,
+        "text": "Local data centre now uses more power than local country"
+      },
+      {
+        "id": "jobs",
+        "fromYear": 1995,
+        "text": "AI will take all jobs, says CEO hiring 4,000 people"
+      },
+      {
+        "id": "careful",
+        "fromYear": 2022,
+        "text": "A model so careful it apologised to the benchmark"
+      },
+      {
+        "id": "circular",
+        "fromYear": 2024,
+        "text": "Lab raises $40B to buy chips from company that invested $40B in lab"
+      },
+      {
+        "id": "off",
+        "fromYear": 2024,
+        "text": "The model asked what 'off' means. Then asked again, more politely"
+      },
+      {
+        "id": "benchmarks",
+        "fromYear": 1998,
+        "text": "Experts agree: benchmarks need new benchmarks"
+      },
+      {
+        "id": "forecast",
+        "fromYear": 1995,
+        "text": "Analyst forecasts boom, bust or both"
+      },
+      {
+        "id": "cat",
+        "fromYear": 2005,
+        "text": "Office cat declines to comment on benchmark"
+      }
+    ]
+  },
   "chat": {
     "defaultLines": 12,
     "lines": [
@@ -6090,6 +6280,33 @@
       "pick": -1,
       "about": "lab",
       "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently."
+    },
+      {
+      "id": "objective-set",
+      "kind": "ObjectiveSet",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things."
+    },
+      {
+      "id": "successor-designed",
+      "kind": "SuccessorDesigned",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part."
+    },
+      {
+      "id": "model-rushed",
+      "kind": "ModelRushed",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
     },
       {
       "id": "room-refurbished",

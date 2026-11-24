@@ -350,7 +350,7 @@ public class HatchEconomyBarLaterTests
         });
         string json = SaveSchemaPretend.At(g.C, 28, g.Sim.Save());
         var loaded = new Game(Simulation.Load(g.C, json));
-        Assert.Equal(34, loaded.State.Schema);
+        Assert.Equal(37, loaded.State.Schema);
         Assert.Equal(-1, loaded.Me.Fleet[0].ResaleLockedUntilTick);
         SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
     }

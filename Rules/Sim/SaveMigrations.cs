@@ -49,6 +49,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 32) MigrateTo32(root);
             if (fromSchema < 33) MigrateTo33(root);
             if (fromSchema < 34) MigrateTo34(root);
+            if (fromSchema < 35) MigrateTo35(root);
+            if (fromSchema < 36) MigrateTo36(root);
+            if (fromSchema < 37) MigrateTo37(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -455,6 +458,24 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "officeEventExpires", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "officeSeen", JsonValue.Array());
             });
+        }
+
+        /// <summary>Schema 35: every model was trained to be correct.</summary>
+        static void MigrateTo35(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "objective", JsonValue.Of(""))));
+        }
+
+        /// <summary>Schema 36: every model was designed by people alone.</summary>
+        static void MigrateTo36(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
+        }
+
+        /// <summary>Schema 37: every launch so far was a tested one.</summary>
+        static void MigrateTo37(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "rushWeeks", JsonValue.Of(0L))));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

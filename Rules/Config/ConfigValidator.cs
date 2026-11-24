@@ -74,6 +74,10 @@ namespace AiLabs.Rules.Config
             LeadsProblems(p, c);
             RepairProblems(p, c);
             OfficeProblems(p, c);
+            ObjectiveProblems(p, c);
+            SuccessorProblems(p, c);
+            RushProblems(p, c);
+            NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -507,6 +511,95 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void NewsProblems(List<string> p, GameConfig c)
+        {
+            NewsConfig n = c.News;
+            if (n == null) { p.Add("news is missing"); return; }
+            if (n.DefaultHeadlines < 1 || n.DefaultHeadlines > 100) p.Add("news.defaultHeadlines must be from 1 to 100");
+            if (n.MinHeadlines < 0 || n.MinHeadlines > n.DefaultHeadlines) p.Add("news.minHeadlines must be from 0 to news.defaultHeadlines");
+            if (n.MinHeadlines > 0 && n.Filler.Count == 0) p.Add("news.minHeadlines needs some news.filler to pad with");
+            UniqueIds(p, "news.headlines", n.Headlines);
+            UniqueIds(p, "news.filler", n.Filler);
+            for (int i = 0; i < n.Headlines.Count; i++)
+            {
+                HeadlineConfig h = n.Headlines[i];
+                string who = "headline " + h.IdValue;
+                if (!AiLabs.Rules.Systems.CompanyChat.IsEventKind(h.Kind)) p.Add(who + " is about the unknown event kind \"" + h.Kind + "\"");
+                if (string.IsNullOrWhiteSpace(h.Text)) p.Add(who + " has no text");
+                if (h.Pick < -1 || h.Pick > 1) p.Add(who + " needs pick -1, 0 or 1");
+                UnknownPlaceholders(p, who, h.Text);
+            }
+            for (int i = 0; i < n.Filler.Count; i++)
+            {
+                FillerConfig f = n.Filler[i];
+                string who = "filler " + f.IdValue;
+                if (string.IsNullOrWhiteSpace(f.Text)) p.Add(who + " has no text");
+                if (f.Text != null && f.Text.IndexOf('{') >= 0) p.Add(who + " has a placeholder, and filler is not about an event");
+                if (f.FromYear < 1000 || f.FromYear > 3000) p.Add(who + " needs a fromYear from 1000 to 3000");
+            }
+        }
+
+        static void UnknownPlaceholders(List<string> p, string who, string text)
+        {
+            if (text == null) return;
+            int at = 0;
+            while ((at = text.IndexOf('{', at)) >= 0)
+            {
+                int end = text.IndexOf('}', at);
+                string tag = end < 0 ? text.Substring(at) : text.Substring(at, end - at + 1);
+                if (Array.IndexOf(AiLabs.Rules.Systems.NewsTicker.Placeholders, tag) < 0) p.Add(who + " has the unknown placeholder " + tag);
+                if (end < 0) break;
+                at = end + 1;
+            }
+        }
+
+        static void RushProblems(List<string> p, GameConfig c)
+        {
+            RushConfig r = c.Rush;
+            if (r == null) { p.Add("rush is missing"); return; }
+            if (r.MaxWeeks < 1 || r.MaxWeeks > 52) p.Add("rush.maxWeeks must be from 1 to 52");
+            if (r.LaunchWeeks < 1 || r.LaunchWeeks > 520) p.Add("rush.launchWeeks must be from 1 to 520");
+            if (r.IncidentWeeks < 1 || r.IncidentWeeks > 520) p.Add("rush.incidentWeeks must be from 1 to 520");
+            if (r.LaunchAppealPermillePerWeek < 0 || (long)r.LaunchAppealPermillePerWeek * r.MaxWeeks > 5000) p.Add("rush.launchAppealPermillePerWeek times maxWeeks must be from 0 to 5000");
+            if (r.IncidentPermillePerWeek < 0 || (long)r.IncidentPermillePerWeek * r.MaxWeeks > MathI.Permille) p.Add("rush.incidentPermillePerWeek times maxWeeks must be from 0 to 1000");
+            if (r.CulturePointsPerWeek < 0 || (long)r.CulturePointsPerWeek * r.MaxWeeks > MathI.Permille) p.Add("rush.culturePointsPerWeek times maxWeeks must be from 0 to 1000");
+        }
+
+        static void SuccessorProblems(List<string> p, GameConfig c)
+        {
+            SuccessorConfig s = c.Successor;
+            if (s == null) { p.Add("successor is missing"); return; }
+            if (s.ComputeSavedPermille < 0 || s.ComputeSavedPermille >= MathI.Permille) p.Add("successor.computeSavedPermille must be from 0 to 999");
+            if (s.CapabilityPermille < 0 || s.CapabilityPermille > 5000) p.Add("successor.capabilityPermille must be from 0 to 5000");
+            if (s.AlignmentPoints < 0 || s.AlignmentPoints > MathI.Permille) p.Add("successor.alignmentPoints must be from 0 to 1000");
+            if (s.ChainPoints < 0 || s.ChainPoints > MathI.Permille) p.Add("successor.chainPoints must be from 0 to 1000");
+            if (s.MaxChain < 0 || s.MaxChain > 20) p.Add("successor.maxChain must be from 0 to 20");
+            if (s.CulturePoints < 0 || s.CulturePoints > MathI.Permille) p.Add("successor.culturePoints must be from 0 to 1000");
+            if (s.HelperMinPermille < 0 || s.HelperMinPermille > 5000) p.Add("successor.helperMinPermille must be from 0 to 5000");
+        }
+
+        static void ObjectiveProblems(List<string> p, GameConfig c)
+        {
+            ObjectivesConfig o = c.Objectives;
+            if (o == null) { p.Add("objectives is missing"); return; }
+            UniqueIds(p, "objectives", o.Objectives);
+            ObjectiveConfig fallback = o.Objective(o.DefaultId);
+            if (fallback == null) p.Add("objectives.defaultId \"" + o.DefaultId + "\" is not an objective");
+            else if (fallback.AlignmentPoints != 0 || fallback.CapabilityPermille != 0 || fallback.AppealPermille != 0 || fallback.CulturePoints != 0)
+                p.Add("the default objective \"" + fallback.IdValue + "\" must change nothing");
+            for (int i = 0; i < o.Objectives.Count; i++)
+            {
+                ObjectiveConfig x = o.Objectives[i];
+                string who = "objective " + x.IdValue;
+                if (string.IsNullOrEmpty(x.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(x.Text)) p.Add(who + " has no text");
+                if (x.AlignmentPoints < -1000 || x.AlignmentPoints > 1000) p.Add(who + " alignmentPoints must be from -1000 to 1000");
+                if (x.CapabilityPermille <= -MathI.Permille || x.CapabilityPermille > 5000) p.Add(who + " capabilityPermille must be above -1000 and up to 5000");
+                if (x.AppealPermille <= -MathI.Permille || x.AppealPermille > 5000) p.Add(who + " appealPermille must be above -1000 and up to 5000");
+                if (x.CulturePoints < -1000 || x.CulturePoints > 1000) p.Add(who + " culturePoints must be from -1000 to 1000");
             }
         }
 

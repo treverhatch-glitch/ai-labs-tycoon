@@ -1610,6 +1610,66 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo34` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
 - Why: the answer must survive a save, and an event picked by date would be lost on an older save. Nothing derived is stored; `OfficeEvents.Waiting` is a view. All guards hold at 1481 tests.
 
+### Q246. How does the player choose a training objective? DECIDED: a command while the model trains, with a neutral default
+- Options: (a) a new argument on `StartTraining`; (b) a separate command for a model still training; (c) a research unlock.
+- Recommendation and choice: **(b)**. `SetTrainingObjective(model, objective)` works only while the model is training and can be changed freely; the last choice wins. The default objective, `correct`, changes nothing and is stored as empty.
+- Why: `StartTraining` is used by rivals, planners and most tests, and a new argument would touch them all. The recipe screen can send both commands in one tap, and the choice can still be changed during the run, like the bible's long wait.
+
+### Q247. What do the four objectives do? DECIDED: engaging sells and erodes control, obedient adds capability and erodes control, careful the reverse
+- Options: (a) only change appeal; (b) change alignment, capability, appeal and culture by data-table points; (c) a hidden "disposition" meter.
+- Recommendation and choice: **(b)**. Be engaging: -80 alignment, +15% appeal, -10 culture. Be obedient: -60 alignment, +6% capability, +3% appeal, -10 culture. Be careful: +100 alignment, -7% capability, -3% appeal, +5 culture. Alignment moves the real and shown meters together.
+- Why: the bible says engagement sells and "breeds flattery" and that engagement or obedience erodes control, so each pays something real and costs control; careful is the honest slow option. A hidden disposition meter would be a second alignment meter to keep in step with the first; the existing alignment gap already carries "partly hidden". Moving the two meters together keeps these models off the sandbagging rung, which reads the gap between them.
+
+### Q248. Is a save change needed, and does the golden move? DECIDED: yes, schema 34; the golden moved with a verified cause
+- Options: (a) store nothing (the effects land at the end of the run, so recompute from the objective); (b) store the objective on the model.
+- Recommendation and choice: **(b)**. `objective` per model (`MigrateTo34` sets empty). The appeal effect reads it at any time after the run, so it cannot be derived from anything else. Rivals' and the autopilot's models stay on the default, so the economy guards, which all use them, are unchanged.
+- Why: the choice has to survive a save. The pinned golden moved because every model now carries the field; with the sync line, the schema number and the data removed the previous golden came back exactly (see the commit message).
+
+### Q249. What does letting a model help design its successor give and cost? DECIDED: a cheaper, stronger run; a successor with less alignment and a culture hit
+- Options: (a) a flat speed-up; (b) a speed-up and a capability gain, paid for in alignment and culture; (c) a risk of a takeoff incident.
+- Recommendation and choice: **(b)**. The run needs 15% less of the compute it still has to do and finishes 5% stronger; the successor loses 70 real and shown alignment points and safety culture loses 15 when it finishes. Setting it up cannot be undone.
+- Why: the bible lists it as something that erodes control, so it must be a real temptation: the gain is large enough to want and the cost is the control meter. A takeoff incident would need the rung 6 rules, which already trigger from real capability and the alignment gap; this keeps those rules as they are and pays the cost up front in alignment and culture.
+
+### Q250. Does it compound? DECIDED: yes, each link of the chain loses 40 more alignment, up to three links
+- Options: (a) the same cost every time; (b) rising with the chain; (c) forbid chains.
+- Recommendation and choice: **(b)**. A helper that was itself designed with help counts one link; the loss is 70 + 40 per link, with at most 3 links counted. The helper needs at least half of the run's forecast capability, so a weak model cannot be used for a strong run.
+- Why: the bible's sixth rung is a model that "improves itself faster than anyone can". A rising cost makes a chain a real decision rather than a switch to flip every version, and the cap keeps a long-running game's numbers bounded.
+
+### Q251. Is a save change needed, and does the golden move? DECIDED: yes, schema 35; the golden moved with a verified cause
+- Options: (a) store only on the successor (the helper id); (b) store a flag on the helper too.
+- Recommendation and choice: **(a)**. `designerId` per model, -1 when people did it alone (`MigrateTo35`). The chain is found by following the ids, and a helper that was pruned from the museum just ends the chain. The cost lands at the finish of the run, so nothing else is stored.
+- Why: one field is enough, and nothing that can be derived is saved. Rivals and the autopilot never use it, so the economy guards are untouched. The pinned golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
+
+### Q252. How does the player pick how long to test? DECIDED: a normal release is the tested one; a separate command skips weeks
+- Options: (a) a testing-weeks field on every release; (b) automatic testing time that grows while a model waits; (c) a separate `RushRelease` for a first launch, with the weeks skipped.
+- Recommendation and choice: **(c)**. `RushRelease(model, weeks 1 to 6, sectors)` does what `ReleaseModel` does for a model that has not been on sale and refuses all the same cases. A normal `ReleaseModel` is unchanged and carries no rush.
+- Why: (a) and (b) would change every release, including those of the autopilot and rivals, and would move the economy guards that depend on them (Q182). Treating the normal release as the tested one keeps all of that exact, and the bible's "rushing" is exactly the skipped case.
+
+### Q253. What does a rush give and cost? DECIDED: +4% appeal for 13 weeks, +0.3 points of incident chance for 26 weeks, and -3 culture, each per week skipped
+- Options: (a) only an incident cost; (b) the launch boost and the incident cost; (c) also a trust hit.
+- Recommendation and choice: **(b)** plus culture. For each week skipped: `launchAppealPermillePerWeek` 40 for `launchWeeks` 13; `incidentPermillePerWeek` 3 for `incidentWeeks` 26; `culturePointsPerWeek` 3 once. A six-week rush is +24% appeal, +1.8 points of weekly incident chance and -18 culture.
+- Why: the bible names two effects: winning the launch window and a likelier incident. A boost that ends after a quarter and a risk that lasts half a year make the rush a gamble, not a free lunch, and the culture cost matches chapter 10's "rushing a release to beat a rival". The existing culture rule only looks at alignment on release; this one is about time.
+
+### Q254. Is a save change needed, and does the golden move? DECIDED: yes, schema 36; the golden moved with a verified cause
+- Options: (a) save the release week and the weeks skipped; (b) save only the weeks skipped, and use the model's existing release date.
+- Recommendation and choice: **(b)**. `rushWeeks` per model (`MigrateTo36` sets 0). The window is read from `releasedTick`, which already exists.
+- Why: one new field is enough. Rivals and the autopilot never rush, so the economy guards, which use them, are unchanged. The golden moved because every model carries the field; with the sync line, the schema number and the data removed the previous golden returned exactly (see the commit message).
+
+### Q255. What is on the ticker? DECIDED: a headline line per public kind of event, about every lab
+- Options: (a) reuse the plain-English event text; (b) a headline line per event kind in the data, in capitals, in the bible's voice; (c) only the player's events.
+- Recommendation and choice: **(b)**, for all labs. Fourteen lines cover eras, world news, the Gauntlet, incidents, releases, bankruptcy, acquisitions, funding, rivals joining, the keynote, board drama, endings and chips. The player's private events (hiring, building, poaching) have no line. A line may pick on an event's `pick`, which is how a lab's first chip gets the bible's Minesweeper headline.
+- Why: `EventText` is for logs and test output; a ticker needs the joke voice and the capitals, and the bible's own headlines are examples of it. The company chat already covers the lab's own life, so the ticker is about the world, and it is data so a writer can add lines without code.
+
+### Q256. What if little happened? DECIDED: pad with filler picked from the date
+- Options: (a) show fewer headlines; (b) a pool of filler headlines, padded to a minimum; (c) generate filler from rivals' state.
+- Recommendation and choice: **(b)**. At least 5 headlines are shown: real ones first, then filler lines whose year has come, never repeating on one ticker, chosen by a hash of the tick, so the same week always gives the same ticker. Eight filler lines, four from the bible's list.
+- Why: an empty ticker in the quiet early years reads as broken, and the filler is half the joke. Hashing the date, not rolling dice, keeps the view read-only and reproducible, in the same way as the company chat.
+
+### Q257. Is a save change needed? DECIDED: no
+- Options: (a) store the ticker; (b) read it off the event log.
+- Recommendation and choice: **(b)**. Nothing is saved; the golden did not move.
+- Why: everything on the ticker already exists in the event log (which is bounded) or the date. Storing it would duplicate the log and need a migration for no gain.
+
 ## CI and tooling
 
 ### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`

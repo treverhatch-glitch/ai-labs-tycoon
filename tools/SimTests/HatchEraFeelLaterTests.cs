@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1186–Q1255: batch 22 era feel / incident-load bar (schema 34).</summary>
+/// <summary>Q1186–Q1255: batch 22 era feel / incident-load bar (schema 37).</summary>
 public class HatchEraFeelLaterTests
 {
     [Fact] public void Q1186_era_feel_1186() { var g = Game.Solo(); int tick = GameDate.TickOfYear(g.C.Calendar, 1996); Assert.True(g.C.Era("dial-up-days").IncidentLoadPermille >= 0); Assert.True(SafetySystem.IncidentChancePermille(g.C, tick, new ModelState { Alignment = 600, Status = ModelStatus.Released }) >= 0); }

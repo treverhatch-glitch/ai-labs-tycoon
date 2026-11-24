@@ -178,6 +178,22 @@ and says why in the commit message.
     `officeSeen`; Q242-Q245), `OfficeEventTests`, `docs/content/office-events.md`. Player labs only. Still open: an office-desk screen (Unity),
     more events (needs for a data centre, a chip, a merger), events with effects that last, rivals with events.
 
+30. **Training objective (bible ch. 6 recipe: correct / engaging / obedient / careful).** ~~Done~~: `objectives` in the data,
+    `TrainingObjectives`, `SetTrainingObjective`, `ObjectiveSet` event, appeal breakdown line, save schema 34 (`objective` per model; Q246-Q248),
+    `TrainingObjectiveTests`, `docs/content/training-objectives.md`. Still open: a recipe-screen row (Unity), a disposition meter, objectives for rivals.
+
+31. **A model helps design its successor (bible ch. 10 "what erodes it").** ~~Done~~: `successor` in the data, `SuccessorDesign`,
+    `DesignWithModel`, `SuccessorDesigned` event, save schema 35 (`designerId` per model; Q249-Q251), `SuccessorDesignTests`,
+    `docs/content/successor-design.md`. Still open: a button on the recipe screen (Unity), a takeoff incident from long chains, rivals doing it.
+
+32. **Release testing and the rushed launch (bible ch. 6, ch. 10).** ~~Done~~: `rush` in the data, `RushedLaunch`, `RushRelease`,
+    `ModelRushed` event, appeal `LaunchEffect` and incident `FromRush` lines, save schema 36 (`rushWeeks` per model; Q252-Q254),
+    `RushedLaunchTests`, `docs/content/rushed-launch.md`. Still open: a rush slider on the release screen (Unity), rivals rushing to beat the player to a sector.
+
+33. **News ticker headlines (bible ch. 14, ch. 17).** ~~Done~~: `news` in the data, `NewsTicker.Headlines` / `About` / `Money`, 14 headline lines and 8 filler lines,
+    read-only, no save change (Q255-Q257), `NewsTickerTests`, `docs/content/news-ticker.md`. Still open: the ticker strip itself (Unity), headlines for the player's
+    own big moments in the bible's voice, era-specific filler.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
