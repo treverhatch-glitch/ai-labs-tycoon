@@ -77,6 +77,10 @@ namespace AiLabs.Rules.Config
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
             RushProblems(p, c);
+            LobbyProblems(p, c);
+            PivotProblems(p, c);
+            CampaignProblems(p, c);
+            RunsProblems(p, c);
             NewsProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
@@ -554,6 +558,92 @@ namespace AiLabs.Rules.Config
                 if (end < 0) break;
                 at = end + 1;
             }
+        }
+
+        static void RunsProblems(List<string> p, GameConfig c)
+        {
+            RunsConfig r = c.Runs;
+            if (r == null) { p.Add("runs is missing"); return; }
+            UniqueIds(p, "runs.approaches", r.Approaches);
+            UniqueIds(p, "runs.checkpoints", r.Checkpoints);
+            ApproachConfig fallbackApproach = r.Approach(r.DefaultApproachId);
+            if (fallbackApproach == null) p.Add("runs.defaultApproachId \"" + r.DefaultApproachId + "\" is not an approach");
+            else if (fallbackApproach.CapabilityPermille != 0 || fallbackApproach.FailurePermillePerWeek != 0)
+                p.Add("the default approach \"" + fallbackApproach.IdValue + "\" must change nothing and never fail");
+            CheckpointConfig fallbackCheckpoint = r.Checkpoint(r.DefaultCheckpointId);
+            if (fallbackCheckpoint == null) p.Add("runs.defaultCheckpointId \"" + r.DefaultCheckpointId + "\" is not a checkpoint habit");
+            else if (fallbackCheckpoint.WeeklyCostPermille != 0) p.Add("the default checkpoint habit \"" + fallbackCheckpoint.IdValue + "\" must be free");
+            for (int i = 0; i < r.Approaches.Count; i++)
+            {
+                ApproachConfig a = r.Approaches[i];
+                string who = "approach " + a.IdValue;
+                if (string.IsNullOrEmpty(a.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(a.Text)) p.Add(who + " has no text");
+                if (a.CapabilityPermille <= -MathI.Permille || a.CapabilityPermille > 5000) p.Add(who + " capabilityPermille must be above -1000 and up to 5000");
+                if (a.FailurePermillePerWeek < 0 || a.FailurePermillePerWeek > MathI.Permille) p.Add(who + " failurePermillePerWeek must be from 0 to 1000");
+            }
+            for (int i = 0; i < r.Checkpoints.Count; i++)
+            {
+                CheckpointConfig k = r.Checkpoints[i];
+                string who = "checkpoint habit " + k.IdValue;
+                if (string.IsNullOrEmpty(k.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(k.Text)) p.Add(who + " has no text");
+                if (k.LossPermille < 0 || k.LossPermille > MathI.Permille) p.Add(who + " lossPermille must be from 0 to 1000");
+                if (k.WeeklyCostPermille < 0 || k.WeeklyCostPermille > 5000) p.Add(who + " weeklyCostPermille must be from 0 to 5000");
+            }
+        }
+
+        static void CampaignProblems(List<string> p, GameConfig c)
+        {
+            CampaignConfig m = c.Campaign;
+            if (m == null) { p.Add("campaign is missing"); return; }
+            if (m.AllMetBonus < 0) p.Add("campaign.allMetBonus must be non-negative");
+            UniqueIds(p, "campaign.goals", m.Goals);
+            for (int i = 0; i < m.Goals.Count; i++)
+            {
+                EraGoalConfig g = m.Goals[i];
+                string who = "campaign goal " + g.IdValue;
+                if (c.Era(g.EraId) == null) p.Add(who + " is for the unknown era \"" + g.EraId + "\"");
+                if (string.IsNullOrEmpty(g.Name)) p.Add(who + " has no name");
+                if (g.Target < 1) p.Add(who + " has a target under 1");
+                if (g.Points < 1) p.Add(who + " is worth under 1 point");
+                if ((g.Metric == GoalMetric.Reputation || g.Metric == GoalMetric.BestAlignment) && g.Target > MathI.Permille) p.Add(who + " asks for more than 1000 of a 0 to 1000 meter");
+            }
+            for (int e = 0; e < c.Eras.Count; e++)
+                if (m.GoalsOf(c.Eras[e].Id).Count == 0) p.Add("era " + c.Eras[e].Id + " has no campaign goals");
+        }
+
+        static void PivotProblems(List<string> p, GameConfig c)
+        {
+            PivotConfig v = c.Pivot;
+            if (v == null) { p.Add("pivot is missing"); return; }
+            if (v.MinWeekCost < 0) p.Add("pivot.minWeekCost must be non-negative");
+            if (v.CostWeeks < 1 || v.CostWeeks > 520) p.Add("pivot.costWeeks must be from 1 to 520");
+            if (v.StaffLossPermille < 0 || v.StaffLossPermille > MathI.Permille) p.Add("pivot.staffLossPermille must be from 0 to 1000");
+            if (v.ConfusionWeeks < 1 || v.ConfusionWeeks > 520) p.Add("pivot.confusionWeeks must be from 1 to 520");
+            if (v.ConfusionAppealPermille < 0 || v.ConfusionAppealPermille >= MathI.Permille) p.Add("pivot.confusionAppealPermille must be from 0 to 999");
+        }
+
+        static void LobbyProblems(List<string> p, GameConfig c)
+        {
+            LobbyConfig l = c.Lobbying;
+            if (l == null) { p.Add("lobbying is missing"); return; }
+            if (l.CooldownWeeks < 0 || l.CooldownWeeks > 520) p.Add("lobbying.cooldownWeeks must be from 0 to 520");
+            if (l.MinWeekCost < 0) p.Add("lobbying.minWeekCost must be non-negative");
+            if (l.QuietCostWeeks < 1 || l.QuietCostWeeks > 520) p.Add("lobbying.quietCostWeeks must be from 1 to 520");
+            if (l.QuietAttention < 1 || l.QuietAttention > MathI.Permille) p.Add("lobbying.quietAttention must be from 1 to 1000");
+            if (l.SubsidyCostWeeks < 1 || l.SubsidyCostWeeks > 520) p.Add("lobbying.subsidyCostWeeks must be from 1 to 520");
+            if (l.SubsidyReturnWeeks < 1 || l.SubsidyReturnWeeks > 520) p.Add("lobbying.subsidyReturnWeeks must be from 1 to 520");
+            Permille(p, "lobbying.subsidyChancePermille", l.SubsidyChancePermille);
+            Permille(p, "lobbying.subsidyChanceCapPermille", l.SubsidyChanceCapPermille);
+            if (l.SubsidyChancePermillePerStaff < 0) p.Add("lobbying.subsidyChancePermillePerStaff must be non-negative");
+            if (l.SubsidyChanceCapPermille < l.SubsidyChancePermille) p.Add("lobbying.subsidyChanceCapPermille must not be under subsidyChancePermille");
+            Permille(p, "lobbying.backfirePermille", l.BackfirePermille);
+            Permille(p, "lobbying.backfireFloorPermille", l.BackfireFloorPermille);
+            if (l.BackfireSavingPermillePerStaff < 0) p.Add("lobbying.backfireSavingPermillePerStaff must be non-negative");
+            if (l.BackfireFloorPermille > l.BackfirePermille) p.Add("lobbying.backfireFloorPermille must not be over backfirePermille");
+            if (l.BackfireAttention < 0 || l.BackfireAttention > MathI.Permille) p.Add("lobbying.backfireAttention must be from 0 to 1000");
+            if (l.BackfireReputation < 0 || l.BackfireReputation > MathI.Permille) p.Add("lobbying.backfireReputation must be from 0 to 1000");
         }
 
         static void RushProblems(List<string> p, GameConfig c)

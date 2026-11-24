@@ -32,8 +32,10 @@ namespace AiLabs.Rules.Systems
             public long ObjectiveEffect;
             /// <summary>Positive while the launch window of a rushed release is open; zero otherwise.</summary>
             public long LaunchEffect;
+            /// <summary>Zero or negative: customers still confused by the lab's last change of style.</summary>
+            public long PivotConfusion;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion; } }
         }
 
         public struct IncidentBreakdown
@@ -127,6 +129,8 @@ namespace AiLabs.Rules.Systems
             b.ObjectiveEffect = MathI.MulPermille(b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost, TrainingObjectives.AppealPermille(c, model)) - (b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost);
             long beforeLaunch = b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost + b.ObjectiveEffect;
             b.LaunchEffect = MathI.MulPermille(beforeLaunch, RushedLaunch.LaunchAppealPermille(c, state.Tick, model)) - beforeLaunch;
+            long beforePivot = beforeLaunch + b.LaunchEffect;
+            b.PivotConfusion = MathI.MulPermille(beforePivot, Pivot.AppealPermille(c, state, lab)) - beforePivot;
             return b;
         }
 

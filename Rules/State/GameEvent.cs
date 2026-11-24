@@ -106,7 +106,17 @@ namespace AiLabs.Rules.State
         /// <summary>A model was put to work on its successor's design. SubjectId is the successor, Amount the helper's id, Ref the successor's name.</summary>
         SuccessorDesigned,
         /// <summary>A model was put on sale with some testing skipped. SubjectId is the model, Amount the weeks skipped, Ref its name.</summary>
-        ModelRushed
+        ModelRushed,
+        /// <summary>The player lobbied a government. Amount is what it cost, Ref is "bloc|goal|result" (result: landed, missed or backfired).</summary>
+        Lobbied,
+        /// <summary>The lab changed its style. SubjectId is how many people left, Amount what it cost, Ref "from|to" style ids (from is empty for none).</summary>
+        StylePivoted,
+        /// <summary>The player's lab was marked against an era's goals as the era ended. SubjectId is the goals met, Amount the points, Ref the era id.</summary>
+        EraScored,
+        /// <summary>A training run set itself back. SubjectId is the model, Amount the compute thrown away, Ref the model's name.</summary>
+        TrainingFailed,
+        /// <summary>The player set up a run. SubjectId is the model, Ref "approach|id" or "checkpoints|id" (empty id for the default).</summary>
+        RunSetUp
     }
 
     /// <summary>

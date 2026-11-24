@@ -75,6 +75,40 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.ModelRushed:
                     return who + " rushed " + e.Ref + " out with " + e.Amount + (e.Amount == 1 ? " week" : " weeks") + " of testing skipped.";
+                case EventKind.Lobbied:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        BlocConfig bloc = parts.Length == 3 ? c.World.Bloc(parts[0]) : null;
+                        if (bloc == null) return who + " lobbied a government.";
+                        string aim = parts[1] == Lobbying.Subsidy ? "a subsidy" : "a little less attention";
+                        if (parts[2] == "backfired") return who + " lobbied " + bloc.Name + " for " + aim + " and it became a scandal.";
+                        if (parts[2] == "missed") return who + " lobbied " + bloc.Name + " for " + aim + ". Nothing came of it.";
+                        return who + " lobbied " + bloc.Name + " and got " + aim + ".";
+                    }
+                case EventKind.StylePivoted:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        StyleConfig to = parts.Length == 2 ? c.Style(parts[1]) : null;
+                        return who + " pivoted to " + (to == null ? "a new style" : to.Name) + ". " + e.SubjectId + (e.SubjectId == 1 ? " person" : " people") + " left.";
+                    }
+                case EventKind.EraScored:
+                    {
+                        EraConfig era = c.Era(e.Ref);
+                        return who + " finished " + (era == null ? e.Ref : era.Name) + " with " + e.SubjectId + (e.SubjectId == 1 ? " goal" : " goals") + " met, scoring " + e.Amount + ".";
+                    }
+                case EventKind.TrainingFailed:
+                    return who + "'s run of " + e.Ref + " diverged and lost " + e.Amount + " compute of progress.";
+                case EventKind.RunSetUp:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        if (parts.Length == 2 && parts[0] == "approach")
+                        {
+                            ApproachConfig a = c.Runs.Approach(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultApproachId : parts[1]);
+                            return who + " chose " + (a == null ? parts[1] : a.Name) + " for a run.";
+                        }
+                        CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
+                        return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";
