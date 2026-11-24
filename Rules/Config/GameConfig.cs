@@ -566,6 +566,10 @@ namespace AiLabs.Rules.Config
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
+        /// <summary>The weight of the era's plain mishap in the draw against the risk classes that bite a model.</summary>
+        public int GenericRiskWeight;
+        /// <summary>Kinds of trouble that open era by era.</summary>
+        public List<RiskClassConfig> RiskClasses = new List<RiskClassConfig>();
         /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
@@ -595,6 +599,8 @@ namespace AiLabs.Rules.Config
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
+            s.Int("genericRiskWeight", ref GenericRiskWeight);
+            s.ObjList("riskClasses", ref RiskClasses);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
             s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);

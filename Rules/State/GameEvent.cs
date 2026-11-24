@@ -67,6 +67,8 @@ namespace AiLabs.Rules.State
         public int Pick;
         /// <summary>A config id or a name the event refers to (a tech, a sector, a model name), or empty.</summary>
         public string Ref;
+        /// <summary>For an incident: the risk class it was (an id from <c>safety.riskClasses</c>), or empty for the era's plain mishap.</summary>
+        public string RiskClass = "";
 
         public void Sync(Syncer s)
         {
@@ -77,6 +79,7 @@ namespace AiLabs.Rules.State
             s.Long("amount", ref Amount);
             s.Int("pick", ref Pick);
             s.Str("ref", ref Ref);
+            s.Str("riskClass", ref RiskClass);
         }
     }
 }

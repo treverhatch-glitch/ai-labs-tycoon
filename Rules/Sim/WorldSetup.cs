@@ -81,8 +81,9 @@ namespace AiLabs.Rules.Sim
         }
 
         /// <summary>
-        /// Makes a rival's lab. At the start of a game it gets the era's share of the starting money and the era's start techs. A lab that
-        /// joins later (<paramref name="arrival"/>) comes with its full starting cash, the era's lot and every tech of the eras before.
+        /// Makes a rival's lab. A founder (one that is there from the first era) at the start of a game gets the era's share of the starting money
+        /// and the era's start techs. A lab that joined in an earlier era than the game starts in has its own starting cash, as one that joins
+        /// later (<paramref name="arrival"/>) does; the latter also gets the era's lot and every tech of the eras before.
         /// </summary>
         public static LabState AddRival(GameConfig c, GameState state, RivalConfig rival, EraConfig era, bool arrival)
         {
@@ -95,10 +96,11 @@ namespace AiLabs.Rules.Sim
             lab.RivalId = rival.Id;
             lab.PlanStartTick = state.Tick + rival.Plan.StartDelayWeeks
                 + (rival.Plan.StartJitterWeeks > 0 ? state.Rng.Rivals.Range(0, rival.Plan.StartJitterWeeks) : 0);
-            lab.Cash = arrival ? rival.StartCash : MathI.MulPermille(rival.StartCash, era.StartCashPermille);
+            bool founder = !arrival && rival.JoinsYear == 0;
+            lab.Cash = arrival ? rival.StartCash : founder ? MathI.MulPermille(rival.StartCash, era.StartCashPermille) : EstablishedCash(c, rival, era);
             lab.Ledger.StartCash = lab.Cash;
             lab.Reputation = rival.Reputation;
-            lab.GrantPerWeek = arrival ? rival.BackerPerWeek : MathI.MulPermille(rival.BackerPerWeek, era.StartGrantPermille);
+            lab.GrantPerWeek = founder ? MathI.MulPermille(rival.BackerPerWeek, era.StartGrantPermille) : rival.BackerPerWeek;
             lab.GrantEndsTick = -1;
             lab.HomeBlocId = rival.HomeBlocId;
             lab.LotId = !arrival && IsFirst(c, era) ? rival.LotId : era.StartLotId;
@@ -118,6 +120,19 @@ namespace AiLabs.Rules.Sim
                 VendorSystem.EnsureStanding(c, state, lab.Id);
             }
             return lab;
+        }
+
+        /// <summary>
+        /// What a lab that joined in an earlier era than the game starts in holds when the game begins: its own starting cash grown by how much
+        /// dearer the start era's runs are than the era it joined in, kept within half to double the player's starting cash so a veteran is never
+        /// poor beside a newcomer nor a giant beside them.
+        /// </summary>
+        public static long EstablishedCash(GameConfig c, RivalConfig rival, EraConfig era)
+        {
+            EraConfig joined = EraSystem.AtYear(c, rival.JoinsYear);
+            long grown = rival.StartCash * era.TrainingCostPermille / MathI.Max(1, joined.TrainingCostPermille);
+            long player = MathI.MulPermille(c.PlayerStart.Cash, era.StartCashPermille);
+            return MathI.Clamp(grown, player / 2, player * 2);
         }
 
         static bool IsFirst(GameConfig c, EraConfig era) { return c.Eras[0] == era; }

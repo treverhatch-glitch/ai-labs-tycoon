@@ -18,6 +18,25 @@ namespace AiLabs.Rules.Sim
             return GameDate.Label(c.Calendar, e.Tick) + ": " + Body(c, state, e, who);
         }
 
+        static string IncidentHeadline(GameConfig c, GameEvent e)
+        {
+            if (!string.IsNullOrEmpty(e.RiskClass))
+            {
+                foreach (RiskClassConfig risk in c.Safety.RiskClasses)
+                    if (risk.Id == e.RiskClass) return risk.Headlines[e.Pick];
+            }
+            return EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick];
+        }
+
+        static string NewRisks(GameConfig c, GameEvent e)
+        {
+            List<RiskClassConfig> opening = RiskClasses.OpeningIn(c, c.Era(e.Ref));
+            if (opening.Count == 0) return "";
+            var names = new List<string>();
+            for (int i = 0; i < opening.Count; i++) names.Add(opening[i].Name.ToLowerInvariant());
+            return " A new kind of trouble: " + string.Join(", ", names) + ".";
+        }
+
         static string EraShifts(GameConfig c, GameEvent e)
         {
             List<EraRuleLine> shifts = EraRules.Shifts(c, e.Tick);
@@ -52,7 +71,7 @@ namespace AiLabs.Rules.Sim
                         LabState incidentLab = state.Lab(e.LabId);
                         ModelState incidentModel = incidentLab == null ? null : incidentLab.Model(e.SubjectId);
                         string modelName = incidentModel == null ? e.Ref : incidentModel.Name;
-                        return "INCIDENT at " + who + ": " + EraSystem.AtTick(c, e.Tick).IncidentHeadlines[e.Pick].Replace("{model}", modelName) + " Fine: $" + e.Amount + ".";
+                        return "INCIDENT at " + who + ": " + IncidentHeadline(c, e).Replace("{model}", modelName) + " Fine: $" + e.Amount + ".";
                     }
                 case EventKind.GauntletCrown: return e.Ref + " by " + who + " takes the crown at " + c.Gauntlet.Name + ".";
                 case EventKind.GauntletBracket: return who + " wins the " + c.Sector(e.Ref).Name + " bracket at " + c.Gauntlet.Name + ".";
@@ -60,7 +79,7 @@ namespace AiLabs.Rules.Sim
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";
                 case EventKind.Bankrupt: return who + " went bankrupt.";
-                case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline + EraShifts(c, e);
+                case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline + EraShifts(c, e) + NewRisks(c, e);
                 case EventKind.WorldNews:
                 {
                     WorldEventConfig news = c.WorldEvent(e.Ref);

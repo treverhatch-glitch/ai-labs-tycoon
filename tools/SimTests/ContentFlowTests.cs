@@ -105,7 +105,7 @@ public class ContentFlowTests
     {
         Run run = FullLife.Value;
         GameConfig c = run.Game.C;
-        string[] landed = run.Seen.Where(e => e.Kind == EventKind.WorldNews).Select(e => e.Ref).ToArray();
+        string[] landed = run.Seen.Where(e => e.Kind == EventKind.WorldNews && c.WorldEvent(e.Ref) != null).Select(e => e.Ref).ToArray();
         int lastYear = run.FirstYear + Years - 1;
         string[] expected = c.WorldEvents.Where(w => w.Year <= lastYear).Select(w => w.Id).ToArray();
         foreach (string id in expected) Assert.Contains(id, landed);

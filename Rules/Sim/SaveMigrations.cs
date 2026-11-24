@@ -328,8 +328,11 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "absorbedByLabId", JsonValue.Of(-1L)));
         }
 
-        /// <summary>Reserved on stack2 for era merge (riskClass / founding / talent — schemas 21–23).</summary>
-        static void MigrateTo21(JsonValue root) { }
+        /// <summary>Risk classes (Q125): an incident event names its class; old events were the plain mishap.</summary>
+        static void MigrateTo21(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "events", e => JsonPatch.AddIfMissing(e, "riskClass", JsonValue.Of("")));
+        }
 
         static void MigrateTo22(JsonValue root) { }
 
