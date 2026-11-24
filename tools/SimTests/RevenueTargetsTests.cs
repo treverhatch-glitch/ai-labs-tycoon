@@ -227,7 +227,7 @@ public class RevenueTargetsTests
     {
         Game g = Selling();
         g.Do(Command.SetRevenueTarget(g.Id, 2));
-        string old = SaveSchemaPretend.At(g.C, 63, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 62, g.Sim.Save());
         Assert.DoesNotContain("revenueTarget", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

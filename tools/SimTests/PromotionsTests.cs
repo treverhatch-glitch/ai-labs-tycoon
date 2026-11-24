@@ -222,7 +222,7 @@ public class PromotionsTests
     {
         Game g = Lab();
         g.Do(Command.PromoteStaff(g.Id, Of(g, "researcher").Id));
-        string old = SaveSchemaPretend.At(g.C, 62, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 61, g.Sim.Save());
         Assert.DoesNotContain("\"senior\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

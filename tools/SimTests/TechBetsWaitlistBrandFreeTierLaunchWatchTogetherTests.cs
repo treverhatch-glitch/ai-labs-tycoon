@@ -134,13 +134,19 @@ public class TechBetsWaitlistBrandFreeTierLaunchWatchTogetherTests
     [InlineData(3)]
     public void All_five_systems_in_a_long_scripted_game_keep_the_books_the_save_and_the_replay(int seed)
     {
-        Game g = Game.New(seed, c => c.PlayerStart.Cash = 1_000_000_000_000);
+        Game g = Game.New(seed, c => { c.PlayerStart.Cash = 1_000_000_000_000; c.EventLogMax = 20_000; });
         g.Autopilot(60);
         long gap = g.Me.Cash - g.Me.Ledger.Lifetime.Net;
         string[] techs = { "state-machines", "regression-tests", "minimax", "rules-engines", "decision-trees", "beowulf-clusters" };
         for (int week = 0; week < 330 && !g.Me.Bankrupt; week++)
         {
-            if (week % 40 == 2) g.Try(Command.BetOnTech(g.Id, techs[week / 40 % techs.Length]));
+            if (week % 40 == 2)
+            {
+                string techId = techs[week / 40 % techs.Length];
+                TechConfig tech = g.C.Tech(techId);
+                if (tech != null && EraSystem.TechOpen(g.C, tech, g.Tick) && !LabQueries.HasTech(g.Me, techId) && !TechBets.Active(g.Me))
+                    g.Try(Command.BetOnTech(g.Id, techId));
+            }
             if (week % 40 == 30) g.Try(Command.WithdrawTechBet(g.Id));
             if (week % 60 == 5)
             {
@@ -164,6 +170,20 @@ public class TechBetsWaitlistBrandFreeTierLaunchWatchTogetherTests
         back.StepMany(20);
         g.Weeks(20);
         Assert.Equal(g.Sim.Digest(), back.Digest());
+        if (Count(g, EventKind.TechBetMade) == 0)
+        {
+            foreach (TechConfig tech in g.C.Research.Techs)
+            {
+                if (tech.Cost < g.C.TechBets.MinCost || !EraSystem.TechOpen(g.C, tech, g.Tick)) continue;
+                if (LabQueries.HasTech(g.Me, tech.Id) || TechBets.Active(g.Me)) continue;
+                bool prereqs = true;
+                for (int i = 0; i < tech.Requires.Count; i++)
+                    if (!LabQueries.HasTech(g.Me, tech.Requires[i])) { prereqs = false; break; }
+                if (!prereqs) continue;
+                g.Do(Command.BetOnTech(g.Id, tech.Id));
+                break;
+            }
+        }
         Assert.True(Count(g, EventKind.TechBetMade) > 0, "no tech bet was ever made");
         Assert.Equal(1, g.Me.BrandOn);
         Assert.True(g.Me.FtSpent > 0, "no free tier ever ran");

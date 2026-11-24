@@ -404,17 +404,7 @@ public class OnCallTests
     [Fact]
     public void A_long_game_with_a_changing_rota_stays_sound_and_the_books_balance()
     {
-        Game g = Game.New(2, c =>
-        {
-            c.OnCall.LockWeeks = 4;
-            c.Litigation.Enabled = 0;
-            c.Security.Enabled = 0;
-            c.GovContracts.Enabled = 0;
-            c.Tax.Enabled = 0;
-            c.Standards.Enabled = 0;
-            c.Reliability.Enabled = 0;
-            c.Scaling.Enabled = 0;
-        });
+        Game g = Game.New(2, c => { c.OnCall.LockWeeks = 4; c.EventLogMax = 20_000; });
         g.Autopilot(60);
         g.Me.Cash += 5_000_000;
         long gap = g.Me.Cash - g.Me.Ledger.Lifetime.Net;
