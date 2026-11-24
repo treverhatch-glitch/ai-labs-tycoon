@@ -92,5 +92,6 @@ python3 tools/art/generate_campus_kit.py
 | [GO-PACKET-INDEX-LANE-REFRESH.md](GO-PACKET-INDEX-LANE-REFRESH.md) | GO packets 66+ (batch 77) |
 | [HQ-LOT-VIEWPORT-INDEX.md](HQ-LOT-VIEWPORT-INDEX.md) | HQ lot viewport (batch 78) |
 | [INDEX-LANE-MANIFEST-TAIL.md](INDEX-LANE-MANIFEST-TAIL.md) | Manifest tail 75–78 (batch 79) |
+| [HUD-ERA-TAIL-INDEX.md](HUD-ERA-TAIL-INDEX.md) | Era HUD tail 29/37/52/53 (batch 80) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

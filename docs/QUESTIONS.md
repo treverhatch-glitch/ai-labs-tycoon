@@ -614,6 +614,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — extends manifest navigation after lot viewport.
 - Why: 4 tail entries (75–78); extended lane 66–78 = 13 batches; HQ indexed bands 5.
 
+### Q529. HUD era tail index? DECIDED: `CampusHudEraTailIndexPresentationSpec`
+
+- Options: (a) extend hub table only; (b) tail doc + era/skin/overlay aliases; (c) wire start-era picker in graphics PR.
+- Recommendation and choice: **(b)** — navigation rollup for era-linked HUD (batches 29/37/52/53).
+- Why: Top bar index stops at era label; seasonal + picker + skin preview need one tail row.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
