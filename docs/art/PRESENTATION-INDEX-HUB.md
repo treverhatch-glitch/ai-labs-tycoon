@@ -21,4 +21,6 @@ Manifest: [INDEX-LANE-MANIFEST.md](INDEX-LANE-MANIFEST.md) (batch 75) lists batc
 
 Post-60 index docs (same lane, not in hub table): world map host ([WORLD-MAP-HOST-INDEX.md](WORLD-MAP-HOST-INDEX.md), batch 66), tab rail ([TAB-RAIL-INTEGRATION-INDEX.md](TAB-RAIL-INTEGRATION-INDEX.md), batch 67), room build ([ROOM-BUILD-INDEX.md](ROOM-BUILD-INDEX.md), batch 68), HQ stack rollup ([HQ-STAGE-STACK-ROLLUP.md](HQ-STAGE-STACK-ROLLUP.md), batch 69), staff/GPU panel ([STAFF-GPU-PANEL-INDEX.md](STAFF-GPU-PANEL-INDEX.md), batch 70), training peek ([TRAINING-PEEK-INDEX.md](TRAINING-PEEK-INDEX.md), batch 71), mascot strip ([HQ-MASCOT-STRIP-INDEX.md](HQ-MASCOT-STRIP-INDEX.md), batch 72), compute split ([COMPUTE-SPLIT-INDEX.md](COMPUTE-SPLIT-INDEX.md), batch 73), HQ completion ([HQ-STAGE-STACK-COMPLETION.md](HQ-STAGE-STACK-COMPLETION.md), batch 74). Era HUD tail: [HUD-ERA-TAIL-INDEX.md](HUD-ERA-TAIL-INDEX.md) (batch 80).
 
+Hub tail (batches 79–82): [PRESENTATION-INDEX-HUB-TAIL.md](PRESENTATION-INDEX-HUB-TAIL.md) (batch 85).
+
 Tokens: `CampusPresentationIndexHubPresentationSpec` (11 hub entries, batches 50–60). Batch 61.

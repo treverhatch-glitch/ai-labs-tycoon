@@ -72,7 +72,8 @@
 | 81 | `c567747` | Rival/world tail index |
 | 82 | `a79600b` | Explainable HUD tail |
 | 83 | `08727c3` | ALT-76 STATUS sync |
-| 84 | (local) | GO packet tail refresh |
+| 84 | `b78f921` | GO packet tail refresh |
+| 85 | (local) | Presentation hub tail |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

@@ -644,6 +644,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — coordinator packets reference extended lane + STATUS sync.
 - Why: Post-78 pushes follow manifest tail, not manifest-only range.
 
+### Q534. Presentation hub tail? DECIDED: `CampusPresentationIndexHubTailPresentationSpec`
+
+- Options: (a) edit hub doc only; (b) hub tail doc + 4 tail row aliases; (c) merge hub into manifest.
+- Recommendation and choice: **(b)** — links hub 50–60 to tails 79–82.
+- Why: Navigation rollup after GO packet tail without renumbering hub.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.

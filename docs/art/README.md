@@ -97,5 +97,6 @@ python3 tools/art/generate_campus_kit.py
 | [EXPLAINABLE-HUD-TAIL-INDEX.md](EXPLAINABLE-HUD-TAIL-INDEX.md) | Explainable HUD tail (batch 82) |
 | [ALT-76-STATUS-SYNC.md](ALT-76-STATUS-SYNC.md) | ALT-76 STATUS through 82 (batch 83) |
 | [GO-PACKET-TAIL-REFRESH.md](GO-PACKET-TAIL-REFRESH.md) | GO packets 78+ (batch 84) |
+| [PRESENTATION-INDEX-HUB-TAIL.md](PRESENTATION-INDEX-HUB-TAIL.md) | Hub tail 79–82 (batch 85) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
