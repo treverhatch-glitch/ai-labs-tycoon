@@ -15,45 +15,54 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
-            if (schema < 56) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "onCallLevel"); JsonPatch.Remove(lab, "onCallLockedUntil"); });
-            if (schema < 55) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "optimiseLevel"); JsonPatch.Remove(lab, "campaignSector"); JsonPatch.Remove(lab, "campaignLevel"); JsonPatch.Remove(lab, "campaignWeeks"); JsonPatch.Remove(lab, "hangoverWeeks"); JsonPatch.Remove(lab, "campaignLockedUntil"); });
-            if (schema < 54) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "ethicsLevel"); JsonPatch.Remove(lab, "ethicsLockedUntil"); JsonPatch.Remove(lab, "chiefScientistId"); JsonPatch.Remove(lab, "chiefSafetyId"); });
-            if (schema < 53) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "equityLevel"); JsonPatch.Remove(lab, "equityPermille"); });
-            if (schema < 52) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchFocus"); JsonPatch.Remove(lab, "focusLockedUntil"); JsonPatch.Remove(lab, "hackWeeks"); JsonPatch.Remove(lab, "hackLockedUntil"); });
-            if (schema < 51) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "auditedUntil")));
-            if (schema < 50)
+            if (schema < 57) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "onCallLevel"); JsonPatch.Remove(lab, "onCallLockedUntil"); });
+            if (schema < 56) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "optimiseLevel"); JsonPatch.Remove(lab, "campaignSector"); JsonPatch.Remove(lab, "campaignLevel"); JsonPatch.Remove(lab, "campaignWeeks"); JsonPatch.Remove(lab, "hangoverWeeks"); JsonPatch.Remove(lab, "campaignLockedUntil"); });
+            if (schema < 55) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "ethicsLevel"); JsonPatch.Remove(lab, "ethicsLockedUntil"); JsonPatch.Remove(lab, "chiefScientistId"); JsonPatch.Remove(lab, "chiefSafetyId"); });
+            if (schema < 54) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "equityLevel"); JsonPatch.Remove(lab, "equityPermille"); });
+            if (schema < 53) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchFocus"); JsonPatch.Remove(lab, "focusLockedUntil"); JsonPatch.Remove(lab, "hackWeeks"); JsonPatch.Remove(lab, "hackLockedUntil"); });
+            if (schema < 52) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "auditedUntil")));
+            if (schema < 51)
             {
                 JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "subletPermille"); JsonPatch.Remove(lab, "subletLockedUntil"); });
                 foreach (string place in SaveMigrations.LedgerPlaces) JsonPatch.ForEach(root, place, totals => JsonPatch.Remove(totals, "sublet"));
             }
-            if (schema < 49) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "prestige"));
-            if (schema < 48) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "complianceLevel"));
-            if (schema < 47) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "payLevel"); JsonPatch.Remove(lab, "payLockedUntil"); });
-            if (schema < 46) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "interpLevel"));
-            if (schema < 45) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "redTeamUntil")));
-            if (schema < 44)
+            if (schema < 50) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "prestige"));
+            if (schema < 49) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "complianceLevel"));
+            if (schema < 48) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "payLevel"); JsonPatch.Remove(lab, "payLockedUntil"); });
+            if (schema < 47) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "interpLevel"));
+            if (schema < 46) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "redTeamUntil")));
+            if (schema < 45)
             {
-                JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "insuranceLevel"); JsonPatch.Remove(lab, "insuranceClaims"); JsonPatch.Remove(lab, "insuranceLockedUntil"); });
-                foreach (string place in SaveMigrations.LedgerPlaces) JsonPatch.ForEach(root, place, totals => JsonPatch.Remove(totals, "insurance"));
+                foreach (string place in SaveMigrations.LedgerPlaces)
+                    JsonPatch.ForEach(root, place, totals => JsonPatch.Remove(totals, "insurance"));
+                JsonPatch.ForEach(root, "labs", lab =>
+                {
+                    JsonPatch.Remove(lab, "insuranceLevel");
+                    JsonPatch.Remove(lab, "insuranceClaims");
+                    JsonPatch.Remove(lab, "insuranceLockedUntil");
+                });
             }
-            if (schema < 43) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "crunchWeeks"));
-            if (schema < 42) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "researchSharePermille"));
-            if (schema < 41) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "loans"));
-            if (schema < 40) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { JsonPatch.Remove(m, "approach"); JsonPatch.Remove(m, "checkpoints"); }));
-            if (schema < 39) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "eraScores"));
-            if (schema < 38) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "pivotEraId"); JsonPatch.Remove(lab, "pivotUntilTick"); });
-            if (schema < 37) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.Remove(b, "lobbyUntilTick")));
-            if (schema < 36) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "rushWeeks")));
-            if (schema < 35) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "designerId")));
-            if (schema < 34) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "objective")));
-            if (schema < 33) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "officeEventId"); JsonPatch.Remove(lab, "officeEventExpires"); JsonPatch.Remove(lab, "officeSeen"); });
-            if (schema < 32) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchLeads"); JsonPatch.Remove(lab, "leadSpeedPermille"); });
-            if (schema < 31) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "rooms", room => JsonPatch.Remove(room, "eraAge")));
-            if (schema < 30) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
-            if (schema < 29) StripCulture(root);
+            if (schema < 44) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "crunchWeeks"));
+            if (schema < 43) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "researchSharePermille"));
+            if (schema < 42) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "loans"));
+            if (schema < 41) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { JsonPatch.Remove(m, "approach"); JsonPatch.Remove(m, "checkpoints"); }));
+            if (schema < 40) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "eraScores"));
+            if (schema < 39) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "pivotEraId"); JsonPatch.Remove(lab, "pivotUntilTick"); });
+            if (schema < 38) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.Remove(b, "lobbyUntilTick")));
+            if (schema < 37) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "rushWeeks")));
+            if (schema < 36) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "designerId")));
+            if (schema < 35) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "objective")));
+            if (schema < 34) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "officeEventId"); JsonPatch.Remove(lab, "officeEventExpires"); JsonPatch.Remove(lab, "officeSeen"); });
+            if (schema < 33) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchLeads"); JsonPatch.Remove(lab, "leadSpeedPermille"); });
+            if (schema < 32) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "rooms", room => JsonPatch.Remove(room, "eraAge")));
+            if (schema < 31) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
+            if (schema < 30) StripCulture(root);
+            if (schema < 29) StripFleetResaleLock(root);
+            if (schema < 28) StripHatchLedgerLines(root);
             if (schema < 27) StripSectorTrust(root);
             if (schema < 26) StripGauntletDepth(root);
             if (schema < 25) StripPressInquiries(root);
+            if (schema < 24) StripBubbleHadCrash(root);
             if (schema < 23) StripPoachOffers(root);
             if (schema < 22) StripFoundingChoices(root);
             if (schema < 21) StripEventRiskClass(root);
@@ -178,6 +187,8 @@ public static class SaveSchemaPretend
 
     static void StripBubblePermille(JsonValue root) => JsonPatch.Remove(root, "bubblePermille");
 
+    static void StripBubbleHadCrash(JsonValue root) => JsonPatch.Remove(root, "bubbleHadCrash");
+
     static void StripAbsorbedByLab(JsonValue root)
     {
         JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "absorbedByLabId"));
@@ -227,5 +238,20 @@ public static class SaveSchemaPretend
             JsonPatch.Remove(s, "queuedGpus");
             JsonPatch.Remove(s, "queueHoldingId");
         });
+    }
+
+    static void StripFleetResaleLock(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.Remove(batch, "resaleLockedUntilTick"));
+    }
+
+    static void StripHatchLedgerLines(JsonValue root)
+    {
+        foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+            JsonPatch.ForEach(root, place, totals =>
+            {
+                JsonPatch.Remove(totals, "acquisition");
+                JsonPatch.Remove(totals, "assetSale");
+            });
     }
 }
