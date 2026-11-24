@@ -44,10 +44,12 @@ namespace AiLabs.Rules.Systems
       state.BubblePermille = (int)MathI.Min(MathI.Permille, state.BubblePermille + boost);
     }
 
-    public static void OnListedChipTrade(GameConfig c, GameState state)
+    public static void OnListedChipTrade(GameConfig c, GameState state, long tradeCash)
     {
       BubbleConfig b = c.Bubble;
-      if (b == null || b.ListedChipBoostPermille <= 0) return;
+      if (b == null) return;
+      if (tradeCash > 0) state.BubbleCapitalRaised += tradeCash;
+      if (b.ListedChipBoostPermille <= 0) return;
       state.BubblePermille = (int)MathI.Min(MathI.Permille, state.BubblePermille + b.ListedChipBoostPermille);
     }
 
@@ -64,7 +66,7 @@ namespace AiLabs.Rules.Systems
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState lab = state.Labs[i];
-        if (lab.Bankrupt) continue;
+        if (!LabQueries.ParticipatesInEconomy(lab)) continue;
         total += lab.Ledger.ThisMonth.Revenue;
       }
       return total;
@@ -83,14 +85,27 @@ namespace AiLabs.Rules.Systems
         {
           state.BubblePermille = b.PostCrashResidualPermille;
           state.BubbleGraceMonths = 0;
+          if (b.ResetCapitalRaisedAfterCrash) state.BubbleCapitalRaised = 0;
         }
         return;
       }
 
+      if (b.PopAtPermille > 0 && state.BubblePermille >= b.PopAtPermille)
+      {
+        StartCrash(c, state, state.BubblePermille >= b.PopAtPermille, postNews: true);
+        return;
+      }
+
       if (state.BubblePermille > 0)
-        state.BubblePermille = (int)MathI.Max(b.PostCrashResidualPermille, state.BubblePermille - b.DecayPermillePerMonth);
+      {
+        int next = state.BubblePermille - b.DecayPermillePerMonth;
+        state.BubblePermille = state.BubbleHadCrash
+          ? (int)MathI.Max(b.PostCrashResidualPermille, next)
+          : (int)MathI.Max(0, next);
+      }
 
       long revenue = MarketRevenueThisMonth(state);
+      if (revenue <= 0) revenue = MarketRevenueLastClosedMonth(state);
       if (state.BubblePermille >= b.HotPermille && b.GraceMonthsBeforeCrash > 0)
       {
         bool returnsOk = state.BubbleCapitalRaised <= 0
@@ -105,8 +120,21 @@ namespace AiLabs.Rules.Systems
       }
       else state.BubbleGraceMonths = 0;
 
-      if (state.BubbleGraceMonths >= b.GraceMonthsBeforeCrash || state.BubblePermille >= b.PopAtPermille)
-        StartCrash(c, state, state.BubblePermille >= b.PopAtPermille, postNews: true);
+      if (state.BubbleGraceMonths >= b.GraceMonthsBeforeCrash)
+        StartCrash(c, state, false, postNews: true);
+    }
+
+    public static long MarketRevenueLastClosedMonth(GameState state)
+    {
+      long total = 0;
+      for (int i = 0; i < state.Labs.Count; i++)
+      {
+        LabState lab = state.Labs[i];
+        if (!LabQueries.ParticipatesInEconomy(lab)) continue;
+        if (lab.Ledger.History.Count > 0) total += lab.Ledger.History[lab.Ledger.History.Count - 1].Totals.Revenue;
+        else total += lab.Ledger.ThisMonth.Revenue;
+      }
+      return total;
     }
 
     public static void StartCrash(GameConfig c, GameState state, bool force = false, bool postNews = true)
@@ -116,6 +144,7 @@ namespace AiLabs.Rules.Systems
       if (InCrash(state)) return;
       if (!force && state.BubbleGraceMonths < b.GraceMonthsBeforeCrash && state.BubblePermille < b.PopAtPermille) return;
       bool playerHaircut = ApplyWeakHaircuts(c, state, b);
+      state.BubbleHadCrash = true;
       state.BubbleCrashMonthsRemaining = b.CrashDurationMonths > 0 ? b.CrashDurationMonths : 12;
       state.BubblePermille = b.PostCrashResidualPermille;
       state.BubbleGraceMonths = 0;
@@ -134,7 +163,7 @@ namespace AiLabs.Rules.Systems
       for (int i = 0; i < state.Labs.Count; i++)
       {
         LabState lab = state.Labs[i];
-        if (lab.Bankrupt) continue;
+        if (!LabQueries.ParticipatesInEconomy(lab)) continue;
         int share = GovernmentSystem.RevenueSharePpm(state, lab);
         if (share >= b.SurvivorRevenuePpm) continue;
         long cut = MathI.MulPermille(lab.Cash, b.WeakCashHaircutPermille);

@@ -299,7 +299,7 @@ public class PivotTests
     {
         Game g = Lab();
         g.Do(Command.PivotStyle(g.Id, "shotgun"));
-        string old = SaveSchemaPretend.At(g.C, 37, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 38, g.Sim.Save());
         Assert.DoesNotContain("pivotEraId", old);
         Assert.DoesNotContain("pivotUntilTick", old);
         Simulation loaded = Simulation.Load(g.C, old);

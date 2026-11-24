@@ -20,14 +20,34 @@ public class BubbleMeterHatchBarTests
     }
 
     [Fact]
-    public void Decay_never_drops_below_post_crash_residual()
+    public void Decay_before_first_crash_can_go_below_post_crash_residual()
     {
         var g = Game.Solo(tweak: c =>
         {
             c.Bubble.PostCrashResidualPermille = 120;
             c.Bubble.HotPermille = 1000;
             c.Bubble.DecayPermillePerMonth = 50;
+            c.Bubble.PopAtPermille = 1000;
         });
+        g.State.BubblePermille = 130;
+        Assert.False(g.State.BubbleHadCrash);
+        BubbleSystem.RunMonth(g.C, g.State);
+        Assert.Equal(80, g.State.BubblePermille);
+    }
+
+    [Fact]
+    public void Decay_after_first_crash_never_drops_below_post_crash_residual()
+    {
+        var g = Game.Solo(tweak: c =>
+        {
+            c.Bubble.PostCrashResidualPermille = 120;
+            c.Bubble.DecayPermillePerMonth = 50;
+            c.Bubble.CrashDurationMonths = 1;
+            c.Bubble.PopAtPermille = 200;
+            c.Bubble.WeakCashHaircutPermille = 0;
+        });
+        g.State.BubbleHadCrash = true;
+        g.State.BubbleCrashMonthsRemaining = 0;
         g.State.BubblePermille = 130;
         BubbleSystem.RunMonth(g.C, g.State);
         Assert.Equal(120, g.State.BubblePermille);

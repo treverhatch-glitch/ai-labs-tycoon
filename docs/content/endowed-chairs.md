@@ -1,6 +1,6 @@
 # Endowed chairs
 
-A big one-off payment buys a permanent research post at a university. It adds research points every week, puts a floor under the lab's academic prestige and costs a stipend every week for good. Each chair costs more than the one before (`chairs.*` in the data; Q341). Schema 64 adds one number to each lab.
+A big one-off payment buys a permanent research post at a university. It adds research points every week, puts a floor under the lab's academic prestige and costs a stipend every week for good. Each chair costs more than the one before (`chairs.*` in the data; Q341). Schema 65 adds one number to each lab.
 
 ## `EndowChair`
 
@@ -19,4 +19,4 @@ Refused, with nothing changed, for a lab that is not the player's, a game with `
 - Everything that reads the prestige level (hiring discount, morale, poaching, counter-offers, grants) sees the floor, because the floor is applied where the level is read.
 - The validator keeps the floor times the most chairs under the top of the prestige scale, so papers still matter, and the price at least 1.
 - Event `ChairEndowed` (SubjectId the chairs held, Amount the price).
-- Schema 64: `chairs` on every lab (older saves: 0). Only the player's lab endows them; a save with a rival chair is flagged.
+- Schema 65: `chairs` on every lab (older saves: 0). Only the player's lab endows them; a save with a rival chair is flagged.

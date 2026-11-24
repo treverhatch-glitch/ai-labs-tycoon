@@ -358,6 +358,10 @@ namespace AiLabs.Rules.Config
             if (a.MinInstalledModels < 0) p.Add("acquisitions.minInstalledModels is negative");
             if (a.RegulatorDealRevenue < 0) p.Add("acquisitions.regulatorDealRevenue is negative");
             if (a.RegulatorAttention < 0) p.Add("acquisitions.regulatorAttention is negative");
+            Permille(p, "acquisitions.plannerAcquireChancePermille", a.PlannerAcquireChancePermille);
+            if (a.FleetResaleLockWeeks < 0) p.Add("acquisitions.fleetResaleLockWeeks is negative");
+            Permille(p, "acquisitions.readyChipBookPermille", a.ReadyChipBookPermille);
+            Permille(p, "acquisitions.chipFleetBookPermille", a.ChipFleetBookPermille);
         }
 
         static void ModelSalesProblems(List<string> p, GameConfig c)
@@ -368,6 +372,7 @@ namespace AiLabs.Rules.Config
             if (m.EarningsMultipleWeeks < 0) p.Add("modelSales.earningsMultipleWeeks is negative");
             if (m.SectorReputationHit < 0) p.Add("modelSales.sectorReputationHit is negative");
             if (m.MinOffer < 0) p.Add("modelSales.minOffer is negative");
+            Permille(p, "modelSales.crashDistressOfferPermille", m.CrashDistressOfferPermille);
         }
 
         static void SharesProblems(List<string> p, GameConfig c)
@@ -1670,6 +1675,7 @@ namespace AiLabs.Rules.Config
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
+            Permille(p, "chips.distressListingPricePermille", k.DistressListingPricePermille);
             RoleConfig architect = c.Role(k.ArchitectRoleId);
             if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
             else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");
