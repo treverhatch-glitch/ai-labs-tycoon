@@ -620,6 +620,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — navigation rollup for era-linked HUD (batches 29/37/52/53).
 - Why: Top bar index stops at era label; seasonal + picker + skin preview need one tail row.
 
+### Q530. Rival/world cross-index tail? DECIDED: `CampusRivalWorldTailIndexPresentationSpec`
+
+- Options: (a) rivals screen only; (b) tail doc linking rivals + world host + freeze; (c) new world-map rules bindings.
+- Recommendation and choice: **(b)** — presentation navigation only.
+- Why: Index lane 66+ needs rivals/world cross-ref without changing rules.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
