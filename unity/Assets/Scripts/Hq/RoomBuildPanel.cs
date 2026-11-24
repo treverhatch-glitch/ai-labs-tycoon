@@ -1039,6 +1039,7 @@ namespace AiLabs.Unity.Hq
                                  + " · " + HqDisplayQueriesHud.LifetimeKnotDevSpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqDisplayQueriesHud.ThisWeekDevCloakSpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqDisplayQueriesHud.LastWeekDevCloakSpendIncomeSummaryLine(_host.Simulation.Player)
+                                 + " · " + HqDisplayQueriesHud.LifetimeDevCloakSpendIncomeSummaryLine(_host.Simulation.Player)
                                  + " · " + HqOperationsHud.RunningCostLine(_host.Simulation);
             }
             if (_status != null && !string.IsNullOrEmpty(_host.StatusMessage))
