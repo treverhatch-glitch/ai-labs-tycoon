@@ -1065,17 +1065,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchForwardQueueBarLaterTests2` (70):** gate **4799/4799**; schema **29** only.
 
-### Q4196–Q4265. Balance/soak bar coda? DECIDED: test-only (batch 65, **HOLD unpushed** — merge wave)
+### Q4196–Q4265. Balance/soak bar coda? DECIDED: test-only (batch 65, **pushed @ `07912df`**)
 
-- **`HatchBalanceSoakBarLaterTests3` (70):** **Q101** neighbour; prepush **4869/4869**; rebase onto `90edc7e` before GO; schema **29** only.
+- **`HatchBalanceSoakBarLaterTests3` (70):** **Q101** neighbour; landed post-#4; schema **29** only.
 
-### Q4266–Q4335. Bubble/acquire bar coda? DECIDED: test-only (batch 66, LOCAL after 65)
+### Q4266–Q4335. Bubble/acquire bar coda? DECIDED: test-only (batch 66, LOCAL — GO **`07912df..efb5e24`**)
 
-- **`HatchBubbleAcquireBarLaterTests3` (70):** bubble crash + acquisition distress; stack2 fork batch **50**; 70-bar filter green; schema **29** only.
+- **`HatchBubbleAcquireBarLaterTests3` (70):** bubble crash + acquisition distress; filter **70/70**; expected gate **4939+**; schema **29** only.
 
-### Q4336–Q4405. Capital/bubble bar coda? TBD: test-only (batch 67, queued)
+### Q4336–Q4405. Capital/bubble bar coda? DECIDED: test-only (batch 67, LOCAL after 66)
 
-- **`HatchCapitalBubbleBarLaterTests3` (70):** systems-only; schema **29** only.
+- **`HatchCapitalBubbleBarLaterTests3` (70):** filter **70/70**; expected gate **5009+**; schema **29** only.
+
+### Q4406–Q4475. Bubble/distress bar coda? DECIDED: test-only (batch 68, LOCAL)
+
+- **`HatchBubbleDistressBarLaterTests3` (70):** Q178 distress listing neighbour; store §bubble/distress; filter **70/70**; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

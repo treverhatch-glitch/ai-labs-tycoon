@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | **LOCAL** batches **65–67** on post-#4 tip; **NO PUSH** until merge GO |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`07912df`**; **LOCAL** batches **66–67** (+6 ahead) |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -183,14 +183,16 @@ and says why in the commit message.
 - ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
 - ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
 - ~~**Hatch forward-queue batch 64**~~ **pushed @ `c63ab58`** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); gate **4799/4799** in-repo; parent `605edb0` (+2); landed ~06:24 UTC Nov 24.
-- **Hatch balance/soak batch 65 (LOCAL — **HOLD** merge wave; **rebased** onto post-#4 `f2bbe8f`)** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); filter **70/70**; grouped GO tip **`3ee8a20`**; **Q101**; schema **29** only.
-- **Hatch bubble/acquire batch 66 (LOCAL — hold until batch 65 lands)** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); stack2 coda batch **50**; filter **70/70**; grouped tip after **65** + spacing; schema **29** only.
+- ~~**Hatch balance/soak batch 65**~~ **pushed @ `07912df`** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); gate **4869+** (full tree **5074** at land); parent `f2bbe8f` (+5); landed GO Nov 24 ~08:48 UTC.
+- **Hatch bubble/acquire batch 66 (LOCAL — hold ~30m spacing after 65)** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); stack2 coda batch **50**; filter **70/70**; grouped GO after spacing; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 67 (LOCAL)** — Q4336–Q4405 `HatchCapitalBubbleBarLaterTests3`; filter **70/70**; hold with **66** until **65** lands.
-  - **batch 68+ (TBD)** — distress/capital codas; **SolvencyHold** schema **30** parked.
-- **Merge wave (Nov 24):** `origin/cursor/later-rules-stack2-75cd` @ **`f2bbe8f`**; **NO PUSH** until merge coordinator clears. **Never** force-push (`--force`, `--force-with-lease`). **Do not rewrite pushed commits** for Co-authored-by. **Pre-push:** coauth grep empty on push range; noreply + `commit-tree` for new commits.
-- **Grouped GO batch 65 (ready — awaiting coordinator):** plain FF push **`f2bbe8f..3ee8a20`** (**5** commits); **excludes** **66–67**; prepush **5074/5074** @ rebase; log `/tmp/b65-post4-prepush.log`.
-- **LOCAL hold:** batches **66–67** (`b0789aa..HEAD`) until **65** lands + ~30m spacing.
+  - **batch 67 (LOCAL)** — Q4336–Q4405 `HatchCapitalBubbleBarLaterTests3`; filter **70/70**; hold until **66** lands.
+  - **batch 68 (LOCAL)** — Q4406–Q4475 `HatchBubbleDistressBarLaterTests3`; filter **70/70**; distress/bubble coda.
+  - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
+- **Push policy:** plain FF only; coauth grep empty on push range; grouped batches; **no force-push**.
+- **Batch 66 GO wall:** batch65 landed ~**08:48 UTC** (~**15:48 ICT**); next GO ≥**09:18 UTC** (~**16:18 ICT**) — grouped FF **`07912df..efb5e24`** (excludes **67+**); coauth grep + prepush on GO.
+- **Batch 66–67 gate:** filters **70/70** each (**140** combined); full prepush running `/tmp/b66-67-prepush.log`.
+- **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
 ## Rules: forward queue (from bible / systems-design)
