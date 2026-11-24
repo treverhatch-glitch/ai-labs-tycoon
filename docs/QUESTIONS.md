@@ -740,11 +740,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — parent `81f640a`, prior doc 90.
 - Why: Coordinator packets after HQ completion tail.
 
-### Q550. ALT-76 STATUS sync through 98? DRAFT: `CampusAlt76StatusSyncThrough98PresentationSpec`
+### Q550. ALT-76 STATUS sync through 98? DECIDED: `CampusAlt76StatusSyncThrough98PresentationSpec`
 
 - Options: (a) skip; (b) STATUS rollup through latest remote batch; (c) merge STATUS with GO packet only.
-- Recommendation: **(b)** — mirror batch 91 pattern.
-- Status: stub batch 101 (local).
+- Recommendation and choice: **(b)** — sync through grouped tail **98**.
+- Why: STATUS lane after `394e007` HQ/GO docs.
+
+### Q551. ALT-76 rollup refresh through 100? DECIDED: `CampusAlt76RollupRefreshB100PresentationSpec`
+
+- Options: (a) batch 89 only; (b) refresh through remote batch 100; (c) skip rollup.
+- Recommendation and choice: **(b)** — pairs with STATUS sync 98.
+- Why: Ops rollup after batches 99–100 landed.
+
+### Q552. Presentation tail rollup refresh? DRAFT: `CampusPresentationTailRollupRefreshPresentationSpec`
+
+- Options: (a) batch 94 only; (b) rollup refresh doc through batch 98 tails; (c) full regen.
+- Recommendation: **(b)** — extend seven-lane rollup.
+- Status: stub batch 103 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
