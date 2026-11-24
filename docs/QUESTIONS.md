@@ -1100,11 +1100,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — closes **158–160**.
 - Why: GO tail bible.
 
-### Q610. ALT-76 rollup refresh through batch 139? DRAFT: `CampusAlt76RollupRefreshB139PresentationSpec`
+### Q610. ALT-76 rollup refresh through batch 139? DECIDED: `CampusAlt76RollupRefreshB139PresentationSpec`
 
 - Options: (a) batch 136 only; (b) through 139; (c) skip.
+- Recommendation and choice: **(b)** — grouped **161–163**.
+- Why: Rollup off `bf47b0d`.
+
+### Q611. Index manifest tail through batch 139? DECIDED: `CampusIndexLaneManifestTailRefreshThrough139PresentationSpec`
+
+- Options: (a) stop at 136; (b) through 139; (c) regen.
+- Recommendation and choice: **(b)**.
+- Why: Batch **162**.
+
+### Q612. GO packet tail through batch 157? DECIDED: `CampusGoPacketTailRefreshThrough157PresentationSpec`
+
+- Options: (a) stop at 154; (b) through 157; (c) skip.
+- Recommendation and choice: **(b)**.
+- Why: Closes **161–163**.
+
+### Q613. ALT-76 STATUS sync through batch 142? DRAFT: `CampusAlt76StatusSyncThrough142PresentationSpec`
+
+- Options: (a) stop at 139; (b) through 142; (c) defer.
 - Recommendation: **(b)**.
-- Status: batch **161** LOCAL.
+- Status: batch **164** LOCAL.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
