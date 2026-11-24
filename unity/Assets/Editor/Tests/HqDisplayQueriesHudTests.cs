@@ -8245,5 +8245,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("162,000").Or.Contain("429,000"));
         }
 
+        [Test]
+        public void this_week_grant_spend_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.ThisWeek.Grants = 4_960;
+            lab.Ledger.ThisWeek.Net = 3_210;
+            string line = HqDisplayQueriesHud.ThisWeekGrantSpendSummaryLine(lab);
+            Assert.That(line, Does.Contain("4,960").Or.Contain("3,210"));
+        }
+
     }
 }
