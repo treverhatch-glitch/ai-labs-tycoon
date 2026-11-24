@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`976c420`**; **LOCAL** batch **86+** |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | **pushing** batches **90–93** → **LOCAL** **94+** after land |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -195,7 +195,9 @@ and says why in the commit message.
 - ~~**Batches 74–77 grouped squash**~~ **pushed @ `a727a84`** — Q4826–Q5105 (**280** tests); gate **5774/5774**; parent `516404f`; ~**20:12 ICT**.
 - ~~**Batches 78–81 grouped squash**~~ **pushed @ `b50d053`** — Q5106–Q5385 (**280** tests); gate **6054/6054**; ~**21:06+ ICT**.
 - ~~**Batches 82–85 grouped squash**~~ **pushed @ `976c420`** — Q5386–Q5665 (**280** tests); gate **6334/6334**; ~**21:19 ICT**.
-- **batch 86 (LOCAL — NO PUSH):** Q5666–Q5735 `HatchAcquireGameplayBarLaterTests2`; next large packet **86–89** after ~**21:49 ICT**.
+- ~~**Batches 86–89 grouped squash**~~ **pushed @ `fda05f6e`** — Q5666–Q5945 (**280** tests); gate **6614/6614**; ~**21:56 ICT**.
+- ~~**Batches 90–93 grouped squash**~~ **pushing** — Q5946–Q6215 (**280** tests); gate **6894/6894** (`/tmp/rivals-b90-prepush.log`).
+- **batch 94+ (LOCAL — NO PUSH):** grow next large packet (94–97) after land; main **`fcee0801`** (PR #3 merged).
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 

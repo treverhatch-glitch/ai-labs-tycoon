@@ -1101,9 +1101,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchFundingFollowOnBarLaterTests3` (70):** `FundingFollowOn` + bubble crash funding; bible capital path.
 
-### Q5106–Q5385. Batches 78–81 cross bars? DECIDED: test-only (LOCAL grouped packet off `a727a84`)
+### Q5106–Q5385. Batches 78–81 cross bars? DECIDED: test-only (**pushed @ `b50d053`**)
 
 - **78** model sales × chips; **79** exit/sell (Q99); **80** containment endings; **81** forward-queue coda; schema **29** only.
+
+### Q5386–Q5665. Batches 82–85 cross bars? DECIDED: test-only (**pushed @ `976c420`**)
+
+- **82–85** balance, forward-queue, acquire gameplay, distress acquire; schema **29** only.
+
+### Q5666–Q5945. Batches 86–89 cross bars? DECIDED: test-only (**pushed @ `fda05f6e`**)
+
+- **86–89** acquire gameplay, distress, bubble distress, rival plan; schema **29** only.
+
+### Q5946–Q6215. Batches 90–93 cross bars? DECIDED: test-only (grouped squash off `fda05f6e`)
+
+- **90** `HatchModelSalesChipBarLaterTests5`; **91** `HatchCapitalBubbleBarLaterTests6`; **92** `HatchBubbleAcquireBarLaterTests6`; **93** `HatchBalanceSoakBarLaterTests5`; schema **29** only.
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
