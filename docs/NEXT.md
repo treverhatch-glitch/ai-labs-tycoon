@@ -188,10 +188,10 @@ and says why in the commit message.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
   - **batch 67 (LOCAL)** — Q4336–Q4405 `HatchCapitalBubbleBarLaterTests3`; filter **70/70**; hold with **66** until **65** lands.
   - **batch 68+ (TBD)** — distress/capital codas; **SolvencyHold** schema **30** parked.
-- **Merge wave (Nov 24):** `origin/cursor/later-rules-stack2-75cd` @ **`f2bbe8f`**; **NO PUSH** until merge coordinator clears. **Never** force-push (`--force`, `--force-with-lease`). **Do not rewrite pushed commits** for Co-authored-by — keep new LOCAL commits clean (noreply + `commit-tree`). Pre-push coauth grep required on push range only.
-- **Grouped GO batch 65 (ready — awaiting coordinator):** plain FF push **`f2bbe8f..3ee8a20`** (**5** commits: `8eb6765`→`3ee8a20`); **excludes** **66–67**; coauth grep on range **clean**; prepush **5074/5074** full tree @ rebase (batch-65 floor **4869+**); log `/tmp/b65-post4-prepush.log`; no force-push.
-- **LOCAL hold:** batches **66–67** until **65** lands + ~30m spacing.
-- **Refill (systems-only):** store `docs/systems-design.md` §**world map site wiring**, §**4 your own chips** (foundry, listings, rival buy); bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
+- **Merge wave (Nov 24):** `origin/cursor/later-rules-stack2-75cd` @ **`f2bbe8f`**; **NO PUSH** until merge coordinator clears. **Never** force-push (`--force`, `--force-with-lease`). **Do not rewrite pushed commits** for Co-authored-by. **Pre-push:** coauth grep empty on push range; noreply + `commit-tree` for new commits.
+- **Grouped GO batch 65 (ready — awaiting coordinator):** plain FF push **`f2bbe8f..3ee8a20`** (**5** commits); **excludes** **66–67**; prepush **5074/5074** @ rebase; log `/tmp/b65-post4-prepush.log`.
+- **LOCAL hold:** batches **66–67** (`b0789aa..HEAD`) until **65** lands + ~30m spacing.
+- **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
 ## Rules: forward queue (from bible / systems-design)
 
