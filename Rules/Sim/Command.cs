@@ -695,7 +695,7 @@ namespace AiLabs.Rules.Sim
     public enum CommandError
     {
         None,
-        UnknownLab, LabBankrupt, UnknownId, InvalidArgument,
+        UnknownLab, LabBankrupt, LabAbsorbed, UnknownId, InvalidArgument,
         OutOfBounds, Overlap, TooSmall, NoBiggerLot,
         NotEnoughCash, NoSeats, NoGpuSlots, StaffNeedSeats, GpusNeedSlots, NotEnoughStaff, NotEnoughGpus,
         AlreadyResearched, MissingPrerequisite, NotEnoughResearch,
