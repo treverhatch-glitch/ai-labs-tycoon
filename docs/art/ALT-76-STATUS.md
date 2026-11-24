@@ -76,7 +76,8 @@
 | 85 | `13418d8` | Presentation hub tail |
 | 86 | `827ba57` | ALT-76 rollup refresh 85 |
 | 87 | `71217c5` | Screen layout tail |
-| 88 | (local) | STATUS sync through 86 |
+| 88 | `95bc74d` | STATUS sync through 86 |
+| 89 | (local) | Capture HUD tail |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

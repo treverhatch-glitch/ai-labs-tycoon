@@ -668,11 +668,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — extends batch 83 sync without rewriting prior spec.
 - Why: STATUS through rollup 86 and screen tail 87.
 
-### Q538. Capture HUD tail navigation? DRAFT: `CampusCaptureHudTailIndexPresentationSpec`
+### Q538. Capture HUD tail navigation? DECIDED: `CampusCaptureHudTailIndexPresentationSpec`
 
 - Options: (a) batch 35 doc only; (b) tail index linking capture + a11y; (c) implement capture in graphics PR.
-- Recommendation: **(b)** — post-88 navigation refill.
-- Status: stub batch 89 (local).
+- Recommendation and choice: **(b)** — links capture regression, focus ring, snapshot, a11y index.
+- Why: PC capture path unchanged; navigation rollup after STATUS sync.
+
+### Q539. GO packet tail through batch 88? DRAFT: extend `CampusGoPacketTailRefreshPresentationSpec`
+
+- Options: (a) store packets only; (b) bump extended lane through STATUS sync 88; (c) automate push scripts.
+- Recommendation: **(b)** — coordinator packets through batch 88.
+- Status: stub batch 90 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
