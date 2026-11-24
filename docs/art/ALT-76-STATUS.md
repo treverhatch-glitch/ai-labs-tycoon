@@ -66,7 +66,8 @@
 | 75 | `01b0286` | Index lane manifest |
 | 76 | `3cd1fda` | ALT-76 rollup refresh |
 | 77 | `7bce909` | GO packet index refresh |
-| 78 | (pushing) | HQ lot viewport index |
+| 78 | `338fc05` | HQ lot viewport index |
+| 79 | (local) | Index manifest tail |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

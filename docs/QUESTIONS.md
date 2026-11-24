@@ -608,11 +608,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — completes HQ stack index tail (lot band).
 - Why: Fifth HQ band now indexed; stack completion doc updated in batch 79 stub.
 
-### Q528. Index lane manifest tail refresh? DRAFT: `CampusIndexLaneManifestTailPresentationSpec`
+### Q528. Index lane manifest tail refresh? DECIDED: `CampusIndexLaneManifestTailPresentationSpec`
 
 - Options: (a) edit manifest table only; (b) tail doc + entry count alias post batch 78; (c) renumber batches 66–78.
-- Recommendation: **(b)** — extends manifest navigation after lot viewport.
-- Status: stub batch 79 (local).
+- Recommendation and choice: **(b)** — extends manifest navigation after lot viewport.
+- Why: 4 tail entries (75–78); extended lane 66–78 = 13 batches; HQ indexed bands 5.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

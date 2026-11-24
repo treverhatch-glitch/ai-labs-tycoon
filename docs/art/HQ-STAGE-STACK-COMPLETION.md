@@ -12,4 +12,4 @@ Rollup completion for PR #41 HQ bands 38–42 after per-band index batches 68–
 
 Stack map: [HQ-STAGE-STACK-ROLLUP.md](HQ-STAGE-STACK-ROLLUP.md) (batch 69).
 
-Tokens: `CampusHqStageStackCompletionPresentationSpec` (band count + indexed band count). Batch 74.
+Tokens: `CampusHqStageStackCompletionPresentationSpec` (band count + **5** indexed bands). Batch 79 (lot viewport indexed in batch 78).

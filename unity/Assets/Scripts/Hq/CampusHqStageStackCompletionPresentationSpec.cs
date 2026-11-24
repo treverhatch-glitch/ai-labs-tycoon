@@ -3,7 +3,7 @@ namespace AiLabs.Unity.Hq
     /// <summary>HQ stack index completion (see HQ-STAGE-STACK-COMPLETION.md).</summary>
     public static class CampusHqStageStackCompletionPresentationSpec
     {
-        public const int IndexedHqBands = 4;
+        public const int IndexedHqBands = 5;
 
         public static int TotalHqBands => CampusHqStageStackRollupPresentationSpec.HqBandCount;
 

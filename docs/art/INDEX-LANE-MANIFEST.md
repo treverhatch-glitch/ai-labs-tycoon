@@ -16,4 +16,6 @@ Post-60 presentation index lane on PR #41; see [PRESENTATION-INDEX-HUB.md](PRESE
 
 ALT refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 
+Tail (batches 75–78): [INDEX-LANE-MANIFEST-TAIL.md](INDEX-LANE-MANIFEST-TAIL.md) (batch 79).
+
 Tokens: `CampusIndexLaneManifestPresentationSpec` (9 entries, batch range 66–74). Batch 75.
