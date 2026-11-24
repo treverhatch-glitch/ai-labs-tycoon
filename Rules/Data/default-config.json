@@ -5556,6 +5556,58 @@
     "sameFunctionMoraleDrop": 40,
     "minMorale": 300
   },
+  "chiefs": {
+    "enabled": true,
+    "minStaff": 5,
+    "fee": 30000,
+    "weeklyPremium": 1200,
+    "researchPermille": 120,
+    "incidentCutPermille": 150,
+    "poachPenaltyPermille": 40,
+    "shockMorale": 100
+  },
+  "ethicsBoard": {
+    "maxLevel": 2,
+    "setupCostPerLevel": 40000,
+    "weeklyCostPerLevel": 2500,
+    "safetyStaffPerLevel": 1,
+    "scandalCutPermillePerLevel": 150,
+    "hearingPointsPerLevel": 3,
+    "attentionPermillePerLevel": 50,
+    "vetoLevel": 2,
+    "vetoAlignment": 400,
+    "resignationReputation": 20,
+    "lockWeeks": 52
+  },
+  "optimise": {
+    "maxLevel": 3,
+    "setupCostPerLevel": 60000,
+    "engineersPerLevel": 2,
+    "demandCutPermillePerLevel": 100,
+    "incidentPermillePerLevel": 8
+  },
+  "marketing": {
+    "maxLevel": 3,
+    "costPerLevel": 40000,
+    "weeks": 8,
+    "appealPermillePerLevel": 120,
+    "shareCeilingPermille": 600,
+    "hangoverWeeks": 8,
+    "hangoverPermillePerLevel": 50,
+    "backlashReputation": 15,
+    "cooldownWeeks": 26,
+    "minSales": 1
+  },
+  "onCall": {
+    "maxLevel": 3,
+    "weeklyCostPerLevel": 1500,
+    "staffPerLevel": 2,
+    "fineCutPermillePerLevel": 100,
+    "reputationCutPermillePerLevel": 100,
+    "moraleDropCutPermillePerLevel": 250,
+    "moralePenaltyPerLevel": 3,
+    "lockWeeks": 8
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,
@@ -8614,6 +8666,66 @@
         "text": "{lab} changes how much compute it lets to outsiders. It now brings in {money} a week"
       },
       {
+        "id": "chief-named",
+        "kind": "ChiefChanged",
+        "pick": 1,
+        "text": "{lab} names a chief. The org chart now has a box with a person in it"
+      },
+      {
+        "id": "chief-stood-down",
+        "kind": "ChiefChanged",
+        "pick": 0,
+        "text": "{lab} lets a chief step back. The box on the org chart is empty again"
+      },
+      {
+        "id": "chief-left",
+        "kind": "ChiefLeft",
+        "pick": -1,
+        "text": "{lab}'s chief walks out. The org chart is 'being reviewed'"
+      },
+      {
+        "id": "board-seated",
+        "kind": "EthicsBoardChanged",
+        "pick": 1,
+        "text": "{lab} seats an ethics board. It has already asked for a bigger room"
+      },
+      {
+        "id": "board-stepped-down",
+        "kind": "EthicsBoardChanged",
+        "pick": 0,
+        "text": "{lab} steps its ethics board down. The press notices before the board does"
+      },
+      {
+        "id": "board-resigned",
+        "kind": "EthicsBoardResigned",
+        "pick": -1,
+        "text": "{lab}'s ethics board resigns. The minutes are 'still being drafted'"
+      },
+      {
+        "id": "campaign-started",
+        "kind": "CampaignRun",
+        "pick": 1,
+        "text": "{lab} launches a marketing campaign. The billboard is mostly logo"
+      },
+      {
+        "id": "campaign-ended",
+        "kind": "CampaignRun",
+        "pick": 0,
+        "text": "{lab}'s marketing campaign wraps up. Customers hold it up against the billboard"
+      },
+      {
+        "id": "optimisation-up",
+        "kind": "OptimisationSet",
+        "pick": 1,
+        "text": "{lab} optimises its inference. The GPUs have been asked to do more with less"
+      },
+      {
+        "id": "on-call-up",
+        "kind": "OnCallSet",
+        "pick": 1,
+        "text": "{lab} puts its team on call. The pagers were ordered in bulk"
+      },
+      {
         "id": "audit-clean",
         "kind": "AuditDone",
         "pick": 1,
@@ -9879,6 +9991,137 @@
         "pick": -1,
         "about": "lab",
         "text": "Strangers are renting our GPUs now. They say they will be very careful. They have not met our GPUs.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chief-named-chat-research",
+        "kind": "ChiefChanged",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "A chief scientist! Somebody finally has to read my doc before the roadmap meeting.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chief-named-chat",
+        "kind": "ChiefChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We have a chief now. Everyone is being very natural about it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chief-left-chat",
+        "kind": "ChiefLeft",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The chief's chair is just a chair again. Nobody wants to be the first to sit in it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "ethics-board-chat-safety",
+        "kind": "EthicsBoardChanged",
+        "roles": [
+          "safety",
+          "red-teamer",
+          "alignment-fellow"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The board wants the safety review in writing. That is the first time anyone has asked.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "ethics-board-chat",
+        "kind": "EthicsBoardChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "There is an ethics board. They have asked for a bigger room and a bigger kettle.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "ethics-board-resigned-chat",
+        "kind": "EthicsBoardResigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board walked out. They left the biscuits, which says it all.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "campaign-chat-sales",
+        "kind": "CampaignRun",
+        "roles": [
+          "sales"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The campaign is live. For eight weeks nobody may say the word 'organic'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "campaign-chat",
+        "kind": "CampaignRun",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "There is a billboard. I am told it is mostly the logo, and the logo is mostly ours.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "campaign-over-chat",
+        "kind": "CampaignRun",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The campaign is over. Customers are now comparing us with the billboard.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "optimisation-chat-engineer",
+        "kind": "OptimisationSet",
+        "roles": [
+          "engineer"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Quantised again. The benchmarks held. Nobody check the edge cases.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "on-call-chat",
+        "kind": "OnCallSet",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "I have been told the pager is 'a team commitment'. It buzzes like a commitment.",
         "fromYear": 0,
         "toYear": 0
       },

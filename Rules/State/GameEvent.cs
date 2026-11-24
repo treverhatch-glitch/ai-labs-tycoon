@@ -160,7 +160,21 @@ namespace AiLabs.Rules.State
         /// <summary>The player gave the team another level of equity. LabId is the lab, SubjectId the level now, Amount the share of the company the people own, in permille.</summary>
         EquityGranted,
         /// <summary>The player moved a person to another role. LabId is the lab, SubjectId the person, Amount the fee, Ref "oldRole>newRole". Pick is 1 inside a function and 0 across functions.</summary>
-        StaffRetrained
+        StaffRetrained,
+        /// <summary>The player named or stood down a chief. LabId is the lab, SubjectId the person, Amount the fee, Ref the title ("scientist" or "safety"). Pick is 1 when named, 0 when stood down.</summary>
+        ChiefChanged,
+        /// <summary>A chief left the payroll or their field and the title fell empty. LabId is the lab, Amount the morale the team lost, Ref the title.</summary>
+        ChiefLeft,
+        /// <summary>The player seated or stepped down the ethics board. LabId is the lab, SubjectId the level now, Amount the cost. Pick is 1 when the level went up, 0 when it went down.</summary>
+        EthicsBoardChanged,
+        /// <summary>The ethics board walked out because the safety staff behind it were gone. LabId is the lab, SubjectId the level it fell to, Amount the level it had.</summary>
+        EthicsBoardResigned,
+        /// <summary>The player set the inference optimisation level. LabId is the lab, SubjectId the level now, Amount the cost. Pick is 1 when the level went up, 0 when it went down.</summary>
+        OptimisationSet,
+        /// <summary>A marketing campaign started or ended. LabId is the lab, SubjectId the budget level, Amount the cost (0 at the end), Ref the sector. Pick is 1 when it starts, 0 when it ends, 2 when an incident cut it short.</summary>
+        CampaignRun,
+        /// <summary>The player changed the on-call rota. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
+        OnCallSet
     }
 
     /// <summary>

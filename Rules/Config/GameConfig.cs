@@ -77,6 +77,11 @@ namespace AiLabs.Rules.Config
         public ResearchFocusConfig Focus = new ResearchFocusConfig();
         public HackWeekConfig Hack = new HackWeekConfig();
         public EquityConfig Equity = new EquityConfig();
+        public ChiefsConfig Chiefs = new ChiefsConfig();
+        public EthicsBoardConfig Board = new EthicsBoardConfig();
+        public OptimisationConfig Optimise = new OptimisationConfig();
+        public MarketingConfig Marketing = new MarketingConfig();
+        public OnCallConfig OnCall = new OnCallConfig();
         public RetrainConfig Retrain = new RetrainConfig();
         public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
@@ -149,6 +154,11 @@ namespace AiLabs.Rules.Config
             s.Obj("focus", ref Focus);
             s.Obj("hack", ref Hack);
             s.Obj("equity", ref Equity);
+            s.Obj("chiefs", ref Chiefs);
+            s.Obj("ethicsBoard", ref Board);
+            s.Obj("optimise", ref Optimise);
+            s.Obj("marketing", ref Marketing);
+            s.Obj("onCall", ref OnCall);
             s.Obj("retrain", ref Retrain);
             s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);

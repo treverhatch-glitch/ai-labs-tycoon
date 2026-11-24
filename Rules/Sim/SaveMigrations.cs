@@ -69,6 +69,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 52) MigrateTo52(root);
             if (fromSchema < 53) MigrateTo53(root);
             if (fromSchema < 54) MigrateTo54(root);
+            if (fromSchema < 55) MigrateTo55(root);
+            if (fromSchema < 56) MigrateTo56(root);
+            if (fromSchema < 57) MigrateTo57(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -631,6 +634,42 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "equityLevel", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "equityPermille", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 55: no lab has named a chief or seated an ethics board.</summary>
+        static void MigrateTo55(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "ethicsLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ethicsLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "chiefScientistId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "chiefSafetyId", JsonValue.Of(-1L));
+            });
+        }
+
+        /// <summary>Schema 56: no lab optimised inference or ran a marketing campaign.</summary>
+        static void MigrateTo56(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "optimiseLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "campaignSector", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "campaignLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "campaignWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hangoverWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "campaignLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 57: no lab kept an on-call rota.</summary>
+        static void MigrateTo57(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "onCallLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "onCallLockedUntil", JsonValue.Of(0L));
             });
         }
 

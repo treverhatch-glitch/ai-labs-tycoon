@@ -2035,6 +2035,49 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - No code or data changed; this is a tests-only entry.
 - Alternatives: gating none of the tools (rejected: an always-on hack week and compliance office bankrupt the thin seed, the same cost of the tool seen in Q303, Q306 and Q311).
 
+### Q319. Can the player name a chief scientist or a chief safety officer? DECIDED: yes, from the lab's own people, for a fee and a weekly premium, and the team feels it when one goes
+- New `chiefs` data, command `AppointChief(title, personId)`, `Chiefs` system, events `ChiefChanged` and `ChiefLeft` (appended). The scientist adds 12% research, the safety officer takes 15% off the weekly incident chance; each costs $30000 to name and $1200 a week, and takes 4% off the lab's poach defence.
+- A chief counts only while the person is still on the payroll in a role of the right function, so a fired, poached or retrained chief stops counting at once. The seat empties on the next week and every remaining person loses 100 morale.
+- New state on the lab (schema 54, `MigrateTo54`): `chiefScientistId` and `chiefSafetyId`, -1 for nobody. Player only and opt-in. The golden digest moved to 0990de6e because of the two lab fields and the schema number only; reverting them brought the previous digest (b16cb924) back.
+- Alternatives: a chief that is a separate hire (rejected: the point is to pick someone you already have and risk losing them); effects that grow with the person's morale (rejected: a second moving part with no new choice); an empty seat that stays until filled and holds the lab's morale down (rejected: one shock at the loss is the cleaner rule).
+
+### Q320. Can the player seat an ethics board that can say no? DECIDED: yes, two levels, and walking away from it is public
+- New `ethicsBoard` data, command `SetEthicsBoard(level)`, `EthicsBoard` system, events `EthicsBoardChanged` and `EthicsBoardResigned` (appended), errors `EthicsLocked` and `BoardVeto`. Level 1 refuses `RushRelease`, takes 15% off an incident's reputation loss, adds 3 hearing points and 5% off attention gains; level 2 doubles those and vetoes a first release whose true alignment is under 400.
+- A level costs $40000 to seat and $2500 a week, and needs a safety person. Stepping down, or losing the safety staff behind it, costs 20 reputation and locks any board out for 52 weeks, so a board is a promise the lab has to keep. The veto reads true alignment, not the displayed one, which is the point of having outsiders.
+- New state on the lab (schema 54, extended): `ethicsLevel` and `ethicsLockedUntil` (`MigrateTo54`). Player only and opt-in. The golden digest moved to 87b45766 because of the two lab fields only; removing them brought 0990de6e back.
+- Alternatives: a board that can be overruled for a price (rejected: the release gate already is a gate you can change); a veto on the displayed alignment (rejected: sandbagging would walk straight past it); a one-off board per release (rejected: the weekly cost and the lock are what make it a decision).
+
+### Q321. Can the engineers make serving cheaper at the cost of reliability? DECIDED: yes, three levels, a setup fee each, and the risk is permanent
+- New `optimise` data, command `SetOptimisation(level)`, `Optimisation` system, event `OptimisationSet` (appended). Each level cuts the lab's serving demand by 10% (applied in the market's second pass, so a lab short of compute serves a larger share) and adds 8 permille to every released model's weekly incident chance (`FromOptimisation` in the breakdown, before a chief safety officer's cut). It needs 2 engineers a level and $60000 a level to raise.
+- Lowering is free but the setup has to be paid again, and the level that counts is held down by the engineers who are still there, so a lab that loses its engineers keeps the setting but not the effect. It does nothing for revenue when the lab already serves everyone, only the risk: that is what makes it a decision about the lab's own state.
+- New state on the lab (schema 55, `MigrateTo55`): `optimiseLevel`. Player only and opt-in. The golden digest moved to d28b97b5 because of the lab field and the schema number only; reverting them brought 87b45766 back.
+- Alternatives: a weekly fee instead of a setup fee (rejected: compliance and the board already work that way, and this one is about a one-off project); a cut of the power bill too (rejected: a second benefit would make the first irrelevant); a fixed demand cut with no engineers (rejected: no link to who is on the payroll).
+
+### Q322. Can the player advertise a model into a sector for a while? DECIDED: yes, a funded burst with a hangover and a backlash risk
+- New `marketing` data, command `RunCampaign(sector, level)`, `MarketingCampaign` system, event `CampaignRun` (appended), `CampaignLocked` error. Each level adds 12% to the appeal of the lab's models in one sector for 8 weeks, scaled down to nothing as the lab's share nears 60%; then an 8-week hangover takes 5% a level off; a new campaign needs 26 weeks. It costs $40000 a level and a sales person.
+- An incident in the campaign sector while it runs costs 15 reputation extra and ends it at once. That is the decision: a bigger budget pays more but loses more if the model is not safe, and a lab that is already large gets almost nothing from it.
+- New state on the lab (schema 55, `MigrateTo55`, extended): `campaignSector`, `campaignLevel`, `campaignWeeks`, `hangoverWeeks`, `campaignLockedUntil`. Player only and opt-in. The golden digest moved to dcfb9d2c; reverting the five fields brought d28b97b5 back.
+- Alternatives: a permanent brand level bought once (rejected: no timing decision and nothing to lose); a boost that does not shrink with share (rejected: it would be a strict upgrade for the biggest lab); a campaign in every sector at once (rejected: one choice of sector is the decision).
+
+### Q323. Can the team be put on call so that incidents cost less? DECIDED: yes, a locked weekly rota that trades morale for a softer landing
+- New `onCall` data, command `SetOnCall(level)`, `OnCall` system, event `OnCallSet` and error `OnCallLocked` (appended). Each level cuts an incident's fine by 10% and its reputation loss by 10%, cuts the team's morale drop by 25%, at $1500 a week and 3 points off where morale settles. It needs 2 safety people or engineers a level; any change locks the rota for 8 weeks.
+- The decision is a bet on how likely an incident is: the rota pays for itself only when one lands, and costs money and morale every week. The lock stops it being switched on only when the risk shows. The rota never changes how often incidents happen (that is the safety work, the chiefs and the optimisation level).
+- New state on the lab (schema 56, `MigrateTo56`): `onCallLevel`, `onCallLockedUntil`. Player only and opt-in. The golden digest moved to fc8f4202; reverting the two fields and the schema number brought dcfb9d2c back.
+- Alternatives: a setup fee instead of a weekly bill (rejected: optimisation already works that way, and this is about a standing cost); no lock (rejected: free to toggle makes the choice meaningless); no morale penalty (rejected: a strict upgrade for any lab with the staff).
+
+### Q324. What do people say about chiefs, the ethics board, campaigns, optimisation and the on-call rota? DECIDED: ten headlines and eleven chat lines, data only
+- Ten headlines (a chief named, stepping back or walking out; a board seated, stepped down or resigned; a campaign starting or ending; optimisation raised; a rota set) and eleven chat lines for the same, with role lines for a researcher (chief named), safety people (board seated), sales (campaign starting) and an engineer (optimisation raised). Only data and the test counts moved (57 headlines, 110 chat lines). Nothing is saved, so no schema bump and no golden change.
+- A campaign cut short by an incident (pick 2) has no headline or chat line of its own: the data allows only picks -1, 0 and 1, and the validator tests that on purpose. The incident already has its own headline and chat.
+- Stepping optimisation or the rota down, and a chief stepping down, have no chat line: they are decisions, not news.
+- Alternatives: widening the pick range to 2 (rejected: an existing test pins it and a new range would touch every other kind); making the collapse its own event kind (rejected: two events for one thing).
+
+### Q325. Do chiefs, the board, optimisation, campaigns and the on-call rota work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- A play-through helper uses all five on a schedule gated on cash (chiefs at weeks 10 and 90, a board at week 20 and dropped at 140, optimisation at 30, a campaign every year, a rota every 60 weeks). Over 260 weeks on seeds 1 to 3 the books balance, the save has no problems, a load plays on the same, the journal replays, and each tool was used at least once. A lab that uses none plays exactly like the same game without the tools.
+- One test combines a chief safety officer, optimisation, a board and a rota on one model: the chief lowers the incident chance, optimisation raises it, both show in the breakdown and its total matches, and an incident then costs less reputation and a smaller fine than the tools-free lab.
+- The test game relaxes the staffing rules (the autopilot's staff are not shaped for them), the same way the earlier together tests do.
+- No code or data changed; this is a tests-only entry.
+- Alternatives: gating none of the tools (rejected: the board and the rota are weekly costs that bankrupt the thin seed, as with Q311 and Q318).
+
 ## Open
 
 None.

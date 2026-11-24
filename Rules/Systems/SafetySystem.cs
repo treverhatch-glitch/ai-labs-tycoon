@@ -33,7 +33,8 @@ namespace AiLabs.Rules.Systems
         /// <summary>The chance the weekly roll uses: the model's own plus what an overloaded lab adds.</summary>
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab));
+            long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab);
+            return (int)MathI.Min(MathI.Permille, before + Chiefs.IncidentChange(c, lab, before));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>
@@ -104,6 +105,7 @@ namespace AiLabs.Rules.Systems
             RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
+            fine = MathI.MulPermille(fine, MathI.Permille - OnCall.FineCutPermille(c, lab));
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
             long covered = Insurance.OnIncident(c, state, lab, model, rung, fine);
             fine -= covered;
@@ -117,6 +119,8 @@ namespace AiLabs.Rules.Systems
             if (risk != null) repLoss = (int)MathI.MulPermille(repLoss, risk.ReputationPermille);
             if (flavour != null) repLoss = (int)MathI.MulPermille(repLoss, flavour.ReputationPermille);
             repLoss = PressSystem.Damp(c, lab, repLoss);
+            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - EthicsBoard.ScandalCutPermille(c, lab));
+            repLoss = (int)MathI.MulPermille(repLoss, MathI.Permille - OnCall.ReputationCutPermille(c, lab));
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine + makeGood);
 
@@ -126,6 +130,7 @@ namespace AiLabs.Rules.Systems
             StaffSystem.OnIncident(c, lab);
             TrustSystem.OnIncident(c, state, lab, model);
             SafetyAudit.OnIncident(state, lab, model);
+            MarketingCampaign.OnIncident(c, state, lab, model);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);
             if (risk != null)

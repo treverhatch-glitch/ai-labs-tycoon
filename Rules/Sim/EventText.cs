@@ -212,6 +212,20 @@ namespace AiLabs.Rules.Sim
                 case EventKind.HackWeek:
                     return e.Pick == 1 ? who + " started a hack week for " + e.SubjectId + " weeks. It cost $" + e.Amount + " and the roadmap is on hold."
                         : who + "'s hack week is over and the team is back on the roadmap.";
+                case EventKind.CampaignRun:
+                    return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
+                        : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
+                        : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.OnCallSet:
+                    return e.Pick == 1 ? who + " put its team on an on-call rota (level " + e.SubjectId + ")." : who + " took its on-call rota down to level " + e.SubjectId + ".";
+                case EventKind.OptimisationSet:
+                    return e.Pick == 1 ? who + " raised inference optimisation to level " + e.SubjectId + " for $" + e.Amount + "." : who + " backed inference optimisation down to level " + e.SubjectId + ".";
+                case EventKind.EthicsBoardChanged:
+                    return e.Pick == 1 ? who + " seated an ethics board (level " + e.SubjectId + ") for $" + e.Amount + "." : who + " stepped its ethics board down to level " + e.SubjectId + ". The press noticed.";
+                case EventKind.EthicsBoardResigned: return who + "'s ethics board resigned from level " + e.Amount + " to " + e.SubjectId + " because the safety team behind it was gone.";
+                case EventKind.ChiefChanged:
+                    return e.Pick == 1 ? who + " named a chief " + e.Ref + " officer for $" + e.Amount + "." : who + " stood down its chief " + e.Ref + " officer.";
+                case EventKind.ChiefLeft: return who + " lost its chief " + e.Ref + " officer. The team lost " + e.Amount + " morale over it.";
                 case EventKind.EquityGranted: return who + " gave the team equity (level " + e.SubjectId + "). The people now own " + (e.Amount / 10) + "." + (e.Amount % 10) + "% of the company.";
                 case EventKind.StaffRetrained:
                     {

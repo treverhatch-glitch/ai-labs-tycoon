@@ -270,7 +270,7 @@ namespace AiLabs.Rules.Systems
             long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaff(c, lab) * a.PolicySavingPermillePerStaff);
             gain.PolicySaving = MathI.MulPermille(before, MathI.Permille - saving) - before;
             long afterPolicy = before + gain.PolicySaving;
-            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab) - SafetyAudit.AttentionReliefPermille(c, state, lab)) - afterPolicy;
+            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab) - SafetyAudit.AttentionReliefPermille(c, state, lab) - EthicsBoard.AttentionReliefPermille(c, lab)) - afterPolicy;
             return gain;
         }
     }

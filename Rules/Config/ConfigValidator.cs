@@ -82,6 +82,11 @@ namespace AiLabs.Rules.Config
             FocusProblems(p, c);
             HackProblems(p, c);
             EquityProblems(p, c);
+            ChiefsProblems(p, c);
+            BoardProblems(p, c);
+            OptimiseProblems(p, c);
+            MarketingProblems(p, c);
+            OnCallProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -892,6 +897,77 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void OnCallProblems(List<string> p, GameConfig c)
+        {
+            OnCallConfig k = c.OnCall;
+            if (k == null) { p.Add("onCall is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("onCall.maxLevel must be from 0 to 10");
+            if (k.WeeklyCostPerLevel < 0) p.Add("onCall.weeklyCostPerLevel is negative");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 100) p.Add("onCall.staffPerLevel must be from 0 to 100");
+            if (k.FineCutPermillePerLevel < 0 || k.FineCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("onCall.fineCutPermillePerLevel must be 0 or more, and every level together at most 900, so an incident always costs something");
+            if (k.ReputationCutPermillePerLevel < 0 || k.ReputationCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("onCall.reputationCutPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.MoraleDropCutPermillePerLevel < 0 || k.MoraleDropCutPermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("onCall.moraleDropCutPermillePerLevel must be 0 or more, and every level together at most 1000");
+            if (k.MoralePenaltyPerLevel < 0 || k.MoralePenaltyPerLevel * (long)k.MaxLevel > 50) p.Add("onCall.moralePenaltyPerLevel must be 0 or more, and every level together at most 50");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("onCall.lockWeeks must be from 0 to 104");
+        }
+
+        static void MarketingProblems(List<string> p, GameConfig c)
+        {
+            MarketingConfig k = c.Marketing;
+            if (k == null) { p.Add("marketing is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("marketing.maxLevel must be from 0 to 10");
+            if (k.CostPerLevel < 0) p.Add("marketing.costPerLevel is negative");
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("marketing.weeks must be from 0 to 52");
+            if (k.AppealPermillePerLevel < 0 || k.AppealPermillePerLevel * (long)k.MaxLevel > 2000) p.Add("marketing.appealPermillePerLevel must be 0 or more, and every level together at most 2000");
+            if (k.ShareCeilingPermille < 1 || k.ShareCeilingPermille > MathI.Permille) p.Add("marketing.shareCeilingPermille must be from 1 to 1000");
+            if (k.HangoverWeeks < 0 || k.HangoverWeeks > 52) p.Add("marketing.hangoverWeeks must be from 0 to 52");
+            if (k.HangoverPermillePerLevel < 0 || k.HangoverPermillePerLevel * (long)k.MaxLevel > 900) p.Add("marketing.hangoverPermillePerLevel must be 0 or more, and every level together at most 900, so a hangover never ends sales");
+            if (k.BacklashReputation < 0 || k.BacklashReputation > 100) p.Add("marketing.backlashReputation must be from 0 to 100");
+            if (k.CooldownWeeks < k.Weeks + k.HangoverWeeks || k.CooldownWeeks > 520) p.Add("marketing.cooldownWeeks must be from weeks plus hangoverWeeks to 520, so one cannot start while another is on");
+            if (k.MinSales < 0 || k.MinSales > 1000) p.Add("marketing.minSales must be from 0 to 1000");
+        }
+
+        static void OptimiseProblems(List<string> p, GameConfig c)
+        {
+            OptimisationConfig k = c.Optimise;
+            if (k == null) { p.Add("optimise is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("optimise.maxLevel must be from 0 to 10");
+            if (k.SetupCostPerLevel < 0) p.Add("optimise.setupCostPerLevel is negative");
+            if (k.EngineersPerLevel < 0 || k.EngineersPerLevel > 100) p.Add("optimise.engineersPerLevel must be from 0 to 100");
+            if (k.DemandCutPermillePerLevel < 0 || k.DemandCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("optimise.demandCutPermillePerLevel must be 0 or more, and every level together at most 900, so serving never costs nothing");
+            if (k.IncidentPermillePerLevel < 0 || k.IncidentPermillePerLevel * (long)k.MaxLevel > 500) p.Add("optimise.incidentPermillePerLevel must be 0 or more, and every level together at most 500");
+        }
+
+        static void BoardProblems(List<string> p, GameConfig c)
+        {
+            EthicsBoardConfig k = c.Board;
+            if (k == null) { p.Add("ethicsBoard is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("ethicsBoard.maxLevel must be from 0 to 5");
+            if (k.SetupCostPerLevel < 0) p.Add("ethicsBoard.setupCostPerLevel is negative");
+            if (k.WeeklyCostPerLevel < 0) p.Add("ethicsBoard.weeklyCostPerLevel is negative");
+            if (k.SafetyStaffPerLevel < 0 || k.SafetyStaffPerLevel > 100) p.Add("ethicsBoard.safetyStaffPerLevel must be from 0 to 100");
+            if (k.ScandalCutPermillePerLevel < 0 || k.ScandalCutPermillePerLevel * (long)k.MaxLevel > 900) p.Add("ethicsBoard.scandalCutPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.HearingPointsPerLevel < 0 || k.HearingPointsPerLevel > 100) p.Add("ethicsBoard.hearingPointsPerLevel must be from 0 to 100");
+            if (k.AttentionPermillePerLevel < 0 || k.AttentionPermillePerLevel * (long)k.MaxLevel > 900) p.Add("ethicsBoard.attentionPermillePerLevel must be 0 or more, and every level together at most 900");
+            if (k.VetoLevel < 0 || k.VetoLevel > k.MaxLevel) p.Add("ethicsBoard.vetoLevel must be from 0 (no veto) to maxLevel");
+            if (k.VetoAlignment < 0 || k.VetoAlignment > MathI.Permille) p.Add("ethicsBoard.vetoAlignment must be from 0 to 1000");
+            if (k.ResignationReputation < 0 || k.ResignationReputation > 100) p.Add("ethicsBoard.resignationReputation must be from 0 to 100");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("ethicsBoard.lockWeeks must be from 0 to 520");
+        }
+
+        static void ChiefsProblems(List<string> p, GameConfig c)
+        {
+            ChiefsConfig k = c.Chiefs;
+            if (k == null) { p.Add("chiefs is missing"); return; }
+            if (k.MinStaff < 0 || k.MinStaff > 1000) p.Add("chiefs.minStaff must be from 0 to 1000");
+            if (k.Fee < 0) p.Add("chiefs.fee is negative");
+            if (k.WeeklyPremium < 0) p.Add("chiefs.weeklyPremium is negative");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 1000) p.Add("chiefs.researchPermille must be from 0 to 1000");
+            if (k.IncidentCutPermille < 0 || k.IncidentCutPermille > 900) p.Add("chiefs.incidentCutPermille must be from 0 to 900, so a safety chief never rules incidents out");
+            if (k.PoachPenaltyPermille < 0 || k.PoachPenaltyPermille > 300) p.Add("chiefs.poachPenaltyPermille must be from 0 to 300");
+            if (k.ShockMorale < 0 || k.ShockMorale > MathI.Permille) p.Add("chiefs.shockMorale must be from 0 to 1000");
         }
 
         static void EquityProblems(List<string> p, GameConfig c)

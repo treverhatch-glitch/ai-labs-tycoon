@@ -56,6 +56,16 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | A hack week ending | {lab}'s hack week ends. The toaster is 'a priority for v2' |
 | Staff equity | {lab} gives its staff equity. Employees are 'cautiously optimistic about a number they cannot sell' |
 | A retrained person | {lab} retrains a person for a new role. HR calls it 'a journey' |
+| A chief named | {lab} names a chief. The org chart now has a box with a person in it |
+| A chief stepping back | {lab} lets a chief step back. The box on the org chart is empty again |
+| A chief walking out | {lab}'s chief walks out. The org chart is 'being reviewed' |
+| An ethics board seated | {lab} seats an ethics board. It has already asked for a bigger room |
+| An ethics board stepped down | {lab} steps its ethics board down. The press notices before the board does |
+| An ethics board resigning | {lab}'s ethics board resigns. The minutes are 'still being drafted' |
+| A campaign starting | {lab} launches a marketing campaign. The billboard is mostly logo |
+| A campaign ending | {lab}'s marketing campaign wraps up. Customers hold it up against the billboard |
+| Inference optimised | {lab} optimises its inference. The GPUs have been asked to do more with less |
+| An on-call rota | {lab} puts its team on call. The pagers were ordered in bulk |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 

@@ -63,7 +63,7 @@ namespace AiLabs.Rules.Systems
 
         public static void OnIncident(GameConfig c, LabState lab)
         {
-            int drop = c.StaffPeople.MoraleIncidentDrop;
+            int drop = (int)MathI.MulPermille(c.StaffPeople.MoraleIncidentDrop, MathI.Permille - OnCall.MoraleDropCutPermille(c, lab));
             if (drop <= 0) return;
             for (int i = 0; i < lab.Staff.Count; i++)
                 lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - drop);

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 54;
+        public const int CurrentSchema = 57;
 
         public int Schema;
         public string ConfigVersion;
@@ -165,6 +165,30 @@ namespace AiLabs.Rules.State
         public string ResearchFocus = "";
         /// <summary>The focus cannot be changed before this tick.</summary>
         public int FocusLockedUntil;
+        /// <summary>The sector of the current or last marketing campaign, empty when there is none (running or being forgiven).</summary>
+        public string CampaignSector = "";
+        /// <summary>The budget level of that campaign.</summary>
+        public int CampaignLevel;
+        /// <summary>The weeks the campaign still has to run, 0 when none is on.</summary>
+        public int CampaignWeeks;
+        /// <summary>The weeks customers still feel let down after a campaign ended.</summary>
+        public int HangoverWeeks;
+        /// <summary>The next campaign cannot start before this tick.</summary>
+        public int CampaignLockedUntil;
+        /// <summary>The level of inference optimisation, 0 for none. Only the player's lab does it.</summary>
+        public int OptimiseLevel;
+        /// <summary>The level of the on-call rota, 0 for none. Only the player's lab runs one.</summary>
+        public int OnCallLevel;
+        /// <summary>The rota cannot be changed before this tick.</summary>
+        public int OnCallLockedUntil;
+        /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
+        public int EthicsLevel;
+        /// <summary>No board can be seated before this tick (set when one is stepped down or resigns).</summary>
+        public int EthicsLockedUntil;
+        /// <summary>The person named chief scientist, or -1 for nobody. Only the player's lab names one.</summary>
+        public int ChiefScientistId = -1;
+        /// <summary>The person named chief safety officer, or -1 for nobody.</summary>
+        public int ChiefSafetyId = -1;
         /// <summary>The levels of staff equity the lab has granted, 0 for none. Only the player's lab grants it.</summary>
         public int EquityLevel;
         /// <summary>The share of the company the people own, in permille of the company. Funding rounds dilute it.</summary>
@@ -342,6 +366,18 @@ namespace AiLabs.Rules.State
             s.Int("subletLockedUntil", ref SubletLockedUntil);
             s.Str("researchFocus", ref ResearchFocus);
             s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Str("campaignSector", ref CampaignSector);
+            s.Int("campaignLevel", ref CampaignLevel);
+            s.Int("campaignWeeks", ref CampaignWeeks);
+            s.Int("hangoverWeeks", ref HangoverWeeks);
+            s.Int("campaignLockedUntil", ref CampaignLockedUntil);
+            s.Int("optimiseLevel", ref OptimiseLevel);
+            s.Int("onCallLevel", ref OnCallLevel);
+            s.Int("onCallLockedUntil", ref OnCallLockedUntil);
+            s.Int("ethicsLevel", ref EthicsLevel);
+            s.Int("ethicsLockedUntil", ref EthicsLockedUntil);
+            s.Int("chiefScientistId", ref ChiefScientistId);
+            s.Int("chiefSafetyId", ref ChiefSafetyId);
             s.Int("equityLevel", ref EquityLevel);
             s.Int("equityPermille", ref EquityPermille);
             s.Int("hackWeeks", ref HackWeeks);

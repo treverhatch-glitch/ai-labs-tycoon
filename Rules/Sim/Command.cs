@@ -50,7 +50,12 @@ namespace AiLabs.Rules.Sim
         SetResearchFocus,
         HoldHackWeek,
         GrantStaffEquity,
-        RetrainStaff
+        RetrainStaff,
+        AppointChief,
+        SetEthicsBoard,
+        SetOptimisation,
+        RunCampaign,
+        SetOnCall
     }
 
     /// <summary>
@@ -395,6 +400,48 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Runs a marketing campaign in a sector the lab sells in, at a budget level from 1 to the data's highest.</summary>
+        public static Command RunCampaign(int labId, string sectorId, int level)
+        {
+            Command c = Make(CommandKind.RunCampaign, labId);
+            c.Id = sectorId;
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the on-call rota, from 0 (none) to the data's highest. Raising needs safety people and engineers; any change locks the rota for some weeks.</summary>
+        public static Command SetOnCall(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetOnCall, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of inference optimisation, from 0 (none) to the data's highest. Raising pays a setup fee and needs engineers; lowering is free.</summary>
+        public static Command SetOptimisation(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetOptimisation, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the ethics board, from 0 (none) to the data's highest. Seating levels costs cash and needs safety staff; stepping down costs reputation and locks the board out for a year.</summary>
+        public static Command SetEthicsBoard(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetEthicsBoard, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Names a person to a chief title ("scientist" or "safety") for a fee, or steps the sitting chief down when the person id is -1.</summary>
+        public static Command AppointChief(int labId, string title, int personId)
+        {
+            Command c = Make(CommandKind.AppointChief, labId);
+            c.Id = title;
+            c.TargetId = personId;
+            return c;
+        }
+
         /// <summary>Gives the team the next level of equity out of the founder's stake. It cannot be taken back.</summary>
         public static Command GrantStaffEquity(int labId)
         {
@@ -706,7 +753,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked
     }
 
     public struct CommandResult

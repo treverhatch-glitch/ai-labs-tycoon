@@ -34,8 +34,10 @@ namespace AiLabs.Rules.Systems
             public long LaunchEffect;
             /// <summary>Zero or negative: customers still confused by the lab's last change of style.</summary>
             public long PivotConfusion;
+            /// <summary>Positive while a marketing campaign runs in the sector, negative in the hangover after it; zero otherwise.</summary>
+            public long CampaignEffect;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion + ObjectiveEffect + LaunchEffect + PivotConfusion + CampaignEffect; } }
         }
 
         public struct IncidentBreakdown
@@ -48,10 +50,14 @@ namespace AiLabs.Rules.Systems
             /// <summary>Extra chance while the lab cannot serve its customers; zero from the model-only query.</summary>
             public int FromOverload;
             public int FromCrunch;
+            /// <summary>What inference optimisation adds to the weekly chance (the models get brittle); zero when the lab does none.</summary>
+            public int FromOptimisation;
             /// <summary>What a red team took off while its weeks last; zero or negative.</summary>
             public int FromRedTeam;
+            /// <summary>What a sitting chief safety officer takes off the weekly chance: zero or negative.</summary>
+            public int FromChief;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromRedTeam; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch + FromOptimisation + FromRedTeam + FromChief; } }
         }
 
         public struct ExitPriceBreakdown
@@ -138,6 +144,8 @@ namespace AiLabs.Rules.Systems
             b.LaunchEffect = MathI.MulPermille(beforeLaunch, RushedLaunch.LaunchAppealPermille(c, state.Tick, model)) - beforeLaunch;
             long beforePivot = beforeLaunch + b.LaunchEffect;
             b.PivotConfusion = MathI.MulPermille(beforePivot, Pivot.AppealPermille(c, state, lab)) - beforePivot;
+            long beforeCampaign = beforePivot + b.PivotConfusion;
+            b.CampaignEffect = MathI.MulPermille(beforeCampaign, MarketingCampaign.AppealPermille(c, state, lab, sector.Id)) - beforeCampaign;
             return b;
         }
 
@@ -169,6 +177,8 @@ namespace AiLabs.Rules.Systems
             IncidentBreakdown b = IncidentParts(c, state.Tick, model);
             b.FromOverload = SafetySystem.OverloadPermille(c, state, lab);
             b.FromCrunch = Crunch.IncidentPermille(c, lab);
+            b.FromOptimisation = Optimisation.IncidentPermille(c, lab);
+            b.FromChief = Chiefs.IncidentChange(c, lab, b.Total);
             return b;
         }
 

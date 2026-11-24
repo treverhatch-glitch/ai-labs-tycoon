@@ -91,6 +91,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetSublet: return SetSublet(c, state, lab, cmd);
                 case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
                 case CommandKind.RetrainStaff: return RetrainStaff(c, state, lab, cmd);
+                case CommandKind.RunCampaign: return RunCampaign(c, state, lab, cmd);
+                case CommandKind.SetOnCall: return SetOnCall(c, state, lab, cmd);
+                case CommandKind.SetOptimisation: return SetOptimisation(c, state, lab, cmd);
+                case CommandKind.SetEthicsBoard: return SetEthicsBoard(c, state, lab, cmd);
+                case CommandKind.AppointChief: return AppointChief(c, state, lab, cmd);
                 case CommandKind.GrantStaffEquity: return GrantStaffEquity(c, state, lab);
                 case CommandKind.HoldHackWeek: return HoldHackWeek(c, state, lab);
                 case CommandKind.SetResearchFocus: return SetResearchFocus(c, state, lab, cmd);
@@ -428,6 +433,8 @@ namespace AiLabs.Rules.Sim
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
             if (SafetyCulture.GateBlocks(lab, model))
                 return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");
+            if (model.Status == ModelStatus.Trained && EthicsBoard.Vetoes(c, lab, model))
+                return Fail(CommandError.BoardVeto, "The ethics board will not let " + model.Name + " go on sale: its true alignment is " + model.Alignment + " and the board wants " + c.Board.VetoAlignment + ".");
             if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
                 return Fail(CommandError.BelowEraSafetyBar, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and the law in " + EraSystem.AtTick(c, state.Tick).Name + " asks for " + EraRules.ReleaseBar(c, state.Tick) + " before a model goes on sale.");
 

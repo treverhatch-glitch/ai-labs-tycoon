@@ -231,6 +231,18 @@ The people talk about the newer tools: a certificate (or an embarrassing score) 
 
 Audits, the research focus, hack weeks, equity and retraining are played together over years in tests: the books balance, saves load, journals replay, and a lab that uses none of them plays as it did before.
 
+The player can name a chief scientist or a chief safety officer from the people on the payroll. The scientist lifts research and the safety officer cuts the chance of incidents, for a fee and a weekly premium. A lab with chiefs is easier for rivals to raid, and when a chief leaves, is fired or is moved to another field the whole team loses morale.
+
+The player can seat an ethics board of one or two levels. It refuses rushed launches, softens the reputation cost of an incident, helps at hearings and eases regulator attention, and at the top level vetoes a first release whose true alignment is too low. It costs a weekly fee and safety staff, and dropping it, or losing the staff behind it, is a public resignation that costs reputation and keeps any board away for a year.
+
+The engineers can optimise inference, up to three levels. Each level cuts the compute needed to serve customers, which pays when the lab is short of compute, and adds a little to every model's weekly incident chance. It needs engineers behind it and a setup fee for each level, and lowering it loses the work.
+
+The player can run a marketing campaign in one sector the lab already sells in, for up to three budget levels. It lifts the appeal of the lab's models there, most when the lab's share is small, for eight weeks, then leaves a hangover, and an incident in that sector while it runs ends it at once and costs reputation. It needs a sales person and a long cooldown.
+
+The player can put safety people and engineers on an on-call rota of up to three levels. When an incident lands it cuts the fine, the reputation lost and the team's morale drop, for a weekly fee, a lower settled morale and a lock of eight weeks on any change. It never changes how often incidents happen.
+
+Chiefs, the ethics board, marketing campaigns, inference optimisation and the on-call rota have headlines and chat lines of their own, and are tested together over years on three seeds.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

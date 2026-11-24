@@ -258,6 +258,13 @@ and says why in the commit message.
 75. **Retrain a person (staff).** ~~Done~~: `RetrainStaff`, `Retraining`, `retrain` data, no new state, `RetrainTests`, `docs/content/retraining.md` (Q316).
 76. **Headlines and chat for audits, focus, hack week, equity and retraining.** ~~Done~~: `ResearchAndStaffToolsNewsChatTests`, news and chat data (Q317).
 77. **Audits, focus, hack week, equity and retraining together (tests).** ~~Done~~: `ResearchStaffToolsTogetherTests` (Q318).
+78. **Chief officers (staff, research, safety).** ~~Done~~: `AppointChief`, `Chiefs`, `chiefs` data, lab `chiefScientistId` and `chiefSafetyId` (schema 54, `MigrateTo54`), `FromChief` in the incident breakdown, `ChiefsTests`, `docs/content/chiefs.md` (Q319).
+79. **Ethics board (safety, government).** ~~Done~~: `SetEthicsBoard`, `EthicsBoard`, `ethicsBoard` data, lab `ethicsLevel` and `ethicsLockedUntil` (schema 54), `BoardVeto` and `EthicsLocked`, `EthicsBoardTests`, `docs/content/ethics-board.md` (Q320).
+80. **Inference optimisation (engineering, compute).** ~~Done~~: `SetOptimisation`, `Optimisation`, `optimise` data, lab `optimiseLevel` (schema 55, `MigrateTo55`), `FromOptimisation` in the incident breakdown, `OptimisationTests`, `docs/content/inference-optimisation.md` (Q321).
+81. **Marketing campaign (sales, reputation).** ~~Done~~: `RunCampaign`, `MarketingCampaign`, `marketing` data, lab campaign fields (schema 55, `MigrateTo55`), `CampaignEffect` in the appeal breakdown, `MarketingCampaignTests`, `docs/content/marketing-campaign.md` (Q322).
+82. **Incident response / on-call (safety, staff).** ~~Done~~: `SetOnCall`, `OnCall`, `onCall` data, lab `onCallLevel` and `onCallLockedUntil` (schema 56, `MigrateTo56`), `OnCallTests`, `docs/content/incident-response.md` (Q323).
+83. **Headlines and chat for chiefs, the board, campaigns, optimisation and the rota.** ~~Done~~: ten headlines and eleven chat lines, data only, `ChiefsBoardCampaignNewsChatTests` (Q324).
+84. **Chiefs, the board, optimisation, campaigns and the rota together (tests).** ~~Done~~: `ChiefsBoardOptimiseCampaignOnCallTogetherTests` (Q325).
 
 ## Rules: later
 
