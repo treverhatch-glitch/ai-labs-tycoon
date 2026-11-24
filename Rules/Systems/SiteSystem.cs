@@ -22,7 +22,7 @@ namespace AiLabs.Rules.Systems
             for (int l = 0; l < state.Labs.Count; l++)
             {
                 LabState lab = state.Labs[l];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 for (int h = 0; h < lab.Holdings.Count; h++)
                 {
                     Holding holding = lab.Holdings[h];
@@ -69,7 +69,7 @@ namespace AiLabs.Rules.Systems
                 for (int l = 0; l < state.Labs.Count; l++)
                 {
                     LabState lab = state.Labs[l];
-                    if (lab.Bankrupt) continue;
+                    if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                     for (int h = 0; h < lab.Holdings.Count; h++)
                         if (lab.Holdings[h].SiteId == config.Id) { Events.Add(state, EventKind.Heatwave, lab.Id, lab.Holdings[h].Id, hw.Weeks, config.Id); break; }
                 }

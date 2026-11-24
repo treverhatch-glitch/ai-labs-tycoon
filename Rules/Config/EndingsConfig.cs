@@ -25,6 +25,12 @@ namespace AiLabs.Rules.Config
         public SuperintelligenceConfig Superintelligence;
         /// <summary>Crown runner-up years in a row before the Second Place ending fires.</summary>
         public int SecondPlaceRunnerUpYears;
+        /// <summary>Home-bloc attention level at or above this for TryNationalised (4 = Freeze).</summary>
+        public int NationalisedHomeLevelMin;
+        /// <summary>Foreign blocs at or above this scrutiny level to count toward TryTreaty (3 = Audit).</summary>
+        public int TreatyForeignLevelMin;
+        /// <summary>How many foreign blocs must be at TreatyForeignLevelMin for TryTreaty.</summary>
+        public int TreatyForeignBlocCount;
 
         public EndingDefConfig Def(string id)
         {
@@ -51,6 +57,9 @@ namespace AiLabs.Rules.Config
             s.Obj("museum", ref Museum);
             s.Obj("superintelligence", ref Superintelligence);
             s.Int("secondPlaceRunnerUpYears", ref SecondPlaceRunnerUpYears);
+            s.Int("nationalisedHomeLevelMin", ref NationalisedHomeLevelMin);
+            s.Int("treatyForeignLevelMin", ref TreatyForeignLevelMin);
+            s.Int("treatyForeignBlocCount", ref TreatyForeignBlocCount);
         }
     }
 

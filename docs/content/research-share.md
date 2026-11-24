@@ -19,6 +19,6 @@ researchers' output for a while, at the price of smaller runs and a thinner serv
 
 ## Notes
 
-- Saved per lab as `researchSharePermille` (schema 42; older saves load with 0). The save check reports a share over the limit.
+- Saved per lab as `researchSharePermille` (schema 43; older saves load with 0). The save check reports a share over the limit.
 - Rivals never set it (their plans do not issue the command) and the command is refused for them.
 - The pinned golden game moved because the lab record has a new saved field; reverting only that field and the schema number gave the old digest back.

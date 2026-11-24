@@ -273,7 +273,7 @@ public class MentoringTests
     {
         Game g = Lab();
         Pair(g);
-        string old = SaveSchemaPretend.At(g.C, 69, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 70, g.Sim.Save());
         foreach (string key in new[] { "mentorId", "mentorWeeks" }) Assert.DoesNotContain("\"" + key + "\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
