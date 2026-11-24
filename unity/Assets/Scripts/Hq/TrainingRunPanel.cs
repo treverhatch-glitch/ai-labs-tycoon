@@ -3035,6 +3035,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekLaunderSpendIncome = HqDisplayQueriesHud.LastWeekLaunderSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekLaunderSpendIncome))
                         _summary.text += " · " + lastWeekLaunderSpendIncome;
+                    string lifetimeLaunderSpendIncome = HqDisplayQueriesHud.LifetimeLaunderSpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeLaunderSpendIncome))
+                        _summary.text += " · " + lifetimeLaunderSpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
