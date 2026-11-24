@@ -95,6 +95,10 @@ namespace AiLabs.Rules.Sim
                 if (lab.ComplianceLevel < 0 || lab.ComplianceLevel > c.Compliance.MaxLevel) p.Add(who + " runs a compliance office at level " + lab.ComplianceLevel);
                 if (lab.Prestige < 0 || lab.Prestige > c.Prestige.Max) p.Add(who + " has " + lab.Prestige + " academic prestige");
                 if (lab.SubletPermille < 0 || lab.SubletPermille > c.Sublet.MaxPermille || lab.SubletLockedUntil < 0) p.Add(who + " lets " + lab.SubletPermille + " permille of its compute to outsiders, which the data does not allow");
+                if (lab.FocusLockedUntil < 0 || !string.IsNullOrEmpty(lab.ResearchFocus) && c.Focus.Option(lab.ResearchFocus) == null) p.Add(who + " has the research focus \"" + lab.ResearchFocus + "\", which the data does not have");
+                if (lab.EquityLevel < 0 || lab.EquityLevel > c.Equity.MaxLevel || lab.EquityPermille < 0 || lab.EquityPermille > MathI.Permille || lab.EquityLevel == 0 != (lab.EquityPermille == 0) || lab.EquityPermille + lab.FounderSharePermille > MathI.Permille)
+                    p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
+                if (lab.HackWeeks < 0 || lab.HackWeeks > c.Hack.Weeks || lab.HackLockedUntil < 0) p.Add(who + " has " + lab.HackWeeks + " weeks of hack week left, which the data does not allow");
                 if (lab.CrunchWeeks < 0 || lab.CrunchWeeks > c.StaffPeople.CrunchMaxWeeks) p.Add(who + " has been in crunch time for " + lab.CrunchWeeks + " weeks");
                 foreach (Loan loan in lab.Loans)
                     if (loan.Balance <= 0 || loan.Payment <= 0 || loan.Misses < 0) p.Add(who + " has a loan (" + loan.Id + ") with nothing owed, no payment or a negative miss count");
@@ -184,6 +188,7 @@ namespace AiLabs.Rules.Sim
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
+                    if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

@@ -251,6 +251,13 @@ and says why in the commit message.
 68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 51, `MigrateTo51`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
 69. **Headlines and chat for the office, papers and the sublet (news, chat).** ~~Done~~: three headlines and four chat lines, `OfficePapersSubletNewsChatTests`, `news-ticker.md`, `company-chat-and-glow.md` (Q310).
 70. **The office, papers and the sublet together (tests).** ~~Done~~: `OfficePapersSubletTogetherTests` (Q311).
+71. **External safety audit (safety, reputation).** ~~Done~~: `CommissionAudit`, `SafetyAudit`, `audit` data, model `auditedUntil` (schema 51, `MigrateTo51`), `SafetyAuditTests`, `docs/content/safety-audit.md` (Q312).
+72. **Research focus (research).** ~~Done~~: `SetResearchFocus`, `ResearchFocus`, `focus` data, lab `researchFocus` and `focusLockedUntil` (schema 52, `MigrateTo52`), `ResearchFocusTests`, `docs/content/research-focus.md` (Q313).
+73. **Hack week (research, staff).** ~~Done~~: `HoldHackWeek`, `HackWeek`, `hack` data, lab `hackWeeks` and `hackLockedUntil` (schema 52), `HackWeekTests`, `docs/content/hack-week.md` (Q314).
+74. **Staff equity (pay, funding).** ~~Done~~: `GrantStaffEquity`, `StaffEquity`, `equity` data, lab `equityLevel` and `equityPermille` (schema 53, `MigrateTo53`), `StaffEquityTests`, `docs/content/staff-equity.md` (Q315).
+75. **Retrain a person (staff).** ~~Done~~: `RetrainStaff`, `Retraining`, `retrain` data, no new state, `RetrainTests`, `docs/content/retraining.md` (Q316).
+76. **Headlines and chat for audits, focus, hack week, equity and retraining.** ~~Done~~: `ResearchAndStaffToolsNewsChatTests`, news and chat data (Q317).
+77. **Audits, focus, hack week, equity and retraining together (tests).** ~~Done~~: `ResearchStaffToolsTogetherTests` (Q318).
 
 ## Rules: later
 

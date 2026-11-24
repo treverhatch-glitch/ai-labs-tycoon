@@ -45,7 +45,12 @@ namespace AiLabs.Rules.Sim
         SetPayLevel,
         SetCompliance,
         PublishPaper,
-        SetSublet
+        SetSublet,
+        CommissionAudit,
+        SetResearchFocus,
+        HoldHackWeek,
+        GrantStaffEquity,
+        RetrainStaff
     }
 
     /// <summary>
@@ -381,10 +386,47 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Moves one person to another role for a share of that role's hire fee and some of their morale. The new role needs a free seat.</summary>
+        public static Command RetrainStaff(int labId, int personId, string roleId)
+        {
+            Command c = Make(CommandKind.RetrainStaff, labId);
+            c.TargetId = personId;
+            c.Id = roleId;
+            return c;
+        }
+
+        /// <summary>Gives the team the next level of equity out of the founder's stake. It cannot be taken back.</summary>
+        public static Command GrantStaffEquity(int labId)
+        {
+            return Make(CommandKind.GrantStaffEquity, labId);
+        }
+
+        /// <summary>Lets the researchers build what they like for the data's weeks: happier, more research, slower training, then a cooldown.</summary>
+        public static Command HoldHackWeek(int labId)
+        {
+            return Make(CommandKind.HoldHackWeek, labId);
+        }
+
+        /// <summary>Picks the lab's research direction by id, or "" to drop it. Costs cash and cannot be done again for a while.</summary>
+        public static Command SetResearchFocus(int labId, string focusId)
+        {
+            Command c = Make(CommandKind.SetResearchFocus, labId);
+            c.Id = focusId ?? "";
+            return c;
+        }
+
         /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>
         public static Command RedTeamModel(int labId, int modelId)
         {
             Command c = Make(CommandKind.RedTeamModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Pays outside auditors to test one model (trained or on sale). They publish its real alignment.</summary>
+        public static Command CommissionAudit(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CommissionAudit, labId);
             c.TargetId = modelId;
             return c;
         }
@@ -664,7 +706,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl
     }
 
     public struct CommandResult

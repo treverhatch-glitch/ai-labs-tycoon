@@ -203,6 +203,24 @@ namespace AiLabs.Rules.Sim
                 case EventKind.ComplianceLapsed: return who + "'s compliance office has too few policy staff and fell from level " + e.Amount + " to level " + e.SubjectId + ".";
                 case EventKind.PaperPublished: return who + " spent " + e.Amount + " research points on a paper. The field noticed, and the lab's prestige is now " + e.SubjectId + ".";
                 case EventKind.SubletChanged: return who + " now lets " + (e.SubjectId / 10) + "% of its compute to outside customers" + (e.Amount > 0 ? ", worth $" + e.Amount + " a week." : ".");
+                case EventKind.AuditDone: return who + " paid $" + e.Amount + " for outside auditors to test " + e.Ref + ". " + (e.Pick == 1 ? "Its numbers held up and it has a certificate." : e.Pick == 0 ? "The published score was not the one the lab had been showing." : "They published its real score.");
+                case EventKind.FocusChanged:
+                    {
+                        FocusOptionConfig f = c.Focus.Option(e.Ref);
+                        return who + (f == null ? " dropped its research focus" : " now focuses its research on " + f.Name) + " (it cost $" + e.Amount + ").";
+                    }
+                case EventKind.HackWeek:
+                    return e.Pick == 1 ? who + " started a hack week for " + e.SubjectId + " weeks. It cost $" + e.Amount + " and the roadmap is on hold."
+                        : who + "'s hack week is over and the team is back on the roadmap.";
+                case EventKind.EquityGranted: return who + " gave the team equity (level " + e.SubjectId + "). The people now own " + (e.Amount / 10) + "." + (e.Amount % 10) + "% of the company.";
+                case EventKind.StaffRetrained:
+                    {
+                        string[] roles = (e.Ref ?? "").Split('>');
+                        RoleConfig from = roles.Length == 2 ? c.Role(roles[0]) : null;
+                        RoleConfig to = roles.Length == 2 ? c.Role(roles[1]) : null;
+                        return who + " retrained a " + (from == null ? "person" : from.Name) + " as a " + (to == null ? "new role" : to.Name) + " for $" + e.Amount + (e.Pick == 1 ? "." : ", and they are not thrilled.");
+                    }
+                case EventKind.AuditRevoked: return "The auditors pulled the certificate of " + e.Ref + " after its incident.";
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";
                 case EventKind.ModelRolledBack:

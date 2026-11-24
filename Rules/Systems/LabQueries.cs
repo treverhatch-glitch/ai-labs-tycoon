@@ -324,6 +324,11 @@ namespace AiLabs.Rules.Systems
         /// </summary>
         public static long TechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
         {
+            return MathI.Max(1, MathI.MulPermille(PublishedTechCost(c, state, lab, tech), ResearchFocus.CostPermille(c, lab, tech)));
+        }
+
+        static long PublishedTechCost(GameConfig c, GameState state, LabState lab, TechConfig tech)
+        {
             if (!IsSafetyTech(tech)) return tech.Cost;
             for (int i = 0; i < state.Labs.Count; i++)
             {
@@ -435,7 +440,7 @@ namespace AiLabs.Rules.Systems
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
                 if (role != null) total += role.WeeklySalary;
             }
-            return MathI.MulPermille(total, MathI.Permille + Pay.SalaryPermille(c, lab));
+            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab)));
         }
 
         public static long WeeklyRoomUpkeep(GameConfig c, LabState lab)

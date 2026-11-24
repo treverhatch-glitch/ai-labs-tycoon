@@ -5522,6 +5522,71 @@
     "revenuePermille": 500,
     "noticeWeeks": 4
   },
+  "focus": {
+    "options": [
+      {
+        "id": "frontier",
+        "name": "Frontier push",
+        "blurb": "Bigger is better, and nobody has proved otherwise yet.",
+        "kinds": [ "CapabilityPermille", "UnlockLine" ]
+      },
+      {
+        "id": "alignment",
+        "name": "Alignment first",
+        "blurb": "Understand it before it understands you.",
+        "kinds": [ "AlignmentPermille" ]
+      },
+      {
+        "id": "efficiency",
+        "name": "Efficiency",
+        "blurb": "The same model for fewer GPUs, and a smaller power bill to explain.",
+        "kinds": [ "TrainingSpeedPermille", "CoolingPermille", "SoftwarePermille", "UnlockChipTarget" ]
+      }
+    ],
+    "discountPermille": 200,
+    "penaltyPermille": 100,
+    "switchCost": 50000,
+    "lockWeeks": 26
+  },
+  "retrain": {
+    "enabled": true,
+    "feePermille": 500,
+    "sameFunctionFeePermille": 250,
+    "moraleDrop": 120,
+    "sameFunctionMoraleDrop": 40,
+    "minMorale": 300
+  },
+  "equity": {
+    "maxLevel": 3,
+    "dilutionPermille": 40,
+    "salaryCutPermille": 60,
+    "moraleStep": 20,
+    "poachStepPermille": 50,
+    "minStaff": 3
+  },
+  "hack": {
+    "weeks": 2,
+    "minResearchers": 2,
+    "minMorale": 300,
+    "costPerStaff": 800,
+    "moraleLift": 80,
+    "researchPermille": 400,
+    "trainingCutPermille": 400,
+    "cooldownWeeks": 26
+  },
+  "audit": {
+    "weeks": 52,
+    "minSafetyStaff": 2,
+    "revenueWeeks": 3,
+    "minCost": 25000,
+    "cleanGap": 20,
+    "cleanReputation": 15,
+    "shameGap": 60,
+    "shameReputation": 25,
+    "culturePoints": 4,
+    "attentionReliefPermille": 150,
+    "hearingPoints": 5
+  },
   "office": {
     "chancePermille": 30,
     "firstAfterWeeks": 26,
@@ -8547,6 +8612,66 @@
         "kind": "SubletChanged",
         "pick": -1,
         "text": "{lab} changes how much compute it lets to outsiders. It now brings in {money} a week"
+      },
+      {
+        "id": "audit-clean",
+        "kind": "AuditDone",
+        "pick": 1,
+        "text": "{lab} gets an outside safety certificate for {ref}. The auditors 'could not find the rest of it'"
+      },
+      {
+        "id": "audit-shamed",
+        "kind": "AuditDone",
+        "pick": 0,
+        "text": "Outside auditors publish the real safety score of {ref}. It is not the one on {lab}'s website"
+      },
+      {
+        "id": "audit-published",
+        "kind": "AuditDone",
+        "pick": -1,
+        "text": "Auditors publish the real score of {ref}. {lab} calls it 'a data point'"
+      },
+      {
+        "id": "audit-revoked",
+        "kind": "AuditRevoked",
+        "pick": -1,
+        "text": "{lab} loses the safety certificate of {ref} after an incident. The sticker is being 'repurposed'"
+      },
+      {
+        "id": "focus-changed",
+        "kind": "FocusChanged",
+        "pick": 1,
+        "text": "{lab} announces a new research focus. The old one is 'still in the building'"
+      },
+      {
+        "id": "focus-dropped",
+        "kind": "FocusChanged",
+        "pick": 0,
+        "text": "{lab} drops its research focus and will 'follow the science, wherever it is'"
+      },
+      {
+        "id": "hack-week-started",
+        "kind": "HackWeek",
+        "pick": 1,
+        "text": "{lab} puts its roadmap on hold for a hack week. Someone has built a toaster that files bug reports"
+      },
+      {
+        "id": "hack-week-ended",
+        "kind": "HackWeek",
+        "pick": 0,
+        "text": "{lab}'s hack week ends. The toaster is 'a priority for v2'"
+      },
+      {
+        "id": "equity-granted",
+        "kind": "EquityGranted",
+        "pick": -1,
+        "text": "{lab} gives its staff equity. Employees are 'cautiously optimistic about a number they cannot sell'"
+      },
+      {
+        "id": "staff-retrained",
+        "kind": "StaffRetrained",
+        "pick": -1,
+        "text": "{lab} retrains a person for a new role. HR calls it 'a journey'"
       }
     ],
     "filler": [
@@ -9754,6 +9879,105 @@
         "pick": -1,
         "about": "lab",
         "text": "Strangers are renting our GPUs now. They say they will be very careful. They have not met our GPUs.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "audit-done-chat-clean",
+        "kind": "AuditDone",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The auditors found nothing. Safety is printing the certificate. Sales has already framed it, upside down.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "audit-done-chat-shamed",
+        "kind": "AuditDone",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The outside report is public. The gap between our number and their number has its own hashtag.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "audit-revoked-chat",
+        "kind": "AuditRevoked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We lost the certificate. Facilities wants the sticker back; it was on a very nice wall.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "focus-changed-chat",
+        "kind": "FocusChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "New research focus. Half the whiteboard is now 'out of scope', which is the half I liked.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hack-week-chat-research",
+        "kind": "HackWeek",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Hack week! I am finally building the thing I have been drawing on napkins since the kickoff.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hack-week-chat",
+        "kind": "HackWeek",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Roadmap is paused for hack week. There are snacks. We are told the snacks are 'strategic'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hack-week-over-chat",
+        "kind": "HackWeek",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Hack week is over. The demo that worked on Thursday is, officially, 'a prototype'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "equity-granted-chat",
+        "kind": "EquityGranted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have equity now. I checked the number and then I checked what 'illiquid' means.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "staff-retrained-chat",
+        "kind": "StaffRetrained",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "They moved me to a new role. The training was a PDF and a pat on the back, but the new desk is nice.",
         "fromYear": 0,
         "toYear": 0
       }

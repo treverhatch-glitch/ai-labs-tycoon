@@ -125,6 +125,7 @@ namespace AiLabs.Rules.Systems
 
             StaffSystem.OnIncident(c, lab);
             TrustSystem.OnIncident(c, state, lab, model);
+            SafetyAudit.OnIncident(state, lab, model);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);
             if (risk != null)

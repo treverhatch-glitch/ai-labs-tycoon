@@ -92,7 +92,7 @@ namespace AiLabs.Rules.Systems
             if (standing.Level == BlocStanding.Hearing)
             {
                 amount = WorldQueries.PolicyStaff(c, lab) >= a.PreparedPolicyStaff ? a.HearingReputationPrepared : a.HearingReputation;
-                amount += Compliance.HearingPoints(c, lab);
+                amount += Compliance.HearingPoints(c, lab) + SafetyAudit.HearingPoints(c, state, lab);
                 if (amount < 0) amount = -PressSystem.Damp(c, lab, (int)-amount);
                 lab.Reputation = (int)MathI.Clamp(lab.Reputation + amount, 0, MathI.Permille);
                 if (amount < 0) PressSystem.OnBeat(c, state, lab, "hearing", (int)-amount, "");

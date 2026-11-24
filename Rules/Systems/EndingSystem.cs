@@ -196,7 +196,8 @@ namespace AiLabs.Rules.Systems
         {
             long rev = RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
             long fleet = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
-            return rev + fleet + lab.Cash;
+            long gross = rev + fleet + lab.Cash;
+            return gross - StaffEquity.StaffShare(lab, gross);
         }
 
         public static bool AllOpenTechsDone(GameConfig c, LabState lab, int tick)

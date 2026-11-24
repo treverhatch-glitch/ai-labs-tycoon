@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Systems
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
       BubbleSystem.OnFundingRaise(c, state, round, cash);
       lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - dilution);
+      StaffEquity.OnRaise(lab, dilution);
       lab.BoardInvestorSeats += round.BoardSeats;
       GameEvent closed = Events.Add(state, EventKind.FundingClosed, lab.Id, -1, cash, round.Id);
       closed.Pick = down ? 1 : 0;

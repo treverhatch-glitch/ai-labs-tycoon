@@ -33,6 +33,8 @@ namespace AiLabs.Rules.Sim
             RivalConfig successor = c.Rival("successor");
             if (successor == null) return Fail(CommandError.UnknownId, "There is no successor plan.");
 
+            lab.EquityLevel = 0;
+            lab.EquityPermille = 0;
             string soldName = lab.Name;
             string founderId = lab.FounderId, styleId = lab.StyleId;
             lab.FounderId = "";

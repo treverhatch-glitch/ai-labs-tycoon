@@ -66,6 +66,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 49) MigrateTo49(root);
             if (fromSchema < 50) MigrateTo50(root);
             if (fromSchema < 51) MigrateTo51(root);
+            if (fromSchema < 52) MigrateTo52(root);
+            if (fromSchema < 53) MigrateTo53(root);
+            if (fromSchema < 54) MigrateTo54(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -601,6 +604,34 @@ namespace AiLabs.Rules.Sim
             });
             foreach (string place in LedgerPlaces)
                 JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "sublet", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 52: no model was ever audited from outside.</summary>
+        static void MigrateTo52(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "auditedUntil", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 53: no lab has picked a research focus or held a hack week.</summary>
+        static void MigrateTo53(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchFocus", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "focusLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 54: no lab gave its team equity.</summary>
+        static void MigrateTo54(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "equityLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "equityPermille", JsonValue.Of(0L));
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

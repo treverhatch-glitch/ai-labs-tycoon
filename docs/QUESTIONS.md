@@ -1990,6 +1990,51 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Tests only: a game with the office, papers, the sublet, a pay level and the offsite used together stays solvent on three seeds, the books balance, the save is sound and a load plays on identically; the journal replays on two more seeds (the office needs no policy staff in those tests, because hired staff are not in the journal); at least one seed opens an office, publishes and lets compute; and an unused set of tools changes nothing against a game without them.
 - Finding: with the office started at week 0 and kept on, seed 2's thin lab went bankrupt (a $12,000 retainer from the first week). The test opens the office only when the lab holds over $1M, and closes it below $300K. That is the tool's cost, like pay.
 
+### Q312. Can the player pay for an outside audit of a model's safety claims? DECIDED: yes, one model at a time; honest numbers earn a certificate, a hidden gap is a scandal
+- New `audit` data, command `CommissionAudit(modelId)`, `SafetyAudit` system, events `AuditDone` and `AuditRevoked` (appended). Needs two safety people; the bill is the larger of $25,000 and three weeks of the model's sales, on the training line.
+- The shown alignment is replaced by the real one. A hidden gap of 20 or less gives a 52 week certificate and +15 reputation; 60 or more is a scandal (-25 reputation, softened by press standing); in between the score is only published. Culture moves by 4 points either way.
+- A certificate takes 15% off the attention governments gain each month (on top of a compliance office) and adds 5 reputation points to a hearing. Several certificates do not stack. An incident on a certified model pulls its certificate.
+- New state on the model (schema 51, `MigrateTo51`): `auditedUntil`. Player only and opt-in; the golden digest moved to 5204c5ee because of the field and the schema number only, and reverting them brought the previous digest (1b97826c) back.
+- Alternatives: publishing the real score only when it is higher than the shown one (rejected: an audit that can quietly keep a flattering number is not an audit); a certificate for the whole lab (rejected: it would hide a risky model behind a safe one); percent-of-fine relief (rejected, same reason as the compliance office).
+
+### Q313. Can the player focus the lab's research on one direction? DECIDED: yes, cheaper techs in it, dearer outside it, with a cost and a lock to change
+- New `focus` data, command `SetResearchFocus(focusId)`, `ResearchFocus` system, event `FocusChanged` (appended), `CommandError.FocusLocked`. Three directions made from tech effect kinds: frontier (capability and model lines), alignment, efficiency (training speed, cooling, software, chip targets).
+- A tech in the chosen direction costs 20% less research; a tech in another direction costs 10% more; techs with no direction do not change. It applies after the discount for a publishing rival's safety tech and never goes below one point. Changing or dropping the focus costs $50,000 and locks it for 26 weeks, so it cannot be flipped to match whatever is for sale.
+- New state on the lab (schema 52, `MigrateTo52`): `researchFocus` and `focusLockedUntil`. Player only and opt-in; rivals and the autopilot never pick one, so defaults change nothing. The golden digest moved to 43a606be because of the two lab fields and the schema number only; reverting them brought the previous digest (5204c5ee) back.
+- Alternatives: a focus that only discounts (rejected: it would always be right to pick one); letting a lab drop the focus for free (rejected: it would remove the penalty whenever a tech outside the focus is wanted); one direction per era (rejected: it takes the choice away).
+
+### Q314. Can the player hold a hack week? DECIDED: yes, two weeks of more research and a happier team, with slower training and a cooldown
+- New `hack` data, command `HoldHackWeek`, `HackWeek` system, event `HackWeek` (appended; Pick 1 start, 0 end), `CommandError.HackLocked`. It costs $800 for each person (hiring line), needs two researchers and an average morale of 300, and cannot overlap crunch time in either order.
+- For two weeks research points are 40% higher, training speed is 40% lower and everyone gains 80 morale at the start. The next one can be held 26 weeks after the start.
+- New state on the lab (schema 52, same `MigrateTo52` as the research focus): `hackWeeks` and `hackLockedUntil`. Player only and opt-in. The golden digest moved to 7f191f56 because of the two lab fields; with only those two sync lines reverted the previous digest (43a606be) came back.
+- Alternatives: a one-off payout of research points (rejected: a cost that falls on training is what makes it a choice); letting it overlap crunch time (rejected: two big research bonuses and a morale lift would stack into the best week of the game); a morale cost (rejected: the point is the opposite of crunch).
+
+### Q315. Can the founder give the team equity? DECIDED: yes, up to three levels out of the founder's stake, for cheaper and steadier staff and a smaller sale price
+- New `equity` data, command `GrantStaffEquity`, `StaffEquity` system, event `EquityGranted` (appended), `CommandError.WouldLoseControl`. Each level moves 4% of the founder's current stake to the people. It needs three people and is refused if it would take the founder to the board's control line.
+- Each level takes 6% off every salary (after the pay policy), adds 20 to where morale settles and takes 5% off a rival's chance to poach. It cannot be taken back.
+- It costs the founder's stake and the people share in the sale: funding rounds dilute the people's stake like the founder's, and the exit price breakdown has a `StaffShare` taken off the total (zero without equity, so the old breakdown test still holds). Selling clears the old lab's equity.
+- New state on the lab (schema 53, `MigrateTo53`): `equityLevel` and `equityPermille`. Player only and opt-in. The golden digest moved to b16cb924 because of the two lab fields and the schema number only; reverting them brought the previous digest (7f191f56) back.
+- Alternatives: a per-person grant (rejected: it needs a vesting list and a screen for each person); equity that can be bought back (rejected: it turns it into a loan); letting the people's stake stay put when a round dilutes the founder (rejected: the two would add up to more than the company).
+
+### Q316. Can the player move a person to another role instead of firing and hiring? DECIDED: yes, for half the new role's hire fee and some morale, if a seat is free
+- New `retrain` data, command `RetrainStaff(personId, roleId)`, `Retraining` system, event `StaffRetrained` (appended). A move across functions costs 50% of the new role's hire fee and 120 morale; inside a function 25% and 40 morale. The person must have 300 morale and the new role a free seat.
+- The person keeps their trait and id and the seat is freed. Moving a safety listener out of the listening roles costs culture like letting them go. Policy, safety and research counts used by the compliance office, audits and hack weeks follow the new role.
+- No new state, so no schema bump and the golden digest did not move. The morale floor is the only limit on repeating it.
+- Alternatives: a per-person cooldown (rejected: it needs a saved field and a schema number); a retrain that keeps all morale (rejected: then firing and hiring would never be worth it); letting a person move to a role with no seat (rejected: seats are what limits every role).
+
+### Q317. What do people say about audits, the research focus, hack weeks, equity and retraining? DECIDED: ten headlines and nine chat lines, data only
+- Headlines for the three audit outcomes (clean, embarrassing, published only), a pulled certificate, a new and a dropped research focus, the start and end of a hack week, staff equity and a retrained person. Chat lines for an audit (clean and embarrassing), a pulled certificate, a focus change, hack week (a researcher line, a general line and an end line), equity and retraining.
+- Only data and the test counts moved (47 headlines, 99 chat lines). Nothing is saved, so no schema bump and no golden change.
+- The audit headlines use `pick` for the outcome and the model name in `{ref}`; the other lines match any pick except hack week, which splits start (1) and end (0).
+- Alternatives: one headline per kind (rejected: an audit that embarrasses the lab is a different story from a clean one); naming the retrained role in the headline (rejected: the placeholders have no way to name a role without a new one).
+
+### Q318. Do audits, the research focus, hack weeks, equity and retraining work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- A play-through helper uses all five tools plus the compliance office and offsites on a schedule gated on cash (audit a model every year, rotate the research focus, hack week every 30 weeks, equity at weeks 40, 120 and 200, an engineer-researcher swap). Over 260 weeks on seeds 1 to 3 the books balance, the save has no problems, a load plays on to the same digest and the journal replays to the same game.
+- Across the three seeds each tool was used at least once. A lab that uses none of them plays exactly like the same game without the tools (cash and reputation identical).
+- Equity makes the weekly salary bill smaller and the exit price smaller (a staff share appears in the breakdown).
+- No code or data changed; this is a tests-only entry.
+- Alternatives: gating none of the tools (rejected: an always-on hack week and compliance office bankrupt the thin seed, the same cost of the tool seen in Q303, Q306 and Q311).
+
 ## Open
 
 None.

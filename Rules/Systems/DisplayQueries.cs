@@ -59,6 +59,8 @@ namespace AiLabs.Rules.Systems
             public long RevenueYears;
             public long FleetResale;
             public long CashOnHand;
+            /// <summary>What the people own of the price (taken off the total). Zero until the team has equity.</summary>
+            public long StaffShare;
             public long Total;
         }
 
@@ -204,7 +206,9 @@ namespace AiLabs.Rules.Systems
             b.RevenueYears = EndingSystem.RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
             b.FleetResale = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
             b.CashOnHand = lab.Cash;
-            b.Total = b.RevenueYears + b.FleetResale + b.CashOnHand;
+            long gross = b.RevenueYears + b.FleetResale + b.CashOnHand;
+            b.StaffShare = StaffEquity.StaffShare(lab, gross);
+            b.Total = gross - b.StaffShare;
             return b;
         }
 

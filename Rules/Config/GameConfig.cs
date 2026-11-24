@@ -74,6 +74,11 @@ namespace AiLabs.Rules.Config
         public ComplianceConfig Compliance = new ComplianceConfig();
         public PrestigeConfig Prestige = new PrestigeConfig();
         public SubletConfig Sublet = new SubletConfig();
+        public ResearchFocusConfig Focus = new ResearchFocusConfig();
+        public HackWeekConfig Hack = new HackWeekConfig();
+        public EquityConfig Equity = new EquityConfig();
+        public RetrainConfig Retrain = new RetrainConfig();
+        public SafetyAuditConfig Audit = new SafetyAuditConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
@@ -141,6 +146,11 @@ namespace AiLabs.Rules.Config
             s.Obj("compliance", ref Compliance);
             s.Obj("prestige", ref Prestige);
             s.Obj("sublet", ref Sublet);
+            s.Obj("focus", ref Focus);
+            s.Obj("hack", ref Hack);
+            s.Obj("equity", ref Equity);
+            s.Obj("retrain", ref Retrain);
+            s.Obj("audit", ref Audit);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 51;
+        public const int CurrentSchema = 54;
 
         public int Schema;
         public string ConfigVersion;
@@ -161,6 +161,18 @@ namespace AiLabs.Rules.State
         public int SubletPermille;
         /// <summary>The share cannot be changed before this tick.</summary>
         public int SubletLockedUntil;
+        /// <summary>The research direction the lab picked, "" for none. Only the player's lab picks one.</summary>
+        public string ResearchFocus = "";
+        /// <summary>The focus cannot be changed before this tick.</summary>
+        public int FocusLockedUntil;
+        /// <summary>The levels of staff equity the lab has granted, 0 for none. Only the player's lab grants it.</summary>
+        public int EquityLevel;
+        /// <summary>The share of the company the people own, in permille of the company. Funding rounds dilute it.</summary>
+        public int EquityPermille;
+        /// <summary>The weeks of hack week still to run, 0 when none is on. Only the player's lab holds one.</summary>
+        public int HackWeeks;
+        /// <summary>The next hack week cannot be held before this tick.</summary>
+        public int HackLockedUntil;
         /// <summary>The pay policy: 0 is market pay, above is better paid, below is worse. Only the player's lab changes it.</summary>
         public int PayLevel;
         /// <summary>The pay policy cannot be changed before this tick.</summary>
@@ -328,6 +340,12 @@ namespace AiLabs.Rules.State
             s.Int("prestige", ref Prestige);
             s.Int("subletPermille", ref SubletPermille);
             s.Int("subletLockedUntil", ref SubletLockedUntil);
+            s.Str("researchFocus", ref ResearchFocus);
+            s.Int("focusLockedUntil", ref FocusLockedUntil);
+            s.Int("equityLevel", ref EquityLevel);
+            s.Int("equityPermille", ref EquityPermille);
+            s.Int("hackWeeks", ref HackWeeks);
+            s.Int("hackLockedUntil", ref HackLockedUntil);
             s.Int("payLevel", ref PayLevel);
             s.Int("payLockedUntil", ref PayLockedUntil);
             s.Int("founderSharePermille", ref FounderSharePermille);
@@ -475,6 +493,8 @@ namespace AiLabs.Rules.State
         public int RushWeeks;
         /// <summary>The model is safer from red-team fixes until this tick; 0 when it was never red-teamed or the weeks are over.</summary>
         public int RedTeamUntil;
+        /// <summary>The model holds an external audit certificate until this tick; 0 when it never had one, or it ran out or was pulled.</summary>
+        public int AuditedUntil;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -507,6 +527,7 @@ namespace AiLabs.Rules.State
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
+            s.Int("auditedUntil", ref AuditedUntil);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

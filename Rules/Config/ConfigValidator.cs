@@ -78,6 +78,11 @@ namespace AiLabs.Rules.Config
             ComplianceProblems(p, c);
             PrestigeProblems(p, c);
             SubletProblems(p, c);
+            AuditProblems(p, c);
+            FocusProblems(p, c);
+            HackProblems(p, c);
+            EquityProblems(p, c);
+            RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -857,6 +862,79 @@ namespace AiLabs.Rules.Config
             if (k.MaxPermille < 0 || k.MaxPermille > 900) p.Add("sublet.maxPermille must be from 0 to 900, so the lab keeps at least a tenth of its compute");
             if (k.RevenuePermille < 0 || k.RevenuePermille > MathI.Permille) p.Add("sublet.revenuePermille must be from 0 to 1000, so subletting never beats renting out the same GPUs at full price");
             if (k.NoticeWeeks < 0 || k.NoticeWeeks > 520) p.Add("sublet.noticeWeeks must be from 0 to 520");
+        }
+
+        static void FocusProblems(List<string> p, GameConfig c)
+        {
+            ResearchFocusConfig k = c.Focus;
+            if (k == null) { p.Add("focus is missing"); return; }
+            if (k.DiscountPermille < 0 || k.DiscountPermille > 900) p.Add("focus.discountPermille must be from 0 to 900, so a tech never becomes free");
+            if (k.PenaltyPermille < 0 || k.PenaltyPermille > 1000) p.Add("focus.penaltyPermille must be from 0 to 1000");
+            if (k.SwitchCost < 0) p.Add("focus.switchCost is negative");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("focus.lockWeeks must be from 0 to 520");
+            var seen = new HashSet<string>();
+            foreach (FocusOptionConfig o in k.Options)
+            {
+                if (string.IsNullOrEmpty(o.Id) || !seen.Add(o.Id)) p.Add("focus option \"" + o.Id + "\" has no id or repeats one");
+                if (string.IsNullOrEmpty(o.Name)) p.Add("focus option " + o.Id + " has no name");
+                if (o.Kinds.Count == 0) p.Add("focus option " + o.Id + " covers no tech effect");
+                foreach (string kind in o.Kinds)
+                    if (!System.Enum.TryParse(kind, out TechEffectKind parsed) || !System.Enum.IsDefined(typeof(TechEffectKind), parsed)) p.Add("focus option " + o.Id + " names the unknown tech effect \"" + kind + "\"");
+            }
+        }
+
+        static void RetrainProblems(List<string> p, GameConfig c)
+        {
+            RetrainConfig k = c.Retrain;
+            if (k == null) { p.Add("retrain is missing"); return; }
+            if (k.FeePermille < 0 || k.FeePermille > MathI.Permille) p.Add("retrain.feePermille must be from 0 to 1000, so retraining never costs more than hiring");
+            if (k.SameFunctionFeePermille < 0 || k.SameFunctionFeePermille > k.FeePermille) p.Add("retrain.sameFunctionFeePermille must be from 0 to feePermille");
+            if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
+            if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void EquityProblems(List<string> p, GameConfig c)
+        {
+            EquityConfig k = c.Equity;
+            if (k == null) { p.Add("equity is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("equity.maxLevel must be from 0 to 10");
+            if (k.DilutionPermille < 1 || k.DilutionPermille > 300) p.Add("equity.dilutionPermille must be from 1 to 300");
+            if (k.SalaryCutPermille < 0 || k.SalaryCutPermille * (long)k.MaxLevel > 600) p.Add("equity.salaryCutPermille must be 0 or more, and every level together must leave at least 40% of a salary");
+            if (k.MoraleStep < 0 || k.MoraleStep * (long)k.MaxLevel > 300) p.Add("equity.moraleStep must be 0 or more, and every level together at most 300");
+            if (k.PoachStepPermille < 0 || k.PoachStepPermille * (long)k.MaxLevel > 600) p.Add("equity.poachStepPermille must be 0 or more, and every level together at most 600");
+            if (k.MinStaff < 0 || k.MinStaff > 1000) p.Add("equity.minStaff must be from 0 to 1000");
+        }
+
+        static void HackProblems(List<string> p, GameConfig c)
+        {
+            HackWeekConfig k = c.Hack;
+            if (k == null) { p.Add("hack is missing"); return; }
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("hack.weeks must be from 0 to 52");
+            if (k.MinResearchers < 0 || k.MinResearchers > 1000) p.Add("hack.minResearchers must be from 0 to 1000");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("hack.minMorale must be from 0 to 1000");
+            if (k.CostPerStaff < 0) p.Add("hack.costPerStaff is negative");
+            if (k.MoraleLift < 0 || k.MoraleLift > MathI.Permille) p.Add("hack.moraleLift must be from 0 to 1000");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 2000) p.Add("hack.researchPermille must be from 0 to 2000");
+            if (k.TrainingCutPermille < 0 || k.TrainingCutPermille > 900) p.Add("hack.trainingCutPermille must be from 0 to 900, so training never stops");
+            if (k.CooldownWeeks < k.Weeks || k.CooldownWeeks > 520) p.Add("hack.cooldownWeeks must be from weeks to 520, so one cannot start while another is on");
+        }
+
+        static void AuditProblems(List<string> p, GameConfig c)
+        {
+            SafetyAuditConfig k = c.Audit;
+            if (k == null) { p.Add("audit is missing"); return; }
+            if (k.Weeks < 0 || k.Weeks > 520) p.Add("audit.weeks must be from 0 to 520");
+            if (k.MinSafetyStaff < 0 || k.MinSafetyStaff > 1000) p.Add("audit.minSafetyStaff must be from 0 to 1000");
+            if (k.RevenueWeeks < 0 || k.RevenueWeeks > 520) p.Add("audit.revenueWeeks must be from 0 to 520");
+            if (k.MinCost < 0) p.Add("audit.minCost is negative");
+            if (k.CleanGap < 0 || k.CleanGap > MathI.Permille) p.Add("audit.cleanGap must be from 0 to 1000");
+            if (k.ShameGap < k.CleanGap || k.ShameGap > MathI.Permille) p.Add("audit.shameGap must be from cleanGap to 1000");
+            if (k.CleanReputation < 0 || k.CleanReputation > 200) p.Add("audit.cleanReputation must be from 0 to 200");
+            if (k.ShameReputation < 0 || k.ShameReputation > 200) p.Add("audit.shameReputation must be from 0 to 200");
+            if (k.CulturePoints < 0 || k.CulturePoints > 100) p.Add("audit.culturePoints must be from 0 to 100");
+            if (k.AttentionReliefPermille < 0 || k.AttentionReliefPermille > 500) p.Add("audit.attentionReliefPermille must be from 0 to 500");
+            if (k.HearingPoints < 0 || k.HearingPoints > 100) p.Add("audit.hearingPoints must be from 0 to 100");
         }
 
         static void LeadsProblems(List<string> p, GameConfig c)
