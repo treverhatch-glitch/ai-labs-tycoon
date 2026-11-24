@@ -10,4 +10,4 @@
 
 **Spacing:** coordinator GO only after `./tools/art/prepush.sh` clean; **~30m** since last push (`9b89640`) — no back-to-back small pushes.
 
-**Squash:** one `commit-tree` child of tip; noreply author; zero `Co-authored-by`; plain push only.
+**Squash:** one `commit-tree` child of tip; noreply author; zero `Co-authored-by`; `prepush.sh` grep before push; plain push only. No empty commits for CI.

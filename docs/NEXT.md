@@ -113,7 +113,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 **Graphics on PR #41** (`cursor/graphics-pipeline-5032`): campus kit (30 props), HUD icons (10), rival silhouettes
 (4), bloc/era JSON, handoff list checks in prepush, and presentation specs (`Campus*PresentationSpec` + docs). Remote tip
-`9b89640` (92–95). LOCAL **96–98** grouped queue ([GROUPED-PUSH-96-NEXT.md](art/GROUPED-PUSH-96-NEXT.md)); **HOLD** until ≥30m after `9b89640` (~**15:55 ICT** / 08:55 UTC). Prepush clean. Q548+ queued.
+`81f640a` (96–98). LOCAL **99–100** gate-ready ([GROUPED-PUSH-99-NEXT.md](art/GROUPED-PUSH-99-NEXT.md)); Q550+ queued. **NO PUSH** until coordinator GO (≥**16:24 ICT** / 09:24 UTC after `81f640a`).
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 

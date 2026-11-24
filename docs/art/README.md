@@ -112,6 +112,9 @@ python3 tools/art/generate_campus_kit.py
 | [HQ-MASCOT-STRIP-TAIL-INDEX.md](HQ-MASCOT-STRIP-TAIL-INDEX.md) | Mascot strip tail (batch 97 local) |
 | [GROUPED-PUSH-92-95.md](GROUPED-PUSH-92-95.md) | Squash 92–95 (landed `9b89640`) |
 | [COMPUTE-SPLIT-TAIL-INDEX.md](COMPUTE-SPLIT-TAIL-INDEX.md) | Compute split tail (batch 98 local) |
-| [GROUPED-PUSH-96-NEXT.md](GROUPED-PUSH-96-NEXT.md) | Next grouped 96–98 queue |
+| [HQ-STAGE-STACK-COMPLETION-TAIL-INDEX.md](HQ-STAGE-STACK-COMPLETION-TAIL-INDEX.md) | HQ completion tail (batch 99 local) |
+| [GO-PACKET-TAIL-REFRESH-98.md](GO-PACKET-TAIL-REFRESH-98.md) | GO packet through 98 (batch 100 local) |
+| [GROUPED-PUSH-96-NEXT.md](GROUPED-PUSH-96-NEXT.md) | Squash 96–98 (landed `81f640a`) |
+| [GROUPED-PUSH-99-NEXT.md](GROUPED-PUSH-99-NEXT.md) | Next grouped 99–100 queue |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

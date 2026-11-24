@@ -728,11 +728,23 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — hub 73, mascot tail 97, training tail 96.
 - Why: HQ band tail chain before grouped push.
 
-### Q548. HQ stack completion tail? DRAFT: `CampusHqStageStackCompletionTailIndexPresentationSpec`
+### Q548. HQ stack completion tail? DECIDED: `CampusHqStageStackCompletionTailIndexPresentationSpec`
 
 - Options: (a) batch 74 only; (b) tail doc + compute split tail; (c) defer stack wire.
-- Recommendation: **(b)** — closes HQ stack tail lane.
-- Status: stub batch 99 (local).
+- Recommendation and choice: **(b)** — completion 74, rollup 69, compute tail 98.
+- Why: HQ band tail chain after grouped 96–98.
+
+### Q549. GO packet tail through batch 98? DECIDED: `CampusGoPacketTailRefreshThrough98PresentationSpec`
+
+- Options: (a) store only; (b) refresh doc through 98; (c) automate spacing.
+- Recommendation and choice: **(b)** — parent `81f640a`, prior doc 90.
+- Why: Coordinator packets after HQ completion tail.
+
+### Q550. ALT-76 STATUS sync through 98? DRAFT: `CampusAlt76StatusSyncThrough98PresentationSpec`
+
+- Options: (a) skip; (b) STATUS rollup through latest remote batch; (c) merge STATUS with GO packet only.
+- Recommendation: **(b)** — mirror batch 91 pattern.
+- Status: stub batch 101 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
