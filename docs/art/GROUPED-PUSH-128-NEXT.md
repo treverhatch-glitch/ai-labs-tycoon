@@ -1,6 +1,6 @@
-# Next grouped push (LOCAL queue)
+# Grouped push 128–130 (LANDED)
 
-**Remote parent:** `e63c189e1eb6081feceb0ce7d7432b29165b1077` (125–127).
+**Remote:** `877df1d709c3a08abc72ad8ac4598b34466ff776` (parent `e63c189`). Pushed **~22:02 ICT** Nov 24.
 
 | Batch | Q | Topic |
 | --- | --- | --- |
@@ -8,4 +8,6 @@
 | 129 | Q578 | STATUS sync 121 |
 | 130 | Q579 | GO packet 124 |
 
-**GO:** **≥~22:01 ICT** (+30m after `e63c189`).
+Prepush **302** meta; `git log -1` noreply/no coauth; `ls-remote` verified.
+
+Next HOLD **≥~22:32 ICT**. Q580+ batch **131+** LOCAL.
