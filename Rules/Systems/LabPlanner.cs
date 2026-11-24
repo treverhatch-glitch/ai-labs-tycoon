@@ -123,18 +123,6 @@ namespace AiLabs.Rules.Systems
             return revenue > 0 && LabQueries.WeeklyRunningCost(x.C, x.State, x.Lab) * 2 > revenue * 3;
         }
 
-        /// <summary>
-        /// A lab whose running costs far outrun its revenue and whose cash is nearly gone cuts now, not once it is in debt:
-        /// with its model overtaken it cannot afford the next run, and waiting for debt was a death spiral.
-        /// </summary>
-        static bool Retrenching(Ctx x)
-        {
-            long cost = LabQueries.WeeklyRunningCost(x.C, x.State, x.Lab);
-            RivalryConfig r = x.C.Rivalry;
-            return cost > 0 && cost * MathI.Permille > x.Lab.LastWeek.Revenue * r.RetrenchCostPermille
-                && x.Lab.Cash < cost * r.RetrenchRunwayWeeks;
-        }
-
         static bool CanSpend(Ctx x, long cost)
         {
             long cushion = Reserve(x);
