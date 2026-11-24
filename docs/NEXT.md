@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 769 tests pass (schemas 19–21: bubble crash, acquisitions, model sales), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 21. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 866 tests pass (schemas 19–22: bubble crash, acquisitions, model sales, risk classes, founding choices), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 22. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -21,8 +21,7 @@ Known limits of the slice, so nobody is surprised:
 - **Training cost per era is retuned for GPU generations.** Hardware generations landed, so the era multipliers were
   scaled down by the compute-per-dollar they add (Q35). Late-game cash is still higher than at launch; Q76 retuned
   dial-up costs and wealth growth for the eight-year soak.
-- **Some rooms and every role beyond the first four have no special rule yet.** New roles fill one of the four
-  functions; a room is built for what it seats or holds.
+- **Role perks are in (Q128 to Q133):** recruiter, red-teamer, alignment fellow, product lead and the four late specialists do more than fill a desk (`rolePerks`, [content/role-perks.md](content/role-perks.md)). The data roles have none yet (they wait for data sources); the later rooms do something too (Q134 to Q136, [content/room-perks.md](content/room-perks.md)): research, training speed, incident catch and robot appeal, per tile under a cap.
 - **The cast is eight labs.** OpenAye, AntHopticsAI and xAy from the start; Metta (2007), Macrosoft (2012), Palantear
   (2017), Goggle DeepMined (2010) and DeepSneak (2023) as arrivals. The start-era picker (item 12) is still UI-only.
 - **Retired models are pruned** past six per line (museum); Gauntlet records keep names.
@@ -91,10 +90,22 @@ and says why in the commit message.
 12. **The wider cast.** ~~Macrosoft, Metta and Palantear plans and join years are in (2005, 2012, 2017).~~ Start-era
     selection is in (rules half, Q118 to Q122): every era is startable with an era-appropriate cast, cash, lot and techs, and
     `StartEras.Offers` feeds a picker. Still open: the picker screen itself.
-13. ~~**Make each era feel different.**~~ Done (Q103 to Q109): `EraRules`, five era rules beside incident load (talent-war
+13. ~~**Make each era feel different.**~~ Done (Q104 to Q109 and Q127): `EraRules`, five era rules beside incident load (talent-war
     hiring fees, chip prices, customer appetite, fine size, and a release law on displayed alignment), the briefing
     and shifts queries, a rules line on the era banner, no save change. Risk classes per era are in (Q110 superseded by
     Q123 to Q126, save schema 21). Still open: per-era mechanics that need new state (they ride on items 7 and 8).
+
+14. ~~**Founding choices (bible ch. 5).**~~ Done (Q137 to Q140, save schema **22**): four founders (Professor, Dropout, Defector, Heir), three
+    strategy styles (Sniper, Shotgun, Wildcard) and a home-base option, chosen in `NewGameOptions` (`simcli --founder --style --home`);
+    founders change the start and carry a lasting edge and cost, styles lift appeal in their sectors and lower it elsewhere
+    ([content/founding.md](content/founding.md)). Still open: the picker screen (Unity), and the Hardware Baron, Open-Weights Rebel
+    and Garage Hacker presets (they wait for chips, open weights and shady offers).
+15. **Talent market (bible ch. 7, "poaching is constant").** Rivals offer absurd packages and the player can answer: counter with
+    money, compute access, a title or the mission, or let the person go; stars have a price, and the player can poach back. Needs
+    pending offers in state, so a new save schema. Not started.
+16. **The press and reputation (bible ch. 14, the press room).** A press room, journalists and news beats: launches, incidents,
+    leaks and hearings change reputation in ways the lab can steer, and the press room dampens a scandal and sharpens a launch.
+    Not started.
 
 ## Rules: later
 

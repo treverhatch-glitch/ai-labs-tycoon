@@ -100,6 +100,21 @@ From 2012 each era also opens *risk classes* (bias, a driving crash, misuse, a d
 physical harm, loss of control). An incident on a model sold in a class's sectors is that class, with a bigger fine and reputation
 hit, so what a lab sells decides what can go wrong. The era banner names the new ones. Only the class of each incident is saved.
 
+Several roles do more than fill a desk (`rolePerks`, [content/role-perks.md](content/role-perks.md)): recruiters win back part of
+every hiring fee, red-teamers catch some incidents before they happen, alignment fellows make alignment compute go further, and
+product leads and the late specialists lift how much customers like a lab's models in their sectors. Each is the number of people
+in the role times a share, under a cap, worked out from the staff each time: nothing is saved.
+
+Some rooms do more than seat people too (`roomPerks`, [content/room-perks.md](content/room-perks.md)): research floors, harness
+control rooms and launch control speed research, an agent ops room speeds training, a sandbox wing catches incidents beside the
+red-teamers, and a robotics arena lifts the appeal of robots and devices. Every tile adds a small share under a cap, read from the
+rooms the lab has.
+
+Who you are is a choice made when the game starts ([content/founding.md](content/founding.md)): a founder (the Professor, the
+Dropout, the Defector, the Heir) changes the start and carries a lasting edge and cost, a style (Sniper, Shotgun, Wildcard) lifts
+appeal in its sectors and lowers it elsewhere, and the home base is any bloc. The founder and style are two ids on the lab; their
+effects are read from the config each time.
+
 ### Models
 
 A lab runs a **family** of model lines at once. Each line is a creature that grows with every version.

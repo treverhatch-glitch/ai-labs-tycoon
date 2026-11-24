@@ -151,7 +151,7 @@ namespace AiLabs.Rules.Sim
             int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
             if (cmd.Count > free)
                 return Fail(CommandError.NoSeats, "There are " + free + " free seats for a " + role.Name + ". Build a room for them first.");
-            long cost = EraRules.HireCost(c, role, cmd.Count, state.Tick);
+            long cost = RolePerks.HireCost(c, lab, role, cmd.Count, state.Tick);
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             StaffSystem.Hire(c, state, lab, role, cmd.Count);

@@ -334,7 +334,15 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "events", e => JsonPatch.AddIfMissing(e, "riskClass", JsonValue.Of("")));
         }
 
-        static void MigrateTo22(JsonValue root) { }
+        /// <summary>Founding choices (Q137): every lab has a founder and a style; saves from before chose neither.</summary>
+        static void MigrateTo22(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "founderId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "styleId", JsonValue.Of(""));
+            });
+        }
 
         static void MigrateTo23(JsonValue root) { }
 

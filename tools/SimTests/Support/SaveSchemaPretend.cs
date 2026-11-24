@@ -17,6 +17,7 @@ public static class SaveSchemaPretend
         {
             if (schema < 28) StripHatchLedgerLines(root);
             if (schema < 24) StripBubbleHadCrash(root);
+            if (schema < 22) StripFoundingChoices(root);
             if (schema < 21) StripEventRiskClass(root);
             if (schema < 20) StripAbsorbedByLab(root);
             if (schema < 19) StripBubbleCrashPhase(root);
@@ -40,6 +41,15 @@ public static class SaveSchemaPretend
         Simulation again = Simulation.Load(sim.Config, json);
         Assert.Empty(SaveGame.Problems(sim.Config, again.State));
         Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripFoundingChoices(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonPatch.Remove(lab, "founderId");
+            JsonPatch.Remove(lab, "styleId");
+        });
     }
 
     static void StripEventRiskClass(JsonValue root)

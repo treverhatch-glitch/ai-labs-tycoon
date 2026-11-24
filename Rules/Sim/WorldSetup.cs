@@ -17,6 +17,9 @@ namespace AiLabs.Rules.Sim
             state.ConfigVersion = c.Version;
             state.Seed = options.Seed;
             EraConfig era = StartEra(c, options);
+            FounderConfig founder = PickFounder(c, options);
+            StyleConfig style = PickStyle(c, options);
+            string homeBloc = PickHomeBloc(c, options);
             int startTick = EraSystem.StartTick(c, era);
             state.Tick = startTick;
             state.NextId = 1;
@@ -44,7 +47,8 @@ namespace AiLabs.Rules.Sim
             player.Reputation = start.Reputation;
             player.GrantPerWeek = MathI.MulPermille(start.GrantPerWeek, era.StartGrantPermille);
             player.GrantEndsTick = startTick + start.GrantWeeks;
-            player.HomeBlocId = start.HomeBlocId;
+            player.HomeBlocId = homeBloc;
+            player.StyleId = style == null ? "" : style.Id;
             player.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
             player.Techs.AddRange(era.StartTechs);
             player.TrainingSharePermille = start.TrainingSharePermille;
@@ -71,6 +75,8 @@ namespace AiLabs.Rules.Sim
             if (options.RivalIds != null)
                 for (int i = 0; i < options.RivalIds.Count; i++)
                     if (c.Rival(options.RivalIds[i]) == null) throw new ArgumentException("There is no rival \"" + options.RivalIds[i] + "\" in the config.");
+
+            if (founder != null) Founding.ApplyStart(c, state, player, founder);
 
             for (int i = 0; i < c.Market.Sectors.Count; i++) state.Sectors.Add(NewSector(c.Market.Sectors[i], GameDate.Year(c.Calendar, startTick)));
             for (int i = 0; i < c.World.Sites.Count; i++) state.Sites.Add(NewSite(c.World.Sites[i].Id));
@@ -135,6 +141,29 @@ namespace AiLabs.Rules.Sim
             return MathI.Clamp(grown, player / 2, player * 2);
         }
 
+        static FounderConfig PickFounder(GameConfig c, NewGameOptions options)
+        {
+            if (string.IsNullOrEmpty(options.FounderId)) return null;
+            FounderConfig founder = c.Founder(options.FounderId);
+            if (founder == null) throw new ArgumentException("There is no founder \"" + options.FounderId + "\" in the config.");
+            return founder;
+        }
+
+        static StyleConfig PickStyle(GameConfig c, NewGameOptions options)
+        {
+            if (string.IsNullOrEmpty(options.StyleId)) return null;
+            StyleConfig style = c.Style(options.StyleId);
+            if (style == null) throw new ArgumentException("There is no style \"" + options.StyleId + "\" in the config.");
+            return style;
+        }
+
+        static string PickHomeBloc(GameConfig c, NewGameOptions options)
+        {
+            if (string.IsNullOrEmpty(options.HomeBlocId)) return c.PlayerStart.HomeBlocId;
+            if (c.World.Bloc(options.HomeBlocId) == null) throw new ArgumentException("There is no bloc \"" + options.HomeBlocId + "\" in the config.");
+            return options.HomeBlocId;
+        }
+
         static bool IsFirst(GameConfig c, EraConfig era) { return c.Eras[0] == era; }
 
         /// <summary>The era the options ask for. An unknown era, or one the picker does not offer, is the caller's mistake.</summary>
@@ -177,7 +206,7 @@ namespace AiLabs.Rules.Sim
         static string Or(string value, string fallback) { return string.IsNullOrEmpty(value) ? fallback : value; }
 
         /// <summary>A new player lab after selling the old one: garage start, era techs, vendor standing, sale cash on the ledger.</summary>
-        public static LabState FoundAgain(GameConfig c, GameState state, string name, string leader, string family, long price)
+        public static LabState FoundAgain(GameConfig c, GameState state, string name, string leader, string family, long price, string founderId = "", string styleId = "")
         {
             PlayerStartConfig start = c.PlayerStart;
             EraConfig era = EraSystem.AtTick(c, state.Tick);
@@ -196,6 +225,8 @@ namespace AiLabs.Rules.Sim
             fresh.GrantPerWeek = start.GrantWeeks > 0 ? MathI.MulPermille(start.GrantPerWeek, era.StartGrantPermille) : 0;
             fresh.GrantEndsTick = start.GrantWeeks > 0 ? state.Tick + start.GrantWeeks : -1;
             fresh.HomeBlocId = start.HomeBlocId;
+            fresh.FounderId = founderId;
+            fresh.StyleId = styleId;
             fresh.LotId = IsFirst(c, era) ? start.LotId : era.StartLotId;
             fresh.Techs.AddRange(RivalSystem.CatchUpTechs(c, era));
             fresh.Techs.AddRange(era.StartTechs);

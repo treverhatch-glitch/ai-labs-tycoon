@@ -34,13 +34,16 @@ namespace AiLabs.Rules.Sim
             if (successor == null) return Fail(CommandError.UnknownId, "There is no successor plan.");
 
             string soldName = lab.Name;
+            string founderId = lab.FounderId, styleId = lab.StyleId;
+            lab.FounderId = "";
+            lab.StyleId = "";
             lab.Controller = LabController.Plan;
             lab.RivalId = "successor";
             if (!lab.Name.Contains("(new owners)")) lab.Name += " (new owners)";
 
             if (mode == "found-again")
             {
-                LabState fresh = WorldSetup.FoundAgain(c, state, soldName, lab.Leader, lab.FamilyName, price);
+                LabState fresh = WorldSetup.FoundAgain(c, state, soldName, lab.Leader, lab.FamilyName, price, founderId, styleId);
                 state.Labs.Insert(0, fresh);
                 state.PlayerLabId = fresh.Id;
             }
