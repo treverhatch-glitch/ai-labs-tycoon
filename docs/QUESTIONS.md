@@ -650,6 +650,18 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — links hub 50–60 to tails 79–82.
 - Why: Navigation rollup after GO packet tail without renumbering hub.
 
+### Q535. ALT-76 rollup refresh through 85? DECIDED: `CampusAlt76RollupRefreshB85PresentationSpec`
+
+- Options: (a) STATUS rows only; (b) second refresh doc through hub tail; (c) regenerate hub table.
+- Recommendation and choice: **(b)** — rollup navigation through batch 85.
+- Why: Batch 76 refresh stopped at 75; tail lane needs one rollup anchor.
+
+### Q536. Screen layout tail index? DRAFT: `CampusScreenLayoutTailIndexPresentationSpec`
+
+- Options: (a) batch 50 table only; (b) tail doc linking screens 47–49 + hub tail; (c) new screen layouts in graphics PR.
+- Recommendation: **(b)** — presentation navigation after ALT refresh.
+- Status: stub batch 87 (local).
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
