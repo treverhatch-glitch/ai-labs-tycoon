@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`f320b6b`**; **LOCAL** batch **70+** |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`516404f`**; **LOCAL** packet **74–77** (NO PUSH) |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -191,12 +191,13 @@ and says why in the commit message.
   - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
 - **Push policy:** plain FF only; coauth grep empty on push range; grouped batches; **no force-push**.
 - ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
-- **Grouped squash packet (LOCAL — NO PUSH):** batches **70–73** off `f320b6b` — **280** new tests (**5494** expected at gate); GO after coordinator + ~**30m** spacing from **`f320b6b`** (~**11:51 UTC** / **18:51 ICT** earliest); commit-tree squash; coauth grep.
-- **batch 70 (LOCAL)** — Q4546–Q4615 `HatchRivalPlanBarLaterTests3` (rivals × chips).
-- **batch 71 (LOCAL)** — Q4616–Q4685 `HatchAcquireListingBarLaterTests3` (acquire × chip listings, systems-design §4).
-- **batch 72 (LOCAL)** — Q4686–Q4755 `HatchWorldMapEconomyBarLaterTests3` (eras × rivalry × bubble, §2 world map).
-- **batch 73 (LOCAL)** — Q4756–Q4825 `HatchFundingFollowOnBarLaterTests3` (follow-on × bubble).
-- **batch 74+ (refill)** — Envydia vendor / site power when phase **C/D** merges open; schema **30** still parked.
+- ~~**Batches 70–73 grouped squash**~~ **pushed @ `516404f`** — Q4546–Q4825 (**280** tests); gate **5494/5494**; parent `f320b6b`; ~**19:26 ICT**.
+- **Grouped squash packet (LOCAL — NO PUSH):** batches **74–77** off **`516404f`** — **280** new tests (**5774** expected gate); bars pin regulator×bubble, shady×China, incident safety, rival economy (systems-design §2–§6, bible shady path); coordinator GO + prepush + ~**30m** after **`516404f`** (~**19:56 ICT** earliest).
+- **batch 74** — Q4826–Q4895 `HatchRegulatorBubbleBarLaterTests4`
+- **batch 75** — Q4896–Q4965 `HatchShadyChinaBarLaterTests4`
+- **batch 76** — Q4966–Q5035 `HatchIncidentSafetyBarLaterTests4`
+- **batch 77** — Q5036–Q5105 `HatchRivalEconomyBarLaterTests4`
+- **batch 78+ (refill)** — Envydia vendor / site power when phase **C** opens; schema **30** parked.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 

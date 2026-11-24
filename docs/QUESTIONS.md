@@ -1097,9 +1097,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchWorldMapEconomyBarLaterTests3` (70):** eras, rivalry retrench, bubble; §2 sites (data-only).
 
-### Q4756–Q4825. Funding follow-on bar? DECIDED: test-only (batch 73, LOCAL)
+### Q4756–Q4825. Funding follow-on bar? DECIDED: test-only (batch 73, **pushed @ `516404f`**)
 
 - **`HatchFundingFollowOnBarLaterTests3` (70):** `FundingFollowOn` + bubble crash funding; bible capital path.
+
+### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (LOCAL grouped packet off `516404f`)
+
+- **74** `HatchRegulatorBubbleBarLaterTests4` — regulator × bubble (Q1026+ bible scrutiny).
+- **75** `HatchShadyChinaBarLaterTests4` — shady × China deals (bible Q102 neighbour).
+- **76** `HatchIncidentSafetyBarLaterTests4` — incident rungs + safety config.
+- **77** `HatchRivalEconomyBarLaterTests4` — rival economy retrench (Q111–Q115 neighbour).
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
