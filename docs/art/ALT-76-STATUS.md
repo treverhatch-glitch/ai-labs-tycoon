@@ -70,7 +70,8 @@
 | 79 | `fed9015` | Index manifest tail |
 | 80 | `fa2920e` | HUD era tail index |
 | 81 | `c567747` | Rival/world tail index |
-| 82 | (local) | Explainable HUD tail |
+| 82 | `a79600b` | Explainable HUD tail |
+| 83 | (local) | ALT-76 STATUS sync |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

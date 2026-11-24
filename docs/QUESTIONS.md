@@ -632,6 +632,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — links HQ, research, room-build breakdown paths.
 - Why: Completes explainable HUD navigation after rival/world tail.
 
+### Q532. ALT-76 STATUS sync through batch 82? DECIDED: `CampusAlt76StatusSyncPresentationSpec`
+
+- Options: (a) STATUS table only; (b) sync doc + last-batch alias; (c) regenerate all index specs.
+- Recommendation and choice: **(b)** — extends batch 76 refresh through tail lane.
+- Why: Coordinator and store bible need consistent remote tips through 82.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
