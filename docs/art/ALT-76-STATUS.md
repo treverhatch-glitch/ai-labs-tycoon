@@ -69,7 +69,8 @@
 | 78 | `338fc05` | HQ lot viewport index |
 | 79 | `fed9015` | Index manifest tail |
 | 80 | `fa2920e` | HUD era tail index |
-| 81 | (pushing) | Rival/world tail index |
+| 81 | `c567747` | Rival/world tail index |
+| 82 | (local) | Explainable HUD tail |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

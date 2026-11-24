@@ -94,5 +94,6 @@ python3 tools/art/generate_campus_kit.py
 | [INDEX-LANE-MANIFEST-TAIL.md](INDEX-LANE-MANIFEST-TAIL.md) | Manifest tail 75–78 (batch 79) |
 | [HUD-ERA-TAIL-INDEX.md](HUD-ERA-TAIL-INDEX.md) | Era HUD tail 29/37/52/53 (batch 80) |
 | [RIVAL-WORLD-TAIL-INDEX.md](RIVAL-WORLD-TAIL-INDEX.md) | Rival/world cross-index (batch 81) |
+| [EXPLAINABLE-HUD-TAIL-INDEX.md](EXPLAINABLE-HUD-TAIL-INDEX.md) | Explainable HUD tail (batch 82) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

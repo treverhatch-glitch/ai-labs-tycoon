@@ -626,6 +626,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — presentation navigation only.
 - Why: Index lane 66+ needs rivals/world cross-ref without changing rules.
 
+### Q531. Explainable HUD tail index? DECIDED: `CampusExplainableHudTailIndexPresentationSpec`
+
+- Options: (a) hub row only; (b) tail doc + breakdown drawer aliases; (c) add new DisplayQueries on graphics PR.
+- Recommendation and choice: **(b)** — links HQ, research, room-build breakdown paths.
+- Why: Completes explainable HUD navigation after rival/world tail.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
