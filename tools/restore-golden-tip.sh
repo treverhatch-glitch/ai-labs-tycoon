@@ -9,6 +9,5 @@ for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/Agency.c
   Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
   git checkout HEAD -- "$f"
 done
-export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
-DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+DOTNET="${DOTNET:-$(command -v dotnet)}"
 cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo

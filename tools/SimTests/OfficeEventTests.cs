@@ -480,7 +480,7 @@ public class OfficeEventTests
     {
         Game g = Lab(0, 0, 8);
         g.Weeks(5);
-        string old = SaveSchemaPretend.At(g.C, 33, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 31, g.Sim.Save());
         Assert.DoesNotContain("officeEventId", old);
         Assert.DoesNotContain("officeSeen", old);
         Simulation loaded = Simulation.Load(g.C, old);

@@ -264,6 +264,8 @@ namespace AiLabs.Rules.Sim
             {
                 for (int i = 0; i < state.Labs.Count; i++)
                     if (!state.Labs[i].Bankrupt) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
+                EndingSystem.TryTreaty(c, state);
+                EndingSystem.TryNationalised(c, state);
                 LabState player = state.Player;
                 if (player != null && !player.Bankrupt) ShadySystem.RunMonth(c, state, player);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);

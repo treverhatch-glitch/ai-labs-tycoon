@@ -284,7 +284,7 @@ public class SuccessorDesignTests
     public void An_older_save_loads_with_every_model_designed_by_people()
     {
         var (g, _, _, _, _) = Setup();
-        string old = SaveSchemaPretend.At(g.C, 35, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 31, g.Sim.Save());
         Assert.DoesNotContain("designerId", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);

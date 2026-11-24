@@ -136,11 +136,11 @@ public static class SaveSchemaPretend
             if (schema < 39) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "eraScores"));
             if (schema < 38) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "pivotEraId"); JsonPatch.Remove(lab, "pivotUntilTick"); });
             if (schema < 37) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.Remove(b, "lobbyUntilTick")));
-            if (schema < 36) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "rushWeeks")));
-            if (schema < 35) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "designerId")));
-            if (schema < 34) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "objective")));
-            if (schema < 33) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "officeEventId"); JsonPatch.Remove(lab, "officeEventExpires"); JsonPatch.Remove(lab, "officeSeen"); });
-            if (schema < 32) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchLeads"); JsonPatch.Remove(lab, "leadSpeedPermille"); });
+            if (schema < 37) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "rushWeeks")));
+            if (schema < 36) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "designerId")));
+            if (schema < 35) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "objective")));
+            if (schema < 34) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "officeEventId"); JsonPatch.Remove(lab, "officeEventExpires"); JsonPatch.Remove(lab, "officeSeen"); });
+            if (schema < 33) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "researchLeads"); JsonPatch.Remove(lab, "leadSpeedPermille"); });
             if (schema < 31) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "rooms", room => JsonPatch.Remove(room, "eraAge")));
             if (schema < 30) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
             if (schema < 29) StripCulture(root);
