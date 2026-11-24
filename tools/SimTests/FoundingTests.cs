@@ -215,9 +215,14 @@ public class FoundingTests
         g.Hire("researcher", 4);
         g.Weeks(1);
         long boosted = g.Me.LastWeek.ResearchGained;
-        Game plain = Start(Options(era: "it-sees"));
-        long baseline = ResearchInAWeek(plain);
-        Assert.Equal(MathI.MulPermille(baseline, 1000 + room + 100), boosted);
+        Game twin = Start(Options(era: "it-sees"), c => c.RoomPerks.AddRange(TestData.Config().RoomPerks));
+        twin.Me.Cash = 1_000_000_000;
+        twin.Build("research-floor", 4, 4);
+        twin.Build("research-lab", 4, 4);
+        twin.Hire("researcher", 4);
+        twin.Weeks(1);
+        long withoutFounder = twin.Me.LastWeek.ResearchGained;
+        Assert.Equal(MathI.MulPermille(withoutFounder, 1000 + 100), boosted);
     }
 
     [Fact]

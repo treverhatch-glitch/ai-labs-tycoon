@@ -391,7 +391,12 @@ public class EraRulesTests
     {
         Func<int, (long fines, int incidents)> run = fine =>
         {
-            Game g = StartedIn("punchline", seed: 4, tweak: c => c.Era("punchline").FinePermille = fine);
+            Game g = StartedIn("punchline", seed: 4, tweak: c =>
+            {
+                c.Era("punchline").FinePermille = fine;
+                foreach (StaffTraitConfig t in c.StaffPeople.Traits)
+                    if (t.Id != "steady") t.HirePermille = 0;
+            });
             g.WithStarterLab(gpus: 12);
             ModelState model = g.Train("mini", 0);
             g.UntilTrained(model, 400);

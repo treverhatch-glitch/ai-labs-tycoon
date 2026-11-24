@@ -188,10 +188,12 @@ namespace AiLabs.Rules.Systems
             p.GraceMonths = state.BubbleGraceMonths;
             p.CrashMonthsRemaining = state.BubbleCrashMonthsRemaining;
             p.CapitalRaised = state.BubbleCapitalRaised;
-            p.MarketRevenueLastMonth = BubbleSystem.MarketRevenueThisMonth(state);
+            p.MarketRevenueLastMonth = BubbleSystem.MarketRevenueLastClosedMonth(state);
             p.GraceMonthsNeeded = b == null ? 0 : b.GraceMonthsBeforeCrash;
+            int popWarn = b == null ? 50 : b.PopWarningMarginPermille;
+            if (popWarn < 1) popWarn = 50;
             if (BubbleSystem.InCrash(state)) p.WarningLevel = 3;
-            else if (b != null && state.BubblePermille >= b.PopAtPermille - 50) p.WarningLevel = 2;
+            else if (b != null && state.BubblePermille >= b.PopAtPermille - popWarn) p.WarningLevel = 2;
             else if (b != null && state.BubblePermille >= b.HotPermille) p.WarningLevel = 1;
             return p;
         }
