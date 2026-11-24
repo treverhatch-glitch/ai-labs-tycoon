@@ -3206,6 +3206,9 @@ namespace AiLabs.Unity.Hq
                     string lastWeekDevJerkinSpendIncome = HqDisplayQueriesHud.LastWeekDevJerkinSpendIncomeSummaryLine(lab);
                     if (!string.IsNullOrEmpty(lastWeekDevJerkinSpendIncome))
                         _summary.text += " · " + lastWeekDevJerkinSpendIncome;
+                    string lifetimeDevJerkinSpendIncome = HqDisplayQueriesHud.LifetimeDevJerkinSpendIncomeSummaryLine(lab);
+                    if (!string.IsNullOrEmpty(lifetimeDevJerkinSpendIncome))
+                        _summary.text += " · " + lifetimeDevJerkinSpendIncome;
                     string weeklyCompute = HqDisplayQueriesHud.WeeklyComputeLine(sim.Config, sim.State, lab);
                     if (!string.IsNullOrEmpty(weeklyCompute))
                         _summary.text += " · " + weeklyCompute;
