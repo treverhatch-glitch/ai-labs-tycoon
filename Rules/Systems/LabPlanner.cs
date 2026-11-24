@@ -38,7 +38,6 @@ namespace AiLabs.Rules.Systems
             Release(x);
 
             CrashDistress(x);
-            Retrench(x);
 
             if (lab.WeeksInDebt > 0 || Retrenching(x))
             {
