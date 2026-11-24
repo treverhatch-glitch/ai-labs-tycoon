@@ -1281,6 +1281,176 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** for the option; (c) is not needed because blocs already carry their own rules on the map. A lab sold to new owners (found-again or spectate) loses its founder and style so the successor is no longer "you"; `FoundAgain` hands both to the new player lab.
 - Why: the founder is the person, not the company.
 
+### Q141. What happens when a rival poaches someone? DECIDED: it makes an offer that waits four weeks, and nobody answering means the person leaves
+
+- Options: (a) keep the instant raid; (b) an offer that waits for an answer, with a cap of open offers; (c) a pop-up that pauses the game.
+- Recommendation and choice: **(b)**. `talent.offerWeeks` 4 and `talent.maxOpenOffers` 2; the offer is saved on the lab (`poachOffers`, save schema 23). Setting `offerWeeks` to 0 gives back (a). The package is the era's hire fee times 6 (twice that for a star).
+- Why: the bible says poaching is constant, so the player needs something to do about it; a wait gives a choice without ever stopping the clock, and an unanswered offer costs exactly what it always cost, so old saves and the golden run play the same.
+
+### Q142. What can the player counter with, and what does it cost? DECIDED: four counters, money sure but dear, a mission free but unlikely
+
+- Options: (a) one "match the offer" button; (b) four counters with a cost and a chance each; (c) a negotiation that goes back and forth.
+- Recommendation and choice: **(b)**: `money` (100% of the package, always works), `compute` (40%, base 80%), `title` (10%, base 45%), `mission` (free, base 35%). Morale above the baseline and reputation above 500 add to the chance (floor 5%). The cost is paid whether or not it works; a counter that works lifts morale.
+- Why: the choice is between cash, compute you may not have and the lab's good name; the chance is taken apart in a `ChanceParts` so the UI can explain it. A back and forth would need a conversation state.
+
+### Q143. How does the player poach back? DECIDED: a headhunter's fee that is always paid, a package on success, and a feud that deepens
+
+- Options: (a) no poaching back; (b) the same maths in reverse; (c) a fixed fee and a flat chance.
+- Recommendation and choice: **(b)**: 15% of the package as a fee (always spent), the package on success. Chance is 40% plus unhappiness times 0.6 plus reputation above 500 times 0.3. The rival loses 15 points of feeling on a success and 3 on a failure; only working rival labs can be raided and a free seat is needed.
+- Why: it uses the same package and morale as the defence, and raiding a rival that is already feuding is cheap, raiding a friend costs the friendship.
+
+### Q144. Do the planners and the autopilot answer offers? DECIDED: no
+
+- Options: (a) planners answer with the cheapest counter that is likely to work; (b) they never answer.
+- Recommendation and choice: **(b)**. A lab on autopilot loses its poached people a few weeks late.
+- Why: answering is the player's decision, and the planner code is shared with other threads. The suggestions system can add a prompt later without touching the rules.
+
+### Q145. What do press rooms do, and are they new rooms? DECIDED: two new stateless rooms, the press room and the auditorium, that dampen scandal and sharpen launches
+
+- Options: (a) a press role that staffs a comms desk; (b) rooms with perks like the later rooms (Q134 to Q136); (c) a flat "PR budget" setting.
+- Recommendation and choice: **(b)**. The bible lists the press room (launches, crisis comms, keynotes) and "room → auditorium", but the config had neither. `press-room` opens in The Punchline and `auditorium` in The Chat Boom, both without seats (new room purpose `Press`). Two room-perk kinds: `ScandalDamping` (a share off every reputation loss from an incident or hearing) and `LaunchBuzz` (a share of 120 reputation points when a model first goes on sale). Together they are capped (60% and 100%).
+- Why: it is the same derived-perk pattern as the other rooms, so nothing about rooms is saved and a sold room stops helping at once. A press role would need a seat, a planner and hiring balance for one effect.
+
+### Q146. What do journalists do, and what happens if the player ignores them? DECIDED: they ask about beats, and an unanswered question just lapses
+
+- Options: (a) an ignored question runs a bad story (a reputation cost); (b) an ignored question lapses with no effect, so only answering changes anything.
+- Recommendation and choice: **(b)**. Four beats (a launch, an incident, a hearing, the Gauntlet crown) bring one of three journalists to the player's desk for 3 weeks, up to 3 questions at a time. The stake is the reputation at play (40 for a launch, what the beat cost or paid otherwise). Open questions are saved on the lab (`pressInquiries`, save schema **25**; 24 is left to another thread).
+- Why: with (b) a lab on autopilot plays as before (the golden run moves only by the new field and the new "journalist asked" events), and the new system is all opportunity. (a) would tax every existing game and rebalance the soak.
+
+### Q147. How does the player answer? DECIDED: three answers priced in sales fees, each a chance of winning a share of the stake or losing a share of it
+
+- Options: (a) one "issue a statement" button; (b) three answers with a cost, a chance and a downside; (c) a free-text negotiation.
+- Recommendation and choice: **(b)**. `honest` is free, always lands and wins back 25%. `spin` costs 6 sales fees, starts at 45%, and a press room's damping raises its chance one for one; it wins 70% and loses 60% on failure. `exclusive` costs 15 fees, starts at 75% and wins 60% for a 15% downside. The journalist adds to the chance (the trade writer +10%, the tabloid -10%) and scales a gaffe (the tabloid 150%). The chance is split into parts so a screen can explain it. Money is booked under the Hiring ledger line (another line would be another schema) and the dice are the existing `Rivals` stream (a new stream would move the saved state of every game).
+- Why: honest is the safe floor, spin is a bet the press room turns into a sure thing, and the exclusive is the dear safe option for a lab without one: three useful choices.
+
+### Q148. Can the player turn the press on a rival? DECIDED: yes, a leak, for a rival with a recent incident, with a backfire
+
+- Options: (a) no; (b) `LeakStory` on a rival that had an incident in the last 26 weeks, for a fee, with a chance and a traced-back cost.
+- Recommendation and choice: **(b)**, because the bible names it ("leak its problems to the press"). It costs 20 sales fees win or lose, starts at 45% (damping and reputation help), and if it runs the rival loses 70 reputation (less its own press rooms) and 12 feeling toward the player; if it is traced the player loses 40 reputation (less the player's damping) and the rival 4 feeling.
+- Why: it is the press version of poaching back (Q143): a cheap shot at a rival that already stumbled, with a price for being caught.
+
+### Q149. Do the planners, the autopilot and the rivals use the press? DECIDED: no
+
+- Options: (a) planners answer journalists and rivals leak; (b) neither.
+- Recommendation and choice: **(b)**. No planner or rival code was touched. Rivals do not build press rooms, answer or leak, so a rival's launch earns no buzz.
+- Why: the planner code is shared with other threads, and a rival leaking at the player needs a rivalry design of its own (rivals own Q150 and up). The save format would not change.
+
+## The Gauntlet, deeper (NEXT item 17)
+
+### Q160. How does the player "teach to the test"? DECIDED: one lab-wide tuning setting that costs money and lifts every score
+
+- Options: (a) a per-entry choice; (b) one setting for the lab (0 to 300 permille) with a prep bill and a score lift; (c) a research tech.
+- Recommendation and choice: **(b)**. `SetGauntletTuning` stores it on the lab (saved, schema **26**). At the Gauntlet the lab pays 10 sales-role hire fees per 100 permille (booked under Hiring) and every score, bracket and crown alike, is lifted by half the tuning (300 gives 15%). A lab that cannot pay, or is bankrupt, enters untuned.
+- Why: the entries are already the models the lab put on sale, so a per-entry choice would mean a choice among models the player already made. One slider is the whole decision: how much to risk the lab's name for a win. Paying at the Gauntlet (not at the command) means the player can change their mind all year.
+
+### Q161. What is the downside? DECIDED: a tuned win can be exposed, more likely with feuding rivals
+
+- Options: (a) none; (b) a flat chance; (c) a chance that grows with the tuning and with the rivals who dislike the player, rolled only if the tuning actually won something.
+- Recommendation and choice: **(c)**. The chance is twice the tuning in permille (100 is 20%) plus 10% for each working rival in a feud, up to 95%. Exposure strips the lift from every entry (the Gauntlet is ranked again, so the win can go to a rival), costs 80 reputation (less scandal damping) and refunds nothing. The roll uses the existing `Ranking` stream and is made only when a tuned lab won something, so a game with no tuning draws no extra luck.
+- Why: the bible asks that rivals be able to expose overfitting. A lab that wins nothing has nothing to expose, so the risk only bites when the gamble paid. Tying it to feuds gives the rivalry system a new job without touching it.
+
+### Q162. What is the live demo? DECIDED: a deterministic reliability check on the crown entry
+
+- Options: (a) a dice roll; (b) a pure function of the model's weekly incident chance; (c) leave it to the Unity scene.
+- Recommendation and choice: **(b)**. A model at 0.8% a week or less is a triumph (+20 reputation), 2% or more is a meme (-30, less damping), in between nothing happens. It applies to every working lab. `demoMemeFromPermille` 0 switches it off.
+- Why: the bible says reliability decides the outcome. A dice roll would draw luck for every lab every year and move every seeded game; a pure function moves only reputation, and a playable scene can show the same result later.
+
+### Q163. What are the joke awards for? DECIDED: two awards, each with a real effect
+
+- Options: (a) cosmetic; (b) a small effect each.
+- Recommendation and choice: **(b)**. "Most Confident While Wrong" (the biggest gap between claimed and true alignment, at least 100) costs 30 reputation. "Best Newcomer" (the best-ranked lab, not the crown winner, within 3 years of its first release) gives 15 reputation and 80 morale to the staff. The winners are saved on the year's record.
+- Why: a gap between claimed and true alignment is what sandbagging makes, so the first award is a second, public way to be caught. The newcomer award gives a young lab a reason to enter and the morale half gives morale something to do.
+
+### Q164. Do rivals tune, and what is the season table? DECIDED: rivals never tune, and the table is a query
+
+- Options: (a) planners tune; (b) the player only. For the table: (a) saved; (b) a query over the kept history.
+- Recommendation and choice: **(b)** and **(b)**. No planner was touched. `GauntletSystem.SeasonTable` scores 5 for a crown and 2 for a bracket win over the kept years, ties by crowns and then by the older lab.
+- Why: planner code is shared with other threads, and a rival that tunes and is exposed would be a rivalry design of its own. A saved table would only repeat what the history already says.
+
+## Sector trust and the customer desk (NEXT item 18)
+
+### Q165. What is sector trust, and what does it do? DECIDED: a 0 to 1000 meter per lab per sector that moves appeal
+
+- Options: (a) one trust number per lab (that is reputation already); (b) a meter per lab per sector that scales appeal; (c) a meter that only unlocks things.
+- Recommendation and choice: **(b)**. Trust sits at 500 where it changes nothing, and appeal is multiplied by 1 + (trust - 500) x 0.3, so full trust is +15% and none is -15%. It shows as its own `TrustBoost` part of the appeal breakdown, so the parts still add up. It is saved as a list of records on the lab (`sectorTrust`, save schema **27**); a sector with no record is at the baseline, so a lab that sells nowhere has nothing saved.
+- Why: reputation already says how the world sees the lab; the bible's point is that each sector's customers judge separately ("trust is slow to win and fast to lose" in the sector where you stumbled). The slope of 0.3 keeps trust worth about as much as a good year of reputation, not a new way to win by itself. A steeper slope or a bigger drop pushed rivals that ship carelessly into bankruptcy in the economy-bounds seeds, because a lab that has an incident every few months sits near zero trust for good.
+
+### Q166. How slow is slow, and how fast is fast? DECIDED: +2 a week and +40 for a bracket win, against -60 for an incident and -100 for being exposed
+
+- Options: (a) symmetric moves; (b) gains well under losses.
+- Recommendation and choice: **(b)**. A lab gains 2 a week in each sector where it has a model on sale (a year is about 96), takes 40 for a bracket win, and loses 60 in every sector an incident's model is on sale in and 100 in every bracket whose tuned win was exposed. A sector the lab has left drifts back to 500 by 1 a week and its record goes. Bankrupt labs are frozen. These are all config numbers.
+- Why: one incident should undo thirty weeks of patient work, and a tuned lab that is caught should lose more than the 40 the lie bought. Making old trust drift away stops a lab that left a sector from keeping a stale bonus for ever.
+
+### Q167. What does "carries to neighbouring sectors" mean in data? DECIDED: sectors belong to a family, and 30% of any move lands in the rest of the family
+
+- Options: (a) a neighbour list per sector; (b) a family tag per sector; (c) no carry.
+- Recommendation and choice: **(b)**. Each of the 33 sectors has a `family` (games, finance, web, language, creative, code, state, physical, science). A trust move (a win or a loss) lands 30% in each other sector of the same family where the lab has a model on sale, with no second-hand carry (carried moves do not carry again). A sector the lab is not in is not touched.
+- Why: a neighbour list for 33 sectors is 33 judgement calls and a validator for symmetry; a tag is one judgement per sector, easy to read in the data and to change. Carrying only into sectors the lab sells in keeps the records few and the effect where it can matter.
+
+### Q168. What is the customer desk? DECIDED: an incident writes one complaint to the player, answered with a refund, a patch or an apology, and an ignored one lapses
+
+- Options: (a) an ignored complaint costs more trust; (b) it lapses with no effect, so only answering changes anything.
+- Recommendation and choice: **(b)**, as with the press (Q146). An incident that costs the player trust writes one complaint, from the sector where the model earns most; its stake is the trust lost there (60 with the default numbers). The desk holds 3, a complaint waits 4 weeks. `refund` costs 3 sales fees and a week of the model's takings in that sector, always works and wins back 70% of the stake. `patch` costs 4 fees, works 60% of the time (a good reputation helps), wins back 60%, and loses another 30% if it fails. `apology` is free and wins back 15%. Money is booked under Hiring and the dice are the existing `Rivals` stream (no new stream, no moved saved state). Complaints are saved on the lab.
+- Why: the incident has already cost the trust, so the desk is only a way to buy some of it back, and a lab on autopilot plays on as before. The three answers sit at the three useful price points: certain and dear, cheap and risky, free and small.
+
+### Q169. Do rivals and planners use trust? DECIDED: rivals gain and lose trust and it moves their appeal; nobody but the player has a desk
+
+- Options: (a) trust is for the player only; (b) every lab has it, only the player answers complaints.
+- Recommendation and choice: **(b)**. Every lab's trust moves with its sales, incidents and bracket wins, so a rival that ships carelessly loses customers like the player would. No planner or rival code was touched: no rival answers complaints.
+- Why: trust that only applied to the player would make the player's appeal the only one that ever moved. The golden run moves because every lab's appeal now follows its trust. The economy-bounds and lifetime tests pass unchanged with the default numbers; they are sensitive to any change that touches rival revenue (the same seeds fail at other trust numbers, and a scan of 40 seeds shows no more rival bankruptcies than with trust switched off).
+
+## The workplace (NEXT item 19)
+
+### Q180. What does a comfort room do? DECIDED: it lifts the level morale settles at, and morale then drifts there at the usual point a week
+
+- Options: (a) rooms add morale once, when built; (b) rooms lift the resting level, so morale keeps climbing to it and falls back when the room goes.
+- Recommendation and choice: **(b)**. Three new Comfort rooms (`coffee-corner`, `kitchen`, `nap-pods`) seat nobody. Their `MoraleLift` perks give points a tile (3, 4 and 5) under a cap each (45, 100, 100) and under a game-wide cap of 150 (`maxMoraleLift`), so a full set settles at 650. A new hire starts at the resting level.
+- Why: it reuses the one drift rule that already exists, so debt, incidents and the Gauntlet's newcomer bonus still mean what they did, and nothing new is saved. The cost is that a lift of 36 takes 36 weeks to arrive, which suits a kitchen: people warm to a place slowly.
+
+### Q181. How does the lab keep people from leaving? DECIDED: a share off the chance of a rival's weekly offer, from the kitchen and the recruiting office
+
+- Options: (a) defence makes a counter-offer cheaper; (b) it cuts the chance an offer arrives.
+- Recommendation and choice: **(b)**. A `PoachDefence` perk takes 0.8% a tile off the weekly chance (kitchen, to 20%) and 1% a tile (recruiting office, to 30%); the total never passes 60% (`maxPoachDefencePermille`, validated to 900 at most so an offer is never ruled out). The roll is the same single `Rivals` roll as before against a smaller number, so no stream moved.
+- Why: the talent market (Q141 onward) already decides what happens once an offer is out, and morale already feeds that through the counter-offer chance. This is the only place left where a room can act before the offer exists.
+
+### Q182. Does morale move research, up and down? DECIDED: up in the shipped data, and the downward slope is there but set to zero
+
+- Options: (a) research moves both ways with morale; (b) it only rises above the baseline.
+- Recommendation and choice: **(b)**, with the loss slope as a data field (`moraleResearchLossSlopePermille`, 0 shipped). Above 500, research rises 40% of the distance a thousand points (650 gives 106%, 1000 gives 120%); below it, research is normal. Set the loss slope to 400 and morale 0 gives 80%.
+- Why: with both directions on, the economy-bounds and lifetime tests failed for rival OpenAye at several seeds and at every nonzero slope I tried (100 to 500). The cause is that a rival's economy splits in two: it snowballs into the billions or it stalls and goes bankrupt around year 18, and a 1.6% research dip from one incident drop in year 1 is enough to choose which. A 40-seed 40-year scan of the full autopilot lifetime showed 1 rival bankruptcy with no morale effect (seed 19) and 3 with it, at 200 and at 400. That fragility was there before this item (seed 19); the loss slope would only make the games the guards watch more likely to tip. It is for a later balance pass, where it can be tuned together with a rival that is harder to push over. Meanwhile, low morale already costs a lab through poaching and counter-offers.
+
+### Q183. What about the recruiting office's other bible effect, hiring speed? DECIDED: not built
+
+- Options: (a) build a hire delay and let recruiters shorten it; (b) leave hiring instant.
+- Recommendation and choice: **(b)**. Hiring is an instant command everywhere, in the planner and in the saved examples; a delay would need a queue of pending hires, a new save field and planner changes.
+- Why: kept for a later item once a screen exists that shows pending hires. The recruiting office keeps its offer defence.
+
+## Staff traits (NEXT item 20)
+
+### Q184. Who gets traits? DECIDED: only the player's hires, taken from the hire's id, not from a dice stream
+
+- Options: (a) every lab's hires roll them; (b) only the player's.
+- Recommendation and choice: **(b)**. A hire of the player's lab gets a trait from a fixed share table (330 in a thousand in all) using the new person's id plus `traitRollSalt`; the star roll still comes first and still uses the world dice. Plan-run labs hire `steady` or `star` as before.
+- Why: rivals' economies are knife-edge (Q182), and a rival whose researchers argue or mentor would move the guard tests at random. The id roll leaves every saved dice stream where it was, and the salt is a data field so a different one gives the same shares to different people. The shipped salt (15) was picked by scanning 40 salts against the 11 lifetime games the economy tests watch (14 of the 40 kept every lab solvent) and then the eight-year balance soak (all but one of those 14 passed it), which says more about those games than about traits (Q182). It decides nothing about balance. A test holds that rolling traits leaves the world dice alone.
+
+### Q185. What does each trait do? DECIDED: one lab-wide number each, summed under caps, plus the two camps
+
+- Options: (a) a rich set of effects per trait; (b) one number each from a short list: own research, training speed, alignment work, incident catch, mentoring, offer chance, resting morale.
+- Recommendation and choice: **(b)**. The doomer and accelerationist pull training speed and alignment work opposite ways at 3 to 4% each; the 10X and the desk-sleeper move their own research by 10%; a mentor lifts every researcher 2%; someone who reads the logs catches 4% more incidents; an interviewer adds 10% to the chance of an offer. Sums are capped (`maxTraitSwingPermille` 300, `maxMentorPermille` 200, `maxOfferBoostPermille` 500; the incident catch stays within 0 to 900 with the rest).
+- Why: each effect plugs into a number that already existed (training speed, alignment work, catch, research, offer chance, resting morale), so nothing new is saved and every part shows up in a breakdown.
+
+### Q186. What is "too many in one room"? DECIDED: a lab with both camps pays 4% of research for every pair, up to 30%
+
+- Options: (a) assign people to rooms and count per room; (b) count per lab.
+- Recommendation and choice: **(b)**. People are role pools with seats, not placed in rooms, so the bible's "in one room" becomes "in one lab". The pair count is the smaller of the two camps; one camp alone never argues.
+- Why: a camp of one with a lone opponent costs 4%, which is a small price; a lab built of both camps pays the cap. The player can fire the lowest-morale person of a role but not pick by trait: sorting people by trait is a staff screen job.
+
+### Q187. Who is courted? DECIDED: stars as before, and now whoever is secretly interviewing
+
+- Options: (a) stars only; (b) stars and interviewers.
+- Recommendation and choice: **(b)**, lowest morale first as before. The interviewing trait also raises the chance an offer arrives. The talent market's counters work on whoever is courted.
+- Why: otherwise the trait would do nothing in a lab with no star, and a poacher going for someone whose calendar says dentist is the joke.
+
 ## Open
 
 None.

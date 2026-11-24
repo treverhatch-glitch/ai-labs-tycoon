@@ -645,7 +645,7 @@ public class WorldTests
     {
         Game g = Game.New(1);
         LabState xay = g.Rival("xay");
-        g.Years(8);
+        g.Years(4);
         Assert.NotEmpty(xay.Holdings);
         Assert.Contains(xay.Holdings, h => h.Kind == HoldingKind.Owned && h.HallKw > 0);
         Assert.Contains(xay.Fleet, b => b.HoldingId != HardwareBatch.Hq);

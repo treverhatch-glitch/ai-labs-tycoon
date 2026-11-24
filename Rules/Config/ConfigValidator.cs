@@ -64,6 +64,9 @@ namespace AiLabs.Rules.Config
             RolePerkProblems(p, c);
             RoomPerkProblems(p, c);
             FoundingProblems(p, c);
+            TalentProblems(p, c);
+            PressProblems(p, c);
+            TrustProblems(p, c);
 
             foreach (RoomTypeConfig room in c.RoomTypes)
             {
@@ -188,6 +191,7 @@ namespace AiLabs.Rules.Config
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
             if (c.Gauntlet.HistoryYears < 1) p.Add("gauntlet.historyYears must be at least 1");
+            GauntletProblems(p, c);
 
             if (c.Lot(c.PlayerStart.LotId) == null) p.Add("playerStart.lotId names the unknown lot \"" + c.PlayerStart.LotId + "\"");
             if (c.PlayerStart.Cash < 0) p.Add("playerStart.cash is negative");
@@ -398,6 +402,150 @@ namespace AiLabs.Rules.Config
                 foreach (string sector in perk.Sectors)
                     if (c.Sector(sector) == null) p.Add(who + " names the unknown sector \"" + sector + "\"");
             }
+        }
+
+        static void TalentProblems(List<string> p, GameConfig c)
+        {
+            TalentConfig t = c.Talent;
+            if (t == null) { p.Add("talent is missing"); return; }
+            if (t.OfferWeeks < 0 || t.OfferWeeks > 52) p.Add("talent.offerWeeks needs a value from 0 to 52");
+            if (t.MaxOpenOffers < 1) p.Add("talent.maxOpenOffers needs at least 1");
+            if (t.PackageMultiple < 1) p.Add("talent.packageMultiple needs at least 1");
+            if (t.StarPackagePermille < MathI.Permille) p.Add("talent.starPackagePermille must be at least 1000: a star never costs less than anyone else");
+            Permille(p, "talent.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("talent.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.PoachBackFeePermille < 0 || t.PoachBackFeePermille > 5000) p.Add("talent.poachBackFeePermille needs a value from 0 to 5000");
+            Permille(p, "talent.poachBackBasePermille", t.PoachBackBasePermille);
+            if (t.PoachBackMoraleSlopePermille < -2000 || t.PoachBackMoraleSlopePermille > 2000) p.Add("talent.poachBackMoraleSlopePermille needs a value from -2000 to 2000");
+            if (t.PoachBackReputationSlopePermille < -2000 || t.PoachBackReputationSlopePermille > 2000) p.Add("talent.poachBackReputationSlopePermille needs a value from -2000 to 2000");
+            if (t.PoachBackFeelingHit < 0 || t.PoachBackFailFeelingHit < 0) p.Add("talent.poachBackFeelingHit and poachBackFailFeelingHit cannot be negative");
+            if (t.Counters.Count == 0) p.Add("talent.counters is empty: an offer would have no answer");
+            UniqueIds(p, "talent.counters", t.Counters);
+            foreach (CounterConfig k in t.Counters)
+            {
+                string who = "counter " + k.Id;
+                if (string.IsNullOrEmpty(k.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(k.Blurb)) p.Add(who + " has no blurb");
+                if (k.CostPermille < 0 || k.CostPermille > 3000) p.Add(who + " needs costPermille from 0 to 3000");
+                Permille(p, who + " baseSuccessPermille", k.BaseSuccessPermille);
+                if (k.MoraleSlopePermille < -2000 || k.MoraleSlopePermille > 2000) p.Add(who + " needs moraleSlopePermille from -2000 to 2000");
+                if (k.ReputationSlopePermille < -2000 || k.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (k.MoraleGain < 0 || k.MoraleGain > 500) p.Add(who + " needs moraleGain from 0 to 500");
+            }
+        }
+
+        static void TrustProblems(List<string> p, GameConfig c)
+        {
+            TrustConfig t = c.Trust;
+            if (t == null) { p.Add("trust is missing"); return; }
+            if (t.BaselineTrust < 0 || t.BaselineTrust > 1000) p.Add("trust.baselineTrust must be from 0 to 1000");
+            if (t.GainPerWeek < 0 || t.GainPerWeek > 1000) p.Add("trust.gainPerWeek must be from 0 to 1000");
+            if (t.IdleDecayPerWeek < 0 || t.IdleDecayPerWeek > 1000) p.Add("trust.idleDecayPerWeek must be from 0 to 1000");
+            if (t.IncidentDrop < 0 || t.IncidentDrop > 1000) p.Add("trust.incidentDrop must be from 0 to 1000");
+            if (t.BracketWinPoints < 0 || t.BracketWinPoints > 1000) p.Add("trust.bracketWinPoints must be from 0 to 1000");
+            if (t.ExposedDrop < 0 || t.ExposedDrop > 1000) p.Add("trust.exposedDrop must be from 0 to 1000");
+            Permille(p, "trust.carryPermille", t.CarryPermille);
+            if (t.AppealSlopePermille < 0 || t.AppealSlopePermille > 1800) p.Add("trust.appealSlopePermille must be from 0 to 1800, or full distrust would erase a model's appeal");
+            if (t.ComplaintWeeks < 1 || t.ComplaintWeeks > 52) p.Add("trust.complaintWeeks needs a value from 1 to 52");
+            if (t.MaxOpenComplaints < 0) p.Add("trust.maxOpenComplaints cannot be negative");
+            Permille(p, "trust.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("trust.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.Responses.Count == 0) p.Add("trust.responses is empty: a customer would have no answer");
+            UniqueIds(p, "trust.responses", t.Responses);
+            foreach (ComplaintResponseConfig r in t.Responses)
+            {
+                string who = "complaint response " + r.Id;
+                if (string.IsNullOrEmpty(r.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(r.Blurb)) p.Add(who + " has no blurb");
+                if (r.CostHireFees < 0 || r.CostHireFees > 1000) p.Add(who + " needs costHireFees from 0 to 1000");
+                if (r.CostRevenuePermille < 0 || r.CostRevenuePermille > 5000) p.Add(who + " needs costRevenuePermille from 0 to 5000");
+                Permille(p, who + " baseSuccessPermille", r.BaseSuccessPermille);
+                if (r.ReputationSlopePermille < -2000 || r.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (r.RestorePermille < 0 || r.RestorePermille > 2000) p.Add(who + " needs restorePermille from 0 to 2000");
+                if (r.BackfirePermille < 0 || r.BackfirePermille > 2000) p.Add(who + " needs backfirePermille from 0 to 2000");
+            }
+            foreach (SectorConfig s in c.Market.Sectors)
+                if (string.IsNullOrEmpty(s.Family)) p.Add("sector " + s.Id + " has no family, so trust could not carry to or from it");
+        }
+
+        static void GauntletProblems(List<string> p, GameConfig c)
+        {
+            GauntletConfig g = c.Gauntlet;
+            if (g.MaxTuningPermille < 0 || g.MaxTuningPermille > 1000) p.Add("gauntlet.maxTuningPermille must be from 0 to 1000");
+            Permille(p, "gauntlet.tuningScoreSharePermille", g.TuningScoreSharePermille);
+            if (g.TuningCostHireFeesPer100 < 0) p.Add("gauntlet.tuningCostHireFeesPer100 is negative");
+            if (g.ExposeChancePerTuningPermille < 0 || g.ExposeFeudBonusPermille < 0) p.Add("gauntlet exposure chances cannot be negative");
+            if (g.MaxTuningPermille > 0 && g.ExposeChancePerTuningPermille < 1) p.Add("gauntlet.exposeChancePerTuningPermille needs at least 1 while tuning is on, or tuning is free money");
+            if (g.ExposedReputationLoss < 0 || g.DemoTriumphReputation < 0 || g.DemoMemeReputation < 0) p.Add("gauntlet reputation amounts cannot be negative");
+            if (g.DemoMemeFromPermille < 0) p.Add("gauntlet.demoMemeFromPermille is negative");
+            if (g.DemoMemeFromPermille > 0 && (g.DemoTriumphBelowPermille < 0 || g.DemoTriumphBelowPermille >= g.DemoMemeFromPermille))
+                p.Add("gauntlet.demoTriumphBelowPermille must be under demoMemeFromPermille, or one demo could be both");
+            if (g.ConfidentWrongMinGap < 1) p.Add("gauntlet.confidentWrongMinGap needs at least 1");
+            if (g.ConfidentWrongReputation < 0 || g.NewcomerReputation < 0) p.Add("gauntlet award reputation cannot be negative");
+            if (g.NewcomerYears < 0) p.Add("gauntlet.newcomerYears is negative");
+            if (g.NewcomerMorale < 0 || g.NewcomerMorale > 500) p.Add("gauntlet.newcomerMorale needs a value from 0 to 500");
+            if (g.SeasonCrownPoints < 0 || g.SeasonBracketPoints < 0) p.Add("gauntlet season points cannot be negative");
+        }
+
+        static void PressProblems(List<string> p, GameConfig c)
+        {
+            PressConfig t = c.Press;
+            if (t == null) { p.Add("press is missing"); return; }
+            if (t.InquiryWeeks < 1 || t.InquiryWeeks > 52) p.Add("press.inquiryWeeks needs a value from 1 to 52");
+            if (t.MaxOpenInquiries < 1) p.Add("press.maxOpenInquiries needs at least 1");
+            if (t.LaunchBuzzPoints < 0 || t.LaunchBuzzPoints > 500) p.Add("press.launchBuzzPoints needs a value from 0 to 500");
+            if (t.MaxDampingPermille < 0 || t.MaxDampingPermille > 900) p.Add("press.maxDampingPermille needs a value from 0 to 900: no lab is immune to a scandal");
+            if (t.MaxBuzzPermille < 0 || t.MaxBuzzPermille > 2000) p.Add("press.maxBuzzPermille needs a value from 0 to 2000");
+            Permille(p, "press.minSuccessPermille", t.MinSuccessPermille);
+            if (t.MinSuccessPermille < 1) p.Add("press.minSuccessPermille needs at least 1 so no answer is hopeless");
+            if (t.LeakWindowWeeks < 1) p.Add("press.leakWindowWeeks needs at least 1");
+            if (t.LeakFeeHireFees < 0) p.Add("press.leakFeeHireFees cannot be negative");
+            Permille(p, "press.leakBaseSuccessPermille", t.LeakBaseSuccessPermille);
+            if (t.LeakReputationSlopePermille < -2000 || t.LeakReputationSlopePermille > 2000) p.Add("press.leakReputationSlopePermille needs a value from -2000 to 2000");
+            if (t.LeakRoomSlopePermille < -2000 || t.LeakRoomSlopePermille > 2000) p.Add("press.leakRoomSlopePermille needs a value from -2000 to 2000");
+            if (t.LeakHitPoints < 0 || t.LeakHitPoints > 1000 || t.LeakBackfirePoints < 0 || t.LeakBackfirePoints > 1000) p.Add("press.leakHitPoints and leakBackfirePoints need values from 0 to 1000");
+            if (t.LeakFeelingHit < 0 || t.LeakFailFeelingHit < 0) p.Add("press.leakFeelingHit and leakFailFeelingHit cannot be negative");
+
+            if (t.Beats.Count == 0) p.Add("press.beats is empty");
+            UniqueIds(p, "press.beats", t.Beats);
+            foreach (BeatConfig b in t.Beats)
+            {
+                string who = "beat " + b.Id;
+                if (string.IsNullOrEmpty(b.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(b.Blurb)) p.Add(who + " has no blurb");
+                if (b.StakePoints < 0 || b.StakePoints > 1000) p.Add(who + " needs stakePoints from 0 to 1000");
+                if (!b.Good && b.StakePoints > 0) p.Add(who + " is bad news, whose stake is what it cost, so stakePoints must be 0");
+                bool covered = false;
+                foreach (JournalistConfig j in t.Journalists) if (j.Beats.Contains(b.Id)) covered = true;
+                if (!covered) p.Add(who + " is covered by no journalist, so nobody would ever ask");
+            }
+            if (t.Journalists.Count == 0) p.Add("press.journalists is empty");
+            UniqueIds(p, "press.journalists", t.Journalists);
+            foreach (JournalistConfig j in t.Journalists)
+            {
+                string who = "journalist " + j.Id;
+                if (string.IsNullOrEmpty(j.Name) || string.IsNullOrEmpty(j.Outlet)) p.Add(who + " needs a name and an outlet");
+                if (string.IsNullOrEmpty(j.Blurb)) p.Add(who + " has no blurb");
+                if (j.Beats.Count == 0) p.Add(who + " covers no beat");
+                foreach (string beat in j.Beats) if (t.Beat(beat) == null) p.Add(who + " covers the unknown beat \"" + beat + "\"");
+                if (j.ChancePermille < -900 || j.ChancePermille > 900) p.Add(who + " needs chancePermille from -900 to 900");
+                if (j.BackfirePermille < 0 || j.BackfirePermille > 5000) p.Add(who + " needs backfirePermille from 0 to 5000");
+            }
+            if (t.Responses.Count == 0) p.Add("press.responses is empty: a journalist would have no answer");
+            UniqueIds(p, "press.responses", t.Responses);
+            foreach (PressResponseConfig r in t.Responses)
+            {
+                string who = "press response " + r.Id;
+                if (string.IsNullOrEmpty(r.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(r.Blurb)) p.Add(who + " has no blurb");
+                if (r.CostHireFees < 0 || r.CostHireFees > 1000) p.Add(who + " needs costHireFees from 0 to 1000");
+                Permille(p, who + " baseSuccessPermille", r.BaseSuccessPermille);
+                if (r.RoomSlopePermille < -2000 || r.RoomSlopePermille > 2000) p.Add(who + " needs roomSlopePermille from -2000 to 2000");
+                if (r.ReputationSlopePermille < -2000 || r.ReputationSlopePermille > 2000) p.Add(who + " needs reputationSlopePermille from -2000 to 2000");
+                if (r.RecoverPermille < 0 || r.RecoverPermille > 2000) p.Add(who + " needs recoverPermille from 0 to 2000");
+                if (r.BackfirePermille < 0 || r.BackfirePermille > 2000) p.Add(who + " needs backfirePermille from 0 to 2000");
+            }
+            if (c.Role("sales") == null) p.Add("press costs are priced in hiring fees of the \"sales\" role, which does not exist");
         }
 
         static void FoundingProblems(List<string> p, GameConfig c)
@@ -797,6 +945,10 @@ namespace AiLabs.Rules.Config
             if (s.MoraleDebtDriftPerWeek < 0) p.Add("staffPeople.moraleDebtDriftPerWeek is negative");
             if (s.MoraleIncidentDrop < 0) p.Add("staffPeople.moraleIncidentDrop is negative");
             if (s.MoralePoachWitnessDrop < 0) p.Add("staffPeople.moralePoachWitnessDrop is negative");
+            if (s.MaxMoraleLift < 0 || s.MoraleBaseline + s.MaxMoraleLift > MathI.Permille) p.Add("staffPeople.maxMoraleLift needs to keep the resting morale within 0 to 1000");
+            if (s.MaxPoachDefencePermille < 0 || s.MaxPoachDefencePermille > 900) p.Add("staffPeople.maxPoachDefencePermille needs 0 to 900, so a rival's offer is never ruled out");
+            if (s.MoraleResearchSlopePermille < 0 || s.MoraleResearchSlopePermille > 2000) p.Add("staffPeople.moraleResearchSlopePermille needs 0 to 2000");
+            if (s.MoraleResearchLossSlopePermille < 0 || s.MoraleResearchLossSlopePermille > 2000) p.Add("staffPeople.moraleResearchLossSlopePermille needs 0 to 2000");
             Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
             Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
             if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
@@ -805,9 +957,35 @@ namespace AiLabs.Rules.Config
             for (int i = 0; i < s.Traits.Count; i++)
             {
                 if (s.Traits[i].Star) hasStar = true;
-                Permille(p, "trait " + s.Traits[i].Id + " researchPermille", s.Traits[i].ResearchPermille);
+                TraitProblems(p, s, s.Traits[i]);
             }
             if (!hasStar) p.Add("staffPeople.traits needs one star trait");
+            if (s.MaxTraitSwingPermille < 0 || s.MaxTraitSwingPermille > 900) p.Add("staffPeople.maxTraitSwingPermille needs 0 to 900");
+            if (s.MaxMentorPermille < 0 || s.MaxMentorPermille > 1000) p.Add("staffPeople.maxMentorPermille needs 0 to 1000");
+            if (s.MaxOfferBoostPermille < 0 || s.MaxOfferBoostPermille > 2000) p.Add("staffPeople.maxOfferBoostPermille needs 0 to 2000");
+            if (s.FrictionPerPairPermille < 0 || s.FrictionPerPairPermille > 500) p.Add("staffPeople.frictionPerPairPermille needs 0 to 500");
+            if (s.MaxFrictionPermille < 0 || s.MaxFrictionPermille > 900) p.Add("staffPeople.maxFrictionPermille needs 0 to 900, so a lab always does some research");
+            if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
+            int hireShare = 0;
+            for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
+            if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");
+        }
+
+        static void TraitProblems(List<string> p, StaffPeopleConfig s, StaffTraitConfig t)
+        {
+            string who = "trait " + t.Id;
+            if (string.IsNullOrEmpty(t.Name)) p.Add(who + " has no name");
+            if (string.IsNullOrEmpty(t.Blurb)) p.Add(who + " has no blurb");
+            if (t.ResearchPermille < -900 || t.ResearchPermille > 1000) p.Add(who + " needs researchPermille from -900 to 1000");
+            if (t.HirePermille < 0 || t.HirePermille > MathI.Permille) p.Add(who + " needs hirePermille from 0 to 1000");
+            if (t.Star && t.HirePermille != 0) p.Add(who + " is the star trait and is rolled by starHirePermille, so its hirePermille must be 0");
+            if (t.TrainingSpeedPermille < -500 || t.TrainingSpeedPermille > 500) p.Add(who + " needs trainingSpeedPermille from -500 to 500");
+            if (t.AlignmentWorkPermille < -500 || t.AlignmentWorkPermille > 500) p.Add(who + " needs alignmentWorkPermille from -500 to 500");
+            if (t.IncidentCatchPermille < -500 || t.IncidentCatchPermille > 500) p.Add(who + " needs incidentCatchPermille from -500 to 500");
+            if (t.MentorPermille < 0 || t.MentorPermille > 500) p.Add(who + " needs mentorPermille from 0 to 500");
+            if (t.OfferPermille < -500 || t.OfferPermille > 500) p.Add(who + " needs offerPermille from -500 to 500");
+            if (t.RestMoraleOffset < -500 || t.RestMoraleOffset > 500) p.Add(who + " needs restMoraleOffset from -500 to 500");
+            if (t.Camp != "" && t.Camp != "doom" && t.Camp != "accel") p.Add(who + " has the camp \"" + t.Camp + "\": it is \"doom\", \"accel\" or empty");
         }
 
         static void FundingProblems(List<string> p, GameConfig c)

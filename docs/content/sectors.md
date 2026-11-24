@@ -2,6 +2,8 @@
      A test (ContentDocsTests) fails when an id from the data is missing here. All names are parody names. -->
 # Sectors
 
+Every sector belongs to a family, and sector trust carries between sectors of a family: see [trust.md](trust.md).
+
 What each sector sells to. `pool/week` is the pool in the year it opens; it then grows at `growth` a year, slowed by `decay` each year after. A model needs `min` capability to enter and stops gaining at `sat`.
 
 ## Dial-up Days (1995)

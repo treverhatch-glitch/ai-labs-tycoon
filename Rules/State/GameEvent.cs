@@ -48,7 +48,35 @@ namespace AiLabs.Rules.State
         /// <summary>Board update after venture capital. Amount is reputation gained.</summary>
         InvestorBoardVisit,
         LabAcquired,
-        ModelSold
+        ModelSold,
+        /// <summary>A rival made an offer to one of the player's people. LabId is the rival, SubjectId the player's lab, Amount the package, Ref the role.</summary>
+        PoachOffered,
+        /// <summary>The player answered an offer. LabId is the player's lab, SubjectId the rival, Amount what the counter cost, Ref the counter, Pick 1 if the person stayed.</summary>
+        PoachCountered,
+        /// <summary>The player tried to poach from a rival. LabId is the player's lab, SubjectId the rival, Amount what it cost, Ref the role, Pick 1 if it worked.</summary>
+        PoachBackTried,
+        /// <summary>A journalist asked the player about a beat. LabId is the player's lab, SubjectId the inquiry, Amount the reputation at play, Ref "beat|journalist|what".</summary>
+        PressInquiry,
+        /// <summary>The player answered a journalist. LabId is the player's lab, SubjectId the inquiry, Amount the reputation moved (negative if it backfired), Ref the response, Pick 1 if it worked.</summary>
+        PressAnswered,
+        /// <summary>The player leaked a rival's incident. LabId is the player's lab, SubjectId the rival, Amount the reputation the rival lost (or the leaker lost, if it was traced), Ref the model, Pick 1 if it ran.</summary>
+        StoryLeaked,
+        /// <summary>A launch earned reputation from the press room. LabId is the lab, SubjectId the model, Amount the reputation points.</summary>
+        LaunchBuzz,
+        /// <summary>A lab paid to tune its entries for the Gauntlet. LabId is the lab, Amount the bill, Pick 1 if it was paid and the tuning went in, 0 if the lab could not afford it.</summary>
+        GauntletTuned,
+        /// <summary>A rival exposed a tuned win. LabId is the lab, SubjectId how many entries lost their lift, Amount the reputation lost.</summary>
+        GauntletExposed,
+        /// <summary>A joke award with a real effect. LabId is the winner, Ref the award id, Amount the effect (reputation, or morale for the newcomers).</summary>
+        GauntletAward,
+        /// <summary>The live demo of a lab's crown entry. LabId is the lab, SubjectId the model, Amount the reputation moved, Pick 1 for a triumph and 0 for a meme.</summary>
+        GauntletDemo,
+        /// <summary>An incident cost a lab the trust of one sector's customers. LabId is the lab, Ref the sector, Amount the trust lost. Logged for the player's lab only.</summary>
+        TrustLost,
+        /// <summary>A customer let down by an incident wrote to the player's desk. LabId is the player's lab, SubjectId the complaint, Amount the trust at stake, Ref "sector|model".</summary>
+        CustomerComplaint,
+        /// <summary>The player answered a complaint. LabId is the player's lab, SubjectId the complaint, Amount the trust moved (negative if it backfired), Ref "response|sector", Pick 1 if it worked.</summary>
+        ComplaintAnswered
     }
 
     /// <summary>

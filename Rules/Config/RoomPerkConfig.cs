@@ -13,7 +13,15 @@ namespace AiLabs.Rules.Config
         /// <summary>Catches a share of incidents before they happen (added to the red-teamers' share).</summary>
         IncidentCut,
         /// <summary>Raises the appeal of the lab's models in the perk's sectors.</summary>
-        SectorAppeal
+        SectorAppeal,
+        /// <summary>Takes a share off every reputation a scandal costs (an incident, a hearing) and helps the lab's answers to the press.</summary>
+        ScandalDamping,
+        /// <summary>A launch earns reputation: the press room's share of the launch buzz points.</summary>
+        LaunchBuzz,
+        /// <summary>Raises the level every staff member's morale settles at, and the level a new hire starts at (in morale points per tile, not permille).</summary>
+        MoraleLift,
+        /// <summary>Takes a share off the chance a rival's offer arrives (the rooms where people would rather stay).</summary>
+        PoachDefence
     }
 
     /// <summary>

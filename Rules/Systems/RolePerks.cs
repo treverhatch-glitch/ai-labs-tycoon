@@ -81,7 +81,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The share of incidents the lab's red-teamers catch before they happen, in permille (never more than 900).</summary>
         public static int IncidentCatchPermille(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(Permille(c, lab, RolePerkKind.IncidentCut) + RoomPerks.Permille(c, lab, RoomPerkKind.IncidentCut), 900);
+            return (int)MathI.Clamp(Permille(c, lab, RolePerkKind.IncidentCut) + RoomPerks.Permille(c, lab, RoomPerkKind.IncidentCut) + Traits.Report(c, lab).IncidentCatchPermille, 0, 900);
         }
 
         public static IncidentOddsBreakdown IncidentOdds(GameConfig c, LabState lab, int tick, ModelState model)

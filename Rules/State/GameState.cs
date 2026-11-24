@@ -157,6 +157,14 @@ namespace AiLabs.Rules.State
         public int AbsorbedByLabId = -1;
         /// <summary>Who the player chose to be at the start (a founder id), or empty for none. Parody rivals have none.</summary>
         public string FounderId = "";
+        /// <summary>Rivals' offers to the player's people that still wait for an answer.</summary>
+        public List<PoachOffer> PoachOffers = new List<PoachOffer>();
+        /// <summary>How hard this lab tunes its entries for the Gauntlet, in permille. 0 enters them as they are.</summary>
+        public int GauntletTuning;
+        /// <summary>Journalists' questions that still wait for an answer.</summary>
+        public List<PressInquiry> PressInquiries = new List<PressInquiry>();
+        public List<SectorTrust> SectorTrust = new List<SectorTrust>();
+        public List<Complaint> Complaints = new List<Complaint>();
         /// <summary>How the player chose to be good at the start (a style id), or empty for none.</summary>
         public string StyleId = "";
         /// <summary>Funding round ids this lab has closed, oldest first.</summary>
@@ -270,6 +278,11 @@ namespace AiLabs.Rules.State
             s.Int("chinaDealDeclinedUntilTick", ref ChinaDealDeclinedUntilTick);
             s.Int("absorbedByLabId", ref AbsorbedByLabId);
             s.Str("founderId", ref FounderId);
+            s.ObjList("poachOffers", ref PoachOffers);
+            s.Int("gauntletTuning", ref GauntletTuning);
+            s.ObjList("pressInquiries", ref PressInquiries);
+            s.ObjList("sectorTrust", ref SectorTrust);
+            s.ObjList("complaints", ref Complaints);
             s.Str("styleId", ref StyleId);
             s.StrList("fundingRounds", ref FundingRounds);
             s.Int("feelingToPlayer", ref FeelingToPlayer);
@@ -457,6 +470,10 @@ namespace AiLabs.Rules.State
         public int CrownLabId;
         public int CrownModelId;
         public int SafestLabId;
+        /// <summary>Who won "Most Confident While Wrong", or -1.</summary>
+        public int ConfidentLabId = -1;
+        /// <summary>Who won "Best Newcomer", or -1.</summary>
+        public int NewcomerLabId = -1;
         public List<GauntletEntry> Entries = new List<GauntletEntry>();
 
         public void Sync(Syncer s)
@@ -465,6 +482,8 @@ namespace AiLabs.Rules.State
             s.Int("crownLabId", ref CrownLabId);
             s.Int("crownModelId", ref CrownModelId);
             s.Int("safestLabId", ref SafestLabId);
+            s.Int("confidentLabId", ref ConfidentLabId);
+            s.Int("newcomerLabId", ref NewcomerLabId);
             s.ObjList("entries", ref Entries);
         }
     }
@@ -479,6 +498,8 @@ namespace AiLabs.Rules.State
         public int ModelId;
         public string ModelName;
         public long Score;
+        /// <summary>True if this score was lifted by tuning and the lift stood.</summary>
+        public bool Tuned;
 
         public void Sync(Syncer s)
         {
@@ -488,6 +509,7 @@ namespace AiLabs.Rules.State
             s.Int("modelId", ref ModelId);
             s.Str("modelName", ref ModelName);
             s.Long("score", ref Score);
+            s.Bool("tuned", ref Tuned);
         }
     }
 }

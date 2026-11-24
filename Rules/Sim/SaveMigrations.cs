@@ -344,7 +344,11 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        static void MigrateTo23(JsonValue root) { }
+        /// <summary>The talent market (Q141): no offers were ever waiting in an older save.</summary>
+        static void MigrateTo23(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
+        }
 
         /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
         static void MigrateTo24(JsonValue root)
@@ -353,14 +357,33 @@ namespace AiLabs.Rules.Sim
             JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
         }
 
-        /// <summary>Reserved on stack2 for era merge (press — schema 25).</summary>
-        static void MigrateTo25(JsonValue root) { }
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save.</summary>
+        static void MigrateTo25(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
+        }
 
-        /// <summary>Reserved on stack2 for era merge (Gauntlet depth — schema 26).</summary>
-        static void MigrateTo26(JsonValue root) { }
+        /// <summary>The Gauntlet, deeper (Q160): nobody tuned, no award was given and no entry was lifted in an older save.</summary>
+        static void MigrateTo26(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "gauntletTuning", JsonValue.Of(0L)));
+            JsonPatch.ForEach(root, "gauntlets", g =>
+            {
+                JsonPatch.AddIfMissing(g, "confidentLabId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(g, "newcomerLabId", JsonValue.Of(-1L));
+            });
+            JsonPatch.ForEach(root, "gauntlets.entries", e => JsonPatch.AddIfMissing(e, "tuned", JsonValue.Of(false)));
+        }
 
-        /// <summary>Reserved on stack2 for era merge (sector trust — schema 27).</summary>
-        static void MigrateTo27(JsonValue root) { }
+        /// <summary>Sector trust and the customer desk (Q165): every sector sits at the baseline and no complaint ever waited in an older save.</summary>
+        static void MigrateTo27(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "sectorTrust", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "complaints", JsonValue.Array());
+            });
+        }
 
         static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
 

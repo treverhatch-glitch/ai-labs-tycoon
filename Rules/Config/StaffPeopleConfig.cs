@@ -16,6 +16,26 @@ namespace AiLabs.Rules.Config
         public int PoachChancePermille;
         /// <summary>Chance each hire is a star trait, in permille.</summary>
         public int StarHirePermille;
+        /// <summary>The most morale points the comfort rooms can add to the level morale settles at.</summary>
+        public int MaxMoraleLift;
+        /// <summary>The most the rooms can take off the chance of a rival's offer, in permille.</summary>
+        public int MaxPoachDefencePermille;
+        /// <summary>How far research rises for every 1000 points a researcher's morale sits above the baseline, in permille.</summary>
+        public int MoraleResearchSlopePermille;
+        /// <summary>How far research falls for every 1000 points a researcher's morale sits below the baseline, in permille. Zero in the shipped data (see Q180).</summary>
+        public int MoraleResearchLossSlopePermille;
+        /// <summary>The most the traits can add to, or take off, the lab's training speed or alignment work, in permille.</summary>
+        public int MaxTraitSwingPermille;
+        /// <summary>The most the mentors can add to every researcher's output, in permille.</summary>
+        public int MaxMentorPermille;
+        /// <summary>The most the people who are secretly interviewing can add to the chance of a rival's offer, in permille of the usual chance.</summary>
+        public int MaxOfferBoostPermille;
+        /// <summary>Research lost for each doomer and accelerationist pair, in permille.</summary>
+        public int FrictionPerPairPermille;
+        /// <summary>The most research arguing can cost, in permille.</summary>
+        public int MaxFrictionPermille;
+        /// <summary>Added to a hire's id before the trait roll. Any whole number does; a different one gives different people the same traits.</summary>
+        public int TraitRollSalt;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -33,6 +53,16 @@ namespace AiLabs.Rules.Config
             s.Int("moralePoachWitnessDrop", ref MoralePoachWitnessDrop);
             s.Int("poachChancePermille", ref PoachChancePermille);
             s.Int("starHirePermille", ref StarHirePermille);
+            s.Int("maxMoraleLift", ref MaxMoraleLift);
+            s.Int("maxPoachDefencePermille", ref MaxPoachDefencePermille);
+            s.Int("moraleResearchSlopePermille", ref MoraleResearchSlopePermille);
+            s.Int("moraleResearchLossSlopePermille", ref MoraleResearchLossSlopePermille);
+            s.Int("maxTraitSwingPermille", ref MaxTraitSwingPermille);
+            s.Int("maxMentorPermille", ref MaxMentorPermille);
+            s.Int("maxOfferBoostPermille", ref MaxOfferBoostPermille);
+            s.Int("frictionPerPairPermille", ref FrictionPerPairPermille);
+            s.Int("maxFrictionPermille", ref MaxFrictionPermille);
+            s.Int("traitRollSalt", ref TraitRollSalt);
             s.ObjList("traits", ref Traits);
         }
     }
@@ -43,6 +73,23 @@ namespace AiLabs.Rules.Config
         public string Name = "";
         public int ResearchPermille;
         public bool Star;
+        /// <summary>The share of the player's hires that arrive with this trait, in permille. The star trait is rolled apart by starHirePermille.</summary>
+        public int HirePermille;
+        /// <summary>What this person adds to the lab's training speed, in permille (negative slows it).</summary>
+        public int TrainingSpeedPermille;
+        /// <summary>What this person adds to the lab's alignment work, in permille (negative loses some).</summary>
+        public int AlignmentWorkPermille;
+        /// <summary>What this person adds to the share of incidents the lab catches, in permille (negative loses some).</summary>
+        public int IncidentCatchPermille;
+        /// <summary>What this person adds to every researcher's output, in permille.</summary>
+        public int MentorPermille;
+        /// <summary>What this person adds to the chance a rival's offer arrives, in permille of the usual chance.</summary>
+        public int OfferPermille;
+        /// <summary>Morale points added to the level this person settles at (negative lowers it).</summary>
+        public int RestMoraleOffset;
+        /// <summary>The camp this person is in ("doom" or "accel"); a lab with both camps starts arguing. Empty for everyone else.</summary>
+        public string Camp = "";
+        public string Blurb = "";
 
         public string Id { get { return IdValue; } }
 
@@ -52,6 +99,15 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Int("researchPermille", ref ResearchPermille);
             s.Bool("star", ref Star);
+            s.Int("hirePermille", ref HirePermille);
+            s.Int("trainingSpeedPermille", ref TrainingSpeedPermille);
+            s.Int("alignmentWorkPermille", ref AlignmentWorkPermille);
+            s.Int("incidentCatchPermille", ref IncidentCatchPermille);
+            s.Int("mentorPermille", ref MentorPermille);
+            s.Int("offerPermille", ref OfferPermille);
+            s.Int("restMoraleOffset", ref RestMoraleOffset);
+            s.Str("camp", ref Camp);
+            s.Str("blurb", ref Blurb);
         }
     }
 }

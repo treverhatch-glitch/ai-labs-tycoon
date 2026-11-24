@@ -84,6 +84,7 @@ namespace AiLabs.Rules.Systems
 
             int repLoss = def == null ? c.Safety.IncidentReputationLoss : def.ReputationLoss;
             if (risk != null) repLoss = (int)MathI.MulPermille(repLoss, risk.ReputationPermille);
+            repLoss = PressSystem.Damp(c, lab, repLoss);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - repLoss);
             Finance.Spend(lab, LedgerLine.Fines, fine);
 
@@ -91,6 +92,7 @@ namespace AiLabs.Rules.Systems
                 model.DisplayedAlignment = EffectiveAlignment(c, model);
 
             StaffSystem.OnIncident(c, lab);
+            TrustSystem.OnIncident(c, state, lab, model);
 
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine, model.Name);
             if (risk != null)
@@ -99,6 +101,7 @@ namespace AiLabs.Rules.Systems
                 e.Pick = state.Rng.Safety.Next(risk.Headlines.Count);
             }
             else e.Pick = state.Rng.Safety.Next(EraSystem.AtTick(c, state.Tick).IncidentHeadlines.Count);
+            PressSystem.OnBeat(c, state, lab, "incident", repLoss, model.Name);
         }
     }
 }
