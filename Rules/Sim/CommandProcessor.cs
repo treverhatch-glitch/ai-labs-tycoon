@@ -22,6 +22,8 @@ namespace AiLabs.Rules.Sim
             if (lab == null) return Fail(CommandError.UnknownLab, "There is no lab " + cmd.LabId + ".");
             if (cmd.LabId >= 0 && lab.Bankrupt && cmd.Kind != CommandKind.ContinueAfterEnding)
                 return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (cmd.LabId >= 0 && lab.AbsorbedByLabId >= 0 && cmd.Kind != CommandKind.ContinueAfterEnding)
+                return Fail(CommandError.LabAbsorbed, lab.Name + " was absorbed into another lab.");
             if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
                 return Fail(CommandError.UnknownLab, "That is not the player's lab.");
             if (cmd.Kind != CommandKind.ContinueAfterEnding && FundingSystem.PlayerCommandLocked(state, lab))
@@ -261,6 +263,8 @@ namespace AiLabs.Rules.Sim
             foreach (HardwareBatch batch in Fleet.OldestFirst(c, lab, holdingId))
             {
                 if (left == 0) break;
+                if (batch.ResaleLockedUntilTick >= 0 && state.Tick < batch.ResaleLockedUntilTick)
+                    return Fail(CommandError.TargetNotEligible, "These GPUs are still tied up in post-acquisition integration.");
                 int take = left < batch.Count ? left : batch.Count;
                 proceeds += take * LabQueries.ResalePerUnit(c, c.Compute.Generation(batch.GpuGenId), state.Tick);
                 Fleet.Take(lab, batch, take);

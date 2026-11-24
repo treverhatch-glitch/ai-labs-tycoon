@@ -37,6 +37,8 @@ namespace AiLabs.Rules.Config
         public int CloudRentPermille;
         /// <summary>A plan orders chips only once a design's yield has reached this.</summary>
         public int PlannerMinYieldPermille;
+        /// <summary>While crash-distressed, list chips at cost times this permille over 1000 instead of the plan mark-up.</summary>
+        public int DistressListingPricePermille;
         public string ArchitectRoleId;
         public string TestLabRoomId;
         public List<ChipTargetConfig> Targets;
@@ -67,6 +69,7 @@ namespace AiLabs.Rules.Config
             s.Int("listingMaxPerMonth", ref ListingMaxPerMonth);
             s.Int("cloudRentPermille", ref CloudRentPermille);
             s.Int("plannerMinYieldPermille", ref PlannerMinYieldPermille);
+            s.Int("distressListingPricePermille", ref DistressListingPricePermille);
             s.Str("architectRoleId", ref ArchitectRoleId);
             s.Str("testLabRoomId", ref TestLabRoomId);
             s.ObjList("targets", ref Targets);

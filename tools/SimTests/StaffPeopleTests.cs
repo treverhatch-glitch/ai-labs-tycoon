@@ -18,7 +18,7 @@ public class StaffPeopleTests
         g.Hire("researcher", 2);
         Assert.Equal(2, g.Me.Staff.Count);
         Assert.All(g.Me.Staff, p => Assert.Equal("researcher", p.RoleId));
-        Assert.All(g.Me.Staff, p => Assert.Equal(g.C.StaffPeople.MoraleBaseline, p.Morale));
+        Assert.All(g.Me.Staff, p => Assert.Equal(Traits.RestingMorale(g.C, g.Me, p), p.Morale));
         Assert.All(g.Me.Staff, p => Assert.False(string.IsNullOrEmpty(p.TraitId)));
         Assert.Equal(2, LabQueries.StaffCount(g.Me, "researcher"));
     }
