@@ -10365,5 +10365,15 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.That(line, Does.Contain("4,340").Or.Contain("11,350"));
         }
 
+        [Test]
+        public void lifetime_jerkin_dev_spend_income_summary_line()
+        {
+            var lab = new LabState { Id = 1 };
+            lab.Ledger.Lifetime.Hardware = -613_400;
+            lab.Ledger.Lifetime.ChipDevelopment = -238_500;
+            string line = HqDisplayQueriesHud.LifetimeJerkinDevSpendIncomeSummaryLine(lab);
+            Assert.That(line, Does.Contain("613,400").Or.Contain("178,500"));
+        }
+
     }
 }
