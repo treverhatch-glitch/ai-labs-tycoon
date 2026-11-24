@@ -1029,9 +1029,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchWorldMapEconomyBarLaterTests2` (70):** stack2 coda on batch 43; gate **4169/0** in-repo; schema **29** only.
 
-### Q3566–Q3635. Regulator/bubble bar coda? DECIDED: test-only (batch 56, LOCAL — GO ≥ ~23:57 UTC)
+### Q3566–Q3635. Regulator/bubble bar coda? DECIDED: test-only (batch 56, pushed @ `3f88c5b`)
 
-- **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + `ListedChipBoostPermille` coda; bible **Q525** / **Q540** gov+containment tails from store; schema **29** only; 70-bar filter green.
+- **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + `ListedChipBoostPermille` coda; gate **4239/0** in-repo; schema **29** only.
+
+### Q3636–Q3705. Acquisition/listing bar coda? DECIDED: test-only (batch 57, LOCAL — GO ≥ ~00:48 UTC)
+
+- **`HatchAcquireListingBarLaterTests2` (70):** stack2 coda on batch 41; `Acquisitions` distress/listing + chip architect weeks; bible **D7** listings queue; schema **29** only; 70-bar filter green.
+
+### Q3706–Q3775. Rival economy bar coda? TBD: test-only (batch 58, queued)
+
+- **`HatchRivalEconomyBarLaterTests2` (70):** rival economy + **Q44** replace-obsolete-hardware neighbour; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

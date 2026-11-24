@@ -162,10 +162,12 @@ and says why in the commit message.
 - ~~**Hatch funding/follow-on batch 53**~~ **pushed @ `b661d1f`** — Q3356–Q3425 (`HatchFundingFollowOnBarLaterTests2`, **70**); gate **4029/0** in-repo; parent `b5d8265` (+ `ce6ace8`, `b661d1f`); landed ~21:53 UTC.
 - ~~**Hatch model-sales/chip batch 54**~~ **pushed @ `a62fc4a`** — Q3426–Q3495 (`HatchModelSalesChipBarLaterTests2`, **70**); gate **4099/0** in-repo; parent `b661d1f` (+ `230bfa8`, `b93c35f`, `a62fc4a`); landed ~22:42 UTC.
 - ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
-- **Hatch regulator/bubble batch 56 (LOCAL — NO PUSH until next grouped GO ≥ ~23:57 UTC)** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); parent `14428ec`; filter **70/0** green; bible **Q525** scrutiny neighbour; schema **29** only.
+- ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
+- **Hatch acquisition/listing batch 57 (LOCAL — NO PUSH until coordinator GO ≥ ~00:48 UTC / 30m after batch 56 land)** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); parent `3f88c5b`; filter **70/0** green; stack2 coda on batch **41**; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 57+ (TBD)** — extend stack2 fork queue from bible backlog after batch **56** lands (SolvencyHold / schema **30** still parked).
-- **Refill:** `internal/bible-systems-design-questions-backlog.md` + `internal/batch19-bible-systems-refill.md` (**P45** landed `d4e65c9` on era-systems — public-metrics / site mirror arcs **829–832+**); batch **55** pins world-map economy coda for stack2 (**Q3496–Q3565**); batch **56** next = regulator/bubble **Q3566–Q3635** + **Q525** gov scrutiny tails; batch **54** **D3–D7** chips; rivals stack2 **52–56**; schema **29** only (**30** SolvencyHold parked).
+  - **batch 58 (queued)** — Q3706–Q3775 `HatchRivalEconomyBarLaterTests2` — rival economy + crown neighbours (**Q44** hardware).
+  - **batch 59+ (TBD)** — shady/china coda, incident/safety, containment coda from backlog; SolvencyHold / schema **30** parked.
+- **Refill:** store bible backlog + batch19 refill; batch **57** = **D7** `BuyListedChips` / acquisition listing stack2 (`FleetResaleLockWeeks`, distress price, chip book); batch **56** **Q525/Q540**; rivals stack2 **52–57**; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 
