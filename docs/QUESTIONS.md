@@ -1046,11 +1046,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — closes **149–151**.
 - Why: GO packet tail bible.
 
-### Q601. ALT-76 STATUS sync through batch 136? DRAFT: `CampusAlt76StatusSyncThrough136PresentationSpec`
+### Q601. ALT-76 STATUS sync through batch 136? DECIDED: `CampusAlt76StatusSyncThrough136PresentationSpec`
 
 - Options: (a) stop at 133; (b) through 136; (c) defer.
-- Recommendation: **(b)** — STATUS tail after GO 145.
-- Status: batch **152** LOCAL.
+- Recommendation and choice: **(b)** — grouped **152–154**.
+- Why: STATUS tail bible.
+
+### Q602. Presentation tail rollup through batch 133? DECIDED: `CampusPresentationTailRollupRefreshThrough133PresentationSpec`
+
+- Options: (a) stop at 130; (b) through 133; (c) skip.
+- Recommendation and choice: **(b)** — 11 lanes.
+- Why: Batch **153**.
+
+### Q603. GO packet tail through batch 148? DECIDED: `CampusGoPacketTailRefreshThrough148PresentationSpec`
+
+- Options: (a) stop at 145; (b) through 148; (c) skip.
+- Recommendation and choice: **(b)** — closes **152–154**.
+- Why: GO packet tail bible.
+
+### Q604. ALT-76 rollup refresh through batch 136? DRAFT: `CampusAlt76RollupRefreshB136PresentationSpec`
+
+- Options: (a) batch 133 only; (b) through 136; (c) skip.
+- Recommendation: **(b)** — post–152–154 ladder.
+- Status: batch **155** LOCAL.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
