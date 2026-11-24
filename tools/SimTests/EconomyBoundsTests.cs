@@ -136,16 +136,14 @@ public class EconomyBoundsTests
     {
         Game g = LossMakingLab();
         long cost = Cost(g);
-        long line = (cost * MathI.Permille + g.C.Rivalry.RetrenchCostPermille - 1) / g.C.Rivalry.RetrenchCostPermille;
-
-        g.Me.LastWeek.Revenue = line;
-        g.Me.Cash = cost;
+        int halfReserve = g.C.Autopilot.ReserveWeeks / 2;
+        g.Me.LastWeek.Revenue = cost;
+        g.Me.Cash = cost * (halfReserve + 2);
         Plan(g);
         Assert.Empty(Cuts(g));
 
         Game h = LossMakingLab();
-        h.Me.LastWeek.Revenue = line - 1;
-        h.Me.Cash = Cost(h);
+        LosingMoney(h, weeksOfCash: halfReserve);
         Plan(h);
         Assert.NotEmpty(Cuts(h));
     }
