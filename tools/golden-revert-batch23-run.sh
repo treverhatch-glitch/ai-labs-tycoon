@@ -14,8 +14,8 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 
 declare -A GOLDEN
 GOLDEN[167]=17b6bcbd69ef7867adcdf9e90ba8e30dcb0f6ca58c6e592746ce875f5412d1f2
-GOLDEN[168]=PLACEHOLDER168
-GOLDEN[169]=PLACEHOLDER169
+GOLDEN[168]=24c74bcc752f5738decfc60f98acc1cc749f9c640c92a2b9588bdc2240794a0f
+GOLDEN[169]=ed94c9e28ab1757f8f93fdb848b8ee8fea01ba890afabe0dc2582ed08adc1035
 
 PREV=$((N - 1))
 BK="/tmp/b23-rev-bak-$N"
