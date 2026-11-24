@@ -38,9 +38,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 24) MigrateTo24(root);
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
@@ -55,6 +57,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 40) MigrateTo40(root);
             if (fromSchema < 41) MigrateTo41(root);
             if (fromSchema < 42) MigrateTo42(root);
+            if (fromSchema < 43) MigrateTo43(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -361,7 +364,14 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
         }
 
-        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
+        static void MigrateTo24(JsonValue root)
+        {
+            bool hadCrash = JsonPatch.IntOr(root, "bubbleCrashMonthsRemaining", 0) > 0;
+            JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
+        }
+
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save.</summary>
         static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
@@ -389,8 +399,26 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
+
+        /// <summary>Acquisition and asset-sale ledger lines (Q170).</summary>
+        static void MigrateTo28(JsonValue root)
+        {
+            foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+                JsonPatch.ForEach(root, place, totals =>
+                {
+                    foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
+                });
+        }
+
+        /// <summary>M&amp;A fleet resale lock on hardware batches (Q202).</summary>
         static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
@@ -400,76 +428,35 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Schema 30: the version naming mess, tidy to start with.</summary>
-        static void MigrateTo30(JsonValue root)
+        /// <summary>Schema 31: the version naming mess, tidy to start with.</summary>
+        static void MigrateTo31(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
         }
 
-        /// <summary>Schema 42: no lab had set compute aside for research experiments.</summary>
-        static void MigrateTo42(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 41: no lab had borrowed.</summary>
-        static void MigrateTo41(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "loans", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 40: every run was built the known way with checkpoints now and then.</summary>
-        static void MigrateTo40(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
-            {
-                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
-            }));
-        }
-
-        /// <summary>Schema 39: no era had been scored.</summary>
-        static void MigrateTo39(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 38: no lab had pivoted.</summary>
-        static void MigrateTo38(JsonValue root)
+        /// <summary>Schema 32: rooms start fresh, as if built this era.</summary>
+        static void MigrateTo32(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
+                JsonValue rooms = lab.Get("rooms");
+                if (rooms == null) return;
+                JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
             });
         }
 
-        /// <summary>Schema 37: no government had been lobbied.</summary>
-        static void MigrateTo37(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.AddIfMissing(b, "lobbyUntilTick", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 36: every launch so far was a tested one.</summary>
-        static void MigrateTo36(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "rushWeeks", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 35: every model was designed by people alone.</summary>
-        static void MigrateTo35(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
-        }
-
-        /// <summary>Schema 34: every model was trained to be correct.</summary>
-        static void MigrateTo34(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "objective", JsonValue.Of(""))));
-        }
-
-        /// <summary>Schema 33: no office event waiting, none seen.</summary>
+        /// <summary>Schema 33: no leads waiting and no tricks learned.</summary>
         static void MigrateTo33(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchLeads", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "leadSpeedPermille", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 34: no office event waiting, none seen.</summary>
+        static void MigrateTo34(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
@@ -479,25 +466,66 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Schema 32: no leads waiting and no tricks learned.</summary>
-        static void MigrateTo32(JsonValue root)
+        /// <summary>Schema 35: every model was trained to be correct.</summary>
+        static void MigrateTo35(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "objective", JsonValue.Of(""))));
+        }
+
+        /// <summary>Schema 36: every model was designed by people alone.</summary>
+        static void MigrateTo36(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
+        }
+
+        /// <summary>Schema 37: every launch so far was a tested one.</summary>
+        static void MigrateTo37(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "rushWeeks", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 38: no government had been lobbied.</summary>
+        static void MigrateTo38(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.AddIfMissing(b, "lobbyUntilTick", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 39: no lab had pivoted.</summary>
+        static void MigrateTo39(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "researchLeads", JsonValue.Array());
-                JsonPatch.AddIfMissing(lab, "leadSpeedPermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 31: rooms start fresh, as if built this era.</summary>
-        static void MigrateTo31(JsonValue root)
+        /// <summary>Schema 40: no era had been scored.</summary>
+        static void MigrateTo40(JsonValue root)
         {
-            JsonPatch.ForEach(root, "labs", lab =>
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 41: every run was built the known way with checkpoints now and then.</summary>
+        static void MigrateTo41(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
             {
-                JsonValue rooms = lab.Get("rooms");
-                if (rooms == null) return;
-                JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
-            });
+                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
+            }));
+        }
+
+        /// <summary>Schema 42: no lab had borrowed.</summary>
+        static void MigrateTo42(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "loans", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 43: no lab had set compute aside for research experiments.</summary>
+        static void MigrateTo43(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

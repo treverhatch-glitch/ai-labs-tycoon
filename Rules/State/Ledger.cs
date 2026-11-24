@@ -9,7 +9,8 @@ namespace AiLabs.Rules.State
         Salaries, RoomUpkeep, GpuRent, GpuUpkeep,
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
-        ChipSales, GreyRevenue, Laundered, CapitalIn
+        ChipSales, GreyRevenue, Laundered, CapitalIn,
+        Acquisition, AssetSale
     }
 
     /// <summary>
@@ -41,6 +42,10 @@ namespace AiLabs.Rules.State
         public long Laundered;
         /// <summary>Money put into the lab from outside: a bailout, the proceeds of selling a lab.</summary>
         public long CapitalIn;
+        /// <summary>Buying another lab (M&amp;A), including assumed debt booked on the buyer.</summary>
+        public long Acquisition;
+        /// <summary>Proceeds from selling a model line to another party.</summary>
+        public long AssetSale;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -48,8 +53,8 @@ namespace AiLabs.Rules.State
         {
             get
             {
-                return Revenue + Grants + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn;
+                return Revenue + Grants + AssetSale + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Acquisition;
             }
         }
 
@@ -75,7 +80,10 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: return ChipSales;
                 case LedgerLine.GreyRevenue: return GreyRevenue;
                 case LedgerLine.Laundered: return Laundered;
-                default: return CapitalIn;
+                case LedgerLine.CapitalIn: return CapitalIn;
+                case LedgerLine.Acquisition: return Acquisition;
+                case LedgerLine.AssetSale: return AssetSale;
+                default: return 0;
             }
         }
 
@@ -101,7 +109,9 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: ChipSales += amount; break;
                 case LedgerLine.GreyRevenue: GreyRevenue += amount; break;
                 case LedgerLine.Laundered: Laundered += amount; break;
-                default: CapitalIn += amount; break;
+                case LedgerLine.CapitalIn: CapitalIn += amount; break;
+                case LedgerLine.Acquisition: Acquisition += amount; break;
+                case LedgerLine.AssetSale: AssetSale += amount; break;
             }
         }
 
@@ -126,6 +136,8 @@ namespace AiLabs.Rules.State
             s.Long("greyRevenue", ref GreyRevenue);
             s.Long("laundered", ref Laundered);
             s.Long("capitalIn", ref CapitalIn);
+            s.Long("acquisition", ref Acquisition);
+            s.Long("assetSale", ref AssetSale);
         }
     }
 

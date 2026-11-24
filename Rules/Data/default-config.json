@@ -4849,7 +4849,7 @@
     "maxFrictionPermille": 300,
     "maxPostsPermille": 300,
     "quitReputation": 20,
-    "traitRollSalt": 15,
+    "traitRollSalt": 20,
     "starHirePermille": 120,
     "traits": [
       {
@@ -8694,6 +8694,14 @@
       {
         "id": "PoachedStaff",
         "text": "{lab} poached a {ref} from the player's roster."
+      },
+      {
+        "id": "SoldModel",
+        "text": "{lab} fire-sold {ref} for ${amount}."
+      },
+      {
+        "id": "AcquiredLab",
+        "text": "{lab} acquired distressed rival {ref} for ${amount}."
       }
     ],
     "reasonTemplates": [
@@ -8816,6 +8824,10 @@
       {
         "id": "ChipsOwnedSharePermille",
         "text": "{pct}% of its compute is its own chips"
+      },
+      {
+        "id": "CrashDistress",
+        "text": "crash distress at {pct}%"
       }
     ]
   },
@@ -8902,6 +8914,7 @@
     "listingMaxPerMonth": 500,
     "cloudRentPermille": 1100,
     "plannerMinYieldPermille": 600,
+    "distressListingPricePermille": 820,
     "architectRoleId": "chip-architect",
     "testLabRoomId": "hw-test-lab",
     "targets": [
@@ -9255,6 +9268,9 @@
     "handcuffsShadyLockWeeks": 240,
     "handcuffsSuccessor": "The Interim CEO",
     "secondPlaceRunnerUpYears": 3,
+    "nationalisedHomeLevelMin": 4,
+    "treatyForeignLevelMin": 3,
+    "treatyForeignBlocCount": 2,
     "superintelligence": {
       "releasedCapabilityMin": 900,
       "paperclipMaxAlignment": 150,
@@ -9428,10 +9444,10 @@
       "leader": "Jam Saltmen",
       "familyName": "ChatGBT",
       "archetype": "ships first, apologises later",
-      "startCash": 250000,
+      "startCash": 400000,
       "lotId": "garage",
       "reputation": 500,
-      "backerPerWeek": 4000,
+      "backerPerWeek": 5000,
       "homeBlocId": "us",
       "joinsYear": 0,
       "plan": {
@@ -9483,7 +9499,7 @@
         "staffGrowthPermillePerYear": 300,
         "gpus": 8,
         "gpuGrowthPermillePerYear": 400,
-        "wealthGrowthPermillePerMillion": 75,
+        "wealthGrowthPermillePerMillion": 50,
         "ownGpus": false,
         "trainingSharePermille": 750,
         "alignmentSharePermille": 50,
@@ -9545,10 +9561,10 @@
       "leader": "Durian Amodayo",
       "familyName": "Clause",
       "archetype": "careful sniper",
-      "startCash": 300000,
+      "startCash": 450000,
       "lotId": "garage",
       "reputation": 500,
-      "backerPerWeek": 5000,
+      "backerPerWeek": 6000,
       "homeBlocId": "us",
       "joinsYear": 0,
       "plan": {
@@ -9605,7 +9621,7 @@
         "staffGrowthPermillePerYear": 250,
         "gpus": 7,
         "gpuGrowthPermillePerYear": 350,
-        "wealthGrowthPermillePerMillion": 75,
+        "wealthGrowthPermillePerMillion": 50,
         "ownGpus": false,
         "trainingSharePermille": 700,
         "alignmentSharePermille": 250,
@@ -10938,7 +10954,9 @@
     "crashCustomerSpendPermille": 780,
     "crashFundingCashPermille": 620,
     "crashGpuPricePermille": 860,
-    "crashFloatCutPpm": 35000
+    "crashFloatCutPpm": 35000,
+    "popWarningMarginPermille": 50,
+    "resetCapitalRaisedAfterCrash": true
   },
   "acquisitions": {
     "capabilityValuePerPoint": 8000,
@@ -10949,13 +10967,20 @@
     "crashDistressPricePermille": 450,
     "minInstalledModels": 1,
     "regulatorDealRevenue": 5000000,
-    "regulatorAttention": 80
+    "regulatorAttention": 80,
+    "rivalRollupChancePermille": 600,
+    "plannerAcquireChancePermille": 35,
+    "fleetResaleLockWeeks": 52,
+    "readyChipBookPermille": 400,
+    "chipFleetBookPermille": 350
   },
   "modelSales": {
     "unprofitableSalePermille": 350,
     "earningsMultipleWeeks": 52,
     "sectorReputationHit": 25,
-    "minOffer": 1000
+    "minOffer": 1000,
+    "incomeSmoothingPermille": 500,
+    "crashDistressOfferPermille": 650
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,
