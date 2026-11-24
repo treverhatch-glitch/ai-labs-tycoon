@@ -938,11 +938,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — closes grouped 131–133.
 - Why: Coordinator packets.
 
-### Q583. Presentation tail rollup through batch 121? DRAFT: `CampusPresentationTailRollupRefreshThrough121PresentationSpec`
+### Q583. Presentation tail rollup through batch 121? DECIDED: `CampusPresentationTailRollupRefreshThrough121PresentationSpec`
 
 - Options: (a) stop at 118; (b) through 121; (c) skip.
-- Recommendation: **(b)** — post-push tail nav.
-- Status: stub batch 134 (local, NO PUSH).
+- Recommendation and choice: **(b)** — after `0834ebd`.
+- Why: Tail grouped 134–136.
+
+### Q584. ALT-76 STATUS sync through batch 127? DECIDED: `CampusAlt76StatusSyncThrough127PresentationSpec`
+
+- Options: (a) stop at 121; (b) through 127; (c) defer.
+- Recommendation and choice: **(b)** — GO 127 ladder.
+- Why: STATUS batch 135.
+
+### Q585. GO packet tail through batch 130? DECIDED: `CampusGoPacketTailRefreshThrough130PresentationSpec`
+
+- Options: (a) stop at 127; (b) through 130; (c) skip.
+- Recommendation and choice: **(b)** — closes 134–136.
+- Why: Coordinator packets.
+
+### Q586. ALT-76 rollup refresh through batch 127? DRAFT: `CampusAlt76RollupRefreshB127PresentationSpec`
+
+- Options: (a) batch 121 only; (b) through 127; (c) skip.
+- Recommendation: **(b)** — post–134–136 ladder.
+- Status: stub batch 137 (local, NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
