@@ -1053,9 +1053,25 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchContainmentEndingBarLaterTests3` (70):** endings/treaty/containment wing; **Q540**; 70-bar filter green.
 
-### Q3986–Q4055. Era/incident bar coda? TBD: test-only (batch 62, queued)
+### Q3986–Q4055. Era/incident bar coda? DECIDED: test-only (batch 62, pushed @ `a618b3c`)
 
-- **`HatchEraIncidentBarLaterTests2` (70):** schema **29** only.
+- **`HatchEraIncidentBarLaterTests2` (70):** gate **4659/4659**; schema **29** only.
+
+### Q4056–Q4125. Exit/sell bar coda? DECIDED: test-only (batch 63, pushed @ `605edb0`)
+
+- **`HatchExitSellBarLaterTests2` (70):** **Q99** `ExitPriceParts`; gate **4729/4729**; schema **29** only.
+
+### Q4126–Q4195. Forward-queue bar coda? DECIDED: test-only (batch 64, pushed @ `c63ab58`)
+
+- **`HatchForwardQueueBarLaterTests2` (70):** gate **4799/4799**; schema **29** only.
+
+### Q4196–Q4265. Balance/soak bar coda? DECIDED: test-only (batch 65, **HOLD unpushed** — merge wave)
+
+- **`HatchBalanceSoakBarLaterTests3` (70):** **Q101** neighbour; prepush **4869/4869**; rebase onto `90edc7e` before GO; schema **29** only.
+
+### Q4266–Q4335. Stack2 tail bar? TBD: test-only (batch 66, queued)
+
+- TBD after batch **65** lands; systems-only per store scope.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
