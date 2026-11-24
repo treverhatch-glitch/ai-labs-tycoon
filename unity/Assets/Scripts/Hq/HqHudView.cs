@@ -2491,6 +2491,9 @@ namespace AiLabs.Unity.Hq
                 string lastWeekNetSpend = HqDisplayQueriesHud.LastWeekNetSpendSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lastWeekNetSpend))
                     status = string.IsNullOrEmpty(status) ? lastWeekNetSpend : status + " · " + lastWeekNetSpend;
+                string lifetimeNetSpend = HqDisplayQueriesHud.LifetimeNetSpendSummaryLine(lab);
+                if (!string.IsNullOrEmpty(lifetimeNetSpend))
+                    status = string.IsNullOrEmpty(status) ? lifetimeNetSpend : status + " · " + lifetimeNetSpend;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
