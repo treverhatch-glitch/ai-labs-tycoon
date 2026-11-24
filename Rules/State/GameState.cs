@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 67;
+        public const int CurrentSchema = 72;
 
         public int Schema;
         public string ConfigVersion;
@@ -215,6 +215,31 @@ namespace AiLabs.Rules.State
         public int BountyLevel;
         /// <summary>The week the level can next change.</summary>
         public int BountyLockedUntil;
+        /// <summary>Cash the lab has set aside in its treasury reserve. Only the player's lab keeps one.</summary>
+        public long Reserve;
+        /// <summary>The level of the lab's public safety pledge, 0 when none. Only the player's lab makes one.</summary>
+        public int PledgeLevel;
+        /// <summary>The week the pledge can next change.</summary>
+        public int PledgeLockedUntil;
+        /// <summary>The level of the roadmap the lab has announced, 0 when none.</summary>
+        public int RoadmapLevel;
+        /// <summary>The week it was announced.</summary>
+        public int RoadmapStart;
+        /// <summary>The week it is judged.</summary>
+        public int RoadmapDue;
+        /// <summary>The capability a model must have to deliver it.</summary>
+        public int RoadmapGoal;
+        /// <summary>The kind of skunkworks project the lab runs (research, safety or engineering), empty when none.</summary>
+        public string SkunkKind = "";
+        /// <summary>People on the team.</summary>
+        public int SkunkPeople;
+        /// <summary>The week it started and the week it pays out.</summary>
+        public int SkunkStart;
+        public int SkunkDue;
+        /// <summary>Person-weeks the team has worked so far.</summary>
+        public long SkunkWork;
+        /// <summary>The week the next project can start.</summary>
+        public int SkunkLockedUntil;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -437,6 +462,19 @@ namespace AiLabs.Rules.State
             s.Int("silenced", ref Silenced);
             s.Int("bountyLevel", ref BountyLevel);
             s.Int("bountyLockedUntil", ref BountyLockedUntil);
+            s.Long("reserve", ref Reserve);
+            s.Int("pledgeLevel", ref PledgeLevel);
+            s.Int("pledgeLockedUntil", ref PledgeLockedUntil);
+            s.Int("roadmapLevel", ref RoadmapLevel);
+            s.Int("roadmapStart", ref RoadmapStart);
+            s.Int("roadmapDue", ref RoadmapDue);
+            s.Int("roadmapGoal", ref RoadmapGoal);
+            s.Str("skunkKind", ref SkunkKind);
+            s.Int("skunkPeople", ref SkunkPeople);
+            s.Int("skunkStart", ref SkunkStart);
+            s.Int("skunkDue", ref SkunkDue);
+            s.Long("skunkWork", ref SkunkWork);
+            s.Int("skunkLockedUntil", ref SkunkLockedUntil);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -540,6 +578,10 @@ namespace AiLabs.Rules.State
         public int Morale;
         /// <summary>1 when the person has been promoted to senior, 0 otherwise.</summary>
         public int Senior;
+        /// <summary>The id of the senior mentoring this person, 0 when nobody is.</summary>
+        public int MentorId;
+        /// <summary>The weeks the pair has held.</summary>
+        public int MentorWeeks;
 
         public void Sync(Syncer s)
         {
@@ -548,6 +590,8 @@ namespace AiLabs.Rules.State
             s.Str("traitId", ref TraitId);
             s.Int("morale", ref Morale);
             s.Int("senior", ref Senior);
+            s.Int("mentorId", ref MentorId);
+            s.Int("mentorWeeks", ref MentorWeeks);
         }
     }
 

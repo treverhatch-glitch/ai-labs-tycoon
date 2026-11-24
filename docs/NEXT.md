@@ -286,6 +286,15 @@ and says why in the commit message.
 103. **Loan restructuring (lower payment for a fee).** ~~Done~~: `restructure` data, `RestructureLoan`, `Restructure`, `RestructureTests`, `docs/content/loan-restructuring.md` (Q345).
 104. **Headlines and chat for chairs, whistleblowers, bounties, pullouts and restructures.** ~~Done~~: 12 headlines, 14 chat lines, `ChairsWhistleBountyPulloutRestructureNewsChatTests` (Q346).
 105. **Chairs, whistleblowers, bounties, pullouts and restructures together.** ~~Done~~: `ChairsWhistleBountyPulloutRestructureTogetherTests` (Q347).
+106. **The treasury reserve (set aside, yield, debt cover).** ~~Done~~: `treasury` data, `SetAsideReserve`, `DrawReserve`, `Treasury`, schema 67, `TreasuryTests`, `docs/content/treasury-reserve.md` (Q349).
+107. **The public safety pledge (floor, weekly trust, breach).** ~~Done~~: `pledge` data, `SetPledge`, `Pledge`, schema 68, `PledgeTests`, `docs/content/safety-pledge.md` (Q350).
+108. **The public roadmap (promised capability, deadline, hype, reward, loss).** ~~Done~~: `roadmap` data, `AnnounceRoadmap`, `Roadmap`, schema 69, `RoadmapTests`, `docs/content/public-roadmap.md` (Q351).
+109. **The customer case study (trust for weeks of a sector's revenue).** Dropped (knob, Q352): a pay-for-stat lump with no state. Not built.
+110. **Retention bonuses (targeted morale for weeks of pay).** Dropped (knob, Q353): a pay-for-stat lump with no state. Not built.
+111. **Mentoring (senior and junior pairs, lost output, a free promotion when a seat opens).** ~~Done~~: `mentoring` data, `AssignMentor`, `EndMentoring`, `Mentoring`, schema 70, `MentoringTests`, `docs/content/mentoring.md` (Q356).
+112. **Skunkworks (a team out of a function for a project, paid by person-weeks, wrap up early at half).** ~~Done~~: `skunkworks` data, `StartSkunkworks`, `WrapUpSkunkworks`, `Skunkworks`, schema 71, `SkunkworksTests`, `docs/content/skunkworks.md` (Q357).
+113. **Headlines and chat for the reserve, the pledge, the roadmap, mentoring and skunkworks.** ~~Done~~: 14 headlines, 14 chat lines, `ReservePledgeRoadmapMentoringSkunkworksNewsChatTests` (Q354).
+114. **The reserve, the pledge, the roadmap, mentoring and skunkworks together.** ~~Done~~: `ReservePledgeRoadmapMentoringSkunkworksTogetherTests` (Q355).
 
 ## Rules: later
 

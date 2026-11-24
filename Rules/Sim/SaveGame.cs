@@ -101,12 +101,29 @@ namespace AiLabs.Rules.Sim
                 if (lab.ConsultantLevel < 0 || lab.ConsultantLevel > c.Consultants.MaxLevel || lab.ConsultantWeeks < 0 || lab.ConsultantWeeks > c.Consultants.Weeks || lab.ConsultantLockedUntil < 0 || (lab.ConsultantWeeks > 0) != (lab.ConsultantLevel > 0))
                     p.Add(who + " has policy consultants (level " + lab.ConsultantLevel + ", " + lab.ConsultantWeeks + " weeks left), which the data does not allow");
                 foreach (StaffMember person in lab.Staff)
+                {
                     if (person.Senior < 0 || person.Senior > 1 || (person.Senior == 1 && lab.Id != state.PlayerLabId))
                         p.Add(who + " has a senior person (" + person.Senior + ") that the data does not allow");
+                    if (person.MentorId < 0 || person.MentorWeeks < 0 || (person.MentorId == 0 && person.MentorWeeks != 0) || (person.MentorId > 0 && (lab.Id != state.PlayerLabId || person.MentorId == person.Id)))
+                        p.Add(who + " has a person with mentor " + person.MentorId + " (" + person.MentorWeeks + " weeks), which does not fit the staff");
+                }
                 if (lab.RevenueTargetLevel < 0 || lab.RevenueTargetLevel > c.RevenueTargets.MaxLevel || lab.RevenueTargetEnd < 0 || lab.RevenueTargetGoal < 0 || lab.RevenueTargetSoFar < 0
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
                     p.Add(who + " has a revenue target (level " + lab.RevenueTargetLevel + ", goal " + lab.RevenueTargetGoal + ") that the data does not allow");
+                if (lab.SkunkWork < 0 || lab.SkunkPeople < 0 || lab.SkunkStart < 0 || lab.SkunkDue < 0 || lab.SkunkLockedUntil < 0 || (lab.SkunkKind != "" && Skunkworks.FunctionOf(lab.SkunkKind) == null)
+                    || (lab.SkunkKind == "" && (lab.SkunkPeople != 0 || lab.SkunkStart != 0 || lab.SkunkDue != 0 || lab.SkunkWork != 0))
+                    || (lab.SkunkKind != "" && (lab.SkunkPeople < 1 || lab.SkunkDue <= lab.SkunkStart))
+                    || ((lab.SkunkKind != "" || lab.SkunkLockedUntil > 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a skunkworks project (\"" + lab.SkunkKind + "\", " + lab.SkunkPeople + " people, due week " + lab.SkunkDue + ") that the data does not allow");
+                if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
+                    || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
+                    || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
+                    p.Add(who + " has a roadmap (level " + lab.RoadmapLevel + ", due week " + lab.RoadmapDue + ") that the data does not allow");
+                if (lab.PledgeLevel < 0 || lab.PledgeLevel > c.Pledge.MaxLevel || lab.PledgeLockedUntil < 0 || ((lab.PledgeLevel > 0 || lab.PledgeLockedUntil > 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a safety pledge at level " + lab.PledgeLevel + " (locked until " + lab.PledgeLockedUntil + "), which the data does not allow");
+                if (lab.Reserve < 0 || (lab.Reserve > 0 && lab.Id != state.PlayerLabId))
+                    p.Add(who + " keeps a reserve of $" + lab.Reserve + ", which the data does not allow");
                 if (lab.BountyLevel < 0 || lab.BountyLevel > c.BugBounty.MaxLevel || lab.BountyLockedUntil < 0 || ((lab.BountyLevel > 0 || lab.BountyLockedUntil > 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " runs a bug bounty at level " + lab.BountyLevel + " (locked until " + lab.BountyLockedUntil + "), which the data does not allow");
                 if (lab.WhistleWeeks < 0 || lab.WhistleModel < 0 || lab.WhistleDue < 0 || lab.Silenced < 0

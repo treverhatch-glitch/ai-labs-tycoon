@@ -214,7 +214,27 @@ namespace AiLabs.Rules.State
         /// <summary>The lab pulled a model out of a sector. SubjectId is the model, Amount the break fee, Pick 1 when it was the last sector and the model was retired. Ref is the sector.</summary>
         SectorPulledOut,
         /// <summary>A loan was restructured. SubjectId is the loan, Amount the fee added to what is owed, Pick 1 when it cleared missed payments.</summary>
-        LoanRestructured
+        LoanRestructured,
+        /// <summary>Cash moved into or out of the treasury reserve by the player. Amount is the sum moved before any fee, Pick 1 when set aside and 0 when drawn.</summary>
+        ReserveMoved,
+        /// <summary>The reserve paid out to cover a debt. Amount is the sum taken from the reserve before the fee.</summary>
+        ReserveCovered,
+        /// <summary>The lab changed its safety pledge. SubjectId is the new level, Amount the reputation lost walking it back, Pick 1 when it was raised.</summary>
+        PledgeSet,
+        /// <summary>A launch broke the pledge. SubjectId is the model, Amount the alignment the pledge asked, Pick the level that was broken.</summary>
+        PledgeBroken,
+        /// <summary>The lab announced a roadmap. SubjectId is the level, Amount the capability promised, Pick the weeks it has.</summary>
+        RoadmapAnnounced,
+        /// <summary>A roadmap was settled. SubjectId is the level, Amount the capability promised, Pick 1 when a model delivered it in time.</summary>
+        RoadmapSettled,
+        /// <summary>A senior started mentoring a junior. SubjectId is the junior, Amount the mentor, Ref the junior's role.</summary>
+        MentoringStarted,
+        /// <summary>A pair ended. SubjectId is the junior, Amount the weeks it held, Ref the role, Pick 0 when the junior graduated, 1 when it broke up, 2 when the player called it off.</summary>
+        MentoringEnded,
+        /// <summary>A skunkworks project started. SubjectId is the kind (1 research, 2 safety, 3 engineering), Amount the people, Pick the weeks, Ref the kind.</summary>
+        SkunkworksStarted,
+        /// <summary>A project paid out. SubjectId is the kind, Amount what it paid (research points, alignment permille or debt points), Pick 1 when it ran its course, 0 when it was wrapped up early.</summary>
+        SkunkworksDone
     }
 
     /// <summary>

@@ -55,7 +55,8 @@ namespace AiLabs.Rules.Systems
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != function) continue;
-                n += person.Senior == 1 ? c.Seniority.WeightPermille : MathI.Permille;
+                if (Skunkworks.Away(c, lab, person)) continue;
+                n += Mentoring.Weight(c, lab, person);
             }
             return n;
         }

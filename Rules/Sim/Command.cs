@@ -69,7 +69,15 @@ namespace AiLabs.Rules.Sim
         AnswerWhistle,
         SetBugBounty,
         PullOutOfSector,
-        RestructureLoan
+        RestructureLoan,
+        SetAsideReserve,
+        DrawReserve,
+        SetPledge,
+        AnnounceRoadmap,
+        AssignMentor,
+        EndMentoring,
+        StartSkunkworks,
+        WrapUpSkunkworks
     }
 
     /// <summary>
@@ -634,6 +642,72 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Moves cash into the treasury reserve. It earns a small yield every week and covers a debt the weekly bill would otherwise leave. Count is dollars.</summary>
+        public static Command SetAsideReserve(int labId, int dollars)
+        {
+            Command c = Make(CommandKind.SetAsideReserve, labId);
+            c.Count = dollars;
+            return c;
+        }
+
+        /// <summary>Takes dollars back out of the reserve, minus a fee. Count is dollars taken from the reserve.</summary>
+        public static Command DrawReserve(int labId, int dollars)
+        {
+            Command c = Make(CommandKind.DrawReserve, labId);
+            c.Count = dollars;
+            return c;
+        }
+
+        /// <summary>Makes a public safety pledge, level 1 to the data's top, or 0 to walk it back. While it holds, customers trust the lab a little more every week; a launch that shows less alignment than the pledge asks breaks it. Lowering it costs reputation, and a change locks it for weeks.</summary>
+        public static Command SetPledge(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPledge, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Announces a public roadmap: a model at least so much more capable than the lab's best (level 1 to the data's top, a bolder promise at each) inside a number of weeks (TargetId). The announcement earns reputation at once; delivering earns more and the deadline passing costs far more.</summary>
+        public static Command AnnounceRoadmap(int labId, int level, int weeks)
+        {
+            Command c = Make(CommandKind.AnnounceRoadmap, labId);
+            c.Count = level;
+            c.TargetId = weeks;
+            return c;
+        }
+
+        /// <summary>Pairs a senior (Count, the person's id) with a junior in the same function (TargetId). The junior's morale climbs and, if the pair holds long enough and a senior seat is free, they are promoted for nothing; meanwhile both count for less.</summary>
+        public static Command AssignMentor(int labId, int mentorId, int menteeId)
+        {
+            Command c = Make(CommandKind.AssignMentor, labId);
+            c.Count = mentorId;
+            c.TargetId = menteeId;
+            return c;
+        }
+
+        /// <summary>Calls off the mentoring of the junior with this id (TargetId). The weeks so far are lost.</summary>
+        public static Command EndMentoring(int labId, int menteeId)
+        {
+            Command c = Make(CommandKind.EndMentoring, labId);
+            c.TargetId = menteeId;
+            return c;
+        }
+
+        /// <summary>Pulls a team (Count people, at least the data's minimum) out of a function for a project of TargetId weeks: Id is "research", "safety" or "engineering". The team is away the whole time and the project costs a budget up front; it pays research points, alignment on the lab's finished models or cleared technical debt, by the person-weeks worked.</summary>
+        public static Command StartSkunkworks(int labId, string kind, int people, int weeks)
+        {
+            Command c = Make(CommandKind.StartSkunkworks, labId);
+            c.Id = kind;
+            c.Count = people;
+            c.TargetId = weeks;
+            return c;
+        }
+
+        /// <summary>Ends the running project now and pays the share of the work done so far that the data allows for stopping early.</summary>
+        public static Command WrapUpSkunkworks(int labId)
+        {
+            return Make(CommandKind.WrapUpSkunkworks, labId);
+        }
+
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
         public static Command PivotStyle(int labId, string styleId)
         {
@@ -879,7 +953,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked, PledgeLocked
     }
 
     public struct CommandResult

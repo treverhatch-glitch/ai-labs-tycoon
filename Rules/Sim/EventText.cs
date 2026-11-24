@@ -222,6 +222,31 @@ namespace AiLabs.Rules.Sim
                     return who + " laid off " + e.Amount + " people (" + e.SubjectId / 10 + "% of the staff)" + (e.Pick == 1 ? ", a deep cut that shook the office." : ".");
                 case EventKind.DebtPaid:
                     return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
+                case EventKind.ReserveMoved:
+                    return e.Pick == 1 ? who + " set $" + e.Amount + " aside in its reserve." : who + " took $" + e.Amount + " back out of its reserve.";
+                case EventKind.ReserveCovered:
+                    return who + "'s reserve paid out $" + e.Amount + " to cover a debt, at a steep fee.";
+                case EventKind.PledgeSet:
+                    return e.Pick == 1 ? who + " pledged publicly that its launches will show at least " + Pledge.Floor(c, e.SubjectId) + " alignment (level " + e.SubjectId + ")."
+                        : e.SubjectId == 0 ? who + " dropped its public safety pledge." : who + " walked its safety pledge back to level " + e.SubjectId + ".";
+                case EventKind.PledgeBroken:
+                    return who + " broke its public safety pledge: " + e.Ref + " launched showing less than the " + e.Amount + " alignment it had promised.";
+                case EventKind.RoadmapAnnounced:
+                    return who + " announced a level " + e.SubjectId + " roadmap: a model with capability " + e.Amount + " inside " + e.Pick + " weeks.";
+                case EventKind.RoadmapSettled:
+                    return e.Pick == 1 ? who + " delivered its roadmap, a model with capability " + e.Amount + ", and customers noticed."
+                        : who + " missed its roadmap for a model with capability " + e.Amount + ", and customers noticed that too.";
+                case EventKind.MentoringStarted:
+                    return who + " paired a senior with a junior " + c.Role(e.Ref).Name.ToLowerInvariant() + " for mentoring.";
+                case EventKind.MentoringEnded:
+                    return e.Pick == 0 ? who + " graduated a junior " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior after " + e.Amount + " weeks of mentoring."
+                        : e.Pick == 1 ? "A mentoring pair at " + who + " broke up after " + e.Amount + " weeks."
+                        : who + " called off a mentoring pair after " + e.Amount + " weeks.";
+                case EventKind.SkunkworksStarted:
+                    return who + " pulled " + e.Amount + " " + e.Ref + " people into a " + e.Pick + "-week skunkworks project.";
+                case EventKind.SkunkworksDone:
+                    return who + (e.Pick == 1 ? " finished" : " wrapped up early") + " its " + e.Ref + " skunkworks project: "
+                        + (e.SubjectId == 1 ? e.Amount + " research points." : e.SubjectId == 2 ? e.Amount + " more alignment on its finished models." : e.Amount + " points of technical debt cleared.");
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

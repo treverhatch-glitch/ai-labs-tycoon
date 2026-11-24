@@ -99,6 +99,11 @@ namespace AiLabs.Rules.Config
             ChairsProblems(p, c);
             WhistleProblems(p, c);
             BugBountyProblems(p, c);
+            TreasuryProblems(p, c);
+            PledgeProblems(p, c);
+            RoadmapProblems(p, c);
+            MentoringProblems(p, c);
+            SkunkworksProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -994,6 +999,76 @@ namespace AiLabs.Rules.Config
             if (k.FeeWeeks < 0 || k.FeeWeeks > 52) p.Add("pullout.feeWeeks must be from 0 to 52");
             if (k.TrustDrop < 0 || k.TrustDrop > 1000) p.Add("pullout.trustDrop must be from 0 to 1000");
             if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("pullout.reputationLoss must be from 0 to 500");
+        }
+
+        static void TreasuryProblems(List<string> p, GameConfig c)
+        {
+            TreasuryConfig k = c.Treasury;
+            if (k == null) { p.Add("treasury is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("treasury.enabled must be 0 or 1");
+            if (k.MinMove < 1) p.Add("treasury.minMove must be at least 1");
+            if (k.WeeklyYieldPpm < 0 || k.WeeklyYieldPpm > 5000) p.Add("treasury.weeklyYieldPpm must be from 0 to 5000, so the reserve is never a money machine");
+            if (k.DrawFeePermille < 0 || k.DrawFeePermille > 500) p.Add("treasury.drawFeePermille must be from 0 to 500");
+            if (k.CoverFeePermille < k.DrawFeePermille || k.CoverFeePermille > 900) p.Add("treasury.coverFeePermille must be from drawFeePermille to 900, so a rescue costs at least what a planned draw does");
+        }
+
+        static void PledgeProblems(List<string> p, GameConfig c)
+        {
+            PledgeConfig k = c.Pledge;
+            if (k == null) { p.Add("pledge is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("pledge.maxLevel must be from 0 to 5 (0 turns pledges off)");
+            if (k.BaseFloor < 1 || k.FloorStep < 0 || k.BaseFloor + (long)k.FloorStep * (MathI.Max(1, k.MaxLevel) - 1) > MathI.Permille)
+                p.Add("pledge.baseFloor and floorStep must keep the top level's floor from 1 to 1000");
+            if (k.TrustPerLevel < 0 || k.TrustPerLevel > 10) p.Add("pledge.trustPerLevel must be from 0 to 10");
+            if (k.BreachReputation < 0 || k.BreachReputation > 500) p.Add("pledge.breachReputation must be from 0 to 500");
+            if (k.BreachTrust < 0 || k.BreachTrust > 500) p.Add("pledge.breachTrust must be from 0 to 500");
+            if (k.WalkBackReputation < 0 || k.WalkBackReputation > k.BreachReputation) p.Add("pledge.walkBackReputation must be from 0 to breachReputation, so breaking a pledge costs more than walking it back");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("pledge.lockWeeks must be from 0 to 104");
+        }
+
+        static void RoadmapProblems(List<string> p, GameConfig c)
+        {
+            RoadmapConfig k = c.Roadmap;
+            if (k == null) { p.Add("roadmap is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("roadmap.maxLevel must be from 0 to 5 (0 turns roadmaps off)");
+            if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.MaxWeeks > 156) p.Add("roadmap.minWeeks and maxWeeks must be from 1 to 156 with maxWeeks at least minWeeks");
+            if (k.StretchPerLevel < 1 || k.StretchPerLevel > 1000) p.Add("roadmap.stretchPerLevel must be from 1 to 1000");
+            if (k.HypePerLevel < 0 || k.HypePerLevel > 100) p.Add("roadmap.hypePerLevel must be from 0 to 100");
+            if (k.DeliverPerLevel < 0 || k.DeliverPerLevel > 200) p.Add("roadmap.deliverPerLevel must be from 0 to 200");
+            if (k.MissPerLevel <= k.HypePerLevel || k.MissPerLevel > 300) p.Add("roadmap.missPerLevel must be above hypePerLevel and at most 300, so a missed roadmap loses more than the hype earned");
+        }
+
+        static void MentoringProblems(List<string> p, GameConfig c)
+        {
+            MentoringConfig k = c.Mentoring;
+            if (k == null) { p.Add("mentoring is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("mentoring.enabled must be 0 or 1");
+            if (k.MaxPairs < 1 || k.MaxPairs > 10) p.Add("mentoring.maxPairs must be from 1 to 10");
+            if (k.Weeks < 1 || k.Weeks > 104) p.Add("mentoring.weeks must be from 1 to 104");
+            if (k.MenteeWeightPermille < 100 || k.MenteeWeightPermille > MathI.Permille) p.Add("mentoring.menteeWeightPermille must be from 100 to 1000, so a junior never counts for more than a whole person");
+            if (k.MoralePerWeek < 0 || k.MoralePerWeek > 50) p.Add("mentoring.moralePerWeek must be from 0 to 50");
+            if (k.MoraleCeiling < 1 || k.MoraleCeiling > MathI.Permille) p.Add("mentoring.moraleCeiling must be from 1 to 1000");
+            if (k.GraduateMorale < 0 || k.GraduateMorale > 500) p.Add("mentoring.graduateMorale must be from 0 to 500");
+            if (k.MentorMorale < 0 || k.MentorMorale > 500) p.Add("mentoring.mentorMorale must be from 0 to 500");
+        }
+
+        static void SkunkworksProblems(List<string> p, GameConfig c)
+        {
+            SkunkworksConfig k = c.Skunkworks;
+            if (k == null) { p.Add("skunkworks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("skunkworks.enabled must be 0 or 1");
+            if (k.MinPeople < 1 || k.MinPeople > 20) p.Add("skunkworks.minPeople must be from 1 to 20");
+            if (k.MaxSharePermille < 1 || k.MaxSharePermille > 900) p.Add("skunkworks.maxSharePermille must be from 1 to 900, so a function is never emptied");
+            if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks || k.MaxWeeks > 104) p.Add("skunkworks.minWeeks and maxWeeks must be from 1 to 104 with maxWeeks at least minWeeks");
+            if (k.LongWeeks < k.MinWeeks || k.LongWeeks > k.MaxWeeks) p.Add("skunkworks.longWeeks must sit between minWeeks and maxWeeks");
+            if (k.LongBonusPermille < 0 || k.LongBonusPermille > 2000) p.Add("skunkworks.longBonusPermille must be from 0 to 2000");
+            if (k.EarlyPermille < 0 || k.EarlyPermille >= MathI.Permille) p.Add("skunkworks.earlyPermille must be from 0 to 999, so wrapping up early always pays less than finishing");
+            if (k.CostPerPersonWeek < 1) p.Add("skunkworks.costPerPersonWeek must be at least 1, so a project is never free");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("skunkworks.lockWeeks must be from 0 to 104");
+            if (k.ResearchPayoffPermille < 1 || k.ResearchPayoffPermille > 5000) p.Add("skunkworks.researchPayoffPermille must be from 1 to 5000");
+            if (k.AlignmentPerHundred < 0 || k.AlignmentPerHundred > 500) p.Add("skunkworks.alignmentPerHundred must be from 0 to 500");
+            if (k.MaxAlignment < 0 || k.MaxAlignment > 500) p.Add("skunkworks.maxAlignment must be from 0 to 500");
+            if (k.DebtPerPersonWeek < 0 || k.DebtPerPersonWeek > 50) p.Add("skunkworks.debtPerPersonWeek must be from 0 to 50");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

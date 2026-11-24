@@ -94,6 +94,11 @@ namespace AiLabs.Rules.Config
         public ChairsConfig Chairs = new ChairsConfig();
         public WhistleConfig Whistle = new WhistleConfig();
         public BugBountyConfig BugBounty = new BugBountyConfig();
+        public TreasuryConfig Treasury = new TreasuryConfig();
+        public PledgeConfig Pledge = new PledgeConfig();
+        public RoadmapConfig Roadmap = new RoadmapConfig();
+        public MentoringConfig Mentoring = new MentoringConfig();
+        public SkunkworksConfig Skunkworks = new SkunkworksConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -186,6 +191,11 @@ namespace AiLabs.Rules.Config
             s.Obj("chairs", ref Chairs);
             s.Obj("whistle", ref Whistle);
             s.Obj("bugBounty", ref BugBounty);
+            s.Obj("treasury", ref Treasury);
+            s.Obj("pledge", ref Pledge);
+            s.Obj("roadmap", ref Roadmap);
+            s.Obj("mentoring", ref Mentoring);
+            s.Obj("skunkworks", ref Skunkworks);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

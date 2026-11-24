@@ -281,6 +281,20 @@ The ticker and the company chat react to chairs, whistleblower concerns, bug bou
 
 The five systems of this batch are exercised together over three seeds and years, and the interactions between them are pinned.
 
+A lab can set cash aside in a reserve that earns a little each week, costs a fee to take back and pays a debt the weekly bill would leave, at a steeper fee.
+
+The player can make a public safety pledge at three levels: customers trust the lab a little more each week while it holds, and a launch that shows less alignment than it asks breaks it at a cost.
+
+The player can announce a roadmap for a more capable model by a date: hype now, a reward for a model that clears the bar in time and a larger loss when the deadline passes first.
+
+The player can pair a senior with a junior in the same function: both count for less for half a year, the junior's morale climbs, and when a senior seat is free the junior is promoted for nothing. The pair breaks up if either leaves.
+
+The player can pull a team out of research, safety or engineering for a project of up to half a year: the function loses their output, the lab pays a budget, and the project pays research points, real alignment on finished models or cleared technical debt for the person-weeks worked. Wrapping up early pays half.
+
+The ticker and the company chat react to the reserve, safety pledges, roadmaps, mentoring and skunkworks projects.
+
+The five systems of this batch (reserve, pledge, roadmap, mentoring, skunkworks) are exercised together over three seeds and years, and the interactions between them are pinned.
+
 The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
 
 Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.

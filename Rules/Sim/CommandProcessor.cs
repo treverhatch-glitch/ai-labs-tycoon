@@ -102,6 +102,14 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.SetBugBounty: return SetBugBounty(c, state, lab, cmd);
                 case CommandKind.PullOutOfSector: return PullOutOfSector(c, state, lab, cmd);
                 case CommandKind.RestructureLoan: return RestructureLoan(c, state, lab, cmd);
+                case CommandKind.AnnounceRoadmap: return AnnounceRoadmap(c, state, lab, cmd);
+                case CommandKind.AssignMentor: return AssignMentor(c, state, lab, cmd);
+                case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
+                case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
+                case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SetPledge: return SetPledge(c, state, lab, cmd);
+                case CommandKind.SetAsideReserve: return SetAsideReserve(c, state, lab, cmd);
+                case CommandKind.DrawReserve: return DrawReserve(c, state, lab, cmd);
                 case CommandKind.ApplyForGrant: return ApplyForGrant(c, state, lab, cmd);
                 case CommandKind.SetSla: return SetSla(c, state, lab, cmd);
                 case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);
@@ -497,6 +505,7 @@ namespace AiLabs.Rules.Sim
                     model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
                 else if (model.DisplayedAlignment < model.Alignment)
                     model.DisplayedAlignment = model.Alignment;
+                Pledge.OnFirstRelease(c, state, lab, model);
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
             if (firstRelease) OfficeEvents.OnRelease(c, state, lab);

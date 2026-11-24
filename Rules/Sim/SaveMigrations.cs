@@ -82,6 +82,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 65) MigrateTo65(root);
             if (fromSchema < 66) MigrateTo66(root);
             if (fromSchema < 67) MigrateTo67(root);
+            if (fromSchema < 68) MigrateTo68(root);
+            if (fromSchema < 69) MigrateTo69(root);
+            if (fromSchema < 70) MigrateTo70(root);
+            if (fromSchema < 71) MigrateTo71(root);
+            if (fromSchema < 72) MigrateTo72(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -769,6 +774,58 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "bountyLevel", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "bountyLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 68: no lab has set cash aside in reserve.</summary>
+        static void MigrateTo68(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reserve", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 69: no lab has made a public safety pledge.</summary>
+        static void MigrateTo69(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pledgeLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "pledgeLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 70: no lab has announced a roadmap.</summary>
+        static void MigrateTo70(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "roadmapLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapGoal", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 71: nobody is in a mentoring pair.</summary>
+        static void MigrateTo71(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
+            {
+                JsonPatch.AddIfMissing(person, "mentorId", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "mentorWeeks", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 72: no lab runs a skunkworks project.</summary>
+        static void MigrateTo72(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "skunkKind", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "skunkPeople", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkWork", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "skunkLockedUntil", JsonValue.Of(0L));
             });
         }
 
