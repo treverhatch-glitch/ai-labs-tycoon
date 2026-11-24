@@ -56,6 +56,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < c.Office.Events.Count; i++)
             {
                 OfficeEventConfig e = c.Office.Events[i];
+                if (e.Trigger != OfficeTrigger.Random) continue;
                 if (!MeetsRequirement(c, lab, e.Requires)) continue;
                 any.Add(e);
                 if (!lab.OfficeSeen.Contains(e.IdValue)) fresh.Add(e);
@@ -69,7 +70,7 @@ namespace AiLabs.Rules.Systems
             if (!Has(lab) || c.Office.Events.Count == 0) return;
             if (IsPending(lab))
             {
-                if (state.Tick + 1 >= lab.OfficeEventExpires) Lapse(state, lab);
+                if (state.Tick + 1 >= lab.OfficeEventExpires) Lapse(c, state, lab);
                 return;
             }
             if (state.Tick < c.Office.FirstAfterWeeks) return;
@@ -85,9 +86,60 @@ namespace AiLabs.Rules.Systems
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
         }
 
-        static void Lapse(GameState state, LabState lab)
+        /// <summary>The hearing questions: the events a hearing at home can pose.</summary>
+        public static List<OfficeEventConfig> HearingQuestions(GameConfig c) { return WithTrigger(c, OfficeTrigger.Hearing); }
+
+        static List<OfficeEventConfig> WithTrigger(GameConfig c, OfficeTrigger trigger)
         {
-            Events.Add(state, EventKind.OfficeEventLapsed, lab.Id, -1, 0, lab.OfficeEventId);
+            var list = new List<OfficeEventConfig>();
+            for (int i = 0; i < c.Office.Events.Count; i++)
+                if (c.Office.Events[i].Trigger == trigger) list.Add(c.Office.Events[i]);
+            return list;
+        }
+
+        /// <summary>
+        /// A hearing at the player's home government has begun: the committee asks a question, taking the place of whatever was waiting
+        /// (that lapses). Rotates through the questions so the same one is not asked twice in a row. Does nothing for rivals, for a hearing
+        /// abroad, or when the data has no hearing questions.
+        /// </summary>
+        public static void OnHearing(GameConfig c, GameState state, LabState lab, string blocId)
+        {
+            if (!Has(lab) || blocId != lab.HomeBlocId) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Hearing);
+        }
+
+        /// <summary>One of the player's models tried to escape: the crisis takes the place of whatever was waiting. Does nothing for rivals or when the data has no escape events.</summary>
+        public static void OnEscape(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab)) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Escape);
+        }
+
+        static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger)
+        {
+            List<OfficeEventConfig> all = WithTrigger(c, trigger);
+            if (all.Count == 0) return;
+            var fresh = new List<OfficeEventConfig>();
+            for (int i = 0; i < all.Count; i++) if (!lab.OfficeSeen.Contains(all[i].IdValue)) fresh.Add(all[i]);
+            if (fresh.Count == 0)
+            {
+                for (int i = 0; i < all.Count; i++) lab.OfficeSeen.Remove(all[i].IdValue);
+                fresh = all;
+            }
+            OfficeEventConfig chosen = fresh[(int)(Mix(state, lab, 3) % fresh.Count)];
+            if (IsPending(lab)) Lapse(c, state, lab);
+            lab.OfficeEventId = chosen.IdValue;
+            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            lab.OfficeSeen.Add(chosen.IdValue);
+            Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+        }
+
+        static void Lapse(GameConfig c, GameState state, LabState lab)
+        {
+            OfficeEventConfig e = c.Office.Event(lab.OfficeEventId);
+            OfficeChoiceConfig fallback = e == null || string.IsNullOrEmpty(e.LapseChoice) ? null : e.Choice(e.LapseChoice);
+            Events.Add(state, EventKind.OfficeEventLapsed, lab.Id, -1, 0, fallback == null ? lab.OfficeEventId : lab.OfficeEventId + "|" + fallback.IdValue);
+            if (fallback != null) for (int i = 0; i < fallback.Effects.Count; i++) Apply(c, state, lab, fallback.Effects[i]);
             lab.OfficeEventId = "";
             lab.OfficeEventExpires = 0;
         }
@@ -126,6 +178,11 @@ namespace AiLabs.Rules.Systems
                 case OfficeEffectKind.Attention:
                     BlocStanding home = lab.Bloc(lab.HomeBlocId);
                     if (home != null) home.Attention = (int)MathI.Clamp((long)home.Attention + effect.Amount, 0, MathI.Permille);
+                    break;
+                case OfficeEffectKind.Corruption:
+                    for (int i = 0; i < lab.Models.Count; i++)
+                        if (lab.Models[i].Status == ModelStatus.Released)
+                            lab.Models[i].Corruption = (int)MathI.Clamp((long)lab.Models[i].Corruption + effect.Amount, 0, MathI.Permille);
                     break;
                 case OfficeEffectKind.CashWeeks:
                     long cash = effect.Amount * WeekCost(c, state, lab);

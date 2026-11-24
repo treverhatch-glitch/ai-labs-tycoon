@@ -36,6 +36,10 @@ namespace AiLabs.Rules.Config
         public int MaxFrictionPermille;
         /// <summary>Added to a hire's id before the trait roll. Any whole number does; a different one gives different people the same traits.</summary>
         public int TraitRollSalt;
+        /// <summary>The most the people who post through it can add to a launch's buzz, and to what a scandal costs, each in permille.</summary>
+        public int MaxPostsPermille;
+        /// <summary>Reputation points a person quitting by blog post costs the lab, before the press room has its say.</summary>
+        public int QuitReputation;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -63,6 +67,8 @@ namespace AiLabs.Rules.Config
             s.Int("frictionPerPairPermille", ref FrictionPerPairPermille);
             s.Int("maxFrictionPermille", ref MaxFrictionPermille);
             s.Int("traitRollSalt", ref TraitRollSalt);
+            s.Int("maxPostsPermille", ref MaxPostsPermille);
+            s.Int("quitReputation", ref QuitReputation);
             s.ObjList("traits", ref Traits);
         }
     }
@@ -89,6 +95,14 @@ namespace AiLabs.Rules.Config
         public int RestMoraleOffset;
         /// <summary>The camp this person is in ("doom" or "accel"); a lab with both camps starts arguing. Empty for everyone else.</summary>
         public string Camp = "";
+        /// <summary>What this person adds to the launch buzz of the lab's models, in permille of the usual buzz (the live posts).</summary>
+        public int BuzzPermille;
+        /// <summary>What this person adds to the reputation a scandal costs the lab, in permille of the loss (the live posts).</summary>
+        public int ScandalPermille;
+        /// <summary>Above zero: this person quits, by blog post, the first week their morale is below this.</summary>
+        public int QuitBelowMorale;
+        /// <summary>Above zero: this person's own research is this much higher while the lab has a variant run training, and this much lower while it does not.</summary>
+        public int InterestingPermille;
         public string Blurb = "";
 
         public string Id { get { return IdValue; } }
@@ -107,6 +121,10 @@ namespace AiLabs.Rules.Config
             s.Int("offerPermille", ref OfferPermille);
             s.Int("restMoraleOffset", ref RestMoraleOffset);
             s.Str("camp", ref Camp);
+            s.Int("buzzPermille", ref BuzzPermille);
+            s.Int("scandalPermille", ref ScandalPermille);
+            s.Int("quitBelowMorale", ref QuitBelowMorale);
+            s.Int("interestingPermille", ref InterestingPermille);
             s.Str("blurb", ref Blurb);
         }
     }

@@ -55,3 +55,9 @@ The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks
 | The investor question | safety staff | explain it properly; promise to look at costs; rename it Trust |
 
 The last eight are the second batch (QUESTIONS Q262 and Q263), from the bible's longer list of event ideas and its "more events" section.
+
+## Hearing questions
+
+An event with `trigger: "Hearing"` is never drawn by the weekly chance. A hearing at the home government poses one instead (see [hearing-questions.md](hearing-questions.md)).
+
+An event with `trigger: "Escape"` is posed by a rung-5 incident instead (see [escape-crisis.md](escape-crisis.md)), and may name a `lapseChoice` that is taken for the player when time runs out.

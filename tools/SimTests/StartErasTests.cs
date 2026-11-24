@@ -233,7 +233,7 @@ public class StartErasTests
     public void A_starting_era_with_no_cash_is_a_config_problem()
     {
         AssertProblem(Problems(c => c.Era("agents").StartCashPermille = 0), "gives no start cash");
-        Assert.Empty(Problems(c => c.Era("agents").Startable = false));
+        Assert.Empty(Problems(c => { c.Era("agents").Startable = false; c.Scenarios.Scenarios.RemoveAll(s => s.EraId == "agents"); }));
     }
 
     [Fact]

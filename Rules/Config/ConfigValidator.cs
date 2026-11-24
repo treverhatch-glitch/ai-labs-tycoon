@@ -78,6 +78,8 @@ namespace AiLabs.Rules.Config
             SuccessorProblems(p, c);
             RushProblems(p, c);
             LobbyProblems(p, c);
+            LoanProblems(p, c);
+            ScenarioProblems(p, c);
             PivotProblems(p, c);
             CampaignProblems(p, c);
             RunsProblems(p, c);
@@ -566,6 +568,8 @@ namespace AiLabs.Rules.Config
             if (r == null) { p.Add("runs is missing"); return; }
             UniqueIds(p, "runs.approaches", r.Approaches);
             UniqueIds(p, "runs.checkpoints", r.Checkpoints);
+            if (r.EngineerSavingPermillePerStaff < 0) p.Add("runs.engineerSavingPermillePerStaff must be non-negative");
+            if (r.EngineerSavingCapPermille < 0 || r.EngineerSavingCapPermille > MathI.Permille) p.Add("runs.engineerSavingCapPermille must be from 0 to 1000");
             ApproachConfig fallbackApproach = r.Approach(r.DefaultApproachId);
             if (fallbackApproach == null) p.Add("runs.defaultApproachId \"" + r.DefaultApproachId + "\" is not an approach");
             else if (fallbackApproach.CapabilityPermille != 0 || fallbackApproach.FailurePermillePerWeek != 0)
@@ -622,6 +626,41 @@ namespace AiLabs.Rules.Config
             if (v.StaffLossPermille < 0 || v.StaffLossPermille > MathI.Permille) p.Add("pivot.staffLossPermille must be from 0 to 1000");
             if (v.ConfusionWeeks < 1 || v.ConfusionWeeks > 520) p.Add("pivot.confusionWeeks must be from 1 to 520");
             if (v.ConfusionAppealPermille < 0 || v.ConfusionAppealPermille >= MathI.Permille) p.Add("pivot.confusionAppealPermille must be from 0 to 999");
+        }
+
+        static void ScenarioProblems(List<string> p, GameConfig c)
+        {
+            ScenariosConfig sc = c.Scenarios;
+            if (sc == null) { p.Add("scenarios is missing"); return; }
+            UniqueIds(p, "scenarios", sc.Scenarios);
+            for (int i = 0; i < sc.Scenarios.Count; i++)
+            {
+                ScenarioConfig s = sc.Scenarios[i];
+                string who = "scenario " + s.IdValue;
+                if (string.IsNullOrEmpty(s.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(s.Blurb)) p.Add(who + " has no blurb");
+                EraConfig era = c.Era(s.EraId);
+                if (era == null) p.Add(who + " starts in the unknown era \"" + s.EraId + "\"");
+                else if (!era.Startable) p.Add(who + " starts in " + era.Name + ", which is not a starting era");
+                if (!string.IsNullOrEmpty(s.FounderId) && c.Founder(s.FounderId) == null) p.Add(who + " has the unknown founder \"" + s.FounderId + "\"");
+                if (!string.IsNullOrEmpty(s.StyleId) && c.Style(s.StyleId) == null) p.Add(who + " has the unknown style \"" + s.StyleId + "\"");
+                if (!string.IsNullOrEmpty(s.HomeBlocId) && c.World.Bloc(s.HomeBlocId) == null) p.Add(who + " has the unknown home bloc \"" + s.HomeBlocId + "\"");
+                for (int k = 0; k < s.RivalIds.Count; k++)
+                    if (c.Rival(s.RivalIds[k]) == null) p.Add(who + " has the unknown rival \"" + s.RivalIds[k] + "\"");
+            }
+        }
+
+        static void LoanProblems(List<string> p, GameConfig c)
+        {
+            LoansConfig l = c.Loans;
+            if (l == null) { p.Add("loans is missing"); return; }
+            if (l.LoanToValuePermille < 1 || l.LoanToValuePermille > MathI.Permille) p.Add("loans.loanToValuePermille must be from 1 to 1000");
+            if (l.TermWeeks < 1 || l.TermWeeks > 520) p.Add("loans.termWeeks must be from 1 to 520");
+            if (l.InterestPermille < 0 || l.InterestPermille > 2000) p.Add("loans.interestPermille must be from 0 to 2000");
+            if (l.MinPrincipal < 1) p.Add("loans.minPrincipal must be at least 1");
+            if (l.MaxOpen < 1 || l.MaxOpen > 20) p.Add("loans.maxOpen must be from 1 to 20");
+            if (l.MissPenaltyPermille < 0 || l.MissPenaltyPermille > MathI.Permille) p.Add("loans.missPenaltyPermille must be from 0 to 1000");
+            if (l.DefaultAfterMisses < 1 || l.DefaultAfterMisses > 52) p.Add("loans.defaultAfterMisses must be from 1 to 52");
         }
 
         static void LobbyProblems(List<string> p, GameConfig c)
@@ -709,6 +748,7 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
                 if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
                 if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
+                if (!string.IsNullOrEmpty(e.LapseChoice) && e.Choice(e.LapseChoice) == null) p.Add(who + " lapses into the unknown choice \"" + e.LapseChoice + "\"");
                 UniqueIds(p, who + " choices", e.Choices);
                 for (int k = 0; k < e.Choices.Count; k++)
                 {
@@ -1374,6 +1414,8 @@ namespace AiLabs.Rules.Config
             if (s.FrictionPerPairPermille < 0 || s.FrictionPerPairPermille > 500) p.Add("staffPeople.frictionPerPairPermille needs 0 to 500");
             if (s.MaxFrictionPermille < 0 || s.MaxFrictionPermille > 900) p.Add("staffPeople.maxFrictionPermille needs 0 to 900, so a lab always does some research");
             if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
+            if (s.MaxPostsPermille < 0 || s.MaxPostsPermille > 1000) p.Add("staffPeople.maxPostsPermille needs 0 to 1000");
+            if (s.QuitReputation < 0 || s.QuitReputation > MathI.Permille) p.Add("staffPeople.quitReputation needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");
@@ -1393,6 +1435,10 @@ namespace AiLabs.Rules.Config
             if (t.MentorPermille < 0 || t.MentorPermille > 500) p.Add(who + " needs mentorPermille from 0 to 500");
             if (t.OfferPermille < -500 || t.OfferPermille > 500) p.Add(who + " needs offerPermille from -500 to 500");
             if (t.RestMoraleOffset < -500 || t.RestMoraleOffset > 500) p.Add(who + " needs restMoraleOffset from -500 to 500");
+            if (t.BuzzPermille < 0 || t.BuzzPermille > 500) p.Add(who + " needs buzzPermille from 0 to 500");
+            if (t.ScandalPermille < 0 || t.ScandalPermille > 500) p.Add(who + " needs scandalPermille from 0 to 500");
+            if (t.QuitBelowMorale < 0 || t.QuitBelowMorale > s.MoraleBaseline) p.Add(who + " needs quitBelowMorale from 0 to the baseline morale, or its people quit the day they arrive");
+            if (t.InterestingPermille < 0 || t.InterestingPermille > 900) p.Add(who + " needs interestingPermille from 0 to 900");
             if (t.Camp != "" && t.Camp != "doom" && t.Camp != "accel") p.Add(who + " has the camp \"" + t.Camp + "\": it is \"doom\", \"accel\" or empty");
         }
 

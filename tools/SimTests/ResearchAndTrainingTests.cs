@@ -14,7 +14,10 @@ public class ResearchAndTrainingTests
     [Fact]
     public void Researchers_earn_research_points_every_week()
     {
-        Game g = Game.Solo().WithStarterLab(researchers: 3);
+        Game g = Game.Solo(1, c =>
+        {
+            foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
+        }).WithStarterLab(researchers: 3);
         g.Weeks(5);
         Assert.Equal(5 * 3 * g.C.Research.PointsPerResearcherWeek, g.Me.ResearchPoints);
         Assert.Equal(3 * g.C.Research.PointsPerResearcherWeek, g.Me.LastWeek.ResearchGained);

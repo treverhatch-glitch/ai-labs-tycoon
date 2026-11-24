@@ -109,6 +109,18 @@ namespace AiLabs.Rules.Sim
                         CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
                         return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
                     }
+                case EventKind.LoanTaken: return who + " borrowed $" + e.Amount + " against its chips.";
+                case EventKind.LoanRepaid:
+                    return e.Ref == "early" ? who + " paid off a loan early: $" + e.Amount + "." : who + " paid off a $" + e.Amount + " loan.";
+                case EventKind.LoanMissed: return who + " missed a $" + e.Amount + " loan payment.";
+                case EventKind.LoanDefaulted:
+                    return who + " defaulted: the lender took " + e.SubjectId + (e.SubjectId == 1 ? " GPU" : " GPUs") + (e.Amount > 0 ? " and wrote off $" + e.Amount + "." : ".");
+                case EventKind.StaffQuit:
+                    {
+                        string[] parts = e.Ref.Split('|');
+                        RoleConfig role = c.Role(parts[0]);
+                        return "A " + (role == null ? parts[0] : role.Name.ToLowerInvariant()) + " quit " + who + " by blog post. It cost " + e.Amount + " reputation.";
+                    }
                 case EventKind.TrainingFinished: return who + " finished training " + e.Ref + " (capability " + e.Amount + ").";
                 case EventKind.ModelReleased: return who + " released " + e.Ref + " into " + e.Amount + (e.Amount == 1 ? " sector." : " sectors.");
                 case EventKind.ModelRetired: return who + " retired " + e.Ref + ".";
@@ -173,8 +185,11 @@ namespace AiLabs.Rules.Sim
                     }
                 case EventKind.OfficeEventLapsed:
                     {
-                        OfficeEventConfig gone = c.Office.Event(e.Ref);
-                        return who + " did nothing about '" + (gone == null ? e.Ref : gone.Name) + "' and it blew over.";
+                        string[] parts = e.Ref.Split('|');
+                        OfficeEventConfig gone = c.Office.Event(parts[0]);
+                        OfficeChoiceConfig taken = parts.Length == 2 && gone != null ? gone.Choice(parts[1]) : null;
+                        if (taken != null) return who + " left '" + gone.Name + "' unanswered, so: " + taken.Text + ".";
+                        return who + " did nothing about '" + (gone == null ? parts[0] : gone.Name) + "' and it blew over.";
                     }
                 case EventKind.ModelFineTuned:
                     return who + " paid $" + e.Amount + " to fine-tune " + e.Ref + ". The glitching has stopped and it is a little more careful.";

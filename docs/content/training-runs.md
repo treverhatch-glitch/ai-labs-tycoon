@@ -21,6 +21,10 @@ Both take the model and an id, and both are refused, changing nothing, for an un
 
 Each training week the run's chance is a hash of the seed, the week, the lab and the model, so it draws nothing from the shared dice. A failure throws away the habit's share of both the run's progress and its safety work and logs `EventKind.TrainingFailed` (Amount: the compute lost). A run with nothing yet to lose does not fail. The capability bonus is added the way the objective's is, into the luck part, so the parts still add up to the whole.
 
+## Engineers
+
+Each engineer takes **6%** off the run's weekly failure chance (`runs.engineerSavingPermillePerStaff` 60), up to **60%** (`engineerSavingCapPermille` 600). A variant run's 1.5% becomes 1.41% with one engineer and 0.6% at the cap. Nothing is saved: the saving is worked out each week from the staff on the books, so firing engineers mid-run raises the chance the next week (see QUESTIONS Q270 and Q271).
+
 ## Notes
 
 - Saved per model: `approach` and `checkpoints` (empty for the defaults), schema 40.

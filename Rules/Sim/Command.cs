@@ -33,7 +33,9 @@ namespace AiLabs.Rules.Sim
         Lobby,
         PivotStyle,
         SetRunApproach,
-        SetCheckpoints
+        SetCheckpoints,
+        TakeLoan,
+        RepayLoan
     }
 
     /// <summary>
@@ -315,6 +317,22 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Borrows against the lab's chips: this share of what it could borrow now, in permille.</summary>
+        public static Command TakeLoan(int labId, int permilleOfRoom)
+        {
+            Command c = Make(CommandKind.TakeLoan, labId);
+            c.Permille = permilleOfRoom;
+            return c;
+        }
+
+        /// <summary>Pays off a loan in one go.</summary>
+        public static Command RepayLoan(int labId, int loanId)
+        {
+            Command c = Make(CommandKind.RepayLoan, labId);
+            c.TargetId = loanId;
+            return c;
+        }
+
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>
         public static Command PivotStyle(int labId, string styleId)
         {
@@ -560,7 +578,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit
     }
 
     public struct CommandResult

@@ -95,6 +95,7 @@ namespace AiLabs.Rules.Systems
                 if (amount < 0) amount = -PressSystem.Damp(c, lab, (int)-amount);
                 lab.Reputation = (int)MathI.Clamp(lab.Reputation + amount, 0, MathI.Permille);
                 if (amount < 0) PressSystem.OnBeat(c, state, lab, "hearing", (int)-amount, "");
+                OfficeEvents.OnHearing(c, state, lab, standing.BlocId);
             }
             else if (standing.Level == BlocStanding.Audit)
             {

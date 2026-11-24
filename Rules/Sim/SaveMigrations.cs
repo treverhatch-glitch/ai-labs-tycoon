@@ -56,6 +56,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 39) MigrateTo39(root);
             if (fromSchema < 40) MigrateTo40(root);
             if (fromSchema < 41) MigrateTo41(root);
+            if (fromSchema < 42) MigrateTo42(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -512,6 +513,12 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
                 JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
             }));
+        }
+
+        /// <summary>Schema 42: no lab had borrowed.</summary>
+        static void MigrateTo42(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "loans", JsonValue.Array()));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

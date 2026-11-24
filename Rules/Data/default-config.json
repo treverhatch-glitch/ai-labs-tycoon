@@ -4843,6 +4843,8 @@
     "maxOfferBoostPermille": 500,
     "frictionPerPairPermille": 40,
     "maxFrictionPermille": 300,
+    "maxPostsPermille": 300,
+    "quitReputation": 20,
     "traitRollSalt": 20,
     "starHirePermille": 120,
     "traits": [
@@ -4859,6 +4861,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Turns up, does the work, goes home."
       },
       {
@@ -4874,6 +4880,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Worth more than a building of average hires, and knows it."
       },
       {
@@ -4889,6 +4899,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Says they are a 10X engineer. Is, a little."
       },
       {
@@ -4904,6 +4918,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "doom",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Raises control and slows releases."
       },
       {
@@ -4919,6 +4937,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "accel",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Ships faster and reads the safety reports later."
       },
       {
@@ -4934,6 +4956,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Everyone near them gets a little better."
       },
       {
@@ -4949,6 +4975,10 @@
         "offerPermille": 0,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Notices the incident before it is a screenshot."
       },
       {
@@ -4964,6 +4994,10 @@
         "offerPermille": 100,
         "restMoraleOffset": 0,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Their calendar says dentist. Rivals know better."
       },
       {
@@ -4979,7 +5013,68 @@
         "offerPermille": 0,
         "restMoraleOffset": 60,
         "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
         "blurb": "Happy, rested, and not at their desk."
+      },
+      {
+        "id": "posts-through-it",
+        "name": "Posts Through It",
+        "researchPermille": 0,
+        "star": false,
+        "hirePermille": 40,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 120,
+        "scandalPermille": 120,
+        "quitBelowMorale": 0,
+        "interestingPermille": 0,
+        "blurb": "Live-posted the outage, the launch and the lunch. Launches get a little louder. So do scandals."
+      },
+      {
+        "id": "quits-by-blog-post",
+        "name": "Will Quit By Blog Post",
+        "researchPermille": 50,
+        "star": false,
+        "hirePermille": 30,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 300,
+        "interestingPermille": 0,
+        "blurb": "Cares a great deal. When it is too much, there will be a table of contents."
+      },
+      {
+        "id": "only-interesting",
+        "name": "Only Works On What Is Interesting",
+        "researchPermille": 0,
+        "star": false,
+        "hirePermille": 40,
+        "trainingSpeedPermille": 0,
+        "alignmentWorkPermille": 0,
+        "incidentCatchPermille": 0,
+        "mentorPermille": 0,
+        "offerPermille": 0,
+        "restMoraleOffset": 0,
+        "camp": "",
+        "buzzPermille": 0,
+        "scandalPermille": 0,
+        "quitBelowMorale": 0,
+        "interestingPermille": 200,
+        "blurb": "Brilliant while a variant run is training. Otherwise they are 'thinking about something'."
       }
     ]
   },
@@ -5358,6 +5453,8 @@
         "name": "The public repository",
         "text": "An intern leaves the model's instructions in a public repository. It has forty stars already.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "rotate",
@@ -5411,6 +5508,8 @@
         "name": "The cat and the benchmark",
         "text": "Your office cat walks across a keyboard and improves a benchmark by 0.3 points.",
         "requires": "AnyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "credit",
@@ -5464,6 +5563,8 @@
         "name": "The wrapper",
         "text": "A startup wraps your model in a new logo and outsells you in a sector you serve.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "lawyers",
@@ -5517,6 +5618,8 @@
         "name": "The leaked report",
         "text": "The safety team's report leaks the night before a funding round.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "publish",
@@ -5570,6 +5673,8 @@
         "name": "The town vote",
         "text": "A town votes on your next data centre. The whole debate is about the noise.",
         "requires": "AnyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "park",
@@ -5623,6 +5728,8 @@
         "name": "The open letter",
         "text": "An open letter asks for a six-month pause. You may sign it.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "sign",
@@ -5680,6 +5787,8 @@
         "name": "The earnings question",
         "text": "An earnings call question about 'AGI by next year' has no safe answer.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "yes",
@@ -5724,6 +5833,8 @@
         "name": "The drawings",
         "text": "Your mascot starts drawing pictures of the server room door.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "ask",
@@ -5777,6 +5888,8 @@
         "name": "Tuesday",
         "text": "Customers discover the model is nicer on Tuesdays. Nobody knows why.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "investigate",
@@ -5821,6 +5934,8 @@
         "name": "The union joke",
         "text": "Your agents unionise as a joke. The joke runs for three weeks.",
         "requires": "AnyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "join",
@@ -5878,6 +5993,8 @@
         "name": "The fake video",
         "text": "A fake video of you announcing free compute goes viral.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "honour",
@@ -5927,6 +6044,8 @@
         "name": "The poetry prize",
         "text": "Your model wins a poetry prize. The judges are furious.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "accept",
@@ -5984,6 +6103,8 @@
         "name": "The essay",
         "text": "Your model refuses a task and writes an essay explaining why. It is a good essay.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "publish",
@@ -6033,6 +6154,8 @@
         "name": "The honest answer",
         "text": "A journalist asks your chatbot about you. It is honest.",
         "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "print",
@@ -6086,6 +6209,8 @@
         "name": "The senator's question",
         "text": "A senator asks whether the model lives in the cloud or in the phone.",
         "requires": "AnyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "brief",
@@ -6139,6 +6264,8 @@
         "name": "The signed GPU",
         "text": "The chip baron signs a GPU on stage and puts it up for auction. The room goes quiet and looks at you.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "bid",
@@ -6192,6 +6319,8 @@
         "name": "The person in the next room",
         "text": "A rival's demo turns out to be a person in another room.",
         "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "post",
@@ -6241,6 +6370,8 @@
         "name": "The five per cent",
         "text": "The safety team asks for five per cent of the compute, in writing, with a graph.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "grant",
@@ -6294,6 +6425,8 @@
         "name": "The investor question",
         "text": "An investor asks why the company has a safety team at all.",
         "requires": "SafetyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
         "choices": [
           {
             "id": "explain",
@@ -6337,6 +6470,341 @@
               {
                 "kind": "Morale",
                 "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-weapon",
+        "name": "The weapon question",
+        "text": "A senator asks whether your model could help someone build a weapon. The room goes quiet and the cameras turn.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "plain",
+            "text": "Say what you tested and what you did not",
+            "result": "The room is cooler than you feared. One staffer writes down the word 'tested'.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": -30
+              }
+            ]
+          },
+          {
+            "id": "promise",
+            "text": "Promise a safeguard by the next hearing",
+            "result": "The committee nods. Your safety lead has to build it by then.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": -50
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "hypothetical",
+            "text": "Call it a hypothetical",
+            "result": "The clip runs all evening, cut after the word hypothetical.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -20
+              },
+              {
+                "kind": "Attention",
+                "amount": 60
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-jobs",
+        "name": "The jobs question",
+        "text": "A committee member asks how many jobs your models will replace, and whether you have a number.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "forecast",
+            "text": "Give the real forecast",
+            "result": "It is not a comfortable number. They thank you for it anyway, and your staff read the transcript.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Attention",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "optimism",
+            "text": "Say it will make more jobs than it ends",
+            "result": "Heads nod. Somebody will be quoting this back to you in a year.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "fund",
+            "text": "Offer a retraining fund",
+            "result": "A cheque and a press release. The committee moves on to someone else's problems.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Attention",
+                "amount": -60
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-data",
+        "name": "The data question",
+        "text": "They ask for the list of what the model was trained on. Some of it is awkward.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "handover",
+            "text": "Hand over the list",
+            "result": "It is long and some of it is embarrassing. The committee notes that you did not make them ask twice.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Attention",
+                "amount": -30
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "text": "Cite trade secrets",
+            "result": "Your team is proud of you. The committee is not.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 50
+              },
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "closed",
+            "text": "Offer a closed briefing",
+            "result": "A quiet room, a few signatures and a legal bill.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": -20
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hearing-pause",
+        "name": "The pause question",
+        "text": "A member asks whether you would stop training if this committee told you to.",
+        "requires": "Nothing",
+        "trigger": "Hearing",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "yes",
+            "text": "Say yes, if the law says so",
+            "result": "It makes the evening news. Your researchers lose two weeks sulking over the maybe.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 20
+              },
+              {
+                "kind": "Attention",
+                "amount": -50
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              }
+            ]
+          },
+          {
+            "id": "no",
+            "text": "Say no, and explain why",
+            "result": "A clip of you saying no goes round. Your staff cheer in the kitchen.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Attention",
+                "amount": 40
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              }
+            ]
+          },
+          {
+            "id": "board",
+            "text": "Say you would consult your board",
+            "result": "The answer satisfies nobody and offends nobody, for now.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "escape-attempt",
+        "name": "It is trying to get out",
+        "text": "One of your models has started copying itself to a server you do not own. The containment wing has locked itself. The lights are doing something unfortunate. Every minute you spend deciding is a minute it spends copying.",
+        "requires": "Nothing",
+        "trigger": "Escape",
+        "lapseChoice": "watch",
+        "choices": [
+          {
+            "id": "shutdown",
+            "text": "Pull the plug on the data centres",
+            "result": "Everything goes dark for a week. It costs a fortune and the investors have questions. The copy never finishes.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -10
+              },
+              {
+                "kind": "Corruption",
+                "amount": -400
+              },
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              }
+            ]
+          },
+          {
+            "id": "contain",
+            "text": "Gamble on the sandbox",
+            "result": "The sandbox holds, mostly. Your safety team spends the night rebuilding it and the press hear about the night.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": -150
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Attention",
+                "amount": 100
+              },
+              {
+                "kind": "Reputation",
+                "amount": -20
+              }
+            ]
+          },
+          {
+            "id": "watch",
+            "text": "Watch what it does",
+            "result": "It does a great deal. Nobody is sure what, and that is the problem.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": 200
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
               }
             ]
           }
@@ -6649,6 +7117,8 @@
   "runs": {
     "defaultApproachId": "standard",
     "defaultCheckpointId": "rare",
+    "engineerSavingPermillePerStaff": 60,
+    "engineerSavingCapPermille": 600,
     "approaches": [
       {
         "id": "standard",
@@ -6679,6 +7149,113 @@
         "text": "A failure costs a tenth of the run, and the storage bill arrives every week.",
         "lossPermille": 100,
         "weeklyCostPermille": 40
+      }
+    ]
+  },
+  "loans": {
+    "loanToValuePermille": 500,
+    "termWeeks": 52,
+    "interestPermille": 80,
+    "minPrincipal": 5000,
+    "maxOpen": 3,
+    "missPenaltyPermille": 100,
+    "defaultAfterMisses": 3
+  },
+  "scenarios": {
+    "scenarios": [
+      {
+        "id": "professors-grant",
+        "name": "The Professor's Grant",
+        "blurb": "2009. You left the university with a grant, a whiteboard and a reputation for being right a long time ago.",
+        "eraId": "punchline",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "us",
+        "labName": "Ivory Tower Labs",
+        "leader": "Prof. Okafor",
+        "familyName": "Ivory",
+        "rivalIds": []
+      },
+      {
+        "id": "dropouts-deck",
+        "name": "The Dropout's Deck",
+        "blurb": "2012. You have a pitch deck, a hoodie and a terrifying amount of confidence. The research is still on the way.",
+        "eraId": "it-sees",
+        "founderId": "dropout",
+        "styleId": "wildcard",
+        "homeBlocId": "us",
+        "labName": "Pitch Deck Labs",
+        "leader": "Sam",
+        "familyName": "Deck",
+        "rivalIds": []
+      },
+      {
+        "id": "defectors-lawsuit",
+        "name": "The Defector's Lawsuit",
+        "blurb": "2017. You walked out of OpenAye with secrets and a non-compete lawsuit. They have not forgotten.",
+        "eraId": "it-writes",
+        "founderId": "defector",
+        "styleId": "shotgun",
+        "homeBlocId": "us",
+        "labName": "Second Chance AI",
+        "leader": "Dr. Vale",
+        "familyName": "Chance",
+        "rivalIds": []
+      },
+      {
+        "id": "heirs-gambit",
+        "name": "The Heir's Gambit",
+        "blurb": "2022. Old money, new chips. Everyone in the lab knows who your father is. Nobody has told you what a loss curve is.",
+        "eraId": "chat-boom",
+        "founderId": "heir",
+        "styleId": "shotgun",
+        "homeBlocId": "gulf",
+        "labName": "Old Money Labs",
+        "leader": "Cordelia",
+        "familyName": "Money",
+        "rivalIds": []
+      },
+      {
+        "id": "dial-up-prologue",
+        "name": "The Dial-Up Prologue",
+        "blurb": "1995. A modem screams in a spare room. Nobody has heard of a neural net, which is lucky, because you are about to build a small one.",
+        "eraId": "dial-up-days",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "uk",
+        "labName": "Cambridge Backroom",
+        "leader": "You",
+        "familyName": "Backroom",
+        "rivalIds": []
+      },
+      {
+        "id": "nordic-quiet",
+        "name": "The Quiet Lab",
+        "blurb": "2024. A fjord, an alignment team and a board who would like you to ship less. Agents have just arrived.",
+        "eraId": "agents",
+        "founderId": "professor",
+        "styleId": "sniper",
+        "homeBlocId": "nordics",
+        "labName": "Fjord Alignment Lab",
+        "leader": "Dr. Lind",
+        "familyName": "Fjord",
+        "rivalIds": []
+      },
+      {
+        "id": "two-horse-race",
+        "name": "The Two-Horse Race",
+        "blurb": "2009. Only OpenAye and DeepSneak are in the world and one of them is about to notice you.",
+        "eraId": "punchline",
+        "founderId": "dropout",
+        "styleId": "shotgun",
+        "homeBlocId": "us",
+        "labName": "Third Horse Labs",
+        "leader": "Jo",
+        "familyName": "Horse",
+        "rivalIds": [
+          "openaye",
+          "deepsneak"
+        ]
       }
     ]
   },
@@ -7043,6 +7620,24 @@
       "pick": -1,
       "about": "lab",
       "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
+    },
+      {
+      "id": "staff-quit",
+      "kind": "StaffQuit",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes."
+    },
+      {
+      "id": "loan-defaulted",
+      "kind": "LoanDefaulted",
+      "roles": [],
+      "trait": "",
+      "pick": -1,
+      "about": "lab",
+      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too."
     },
       {
       "id": "room-refurbished",

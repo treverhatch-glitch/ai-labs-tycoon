@@ -16,7 +16,20 @@ namespace AiLabs.Rules.Config
         /// <summary>Weeks of what the lab pays every week to stand still, as cash. Negative spends it (never more than the lab has).</summary>
         CashWeeks,
         /// <summary>Points of the home government's attention to the lab (0 to 1000). Negative eases it.</summary>
-        Attention
+        Attention,
+        /// <summary>Points of corruption on every model the lab has on sale (0 to 1000). Negative cleans them.</summary>
+        Corruption
+    }
+
+    /// <summary>What sets an office event off.</summary>
+    public enum OfficeTrigger
+    {
+        /// <summary>The weekly chance: the event can happen to any player lab that meets its needs.</summary>
+        Random,
+        /// <summary>A hearing at the lab's home government (bible ch. 12, "a short dialogue scene"). Never drawn by the weekly chance.</summary>
+        Hearing,
+        /// <summary>One of the lab's models tried to escape (incident rung 5; bible ch. 10). Never drawn by the weekly chance.</summary>
+        Escape
     }
 
     /// <summary>What the lab needs before an office event can happen to it.</summary>
@@ -70,6 +83,9 @@ namespace AiLabs.Rules.Config
         /// <summary>What happened, in a sentence or two.</summary>
         public string Text = "";
         public OfficeRequires Requires;
+        public OfficeTrigger Trigger;
+        /// <summary>The choice taken for the player when nobody answers in time (empty: nothing happens, the event blows over).</summary>
+        public string LapseChoice = "";
         public List<OfficeChoiceConfig> Choices = new List<OfficeChoiceConfig>();
 
         public string Id { get { return IdValue; } }
@@ -86,6 +102,8 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Str("text", ref Text);
             s.Enum("requires", ref Requires);
+            s.Enum("trigger", ref Trigger);
+            s.Str("lapseChoice", ref LapseChoice);
             s.ObjList("choices", ref Choices);
         }
     }

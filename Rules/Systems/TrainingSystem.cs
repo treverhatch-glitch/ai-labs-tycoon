@@ -35,7 +35,7 @@ namespace AiLabs.Rules.Systems
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != RoleFunction.Research) continue;
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
-                int bonus = trait == null ? 0 : trait.ResearchPermille;
+                int bonus = trait == null ? 0 : trait.ResearchPermille + Traits.InterestingShift(c, lab, trait);
                 gained += MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)

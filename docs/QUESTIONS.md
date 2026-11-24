@@ -1730,6 +1730,86 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)**. `approach` and `checkpoints` on every model (`MigrateTo40` sets both empty).
 - Why: two ids, two fields, in the same shape as the objective. The golden moved because every model carries them; with the sync lines, the hooks, the schema number and the data removed the previous golden returned exactly.
 
+### Q270. How do engineers cut failed runs? DECIDED: each engineer takes 6% off a variant run's weekly failure chance, up to 60%
+- Options: (a) a flat chance cut per engineer; (b) a share of the chance per engineer, with a cap; (c) engineers set the checkpoint loss instead.
+- Recommendation and choice: **(b)**, `engineerSavingPermillePerStaff` 60 and `engineerSavingCapPermille` 600 in the `runs` data. The chance a variant run fails in a week is its approach's chance (1.5%) less that share, rounded down to whole permille.
+- Why: the bible lists "fewer failed runs" among what engineers do. Training speed already scales with engineers up to a cap, so the same shape is used. A share of the chance cannot push it below zero, and the cap means no crew makes a variant run safe. Known architectures never fail, so nothing changes unless the player chose a variant.
+
+### Q271. Does this need a save change or move the golden? DECIDED: no, the chance is worked out each week from the staff on the books
+- Options: (a) store a per-model saving; (b) work it out when the week runs.
+- Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move, since the golden run trains only known architectures.
+- Why: derived numbers are not saved (Q182 practice); an engineer fired mid-run should change the chance the next week.
+
+### Q272. How is a hearing question asked? DECIDED: as an office event with a hearing trigger, posed when the home government reaches the Hearing level
+- Options: (a) a new hearing system with its own state and command; (b) the existing office-event machinery with a trigger field.
+- Recommendation and choice: **(b)**. `OfficeEventConfig.Trigger` is `Random` (the weekly chance) or `Hearing` (never drawn by the chance). The answer uses `AnswerOfficeEvent`, so the Unity event panel needs nothing new.
+- Why: a hearing question is a choice with effects, which is what an office event already is. It needs no save field and no command, and the log, text and chat already know how to show it.
+
+### Q273. What do the answers move, and what happens to the automatic hit? DECIDED: heat, reputation, culture, morale and money, on top of the unchanged hit
+- Options: (a) the answer replaces the flat reputation loss; (b) the answer comes on top.
+- Recommendation and choice: **(b)**. Four questions with three answers each, every answer a trade (a promise costs culture, an honest forecast costs morale, a dodge costs reputation and heat). A hearing at home only; a waiting office event lapses; the questions rotate before repeating.
+- Why: replacing the hit would change what every unanswered or autopilot hearing costs and move the economy guards (Q182). The bible's "share price" has no lever outside the bubble work, so reputation stands for trust and the effect is left open.
+
+### Q274. Is a save change needed, and does the golden move? DECIDED: no
+- Options: (a) store the hearing's bloc on the lab; (b) pose only at home.
+- Recommendation and choice: **(b)**. Only a hearing at the home government asks a question, so the heat effect (home attention) is always the right bloc and nothing is saved. The golden run does not reach a hearing as a player.
+- Why: a hearing abroad needs its own bloc stored, which would be a schema change for a rare case; it is listed as open.
+
+### Q275. What do posts through it and only works on what is interesting do? DECIDED: posts make launches and scandals louder; the other does more on variant runs and less otherwise
+- Options: (a) posts leak secrets; (b) posts add to launch buzz and to what scandals cost; (c) only the loud half. For the third trait: (d) a flat research change; (e) a research change that depends on what the lab is working on.
+- Recommendation and choice: **(b)** with +12% each way per poster, capped at 30%, and **(e)** with the work being interesting while a variant run (item 38) trains: +20% to their own research then, -20% otherwise.
+- Why: the bible lists the traits without numbers. Live posting is naturally both: free reach when the news is good and a megaphone when it is bad. "Only works on what is interesting" needs a notion of interesting that the player controls, and a variant run is the experiment the game already has. Both stay small so the economy guards (Q182) hold.
+
+### Q276. What does "will quit by blog post" do? DECIDED: they leave the first week their morale is under 300 and the post costs 20 reputation
+- Options: (a) a random chance of quitting each week; (b) a morale line.
+- Recommendation and choice: **(b)**. No dice are used, so no saved stream moves. The player can see it coming and prevent it with morale (comfort rooms, rest, not running into debt). The reputation loss goes through the press room's damping (and a poster in the lab makes it louder).
+- Why: the bible says "leave in protest" and "quits by blog post" as jokes from mechanics, and a mechanic the player can read is funnier than a random one. A line below the resting level of 500 means the trait is only a risk in a lab that is already in trouble.
+
+### Q277. Does this move the golden, and how was that checked? DECIDED: yes, because the new traits change who the golden run's hires turn out to be; with their hire shares at zero the previous golden returned exactly
+- Options: (a) give the new traits no hire share (never hired); (b) hire them like the rest.
+- Recommendation and choice: **(b)**, 4%, 3% and 4%. No save change: the trait id was always saved. The golden moved to `b1bf2703`.
+- Why: a trait nobody can hire is no trait. They come after the existing bands in the roll, so nobody who had a trait lost it. The effects are small and only reach labs that get the people, and none of the economy guards moved.
+
+### Q278. How much can be borrowed, and against what? DECIDED: half of what the lab's owned GPUs would fetch today, less what it still owes
+- Options: (a) a flat limit by era; (b) a share of the lab's cash flow; (c) a share of the chips' resale value.
+- Recommendation and choice: **(c)**, 50% (`loanToValuePermille` 500), counting interest in what is owed. Rented and reserved compute and the lab's own chip designs are not collateral, since the first two are not the lab's and the last has no market price.
+- Why: the bible says "against your chips". Resale value already falls a generation at a time, so the borrowing room shrinks as the chips age, which is the lesson ("whatever the chip is worth by then") without a new number. Half leaves the lender a margin.
+
+### Q279. How is it paid back, and what if it is not? DECIDED: weekly over a year with flat interest; three missed payments in a row and the lender takes the chips
+- Options: (a) interest every week on a falling balance; (b) flat interest once, equal weekly payments; (c) a margin call when the chips lose value.
+- Recommendation and choice: **(b)**, 8% over 52 weeks, a 10% penalty on a missed payment and a default after three. The lender takes the most valuable GPUs first and writes off what they do not cover. No margin call.
+- Why: the bible says repayment is "on schedule, whatever the chip is worth by then", which rules out (c). Flat interest keeps the sums whole and easy to read. Taking the best chips first is what hurts, and the write-off keeps a lab from owing more than it ever had.
+
+### Q280. Where does the money go on the books, and is a save change needed? DECIDED: the capital line both ways; yes, schema 41, and the golden moved with a verified cause
+- Options: (a) a new ledger line for loans; (b) the existing capital line.
+- Recommendation and choice: **(b)**, with payments as negative capital. One list of loans per lab (`MigrateTo41` gives every lab an empty one). The golden moved only because every lab now carries the list: with the sync line and the schema number reverted, the previous golden returned exactly.
+- Why: a new ledger line touches every total and every display (Q182 practice); a loan is capital in and out, so the capital line says what happened.
+
+### Q281. How is the escape attempt made a timed crisis? DECIDED: an office event with an Escape trigger, posed by a rung-5 incident, that takes a default answer if it lapses
+- Options: (a) a new crisis state and command; (b) the existing office-event machinery with a trigger and a lapse choice.
+- Recommendation and choice: **(b)**. `OfficeTrigger.Escape`, and `lapseChoice` on the event: when nobody answers in time that choice is taken for the player. Every other event has none and still just blows over.
+- Why: the crisis is a choice with effects on a clock, which is what an office event already is, and it needs no save field and no new command. "Timed" only means something if running out of time costs something, hence the default.
+
+### Q282. What are the answers? DECIDED: pull the plug (costly, clean), gamble on the sandbox (cheaper, half clean, noticed), watch (free, worse)
+- Options: (a) a real dice gamble on containment; (b) three sure answers that trade money against corruption.
+- Recommendation and choice: **(b)**, with a new `Corruption` effect on every model on sale. The default for a lapse is "watch", which raises corruption by 200 and takes 10 safety culture.
+- Why: a dice gamble would need its own chance rules and a way to show them. Three sure answers are readable and each costs something real: ten weeks of running costs for the clean break, a night of rebuilding and bad press for the middle, and a more likely Loose ending for doing nothing. The gamble is listed as open.
+
+### Q283. Is a save change needed, and does it reach the economy? DECIDED: no save change; rung 5 only follows from corruption the shady path builds
+- Options: (a) store the model that tried to escape; (b) apply the effects to every model on sale.
+- Recommendation and choice: **(b)**. Nothing new is saved and the golden did not move.
+- Why: rung 5 needs corruption of 450 or more, which only comes from shady contracts, so labs that never choose them see none of this. For labs that do, the answers are the choice the bible asks for.
+
+### Q284. What is a scenario? DECIDED: a named bundle of the choices a new game already has, filled in from the data
+- Options: (a) scenarios that also set up a starting situation (a lawsuit under way, a hall half built); (b) a named bundle of era, founder, style, home bloc, names and rivals.
+- Recommendation and choice: **(b)**, seven of them: four founders in their natural year, the 1995 prologue, a quiet alignment-minded lab in the Nordics and a two-rival race. `Scenarios.Options` and `Scenarios.Start` turn one into a game. A game from a scenario has the same digest as one made by hand with the same options.
+- Why: the bible asks for "a named archetype in a specific year". Everything such a start needs is already a new-game option, so the data-only version is faithful, testable and changes no rules. Starting situations need a save field or setup code per scenario and are listed as open.
+
+### Q285. Is anything saved? DECIDED: no
+- Options: (a) remember which scenario a game began as; (b) nothing.
+- Recommendation and choice: **(b)**. The game is exactly what the options make; no schema change and the golden did not move.
+- Why: nothing in the rules would read it. A screen that wants "you are playing the Heir's Gambit" can keep that outside the rules.
+
 ## CI and tooling
 
 ### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`
