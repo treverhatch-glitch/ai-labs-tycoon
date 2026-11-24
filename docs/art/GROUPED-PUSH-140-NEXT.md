@@ -1,9 +1,5 @@
-# Grouped 140–142
+# Grouped 140–142 (LANDED)
 
-**Parent:** `4cecde7` · **GO ≥00:04 ICT**
+**Remote:** `d0c6d0ad66ceb7bd3064ad32a45a58a7476fb465` (~**00:05 ICT** Nov 25). Parent `4cecde7`. Q589–Q591. Prepush **326** meta; **153** Editor tests.
 
-| Batch | Q | Topic |
-| --- | --- | --- |
-| 140 | Q589 | STATUS sync 130 |
-| 141 | Q590 | Tail rollup 127 |
-| 142 | Q591 | GO packet 136 |
+HOLD **≥~00:35 ICT**. Q592+ batch **143+** LOCAL.
