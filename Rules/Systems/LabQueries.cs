@@ -23,6 +23,8 @@ namespace AiLabs.Rules.Systems
     /// </summary>
     public static class LabQueries
     {
+        /// <summary>False when the lab is bankrupt or absorbed into another — it should not trade, earn or spend.</summary>
+        public static bool ParticipatesInEconomy(LabState lab) => lab != null && !lab.Bankrupt && lab.AbsorbedByLabId < 0;
         public static int StaffCount(LabState lab, string roleId)
         {
             int n = 0;

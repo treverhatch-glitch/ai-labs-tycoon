@@ -35,6 +35,6 @@ Quitting follows morale as it always did: a person with the "quits by blog post"
 | `spent` | It reached `crunchMaxWeeks` (26). |
 | `empty` | No one was left on the payroll. |
 
-Morale comes back at the drift (1 point a week), so a full 26-week crunch leaves the team under the 450 needed to start another, and the next one has to wait. The saved field is `crunchWeeks` (schema 43): 1 in the first week and one more each week; 0 when not in crunch.
+Morale comes back at the drift (1 point a week), so a full 26-week crunch leaves the team under the 450 needed to start another, and the next one has to wait. The saved field is `crunchWeeks` (schema 44): 1 in the first week and one more each week; 0 when not in crunch.
 
 See QUESTIONS Q298 and [workplace.md](workplace.md) for morale.
