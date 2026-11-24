@@ -11,4 +11,6 @@ Syncs [ALT-76-STATUS.md](ALT-76-STATUS.md) through batch **82** after post-manif
 
 Prior refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 
+Later sync: [ALT-76-STATUS-SYNC-86.md](ALT-76-STATUS-SYNC-86.md) (batch 88).
+
 Tokens: `CampusAlt76StatusSyncPresentationSpec` (last synced batch 82). Batch 83.

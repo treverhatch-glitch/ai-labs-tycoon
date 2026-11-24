@@ -662,11 +662,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — presentation navigation after ALT refresh.
 - Why: Full screens need hub tail cross-link without new layouts.
 
-### Q537. ALT-76 STATUS sync through 86? DRAFT: extend `CampusAlt76StatusSyncPresentationSpec`
+### Q537. ALT-76 STATUS sync through 86? DECIDED: `CampusAlt76StatusSyncThrough86PresentationSpec`
 
-- Options: (a) STATUS rows only; (b) bump LastSyncedBatch to 86; (c) regenerate STATUS from scratch.
-- Recommendation: **(b)** — STATUS rows through rollup refresh batch.
-- Status: stub batch 88 (local).
+- Options: (a) STATUS rows only; (b) sync-through-86 doc + aliases; (c) regenerate STATUS from scratch.
+- Recommendation and choice: **(b)** — extends batch 83 sync without rewriting prior spec.
+- Why: STATUS through rollup 86 and screen tail 87.
+
+### Q538. Capture HUD tail navigation? DRAFT: `CampusCaptureHudTailIndexPresentationSpec`
+
+- Options: (a) batch 35 doc only; (b) tail index linking capture + a11y; (c) implement capture in graphics PR.
+- Recommendation: **(b)** — post-88 navigation refill.
+- Status: stub batch 89 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
