@@ -1,13 +1,7 @@
-# Next grouped push (LOCAL queue)
+# Grouped push 116–118 (LANDED)
 
-**Remote parent:** `0fa548326a90cba7d59d4f97c1e52cce3e7bacc9` (113–115).
+**Remote:** `c19315764de0e360a2bae32a95b4e6207c8e81a1` (parent was `0fa5483`). Pushed **~19:58 ICT** Nov 24.
 
-| Batch | Topic | Token |
-| --- | --- | --- |
-| 116 | Manifest tail refresh 112 | `CampusIndexLaneManifestTailRefreshThrough112PresentationSpec` |
-| 117 | Tail rollup refresh 112 | `CampusPresentationTailRollupRefreshThrough112PresentationSpec` |
-| 118 | GO packet through 115 | `CampusGoPacketTailRefreshThrough115PresentationSpec` |
+Prepush **278** meta; coauth grep clean; `ls-remote` verified.
 
-**HOLD:** no squash before **≥19:57 ICT** / ~12:27 UTC (`0fa5483` @ 18:56 ICT + 30m).
-
-**Squash:** `commit-tree`; prepush coauth grep; plain push on coordinator GO only.
+Next queue: [GROUPED-PUSH-119-NEXT.md](GROUPED-PUSH-119-NEXT.md).
