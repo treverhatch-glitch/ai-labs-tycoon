@@ -468,11 +468,38 @@ and says why in the commit message.
 285. **Hardening polish: float + scenario goal + baggage.** ~~Done (local)~~: edge triple.
 286. **Hardening polish: rung cooldown + baggage + scenario.** ~~Done (local)~~: edge.
 287. **Hardening polish: spectate keeps law target.** ~~Done (local)~~: governance.
-288. **Hardening polish: spectate keeps goal result + deadline soak.** ~~Done (local)~~: governance; soak `SetCampaignDeadline` only for active player lab. Hardening filter **522/0** (local tip).
+288. **Hardening polish: spectate keeps goal result + deadline soak.** ~~Done (local)~~: governance; soak `SetCampaignDeadline` only for active player lab. Shipped **`5168cc9`** (**522/0**).
+289. **Hardening polish: spectate keeps public float.** ~~Done (local)~~: governance.
+290. **Hardening polish: loan + law target + scenario goal.** ~~Done (local)~~: together.
+291. **Hardening polish: margin call + law + scenario goal.** ~~Done (local)~~: limits.
+292. **Hardening polish: deadline + bubble + baggage.** ~~Done (local)~~: edge.
+293. **Hardening polish: cross-soak baggage + scenario id.** ~~Done (local)~~: assign scenario before pick (week ≥460).
+294. **Hardening polish: spectate keeps deadline tick.** ~~Done (local)~~: governance.
+295. **Hardening polish: spectate keeps law shape pending.** ~~Done (local)~~: governance.
+296. **Hardening polish: spectate keeps margin call left.** ~~Done (local)~~: governance.
+297. **Hardening polish: loan + bubble + scenario id.** ~~Done (local)~~: together.
+298. **Hardening polish: hearing float + goal + law + soak margin guard.** ~~Done (local)~~: edge; soak `SatisfyMarginCall` only active player.
+299. **Hardening polish: spectate keeps rung cooldown + arc.** ~~Done (local)~~: governance.
+300. **Hardening polish: margin satisfy + baggage + law.** ~~Done (local)~~: together.
+301. **Hardening polish: margin call + bubble + law.** ~~Done (local)~~: limits.
+302. **Hardening polish: cross-soak set-law active player.** ~~Done (local)~~: week ≥460/470.
+303. **Hardening polish: spectate keeps baggage picked.** ~~Done (local)~~: governance.
+304. **Hardening polish: deadline + goal + law pending.** ~~Done (local)~~: edge triple.
+305. **Hardening polish: loan + law pending + scenario.** ~~Done (local)~~: together.
+306. **Hardening polish: rung cooldown + goal + law.** ~~Done (local)~~: edge.
+307. **Hardening polish: cross-soak shape-law active player.** ~~Done (local)~~: week ≥460/470.
+308. **Hardening polish: spectate bubble permille.** ~~Done (local)~~: governance (state bubble).
+309. **Hardening polish: float + bubble + scenario goal.** ~~Done (local)~~: edge.
+310. **Hardening polish: baggage + margin + goal.** ~~Done (local)~~: together.
+311. **Hardening polish: cross-soak baggage active player.** ~~Done (local)~~: week ≥460.
+312. **Hardening polish: spectate float + scenario.** ~~Done (local)~~: governance.
+313. **Hardening polish: loan + baggage + law.** ~~Done (local)~~: together.
+314. **Hardening polish: margin + law pending + scenario.** ~~Done (local)~~: limits.
+315. **Hardening polish: deadline + hearing bubble.** ~~Done (local)~~: edge; cross-soak TakeLoan active player. Hardening filter **546/0** (local tip).
 
 ## Rules: later
 
-- **P13** (PR **#48**): origin **`3f48328`**. **NO PUSH** (Q476). LOCAL **522/0** (§222–288); squash prep: store `internal/p13-local-squash-prep-3f48328.md`.
+- **P13** (PR **#48**): origin **`9b19488d`**; squash **`5168cc9`** **522/0**. LOCAL **546/0** (§289–315); **NO PUSH** until rules/test success + GO (`commit-tree` squash).
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

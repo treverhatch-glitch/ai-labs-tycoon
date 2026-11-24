@@ -165,6 +165,92 @@ public class EraPSystemsLimitsAndMidSaveHardeningTests
     }
 
     [Fact]
+    public void Margin_call_left_with_law_target_and_scenario_goal_mid_save_matches()
+    {
+        Game g = Game.Solo(153, c =>
+        {
+            c.MarginCall.Enabled = 1;
+            c.MarginCall.CovenantPermille = 1000;
+            c.Loans.LoanToValuePermille = 800;
+            c.ScenarioGoals.Enabled = 1;
+            c.Office.ChancePermille = 0;
+        }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        TriggerMarginCall(g);
+        int margin = g.Me.MarginCallLeft;
+        string law = g.Me.LawTarget;
+        int result = g.Me.ScenarioGoalResult;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        Assert.Equal(law, back.Player.LawTarget);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_left_with_bubble_and_law_target_mid_save_matches()
+    {
+        Game g = Game.Solo(154, c =>
+        {
+            c.MarginCall.Enabled = 1;
+            c.MarginCall.CovenantPermille = 1000;
+            c.Loans.LoanToValuePermille = 800;
+            c.LawShaping.MinEra = 0;
+            c.Lobbying.BackfirePermille = 0;
+            c.Lobbying.BackfireFloorPermille = 0;
+            c.Office.ChancePermille = 0;
+        }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000_000;
+        g.State.BubblePermille = 415;
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        TriggerMarginCall(g);
+        int bubble = g.State.BubblePermille;
+        string law = g.Me.LawTarget;
+        int margin = g.Me.MarginCallLeft;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(bubble, back.State.BubblePermille);
+        Assert.Equal(law, back.Player.LawTarget);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_left_law_shape_pending_and_scenario_id_mid_save_matches()
+    {
+        Game g = Game.Solo(153, c =>
+        {
+            c.MarginCall.Enabled = 1;
+            c.MarginCall.CovenantPermille = 1000;
+            c.Loans.LoanToValuePermille = 800;
+            c.LawShaping.MinEra = 0;
+            c.Lobbying.BackfirePermille = 0;
+            c.Lobbying.BackfireFloorPermille = 0;
+            c.Office.ChancePermille = 0;
+        }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
+        TriggerMarginCall(g);
+        int margin = g.Me.MarginCallLeft;
+        int pending = g.Me.LawShapePending;
+        string scenario = g.Me.ScenarioId;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
     public void Margin_call_left_with_scenario_goal_and_baggage_mid_save_matches()
     {
         Game g = Game.Solo(152, c =>

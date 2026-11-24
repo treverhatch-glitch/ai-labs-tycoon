@@ -221,4 +221,168 @@ public class EraGovernancePlayerOnlyHardeningTests
         Assert.Equal(result, spectating.ScenarioGoalResult);
         HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
     }
+
+    [Fact]
+    public void Spectate_keeps_public_float_mid_save_matches()
+    {
+        Game g = WithRival(195);
+        int playerId = g.Id;
+        g.Me.PublicFloatPpm = 54_000;
+        int ppm = g.Me.PublicFloatPpm;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(ppm, spectating.PublicFloatPpm);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_campaign_deadline_tick_mid_save_matches()
+    {
+        Game g = WithRival(196);
+        int playerId = g.Id;
+        g.C.CampaignDeadline.MinEra = 0;
+        g.Do(Command.SetCampaignDeadline(playerId, g.Tick + 52));
+        int stop = g.Me.CampaignDeadlineTick;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(stop, spectating.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_law_shape_pending_mid_save_matches()
+    {
+        Game g = WithRival(197);
+        int playerId = g.Id;
+        g.C.LawShaping.MinEra = 0;
+        g.C.Lobbying.BackfirePermille = 0;
+        g.C.Lobbying.BackfireFloorPermille = 0;
+        g.Me.Cash = 1_000_000_000_000;
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
+        int pending = g.Me.LawShapePending;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(pending, spectating.LawShapePending);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_bubble_permille_mid_save_matches()
+    {
+        Game g = WithRival(202);
+        int playerId = g.Id;
+        g.State.BubblePermille = 388;
+        int bubble = g.State.BubblePermille;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(bubble, back.State.BubblePermille);
+        LabState spectating = back.State.Lab(playerId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_baggage_picked_mid_save_matches()
+    {
+        Game g = WithRival(201);
+        int playerId = g.Id;
+        g.Do(Command.PickScenarioBaggage(playerId, "early-lawsuit"));
+        int picked = g.Me.BaggagePicked;
+        string baggage = g.Me.BaggageId;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(picked, spectating.BaggagePicked);
+        Assert.Equal(baggage, spectating.BaggageId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_rung_six_cooldown_mid_save_matches()
+    {
+        Game g = WithRival(199);
+        int playerId = g.Id;
+        g.Me.RungSixCooldownUntil = g.Tick + 30;
+        int until = g.Me.RungSixCooldownUntil;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(until, spectating.RungSixCooldownUntil);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_rung_six_arc_until_mid_save_matches()
+    {
+        Game g = WithRival(200);
+        int playerId = g.Id;
+        g.Me.RungSixArcUntil = g.Tick + 18;
+        int arc = g.Me.RungSixArcUntil;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(arc, spectating.RungSixArcUntil);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_hearing_float_and_scenario_id_mid_save_matches()
+    {
+        Game g = WithRival(203);
+        int playerId = g.Id;
+        g.C.HearingSharePrice.MinFloatPpm = 1;
+        g.Me.PublicFloatPpm = 88_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        int ppm = g.Me.PublicFloatPpm;
+        string scenario = g.Me.ScenarioId;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(ppm, spectating.PublicFloatPpm);
+        Assert.Equal(scenario, spectating.ScenarioId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_margin_call_left_mid_save_matches()
+    {
+        Game g = WithRival(198);
+        int playerId = g.Id;
+        g.C.MarginCall.Enabled = 1;
+        g.C.MarginCall.CovenantPermille = 1000;
+        g.C.Loans.LoanToValuePermille = 800;
+        g.Me.Cash = 500_000_000_000;
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 6);
+        g.Do(Command.TakeLoan(playerId, 800));
+        Fleet.Take(g.Me, g.Me.Fleet[0], g.Me.Fleet[0].Count - 1);
+        Finance.RunWeek(g.C, g.State, g.Me);
+        if (g.Me.MarginCallLeft < 1) return;
+        int margin = g.Me.MarginCallLeft;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(margin, spectating.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
 }

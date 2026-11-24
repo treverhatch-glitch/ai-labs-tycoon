@@ -380,6 +380,128 @@ public class EraPSystemsEdgeHardeningTests
     }
 
     [Fact]
+    public void Hearing_float_scenario_goal_and_law_target_mid_save_matches()
+    {
+        Game g = Lab(205);
+        g.Me.PublicFloatPpm = 81_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        int ppm = g.Me.PublicFloatPpm;
+        int result = g.Me.ScenarioGoalResult;
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(ppm, back.Player.PublicFloatPpm);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Campaign_deadline_hearing_bubble_mid_save_matches()
+    {
+        Game g = Lab(209);
+        g.Me.PublicFloatPpm = 95_000;
+        g.Me.Bloc("us").Level = BlocStanding.Letter;
+        g.Me.Bloc("us").Attention = g.C.World.Attention.HearingAt + 80;
+        GovernmentSystem.CloseMonth(g.C, g.State, g.Me);
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 48));
+        int stop = g.Me.CampaignDeadlineTick;
+        int bubble = g.State.BubblePermille;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        Assert.Equal(bubble, back.State.BubblePermille);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Public_float_bubble_and_scenario_goal_mid_save_matches()
+    {
+        Game g = Lab(208);
+        g.Me.PublicFloatPpm = 66_000;
+        g.State.BubblePermille = 475;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        int ppm = g.Me.PublicFloatPpm;
+        int bubble = g.State.BubblePermille;
+        int result = g.Me.ScenarioGoalResult;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(ppm, back.Player.PublicFloatPpm);
+        Assert.Equal(bubble, back.State.BubblePermille);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Campaign_deadline_scenario_goal_and_law_shape_pending_mid_save_matches()
+    {
+        Game g = Lab(206);
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 38));
+        int result = g.Me.ScenarioGoalResult;
+        int pending = g.Me.LawShapePending;
+        int stop = g.Me.CampaignDeadlineTick;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Rung_six_cooldown_scenario_goal_and_law_target_mid_save_matches()
+    {
+        Game g = Lab(207);
+        g.Me.RungSixCooldownUntil = g.Tick + 26;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        int until = g.Me.RungSixCooldownUntil;
+        int result = g.Me.ScenarioGoalResult;
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(until, back.Player.RungSixCooldownUntil);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Campaign_deadline_bubble_and_baggage_mid_save_matches()
+    {
+        Game g = Lab(204);
+        g.C.ScenarioBaggage.Enabled = 1;
+        g.State.BubblePermille = 460;
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 40));
+        int bubble = g.State.BubblePermille;
+        string baggage = g.Me.BaggageId;
+        int stop = g.Me.CampaignDeadlineTick;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(bubble, back.State.BubblePermille);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
     public void Hearing_bubble_law_target_and_scenario_id_mid_save_matches()
     {
         Game g = Lab(201);
