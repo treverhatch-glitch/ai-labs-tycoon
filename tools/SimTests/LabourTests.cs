@@ -277,7 +277,7 @@ public class LabourTests
     public void An_older_save_loads_with_no_organising()
     {
         Game g = Organising();
-        string old = SaveSchemaPretend.At(g.C, 71, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 72, g.Sim.Save());
         foreach (string key in new[] { "labourStage", "labourPressure", "labourDue", "labourHard" }) Assert.DoesNotContain("\"" + key + "\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
