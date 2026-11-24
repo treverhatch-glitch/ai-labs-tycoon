@@ -1,6 +1,6 @@
-# Next grouped push (LOCAL queue)
+# Grouped push 122–124 (LANDED)
 
-**Remote parent:** `ff87cc93bdab8bee02e48029619cd6d32b7fdf14` (119–121).
+**Remote:** `0a7f37e6e493e6b1d30642ee28e056316234a810` (parent `ff87cc9`). Pushed **~21:00 ICT** Nov 24.
 
 | Batch | Q | Topic |
 | --- | --- | --- |
@@ -8,6 +8,6 @@
 | 123 | Q572 | Tail rollup 115 |
 | 124 | Q573 | STATUS sync 118 |
 
-**GO:** **≥~20:59 ICT** (+30m after `ff87cc9`).
+Prepush **290** meta; coauth grep clean; `ls-remote` verified.
 
-**Squash:** `commit-tree`; prepush coauth grep; plain push on coordinator GO only.
+Next HOLD **≥~21:30 ICT**. Q574+ LOCAL.
