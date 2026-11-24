@@ -3124,6 +3124,9 @@ namespace AiLabs.Unity.Hq
                 string lifetimeDevFrockSpendIncome = HqDisplayQueriesHud.LifetimeDevFrockSpendIncomeSummaryLine(lab);
                 if (!string.IsNullOrEmpty(lifetimeDevFrockSpendIncome))
                     status = string.IsNullOrEmpty(status) ? lifetimeDevFrockSpendIncome : status + " · " + lifetimeDevFrockSpendIncome;
+                string thisWeekFrockDevSpendIncome = HqDisplayQueriesHud.ThisWeekFrockDevSpendIncomeSummaryLine(lab);
+                if (!string.IsNullOrEmpty(thisWeekFrockDevSpendIncome))
+                    status = string.IsNullOrEmpty(status) ? thisWeekFrockDevSpendIncome : status + " · " + thisWeekFrockDevSpendIncome;
                 string vendorCourt = HqDisplayQueriesHud.LatestVendorCourtLine(sim.State, sim.Tick);
                 if (!string.IsNullOrEmpty(vendorCourt))
                     status = string.IsNullOrEmpty(status) ? vendorCourt : status + " · " + vendorCourt;
