@@ -1,9 +1,5 @@
-# Grouped 155–157
+# Grouped 155–157 (LANDED)
 
-**Parent:** `1e648a4` · **GO ≥02:39 ICT**
+**Remote:** `2ea09aa82cb76c3d72651fea4bca4ada1a3935a3` (~**02:40 ICT**). Q604–Q606. Prepush **356** meta; **168** tests.
 
-| Batch | Q | Topic |
-| --- | --- | --- |
-| 155 | Q604 | Rollup 136 |
-| 156 | Q605 | Manifest 136 |
-| 157 | Q606 | GO 151 |
+HOLD **≥~03:10 ICT**. Q607+ batch **158+** LOCAL.
