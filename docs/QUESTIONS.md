@@ -1172,6 +1172,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation: **(b)**.
 - Status: batch **172** LOCAL.
 
+### Q622. ALT-76 rollup refresh through batch 145? DRAFT: `CampusAlt76RollupRefreshB145PresentationSpec`
+
+- Options: (a) batch 142 only; (b) through 145; (c) skip.
+- Recommendation: **(b)** — fork batch **173+** after **170–172** land.
+- Status: **NO PUSH** until Q619–Q621 decided.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
