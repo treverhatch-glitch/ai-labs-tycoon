@@ -11,55 +11,55 @@ BUILD = UNITY / "Scripts/Hq/RoomBuildPanel.cs"
 TESTS = UNITY / "Editor/Tests/HqDisplayQueriesHudTests.cs"
 
 F885_886 = [
-    ("ThisWeekKnotDevSpendIncomeSummaryLine", [
+    ("ThisWeekClewDevSpendIncomeSummaryLine", [
         ("spend", "ThisWeekLedgerSpendSummaryLine(lab)"),
         ("income", "ThisWeekLedgerIncomeSummaryLine(lab)"),
         ("fines", "ThisWeekLedgerFinesLine(lab)"),
         ("chipDev", "ThisWeekLedgerChipDevelopmentLine(lab)"),
     ]),
-    ("LastWeekKnotDevSpendIncomeSummaryLine", [
+    ("LastWeekClewDevSpendIncomeSummaryLine", [
         ("spend", "LastWeekLedgerSpendSummaryLine(lab)"),
         ("income", "LastWeekLedgerIncomeSummaryLine(lab)"),
         ("fines", "LastWeekLedgerFinesLine(lab)"),
         ("chipDev", "LastWeekLedgerChipDevelopmentLine(lab)"),
     ]),
-    ("LifetimeKnotDevSpendIncomeSummaryLine", [
+    ("LifetimeClewDevSpendIncomeSummaryLine", [
         ("spend", "LifetimeLedgerSpendSummaryLine(lab)"),
         ("revenue", "LifetimeLedgerRevenueLine(lab)"),
         ("fines", "LifetimeLedgerFinesLine(lab)"),
         ("chipDev", "LifetimeLedgerChipDevelopmentLine(lab)"),
     ]),
-    ("ThisWeekDevCloakSpendIncomeSummaryLine", [
+    ("ThisWeekDevJerkinSpendIncomeSummaryLine", [
         ("spend", "ThisWeekLedgerSpendSummaryLine(lab)"),
         ("income", "ThisWeekLedgerIncomeSummaryLine(lab)"),
         ("chipDev", "ThisWeekLedgerChipDevelopmentLine(lab)"),
         ("hardware", "ThisWeekLedgerHardwareLine(lab)"),
     ]),
-    ("LastWeekDevCloakSpendIncomeSummaryLine", [
+    ("LastWeekDevJerkinSpendIncomeSummaryLine", [
         ("spend", "LastWeekLedgerSpendSummaryLine(lab)"),
         ("income", "LastWeekLedgerIncomeSummaryLine(lab)"),
         ("chipDev", "LastWeekLedgerChipDevelopmentLine(lab)"),
         ("hardware", "LastWeekLedgerHardwareLine(lab)"),
     ]),
-    ("LifetimeDevCloakSpendIncomeSummaryLine", [
+    ("LifetimeDevJerkinSpendIncomeSummaryLine", [
         ("spend", "LifetimeLedgerSpendSummaryLine(lab)"),
         ("revenue", "LifetimeLedgerRevenueLine(lab)"),
         ("chipDev", "LifetimeLedgerChipDevelopmentLine(lab)"),
         ("hardware", "LifetimeLedgerHardwareLine(lab)"),
     ]),
-    ("ThisWeekCloakDevSpendIncomeSummaryLine", [
+    ("ThisWeekJerkinDevSpendIncomeSummaryLine", [
         ("spend", "ThisWeekLedgerSpendSummaryLine(lab)"),
         ("income", "ThisWeekLedgerIncomeSummaryLine(lab)"),
         ("hardware", "ThisWeekLedgerHardwareLine(lab)"),
         ("chipDev", "ThisWeekLedgerChipDevelopmentLine(lab)"),
     ]),
-    ("LastWeekCloakDevSpendIncomeSummaryLine", [
+    ("LastWeekJerkinDevSpendIncomeSummaryLine", [
         ("spend", "LastWeekLedgerSpendSummaryLine(lab)"),
         ("income", "LastWeekLedgerIncomeSummaryLine(lab)"),
         ("hardware", "LastWeekLedgerHardwareLine(lab)"),
         ("chipDev", "LastWeekLedgerChipDevelopmentLine(lab)"),
     ]),
-    ("LifetimeCloakDevSpendIncomeSummaryLine", [
+    ("LifetimeJerkinDevSpendIncomeSummaryLine", [
         ("spend", "LifetimeLedgerSpendSummaryLine(lab)"),
         ("revenue", "LifetimeLedgerRevenueLine(lab)"),
         ("hardware", "LifetimeLedgerHardwareLine(lab)"),
@@ -161,67 +161,67 @@ F887_888 = [
 ]
 
 SPRINT885 = [
-    ("ThisWeekKnotDevSpendIncomeSummaryLine", "thisWeekKnotDevSpendIncome", "this week knot dev spend income", "this_week_knot_dev_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.Fines = -930;\n            lab.Ledger.ThisWeek.ChipDevelopment = -31_530;", "930", "11,530"),
-    ("LastWeekKnotDevSpendIncomeSummaryLine", "lastWeekKnotDevSpendIncome", "last week knot dev spend income", "last_week_knot_dev_spend_income_summary_line",
-     "lab.Ledger.LastWeek.Fines = -910;\n            lab.Ledger.LastWeek.ChipDevelopment = -31_330;", "910", "11,330"),
-    ("LifetimeKnotDevSpendIncomeSummaryLine", "lifetimeKnotDevSpendIncome", "lifetime knot dev spend income", "lifetime_knot_dev_spend_income_summary_line",
-     "lab.Ledger.Lifetime.Fines = -44_200;\n            lab.Ledger.Lifetime.ChipDevelopment = -198_100;", "44,200", "178,100"),
-    ("ThisWeekDevCloakSpendIncomeSummaryLine", "thisWeekDevCloakSpendIncome", "this week dev cloak spend income", "this_week_dev_cloak_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.ChipDevelopment = -31_540;\n            lab.Ledger.ThisWeek.Hardware = -4_350;", "11,540", "4,350"),
-    ("LastWeekDevCloakSpendIncomeSummaryLine", "lastWeekDevCloakSpendIncome", "last week dev cloak spend income", "last_week_dev_cloak_spend_income_summary_line",
-     "lab.Ledger.LastWeek.ChipDevelopment = -31_340;\n            lab.Ledger.LastWeek.Hardware = -4_330;", "11,340", "4,330"),
-    ("LifetimeDevCloakSpendIncomeSummaryLine", "lifetimeDevCloakSpendIncome", "lifetime dev cloak spend income", "lifetime_dev_cloak_spend_income_summary_line",
-     "lab.Ledger.Lifetime.ChipDevelopment = -198_300;\n            lab.Ledger.Lifetime.Hardware = -613_200;", "178,300", "613,200"),
+    ("ThisWeekClewDevSpendIncomeSummaryLine", "thisWeekClewDevSpendIncome", "this week clew dev spend income", "this_week_clew_dev_spend_income_summary_line",
+     "lab.Ledger.ThisWeek.Fines = -930;\n            lab.Ledger.ThisWeek.ChipDevelopment = -71_530;", "930", "11,530"),
+    ("LastWeekClewDevSpendIncomeSummaryLine", "lastWeekClewDevSpendIncome", "last week clew dev spend income", "last_week_clew_dev_spend_income_summary_line",
+     "lab.Ledger.LastWeek.Fines = -910;\n            lab.Ledger.LastWeek.ChipDevelopment = -71_330;", "910", "11,330"),
+    ("LifetimeClewDevSpendIncomeSummaryLine", "lifetimeClewDevSpendIncome", "lifetime clew dev spend income", "lifetime_clew_dev_spend_income_summary_line",
+     "lab.Ledger.Lifetime.Fines = -44_200;\n            lab.Ledger.Lifetime.ChipDevelopment = -238_100;", "44,200", "178,100"),
+    ("ThisWeekDevJerkinSpendIncomeSummaryLine", "thisWeekDevJerkinSpendIncome", "this week dev jerkin spend income", "this_week_dev_jerkin_spend_income_summary_line",
+     "lab.Ledger.ThisWeek.ChipDevelopment = -71_540;\n            lab.Ledger.ThisWeek.Hardware = -4_350;", "11,540", "4,350"),
+    ("LastWeekDevJerkinSpendIncomeSummaryLine", "lastWeekDevJerkinSpendIncome", "last week dev jerkin spend income", "last_week_dev_jerkin_spend_income_summary_line",
+     "lab.Ledger.LastWeek.ChipDevelopment = -71_340;\n            lab.Ledger.LastWeek.Hardware = -4_330;", "11,340", "4,330"),
+    ("LifetimeDevJerkinSpendIncomeSummaryLine", "lifetimeDevJerkinSpendIncome", "lifetime dev jerkin spend income", "lifetime_dev_jerkin_spend_income_summary_line",
+     "lab.Ledger.Lifetime.ChipDevelopment = -238_300;\n            lab.Ledger.Lifetime.Hardware = -613_200;", "178,300", "613,200"),
 ]
 
 SPRINT886 = [
-    ("ThisWeekCloakDevSpendIncomeSummaryLine", "thisWeekCloakDevSpendIncome", "this week cloak dev spend income", "this_week_cloak_dev_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.Hardware = -4_360;\n            lab.Ledger.ThisWeek.ChipDevelopment = -31_550;", "4,360", "11,550"),
-    ("LastWeekCloakDevSpendIncomeSummaryLine", "lastWeekCloakDevSpendIncome", "last week cloak dev spend income", "last_week_cloak_dev_spend_income_summary_line",
-     "lab.Ledger.LastWeek.Hardware = -4_340;\n            lab.Ledger.LastWeek.ChipDevelopment = -31_350;", "4,340", "11,350"),
-    ("LifetimeCloakDevSpendIncomeSummaryLine", "lifetimeCloakDevSpendIncome", "lifetime cloak dev spend income", "lifetime_cloak_dev_spend_income_summary_line",
-     "lab.Ledger.Lifetime.Hardware = -613_400;\n            lab.Ledger.Lifetime.ChipDevelopment = -198_500;", "613,400", "178,500"),
+    ("ThisWeekJerkinDevSpendIncomeSummaryLine", "thisWeekJerkinDevSpendIncome", "this week jerkin dev spend income", "this_week_jerkin_dev_spend_income_summary_line",
+     "lab.Ledger.ThisWeek.Hardware = -4_360;\n            lab.Ledger.ThisWeek.ChipDevelopment = -71_550;", "4,360", "11,550"),
+    ("LastWeekJerkinDevSpendIncomeSummaryLine", "lastWeekJerkinDevSpendIncome", "last week jerkin dev spend income", "last_week_jerkin_dev_spend_income_summary_line",
+     "lab.Ledger.LastWeek.Hardware = -4_340;\n            lab.Ledger.LastWeek.ChipDevelopment = -71_350;", "4,340", "11,350"),
+    ("LifetimeJerkinDevSpendIncomeSummaryLine", "lifetimeJerkinDevSpendIncome", "lifetime jerkin dev spend income", "lifetime_jerkin_dev_spend_income_summary_line",
+     "lab.Ledger.Lifetime.Hardware = -613_400;\n            lab.Ledger.Lifetime.ChipDevelopment = -238_500;", "613,400", "178,500"),
     ("ThisWeekDevRegentSpendIncomeSummaryLine", "thisWeekDevRegentSpendIncome", "this week dev regent spend income", "this_week_dev_regent_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.ChipDevelopment = -31_560;\n            lab.Ledger.ThisWeek.CapitalIn = 18_460;", "11,560", "18,460"),
+     "lab.Ledger.ThisWeek.ChipDevelopment = -71_560;\n            lab.Ledger.ThisWeek.CapitalIn = 18_460;", "11,560", "18,460"),
     ("LastWeekDevRegentSpendIncomeSummaryLine", "lastWeekDevRegentSpendIncome", "last week dev regent spend income", "last_week_dev_regent_spend_income_summary_line",
-     "lab.Ledger.LastWeek.ChipDevelopment = -31_360;\n            lab.Ledger.LastWeek.CapitalIn = 18_260;", "11,360", "18,260"),
+     "lab.Ledger.LastWeek.ChipDevelopment = -71_360;\n            lab.Ledger.LastWeek.CapitalIn = 18_260;", "11,360", "18,260"),
     ("LifetimeDevRegentSpendIncomeSummaryLine", "lifetimeDevRegentSpendIncome", "lifetime dev regent spend income", "lifetime_dev_regent_spend_income_summary_line",
-     "lab.Ledger.Lifetime.ChipDevelopment = -198_700;\n            lab.Ledger.Lifetime.CapitalIn = 2_413_200;", "178,700", "2,413,200"),
+     "lab.Ledger.Lifetime.ChipDevelopment = -238_700;\n            lab.Ledger.Lifetime.CapitalIn = 2_413_200;", "178,700", "2,413,200"),
 ]
 
 SPRINT887 = [
     ("ThisWeekRegentDevSpendIncomeSummaryLine", "thisWeekRegentDevSpendIncome", "this week regent dev spend income", "this_week_regent_dev_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.CapitalIn = 18_470;\n            lab.Ledger.ThisWeek.ChipDevelopment = -31_570;", "18,470", "11,570"),
+     "lab.Ledger.ThisWeek.CapitalIn = 18_470;\n            lab.Ledger.ThisWeek.ChipDevelopment = -71_570;", "18,470", "11,570"),
     ("LastWeekRegentDevSpendIncomeSummaryLine", "lastWeekRegentDevSpendIncome", "last week regent dev spend income", "last_week_regent_dev_spend_income_summary_line",
-     "lab.Ledger.LastWeek.CapitalIn = 18_270;\n            lab.Ledger.LastWeek.ChipDevelopment = -31_370;", "18,270", "11,370"),
+     "lab.Ledger.LastWeek.CapitalIn = 18_270;\n            lab.Ledger.LastWeek.ChipDevelopment = -71_370;", "18,270", "11,370"),
     ("LifetimeRegentDevSpendIncomeSummaryLine", "lifetimeRegentDevSpendIncome", "lifetime regent dev spend income", "lifetime_regent_dev_spend_income_summary_line",
-     "lab.Ledger.Lifetime.CapitalIn = 2_413_400;\n            lab.Ledger.Lifetime.ChipDevelopment = -198_900;", "2,413,400", "178,900"),
+     "lab.Ledger.Lifetime.CapitalIn = 2_413_400;\n            lab.Ledger.Lifetime.ChipDevelopment = -238_900;", "2,413,400", "178,900"),
     ("ThisWeekDevKindleSpendIncomeSummaryLine", "thisWeekDevKindleSpendIncome", "this week dev kindle spend income", "this_week_dev_kindle_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.ChipDevelopment = -31_580;\n            lab.Ledger.ThisWeek.PatentLicense = -2_490;", "11,580", "2,490"),
+     "lab.Ledger.ThisWeek.ChipDevelopment = -71_580;\n            lab.Ledger.ThisWeek.PatentLicense = -2_490;", "11,580", "2,490"),
     ("LastWeekDevKindleSpendIncomeSummaryLine", "lastWeekDevKindleSpendIncome", "last week dev kindle spend income", "last_week_dev_kindle_spend_income_summary_line",
-     "lab.Ledger.LastWeek.ChipDevelopment = -31_380;\n            lab.Ledger.LastWeek.PatentLicense = -2_470;", "11,380", "2,470"),
+     "lab.Ledger.LastWeek.ChipDevelopment = -71_380;\n            lab.Ledger.LastWeek.PatentLicense = -2_470;", "11,380", "2,470"),
     ("LifetimeDevKindleSpendIncomeSummaryLine", "lifetimeDevKindleSpendIncome", "lifetime dev kindle spend income", "lifetime_dev_kindle_spend_income_summary_line",
-     "lab.Ledger.Lifetime.ChipDevelopment = -199_100;\n            lab.Ledger.Lifetime.PatentLicense = -39_600;", "179,100", "39,600"),
+     "lab.Ledger.Lifetime.ChipDevelopment = -239_100;\n            lab.Ledger.Lifetime.PatentLicense = -39_600;", "179,100", "39,600"),
 ]
 
 SPRINT888 = [
     ("ThisWeekKindleDevSpendIncomeSummaryLine", "thisWeekKindleDevSpendIncome", "this week kindle dev spend income", "this_week_kindle_dev_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.PatentLicense = -2_500;\n            lab.Ledger.ThisWeek.ChipDevelopment = -31_590;", "2,500", "11,590"),
+     "lab.Ledger.ThisWeek.PatentLicense = -2_500;\n            lab.Ledger.ThisWeek.ChipDevelopment = -71_590;", "2,500", "11,590"),
     ("LastWeekKindleDevSpendIncomeSummaryLine", "lastWeekKindleDevSpendIncome", "last week kindle dev spend income", "last_week_kindle_dev_spend_income_summary_line",
-     "lab.Ledger.LastWeek.PatentLicense = -2_480;\n            lab.Ledger.LastWeek.ChipDevelopment = -31_390;", "2,480", "11,390"),
+     "lab.Ledger.LastWeek.PatentLicense = -2_480;\n            lab.Ledger.LastWeek.ChipDevelopment = -71_390;", "2,480", "11,390"),
     ("LifetimeKindleDevSpendIncomeSummaryLine", "lifetimeKindleDevSpendIncome", "lifetime kindle dev spend income", "lifetime_kindle_dev_spend_income_summary_line",
-     "lab.Ledger.Lifetime.PatentLicense = -39_800;\n            lab.Ledger.Lifetime.ChipDevelopment = -199_300;", "39,800", "179,300"),
+     "lab.Ledger.Lifetime.PatentLicense = -39_800;\n            lab.Ledger.Lifetime.ChipDevelopment = -239_300;", "39,800", "179,300"),
     ("ThisWeekDevCitadelSpendIncomeSummaryLine", "thisWeekDevCitadelSpendIncome", "this week dev citadel spend income", "this_week_dev_citadel_spend_income_summary_line",
-     "lab.Ledger.ThisWeek.ChipDevelopment = -31_600;\n            lab.Ledger.ThisWeek.SiteBuild = -6_900;", "11,600", "6,900"),
+     "lab.Ledger.ThisWeek.ChipDevelopment = -71_600;\n            lab.Ledger.ThisWeek.SiteBuild = -6_900;", "11,600", "6,900"),
     ("LastWeekDevCitadelSpendIncomeSummaryLine", "lastWeekDevCitadelSpendIncome", "last week dev citadel spend income", "last_week_dev_citadel_spend_income_summary_line",
-     "lab.Ledger.LastWeek.ChipDevelopment = -31_400;\n            lab.Ledger.LastWeek.SiteBuild = -6_880;", "11,400", "6,880"),
+     "lab.Ledger.LastWeek.ChipDevelopment = -71_400;\n            lab.Ledger.LastWeek.SiteBuild = -6_880;", "11,400", "6,880"),
     ("LifetimeDevCitadelSpendIncomeSummaryLine", "lifetimeDevCitadelSpendIncome", "lifetime dev citadel spend income", "lifetime_dev_citadel_spend_income_summary_line",
-     "lab.Ledger.Lifetime.ChipDevelopment = -199_500;\n            lab.Ledger.Lifetime.SiteBuild = -389_600;", "179,500", "389,600"),
+     "lab.Ledger.Lifetime.ChipDevelopment = -239_500;\n            lab.Ledger.Lifetime.SiteBuild = -389_600;", "179,500", "389,600"),
 ]
 
-PA885 = '            string lifetimeDevClewSpendIncomePart = string.IsNullOrEmpty(lifetimeDevKnotSpendIncome) ? "" : " · " + lifetimeDevKnotSpendIncome;'
-PA886 = '            string lifetimeDevCloakSpendIncomePart = string.IsNullOrEmpty(lifetimeDevCloakSpendIncome) ? "" : " · " + lifetimeDevCloakSpendIncome;'
+PA885 = '            string lifetimeDevClewSpendIncomePart = string.IsNullOrEmpty(lifetimeDevClewSpendIncome) ? "" : " · " + lifetimeDevClewSpendIncome;'
+PA886 = '            string lifetimeDevJerkinSpendIncomePart = string.IsNullOrEmpty(lifetimeDevJerkinSpendIncome) ? "" : " · " + lifetimeDevJerkinSpendIncome;'
 PA887 = '            string lifetimeDevRegentSpendIncomePart = string.IsNullOrEmpty(lifetimeDevRegentSpendIncome) ? "" : " · " + lifetimeDevRegentSpendIncome;'
 PA888 = '            string lifetimeDevKindleSpendIncomePart = string.IsNullOrEmpty(lifetimeDevKindleSpendIncome) ? "" : " · " + lifetimeDevKindleSpendIncome;'
 
@@ -387,8 +387,8 @@ def run_sprint(cycles, part_anchor, tail_token):
 
 insert_formatters(F885_886)
 git_commit("feat(hud): sprint885-886 twelve ledger summary formatters", [HUD_PATH])
-run_sprint(SPRINT885, PA885, "lifetimeDevKnotSpendIncome")
-run_sprint(SPRINT886, PA886, "lifetimeDevCableSpendIncomePart")
+run_sprint(SPRINT885, PA885, "lifetimeDevClewSpendIncome")
+run_sprint(SPRINT886, PA886, "lifetimeDevJerkinSpendIncome")
 subprocess.check_call(
     ["dotnet", "test", "tools/SimTests/SimTests.csproj", "--filter", "FullyQualifiedName~golden", "-v", "q"],
     cwd=ROOT,
@@ -396,11 +396,9 @@ subprocess.check_call(
 
 insert_formatters(F887_888)
 git_commit("feat(hud): sprint887-888 twelve ledger summary formatters", [HUD_PATH])
-run_sprint(SPRINT887, PA887, "lifetimeDevTabardSpendIncomePart")
-run_sprint(SPRINT888, PA888, "lifetimeDevSurpliceSpendIncomePart")
+run_sprint(SPRINT887, PA887, "lifetimeDevRegentSpendIncome")
+run_sprint(SPRINT888, PA888, "lifetimeDevKindleSpendIncome")
 subprocess.check_call(
     ["dotnet", "test", "tools/SimTests/SimTests.csproj", "--filter", "FullyQualifiedName~golden", "-v", "q"],
     cwd=ROOT,
 )
-
-Path('/agent/repos/ai-labs-tycoon/studio/hud-ledger/recovered/run_sprints_885_888.exit').write_text('EXIT:0\n')
