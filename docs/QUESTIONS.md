@@ -1081,9 +1081,25 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBubbleDistressBarLaterTests3` (70):** Q178 distress listing neighbour; store §bubble/distress; filter **70/70**; schema **29** only.
 
-### Q4476–Q4545. Distress/acquire bar coda? DECIDED: test-only (batch 69, LOCAL)
+### Q4476–Q4545. Distress/acquire bar coda? DECIDED: test-only (batch 69, **pushed @ `f320b6b`**)
 
-- **`HatchDistressAcquireBarLaterTests3` (70):** chips distress listing + crash offers; bible acquire path; filter **70/70**; schema **29** only.
+- **`HatchDistressAcquireBarLaterTests3` (70):** chips distress listing + crash offers; gate **5214** at land; schema **29** only.
+
+### Q4546–Q4615. Rival plan × chips cross bar? DECIDED: test-only (batch 70, LOCAL squash packet)
+
+- **`HatchRivalPlanBarLaterTests3` (70):** store §rivals + §chips listings; schema **29** only.
+
+### Q4616–Q4685. Acquire/listing × chips bar? DECIDED: test-only (batch 71, LOCAL)
+
+- **`HatchAcquireListingBarLaterTests3` (70):** distress listing + acquisition; systems-design §4.
+
+### Q4686–Q4755. World-map/economy cross bar? DECIDED: test-only (batch 72, LOCAL)
+
+- **`HatchWorldMapEconomyBarLaterTests3` (70):** eras, rivalry retrench, bubble; §2 sites (data-only).
+
+### Q4756–Q4825. Funding follow-on bar? DECIDED: test-only (batch 73, LOCAL)
+
+- **`HatchFundingFollowOnBarLaterTests3` (70):** `FundingFollowOn` + bubble crash funding; bible capital path.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 

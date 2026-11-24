@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`47f9787`**; **LOCAL** batch **69** + ledger |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`f320b6b`**; **LOCAL** batch **70+** |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -190,8 +190,13 @@ and says why in the commit message.
 - ~~**Hatch bubble/distress batch 68**~~ **pushed @ `47f9787`** — Q4406–Q4475 (`HatchBubbleDistressBarLaterTests3`, **70**); squash `e90c37d` onto `b9c1d5a`; gate **5144/5144**; ~**10:26+ UTC** (~**17:26 ICT**).
   - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
 - **Push policy:** plain FF only; coauth grep empty on push range; grouped batches; **no force-push**.
-- **Batch 69 GO wall:** batch68 @ **`47f9787`**; next GO ≥~**10:56 UTC** (~**17:49 ICT**); squash HEAD tree w/ `HatchDistressAcquireBarLaterTests3` onto `47f9787` (excludes ledger-only docs); commit-tree + grep.
-- **batch 69 (LOCAL)** — Q4476–Q4545 `HatchDistressAcquireBarLaterTests3`; filter **70/70**.
+- ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
+- **Grouped squash packet (LOCAL — NO PUSH):** batches **70–73** off `f320b6b` — **280** new tests (**5494** expected at gate); GO after coordinator + ~**30m** spacing from **`f320b6b`** (~**11:51 UTC** / **18:51 ICT** earliest); commit-tree squash; coauth grep.
+- **batch 70 (LOCAL)** — Q4546–Q4615 `HatchRivalPlanBarLaterTests3` (rivals × chips).
+- **batch 71 (LOCAL)** — Q4616–Q4685 `HatchAcquireListingBarLaterTests3` (acquire × chip listings, systems-design §4).
+- **batch 72 (LOCAL)** — Q4686–Q4755 `HatchWorldMapEconomyBarLaterTests3` (eras × rivalry × bubble, §2 world map).
+- **batch 73 (LOCAL)** — Q4756–Q4825 `HatchFundingFollowOnBarLaterTests3` (follow-on × bubble).
+- **batch 74+ (refill)** — Envydia vendor / site power when phase **C/D** merges open; schema **30** still parked.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
