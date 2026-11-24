@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`a727a84`**; **LOCAL** packet **78–81** |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`b50d053`**; **LOCAL** batch **82+** |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -189,13 +189,13 @@ and says why in the commit message.
 - ~~**Hatch capital/bubble batch 67**~~ **pushed @ `b9c1d5a`** — Q4336–Q4405 (`HatchCapitalBubbleBarLaterTests3`, **70**); squash via commit-tree off `5b52104`; gate **5074/5074**; landed ~**09:49 UTC** (~**16:49 ICT**).
 - ~~**Hatch bubble/distress batch 68**~~ **pushed @ `47f9787`** — Q4406–Q4475 (`HatchBubbleDistressBarLaterTests3`, **70**); squash `e90c37d` onto `b9c1d5a`; gate **5144/5144**; ~**10:26+ UTC** (~**17:26 ICT**).
   - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
-- **Push policy:** plain FF only; coauth grep empty on push range; grouped batches; **no force-push**.
+- **Push policy:** plain FF / commit-tree squash only; grouped batches; **no force-push**. Before each grouped push: `git log -1 --format=%B` on **new** commit(s) — **no `Co-authored-by`**; also grep push range. Fix **unpushed** commits via `commit-tree` replay locally only; **never** amend/rewrite **already on origin** (including `main`) — leave violations alone.
 - ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
 - ~~**Batches 70–73 grouped squash**~~ **pushed @ `516404f`** — Q4546–Q4825 (**280** tests); gate **5494/5494**; parent `f320b6b`; ~**19:26 ICT**.
 - ~~**Batches 74–77 grouped squash**~~ **pushed @ `a727a84`** — Q4826–Q5105 (**280** tests); gate **5774/5774**; parent `516404f`; ~**20:12 ICT**.
-- **Grouped squash packet (LOCAL — NO PUSH):** batches **78–81** off **`a727a84`** — **280** tests (**6054** expected gate); model sales×chips, exit/sell (Q99), containment endings (Q97–Q98), forward queue; GO after coordinator + prepush + ~**30m** after **`a727a84`** (~**20:42 ICT** earliest; satisfied **20:42+**).
-- **78** Q5106–Q5175 `HatchModelSalesChipBarLaterTests4` · **79** Q5176–Q5245 `HatchExitSellBarLaterTests4` · **80** Q5246–Q5315 `HatchContainmentEndingBarLaterTests5` · **81** Q5316–Q5385 `HatchForwardQueueBarLaterTests5`
-- **batch 82+ (refill)** — Envydia vendor / site power (systems-design §2–§3); schema **30** parked.
+- ~~**Batches 78–81 grouped squash**~~ **pushed @ `b50d053`** — Q5106–Q5385 (**280** tests); gate **6054/6054**; ~**21:06+ ICT**.
+- **Grouped squash packet (GO):** batches **82–85** off **`b50d053`** — **280** tests (**6334** gate); pop/second-place, freeze/audit, treaty endings.
+- **86+ LOCAL after land** — Envydia / sites refill.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
