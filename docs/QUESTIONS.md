@@ -1113,9 +1113,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **86–89** acquire gameplay, distress, bubble distress, rival plan; schema **29** only.
 
-### Q5946–Q6215. Batches 90–93 cross bars? DECIDED: test-only (grouped squash off `fda05f6e`)
+### Q5946–Q6215. Batches 90–93 cross bars? DECIDED: test-only (**pushed @ `91dadc47`**)
 
 - **90** `HatchModelSalesChipBarLaterTests5`; **91** `HatchCapitalBubbleBarLaterTests6`; **92** `HatchBubbleAcquireBarLaterTests6`; **93** `HatchBalanceSoakBarLaterTests5`; schema **29** only.
+
+### Q6216–Q6495. Batches 94–97 cross bars? DECIDED: test-only (LOCAL grouped packet off `91dadc47`)
+
+- **94–97** regulator/bubble, shady/china, incident/safety, rival economy; schema **29** only.
+
+### Q6496–Q6775. Batches 98–101 cross bars? DECIDED: test-only (LOCAL off `91dadc47`)
+
+- **98–101** funding follow-on, world map, acquire/listing, era incident load; schema **29** only.
+
+### Q6776+. Batch 102+ queue? OPEN
+
+- Refill from bible forward queue and systems-design tails when **94–101** packet lands.
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
