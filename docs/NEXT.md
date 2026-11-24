@@ -169,9 +169,10 @@ and says why in the commit message.
 - ~~**Hatch incident/safety batch 60**~~ **pushed @ `d332207`** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); gate **4589/0** in-repo; parent `7d877f6` (+5); landed GO ~03:52 UTC Nov 24.
 - ~~**Hatch containment/ending batch 61**~~ **pushed @ `be476fc`** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); gate **4589/4589** in-repo; parent `d332207` (+6); landed ~04:48 UTC Nov 24.
 - ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
-- **Hatch exit/sell batch 63 (LOCAL — NO PUSH until GO ≥ ~05:49 UTC)** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); parent `a618b3c`; filter **70/0**; expected prepush **4729/4729**; **Q99** `ExitPriceParts`; schema **29** only.
+- ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
+- **Hatch forward-queue batch 64 (LOCAL — NO PUSH until GO ≥ ~06:20 UTC)** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); parent `605edb0`; filter **70/0**; expected prepush **4799/4799**; cross-era + exit neighbours; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 64+ (TBD)** — balance/forward-queue codas; **SolvencyHold** schema **30** parked.
+  - **batch 65+ (TBD)** — balance-soak coda; **SolvencyHold** schema **30** parked.
 - **Refill (systems-only):** per store `internal/next-work-real-systems-only.md` — stack2 **data bars** on real config/state (no query-only `*Parts`); bible **Q100**/eras + **Q540** endings; cross-system bars keep save round-trip + runtime `Game.Solo` slots; rivals stack2 **52–62**; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
