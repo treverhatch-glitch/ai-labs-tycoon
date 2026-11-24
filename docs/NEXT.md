@@ -167,11 +167,11 @@ and says why in the commit message.
 - ~~**Hatch rival/economy batch 58**~~ **pushed @ `29a97d3`** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); gate **4449/0** in-repo; parent `8744e8f` (+4); landed ~02:17 UTC Nov 24.
 - ~~**Hatch shady/china batch 59**~~ **pushed @ `7d877f6`** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); gate **4519/0** in-repo; landed ~03:16 UTC Nov 24.
 - ~~**Hatch incident/safety batch 60**~~ **pushed @ `d332207`** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); gate **4589/0** in-repo; parent `7d877f6` (+5); landed GO ~03:52 UTC Nov 24.
-- **Hatch containment/ending batch 61 (LOCAL — NO PUSH until GO ≥ ~04:22 UTC / 30m after `d332207`)** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); push range **`d332207..abb476b`** (**5** commits); filter **70/0**; expected prepush **4659/4659**; bible **Q540** + treaty/pop; schema **29** only.
+- ~~**Hatch containment/ending batch 61**~~ **pushed @ `be476fc`** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); gate **4589/4589** in-repo; parent `d332207` (+6); landed ~04:48 UTC Nov 24.
+- **Hatch era/incident batch 62 (LOCAL — NO PUSH until GO ≥ ~05:18 UTC)** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); parent `be476fc`; filter **70/0**; expected prepush **4659/4659**; **Q100** `incidentLoadPermille`; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 62 (queued)** — Q3986–Q4055 `HatchEraIncidentBarLaterTests2` — era incident coda (batch **48** fork).
-  - **batch 63+ (TBD)** — exit/sell, balance coda; **SolvencyHold** schema **30** parked on `main`.
-- **Refill:** store `internal/bible-systems-design-questions-backlog.md` (**Q525** scrutiny, **Q540** HUD); batch **61** endings/containment-wing + `ThePopEndingForPlayer`; batch **62** **Q100** era `incidentLoadPermille`; rivals stack2 **52–62**; schema **29** only.
+  - **batch 63+ (TBD)** — exit/sell, balance, forward-queue codas; **SolvencyHold** schema **30** parked.
+- **Refill (systems-only):** per store `internal/next-work-real-systems-only.md` — stack2 **data bars** on real config/state (no query-only `*Parts`); bible **Q100**/eras + **Q540** endings; cross-system bars keep save round-trip + runtime `Game.Solo` slots; rivals stack2 **52–62**; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 
