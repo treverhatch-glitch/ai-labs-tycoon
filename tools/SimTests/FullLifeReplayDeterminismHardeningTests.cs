@@ -7,6 +7,7 @@ using Xunit;
 namespace AiLabs.SimTests;
 
 /// <summary>From a 1995 start, a full multi-decade autopilot run replays from the same journal on several seeds.</summary>
+[Trait("Category", "LongRunning")]
 public class FullLifeReplayDeterminismHardeningTests
 {
     const int SixtyYearsWeeks = 60 * 48;

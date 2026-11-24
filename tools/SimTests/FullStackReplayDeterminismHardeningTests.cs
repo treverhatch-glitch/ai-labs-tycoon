@@ -8,6 +8,7 @@ using Xunit;
 namespace AiLabs.SimTests;
 
 /// <summary>Sixty-year full-stack autopilot runs replay from the journal on many seeds.</summary>
+[Trait("Category", "LongRunning")]
 public class FullStackReplayDeterminismHardeningTests
 {
     const int SixtyYearsWeeks = 60 * 48;
