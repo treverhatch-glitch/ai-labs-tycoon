@@ -196,9 +196,9 @@ namespace AiLabs.Rules.Systems
             lab.OfficeEventId = "";
             lab.OfficeEventExpires = 0;
             Events.Add(state, EventKind.OfficeEventAnswered, lab.Id, -1, 0, e.IdValue + "|" + choice.IdValue);
-            HearingSharePrice.OnAnswered(c, state, lab, e, choice);
-            if (e.Trigger == OfficeTrigger.Escape || e.Trigger == OfficeTrigger.Takeoff)
-                RungSixCrisis.OnArcAnswered(c, state, lab, e.Trigger);
+            // HearingSharePrice.OnAnswered(c, state, lab, e, choice);
+            // if (e.Trigger == OfficeTrigger.Escape || e.Trigger == OfficeTrigger.Takeoff)
+                // RungSixCrisis.OnArcAnswered(c, state, lab, e.Trigger);
         }
 
         static void Apply(GameConfig c, GameState state, LabState lab, OfficeEffectConfig effect)

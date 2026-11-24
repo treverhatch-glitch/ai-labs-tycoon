@@ -1,7 +1,8 @@
 name: rules
 
-# Plain C# SimTests + two-year SimCli (main 401a79cd/Q736: 60m cap). Era PRs skip Category=LongRunning; workflow_dispatch full suite.
+# Plain C# SimTests + two-year SimCli (main 69231943/Q736: 60m cap). Era PRs skip Category=LongRunning; workflow_dispatch full suite.
 # Full SimTests on era-sized merge refs can take ~35–40m; main-shaped branches are much faster.
+# Runs on pull requests and by hand only. No push trigger; a new push cancels the in-flight run on the same PR.
 on:
   pull_request:
   workflow_dispatch:

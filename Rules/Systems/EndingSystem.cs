@@ -18,6 +18,8 @@ namespace AiLabs.Rules.Systems
         public const string LooseId = "loose";
         public const string ThePopId = "the-pop";
         public const string SecondPlaceId = "second-place";
+        public const string TreatyId = "treaty";
+        public const string NationalisedId = "nationalised";
 
         public static void RecordBankrupt(GameConfig c, GameState state, LabState lab)
         {
@@ -256,6 +258,42 @@ namespace AiLabs.Rules.Systems
             Add(state, player.Id, SecondPlaceId);
             player.CrownRunnerUpStreak = 0;
             Events.Add(state, EventKind.EndingReached, player.Id, -1, streak, SecondPlaceId);
+        }
+
+        /// <summary>Home government has frozen the player out entirely.</summary>
+        public static void TryNationalised(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            EndingsConfig cfg = c.Endings;
+            if (cfg.NationalisedHomeLevelMin < 1) return;
+            if (HasOpen(state, NationalisedId) || HasRecorded(state, NationalisedId)) return;
+            BlocStanding home = player.Bloc(player.HomeBlocId);
+            if (home == null || home.Level < cfg.NationalisedHomeLevelMin) return;
+            Add(state, player.Id, NationalisedId);
+            Events.Add(state, EventKind.EndingReached, player.Id, home.Level, home.Attention, NationalisedId);
+        }
+
+        /// <summary>Several foreign blocs are auditing the player at once — a treaty is imposed.</summary>
+        public static void TryTreaty(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            EndingsConfig cfg = c.Endings;
+            if (cfg.TreatyForeignBlocCount < 1 || cfg.TreatyForeignLevelMin < 1) return;
+            if (HasOpen(state, TreatyId) || HasRecorded(state, TreatyId)) return;
+            int foreign = 0;
+            for (int i = 0; i < player.Blocs.Count; i++)
+            {
+                BlocStanding s = player.Blocs[i];
+                if (s.BlocId == player.HomeBlocId) continue;
+                if (s.Level >= cfg.TreatyForeignLevelMin) foreign++;
+            }
+            if (foreign < cfg.TreatyForeignBlocCount) return;
+            Add(state, player.Id, TreatyId);
+            Events.Add(state, EventKind.EndingReached, player.Id, foreign, 0, TreatyId);
         }
 
         public static void ApplyContinue(GameConfig c, GameState state, LabState lab, EndingRecord record, string mode)

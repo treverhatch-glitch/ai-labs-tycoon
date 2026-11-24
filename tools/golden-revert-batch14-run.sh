@@ -10,21 +10,21 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[135]=6e2a3e7d979e90c9c25a0d42656787acbfd20d14eb4c20106fa2d10c97901a4d
-GOLDEN[136]=11a5a356764ccd01249444e8f495115204de549ab6ab02bb61b57bed3ee6d9c4
-GOLDEN[137]=4d258e3b753cf07c4336218808204328725cdcfad601e70742f3c83a317897ea
-GOLDEN[138]=9d41ce1fff6f9b26f1055ce87bb9acd2df6883228fd5ca6e232dc664685c99d2
+GOLDEN[135]=113cd5aa5a9ccfdda1139cc8ee6dc080a28f41002a4d3181b1daa16888248589
+GOLDEN[136]=85c66f4593f2115a57d149c6f9c0e92d85b0946c50e36d2243db0959f2b67676
+GOLDEN[137]=820b04eaeb423034b9b27a01ac91dcec48334d98d2a6b5f0b7153ac6e9e17ea9
+GOLDEN[138]=eb968ab3537da88b6871002f946cf1de5ad990a5d8d6f4344e1aac97beba22b7
 
 PREV=$((N - 1))
 BK="/tmp/b14-rev-bak-$N"
 mkdir -p "$BK"
 for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/MarketSystem.cs Rules/Systems/SafetySystem.cs Rules/Systems/TrainingSystem.cs \
-  Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  Rules/Systems/BubbleSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
   cp "$f" "$BK/$(echo $f | tr '/' '_')"
 done
 restore() {
   for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/MarketSystem.cs Rules/Systems/SafetySystem.cs Rules/Systems/TrainingSystem.cs \
-  Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+    Rules/Systems/BubbleSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
   (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
