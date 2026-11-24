@@ -39,6 +39,10 @@ namespace AiLabs.Rules.Config
         public int CrashGpuPricePermille;
         /// <summary>Monthly rival public-float cut during a crash, in ppm.</summary>
         public int CrashFloatCutPpm;
+        /// <summary>Warning level 2 when permille is within this many points of popAtPermille.</summary>
+        public int PopWarningMarginPermille;
+        /// <summary>When true, clear cumulative hot-money tally when a crash phase fully ends.</summary>
+        public bool ResetCapitalRaisedAfterCrash;
 
         public void Sync(Syncer s)
         {
@@ -60,6 +64,8 @@ namespace AiLabs.Rules.Config
             s.Int("crashFundingCashPermille", ref CrashFundingCashPermille);
             s.Int("crashGpuPricePermille", ref CrashGpuPricePermille);
             s.Int("crashFloatCutPpm", ref CrashFloatCutPpm);
+            s.Int("popWarningMarginPermille", ref PopWarningMarginPermille);
+            s.Bool("resetCapitalRaisedAfterCrash", ref ResetCapitalRaisedAfterCrash);
         }
     }
 }
