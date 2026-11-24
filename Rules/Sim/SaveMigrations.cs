@@ -79,6 +79,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 62) MigrateTo62(root);
             if (fromSchema < 63) MigrateTo63(root);
             if (fromSchema < 64) MigrateTo64(root);
+            if (fromSchema < 65) MigrateTo65(root);
+            if (fromSchema < 66) MigrateTo66(root);
+            if (fromSchema < 67) MigrateTo67(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -741,6 +744,31 @@ namespace AiLabs.Rules.Sim
             {
                 foreach (string key in new[] { "revenueTargetLevel", "revenueTargetEnd", "revenueTargetGoal", "revenueTargetSoFar" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 65: no lab has endowed a chair.</summary>
+        static void MigrateTo65(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chairs", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 66: no lab has a whistleblower concern open or a silence bought.</summary>
+        static void MigrateTo66(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "whistleWeeks", "whistleModel", "whistleDue", "silenced" }) JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 67: no lab has set a bug bounty level.</summary>
+        static void MigrateTo67(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "bountyLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "bountyLockedUntil", JsonValue.Of(0L));
             });
         }
 

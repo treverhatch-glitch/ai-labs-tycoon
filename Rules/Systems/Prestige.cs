@@ -11,7 +11,7 @@ namespace AiLabs.Rules.Systems
 
         public static int Level(GameConfig c, LabState lab)
         {
-            return (int)MathI.Clamp(lab.Prestige, 0, c.Prestige.Max);
+            return (int)MathI.Clamp(MathI.Max(lab.Prestige, Chairs.Floor(c, lab)), 0, c.Prestige.Max);
         }
 
         /// <summary>People on the payroll who do research and so can write a paper.</summary>

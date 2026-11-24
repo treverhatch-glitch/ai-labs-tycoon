@@ -34,7 +34,7 @@ namespace AiLabs.Rules.Systems
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
             long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab) + TechDebt.IncidentPermille(c, lab);
-            return IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before));
+            return IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before) + BugBounty.IncidentChange(c, lab, before));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>

@@ -5614,6 +5614,48 @@
     "reputationAtFull": 20,
     "moraleAtFull": 60
   },
+  "chairs": {
+    "maxChairs": 3,
+    "costBase": 150000,
+    "stipendPerWeek": 1200,
+    "researchPerWeek": 14,
+    "prestigeFloor": 120,
+    "minResearchers": 3
+  },
+  "restructure": {
+    "enabled": 1,
+    "stretchPermille": 2000,
+    "feePermille": 100,
+    "reputationLoss": 15
+  },
+  "pullout": {
+    "enabled": 1,
+    "feeWeeks": 4,
+    "trustDrop": 100,
+    "reputationLoss": 10
+  },
+  "bugBounty": {
+    "maxLevel": 3,
+    "setupPerLevel": 40000,
+    "weeklyPerLevel": 2000,
+    "cutPerLevel": 100,
+    "cooldownWeeks": 13
+  },
+  "whistle": {
+    "enabled": 1,
+    "roleId": "safety",
+    "gapPermille": 150,
+    "moraleBelow": 450,
+    "weeksToConcern": 6,
+    "answerWeeks": 4,
+    "cleanReputation": 25,
+    "cleanMorale": 120,
+    "silenceFee": 250000,
+    "silenceMorale": 80,
+    "leakReputation": 60,
+    "leakPerSilence": 30,
+    "leakMorale": 150
+  },
   "revenueTargets": {
     "maxLevel": 3,
     "weeks": 13,
@@ -9001,6 +9043,78 @@
         "kind": "TargetSettled",
         "pick": 0,
         "text": "{lab} misses its revenue target, making {money}. The board 'will be circling back'"
+      },
+      {
+        "id": "chair-endowed",
+        "kind": "ChairEndowed",
+        "pick": -1,
+        "text": "{lab} endows a university chair for {money}. A professor 'finally has a window'"
+      },
+      {
+        "id": "whistle-raised",
+        "kind": "WhistleRaised",
+        "pick": -1,
+        "text": "A safety person at {lab} 'has some questions' about the alignment numbers on {model}"
+      },
+      {
+        "id": "whistle-clean",
+        "kind": "WhistleAnswered",
+        "pick": 0,
+        "text": "{lab} comes clean about {model}. The slide 'was aspirational'"
+      },
+      {
+        "id": "whistle-silence",
+        "kind": "WhistleAnswered",
+        "pick": 1,
+        "text": "{lab} 'resolves' an internal concern about {model} for {money}. Everyone signs something"
+      },
+      {
+        "id": "whistle-leaked-resign",
+        "kind": "WhistleLeaked",
+        "pick": 1,
+        "text": "Insider leaks {lab}'s doubts about {model} and a safety person resigns. 'A culture of listening,' says {lab}"
+      },
+      {
+        "id": "whistle-leaked",
+        "kind": "WhistleLeaked",
+        "pick": 0,
+        "text": "Insider leaks {lab}'s doubts about {model}. 'A culture of listening,' says {lab}"
+      },
+      {
+        "id": "bounty-raised",
+        "kind": "BountySet",
+        "pick": 1,
+        "text": "{lab} raises its bug bounty. Strangers on the internet will now be paid to be rude to its models"
+      },
+      {
+        "id": "bounty-lowered",
+        "kind": "BountySet",
+        "pick": 0,
+        "text": "{lab} scales back its bug bounty. The strangers 'will find other hobbies'"
+      },
+      {
+        "id": "pullout",
+        "kind": "SectorPulledOut",
+        "pick": 0,
+        "text": "{lab} pulls {model} out of {ref}, paying {money} to customers 'for the inconvenience'"
+      },
+      {
+        "id": "pullout-last",
+        "kind": "SectorPulledOut",
+        "pick": 1,
+        "text": "{lab} leaves {ref} and retires {model}. 'We are refocusing,' says {lab}"
+      },
+      {
+        "id": "loan-restructured",
+        "kind": "LoanRestructured",
+        "pick": 0,
+        "text": "{lab} 'extends its runway' with a restructured loan"
+      },
+      {
+        "id": "loan-restructured-missed",
+        "kind": "LoanRestructured",
+        "pick": 1,
+        "text": "{lab} restructures a loan it had stopped paying. The lender 'values the relationship'"
       }
     ],
     "filler": [
@@ -10688,6 +10802,160 @@
         "pick": 0,
         "about": "lab",
         "text": "We missed the number. The board meeting has a new agenda item called 'learnings'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chair-endowed-chat-researcher",
+        "kind": "ChairEndowed",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a chair now. With a plaque. I have to go to the lunches.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chair-endowed-chat",
+        "kind": "ChairEndowed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We endowed a chair. Somebody is already asking where the plaque goes.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-raised-chat-safety",
+        "kind": "WhistleRaised",
+        "roles": ["safety"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "I said it out loud, in a meeting, with the door open. {model} does not look like the slide.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-raised-chat",
+        "kind": "WhistleRaised",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Somebody in safety has asked a question about {model}. Everybody is being very busy.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-clean-chat",
+        "kind": "WhistleAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We told everyone what {model} really scores. It was awkward and I slept better.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-silence-chat",
+        "kind": "WhistleAnswered",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "There is a new document about {model} and everyone in safety has signed it. Nobody will say what is in it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-leaked-chat-resign",
+        "kind": "WhistleLeaked",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "It is in the news about {model}, and one of the safety team left this morning with a box.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "whistle-leaked-chat",
+        "kind": "WhistleLeaked",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "It is in the news about {model}. The comms team has moved into the meeting room.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "bounty-raised-chat",
+        "kind": "BountySet",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We pay strangers to break our models now. They are very good at it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "bounty-lowered-chat",
+        "kind": "BountySet",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The bug bounty went down. The strangers were quick to notice.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pullout-chat",
+        "kind": "SectorPulledOut",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We left {ref}. The customers there got a nice letter and a refund.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pullout-last-chat",
+        "kind": "SectorPulledOut",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We left {ref} and {model} is retired. Somebody put a candle by its server.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-restructured-chat-sales",
+        "kind": "LoanRestructured",
+        "roles": ["sales"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We restructured the loan. I am told this is not the same as being in trouble.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-restructured-chat",
+        "kind": "LoanRestructured",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The loan has a longer term now. The lender sent a very polite email.",
         "fromYear": 0,
         "toYear": 0
       }

@@ -279,6 +279,13 @@ and says why in the commit message.
 96. **Board targets (finance, reputation).** ~~Done~~: `revenueTargets` data, `SetRevenueTarget`, `RevenueTargets`, schema 63, `RevenueTargetsTests`, `docs/content/board-targets.md` (Q338).
 97. **News and chat for scrapped runs, layoffs, debt, promotions and targets.** ~~Done~~: ten headlines and ten chat lines (79 and 132 in all), `ScrapLayoffDebtPromotionTargetNewsChatTests` (Q339).
 98. **Scrapping, layoffs, debt, promotions and targets together (tests).** ~~Done~~: `ScrapLayoffDebtPromotionTargetTogetherTests` (Q340).
+99. **Endowed chairs (research, prestige, cash).** ~~Done~~: `chairs` data, `EndowChair`, `Chairs`, schema 64, `ChairsTests`, `docs/content/endowed-chairs.md` (Q341).
+100. **The whistleblower (alignment claims, safety staff).** ~~Done~~: `whistle` data, `AnswerWhistle`, `Whistle`, schema 65, `WhistleTests`, `docs/content/whistleblower.md` (Q342).
+101. **The bug bounty (incident cut for a standing bill).** ~~Done~~: `bugBounty` data, `SetBugBounty`, `BugBounty`, schema 66, `BugBountyTests`, `docs/content/bug-bounty.md` (Q343).
+102. **Sector pullout (leave a sector, keep the model).** ~~Done~~: `pullout` data, `PullOutOfSector`, `Pullout`, `PulloutTests`, `docs/content/sector-pullout.md` (Q344).
+103. **Loan restructuring (lower payment for a fee).** ~~Done~~: `restructure` data, `RestructureLoan`, `Restructure`, `RestructureTests`, `docs/content/loan-restructuring.md` (Q345).
+104. **Headlines and chat for chairs, whistleblowers, bounties, pullouts and restructures.** ~~Done~~: 12 headlines, 14 chat lines, `ChairsWhistleBountyPulloutRestructureNewsChatTests` (Q346).
+105. **Chairs, whistleblowers, bounties, pullouts and restructures together.** ~~Done~~: `ChairsWhistleBountyPulloutRestructureTogetherTests` (Q347).
 
 ## Rules: later
 

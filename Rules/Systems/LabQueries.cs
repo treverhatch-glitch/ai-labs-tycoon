@@ -455,7 +455,7 @@ namespace AiLabs.Rules.Systems
                 if (role == null) continue;
                 total += lab.Staff[i].Senior == 1 ? MathI.MulPermille(role.WeeklySalary, MathI.Permille + c.Seniority.RaisePermille) : role.WeeklySalary;
             }
-            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab)));
+            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab))) + Chairs.Stipends(c, lab);
         }
 
         public static long WeeklyRoomUpkeep(GameConfig c, LabState lab)

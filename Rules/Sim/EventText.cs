@@ -229,6 +229,22 @@ namespace AiLabs.Rules.Sim
                 case EventKind.TargetSettled:
                     return e.Pick == 1 ? who + " hit its level " + e.SubjectId + " revenue target with $" + e.Amount + " and the board is pleased."
                         : who + " missed its level " + e.SubjectId + " revenue target, making $" + e.Amount + ", and the board is not pleased.";
+                case EventKind.ChairEndowed:
+                    return who + " endowed a university chair for $" + e.Amount + " and now holds " + e.SubjectId + (e.SubjectId == 1 ? " chair." : " chairs.");
+                case EventKind.WhistleRaised:
+                    return "A safety person at " + who + " says " + e.Ref + " shows " + e.Amount + " points more alignment than it has, and wants an answer.";
+                case EventKind.WhistleAnswered:
+                    return e.Pick == 0 ? who + " came clean about " + e.Ref + " and its shown alignment now matches the real one."
+                        : who + " paid $" + e.Amount + " to keep the concern about " + e.Ref + " quiet.";
+                case EventKind.WhistleLeaked:
+                    return "The concern about " + e.Ref + " leaked and " + who + " lost " + e.Amount + " reputation" + (e.Pick == 1 ? "; a safety person resigned." : ".");
+                case EventKind.BountySet:
+                    return e.SubjectId == 0 ? who + " closed its bug bounty."
+                        : who + (e.Pick == 1 ? " raised" : " lowered") + " its bug bounty to level " + e.SubjectId + (e.Amount > 0 ? " for $" + e.Amount + "." : ".");
+                case EventKind.SectorPulledOut:
+                    return who + " pulled out of " + e.Ref + (e.Amount > 0 ? ", paying $" + e.Amount + " to its customers" : "") + (e.Pick == 1 ? " and retired the model." : ".");
+                case EventKind.LoanRestructured:
+                    return who + " restructured loan " + e.SubjectId + ": a longer term and a lower payment for $" + e.Amount + " added to what it owes" + (e.Pick == 1 ? ", with its missed payments forgiven." : ".");
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

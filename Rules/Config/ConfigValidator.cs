@@ -96,6 +96,11 @@ namespace AiLabs.Rules.Config
             TechDebtProblems(p, c);
             SeniorityProblems(p, c);
             RevenueTargetsProblems(p, c);
+            ChairsProblems(p, c);
+            WhistleProblems(p, c);
+            BugBountyProblems(p, c);
+            PulloutProblems(p, c);
+            RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -969,6 +974,68 @@ namespace AiLabs.Rules.Config
             if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
             if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
             if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
+        }
+
+        static void RestructureProblems(List<string> p, GameConfig c)
+        {
+            RestructureConfig k = c.Restructure;
+            if (k == null) { p.Add("restructure is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("restructure.enabled must be 0 or 1");
+            if (k.StretchPermille < 1000 || k.StretchPermille > 5000) p.Add("restructure.stretchPermille must be from 1000 to 5000, so a restructure never shortens the term");
+            if (k.FeePermille < 0 || k.FeePermille > 500) p.Add("restructure.feePermille must be from 0 to 500");
+            if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("restructure.reputationLoss must be from 0 to 500");
+        }
+
+        static void PulloutProblems(List<string> p, GameConfig c)
+        {
+            PulloutConfig k = c.Pullout;
+            if (k == null) { p.Add("pullout is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pullout.enabled must be 0 or 1");
+            if (k.FeeWeeks < 0 || k.FeeWeeks > 52) p.Add("pullout.feeWeeks must be from 0 to 52");
+            if (k.TrustDrop < 0 || k.TrustDrop > 1000) p.Add("pullout.trustDrop must be from 0 to 1000");
+            if (k.ReputationLoss < 0 || k.ReputationLoss > 500) p.Add("pullout.reputationLoss must be from 0 to 500");
+        }
+
+        static void BugBountyProblems(List<string> p, GameConfig c)
+        {
+            BugBountyConfig k = c.BugBounty;
+            if (k == null) { p.Add("bugBounty is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("bugBounty.maxLevel must be from 0 to 5 (0 turns the bounty off)");
+            if (k.SetupPerLevel < 0) p.Add("bugBounty.setupPerLevel must not be negative");
+            if (k.WeeklyPerLevel < 1) p.Add("bugBounty.weeklyPerLevel must be at least 1, so the programme is never free to run");
+            if (k.CutPerLevel < 0 || k.CutPerLevel * (long)k.MaxLevel > 900) p.Add("bugBounty.cutPerLevel times maxLevel must not pass 900, so a bounty never ends incidents");
+            if (k.CooldownWeeks < 0 || k.CooldownWeeks > 104) p.Add("bugBounty.cooldownWeeks must be from 0 to 104");
+        }
+
+        static void WhistleProblems(List<string> p, GameConfig c)
+        {
+            WhistleConfig k = c.Whistle;
+            if (k == null) { p.Add("whistle is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("whistle.enabled must be 0 or 1");
+            if (c.Role(k.RoleId) == null) p.Add("whistle.roleId must be a role of the game");
+            if (k.GapPermille < 1 || k.GapPermille > 1000) p.Add("whistle.gapPermille must be from 1 to 1000");
+            if (k.MoraleBelow < 0 || k.MoraleBelow > 1000) p.Add("whistle.moraleBelow must be from 0 to 1000");
+            if (k.WeeksToConcern < 1 || k.WeeksToConcern > 52) p.Add("whistle.weeksToConcern must be from 1 to 52");
+            if (k.AnswerWeeks < 1 || k.AnswerWeeks > 26) p.Add("whistle.answerWeeks must be from 1 to 26");
+            if (k.CleanReputation < 0 || k.CleanReputation > 500) p.Add("whistle.cleanReputation must be from 0 to 500");
+            if (k.CleanMorale < 0 || k.CleanMorale > 500) p.Add("whistle.cleanMorale must be from 0 to 500");
+            if (k.SilenceFee < 1) p.Add("whistle.silenceFee must be at least 1, so silence is never free");
+            if (k.SilenceMorale < 0 || k.SilenceMorale > 500) p.Add("whistle.silenceMorale must be from 0 to 500");
+            if (k.LeakReputation < k.CleanReputation || k.LeakReputation > 500) p.Add("whistle.leakReputation must be from cleanReputation to 500, so waiting is never cheaper than coming clean");
+            if (k.LeakPerSilence < 0 || k.LeakPerSilence > 200) p.Add("whistle.leakPerSilence must be from 0 to 200");
+            if (k.LeakMorale < 0 || k.LeakMorale > 500) p.Add("whistle.leakMorale must be from 0 to 500");
+        }
+
+        static void ChairsProblems(List<string> p, GameConfig c)
+        {
+            ChairsConfig k = c.Chairs;
+            if (k == null) { p.Add("chairs is missing"); return; }
+            if (k.MaxChairs < 0 || k.MaxChairs > 10) p.Add("chairs.maxChairs must be from 0 to 10 (0 turns chairs off)");
+            if (k.CostBase < 1) p.Add("chairs.costBase must be at least 1, so a chair is never free");
+            if (k.StipendPerWeek < 0) p.Add("chairs.stipendPerWeek must not be negative");
+            if (k.ResearchPerWeek < 0 || k.ResearchPerWeek > 200) p.Add("chairs.researchPerWeek must be from 0 to 200");
+            if (k.PrestigeFloor < 0 || (c.Prestige.Max > 0 && k.PrestigeFloor * (long)k.MaxChairs >= c.Prestige.Max)) p.Add("chairs.prestigeFloor times maxChairs must stay under the most prestige, so papers still matter");
+            if (k.MinResearchers < 0 || k.MinResearchers > 50) p.Add("chairs.minResearchers must be from 0 to 50");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

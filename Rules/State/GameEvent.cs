@@ -200,7 +200,21 @@ namespace AiLabs.Rules.State
         /// <summary>The lab committed to a revenue target. SubjectId is the level, Amount the goal.</summary>
         TargetSet,
         /// <summary>A revenue target was judged. SubjectId is the level, Amount the revenue made, Pick 1 when it was met.</summary>
-        TargetSettled
+        TargetSettled,
+        /// <summary>The lab endowed a university chair. SubjectId is the chairs it now holds, Amount the cost.</summary>
+        ChairEndowed,
+        /// <summary>A safety person raised a concern that a model shows more alignment than it has. SubjectId is the model, Amount the gap in permille.</summary>
+        WhistleRaised,
+        /// <summary>The concern was answered. SubjectId is the model, Amount what it cost, Pick 0 when the lab came clean and 1 when it paid for silence.</summary>
+        WhistleAnswered,
+        /// <summary>The concern leaked. SubjectId is the model, Amount the reputation lost, Pick 1 when a person resigned over it.</summary>
+        WhistleLeaked,
+        /// <summary>The lab changed its bug bounty. SubjectId is the new level, Amount the fee, Pick 1 when it was raised.</summary>
+        BountySet,
+        /// <summary>The lab pulled a model out of a sector. SubjectId is the model, Amount the break fee, Pick 1 when it was the last sector and the model was retired. Ref is the sector.</summary>
+        SectorPulledOut,
+        /// <summary>A loan was restructured. SubjectId is the loan, Amount the fee added to what is owed, Pick 1 when it cleared missed payments.</summary>
+        LoanRestructured
     }
 
     /// <summary>

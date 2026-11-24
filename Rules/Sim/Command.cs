@@ -64,7 +64,12 @@ namespace AiLabs.Rules.Sim
         Layoff,
         PayDownDebt,
         PromoteStaff,
-        SetRevenueTarget
+        SetRevenueTarget,
+        EndowChair,
+        AnswerWhistle,
+        SetBugBounty,
+        PullOutOfSector,
+        RestructureLoan
     }
 
     /// <summary>
@@ -458,6 +463,37 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Endows a university chair: a big one-off cost that pays for good in research points and a floor under academic prestige, and a stipend every week.</summary>
+        public static Command EndowChair(int labId)
+        {
+            return Make(CommandKind.EndowChair, labId);
+        }
+
+        /// <summary>Answers a safety person's concern about a model's shown alignment: 0 comes clean (the shown number drops to the real one), 1 pays for silence (the gap stays and the next silence costs more).</summary>
+        public static Command AnswerWhistle(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerWhistle, labId);
+            c.Count = choice;
+            return c;
+        }
+
+        /// <summary>Sets the bug bounty level, 0 to the data's top. Raising it costs a fee per level, every level costs a bill every week for each released model, and it takes a share off the weekly incident chance; a change locks the level for some weeks.</summary>
+        public static Command SetBugBounty(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetBugBounty, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Pulls a model on sale out of one sector: a break fee of some weeks of what it earned there, lost trust and reputation, and the share it had built. A model with no sector left is retired.</summary>
+        public static Command PullOutOfSector(int labId, int modelId, string sectorId)
+        {
+            Command c = Make(CommandKind.PullOutOfSector, labId);
+            c.TargetId = modelId;
+            c.Ids.Add(sectorId);
+            return c;
+        }
+
         /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>
         public static Command ApplyForGrant(int labId, int tier)
         {
@@ -586,6 +622,14 @@ namespace AiLabs.Rules.Sim
         public static Command RepayLoan(int labId, int loanId)
         {
             Command c = Make(CommandKind.RepayLoan, labId);
+            c.TargetId = loanId;
+            return c;
+        }
+
+        /// <summary>Asks the lender to stretch a loan over a longer term: a lower weekly payment for a fee added to what is owed, a dent in the lab's name and a clean sheet of missed payments.</summary>
+        public static Command RestructureLoan(int labId, int loanId)
+        {
+            Command c = Make(CommandKind.RestructureLoan, labId);
             c.TargetId = loanId;
             return c;
         }
@@ -835,7 +879,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked, BountyLocked
     }
 
     public struct CommandResult
