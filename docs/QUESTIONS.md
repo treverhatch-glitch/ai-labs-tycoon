@@ -686,11 +686,35 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — STATUS through capture tail without rewriting 86 sync.
 - Why: Coordinator bible matches remote tips through 89.
 
-### Q541. ALT-76 rollup refresh through 89? DRAFT: `CampusAlt76RollupRefreshB89PresentationSpec`
+### Q541. ALT-76 rollup refresh through 89? DECIDED: `CampusAlt76RollupRefreshB89PresentationSpec`
 
 - Options: (a) STATUS only; (b) rollup refresh doc through batch 89; (c) merge all tail docs.
-- Recommendation: **(b)** — second rollup anchor after batch 86 refresh.
-- Status: stub batch 92 (local).
+- Recommendation and choice: **(b)** — rollup anchor after STATUS sync 89.
+- Why: Matches ALT-76 rollup chain 76 → 85 → 89.
+
+### Q542. GO packet tail through batch 90? DECIDED: `CampusGoPacketTailRefreshThrough90PresentationSpec`
+
+- Options: (a) store only; (b) refresh doc through batch 90; (c) automate spacing checks.
+- Recommendation and choice: **(b)** — coordinator packets after rollup refresh 89.
+- Why: Extends batch 84/88 GO packet tail chain; merge-wave local hold.
+
+### Q543. Presentation tail rollup through 92? DECIDED: `CampusPresentationTailRollupPresentationSpec`
+
+- Options: (a) hub tail only; (b) rollup doc for tails 79–92; (c) regen all index specs.
+- Recommendation and choice: **(b)** — seven tail lanes + ops cross-refs.
+- Why: Bible navigation capstone while merge wave holds pushes.
+
+### Q544. Staff presentation tail cross-link? DECIDED: `CampusStaffPresentationTailIndexPresentationSpec`
+
+- Options: (a) batch 57 only; (b) tail doc linking staff + hire rows + hub; (c) staff meshes in graphics PR.
+- Recommendation and choice: **(b)** — hub 57, band 70, rollup 94 anchors.
+- Why: Post-merge navigation without rules/staff mesh work.
+
+### Q545. Training peek tail cross-link? DRAFT: `CampusTrainingPeekTailIndexPresentationSpec`
+
+- Options: (a) batch 71 only; (b) tail doc + rollup + training bar; (c) defer until Unity wire.
+- Recommendation: **(b)** — mirror staff tail pattern.
+- Status: stub batch 96 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

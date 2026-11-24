@@ -9,4 +9,6 @@ Extends [GO-PACKET-TAIL-REFRESH.md](GO-PACKET-TAIL-REFRESH.md) (batch 84) for co
 | Capture tail | [CAPTURE-HUD-TAIL-INDEX.md](CAPTURE-HUD-TAIL-INDEX.md) (batch 89, local until push) |
 | Store | `internal/graphics-batch{N}-go-packet.md` |
 
+Later: [GO-PACKET-TAIL-REFRESH-90.md](GO-PACKET-TAIL-REFRESH-90.md) (batch 93, local).
+
 Tokens: `CampusGoPacketTailRefreshThrough88PresentationSpec`. Batch 90.

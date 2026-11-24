@@ -11,4 +11,6 @@ Extends [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) (batches **50–6
 
 Ops: [ALT-76-STATUS-SYNC.md](ALT-76-STATUS-SYNC.md) (83), [GO-PACKET-TAIL-REFRESH.md](GO-PACKET-TAIL-REFRESH.md) (84).
 
+Rollup: [PRESENTATION-TAIL-ROLLUP.md](PRESENTATION-TAIL-ROLLUP.md) (batch 94 local).
+
 Tokens: `CampusPresentationIndexHubTailPresentationSpec` (4 tail rows + hub entry alias). Batch 85.

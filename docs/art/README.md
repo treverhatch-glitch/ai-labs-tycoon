@@ -104,5 +104,10 @@ python3 tools/art/generate_campus_kit.py
 | [CAPTURE-HUD-TAIL-INDEX.md](CAPTURE-HUD-TAIL-INDEX.md) | Capture + a11y tail (batch 89) |
 | [GO-PACKET-TAIL-REFRESH-88.md](GO-PACKET-TAIL-REFRESH-88.md) | GO packets through 88 (batch 90) |
 | [ALT-76-STATUS-SYNC-89.md](ALT-76-STATUS-SYNC-89.md) | STATUS sync through 89 (batch 91) |
+| [ALT-76-ROLLUP-REFRESH-89.md](ALT-76-ROLLUP-REFRESH-89.md) | ALT rollup through 89 (batch 92) |
+| [GO-PACKET-TAIL-REFRESH-90.md](GO-PACKET-TAIL-REFRESH-90.md) | GO packet through 90 (batch 93 local) |
+| [PRESENTATION-TAIL-ROLLUP.md](PRESENTATION-TAIL-ROLLUP.md) | Tail rollup 79–92 (batch 94 local) |
+| [STAFF-PRESENTATION-TAIL-INDEX.md](STAFF-PRESENTATION-TAIL-INDEX.md) | Staff tail anchors (batch 95 local) |
+| [GROUPED-PUSH-92-95.md](GROUPED-PUSH-92-95.md) | Squash plan for merge-wave catch-up |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.
