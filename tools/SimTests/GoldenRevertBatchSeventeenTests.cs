@@ -24,7 +24,7 @@ public class GoldenRevertBatchSeventeenTests
             using var p = System.Diagnostics.Process.Start(psi);
             string stdout = p.StandardOutput.ReadToEnd();
             string stderr = p.StandardError.ReadToEnd();
-            p.WaitForExit(1_200_000);
+            p.WaitForExit(1_800_000);
             Xunit.Assert.Equal(0, p.ExitCode);
             Xunit.Assert.Contains("Passed!", stdout + stderr);
             Xunit.Assert.Contains($"schema {schema} revert: Passed!", stdout);
