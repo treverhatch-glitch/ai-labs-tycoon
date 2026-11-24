@@ -216,6 +216,19 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.RunScrapped:
+                    return who + " scrapped the training run of " + e.Ref + (e.Pick == 1 ? " well into it" : " early") + " and kept " + e.Amount + " research points.";
+                case EventKind.LayoffRound:
+                    return who + " laid off " + e.Amount + " people (" + e.SubjectId / 10 + "% of the staff)" + (e.Pick == 1 ? ", a deep cut that shook the office." : ".");
+                case EventKind.DebtPaid:
+                    return who + " paid down " + e.Amount + " points of technical debt" + (e.Pick == 1 ? " and has none left." : ", " + e.SubjectId + " to go.");
+                case EventKind.StaffPromoted:
+                    return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
+                case EventKind.TargetSet:
+                    return who + " told the board it would make $" + e.Amount + " in the next quarter (level " + e.SubjectId + ").";
+                case EventKind.TargetSettled:
+                    return e.Pick == 1 ? who + " hit its level " + e.SubjectId + " revenue target with $" + e.Amount + " and the board is pleased."
+                        : who + " missed its level " + e.SubjectId + " revenue target, making $" + e.Amount + ", and the board is not pleased.";
                 case EventKind.GrantApplied:
                     return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
                 case EventKind.GrantDecided:

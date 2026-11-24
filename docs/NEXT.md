@@ -272,6 +272,13 @@ and says why in the commit message.
 89. **Research grants (research, funding).** ~~Done~~: `ApplyForGrant`, `ResearchGrants`, `researchGrants` data, five lab fields (schema 60, `MigrateTo60`), `ResearchGrantsTests`, `docs/content/research-grants.md` (Q333). The recruiting drive was rejected as a priced timed modifier (Q330).
 90. **Headlines and chat for consultants, post-mortems, the pledge and grants.** ~~Done~~: twelve headlines and twelve chat lines, data only, `ConsultantsPostMortemSlaNewsChatTests` (Q331).
 91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
+92. **Scrap a training run (research, compute).** ~~Done~~: `ScrapRun`, `Abandon`, `abandon` data, no new state, `AbandonTests`, `docs/content/scrapping-a-run.md` (Q334).
+93. **Layoff rounds (staff, cash).** ~~Done~~: `Layoff`, `Layoffs`, `layoffs` data, no new state, `LayoffsTests`, `docs/content/layoff-rounds.md` (Q335).
+94. **Technical debt (safety, cash, engineers).** ~~Done~~: `techDebt` data, `PayDownDebt`, `TechDebt`, schema 61, `TechDebtTests`, `docs/content/technical-debt.md` (Q336).
+95. **Promotions (staff, cash, seats).** ~~Done~~: `seniority` data, `PromoteStaff`, `Seniority`, schema 62, `PromotionsTests`, `docs/content/promotions.md` (Q337).
+96. **Board targets (finance, reputation).** ~~Done~~: `revenueTargets` data, `SetRevenueTarget`, `RevenueTargets`, schema 63, `RevenueTargetsTests`, `docs/content/board-targets.md` (Q338).
+97. **News and chat for scrapped runs, layoffs, debt, promotions and targets.** ~~Done~~: ten headlines and ten chat lines (79 and 132 in all), `ScrapLayoffDebtPromotionTargetNewsChatTests` (Q339).
+98. **Scrapping, layoffs, debt, promotions and targets together (tests).** ~~Done~~: `ScrapLayoffDebtPromotionTargetTogetherTests` (Q340).
 
 ## Rules: later
 

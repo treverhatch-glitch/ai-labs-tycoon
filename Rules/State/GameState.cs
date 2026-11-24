@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 61;
+        public const int CurrentSchema = 64;
 
         public int Schema;
         public string ConfigVersion;
@@ -199,6 +199,16 @@ namespace AiLabs.Rules.State
         public int ResearchGrantLockedUntil;
         /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
         public int ConsultantLevel;
+        /// <summary>Technical debt, 0 to 1000. Grows with rushed launches, crunch weeks and patched glitches; only paying it down lowers it.</summary>
+        public int TechDebt;
+        /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
+        public int RevenueTargetLevel;
+        /// <summary>The week the target is judged.</summary>
+        public int RevenueTargetEnd;
+        /// <summary>The revenue the lab promised to make by then.</summary>
+        public long RevenueTargetGoal;
+        /// <summary>The revenue made since the commitment.</summary>
+        public long RevenueTargetSoFar;
         /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
         public int ConsultantWeeks;
         /// <summary>The next firm cannot start before this tick.</summary>
@@ -405,6 +415,11 @@ namespace AiLabs.Rules.State
             s.Int("researchGrantOwed", ref ResearchGrantOwed);
             s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
             s.Int("consultantLevel", ref ConsultantLevel);
+            s.Int("techDebt", ref TechDebt);
+            s.Int("revenueTargetLevel", ref RevenueTargetLevel);
+            s.Int("revenueTargetEnd", ref RevenueTargetEnd);
+            s.Long("revenueTargetGoal", ref RevenueTargetGoal);
+            s.Long("revenueTargetSoFar", ref RevenueTargetSoFar);
             s.Int("consultantWeeks", ref ConsultantWeeks);
             s.Int("consultantLockedUntil", ref ConsultantLockedUntil);
             s.Int("ethicsLevel", ref EthicsLevel);
@@ -502,6 +517,8 @@ namespace AiLabs.Rules.State
         public string RoleId = "";
         public string TraitId = "";
         public int Morale;
+        /// <summary>1 when the person has been promoted to senior, 0 otherwise.</summary>
+        public int Senior;
 
         public void Sync(Syncer s)
         {
@@ -509,6 +526,7 @@ namespace AiLabs.Rules.State
             s.Str("roleId", ref RoleId);
             s.Str("traitId", ref TraitId);
             s.Int("morale", ref Morale);
+            s.Int("senior", ref Senior);
         }
     }
 

@@ -46,6 +46,20 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
+        /// <summary>Whole people in a function, in permille, with each senior counting for more (the data's weight). Equals a plain count times 1000 when nobody is senior.</summary>
+        public static long HeadsPermille(GameConfig c, LabState lab, RoleFunction function)
+        {
+            long n = 0;
+            for (int i = 0; i < lab.Staff.Count; i++)
+            {
+                StaffMember person = lab.Staff[i];
+                RoleConfig role = c.Role(person.RoleId);
+                if (role == null || role.Function != function) continue;
+                n += person.Senior == 1 ? c.Seniority.WeightPermille : MathI.Permille;
+            }
+            return n;
+        }
+
         public static int TotalStaff(LabState lab) { return lab.Staff.Count; }
 
         public static int SeatsInRoom(GameConfig c, RoomState room)
@@ -438,7 +452,8 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 RoleConfig role = c.Role(lab.Staff[i].RoleId);
-                if (role != null) total += role.WeeklySalary;
+                if (role == null) continue;
+                total += lab.Staff[i].Senior == 1 ? MathI.MulPermille(role.WeeklySalary, MathI.Permille + c.Seniority.RaisePermille) : role.WeeklySalary;
             }
             return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab)));
         }

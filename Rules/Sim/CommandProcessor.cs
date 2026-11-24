@@ -92,6 +92,11 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
                 case CommandKind.RetrainStaff: return RetrainStaff(c, state, lab, cmd);
                 case CommandKind.RunCampaign: return RunCampaign(c, state, lab, cmd);
+                case CommandKind.ScrapRun: return ScrapRun(c, state, lab, cmd);
+                case CommandKind.Layoff: return Layoff(c, state, lab, cmd);
+                case CommandKind.PayDownDebt: return PayDownDebt(c, state, lab, cmd);
+                case CommandKind.PromoteStaff: return PromoteStaff(c, state, lab, cmd);
+                case CommandKind.SetRevenueTarget: return SetRevenueTarget(c, state, lab, cmd);
                 case CommandKind.ApplyForGrant: return ApplyForGrant(c, state, lab, cmd);
                 case CommandKind.SetSla: return SetSla(c, state, lab, cmd);
                 case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);

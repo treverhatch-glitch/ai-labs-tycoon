@@ -76,6 +76,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 59) MigrateTo59(root);
             if (fromSchema < 60) MigrateTo60(root);
             if (fromSchema < 61) MigrateTo61(root);
+            if (fromSchema < 62) MigrateTo62(root);
+            if (fromSchema < 63) MigrateTo63(root);
+            if (fromSchema < 64) MigrateTo64(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -715,6 +718,28 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 foreach (string key in new[] { "researchGrantStage", "researchGrantTier", "researchGrantTick", "researchGrantOwed", "researchGrantLockedUntil" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 62: no lab has any technical debt.</summary>
+        static void MigrateTo62(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "techDebt", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 63: nobody has been promoted to senior.</summary>
+        static void MigrateTo63(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person => JsonPatch.AddIfMissing(person, "senior", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 64: no board revenue target is active.</summary>
+        static void MigrateTo64(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "revenueTargetLevel", "revenueTargetEnd", "revenueTargetGoal", "revenueTargetSoFar" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }

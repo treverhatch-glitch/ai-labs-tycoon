@@ -91,6 +91,11 @@ namespace AiLabs.Rules.Config
             PostMortemProblems(p, c);
             SlaProblems(p, c);
             ResearchGrantsProblems(p, c);
+            AbandonProblems(p, c);
+            LayoffsProblems(p, c);
+            TechDebtProblems(p, c);
+            SeniorityProblems(p, c);
+            RevenueTargetsProblems(p, c);
             IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
@@ -902,6 +907,68 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void AbandonProblems(List<string> p, GameConfig c)
+        {
+            AbandonConfig k = c.Abandon;
+            if (k == null) { p.Add("abandon is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("abandon.enabled must be 0 or 1");
+            if (k.SalvagePermille < 0 || k.SalvagePermille > 500) p.Add("abandon.salvagePermille must be from 0 to 500, so scrapping a run never pays better than finishing it");
+            if (k.ReputationAtFull < 0 || k.ReputationAtFull > 200) p.Add("abandon.reputationAtFull must be from 0 to 200");
+            if (k.MoraleAtFull < 0 || k.MoraleAtFull > 500) p.Add("abandon.moraleAtFull must be from 0 to 500");
+        }
+
+        static void LayoffsProblems(List<string> p, GameConfig c)
+        {
+            LayoffsConfig k = c.Layoffs;
+            if (k == null) { p.Add("layoffs is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("layoffs.enabled must be 0 or 1");
+            if (k.MaxPermille < 0 || k.MaxPermille > 500) p.Add("layoffs.maxPermille must be from 0 to 500, so a round never empties the lab");
+            if (k.SeverancePermille < 100 || k.SeverancePermille > MathI.Permille) p.Add("layoffs.severancePermille must be from 100 to 1000, so a round is cheaper than letting people go one by one but never free");
+            if (k.ReputationAtAll < 0 || k.ReputationAtAll > 200) p.Add("layoffs.reputationAtAll must be from 0 to 200");
+            if (k.MoraleAtAll < 0 || k.MoraleAtAll > 500) p.Add("layoffs.moraleAtAll must be from 0 to 500");
+            if (k.DeepPermille < 1 || k.DeepPermille > MathI.Permille) p.Add("layoffs.deepPermille must be from 1 to 1000");
+        }
+
+        static void TechDebtProblems(List<string> p, GameConfig c)
+        {
+            TechDebtConfig k = c.TechDebt;
+            if (k == null) { p.Add("techDebt is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("techDebt.enabled must be 0 or 1");
+            if (k.RushPerWeek < 0 || k.RushPerWeek > 200) p.Add("techDebt.rushPerWeek must be from 0 to 200");
+            if (k.CrunchPerWeek < 0 || k.CrunchPerWeek > 50) p.Add("techDebt.crunchPerWeek must be from 0 to 50");
+            if (k.FineTunePatch < 0 || k.FineTunePatch > 200) p.Add("techDebt.fineTunePatch must be from 0 to 200");
+            if (k.IncidentAtFull < 0 || k.IncidentAtFull > 200) p.Add("techDebt.incidentAtFull must be from 0 to 200");
+            if (k.CostPerPoint < 1) p.Add("techDebt.costPerPoint must be at least 1, so debt is never free to clear");
+            if (k.MinEngineers < 0 || k.MinEngineers > 50) p.Add("techDebt.minEngineers must be from 0 to 50");
+            if (k.MaxPerCommand < 1 || k.MaxPerCommand > MathI.Permille) p.Add("techDebt.maxPerCommand must be from 1 to 1000");
+        }
+
+        static void SeniorityProblems(List<string> p, GameConfig c)
+        {
+            SeniorityConfig k = c.Seniority;
+            if (k == null) { p.Add("seniority is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("seniority.enabled must be 0 or 1");
+            if (k.WeightPermille < 1000 || k.WeightPermille > 3000) p.Add("seniority.weightPermille must be from 1000 to 3000, so a senior counts for at least one person and at most three");
+            if (k.RaisePermille < 0 || k.RaisePermille > 2000) p.Add("seniority.raisePermille must be from 0 to 2000");
+            if (k.RaisePermille < k.WeightPermille - 1000 - 400) p.Add("seniority.raisePermille must not fall more than 400 below the extra weight, so promoting is never a free gain");
+            if (k.FeePermille < 0 || k.FeePermille > 10000) p.Add("seniority.feePermille must be from 0 to 10000");
+            if (k.MaxSharePermille < 1 || k.MaxSharePermille > 500) p.Add("seniority.maxSharePermille must be from 1 to 500, so a function is never all seniors");
+            if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("seniority.minMorale must be from 0 to 1000");
+            if (k.MoraleBoost < 0 || k.MoraleBoost > 500) p.Add("seniority.moraleBoost must be from 0 to 500");
+        }
+
+        static void RevenueTargetsProblems(List<string> p, GameConfig c)
+        {
+            RevenueTargetsConfig k = c.RevenueTargets;
+            if (k == null) { p.Add("revenueTargets is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 5) p.Add("revenueTargets.maxLevel must be from 0 to 5 (0 turns targets off)");
+            if (k.Weeks < 4 || k.Weeks > 52) p.Add("revenueTargets.weeks must be from 4 to 52");
+            if (k.StretchPerLevel < 0 || k.StretchPerLevel > 1000) p.Add("revenueTargets.stretchPerLevel must be from 0 to 1000");
+            if (k.MinWeeklyRevenue < 1) p.Add("revenueTargets.minWeeklyRevenue must be at least 1, so there is something to measure against");
+            if (k.RewardPerLevel < 0 || k.RewardPerLevel > 100) p.Add("revenueTargets.rewardPerLevel must be from 0 to 100");
+            if (k.PenaltyPerLevel < k.RewardPerLevel || k.PenaltyPerLevel > 200) p.Add("revenueTargets.penaltyPerLevel must be from rewardPerLevel to 200, so a missed target costs at least what a met one earns");
         }
 
         static void ResearchGrantsProblems(List<string> p, GameConfig c)

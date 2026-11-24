@@ -36,7 +36,8 @@ namespace AiLabs.Rules.Systems
                 if (role == null || role.Function != RoleFunction.Research) continue;
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
                 int bonus = trait == null ? 0 : trait.ResearchPermille + Traits.InterestingShift(c, lab, trait);
-                gained += MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
+                long one = MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
+                gained += person.Senior == 1 ? MathI.MulPermille(one, c.Seniority.WeightPermille) : one;
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
@@ -53,7 +54,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>How much training work a unit of compute does: techs plus engineers, who keep the runs from crashing.</summary>
         public static int SpeedPermille(GameConfig c, LabState lab)
         {
-            long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
+            long engineers = LabQueries.HeadsPermille(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille / MathI.Permille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
                 + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
                 + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed)
@@ -66,7 +67,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
         public static int AlignmentWorkPermille(GameConfig c, LabState lab, int tick)
         {
-            long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
+            long staff = LabQueries.HeadsPermille(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille / MathI.Permille;
             return MathI.Permille + ControlStale.AlignmentBonusPermille(c, lab, tick)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
                 + LabQueries.ContainmentAlignmentBonus(c, lab)

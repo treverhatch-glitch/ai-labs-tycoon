@@ -78,6 +78,16 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | A grant declined | {lab}'s grant application is declined. The panel found it 'ambitious, in places' |
 | A grant delivered | {lab} delivers the papers its grant asked for. The panel is 'cautiously delighted' |
 | A grant clawed back | {lab} misses its grant deadline and pays part back. The papers are 'nearly done' |
+| A run scrapped late | {lab} scraps the training run of {ref} well into it. The compute 'has been repurposed as lessons' |
+| A run scrapped early | {lab} cancels the training run of {ref} early. Nobody had named the cluster yet |
+| A deep layoff | {lab} lays off {amount} people in a deep cut. The all-hands email used the word 'rightsizing' |
+| A layoff round | {lab} lays off {amount} people. HR calls it 'a realignment of focus' |
+| Debt cleared | {lab} clears its technical debt. The engineers were 'cautiously hopeful' for a whole sprint |
+| Debt paid down | {lab} pays down technical debt. The backlog 'remains healthy' |
+| A promotion | {lab} promotes a {ref} to senior. The new title came with a larger monitor |
+| A target set | {lab} promises the board {money} for the quarter. The slide had an upward arrow |
+| A target met | {lab} hits its revenue target with {money}. The board 'always believed' |
+| A target missed | {lab} misses its revenue target, making {money}. The board 'will be circling back' |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 

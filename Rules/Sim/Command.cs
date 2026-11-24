@@ -59,7 +59,12 @@ namespace AiLabs.Rules.Sim
         HireConsultants,
         PublishPostMortem,
         SetSla,
-        ApplyForGrant
+        ApplyForGrant,
+        ScrapRun,
+        Layoff,
+        PayDownDebt,
+        PromoteStaff,
+        SetRevenueTarget
     }
 
     /// <summary>
@@ -409,6 +414,46 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.RunCampaign, labId);
             c.Id = sectorId;
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Scraps a training run that is still going: its compute is gone, part of it comes back as research points, the press and the team mind in proportion to how far along it was.</summary>
+        public static Command ScrapRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ScrapRun, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Lets go of a share (permille, up to the data's cap) of every function at once, on a reduced package. The people who stay and the press mind it.</summary>
+        public static Command Layoff(int labId, int permille)
+        {
+            Command c = Make(CommandKind.Layoff, labId);
+            c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Pays down technical debt by a number of points (up to the data's cap per command) for cash. Needs engineers.</summary>
+        public static Command PayDownDebt(int labId, int points)
+        {
+            Command c = Make(CommandKind.PayDownDebt, labId);
+            c.Count = points;
+            return c;
+        }
+
+        /// <summary>Promotes one person to senior: a fee and a raise now, and they count for more in their function. Needs the person's id.</summary>
+        public static Command PromoteStaff(int labId, int staffId)
+        {
+            Command c = Make(CommandKind.PromoteStaff, labId);
+            c.TargetId = staffId;
+            return c;
+        }
+
+        /// <summary>Commits the lab to a revenue target for the next quarter, at a level from 1 to the data's top. A harder target pays more reputation if met and costs more if missed.</summary>
+        public static Command SetRevenueTarget(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetRevenueTarget, labId);
             c.Count = level;
             return c;
         }

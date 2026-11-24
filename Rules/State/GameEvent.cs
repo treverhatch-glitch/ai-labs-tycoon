@@ -188,7 +188,19 @@ namespace AiLabs.Rules.State
         /// <summary>The panel ruled on a research grant. LabId is the lab, SubjectId the tier, Amount the award (0 when declined). Pick is 1 when awarded, 0 when declined.</summary>
         GrantDecided,
         /// <summary>A research grant was settled. LabId is the lab, SubjectId the tier, Amount the cash paid back. Pick is 1 when the papers were delivered, 0 when they were not.</summary>
-        GrantSettled
+        GrantSettled,
+        /// <summary>The player scrapped a training run. LabId is the lab, SubjectId the model's id, Amount the research points kept, Ref the model's name. Pick is 1 when the run was at least half done, 0 when it was less.</summary>
+        RunScrapped,
+        /// <summary>A layoff round. Amount is the people let go, SubjectId the share of the staff in permille, Pick 1 when it was a deep cut.</summary>
+        LayoffRound,
+        /// <summary>The lab paid down technical debt. Amount is the points retired, SubjectId the debt left, Pick 1 when none is left.</summary>
+        DebtPaid,
+        /// <summary>A person was promoted to senior. SubjectId is the person, Amount the fee, Ref the role id.</summary>
+        StaffPromoted,
+        /// <summary>The lab committed to a revenue target. SubjectId is the level, Amount the goal.</summary>
+        TargetSet,
+        /// <summary>A revenue target was judged. SubjectId is the level, Amount the revenue made, Pick 1 when it was met.</summary>
+        TargetSettled
     }
 
     /// <summary>
