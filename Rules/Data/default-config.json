@@ -4642,7 +4642,7 @@
     "maxOfferBoostPermille": 500,
     "frictionPerPairPermille": 40,
     "maxFrictionPermille": 300,
-    "traitRollSalt": 0,
+    "traitRollSalt": 20,
     "starHirePermille": 120,
     "traits": [
       {
