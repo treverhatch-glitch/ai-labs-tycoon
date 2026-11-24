@@ -424,7 +424,7 @@ public class HatchRivalsChipsDeliveryLaterTests
         g.Do(Command.AcquireLab(g.Id, rival.Id));
         string save = g.Sim.Save();
         var loaded = new Game(Simulation.Load(g.C, save));
-        Assert.Equal(29, loaded.State.Schema);
+        Assert.Equal(31, loaded.State.Schema);
         SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
     }
 
