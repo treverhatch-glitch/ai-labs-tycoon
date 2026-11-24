@@ -55,7 +55,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 VendorStanding standing = state.Vendor.Standing(lab.Id);
                 if (standing == null || standing.QueuedGpus <= 0) continue;
                 int holdingId = standing.QueueHoldingId;

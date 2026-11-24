@@ -183,6 +183,7 @@ namespace AiLabs.Rules.Sim
             LabState seller = state.Lab(cmd.TargetId);
             if (seller == null || seller.Id == lab.Id) return Fail(CommandError.UnknownLab, "There is no other lab " + cmd.TargetId + ".");
             if (seller.Bankrupt) return Fail(CommandError.LabBankrupt, seller.Name + " is bankrupt.");
+            if (seller.AbsorbedByLabId >= 0) return Fail(CommandError.LabAbsorbed, seller.Name + " was absorbed into another lab.");
             ChipListing listing = seller.Listing(cmd.Y);
             ChipDesign d = seller.Design(cmd.Y);
             if (listing == null || d == null || d.Status != ChipDesignStatus.Ready) return Fail(CommandError.UnknownId, seller.Name + " has no such chips on offer.");
@@ -210,7 +211,7 @@ namespace AiLabs.Rules.Sim
             // A trade with the player warms a rival up to them, whichever way the chips go.
             LabState rival = lab.Id == state.Player.Id ? seller : seller.Id == state.Player.Id ? lab : null;
             if (rival != null) RivalSystem.Feel(c, rival, c.Rivalry.Feelings.ChipOrderPermille);
-            BubbleSystem.OnListedChipTrade(c, state);
+            BubbleSystem.OnListedChipTrade(c, state, price);
             return CommandResult.Done(order.Id);
         }
     }
