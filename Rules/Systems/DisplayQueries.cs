@@ -26,8 +26,10 @@ namespace AiLabs.Rules.Systems
             public long RoleBoost;
             public long TrustBoost;
             public long ChampionBoost;
+            /// <summary>Zero or negative: customers who cannot tell the lab's models apart.</summary>
+            public long NamingConfusion;
 
-            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost; } }
+            public long Total { get { return Core + ReputationBoost + SalesBoost + RoleBoost + TrustBoost + ChampionBoost + NamingConfusion; } }
         }
 
         public struct IncidentBreakdown
@@ -82,10 +84,10 @@ namespace AiLabs.Rules.Systems
             long displayBoost = MathI.MulPermille(model.Capability, MathI.MulPermille(sector.SafetyWeightPermille, sandbagGap));
             b.FromAlignment = effectiveAlign;
             b.SandbagBoost = displayBoost;
-            if (LabQueries.IsGlitching(c, model, tick))
+            if (SectorFlavours.IsGlitching(c, model, sector.Id, tick))
             {
                 long before = b.FromCapability + effectiveAlign + displayBoost;
-                long after = MathI.MulPermille(before, c.Safety.GlitchQualityPermille);
+                long after = MathI.MulPermille(before, SectorFlavours.GlitchQualityPermille(c, sector.Id));
                 b.GlitchAdjustment = after - before;
             }
             return b;
@@ -109,10 +111,12 @@ namespace AiLabs.Rules.Systems
             b.RoleBoost = afterRole - afterSales;
             long afterTrust = MathI.MulPermille(afterRole, TrustSystem.AppealPermille(c, lab, sector.Id));
             b.TrustBoost = afterTrust - afterRole;
+            long afterNames = MathI.MulPermille(afterTrust, VersionNaming.AppealPermille(c, lab));
+            b.NamingConfusion = afterNames - afterTrust;
             if (sectorState.ChampionLabId == lab.Id)
             {
-                long afterCrown = MathI.MulPermille(afterTrust, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
-                b.ChampionBoost = afterCrown - afterTrust;
+                long afterCrown = MathI.MulPermille(afterNames, MathI.Permille + c.Gauntlet.BracketWinnerAppealPermille);
+                b.ChampionBoost = afterCrown - afterNames;
             }
             return b;
         }

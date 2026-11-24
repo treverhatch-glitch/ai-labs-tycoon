@@ -18,7 +18,7 @@ public class RolePerksTests
     static Game Lab(string eraId, Action<GameConfig> tweak = null, long seed = 1)
     {
         var options = new NewGameOptions { Seed = seed, StartEraId = eraId, RivalIds = new List<string>() };
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RoomPerks.Clear(); foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RoomPerks.Clear(); foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; c.Culture.CatchSlopePermille = 0; if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000_000;
         return g;
     }
@@ -515,7 +515,7 @@ public class RolePerksTests
         Assert.True(parts.RoleBoost > 0);
         Assert.True(parts.ChampionBoost > 0);
         Assert.Equal(parts.Total, MarketSystem.Appeal(g.C, g.State, g.C.Sector("coding-agents"), g.State.Sector("coding-agents"), g.Me, model));
-        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
+        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost + parts.NamingConfusion, parts.Total);
     }
 
     [Fact]

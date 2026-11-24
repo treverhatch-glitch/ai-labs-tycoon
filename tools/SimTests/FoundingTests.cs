@@ -332,7 +332,7 @@ public class FoundingTests
         long with = AppealIn(g, model, "doc-reading").RoleBoost;
         Assert.True(with > alone && alone > 0);
         var parts = AppealIn(g, model, "doc-reading");
-        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost, parts.Total);
+        Assert.Equal(parts.Core + parts.ReputationBoost + parts.SalesBoost + parts.RoleBoost + parts.TrustBoost + parts.ChampionBoost + parts.NamingConfusion, parts.Total);
     }
 
     // ---- home base
@@ -370,6 +370,7 @@ public class FoundingTests
         Game g = Start(Options(era: "chat-boom", rivals: true));
         g.WithStarterLab();
         g.Weeks(10);
+        g.Me.CultureShift = 0;
         string old = SaveSchemaPretend.At(g.C, 21, g.Sim.Save());
         Assert.DoesNotContain("founderId", old);
         Simulation loaded = Simulation.Load(g.C, old);

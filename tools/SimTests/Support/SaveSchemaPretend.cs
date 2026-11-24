@@ -15,6 +15,9 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 31) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
+            if (schema < 30) StripCulture(root);
+            if (schema < 29) StripFleetResaleLock(root);
             if (schema < 28) StripHatchLedgerLines(root);
             if (schema < 27) StripSectorTrust(root);
             if (schema < 26) StripGauntletDepth(root);
@@ -45,6 +48,16 @@ public static class SaveSchemaPretend
         Simulation again = Simulation.Load(sim.Config, json);
         Assert.Empty(SaveGame.Problems(sim.Config, again.State));
         Assert.Equal(sim.Digest(), again.Digest());
+    }
+
+    static void StripCulture(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs", lab =>
+        {
+            JsonPatch.Remove(lab, "cultureShift");
+            JsonPatch.Remove(lab, "releaseGate");
+            JsonPatch.Remove(lab, "gateSetTick");
+        });
     }
 
     static void StripSectorTrust(JsonValue root)
@@ -185,6 +198,11 @@ public static class SaveSchemaPretend
             JsonPatch.Remove(s, "queuedGpus");
             JsonPatch.Remove(s, "queueHoldingId");
         });
+    }
+
+    static void StripFleetResaleLock(JsonValue root)
+    {
+        JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.Remove(batch, "resaleLockedUntilTick"));
     }
 
     static void StripHatchLedgerLines(JsonValue root)

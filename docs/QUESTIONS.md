@@ -1451,6 +1451,65 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**, lowest morale first as before. The interviewing trait also raises the chance an offer arrives. The talent market's counters work on whoever is courted.
 - Why: otherwise the trait would do nothing in a lab with no star, and a poacher going for someone whose calendar says dentist is the joke.
 
+## Sector incident flavours (NEXT item 21)
+
+### Q188. How does a flavour sit beside the era's risk classes? DECIDED: it is the sector's character and multiplies with the class
+
+- Options: (a) fold the flavours into the risk classes (a class per sector); (b) a separate per-sector table that applies to every incident there.
+- Recommendation and choice: **(b)**. A risk class is a kind of trouble chosen at random from the era and the sector. A flavour is what any trouble costs in that sector. When both apply the fine and the reputation multiply.
+- Why: classes already pick by era; a sector's character should not depend on which class the dice gave, and the support bot's refunds belong to the support sector in every era.
+
+### Q189. What does an incident cost beyond reputation? DECIDED: refunds in weeks of takings, a longer or deeper glitch in that sector, and a sharper trust fall
+
+- Options: (a) a new "refunds" ledger line; (b) refunds booked with fines; (c) only multipliers.
+- Recommendation and choice: **(b)** plus the glitch and the trust multiplier. Refunds are `makeGoodWeeks` of the model's takings in the sector, on top of the fine, on the fines line; the incident line in the log shows the whole bill. The era's fine rule multiplies the fine, not the refunds. The glitch weeks and depth are read per sector from the model's last incident tick, so nothing is saved.
+- Why: a new ledger line would change the saved totals and the ledger screens for a figure the lab never plans around; the fines line is already "what incidents cost". Everything else is derived, so there is no schema change.
+
+### Q190. Do rivals pay flavours? DECIDED: not yet. A data switch, `safety.sectorFlavoursForRivals`, shipped false
+
+- Options: (a) every lab pays; (b) the player only for now; (c) rivals pay half.
+- Recommendation and choice: **(b)**, with the switch. Costs (fine, reputation, trust, refunds) hit the player's labs. The glitch is a quality curve in the sector, so it is the same for every lab. With every lab paying, the content-flow guard (seed 3) saw OpenAye's lifetime game go bankrupt, the same knife-edge as Q182. With the switch off the guards pass. Not salt-fishing this time: the number of rival incidents is the cause, so the honest fix is to wait for the rivals thread.
+- Why: rivals' fines in flavoured sectors are bigger by design, and nothing about the bible says rivals must pay the same. Flip the switch once the economy is robust.
+
+## Safety culture and release gates (NEXT item 22)
+
+### Q191. What is culture, and what does it do? DECIDED: a 0 to 1000 number per lab that adds to or takes from the incident catch
+- Options: (a) it changes the incident chance; (b) it changes the share of incidents caught before they ship; (c) it changes staff morale.
+- Recommendation and choice: **(b)**, 10% of catch at the extremes (`catchSlopePermille` 200, neutral 500; at 300 the eight-year balance soak sat one game over its crown limit, so the gentler slope shipped). It adds to the red-teamers', rooms' and traits' share under the same 90% ceiling, so "staff who report problems" literally means more problems caught early, and the incident-odds breakdown already explains it.
+- Why: the catch line is where the bible's staff-report-or-hide idea already lives; the incident chance is tied to alignment and era load and is used by every lab.
+
+### Q192. What moves it? DECIDED: listening staff, answered and lapsed complaints, rushed and gated releases, and a steady drift down
+- Options: (a) only staff; (b) staff plus the events the bible names ("rushing a release", "firing or ignoring the safety team").
+- Recommendation and choice: **(b)**. A point a week per safety, red-team or alignment person up to +6, against a drift of -2: three people hold it level and nobody lets it slide, which is "ignoring the safety team". A first release under 500 alignment costs 40 (once per model, so adding sectors cannot farm it); a first release through the lab's own gate at or above that line earns 10; loosening the gate costs 60; answering a complaint earns 10 and one lapsing costs 10. Only the player's labs keep a culture that moves.
+- Why: each rule is a hook on something that already exists (the weekly step, the release, the complaint desk). Rivals stay at the start level because their economies are knife-edge (Q182 and Q190), and the plan labs never set gates.
+
+### Q193. What does it mean to "have to obey" a gate? DECIDED: a release below it is refused, and loosening it waits and costs culture
+- Options: (a) breaking it costs culture but is allowed; (b) a refusal; (c) a refusal that can be lifted after a wait.
+- Recommendation and choice: **(c)**. The gate is the least displayed alignment a model may show to go on sale (up to 900), checked like the law's bar before any claim at the door is applied, so the claim cannot buy a way past it. Raising is free and restarts the lock; loosening or removing it is refused for 26 weeks after the last change, then costs 60 culture.
+- Why: a rule you can break at will is not a rule; a permanent one is a trap. The displayed meter is what the player can see, so the gate never leaks the true alignment. This keeps the sandbagging gap meaningful (a lab that lies to itself still passes).
+
+### Q194. Is a save change needed? DECIDED: yes, schema 29: three lab numbers, no config in the save
+- Options: (a) store the culture level; (b) store a shift from `culture.start`.
+- Recommendation and choice: **(b)**: `cultureShift`, `releaseGate`, `gateSetTick`. An older save migrates with all three at 0, which is the starting culture and no gate, and needs no config. Schema 28 is stack2's ledger migration; mine chains after it and skips it the way 25 skipped 24.
+- Why: a shift means a new lab, or a lab founded again after a sale, starts at the data's `culture.start` without touching world setup. The golden digest moved only because of the new saved numbers: with every culture effect off it equals the digest of the same game with the three fields zeroed.
+
+## Version naming rot (NEXT item 23)
+
+### Q195. What rots, and how? DECIDED: a per-lab mess number; every training run adds to it and a few words stack onto new names
+- Options: (a) names grow only; (b) a mess meter with its own clean-up; (c) rename old models.
+- Recommendation and choice: **(b)**. Each new run adds 70 points of mess (up to 1000). A new model is named with one stacked word per 100 points (Pro, Max, Turbo, Ultra, Plus, v2, Final, (new), Final-FINAL, Reborn), so the third version is the first to be "Pro"; the list holds at its last word. The name is fixed when the run starts and saved with the model, so old models keep the names they were given.
+- Why: the bible calls it a joke that is also a system: names get worse as you ship, and it should cost something to fix. A meter lets the screen show the rot and lets a clean-up be a plain command. Only the player's labs rot; rivals keep plain names (the same Q182 reason as Q190 and Q194).
+
+### Q196. What does it cost, and what does a clean-up cost? DECIDED: up to 8% of appeal at full mess; a clean-up takes off 400 and costs four sales hires' fees
+- Options: (a) 10% of appeal at full mess; (b) 8%; (c) 6%.
+- Recommendation and choice: **(b)**, 80 permille at 1000 mess, linear (`confusionPermille`). It is its own named part of the appeal breakdown, after trust and before the Gauntlet crown, so the parts still add up. A clean-up (`CleanUpNaming`) takes off 400 points and costs `cleanFeeHireFees` 4 times a sales rep's hiring fee in the current era ("a little marketing effort", scaling with the era like the press room's). It is refused when the names are already tidy or the cash is short, and changes nothing then.
+- Why: 100 permille took OpenAye bankrupt in the forty-year economy guard at seeds 20 and 27 (the same knife-edge as Q182: the player's autopilot loses some share and the rival's game flips). 80 and 60 both passed those guards; 80 was kept because it is the closest to the bible's "measurably confused". Not salt-fishing: one number scanned, logged here. `StoryTests` (reckless vs careful) sets confusion to 0 so it still compares only care.
+
+### Q197. Is a save change needed? DECIDED: yes, schema 30: one lab number, nothing else
+- Options: (a) store each model's suffix count; (b) store one mess number per lab.
+- Recommendation and choice: **(b)**: `namingMess`. An older save migrates with it at 0 (tidy names), so nothing in an old game changes until the next training run. Names already in the save stay as they are.
+- Why: the suffixes are in the saved names; the number is the only thing the next name and the appeal part need. The golden digest moved, and the cause was checked: with no mess added, the saved number and schema number set back to schema 29's, the digest of the one pinned game equals the old golden `e77d4325`. So the move is the new field, the new schema number, and the naming rot itself (three or more runs in that game year, so names and appeal changed).
+
 ## CI and tooling
 
 ### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`
