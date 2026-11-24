@@ -78,7 +78,8 @@
 | 87 | `71217c5` | Screen layout tail |
 | 88 | `95bc74d` | STATUS sync through 86 |
 | 89 | `eddff91` | Capture HUD tail |
-| 90 | (local) | GO packet tail through 88 |
+| 90 | `5abe36c` | GO packet tail through 88 |
+| 91 | (local) | STATUS sync through 89 |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

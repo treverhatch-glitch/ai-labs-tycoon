@@ -103,5 +103,6 @@ python3 tools/art/generate_campus_kit.py
 | [ALT-76-STATUS-SYNC-86.md](ALT-76-STATUS-SYNC-86.md) | STATUS sync through 86 (batch 88) |
 | [CAPTURE-HUD-TAIL-INDEX.md](CAPTURE-HUD-TAIL-INDEX.md) | Capture + a11y tail (batch 89) |
 | [GO-PACKET-TAIL-REFRESH-88.md](GO-PACKET-TAIL-REFRESH-88.md) | GO packets through 88 (batch 90) |
+| [ALT-76-STATUS-SYNC-89.md](ALT-76-STATUS-SYNC-89.md) | STATUS sync through 89 (batch 91) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

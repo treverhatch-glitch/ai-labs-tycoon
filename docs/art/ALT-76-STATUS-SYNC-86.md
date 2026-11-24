@@ -10,4 +10,6 @@ Extends [ALT-76-STATUS-SYNC.md](ALT-76-STATUS-SYNC.md) (batch 83, synced through
 
 Rows: [ALT-76-STATUS.md](ALT-76-STATUS.md).
 
+Later: [ALT-76-STATUS-SYNC-89.md](ALT-76-STATUS-SYNC-89.md) (batch 91).
+
 Tokens: `CampusAlt76StatusSyncThrough86PresentationSpec` (last synced **86**). Batch 88.

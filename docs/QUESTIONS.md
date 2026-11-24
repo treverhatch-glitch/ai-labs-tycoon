@@ -680,11 +680,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — coordinator packets reference sync through 88.
 - Why: Matches store graphics-batch{N}-go-packet pattern post tails.
 
-### Q540. ALT-76 STATUS sync through 89? DRAFT: `CampusAlt76StatusSyncThrough89PresentationSpec`
+### Q540. ALT-76 STATUS sync through 89? DECIDED: `CampusAlt76StatusSyncThrough89PresentationSpec`
 
 - Options: (a) STATUS rows only; (b) sync doc after capture tail push; (c) full STATUS regen.
-- Recommendation: **(b)** — bump synced batch after batch 89 lands.
-- Status: stub batch 91 (local).
+- Recommendation and choice: **(b)** — STATUS through capture tail without rewriting 86 sync.
+- Why: Coordinator bible matches remote tips through 89.
+
+### Q541. ALT-76 rollup refresh through 89? DRAFT: `CampusAlt76RollupRefreshB89PresentationSpec`
+
+- Options: (a) STATUS only; (b) rollup refresh doc through batch 89; (c) merge all tail docs.
+- Recommendation: **(b)** — second rollup anchor after batch 86 refresh.
+- Status: stub batch 92 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
