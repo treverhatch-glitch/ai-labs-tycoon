@@ -183,14 +183,14 @@ and says why in the commit message.
 - ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
 - ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
 - ~~**Hatch forward-queue batch 64**~~ **pushed @ `c63ab58`** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); gate **4799/4799** in-repo; parent `605edb0` (+2); landed ~06:24 UTC Nov 24.
-- **Hatch balance/soak batch 65 (LOCAL — **HOLD** merge wave; **rebased** onto post-#4 `f2bbe8f`)** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); filter **70/70**; grouped GO tip **`8d1dac8`**; **Q101**; schema **29** only.
-- **Hatch bubble/acquire batch 66 (LOCAL — hold until batch 65 lands)** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); stack2 coda batch **50**; filter **70/70**; grouped tip **`66fc094`** after **65** + spacing; schema **29** only.
+- **Hatch balance/soak batch 65 (LOCAL — **HOLD** merge wave; **rebased** onto post-#4 `f2bbe8f`)** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); filter **70/70**; grouped GO tip **`3ee8a20`**; **Q101**; schema **29** only.
+- **Hatch bubble/acquire batch 66 (LOCAL — hold until batch 65 lands)** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); stack2 coda batch **50**; filter **70/70**; grouped tip after **65** + spacing; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
   - **batch 67 (LOCAL)** — Q4336–Q4405 `HatchCapitalBubbleBarLaterTests3`; filter **70/70**; hold with **66** until **65** lands.
   - **batch 68+ (TBD)** — distress/capital codas; **SolvencyHold** schema **30** parked.
 - **Merge wave (Nov 24):** `origin/cursor/later-rules-stack2-75cd` @ **`f2bbe8f`**; **NO PUSH** until merge coordinator clears. **Never** force-push (`--force`, `--force-with-lease`). **Do not rewrite pushed commits** for Co-authored-by — keep new LOCAL commits clean (noreply + `commit-tree`). Pre-push coauth grep required on push range only.
-- **Grouped GO batch 65 (ready — awaiting coordinator):** plain FF push **`f2bbe8f..8d1dac8`** (**4** commits: `8eb6765`→`8d1dac8`); **excludes** **66–67**; coauth grep on range **clean**; prepush **5074/5074** full tree @ rebase (batch-65 floor **4869+**); log `/tmp/b65-post4-prepush.log`; no force-push.
-- **LOCAL hold:** batches **66–67** (`d4b833e..02181c2`) until **65** lands + ~30m spacing.
+- **Grouped GO batch 65 (ready — awaiting coordinator):** plain FF push **`f2bbe8f..3ee8a20`** (**5** commits: `8eb6765`→`3ee8a20`); **excludes** **66–67**; coauth grep on range **clean**; prepush **5074/5074** full tree @ rebase (batch-65 floor **4869+**); log `/tmp/b65-post4-prepush.log`; no force-push.
+- **LOCAL hold:** batches **66–67** until **65** lands + ~30m spacing.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map site wiring**, §**4 your own chips** (foundry, listings, rival buy); bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
 ## Rules: forward queue (from bible / systems-design)

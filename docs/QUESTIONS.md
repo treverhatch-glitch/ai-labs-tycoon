@@ -1069,9 +1069,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBalanceSoakBarLaterTests3` (70):** **Q101** neighbour; prepush **4869/4869**; rebase onto `90edc7e` before GO; schema **29** only.
 
-### Q4266–Q4335. Stack2 tail bar? TBD: test-only (batch 66, queued)
+### Q4266–Q4335. Bubble/acquire bar coda? DECIDED: test-only (batch 66, LOCAL after 65)
 
-- TBD after batch **65** lands; systems-only per store scope.
+- **`HatchBubbleAcquireBarLaterTests3` (70):** bubble crash + acquisition distress; stack2 fork batch **50**; 70-bar filter green; schema **29** only.
+
+### Q4336–Q4405. Capital/bubble bar coda? TBD: test-only (batch 67, queued)
+
+- **`HatchCapitalBubbleBarLaterTests3` (70):** systems-only; schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
