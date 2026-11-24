@@ -408,11 +408,14 @@ public class HatchRivalDistressLaterTests
         LabState goggle = GoggleWithReadyChip(g);
         ChipDesign d = goggle.ChipDesigns[0];
         g.State.BubbleCrashMonthsRemaining = 6;
-        WeakCashOnly(goggle);
+        goggle.Cash = 8_000_000;
+        goggle.WeeksInDebt = 2;
         int markup = g.C.Rival("goggle").Plan.ListsChipsMarkupPermille;
         RunPlanner(g, goggle, "goggle");
         long expected = MathI.MulPermille(ChipQueries.CostPerGoodChip(ChipQueries.Spec(g.C, d), d.YieldPermille), MathI.Permille + markup);
-        Assert.Equal(expected, goggle.Listing(d.Id).PricePerChip);
+        ChipListing listing = goggle.Listing(d.Id);
+        Assert.NotNull(listing);
+        Assert.Equal(expected, listing.PricePerChip);
     }
 
     [Fact]

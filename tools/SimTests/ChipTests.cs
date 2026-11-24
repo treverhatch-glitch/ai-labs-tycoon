@@ -715,6 +715,7 @@ public class ChipTests
             NoLuck(c);
             c.Vendor.DriftPerMonth = 0;
             c.Vendor.GpusPerStanding = 1_000_000;
+            foreach (EraConfig era in c.Eras) era.ChipPricePermille = 1000;
         });
         VendorStanding standing = g.State.Vendor.Standing(g.Id);
         int start = standing.Standing;
