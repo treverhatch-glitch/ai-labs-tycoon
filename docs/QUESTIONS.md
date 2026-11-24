@@ -830,11 +830,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — parent `1ce8cde`.
 - Why: Closes ops grouped batch 113–115.
 
-### Q565. Index manifest tail refresh through 112? DRAFT: `CampusIndexLaneManifestTailRefreshThrough112PresentationSpec`
+### Q565. Index manifest tail refresh through 112? DECIDED: `CampusIndexLaneManifestTailRefreshThrough112PresentationSpec`
 
 - Options: (a) batch 107 only; (b) through 112; (c) full regen.
-- Recommendation: **(b)** — manifest bible.
-- Status: stub batch 116 (local, NO PUSH).
+- Recommendation and choice: **(b)** — after `0fa5483` ops ladder.
+- Why: Manifest bible grouped batch 116–118.
+
+### Q566. Presentation tail rollup refresh through 112? DECIDED: `CampusPresentationTailRollupRefreshThrough112PresentationSpec`
+
+- Options: (a) batch 111 only; (b) through 112; (c) regen.
+- Recommendation and choice: **(b)** — 11 lanes, manifest 116 link.
+- Why: Tail navigation capstone refresh.
+
+### Q567. GO packet tail through batch 115? DECIDED: `CampusGoPacketTailRefreshThrough115PresentationSpec`
+
+- Options: (a) stop at 112; (b) through 115; (c) skip.
+- Recommendation and choice: **(b)** — closes grouped 116–118.
+- Why: Coordinator packets after `0fa5483`.
+
+### Q568. ALT-76 STATUS sync through 115? DRAFT: `CampusAlt76StatusSyncThrough115PresentationSpec`
+
+- Options: (a) stop at 109; (b) through 115; (c) defer.
+- Recommendation: **(b)** — post–116–118 push ladder.
+- Status: stub batch 119 (local, NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
