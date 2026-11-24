@@ -73,6 +73,11 @@ namespace AiLabs.Rules.Config
             ControlProblems(p, c);
             LeadsProblems(p, c);
             RepairProblems(p, c);
+            RedTeamProblems(p, c);
+            InterpProblems(p, c);
+            ComplianceProblems(p, c);
+            PrestigeProblems(p, c);
+            SubletProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
             SuccessorProblems(p, c);
@@ -789,6 +794,71 @@ namespace AiLabs.Rules.Config
             if (r.RollbackReputationLoss < 0 || r.RollbackReputationLoss > MathI.Permille) p.Add("repair.rollbackReputationLoss must be from 0 to 1000");
         }
 
+        static void RedTeamProblems(List<string> p, GameConfig c)
+        {
+            RedTeamConfig r = c.RedTeam;
+            if (r == null) { p.Add("redTeam is missing"); return; }
+            if (r.RoleId != "" && c.Role(r.RoleId) == null) p.Add("redTeam.roleId names the unknown role \"" + r.RoleId + "\"");
+            if (r.MinStaff < 0 || r.MinStaff > 1000) p.Add("redTeam.minStaff must be from 0 to 1000");
+            if (r.RevenueWeeks < 0 || r.RevenueWeeks > 520) p.Add("redTeam.revenueWeeks must be from 0 to 520");
+            if (r.MinCost < 0) p.Add("redTeam.minCost is negative");
+            if (r.Weeks < 0 || r.Weeks > 520) p.Add("redTeam.weeks must be from 0 to 520");
+            if (r.IncidentCutPermille < 0 || r.IncidentCutPermille > MathI.Permille) p.Add("redTeam.incidentCutPermille must be from 0 to 1000");
+            if (r.GapClosePermille < 0 || r.GapClosePermille > MathI.Permille) p.Add("redTeam.gapClosePermille must be from 0 to 1000");
+            if (r.AlignmentGain < 0 || r.AlignmentGain > MathI.Permille) p.Add("redTeam.alignmentGain must be from 0 to 1000");
+            if (r.CulturePoints < 0 || r.CulturePoints > 100) p.Add("redTeam.culturePoints must be from 0 to 100");
+        }
+
+        static void InterpProblems(List<string> p, GameConfig c)
+        {
+            InterpConfig i = c.Interp;
+            if (i == null) { p.Add("interp is missing"); return; }
+            if (i.MaxLevel > 10) p.Add("interp.levelTechs has more than 10 levels");
+            foreach (string tech in i.LevelTechs) if (c.Tech(tech) == null) p.Add("interp.levelTechs names the unknown tech \"" + tech + "\"");
+            if (i.WeeklyCostPerLevel < 0) p.Add("interp.weeklyCostPerLevel is negative");
+            if (i.GapClosePermillePerLevel < 0 || i.GapClosePermillePerLevel > MathI.Permille) p.Add("interp.gapClosePermillePerLevel must be from 0 to 1000");
+            if (i.ResearchCostPermillePerLevel < 0 || i.ResearchCostPermillePerLevel * (long)i.MaxLevel > 900) p.Add("interp.researchCostPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the research");
+            if (i.StaleReliefPermillePerLevel < 0 || i.StaleReliefPermillePerLevel * (long)i.MaxLevel > MathI.Permille) p.Add("interp.staleReliefPermillePerLevel must be 0 or more, and every level together can take away at most all of the loss");
+        }
+
+        static void ComplianceProblems(List<string> p, GameConfig c)
+        {
+            ComplianceConfig k = c.Compliance;
+            if (k == null) { p.Add("compliance is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("compliance.maxLevel must be from 0 to 10");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 100) p.Add("compliance.staffPerLevel must be from 0 to 100");
+            if (k.WeeklyCostPerLevel < 0) p.Add("compliance.weeklyCostPerLevel is negative");
+            if (k.AttentionPermillePerLevel < 0 || k.AttentionPermillePerLevel * (long)k.MaxLevel > 900) p.Add("compliance.attentionPermillePerLevel must be 0 or more, and every level together must leave at least a tenth of the attention");
+            if (k.AuditFinePermillePerLevel < 0 || k.AuditFinePermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("compliance.auditFinePermillePerLevel must be 0 or more, and every level together can take away at most the whole fine");
+            if (k.HearingPointsPerLevel < 0 || k.HearingPointsPerLevel * (long)k.MaxLevel > 100) p.Add("compliance.hearingPointsPerLevel must be 0 or more, and every level together can add at most 100 points");
+        }
+
+        static void PrestigeProblems(List<string> p, GameConfig c)
+        {
+            PrestigeConfig k = c.Prestige;
+            if (k == null) { p.Add("prestige is missing"); return; }
+            if (k.Max < 0 || k.Max > 100000) p.Add("prestige.max must be from 0 to 100000");
+            if (k.PaperPrestige < 0 || k.PaperPrestige > k.Max) p.Add("prestige.paperPrestige must be from 0 to the most");
+            if (k.DecayPerWeek < 0 || k.DecayPerWeek > k.Max) p.Add("prestige.decayPerWeek must be from 0 to the most");
+            if (k.PaperResearchWeeks < 0 || k.PaperResearchWeeks > 520) p.Add("prestige.paperResearchWeeks must be from 0 to 520");
+            if (k.MinPoints < 0) p.Add("prestige.minPoints is negative");
+            if (k.MinResearchers < 0 || k.MinResearchers > 1000) p.Add("prestige.minResearchers must be from 0 to 1000");
+            if (k.PaperReputation < 0 || k.PaperReputation > 200) p.Add("prestige.paperReputation must be from 0 to 200");
+            if (k.MoraleAtMax < 0 || k.MoraleAtMax > 300) p.Add("prestige.moraleAtMax must be from 0 to 300");
+            if (k.HireDiscountAtMax < 0 || k.HireDiscountAtMax > 500) p.Add("prestige.hireDiscountAtMax must be from 0 to 500");
+            if (k.PoachAtMax < 0 || k.PoachAtMax > 500) p.Add("prestige.poachAtMax must be from 0 to 500");
+            if (k.CounterAtMax < 0 || k.CounterAtMax > 300) p.Add("prestige.counterAtMax must be from 0 to 300");
+        }
+
+        static void SubletProblems(List<string> p, GameConfig c)
+        {
+            SubletConfig k = c.Sublet;
+            if (k == null) { p.Add("sublet is missing"); return; }
+            if (k.MaxPermille < 0 || k.MaxPermille > 900) p.Add("sublet.maxPermille must be from 0 to 900, so the lab keeps at least a tenth of its compute");
+            if (k.RevenuePermille < 0 || k.RevenuePermille > MathI.Permille) p.Add("sublet.revenuePermille must be from 0 to 1000, so subletting never beats renting out the same GPUs at full price");
+            if (k.NoticeWeeks < 0 || k.NoticeWeeks > 520) p.Add("sublet.noticeWeeks must be from 0 to 520");
+        }
+
         static void LeadsProblems(List<string> p, GameConfig c)
         {
             LeadsConfig l = c.Leads;
@@ -1449,6 +1519,13 @@ namespace AiLabs.Rules.Config
             if (s.OffsiteMoraleLift < 0 || s.OffsiteMoraleLift > MathI.Permille) p.Add("staffPeople.offsiteMoraleLift needs 0 to 1000");
             if (s.OffsiteMaxAboveResting < 0 || s.OffsiteMaxAboveResting > MathI.Permille) p.Add("staffPeople.offsiteMaxAboveResting needs 0 to 1000");
             if (s.OffsiteCultureLift < 0 || s.OffsiteCultureLift > MathI.Permille) p.Add("staffPeople.offsiteCultureLift needs 0 to 1000");
+            if (s.PayMinLevel > 0 || s.PayMinLevel < -5) p.Add("staffPeople.payMinLevel needs -5 to 0");
+            if (s.PayMaxLevel < 0 || s.PayMaxLevel > 5) p.Add("staffPeople.payMaxLevel needs 0 to 5");
+            if (s.PaySalaryStepPermille < 0 || s.PaySalaryStepPermille * (long)-s.PayMinLevel > 900) p.Add("staffPeople.paySalaryStepPermille needs 0 or more, and the lowest level must leave at least a tenth of every salary");
+            if (s.PayMoraleStep < 0 || s.PayMoraleStep > 300) p.Add("staffPeople.payMoraleStep needs 0 to 300");
+            if (s.PayPoachStepPermille < 0 || s.PayPoachStepPermille > 300) p.Add("staffPeople.payPoachStepPermille needs 0 to 300");
+            if (s.PayLockWeeks < 0 || s.PayLockWeeks > 520) p.Add("staffPeople.payLockWeeks needs 0 to 520");
+            if (s.PayCutShock < 0 || s.PayCutShock > MathI.Permille) p.Add("staffPeople.payCutShock needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");

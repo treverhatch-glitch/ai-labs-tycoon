@@ -151,6 +151,9 @@ namespace AiLabs.Rules.Sim
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
                     Crunch.RunWeek(c, state, state.Labs[i]);
+                    Interpretability.RunWeek(c, state, state.Labs[i]);
+                    Compliance.RunWeek(c, state, state.Labs[i]);
+                    Prestige.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
                     Traits.RunQuits(c, state, state.Labs[i]);
                     TalentSystem.RunWeek(c, state, state.Labs[i]);

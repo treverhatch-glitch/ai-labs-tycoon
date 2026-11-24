@@ -39,7 +39,13 @@ namespace AiLabs.Rules.Sim
         SetResearchShare,
         SetCrunch,
         SetInsurance,
-        HoldOffsite
+        HoldOffsite,
+        RedTeamModel,
+        SetInterpretability,
+        SetPayLevel,
+        SetCompliance,
+        PublishPaper,
+        SetSublet
     }
 
     /// <summary>
@@ -337,6 +343,52 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Sets the pay policy: 0 is market pay, above 0 pays better, below 0 pays worse, within the data's limits.</summary>
+        public static Command SetPayLevel(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPayLevel, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the interpretability programme, from 0 (off) to the data's highest.</summary>
+        public static Command SetInterpretability(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetInterpretability, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sets the level of the compliance office, from 0 (off) to the data's highest. Each level needs policy staff.</summary>
+        public static Command SetCompliance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetCompliance, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Spends research points to publish a paper, which earns reputation and academic prestige.</summary>
+        public static Command PublishPaper(int labId)
+        {
+            return Make(CommandKind.PublishPaper, labId);
+        }
+
+        /// <summary>Lets this share of the lab's general compute (permille) to outside customers, from 0 to the data's most.</summary>
+        public static Command SetSublet(int labId, int permille)
+        {
+            Command c = Make(CommandKind.SetSublet, labId);
+            c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Pays a red team to attack one model of the lab (trained or on sale) for the data's weeks of fewer incidents.</summary>
+        public static Command RedTeamModel(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.RedTeamModel, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
         /// <summary>Takes the whole team away for a day: morale up for everyone who has room to rise, for about a week of salaries.</summary>
         public static Command HoldOffsite(int labId)
         {
@@ -612,7 +664,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked
     }
 
     public struct CommandResult

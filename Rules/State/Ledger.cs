@@ -11,7 +11,7 @@ namespace AiLabs.Rules.State
         Land, SiteBuild, Power, ChipDevelopment,
         ChipSales, GreyRevenue, Laundered, CapitalIn,
         Acquisition, AssetSale,
-        Insurance
+        Insurance, Sublet
     }
 
     /// <summary>
@@ -31,24 +31,18 @@ namespace AiLabs.Rules.State
         public long Hardware;
         public long Training;
         public long Fines;
-        /// <summary>Land bought for data-centre sites (cost), and its refund when sold (income).</summary>
         public long Land;
-        /// <summary>Halls and power deals built at sites.</summary>
         public long SiteBuild;
-        /// <summary>The weekly power bill of the lab's holdings, colo markup included.</summary>
         public long Power;
         public long ChipDevelopment;
         public long ChipSales;
         public long GreyRevenue;
         public long Laundered;
-        /// <summary>Money put into the lab from outside: a bailout, the proceeds of selling a lab.</summary>
         public long CapitalIn;
-        /// <summary>Buying another lab (M&amp;A), including assumed debt booked on the buyer.</summary>
         public long Acquisition;
-        /// <summary>Proceeds from selling a model line to another party.</summary>
         public long AssetSale;
-        /// <summary>The weekly premium for incident insurance.</summary>
         public long Insurance;
+        public long Sublet;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -56,7 +50,7 @@ namespace AiLabs.Rules.State
         {
             get
             {
-                return Revenue + Grants + AssetSale + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
+                return Revenue + Grants + AssetSale + Sublet + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
                 + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Acquisition + Insurance;
             }
         }
@@ -87,6 +81,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.Acquisition: return Acquisition;
                 case LedgerLine.AssetSale: return AssetSale;
                 case LedgerLine.Insurance: return Insurance;
+                case LedgerLine.Sublet: return Sublet;
                 default: return 0;
             }
         }
@@ -117,6 +112,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.Acquisition: Acquisition += amount; break;
                 case LedgerLine.AssetSale: AssetSale += amount; break;
                 case LedgerLine.Insurance: Insurance += amount; break;
+                case LedgerLine.Sublet: Sublet += amount; break;
             }
         }
 
@@ -144,6 +140,7 @@ namespace AiLabs.Rules.State
             s.Long("acquisition", ref Acquisition);
             s.Long("assetSale", ref AssetSale);
             s.Long("insurance", ref Insurance);
+            s.Long("sublet", ref Sublet);
         }
     }
 
@@ -165,15 +162,11 @@ namespace AiLabs.Rules.State
 
     public sealed class LedgerState : ISync
     {
-        /// <summary>The cash the lab was founded with. Cash is always StartCash + Lifetime.Net.</summary>
         public long StartCash;
-        /// <summary>Money moved since the last week closed: this week's orders so far.</summary>
         public LedgerTotals ThisWeek = new LedgerTotals();
-        /// <summary>The last closed week.</summary>
         public LedgerTotals LastWeek = new LedgerTotals();
         public LedgerTotals ThisMonth = new LedgerTotals();
         public LedgerTotals Lifetime = new LedgerTotals();
-        /// <summary>Closed months, oldest first, capped at the config's historyMonths.</summary>
         public List<MonthRecord> History = new List<MonthRecord>();
 
         public void Sync(Syncer s)
@@ -187,7 +180,6 @@ namespace AiLabs.Rules.State
         }
     }
 
-    /// <summary>What a lab's compute did last week, kept for the screens and for explaining the numbers.</summary>
     public sealed class WeekReport : ISync
     {
         public long Compute;

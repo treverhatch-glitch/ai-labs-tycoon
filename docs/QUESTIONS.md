@@ -1911,6 +1911,85 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The worry was a permanent research bonus from chained offsites. With the ceiling at resting plus 100 the extra research is about 4% and decays at the drift, so it is capped and not a loop.
 - Alternatives: a cooldown (rejected: it needs saved state and the ceiling already limits it); a flat morale set to the maximum (rejected: that would be the exploit).
 
+### Q301. Can the player pay a red team to attack a model? DECIDED: yes, one model at a time, for a bill; it cuts that model's incident chance for 26 weeks
+- Bible ch. 10 lists "red teams: people paid to break it first" among what builds control. `RedTeamModel(model)` is the player's command for it, new `redTeam` data section, `RedTeam` system, event `RedTeamRan`.
+- It needs a trained or on-sale model and at least one red-teamer on the staff (`redTeam.roleId`, `minStaff`). The bill is two weeks of what the model sells for, never under $15,000, on the training ledger line. It is refused for a rival, for a model still training or retired, while a red team's weeks are running, and when the lab cannot pay.
+- It does three things at once: half the gap between the shown and real alignment is closed (the shown meter comes down, so a sandbagged model can fall below the lab's own release gate), 30 points of real alignment are added (the shown meter moves with it, never past 1000), and the lab gains 5 safety culture.
+- For 26 weeks (`redTeam.weeks`) the model's own weekly incident chance (after a rushed launch, before overload and crunch) loses 30%. It is its own line in the incident breakdown (`FromRedTeam`, zero or negative) so the parts still add up. A model cannot be attacked again until the weeks are over.
+- New state per model (schema 45, `MigrateTo45`): `redTeamUntil`, 0 when never red-teamed. Player only and opt-in; rivals and the autopilot never use it, so defaults change nothing.
+- The golden digest moved to f76df7ee because of the model field and the schema number only; reverting them brought the previous digest (e1ea850c) back.
+- Alternatives: a flat cut that never ends (rejected: it would be permanent insurance); a bill by capability (rejected: revenue already scales with how much the model is worth); closing the whole gap (rejected: half keeps the choice of a second round after the weeks).
+
+### Q302. Can the player run a standing interpretability programme? DECIDED: yes, three levels on the two interpretability techs, a weekly bill and some research for a closing gap and fresher safety techs
+- Bible ch. 10: "interpretability: research into what the model is actually doing inside". `SetInterpretability(level)`, new `interp` data section, `Interpretability` system, event `GapFound`.
+- A level needs its tech: levels 1 and 2 need Interpretability v1, level 3 needs v2 (`interp.levelTechs`, one id per level; the list's length is the top level, and an empty list turns the programme off). Refused for a rival, a level outside 0 to the top, the same level, and a missing tech (`MissingPrerequisite`). Turning it off is free and can be done any week.
+- While it runs, each level costs $5,000 a week on the training line (paid even into debt, like any bill), takes 6% off the lab's research output (so all three take 18%), and each week closes 10% of the gap between the shown and real alignment of every model on sale (at least one point while a gap remains, so it always ends). When the last point goes, `GapFound` is logged once. Models not on sale are left alone.
+- It also takes 15% per level off what stale safety techs have lost (`ControlStale`), so level 3 halves most of the loss.
+- The honest meter can put a model under the lab's own release gate, and once the gap is under the sandbag bar an incident is no longer the sandbagging rung. A red team closes half the gap at once and the programme finishes the rest.
+- New state on the lab (schema 46, `MigrateTo46`): `interpLevel`. Player only and opt-in; rivals and the autopilot never run one, so defaults change nothing.
+- The golden digest moved to 8bce7642 because of the lab field and the schema number only; reverting them brought the previous digest (f76df7ee) back.
+- Alternatives: a one-off purchase (rejected: it is a team, and teams cost money every week); closing the gap faster than a few weeks (rejected: it would make sandbagging free); a research bonus for the programme (rejected: it should cost research, as the bible's safety trade says).
+
+### Q303. Can the player set the lab's pay policy? DECIDED: yes, from 15% below to 30% above market, with morale, poaching and a cut that shocks
+- New `staffPeople.pay*` data and command `SetPayLevel(level)`, `Pay` system, event `PayChanged`, error `PayLocked` (appended). Level 0 is market pay and where every lab starts; the player can go down to -1 and up to +2.
+- Each level changes every salary by 15% (so the bill is 850, 1000, 1150 or 1300 per mille of the role salaries), moves the level morale settles at by 40 points, and changes the share of a rival's offers the lab turns away by 15 points. The room defences and the pay add together, kept between -500 and 900 so a rival's offer is never ruled out and never more than one and a half times likelier.
+- A cut shocks everyone's morale at once by 100 for each level it falls (never below 0), which can make people who quit when unhappy leave and can make the team too tired for crunch. A raise gives no jolt: people drift up to the new level. A change locks pay for 26 weeks.
+- The offsite and the shady cost estimates read the same salary query, so they follow the policy. Hiring and severance fees do not.
+- New state on the lab (schema 47, `MigrateTo47`): `payLevel` and `payLockedUntil`. Player only and opt-in; rivals and the autopilot never change pay, and the planners read the role salaries directly, so rivals are untouched and defaults change nothing.
+- The golden digest moved to 130c6c78 because of the two lab fields and the schema number only; reverting them brought the previous digest (8bce7642) back.
+- Always raising pay on a thin lab does bankrupt it: on seed 2 of the autopilot game, a +1 level raised from the start (a 15% heavier payroll) ran the lab into the debt clock. That is accepted as the tool's cost, not a bug. The long-game test only raises pay while the lab holds over $1M.
+- Alternatives: a per-role pay (rejected: a company-wide level is one decision, not ten); a jolt for a raise (rejected: free morale for money would be an exploit); cuts that never shock (rejected: a pay cut is felt).
+
+### Q304. Do crunch, insurance, the offsite, red teams, interpretability and pay get headlines? DECIDED: yes, seven lines, data and tests only
+- Seven new `news.headlines` lines (34 in all): `CrunchEnded`, `InsuranceClaimPaid`, `InsuranceDropped`, `OffsiteHeld`, `RedTeamRan`, `GapFound` and `PayChanged`. Buying or changing a policy, turning crunch on and setting an interpretability level make no news; only what happens as a result does.
+- Every lab's events are on the ticker, but only the player's lab can make these events, so the rivals' tickers are unchanged. Nothing is saved and no rule changes, so the golden digest did not move.
+- Alternatives: a headline for every command (rejected: the ticker is about what the world sees, not what a boss decides); a line per way crunch can end (rejected: the headline only needs the weeks, and the events carry the reason).
+
+### Q305. Do the people talk about what the care tools do? DECIDED: yes, 14 chat lines, with the event's pick carrying the reason where it matters
+- Fourteen new `chat.lines` (86 in all) for `CrunchEnded`, `InsuranceClaimPaid`, `InsuranceDropped`, `OffsiteHeld`, `RedTeamRan`, `GapFound` and `PayChanged`. A researcher, engineer, red-teamer, safety person or alignment fellow has a line of their own where it fits, and anyone else gets the plain line.
+- Two events now carry a pick, so a line can tell apart what happened. `CrunchEnded`: 1 when morale gave out ("tired"), 0 when the player stopped it, -1 for the longest crunch or an empty lab. `PayChanged`: 1 for a raise, 0 for a cut. The pick is already a saved event field, so no schema change; chat line picks stay in -1 to 1.
+- Nothing about the rules changes and the pinned golden game has none of these events, so the golden digest did not move.
+- Alternatives: a new `ref` filter on chat lines (rejected: a config change for two events, when the pick does it); a line for every crunch reason (rejected: the pick only holds -1 to 1).
+
+### Q306. Do the six care tools hold up together? DECIDED: yes, one long-game test covers them; no rule changes
+- `CareToolsTogetherTests` plays autopilot games from a fresh start for 60 weeks, then uses crunch, the offsite, insurance, red teams, the interpretability programme and the pay policy for 200 to 260 weeks on three seeds: not bankrupt, the books balance (cash minus lifetime net is unchanged), the save is sound, a load plays on the same, the journal replays, and morale, crunch weeks, pay level, interpretability level, red-team weeks and the alignment gap stay in range.
+- The test only raises pay while the lab has over $1M (or is already paying more), as a sensible player would: always raising it on a thin autopilot lab on seed 2 does bankrupt it, which is the cost of the tool, not a bug.
+- No rules, data or saves change, so the golden digest did not move.
+
+### Q307. Can the player run a compliance office to deal with governments? DECIDED: yes, up to three levels, each needing policy staff, for a weekly retainer
+- New `compliance` data and command `SetCompliance(level)`, `Compliance` system, event `ComplianceLapsed` (appended). Level 0 is off and where every lab starts; the player can go up to 3.
+- Each level costs $6,000 a week (the salaries line, as a legal and compliance retainer) and needs one policy person on the payroll. Each level takes 8% off the attention every government gains in the lab each month (after what policy staff already take off, never more than 90% together), 15% off an audit fine and adds 5 reputation points to how a hearing goes. Audits and hearings are the only places the money and reputation move; attention steps (letters, hearings, audits, freezes) follow from the lower attention.
+- A level the policy staff no longer cover is dropped the next week, one event is logged and the retainer follows the lower level. The player must hire again and set the level again.
+- New state on the lab (schema 48, `MigrateTo48`): `complianceLevel`. Player only and opt-in; rivals and the autopilot never run one, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to 32d55db6 because of the lab field and the schema number only; reverting them brought the previous digest (130c6c78) back.
+- Alternatives: a hearing sting cut in percent (rejected: a prepared hearing already gains reputation, so a cut of a loss would almost never apply); a retainer without staff (rejected: policy people are what makes a lab credible); letting a lapsed office keep its effect (rejected: it would be a free perk for a lab that fired the staff).
+
+### Q308. Can the player publish papers to build the lab's name among researchers? DECIDED: yes, for research points, with a prestige that fades
+- New `prestige` data and command `PublishPaper`, `Prestige` system, event `PaperPublished` (appended). The player spends research points: three weeks of the lab's current research output (never under 60 points), and needs at least two researchers on the payroll. A paper adds 8 reputation points at once and 200 academic prestige (the most is 1000). Prestige fades by 4 a week, so one paper lasts about 50 weeks.
+- While prestige lasts it grows every effect in step, up to these values at the most: morale settles 60 points higher, hiring fees are 20% lower (they show as a perk discount in the fee breakdown), counter-offers to a rival's offer work 10 points better, and rivals find the lab's people 20% more tempting (it adds to the poach chance after the room and pay defences, inside the same -500 to 900 limits). Fame brings offers as well as happiness.
+- A paper costs research only, so a lab with no cash can publish and a bankrupt one cannot. A lab at the most cannot publish more; a paper that would pass the most stops at it.
+- New state on the lab (schema 49, `MigrateTo49`): `prestige`. Player only and opt-in; rivals and the autopilot never publish, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to f7bc9480 because of the lab field and the schema number only; reverting them brought the previous digest (32d55db6) back.
+- Alternatives: a cash price for papers (rejected: research points are what researchers spend their time on, so they are the honest price); prestige that never fades (rejected: reputation in a field is kept up by publishing); a morale-only effect (rejected: it would be free; the poaching risk is the cost of being famous).
+
+### Q309. Can the player let spare compute to outside customers? DECIDED: yes, up to half of the general compute, for half the rent value, with notice
+- New `sublet` data and command `SetSublet(permille)`, `Sublet` system, event `SubletChanged`, error `SubletLocked` (appended), ledger line `Sublet` (an income line, appended). The player lets up to 500 permille of the lab's general compute (rented, owned and reserved GPUs and training chips, after the research share). The share earns 500 permille of what the same compute would rent for, every week, on its own ledger line. Inference chips are never let.
+- The let compute leaves the lab: training runs get less (a run takes longer), and customers are served from less, so a lab that lets too much can be overloaded. The research share and the sublet share cut one after the other. A change locks the share for 4 weeks, because leases need notice.
+- It cannot be a money machine: a GPU rented from the cloud costs 100% of its rent and earns at most 50% back; only owned hardware or idle reserved compute really gains from it. The validator keeps the revenue share at or under 1000 permille and the most at or under 900 so the lab always keeps a tenth of its compute.
+- New state on the lab (schema 50, `MigrateTo50`): `subletPermille` and `subletLockedUntil`, and the `sublet` field of every ledger (`LedgerPlaces`). Player only and opt-in; rivals and the autopilot never sublet, so defaults change nothing and the economy bounds and the long soak did not move.
+- The golden digest moved to 1b97826c because of the two lab fields, the ledger field and the schema number only; reverting them brought the previous digest (f7bc9480) back.
+- Alternatives: a per-GPU price set by the player (rejected: one share is one decision); no notice (rejected: the player could let the compute between training runs and take it back the week a run starts, for free); letting inference chips (rejected: they only serve customers, and the share would have to reach into serving).
+
+### Q310. Do the compliance office, papers and the compute sublet show up in the news and the chat? DECIDED: yes, three headlines and four chat lines
+- Data only: headlines `compliance-lapsed`, `paper-published` and `sublet-changed` (37 in all), and chat lines `paper-published-chat-research`, `paper-published-chat`, `compliance-lapsed-chat` and `sublet-changed-chat` (90 in all). Nothing here is saved.
+- `Prestige.Publish` sets pick 1 on `PaperPublished`, so chat can tell a paper from other events. The other two events carry the default pick, and their lines take any.
+- `ComplianceLapsed` stores the level it had in the amount, so its headline says "drops from level N" (`{subject}` is another lab's name in a headline, so it cannot hold a level). `SubletChanged` stores the weekly money in the amount.
+- Alternatives: a headline each time a level is set (rejected: the player knows, and the ticker is for what others would read); chat for every compliance level (rejected: one lapse line is enough).
+
+### Q311. Do the compliance office, papers and the sublet work together over years? DECIDED: yes, tested over 260 weeks on three seeds
+- Tests only: a game with the office, papers, the sublet, a pay level and the offsite used together stays solvent on three seeds, the books balance, the save is sound and a load plays on identically; the journal replays on two more seeds (the office needs no policy staff in those tests, because hired staff are not in the journal); at least one seed opens an office, publishes and lets compute; and an unused set of tools changes nothing against a game without them.
+- Finding: with the office started at week 0 and kept on, seed 2's thin lab went bankrupt (a $12,000 retainer from the first week). The test opens the office only when the lab holds over $1M, and closes it below $300K. That is the tool's cost, like pay.
+
 ## Open
 
 None.

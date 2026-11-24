@@ -112,7 +112,7 @@ public class MigrationTests
             amount *= 3;
         }
         Assert.Equal(expected, totals.Net);
-        Assert.Equal(22, Enum.GetValues(typeof(LedgerLine)).Length);
+        Assert.Equal(23, Enum.GetValues(typeof(LedgerLine)).Length);
     }
 
     [Fact]

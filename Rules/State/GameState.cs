@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 45;
+        public const int CurrentSchema = 51;
 
         public int Schema;
         public string ConfigVersion;
@@ -151,6 +151,20 @@ namespace AiLabs.Rules.State
         public int InsuranceClaims;
         /// <summary>The policy cannot be changed before this tick.</summary>
         public int InsuranceLockedUntil;
+        /// <summary>The level of the interpretability programme the lab runs, 0 for none. Only the player's lab runs one.</summary>
+        public int InterpLevel;
+        /// <summary>The level of the compliance office the lab runs, 0 for none. Only the player's lab runs one.</summary>
+        public int ComplianceLevel;
+        /// <summary>The lab's academic prestige from papers it published. It fades every week. Only the player's lab publishes.</summary>
+        public int Prestige;
+        /// <summary>The share of general compute the lab lets to outside customers, in permille. Zero until the player sets it.</summary>
+        public int SubletPermille;
+        /// <summary>The share cannot be changed before this tick.</summary>
+        public int SubletLockedUntil;
+        /// <summary>The pay policy: 0 is market pay, above is better paid, below is worse. Only the player's lab changes it.</summary>
+        public int PayLevel;
+        /// <summary>The pay policy cannot be changed before this tick.</summary>
+        public int PayLockedUntil;
         /// <summary>The founder's equity, in permille. Drops when funding rounds close.</summary>
         public int FounderSharePermille;
         /// <summary>Investor seats on the board after venture rounds.</summary>
@@ -309,6 +323,13 @@ namespace AiLabs.Rules.State
             s.Int("insuranceLevel", ref InsuranceLevel);
             s.Int("insuranceClaims", ref InsuranceClaims);
             s.Int("insuranceLockedUntil", ref InsuranceLockedUntil);
+            s.Int("interpLevel", ref InterpLevel);
+            s.Int("complianceLevel", ref ComplianceLevel);
+            s.Int("prestige", ref Prestige);
+            s.Int("subletPermille", ref SubletPermille);
+            s.Int("subletLockedUntil", ref SubletLockedUntil);
+            s.Int("payLevel", ref PayLevel);
+            s.Int("payLockedUntil", ref PayLockedUntil);
             s.Int("founderSharePermille", ref FounderSharePermille);
             s.Int("boardInvestorSeats", ref BoardInvestorSeats);
             s.Int("publicFloatPpm", ref PublicFloatPpm);
@@ -452,6 +473,8 @@ namespace AiLabs.Rules.State
         public string Checkpoints = "";
         /// <summary>Weeks of testing skipped when this model was first put on sale, or 0 for a tested launch.</summary>
         public int RushWeeks;
+        /// <summary>The model is safer from red-team fixes until this tick; 0 when it was never red-teamed or the weeks are over.</summary>
+        public int RedTeamUntil;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -483,6 +506,7 @@ namespace AiLabs.Rules.State
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);
+            s.Int("redTeamUntil", ref RedTeamUntil);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

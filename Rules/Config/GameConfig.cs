@@ -69,6 +69,11 @@ namespace AiLabs.Rules.Config
         public ControlConfig Control = new ControlConfig();
         public LeadsConfig Leads = new LeadsConfig();
         public RepairConfig Repair = new RepairConfig();
+        public RedTeamConfig RedTeam = new RedTeamConfig();
+        public InterpConfig Interp = new InterpConfig();
+        public ComplianceConfig Compliance = new ComplianceConfig();
+        public PrestigeConfig Prestige = new PrestigeConfig();
+        public SubletConfig Sublet = new SubletConfig();
         public OfficeConfig Office = new OfficeConfig();
         public ObjectivesConfig Objectives = new ObjectivesConfig();
         public SuccessorConfig Successor = new SuccessorConfig();
@@ -131,6 +136,11 @@ namespace AiLabs.Rules.Config
             s.Obj("control", ref Control);
             s.Obj("leads", ref Leads);
             s.Obj("repair", ref Repair);
+            s.Obj("redTeam", ref RedTeam);
+            s.Obj("interp", ref Interp);
+            s.Obj("compliance", ref Compliance);
+            s.Obj("prestige", ref Prestige);
+            s.Obj("sublet", ref Sublet);
             s.Obj("office", ref Office);
             s.Obj("objectives", ref Objectives);
             s.Obj("successor", ref Successor);

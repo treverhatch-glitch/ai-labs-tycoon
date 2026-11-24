@@ -64,6 +64,20 @@ namespace AiLabs.Rules.Config
         public int OffsiteMaxAboveResting;
         /// <summary>Safety culture points an offsite adds, for the player's lab.</summary>
         public int OffsiteCultureLift;
+        /// <summary>The lowest pay level the player can set (0 or below; below 0 is below market).</summary>
+        public int PayMinLevel;
+        /// <summary>The highest pay level (0 or above). Level 0 is market pay and is where every lab starts. Both zero means there is no pay policy.</summary>
+        public int PayMaxLevel;
+        /// <summary>What each level adds to (or takes from) every salary, in permille.</summary>
+        public int PaySalaryStepPermille;
+        /// <summary>Morale points each level adds to (or takes from) the level everyone settles at.</summary>
+        public int PayMoraleStep;
+        /// <summary>What each level adds to (or takes from) the share of a rival's offers that the lab turns away, in permille.</summary>
+        public int PayPoachStepPermille;
+        /// <summary>Weeks after a change before the level can be changed again.</summary>
+        public int PayLockWeeks;
+        /// <summary>Morale every person loses at once for each level the pay is cut by.</summary>
+        public int PayCutShock;
         public List<StaffTraitConfig> Traits = new List<StaffTraitConfig>();
 
         public StaffTraitConfig Trait(string id)
@@ -105,6 +119,13 @@ namespace AiLabs.Rules.Config
             s.Int("offsiteMoraleLift", ref OffsiteMoraleLift);
             s.Int("offsiteMaxAboveResting", ref OffsiteMaxAboveResting);
             s.Int("offsiteCultureLift", ref OffsiteCultureLift);
+            s.Int("payMinLevel", ref PayMinLevel);
+            s.Int("payMaxLevel", ref PayMaxLevel);
+            s.Int("paySalaryStepPermille", ref PaySalaryStepPermille);
+            s.Int("payMoraleStep", ref PayMoraleStep);
+            s.Int("payPoachStepPermille", ref PayPoachStepPermille);
+            s.Int("payLockWeeks", ref PayLockWeeks);
+            s.Int("payCutShock", ref PayCutShock);
             s.ObjList("traits", ref Traits);
         }
     }

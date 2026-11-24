@@ -40,6 +40,7 @@ namespace AiLabs.Rules.Systems
             }
 
             Insurance.RunWeek(c, state, lab);
+            Sublet.RunWeek(c, state, lab);
             Spend(lab, LedgerLine.Salaries, LabQueries.WeeklySalaries(c, lab));
             Spend(lab, LedgerLine.RoomUpkeep, LabQueries.WeeklyRoomUpkeep(c, lab));
             Spend(lab, LedgerLine.GpuRent, LabQueries.WeeklyGpuRent(c, state, lab));

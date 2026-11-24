@@ -60,6 +60,12 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 43) MigrateTo43(root);
             if (fromSchema < 44) MigrateTo44(root);
             if (fromSchema < 45) MigrateTo45(root);
+            if (fromSchema < 46) MigrateTo46(root);
+            if (fromSchema < 47) MigrateTo47(root);
+            if (fromSchema < 48) MigrateTo48(root);
+            if (fromSchema < 49) MigrateTo49(root);
+            if (fromSchema < 50) MigrateTo50(root);
+            if (fromSchema < 51) MigrateTo51(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -549,6 +555,52 @@ namespace AiLabs.Rules.Sim
             });
             foreach (string place in LedgerPlaces)
                 JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "insurance", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 46: no model was ever red-teamed.</summary>
+        static void MigrateTo46(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "redTeamUntil", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 47: no lab ran an interpretability programme.</summary>
+        static void MigrateTo47(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "interpLevel", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 48: every lab paid market rates and had never changed its pay.</summary>
+        static void MigrateTo48(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "payLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "payLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 49: no lab ran a compliance office.</summary>
+        static void MigrateTo49(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "complianceLevel", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 50: no lab had published a paper.</summary>
+        static void MigrateTo50(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "prestige", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 51: no lab sublet compute, so every ledger has an empty sublet line.</summary>
+        static void MigrateTo51(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "subletPermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "subletLockedUntil", JsonValue.Of(0L));
+            });
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "sublet", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
