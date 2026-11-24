@@ -2351,3 +2351,5 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q473. Batch sixteen news, chat and combos. DECIDED: seven headline kinds, six chat lines (398/352); `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests`.
 
 ### Q474. Post–era-16 hardening count: ship 410/0 or block for 446/0? DECIDED (2026-11-23, grouped P13 `2722044`): **accept 410/0** at post–era-16 rebuild; **−36** vs lost `754951a` parity recovered only in the **next grouped P13 batch** (exit-debt bridge, player-only refuses, extra EraO limits/fuzz — see project `internal/p13-phase0-hardening-rebuild-queue.md`). No single-item recovery push.
+
+### Q475. NEXT §217–219 hardening polish: push incrementally or grouped only? DECIDED (2026-11-23, post-`c9a1147`): **grouped squash only** on next P13 GO; origin stays **`c9a1147`** until full-suite gate. LOCAL §217–219 work batches hardening toward **449+** filter without rules changes.

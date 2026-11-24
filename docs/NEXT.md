@@ -397,11 +397,15 @@ and says why in the commit message.
 214. **Per-scenario goals (bible ch. 15 tail).** ~~Done (local)~~: `ScenarioGoals`, schema 147 (Q471).
 215. **Targeted lobbying law (bible ch. 12 lobbying tail).** ~~Done (local)~~: `SetLawTarget`, schema 148 (Q472).
 216. **Batch sixteen news, chat and combination rules.** ~~Done (local)~~: `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests` (Q473).
+217. **Hardening polish: batch-16 chat @ schemas 145–148.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` hearing + law-target chat pretends (no rules).
+218. **Hardening polish: rung-six respond mid-save.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` respond → save → weeks keeps arc/cooldown.
+219. **Hardening polish: cross-soak EraP hooks.** ~~Done (local)~~: `HardeningCrossSystemSoakTests` week ≥470 — `SetLawTarget`, shape law, float, `ScenarioGoals.Check`, loan, `SatisfyMarginCall`, `SetCampaignDeadline`, `GovernmentSystem.CloseMonth` when floated; plus batch-16 margin/scenario chat pretends and law-target+loan mid-save (`EraPBatchSixteenNewsChatHardeningTests`, `EraPBatchSixteenTogetherHardeningTests`). Hardening filter **452/0** (local tip; origin **`c9a1147`**).
+220. **Hardening polish: rung-six + margin covenant.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` rung-six respond + margin mid-save; `EraPSystemsEdgeHardeningTests` satisfy margin while rung-six cooldown.
+221. **Hardening polish: campaign deadline + margin.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + `MarginCallLeft` round-trip. Hardening filter **455/0** (local tip).
 
 ## Rules: later
 
-- **P13 −36 recovery (LOCAL grouped squash on `2722044`, unpushed).** Hardening **446/0**, golden **55e4c4f0…**, Q474; full suite queued (`/tmp/p13-recovery-full-suite.log`). **NO PUSH** until coordinator GO, **≥30m** after last P13 push (`2722044`), full **EXIT:0**. Tip SHA: store `internal/p13-recovery-go-packet.md`.
-- **§217+ hardening polish (post-P13, rules unchanged).** Optional: rung-six **Respond** through mid-save arc steps; hearing pretends **chat** pins; cross-soak `@688` week hooks — see store `internal/p13-next-local-post-era16.md`.
+- **P13 −36 recovery** ~~**PUSHED**~~ @ origin **`c9a1147`** (PR **#48**): **4086/4086**, hardening **446/0**, Q474. **NO further push** until next grouped P13 batch + coordinator GO. LOCAL tip **455/0** hardening (§217–221); squash all commits since **`c9a1147`** on GO (SHAs in store queue). Backlog: store `internal/p13-post-recovery-local-queue.md`.
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

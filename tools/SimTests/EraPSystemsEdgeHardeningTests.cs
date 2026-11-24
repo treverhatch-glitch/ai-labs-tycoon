@@ -114,6 +114,63 @@ public class EraPSystemsEdgeHardeningTests
     }
 
     [Fact]
+    public void Margin_satisfy_while_rung_six_cooldown_mid_save_clears_call_only()
+    {
+        Game g = Lab(178);
+        g.C.RungSixCrisis.CorruptionMin = 100;
+        ModelState m = g.Train("mini", 0);
+        g.UntilTrained(m);
+        g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
+        m.Corruption = 800;
+        OfficeEvents.OnEscape(g.C, g.State, g.Me);
+        g.Do(Command.AnswerOfficeEvent(g.Id, g.C.Office.Event(g.Me.OfficeEventId).Choices[0].IdValue));
+        RungSixCrisis.RunWeek(g.C, g.State, g.Me);
+        if (!OfficeEvents.IsPending(g.Me)) return;
+        OfficeEventConfig e = g.C.Office.Event(g.Me.OfficeEventId);
+        g.Do(Command.RespondRungSix(g.Id, e.Choices[0].IdValue));
+        int cooldown = g.Me.RungSixCooldownUntil;
+        g.C.Loans.LoanToValuePermille = 800;
+        g.C.MarginCall.CovenantPermille = 1000;
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 6);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        Fleet.Take(g.Me, g.Me.Fleet[0], g.Me.Fleet[0].Count - 1);
+        Finance.RunWeek(g.C, g.State, g.Me);
+        if (g.Me.MarginCallLeft < 1) return;
+        string mid = g.Sim.Save();
+        Game after = new Game(Simulation.Load(g.C, mid));
+        int pay = (int)MarginCall.CashDue(after.C, after.State, after.Me);
+        after.Do(Command.SatisfyMarginCall(after.Id, 0, pay));
+        Assert.Equal(0, after.Me.MarginCallLeft);
+        Assert.Equal(cooldown, after.Me.RungSixCooldownUntil);
+        HardeningInvariants.AssertEraPStateBounds(g.C, after.Me);
+    }
+
+    [Fact]
+    public void Rung_six_respond_mid_save_keeps_cooldown_after_weeks()
+    {
+        Game g = Lab(177);
+        g.C.RungSixCrisis.CorruptionMin = 100;
+        ModelState m = g.Train("mini", 0);
+        g.UntilTrained(m);
+        g.Do(Command.ReleaseModel(g.Id, m.Id, 0, "game-ai"));
+        m.Corruption = 800;
+        OfficeEvents.OnEscape(g.C, g.State, g.Me);
+        g.Do(Command.AnswerOfficeEvent(g.Id, g.C.Office.Event(g.Me.OfficeEventId).Choices[0].IdValue));
+        RungSixCrisis.RunWeek(g.C, g.State, g.Me);
+        if (!OfficeEvents.IsPending(g.Me)) return;
+        OfficeEventConfig e = g.C.Office.Event(g.Me.OfficeEventId);
+        g.Do(Command.RespondRungSix(g.Id, e.Choices[0].IdValue));
+        int arcUntil = g.Me.RungSixArcUntil;
+        int cooldown = g.Me.RungSixCooldownUntil;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        back.StepMany(4);
+        Assert.Equal(arcUntil, back.Player.RungSixArcUntil);
+        Assert.Equal(cooldown, back.Player.RungSixCooldownUntil);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
     public void Schema_144_through_148_saves_round_trip_and_play_twenty_weeks()
     {
         Game g = Lab(174);

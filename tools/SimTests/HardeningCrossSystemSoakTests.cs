@@ -264,12 +264,33 @@ public class HardeningCrossSystemSoakTests
         {
             g.C.MarginCall.Enabled = 1;
             g.C.ScenarioGoals.Enabled = 1;
+            g.C.HearingSharePrice.MinFloatPpm = 1;
+            g.C.RungSixCrisis.MinEra = 0;
+            g.C.LawShaping.MinEra = 0;
+            g.C.Lobbying.BackfirePermille = 0;
+            g.C.Lobbying.BackfireFloorPermille = 0;
             if (week % 52 == 7 && string.IsNullOrEmpty(g.Me.ScenarioId) && g.C.Scenarios.Scenarios.Count > 0)
                 g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
-            if (week % 54 == 9 && g.Me.LawTarget == "")
+            if (week % 54 == 9 && string.IsNullOrEmpty(g.Me.LawTarget))
+                g.Try(Command.SetLawTarget(g.Id, LawShaping.Loose));
+            if (week % 55 == 10 && g.Me.LawShapePending == 0)
                 EraLawHardeningSupport.TryShapeLaw(g, LawShaping.Loose);
+            if (week % 57 == 12 && g.Me.PublicFloatPpm < 10_000)
+                g.Me.PublicFloatPpm = 40_000;
+            if (week % 58 == 14 && ScenarioGoals.Enabled(g.C) && g.Me.ScenarioGoalResult == 0)
+                ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
             if (week % 56 == 11 && Loans.Outstanding(g.Me) == 0)
                 g.Try(Command.TakeLoan(g.Id, 150));
+            if (week % 59 == 16 && g.Me.MarginCallLeft > 0)
+            {
+                long pay = MarginCall.CashDue(g.C, g.State, g.Me);
+                if (pay > 0 && g.Me.Cash >= pay)
+                    g.Try(Command.SatisfyMarginCall(g.Id, 0, (int)pay));
+            }
+            if (week % 60 == 18 && g.Me.CampaignDeadlineTick == 0)
+                g.Try(Command.SetCampaignDeadline(g.Id, g.Tick + 48));
+            if (week % 62 == 20 && g.Me.PublicFloatPpm >= 10_000 && GameDate.IsMonthStart(g.C.Calendar, g.Tick))
+                GovernmentSystem.CloseMonth(g.C, g.State, g.Me);
         }
     }
 
