@@ -1117,17 +1117,25 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **90** `HatchModelSalesChipBarLaterTests5`; **91** `HatchCapitalBubbleBarLaterTests6`; **92** `HatchBubbleAcquireBarLaterTests6`; **93** `HatchBalanceSoakBarLaterTests5`; schema **29** only.
 
-### Q6216–Q6495. Batches 94–97 cross bars? DECIDED: test-only (LOCAL grouped packet off `91dadc47`)
+### Q6216–Q6775. Batches 94–101 cross bars? DECIDED: test-only (**pushed @ `5eb685f8`**)
 
-- **94–97** regulator/bubble, shady/china, incident/safety, rival economy; schema **29** only.
+- Eight bars (regulator through era incident); schema **29** only.
 
-### Q6496–Q6775. Batches 98–101 cross bars? DECIDED: test-only (LOCAL off `91dadc47`)
+### Q6776–Q7335. Batches 102–109 cross bars? DECIDED: test-only (**pushed @ `488a5cd4`**)
 
-- **98–101** funding follow-on, world map, acquire/listing, era incident load; schema **29** only.
+- **102–105** acquire/distress/plan; **106–109** pop/freeze/treaty/bubble (bible **Q97–Q98**, **Q89**, **Q150–Q153**, **Q90**).
 
-### Q6776+. Batch 102+ queue? OPEN
+### Q7336–Q7615. Batches 110–113 cross bars? DECIDED: test-only (LOCAL off `488a5cd4`)
 
-- Refill from bible forward queue and systems-design tails when **94–101** packet lands.
+- **110–113** model sales, exit/sell (**Q99**), bubble acquire, balance soak (**Q101**); schema **29** only.
+
+### Q7616–Q7895. Batches 114–117 cross bars? DECIDED: test-only (LOCAL off `488a5cd4`)
+
+- **114** forward-queue coda; **115** containment endings (**Q94**); **116–117** acquire × distress; schema **29** only.
+
+### Q7896+. Batch 118+ queue? OPEN
+
+- Regulator/shady/safety/economy or chips cross codas after **110–117** lands.
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
