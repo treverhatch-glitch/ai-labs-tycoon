@@ -39,9 +39,10 @@ public class AcquireLabLaterTests
         Assert.True(q.ModelsPart > 0);
         Assert.True(q.StaffPart > 0);
         Assert.True(q.Distressed);
+        Assert.Equal(120_000, q.DebtAssumed);
         long subtotal = q.Total - q.IntegrationCost;
-        long gross = q.ModelsPart + q.StaffPart + q.FleetPart + q.CashPart;
-        Assert.Equal(MathI.MulPermille(gross, g.C.Acquisitions.DistressPricePermille), subtotal);
+        long distressed = MathI.MulPermille(q.ModelsPart + q.StaffPart, g.C.Acquisitions.DistressPricePermille);
+        Assert.Equal(distressed + q.FleetPart + q.CashPart - q.DebtAssumed, subtotal);
     }
 
     [Fact]
