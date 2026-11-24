@@ -1039,7 +1039,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q3706–Q3775. Rival economy bar coda? DECIDED: test-only (batch 58, commit-ready — GO ≥ ~01:50 UTC on `8744e8f`)
 
-- **`HatchRivalEconomyBarLaterTests2` (70):** rollup/planner, rival plans, distress listing; **Q44**; push **`8744e8f..0c12ed7`**; 70-bar filter green.
+- **`HatchRivalEconomyBarLaterTests2` (70):** rollup/planner, rival plans, distress listing; **Q44**; push **`8744e8f..29a97d3`**; 70-bar filter green.
 
 ### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, LOCAL after 58)
 

@@ -164,7 +164,7 @@ and says why in the commit message.
 - ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
 - ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
 - ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
-- **Hatch rival/economy batch 58 (LOCAL commit-ready — NO PUSH until GO ≥ ~01:50 UTC / 30m after `8744e8f`)** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); push range **`8744e8f..0c12ed7`** (3 commits: `40db12f` test + docs); filter **70/0**; expected gate **4449/0**; **Q44**; schema **29** only.
+- **Hatch rival/economy batch 58 (LOCAL commit-ready — NO PUSH until GO ≥ ~01:50 UTC / 30m after `8744e8f`)** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); push range **`8744e8f..29a97d3`** (4 commits, excludes batch **59**); filter **70/0**; expected gate **4449/0**; **Q44**; schema **29** only.
 - **Hatch shady/china batch 59 (LOCAL — hold until batch 58 lands)** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); parent after **58**; filter **70/0**; bible **Q102** decline cooldown; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
   - **batch 60+ (TBD)** — incident/safety, containment coda; SolvencyHold / schema **30** parked.
