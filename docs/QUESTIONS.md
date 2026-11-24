@@ -1081,6 +1081,10 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchBubbleDistressBarLaterTests3` (70):** Q178 distress listing neighbour; store §bubble/distress; filter **70/70**; schema **29** only.
 
+### Q4476–Q4545. Distress/acquire bar coda? DECIDED: test-only (batch 69, LOCAL)
+
+- **`HatchDistressAcquireBarLaterTests3` (70):** chips distress listing + crash offers; bible acquire path; filter **70/70**; schema **29** only.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
