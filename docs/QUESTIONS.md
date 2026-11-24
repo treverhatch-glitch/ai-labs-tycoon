@@ -710,11 +710,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — hub 57, band 70, rollup 94 anchors.
 - Why: Post-merge navigation without rules/staff mesh work.
 
-### Q545. Training peek tail cross-link? DRAFT: `CampusTrainingPeekTailIndexPresentationSpec`
+### Q545. Training peek tail cross-link? DECIDED: `CampusTrainingPeekTailIndexPresentationSpec`
 
 - Options: (a) batch 71 only; (b) tail doc + rollup + training bar; (c) defer until Unity wire.
-- Recommendation: **(b)** — mirror staff tail pattern.
-- Status: stub batch 96 (local).
+- Recommendation and choice: **(b)** — hub 71, staff tail 95, rollup 94.
+- Why: Bible refill after grouped 92–95 push.
+
+### Q546. Mascot strip tail cross-link? DECIDED: `CampusHqMascotStripTailIndexPresentationSpec`
+
+- Options: (a) batch 72 only; (b) tail doc + HQ stack completion; (c) defer mascot meshes.
+- Recommendation and choice: **(b)** — hub 72, stack completion 74, training tail 96.
+- Why: HQ band tail refill before next grouped push.
+
+### Q547. Compute split tail cross-link? DECIDED: `CampusComputeSplitTailIndexPresentationSpec`
+
+- Options: (a) batch 73 only; (b) tail doc + training/mascot tails; (c) rules compute UI.
+- Recommendation and choice: **(b)** — hub 73, mascot tail 97, training tail 96.
+- Why: HQ band tail chain before grouped push.
+
+### Q548. HQ stack completion tail? DRAFT: `CampusHqStageStackCompletionTailIndexPresentationSpec`
+
+- Options: (a) batch 74 only; (b) tail doc + compute split tail; (c) defer stack wire.
+- Recommendation: **(b)** — closes HQ stack tail lane.
+- Status: stub batch 99 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

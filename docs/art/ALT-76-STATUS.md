@@ -80,7 +80,8 @@
 | 89 | `eddff91` | Capture HUD tail |
 | 90 | `5abe36c` | GO packet tail through 88 |
 | 91 | `db6f9e3` | STATUS sync through 89 |
-| 92–95 | (local → grouped push) | Rollup 89, GO packet 90, tail rollup, staff tail |
+| 92–95 | `9b89640` | Grouped: rollup 89, GO 90, tail rollup, staff tail |
+| 96–98 | (local) | Training / mascot / compute split tails |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

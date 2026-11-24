@@ -108,6 +108,10 @@ python3 tools/art/generate_campus_kit.py
 | [GO-PACKET-TAIL-REFRESH-90.md](GO-PACKET-TAIL-REFRESH-90.md) | GO packet through 90 (batch 93 local) |
 | [PRESENTATION-TAIL-ROLLUP.md](PRESENTATION-TAIL-ROLLUP.md) | Tail rollup 79–92 (batch 94 local) |
 | [STAFF-PRESENTATION-TAIL-INDEX.md](STAFF-PRESENTATION-TAIL-INDEX.md) | Staff tail anchors (batch 95 local) |
-| [GROUPED-PUSH-92-95.md](GROUPED-PUSH-92-95.md) | Squash plan for merge-wave catch-up |
+| [TRAINING-PEEK-TAIL-INDEX.md](TRAINING-PEEK-TAIL-INDEX.md) | Training tail (batch 96 local) |
+| [HQ-MASCOT-STRIP-TAIL-INDEX.md](HQ-MASCOT-STRIP-TAIL-INDEX.md) | Mascot strip tail (batch 97 local) |
+| [GROUPED-PUSH-92-95.md](GROUPED-PUSH-92-95.md) | Squash 92–95 (landed `9b89640`) |
+| [COMPUTE-SPLIT-TAIL-INDEX.md](COMPUTE-SPLIT-TAIL-INDEX.md) | Compute split tail (batch 98 local) |
+| [GROUPED-PUSH-96-NEXT.md](GROUPED-PUSH-96-NEXT.md) | Next grouped 96–98 queue |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

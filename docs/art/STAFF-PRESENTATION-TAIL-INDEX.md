@@ -9,4 +9,6 @@ Cross-links staff hire/GPU presentation after the post-60 tail rollup ([PRESENTA
 | Tail rollup | [PRESENTATION-TAIL-ROLLUP.md](PRESENTATION-TAIL-ROLLUP.md) | 94 |
 | Presentation hub | [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md) | 50 |
 
-Tokens: `CampusStaffPresentationTailIndexPresentationSpec` (hub + band + rollup anchors). Batch 95 (local).
+Follow-on: [TRAINING-PEEK-TAIL-INDEX.md](TRAINING-PEEK-TAIL-INDEX.md) (batch 96 local).
+
+Tokens: `CampusStaffPresentationTailIndexPresentationSpec` (hub + band + rollup anchors). Batch 95.
