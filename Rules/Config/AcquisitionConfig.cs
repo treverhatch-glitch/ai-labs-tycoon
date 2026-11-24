@@ -13,6 +13,16 @@ namespace AiLabs.Rules.Config
     public int MinInstalledModels;
     public long RegulatorDealRevenue;
     public int RegulatorAttention;
+    /// <summary>Chance per distressed pair that a rival rollup happens during a crash, permille out of 1000.</summary>
+    public int RivalRollupChancePermille;
+    /// <summary>Each planning week in crash, chance a healthy rival tries to acquire the weakest distressed peer, permille out of 1000.</summary>
+    public int PlannerAcquireChancePermille;
+    /// <summary>Weeks after M&amp;A during which integrated GPU batches cannot be sold (arbitrage bar).</summary>
+    public int FleetResaleLockWeeks;
+    /// <summary>Book value permille applied to ready chip designs in acquisition quotes.</summary>
+    public int ReadyChipBookPermille;
+    /// <summary>Book value permille applied to on-fleet ready chip batches in quotes.</summary>
+    public int ChipFleetBookPermille;
 
     public void Sync(Syncer s)
     {
@@ -25,6 +35,11 @@ namespace AiLabs.Rules.Config
       s.Int("minInstalledModels", ref MinInstalledModels);
       s.Long("regulatorDealRevenue", ref RegulatorDealRevenue);
       s.Int("regulatorAttention", ref RegulatorAttention);
+      s.Int("rivalRollupChancePermille", ref RivalRollupChancePermille);
+      s.Int("plannerAcquireChancePermille", ref PlannerAcquireChancePermille);
+      s.Int("fleetResaleLockWeeks", ref FleetResaleLockWeeks);
+      s.Int("readyChipBookPermille", ref ReadyChipBookPermille);
+      s.Int("chipFleetBookPermille", ref ChipFleetBookPermille);
     }
   }
 }
