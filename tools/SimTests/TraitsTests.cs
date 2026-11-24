@@ -267,11 +267,11 @@ public class TraitsTests
         Game fast = Lab();
         Add(fast, "accelerationist", 2);
         Assert.Equal(TrainingSystem.SpeedPermille(plain.C, plain.Me) + 80, TrainingSystem.SpeedPermille(fast.C, fast.Me));
-        Assert.Equal(TrainingSystem.AlignmentWorkPermille(plain.C, plain.Me) - 60, TrainingSystem.AlignmentWorkPermille(fast.C, fast.Me));
+        Assert.Equal(TrainingSystem.AlignmentWorkPermille(plain.C, plain.Me, plain.State.Tick) - 60, TrainingSystem.AlignmentWorkPermille(fast.C, fast.Me, fast.State.Tick));
         Game careful = Lab();
         Add(careful, "doomer", 2);
         Assert.Equal(TrainingSystem.SpeedPermille(plain.C, plain.Me) - 60, TrainingSystem.SpeedPermille(careful.C, careful.Me));
-        Assert.Equal(TrainingSystem.AlignmentWorkPermille(plain.C, plain.Me) + 80, TrainingSystem.AlignmentWorkPermille(careful.C, careful.Me));
+        Assert.Equal(TrainingSystem.AlignmentWorkPermille(plain.C, plain.Me, plain.State.Tick) + 80, TrainingSystem.AlignmentWorkPermille(careful.C, careful.Me, careful.State.Tick));
     }
 
     [Fact]

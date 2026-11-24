@@ -15,6 +15,7 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 32) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "rooms", room => JsonPatch.Remove(room, "eraAge")));
             if (schema < 31) JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "namingMess"));
             if (schema < 30) StripCulture(root);
             if (schema < 29) StripFleetResaleLock(root);

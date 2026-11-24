@@ -10,7 +10,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1116–Q1185: batch 21 era/cast picker data bar (schema 31).</summary>
+/// <summary>Q1116–Q1185: batch 21 era/cast picker data bar (schema 32).</summary>
 public class HatchEraCastPickerLaterTests
 {
     [Fact] public void Q1116_era_cast_1116() { GameConfig c = TestData.Config(); EraConfig era = c.Era("dial-up-days"); Assert.False(string.IsNullOrEmpty(era.Tagline)); Assert.False(string.IsNullOrEmpty(era.ModelsCanDo)); Assert.False(string.IsNullOrEmpty(era.Name)); }

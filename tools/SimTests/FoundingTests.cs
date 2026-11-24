@@ -371,6 +371,7 @@ public class FoundingTests
         g.WithStarterLab();
         g.Weeks(10);
         g.Me.CultureShift = 0;
+        foreach (RoomState room in g.Me.Rooms) room.EraAge = 0;
         string old = SaveSchemaPretend.At(g.C, 21, g.Sim.Save());
         Assert.DoesNotContain("founderId", old);
         Simulation loaded = Simulation.Load(g.C, old);

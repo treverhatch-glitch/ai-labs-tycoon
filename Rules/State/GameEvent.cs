@@ -76,7 +76,15 @@ namespace AiLabs.Rules.State
         /// <summary>A customer let down by an incident wrote to the player's desk. LabId is the player's lab, SubjectId the complaint, Amount the trust at stake, Ref "sector|model".</summary>
         CustomerComplaint,
         /// <summary>The player answered a complaint. LabId is the player's lab, SubjectId the complaint, Amount the trust moved (negative if it backfired), Ref "response|sector", Pick 1 if it worked.</summary>
-        ComplaintAnswered
+        ComplaintAnswered,
+        /// <summary>A room slipped into a worse stage of age as a new era began. LabId is the lab, SubjectId the room, Amount its age in eras, Ref the room type.</summary>
+        RoomDated,
+        /// <summary>The player refurbished a room. LabId is the lab, SubjectId the room, Amount the cost, Ref the room type.</summary>
+        RoomRefurbished,
+        /// <summary>A player lab's safety techs lost more ground as a new era began. LabId is the lab, Amount the permille of their bonus now lost, Ref the lab's newest safety tech.</summary>
+        ControlStale,
+        /// <summary>New safety research won back ground. LabId is the lab, Amount the permille won back, Ref the tech.</summary>
+        ControlRefreshed
     }
 
     /// <summary>

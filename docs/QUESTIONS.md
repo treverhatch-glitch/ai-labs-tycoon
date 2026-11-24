@@ -1510,6 +1510,52 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**: `namingMess`. An older save migrates with it at 0 (tidy names), so nothing in an old game changes until the next training run. Names already in the save stay as they are.
 - Why: the suffixes are in the saved names; the number is the only thing the next name and the appeal part need. The golden digest moved, and the cause was checked: with no mess added, the saved number and schema number set back to schema 29's, the digest of the one pinned game equals the old golden `e77d4325`. So the move is the new field, the new schema number, and the naming rot itself (three or more runs in that game year, so names and appeal changed).
 
+## The company chat and the glow (NEXT item 24)
+
+### Q198. How does the chat know what to say, and who says it? DECIDED: read off the event log and the payroll, nothing saved
+- Options: (a) store a chat log in the save; (b) derive it from events and the people on the payroll each time it is asked for.
+- Recommendation and choice: **(b)**. `chat.lines` in the data (35 lines) say which event kind each reacts to, which roles may say it, an optional trait, and (for yes-or-no events) which pick. The first line that fits the event and has someone to say it wins, so trait lines are listed before the plain ones; the speaker is picked from the people who fit by a hash of the event, so the same event always gets the same speaker while that person is still on the payroll. A kind with no line stays out of the feed. A poach is about the lab it was done to (`about: "subject"`).
+- Why: events are already data and the bible asks for staff to react in character; saving prose would bloat the save and freeze the jokes. The cost is that a line's speaker can change when people leave, which is acceptable for a chat that is a view. Reading the chat changes nothing (checked against the digest).
+
+### Q199. What does the glow show, and does it tell the truth? DECIDED: the true meters, against a dashboard that sees only the displayed ones
+- Options: (a) show the displayed alignment; (b) show the true risk of the worst model; (c) (b) plus a second reading for the dashboard.
+- Recommendation and choice: **(c)**. Seven stages in `glow.stages` follow the ladder: calm, humming (weekly incident chance of 1% or more), flickering (rung 2), empty corridor (rung 3, sandbagging), doors locked (rung 4), power dips (rung 5), quiet (rung 6). The worst released or trained model sets the stage. The dashboard reading is the same calculation on the displayed alignment with no corruption, so when a model sandbags or is corrupted the report says `ChartIsMisleading` and the room is further up the ladder than the chart. Brightness is the combined capability of the latest model of each line, up to `fullAtCapability` 10000.
+- Why: the bible's "truth through the walls": a careful player learns to trust the room over the chart. Derived only, no save change, no effect on any rule, so the economy guards are untouched.
+
+## Rooms that age (NEXT item 25)
+
+### Q230. What makes a room old? DECIDED: how many eras have begun since it was built, not how many weeks
+- Options: (a) weeks since built; (b) eras since built (`eraAge` on each room, +1 at every era change); (c) the room type's own era.
+- Recommendation and choice: **(b)**. At each era change after the first week, every room of a player lab gets one older; a refurbish sets it back to 0. Five stages in `ageing.stages` read it: fresh (0), settled (1), dated (2), beige (3), museum piece (5).
+- Why: the bible says a room "goes out of date", and what dates a room is the world moving on, not the calendar. Counting eras makes a quick game age rooms faster in weeks and keeps it independent of the scenario's tick length. Only the player's rooms age (the Q182 knife-edge: rival upkeep is part of the economy the guards pin).
+
+### Q231. What does an old room cost, and what does it cost to fix? DECIDED: extra upkeep and a morale penalty from the dated stage on; a refurbish is a quarter of the build cost
+- Options: (a) upkeep only; (b) morale only; (c) both, with a cap on morale.
+- Recommendation and choice: **(c)**. Dated: +15% upkeep, 20 morale off the resting level; beige: +30%, 40; museum piece: +50%, 60. The morale penalty is the average over the rooms that seat people, weighted by tiles, so one old broom cupboard does not sink the lab, and it is capped by `maxMoralePenalty` 60. `RefurbishRoom` costs `refurbishCostPermille` 250 of the room's build cost per tile times its tiles (paid on the construction ledger line), refused when the room is already fresh or the cash is short.
+- Why: the first two stages are free on purpose so a player has two eras of grace and the cost arrives as a warning (a `RoomDated` event, and a chat line) rather than a surprise. The economy guards (EconomyBounds seeds 1, 2, 4, 5, 20, 24, 27, 31, ContentFlow, the soak) stayed green with these values at the first scan, so the numbers were not tuned against them. Old workplace tests that run for hundreds of weeks set `ageing.maxMoralePenalty` to 0 so they still test comfort rooms alone.
+
+### Q232. Is a save change needed? DECIDED: yes, schema 32: one number per room
+- Options: (a) store the tick each room was built and derive the age; (b) store the age.
+- Recommendation and choice: **(b)**: `eraAge` per room. An older save migrates with 0 on every room (fresh), so nothing in an old game changes until the next era change. (The first draft of NEXT said `builtTick`; the age is what a refurbish resets, so the age is what is saved.)
+- Why: a derived age would need the era history, and a refurbish would need a second field anyway. The golden digest moved and the cause was checked: with the ageing stages set to 0 upkeep and 0 morale, the saved number removed and the schema set back to 30, the digest of the pinned game equals the old golden `6b8ed8f9`. So the move is the new field, the schema number and the ageing itself (the pinned game crosses eras, so upkeep and morale changed).
+
+## Control goes stale (NEXT item 26)
+
+### Q233. What makes control stale, and what puts it right? DECIDED: eras since the lab's newest safety tech; any new safety tech resets it for all of them
+- Options: (a) each tech decays by its own age; (b) every safety tech decays by the age of the lab's newest one; (c) a saved "last refreshed" date.
+- Recommendation and choice: **(b)**. Stale eras = the era now minus the era of the newest tech the lab owns that has an alignment effect. The first `control.graceEras` (1) are free; each era after costs `lossPerEraPermille` (100, a tenth) of the safety techs' summed bonus, never more than `maxLossPermille` (500). So the whole safety stack counts for 90% two eras after the newest piece of safety research, and half at six. Researching any new safety tech makes the newest one this era's, which puts every older one back to full strength.
+- Why: the bible says techniques "go stale as models change" and that new research is the cure. Per-tech decay (a) would punish a lab for owning a fine old tech next to a fresh one; the lab-wide reading rewards keeping up. Nothing needs saving: it is worked out from the techs and the date, so there is no schema change. Only player labs go stale (the Q182 knife-edge: a rival's safety is part of its economy).
+
+### Q234. What does a stale control actually change, and how is the player told? DECIDED: the alignment work in training runs; two events and two chat lines
+- Options: (a) lower the displayed alignment of finished models; (b) lower the alignment work a run gets; (c) raise the incident chance.
+- Recommendation and choice: **(b)**. `TrainingSystem.AlignmentWorkPermille` now takes the date and uses the stale bonus instead of the full one (the other parts, staff, containment, role perks and traits, are unchanged). Models already finished keep what they got. When a new era leaves a lab further behind, a `ControlStale` event says so (once per era until the cap, then no more); a safety tech that wins ground back writes `ControlRefreshed` with how much. Both have plain-English log text and a chat line from the safety people. `ControlStale.Of` gives a screen the era, the newest tech, the stale eras, the loss and the bonus before and after.
+- Why: new runs are where the techniques are used, so that is where staleness bites, and it asks for the thing the bible asks for (new safety research) rather than a new button. Not touching finished models avoids rewriting history and keeps the displayed meter stable.
+
+### Q235. What does firing the safety team cost? DECIDED: 15 culture a head for the roles that listen
+- Options: (a) nothing beyond the lost weekly gain from Q191; (b) a one-off culture hit per person let go; (c) a hit for every role.
+- Recommendation and choice: **(b)** for the roles in `culture.listeningRoles` (safety, red-teamer, alignment-fellow): `control.firedListenerPoints` 15 each, so letting a team of three go costs 45 on top of the weekly gain it stops. Letting anyone else go costs nothing. Culture stays in 0 to 1000, and a refused firing changes nothing.
+- Why: the bible lists "firing or ignoring the safety team" as something that erodes control. Ignoring was already the weekly drift of Q191; firing is a decision, so it gets a visible price. Economy and golden: no player-only revenue or cost changed. The golden run did not move (the pinned game never has the player researching safety and then crossing eras), and EconomyBounds, ContentFlow and the soak stayed green at the first values, so nothing was tuned.
+
 ## CI and tooling
 
 ### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`

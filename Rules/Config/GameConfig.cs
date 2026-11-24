@@ -65,6 +65,10 @@ namespace AiLabs.Rules.Config
         public TrustConfig Trust = new TrustConfig();
         public CultureConfig Culture = new CultureConfig();
         public NamingConfig Naming = new NamingConfig();
+        public AgeingConfig Ageing = new AgeingConfig();
+        public ControlConfig Control = new ControlConfig();
+        public ChatConfig Chat = new ChatConfig();
+        public GlowConfig Glow = new GlowConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -110,6 +114,10 @@ namespace AiLabs.Rules.Config
             s.Obj("trust", ref Trust);
             s.Obj("culture", ref Culture);
             s.Obj("naming", ref Naming);
+            s.Obj("ageing", ref Ageing);
+            s.Obj("control", ref Control);
+            s.Obj("chat", ref Chat);
+            s.Obj("glow", ref Glow);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);

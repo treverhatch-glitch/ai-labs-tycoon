@@ -148,12 +148,19 @@ and says why in the commit message.
     ~~Done~~: `naming` in the data, `VersionNaming`, `CleanUpNaming`, a confusion part on appeal, save schema 30 (`namingMess`; Q195-Q197),
     `VersionNamingTests`, `docs/content/version-naming.md`. Player labs only. Still open: a naming screen (Unity), rivals with confusing names, renaming old models.
 24. **The company chat and the glow (bible ch. 14 "company chat feed", ch. 10 "the glow", "truth through the walls").** Staff react to the
-    lab's decisions in character (derived from events, the staff on the payroll and their traits; nothing saved), and the building shows the
-    worst model's risk by rung, including when a sandbagging model corrupts the dashboard. Display queries only, no schema.
+    lab's decisions in character, and the building shows the worst model's risk by rung, including when a sandbagging model corrupts the
+    dashboard. ~~Done~~: `chat` and `glow` in the data, `CompanyChat.Feed`, `Glow.Of`, no schema change and no rule effect (Q198-Q199),
+    `CompanyChatTests`, `GlowTests`, `docs/content/company-chat-and-glow.md`. Still open: the news ticker headlines, the chat as a Unity panel,
+    the mascot face on screens (art), chat lines for more event kinds.
 25. **Rooms that age (bible ch. 14, "old rooms go out of date").** A room built in an earlier era goes beige and dusty; staff in it complain
-    (morale) until the lab refurbishes it for a fraction of the build cost. Save schema 31 (`builtTick` per room).
+    (morale) until the lab refurbishes it for a fraction of the build cost. ~~Done~~: `ageing` in the data, `RoomAge`, `RefurbishRoom`,
+    extra upkeep and a morale penalty from the dated stage, save schema 31 (`eraAge` per room; Q230-Q232), `RoomAgeTests`,
+    `docs/content/room-ageing.md`. Player labs only. Still open: a refurbish button and a room tint (Unity), rivals with old rooms, room redesigns on refurbish.
 26. **Control goes stale (bible ch. 10, "what erodes it").** Each new era, the control techniques of older eras count for less until the
-    lab does new safety research; ignoring or firing the safety team shows up in the lab's culture. Player labs only; no schema expected.
+    lab does new safety research; ignoring or firing the safety team shows up in the lab's culture. ~~Done~~: `control` in the data,
+    `ControlStale`, alignment work uses the stale bonus, `ControlStale`/`ControlRefreshed` events, a culture cost for firing the listeners,
+    no schema change (Q233-Q235), `ControlStaleTests`, `docs/content/control-stale.md`. Player labs only. Still open: a screen for it (Unity),
+    rivals going stale, the stale readout on finished models.
 
 ## Rules: later
 
