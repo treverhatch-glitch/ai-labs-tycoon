@@ -1,9 +1,5 @@
-# Grouped 146–148
+# Grouped 146–148 (LANDED)
 
-**Parent:** `9e9c084` · **GO ≥01:06 ICT**
+**Remote:** `eff9fe3600150e6a578cc37dc2666b3a71da0758` (~**01:07 ICT** Nov 25). Q595–Q597. Prepush **338** meta; **159** tests.
 
-| Batch | Q | Topic |
-| --- | --- | --- |
-| 146 | Q595 | STATUS 133 |
-| 147 | Q596 | Tail rollup 130 |
-| 148 | Q597 | GO 142 |
+HOLD **≥~01:37 ICT**. Q598+ batch **149+** LOCAL.
