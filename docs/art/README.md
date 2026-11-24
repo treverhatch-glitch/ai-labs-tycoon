@@ -118,6 +118,9 @@ python3 tools/art/generate_campus_kit.py
 | [ALT-76-STATUS-SYNC-98.md](ALT-76-STATUS-SYNC-98.md) | STATUS sync 98 (batch 101 local) |
 | [ALT-76-ROLLUP-REFRESH-100.md](ALT-76-ROLLUP-REFRESH-100.md) | Rollup refresh 100 (batch 102 local) |
 | [GROUPED-PUSH-99-NEXT.md](GROUPED-PUSH-99-NEXT.md) | Squash 99–100 (landed `394e007`) |
-| [GROUPED-PUSH-101-NEXT.md](GROUPED-PUSH-101-NEXT.md) | Next grouped 101–102 queue |
+| [PRESENTATION-TAIL-ROLLUP-REFRESH-98.md](PRESENTATION-TAIL-ROLLUP-REFRESH-98.md) | Tail rollup refresh (batch 103 local) |
+| [GO-PACKET-TAIL-REFRESH-102.md](GO-PACKET-TAIL-REFRESH-102.md) | GO packet 102 (batch 104 local) |
+| [GROUPED-PUSH-101-NEXT.md](GROUPED-PUSH-101-NEXT.md) | Squash 101–102 (landed `b40f87f`) |
+| [GROUPED-PUSH-103-NEXT.md](GROUPED-PUSH-103-NEXT.md) | Next grouped 103–104 queue |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

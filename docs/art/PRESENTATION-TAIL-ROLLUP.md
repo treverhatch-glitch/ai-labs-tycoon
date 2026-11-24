@@ -18,4 +18,6 @@ Hub: [PRESENTATION-INDEX-HUB.md](PRESENTATION-INDEX-HUB.md).
 
 Post-rollup staff anchor: [STAFF-PRESENTATION-TAIL-INDEX.md](STAFF-PRESENTATION-TAIL-INDEX.md) (batch 95 local).
 
-Tokens: `CampusPresentationTailRollupPresentationSpec` (**7** tail lanes). Batch 94 (local).
+Refresh: [PRESENTATION-TAIL-ROLLUP-REFRESH-98.md](PRESENTATION-TAIL-ROLLUP-REFRESH-98.md) (batch 103 local, **11** lanes).
+
+Tokens: `CampusPresentationTailRollupPresentationSpec` (**7** tail lanes). Batch 94.

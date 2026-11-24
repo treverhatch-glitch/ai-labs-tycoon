@@ -1,0 +1,5 @@
+# Graphics batch 103 (LOCAL)
+
+- [x] `PRESENTATION-TAIL-ROLLUP-REFRESH-98.md` + spec/tests
+- [x] Q552 DECIDED
+- [ ] Grouped 103–104 [GROUPED-PUSH-103-NEXT.md](GROUPED-PUSH-103-NEXT.md)

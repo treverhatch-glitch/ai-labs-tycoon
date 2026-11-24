@@ -83,7 +83,8 @@
 | 92–95 | `9b89640` | Grouped: rollup 89, GO 90, tail rollup, staff tail |
 | 96–98 | `81f640a` | Grouped: training, mascot, compute split tails |
 | 99–100 | `394e007` | HQ completion tail, GO packet through 98 |
-| 101–102 | (local) | STATUS sync 98, rollup refresh 100 |
+| 101–102 | `b40f87f` | STATUS sync 98, rollup refresh 100 |
+| 103–104 | (local) | Tail rollup refresh, GO packet 102 |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 
