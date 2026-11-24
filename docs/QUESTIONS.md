@@ -638,6 +638,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — extends batch 76 refresh through tail lane.
 - Why: Coordinator and store bible need consistent remote tips through 82.
 
+### Q533. GO packet tail refresh? DECIDED: `CampusGoPacketTailRefreshPresentationSpec`
+
+- Options: (a) reuse batch 77 doc only; (b) tail GO packet doc for pushes 78+; (c) automate store writes.
+- Recommendation and choice: **(b)** — coordinator packets reference extended lane + STATUS sync.
+- Why: Post-78 pushes follow manifest tail, not manifest-only range.
+
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
 - Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
