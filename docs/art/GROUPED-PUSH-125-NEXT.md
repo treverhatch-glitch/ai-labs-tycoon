@@ -1,6 +1,6 @@
-# Next grouped push (LOCAL queue)
+# Grouped push 125–127 (LANDED)
 
-**Remote parent:** `0a7f37e6e493e6b1d30642ee28e056316234a810` (122–124).
+**Remote:** `e63c189e1eb6081feceb0ce7d7432b29165b1077` (parent `0a7f37e`). Pushed **~21:31 ICT** Nov 24.
 
 | Batch | Q | Topic |
 | --- | --- | --- |
@@ -8,6 +8,8 @@
 | 126 | Q575 | GO packet 121 |
 | 127 | Q576 | Manifest tail 118 |
 
-Includes `tools/art/prepush.sh` noreply + HEAD body echo (Hatch 21:10).
+Also: `tools/art/prepush.sh` noreply + HEAD body echo (Hatch 21:10).
 
-**GO:** **≥~21:30 ICT** (+30m after `0a7f37e`).
+Prepush **296** meta; `git log -1 --format=%B` clean; `ls-remote` verified.
+
+Next HOLD **≥~22:01 ICT**. Q577+ LOCAL.
