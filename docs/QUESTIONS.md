@@ -2405,3 +2405,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q500. Discount first acquire payment on data sources in late era? DECIDED (schema 169): `dataSourceAcquireEraDiscount`; `DataSourceAcquireEraDiscounted` on `AcquireDataSource`.
 
 ### Q501. Batch twenty-three news, chat and combos. DECIDED: three headlines, three chat lines (421/374); `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests`.
+
+### Q502. Era relief on margin satisfy payment? *Planned (schema 170):* `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved`.
+
+### Q503. Extra slack on scenario goals deadline in late era? *Planned (schema 171):* `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked`.
+
+### Q504. Extra weeks to answer takeoff crisis in late era? *Planned (schema 172):* `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced`.
+
+### Q505. Batch twenty-four news, chat and combos. *Planned:* three headlines, three chat lines (424/377); `BatchTwentyFour*`.

@@ -443,6 +443,16 @@ and says why in the commit message.
 
 244. **Batch twenty-three news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests` (Q501).
 
+### Era batch 24 (LOCAL design — HOLD push)
+
+245. **Margin satisfy era relief.** *Planned:* `MarginSatisfyEraRelief`, schema 170 (Q502).
+
+246. **Scenario goals era slack.** *Planned:* `ScenarioGoalsEraSlack`, schema 171 (Q503).
+
+247. **Takeoff crisis era grace.** *Planned:* `TakeoffCrisisEraGrace`, schema 172 (Q504).
+
+248. **Batch twenty-four news, chat and combination rules.** *Planned:* `BatchTwentyFour*` (Q505); target 424/377.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
