@@ -54,7 +54,7 @@ namespace AiLabs.Rules.Systems
 
         public static long PricePerGpu(GameConfig c, GameState state, LabState lab, GpuGenerationConfig gen)
         {
-            return MathI.MulPermille(gen.BuyPrice, PricePermille(c, state, lab));
+            return EraRules.ChipPrice(c, MathI.MulPermille(gen.BuyPrice, PricePermille(c, state, lab)), state.Tick);
         }
 
         public static int StandingOf(GameState state, LabState lab)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -15,6 +16,15 @@ namespace AiLabs.Rules.Sim
             LabState lab = state.Lab(e.LabId);
             string who = lab == null ? "A lab" : lab.Name;
             return GameDate.Label(c.Calendar, e.Tick) + ": " + Body(c, state, e, who);
+        }
+
+        static string EraShifts(GameConfig c, GameEvent e)
+        {
+            List<EraRuleLine> shifts = EraRules.Shifts(c, e.Tick);
+            if (shifts.Count == 0) return "";
+            var parts = new List<string>();
+            for (int i = 0; i < shifts.Count; i++) parts.Add(EraRules.Label(shifts[i].Kind).ToLowerInvariant() + " " + EraRules.Text(shifts[i].Kind, shifts[i].Value));
+            return " The rules shift: " + string.Join(", ", parts) + ".";
         }
 
         static string Body(GameConfig c, GameState state, GameEvent e, string who)
@@ -50,7 +60,7 @@ namespace AiLabs.Rules.Sim
                 case EventKind.GrantEnded: return who + " got the last cheque of its grant.";
                 case EventKind.InDebt: return who + " is in debt ($" + e.Amount + ").";
                 case EventKind.Bankrupt: return who + " went bankrupt.";
-                case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline;
+                case EventKind.EraBegan: return "A new era begins: " + c.Era(e.Ref).Name + ". " + c.Era(e.Ref).Tagline + EraShifts(c, e);
                 case EventKind.WorldNews:
                 {
                     WorldEventConfig news = c.WorldEvent(e.Ref);

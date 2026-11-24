@@ -17,6 +17,24 @@ Training cost and research speed are shares of the first era (1000 = x1). Start-
 | 7 | `bodies` Bodies (expansion) | 2029 | x80 | x35 | - | no |
 | 8 | `upward` Upward (expansion) | 2033 | x120 | x60 | - | no |
 
+## Era rules
+
+What each era turns, on top of training cost and research speed (table above). All are era fields in the config; none is saved. A rule at its baseline (x1, or no law) does nothing. Incident chance is x1 except where listed. The release law is the alignment a model must *show* before it can go on sale (a lab that sandbags shows more than it has).
+
+| Era | Hiring fee (talent war) | Chip price | Customer appetite | Incident chance | Fines | Alignment needed to go on sale |
+| --- | --- | --- | --- | --- | --- | --- |
+| `dial-up-days` | x1 | x1 | x1 | x1 | x1 | no rule |
+| `punchline` | x1 | x1 | x1 | x1 | x1 | no rule |
+| `it-sees` | x1.5 | x1 | x1 | x1 | x1 | no rule |
+| `it-writes` | x2 | x1.1 | x1.1 | x1 | x1 | no rule |
+| `chat-boom` | x3 | x1.6 | x1.4 | x1 | x1.5 | 80 |
+| `agents` | x3.5 | x1.3 | x1.25 | x1.2 | x2 | 120 |
+| `harnesses` | x3 | x1.1 | x1.25 | x1 | x3 | 160 |
+| `bodies` | x2.5 | x1 | x1.1 | x1 | x3 | 200 |
+| `upward` | x2.5 | x1 | x1.1 | x1 | x3 | 250 |
+
+The era banner event lists what changed from the era before (`EraRules.Shifts`); a screen can list all of it (`EraRules.Briefing`).
+
 ## Dial-up Days (1995)
 
 *Cosy, slow and broke. AI is a dirty word and the internet is booming.*
