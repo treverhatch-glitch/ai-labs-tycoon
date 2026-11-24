@@ -319,7 +319,7 @@ public class HatchRivalsChipsIntegrateLaterTests
         rival.Cash = -15_500;
         Finance.Earn(g.Me, LedgerLine.CapitalIn, 80_000_000);
         g.Do(Command.AcquireLab(g.Id, rival.Id));
-        Assert.Equal(31, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
         SaveSchemaPretend.AssertRoundTrip(g.Sim);
     }
 
@@ -587,6 +587,6 @@ public class HatchRivalsChipsIntegrateLaterTests
         Finance.Earn(g.Me, LedgerLine.CapitalIn, 85_000_000);
         g.Do(Command.AcquireLab(g.Id, rival.Id));
         Assert.True(g.Me.ChipDesigns.Count >= 1);
-        Assert.Equal(31, g.State.Schema);
+        Assert.Equal(GameState.CurrentSchema, g.State.Schema);
     }
 }

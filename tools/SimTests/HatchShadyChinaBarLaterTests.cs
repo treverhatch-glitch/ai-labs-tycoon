@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1466–Q1535: batch 26 shady/china data bar (schema 31).</summary>
+/// <summary>Q1466–Q1535: batch 26 shady/china data bar (schema 34).</summary>
 public class HatchShadyChinaBarLaterTests
 {
     static readonly string[] Cards = { "intrusion-for-hire", "liberate-funds", "sabotage-run", "hack-government" };
@@ -26,7 +26,7 @@ public class HatchShadyChinaBarLaterTests
     [Fact] public void Q1477_shady_china_1477() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[2]); }
     [Fact] public void Q1478_shady_china_1478() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[3]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1479_shady_china_1479() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[3], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
-    [Fact] public void Q1480_shady_china_1480() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(31, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2612 })).State.Schema); }
+    [Fact] public void Q1480_shady_china_1480() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(GameState.CurrentSchema, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2612 })).State.Schema); }
     [Fact] public void Q1481_shady_china_1481() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[3]); }
     [Fact] public void Q1482_shady_china_1482() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[0]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1483_shady_china_1483() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[0], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
@@ -42,7 +42,7 @@ public class HatchShadyChinaBarLaterTests
     [Fact] public void Q1493_shady_china_1493() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[2]); }
     [Fact] public void Q1494_shady_china_1494() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[3]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1495_shady_china_1495() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[3], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
-    [Fact] public void Q1496_shady_china_1496() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(31, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2628 })).State.Schema); }
+    [Fact] public void Q1496_shady_china_1496() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(GameState.CurrentSchema, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2628 })).State.Schema); }
     [Fact] public void Q1497_shady_china_1497() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[3]); }
     [Fact] public void Q1498_shady_china_1498() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[0]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1499_shady_china_1499() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[0], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
@@ -58,7 +58,7 @@ public class HatchShadyChinaBarLaterTests
     [Fact] public void Q1509_shady_china_1509() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[2]); }
     [Fact] public void Q1510_shady_china_1510() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[3]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1511_shady_china_1511() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[3], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
-    [Fact] public void Q1512_shady_china_1512() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(31, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2644 })).State.Schema); }
+    [Fact] public void Q1512_shady_china_1512() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(GameState.CurrentSchema, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2644 })).State.Schema); }
     [Fact] public void Q1513_shady_china_1513() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[3]); }
     [Fact] public void Q1514_shady_china_1514() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[0]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1515_shady_china_1515() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[0], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
@@ -74,7 +74,7 @@ public class HatchShadyChinaBarLaterTests
     [Fact] public void Q1525_shady_china_1525() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[2]); }
     [Fact] public void Q1526_shady_china_1526() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[3]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1527_shady_china_1527() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[3], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
-    [Fact] public void Q1528_shady_china_1528() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(31, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2660 })).State.Schema); }
+    [Fact] public void Q1528_shady_china_1528() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineAttention >= 0); Assert.Equal(GameState.CurrentSchema, new Game(Simulation.NewGame(c, new NewGameOptions { Seed = 2660 })).State.Schema); }
     [Fact] public void Q1529_shady_china_1529() { GameConfig c = TestData.Config(); Assert.Contains(c.Shady.Cards, x => x.Id == Cards[3]); }
     [Fact] public void Q1530_shady_china_1530() { GameConfig c = TestData.Config(); ShadyCardConfig card = c.Shady.Card(Cards[0]); Assert.True(card.Weeks > 0); Assert.True(card.SuccessPermille > 0); }
     [Fact] public void Q1531_shady_china_1531() { Game g = Game.New(); LabState r = g.Rival("openaye"); r.Models.Add(new ModelState { Id = g.State.TakeId(), Capability = 500, Status = ModelStatus.Trained }); g.Refused(Command.StartShadyOp(r.Id, Cards[0], r.Models[0].Id, -1, -1, ""), CommandError.InvalidArgument); }
