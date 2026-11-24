@@ -24,7 +24,6 @@ namespace AiLabs.Rules.Systems
         static void TryDistressChipListings(Ctx x)
         {
             if (x.Plan.ListsChipsMarkupPermille <= 0) return;
-            if (x.C.Chips.DistressListingPricePermille <= 0) return;
             ListChips(x);
         }
 
