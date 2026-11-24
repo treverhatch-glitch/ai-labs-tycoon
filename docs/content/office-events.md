@@ -1,0 +1,46 @@
+<!-- Generated from Rules/Data/default-config.json (office). The data file is the source of truth: edit it, then update this page. -->
+# Office events
+
+The bible's chapter 14 lists "event ideas" with no right answer: an intern leaks the model's instructions, the office cat improves a benchmark, a startup wraps your model, the safety report leaks before a funding round. Now and then one happens to the **player's** lab and waits on the desk for an answer. Rivals have none. Nothing is rolled from a dice stream (see QUESTIONS Q242 to Q245).
+
+## When
+
+- Nothing happens before game week **26** (`firstAfterWeeks`; a game that starts in a later era is already past it).
+- With none waiting, each week has a **3%** chance (`chancePermille` 30), worked out from the week, the lab and the game's seed.
+- One event waits at a time. It waits **8 weeks** (`expireWeeks`) and then blows over: no effect at all, just a line in the log.
+- Some events need something first: a model on sale, somebody on the safety team, or anyone on the payroll. The list goes round in turn before an event repeats.
+
+## Answering
+
+`AnswerOfficeEvent` takes the choice. It is refused, changing nothing, when nothing is waiting (`NoOfficeEvent`) or the choice is not one of the event's. Every event has three answers; one has an answer that does nothing.
+
+| Effect | What it does |
+|---|---|
+| Reputation | Points of reputation, kept inside 0 to 1000 |
+| Culture | Points of safety culture |
+| Morale | Points of morale for everyone on the payroll, kept inside 0 to 1000 |
+| ResearchWeeks | Weeks of the lab's research output, as research points. A loss never goes below none |
+| CashWeeks | Weeks of what the lab pays to stand still (never under **1,000** a week, `minWeekCost`). A gain is a grant; a loss is never more than the cash the lab has, so an event cannot bankrupt it |
+
+## The eleven events
+
+| Event | Needs | Answers |
+|---|---|---|
+| The public repository | nothing | rotate every key; call it transparency; fork it with a licence |
+| The cat and the benchmark | anyone | credit the cat; rerun without it; give the cat a desk |
+| The wrapper | a model on sale | send the lawyers; offer a partnership; ship a better wrapper |
+| The leaked report | safety staff | publish in full; say it was a draft; hunt the leaker |
+| The town vote | anyone | fund a park; hire a land lawyer; promise quiet fans |
+| The open letter | nothing | sign; decline; publish your own |
+| The earnings question | nothing | yes; no; talk about the weather |
+| The drawings | a model on sale | ask about the door; frame them; move the door |
+| Tuesday | a model on sale | investigate; market it as Tuesday Mode; leave it |
+| The union joke | anyone | join in; ban it; negotiate |
+| The fake video | nothing | honour it; debunk it; ignore it |
+
+## Notes
+
+- Saved per lab: the event waiting, its deadline and the events seen in this round (schema 33).
+- `OfficeEvents.Waiting` gives a screen the event and the weeks left. Events, answers and lapses are in the log (`OfficeEventPosed`, `OfficeEventAnswered`, `OfficeEventLapsed`) and the company chat has a line for the first two.
+- The autopilot never answers, so its events lapse and cost nothing.
+- The pinned golden game moved (the player's lab is posed events in its year, and the save has new fields); the cause was checked, see the commit message.

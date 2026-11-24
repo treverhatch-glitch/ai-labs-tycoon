@@ -84,7 +84,23 @@ namespace AiLabs.Rules.State
         /// <summary>A player lab's safety techs lost more ground as a new era began. LabId is the lab, Amount the permille of their bonus now lost, Ref the lab's newest safety tech.</summary>
         ControlStale,
         /// <summary>New safety research won back ground. LabId is the lab, Amount the permille won back, Ref the tech.</summary>
-        ControlRefreshed
+        ControlRefreshed,
+        /// <summary>A trained model came out far better than aimed for. LabId is the lab, SubjectId the model, Amount the luck in permille, Ref the model name.</summary>
+        LeadFound,
+        /// <summary>An investigation ended. LabId is the lab, SubjectId the lead, Amount what it gave (points or permille), Ref the outcome id, Pick 1 when something came of it.</summary>
+        LeadResolved,
+        /// <summary>A lead nobody followed went cold. LabId is the lab, SubjectId the lead, Ref the model name.</summary>
+        LeadWentCold,
+        /// <summary>The player paid to fine-tune a glitching model. LabId is the lab, SubjectId the model, Amount the cost, Ref the model name.</summary>
+        ModelFineTuned,
+        /// <summary>The player withdrew a glitching model and put the older version back on sale. LabId is the lab, SubjectId the older model now on sale, Amount the reputation lost, Ref the withdrawn model's name.</summary>
+        ModelRolledBack,
+        /// <summary>Something happened at the player's lab that wants an answer. LabId is the lab, Ref the office event id.</summary>
+        OfficeEventPosed,
+        /// <summary>The player answered. LabId is the lab, Ref "event|choice".</summary>
+        OfficeEventAnswered,
+        /// <summary>Nobody answered in time and it blew over. LabId is the lab, Ref the office event id.</summary>
+        OfficeEventLapsed
     }
 
     /// <summary>

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 32;
+        public const int CurrentSchema = 34;
 
         public int Schema;
         public string ConfigVersion;
@@ -169,6 +169,15 @@ namespace AiLabs.Rules.State
         public int GateSetTick;
         /// <summary>How confusing the lab's model names have become, from 0 (tidy) up. Only the player's labs let it grow.</summary>
         public int NamingMess;
+        /// <summary>Lucky runs nobody has explained yet.</summary>
+        public List<ResearchLead> Leads = new List<ResearchLead>();
+        /// <summary>The training speed that followed leads have added, in permille.</summary>
+        public int LeadSpeedPermille;
+        /// <summary>The office event waiting for an answer (an id of <c>office.events</c>), or empty.</summary>
+        public string OfficeEventId = "";
+        public int OfficeEventExpires;
+        /// <summary>Office events this lab has had in the current round of the list.</summary>
+        public List<string> OfficeSeen = new List<string>();
         /// <summary>Journalists' questions that still wait for an answer.</summary>
         public List<PressInquiry> PressInquiries = new List<PressInquiry>();
         public List<SectorTrust> SectorTrust = new List<SectorTrust>();
@@ -292,6 +301,11 @@ namespace AiLabs.Rules.State
             s.Int("releaseGate", ref ReleaseGate);
             s.Int("gateSetTick", ref GateSetTick);
             s.Int("namingMess", ref NamingMess);
+            s.ObjList("researchLeads", ref Leads);
+            s.Int("leadSpeedPermille", ref LeadSpeedPermille);
+            s.Str("officeEventId", ref OfficeEventId);
+            s.Int("officeEventExpires", ref OfficeEventExpires);
+            s.StrList("officeSeen", ref OfficeSeen);
             s.ObjList("pressInquiries", ref PressInquiries);
             s.ObjList("sectorTrust", ref SectorTrust);
             s.ObjList("complaints", ref Complaints);

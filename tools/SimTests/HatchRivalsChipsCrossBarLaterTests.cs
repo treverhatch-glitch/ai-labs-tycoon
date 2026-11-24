@@ -542,7 +542,7 @@ public class HatchRivalsChipsCrossBarLaterTests
         Finance.Earn(g.Me, LedgerLine.CapitalIn, 76_000_000);
         g.Do(Command.AcquireLab(g.Id, rival.Id));
         var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
-        Assert.Equal(32, loaded.State.Schema);
+        Assert.Equal(34, loaded.State.Schema);
     }
 
     [Fact]

@@ -47,6 +47,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
             if (fromSchema < 32) MigrateTo32(root);
+            if (fromSchema < 33) MigrateTo33(root);
+            if (fromSchema < 34) MigrateTo34(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -431,6 +433,27 @@ namespace AiLabs.Rules.Sim
                 JsonValue rooms = lab.Get("rooms");
                 if (rooms == null) return;
                 JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
+            });
+        }
+
+        /// <summary>Schema 33: no leads waiting and no tricks learned.</summary>
+        static void MigrateTo33(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchLeads", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "leadSpeedPermille", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 34: no office event waiting, none seen.</summary>
+        static void MigrateTo34(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "officeEventId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "officeEventExpires", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "officeSeen", JsonValue.Array());
             });
         }
 

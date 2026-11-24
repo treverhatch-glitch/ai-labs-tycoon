@@ -340,7 +340,7 @@ public class HatchRivalsChipsTailLaterTests
         var loaded = new Game(Simulation.Load(g.C, g.Sim.Save()));
         SaveSchemaPretend.AssertRoundTrip(loaded.Sim);
         Assert.Equal(2, loaded.Me.ChipOrders.Count);
-        Assert.Equal(32, loaded.State.Schema);
+        Assert.Equal(34, loaded.State.Schema);
     }
 
     [Fact]
@@ -615,7 +615,7 @@ public class HatchRivalsChipsTailLaterTests
         rival.Cash = -15_600;
         Finance.Earn(g.Me, LedgerLine.CapitalIn, 80_000_000);
         g.Do(Command.AcquireLab(g.Id, rival.Id));
-        Assert.Equal(32, g.State.Schema);
+        Assert.Equal(34, g.State.Schema);
         Assert.True(LabQueries.ParticipatesInEconomy(g.Me));
         SaveSchemaPretend.AssertRoundTrip(g.Sim);
     }

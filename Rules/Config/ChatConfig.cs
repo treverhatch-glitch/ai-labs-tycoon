@@ -43,7 +43,7 @@ namespace AiLabs.Rules.Config
         public int Pick = -1;
         /// <summary>"lab" when the event happened to the lab, "subject" when it happened to someone else and the lab is the one it was done to (a poach).</summary>
         public string About = "lab";
-        /// <summary>The words. {model}, {amount}, {ref}, {sector}, {role}, {room}, {tech} and {lab} are filled in.</summary>
+        /// <summary>The words. {model}, {amount}, {ref}, {sector}, {role}, {room}, {tech}, {event} and {lab} are filled in.</summary>
         public string Text = "";
 
         public string Id { get { return IdValue; } }

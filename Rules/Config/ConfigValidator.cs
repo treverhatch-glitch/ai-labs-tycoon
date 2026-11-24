@@ -71,6 +71,9 @@ namespace AiLabs.Rules.Config
             NamingProblems(p, c);
             AgeingProblems(p, c);
             ControlProblems(p, c);
+            LeadsProblems(p, c);
+            RepairProblems(p, c);
+            OfficeProblems(p, c);
             ChatProblems(p, c);
             GlowProblems(p, c);
 
@@ -504,6 +507,73 @@ namespace AiLabs.Rules.Config
                     p.Add(who + " does not start above the chance of the stage before it");
                 if (i > 0 && s.MinRung > 0 && g.Stages[i - 1].MinRung > 0 && s.MinRung <= g.Stages[i - 1].MinRung)
                     p.Add(who + " does not start above the rung of the stage before it");
+            }
+        }
+
+        static void OfficeProblems(List<string> p, GameConfig c)
+        {
+            OfficeConfig o = c.Office;
+            if (o == null) { p.Add("office is missing"); return; }
+            if (o.ChancePermille < 0 || o.ChancePermille > MathI.Permille) p.Add("office.chancePermille must be from 0 to 1000");
+            if (o.FirstAfterWeeks < 0 || o.FirstAfterWeeks > 2000) p.Add("office.firstAfterWeeks must be from 0 to 2000");
+            if (o.ExpireWeeks < 1 || o.ExpireWeeks > 520) p.Add("office.expireWeeks must be from 1 to 520");
+            if (o.MinWeekCost < 0) p.Add("office.minWeekCost is negative");
+            UniqueIds(p, "office.events", o.Events);
+            for (int i = 0; i < o.Events.Count; i++)
+            {
+                OfficeEventConfig e = o.Events[i];
+                string who = "office event " + e.IdValue;
+                if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
+                if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
+                UniqueIds(p, who + " choices", e.Choices);
+                for (int k = 0; k < e.Choices.Count; k++)
+                {
+                    OfficeChoiceConfig ch = e.Choices[k];
+                    string what = who + " choice " + ch.IdValue;
+                    if (string.IsNullOrEmpty(ch.Text)) p.Add(what + " has no text");
+                    if (string.IsNullOrEmpty(ch.Result)) p.Add(what + " has no result");
+                    for (int f = 0; f < ch.Effects.Count; f++)
+                        if (ch.Effects[f].Amount == 0 || ch.Effects[f].Amount < -1000 || ch.Effects[f].Amount > 1000) p.Add(what + " has an effect with an amount of " + ch.Effects[f].Amount + " (it must be from -1000 to 1000 and not 0)");
+                }
+            }
+        }
+
+        static void RepairProblems(List<string> p, GameConfig c)
+        {
+            RepairConfig r = c.Repair;
+            if (r == null) { p.Add("repair is missing"); return; }
+            if (r.FineTuneRevenueWeeks < 0 || r.FineTuneRevenueWeeks > 520) p.Add("repair.fineTuneRevenueWeeks must be from 0 to 520");
+            if (r.FineTuneMinCost < 0) p.Add("repair.fineTuneMinCost is negative");
+            if (r.FineTuneAlignment < 0 || r.FineTuneAlignment > MathI.Permille) p.Add("repair.fineTuneAlignment must be from 0 to 1000");
+            if (r.RollbackReputationLoss < 0 || r.RollbackReputationLoss > MathI.Permille) p.Add("repair.rollbackReputationLoss must be from 0 to 1000");
+        }
+
+        static void LeadsProblems(List<string> p, GameConfig c)
+        {
+            LeadsConfig l = c.Leads;
+            if (l == null) { p.Add("leads is missing"); return; }
+            if (l.MinLuckPermille < 1 || l.MinLuckPermille > MathI.Permille) p.Add("leads.minLuckPermille must be from 1 to 1000");
+            if (l.MinLuckPermille > c.Training.LuckPermille) p.Add("leads.minLuckPermille is above training.luckPermille, so no run could ever leave a lead");
+            if (l.MaxOpen < 1 || l.MaxOpen > 20) p.Add("leads.maxOpen must be from 1 to 20");
+            if (l.ExpireWeeks < 1 || l.ExpireWeeks > 520) p.Add("leads.expireWeeks must be from 1 to 520");
+            if (l.FollowWeeks < 1 || l.FollowWeeks > 520) p.Add("leads.followWeeks must be from 1 to 520");
+            if (l.FollowCostWeeks < 0 || l.FollowCostWeeks > 520) p.Add("leads.followCostWeeks must be from 0 to 520");
+            if (l.MinCost < 0) p.Add("leads.minCost is negative");
+            if (l.MaxSpeedPermille < 0 || l.MaxSpeedPermille > 2000) p.Add("leads.maxSpeedPermille must be from 0 to 2000");
+            if (l.Outcomes.Count == 0) p.Add("leads.outcomes is empty");
+            UniqueIds(p, "leads.outcomes", l.Outcomes);
+            long weights = 0;
+            for (int i = 0; i < l.Outcomes.Count; i++)
+            {
+                LeadOutcomeConfig o = l.Outcomes[i];
+                string who = "lead outcome " + o.IdValue;
+                if (string.IsNullOrEmpty(o.Name)) p.Add(who + " has no name");
+                if (string.IsNullOrEmpty(o.Blurb)) p.Add(who + " has no blurb");
+                if (o.Weight < 1 || o.Weight > 1000) p.Add(who + " needs a weight from 1 to 1000");
+                if (o.Kind != LeadEffectKind.Nothing && o.Amount < 1) p.Add(who + " does something but gives nothing");
+                if (o.Kind == LeadEffectKind.Nothing && o.Amount != 0) p.Add(who + " does nothing but has an amount");
+                weights += o.Weight;
             }
         }
 
