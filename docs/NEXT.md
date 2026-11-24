@@ -166,11 +166,12 @@ and says why in the commit message.
 - ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
 - ~~**Hatch rival/economy batch 58**~~ **pushed @ `29a97d3`** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); gate **4449/0** in-repo; parent `8744e8f` (+4); landed ~02:17 UTC Nov 24.
 - ~~**Hatch shady/china batch 59**~~ **pushed @ `7d877f6`** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); gate **4519/0** in-repo; landed ~03:16 UTC Nov 24.
-- **Hatch incident/safety batch 60 (LOCAL commit-ready — NO PUSH until GO ≥ ~03:46 UTC)** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); push range **`7d877f6..d332207`** (**5** commits); filter **70/0**; expected prepush **4589/4589**; **Q100**; schema **29** only.
-- **Hatch containment/ending batch 61 (LOCAL — hold until batch 60 lands)** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); filter **70/0**; bible **Q540** containment HUD; schema **29** only.
+- ~~**Hatch incident/safety batch 60**~~ **pushed @ `d332207`** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); gate **4589/0** in-repo; parent `7d877f6` (+5); landed GO ~03:52 UTC Nov 24.
+- **Hatch containment/ending batch 61 (LOCAL — NO PUSH until GO ≥ ~04:22 UTC / 30m after `d332207`)** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); proposed push **`d332207..BATCH61_TIP`**; filter **70/0**; expected prepush **4659/4659**; bible **Q540** containment HUD + treaty/pop; schema **29** only.
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 62+ (TBD)** — stack2 tail / SolvencyHold schema **30** parked.
-- **Refill:** batch **60** **Q100**; batch **61** **Q540** + treaty/pop neighbours; schema **29** only.
+  - **batch 62 (queued)** — Q3986–Q4055 `HatchEraIncidentBarLaterTests2` — era incident coda (batch **48** fork).
+  - **batch 63+ (TBD)** — exit/sell, balance coda; **SolvencyHold** schema **30** parked on `main`.
+- **Refill:** store `internal/bible-systems-design-questions-backlog.md` (**Q525** scrutiny, **Q540** HUD); batch **61** endings/containment-wing + `ThePopEndingForPlayer`; batch **62** **Q100** era `incidentLoadPermille`; rivals stack2 **52–62**; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 
