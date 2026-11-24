@@ -1043,7 +1043,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, commit-ready — GO ≥ ~02:47 UTC)
 
-- **`HatchShadyChinaBarLaterTests3` (70):** china shady cards, cooldown, bloc; **Q102**; 70-bar filter green.
+- **`HatchShadyChinaBarLaterTests3` (70):** china shady cards, cooldown, bloc; **Q102**; push **`29a97d3..7d877f6`**; 70-bar filter green.
 
 ### Q3846–Q3915. Incident/safety bar coda? DECIDED: test-only (batch 60, LOCAL after 59)
 
