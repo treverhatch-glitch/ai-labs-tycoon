@@ -99,5 +99,6 @@ python3 tools/art/generate_campus_kit.py
 | [GO-PACKET-TAIL-REFRESH.md](GO-PACKET-TAIL-REFRESH.md) | GO packets 78+ (batch 84) |
 | [PRESENTATION-INDEX-HUB-TAIL.md](PRESENTATION-INDEX-HUB-TAIL.md) | Hub tail 79–82 (batch 85) |
 | [ALT-76-ROLLUP-REFRESH-85.md](ALT-76-ROLLUP-REFRESH-85.md) | ALT refresh through 85 (batch 86) |
+| [SCREEN-LAYOUT-TAIL-INDEX.md](SCREEN-LAYOUT-TAIL-INDEX.md) | Screen layouts + hub tail (batch 87) |
 
 **Code hooks today:** `HqVisualPalette`, `HqGridLayout`, `CampusPresentationSpec` under `unity/Assets/Scripts/Hq/`.

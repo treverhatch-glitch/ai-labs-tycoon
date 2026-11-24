@@ -74,7 +74,8 @@
 | 83 | `08727c3` | ALT-76 STATUS sync |
 | 84 | `b78f921` | GO packet tail refresh |
 | 85 | `13418d8` | Presentation hub tail |
-| 86 | (local) | ALT-76 rollup refresh 85 |
+| 86 | `827ba57` | ALT-76 rollup refresh 85 |
+| 87 | (local) | Screen layout tail |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 
