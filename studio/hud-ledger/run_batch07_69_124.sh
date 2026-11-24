@@ -7,6 +7,7 @@ export GIT_AUTHOR_NAME='treverhatch-glitch'
 export GIT_AUTHOR_EMAIL='342607508+treverhatch-glitch@users.noreply.github.com'
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_COMMITTER_EMAIL"
+git config commit.gpgsign false
 LEDGER="$ROOT/studio/hud-ledger"
 REC="$LEDGER/recovered"
 FIX="$LEDGER/fix_staff_mascot_tail_chain.py"
