@@ -77,7 +77,8 @@
 | 86 | `827ba57` | ALT-76 rollup refresh 85 |
 | 87 | `71217c5` | Screen layout tail |
 | 88 | `95bc74d` | STATUS sync through 86 |
-| 89 | (local) | Capture HUD tail |
+| 89 | `eddff91` | Capture HUD tail |
+| 90 | (local) | GO packet tail through 88 |
 
 Rollup: [ALT-76-ROLLUP.md](ALT-76-ROLLUP.md) (batch 62). Refresh: [ALT-76-ROLLUP-REFRESH.md](ALT-76-ROLLUP-REFRESH.md) (batch 76).
 

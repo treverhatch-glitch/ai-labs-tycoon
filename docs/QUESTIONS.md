@@ -674,11 +674,17 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — links capture regression, focus ring, snapshot, a11y index.
 - Why: PC capture path unchanged; navigation rollup after STATUS sync.
 
-### Q539. GO packet tail through batch 88? DRAFT: extend `CampusGoPacketTailRefreshPresentationSpec`
+### Q539. GO packet tail through batch 88? DECIDED: `CampusGoPacketTailRefreshThrough88PresentationSpec`
 
-- Options: (a) store packets only; (b) bump extended lane through STATUS sync 88; (c) automate push scripts.
-- Recommendation: **(b)** — coordinator packets through batch 88.
-- Status: stub batch 90 (local).
+- Options: (a) store packets only; (b) refresh doc + STATUS sync alias through 88; (c) automate push scripts.
+- Recommendation and choice: **(b)** — coordinator packets reference sync through 88.
+- Why: Matches store graphics-batch{N}-go-packet pattern post tails.
+
+### Q540. ALT-76 STATUS sync through 89? DRAFT: `CampusAlt76StatusSyncThrough89PresentationSpec`
+
+- Options: (a) STATUS rows only; (b) sync doc after capture tail push; (c) full STATUS regen.
+- Recommendation: **(b)** — bump synced batch after batch 89 lands.
+- Status: stub batch 91 (local).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
