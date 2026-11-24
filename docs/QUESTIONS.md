@@ -956,11 +956,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — closes 134–136.
 - Why: Coordinator packets.
 
-### Q586. ALT-76 rollup refresh through batch 127? DRAFT: `CampusAlt76RollupRefreshB127PresentationSpec`
+### Q586. ALT-76 rollup refresh through batch 127? DECIDED: `CampusAlt76RollupRefreshB127PresentationSpec`
 
 - Options: (a) batch 121 only; (b) through 127; (c) skip.
-- Recommendation: **(b)** — post–134–136 ladder.
-- Status: stub batch 137 (local, NO PUSH).
+- Recommendation and choice: **(b)** — after `1bebea5`.
+- Why: Grouped 137–139.
+
+### Q587. Index manifest tail through batch 127? DECIDED: `CampusIndexLaneManifestTailRefreshThrough127PresentationSpec`
+
+- Options: (a) stop at 121; (b) through 127; (c) regen.
+- Recommendation and choice: **(b)** — manifest bible.
+- Why: Pairs rollup 137.
+
+### Q588. GO packet tail through batch 133? DECIDED: `CampusGoPacketTailRefreshThrough133PresentationSpec`
+
+- Options: (a) stop at 130; (b) through 133; (c) skip.
+- Recommendation and choice: **(b)** — closes 137–139.
+- Why: Coordinator packets.
+
+### Q589. ALT-76 STATUS sync through batch 130? DRAFT: `CampusAlt76StatusSyncThrough130PresentationSpec`
+
+- Options: (a) stop at 127; (b) through 130; (c) defer.
+- Recommendation: **(b)** — post-push STATUS ladder.
+- Status: stub batch 140 (local, NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

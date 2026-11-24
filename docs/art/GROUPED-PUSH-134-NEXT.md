@@ -1,3 +1,3 @@
-# Next grouped push — GO ≥~23:03 ICT
+# Grouped push 134–136 (LANDED)
 
-Parent `0834ebd`. Batches **134–136** (Q583–Q585): tail rollup 121, STATUS 127, GO 130.
+**Remote:** `1bebea5c8b8180f47d2ece2e3f8ca0b812a39734` (~**23:04 ICT**). Parent `0834ebd`. Q583–Q585. Prepush **314** meta. HOLD **≥~23:34 ICT**.
