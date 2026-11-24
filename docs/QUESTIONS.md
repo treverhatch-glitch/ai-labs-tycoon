@@ -1041,17 +1041,21 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **`HatchRivalEconomyBarLaterTests2` (70):** gate **4449/0** in-repo; schema **29** only.
 
-### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, commit-ready — GO ≥ ~02:47 UTC)
+### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, pushed @ `7d877f6`)
 
-- **`HatchShadyChinaBarLaterTests3` (70):** china shady cards, cooldown, bloc; **Q102**; push **`29a97d3..7d877f6`**; 70-bar filter green.
+- **`HatchShadyChinaBarLaterTests3` (70):** gate **4519/0** in-repo; schema **29** only.
 
-### Q3846–Q3915. Incident/safety bar coda? DECIDED: test-only (batch 60, LOCAL after 59)
+### Q3846–Q3915. Incident/safety bar coda? DECIDED: test-only (batch 60, commit-ready — GO ≥ ~03:46 UTC)
 
-- **`HatchIncidentSafetyBarLaterTests2` (70):** investigation, safety rungs, incident gain; **Q100**; 70-bar filter green.
+- **`HatchIncidentSafetyBarLaterTests2` (70):** investigation, safety rungs; **Q100**; 70-bar filter green.
 
-### Q3916–Q3985. Containment/ending bar coda? TBD: test-only (batch 61, queued)
+### Q3916–Q3985. Containment/ending bar coda? DECIDED: test-only (batch 61, LOCAL after 60)
 
-- **`HatchContainmentEndingBarLaterTests3` (70):** schema **29** only.
+- **`HatchContainmentEndingBarLaterTests3` (70):** endings/treaty/containment wing; **Q540**; 70-bar filter green.
+
+### Q3986–Q4055. Era/incident bar coda? TBD: test-only (batch 62, queued)
+
+- **`HatchEraIncidentBarLaterTests2` (70):** schema **29** only.
 
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
