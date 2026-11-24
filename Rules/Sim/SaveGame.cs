@@ -98,6 +98,15 @@ namespace AiLabs.Rules.Sim
                 if (lab.FocusLockedUntil < 0 || !string.IsNullOrEmpty(lab.ResearchFocus) && c.Focus.Option(lab.ResearchFocus) == null) p.Add(who + " has the research focus \"" + lab.ResearchFocus + "\", which the data does not have");
                 if (lab.EquityLevel < 0 || lab.EquityLevel > c.Equity.MaxLevel || lab.EquityPermille < 0 || lab.EquityPermille > MathI.Permille || lab.EquityLevel == 0 != (lab.EquityPermille == 0) || lab.EquityPermille + lab.FounderSharePermille > MathI.Permille)
                     p.Add(who + " has given its team equity level " + lab.EquityLevel + " worth " + lab.EquityPermille + " permille, which does not fit with its founder share");
+                if (lab.ConsultantLevel < 0 || lab.ConsultantLevel > c.Consultants.MaxLevel || lab.ConsultantWeeks < 0 || lab.ConsultantWeeks > c.Consultants.Weeks || lab.ConsultantLockedUntil < 0 || (lab.ConsultantWeeks > 0) != (lab.ConsultantLevel > 0))
+                    p.Add(who + " has policy consultants (level " + lab.ConsultantLevel + ", " + lab.ConsultantWeeks + " weeks left), which the data does not allow");
+                if (lab.ResearchGrantStage < 0 || lab.ResearchGrantStage > ResearchGrants.Owed || lab.ResearchGrantTier < 0 || lab.ResearchGrantTier > c.ResearchGrants.MaxTier || lab.ResearchGrantTick < 0 || lab.ResearchGrantOwed < 0 || lab.ResearchGrantLockedUntil < 0
+                    || (lab.ResearchGrantStage == ResearchGrants.None && (lab.ResearchGrantTier != 0 || lab.ResearchGrantOwed != 0))
+                    || (lab.ResearchGrantStage != ResearchGrants.None && lab.ResearchGrantTier < 1)
+                    || (lab.ResearchGrantStage == ResearchGrants.InReview && lab.ResearchGrantOwed != 0)
+                    || (lab.ResearchGrantStage == ResearchGrants.Owed && (lab.ResearchGrantOwed < 1 || lab.ResearchGrantOwed > lab.ResearchGrantTier)))
+                    p.Add(who + " has a research grant (stage " + lab.ResearchGrantStage + ", tier " + lab.ResearchGrantTier + ", " + lab.ResearchGrantOwed + " papers owed) that the data does not allow");
+                if (lab.SlaLevel < 0 || lab.SlaLevel > c.Sla.MaxLevel || lab.SlaLockedUntil < 0 || lab.SlaStrikes < 0 || (c.Sla.StrikeWeeks > 0 && lab.SlaStrikes >= c.Sla.StrikeWeeks)) p.Add(who + " has a service-level pledge (level " + lab.SlaLevel + ", " + lab.SlaStrikes + " broken weeks) that the data does not allow");
                 if (lab.OnCallLevel < 0 || lab.OnCallLevel > c.OnCall.MaxLevel || lab.OnCallLockedUntil < 0) p.Add(who + " has an on-call rota of level " + lab.OnCallLevel + ", which the data does not allow");
                 if (lab.CampaignLevel < 0 || lab.CampaignLevel > c.Marketing.MaxLevel || lab.CampaignWeeks < 0 || lab.CampaignWeeks > c.Marketing.Weeks || lab.HangoverWeeks < 0 || lab.HangoverWeeks > c.Marketing.HangoverWeeks || lab.CampaignLockedUntil < 0
                     || (lab.CampaignWeeks > 0 || lab.HangoverWeeks > 0) != (lab.CampaignLevel > 0 && !string.IsNullOrEmpty(lab.CampaignSector) && c.Sector(lab.CampaignSector) != null))
@@ -195,6 +204,7 @@ namespace AiLabs.Rules.Sim
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
+                    if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");

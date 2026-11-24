@@ -5608,6 +5608,50 @@
     "moralePenaltyPerLevel": 3,
     "lockWeeks": 8
   },
+  "researchGrants": {
+    "maxTier": 3,
+    "minResearchers": 2,
+    "applyCostPerTier": 5000,
+    "awardPerTier": 60000,
+    "barPerTier": 250,
+    "reputationWeightPermille": 300,
+    "reviewWeeks": 6,
+    "deliverWeeks": 30,
+    "clawbackPermille": 500,
+    "completedReputation": 15,
+    "failedReputation": 30,
+    "cooldownWeeks": 20
+  },
+  "sla": {
+    "maxLevel": 3,
+    "premiumPermillePerLevel": 40,
+    "breachBelowPermille": 900,
+    "refundPermillePerLevel": 120,
+    "breachReputationPerLevel": 8,
+    "minReputation": 300,
+    "lockWeeks": 8,
+    "strikeWeeks": 3
+  },
+  "postMortem": {
+    "windowWeeks": 6,
+    "summaryCost": 20000,
+    "fullCost": 50000,
+    "summaryRecoverPermille": 300,
+    "fullRecoverPermille": 600,
+    "minSafetyStaff": 1
+  },
+  "consultants": {
+    "maxLevel": 2,
+    "feePerLevel": 30000,
+    "weeklyPerLevel": 2000,
+    "staffPerLevel": 3,
+    "weeks": 12,
+    "cooldownWeeks": 26
+  },
+  "incidentFloor": {
+    "fineFloorPermille": 150,
+    "chanceFloorPermille": 400
+  },
   "equity": {
     "maxLevel": 3,
     "dilutionPermille": 40,
@@ -8726,6 +8770,78 @@
         "text": "{lab} puts its team on call. The pagers were ordered in bulk"
       },
       {
+        "id": "consultants-hired",
+        "kind": "ConsultantsHired",
+        "pick": 1,
+        "text": "{lab} hires policy consultants. Their rate card has a section called 'access'"
+      },
+      {
+        "id": "consultants-left",
+        "kind": "ConsultantsHired",
+        "pick": 0,
+        "text": "{lab}'s policy consultants head home. The invoices stay"
+      },
+      {
+        "id": "post-mortem-summary",
+        "kind": "PostMortemPublished",
+        "pick": 0,
+        "text": "{lab} publishes a short note on what went wrong with {ref}. It uses the word 'learnings'"
+      },
+      {
+        "id": "post-mortem-full",
+        "kind": "PostMortemPublished",
+        "pick": 1,
+        "text": "{lab} publishes a full post-mortem of {ref}, including the bit about its real alignment"
+      },
+      {
+        "id": "sla-pledged",
+        "kind": "SlaPledged",
+        "pick": 1,
+        "text": "{lab} pledges a service level to its customers. The uptime page is now a legal document"
+      },
+      {
+        "id": "sla-dropped",
+        "kind": "SlaPledged",
+        "pick": 0,
+        "text": "{lab} lowers its service-level pledge. The footnote grows"
+      },
+      {
+        "id": "sla-broken-serving",
+        "kind": "SlaBroken",
+        "pick": 0,
+        "text": "{lab} misses its service level and refunds customers. Demand 'exceeded expectations'"
+      },
+      {
+        "id": "sla-broken-incident",
+        "kind": "SlaBroken",
+        "pick": 1,
+        "text": "{lab} breaks its service-level pledge with an incident. The refund is a rounding error to nobody"
+      },
+      {
+        "id": "grant-awarded",
+        "kind": "GrantDecided",
+        "pick": 1,
+        "text": "{lab} wins a research grant. The panel liked the abstract and loved the budget"
+      },
+      {
+        "id": "grant-declined",
+        "kind": "GrantDecided",
+        "pick": 0,
+        "text": "{lab}'s grant application is declined. The panel found it 'ambitious, in places'"
+      },
+      {
+        "id": "grant-delivered",
+        "kind": "GrantSettled",
+        "pick": 1,
+        "text": "{lab} delivers the papers its grant asked for. The panel is 'cautiously delighted'"
+      },
+      {
+        "id": "grant-clawed-back",
+        "kind": "GrantSettled",
+        "pick": 0,
+        "text": "{lab} misses its grant deadline and pays part back. The papers are 'nearly done'"
+      },
+      {
         "id": "audit-clean",
         "kind": "AuditDone",
         "pick": 1,
@@ -10122,6 +10238,146 @@
         "pick": 1,
         "about": "lab",
         "text": "I have been told the pager is 'a team commitment'. It buzzes like a commitment.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "consultants-chat-policy",
+        "kind": "ConsultantsHired",
+        "roles": [
+          "policy"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "They have better shoes than me and a binder with my job in it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "consultants-chat",
+        "kind": "ConsultantsHired",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "There are strangers in the policy corner. They say 'the room' a lot.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "post-mortem-chat-safety",
+        "kind": "PostMortemPublished",
+        "roles": [
+          "safety"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We wrote the real number down and published it. Sales read it once, aloud.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "post-mortem-chat",
+        "kind": "PostMortemPublished",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The post-mortem is out. It has a timeline, a chart and one very honest sentence.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "post-mortem-summary-chat",
+        "kind": "PostMortemPublished",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The summary says we 'take this seriously'. It does not say how.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sla-chat-engineer",
+        "kind": "SlaPledged",
+        "roles": [
+          "engineer"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Sales promised nines. I have a calculator and a bad feeling.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sla-chat",
+        "kind": "SlaPledged",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We have an uptime number now. It has a lawyer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sla-broken-chat",
+        "kind": "SlaBroken",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We missed the pledge. Finance is drawing a graph with a very short axis.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "grant-awarded-chat-researcher",
+        "kind": "GrantDecided",
+        "roles": [
+          "researcher"
+        ],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The grant came through. I now owe the panel papers, and the panel owes me nothing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "grant-awarded-chat",
+        "kind": "GrantDecided",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "We got the grant. Somebody has to write the papers it paid for.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "grant-declined-chat",
+        "kind": "GrantDecided",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The panel said no. The fee is gone and the abstract is still very good.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "grant-late-chat",
+        "kind": "GrantSettled",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "We owed papers and paid money instead. Finance calls it a 'refund of enthusiasm'.",
         "fromYear": 0,
         "toYear": 0
       },

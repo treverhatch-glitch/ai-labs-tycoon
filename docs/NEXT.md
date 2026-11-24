@@ -265,6 +265,13 @@ and says why in the commit message.
 82. **Incident response / on-call (safety, staff).** ~~Done~~: `SetOnCall`, `OnCall`, `onCall` data, lab `onCallLevel` and `onCallLockedUntil` (schema 56, `MigrateTo56`), `OnCallTests`, `docs/content/incident-response.md` (Q323).
 83. **Headlines and chat for chiefs, the board, campaigns, optimisation and the rota.** ~~Done~~: ten headlines and eleven chat lines, data only, `ChiefsBoardCampaignNewsChatTests` (Q324).
 84. **Chiefs, the board, optimisation, campaigns and the rota together (tests).** ~~Done~~: `ChiefsBoardOptimiseCampaignOnCallTogetherTests` (Q325).
+86. **Incident floors (safety).** ~~Done~~: `incidentFloor` data, `IncidentFloor`, an insurer payout cap, `IncidentFloorTests`, `docs/content/incident-floors.md` (Q327). No state.
+85. **Policy consultants (government, staff).** ~~Done~~: `HireConsultants`, `PolicyConsultants`, `consultants` data, lab `consultantLevel`, `consultantWeeks`, `consultantLockedUntil` (schema 57, `MigrateTo57`), `WorldQueries.PolicyStaffWithConsultants`, `ConsultantsTests`, `docs/content/policy-consultants.md` (Q326). Early audit settlement was considered and left out (Q326).
+87. **Public post-mortems (safety).** ~~Done~~: `PublishPostMortem`, `PostMortem`, `postMortem` data, model `incidentRepLoss` and `postMortemDone` (schema 58, `MigrateTo58`), `PostMortemTests`, `docs/content/post-mortems.md` (Q328).
+88. **Service-level pledge (economy, safety).** ~~Done~~: `SetSla`, `Sla`, `sla` data, lab `slaLevel`, `slaLockedUntil`, `slaStrikes` (schema 59, `MigrateTo59`), `SlaTests`, `docs/content/service-level-pledge.md` (Q329).
+89. **Research grants (research, funding).** ~~Done~~: `ApplyForGrant`, `ResearchGrants`, `researchGrants` data, five lab fields (schema 60, `MigrateTo60`), `ResearchGrantsTests`, `docs/content/research-grants.md` (Q333). The recruiting drive was rejected as a priced timed modifier (Q330).
+90. **Headlines and chat for consultants, post-mortems, the pledge and grants.** ~~Done~~: twelve headlines and twelve chat lines, data only, `ConsultantsPostMortemSlaNewsChatTests` (Q331).
+91. **Consultants, post-mortems, the pledge and grants together (tests).** ~~Done~~: `ConsultantsPostMortemSlaTogetherTests` (Q332).
 
 ## Rules: later
 

@@ -66,6 +66,18 @@ The bible's chapter 14 gives ticker headlines in capitals ("OPENAYE RAISES $40B 
 | A campaign ending | {lab}'s marketing campaign wraps up. Customers hold it up against the billboard |
 | Inference optimised | {lab} optimises its inference. The GPUs have been asked to do more with less |
 | An on-call rota | {lab} puts its team on call. The pagers were ordered in bulk |
+| Policy consultants hired | {lab} hires policy consultants. Their rate card has a section called 'access' |
+| Policy consultants leaving | {lab}'s policy consultants head home. The invoices stay |
+| A post-mortem summary | {lab} publishes a short note on what went wrong with {ref}. It uses the word 'learnings' |
+| A full post-mortem | {lab} publishes a full post-mortem of {ref}, including the bit about its real alignment |
+| A service-level pledge | {lab} pledges a service level to its customers. The uptime page is now a legal document |
+| A pledge lowered | {lab} lowers its service-level pledge. The footnote grows |
+| A pledge broken by load | {lab} misses its service level and refunds customers. Demand 'exceeded expectations' |
+| A pledge broken by an incident | {lab} breaks its service-level pledge with an incident. The refund is a rounding error to nobody |
+| A grant awarded | {lab} wins a research grant. The panel liked the abstract and loved the budget |
+| A grant declined | {lab}'s grant application is declined. The panel found it 'ambitious, in places' |
+| A grant delivered | {lab} delivers the papers its grant asked for. The panel is 'cautiously delighted' |
+| A grant clawed back | {lab} misses its grant deadline and pays part back. The papers are 'nearly done' |
 
 `{money}` is the event's amount the way a headline says it: $12, $340K, $1.5M, $40B, $2.2T (whole numbers, rounded down). Every lab's events are on the ticker, not just the player's. Anything a placeholder cannot find falls back to the raw text or "A LAB".
 

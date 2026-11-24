@@ -216,6 +216,22 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? who + " started a level " + e.SubjectId + " marketing campaign in " + e.Ref + " for $" + e.Amount + "."
                         : e.Pick == 2 ? who + "'s campaign in " + e.Ref + " collapsed when its model had an incident, and customers noticed."
                         : who + "'s campaign in " + e.Ref + " is over. Customers are measuring it against what it promised.";
+                case EventKind.GrantApplied:
+                    return who + " applied for a tier " + e.SubjectId + " research grant for $" + e.Amount + ".";
+                case EventKind.GrantDecided:
+                    return e.Pick == 1 ? who + " was awarded a tier " + e.SubjectId + " research grant of $" + e.Amount + " and now owes the panel " + e.SubjectId + (e.SubjectId == 1 ? " paper." : " papers.")
+                        : who + "'s tier " + e.SubjectId + " research grant application was declined.";
+                case EventKind.GrantSettled:
+                    return e.Pick == 1 ? who + " delivered the papers its tier " + e.SubjectId + " grant asked for." : who + " did not deliver the papers its tier " + e.SubjectId + " grant asked for and paid back $" + e.Amount + ".";
+                case EventKind.SlaPledged:
+                    return e.Pick == 1 ? who + " pledged a level " + e.SubjectId + " service level to its customers." : who + " backed its service-level pledge down to level " + e.SubjectId + ".";
+                case EventKind.SlaBroken:
+                    return who + " broke its level " + e.SubjectId + " service-level pledge " + (e.Pick == 1 ? "with an incident" : "by not keeping up with demand") + " and refunded $" + e.Amount + ".";
+                case EventKind.PostMortemPublished:
+                    return e.Pick == 1 ? who + " published a full post-mortem of " + e.Ref + " and told the public its real alignment. It won back " + e.Amount + " reputation."
+                        : who + " published a summary of what went wrong with " + e.Ref + ". It won back " + e.Amount + " reputation.";
+                case EventKind.ConsultantsHired:
+                    return e.Pick == 1 ? who + " hired a level " + e.SubjectId + " firm of policy consultants for $" + e.Amount + "." : who + "'s policy consultants have gone home and left their invoices.";
                 case EventKind.OnCallSet:
                     return e.Pick == 1 ? who + " put its team on an on-call rota (level " + e.SubjectId + ")." : who + " took its on-call rota down to level " + e.SubjectId + ".";
                 case EventKind.OptimisationSet:

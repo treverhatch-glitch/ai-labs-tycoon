@@ -44,6 +44,7 @@ namespace AiLabs.Rules.Systems
             lab.Reputation = (int)MathI.Clamp(lab.Reputation + c.Prestige.PaperReputation, 0, MathI.Permille);
             GameEvent e = Events.Add(state, EventKind.PaperPublished, lab.Id, lab.Prestige, cost, "");
             e.Pick = 1;
+            ResearchGrants.OnPaper(c, state, lab);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)

@@ -55,7 +55,11 @@ namespace AiLabs.Rules.Sim
         SetEthicsBoard,
         SetOptimisation,
         RunCampaign,
-        SetOnCall
+        SetOnCall,
+        HireConsultants,
+        PublishPostMortem,
+        SetSla,
+        ApplyForGrant
     }
 
     /// <summary>
@@ -409,6 +413,39 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Applies for a research grant of a tier (1 to the data's top). A fee, a review of some weeks, and then a payout that owes one paper for each tier.</summary>
+        public static Command ApplyForGrant(int labId, int tier)
+        {
+            Command c = Make(CommandKind.ApplyForGrant, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Sets the lab's service-level pledge (0 to the data's top level). Revenue premium each week, refunds and reputation loss in a week the promise breaks. A change locks it for some weeks.</summary>
+        public static Command SetSla(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetSla, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Publishes a post-mortem of a model's last incident: depth 1 is a summary, 2 a full write-up that also tells the public the model's true alignment. Within a few weeks of the incident, once for each.</summary>
+        public static Command PublishPostMortem(int labId, int modelId, int depth)
+        {
+            Command c = Make(CommandKind.PublishPostMortem, labId);
+            c.TargetId = modelId;
+            c.Count = depth;
+            return c;
+        }
+
+        /// <summary>Hires a firm of policy consultants (level 1 to the data's highest) for a few weeks. Costs a fee and a weekly bill, and the next firm has to wait.</summary>
+        public static Command HireConsultants(int labId, int level)
+        {
+            Command c = Make(CommandKind.HireConsultants, labId);
+            c.Count = level;
+            return c;
+        }
+
         /// <summary>Sets the level of the on-call rota, from 0 (none) to the data's highest. Raising needs safety people and engineers; any change locks the rota for some weeks.</summary>
         public static Command SetOnCall(int labId, int level)
         {
@@ -753,7 +790,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked, PayLocked, SubletLocked, FocusLocked, HackLocked, WouldLoseControl, EthicsLocked, BoardVeto, CampaignLocked, OnCallLocked, ConsultantsLocked, SlaLocked, GrantLocked
     }
 
     public struct CommandResult

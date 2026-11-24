@@ -87,6 +87,11 @@ namespace AiLabs.Rules.Config
             OptimiseProblems(p, c);
             MarketingProblems(p, c);
             OnCallProblems(p, c);
+            ConsultantsProblems(p, c);
+            PostMortemProblems(p, c);
+            SlaProblems(p, c);
+            ResearchGrantsProblems(p, c);
+            IncidentFloorProblems(p, c);
             RetrainProblems(p, c);
             OfficeProblems(p, c);
             ObjectiveProblems(p, c);
@@ -897,6 +902,70 @@ namespace AiLabs.Rules.Config
             if (k.MoraleDrop < 0 || k.MoraleDrop > MathI.Permille) p.Add("retrain.moraleDrop must be from 0 to 1000");
             if (k.SameFunctionMoraleDrop < 0 || k.SameFunctionMoraleDrop > k.MoraleDrop) p.Add("retrain.sameFunctionMoraleDrop must be from 0 to moraleDrop");
             if (k.MinMorale < 0 || k.MinMorale > MathI.Permille) p.Add("retrain.minMorale must be from 0 to 1000");
+        }
+
+        static void ResearchGrantsProblems(List<string> p, GameConfig c)
+        {
+            ResearchGrantsConfig k = c.ResearchGrants;
+            if (k == null) { p.Add("researchGrants is missing"); return; }
+            if (k.MaxTier < 0 || k.MaxTier > 5) p.Add("researchGrants.maxTier must be from 0 to 5");
+            if (k.MinResearchers < 0 || k.MinResearchers > 100) p.Add("researchGrants.minResearchers must be from 0 to 100");
+            if (k.ApplyCostPerTier < 0) p.Add("researchGrants.applyCostPerTier is negative");
+            if (k.AwardPerTier < k.ApplyCostPerTier) p.Add("researchGrants.awardPerTier must be at least applyCostPerTier, or no grant could pay for its own application");
+            if (k.BarPerTier < 0 || k.BarPerTier * (long)k.MaxTier > 2000) p.Add("researchGrants.barPerTier must be 0 or more, and the top tier's bar at most 2000");
+            if (k.ReputationWeightPermille < 0 || k.ReputationWeightPermille > MathI.Permille) p.Add("researchGrants.reputationWeightPermille must be from 0 to 1000");
+            if (k.ReviewWeeks < 1 || k.ReviewWeeks > 52) p.Add("researchGrants.reviewWeeks must be from 1 to 52");
+            if (k.DeliverWeeks < 1 || k.DeliverWeeks > 104) p.Add("researchGrants.deliverWeeks must be from 1 to 104");
+            if (k.ClawbackPermille < 0 || k.ClawbackPermille > MathI.Permille) p.Add("researchGrants.clawbackPermille must be from 0 to 1000");
+            if (k.CompletedReputation < 0 || k.CompletedReputation > 100) p.Add("researchGrants.completedReputation must be from 0 to 100");
+            if (k.FailedReputation < 0 || k.FailedReputation > 200) p.Add("researchGrants.failedReputation must be from 0 to 200");
+            if (k.CooldownWeeks < 0 || k.CooldownWeeks > 104) p.Add("researchGrants.cooldownWeeks must be from 0 to 104");
+        }
+
+        static void SlaProblems(List<string> p, GameConfig c)
+        {
+            SlaConfig k = c.Sla;
+            if (k == null) { p.Add("sla is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("sla.maxLevel must be from 0 to 10");
+            if (k.PremiumPermillePerLevel < 0 || k.PremiumPermillePerLevel * (long)k.MaxLevel > 300) p.Add("sla.premiumPermillePerLevel must be 0 or more, and every level together at most 300");
+            if (k.BreachBelowPermille < 1 || k.BreachBelowPermille > MathI.Permille) p.Add("sla.breachBelowPermille must be from 1 to 1000");
+            if (k.RefundPermillePerLevel < k.PremiumPermillePerLevel || k.RefundPermillePerLevel * (long)k.MaxLevel > MathI.Permille) p.Add("sla.refundPermillePerLevel must be at least the premium, and every level together at most 1000, so a pledge that is always broken never pays");
+            if (k.BreachReputationPerLevel < 0 || k.BreachReputationPerLevel * (long)k.MaxLevel > 200) p.Add("sla.breachReputationPerLevel must be 0 or more, and every level together at most 200");
+            if (k.MinReputation < 0 || k.MinReputation > MathI.Permille) p.Add("sla.minReputation must be from 0 to 1000");
+            if (k.LockWeeks < 0 || k.LockWeeks > 104) p.Add("sla.lockWeeks must be from 0 to 104");
+            if (k.StrikeWeeks < 0 || k.StrikeWeeks > 52) p.Add("sla.strikeWeeks must be from 0 to 52");
+        }
+
+        static void PostMortemProblems(List<string> p, GameConfig c)
+        {
+            PostMortemConfig k = c.PostMortem;
+            if (k == null) { p.Add("postMortem is missing"); return; }
+            if (k.WindowWeeks < 0 || k.WindowWeeks > 52) p.Add("postMortem.windowWeeks must be from 0 to 52");
+            if (k.SummaryCost < 0) p.Add("postMortem.summaryCost is negative");
+            if (k.FullCost < k.SummaryCost) p.Add("postMortem.fullCost must be at least summaryCost");
+            if (k.SummaryRecoverPermille < 0 || k.SummaryRecoverPermille > MathI.Permille) p.Add("postMortem.summaryRecoverPermille must be from 0 to 1000");
+            if (k.FullRecoverPermille < k.SummaryRecoverPermille || k.FullRecoverPermille > MathI.Permille) p.Add("postMortem.fullRecoverPermille must be from summaryRecoverPermille to 1000, so no write-up wins back more than the incident cost");
+            if (k.MinSafetyStaff < 0 || k.MinSafetyStaff > 100) p.Add("postMortem.minSafetyStaff must be from 0 to 100");
+        }
+
+        static void ConsultantsProblems(List<string> p, GameConfig c)
+        {
+            ConsultantsConfig k = c.Consultants;
+            if (k == null) { p.Add("consultants is missing"); return; }
+            if (k.MaxLevel < 0 || k.MaxLevel > 10) p.Add("consultants.maxLevel must be from 0 to 10");
+            if (k.FeePerLevel < 0) p.Add("consultants.feePerLevel is negative");
+            if (k.WeeklyPerLevel < 0) p.Add("consultants.weeklyPerLevel is negative");
+            if (k.StaffPerLevel < 0 || k.StaffPerLevel > 50) p.Add("consultants.staffPerLevel must be from 0 to 50");
+            if (k.Weeks < 0 || k.Weeks > 52) p.Add("consultants.weeks must be from 0 to 52");
+            if (k.CooldownWeeks < k.Weeks || k.CooldownWeeks > 104) p.Add("consultants.cooldownWeeks must be at least weeks and at most 104, so a firm is never in all the time");
+        }
+
+        static void IncidentFloorProblems(List<string> p, GameConfig c)
+        {
+            IncidentFloorConfig k = c.IncidentFloor;
+            if (k == null) { p.Add("incidentFloor is missing"); return; }
+            if (k.FineFloorPermille < 0 || k.FineFloorPermille > MathI.Permille) p.Add("incidentFloor.fineFloorPermille must be from 0 to 1000");
+            if (k.ChanceFloorPermille < 0 || k.ChanceFloorPermille > MathI.Permille) p.Add("incidentFloor.chanceFloorPermille must be from 0 to 1000");
         }
 
         static void OnCallProblems(List<string> p, GameConfig c)

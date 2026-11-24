@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 57;
+        public const int CurrentSchema = 61;
 
         public int Schema;
         public string ConfigVersion;
@@ -181,6 +181,28 @@ namespace AiLabs.Rules.State
         public int OnCallLevel;
         /// <summary>The rota cannot be changed before this tick.</summary>
         public int OnCallLockedUntil;
+        /// <summary>The service-level pledge (0 is none).</summary>
+        public int SlaLevel;
+        /// <summary>The week the pledge can next be changed.</summary>
+        public int SlaLockedUntil;
+        /// <summary>Broken weeks in a row.</summary>
+        public int SlaStrikes;
+        /// <summary>0 with no grant, 1 while one is under review, 2 while the papers for an awarded one are owed.</summary>
+        public int ResearchGrantStage;
+        /// <summary>The tier applied for (0 with no grant).</summary>
+        public int ResearchGrantTier;
+        /// <summary>The week the review ends (stage 1) or the papers are due (stage 2).</summary>
+        public int ResearchGrantTick;
+        /// <summary>The papers still owed for an awarded grant.</summary>
+        public int ResearchGrantOwed;
+        /// <summary>The week the lab can next apply.</summary>
+        public int ResearchGrantLockedUntil;
+        /// <summary>The level of the firm of policy consultants that is in, 0 when none. Only the player's lab hires them.</summary>
+        public int ConsultantLevel;
+        /// <summary>The weeks the firm still has to stay, 0 when none is in.</summary>
+        public int ConsultantWeeks;
+        /// <summary>The next firm cannot start before this tick.</summary>
+        public int ConsultantLockedUntil;
         /// <summary>The level of the ethics board, 0 for none. Only the player's lab seats one.</summary>
         public int EthicsLevel;
         /// <summary>No board can be seated before this tick (set when one is stepped down or resigns).</summary>
@@ -374,6 +396,17 @@ namespace AiLabs.Rules.State
             s.Int("optimiseLevel", ref OptimiseLevel);
             s.Int("onCallLevel", ref OnCallLevel);
             s.Int("onCallLockedUntil", ref OnCallLockedUntil);
+            s.Int("slaLevel", ref SlaLevel);
+            s.Int("slaLockedUntil", ref SlaLockedUntil);
+            s.Int("slaStrikes", ref SlaStrikes);
+            s.Int("researchGrantStage", ref ResearchGrantStage);
+            s.Int("researchGrantTier", ref ResearchGrantTier);
+            s.Int("researchGrantTick", ref ResearchGrantTick);
+            s.Int("researchGrantOwed", ref ResearchGrantOwed);
+            s.Int("researchGrantLockedUntil", ref ResearchGrantLockedUntil);
+            s.Int("consultantLevel", ref ConsultantLevel);
+            s.Int("consultantWeeks", ref ConsultantWeeks);
+            s.Int("consultantLockedUntil", ref ConsultantLockedUntil);
             s.Int("ethicsLevel", ref EthicsLevel);
             s.Int("ethicsLockedUntil", ref EthicsLockedUntil);
             s.Int("chiefScientistId", ref ChiefScientistId);
@@ -517,6 +550,10 @@ namespace AiLabs.Rules.State
         public int LastIncidentTick;
         public int Incidents;
         public int Corruption;
+        /// <summary>The reputation points the model's last incident cost its lab.</summary>
+        public int IncidentRepLoss;
+        /// <summary>0 while the last incident has no post-mortem, 1 after a summary and 2 after a full write-up.</summary>
+        public int PostMortemDone;
         /// <summary>What the run was for (an id of <c>objectives</c>), or empty for the default, to be correct.</summary>
         public string Objective = "";
         /// <summary>The model that helped design this one while it trained, or -1 when people did it alone.</summary>
@@ -559,6 +596,8 @@ namespace AiLabs.Rules.State
             s.Int("lastIncidentTick", ref LastIncidentTick);
             s.Int("incidents", ref Incidents);
             s.Int("corruption", ref Corruption);
+            s.Int("incidentRepLoss", ref IncidentRepLoss);
+            s.Int("postMortemDone", ref PostMortemDone);
             s.Str("objective", ref Objective);
             s.Int("designerId", ref DesignerId);
             s.Int("rushWeeks", ref RushWeeks);

@@ -15,6 +15,10 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 61) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "researchGrantStage", "researchGrantTier", "researchGrantTick", "researchGrantOwed", "researchGrantLockedUntil" }) JsonPatch.Remove(lab, key); });
+            if (schema < 60) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "slaLevel"); JsonPatch.Remove(lab, "slaLockedUntil"); JsonPatch.Remove(lab, "slaStrikes"); });
+            if (schema < 59) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { JsonPatch.Remove(m, "incidentRepLoss"); JsonPatch.Remove(m, "postMortemDone"); }));
+            if (schema < 58) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "consultantLevel"); JsonPatch.Remove(lab, "consultantWeeks"); JsonPatch.Remove(lab, "consultantLockedUntil"); });
             if (schema < 57) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "onCallLevel"); JsonPatch.Remove(lab, "onCallLockedUntil"); });
             if (schema < 56) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "optimiseLevel"); JsonPatch.Remove(lab, "campaignSector"); JsonPatch.Remove(lab, "campaignLevel"); JsonPatch.Remove(lab, "campaignWeeks"); JsonPatch.Remove(lab, "hangoverWeeks"); JsonPatch.Remove(lab, "campaignLockedUntil"); });
             if (schema < 55) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "ethicsLevel"); JsonPatch.Remove(lab, "ethicsLockedUntil"); JsonPatch.Remove(lab, "chiefScientistId"); JsonPatch.Remove(lab, "chiefSafetyId"); });

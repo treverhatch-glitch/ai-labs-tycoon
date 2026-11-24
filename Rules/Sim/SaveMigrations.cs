@@ -72,6 +72,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 55) MigrateTo55(root);
             if (fromSchema < 56) MigrateTo56(root);
             if (fromSchema < 57) MigrateTo57(root);
+            if (fromSchema < 58) MigrateTo58(root);
+            if (fromSchema < 59) MigrateTo59(root);
+            if (fromSchema < 60) MigrateTo60(root);
+            if (fromSchema < 61) MigrateTo61(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -670,6 +674,48 @@ namespace AiLabs.Rules.Sim
             {
                 JsonPatch.AddIfMissing(lab, "onCallLevel", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "onCallLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 58: no lab has hired policy consultants.</summary>
+        static void MigrateTo58(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "consultantLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 59: no incident was ever written up.</summary>
+        static void MigrateTo59(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "incidentRepLoss", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "postMortemDone", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 60: no lab has made a service-level pledge.</summary>
+        static void MigrateTo60(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "slaLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaStrikes", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 61: no lab has an outstanding research grant.</summary>
+        static void MigrateTo61(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "researchGrantStage", "researchGrantTier", "researchGrantTick", "researchGrantOwed", "researchGrantLockedUntil" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

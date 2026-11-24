@@ -174,7 +174,21 @@ namespace AiLabs.Rules.State
         /// <summary>A marketing campaign started or ended. LabId is the lab, SubjectId the budget level, Amount the cost (0 at the end), Ref the sector. Pick is 1 when it starts, 0 when it ends, 2 when an incident cut it short.</summary>
         CampaignRun,
         /// <summary>The player changed the on-call rota. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
-        OnCallSet
+        OnCallSet,
+        /// <summary>A firm of policy consultants came in or left. LabId is the lab, SubjectId the level, Amount the fee (0 when they leave). Pick is 1 when they start, 0 when they leave.</summary>
+        ConsultantsHired,
+        /// <summary>The player published a post-mortem of a model's last incident. LabId is the lab, SubjectId the model, Amount the reputation won back, Ref the model's name. Pick is 0 for a summary, 1 for a full write-up.</summary>
+        PostMortemPublished,
+        /// <summary>The player changed the service-level pledge, or a run of broken weeks dropped it. LabId is the lab, SubjectId the level now. Pick is 1 when the level went up, 0 when it went down.</summary>
+        SlaPledged,
+        /// <summary>A week broke the service-level pledge. LabId is the lab, SubjectId the level, Amount the refund. Pick is 0 for too little serving compute, 1 for an incident.</summary>
+        SlaBroken,
+        /// <summary>The player applied for a research grant. LabId is the lab, SubjectId the tier, Amount the application fee. Pick is 1.</summary>
+        GrantApplied,
+        /// <summary>The panel ruled on a research grant. LabId is the lab, SubjectId the tier, Amount the award (0 when declined). Pick is 1 when awarded, 0 when declined.</summary>
+        GrantDecided,
+        /// <summary>A research grant was settled. LabId is the lab, SubjectId the tier, Amount the cash paid back. Pick is 1 when the papers were delivered, 0 when they were not.</summary>
+        GrantSettled
     }
 
     /// <summary>
