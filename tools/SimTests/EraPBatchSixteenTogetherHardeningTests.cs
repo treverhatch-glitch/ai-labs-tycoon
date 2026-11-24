@@ -19,6 +19,7 @@ public class EraPBatchSixteenTogetherHardeningTests
             c.MarginCall.CovenantPermille = 950;
             c.CampaignDeadline.MinEra = 0;
             c.ScenarioGoals.Enabled = 1;
+            c.ScenarioBaggage.Enabled = 1;
             c.LawShaping.MinEra = 0;
             c.Lobbying.BackfirePermille = 0;
             c.Lobbying.BackfireFloorPermille = 0;
@@ -162,6 +163,348 @@ public class EraPBatchSixteenTogetherHardeningTests
         Simulation back = Simulation.Load(g.C, mid);
         Assert.Equal(deadline, back.Player.CampaignDeadlineTick);
         Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Law_target_with_scenario_goal_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        int result = g.Me.ScenarioGoalResult;
+        string target = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(target, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Campaign_deadline_with_law_target_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 40));
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        int stop = g.Me.CampaignDeadlineTick;
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Law_shape_pending_with_margin_call_mid_save_matches()
+    {
+        Game g = Lab();
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
+        TriggerMarginCall(g);
+        if (g.Me.MarginCallLeft < 1) return;
+        int pending = g.Me.LawShapePending;
+        int margin = g.Me.MarginCallLeft;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Scenario_id_with_law_shape_pending_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Strict);
+        string scenario = g.Me.ScenarioId;
+        int pending = g.Me.LawShapePending;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Public_float_with_scenario_goal_and_deadline_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.PublicFloatPpm = 72_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 32));
+        int ppm = g.Me.PublicFloatPpm;
+        int result = g.Me.ScenarioGoalResult;
+        int stop = g.Me.CampaignDeadlineTick;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(ppm, back.Player.PublicFloatPpm);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Baggage_with_law_target_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        string baggage = g.Me.BaggageId;
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_left_with_law_target_mid_save_matches()
+    {
+        Game g = Lab();
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        TriggerMarginCall(g);
+        if (g.Me.MarginCallLeft < 1) return;
+        string law = g.Me.LawTarget;
+        int margin = g.Me.MarginCallLeft;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(law, back.Player.LawTarget);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Baggage_with_scenario_id_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        string scenario = g.Me.ScenarioId;
+        string baggage = g.Me.BaggageId;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Law_shape_pending_with_scenario_goal_result_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
+        int result = g.Me.ScenarioGoalResult;
+        int pending = g.Me.LawShapePending;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Baggage_with_campaign_deadline_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 28));
+        string baggage = g.Me.BaggageId;
+        int stop = g.Me.CampaignDeadlineTick;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Loan_outstanding_with_scenario_id_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        string scenario = g.Me.ScenarioId;
+        long debt = Loans.Outstanding(g.Me);
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        Assert.Equal(debt, Loans.Outstanding(back.Player));
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_with_scenario_id_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        TriggerMarginCall(g);
+        if (g.Me.MarginCallLeft < 1) return;
+        string scenario = g.Me.ScenarioId;
+        int margin = g.Me.MarginCallLeft;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Baggage_with_law_shape_pending_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        EraLawHardeningSupport.ShapeLaw(g, LawShaping.Loose);
+        string baggage = g.Me.BaggageId;
+        int pending = g.Me.LawShapePending;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(pending, back.Player.LawShapePending);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_satisfy_with_scenario_goal_mid_save_clears_call()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        int result = g.Me.ScenarioGoalResult;
+        TriggerMarginCall(g);
+        if (g.Me.MarginCallLeft < 1) return;
+        int pay = (int)MarginCall.CashDue(g.C, g.State, g.Me);
+        g.Do(Command.SatisfyMarginCall(g.Id, 0, pay));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(0, back.Player.MarginCallLeft);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Loan_outstanding_with_law_target_mid_save_matches()
+    {
+        Game g = Lab();
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Strict);
+        long debt = Loans.Outstanding(g.Me);
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(debt, Loans.Outstanding(back.Player));
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Baggage_scenario_goal_and_deadline_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        g.Do(Command.SetCampaignDeadline(g.Id, g.Tick + 30));
+        string baggage = g.Me.BaggageId;
+        int result = g.Me.ScenarioGoalResult;
+        int stop = g.Me.CampaignDeadlineTick;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(stop, back.Player.CampaignDeadlineTick);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_with_baggage_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        TriggerMarginCall(g);
+        if (g.Me.MarginCallLeft < 1) return;
+        string baggage = g.Me.BaggageId;
+        int margin = g.Me.MarginCallLeft;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Loan_baggage_and_law_target_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        EraLawHardeningSupport.SetLawTarget(g, LawShaping.Loose);
+        string baggage = g.Me.BaggageId;
+        long debt = Loans.Outstanding(g.Me);
+        string law = g.Me.LawTarget;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(debt, Loans.Outstanding(back.Player));
+        Assert.Equal(law, back.Player.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Loan_baggage_and_scenario_id_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        string baggage = g.Me.BaggageId;
+        string scenario = g.Me.ScenarioId;
+        long debt = Loans.Outstanding(g.Me);
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        Assert.Equal(debt, Loans.Outstanding(back.Player));
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Loan_scenario_goal_and_baggage_mid_save_matches()
+    {
+        Game g = Lab();
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        Fleet.AddGpus(g.State, g.Me, HardwareBatch.Hq, LabQueries.CurrentGeneration(g.C, g.Tick).IdValue, 4);
+        g.Do(Command.TakeLoan(g.Id, 800));
+        string baggage = g.Me.BaggageId;
+        int result = g.Me.ScenarioGoalResult;
+        long debt = Loans.Outstanding(g.Me);
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        Assert.Equal(debt, Loans.Outstanding(back.Player));
         HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
     }
 }

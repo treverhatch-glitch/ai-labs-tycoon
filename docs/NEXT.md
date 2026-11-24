@@ -401,11 +401,78 @@ and says why in the commit message.
 218. **Hardening polish: rung-six respond mid-save.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` respond → save → weeks keeps arc/cooldown.
 219. **Hardening polish: cross-soak EraP hooks.** ~~Done (local)~~: `HardeningCrossSystemSoakTests` week ≥470 — `SetLawTarget`, shape law, float, `ScenarioGoals.Check`, loan, `SatisfyMarginCall`, `SetCampaignDeadline`, `GovernmentSystem.CloseMonth` when floated; plus batch-16 margin/scenario chat pretends and law-target+loan mid-save (`EraPBatchSixteenNewsChatHardeningTests`, `EraPBatchSixteenTogetherHardeningTests`). Hardening filter **452/0** (local tip; origin **`c9a1147`**).
 220. **Hardening polish: rung-six + margin covenant.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` rung-six respond + margin mid-save; `EraPSystemsEdgeHardeningTests` satisfy margin while rung-six cooldown.
-221. **Hardening polish: campaign deadline + margin.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + `MarginCallLeft` round-trip. Hardening filter **455/0** (local tip).
+221. **Hardening polish: campaign deadline + margin.** ~~Done (local)~~ ~~**PUSHED** @ `3f48328`~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + `MarginCallLeft` round-trip.
+222. **Hardening polish: scenario goal missed chat/headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147 round-trip.
+223. **Hardening polish: law target + scenario goal.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` goal result + `LawTarget` mid-save.
+224. **Hardening polish: float + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` float ppm + `ScenarioGoalResult` round-trip.
+225. **Hardening polish: hearing float + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` `PublicFloatPpm` + `LawTarget` mid-save.
+226. **Hardening polish: campaign deadline + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + law target.
+227. **Hardening polish: scenario goal met headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147.
+228. **Hardening polish: law target headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 148.
+229. **Hardening polish: law shape pending + margin.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` pending + `MarginCallLeft`.
+230. **Hardening polish: scenario id + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+231. **Hardening polish: rung-six cooldown + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+232. **Hardening polish: margin default headline.** ~~Done (local)~~: `MarginCallDefaulted` @ schema 144.
+233. **Hardening polish: campaign deadline hit news.** ~~Done (local)~~: headline + chat @ schema 139.
+234. **Hardening polish: law shaped chat.** ~~Done (local)~~: `LawShaped` @ schema 140.
+235. **Hardening polish: bubble + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+236. **Hardening polish: deadline + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+237. **Hardening polish: float + scenario goal + deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+238. **Hardening polish: law shaped headline @ 140.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests`.
+239. **Hardening polish: campaign deadline set chat.** ~~Done (local)~~: @ schema 139.
+240. **Hardening polish: scenario baggage chat.** ~~Done (local)~~: @ schema 143.
+241. **Hardening polish: baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+242. **Hardening polish: margin + law target.** ~~Done (local)~~: `MarginCallLeft` + `LawTarget` mid-save.
+243. **Hardening polish: hearing float + scenario goal.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+244. **Hardening polish: campaign deadline set headline.** ~~Done (local)~~: @ schema 139.
+245. **Hardening polish: scenario baggage headline.** ~~Done (local)~~: @ schema 143.
+246. **Hardening polish: baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+247. **Hardening polish: law pending + scenario goal.** ~~Done (local)~~: pending + `ScenarioGoalResult`.
+248. **Hardening polish: rung-six arc + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+249. **Hardening polish: bubble + law shape pending.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+250. **Hardening polish: baggage pick mid-save.** ~~Done (local)~~: `BaggageId` + `BaggagePicked`.
+251. **Hardening polish: baggage + campaign deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+252. **Hardening polish: loan + scenario id.** ~~Done (local)~~: `Loans.Outstanding` round-trip.
+253. **Hardening polish: margin + scenario id.** ~~Done (local)~~: together; soak week ≥460 sets `ScenarioId` after baggage.
+254. **Hardening polish: hearing bubble + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+255. **Hardening polish: rung-six arc + scenario id.** ~~Done (local)~~: edge mid-save.
+256. **Hardening polish: baggage + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+257. **Hardening polish: margin satisfy + scenario goal.** ~~Done (local)~~: clears call, keeps `ScenarioGoalResult`.
+258. **Hardening polish: margin + scenario id limits.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+259. **Hardening polish: float + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+260. **Hardening polish: rung-six cooldown + scenario id.** ~~Done (local)~~: edge.
+261. **Hardening polish: loan + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+262. **Hardening polish: baggage + goal + deadline.** ~~Done (local)~~: together triple.
+263. **Hardening polish: spectate + baggage.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak week ≥460 `SetLawTarget` after baggage.
+264. **Hardening polish: spectate + takeoff.** ~~Done (local)~~: `RespondTakeoff` while spectating.
+265. **Hardening polish: baggage + rung-six arc.** ~~Done (local)~~: edge.
+266. **Hardening polish: bubble + goal + law target.** ~~Done (local)~~: triple mid-save.
+267. **Hardening polish: law pending + deadline.** ~~Done (local)~~: edge.
+268. **Hardening polish: margin + baggage.** ~~Done (local)~~: together.
+269. **Hardening polish: float + baggage + rung cooldown.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+270. **Hardening polish: hearing float + baggage.** ~~Done (local)~~: edge mid-save.
+271. **Hardening polish: loan + baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+272. **Hardening polish: margin call + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+273. **Hardening polish: cross-soak scenario goals guard.** ~~Done (local)~~: `ScenarioGoals.Check` only when `ScenarioId` set.
+274. **Hardening polish: loan + baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+275. **Hardening polish: hearing bubble + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+276. **Hardening polish: float + law target + scenario id.** ~~Done (local)~~: edge mid-save.
+277. **Hardening polish: rung arc + law pending + baggage.** ~~Done (local)~~: edge triple.
+278. **Hardening polish: spectate keeps baggage + soak loan guard.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak `TakeLoan` only with fleet collateral.
+279. **Hardening polish: bubble + baggage + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+280. **Hardening polish: loan + scenario goal + baggage.** ~~Done (local)~~: together.
+281. **Hardening polish: margin call + goal + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+282. **Hardening polish: spectate keeps scenario id.** ~~Done (local)~~: governance mid-save.
+283. **Hardening polish: cross-soak shape-law guard.** ~~Done (local)~~: `TryShapeLaw` only when `LawTarget` set (weeks ≥460/470).
+284. **Hardening polish: hearing bubble + law + scenario.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+285. **Hardening polish: float + scenario goal + baggage.** ~~Done (local)~~: edge triple.
+286. **Hardening polish: rung cooldown + baggage + scenario.** ~~Done (local)~~: edge.
+287. **Hardening polish: spectate keeps law target.** ~~Done (local)~~: governance.
+288. **Hardening polish: spectate keeps goal result + deadline soak.** ~~Done (local)~~: governance; soak `SetCampaignDeadline` only for active player lab. Hardening filter **522/0** (local tip).
 
 ## Rules: later
 
-- **P13 −36 recovery** ~~**PUSHED**~~ @ origin **`c9a1147`** (PR **#48**): **4086/4086**, hardening **446/0**, Q474. **NO further push** until next grouped P13 batch + coordinator GO. LOCAL tip **455/0** hardening (§217–221); squash all commits since **`c9a1147`** on GO (SHAs in store queue). Backlog: store `internal/p13-post-recovery-local-queue.md`.
+- **P13** (PR **#48**): origin **`3f48328`**. **NO PUSH** (Q476). LOCAL **522/0** (§222–288); squash prep: store `internal/p13-local-squash-prep-3f48328.md`.
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

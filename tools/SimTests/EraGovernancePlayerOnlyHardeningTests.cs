@@ -132,4 +132,93 @@ public class EraGovernancePlayerOnlyHardeningTests
         g.Do(Command.SellLab(playerId, "spectate"));
         g.Refused(Command.RespondRungSix(playerId, "hold"), CommandError.Spectating);
     }
+
+    [Fact]
+    public void Spectate_refuses_pick_scenario_baggage()
+    {
+        Game g = WithRival(188);
+        int playerId = g.Id;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        g.Refused(Command.PickScenarioBaggage(playerId, "early-lawsuit"), CommandError.Spectating);
+    }
+
+    [Fact]
+    public void Spectate_refuses_respond_takeoff()
+    {
+        Game g = WithRival(189);
+        int playerId = g.Id;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        g.Refused(Command.RespondTakeoff(playerId, "contain"), CommandError.Spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_picked_baggage_mid_save_matches()
+    {
+        Game g = WithRival(191);
+        int playerId = g.Id;
+        g.Do(Command.PickScenarioBaggage(playerId, "early-lawsuit"));
+        string baggage = g.Me.BaggageId;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(baggage, spectating.BaggageId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_scenario_id_mid_save_matches()
+    {
+        Game g = WithRival(192);
+        int playerId = g.Id;
+        g.C.ScenarioGoals.Enabled = 1;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        string scenario = g.Me.ScenarioId;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(scenario, spectating.ScenarioId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_law_target_mid_save_matches()
+    {
+        Game g = WithRival(193);
+        int playerId = g.Id;
+        g.Try(Command.SetLawTarget(playerId, LawShaping.Loose));
+        string law = g.Me.LawTarget;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(law, spectating.LawTarget);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
+
+    [Fact]
+    public void Spectate_keeps_scenario_goal_result_mid_save_matches()
+    {
+        Game g = WithRival(194);
+        int playerId = g.Id;
+        g.C.ScenarioGoals.Enabled = 1;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        int result = g.Me.ScenarioGoalResult;
+        g.Me.Ledger.ThisMonth.Revenue = 2_000_000;
+        g.Do(Command.SellLab(playerId, "spectate"));
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        LabState spectating = back.State.Lab(playerId);
+        Assert.Equal(result, spectating.ScenarioGoalResult);
+        HardeningInvariants.AssertEraPStateBounds(g.C, spectating);
+    }
 }

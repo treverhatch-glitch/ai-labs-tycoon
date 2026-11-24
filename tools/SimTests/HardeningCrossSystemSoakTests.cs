@@ -253,11 +253,15 @@ public class HardeningCrossSystemSoakTests
             g.C.CampaignDeadline.MinEra = 0;
             g.C.LawShaping.MinEra = 0;
             g.C.ScenarioBaggage.Enabled = 1;
-            if (week % 46 == 7 && g.Me.CampaignDeadlineTick == 0)
+            if (week % 46 == 7 && g.Me.CampaignDeadlineTick == 0 && g.State.PlayerLabId == g.Id)
                 g.Try(Command.SetCampaignDeadline(g.Id, g.Tick + 60));
             if (week % 48 == 9 && g.Me.BaggagePicked == 0)
                 g.Try(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
-            if (week % 50 == 11 && g.Me.LawShapePending == 0)
+            if (week % 49 == 10 && string.IsNullOrEmpty(g.Me.ScenarioId) && g.C.Scenarios.Scenarios.Count > 0)
+                g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+            if (week % 51 == 12 && string.IsNullOrEmpty(g.Me.LawTarget))
+                g.Try(Command.SetLawTarget(g.Id, LawShaping.Loose));
+            if (week % 50 == 11 && g.Me.LawShapePending == 0 && !string.IsNullOrEmpty(g.Me.LawTarget))
                 EraLawHardeningSupport.TryShapeLaw(g, LawShaping.Loose);
         }
         if (week >= 470)
@@ -273,13 +277,13 @@ public class HardeningCrossSystemSoakTests
                 g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
             if (week % 54 == 9 && string.IsNullOrEmpty(g.Me.LawTarget))
                 g.Try(Command.SetLawTarget(g.Id, LawShaping.Loose));
-            if (week % 55 == 10 && g.Me.LawShapePending == 0)
+            if (week % 55 == 10 && g.Me.LawShapePending == 0 && !string.IsNullOrEmpty(g.Me.LawTarget))
                 EraLawHardeningSupport.TryShapeLaw(g, LawShaping.Loose);
             if (week % 57 == 12 && g.Me.PublicFloatPpm < 10_000)
                 g.Me.PublicFloatPpm = 40_000;
-            if (week % 58 == 14 && ScenarioGoals.Enabled(g.C) && g.Me.ScenarioGoalResult == 0)
+            if (week % 58 == 14 && ScenarioGoals.Enabled(g.C) && g.Me.ScenarioGoalResult == 0 && !string.IsNullOrEmpty(g.Me.ScenarioId))
                 ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
-            if (week % 56 == 11 && Loans.Outstanding(g.Me) == 0)
+            if (week % 56 == 11 && Loans.Outstanding(g.Me) == 0 && g.Me.Fleet.Count > 0 && g.Me.Fleet[0].Count > 0)
                 g.Try(Command.TakeLoan(g.Id, 150));
             if (week % 59 == 16 && g.Me.MarginCallLeft > 0)
             {
@@ -287,7 +291,7 @@ public class HardeningCrossSystemSoakTests
                 if (pay > 0 && g.Me.Cash >= pay)
                     g.Try(Command.SatisfyMarginCall(g.Id, 0, (int)pay));
             }
-            if (week % 60 == 18 && g.Me.CampaignDeadlineTick == 0)
+            if (week % 60 == 18 && g.Me.CampaignDeadlineTick == 0 && g.State.PlayerLabId == g.Id)
                 g.Try(Command.SetCampaignDeadline(g.Id, g.Tick + 48));
             if (week % 62 == 20 && g.Me.PublicFloatPpm >= 10_000 && GameDate.IsMonthStart(g.C.Calendar, g.Tick))
                 GovernmentSystem.CloseMonth(g.C, g.State, g.Me);

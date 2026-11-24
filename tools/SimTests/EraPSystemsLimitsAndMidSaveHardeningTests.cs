@@ -125,4 +125,72 @@ public class EraPSystemsLimitsAndMidSaveHardeningTests
         Simulation back = Simulation.Load(g.C, mid);
         Assert.Equal(LawShaping.Loose, back.Player.LawTarget);
     }
+
+    [Fact]
+    public void Margin_call_left_with_scenario_id_mid_save_matches()
+    {
+        Game g = MarginLab(150);
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        TriggerMarginCall(g);
+        int margin = g.Me.MarginCallLeft;
+        string scenario = g.Me.ScenarioId;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        Assert.Equal(scenario, back.Player.ScenarioId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_left_with_baggage_mid_save_matches()
+    {
+        Game g = Game.Solo(151, c =>
+        {
+            c.MarginCall.Enabled = 1;
+            c.MarginCall.CovenantPermille = 1000;
+            c.Loans.LoanToValuePermille = 800;
+            c.ScenarioBaggage.Enabled = 1;
+            c.Office.ChancePermille = 0;
+        }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000_000;
+        g.Do(Command.PickScenarioBaggage(g.Id, "early-lawsuit"));
+        TriggerMarginCall(g);
+        int margin = g.Me.MarginCallLeft;
+        string baggage = g.Me.BaggageId;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
+
+    [Fact]
+    public void Margin_call_left_with_scenario_goal_and_baggage_mid_save_matches()
+    {
+        Game g = Game.Solo(152, c =>
+        {
+            c.MarginCall.Enabled = 1;
+            c.MarginCall.CovenantPermille = 1000;
+            c.Loans.LoanToValuePermille = 800;
+            c.ScenarioBaggage.Enabled = 1;
+            c.ScenarioGoals.Enabled = 1;
+            c.Office.ChancePermille = 0;
+        }).WithStarterLab(gpus: 4);
+        g.Me.Cash = 500_000_000_000;
+        g.Me.ScenarioId = g.C.Scenarios.Scenarios[0].IdValue;
+        g.Do(Command.PickScenarioBaggage(g.Id, "reputational-leak"));
+        ScenarioGoalConfig goal = g.C.ScenarioGoals.Goals.Find(x => x.IdValue == "ten-staff");
+        if (goal != null) goal.Target = 4;
+        ScenarioGoals.Check(g.C, g.State, g.Me, deadline: false);
+        TriggerMarginCall(g);
+        int margin = g.Me.MarginCallLeft;
+        string baggage = g.Me.BaggageId;
+        int result = g.Me.ScenarioGoalResult;
+        string mid = g.Sim.Save();
+        Simulation back = Simulation.Load(g.C, mid);
+        Assert.Equal(margin, back.Player.MarginCallLeft);
+        Assert.Equal(baggage, back.Player.BaggageId);
+        Assert.Equal(result, back.Player.ScenarioGoalResult);
+        HardeningInvariants.AssertEraPStateBounds(g.C, back.Player);
+    }
 }
