@@ -27,7 +27,7 @@ public class ChipTests
     /// The player (and, if asked, every rival) in the given year, knowing the chip techs, with a design lab seating some
     /// architects and a lot of cash. The calendar is moved by hand: the sim has no other way to reach 2023 quickly.
     /// </summary>
-    static Game Lab(int year, int architects = 4, int engineers = 0, bool rivals = false, Action<GameConfig> tweak = null, long cash = 20_000_000_000L)
+    internal static Game Lab(int year, int architects = 4, int engineers = 0, bool rivals = false, Action<GameConfig> tweak = null, long cash = 20_000_000_000L)
     {
         var options = new NewGameOptions { Seed = 1, StartEraId = "punchline" };
         if (!rivals) options.RivalIds = new List<string>();
@@ -67,7 +67,7 @@ public class ChipTests
         }
     }
 
-    static int Hall(Game g, LabState lab, string siteId = "us-oregon", int kw = 1_000_000)
+    internal static int Hall(Game g, LabState lab, string siteId = "us-oregon", int kw = 1_000_000)
     {
         int id = g.Do(Command.BuyLand(lab.Id, siteId)).CreatedId;
         lab.Holding(id).HallKw = kw;
@@ -80,7 +80,7 @@ public class ChipTests
     }
 
     /// <summary>Starts a design and makes it Ready without waiting: the points are done and the tape-out has come back.</summary>
-    static ChipDesign Ready(Game g, LabState lab, string target = Inference, string node = "n28", string die = "small", string format = "fp16", string memory = "ddr", string cooling = "air", int yield = -1)
+    internal static ChipDesign Ready(Game g, LabState lab, string target = Inference, string node = "n28", string die = "small", string format = "fp16", string memory = "ddr", string cooling = "air", int yield = -1)
     {
         var d = new ChipDesign();
         ChipSpec spec = ChipQueries.Derive(g.C, target, node, die, format, memory, cooling);
@@ -104,9 +104,10 @@ public class ChipTests
         return d;
     }
 
-    static void NoLuck(GameConfig c)
+    internal static void NoLuck(GameConfig c)
     {
         c.Chips.YieldCrashPermille = 0;
+        c.Chips.SnubChancePermille = 0;
         foreach (ChipNodeConfig n in c.Chips.Nodes) n.RespinPermille = 0;
     }
 

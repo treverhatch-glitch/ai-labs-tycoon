@@ -29,7 +29,9 @@ namespace AiLabs.Rules.Config
         /// <summary>A hearing at the lab's home government (bible ch. 12, "a short dialogue scene"). Never drawn by the weekly chance.</summary>
         Hearing,
         /// <summary>One of the lab's models tried to escape (incident rung 5; bible ch. 10). Never drawn by the weekly chance.</summary>
-        Escape
+        Escape,
+        /// <summary>A model of the lab's first goes on sale (bible ch. 14, "let the model be funny: its mistakes, its release notes"). Never drawn by the weekly chance and never replaces an event already waiting.</summary>
+        Release
     }
 
     /// <summary>What the lab needs before an office event can happen to it.</summary>
@@ -41,7 +43,11 @@ namespace AiLabs.Rules.Config
         /// <summary>Somebody in the safety function.</summary>
         SafetyStaff,
         /// <summary>At least one person on the payroll.</summary>
-        AnyStaff
+        AnyStaff,
+        /// <summary>A chip design of the lab's own that is ready.</summary>
+        OwnChip,
+        /// <summary>Rented GPUs on the books.</summary>
+        RentedCompute
     }
 
     /// <summary>

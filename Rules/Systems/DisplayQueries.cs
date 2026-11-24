@@ -45,8 +45,10 @@ namespace AiLabs.Rules.Systems
             public int FromCorruption;
             /// <summary>Extra chance from skipping testing before launch; zero for a tested launch.</summary>
             public int FromRush;
+            /// <summary>Extra chance while the lab cannot serve its customers; zero from the model-only query.</summary>
+            public int FromOverload;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload; } }
         }
 
         public struct ExitPriceBreakdown
@@ -151,6 +153,14 @@ namespace AiLabs.Rules.Systems
             int withoutRush = SafetySystem.IncidentChanceWithoutRush(c, tick, model);
             b.FromCorruption = withoutRush - (int)baseChance;
             b.FromRush = SafetySystem.IncidentChancePermille(c, tick, model) - withoutRush;
+            return b;
+        }
+
+        /// <summary>The same breakdown for a model in a lab, with what overload adds.</summary>
+        public static IncidentBreakdown IncidentParts(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            IncidentBreakdown b = IncidentParts(c, state.Tick, model);
+            b.FromOverload = SafetySystem.OverloadPermille(c, state, lab);
             return b;
         }
 

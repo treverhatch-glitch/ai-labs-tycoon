@@ -1810,6 +1810,42 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. The game is exactly what the options make; no schema change and the golden did not move.
 - Why: nothing in the rules would read it. A screen that wants "you are playing the Heir's Gambit" can keep that outside the rules.
 
+### Q286. Do rivals pay sector flavours now? DECIDED: yes, `safety.sectorFlavoursForRivals` ships true
+
+- Options: (a) leave it false until the rivals thread has merged; (b) turn it on in this chain once a forty-year soak shows no extra bankruptcies; (c) rivals pay half.
+- Recommendation and choice: **(b)**. Checked on a throwaway merge of this chain with the rival-robustness work (PR #3, `RunwayRetrenchment` and Q200-Q201), never pushed: forty seeds (1-40) of forty years with the autopilot player, counting plan labs that ended bankrupt. Switch off: 0 of 40. Switch on: 0 of 40. A second range, seeds 101-180, ended with 12 rival bankruptcies with the switch off and 5 with it on, so the switch does not add bankruptcies; the Q201 bar of zero holds on its own seeds 1-40 only, which is for that thread to know. On this chain alone (the older retrenchment rule), seeds 1-40 had 1 bankruptcy with the switch off (seed 12) and 0 with it on. The full suite passes with the switch on, the golden digest did not move, and the content-flow and economy-bounds guards are green.
+- Why: Q190 turned it off because rival incidents bankrupted OpenAye's lifetime game; with retrenchment before debt that no longer happens. The switch stays in the data, so it can be turned off again if a future change makes the economy knife-edge.
+
+### Q287. Which events come next, and what do they need? DECIDED: six more from the bible's list, with two new needs, a ready chip design and rented compute
+
+- Options: (a) only events that need nothing, a model or staff; (b) add needs for the chip and rented-compute events so they only appear when they make sense; (c) a new trigger kind.
+- Recommendation and choice: **(b)**. `OfficeRequires.OwnChip` (a ready design in `chipDesigns`) and `OfficeRequires.RentedCompute` (rented GPUs on the books). The six events: a researcher leaves for a competing lab, a rival's chief executive is fired on Friday and back on Tuesday, the model asks what "off" means (uses the corruption effect from Q282), a loud reply that takes the servers down, the first chip's Minesweeper benchmark, and the landlord who trains its own models sends a friendly note about your usage.
+- Why: events with no right answer are the bible's "event ideas". A chip event for a lab with no chips, or a landlord event for a lab that rents nothing, would read as noise. Nothing is saved, no schema change. The golden digest did not move.
+
+### Q288. What does the foundry snub do, and to whom? DECIDED: a 20-week slip on the player's own new orders when the vendor's standing is under 350, one chance in four
+
+- Options: (a) a year's slip as in the bible's table; (b) a shorter slip with a roll; (c) a lost order.
+- Recommendation and choice: **(b)**. `chips.snubStandingBelow` 350, `snubChancePermille` 250, `snubWeeks` 20 (a bit under half the 48-week year). It reads the vendor's standing, which falls when a lab makes its own training chips (Envydia's reaction), so the risk is the price of independence. The roll is a hash of the seed, the week, the lab and the order, so it draws nothing from the dice stream and nothing is saved; `ChipSlotSnubbed` goes in the log. Player labs only, and only the lab's own orders, not chips bought from another lab's list.
+- Why: a year would end a run of chips outright and rivals' chip buying is plan-driven economy that must stay knife-edge safe (Q182). A lost order would need a refund path. A slip uses the delivery tick the order already has. No schema change; the golden digest did not move.
+
+### Q289. Does serving too much hurt reliability? DECIDED: yes, an overloaded player lab adds up to 6 points to every model's weekly incident chance
+
+- Options: (a) quality penalty only; (b) extra incident chance scaled by the share of demand left unserved; (c) a new meter.
+- Recommendation and choice: **(b)**. `safety.overloadIncidentPermille` 60 times the unserved share of last week's demand, added at the weekly roll (`SafetySystem.WeeklyChancePermille`), shown as `FromOverload` in the incident breakdown. Player labs only (`safety.overloadForRivals` false): the rivals' incident counts feed the knife-edge guards (Q182, Q190), so rivals keep rolling exactly as before.
+- Why: the bible's "overworked" state says reliability drops. The mood already exists and a quality hit would need a new term in the appeal breakdown; the incident chance already has a breakdown and is where "reliable" lives. Nothing is saved, no schema change.
+
+### Q290. Do the release notes need an answer? DECIDED: yes, a small event on a model's first release, never replacing one already waiting
+
+- Options: (a) flavour text in the log only; (b) a choice event on the first release; (c) a choice on the release command itself.
+- Recommendation and choice: **(b)**. A new office trigger, `Release` (like `Hearing` and `Escape`), three events (the changelog, known issues, a joke), posed by `OfficeEvents.OnRelease` when a model first goes on sale. Unlike hearings and the escape crisis it does not replace an event that is waiting, so a release never wipes out something the player has not answered. Player labs only. Small effects (reputation, attention, culture, morale; letting the model write them adds 30 corruption).
+- Why: the bible's tone rule says a joke without a consequence is flavour text and one with a consequence is a system. A new field on the release command would change `Command` and every caller for a few points of reputation; the event machinery already has the answer, expiry and lapse. No schema change. The pinned golden game moved: the golden player releases a model, so the log now has a posed (and lapsed) release note; moving the three events to another trigger gave the old digest back, so that is the whole cause.
+
+### Q291. What is the third share of compute, and what does it buy? DECIDED: a player-set share of general compute for research experiments, at +1.2 permille of research per permille set aside, up to 30%
+
+- Options: (a) research always needs compute at a fixed rate; (b) a share the player sets, taken off general compute before training and serving divide it; (c) a separate pool of experiment GPUs.
+- Recommendation and choice: **(b)**. `lab.researchSharePermille` (schema 43), `SetResearchShare`, limit `research.maxComputeSharePermille` 300, bonus `research.computeShareBonusPermille` 1200. The share comes off `LabQueries.Split` general compute and own-chip compute, so training and customers see the same smaller pool everywhere the split is used. The bonus multiplies the researchers' output (`TrainingSystem.ResearchPerWeek`), so a lab without researchers gets nothing.
+- Why: the bible says "split compute three ways" and only two ways existed. A fixed rate would change every lab's economy at once and the rivals' balance (Q182); a share starts at zero, is player-only and is refused for rivals, so defaults change nothing. A separate GPU pool would need new holdings and orders. Schema 43 is the one new saved field (loans took 42 on main); the golden digest moved only because of it (checked by reverting the field and the schema number).
+
 ## CI and tooling
 
 ### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`

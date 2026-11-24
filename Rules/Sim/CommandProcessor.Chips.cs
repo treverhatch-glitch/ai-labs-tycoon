@@ -143,6 +143,12 @@ namespace AiLabs.Rules.Sim
 
             ChipOrder order = PlaceChipOrder(c, state, lab, lab, d, spec, holding, cmd.Count, month);
             Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
+            int slip = ChipSystem.SnubWeeks(c, state, lab, order.Id);
+            if (slip > 0)
+            {
+                order.DeliveryTick += slip;
+                Events.Add(state, EventKind.ChipSlotSnubbed, lab.Id, d.Id, slip, order.Id.ToString());
+            }
             return CommandResult.Done(order.Id);
         }
 

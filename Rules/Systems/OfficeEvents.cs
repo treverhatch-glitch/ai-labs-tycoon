@@ -37,6 +37,10 @@ namespace AiLabs.Rules.Systems
                     return false;
                 case OfficeRequires.SafetyStaff: return LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) > 0;
                 case OfficeRequires.AnyStaff: return lab.Staff.Count > 0;
+                case OfficeRequires.OwnChip:
+                    for (int i = 0; i < lab.ChipDesigns.Count; i++) if (lab.ChipDesigns[i].Status == ChipDesignStatus.Ready) return true;
+                    return false;
+                case OfficeRequires.RentedCompute: return lab.RentedGpus > 0;
                 default: return true;
             }
         }
@@ -113,6 +117,13 @@ namespace AiLabs.Rules.Systems
         {
             if (!Has(lab)) return;
             PoseTriggered(c, state, lab, OfficeTrigger.Escape);
+        }
+
+        /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>
+        public static void OnRelease(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab) || IsPending(lab)) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Release);
         }
 
         static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger)

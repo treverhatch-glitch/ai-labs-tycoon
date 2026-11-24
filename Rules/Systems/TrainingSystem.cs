@@ -40,7 +40,14 @@ namespace AiLabs.Rules.Systems
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
-            return gained;
+            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab));
+        }
+
+        /// <summary>The research bonus from compute set aside for experiments: the lab's share (kept inside the data's limit) times the bonus per permille.</summary>
+        public static int ComputeShareBonusPermille(GameConfig c, LabState lab)
+        {
+            long share = MathI.Clamp(lab.ResearchSharePermille, 0, c.Research.MaxComputeSharePermille);
+            return (int)(share * c.Research.ComputeShareBonusPermille / MathI.Permille);
         }
 
         /// <summary>How much training work a unit of compute does: techs plus engineers, who keep the runs from crashing.</summary>

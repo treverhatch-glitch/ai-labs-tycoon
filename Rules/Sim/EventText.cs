@@ -109,6 +109,7 @@ namespace AiLabs.Rules.Sim
                         CheckpointConfig k = parts.Length == 2 ? c.Runs.Checkpoint(string.IsNullOrEmpty(parts[1]) ? c.Runs.DefaultCheckpointId : parts[1]) : null;
                         return who + " chose \"" + (k == null ? e.Ref : k.Name) + "\" for a run.";
                     }
+                case EventKind.ChipSlotSnubbed: return "Foundry snub. " + who + "'s chip slot went to a bigger customer and the delivery slips " + e.Amount + " weeks.";
                 case EventKind.LoanTaken: return who + " borrowed $" + e.Amount + " against its chips.";
                 case EventKind.LoanRepaid:
                     return e.Ref == "early" ? who + " paid off a loan early: $" + e.Amount + "." : who + " paid off a $" + e.Amount + " loan.";

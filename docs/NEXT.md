@@ -225,6 +225,12 @@ and says why in the commit message.
     the `escape-attempt` event with three answers (Q281-Q283), `EscapeCrisisTests`, `docs/content/escape-crisis.md`; no schema, golden unchanged. Still open: a real gamble, a rung-6 crisis, one-site shutdowns.
 44. **Scenarios (bible ch. 15 "start as a named archetype in a specific year").** ~~Done~~: `scenarios` in the data (seven named starts), `Scenarios.List` / `Options` / `Start`, the validator (Q284-Q285),
     `ScenarioTests`, `docs/content/scenarios.md`; no schema, golden unchanged. Still open: starting situations, per-scenario goals, the picker (Unity), the 1956 prologue.
+45. **Rivals pay sector flavours (Q190 switch).** ~~Done~~: `safety.sectorFlavoursForRivals` ships true after a forty-year soak on a throwaway merge with the rival-robustness work (Q286); the sector-flavours page says every lab pays; tests set the switch explicitly where they want the plain way. No schema, golden unchanged.
+46. **More office events, round three (bible ch. 14 "event ideas", v0.2 headlines).** ~~Done~~: six events (a goodbye, a rival's Friday, what "off" means, the reply, the first chip benchmark, the landlord's note), `OfficeRequires.OwnChip` and `RentedCompute` (Q287), `MoreOfficeEventsTests`, `docs/content/office-events.md`. No schema.
+47. **Foundry snub (bible ch. 7 chip risk events).** ~~Done~~: `chips.snubStandingBelow`/`snubChancePermille`/`snubWeeks`, `ChipSystem.SnubWeeks`, `EventKind.ChipSlotSnubbed`, `FoundrySnubTests`, `docs/content/chips.md` (Q288). No schema.
+48. **Overload costs reliability (bible ch. 6 model states, "overworked: serving load too high; reliability drops").** ~~Done~~: `safety.overloadIncidentPermille` / `overloadForRivals`, `SafetySystem.OverloadPermille` and `WeeklyChancePermille`, `IncidentBreakdown.FromOverload`, `OverloadTests`, `docs/content/overload.md` (Q289). No schema.
+49. **Release notes (bible ch. 14 "its release notes").** ~~Done~~: `OfficeTrigger.Release`, `OfficeEvents.OnRelease`, three events, `ReleaseNotesTests`, `docs/content/office-events.md` (Q290). No schema.
+50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 43, `MigrateTo43`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
 
 ## Rules: later
 

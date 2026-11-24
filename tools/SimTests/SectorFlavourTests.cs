@@ -547,16 +547,36 @@ public class SectorFlavourTests
     [Fact]
     public void Rivals_fail_the_plain_way_while_the_data_says_so()
     {
-        var game = new Game(Simulation.NewGame(Config(), new NewGameOptions { Seed = 1, StartEraId = "agents" }));
+        var game = new Game(Simulation.NewGame(Config(c => c.Safety.SectorFlavoursForRivals = false), new NewGameOptions { Seed = 1, StartEraId = "agents" }));
         LabState rival = game.State.Labs.First(l => l.Id != game.Id);
         var model = new ModelState { Id = 7, Sectors = new List<string> { "customer-support", "legal-research" } };
-        Assert.False(game.C.Safety.SectorFlavoursForRivals);
         Assert.False(SectorFlavours.Pays(game.C, game.State, rival));
         Assert.True(SectorFlavours.Pays(game.C, game.State, game.Me));
         Assert.Null(SectorFlavours.Leading(game.C, game.State, rival, model));
         Assert.Equal(0, SectorFlavours.MakeGood(game.C, game.State, rival, model));
         Assert.Equal(1000, SectorFlavours.TrustPermille(game.C, game.State, rival, "legal-research"));
         Assert.Equal(1800, SectorFlavours.TrustPermille(game.C, game.State, game.Me, "legal-research"));
+    }
+
+    [Fact]
+    public void The_shipped_data_has_rivals_paying_what_a_flavour_costs_too()
+    {
+        var game = new Game(Simulation.NewGame(Config(), new NewGameOptions { Seed = 1, StartEraId = "agents" }));
+        LabState rival = game.State.Labs.First(l => l.Id != game.Id);
+        Assert.True(game.C.Safety.SectorFlavoursForRivals);
+        Assert.True(SectorFlavours.Pays(game.C, game.State, rival));
+    }
+
+    [Fact]
+    public void A_rival_with_takings_in_a_flavoured_sector_owes_refunds_when_rivals_pay()
+    {
+        var game = new Game(Simulation.NewGame(Config(), new NewGameOptions { Seed = 1, StartEraId = "agents" }));
+        LabState rival = game.State.Labs.First(l => l.Id != game.Id);
+        var model = new ModelState { Id = 7, Sectors = new List<string> { "customer-support" } };
+        game.State.Sector("customer-support").Entries.Add(new SectorEntry { LabId = rival.Id, ModelId = 7, LastRevenue = 10_000 });
+        Assert.Equal(20_000, SectorFlavours.MakeGood(game.C, game.State, rival, model));
+        game.C.Safety.SectorFlavoursForRivals = false;
+        Assert.Equal(0, SectorFlavours.MakeGood(game.C, game.State, rival, model));
     }
 
     [Fact]

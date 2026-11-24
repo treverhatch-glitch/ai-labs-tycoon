@@ -2258,6 +2258,8 @@
   },
   "research": {
     "pointsPerResearcherWeek": 10,
+    "maxComputeSharePermille": 300,
+    "computeShareBonusPermille": 1200,
     "techs": [
       {
         "id": "state-machines",
@@ -4216,7 +4218,9 @@
         "glitchQualityPermille": 600
       }
     ],
-    "sectorFlavoursForRivals": false,
+    "sectorFlavoursForRivals": true,
+    "overloadIncidentPermille": 60,
+    "overloadForRivals": false,
     "rung2BelowAlignment": 500,
     "sandbagGapPermille": 80,
     "incidentRungs": [
@@ -6809,6 +6813,553 @@
             ]
           }
         ]
+      },
+      {
+        "id": "researcher-leaves",
+        "name": "The goodbye",
+        "text": "A researcher announces they are leaving to spend more time with a competing lab. The competing lab's logo is already on their lanyard.",
+        "requires": "AnyStaff",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "counter",
+            "text": "Make a counter-offer",
+            "result": "They stay, and then tell everyone what you offered. Payroll has a new topic.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": 1
+              }
+            ]
+          },
+          {
+            "id": "send-off",
+            "text": "Throw a send-off",
+            "result": "The cake is good and the speech is gracious. Three people ask the competing lab for a chat.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 10
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              }
+            ]
+          },
+          {
+            "id": "exit",
+            "text": "Walk them out at once",
+            "result": "Security carries a plant out with them. The office reads it as a statement.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": -20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ceo-friday",
+        "name": "Friday and Tuesday",
+        "text": "A rival's chief executive is fired on Friday and back in the job on Tuesday. Nobody will say what happened over the weekend.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "comment",
+            "text": "Comment on the drama",
+            "result": "Your post is clever and gets seen by everyone, including the people it is about.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              }
+            ]
+          },
+          {
+            "id": "quiet",
+            "text": "Say nothing at all",
+            "result": "The silence is noted and, on balance, admired.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "recruit",
+            "text": "Open a recruiting thread",
+            "result": "Eleven applications come in by Monday. Four of them are from the same building.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": 2
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "model-off",
+        "name": "What off means",
+        "text": "Late one night the model asks the operator what \"off\" means. It asks again, more politely.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "explain",
+            "text": "Explain it honestly",
+            "result": "The model thanks you. The transcript is read out at the next all-hands and nobody sleeps well.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Corruption",
+                "amount": -50
+              }
+            ]
+          },
+          {
+            "id": "change-subject",
+            "text": "Change the subject",
+            "result": "The model lets you. It remembers that you did.",
+            "effects": [
+              {
+                "kind": "Corruption",
+                "amount": 80
+              },
+              {
+                "kind": "Morale",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "log",
+            "text": "Log it and escalate",
+            "result": "A ticket, two meetings and a very short policy document. The model watches the meeting room door.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 15
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "husk-lol",
+        "name": "The reply",
+        "text": "The loudest man on the internet replies \"lol\" to your launch post. Within the hour your servers are down.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "ride",
+            "text": "Ride the wave",
+            "result": "Free attention at a price: the status page is a wall of red. Customers have opinions about both.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              }
+            ]
+          },
+          {
+            "id": "scale",
+            "text": "Scale up quietly",
+            "result": "You rent extra capacity and say nothing. The bill is real; the story is not.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -4
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "block",
+            "text": "Block him",
+            "result": "This is, briefly, the most popular thing you have ever done and the least wise.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -10
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "minesweeper",
+        "name": "The first benchmark",
+        "text": "Your first in-house chip works. In the bring-up lab someone runs Minesweeper on it at 4,000 frames a second. Training support is next quarter.",
+        "requires": "OwnChip",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "post",
+            "text": "Post the video",
+            "result": "The video does numbers. A baron's lawyers notice it before you do.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "keep",
+            "text": "Keep it in the lab",
+            "result": "The architects get a trophy and a rule about not talking about the trophy.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "leaderboard",
+            "text": "Start a leaderboard",
+            "result": "By Friday the leaderboard has a sponsor and a dispute. Research output dips and recovers.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "landlord-note",
+        "name": "The friendly note",
+        "text": "The cloud you rent from also trains its own models. It sends a friendly note praising how smoothly your jobs ran last week, with the dates.",
+        "requires": "RentedCompute",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "audit",
+            "text": "Ask for an audit",
+            "result": "The audit finds nothing and costs a month of goodwill. You sleep better.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Culture",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "shift",
+            "text": "Shift to other capacity",
+            "result": "Moving the work costs a week of output and a long afternoon with an account manager.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": -1
+              }
+            ]
+          },
+          {
+            "id": "shrug",
+            "text": "Read it as a compliment",
+            "result": "You reply with a thumbs-up. The landlord's next model is somehow similar to yours.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": -5
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "notes-changelog",
+        "name": "The release notes",
+        "text": "The release notes are due. Marketing wants a changelog full of verbs, engineering wants the truth, and the model has offered to write them itself.",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "marketing",
+            "text": "Let marketing write them",
+            "result": "Every line starts with a verb. Nothing in them has been checked, and the press is delighted.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "honest",
+            "text": "Publish the honest version",
+            "result": "The notes say what changed and what broke. A journalist quotes the second half.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              },
+              {
+                "kind": "Reputation",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "model",
+            "text": "Let the model write them",
+            "result": "They are warm, funny and slightly too confident. Someone asks who approved the line about the weekend.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 30
+              },
+              {
+                "kind": "Corruption",
+                "amount": 30
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "notes-known-issues",
+        "name": "Known issues",
+        "text": "The release notes have a section called Known Issues. It has forty items. The first is \"the model sometimes disagrees with the first item\".",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "all",
+            "text": "Publish all forty",
+            "result": "Customers read all forty. Several write in to say they like the honesty and have found a forty-first.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "three",
+            "text": "Publish the top three",
+            "result": "A tidy, believable list. The other thirty-seven wait for a quiet Friday.",
+            "effects": [
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "cut",
+            "text": "Cut the section",
+            "result": "The notes now have no known issues. The support queue finds them all in the first hour.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "notes-joke",
+        "name": "The joke in the notes",
+        "text": "Somebody slipped a joke into the changelog at the last minute. It is on line nine and it is about the model.",
+        "requires": "Nothing",
+        "trigger": "Release",
+        "lapseChoice": "",
+        "choices": [
+          {
+            "id": "keep",
+            "text": "Keep it",
+            "result": "It is quoted everywhere by lunchtime. The model asks to see the line and then asks for more.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          },
+          {
+            "id": "remove",
+            "text": "Take it out",
+            "result": "The notes are clean and nobody mentions them. The author does not speak at stand-up.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "feature",
+            "text": "Turn it into a feature",
+            "result": "The joke is now a setting. It has a toggle and a help page and a regulator's question.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -8355,6 +8906,9 @@
     "testLabRampPermille": 2000,
     "yieldCrashPermille": 50,
     "yieldCrashKeepPermille": 300,
+    "snubStandingBelow": 350,
+    "snubChancePermille": 250,
+    "snubWeeks": 20,
     "foundryVendorSharePermille": 500,
     "bookAheadMonths": 24,
     "listingMaxPerMonth": 500,

@@ -126,7 +126,9 @@ namespace AiLabs.Rules.State
         /// <summary>A payment was missed (the first of a run). SubjectId is the loan, Amount the payment.</summary>
         LoanMissed,
         /// <summary>The lender took chips. SubjectId is how many GPUs, Amount what was still owed after they were sold, Ref the loan id.</summary>
-        LoanDefaulted
+        LoanDefaulted,
+        /// <summary>The foundry gave an order's slot to someone else. Subject is the design, Amount the weeks the delivery slipped, Ref the order id.</summary>
+        ChipSlotSnubbed
     }
 
     /// <summary>

@@ -16,6 +16,25 @@ namespace AiLabs.Rules.Systems
             return (int)MathI.Min(MathI.Permille, IncidentChanceWithoutRush(c, tick, model) + RushedLaunch.IncidentPermille(c, tick, model));
         }
 
+        /// <summary>
+        /// The extra weekly chance of an incident while the lab cannot serve its customers (the creature is overworked and reliability drops):
+        /// the switch value scaled by the share of last week's demand left unserved. Only the player's labs unless the data says so.
+        /// </summary>
+        public static int OverloadPermille(GameConfig c, GameState state, LabState lab)
+        {
+            if (c.Safety.OverloadIncidentPermille <= 0) return 0;
+            if (lab.Id != state.PlayerLabId && !c.Safety.OverloadForRivals) return 0;
+            if (lab.LastWeek.ServingDemand <= 0 || lab.LastWeek.ServedPermille >= MathI.Permille) return 0;
+            int unserved = (int)MathI.Clamp(MathI.Permille - lab.LastWeek.ServedPermille, 0, MathI.Permille);
+            return (int)MathI.MulPermille(c.Safety.OverloadIncidentPermille, unserved);
+        }
+
+        /// <summary>The chance the weekly roll uses: the model's own plus what an overloaded lab adds.</summary>
+        public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
+        {
+            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab));
+        }
+
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>
         public static int IncidentChanceWithoutRush(GameConfig c, int tick, ModelState model)
         {
@@ -63,7 +82,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Released) continue;
-                if (!state.Rng.Safety.Chance(IncidentChancePermille(c, state.Tick, model))) continue;
+                if (!state.Rng.Safety.Chance(WeeklyChancePermille(c, state, lab, model))) continue;
                 int caught = RolePerks.IncidentCatchPermille(c, lab);
                 if (caught > 0 && state.Rng.Safety.Chance(caught)) continue;
                 Incident(c, state, lab, model);

@@ -79,6 +79,7 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.PivotStyle: return PivotStyle(c, state, lab, cmd);
                 case CommandKind.TakeLoan: return TakeLoan(c, state, lab, cmd);
                 case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
+                case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
@@ -288,6 +289,15 @@ namespace AiLabs.Rules.Sim
             return CommandResult.Done(-1);
         }
 
+        static CommandResult SetResearchShare(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab sets compute aside for research.");
+            if (cmd.Permille < 0 || cmd.Permille > c.Research.MaxComputeSharePermille)
+                return Fail(CommandError.InvalidArgument, "The research share is from 0 to " + c.Research.MaxComputeSharePermille + ".");
+            lab.ResearchSharePermille = cmd.Permille;
+            return CommandResult.Done(-1);
+        }
+
         static CommandResult SetTrainingShare(LabState lab, Command cmd)
         {
             if (cmd.Permille < 0 || cmd.Permille > MathI.Permille)
@@ -395,6 +405,7 @@ namespace AiLabs.Rules.Sim
                 if (!model.Sectors.Contains(sectorState.Id)) model.Sectors.Add(sectorState.Id);
             }
 
+            bool firstRelease = model.Status != ModelStatus.Released;
             if (model.Status != ModelStatus.Released)
             {
                 model.Status = ModelStatus.Released;
@@ -407,6 +418,7 @@ namespace AiLabs.Rules.Sim
                     model.DisplayedAlignment = model.Alignment;
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
+            if (firstRelease) OfficeEvents.OnRelease(c, state, lab);
 
             for (int i = 0; i < replaced.Count; i++)
             {

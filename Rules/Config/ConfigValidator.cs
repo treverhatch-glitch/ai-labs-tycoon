@@ -109,6 +109,8 @@ namespace AiLabs.Rules.Config
             WorldProblems(p, c);
 
             if (c.Research.PointsPerResearcherWeek < 0) p.Add("research.pointsPerResearcherWeek is negative");
+            Permille(p, "research.maxComputeSharePermille", c.Research.MaxComputeSharePermille);
+            if (c.Research.ComputeShareBonusPermille < 0) p.Add("research.computeShareBonusPermille is negative");
             foreach (TechConfig tech in c.Research.Techs)
             {
                 if (tech.Cost < 0) p.Add("tech " + tech.Id + " has a negative cost");
@@ -414,6 +416,7 @@ namespace AiLabs.Rules.Config
         {
             SafetyConfig safety = c.Safety;
             UniqueIds(p, "safety.sectorFlavours", safety.SectorFlavours);
+            Permille(p, "safety.overloadIncidentPermille", safety.OverloadIncidentPermille);
             for (int i = 0; i < safety.SectorFlavours.Count; i++)
             {
                 SectorFlavourConfig f = safety.SectorFlavours[i];
@@ -1223,6 +1226,9 @@ namespace AiLabs.Rules.Config
             if (k.TestLabRampPermille < MathI.Permille) p.Add("chips.testLabRampPermille must be at least 1000: a test lab never slows the ramp");
             Permille(p, "chips.yieldCrashPermille", k.YieldCrashPermille);
             Permille(p, "chips.yieldCrashKeepPermille", k.YieldCrashKeepPermille);
+            if (k.SnubStandingBelow < 0 || k.SnubStandingBelow > 1000) p.Add("chips.snubStandingBelow must be from 0 to 1000");
+            Permille(p, "chips.snubChancePermille", k.SnubChancePermille);
+            if (k.SnubWeeks < 0) p.Add("chips.snubWeeks is negative");
             if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
             if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");

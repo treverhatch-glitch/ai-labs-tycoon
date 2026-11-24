@@ -174,6 +174,7 @@ public class MarketTests
 
         // Hand back all the GPUs: the customers are still there, but nothing can serve them.
         starved.Rent(0);
+        starved.C.Safety.OverloadIncidentPermille = 0;
         roomy.Weeks(1);
         starved.Weeks(1);
 
