@@ -234,7 +234,31 @@ namespace AiLabs.Rules.State
         /// <summary>A skunkworks project started. SubjectId is the kind (1 research, 2 safety, 3 engineering), Amount the people, Pick the weeks, Ref the kind.</summary>
         SkunkworksStarted,
         /// <summary>A project paid out. SubjectId is the kind, Amount what it paid (research points, alignment permille or debt points), Pick 1 when it ran its course, 0 when it was wrapped up early.</summary>
-        SkunkworksDone
+        SkunkworksDone,
+        /// <summary>The staff started to organise. Amount is the pressure, SubjectId the weeks the player has to answer.</summary>
+        LabourDrive,
+        /// <summary>A union was recognised. Pick 1 when the player chose it, 0 when a strike forced it. Amount is the pay it adds in permille.</summary>
+        LabourRecognised,
+        /// <summary>The player resisted a drive. Pick 1 when chosen, 0 when the window ran out. Amount is the legal fees.</summary>
+        LabourResisted,
+        /// <summary>A resisted drive collapsed because pressure was back under the drive level. Amount is the pressure left.</summary>
+        LabourHeld,
+        /// <summary>The staff went on strike. Amount is the weeks, SubjectId the morale lost.</summary>
+        LabourStrike,
+        /// <summary>An end-of-life notice was given. SubjectId is the model, Amount the weeks, Pick 1 when the successor was designed with its help, Ref the model.</summary>
+        SunsetAnnounced,
+        /// <summary>A model left the market. SubjectId is the successor, Amount the sectors that moved over, Pick 1 when none was dropped, Ref the model.</summary>
+        SunsetDone,
+        /// <summary>A notice was withdrawn. SubjectId is the model, Amount the reputation it cost, Pick 1 when the player called it off and 0 when the successor was gone, Ref the model.</summary>
+        SunsetCalledOff,
+        /// <summary>An account team changed. Ref is the sector name, SubjectId the weeks of familiarity left, Amount the people now on it. Pick 1 for a new team, 0 for a changed one, 2 when it was disbanded, 3 when losing salespeople thinned it and 4 when the lab lost the sector.</summary>
+        AccountTeamChanged,
+        /// <summary>A paper went out for review. SubjectId is the venue (1 workshop, 2 main, 3 flagship), Amount the research points, Pick the effort, Ref the venue name.</summary>
+        PaperSubmitted,
+        /// <summary>A paper was decided. SubjectId is the venue, Amount the prestige it added (accepted) or the points given back (rejected or withdrawn), Pick 1 accepted, 0 rejected, 2 withdrawn, Ref the venue name.</summary>
+        PaperDecided,
+        /// <summary>A former employee came back. SubjectId is their old id, Amount the fee, Pick how they had left (1 good terms, 0 laid off, -1 quit), Ref the role id.</summary>
+        AlumniRehired
     }
 
     /// <summary>

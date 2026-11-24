@@ -516,6 +516,7 @@ public class TalentMarketTests
         var (g, _) = Market();
         g.Weeks(5);
         g.Me.CultureShift = 0;
+        g.Me.Alumni.Clear();
         string old = SaveSchemaPretend.At(g.C, 22, g.Sim.Save());
         Assert.DoesNotContain("poachOffers", old);
         Simulation loaded = Simulation.Load(g.C, old);

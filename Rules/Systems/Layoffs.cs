@@ -27,7 +27,7 @@ namespace AiLabs.Rules.Systems
         {
             long cost = 0;
             for (int i = 0; i < c.Roles.Count; i++)
-                cost += MathI.MulPermille(c.Roles[i].Severance * (long)CutIn(lab, c.Roles[i].Id, permille), c.Layoffs.SeverancePermille);
+                cost += Labour.Severance(c, lab, MathI.MulPermille(c.Roles[i].Severance * (long)CutIn(lab, c.Roles[i].Id, permille), c.Layoffs.SeverancePermille));
             return cost;
         }
 
@@ -48,6 +48,7 @@ namespace AiLabs.Rules.Systems
             int share = StaffSharePermille(c, lab, permille);
             long package = Package(c, lab, permille);
             int total = 0;
+            var leavers = Alumni.Roster(lab);
             for (int i = 0; i < c.Roles.Count; i++)
             {
                 RoleConfig role = c.Roles[i];
@@ -57,12 +58,14 @@ namespace AiLabs.Rules.Systems
                 ControlStale.OnFired(c, lab, role.Id, cut);
                 total += cut;
             }
+            Alumni.RecordGone(c, state, lab, leavers, Alumni.LaidOff);
             TalentSystem.DropGoneOffers(lab);
             Finance.Spend(lab, LedgerLine.Hiring, package);
             int morale = MoraleLoss(c, share);
             if (morale > 0)
                 for (int i = 0; i < lab.Staff.Count; i++) lab.Staff[i].Morale = (int)MathI.Max(0, lab.Staff[i].Morale - morale);
             lab.Reputation = (int)MathI.Max(0, lab.Reputation - ReputationLoss(c, share));
+            Labour.OnLayoff(c, lab, share);
             GameEvent e = Events.Add(state, EventKind.LayoffRound, lab.Id, share, total, "");
             e.Pick = share >= c.Layoffs.DeepPermille ? 1 : 0;
         }

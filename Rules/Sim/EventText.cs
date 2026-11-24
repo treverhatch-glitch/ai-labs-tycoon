@@ -247,6 +247,36 @@ namespace AiLabs.Rules.Sim
                 case EventKind.SkunkworksDone:
                     return who + (e.Pick == 1 ? " finished" : " wrapped up early") + " its " + e.Ref + " skunkworks project: "
                         + (e.SubjectId == 1 ? e.Amount + " research points." : e.SubjectId == 2 ? e.Amount + " more alignment on its finished models." : e.Amount + " points of technical debt cleared.");
+                case EventKind.LabourDrive:
+                    return "Staff at " + who + " are organising; the lab has " + e.SubjectId + " weeks to answer.";
+                case EventKind.LabourRecognised:
+                    return e.Pick == 1 ? who + " recognised its staff union." : who + " was forced to recognise its staff union after a strike.";
+                case EventKind.LabourResisted:
+                    return e.Pick == 1 ? who + " hired lawyers to resist its staff drive for $" + e.Amount + "." : who + " let its staff drive go unanswered and is resisting it.";
+                case EventKind.LabourHeld:
+                    return "The staff drive at " + who + " fizzled out.";
+                case EventKind.LabourStrike:
+                    return "Staff at " + who + " went on strike for " + e.Amount + " weeks.";
+                case EventKind.SunsetAnnounced:
+                    return who + " announced that " + e.Ref + " will be retired in " + e.Amount + " weeks" + (e.Pick == 1 ? ", with the model it helped design as its successor." : ".");
+                case EventKind.SunsetDone:
+                    return who + " retired " + e.Ref + "; " + e.Amount + (e.Amount == 1 ? " sector moved" : " sectors moved") + " to its successor" + (e.Pick == 1 ? "." : " and the rest were dropped.");
+                case EventKind.SunsetCalledOff:
+                    return e.Pick == 1 ? who + " called off the retirement of " + e.Ref + "." : who + " withdrew the retirement of " + e.Ref + " because its successor was gone.";
+                case EventKind.AccountTeamChanged:
+                    return e.Pick == 1 ? who + " put " + e.Amount + " salespeople on the " + e.Ref + " account team."
+                        : e.Pick == 0 ? who + " resized the " + e.Ref + " account team to " + e.Amount + " (" + e.SubjectId + " weeks of familiarity kept)."
+                        : e.Pick == 2 ? who + " disbanded the " + e.Ref + " account team."
+                        : e.Pick == 3 ? "The " + e.Ref + " account team at " + who + " is down to " + e.Amount + " people."
+                        : "The " + e.Ref + " account team at " + who + " was disbanded when the lab left the sector.";
+                case EventKind.PaperSubmitted:
+                    return who + " sent a paper to a " + e.Ref + " (effort " + e.Pick + ", " + e.Amount + " research points).";
+                case EventKind.PaperDecided:
+                    return e.Pick == 1 ? "A " + e.Ref + " accepted a paper from " + who + ", adding " + e.Amount + " prestige."
+                        : e.Pick == 0 ? "A " + e.Ref + " rejected a paper from " + who + "; " + e.Amount + " research points came back."
+                        : who + " withdrew a paper from a " + e.Ref + " and got " + e.Amount + " research points back.";
+                case EventKind.AlumniRehired:
+                    return who + " rehired a former " + c.Role(e.Ref).Name.ToLowerInvariant() + (e.Pick == 1 ? " who had left on good terms" : e.Pick == 0 ? " who had been laid off" : " who had quit") + " for $" + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -104,6 +104,11 @@ namespace AiLabs.Rules.Config
             RoadmapProblems(p, c);
             MentoringProblems(p, c);
             SkunkworksProblems(p, c);
+            LabourProblems(p, c);
+            SunsetProblems(p, c);
+            AccountsProblems(p, c);
+            ConferenceProblems(p, c);
+            AlumniProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1069,6 +1074,84 @@ namespace AiLabs.Rules.Config
             if (k.AlignmentPerHundred < 0 || k.AlignmentPerHundred > 500) p.Add("skunkworks.alignmentPerHundred must be from 0 to 500");
             if (k.MaxAlignment < 0 || k.MaxAlignment > 500) p.Add("skunkworks.maxAlignment must be from 0 to 500");
             if (k.DebtPerPersonWeek < 0 || k.DebtPerPersonWeek > 50) p.Add("skunkworks.debtPerPersonWeek must be from 0 to 50");
+        }
+
+        static void LabourProblems(List<string> p, GameConfig c)
+        {
+            LabourConfig k = c.Labour;
+            if (k == null) { p.Add("labour is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("labour.enabled must be 0 or 1");
+            if (k.MinStaff < 2 || k.MinStaff > 200) p.Add("labour.minStaff must be from 2 to 200");
+            if (k.MoraleBelow < 0 || k.MoraleBelow > MathI.Permille) p.Add("labour.moraleBelow must be from 0 to 1000");
+            if (k.LowMoralePerWeek < 0 || k.LowMoralePerWeek > 500 || k.CrunchPerWeek < 0 || k.CrunchPerWeek > 500) p.Add("labour.lowMoralePerWeek and crunchPerWeek must be from 0 to 500");
+            if (k.LayoffPerFull < 0 || k.LayoffPerFull > 2000) p.Add("labour.layoffPerFull must be from 0 to 2000");
+            if (k.DecayPerWeek < 0 || k.DecayPerWeek > 500) p.Add("labour.decayPerWeek must be from 0 to 500");
+            if (k.DrivePressure < 100 || k.DrivePressure >= MathI.Permille) p.Add("labour.drivePressure must be from 100 to 999, so the staff can always organise before the top");
+            if (k.WindowWeeks < 1 || k.WindowWeeks > 52) p.Add("labour.windowWeeks must be from 1 to 52");
+            if (k.ResistWeeks < 1 || k.ResistWeeks > 104) p.Add("labour.resistWeeks must be from 1 to 104");
+            if (k.ResistFactorPermille < MathI.Permille || k.ResistFactorPermille > 5000) p.Add("labour.resistFactorPermille must be from 1000 to 5000, so resisting never calms anyone");
+            if (k.ResistCost < 0) p.Add("labour.resistCost must not be negative");
+            if (k.HeldPressure < 0 || k.HeldPressure >= k.DrivePressure) p.Add("labour.heldPressure must be from 0 to below drivePressure");
+            if (k.StrikeWeeks < 1 || k.StrikeWeeks > 26) p.Add("labour.strikeWeeks must be from 1 to 26");
+            if (k.StrikeMorale < 0 || k.StrikeMorale > MathI.Permille) p.Add("labour.strikeMorale must be from 0 to 1000");
+            if (k.StrikeCutPermille < 0 || k.StrikeCutPermille >= MathI.Permille) p.Add("labour.strikeCutPermille must be from 0 to 999");
+            if (k.RecogniseMorale < 0 || k.RecogniseMorale > 500) p.Add("labour.recogniseMorale must be from 0 to 500");
+            if (k.PayPermille < 0 || k.PayPermille > 500 || k.HardPayPermille < k.PayPermille || k.HardPayPermille > 1000) p.Add("labour.payPermille must be from 0 to 500 and hardPayPermille from payPermille to 1000");
+            if (k.SeverancePermille < MathI.Permille || k.HardSeverancePermille < k.SeverancePermille || k.HardSeverancePermille > 10000) p.Add("labour.severancePermille must be at least 1000 and hardSeverancePermille from severancePermille to 10000");
+            if (k.ResearchPermille < 0 || k.ResearchPermille > 500 || k.HardResearchPermille < 0 || k.HardResearchPermille > k.ResearchPermille) p.Add("labour.researchPermille must be from 0 to 500 and hardResearchPermille from 0 to researchPermille");
+        }
+
+        static void SunsetProblems(List<string> p, GameConfig c)
+        {
+            SunsetConfig k = c.Sunset;
+            if (k == null) { p.Add("sunset is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sunset.enabled must be 0 or 1");
+            if (k.MinWeeks < 1 || k.MaxWeeks <= k.MinWeeks || k.MaxWeeks > 104) p.Add("sunset.minWeeks and maxWeeks must be from 1 to 104 with maxWeeks above minWeeks");
+            if (k.SupportPermille < 0 || k.SupportPermille > MathI.Permille) p.Add("sunset.supportPermille must be from 0 to 1000");
+            if (k.TrustDropLong < 0 || k.TrustDropShort < k.TrustDropLong || k.TrustDropShort > MathI.Permille) p.Add("sunset.trustDropShort must be from trustDropLong to 1000, so a short notice never hurts less than a long one");
+            if (k.AssistedCutPermille < 0 || k.AssistedCutPermille > MathI.Permille) p.Add("sunset.assistedCutPermille must be from 0 to 1000");
+            if (k.DroppedPermille < MathI.Permille || k.DroppedPermille > 5000) p.Add("sunset.droppedPermille must be from 1000 to 5000, so losing a sector never hurts less than moving it");
+            if (k.CancelReputation < 0 || k.CancelReputation > 200 || k.BrokenReputation < k.CancelReputation || k.BrokenReputation > 400) p.Add("sunset.cancelReputation must be from 0 to 200 and brokenReputation from cancelReputation to 400");
+        }
+
+        static void AccountsProblems(List<string> p, GameConfig c)
+        {
+            AccountsConfig k = c.Accounts;
+            if (k == null) { p.Add("accounts is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("accounts.enabled must be 0 or 1");
+            if (k.MaxPeople < 1 || k.MaxPeople > 10) p.Add("accounts.maxPeople must be from 1 to 10");
+            if (k.KeepFree < 0 || k.KeepFree > 10) p.Add("accounts.keepFree must be from 0 to 10");
+            if (k.PerPersonPermille < 0 || k.PerPersonPermille > 500) p.Add("accounts.perPersonPermille must be from 0 to 500");
+            if (k.StartPermille < 0 || k.StartPermille >= MathI.Permille) p.Add("accounts.startPermille must be from 0 to 999, so a team always has something to learn");
+            if (k.MaxWeeks < 1 || k.MaxWeeks > 260) p.Add("accounts.maxWeeks must be from 1 to 260");
+            if (k.ComboCapPermille < 0 || k.ComboCapPermille > 1000) p.Add("accounts.comboCapPermille must be from 0 to 1000");
+            if (k.MaxPeople * k.PerPersonPermille > 1000) p.Add("accounts.maxPeople times perPersonPermille must not top 1000");
+        }
+
+        static void ConferenceProblems(List<string> p, GameConfig c)
+        {
+            ConferenceConfig k = c.Conference;
+            if (k == null) { p.Add("conference is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("conference.enabled must be 0 or 1");
+            if (k.MaxPending < 1 || k.MaxPending > 10) p.Add("conference.maxPending must be from 1 to 10");
+            if (k.MainCost < 1 || k.FlagshipCost < k.MainCost || k.FlagshipCost > 20) p.Add("conference.mainCost must be at least 1 and flagshipCost from mainCost to 20");
+            if (k.WorkshopWeeks < 1 || k.MainWeeks < k.WorkshopWeeks || k.FlagshipWeeks < k.MainWeeks || k.FlagshipWeeks > 104) p.Add("conference.workshopWeeks must be at least 1, mainWeeks at least workshopWeeks and flagshipWeeks from mainWeeks to 104");
+            if (k.MainBar < 0 || k.FlagshipBar < k.MainBar || k.FlagshipBar > 2000) p.Add("conference.mainBar must be at least 0 and flagshipBar from mainBar to 2000");
+            if (k.EffortPrestige < 0 || k.EffortPrestige > 500) p.Add("conference.effortPrestige must be from 0 to 500");
+            if (k.AcceptPrestige < 0 || k.AcceptPrestige > 500 || k.AcceptReputation < 0 || k.AcceptReputation > 200) p.Add("conference.acceptPrestige must be from 0 to 500 and acceptReputation from 0 to 200");
+            if (k.RefundPermille < 0 || k.RefundPermille >= MathI.Permille || k.WithdrawPermille < k.RefundPermille || k.WithdrawPermille >= MathI.Permille) p.Add("conference.refundPermille must be from 0 to 999 and withdrawPermille from refundPermille to 999, so a paper always costs something");
+        }
+
+        static void AlumniProblems(List<string> p, GameConfig c)
+        {
+            AlumniConfig k = c.Alumni;
+            if (k == null) { p.Add("alumni is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("alumni.enabled must be 0 or 1");
+            if (k.MaxSize < 1 || k.MaxSize > 50) p.Add("alumni.maxSize must be from 1 to 50");
+            if (k.ExpireWeeks < 1 || k.ExpireWeeks > 520) p.Add("alumni.expireWeeks must be from 1 to 520");
+            if (k.FeeGoodPermille < 0 || k.FeeLaidOffPermille < k.FeeGoodPermille || k.FeeQuitPermille < k.FeeLaidOffPermille || k.FeeQuitPermille > MathI.Permille) p.Add("alumni.feeGoodPermille must be at least 0, feeLaidOffPermille at least feeGoodPermille and feeQuitPermille from feeLaidOffPermille to 1000, so a worse parting never makes a return cheaper");
+            if (k.MoraleGood < -500 || k.MoraleGood > 500 || k.MoraleLaidOff < -500 || k.MoraleLaidOff > k.MoraleGood || k.MoraleQuit < -500 || k.MoraleQuit > k.MoraleLaidOff) p.Add("alumni.moraleGood must be from -500 to 500, moraleLaidOff from -500 to moraleGood and moraleQuit from -500 to moraleLaidOff");
+            if (k.PeerGood < -200 || k.PeerGood > 200 || k.PeerLaidOff < -200 || k.PeerLaidOff > k.PeerGood || k.PeerQuit < -200 || k.PeerQuit > k.PeerLaidOff) p.Add("alumni.peerGood must be from -200 to 200, peerLaidOff from -200 to peerGood and peerQuit from -200 to peerLaidOff");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

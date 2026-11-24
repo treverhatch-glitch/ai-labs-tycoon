@@ -98,6 +98,7 @@ namespace AiLabs.Rules.Systems
                 StaffTraitConfig t = c.StaffPeople.Trait(p.TraitId);
                 if (t == null || t.QuitBelowMorale <= 0 || p.Morale >= t.QuitBelowMorale) continue;
                 lab.Staff.RemoveAt(i);
+                Alumni.Record(c, state, lab, p, Alumni.Quit);
                 int loss = PressSystem.Damp(c, lab, c.StaffPeople.QuitReputation);
                 lab.Reputation = (int)MathI.Clamp((long)lab.Reputation - loss, 0, MathI.Permille);
                 Events.Add(state, EventKind.StaffQuit, lab.Id, p.Id, loss, p.RoleId + "|" + p.TraitId);

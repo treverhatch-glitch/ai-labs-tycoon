@@ -55,7 +55,7 @@ namespace AiLabs.Rules.Systems
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != function) continue;
-                if (Skunkworks.Away(c, lab, person)) continue;
+                if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person)) continue;
                 n += Mentoring.Weight(c, lab, person);
             }
             return n;
@@ -456,7 +456,7 @@ namespace AiLabs.Rules.Systems
                 if (role == null) continue;
                 total += lab.Staff[i].Senior == 1 ? MathI.MulPermille(role.WeeklySalary, MathI.Permille + c.Seniority.RaisePermille) : role.WeeklySalary;
             }
-            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab))) + Chairs.Stipends(c, lab);
+            return MathI.MulPermille(total, MathI.Max(100, MathI.Permille + Pay.SalaryPermille(c, lab) + Labour.PayPermille(c, lab) - StaffEquity.SalaryCutPermille(c, lab))) + Chairs.Stipends(c, lab);
         }
 
         public static long WeeklyRoomUpkeep(GameConfig c, LabState lab)

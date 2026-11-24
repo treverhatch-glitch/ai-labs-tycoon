@@ -77,7 +77,15 @@ namespace AiLabs.Rules.Sim
         AssignMentor,
         EndMentoring,
         StartSkunkworks,
-        WrapUpSkunkworks
+        WrapUpSkunkworks,
+        RecogniseUnion,
+        ResistUnion,
+        AnnounceSunset,
+        CancelSunset,
+        AssignAccountTeam,
+        SubmitPaper,
+        WithdrawPaper,
+        RehireAlumnus
     }
 
     /// <summary>
@@ -706,6 +714,69 @@ namespace AiLabs.Rules.Sim
         public static Command WrapUpSkunkworks(int labId)
         {
             return Make(CommandKind.WrapUpSkunkworks, labId);
+        }
+
+        /// <summary>Answers a staff drive to organise by recognising the union: a contract with better pay, dearer layoffs, no crunch time and a little more research.</summary>
+        public static Command RecogniseUnion(int labId)
+        {
+            return Make(CommandKind.RecogniseUnion, labId);
+        }
+
+        /// <summary>Answers a staff drive by resisting it: legal fees now, and the drive collapses only if pressure is back under the drive level at the end of the resisting period; a strike comes first if pressure tops out.</summary>
+        public static Command ResistUnion(int labId)
+        {
+            return Make(CommandKind.ResistUnion, labId);
+        }
+
+        /// <summary>Gives a released model an end-of-life notice of Count weeks (TargetId is the model). On the day its customers move to the successor it helped design, and the model is retired. Needs such a successor on sale, and costs the lab support while the notice runs.</summary>
+        public static Command AnnounceSunset(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.AnnounceSunset, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Calls a model's end-of-life notice off. It costs the lab some reputation.</summary>
+        public static Command CancelSunset(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CancelSunset, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Sets the salespeople on a sector's account team (Id is the sector, Count the people, 0 to disband). The sector needs a model of the lab on sale, and the people leave the lab-wide sales force. A new team starts from nothing and a changed one loses part of what it built.</summary>
+        public static Command AssignAccountTeam(int labId, string sectorId, int people)
+        {
+            Command c = Make(CommandKind.AssignAccountTeam, labId);
+            c.Id = sectorId;
+            c.Count = people;
+            return c;
+        }
+
+        /// <summary>Sends a paper to a venue (TargetId 1 workshop, 2 main conference, 3 flagship) with an effort of Count (1 to 3). The research points are paid now; the decision comes after the venue's review weeks and depends only on the lab's prestige that day plus the effort.</summary>
+        public static Command SubmitPaper(int labId, int venue, int effort)
+        {
+            Command c = Make(CommandKind.SubmitPaper, labId);
+            c.TargetId = venue;
+            c.Count = effort;
+            return c;
+        }
+
+        /// <summary>Takes a paper out of review (TargetId is its place in the lab's list, from 0) for part of the points back.</summary>
+        public static Command WithdrawPaper(int labId, int index)
+        {
+            Command c = Make(CommandKind.WithdrawPaper, labId);
+            c.TargetId = index;
+            return c;
+        }
+
+        /// <summary>Brings a former employee back (TargetId is the person's old id from the lab's alumni list). It costs a share of the hiring fee that is smaller for a better parting, needs a free seat, and the person returns with their old trait and a morale that depends on how they left.</summary>
+        public static Command RehireAlumnus(int labId, int personId)
+        {
+            Command c = Make(CommandKind.RehireAlumnus, labId);
+            c.TargetId = personId;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

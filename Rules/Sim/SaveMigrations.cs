@@ -87,6 +87,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 70) MigrateTo70(root);
             if (fromSchema < 71) MigrateTo71(root);
             if (fromSchema < 72) MigrateTo72(root);
+            if (fromSchema < 73) MigrateTo73(root);
+            if (fromSchema < 74) MigrateTo74(root);
+            if (fromSchema < 75) MigrateTo75(root);
+            if (fromSchema < 76) MigrateTo76(root);
+            if (fromSchema < 77) MigrateTo77(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -827,6 +832,46 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "skunkWork", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "skunkLockedUntil", JsonValue.Of(0L));
             });
+        }
+
+        /// <summary>Schema 73: no lab has organised labour pressure.</summary>
+        static void MigrateTo73(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "labourStage", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourPressure", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourHard", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 74: no model has an end-of-life notice.</summary>
+        static void MigrateTo74(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "sunsetStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "sunsetTick", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 75: no lab has account teams.</summary>
+        static void MigrateTo75(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "accountTeams", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 76: no lab has a paper out for review.</summary>
+        static void MigrateTo76(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "submissions", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 77: nobody has left a lab into the alumni pool.</summary>
+        static void MigrateTo77(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "alumni", JsonValue.Array()));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)

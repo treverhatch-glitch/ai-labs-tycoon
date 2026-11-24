@@ -116,6 +116,38 @@ namespace AiLabs.Rules.Sim
                     || (lab.SkunkKind != "" && (lab.SkunkPeople < 1 || lab.SkunkDue <= lab.SkunkStart))
                     || ((lab.SkunkKind != "" || lab.SkunkLockedUntil > 0) && lab.Id != state.PlayerLabId))
                     p.Add(who + " has a skunkworks project (\"" + lab.SkunkKind + "\", " + lab.SkunkPeople + " people, due week " + lab.SkunkDue + ") that the data does not allow");
+                if (lab.LabourStage < 0 || lab.LabourStage > 4 || lab.LabourPressure < 0 || lab.LabourPressure > MathI.Permille || lab.LabourDue < 0 || (lab.LabourHard != 0 && lab.LabourHard != 1)
+                    || (lab.LabourStage == 0 || lab.LabourStage == 2 ? lab.LabourDue != 0 : lab.LabourDue < 1)
+                    || (lab.LabourHard == 1 && lab.LabourStage != 2) || (lab.LabourStage == 2 && lab.LabourPressure != 0)
+                    || ((lab.LabourStage != 0 || lab.LabourPressure != 0 || lab.LabourHard != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a labour stage (" + lab.LabourStage + ", pressure " + lab.LabourPressure + ", due week " + lab.LabourDue + ") that the data does not allow");
+                {
+                    var seen = new System.Collections.Generic.HashSet<string>();
+                    int assigned = 0;
+                    foreach (AccountTeam team in lab.AccountTeams)
+                    {
+                        assigned += team.People;
+                        if (c.Sector(team.SectorId) == null || !seen.Add(team.SectorId) || team.People < 1 || team.People > c.Accounts.MaxPeople || team.Weeks < 0 || team.Weeks > c.Accounts.MaxWeeks)
+                            p.Add(who + " has an account team (" + team.SectorId + ", " + team.People + " people, " + team.Weeks + " weeks) that the data does not allow");
+                    }
+                    if (lab.AccountTeams.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has account teams, which only the player's lab can have");
+                    if (assigned > c.Accounts.MaxPeople * c.Market.Sectors.Count) p.Add(who + " has more people on account teams than the data allows");
+                }
+                {
+                    foreach (Submission paper in lab.Submissions)
+                        if (paper.Tier < 1 || paper.Tier > 3 || paper.Effort < 1 || paper.Effort > 3 || paper.Cost < 1 || paper.Due < 1)
+                            p.Add(who + " has a paper out for review (venue " + paper.Tier + ", effort " + paper.Effort + ", due week " + paper.Due + ") that the data does not allow");
+                    if (lab.Submissions.Count > c.Conference.MaxPending) p.Add(who + " has more papers out for review than the data allows");
+                    if (lab.Submissions.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has papers out for review, which only the player's lab can have");
+                }
+                {
+                    var seenAlumni = new System.Collections.Generic.HashSet<int>();
+                    foreach (Alumnus gone in lab.Alumni)
+                        if (c.Role(gone.RoleId) == null || gone.Terms < -1 || gone.Terms > 1 || gone.Left < 0 || gone.Left > state.Tick || !seenAlumni.Add(gone.Id))
+                            p.Add(who + " has an alumnus (" + gone.Id + ", " + gone.RoleId + ", left week " + gone.Left + ") that the data does not allow");
+                    if (lab.Alumni.Count > c.Alumni.MaxSize) p.Add(who + " has more alumni than the data allows");
+                    if (lab.Alumni.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has alumni, which only the player's lab can have");
+                }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -239,6 +271,9 @@ namespace AiLabs.Rules.Sim
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
+                    if (model.SunsetStart < 0 || model.SunsetTick < 0 || (model.SunsetTick == 0 && model.SunsetStart != 0)
+                        || (model.SunsetTick > 0 && (model.SunsetTick <= model.SunsetStart || lab.Id != state.PlayerLabId)))
+                        p.Add(model.Name + " has an end-of-life notice (given week " + model.SunsetStart + ", leaves week " + model.SunsetTick + ") that the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }

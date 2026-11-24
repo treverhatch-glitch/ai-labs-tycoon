@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 72;
+        public const int CurrentSchema = 77;
 
         public int Schema;
         public string ConfigVersion;
@@ -240,6 +240,20 @@ namespace AiLabs.Rules.State
         public long SkunkWork;
         /// <summary>The week the next project can start.</summary>
         public int SkunkLockedUntil;
+        /// <summary>The labour stage: 0 quiet, 1 organising (waiting for the player), 2 union recognised, 3 resisting, 4 on strike.</summary>
+        public int LabourStage;
+        /// <summary>Staff pressure to organise, 0 to 1000.</summary>
+        public int LabourPressure;
+        /// <summary>The week the stage ends (stages 1, 3 and 4), 0 otherwise.</summary>
+        public int LabourDue;
+        /// <summary>1 when the contract was forced by a strike.</summary>
+        public int LabourHard;
+        /// <summary>The salespeople assigned to sectors, one team a sector.</summary>
+        public List<AccountTeam> AccountTeams = new List<AccountTeam>();
+        /// <summary>Papers out for review, oldest first.</summary>
+        public List<Submission> Submissions = new List<Submission>();
+        /// <summary>People who left the lab and can be asked back, oldest first.</summary>
+        public List<Alumnus> Alumni = new List<Alumnus>();
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -475,6 +489,13 @@ namespace AiLabs.Rules.State
             s.Int("skunkDue", ref SkunkDue);
             s.Long("skunkWork", ref SkunkWork);
             s.Int("skunkLockedUntil", ref SkunkLockedUntil);
+            s.Int("labourStage", ref LabourStage);
+            s.Int("labourPressure", ref LabourPressure);
+            s.Int("labourDue", ref LabourDue);
+            s.Int("labourHard", ref LabourHard);
+            s.ObjList("accountTeams", ref AccountTeams);
+            s.ObjList("submissions", ref Submissions);
+            s.ObjList("alumni", ref Alumni);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -651,6 +672,10 @@ namespace AiLabs.Rules.State
         public int RedTeamUntil;
         /// <summary>The model holds an external audit certificate until this tick; 0 when it never had one, or it ran out or was pulled.</summary>
         public int AuditedUntil;
+        /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
+        public int SunsetStart;
+        /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
+        public int SunsetTick;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -686,6 +711,8 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("sunsetStart", ref SunsetStart);
+            s.Int("sunsetTick", ref SunsetTick);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);
