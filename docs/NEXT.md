@@ -433,6 +433,16 @@ and says why in the commit message.
 239. **Margin call era grace weeks.** ~~Done (local)~~: `MarginCallEraGrace`, schema 166 (Q496).
 240. **Batch twenty-two news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests` (Q497).
 
+### Era batch 23 (LOCAL prep on `w-af2f`, HOLD push)
+
+241. **Hearing share-price era boost tail.** ~~Done (local)~~: `HearingSharePriceEraBoost`, schema 167 (Q498).
+
+242. **Rung-six era cooldown shortening.** ~~Done (local)~~: `RungSixEraCooldown`, schema 168 (Q499).
+
+243. **Data source acquire era discount.** ~~Done (local)~~: `DataSourceAcquireEraDiscount`, schema 169 (Q500).
+
+244. **Batch twenty-three news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests` (Q501).
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

@@ -646,7 +646,10 @@ namespace AiLabs.Rules.State
         SectorPricingEraRelieved,
         LawTargetEraAmplified,
         SpecialistBranchEraDiscounted,
-        MarginCallEraGraced
+        MarginCallEraGraced,
+        HearingShareEraBoosted,
+        RungSixEraCooldownShortened,
+        DataSourceAcquireEraDiscounted
     }
 
     /// <summary>

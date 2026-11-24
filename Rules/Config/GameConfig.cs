@@ -195,6 +195,9 @@ namespace AiLabs.Rules.Config
         public LawTargetEraAmplifyConfig LawTargetEraAmplify = new LawTargetEraAmplifyConfig();
         public SpecialistBranchEraDiscountConfig SpecialistBranchEraDiscount = new SpecialistBranchEraDiscountConfig();
         public MarginCallEraGraceConfig MarginCallEraGrace = new MarginCallEraGraceConfig();
+        public HearingSharePriceEraBoostConfig HearingSharePriceEraBoost = new HearingSharePriceEraBoostConfig();
+        public RungSixEraCooldownConfig RungSixEraCooldown = new RungSixEraCooldownConfig();
+        public DataSourceAcquireEraDiscountConfig DataSourceAcquireEraDiscount = new DataSourceAcquireEraDiscountConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -388,6 +391,9 @@ namespace AiLabs.Rules.Config
             s.Obj("lawTargetEraAmplify", ref LawTargetEraAmplify);
             s.Obj("specialistBranchEraDiscount", ref SpecialistBranchEraDiscount);
             s.Obj("marginCallEraGrace", ref MarginCallEraGrace);
+            s.Obj("hearingSharePriceEraBoost", ref HearingSharePriceEraBoost);
+            s.Obj("rungSixEraCooldown", ref RungSixEraCooldown);
+            s.Obj("dataSourceAcquireEraDiscount", ref DataSourceAcquireEraDiscount);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

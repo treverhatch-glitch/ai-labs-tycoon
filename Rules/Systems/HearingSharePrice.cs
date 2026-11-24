@@ -21,10 +21,16 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < choice.Effects.Count; i++)
                 if (choice.Effects[i].Kind == OfficeEffectKind.Reputation) rep += choice.Effects[i].Amount;
             HearingSharePriceConfig cfg = c.HearingSharePrice;
-            int delta = rep >= 0 ? cfg.UpPermille : cfg.DownPermille;
-            if (delta <= 0) return;
-            if (rep < 0) state.BubblePermille = (int)MathI.Max(0, state.BubblePermille - delta);
-            else BubbleSystem.Boost(c, state, delta);
+            int baseDelta = rep >= 0 ? cfg.UpPermille : cfg.DownPermille;
+            if (baseDelta <= 0) return;
+            int boost = HearingSharePriceEraBoost.BoostPermille(c, state, rep);
+            int delta = baseDelta + boost;
+            if (rep < 0) state.BubblePermille = (int)MathI.Max(0, state.BubblePermille - baseDelta);
+            else
+            {
+                BubbleSystem.Boost(c, state, delta);
+                HearingSharePriceEraBoost.OnAnswered(c, state, lab, delta, boost);
+            }
             Events.Add(state, EventKind.HearingShareNudged, lab.Id, delta, rep, "");
         }
     }

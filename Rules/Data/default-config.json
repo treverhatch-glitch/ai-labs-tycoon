@@ -12447,6 +12447,24 @@
         "text": "{lab} caught a margin call with extra cure time"
       },
       {
+        "id": "hearing-share-era-boost",
+        "kind": "HearingShareEraBoosted",
+        "pick": -1,
+        "text": "{lab} boosted the bubble after a hearing in a late era"
+      },
+      {
+        "id": "rung-six-era-cooldown",
+        "kind": "RungSixEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} shortened rung-six cooldown after a crisis answer"
+      },
+      {
+        "id": "data-acquire-era-discount",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "pick": -1,
+        "text": "{lab} acquired {ref} with an era licensing discount"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16813,6 +16831,39 @@
         "toYear": 0
       },
       {
+        "id": "hearing-boost-chat",
+        "kind": "HearingShareEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The float got an extra bump after that hearing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rung-six-cooldown-chat",
+        "kind": "RungSixEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Crisis ladder cooldown came back faster this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-acquire-discount-chat",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "First payment on licensed data was cheaper than usual.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19606,5 +19657,20 @@
     "enabled": 1,
     "minEra": 2,
     "graceWeeks": 2
+  },
+  "hearingSharePriceEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "boostPermille": 50
+  },
+  "rungSixEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 4
+  },
+  "dataSourceAcquireEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
   }
 }

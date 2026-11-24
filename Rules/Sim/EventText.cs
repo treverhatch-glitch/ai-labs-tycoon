@@ -702,6 +702,12 @@ namespace AiLabs.Rules.Sim
                     return who + " branched specialist \"" + e.Ref + "\" with $" + e.Amount + " era discount on model " + e.SubjectId + ".";
                 case EventKind.MarginCallEraGraced:
                     return who + " got a margin call with " + e.Amount + " extra cure weeks (" + e.SubjectId + " total).";
+                case EventKind.HearingShareEraBoosted:
+                    return who + " nudged the bubble +" + e.Amount + " permille after a hearing (total +" + e.SubjectId + ").";
+                case EventKind.RungSixEraCooldownShortened:
+                    return who + " answered a rung-six crisis with a shorter cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.DataSourceAcquireEraDiscounted:
+                    return who + " acquired data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

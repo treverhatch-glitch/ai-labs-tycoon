@@ -44,6 +44,9 @@ os.replace(t,p)
 "
 }
 
+[ "$N" -le 169 ] && disable_cfg dataSourceAcquireEraDiscount
+[ "$N" -le 168 ] && disable_cfg rungSixEraCooldown
+[ "$N" -le 167 ] && disable_cfg hearingSharePriceEraBoost
 [ "$N" -le 166 ] && disable_cfg marginCallEraGrace
 [ "$N" -le 165 ] && disable_cfg specialistBranchEraDiscount
 [ "$N" -le 164 ] && disable_cfg lawTargetEraAmplify

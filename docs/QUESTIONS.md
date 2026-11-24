@@ -2397,3 +2397,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q496. Extra margin-call cure weeks in late era? DECIDED (schema 166): `marginCallEraGrace`; `MarginCallEraGraced` when a call fires.
 
 ### Q497. Batch twenty-two news, chat and combos. DECIDED: three headlines, three chat lines (418/371); `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests`.
+
+### Q498. Extra bubble nudge on positive hearing answers in late era? DECIDED (schema 167): `hearingSharePriceEraBoost`; `HearingShareEraBoosted` on hearing answers with float.
+
+### Q499. Shorter rung-six cooldown after crisis answer in late era? DECIDED (schema 168): `rungSixEraCooldown`; `RungSixEraCooldownShortened` on `RespondRungSix`.
+
+### Q500. Discount first acquire payment on data sources in late era? DECIDED (schema 169): `dataSourceAcquireEraDiscount`; `DataSourceAcquireEraDiscounted` on `AcquireDataSource`.
+
+### Q501. Batch twenty-three news, chat and combos. DECIDED: three headlines, three chat lines (421/374); `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests`.
