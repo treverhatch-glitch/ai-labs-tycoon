@@ -32,7 +32,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>The chance the weekly roll uses: the model's own plus what an overloaded lab adds.</summary>
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab));
+            return (int)MathI.Min(MathI.Permille, IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>
@@ -104,6 +104,8 @@ namespace AiLabs.Rules.Systems
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
+            long covered = Insurance.OnIncident(c, state, lab, model, rung, fine);
+            fine -= covered;
 
             model.Incidents++;
             model.LastIncidentRung = rung;

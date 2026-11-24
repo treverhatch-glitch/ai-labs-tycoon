@@ -36,7 +36,10 @@ namespace AiLabs.Rules.Sim
         SetCheckpoints,
         TakeLoan,
         RepayLoan,
-        SetResearchShare
+        SetResearchShare,
+        SetCrunch,
+        SetInsurance,
+        HoldOffsite
     }
 
     /// <summary>
@@ -326,6 +329,28 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Takes out, changes or cancels incident insurance: the level, from 0 (none) to the data's highest.</summary>
+        public static Command SetInsurance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetInsurance, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Takes the whole team away for a day: morale up for everyone who has room to rise, for about a week of salaries.</summary>
+        public static Command HoldOffsite(int labId)
+        {
+            return Make(CommandKind.HoldOffsite, labId);
+        }
+
+        /// <summary>Starts crunch time (on) or ends it (off).</summary>
+        public static Command SetCrunch(int labId, bool on)
+        {
+            Command c = Make(CommandKind.SetCrunch, labId);
+            c.Count = on ? 1 : 0;
+            return c;
+        }
+
         /// <summary>Borrows against the lab's chips: this share of what it could borrow now, in permille.</summary>
         public static Command TakeLoan(int labId, int permilleOfRoom)
         {
@@ -587,7 +612,7 @@ namespace AiLabs.Rules.Sim
         DesignNotReady, FoundryFull,
         ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
         EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable, BoardLocked,
-        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit
+        BelowEraSafetyBar, OfferGone, InquiryGone, ComplaintGone, BelowReleaseGate, GateLocked, LeadGone, NoOfficeEvent, LobbyCooling, PivotSpent, LoanLimit, TeamTooTired, Uninsurable, InsuranceLocked
     }
 
     public struct CommandResult

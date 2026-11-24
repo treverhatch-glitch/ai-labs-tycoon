@@ -80,6 +80,9 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.TakeLoan: return TakeLoan(c, state, lab, cmd);
                 case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
                 case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
+                case CommandKind.SetCrunch: return SetCrunch(c, state, lab, cmd);
+                case CommandKind.SetInsurance: return SetInsurance(c, state, lab, cmd);
+                case CommandKind.HoldOffsite: return HoldOffsite(c, state, lab);
                 case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
                 case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
                 case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
@@ -295,6 +298,51 @@ namespace AiLabs.Rules.Sim
             if (cmd.Permille < 0 || cmd.Permille > c.Research.MaxComputeSharePermille)
                 return Fail(CommandError.InvalidArgument, "The research share is from 0 to " + c.Research.MaxComputeSharePermille + ".");
             lab.ResearchSharePermille = cmd.Permille;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetCrunch(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can ask its people to work late.");
+            if (cmd.Count != 0 && cmd.Count != 1) return Fail(CommandError.InvalidArgument, "Crunch time is on (1) or off (0).");
+            if (cmd.Count == 0)
+            {
+                if (!Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is not in crunch time.");
+                Crunch.End(state, lab, "stopped", lab.CrunchWeeks - 1);
+                return CommandResult.Done(-1);
+            }
+            if (Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is already in crunch time.");
+            if (c.StaffPeople.CrunchMaxWeeks <= 0) return Fail(CommandError.InvalidArgument, "There is no crunch time in this game.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to work late.");
+            if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
+                return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");
+            lab.CrunchWeeks = 1;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult HoldOffsite(GameConfig c, GameState state, LabState lab)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab takes its team on an offsite.");
+            if (c.StaffPeople.OffsiteMoraleLift <= 0) return Fail(CommandError.InvalidArgument, "There are no offsites in this game.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to take away.");
+            if (Offsite.Lifted(c, lab) == 0) return Fail(CommandError.InvalidArgument, "No one has room left to rise: everyone is as high as an offsite can take them.");
+            long cost = Offsite.Cost(c, lab);
+            if (lab.Cash < cost) return NeedCash(lab, cost);
+            Offsite.Hold(c, state, lab, cost);
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetInsurance(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab buys incident insurance.");
+            FinanceConfig f = c.Finance;
+            if (cmd.Count < 0 || cmd.Count > f.InsuranceMaxLevel) return Fail(CommandError.InvalidArgument, "Insurance is from level 0 to " + f.InsuranceMaxLevel + ".");
+            if (cmd.Count == lab.InsuranceLevel) return Fail(CommandError.InvalidArgument, "The lab already has that cover.");
+            if (state.Tick < lab.InsuranceLockedUntil) return Fail(CommandError.InsuranceLocked, "The policy was changed recently and cannot be changed before week " + lab.InsuranceLockedUntil + ".");
+            if (cmd.Count > lab.InsuranceLevel && lab.InsuranceClaims >= f.InsuranceDropClaims)
+                return Fail(CommandError.Uninsurable, "No insurer will sell cover to a lab with " + lab.InsuranceClaims + " recent claims.");
+            lab.InsuranceLevel = cmd.Count;
+            lab.InsuranceLockedUntil = state.Tick + f.InsuranceLockWeeks;
             return CommandResult.Done(-1);
         }
 

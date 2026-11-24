@@ -761,11 +761,38 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab whose cash stays below zero this many weeks in a row goes bankrupt.</summary>
         public int BankruptcyGraceWeeks;
         public int HistoryMonths;
+        /// <summary>The highest insurance level; 0 for no insurance in the game.</summary>
+        public int InsuranceMaxLevel;
+        /// <summary>The share of an incident fine each level covers, in permille.</summary>
+        public int InsuranceCoverPermille;
+        /// <summary>The weekly premium per level as a share of last week's revenue, in permille.</summary>
+        public int InsurancePremiumPermille;
+        /// <summary>The weekly premium per level is never less than this many dollars.</summary>
+        public long InsuranceMinPremium;
+        /// <summary>Added to the premium for each claim the insurer remembers, in permille.</summary>
+        public int InsuranceClaimLoadingPermille;
+        /// <summary>One remembered claim is forgotten this many weeks apart.</summary>
+        public int InsuranceForgetWeeks;
+        /// <summary>The insurer ends the policy at this many remembered claims, and will not sell one while the lab is at it.</summary>
+        public int InsuranceDropClaims;
+        /// <summary>Incidents at this rung or above are not covered.</summary>
+        public int InsuranceExcludedRung;
+        /// <summary>Weeks a change to the policy locks it for.</summary>
+        public int InsuranceLockWeeks;
 
         public void Sync(Syncer s)
         {
             s.Int("bankruptcyGraceWeeks", ref BankruptcyGraceWeeks);
             s.Int("historyMonths", ref HistoryMonths);
+            s.Int("insuranceMaxLevel", ref InsuranceMaxLevel);
+            s.Int("insuranceCoverPermille", ref InsuranceCoverPermille);
+            s.Int("insurancePremiumPermille", ref InsurancePremiumPermille);
+            s.Long("insuranceMinPremium", ref InsuranceMinPremium);
+            s.Int("insuranceClaimLoadingPermille", ref InsuranceClaimLoadingPermille);
+            s.Int("insuranceForgetWeeks", ref InsuranceForgetWeeks);
+            s.Int("insuranceDropClaims", ref InsuranceDropClaims);
+            s.Int("insuranceExcludedRung", ref InsuranceExcludedRung);
+            s.Int("insuranceLockWeeks", ref InsuranceLockWeeks);
         }
     }
 

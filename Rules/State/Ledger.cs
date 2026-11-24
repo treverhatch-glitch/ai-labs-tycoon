@@ -10,7 +10,8 @@ namespace AiLabs.Rules.State
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
         ChipSales, GreyRevenue, Laundered, CapitalIn,
-        Acquisition, AssetSale
+        Acquisition, AssetSale,
+        Insurance
     }
 
     /// <summary>
@@ -46,6 +47,8 @@ namespace AiLabs.Rules.State
         public long Acquisition;
         /// <summary>Proceeds from selling a model line to another party.</summary>
         public long AssetSale;
+        /// <summary>The weekly premium for incident insurance.</summary>
+        public long Insurance;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -54,7 +57,7 @@ namespace AiLabs.Rules.State
             get
             {
                 return Revenue + Grants + AssetSale + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Acquisition;
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + Acquisition + Insurance;
             }
         }
 
@@ -83,6 +86,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.CapitalIn: return CapitalIn;
                 case LedgerLine.Acquisition: return Acquisition;
                 case LedgerLine.AssetSale: return AssetSale;
+                case LedgerLine.Insurance: return Insurance;
                 default: return 0;
             }
         }
@@ -112,6 +116,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.CapitalIn: CapitalIn += amount; break;
                 case LedgerLine.Acquisition: Acquisition += amount; break;
                 case LedgerLine.AssetSale: AssetSale += amount; break;
+                case LedgerLine.Insurance: Insurance += amount; break;
             }
         }
 
@@ -138,6 +143,7 @@ namespace AiLabs.Rules.State
             s.Long("capitalIn", ref CapitalIn);
             s.Long("acquisition", ref Acquisition);
             s.Long("assetSale", ref AssetSale);
+            s.Long("insurance", ref Insurance);
         }
     }
 

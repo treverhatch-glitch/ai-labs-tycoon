@@ -231,6 +231,15 @@ and says why in the commit message.
 48. **Overload costs reliability (bible ch. 6 model states, "overworked: serving load too high; reliability drops").** ~~Done~~: `safety.overloadIncidentPermille` / `overloadForRivals`, `SafetySystem.OverloadPermille` and `WeeklyChancePermille`, `IncidentBreakdown.FromOverload`, `OverloadTests`, `docs/content/overload.md` (Q289). No schema.
 49. **Release notes (bible ch. 14 "its release notes").** ~~Done~~: `OfficeTrigger.Release`, `OfficeEvents.OnRelease`, three events, `ReleaseNotesTests`, `docs/content/office-events.md` (Q290). No schema.
 50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 43, `MigrateTo43`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
+51. **Era-flavoured office events (bible "events by era").** ~~Done~~: `fromYear` / `toYear` on `OfficeEventConfig`, `OfficeEvents.InYears`, six events, `EraOfficeEventsTests`, `docs/content/office-events.md` (Q292).
+52. **Era-flavoured filler headlines (bible ch. 12 "the ticker").** ~~Done~~: `toYear` on `FillerConfig`, `NewsTicker.PickFiller`, 18 new lines, `EraFillerTests`, `docs/content/news-ticker.md` (Q293).
+53. **Era-flavoured company chat (bible ch. 10).** ~~Done~~: `fromYear` / `toYear` on `ChatLineConfig`, `CompanyChat.Fits`, seven lines, `EraChatTests`, `docs/content/company-chat-and-glow.md` (Q294).
+54. **Headlines for chip and loan events.** ~~Done~~: eight lines in `news.headlines`, `ChipLoanNewsTests`, `docs/content/news-ticker.md` (Q295).
+55. **Chat lines for chip and loan events.** ~~Done~~: ten lines in `chat.lines`, `ChipLoanChatTests`, `docs/content/company-chat-and-glow.md` (Q296).
+56. **Headlines for press, poaching and Gauntlet events.** ~~Done~~: five lines in `news.headlines`, `PressNewsTests`, `docs/content/news-ticker.md` (Q297).
+57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 44, `MigrateTo44`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
+58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 45, `MigrateTo45`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
+59. **The offsite (staff).** ~~Done~~: `HoldOffsite`, `Offsite`, `staffPeople.offsite*`, `OffsiteHeld`, `OffsiteTests`, `docs/content/offsite.md` (Q300).
 
 ## Rules: later
 

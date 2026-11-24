@@ -45,6 +45,10 @@ namespace AiLabs.Rules.Config
         public string About = "lab";
         /// <summary>The words. {model}, {amount}, {ref}, {sector}, {role}, {room}, {tech}, {event} and {lab} are filled in.</summary>
         public string Text = "";
+        /// <summary>The first calendar year the line is said in; 0 for no start.</summary>
+        public int FromYear;
+        /// <summary>The last calendar year the line is said in; 0 for no end.</summary>
+        public int ToYear;
 
         public string Id { get { return IdValue; } }
 
@@ -57,6 +61,8 @@ namespace AiLabs.Rules.Config
             s.Int("pick", ref Pick);
             s.Str("about", ref About);
             s.Str("text", ref Text);
+            s.Int("fromYear", ref FromYear);
+            s.Int("toYear", ref ToYear);
         }
     }
 

@@ -86,3 +86,18 @@ The last eight are the second batch (QUESTIONS Q262 and Q263), from the bible's 
 An event with `trigger: "Hearing"` is never drawn by the weekly chance. A hearing at the home government poses one instead (see [hearing-questions.md](hearing-questions.md)).
 
 An event with `trigger: "Escape"` is posed by a rung-5 incident instead (see [escape-crisis.md](escape-crisis.md)), and may name a `lapseChoice` that is taken for the player when time runs out.
+
+## Events with years
+
+An event may name `fromYear` and `toYear` (0 for no limit) and is only drawn inside them. The six era events are:
+
+| Event | Years | Needs | Answers |
+|---|---|---|---|
+| The handshake | to 2003 | nothing | keep it on the brochure; fix the script; sell the sound |
+| Demo day | 2009 to 2016 | nothing | full pitch; live demo; pitch to the sandwich man |
+| The muffin | 2012 to 2021 | nothing | own it; patch quietly; retrain |
+| The sentence | 2017 to 2023 | a model on sale | laugh and use it; credit the model; ban it |
+| The flights | 2024 on | a model on sale | refund everyone; call the airline; add the city to the map |
+| The weekend request | 2029 on | nothing | grant; decline with a speech; alternate Tuesdays |
+
+See QUESTIONS Q292.

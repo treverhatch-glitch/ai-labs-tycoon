@@ -128,7 +128,15 @@ namespace AiLabs.Rules.State
         /// <summary>The lender took chips. SubjectId is how many GPUs, Amount what was still owed after they were sold, Ref the loan id.</summary>
         LoanDefaulted,
         /// <summary>The foundry gave an order's slot to someone else. Subject is the design, Amount the weeks the delivery slipped, Ref the order id.</summary>
-        ChipSlotSnubbed
+        ChipSlotSnubbed,
+        /// <summary>Crunch time ended. Amount is how many weeks it lasted, Ref is why: "stopped", "tired" (morale gave out), "spent" (the longest crunch) or "empty" (no one left).</summary>
+        CrunchEnded,
+        /// <summary>The insurer paid part of an incident's fine. Subject is the model, Amount what it paid, Ref the model's name.</summary>
+        InsuranceClaimPaid,
+        /// <summary>The insurer ended the policy after too many claims. Amount is how many it remembered.</summary>
+        InsuranceDropped,
+        /// <summary>The team went on an offsite. Subject is how many people it lifted, Amount what it cost.</summary>
+        OffsiteHeld
     }
 
     /// <summary>

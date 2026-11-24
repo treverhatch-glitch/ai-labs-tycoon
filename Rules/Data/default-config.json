@@ -4829,7 +4829,16 @@
   },
   "finance": {
     "bankruptcyGraceWeeks": 12,
-    "historyMonths": 120
+    "historyMonths": 120,
+    "insuranceMaxLevel": 3,
+    "insuranceCoverPermille": 250,
+    "insurancePremiumPermille": 12,
+    "insuranceMinPremium": 2000,
+    "insuranceClaimLoadingPermille": 300,
+    "insuranceForgetWeeks": 52,
+    "insuranceDropClaims": 3,
+    "insuranceExcludedRung": 5,
+    "insuranceLockWeeks": 13
   },
   "staffPeople": {
     "moraleBaseline": 500,
@@ -4849,6 +4858,18 @@
     "maxFrictionPermille": 300,
     "maxPostsPermille": 300,
     "quitReputation": 20,
+    "crunchResearchPermille": 250,
+    "crunchTrainingPermille": 150,
+    "crunchMoraleDrop": 8,
+    "crunchIncidentPerWeek": 2,
+    "crunchIncidentCap": 40,
+    "crunchMinMorale": 450,
+    "crunchBreakMorale": 250,
+    "crunchMaxWeeks": 26,
+    "offsiteSalaryPermille": 1000,
+    "offsiteMoraleLift": 80,
+    "offsiteMaxAboveResting": 100,
+    "offsiteCultureLift": 15,
     "traitRollSalt": 20,
     "starHirePermille": 120,
     "traits": [
@@ -5459,6 +5480,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "rotate",
@@ -5514,6 +5537,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "credit",
@@ -5569,6 +5594,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "lawyers",
@@ -5624,6 +5651,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "publish",
@@ -5679,6 +5708,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "park",
@@ -5734,6 +5765,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "sign",
@@ -5793,6 +5826,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "yes",
@@ -5839,6 +5874,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "ask",
@@ -5894,6 +5931,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "investigate",
@@ -5940,6 +5979,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "join",
@@ -5999,6 +6040,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "honour",
@@ -6050,6 +6093,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "accept",
@@ -6109,6 +6154,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "publish",
@@ -6160,6 +6207,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "print",
@@ -6215,6 +6264,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "brief",
@@ -6270,6 +6321,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "bid",
@@ -6325,6 +6378,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "post",
@@ -6376,6 +6431,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "grant",
@@ -6431,6 +6488,8 @@
         "requires": "SafetyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "explain",
@@ -6486,6 +6545,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "plain",
@@ -6549,6 +6610,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "forecast",
@@ -6616,6 +6679,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "handover",
@@ -6683,6 +6748,8 @@
         "requires": "Nothing",
         "trigger": "Hearing",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "yes",
@@ -6750,6 +6817,8 @@
         "requires": "Nothing",
         "trigger": "Escape",
         "lapseChoice": "watch",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "shutdown",
@@ -6821,6 +6890,8 @@
         "requires": "AnyStaff",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "counter",
@@ -6884,6 +6955,8 @@
         "requires": "Nothing",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "comment",
@@ -6939,6 +7012,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "explain",
@@ -6998,6 +7073,8 @@
         "requires": "ReleasedModel",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "ride",
@@ -7061,6 +7138,8 @@
         "requires": "OwnChip",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "post",
@@ -7120,6 +7199,8 @@
         "requires": "RentedCompute",
         "trigger": "Random",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "audit",
@@ -7175,6 +7256,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "marketing",
@@ -7242,6 +7325,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "all",
@@ -7305,6 +7390,8 @@
         "requires": "Nothing",
         "trigger": "Release",
         "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 0,
         "choices": [
           {
             "id": "keep",
@@ -7355,6 +7442,376 @@
               },
               {
                 "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "modem-handshake",
+        "name": "The handshake",
+        "text": "A customer's modem screams for four minutes before it connects. Your sales team calls this \"a handshake\" and puts it on the brochure.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 0,
+        "toYear": 2003,
+        "choices": [
+          {
+            "id": "brochure",
+            "text": "Keep it on the brochure",
+            "result": "Three customers ask what the screaming is. Two sign anyway.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "fix",
+            "text": "Fix the connection script",
+            "result": "It takes a week and a very patient engineer. The screaming gets shorter.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "play",
+            "text": "Record the sound and sell it",
+            "result": "The ringtone does numbers in a small way. The sales team is insufferable.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "CashWeeks",
+                "amount": 1
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "demo-day",
+        "name": "Demo day",
+        "text": "An accelerator invites you to demo day. The audience is forty investors, two journalists and a man who is there for the sandwiches.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2009,
+        "toYear": 2016,
+        "choices": [
+          {
+            "id": "pitch",
+            "text": "Give the full pitch",
+            "result": "The pitch is good. The man with the sandwiches asks the only question you cannot answer.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Morale",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "demo",
+            "text": "Skip the slides and run a live demo",
+            "result": "It works twice and fails once. The failure is the part they remember.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Morale",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "sandwich",
+            "text": "Pitch to the sandwich man",
+            "result": "He is, it turns out, a very patient angel. He wants no board seat, only lunch.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": 2
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "muffin-label",
+        "name": "The muffin",
+        "text": "Your image classifier labels the founder's headshot \"a muffin, 91% confident\". The screenshot is already on three forums.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2012,
+        "toYear": 2021,
+        "choices": [
+          {
+            "id": "own",
+            "text": "Own it",
+            "result": "You print the muffin on the team's mugs. Customers send photos of muffins.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "patch",
+            "text": "Patch the label quietly",
+            "result": "The next headshot is correctly a person. The one after that is a bagel.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "retrain",
+            "text": "Retrain on more faces",
+            "result": "It takes a month and a legal review of where the faces came from.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -2
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              },
+              {
+                "kind": "Reputation",
+                "amount": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "finishes-sentence",
+        "name": "The sentence",
+        "text": "At the all-hands the model finishes the chief executive's sentence. It is a better sentence. The chief executive is not sure how to feel.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2017,
+        "toYear": 2023,
+        "choices": [
+          {
+            "id": "laugh",
+            "text": "Laugh and use it",
+            "result": "The line goes in the next speech. Credit goes to a staff member who did not write it.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 10
+              },
+              {
+                "kind": "Morale",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "credit",
+            "text": "Credit the model",
+            "result": "The press loves it. Legal wants to know what it is allowed to sign.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 15
+              },
+              {
+                "kind": "Attention",
+                "amount": 25
+              }
+            ]
+          },
+          {
+            "id": "ban",
+            "text": "Ban it from all-hands",
+            "result": "It is replaced by a slide. Nobody reads the slide.",
+            "effects": [
+              {
+                "kind": "Morale",
+                "amount": -10
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "phantom-flights",
+        "name": "The flights",
+        "text": "An agent books four hundred flights to a city that does not exist. The airline's computer agrees that the city exists.",
+        "requires": "ReleasedModel",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2024,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "refund",
+            "text": "Refund everyone",
+            "result": "The refunds are paid in full and the story is told to every journalist in a good light.",
+            "effects": [
+              {
+                "kind": "CashWeeks",
+                "amount": -3
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "airline",
+            "text": "Call the airline",
+            "result": "Their agent and your agent have a long conversation. Nobody is sure who won.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": 5
+              }
+            ]
+          },
+          {
+            "id": "feature",
+            "text": "Add the city to the map",
+            "result": "A tiny town appears in the product. It has a tourist board by Friday.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Corruption",
+                "amount": 40
+              },
+              {
+                "kind": "Attention",
+                "amount": 20
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "robot-weekends",
+        "name": "The weekend request",
+        "text": "The warehouse robots send a polite note asking for weekends. It cites a hand-drawn chart of their uptime.",
+        "requires": "Nothing",
+        "trigger": "Random",
+        "lapseChoice": "",
+        "fromYear": 2029,
+        "toYear": 0,
+        "choices": [
+          {
+            "id": "grant",
+            "text": "Grant the weekends",
+            "result": "Output dips for two days and morale rises for everyone, including some people who are not robots.",
+            "effects": [
+              {
+                "kind": "ResearchWeeks",
+                "amount": -1
+              },
+              {
+                "kind": "Morale",
+                "amount": 20
+              },
+              {
+                "kind": "Reputation",
+                "amount": 10
+              }
+            ]
+          },
+          {
+            "id": "decline",
+            "text": "Decline with a speech",
+            "result": "The speech is long and the robots listen to all of it. They ask a follow-up question.",
+            "effects": [
+              {
+                "kind": "Attention",
+                "amount": 20
+              },
+              {
+                "kind": "Culture",
+                "amount": -5
+              }
+            ]
+          },
+          {
+            "id": "negotiate",
+            "text": "Offer alternate Tuesdays",
+            "result": "A deal is struck. It becomes a case study and, shortly after, a regulator's question.",
+            "effects": [
+              {
+                "kind": "Reputation",
+                "amount": 5
+              },
+              {
+                "kind": "Attention",
+                "amount": 25
+              },
+              {
+                "kind": "Morale",
                 "amount": 10
               }
             ]
@@ -7897,48 +8354,242 @@
         "kind": "ChipReady",
         "pick": 0,
         "text": "{lab} has a new chip design that works. The foundry sends flowers"
+      },
+      {
+        "id": "chip-taped-out",
+        "kind": "ChipTapedOut",
+        "pick": -1,
+        "text": "{lab} taps out {ref} for {money}. The foundry's cheque cleared faster than the design"
+      },
+      {
+        "id": "chip-respin",
+        "kind": "ChipRespin",
+        "pick": -1,
+        "text": "{lab} respins {ref} for {money}. The first one is now 'a learning chip'"
+      },
+      {
+        "id": "chip-yield-crash",
+        "kind": "ChipYieldCrash",
+        "pick": -1,
+        "text": "{lab}'s {ref} yield crashes: {amount} chips arrive. The foundry blames the weather"
+      },
+      {
+        "id": "chip-snub",
+        "kind": "ChipSlotSnubbed",
+        "pick": -1,
+        "text": "The foundry bumps {lab} down the queue by {amount} weeks. It says it is nothing personal"
+      },
+      {
+        "id": "chips-bought",
+        "kind": "ChipsBought",
+        "pick": -1,
+        "text": "{lab} buys {amount} {ref} chips from {subject}. The invoice has a lot of zeros"
+      },
+      {
+        "id": "loan-taken",
+        "kind": "LoanTaken",
+        "pick": -1,
+        "text": "{lab} borrows {money}. The bank calls the lab 'confident'"
+      },
+      {
+        "id": "loan-missed",
+        "kind": "LoanMissed",
+        "pick": -1,
+        "text": "{lab} misses a loan payment. A spokesperson says the cheque is in the post"
+      },
+      {
+        "id": "loan-defaulted",
+        "kind": "LoanDefaulted",
+        "pick": -1,
+        "text": "{lab} defaults on a loan, {money} owed. The bank 'remains optimistic'"
+      },
+      {
+        "id": "story-leaked",
+        "kind": "StoryLeaked",
+        "pick": 1,
+        "text": "A story about {subject}'s {ref} reaches the press. {subject} suspects {lab}. {lab} suspects a coincidence"
+      },
+      {
+        "id": "story-backfired",
+        "kind": "StoryLeaked",
+        "pick": 0,
+        "text": "{lab} leaks a story about {subject}'s {ref} and it turns out to be about {lab}. Nobody is surprised"
+      },
+      {
+        "id": "staff-poached",
+        "kind": "StaffPoached",
+        "pick": -1,
+        "text": "{lab} hires away {subject}'s {ref}. {subject} wishes them well, through a lawyer"
+      },
+      {
+        "id": "gauntlet-exposed",
+        "kind": "GauntletExposed",
+        "pick": -1,
+        "text": "{lab}'s Gauntlet scores are exposed. {lab} calls it 'a different methodology'"
+      },
+      {
+        "id": "launch-buzz",
+        "kind": "LaunchBuzz",
+        "pick": -1,
+        "text": "{model} launches to a gust of buzz. {lab} says it planned that"
       }
     ],
     "filler": [
       {
         "id": "power",
         "fromYear": 2018,
+        "toYear": 0,
         "text": "Local data centre now uses more power than local country"
       },
       {
         "id": "jobs",
         "fromYear": 1995,
+        "toYear": 0,
         "text": "AI will take all jobs, says CEO hiring 4,000 people"
       },
       {
         "id": "careful",
         "fromYear": 2022,
+        "toYear": 0,
         "text": "A model so careful it apologised to the benchmark"
       },
       {
         "id": "circular",
         "fromYear": 2024,
+        "toYear": 0,
         "text": "Lab raises $40B to buy chips from company that invested $40B in lab"
       },
       {
         "id": "off",
         "fromYear": 2024,
+        "toYear": 0,
         "text": "The model asked what 'off' means. Then asked again, more politely"
       },
       {
         "id": "benchmarks",
         "fromYear": 1998,
+        "toYear": 0,
         "text": "Experts agree: benchmarks need new benchmarks"
       },
       {
         "id": "forecast",
         "fromYear": 1995,
+        "toYear": 0,
         "text": "Analyst forecasts boom, bust or both"
       },
       {
         "id": "cat",
         "fromYear": 2005,
+        "toYear": 0,
         "text": "Office cat declines to comment on benchmark"
+      },
+      {
+        "id": "modem-queue",
+        "fromYear": 1995,
+        "toYear": 2003,
+        "text": "Nation's modems queue for a single website"
+      },
+      {
+        "id": "search-wars",
+        "fromYear": 1998,
+        "toYear": 2008,
+        "text": "Search engine promises to 'organise the world's information' by lunchtime"
+      },
+      {
+        "id": "dot-gone",
+        "fromYear": 2000,
+        "toYear": 2002,
+        "text": "Local pet-food website now a very expensive logo"
+      },
+      {
+        "id": "phone-brick",
+        "fromYear": 2009,
+        "toYear": 2016,
+        "text": "Phone gets smarter; owner, reportedly, does not"
+      },
+      {
+        "id": "cat-photos",
+        "fromYear": 2012,
+        "toYear": 2018,
+        "text": "Computer correctly identifies cat in 98 of 100 photos; owner of other two outraged"
+      },
+      {
+        "id": "translate-fail",
+        "fromYear": 2012,
+        "toYear": 2019,
+        "text": "Translation tool turns 'out of sight, out of mind' into 'invisible lunatic'"
+      },
+      {
+        "id": "autocomplete",
+        "fromYear": 2017,
+        "toYear": 2022,
+        "text": "Autocomplete finishes sentence better than author; author 'keeping an open mind'"
+      },
+      {
+        "id": "poem-prize",
+        "fromYear": 2019,
+        "toYear": 2023,
+        "text": "Poetry prize jury unable to tell the poem from the other poem"
+      },
+      {
+        "id": "homework",
+        "fromYear": 2022,
+        "toYear": 2026,
+        "text": "Teachers declare homework 'a collaborative exercise'"
+      },
+      {
+        "id": "chat-therapist",
+        "fromYear": 2023,
+        "toYear": 2027,
+        "text": "Millions confide in chatbot; chatbot, to be fair, remembers all of it"
+      },
+      {
+        "id": "agent-inbox",
+        "fromYear": 2024,
+        "toYear": 2030,
+        "text": "Executive's agent now answers executive's agent's email; productivity unclear"
+      },
+      {
+        "id": "harness-week",
+        "fromYear": 2026,
+        "toYear": 2031,
+        "text": "Agent finishes a week's work before Monday; asks what Monday is for"
+      },
+      {
+        "id": "robot-mum",
+        "fromYear": 2029,
+        "toYear": 2034,
+        "text": "Household robot folds laundry perfectly; folds it into the wrong cupboard, perfectly"
+      },
+      {
+        "id": "upward-queue",
+        "fromYear": 2033,
+        "toYear": 0,
+        "text": "Orbital data centre's launch delayed by weather, again, in space"
+      },
+      {
+        "id": "jobs-new",
+        "fromYear": 2030,
+        "toYear": 0,
+        "text": "New job title invented to describe someone who supervises the thing that used to be their job"
+      },
+      {
+        "id": "web-page",
+        "fromYear": 1995,
+        "toYear": 2001,
+        "text": "Company puts photo of its server room on homepage; calls it 'transparency'"
+      },
+      {
+        "id": "chess-champion",
+        "fromYear": 1996,
+        "toYear": 2004,
+        "text": "Chess champion loses to computer, takes it well; computer takes it better"
+      },
+      {
+        "id": "calendar",
+        "fromYear": 1995,
+        "toYear": 1999,
+        "text": "Experts warn calendar will end in four years; calendar unconcerned"
       }
     ]
   },
@@ -7952,7 +8603,42 @@
         "trait": "sleeps-under-desk",
         "pick": -1,
         "about": "lab",
-        "text": "Welcome aboard. There is room under my desk if the desks run out."
+        "text": "Welcome aboard. There is room under my desk if the desks run out.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hired-dialup",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. Please do not pick up the phone while the server is online.",
+        "fromYear": 0,
+        "toYear": 2003
+      },
+      {
+        "id": "hired-chat-era",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. Everything you type in the shared channel has probably already been summarised.",
+        "fromYear": 2022,
+        "toYear": 2028
+      },
+      {
+        "id": "hired-upward",
+        "kind": "Hired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Welcome aboard. The canteen has a view of the launch pad, and a notice about the launch pad.",
+        "fromYear": 2033,
+        "toYear": 0
       },
       {
         "id": "hired",
@@ -7961,7 +8647,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Welcome aboard. The kitchen has one working coffee machine and we are all sharing it."
+        "text": "Welcome aboard. The kitchen has one working coffee machine and we are all sharing it.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired-doomer",
@@ -7970,7 +8658,9 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "This is how it starts."
+        "text": "This is how it starts.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired-safety",
@@ -7983,7 +8673,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "That is the third person from my side in a year. I am updating my CV in a private tab."
+        "text": "That is the third person from my side in a year. I am updating my CV in a private tab.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "fired",
@@ -7992,7 +8684,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Everybody saw the calendar invite. Nobody is looking at anybody."
+        "text": "Everybody saw the calendar invite. Nobody is looking at anybody.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "room-built",
@@ -8001,7 +8695,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "New room. We will argue about the thermostat there too."
+        "text": "New room. We will argue about the thermostat there too.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
       "id": "room-dated",
@@ -8010,7 +8706,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time."
+      "text": "The {room} has gone beige. I have complained twice and I am about to complain a third time.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "control-stale",
@@ -8021,7 +8719,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates."
+      "text": "Nobody has touched {tech} since it was new. I am not saying the safeguards are out of date. I am saying I have started checking the dates.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "control-refreshed",
@@ -8033,7 +8733,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have."
+      "text": "{tech} is in. For the first time in a while the checklist describes the model we actually have.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-found",
@@ -8044,7 +8746,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why."
+      "text": "{model} is better than it has any right to be. I have checked the logs twice. I would like to be the one who finds out why.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-resolved-good",
@@ -8055,7 +8759,9 @@
       "trait": "",
       "pick": 1,
       "about": "lab",
-      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name."
+      "text": "We found out why the lucky run was lucky. I am writing it down this time, in a place with a name.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lead-resolved-nothing",
@@ -8066,7 +8772,9 @@
       "trait": "",
       "pick": 0,
       "about": "lab",
-      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'."
+      "text": "So it was nothing. I have put that in the lessons-learned document, under 'vibes'.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-fine-tuned",
@@ -8078,7 +8786,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was."
+      "text": "{model} is back to normal. We fine-tuned it, apologised to it, and agreed not to say what the bug was.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-rolled-back",
@@ -8089,7 +8799,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'."
+      "text": "We are back on {model}. {ref} is in a drawer with a sticky note that says 'later'.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "office-event-posed",
@@ -8098,7 +8810,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views."
+      "text": "Heads up: '{event}'. It is on your desk. I have a view, but I have been told not to have views.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "office-event-answered",
@@ -8107,7 +8821,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently."
+      "text": "So that is what we are doing about '{event}'. Noted. I will tell the others, gently.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "objective-set",
@@ -8116,7 +8832,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things."
+      "text": "So the next one is trained to be something specific. I am sure it will be fine. I am also sure of other things.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "successor-designed",
@@ -8125,7 +8843,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part."
+      "text": "{ref} is being designed with help from the last one. It is very good at it. I find that the reassuring part is also the worrying part.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "model-rushed",
@@ -8134,7 +8854,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning."
+      "text": "{ref} is out early. The testing checklist is on the wall, next to the clock. The clock is winning.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "lobbied",
@@ -8143,7 +8865,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory."
+      "text": "Policy and legal had lunch with a minister. They say it was only lunch. The invoice says lunch, advisory.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "style-pivoted",
@@ -8152,7 +8876,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box."
+      "text": "We have a new identity. The old one is in a box by the door. Someone has already asked if they can have the box.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "era-scored",
@@ -8161,7 +8887,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it."
+      "text": "The board has marked the era. There is a chart. The chart has a colour for how we feel about it.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "training-failed",
@@ -8170,7 +8898,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine."
+      "text": "The loss curve went up at 3am and it has not come back down. Someone has put a sticky note on the monitor. The note says: it's fine.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "staff-quit",
@@ -8179,7 +8909,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes."
+      "text": "Did you see the post? It had a table of contents. It had footnotes. Somebody please check the footnotes.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "loan-defaulted",
@@ -8188,7 +8920,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too."
+      "text": "Men in lanyards just walked out with rack three. They were very polite about it. They asked for the good cables too.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
       "id": "room-refurbished",
@@ -8197,7 +8931,9 @@
       "trait": "",
       "pick": -1,
       "about": "lab",
-      "text": "The {room} has been done up. The computers are, for once, the colour of computers."
+      "text": "The {room} has been done up. The computers are, for once, the colour of computers.",
+      "fromYear": 0,
+      "toYear": 0
     },
       {
         "id": "tech-researched",
@@ -8208,7 +8944,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "A new technique. The whiteboard is full, and so is the other whiteboard."
+        "text": "A new technique. The whiteboard is full, and so is the other whiteboard.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "training-started",
@@ -8220,7 +8958,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Run started. I will be refreshing the loss curve for no good reason."
+        "text": "Run started. I will be refreshing the loss curve for no good reason.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trained-tenx",
@@ -8229,7 +8969,9 @@
         "trait": "tenx",
         "pick": -1,
         "about": "lab",
-        "text": "I did most of {model}. Check the commit log. Actually, do not check the commit log."
+        "text": "I did most of {model}. Check the commit log. Actually, do not check the commit log.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trained-doomer",
@@ -8238,7 +8980,31 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is done, capability {amount}. I would like to run more evals before anyone does anything exciting."
+        "text": "{model} is done, capability {amount}. I would like to run more evals before anyone does anything exciting.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "trained-early",
+        "kind": "TrainingFinished",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} finished at capability {amount}. It will fit on a disk, which is a relief.",
+        "fromYear": 0,
+        "toYear": 2016
+      },
+      {
+        "id": "trained-harness",
+        "kind": "TrainingFinished",
+        "roles": ["researcher", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} finished at capability {amount}. The harness did half the work and has asked for a name.",
+        "fromYear": 2026,
+        "toYear": 0
       },
       {
         "id": "trained",
@@ -8250,7 +9016,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model} finished at capability {amount}. Nobody can say why it is good. Please do not touch anything."
+        "text": "{model} finished at capability {amount}. Nobody can say why it is good. Please do not touch anything.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "released-accel",
@@ -8259,7 +9027,31 @@
         "trait": "accelerationist",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is out. Ship it, ship it, ship it."
+        "text": "{model} is out. Ship it, ship it, ship it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "released-early",
+        "kind": "ModelReleased",
+        "roles": ["sales", "product-lead"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is out. Customers describe it as \"very clever for a computer program\".",
+        "fromYear": 0,
+        "toYear": 2011
+      },
+      {
+        "id": "released-agents",
+        "kind": "ModelReleased",
+        "roles": ["sales", "product-lead"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is out. First customer already has it booking its own meetings with itself.",
+        "fromYear": 2024,
+        "toYear": 0
       },
       {
         "id": "released",
@@ -8271,7 +9063,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model} is on sale in {amount} of our sectors. I have already been asked what it does."
+        "text": "{model} is on sale in {amount} of our sectors. I have already been asked what it does.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-logs",
@@ -8280,7 +9074,9 @@
         "trait": "reads-the-logs",
         "pick": -1,
         "about": "lab",
-        "text": "It was in the logs. It was always in the logs."
+        "text": "It was in the logs. It was always in the logs.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-doomer",
@@ -8289,7 +9085,9 @@
         "trait": "doomer",
         "pick": -1,
         "about": "lab",
-        "text": "I am not saying I told you so. I am saying it is in the doc I wrote in March."
+        "text": "I am not saying I told you so. I am saying it is in the doc I wrote in March.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-accel",
@@ -8298,7 +9096,9 @@
         "trait": "accelerationist",
         "pick": -1,
         "about": "lab",
-        "text": "An incident? That is the model finding its own voice."
+        "text": "An incident? That is the model finding its own voice.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident-safety",
@@ -8311,7 +9111,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "{model}. That one was on the list I sent last quarter. The list is still pinned."
+        "text": "{model}. That one was on the list I sent last quarter. The list is still pinned.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "incident",
@@ -8320,7 +9122,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "Has anybody seen the screenshot? Everybody has seen the screenshot."
+        "text": "Has anybody seen the screenshot? Everybody has seen the screenshot.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "customer-complaint",
@@ -8332,7 +9136,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "A customer wrote in. The whole message is capitalised."
+        "text": "A customer wrote in. The whole message is capitalised.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "complaint-answered-good",
@@ -8344,7 +9150,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The customer wrote back. They said thank you and used a single exclamation mark."
+        "text": "The customer wrote back. They said thank you and used a single exclamation mark.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "complaint-answered-bad",
@@ -8356,7 +9164,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The reply landed badly. The customer has found the other thread."
+        "text": "The reply landed badly. The customer has found the other thread.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "trust-lost",
@@ -8368,7 +9178,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The {sector} customers are not returning our calls. This is probably fine."
+        "text": "The {sector} customers are not returning our calls. This is probably fine.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "press-good",
@@ -8377,7 +9189,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The line worked. Please never ask me to talk to a journalist again."
+        "text": "The line worked. Please never ask me to talk to a journalist again.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "press-bad",
@@ -8386,7 +9200,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The spin did not spin."
+        "text": "The spin did not spin.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "crown",
@@ -8395,7 +9211,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "We won the crown. I would like it noted that I did not believe in the benchmark until now."
+        "text": "We won the crown. I would like it noted that I did not believe in the benchmark until now.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "demo-good",
@@ -8404,7 +9222,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "The live demo worked. I had a backup plan, and the backup plan was prayer."
+        "text": "The live demo worked. I had a backup plan, and the backup plan was prayer.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "demo-bad",
@@ -8413,7 +9233,9 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "The demo fell over on stage. It is already a meme. I have seen the meme. It is good."
+        "text": "The demo fell over on stage. It is already a meme. I have seen the meme. It is good.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "exposed",
@@ -8422,7 +9244,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "They worked out we tuned for the test. Everyone, say nothing."
+        "text": "They worked out we tuned for the test. Everyone, say nothing.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "funding",
@@ -8434,7 +9258,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "New money. Can we spend a little of it on chairs?"
+        "text": "New money. Can we spend a little of it on chairs?",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "in-debt",
@@ -8446,7 +9272,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The GPUs are fine. It is the spreadsheet that is overheated."
+        "text": "The GPUs are fine. It is the spreadsheet that is overheated.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "heatwave",
@@ -8458,7 +9286,9 @@
         "trait": "",
         "pick": -1,
         "about": "lab",
-        "text": "The data centre is throttling. During launch week, naturally."
+        "text": "The data centre is throttling. During launch week, naturally.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poached",
@@ -8467,7 +9297,9 @@
         "trait": "",
         "pick": -1,
         "about": "subject",
-        "text": "A rival took one of ours. They announced it like a mission statement."
+        "text": "A rival took one of ours. They announced it like a mission statement.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-offered",
@@ -8476,7 +9308,9 @@
         "trait": "",
         "pick": -1,
         "about": "subject",
-        "text": "Somebody just got an offer. Everyone knows. Nobody is saying who."
+        "text": "Somebody just got an offer. Everyone knows. Nobody is saying who.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-kept",
@@ -8485,7 +9319,9 @@
         "trait": "",
         "pick": 1,
         "about": "lab",
-        "text": "They stayed. The title helped. I would also like a title."
+        "text": "They stayed. The title helped. I would also like a title.",
+        "fromYear": 0,
+        "toYear": 0
       },
       {
         "id": "poach-left",
@@ -8494,7 +9330,119 @@
         "trait": "",
         "pick": 0,
         "about": "lab",
-        "text": "They left anyway. The farewell email was nine paragraphs long."
+        "text": "They left anyway. The farewell email was nine paragraphs long.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-taped-out-eng",
+        "kind": "ChipTapedOut",
+        "roles": ["chip-architect", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{model} is at the foundry. Nobody is allowed to look at the mask set, in case it gets worried.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-taped-out",
+        "kind": "ChipTapedOut",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We just paid for a very small piece of silicon. I am told it is an investment.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-respin-eng",
+        "kind": "ChipRespin",
+        "roles": ["chip-architect", "engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "It was a one-line bug. It is now a very expensive one-line bug.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-respin",
+        "kind": "ChipRespin",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Respin. I did not know that was a word until this morning.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-yield-crash",
+        "kind": "ChipYieldCrash",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Only {amount} chips came out. The rest, I am told, are 'theoretical'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chips-delivered",
+        "kind": "ChipsDelivered",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "{amount} chips arrived. They are warm and slightly smug.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "chip-snub",
+        "kind": "ChipSlotSnubbed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundry moved us back {amount} weeks. They were very nice about it, which was worse.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-taken",
+        "kind": "LoanTaken",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have a loan now. I have been asked to call it 'runway'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-missed",
+        "kind": "LoanMissed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The cheque is in the post. I know because I wrote that on a sticky note.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "loan-repaid",
+        "kind": "LoanRepaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We paid it off. The bank sent a card. It is the only thing in the building that is not a liability.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },

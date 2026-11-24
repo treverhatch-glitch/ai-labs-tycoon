@@ -1854,6 +1854,63 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(a)** for now. Era/hardening merge refs run the full Release suite in about 36–40 minutes wall time (`internal/simtests-timing-2026-11-24.md`); a **40m** job cap cancelled green runs at the end of the suite, not a hung test. Bump `.github/workflows/rules.yml` `timeout-minutes` from **40** to **60** on `main` so PR heads that merge `main` inherit the budget; re-merge `main` into branches that timed out (e.g. **#48** @ `a2296efe`). Filtered PR CI remains a larger follow-up.
 - Why: cheap, matches measured runtime, and keeps one full-suite bar until the era line is trimmed or split.
 
+### Q292. Can an office event belong to a stretch of years? DECIDED: yes, `fromYear` / `toYear` on the event (0 for open), six events use them
+- An office event may now name the first and last calendar year it can happen in. `OfficeEvents.Eligible` takes an optional tick and drops events outside their years; the weekly draw passes the current tick. Called without a tick (tests, tools) the years are ignored.
+- Six events use it: the modem handshake (to 2003), demo day (2009 to 2016), the muffin (2012 to 2021), the sentence (2017 to 2023), the phantom flights (2024 on) and the weekend request (2029 on). The older 33 events carry `fromYear: 0, toYear: 0` and happen at any date.
+- The validator rejects negative years or a first year after the last.
+- The golden digest did not move: the draw is only for the player and the golden run sees none of the new events. Rivals have no office, so the economy is untouched.
+- Alternatives: era ids instead of years (rejected: scenarios can move era dates); a separate `requires` kind (rejected: a requirement is about the lab, not the calendar).
+
+### Q293. Can filler headlines belong to an era? DECIDED: yes, `toYear` joins `fromYear`, and 18 new lines use it
+- A filler line may now name a last year (`toYear`, 0 for no end), the same way an office event names its years (Q292). `NewsTicker.PickFiller` skips a line after its last year; the validator rejects a line that ends before it starts.
+- 18 new lines cover the dial-up days (modems, a homepage, a calendar, a chess match), the dot-com bust, the phone and cat-photo years, autocomplete and the poem prize, homework, the chatbot therapist, agent inboxes, harnesses, household robots and the orbital launch delay. The older eight keep `toYear: 0`.
+- Every calendar year from 1995 has at least five lines open (a test checks 1995 to 2045), so the ticker is never padded short.
+- The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing about the economy changed.
+
+### Q294. Can chat lines belong to an era? DECIDED: yes, `fromYear` / `toYear` on a chat line, seven lines use them
+- A chat line may name the first and last calendar year it is said in. `CompanyChat.Fits` compares the event's tick, so an old event keeps the voice of its time when the feed is read later.
+- Seven lines use it: a hire in the dial-up days (to 2003), the chat boom (2022 to 2028) and the upward era (2033 on); a release by sales to 2011 and from 2024; a finished model to 2016 and from 2026. They sit after the trait lines and before the plain lines, so personality still beats era, and era beats the plain line.
+- The validator rejects negative years or a first year after the last. The chat is read off the event log and never saved: the golden digest did not move and the economy is untouched.
+- Two chat tests that pinned the plain "hired" line now ask for it in 2012, a year no era line covers.
+
+### Q295. Which chip and loan events make the news? DECIDED: tapeouts, respins, yield crashes, foundry snubs, chip sales, loans, missed payments and defaults
+- Eight new headline lines for events that had none: `ChipTapedOut`, `ChipRespin`, `ChipYieldCrash`, `ChipSlotSnubbed` (item 47), `ChipsBought`, `LoanTaken`, `LoanMissed` and `LoanDefaulted`. A repaid loan stays quiet (good news is not news).
+- Every lab's events reach the ticker, so a rival's tapeout or default makes the paper too. The ticker is never saved and rolls no shared dice, so the golden digest did not move and the economy is untouched.
+- Alternatives: also headline `ModelSold`, `StaffQuit` and `GauntletAward` (rejected for now: they would crowd out the release and incident lines the player cares about).
+
+### Q296. How do the people react to chips and loans? DECIDED: ten chat lines for eight event kinds
+- Ten new lines: `ChipTapedOut` and `ChipRespin` each have a line for chip architects and engineers and a plain line for anyone else; `ChipYieldCrash`, `ChipsDelivered` and `ChipSlotSnubbed` have a plain line that says the chip or week count; `LoanTaken`, `LoanMissed` and `LoanRepaid` have a plain line each.
+- Chat is read off the event log and never saved: the golden digest did not move and the economy is untouched. One chat test that counted the table now expects 72 lines.
+- Alternatives: lines for `LoanDefaulted` (rejected: the `InDebt` and bankruptcy lines already speak for it and a default is the end of a conversation, not the start).
+
+### Q297. Which press and talent events make the news? DECIDED: leaks (both ways), poached staff, exposed Gauntlet scores and launch buzz
+- Five new headline lines: `StoryLeaked` (pick 1 for a leak that ran, pick 0 for one that backfired), `StaffPoached`, `GauntletExposed` and `LaunchBuzz`. A poach by no particular lab reads "A LAB HIRES AWAY...".
+- Left out on purpose: `TrustLost` (one event per sector, many with no loss) and `ChinaDealOffered` (an offer, not an event the paper would run).
+- The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing in the economy changed.
+
+### Q298. Can the player ask the team to work late? DECIDED: yes, crunch time: +25% research and +15% training speed for -8 morale a week and a rising incident risk, up to 26 weeks
+- New state `lab.crunchWeeks` (schema 44, `MigrateTo44`), command `SetCrunch(on)`, `Crunch` system, event `CrunchEnded`, command error `TeamTooTired`. Player only; nothing changes until it is turned on, so no rival, soak or economy guard moves.
+- It costs morale (8 a week against a 1-point drift), adds incident chance (2 permille per week up to 40) and ends when the team is worn out (average morale under 250), after 26 weeks, when the player says, or when no one is left.
+- It cannot start below an average morale of 450. A full 26-week crunch ends near 320, so the next one waits; the long-run gain is a few percent, not 25.
+- Morale below the baseline still does not slow research (Q180), so the real cost is the incident risk, the quits and the wait.
+- The golden digest moved to 691a1ad0 because of the new field and the schema number only; reverting both brought the previous digest (3ccf0148) back.
+- Alternatives: a research penalty from low morale (rejected: Q180 turned it off on purpose); a cash cost for overtime (rejected: morale and incidents are the cost the bible names for rushing).
+
+### Q299. Can the player insure against incident fines? DECIDED: yes, three levels of 25% cover each, a premium on revenue, claims that load it, and a drop-out at three
+- New state on the lab (schema 45, `MigrateTo45`): `insuranceLevel`, `insuranceClaims`, `insuranceLockedUntil`; a new ledger line `insurance` (appended to `LedgerLine`, migrated into every ledger totals object as zero); command `SetInsurance(level)`; `Insurance` system; events `InsuranceClaimPaid` and `InsuranceDropped`; command errors `Uninsurable` and `InsuranceLocked`. All appended.
+- Premium per level is the larger of $2,000 and 1.2% of last week's revenue, plus 30% for each remembered claim. The cover is 25% of the fine per level, so level 3 covers 75% and the validator keeps the top level at or under 100%.
+- Rung 5 and above (an escape) is never covered, make-good payments and reputation loss are not covered, a claim is forgotten every 52 weeks, and the third remembered claim ends the policy. Changing it locks the policy for 13 weeks.
+- Player only and opt-in: no rival buys, the autopilot does not buy, so economy bounds and the balance soak are unchanged. `EconomyBoundsTests` and the soak were not rerun for this item beyond the full suite, since defaults change nothing.
+- The golden digest moved to e1ea850c because of the three lab fields, the ledger field and the schema number only; reverting them brought the previous digest (691a1ad0) back.
+- Alternatives: a flat premium (rejected: a rich lab would never feel it); covering reputation loss (rejected: insurance pays money, not trust); a one-off deductible instead of a share (rejected: a share scales with the fine).
+
+### Q300. Can the player take the team on an offsite? DECIDED: yes, a week of salaries for +80 morale (never more than 100 above resting) and +15 culture, with no cooldown state
+- New command `HoldOffsite`, `Offsite` system, event `OffsiteHeld`, `staffPeople.offsite*` data. No new saved state (so no schema and the golden digest did not move): the limit is the ceiling, resting morale plus 100, so a second offsite gives only what room is left and a third is refused.
+- It costs one week of salaries on the hiring ledger line, lifts everyone with room to rise, and adds 15 safety culture points (the player's lab only). Refused when there is no one to take, no cash, nothing to gain, no offsites in the data, or the lab is not the player's or is bankrupt.
+- It is how a tired team gets over crunch time's start line (average morale 450) and how a person who would quit by blog post is kept; both are tested.
+- The worry was a permanent research bonus from chained offsites. With the ceiling at resting plus 100 the extra research is about 4% and decays at the drift, so it is capped and not a loop.
+- Alternatives: a cooldown (rejected: it needs saved state and the ceiling already limits it); a flat morale set to the maximum (rejected: that would be the exploit).
+
 ## Open
 
 None.

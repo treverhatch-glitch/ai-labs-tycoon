@@ -112,7 +112,7 @@ public class MigrationTests
             amount *= 3;
         }
         Assert.Equal(expected, totals.Net);
-        Assert.Equal(21, Enum.GetValues(typeof(LedgerLine)).Length);
+        Assert.Equal(22, Enum.GetValues(typeof(LedgerLine)).Length);
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public class MigrationTests
             var all = new List<LedgerTotals> { lab.Ledger.ThisWeek, lab.Ledger.LastWeek, lab.Ledger.ThisMonth, lab.Ledger.Lifetime };
             all.AddRange(lab.Ledger.History.Select(h => h.Totals));
             foreach (LedgerTotals t in all)
-                foreach (LedgerLine line in new[] { LedgerLine.Land, LedgerLine.SiteBuild, LedgerLine.Power, LedgerLine.ChipDevelopment, LedgerLine.ChipSales, LedgerLine.GreyRevenue, LedgerLine.Laundered, LedgerLine.CapitalIn, LedgerLine.Acquisition, LedgerLine.AssetSale })
+                foreach (LedgerLine line in new[] { LedgerLine.Land, LedgerLine.SiteBuild, LedgerLine.Power, LedgerLine.ChipDevelopment, LedgerLine.ChipSales, LedgerLine.GreyRevenue, LedgerLine.Laundered, LedgerLine.CapitalIn, LedgerLine.Acquisition, LedgerLine.AssetSale, LedgerLine.Insurance })
                     Assert.Equal(0, t.Get(line));
             Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
         }

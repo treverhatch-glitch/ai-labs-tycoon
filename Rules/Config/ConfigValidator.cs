@@ -208,6 +208,17 @@ namespace AiLabs.Rules.Config
 
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
+            FinanceConfig fin = c.Finance;
+            if (fin.InsuranceMaxLevel < 0 || fin.InsuranceMaxLevel > 10) p.Add("finance.insuranceMaxLevel needs 0 to 10");
+            if (fin.InsuranceCoverPermille < 0 || fin.InsuranceCoverPermille > MathI.Permille) p.Add("finance.insuranceCoverPermille needs 0 to 1000");
+            if (fin.InsuranceMaxLevel * fin.InsuranceCoverPermille > MathI.Permille) p.Add("finance.insuranceMaxLevel times insuranceCoverPermille is over 1000, so the top level would cover more than the fine");
+            if (fin.InsurancePremiumPermille < 0 || fin.InsurancePremiumPermille > MathI.Permille) p.Add("finance.insurancePremiumPermille needs 0 to 1000");
+            if (fin.InsuranceMinPremium < 0) p.Add("finance.insuranceMinPremium is negative");
+            if (fin.InsuranceClaimLoadingPermille < 0 || fin.InsuranceClaimLoadingPermille > 10000) p.Add("finance.insuranceClaimLoadingPermille needs 0 to 10000");
+            if (fin.InsuranceForgetWeeks < 1 || fin.InsuranceForgetWeeks > 520) p.Add("finance.insuranceForgetWeeks needs 1 to 520");
+            if (fin.InsuranceDropClaims < 1 || fin.InsuranceDropClaims > 100) p.Add("finance.insuranceDropClaims needs 1 to 100");
+            if (fin.InsuranceExcludedRung < 1 || fin.InsuranceExcludedRung > 99) p.Add("finance.insuranceExcludedRung needs 1 to 99");
+            if (fin.InsuranceLockWeeks < 0 || fin.InsuranceLockWeeks > 520) p.Add("finance.insuranceLockWeeks needs 0 to 520");
             FundingProblems(p, c);
             StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
@@ -492,6 +503,7 @@ namespace AiLabs.Rules.Config
                 if (!AiLabs.Rules.Systems.CompanyChat.IsEventKind(l.Kind)) p.Add(who + " is about the unknown event kind \"" + l.Kind + "\"");
                 if (string.IsNullOrWhiteSpace(l.Text)) p.Add(who + " has no text");
                 if (l.Pick < -1 || l.Pick > 1) p.Add(who + " needs pick -1, 0 or 1");
+                if (l.FromYear < 0 || l.ToYear < 0 || (l.ToYear > 0 && l.FromYear > l.ToYear)) p.Add(who + " has years that do not make a range (" + l.FromYear + " to " + l.ToYear + ")");
                 if (l.About != "lab" && l.About != "subject") p.Add(who + " needs about \"lab\" or \"subject\"");
                 foreach (string role in l.Roles)
                     if (c.Role(role) == null) p.Add(who + " names the unknown role \"" + role + "\"");
@@ -548,6 +560,7 @@ namespace AiLabs.Rules.Config
                 if (string.IsNullOrWhiteSpace(f.Text)) p.Add(who + " has no text");
                 if (f.Text != null && f.Text.IndexOf('{') >= 0) p.Add(who + " has a placeholder, and filler is not about an event");
                 if (f.FromYear < 1000 || f.FromYear > 3000) p.Add(who + " needs a fromYear from 1000 to 3000");
+                if (f.ToYear != 0 && f.ToYear < f.FromYear) p.Add(who + " ends (" + f.ToYear + ") before it starts (" + f.FromYear + ")");
             }
         }
 
@@ -750,6 +763,7 @@ namespace AiLabs.Rules.Config
                 string who = "office event " + e.IdValue;
                 if (string.IsNullOrEmpty(e.Name)) p.Add(who + " has no name");
                 if (string.IsNullOrEmpty(e.Text)) p.Add(who + " has no text");
+                if (e.FromYear < 0 || e.ToYear < 0 || (e.ToYear > 0 && e.FromYear > e.ToYear)) p.Add(who + " has years that do not make a range (" + e.FromYear + " to " + e.ToYear + ")");
                 if (e.Choices.Count < 2) p.Add(who + " needs at least two choices");
                 if (!string.IsNullOrEmpty(e.LapseChoice) && e.Choice(e.LapseChoice) == null) p.Add(who + " lapses into the unknown choice \"" + e.LapseChoice + "\"");
                 UniqueIds(p, who + " choices", e.Choices);
@@ -1422,6 +1436,19 @@ namespace AiLabs.Rules.Config
             if (s.TraitRollSalt < 0) p.Add("staffPeople.traitRollSalt is negative");
             if (s.MaxPostsPermille < 0 || s.MaxPostsPermille > 1000) p.Add("staffPeople.maxPostsPermille needs 0 to 1000");
             if (s.QuitReputation < 0 || s.QuitReputation > MathI.Permille) p.Add("staffPeople.quitReputation needs 0 to 1000");
+            if (s.CrunchResearchPermille < 0 || s.CrunchResearchPermille > 5000) p.Add("staffPeople.crunchResearchPermille needs 0 to 5000");
+            if (s.CrunchTrainingPermille < 0 || s.CrunchTrainingPermille > 5000) p.Add("staffPeople.crunchTrainingPermille needs 0 to 5000");
+            if (s.CrunchMoraleDrop < 0 || s.CrunchMoraleDrop > MathI.Permille) p.Add("staffPeople.crunchMoraleDrop needs 0 to 1000");
+            if (s.CrunchIncidentPerWeek < 0 || s.CrunchIncidentPerWeek > MathI.Permille) p.Add("staffPeople.crunchIncidentPerWeek needs 0 to 1000");
+            if (s.CrunchIncidentCap < 0 || s.CrunchIncidentCap > MathI.Permille) p.Add("staffPeople.crunchIncidentCap needs 0 to 1000");
+            if (s.CrunchMinMorale < 0 || s.CrunchMinMorale > MathI.Permille) p.Add("staffPeople.crunchMinMorale needs 0 to 1000");
+            if (s.CrunchBreakMorale < 0 || s.CrunchBreakMorale > MathI.Permille) p.Add("staffPeople.crunchBreakMorale needs 0 to 1000");
+            if (s.CrunchBreakMorale > s.CrunchMinMorale) p.Add("staffPeople.crunchBreakMorale is above crunchMinMorale, so crunch would end the week it starts");
+            if (s.CrunchMaxWeeks < 0 || s.CrunchMaxWeeks > 520) p.Add("staffPeople.crunchMaxWeeks needs 0 to 520");
+            if (s.OffsiteSalaryPermille < 0 || s.OffsiteSalaryPermille > 52000) p.Add("staffPeople.offsiteSalaryPermille needs 0 to 52000");
+            if (s.OffsiteMoraleLift < 0 || s.OffsiteMoraleLift > MathI.Permille) p.Add("staffPeople.offsiteMoraleLift needs 0 to 1000");
+            if (s.OffsiteMaxAboveResting < 0 || s.OffsiteMaxAboveResting > MathI.Permille) p.Add("staffPeople.offsiteMaxAboveResting needs 0 to 1000");
+            if (s.OffsiteCultureLift < 0 || s.OffsiteCultureLift > MathI.Permille) p.Add("staffPeople.offsiteCultureLift needs 0 to 1000");
             int hireShare = 0;
             for (int i = 0; i < s.Traits.Count; i++) hireShare += s.Traits[i].HirePermille;
             if (hireShare > MathI.Permille) p.Add("staffPeople.traits hirePermille adds up to " + hireShare + ": it must not pass 1000");

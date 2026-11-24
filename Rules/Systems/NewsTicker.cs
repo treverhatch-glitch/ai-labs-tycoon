@@ -68,7 +68,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < c.News.Filler.Count; i++)
             {
                 FillerConfig f = c.News.Filler[i];
-                if (f.FromYear > year) continue;
+                if (f.FromYear > year || (f.ToYear > 0 && f.ToYear < year)) continue;
                 bool used = false;
                 for (int k = 0; k < taken.Count; k++) if (taken[k].IsFiller && taken[k].LineId == f.IdValue) used = true;
                 if (!used) open.Add(f);

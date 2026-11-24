@@ -47,8 +47,9 @@ namespace AiLabs.Rules.Systems
             public int FromRush;
             /// <summary>Extra chance while the lab cannot serve its customers; zero from the model-only query.</summary>
             public int FromOverload;
+            public int FromCrunch;
 
-            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload; } }
+            public int Total { get { return FromConfig + FromAlignment + FromCorruption + FromRush + FromOverload + FromCrunch; } }
         }
 
         public struct ExitPriceBreakdown
@@ -161,6 +162,7 @@ namespace AiLabs.Rules.Systems
         {
             IncidentBreakdown b = IncidentParts(c, state.Tick, model);
             b.FromOverload = SafetySystem.OverloadPermille(c, state, lab);
+            b.FromCrunch = Crunch.IncidentPermille(c, lab);
             return b;
         }
 

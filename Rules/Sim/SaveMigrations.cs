@@ -58,6 +58,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 41) MigrateTo41(root);
             if (fromSchema < 42) MigrateTo42(root);
             if (fromSchema < 43) MigrateTo43(root);
+            if (fromSchema < 44) MigrateTo44(root);
+            if (fromSchema < 45) MigrateTo45(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -526,6 +528,27 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo43(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 44: no team was in crunch time.</summary>
+        static void MigrateTo44(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crunchWeeks", JsonValue.Of(0L)));
+        }
+
+        public static readonly string[] LedgerPlaces = { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" };
+
+        /// <summary>Schema 45: no lab had insurance, and the ledger gained a premium line (zero, so cash is still explained).</summary>
+        static void MigrateTo45(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "insuranceLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "insuranceClaims", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "insuranceLockedUntil", JsonValue.Of(0L));
+            });
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "insurance", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
