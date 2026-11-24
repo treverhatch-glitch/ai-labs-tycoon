@@ -1,13 +1,13 @@
-# Next grouped push (LOCAL queue)
+# Grouped push 119–121 (LANDED)
 
-**Remote parent:** `c19315764de0e360a2bae32a95b4e6207c8e81a1` (116–118).
+**Remote:** `ff87cc93bdab8bee02e48029619cd6d32b7fdf14` (parent `c193157`). Pushed **~20:29 ICT** Nov 24.
 
-| Batch | Topic | Token |
+| Batch | Q | Topic |
 | --- | --- | --- |
-| 119 | STATUS sync through 115 | `CampusAlt76StatusSyncThrough115PresentationSpec` |
+| 119 | Q568 | STATUS sync 115 |
+| 120 | Q569 | Rollup refresh 115 |
+| 121 | Q570 | GO packet through 118 |
 
-Grow **120+** (Q569 rollup) before next GO.
+Prepush **284** meta; coauth grep clean; `ls-remote` verified.
 
-**HOLD:** **≥~20:28 ICT** (+30m from `c193157` @ ~19:58 ICT).
-
-**Squash:** `commit-tree`; prepush coauth grep; plain push on coordinator GO only.
+Next: Q571+ **LOCAL** until **≥~20:59 ICT**.
