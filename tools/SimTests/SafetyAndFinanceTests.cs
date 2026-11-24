@@ -67,7 +67,7 @@ public class SafetyAndFinanceTests
     public void An_incident_costs_reputation_and_a_fine_and_the_model_glitches_for_a_while()
     {
         // Find the first incident of a reckless lab and look at the week it happened.
-        Game g = Game.Solo(seed: 4).WithStarterLab(gpus: 8);
+        Game g = Game.Solo(seed: 4, tweak: c => c.Safety.SectorFlavours.Clear()).WithStarterLab(gpus: 8);
         ModelState model = g.Train("mini", 0);
         g.UntilTrained(model);
         g.Release(model, "game-ai", "game-bots");

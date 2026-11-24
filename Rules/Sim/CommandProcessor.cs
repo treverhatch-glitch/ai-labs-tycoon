@@ -73,6 +73,8 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.LeakStory: return LeakStory(c, state, lab, cmd);
                 case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
                 case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
+                case CommandKind.SetReleaseGate: return SetReleaseGate(c, state, lab, cmd);
+                case CommandKind.CleanUpNaming: return CleanUpNaming(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -315,7 +317,8 @@ namespace AiLabs.Rules.Sim
             model.Id = state.TakeId();
             model.LineId = line.Id;
             model.Version = LabQueries.NextVersion(lab, line.Id);
-            model.Name = lab.FamilyName + " " + line.Name + " " + model.Version;
+            model.Name = VersionNaming.NameFor(c, lab, line, model.Version);
+            VersionNaming.OnVersionNamed(c, lab);
             model.Status = ModelStatus.Training;
             model.RequiredCompute = EraSystem.RunCompute(c, line, state.Tick);
             model.AlignmentSharePermille = cmd.Permille;
@@ -336,6 +339,8 @@ namespace AiLabs.Rules.Sim
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released)
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
+            if (SafetyCulture.GateBlocks(lab, model))
+                return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");
             if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
                 return Fail(CommandError.BelowEraSafetyBar, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and the law in " + EraSystem.AtTick(c, state.Tick).Name + " asks for " + EraRules.ReleaseBar(c, state.Tick) + " before a model goes on sale.");
 
@@ -378,6 +383,7 @@ namespace AiLabs.Rules.Sim
                 model.Status = ModelStatus.Released;
                 model.ReleasedTick = state.Tick;
                 PressSystem.OnLaunch(c, state, lab, model);
+                SafetyCulture.OnFirstRelease(c, lab, model);
                 if (cmd.Permille > 0)
                     model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
                 else if (model.DisplayedAlignment < model.Alignment)

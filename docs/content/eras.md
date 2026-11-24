@@ -39,6 +39,8 @@ The era banner event lists what changed from the era before (`EraRules.Shifts`);
 
 Trouble that belongs to an era (`safety.riskClasses`). A class opens with its era and stays open. It bites a model that is on sale in one of its sectors: such an incident is that class instead of the era's plain mishap, with a larger fine and a bigger blow to reputation. A model with no class biting it gets the plain mishap as before, and the dice are not touched. The plain mishap keeps `safety.genericRiskWeight` (1000) against each class's weight, so it never disappears. The era banner names the classes an era opens.
 
+On top of the class, the sector's own way of failing applies: see [sector-flavours.md](sector-flavours.md). The fine and the reputation lost are the rung's, times the class, times the sector's flavour, then the era's fine rule.
+
 | Class | Opens | Sectors | Fine | Reputation | Weight |
 | --- | --- | --- | --- | --- | --- |
 | `bias` Bias | `it-sees` | `fraud-detection`, `doc-reading`, `image-recognition`, `voice-assistants` | x1 | x1.5 | 1000 |

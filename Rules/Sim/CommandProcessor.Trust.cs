@@ -18,6 +18,7 @@ namespace AiLabs.Rules.Sim
 
             if (cost > 0) Finance.Spend(lab, LedgerLine.Hiring, cost);
             lab.Complaints.Remove(complaint);
+            SafetyCulture.OnComplaintAnswered(c, lab);
             bool works = state.Rng.Rivals.Chance(TrustSystem.AnswerChance(c, lab, response).Total);
             int points = works
                 ? (int)MathI.MulPermille(complaint.Stake, response.RestorePermille)

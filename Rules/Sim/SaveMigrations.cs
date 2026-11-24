@@ -44,6 +44,8 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 27) MigrateTo27(root);
             if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
+            if (fromSchema < 30) MigrateTo30(root);
+            if (fromSchema < 31) MigrateTo31(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -401,6 +403,23 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo29(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static void MigrateTo30(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "cultureShift", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "releaseGate", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "gateSetTick", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 31: the version naming mess, tidy to start with.</summary>
+        static void MigrateTo31(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
