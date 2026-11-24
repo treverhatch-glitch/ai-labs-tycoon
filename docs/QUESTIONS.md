@@ -1125,17 +1125,29 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **102–105** acquire/distress/plan; **106–109** pop/freeze/treaty/bubble (bible **Q97–Q98**, **Q89**, **Q150–Q153**, **Q90**).
 
-### Q7336–Q7615. Batches 110–113 cross bars? DECIDED: test-only (LOCAL off `488a5cd4`)
+### Q7336–Q7895. Batches 110–117 cross bars? DECIDED: test-only (**pushed @ `fff5b629`**)
 
-- **110–113** model sales, exit/sell (**Q99**), bubble acquire, balance soak (**Q101**); schema **29** only.
+### Q7896–Q8455. Batches 118–125 cross bars? DECIDED: test-only (**pushed @ `6c5a0aba`**)
 
-### Q7616–Q7895. Batches 114–117 cross bars? DECIDED: test-only (LOCAL off `488a5cd4`)
+### Q8456–Q9295. Batches 126–137 cross bars? DECIDED: test-only (**pushed @ `bc359ed5`**)
 
-- **114** forward-queue coda; **115** containment endings (**Q94**); **116–117** acquire × distress; schema **29** only.
+### Q9296–Q9855. Batches 138–145 cross bars? DECIDED: test-only (**pushed @ `8342ffb1`**)
 
-### Q7896+. Batch 118+ queue? OPEN
+- **138–141** regulator, shady (**Q102**), incident (**Q91**), economy (**Q111–Q115**); **142–145** funding (**Q95**), world, listings, era (**Q100**).
 
-- Regulator/shady/safety/economy or chips cross codas after **110–117** lands.
+### Q9856–Q10125. Batches 146–149 cross bars? DECIDED: test-only (LOCAL off `8342ffb1`)
+
+- **146–149** pop (**Q97–Q98**), freeze (**Q89**), treaty (**Q150–Q153**), capital (**Q90**); schema **29** only.
+
+### Q10126–Q10415. Batches 150–153 cross bars? DECIDED: test-only (**146–153** packet)
+
+- **150–153** model/chip (**Q99**), exit, bubble/acquire (**Q95**), soak (**Q101**).
+
+### Q10416–Q10695. Batches 154–157 cross bars? DECIDED: test-only (LOCAL after **146–153**)
+
+- **154–157** forward-queue (**Q97–Q101**), containment, acquire gameplay, distress/acquire.
+
+### Q10696+. Batch 158+ queue? OPEN
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
