@@ -15,6 +15,8 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 28) StripHatchLedgerLines(root);
+            if (schema < 24) StripBubbleHadCrash(root);
             if (schema < 22) StripFoundingChoices(root);
             if (schema < 21) StripEventRiskClass(root);
             if (schema < 20) StripAbsorbedByLab(root);
@@ -98,6 +100,8 @@ public static class SaveSchemaPretend
 
     static void StripBubblePermille(JsonValue root) => JsonPatch.Remove(root, "bubblePermille");
 
+    static void StripBubbleHadCrash(JsonValue root) => JsonPatch.Remove(root, "bubbleHadCrash");
+
     static void StripAbsorbedByLab(JsonValue root)
     {
         JsonPatch.ForEach(root, "labs", lab => JsonPatch.Remove(lab, "absorbedByLabId"));
@@ -147,5 +151,15 @@ public static class SaveSchemaPretend
             JsonPatch.Remove(s, "queuedGpus");
             JsonPatch.Remove(s, "queueHoldingId");
         });
+    }
+
+    static void StripHatchLedgerLines(JsonValue root)
+    {
+        foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+            JsonPatch.ForEach(root, place, totals =>
+            {
+                JsonPatch.Remove(totals, "acquisition");
+                JsonPatch.Remove(totals, "assetSale");
+            });
     }
 }
