@@ -360,6 +360,12 @@ and says why in the commit message.
 177. **Round buyback by board vote.** ~~Done~~: `BuyBackRound`, schema 118, `BuybackTests` (Q430).
 178. **Spot capacity.** ~~Done~~: `SetSpotShare`, schema 119, `SpotTests` (Q431).
 179. **Batch ten news, chat and combination rules.** ~~Done~~: headlines and chat (Q432), directors and data suits (Q433), complaints and directors (Q434), waves and cleaning (Q435), waves and buyback votes (Q436).
+180. **Agent autonomy.** ~~Done~~: `SetAutonomy`, schema 120, `AgencyTests` (Q437).
+181. **Annotation vendors.** ~~Done~~: `ContractAnnotators`, `EndAnnotators`, `AuditVendor`, schema 121, `AnnotationTests` (Q438).
+182. **Post-training.** ~~Done~~: `PostTrain`, `AbandonPostTraining`, schema 122, `PostTrainingTests` (Q439).
+183. **Owners and documentation.** ~~Done~~: `AssignOwner`, `WriteDocs`, schema 123, `KnowledgeTests` (Q440).
+184. **Board motions.** ~~Done~~: `HoldBoardMeetings`, `AnswerMotion`, schema 124, `BoardMotionsTests` (Q441).
+185. **Batch eleven news and chat** and four combination rules. ~~Done~~: Q442 to Q446, `AgencyAnnotationPostTrainingKnowledgeBoardNewsChatTests`, `AgencyAnnotationPostTrainingKnowledgeBoardTogetherTests`.
 
 ## Rules: later
 

@@ -19,7 +19,10 @@ namespace AiLabs.Rules.Sim
 
             Finance.Spend(lab, LedgerLine.Hiring, cost);
             string from = lab.StyleId;
+            var before = Alumni.Roster(lab);
             int left = Pivot.Leave(c, lab);
+            for (int i = 0; i < before.Count; i++)
+                if (!lab.Staff.Contains(before[i])) Knowledge.OnLeft(c, state, lab, before[i].Id);
             lab.StyleId = style.Id;
             lab.PivotEraId = Pivot.EraId(c, state);
             lab.PivotUntilTick = state.Tick + c.Pivot.ConfusionWeeks;

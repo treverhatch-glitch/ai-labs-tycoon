@@ -192,7 +192,17 @@ namespace AiLabs.Rules.Sim
         SetGovernance,
         SeatDirector,
         BuyBackRound,
-        SetSpotShare
+        SetSpotShare,
+        SetAutonomy,
+        ContractAnnotators,
+        EndAnnotators,
+        AuditVendor,
+        PostTrain,
+        AbandonPostTraining,
+        AssignOwner,
+        WriteDocs,
+        HoldBoardMeetings,
+        AnswerMotion
     }
 
     /// <summary>
@@ -1666,6 +1676,85 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.SetSpotShare, labId);
             c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Sets how much freedom a released model gives its agents: 0 none, 1 supervised, 2 delegated, 3 autonomous. TargetId is the model.</summary>
+        public static Command SetAutonomy(int labId, int modelId, int level)
+        {
+            Command c = Make(CommandKind.SetAutonomy, labId);
+            c.TargetId = modelId;
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Contracts an annotation vendor for a term: 1 volume, 2 licensed, 3 expert. Count is the vendor.</summary>
+        public static Command ContractAnnotators(int labId, int vendor)
+        {
+            Command c = Make(CommandKind.ContractAnnotators, labId);
+            c.Count = vendor;
+            return c;
+        }
+
+        /// <summary>Ends the vendor contract early, paying most of the fees still to run.</summary>
+        public static Command EndAnnotators(int labId)
+        {
+            return Make(CommandKind.EndAnnotators, labId);
+        }
+
+        /// <summary>Audits the vendor, taking most of the hidden exposure away.</summary>
+        public static Command AuditVendor(int labId)
+        {
+            return Make(CommandKind.AuditVendor, labId);
+        }
+
+        /// <summary>Starts tuning a trained model: Count 1 preference tuning, 2 safety tuning. TargetId is the model.</summary>
+        public static Command PostTrain(int labId, int modelId, int kind)
+        {
+            Command c = Make(CommandKind.PostTrain, labId);
+            c.TargetId = modelId;
+            c.Count = kind;
+            return c;
+        }
+
+        /// <summary>Stops the tuning run of a model. The data it used is gone.</summary>
+        public static Command AbandonPostTraining(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AbandonPostTraining, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Names the person who owns a model. TargetId is the model, Count the staff id; Count 0 takes the owner away.</summary>
+        public static Command AssignOwner(int labId, int modelId, int staffId)
+        {
+            Command c = Make(CommandKind.AssignOwner, labId);
+            c.TargetId = modelId;
+            c.Count = staffId;
+            return c;
+        }
+
+        /// <summary>Writes the next level of documentation for a model. TargetId is the model.</summary>
+        public static Command WriteDocs(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WriteDocs, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts (Count 1) or stops (Count 0) holding board meetings.</summary>
+        public static Command HoldBoardMeetings(int labId, int on)
+        {
+            Command c = Make(CommandKind.HoldBoardMeetings, labId);
+            c.Count = on;
+            return c;
+        }
+
+        /// <summary>Answers the motion on the table: Count 1 accepts it as a commitment, 0 declines it.</summary>
+        public static Command AnswerMotion(int labId, int accept)
+        {
+            Command c = Make(CommandKind.AnswerMotion, labId);
+            c.Count = accept;
             return c;
         }
 

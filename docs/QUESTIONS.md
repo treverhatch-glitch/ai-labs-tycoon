@@ -2662,6 +2662,42 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - It makes the timing of a buyback depend on compute, as a prudent board would see it.
 - Alternatives: the wave raises the price (rejected: the price already follows the bubble).
 
+### Q437. How free should the agents of a model be? DECIDED: three levels that lift revenue and risk, gated by containment and alignment, with blow-ups the wings make rarer and a streak that earns trust
+- The lift is worth having, so the lab wants level 3, but it needs rooms and a well-aligned model, and every week at level 2 or 3 is a roll that the wings make safer. A blow-up costs a refund and trust and starts the streak again.
+- Alternatives: a flat fee for more revenue (rejected: no risk), a random incident only (rejected: nothing to plan with rooms).
+
+### Q438. Who should label the data? DECIDED: a contracted vendor with a weekly take-or-pay fee, a yield bonus on jobs within its size, a hidden exposure that only the cheap vendor builds, an audit, and a scandal that ends the contract
+- The cheap vendor gives the widest yield for the least money, but its exposure builds unseen and the lab has to audit it (or pay the early fee to leave) before the scandal rolls. The dearer vendors are safe but only for small jobs, so the choice follows the size of the cleaning runs.
+- Alternatives: a fee per job (rejected: no commitment), a quality stat on the dataset (rejected: nothing to manage over time).
+
+### Q439. What does a lab do to a model before it goes on sale? DECIDED: preference tuning on user data lifts revenue and teaches the model to please, safety tuning on licensed data lifts alignment and makes it refuse, each pass worth less and a limited number of passes, and the model waits while it runs
+- The two kinds pull in opposite directions on revenue and on incidents, use different data, and the release waits for the run, so a lab with a model below the era safety bar has a real reason to tune and a real price for it.
+- Alternatives: a flat fee for alignment (rejected: a pay-for-stat knob with no state), a tuning that never stops giving (rejected: nothing to decide).
+
+### Q440. Who knows the model? DECIDED: an owner for each model, documentation written a level at a time that goes stale, a gap that a departing owner leaves, closed week by week by the next owner, which raises incidents and stops agents and tuning until it is closed
+- Losing a person now costs something the lab can see and prepare for, and which people it can afford to lose depends on who owns what and how much of it is written down. The limit of two models per person is the bus factor.
+- Alternatives: a flat morale penalty when anyone leaves (rejected: no choice before it happens), documentation that never goes stale (rejected: one purchase solves it).
+
+### Q441. How does the board hold the founders to their word? DECIDED: optional meetings where the board tables a motion each quarter, accepted as a commitment judged at its deadline or declined, with a tension that directors soften and that raises the control the founders need to survive a vote
+- Every answer costs something: accepting binds the lab to a goal it may miss, declining and ignoring add tension at once. A lab with dual-class shares can afford to decline, a lab with a lot of its equity sold cannot, and independent directors make all of it milder.
+- Alternatives: a board that only tables revenue targets (that exists already as the board targets), a tension that rises with the calendar (rejected: nothing for the lab to do about it).
+
+### Q442. What do the agent autonomy, annotation vendor, post-training, ownership and board motion events look like on the news and in the chat? DECIDED: a headline for each, the ones with two outcomes split by pick, and a chat line where the staff would talk about it
+- The pick of a headline is minus one, zero or one, so a scandal that ends a vendor contract has no second headline of its own: the scandal event already has one. Ignored motions and safety tunings take the zero pick or an event of their own.
+- 23 headlines and 11 chat lines, in the data, in the same voice as the others.
+
+### Q443. What does a knowledge gap do to agents? DECIDED: it adds to the blow-up chance of the model's agents, up to 6% at a full gap, scaled by the gap (`agency.gapBlowup`)
+- Agents run on what the people know; with the owner gone and little written down they go wrong more often. Letting a new owner close the gap, or writing the docs, is the way out.
+
+### Q444. What does a labour scandal at the annotation vendor do to the board? DECIDED: it adds 150 tension when the lab holds board meetings (`annotation.scandalTension`)
+- A scandal is exactly what the board's conduct motions are for. A lab that does not hold meetings is not affected, and the independent directors take their share off as they do for every addition.
+
+### Q445. What does an agent blow-up do to the board? DECIDED: it adds 100 tension when the lab holds board meetings (`boardAgenda.blowupTension`)
+- A blow-up already costs a refund and trust; with meetings on it also costs the board's patience, so running agents at the highest level has a cost in the board room too.
+
+### Q446. Does documentation help with the failures of a tuned model? DECIDED: each level takes 20% off the incident chance that preference tuning adds, at most 25% a level (`postTraining.docsCutSyco`)
+- A model that is written down is understood: the habits preference tuning taught it are known and handled. Safety tuning is not changed.
+
 ## Open
 
 None.

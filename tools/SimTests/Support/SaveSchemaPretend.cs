@@ -15,6 +15,12 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 125) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "meetingsOn", "boardTension", "motionPend", "motionPendGoal", "motionAnswerBy", "motionKind", "motionGoal", "motionDue", "motionNext", "motionsTabled", "motionsKept", "motionsBroken", "motionsDeclined" }) JsonPatch.Remove(lab, key); });
+            if (schema < 124) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "ownerId", "docLevel", "docAge", "knowGap", "handovers" }) JsonPatch.Remove(m, key); }));
+            if (schema < 123) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "postKind", "postLeft", "postPref", "postSafety" }) JsonPatch.Remove(m, key); }));
+            if (schema < 122) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "annVendor", "annLeft", "annExposure", "annStrikes", "annAuditWeek", "annCleaned" }) JsonPatch.Remove(lab, key); });
+            if (schema < 121) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "agentEarned" }) JsonPatch.Remove(lab, key); });
+            if (schema < 121) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "agentLevel", "agentSince", "agentStreak", "agentBlowups" }) JsonPatch.Remove(m, key); }));
             if (schema < 120) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "spotPermille", "spotSince", "spotSaved", "spotPreempts", "spotLost", "spotOut", "spotWaves" }) JsonPatch.Remove(lab, key); });
             if (schema < 119) JsonPatch.ForEach(root, "labs", lab => { JsonPatch.Remove(lab, "boughtRounds"); foreach (string key in new[] { "boardVoteWeek", "boardWon", "boardLost" }) JsonPatch.Remove(lab, key); });
             if (schema < 118) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "govForm", "govSince", "govDirectors", "govSearch", "govResigned" }) JsonPatch.Remove(lab, key); });

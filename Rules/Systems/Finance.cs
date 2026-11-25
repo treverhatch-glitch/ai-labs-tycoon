@@ -80,6 +80,7 @@ namespace AiLabs.Rules.Systems
                 if (sector.ChampionLabId == lab.Id) sector.ChampionLabId = -1;
             }
             lab.Staff.Clear();
+            Knowledge.OnBankrupt(lab);
             Loans.OnBankrupt(lab);
             lab.RentedGpus = 0;
             lab.ReservedContracts.Clear();

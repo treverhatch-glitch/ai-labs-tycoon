@@ -154,6 +154,11 @@ namespace AiLabs.Rules.Config
             GovernanceProblems(p, c);
             BuybackProblems(p, c);
             SpotProblems(p, c);
+            AgencyProblems(p, c);
+            AnnotationProblems(p, c);
+            PostTrainingProblems(p, c);
+            KnowledgeProblems(p, c);
+            BoardAgendaProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1752,6 +1757,58 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("spot.enabled must be 0 or 1");
             if (k.ReclaimWeeks < 1) p.Add("spot.reclaimWeeks must be at least 1");
             if (k.MaxPermille < 0 || k.MaxPermille > 1000 || k.DiscountPermille < 0 || k.DiscountPermille > 900 || k.PreemptPermille < 0 || k.PreemptPermille > 1000 || k.DefaultLossPermille < 0 || k.DefaultLossPermille > 1000 || k.ChangeWeeks < 0) p.Add("spot shares must be from 0 to 1000 (discount to 900) and changeWeeks not negative");
+        }
+
+        static void AgencyProblems(List<string> p, GameConfig c)
+        {
+            AgencyConfig k = c.Agency;
+            if (k == null) { p.Add("agency is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("agency.enabled must be 0 or 1");
+            if (k.GapBlowup < 0 || k.GapBlowup > 1000) p.Add("agency.gapBlowup must be from 0 to 1000");
+            if (k.MinEra < 0 || k.SetupCost < 0 || k.Rooms2 < 0 || k.Rooms3 < k.Rooms2 || k.MinAlign3 < 0 || k.MinAlign3 > 1000 || k.Cooldown < 0) p.Add("agency minEra, setupCost and cooldown must not be negative, rooms3 at least rooms2 and minAlign3 from 0 to 1000");
+            if (k.Lift1 < 0 || k.Lift2 < k.Lift1 || k.Lift3 < k.Lift2 || k.Lift3 > 2000 || k.Incident1 < 0 || k.Incident2 < k.Incident1 || k.Incident3 < k.Incident2 || k.Incident3 > 1000) p.Add("agency lifts and incident chances must rise with the level, lift3 at most 2000 and incident3 at most 1000");
+            if (k.Blowup2 < 0 || k.Blowup3 < k.Blowup2 || k.Blowup3 > 1000 || k.RoomCut < 0 || k.RoomCut > 1000 || k.RefundWeeks < 0 || k.BlowupTrust < 0 || k.StreakWeeks < 1 || k.StreakTrust < 0) p.Add("agency blow-up chances must rise with the level and not pass 1000, roomCut from 0 to 1000, streakWeeks at least 1 and the rest not negative");
+        }
+
+        static void AnnotationProblems(List<string> p, GameConfig c)
+        {
+            AnnotationConfig k = c.Annotation;
+            if (k == null) { p.Add("annotation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("annotation.enabled must be 0 or 1");
+            if (k.ScandalTension < 0 || k.ScandalTension > 1000) p.Add("annotation.scandalTension must be from 0 to 1000");
+            if (k.Weekly1 < 0 || k.Weekly2 < 0 || k.Weekly3 < 0 || k.Bonus1 < 0 || k.Bonus2 < 0 || k.Bonus3 < 0 || k.Bonus1 > 500 || k.Bonus2 > 500 || k.Bonus3 > 500 || k.Cap1 < 1 || k.Cap2 < 1 || k.Cap3 < 1) p.Add("annotation fees and bonuses must not be negative, bonuses at most 500, and sizes at least 1");
+            if (k.Risk1 < 0 || k.Risk2 < 0 || k.Risk3 < 0 || k.Risk1 > 1000 || k.Term < 1 || k.EarlyPermille < 0 || k.EarlyPermille > 1000 || k.AuditCost < 0 || k.AuditCut < 0 || k.AuditCut > 1000 || k.AuditWeeks < 0) p.Add("annotation risks from 0 to 1000, term at least 1, early and audit cut from 0 to 1000, and costs not negative");
+            if (k.ExposeDiv < 1 || k.ExposeFine < 0 || k.ExposeTrust < 0 || k.ExposeReset < 0 || k.ExposeReset > 1000) p.Add("annotation exposeDiv must be at least 1, fine and trust not negative and exposeReset from 0 to 1000");
+        }
+
+        static void PostTrainingProblems(List<string> p, GameConfig c)
+        {
+            PostTrainingConfig k = c.PostTraining;
+            if (k == null) { p.Add("postTraining is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("postTraining.enabled must be 0 or 1");
+            if (k.DocsCutSyco < 0 || k.DocsCutSyco > 250) p.Add("postTraining.docsCutSyco must be from 0 to 250");
+            if (k.MinEra < 0 || k.Weeks < 1 || k.Cost < 0 || k.Units < 1 || k.MaxPasses < 1 || k.MaxPasses > 8) p.Add("postTraining minEra and cost must not be negative, weeks and units at least 1 and maxPasses from 1 to 8");
+            if (k.PrefLift < 0 || k.PrefLift > 1000 || k.PrefDecay < 0 || k.PrefDecay > 1000 || k.Syco < 0 || k.Syco > 1000 || k.SafetyGain < 0 || k.SafetyGain > 1000 || k.SafetyDecay < 0 || k.SafetyDecay > 1000 || k.Refuse < 0 || k.Refuse > 1000 || k.MinLift > 0 || k.MinLift < -1000) p.Add("postTraining lifts, decays, syco, safetyGain and refuse from 0 to 1000 and minLift from -1000 to 0");
+        }
+
+        static void KnowledgeProblems(List<string> p, GameConfig c)
+        {
+            KnowledgeConfig k = c.Knowledge;
+            if (k == null) { p.Add("knowledge is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("knowledge.enabled must be 0 or 1");
+            if (k.MaxOwned < 1 || k.MaxDocs < 0 || k.MaxDocs > 4 || k.DocCost < 0 || k.DocStale < 1) p.Add("knowledge maxOwned and docStale must be at least 1, maxDocs from 0 to 4 and docCost not negative");
+            if (k.DocCut < 0 || k.DocCut * k.MaxDocs > 1000 || k.GapBase < 0 || k.GapBase > 1000 || k.Ramp < 0 || k.GapIncident < 0 || k.GapIncident > 1000 || k.GapRiskAt < 0 || k.GapRiskAt > 1000) p.Add("knowledge docCut times maxDocs at most 1000, gapBase, gapIncident and gapRiskAt from 0 to 1000 and ramp not negative");
+        }
+
+        static void BoardAgendaProblems(List<string> p, GameConfig c)
+        {
+            BoardAgendaConfig k = c.BoardAgenda;
+            if (k == null) { p.Add("boardAgenda is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("boardAgenda.enabled must be 0 or 1");
+            if (k.BlowupTension < 0 || k.BlowupTension > 1000) p.Add("boardAgenda.blowupTension must be from 0 to 1000");
+            if (k.MinSeats < 1 || k.MeetingWeeks < 1 || k.AnswerWeeks < 1 || k.CommitWeeks < 1 || k.MeetingWeeks < k.AnswerWeeks) p.Add("boardAgenda minSeats, meetingWeeks, answerWeeks and commitWeeks must be at least 1 and a meeting no sooner than the answer");
+            if (k.AcceptRelief < 0 || k.KeptRelief < 0 || k.DeclineTension < 0 || k.IgnoreTension < 0 || k.BrokenTension < 0 || k.DirectorCut < 0 || k.DirectorCut > 1000 || k.OustAt < 1 || k.OustAt > 1000 || k.OustMargin < 0 || k.OustMargin > 1000 || k.CalmBelow < 0 || k.CalmBelow > 1000) p.Add("boardAgenda tensions must not be negative, directorCut, oustMargin and calmBelow from 0 to 1000 and oustAt from 1 to 1000");
+            if (k.RaiseBonus < 0 || k.RaiseBonus > 1000 || k.RunwayStretch < 0 || k.RunwayFloor < 0 || k.SafetyAdd < 1) p.Add("boardAgenda raiseBonus from 0 to 1000, runway values not negative and safetyAdd at least 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

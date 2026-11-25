@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 120;
+        public const int CurrentSchema = 125;
 
         public int Schema;
         public string ConfigVersion;
@@ -563,6 +563,29 @@ namespace AiLabs.Rules.State
         /// <summary>Weeks left in the current reclaim wave, and how many waves the cloud has called.</summary>
         public int SpotOut;
         public int SpotWaves;
+        /// <summary>Revenue the lab has earned from agent autonomy.</summary>
+        public long AgentEarned;
+        /// <summary>Vendor under contract (0 none, 1 volume, 2 licensed, 3 expert), weeks left, hidden exposure (permille), scandals so far, one more than the week of the last audit, and units cleaned with the vendor.</summary>
+        public int AnnVendor;
+        public int AnnLeft;
+        public int AnnExposure;
+        public int AnnStrikes;
+        public int AnnAuditWeek;
+        public int AnnCleaned;
+        /// <summary>Board agenda: meetings held (0 or 1), tension (out of 1000), the motion on the table (0 none, 1 calm, 2 runway, 3 safety), its goal and the week it must be answered by; the commitment accepted, its goal and its deadline; the week of the next meeting; and the motions tabled, kept, broken and declined.</summary>
+        public int MeetingsOn;
+        public int BoardTension;
+        public int MotionPend;
+        public long MotionPendGoal;
+        public int MotionAnswerBy;
+        public int MotionKind;
+        public long MotionGoal;
+        public int MotionDue;
+        public int MotionNext;
+        public int MotionsTabled;
+        public int MotionsKept;
+        public int MotionsBroken;
+        public int MotionsDeclined;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1053,6 +1076,26 @@ namespace AiLabs.Rules.State
             s.Long("spotLost", ref SpotLost);
             s.Int("spotOut", ref SpotOut);
             s.Int("spotWaves", ref SpotWaves);
+            s.Long("agentEarned", ref AgentEarned);
+            s.Int("annVendor", ref AnnVendor);
+            s.Int("annLeft", ref AnnLeft);
+            s.Int("annExposure", ref AnnExposure);
+            s.Int("annStrikes", ref AnnStrikes);
+            s.Int("annAuditWeek", ref AnnAuditWeek);
+            s.Int("annCleaned", ref AnnCleaned);
+            s.Int("meetingsOn", ref MeetingsOn);
+            s.Int("boardTension", ref BoardTension);
+            s.Int("motionPend", ref MotionPend);
+            s.Long("motionPendGoal", ref MotionPendGoal);
+            s.Int("motionAnswerBy", ref MotionAnswerBy);
+            s.Int("motionKind", ref MotionKind);
+            s.Long("motionGoal", ref MotionGoal);
+            s.Int("motionDue", ref MotionDue);
+            s.Int("motionNext", ref MotionNext);
+            s.Int("motionsTabled", ref MotionsTabled);
+            s.Int("motionsKept", ref MotionsKept);
+            s.Int("motionsBroken", ref MotionsBroken);
+            s.Int("motionsDeclined", ref MotionsDeclined);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1253,6 +1296,22 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Knowledge: the staff id of the person who owns the model (0 none), the level of its documentation, weeks since the documentation was last written, the knowledge gap (out of 1000) and how many owners have left it.</summary>
+        public int OwnerId;
+        public int DocLevel;
+        public int DocAge;
+        public int KnowGap;
+        public int Handovers;
+        /// <summary>Post-training: the kind of run going on (0 none, 1 preference tuning, 2 safety tuning), weeks left of it, and how many of each kind the model has had.</summary>
+        public int PostKind;
+        public int PostLeft;
+        public int PostPref;
+        public int PostSafety;
+        /// <summary>Autonomy level of the model agents (0 none, 1 supervised, 2 delegated, 3 autonomous), one more than the week it was set, weeks since the last blow-up, and blow-ups.</summary>
+        public int AgentLevel;
+        public int AgentSince;
+        public int AgentStreak;
+        public int AgentBlowups;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -1300,6 +1359,19 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("ownerId", ref OwnerId);
+            s.Int("docLevel", ref DocLevel);
+            s.Int("docAge", ref DocAge);
+            s.Int("knowGap", ref KnowGap);
+            s.Int("handovers", ref Handovers);
+            s.Int("postKind", ref PostKind);
+            s.Int("postLeft", ref PostLeft);
+            s.Int("postPref", ref PostPref);
+            s.Int("postSafety", ref PostSafety);
+            s.Int("agentLevel", ref AgentLevel);
+            s.Int("agentSince", ref AgentSince);
+            s.Int("agentStreak", ref AgentStreak);
+            s.Int("agentBlowups", ref AgentBlowups);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

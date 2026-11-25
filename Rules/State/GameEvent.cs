@@ -540,7 +540,45 @@ namespace AiLabs.Rules.State
         /// <summary>A training run was preempted and lost progress. SubjectId is the model, Amount the compute lost, Ref the model name.</summary>
         SpotPreempted,
         /// <summary>The board voted on buying a round back. Pick is 1 passed or 0 refused, Amount the yes votes in permille of all, Ref the round.</summary>
-        BoardVoted
+        BoardVoted,
+        /// <summary>The autonomy of a model changed. SubjectId is the model, Amount the level.</summary>
+        AutonomySet,
+        /// <summary>An agent run went wrong. SubjectId is the model, Amount the revenue refunded, Ref the model name.</summary>
+        AgentBlowup,
+        /// <summary>A model kept its agents clean for a long streak. SubjectId is the model, Ref the model name.</summary>
+        AgentStreak,
+        /// <summary>A vendor was contracted. SubjectId is the vendor.</summary>
+        AnnotatorsContracted,
+        /// <summary>The vendor contract ended. SubjectId is the vendor, Pick 1 ran its term, 0 ended early; a scandal has its own event.</summary>
+        AnnotatorsEnded,
+        /// <summary>The vendor was audited. Amount is the exposure left.</summary>
+        VendorAudited,
+        /// <summary>A labour scandal about the vendor broke. SubjectId is the vendor, Amount the fine.</summary>
+        VendorScandal,
+        /// <summary>A tuning run started. SubjectId is the model, Amount the kind.</summary>
+        PostTrainingStarted,
+        /// <summary>A tuning run finished. SubjectId is the model, Pick 1 preference tuning, 0 safety tuning, Amount the number of runs of that kind it now has.</summary>
+        PostTrainingDone,
+        /// <summary>A tuning run was abandoned. SubjectId is the model.</summary>
+        PostTrainingAbandoned,
+        /// <summary>A person was named as the owner of a model. SubjectId is the model, Amount the staff id.</summary>
+        OwnerNamed,
+        /// <summary>The owner of a model left. SubjectId is the model, Amount the gap that was left.</summary>
+        OwnerLeft,
+        /// <summary>Documentation was written for a model. SubjectId is the model, Amount its level.</summary>
+        DocsWritten,
+        /// <summary>The documentation of a model went stale. SubjectId is the model, Amount its level now.</summary>
+        DocsStale,
+        /// <summary>The board tabled a motion. SubjectId is the kind (1 calm, 2 runway, 3 safety), Amount its goal.</summary>
+        MotionTabled,
+        /// <summary>The lab answered a motion. SubjectId is the kind, Pick 1 accepted, 0 declined.</summary>
+        MotionAnswered,
+        /// <summary>A motion went unanswered. SubjectId is the kind.</summary>
+        MotionIgnored,
+        /// <summary>A commitment reached its deadline. SubjectId is the kind, Pick 1 kept, 0 broken.</summary>
+        MotionJudged,
+        /// <summary>The board forced a vote on the founders. Amount is the tension.</summary>
+        BoardForcedVote
     }
 
     /// <summary>

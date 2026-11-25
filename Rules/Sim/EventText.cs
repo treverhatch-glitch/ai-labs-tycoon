@@ -559,6 +559,44 @@ namespace AiLabs.Rules.Sim
                     return who + " lost part of " + e.Ref + " when spot capacity was taken back.";
                 case EventKind.BoardVoted:
                     return "The board of " + who + (e.Pick == 1 ? " passed" : " refused") + " buying out the " + e.Ref + " investors.";
+                case EventKind.AutonomySet:
+                    return who + " changed how much freedom the agents of a model have.";
+                case EventKind.AgentBlowup:
+                    return "An agent run of " + e.Ref + " went wrong at " + who + " and customers were refunded $" + e.Amount + ".";
+                case EventKind.AgentStreak:
+                    return "The agents of " + e.Ref + " have run clean for a long while at " + who + ".";
+                case EventKind.AnnotatorsContracted:
+                    return who + " contracted an annotation vendor.";
+                case EventKind.AnnotatorsEnded:
+                    return who + " ended its annotation contract.";
+                case EventKind.VendorAudited:
+                    return who + " audited its annotation vendor.";
+                case EventKind.VendorScandal:
+                    return "A labour scandal about the annotators of " + who + " broke and cost $" + e.Amount + ".";
+                case EventKind.PostTrainingStarted:
+                    return who + " began tuning " + e.Ref + ".";
+                case EventKind.PostTrainingDone:
+                    return who + " finished tuning " + e.Ref + ".";
+                case EventKind.PostTrainingAbandoned:
+                    return who + " abandoned the tuning of " + e.Ref + ".";
+                case EventKind.OwnerNamed:
+                    return who + " named an owner for " + e.Ref + ".";
+                case EventKind.OwnerLeft:
+                    return "The owner of " + e.Ref + " left " + who + " and the gap is " + e.Amount + ".";
+                case EventKind.DocsWritten:
+                    return who + " wrote documentation for " + e.Ref + ".";
+                case EventKind.DocsStale:
+                    return "The documentation of " + e.Ref + " at " + who + " has gone stale.";
+                case EventKind.MotionTabled:
+                    return "The board of " + who + " tabled a motion.";
+                case EventKind.MotionAnswered:
+                    return who + " answered a board motion.";
+                case EventKind.MotionIgnored:
+                    return "A motion at the board of " + who + " went unanswered.";
+                case EventKind.MotionJudged:
+                    return e.Pick == 1 ? "The board of " + who + " saw a commitment kept." : "The board of " + who + " saw a commitment broken.";
+                case EventKind.BoardForcedVote:
+                    return "The board of " + who + " forced a vote on the founders.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

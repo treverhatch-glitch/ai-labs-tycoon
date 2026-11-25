@@ -135,6 +135,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 118) MigrateTo118(root);
             if (fromSchema < 119) MigrateTo119(root);
             if (fromSchema < 120) MigrateTo120(root);
+            if (fromSchema < 121) MigrateTo121(root);
+            if (fromSchema < 122) MigrateTo122(root);
+            if (fromSchema < 123) MigrateTo123(root);
+            if (fromSchema < 124) MigrateTo124(root);
+            if (fromSchema < 125) MigrateTo125(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -1359,6 +1364,60 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 foreach (string key in new[] { "spotPermille", "spotSince", "spotSaved", "spotPreempts", "spotLost", "spotOut", "spotWaves" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 121: no model has agent autonomy.</summary>
+        static void MigrateTo121(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "agentEarned", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "agentLevel", "agentSince", "agentStreak", "agentBlowups" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 122: no lab has an annotation vendor.</summary>
+        static void MigrateTo122(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "annVendor", "annLeft", "annExposure", "annStrikes", "annAuditWeek", "annCleaned" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 123: no model has been tuned after training.</summary>
+        static void MigrateTo123(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                foreach (string key in new[] { "postKind", "postLeft", "postPref", "postSafety" })
+                    JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 124: no model has an owner or documentation.</summary>
+        static void MigrateTo124(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                foreach (string key in new[] { "ownerId", "docLevel", "docAge", "knowGap", "handovers" })
+                    JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 125: no lab holds board meetings.</summary>
+        static void MigrateTo125(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "meetingsOn", "boardTension", "motionPend", "motionPendGoal", "motionAnswerBy", "motionKind", "motionGoal", "motionDue", "motionNext", "motionsTabled", "motionsKept", "motionsBroken", "motionsDeclined" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
