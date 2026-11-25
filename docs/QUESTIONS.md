@@ -1324,9 +1324,13 @@ Parent `2ea59b0b`; prepush **21194/21194**; GO ≥**15:48 ICT**.
 
 Prepush **21757/21757**; GO ≥**16:18 ICT**.
 
-### Q14136–Q14905. Batches 306–313 + host queue prep tail? DECIDED: test-only (LOCAL HOLD after `ac7fd7ae`)
+### Q14136–Q14905. Batches 306–313 + host queue prep tail? DECIDED: test-only (pushed @ `bef51859`, Nov 25)
 
-Rival relations, funding ladder completion, balance preset ids.
+Prepush **22320/22320**; GO ≥**16:49 ICT**.
+
+### Q14206–Q14975. Batches 314–321 + HostExplainNext314? DECIDED: test-only (LOCAL HOLD after `bef51859`)
+
+Rival log bounds, two-step funding ladder, balance soak game-count prep.
 
 ## Open
 
