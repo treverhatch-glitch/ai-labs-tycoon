@@ -1262,29 +1262,47 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**.
 - Why: Closes **185–187**.
 
-### Q637. ALT-76 STATUS sync through batch 154? DRAFT: `CampusAlt76StatusSyncThrough154PresentationSpec`
+### Q637. ALT-76 STATUS sync through batch 154? DECIDED: `CampusAlt76StatusSyncThrough154PresentationSpec`
 
 - Options: (a) stop at 151; (b) through 154; (c) defer.
-- Recommendation: **(b)** — fork **188–190** LOCAL.
-- Status: batch **188** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)** — grouped **188–190**.
+- Why: Off `de6f177`.
 
-### Q638. Presentation tail rollup through batch 151? DRAFT: `CampusPresentationTailRollupRefreshThrough151PresentationSpec`
+### Q638. Presentation tail rollup through batch 151? DECIDED: `CampusPresentationTailRollupRefreshThrough151PresentationSpec`
 
 - Options: (a) stop at 148; (b) through 151; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **189** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **189**.
 
-### Q639. GO packet tail through batch 184? DRAFT: `CampusGoPacketTailRefreshThrough184PresentationSpec`
+### Q639. GO packet tail through batch 184? DECIDED: `CampusGoPacketTailRefreshThrough184PresentationSpec`
 
 - Options: (a) stop at 181; (b) through 184; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **190** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Closes **188–190**.
 
 ### Q640. ALT-76 rollup refresh through batch 154? DRAFT: `CampusAlt76RollupRefreshB154PresentationSpec`
 
 - Options: (a) batch 151 only; (b) through 154; (c) skip.
-- Recommendation: **(b)** — fork batch **191+** after **188–190** land.
-- Status: **NO PUSH** until Q637–Q639 decided.
+- Recommendation: **(b)** — fork **191–193** LOCAL.
+- Status: batch **191** LOCAL (NO PUSH).
+
+### Q641. Index manifest tail through batch 154? DRAFT: `CampusIndexLaneManifestTailRefreshThrough154PresentationSpec`
+
+- Options: (a) stop at 151; (b) through 154; (c) regen.
+- Recommendation: **(b)**.
+- Status: batch **192** LOCAL.
+
+### Q642. GO packet tail through batch 187? DRAFT: `CampusGoPacketTailRefreshThrough187PresentationSpec`
+
+- Options: (a) stop at 184; (b) through 187; (c) skip.
+- Recommendation: **(b)**.
+- Status: batch **193** LOCAL.
+
+### Q643. ALT-76 STATUS sync through batch 157? DRAFT: `CampusAlt76StatusSyncThrough157PresentationSpec`
+
+- Options: (a) stop at 154; (b) through 157; (c) defer.
+- Recommendation: **(b)** — fork batch **194+** after **191–193** land.
+- Status: **NO PUSH** until Q640–Q642 decided.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
