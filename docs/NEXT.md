@@ -35,6 +35,16 @@ Known limits of the slice, so nobody is surprised:
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
   the player's side.
 
+## Agent lanes (max **3** active)
+
+| Lane | Branch / focus | Status |
+| --- | --- | --- |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`113be5fc`** (322–329 land); **LOCAL** **330+** (HOLD ≥~**18:11 ICT**) |
+| *(reserve)* | — | idle |
+| *(reserve)* | — | idle |
+
+Stay in-lane; grouped batch pushes only (no single-item).
+
 ## Who works where
 
 Agents work in parallel. Stay in your area and the merges stay boring.
@@ -63,6 +73,12 @@ and says why in the commit message.
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
 3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
    odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
+3b. ~~**Host explain slices (rival log, reserved compute, funding ladder).**~~ Done: `GpuRentParts`,
+   `ReservedComputeParts`, `TrySignReservedQuote`, `VendorQueueParts`, `VendorLogLines`, `TryNextFundingQuote`,
+   `RivalLogLines`, `RivalDecisionSlices`, `HardwareFleetParts`, `FundingLadderParts`, `RivalRelationSlices`;
+   `HostExplainSliceLaterTests` (**13**).
+4–7 **host breakdowns:** rival relations/log, reserved+Envydia, hardware fleet, funding ladder (`DisplayQueries` + tests).
+8–11 **host breakdowns (LOCAL):** alignment gap, incident parts, staff roster, balance-soak preview; `HostExplainSystemsLaterTests` (**4**).
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
@@ -576,10 +592,48 @@ and says why in the commit message.
 - ~~**Hatch containment/ending batch 61**~~ **pushed @ `be476fc`** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); gate **4589/4589** in-repo; parent `d332207` (+6); landed ~04:48 UTC Nov 24.
 - ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
 - ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
-- **Hatch forward-queue batch 64 (LOCAL — NO PUSH until GO ≥ ~06:20 UTC)** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); parent `605edb0`; filter **70/0**; expected prepush **4799/4799**; cross-era + exit neighbours; schema **29** only.
+- ~~**Hatch forward-queue batch 64**~~ **pushed @ `c63ab58`** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); gate **4799/4799** in-repo; parent `605edb0` (+2); landed ~06:24 UTC Nov 24.
+- ~~**Hatch balance/soak batch 65**~~ **pushed @ `07912df`** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); gate **4869+** (full tree **5074** at land); parent `f2bbe8f` (+5); landed GO Nov 24 ~08:48 UTC.
+- ~~**Hatch bubble/acquire batch 66**~~ **pushed @ `5b52104`** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); gate **5004/5004** @ tip; parent `07912df` (+2); landed ~**09:18 UTC** (~**16:18 ICT**).
 - **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-  - **batch 65+ (TBD)** — balance-soak coda; **SolvencyHold** schema **30** parked.
-- **Refill (systems-only):** per store `internal/next-work-real-systems-only.md` — stack2 **data bars** on real config/state (no query-only `*Parts`); bible **Q100**/eras + **Q540** endings; cross-system bars keep save round-trip + runtime `Game.Solo` slots; rivals stack2 **52–62**; schema **29** only.
+- ~~**Hatch capital/bubble batch 67**~~ **pushed @ `b9c1d5a`** — Q4336–Q4405 (`HatchCapitalBubbleBarLaterTests3`, **70**); squash via commit-tree off `5b52104`; gate **5074/5074**; landed ~**09:49 UTC** (~**16:49 ICT**).
+- ~~**Hatch bubble/distress batch 68**~~ **pushed @ `47f9787`** — Q4406–Q4475 (`HatchBubbleDistressBarLaterTests3`, **70**); squash `e90c37d` onto `b9c1d5a`; gate **5144/5144**; ~**10:26+ UTC** (~**17:26 ICT**).
+  - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
+- **Push policy:** grouped **commit-tree** squashes; **no `--force` / `--force-with-lease` ever** (firm Nov 25). Before each GO: read project store `internal/push-policy-standing.md` + `internal/standing-rules-rivals.md`. Prepush, coauth grep, plain **`git push`** only. On non-FF: `fetch`, rebuild squash with **`commit-tree` parent = `origin` tip**, plain push — or stop and report.
+- ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
+- ~~**Batches 70–73 grouped squash**~~ **pushed @ `516404f`** — Q4546–Q4825 (**280** tests); gate **5494/5494**; parent `f320b6b`; ~**19:26 ICT**.
+- ~~**Batches 74–77 grouped squash**~~ **pushed @ `a727a84`** — Q4826–Q5105 (**280** tests); gate **5774/5774**; parent `516404f`; ~**20:12 ICT**.
+- ~~**Batches 78–81 grouped squash**~~ **pushed @ `b50d053`** — Q5106–Q5385 (**280** tests); gate **6054/6054**; ~**21:06+ ICT**.
+- ~~**Batches 82–85 grouped squash**~~ **pushed @ `976c420`** — Q5386–Q5665 (**280** tests); gate **6334/6334**; ~**21:19 ICT**.
+- ~~**Batches 86–89 grouped squash**~~ **pushed @ `fda05f6e`** — Q5666–Q5945 (**280** tests); gate **6614/6614**; ~**21:56 ICT**.
+- ~~**Batches 126–137 grouped squash**~~ **pushed @ `bc359ed5`** — Q8456–Q9295 (**840**).
+- ~~**Batches 138–145 grouped squash**~~ **pushed @ `8342ffb1`** — Q9296–Q9855 (**560**); gate **10534/10534** (`/tmp/rivals-b138-145-prepush.log`); GO ~04:56 ICT Nov 25.
+- ~~**Batches 146–153 grouped squash**~~ **pushed @ `21d27d72`** — Q9856–Q10415 (**560**); gate **11094/11094** (`/tmp/rivals-b146-153-prepush.log`); GO ~**05:31 ICT** Nov 25.
+- ~~**Batches 154–161 grouped squash**~~ **pushed @ `12e765f6`** — Q10416–Q10975 (**560**); gate **11654/11654** (`/tmp/rivals-b154-161-prepush.log`); GO ~**06:06 ICT** Nov 25.
+- ~~**Batches 162–169 grouped squash**~~ **pushed @ `e5d2e62d`** — Q10976–Q11515 (**560**); gate **12214/12214** (`/tmp/rivals-b162-169-prepush.log`); GO ~**06:37 ICT** Nov 25.
+- ~~**Batches 170–177 grouped squash**~~ **pushed @ `518fe0d2`** — Q11516–Q11955 (**560**); gate **12774/12774** (`/tmp/rivals-b170-177-prepush.log`); GO ~**07:01 ICT** Nov 25.
+- ~~**Batches 178–185 grouped squash**~~ **pushed @ `d6765bc0`** — Q11956–Q12495 (**560**); gate **13334/13334** (`/tmp/rivals-b178-185-prepush.log`); GO ~**07:36 ICT** Nov 25.
+- ~~**Batches 186–193 grouped squash**~~ **pushed @ `92587abf`** — Q12496–Q13035 (**560**); gate **13894/13894** (`/tmp/rivals-b186-193-prepush.log`); GO ~**08:07 ICT** Nov 25.
+- ~~**Batches 194–201 grouped squash**~~ **pushed @ `893386d5`** — Q13036–Q13575 (**560**); gate **14454/14454** (`/tmp/rivals-b194-201-prepush.log`); GO ~**08:36 ICT** Nov 25.
+- ~~**Batches 202–209 grouped squash**~~ **pushed @ `3e3662f8`** — Q13576–Q14065 (**560**); gate **15014/15014** (`/tmp/rivals-b202-209-prepush.log`); GO ~**09:07 ICT** Nov 25. **Remote tip frozen** at **`3e3662f8`** (no rewrite).
+- ~~**Batches 210–217 grouped squash**~~ **pushed @ `e546be75`** — Q14066–Q14615 (**560**) + host explain slices; gate **15579/15579** (`/tmp/rivals-b210-217-prepush.log`); GO ≥**09:37 ICT** Nov 25. Plain FF push (`3e3662f8..e546be75`); no force.
+- ~~**Batches 218–229 grouped squash**~~ **pushed @ `5c5e6f6f`** — Q13376–Q14195 (**840**) + host reserved/rival slices; gate **16421/16421** (`/tmp/rivals-b218-229-prepush.log`); GO ≥**10:41 ICT** Nov 25; plain FF (`e546be75..5c5e6f6f`).
+- ~~**Batches 230–237 grouped squash**~~ **pushed @ `bc70a1c5`** — Q14136–Q14685 (**560**) + vendor host slices; gate **16983/16983** (`/tmp/rivals-b230-237-prepush.log`); GO ≥**11:11 ICT** Nov 25; plain FF (`5c5e6f6..bc70a1c5`).
+- ~~**Batches 238–245 grouped squash**~~ **pushed @ `a285199b`** — Q13446–Q14265 (**560**) + NEXT **#4–#7** host breakdowns; gate **17547/17547** (`/tmp/rivals-b238-245-prepush.log`); GO ~**11:42 ICT** Nov 25; plain FF (`bc70a1c5..a285199b`).
+- ~~**Batches 246–249 grouped squash**~~ **pushed @ `45ba4b85`** — Q13716–Q14195 (**280**) + cross-system host; gate **17830/17830** (`/tmp/rivals-b246-249-prepush.log`); GO ~**12:20 ICT** Nov 25; plain FF (`a285199b..45ba4b85`).
+- ~~**Batches 250–257 grouped squash**~~ **pushed @ `1ecfc559`** — Q14206–Q14755 (**560**) + NEXT **#8–#11**; gate **18394/18394** (`/tmp/rivals-b250-257-prepush.log`); GO ~**12:55 ICT** Nov 25; plain FF (`45ba4b85..1ecfc559`).
+- ~~**Batches 258–265 grouped squash**~~ **pushed @ `c6ac9d28`** — Q13516–Q14265 (**560**); gate **18954/18954** (`/tmp/rivals-b258-265-prepush.log`); GO ~**13:26 ICT** Nov 25; plain FF (`1ecfc559..c6ac9d28`); main ack **`618c864b`**.
+- ~~**Batches 266–273 grouped squash**~~ **pushed @ `1f535b41`** — Q13786–Q14555 (**560**); gate **19514/19514** (`/tmp/rivals-b266-273-prepush.log`); GO ~**14:17 ICT** Nov 25; plain FF (`c6ac9d28..1f535b41`); main ack **`834a9ca7`**.
+- ~~**Batches 274–281 grouped squash**~~ **pushed @ `8e8296a7`** — Q13856–Q14625 (**560**); gate **20074/20074** (`/tmp/rivals-b274-281-prepush.log`); GO ~**14:48 ICT** Nov 25; plain FF (`1f535b41..8e8296a7`); main ack **`ac3aa9ad`**.
+- ~~**Batches 282–289 grouped squash**~~ **pushed @ `2ea59b0b`** — Q13926–Q14695 (**560**); gate **20634/20634** (`/tmp/rivals-b282-289-prepush.log`); GO ≥**15:18 ICT** Nov 25; plain FF (`8e8296a7..2ea59b0b`).
+- ~~**Batches 290–297 grouped squash**~~ **pushed @ `7e2f17b3`** — Q13996–Q14765 (**560**); gate **21194/21194** (`/tmp/rivals-b290-297-prepush.log`); GO ≥**15:48 ICT** Nov 25; plain FF (`2ea59b0b..7e2f17b3`).
+- ~~**Batches 298–305 grouped squash**~~ **pushed @ `ac7fd7ae`** — Q14066–Q14835 (**560**) + `HostExplainQueuePrepLaterTests` (**3**); gate **21757/21757** (`/tmp/rivals-b298-305-prepush.log`); GO ≥**16:18 ICT** Nov 25; plain FF (`7e2f17b3..ac7fd7ae`).
+- ~~**Batches 306–313 grouped squash**~~ **pushed @ `bef51859`** — Q14136–Q14905 (**560**) + `HostExplainQueuePrepLaterTests` (**6**); gate **22320/22320** (`/tmp/rivals-b306-313-prepush.log`); GO ≥**16:49 ICT** Nov 25; plain FF (`ac7fd7ae..bef51859`).
+- ~~**Batches 314–321 grouped squash**~~ **pushed @ `71a0d490`** — Q14206–Q14975 (**560**) + `HostExplainNext314LaterTests` (**3**); gate **22883/22883** (`/tmp/rivals-b314-321-prepush.log`); GO ≥**17:19 ICT** Nov 25 (landed ~**17:11 ICT**); plain FF (`bef51859..71a0d490`).
+- ~~**Batches 322–329 land**~~ **remote @ `113be5fc`** — Q14276–Q15045 (**560**); gate **23443/23443** (`/tmp/rivals-b322-329-prepush.log`); GO ≥**17:41 ICT** Nov 25 (content already FF from `71a0d490`; regular commit, not commit-tree squash — no rewrite).
+- **Batches 330+ (LOCAL — HOLD PUSH):** hatch **330–337** + `HostExplainNext330LaterTests` (**3**); **no push** until ≥~**18:11 ICT** after **`113be5fc`**.
+- **LOCAL hold:** batch **67** until **66** lands.
+- **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
 ## Rules: forward queue (from bible / systems-design)
 
