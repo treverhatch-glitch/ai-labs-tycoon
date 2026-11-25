@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 100;
+        public const int CurrentSchema = 105;
 
         public int Schema;
         public string ConfigVersion;
@@ -436,6 +436,36 @@ namespace AiLabs.Rules.State
         /// <summary>How many papers replicated and how many did not.</summary>
         public int ReplWins;
         public int ReplFails;
+        /// <summary>The tech the lab has publicly bet on researching (its place in the data plus one, 0 none), the weeks left to do it, and how many bets it kept and lost.</summary>
+        public int TbRef;
+        public int TbLeft;
+        public int TbWins;
+        public int TbLosses;
+        /// <summary>The model the lab has opened a public waitlist for (0 none), the hype built so far, the weeks left of the promise, and how many lists paid off and lapsed.</summary>
+        public int WlModel;
+        public int WlHype;
+        public int WlLeft;
+        public int WlWins;
+        public int WlFlops;
+        /// <summary>Whether the lab keeps a careers page, its score as an employer (0 to 1000), the weeks left for a bad review to be answered, whether the score is under the low bar, and how many reviews it has had.</summary>
+        public int BrandOn;
+        public int BrandScore;
+        public int BrandReview;
+        public int BrandLow;
+        public int BrandReviews;
+        /// <summary>The level of the free tier (0 none), its reach (0 to 1000), the weeks it has run, and the cash it has cost and brought in.</summary>
+        public int FtLevel;
+        public int FtReach;
+        public int FtWeeks;
+        public long FtSpent;
+        public long FtEarned;
+        /// <summary>Whether the lab keeps a launch watch desk, the rival (its id plus one) whose launch is waiting for an answer (0 none), how far ahead of the lab it is in permille, the weeks it has waited, and how many launches landed and were answered.</summary>
+        public int LwOn;
+        public int LwRival;
+        public int LwLead;
+        public int LwWait;
+        public int LwHits;
+        public int LwAnswers;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -819,6 +849,31 @@ namespace AiLabs.Rules.State
             s.Int("replRigor", ref ReplRigor);
             s.Int("replWins", ref ReplWins);
             s.Int("replFails", ref ReplFails);
+            s.Int("tbRef", ref TbRef);
+            s.Int("tbLeft", ref TbLeft);
+            s.Int("tbWins", ref TbWins);
+            s.Int("tbLosses", ref TbLosses);
+            s.Int("wlModel", ref WlModel);
+            s.Int("wlHype", ref WlHype);
+            s.Int("wlLeft", ref WlLeft);
+            s.Int("wlWins", ref WlWins);
+            s.Int("wlFlops", ref WlFlops);
+            s.Int("brandOn", ref BrandOn);
+            s.Int("brandScore", ref BrandScore);
+            s.Int("brandReview", ref BrandReview);
+            s.Int("brandLow", ref BrandLow);
+            s.Int("brandReviews", ref BrandReviews);
+            s.Int("ftLevel", ref FtLevel);
+            s.Int("ftReach", ref FtReach);
+            s.Int("ftWeeks", ref FtWeeks);
+            s.Long("ftSpent", ref FtSpent);
+            s.Long("ftEarned", ref FtEarned);
+            s.Int("lwOn", ref LwOn);
+            s.Int("lwRival", ref LwRival);
+            s.Int("lwLead", ref LwLead);
+            s.Int("lwWait", ref LwWait);
+            s.Int("lwHits", ref LwHits);
+            s.Int("lwAnswers", ref LwAnswers);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

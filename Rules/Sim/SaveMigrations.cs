@@ -115,6 +115,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 98) MigrateTo98(root);
             if (fromSchema < 99) MigrateTo99(root);
             if (fromSchema < 100) MigrateTo100(root);
+            if (fromSchema < 101) MigrateTo101(root);
+            if (fromSchema < 102) MigrateTo102(root);
+            if (fromSchema < 103) MigrateTo103(root);
+            if (fromSchema < 104) MigrateTo104(root);
+            if (fromSchema < 105) MigrateTo105(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -1130,6 +1135,56 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 foreach (string key in new[] { "replPending", "replWait", "replLeft", "replRigor", "replWins", "replFails" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 101: no lab has a public bet on a tech.</summary>
+        static void MigrateTo101(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "tbRef", "tbLeft", "tbWins", "tbLosses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 102: no lab has a waitlist open.</summary>
+        static void MigrateTo102(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "wlModel", "wlHype", "wlLeft", "wlWins", "wlFlops" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 103: no lab keeps a careers page.</summary>
+        static void MigrateTo103(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "brandOn", "brandScore", "brandReview", "brandLow", "brandReviews" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 104: no lab runs a free tier.</summary>
+        static void MigrateTo104(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "ftLevel", "ftReach", "ftWeeks", "ftSpent", "ftEarned" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 105: no lab keeps a launch watch desk.</summary>
+        static void MigrateTo105(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "lwOn", "lwRival", "lwLead", "lwWait", "lwHits", "lwAnswers" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }

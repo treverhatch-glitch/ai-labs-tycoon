@@ -2484,6 +2484,45 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Shocks are on by default, so a lab that never answers takes its hits. Seven old tests that ran across the dates of world events (five morale tests in `WorkplaceTests`, and one older-save replay each in `RushedLaunchTests` and `TrainingObjectiveTests`) now turn shocks off in their own config, because a pretend older save drops a shock still waiting; a conference test turns replication off in its own config (a paper left waiting on its code decision costs prestige while it is in review), and the "newer version" save test now uses the current schema plus one instead of a fixed 99, which the ninety-ninth schema made an ordinary save; the rest of the suite needed nothing.
 - Alternatives: shocks off by default (rejected: the news would never reach the player), the values observer reading only its own systems (rejected: the player expects every act to count).
 
+### Q400. Can the lab promise a tech before it has it? DECIDED: yes, a public bet on one reachable tech, kept or missed
+- Research is a queue the player works through in private. A bet makes the order public: pick one tech that is reachable now, and the world is watching. Keeping the promise earns reputation and prestige; missing it costs reputation, and taking it back costs less, so the real choice is how big a tech to promise and when to give up.
+- It uses the research the lab does anyway, so there is nothing to buy: the player must plan the research points (and the weeks) to keep it, which makes the tree's depth matter more than before.
+- Alternatives: a cash prize for finishing early (rejected: pay-for-progress), several bets at once (rejected: no choice of which), a bet on a tech not yet reachable (rejected: just luck).
+
+### Q401. Can the lab take names for a model before it ships? DECIDED: yes, a public waitlist with a promised date
+- A launch is more than a release. A waitlist builds anticipation each week it stays open, so promising a long wait could pay more, but the lab then has to ship inside the promise or the hype is spent against it. Closing early is cheaper than lapsing.
+- It reads the model's own status, so training, release and retirement did not change: shipping is the same decision it always was, now with a date attached.
+- Alternatives: paid pre-orders (rejected: pay-for-cash), hype that decays (rejected: no promise to keep), a waitlist for any model including released ones (rejected: nothing left to promise).
+
+### Q402. Does the lab have a name as an employer? DECIDED: yes, a score from its own people decisions that moves every hire fee
+- Staff decisions already exist one by one: promotions, equity, sabbaticals, layoffs. An employer score ties them together so the lab pays the cost of its record when it next hires, and a bad record brings a review that has to be answered.
+- Answering has three costs: cash, reputation or score. Owning up is the only way to win the score back; rebutting protects the score at the cost of the lab's name.
+- It starts when the lab sets up a careers page, so games that never do are unchanged.
+- Alternatives: a free score from the start (rejected: changes every old hire), a cash payment for score (rejected: pay-for-stat; here the cost is repairing a real problem), random reviews (rejected: nothing to plan for).
+
+### Q403. Can the lab give a model away to grow? DECIDED: yes, a free tier at three levels that costs more as it reaches more
+- Revenue has been all about the paid line. A free tier trades a weekly bill for revenue that grows with reach: a small level is cheap and slow, a big one reaches fast but costs a lot to serve and the bill rises as it succeeds. Shutting it upsets the people who built on it, so it is a real commitment, not a switch to flick.
+- Nothing is paid up front and nothing is unlocked by paying: the only thing the lab can choose is how much of its own revenue to risk.
+- Alternatives: a fixed ratio of revenue (rejected: no cost growth, always right), free access for rivals too (rejected: rivals' behaviour belongs to the rivals work), a one-off launch discount (rejected: no state).
+
+### Q404. Does the lab watch what rivals launch? DECIDED: yes, with a desk it pays for, and it only reads
+- Rivals release models all through the game, but the player only saw them in the market share. A watch desk turns a rival launch into a decision: if it beats the lab, answer it (counter-programme for cash, or own the safety story if the lab's model is safe enough) or take the reputation hit. A launch the lab already beats is a small win. Owning the safety story is only possible for a lab that actually built a safe model, so the choice reflects earlier ones.
+- The desk reads rival models and release events and nothing more: it changes no rival state, so rival behaviour stays entirely with the rivals work. The only link is that the player's reputation moves the shared market, as it already did.
+- It starts when the desk is paid for, so games that never open one are unchanged.
+- Alternatives: a free alert for every launch (rejected: no cost to the knowledge, and every old game changes), letting the lab sabotage the launch (rejected: acts on rivals), a scripted launch list (rejected: rivals decide their own).
+
+### Q405. Do the batch-seven systems make the news and the chat? DECIDED: yes, 22 headlines and 12 chat lines for 12 event kinds
+- Tech bets (made, kept, missed, withdrawn), waitlists (opened, shipped, lapsed, closed), the careers page and its reviews (opened, a bad review, fixed, ignored, answered another way), the free tier (opened, shut, lost with its model) and the launch watch (desk, a launch that beats the lab or that it beats, countered, unanswered, answered another way).
+- Picks above 1 fall to the data's wildcard line, so withdrawing a bet and a rebutted review share lines with their neighbours.
+- Alternatives: a headline per answer (rejected: the data only picks 0 and 1 besides the wildcard).
+
+### Q406. How do the five new systems meet? DECIDED: through the employer score and the launch watch's loss
+- The employer score (Q402) reads the bets and the waitlist: a kept tech promise or a waitlist that shipped in time adds the same points as a promotion; a missed promise or a lapsed waitlist takes away what a resignation does. People want to work at a lab that does what it says.
+- The launch watch (Q404) takes less loss from a rival launch the bigger the free tier's reach (a quarter of the reach in permille, so at most 25% off). A lab with a free tier has users who stay with it when a rival arrives.
+- The other pairs share nothing on purpose: a waitlist is about when to ship, a bet about what to research, and neither changes the free tier's books.
+- All five are inert until the player uses a command, so no old test needed a new switch (Q400 to Q404).
+- Alternatives: all five default-on (rejected: every old game would change), a free tier that also changes waitlist hype (rejected: two numbers moving together with no choice).
+
 ## Open
 
 None.

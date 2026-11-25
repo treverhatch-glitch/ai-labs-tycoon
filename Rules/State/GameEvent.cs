@@ -432,7 +432,31 @@ namespace AiLabs.Rules.State
         /// <summary>The lab kept a paper's code back. Amount is the prestige it cost, Pick 0 the lab chose to, 1 it waited too long.</summary>
         CodeWithheld,
         /// <summary>Another lab tried to reproduce a paper. Amount is the prestige it changed, SubjectId how reproducible the paper was, Pick 1 it replicated and 0 it did not.</summary>
-        PaperReplicated
+        PaperReplicated,
+        /// <summary>The lab made a public bet on a tech. SubjectId is its place in the data, Ref the tech.</summary>
+        TechBetMade,
+        /// <summary>A bet ended. Amount is the reputation it changed, Ref the tech, Pick 1 kept, 0 the weeks ran out, 2 taken back.</summary>
+        TechBetEnded,
+        /// <summary>The lab opened a waitlist. SubjectId is the model, Amount the weeks promised.</summary>
+        WaitlistOpened,
+        /// <summary>A waitlist ended. Amount is the reputation it changed, SubjectId the model, Pick 1 shipped in time, 0 the promise lapsed, 2 closed early.</summary>
+        WaitlistEnded,
+        /// <summary>The lab set up a careers page. Amount is the cash it cost.</summary>
+        CareersOpened,
+        /// <summary>A bad review of the lab as an employer appeared. Amount is the score.</summary>
+        BadReview,
+        /// <summary>A bad review was answered. Amount is the score change, Pick 1 fixed, 2 rebutted, 3 left, 0 nobody answered in time.</summary>
+        ReviewAnswered,
+        /// <summary>The lab opened a free tier. Amount is the level.</summary>
+        FreeTierOpened,
+        /// <summary>The free tier closed. Amount is the reputation lost, SubjectId the weeks it ran, Pick 1 shut by the lab, 0 the model went.</summary>
+        FreeTierClosed,
+        /// <summary>The lab set up a launch watch desk. Amount is the cash it cost.</summary>
+        WatchDeskOpened,
+        /// <summary>The desk saw a rival launch. SubjectId is the rival, Amount how far ahead of the lab it is in permille (0 when the lab already beats it), Pick 1 it beats the lab.</summary>
+        RivalLaunchSeen,
+        /// <summary>A rival launch was answered. SubjectId is the rival, Amount the reputation change, Pick 1 counter-programmed, 2 held, 3 owned the safety story, 0 nobody answered in time.</summary>
+        LaunchAnswered
     }
 
     /// <summary>

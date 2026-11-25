@@ -134,6 +134,11 @@ namespace AiLabs.Rules.Config
             CreedProblems(p, c);
             ShocksProblems(p, c);
             ReplicationProblems(p, c);
+            TechBetsProblems(p, c);
+            WaitlistProblems(p, c);
+            BrandProblems(p, c);
+            FreeTierProblems(p, c);
+            LaunchWatchProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1523,6 +1528,53 @@ namespace AiLabs.Rules.Config
             if (k.PendingMax < 1 || k.PendingWeeks < 1 || k.Weeks < 1 || k.MaxEffort < 0 || k.MaxEffort > 12 || k.EffortPoints < 0) p.Add("replication.pendingMax, pendingWeeks and weeks must be at least 1, maxEffort from 0 to 12 and effortPoints not negative");
             if (k.RigorBase < 0 || k.RigorStep < 0 || k.RigorPerWriter < 0 || k.BarBase < 0 || k.BarBase > MathI.Permille || k.BarPerPrestige < 0 || k.BarPerPrestige > MathI.Permille) p.Add("replication.rigorBase, rigorStep and rigorPerWriter must not be negative, barBase and barPerPrestige from 0 to 1000");
             if (k.WinPrestige < 0 || k.LossPrestige < 0 || k.WithholdPrestige < 0 || k.WinReputation < 0 || k.LossReputation < 0 || k.WinReputation > 500 || k.LossReputation > 500) p.Add("replication.winPrestige, lossPrestige and withholdPrestige must not be negative and winReputation and lossReputation from 0 to 500");
+        }
+
+        static void TechBetsProblems(List<string> p, GameConfig c)
+        {
+            TechBetsConfig k = c.TechBets;
+            if (k == null) { p.Add("techBets is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("techBets.enabled must be 0 or 1");
+            if (k.Weeks < 1 || k.MinCost < 0) p.Add("techBets.weeks must be at least 1 and minCost not negative");
+            if (k.WinReputation < 0 || k.WinReputation > 500 || k.LossReputation < 0 || k.LossReputation > 500 || k.WithdrawReputation < 0 || k.WithdrawReputation > 500 || k.WinPrestige < 0) p.Add("techBets.winReputation, lossReputation and withdrawReputation must be from 0 to 500 and winPrestige not negative");
+        }
+
+        static void WaitlistProblems(List<string> p, GameConfig c)
+        {
+            WaitlistConfig k = c.Waitlist;
+            if (k == null) { p.Add("waitlist is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("waitlist.enabled must be 0 or 1");
+            if (k.MinWeeks < 1 || k.MaxWeeks < k.MinWeeks) p.Add("waitlist.minWeeks must be at least 1 and maxWeeks at least minWeeks");
+            if (k.HypeStep < 0 || k.HypeStep > 1000 || k.WinPerThousand < 0 || k.WinPerThousand > 1000 || k.LossPerThousand < 0 || k.LossPerThousand > 1000 || k.ClosePerThousand < 0 || k.ClosePerThousand > 1000) p.Add("waitlist.hypeStep and the per-thousand values must be from 0 to 1000");
+        }
+
+        static void BrandProblems(List<string> p, GameConfig c)
+        {
+            BrandConfig k = c.Brand;
+            if (k == null) { p.Add("brand is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("brand.enabled must be 0 or 1");
+            if (k.OpenCost < 0 || k.RepairCostPerStaff < 0) p.Add("brand.openCost and repairCostPerStaff must not be negative");
+            if (k.Start < 0 || k.Start > 1000 || k.LowBar < 0 || k.LowBar > 1000 || k.MaxFeePermille < 0 || k.MaxFeePermille > 900) p.Add("brand.start and lowBar must be from 0 to 1000 and maxFeePermille from 0 to 900");
+            if (k.KeptPoints < 0 || k.BrokenPoints < 0 || k.RepairPoints < 0 || k.IgnorePoints < 0 || k.ReviewWeeks < 1 || k.RebutReputation < 0 || k.RebutReputation > 500) p.Add("brand points must not be negative, reviewWeeks at least 1 and rebutReputation from 0 to 500");
+        }
+
+        static void FreeTierProblems(List<string> p, GameConfig c)
+        {
+            FreeTierConfig k = c.FreeTier;
+            if (k == null) { p.Add("freeTier is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("freeTier.enabled must be 0 or 1");
+            if (k.LiftA < 0 || k.LiftB < k.LiftA || k.LiftC < k.LiftB || k.LiftC > 900) p.Add("freeTier.liftA, liftB and liftC must not fall and liftC be at most 900");
+            if (k.StepA < 0 || k.StepB < 0 || k.StepC < 0 || k.CostA < 0 || k.CostB < 0 || k.CostC < 0 || k.CloseLoss < 0 || k.CloseLoss > 500) p.Add("freeTier steps and costs must not be negative and closeLoss from 0 to 500");
+        }
+
+        static void LaunchWatchProblems(List<string> p, GameConfig c)
+        {
+            LaunchWatchConfig k = c.LaunchWatch;
+            if (k == null) { p.Add("launchWatch is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("launchWatch.enabled must be 0 or 1");
+            if (k.OpenCost < 0 || k.WeeklyCost < 0 || k.CounterPerStaff < 0 || k.WaitWeeks < 1) p.Add("launchWatch costs must not be negative and waitWeeks at least 1");
+            if (k.CounterKeepPermille < 0 || k.CounterKeepPermille > 1000 || k.SafetyBar < 0 || k.SafetyBar > 1000) p.Add("launchWatch.counterKeepPermille and safetyBar must be from 0 to 1000");
+            if (k.LossReputation < 0 || k.LossReputation > 500 || k.SafetyGain < 0 || k.SafetyGain > 500 || k.LeadGain < 0 || k.LeadGain > 500) p.Add("launchWatch reputation values must be from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

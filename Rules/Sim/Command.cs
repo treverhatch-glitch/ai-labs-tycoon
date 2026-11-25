@@ -148,7 +148,18 @@ namespace AiLabs.Rules.Sim
         OwnUp,
         AnswerShock,
         ReleaseCode,
-        WithholdCode
+        WithholdCode,
+        BetOnTech,
+        WithdrawTechBet,
+        OpenWaitlist,
+        CloseWaitlist,
+        OpenCareersPage,
+        AnswerReview,
+        OpenFreeTier,
+        CloseFreeTier,
+        OpenWatchDesk,
+        CloseWatchDesk,
+        AnswerLaunch
     }
 
     /// <summary>
@@ -1291,6 +1302,83 @@ namespace AiLabs.Rules.Sim
         public static Command WithholdCode(int labId)
         {
             return Make(CommandKind.WithholdCode, labId);
+        }
+
+        /// <summary>Publicly bets that the lab will research a tech (by id) within the data's weeks. One bet at a time.</summary>
+        public static Command BetOnTech(int labId, string techId)
+        {
+            Command c = Make(CommandKind.BetOnTech, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        /// <summary>Takes the public bet back. It costs a little reputation.</summary>
+        public static Command WithdrawTechBet(int labId)
+        {
+            return Make(CommandKind.WithdrawTechBet, labId);
+        }
+
+        /// <summary>Opens a public waitlist for a model that is training or trained but not out, promising it in the given weeks.</summary>
+        public static Command OpenWaitlist(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.OpenWaitlist, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Closes the waitlist early. It costs reputation by the hype it built.</summary>
+        public static Command CloseWaitlist(int labId)
+        {
+            return Make(CommandKind.CloseWaitlist, labId);
+        }
+
+        /// <summary>Sets up a careers page: the lab starts being scored as an employer. It costs the data's cash.</summary>
+        public static Command OpenCareersPage(int labId)
+        {
+            return Make(CommandKind.OpenCareersPage, labId);
+        }
+
+        /// <summary>Answers a bad review: 1 own up and fix it (costs cash for each person), 2 publicly rebut it, 3 leave it.</summary>
+        public static Command AnswerReview(int labId, int stance)
+        {
+            Command c = Make(CommandKind.AnswerReview, labId);
+            c.Count = stance;
+            return c;
+        }
+
+        /// <summary>Opens a free tier of the lab's best released model at a level, 1 to 3. A higher level reaches more and costs more to serve.</summary>
+        public static Command OpenFreeTier(int labId, int level)
+        {
+            Command c = Make(CommandKind.OpenFreeTier, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Shuts the free tier. The people who built on it are upset by its reach.</summary>
+        public static Command CloseFreeTier(int labId)
+        {
+            return Make(CommandKind.CloseFreeTier, labId);
+        }
+
+        /// <summary>Sets up a launch watch desk. It costs the data's cash and then a weekly bill.</summary>
+        public static Command OpenWatchDesk(int labId)
+        {
+            return Make(CommandKind.OpenWatchDesk, labId);
+        }
+
+        /// <summary>Shuts the launch watch desk. A launch waiting for an answer is taken as held.</summary>
+        public static Command CloseWatchDesk(int labId)
+        {
+            return Make(CommandKind.CloseWatchDesk, labId);
+        }
+
+        /// <summary>Answers a rival launch that beats the lab: 1 counter-programme (cash for each person), 2 hold, 3 own the safety story (needs a safe enough model).</summary>
+        public static Command AnswerLaunch(int labId, int answer)
+        {
+            Command c = Make(CommandKind.AnswerLaunch, labId);
+            c.Count = answer;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

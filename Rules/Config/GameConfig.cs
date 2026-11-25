@@ -129,6 +129,11 @@ namespace AiLabs.Rules.Config
         public CreedConfig Creed = new CreedConfig();
         public ShocksConfig Shocks = new ShocksConfig();
         public ReplicationConfig Replication = new ReplicationConfig();
+        public TechBetsConfig TechBets = new TechBetsConfig();
+        public WaitlistConfig Waitlist = new WaitlistConfig();
+        public BrandConfig Brand = new BrandConfig();
+        public FreeTierConfig FreeTier = new FreeTierConfig();
+        public LaunchWatchConfig LaunchWatch = new LaunchWatchConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -256,6 +261,11 @@ namespace AiLabs.Rules.Config
             s.Obj("creed", ref Creed);
             s.Obj("shocks", ref Shocks);
             s.Obj("replication", ref Replication);
+            s.Obj("techBets", ref TechBets);
+            s.Obj("waitlist", ref Waitlist);
+            s.Obj("brand", ref Brand);
+            s.Obj("freeTier", ref FreeTier);
+            s.Obj("launchWatch", ref LaunchWatch);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

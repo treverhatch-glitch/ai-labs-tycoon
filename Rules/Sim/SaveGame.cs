@@ -257,6 +257,28 @@ namespace AiLabs.Rules.Sim
                     || (lab.ReplLeft == 0 && lab.ReplRigor != 0)
                     || ((lab.ReplPending != 0 || lab.ReplLeft != 0 || lab.ReplWins != 0 || lab.ReplFails != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has " + lab.ReplPending + " papers waiting on their code and one being replicated (" + lab.ReplLeft + " weeks) in a way the data does not allow");
+                if (lab.TbRef < 0 || lab.TbRef > c.Research.Techs.Count || lab.TbLeft < 0 || lab.TbWins < 0 || lab.TbLosses < 0
+                    || (lab.TbRef > 0 && lab.TbLeft < 1) || (lab.TbRef == 0 && lab.TbLeft != 0)
+                    || ((lab.TbRef != 0 || lab.TbWins != 0 || lab.TbLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a public tech bet " + lab.TbRef + " (" + lab.TbLeft + " weeks left) in a way the data does not allow");
+                if (lab.WlModel < 0 || lab.WlHype < 0 || lab.WlHype > 1000 || lab.WlLeft < 0 || lab.WlWins < 0 || lab.WlFlops < 0
+                    || (lab.WlModel > 0 && lab.WlLeft < 1) || (lab.WlModel == 0 && (lab.WlLeft != 0 || lab.WlHype != 0))
+                    || ((lab.WlModel != 0 || lab.WlWins != 0 || lab.WlFlops != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a waitlist " + lab.WlModel + " (hype " + lab.WlHype + ", " + lab.WlLeft + " weeks left) in a way the data does not allow");
+                if (lab.BrandOn < 0 || lab.BrandOn > 1 || lab.BrandScore < 0 || lab.BrandScore > 1000 || lab.BrandReview < 0 || lab.BrandLow < 0 || lab.BrandLow > 1 || lab.BrandReviews < 0
+                    || (lab.BrandOn == 0 && (lab.BrandScore != 0 || lab.BrandReview != 0 || lab.BrandLow != 0))
+                    || (lab.BrandReview > 0 && lab.BrandLow != 1)
+                    || ((lab.BrandOn != 0 || lab.BrandReviews != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has an employer brand (on " + lab.BrandOn + ", score " + lab.BrandScore + ", review " + lab.BrandReview + ") in a way the data does not allow");
+                if (lab.FtLevel < 0 || lab.FtLevel > 3 || lab.FtReach < 0 || lab.FtReach > 1000 || lab.FtWeeks < 0 || lab.FtSpent < 0 || lab.FtEarned < 0
+                    || (lab.FtLevel == 0 && (lab.FtReach != 0 || lab.FtWeeks != 0))
+                    || ((lab.FtLevel != 0 || lab.FtSpent != 0 || lab.FtEarned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a free tier (level " + lab.FtLevel + ", reach " + lab.FtReach + ") in a way the data does not allow");
+                if (lab.LwOn < 0 || lab.LwOn > 1 || lab.LwRival < 0 || lab.LwLead < 0 || lab.LwLead > 1000 || lab.LwWait < 0 || lab.LwHits < 0 || lab.LwAnswers < 0
+                    || (lab.LwOn == 0 && (lab.LwRival != 0 || lab.LwLead != 0 || lab.LwWait != 0))
+                    || (lab.LwRival == 0 && (lab.LwLead != 0 || lab.LwWait != 0))
+                    || ((lab.LwOn != 0 || lab.LwHits != 0 || lab.LwAnswers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a launch watch (on " + lab.LwOn + ", rival " + lab.LwRival + ", lead " + lab.LwLead + ") in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -336,6 +336,13 @@ and says why in the commit message.
 153. **Replication.** ~~Done~~: `ReleaseCode`, `WithholdCode`, schema 99, `ReplicationTests` (Q397).
 154. **News and chat for the sixth batch.** ~~Done~~: 22 headlines and 18 chat lines, `DevicesPlatformsCreedShocksReplicationNewsChatTests`, pins at 255 and 278 (Q398).
 155. **How the sixth batch meets.** ~~Done~~: values read the other systems, a creed shields or exposes a lab to a backlash, `DevicesPlatformsCreedShocksReplicationTogetherTests` (Q399).
+156. **Tech bets.** ~~Done~~: `BetOnTech`, `WithdrawTechBet`, schema 100, `TechBetsTests` (Q400).
+157. **Waitlist.** ~~Done~~: `OpenWaitlist`, `CloseWaitlist`, schema 101, `WaitlistTests` (Q401).
+158. **Employer brand.** ~~Done~~: `OpenCareersPage`, `AnswerReview`, schema 102, `BrandTests` (Q402).
+159. **Free tier.** ~~Done~~: `OpenFreeTier`, `CloseFreeTier`, schema 103, `FreeTierTests` (Q403).
+160. **Launch watch.** ~~Done~~: `OpenWatchDesk`, `CloseWatchDesk`, `AnswerLaunch`, schema 104, `LaunchWatchTests` (Q404).
+161. **News and chat for the seventh batch.** ~~Done~~: 22 headlines and 12 chat lines, `TechBetsWaitlistBrandFreeTierLaunchWatchNewsChatTests` (Q405).
+162. **How the seventh batch meets.** ~~Done~~: the employer score reads bets and waitlists, a free tier cushions a rival launch, `TechBetsWaitlistBrandFreeTierLaunchWatchTogetherTests` (Q406).
 
 ## Rules: later
 
