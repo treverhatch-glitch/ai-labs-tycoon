@@ -1304,9 +1304,13 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 Eight schema-29 hatch bars; parent `1ecfc559`; prepush **18954/18954**.
 
-### Q13786–Q14555. Batches 266–273 cross bars? DECIDED: test-only (LOCAL HOLD after `c6ac9d28`)
+### Q13786–Q14555. Batches 266–273 cross bars? DECIDED: test-only (pushed @ `1f535b41` grouped squash, Nov 25)
 
-Eight-bar bible rotation (funding/pop/treaty/world + model/exit/bubble/soak).
+Eight schema-29 hatch bars; parent `c6ac9d28`; prepush **19514/19514**.
+
+### Q13856–Q14625. Batches 274–281 cross bars? DECIDED: test-only (LOCAL HOLD after `1f535b41`)
+
+Bible rotation +70Q/clone from 266–273 lineage.
 
 ## Open
 
