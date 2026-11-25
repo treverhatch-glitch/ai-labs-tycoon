@@ -4431,3 +4431,111 @@ Vendor/funding ladder/balance soak host slices.
 - Options: (a) defer; (b) presentation chrome; (c) skip.
 - Recommendation and choice: **(b)** — batch **326**.
 
+<<<<<<< Updated upstream
+=======
+### Q776. Presentation tail rollup through batch 208? DECIDED: `CampusPresentationTailRollupRefreshThrough208PresentationSpec`
+
+- Options: (a) stop at 205; (b) through 208; (c) skip.
+- Recommendation and choice: **(b)** — batch **327**.
+
+### Q777. Index manifest tail through batch 211? DECIDED: `CampusIndexLaneManifestTailRefreshThrough211PresentationSpec`
+
+- Options: (a) stop at 208; (b) through 211; (c) skip.
+- Recommendation and choice: **(b)** — batch **328**.
+
+### Q778. GO packet tail through batch 289? DECIDED: `CampusGoPacketTailRefreshThrough289PresentationSpec`
+
+- Options: (a) stop at 286; (b) through 289; (c) skip.
+- Recommendation and choice: **(b)** — batch **329**.
+
+### Q779. ALT-76 rollup refresh through batch 211? DECIDED: `CampusAlt76RollupRefreshB211PresentationSpec`
+
+- Options: (a) stop at 208; (b) through 211; (c) skip.
+- Recommendation and choice: **(b)** — batch **330**.
+
+### Q780. Rules-adjacent era systems tail index? DECIDED: `CampusRulesAdjacentEraSystemsTailIndexPresentationSpec`
+
+- Options: (a) stop at schema 153; (b) tail index row; (c) skip.
+- Recommendation and choice: **(b)** — batch **331** (bible/systems thickener).
+
+### Q781. ALT-76 status sync through batch 214? DECIDED: `CampusAlt76StatusSyncThrough214PresentationSpec`
+
+- Options: (a) stop at 211; (b) through 214; (c) skip.
+- Recommendation and choice: **(b)** — batch **332**.
+
+### Q782. Presentation tail rollup through batch 211? DECIDED: `CampusPresentationTailRollupRefreshThrough211PresentationSpec`
+
+- Options: (a) stop at 208; (b) through 211; (c) skip.
+- Recommendation and choice: **(b)** — batch **333**.
+
+### Q783. ALT-76 rollup refresh through batch 214? DECIDED: `CampusAlt76RollupRefreshB214PresentationSpec`
+
+- Options: (a) stop at 211; (b) through 214; (c) skip.
+- Recommendation and choice: **(b)** — batch **334**.
+
+### Q784. GO packet tail through batch 292? DECIDED: `CampusGoPacketTailRefreshThrough292PresentationSpec`
+
+- Options: (a) stop at 289; (b) through 292; (c) skip.
+- Recommendation and choice: **(b)** — batch **335**.
+
+### Q785. Rivals/world tail index refresh through 312? DECIDED: `CampusRivalWorldTailIndexRefreshThrough312PresentationSpec`
+
+- Options: (a) stop at 300; (b) through 312; (c) skip.
+- Recommendation and choice: **(b)** — batch **336**.
+
+### Q786. Index manifest tail through batch 214? DECIDED: `CampusIndexLaneManifestTailRefreshThrough214PresentationSpec`
+
+- Options: (a) stop at 211; (b) through 214; (c) skip.
+- Recommendation and choice: **(b)** — batch **337**.
+
+### Q787. Explainable HUD tail through batch 315? DECIDED: `CampusExplainableHudTailRefreshThrough315PresentationSpec`
+
+- Options: (a) stop at 312; (b) through 315; (c) skip.
+- Recommendation and choice: **(b)** — batch **338**.
+
+### Q788. Era systems bible thickener index? DECIDED: `CampusEraSystemsBibleThickenerIndexPresentationSpec`
+
+- Options: (a) defer post-#82; (b) index rows 322–326; (c) skip.
+- Recommendation and choice: **(b)** — batch **339** (bible/systems refill).
+
+### Q789. Seasonal/a11y chrome tail through batch 315? DECIDED: `CampusSeasonalA11yChromeTailRefreshThrough315PresentationSpec`
+
+- Options: (a) stop at 312; (b) through 315; (c) skip.
+- Recommendation and choice: **(b)** — batch **340**.
+
+### Q790. ALT-76 status sync through batch 217? DECIDED: `CampusAlt76StatusSyncThrough217PresentationSpec`
+
+- Options: (a) stop at 214; (b) through 217; (c) skip.
+- Recommendation and choice: **(b)** — batch **341**.
+
+### Q791. ALT-76 rollup refresh through batch 217? DECIDED: `CampusAlt76RollupRefreshB217PresentationSpec`
+
+- Options: (a) stop at 214; (b) through 217; (c) skip.
+- Recommendation and choice: **(b)** — batch **342**.
+
+### Q792. GO packet tail through batch 295? DECIDED: `CampusGoPacketTailRefreshThrough295PresentationSpec`
+
+- Options: (a) stop at 292; (b) through 295; (c) skip.
+- Recommendation and choice: **(b)** — batch **343**.
+
+### Q793. Presentation tail rollup through batch 214? DECIDED: `CampusPresentationTailRollupRefreshThrough214PresentationSpec`
+
+- Options: (a) stop at 211; (b) through 214; (c) skip.
+- Recommendation and choice: **(b)** — batch **344**.
+
+### Q794. World map era systems bible tail? DECIDED: `CampusWorldMapEraSystemsBibleTailPresentationSpec`
+
+- Options: (a) map HUD only; (b) map + rival-intent era chrome; (c) skip.
+- Recommendation and choice: **(b)** — batch **345**.
+
+### Q795. Staff/GPU era systems bible tail? DECIDED: `CampusStaffGpuEraSystemsBibleTailPresentationSpec`
+
+- Options: (a) staff panel only; (b) staff + GPU tier affordance; (c) skip.
+- Recommendation and choice: **(b)** — batch **346**.
+
+### Q796. Era reserved-compute bible HUD thickener? DRAFT: `CampusEraReservedComputeBibleThickenerPresentationSpec`
+
+- Options: (a) defer; (b) thickener on schema 149; (c) skip.
+- Recommendation: **(b)** — batch **347**.
+- Status: LOCAL fork (NO PUSH).
+>>>>>>> Stashed changes
