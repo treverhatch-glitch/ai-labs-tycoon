@@ -125,6 +125,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 108) MigrateTo108(root);
             if (fromSchema < 109) MigrateTo109(root);
             if (fromSchema < 110) MigrateTo110(root);
+            if (fromSchema < 111) MigrateTo111(root);
+            if (fromSchema < 112) MigrateTo112(root);
+            if (fromSchema < 113) MigrateTo113(root);
+            if (fromSchema < 114) MigrateTo114(root);
+            if (fromSchema < 115) MigrateTo115(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -1239,6 +1244,66 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "ltsKept", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "ltsBroken", JsonValue.Of(0L));
                 JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "ltsLeft", JsonValue.Of(0L)));
+            });
+        }
+
+        /// <summary>Schema 111: no model exposes API integrations.</summary>
+        static void MigrateTo111(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "apiMoved", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "apiLost", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "integrations", "apiState", "apiLeft", "apiSuccessor" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 112: no model is in a conformity assessment.</summary>
+        static void MigrateTo112(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "cfGranted", "cfFindings", "cfSuspended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m =>
+                {
+                    foreach (string key in new[] { "certStage", "certLeft", "certScope", "certTries" })
+                        JsonPatch.AddIfMissing(m, key, JsonValue.Of(0L));
+                });
+            });
+        }
+
+        /// <summary>Schema 113: no lab has chosen a structure.</summary>
+        static void MigrateTo113(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "orgForm", "orgSince", "orgDisrupt", "orgReorgs" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 114: no lab has a fabric or is building one.</summary>
+        static void MigrateTo114(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "fabTier", "fabBuild", "fabLeft", "fabGpus", "fabBuilt", "fabCancelled" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 115: no lab joined the incident register.</summary>
+        static void MigrateTo115(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "discOn", "discOpen", "discLeft", "discPrep", "discFindings", "discFiled", "discInspect", "discModel" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

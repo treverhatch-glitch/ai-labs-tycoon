@@ -172,7 +172,19 @@ namespace AiLabs.Rules.Sim
         RenewLicence,
         SurrenderLicence,
         PledgeSupport,
-        BreakSupportPledge
+        BreakSupportPledge,
+        OpenApi,
+        DeprecateApi,
+        CancelDeprecation,
+        StartConformity,
+        SubmitEvidence,
+        WithdrawConformity,
+        SetOrg,
+        OrderFabric,
+        CancelFabric,
+        JoinRegister,
+        LeaveRegister,
+        FileReport
     }
 
     /// <summary>
@@ -1491,6 +1503,97 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.BreakSupportPledge, labId);
             c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Opens a released model's API: customers start building on it. Costs upkeep every week and lifts the model's revenue as integrations grow.</summary>
+        public static Command OpenApi(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.OpenApi, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts to retire a model's API with a deadline in weeks. The successor is a model of the lab with an open API, or 0 for none.</summary>
+        public static Command DeprecateApi(int labId, int modelId, int successorId, int weeks)
+        {
+            Command c = Make(CommandKind.DeprecateApi, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            c.Id = successorId.ToString();
+            return c;
+        }
+
+        /// <summary>Calls off a deprecation. What was already lost stays lost.</summary>
+        public static Command CancelDeprecation(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.CancelDeprecation, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Starts a conformity assessment of a released model. Scope 1 is narrow, 2 is broad. Compiles a dossier first, for research points.</summary>
+        public static Command StartConformity(int labId, int modelId, int scope)
+        {
+            Command c = Make(CommandKind.StartConformity, labId);
+            c.TargetId = modelId;
+            c.Count = scope;
+            return c;
+        }
+
+        /// <summary>Hands the assessor the evidence. The model needs a live red-team result, and for a broad scope a live external audit too.</summary>
+        public static Command SubmitEvidence(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.SubmitEvidence, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Drops the assessment, or gives up the certificate. Nothing is refunded.</summary>
+        public static Command WithdrawConformity(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawConformity, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Organises the lab: 1 flat, 2 by function, 3 in cross-functional squads. Changing it disrupts the lab for a while and cannot be repeated soon.</summary>
+        public static Command SetOrg(int labId, int form)
+        {
+            Command c = Make(CommandKind.SetOrg, labId);
+            c.Count = form;
+            return c;
+        }
+
+        /// <summary>Orders the next tier of the training-cluster fabric. A deposit now, the rest at delivery; the cluster is down for the last weeks.</summary>
+        public static Command OrderFabric(int labId)
+        {
+            return Make(CommandKind.OrderFabric, labId);
+        }
+
+        /// <summary>Cancels the tier being built. The deposit is lost.</summary>
+        public static Command CancelFabric(int labId)
+        {
+            return Make(CommandKind.CancelFabric, labId);
+        }
+
+        /// <summary>Joins the incident register: every incident must be reported within weeks, and inspections look at the findings.</summary>
+        public static Command JoinRegister(int labId)
+        {
+            return Make(CommandKind.JoinRegister, labId);
+        }
+
+        /// <summary>Leaves the register. Not while a report is waiting or being prepared.</summary>
+        public static Command LeaveRegister(int labId)
+        {
+            return Make(CommandKind.LeaveRegister, labId);
+        }
+
+        /// <summary>Files the oldest waiting report: 1 a summary now (leaves a finding), 2 a full report (weeks of safety people's time; clears a finding).</summary>
+        public static Command FileReport(int labId, int depth)
+        {
+            Command c = Make(CommandKind.FileReport, labId);
+            c.Count = depth;
             return c;
         }
 

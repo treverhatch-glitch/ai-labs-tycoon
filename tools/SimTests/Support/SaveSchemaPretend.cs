@@ -15,6 +15,13 @@ public static class SaveSchemaPretend
         JsonValue root = Json.Parse(saveJson);
         if (schema < GameState.CurrentSchema)
         {
+            if (schema < 115) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "discOn", "discOpen", "discLeft", "discPrep", "discFindings", "discFiled", "discInspect", "discModel" }) JsonPatch.Remove(lab, key); });
+            if (schema < 114) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "fabTier", "fabBuild", "fabLeft", "fabGpus", "fabBuilt", "fabCancelled" }) JsonPatch.Remove(lab, key); });
+            if (schema < 113) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "orgForm", "orgSince", "orgDisrupt", "orgReorgs" }) JsonPatch.Remove(lab, key); });
+            if (schema < 112) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "cfGranted", "cfFindings", "cfSuspended" }) JsonPatch.Remove(lab, key); });
+            if (schema < 112) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "certStage", "certLeft", "certScope", "certTries" }) JsonPatch.Remove(m, key); }));
+            if (schema < 111) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "apiMoved", "apiLost" }) JsonPatch.Remove(lab, key); });
+            if (schema < 111) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => { foreach (string key in new[] { "integrations", "apiState", "apiLeft", "apiSuccessor" }) JsonPatch.Remove(m, key); }));
             if (schema < 110) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "ltsKept", "ltsBroken" }) JsonPatch.Remove(lab, key); });
             if (schema < 110) JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.Remove(m, "ltsLeft")));
             if (schema < 109) JsonPatch.ForEach(root, "labs", lab => { foreach (string key in new[] { "licRegime", "licPhase", "licLeft", "licStrikes", "licCooldown", "licGranted", "licRefused", "licSuspended" }) JsonPatch.Remove(lab, key); });

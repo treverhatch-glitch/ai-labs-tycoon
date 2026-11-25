@@ -2574,6 +2574,52 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - While a pod is sharp, pledged models cost 25% less each week to keep supported. The lab still has to want a pod: it costs a kick-off and its chemistry can fall.
 - Alternatives: a flat cut (rejected: no choice), a pod bound to each model (rejected: more state than the saving is worth).
 
+### Q417. What happens to the people who built on the old version? DECIDED: integrations stay with a version and have to be moved by a deprecation with a deadline
+- Releasing a newer model moves the customers' spending to it, but not the integrations their engineers built. Integrations are a lock-in that grows with time and lifts revenue, and they belong to one version. Retiring a version is a plan: pick the successor, pick the deadline. A short one strands customers and costs trust, a long one keeps paying upkeep on two versions and loses a share of the movers anyway.
+- It is not a purchase: the lift has to be earned over many weeks and lost the day the version is left behind unless the lab does the moving.
+- Alternatives: integrations carried over free (rejected: no decision), a flat fee to migrate (rejected: a fee, not a choice), stranding with no trust cost (rejected: a deadline would have no teeth).
+
+### Q418. Is a safety audit the end of the story? DECIDED: a staged conformity pipeline that reads the evidence the lab has gathered
+- Red teams and audits each give a short-lived benefit. A conformity assessment joins them: a dossier, then evidence that has to be live on the day, then a review against a bar on the true alignment and the claim gap, then a term with a surveillance check. Findings loop the lab back to remediation and fresh evidence, so the order in which the lab does things matters and a model that is not really aligned cannot be certified however much is spent.
+- The research points for the dossier are the small part. The model has to be good.
+- Alternatives: a pass chance (rejected: honest models would fail by luck), a fee for a certificate (rejected: pay-for-stat), a lab-wide certificate (rejected: licensing already is lab-wide).
+
+### Q419. Does it matter how the lab is organised? DECIDED: three structures whose cost depends on how big the lab is and how many seniors it has
+- A flat lab is free until it outgrows its cap. A functional lab gains research when each function has a senior and loses where one does not, and starts to strain once functions are large. Squads gain training speed but need a senior each and 3 different roles. Which is best changes as the lab grows and promotes, so a reorganisation is a bet on the lab's next year; it is paid for in 8 weeks of disruption and a 26 week lock.
+- It reads staff and seniority as they are, so promotions, hiring, layoffs and quitting all change the answer without a hook of their own.
+- Alternatives: a flat bonus per structure (rejected: no tension), paying for a structure (rejected: a fee), a leader per team named by the player (rejected: promotions already name them).
+
+### Q420. How does a lab turn a pile of GPUs into one fast cluster? DECIDED: a three tier fabric with lead times, a cutover outage and a deposit
+- Each tier is bought for every GPU owned, so it is cheap for a small fleet and dear for a large one, and it opens with an era. The order takes weeks; the last weeks take the cluster down. Cancelling loses the deposit. The balance is paid at delivery, so a lab that spent its cash waits with the cluster still down.
+- It is separate from buying GPUs (`BuyGpus`, the queue of purchases) and from building sites: those add or house GPUs, this makes the ones owned faster.
+- Alternatives: buying speed per GPU (rejected: a pay-for-stat), no outage (rejected: no timing decision), refund on cancel (rejected: no cost to changing your mind).
+
+### Q421. What does it cost to be open about incidents? DECIDED: a voluntary register with deadlines, findings and inspections
+- Joining is a choice with no fee. Each incident then starts a clock. A summary report is fast and earns a little trust but adds a finding; a full report needs safety people and weeks but clears one. Findings build up until an inspection fines them. Staying out costs nothing and gains nothing.
+- It is separate from the licence (a lab-level standing), the on-call rota (softening fines), conformity (certifying a model before it goes out) and post-mortems (learning after one). It is a duty that arrives with incidents, not a purchase.
+- Alternatives: trust for a fee (rejected: a pay-for-stat), automatic reporting (rejected: no decision), a fine cut for joining (rejected: the licence already does that).
+
+### Q422. What does the world say about the batch of systems? DECIDED: headlines for every turn and chat for the ones that land
+- API integrations, conformity, the lab structure, the cluster fabric and the incident register each log their own events. Every kind has a headline and each branch has its own line (an API closed clean or with customers stranded, a conformity mark passed, failed, expired, suspended or withdrawn, a register joined or left, a report filed in full or short, an inspection clean or fined). Chat follows the endings and the strains. Picks above 1 fall back to the line with no pick, listed last.
+- Pins: 320 headlines and 308 chat lines.
+- Alternatives: one generic line per system (rejected: the branches are the story).
+
+### Q423. Does a conformity mark make an incident worse? DECIDED: an incident on a certified model, with the lab on the register, leaves a finding at once
+- A lab that has put a model through assessment and joined the register has told two bodies the model is safe. An incident on it leaves one extra finding on file (`disclosure.certifiedFindings`) as well as opening its report. Labs not on the register, and models without a mark, are unchanged.
+- Alternatives: suspend the mark at once (rejected: surveillance already does that, with evidence), a bigger fine (rejected: a number, not a consequence).
+
+### Q424. Does the structure speed up the paperwork? DECIDED: a functional lab with a senior safety person prepares a full report a week sooner
+- Only in a settled functional lab (`org.form` 2, no reorganisation under way) with a senior in the safety function; never under a week (`disclosure.orgFasterWeeks`). A flat lab, a squad lab, a lab settling a reorganisation, and a lab with no senior safety lead prepare in the full 3 weeks.
+- Alternatives: a research bonus for registers (rejected: unrelated).
+
+### Q425. Do squads help with a cluster upgrade? DECIDED: squads, all led, halve the cutover loss
+- While the cluster is down for the cutover (the last 3 weeks of a fabric build), a squad lab in which every squad has a senior (the same test as the squads' training bonus) loses half as much training speed (`fabric.squadCutPermille`). Squads with a squad unled, and the other structures, lose the full amount.
+- Alternatives: a shorter lead time (rejected: lead times are the point).
+
+### Q426. Do customers on an API notice an incident? DECIDED: an incident on a model with integrations costs 6% of them
+- Each incident on a model with integrations loses `integrations.incidentPermille` (60) of them, so the lift and the lock-in that integrations bring are exposed to the model's safety record. A model with none, and a lab with the integrations switched off, are unchanged. The loss is not counted in the stranded count, which is for closing an API.
+- Alternatives: lose trust only (rejected: integrations are the thing built up).
+
 ## Open
 
 None.

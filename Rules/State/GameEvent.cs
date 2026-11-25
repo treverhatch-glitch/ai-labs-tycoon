@@ -484,7 +484,37 @@ namespace AiLabs.Rules.State
         /// <summary>The lab pledged to support a model. Amount is the weeks.</summary>
         SupportPledged,
         /// <summary>A pledge ended. Pick 1 kept, 0 broken, Amount the fee paid for a breach.</summary>
-        SupportPledgeEnded
+        SupportPledgeEnded,
+        /// <summary>The lab opened a model's API.</summary>
+        ApiOpened,
+        /// <summary>The lab began retiring a model's API. Amount is the weeks.</summary>
+        ApiDeprecated,
+        /// <summary>A deprecation ended. Pick 1 when nothing was left behind, 0 when integrations were stranded; Amount is how many.</summary>
+        ApiEnded,
+        /// <summary>The lab began a conformity assessment. Pick is the scope.</summary>
+        ConformityStarted,
+        /// <summary>A review ended. Pick 1 certified, 0 findings.</summary>
+        ConformityDecided,
+        /// <summary>An assessment or certificate ended. Pick 0 withdrawn, 1 expired, 2 suspended.</summary>
+        ConformityEnded,
+        /// <summary>The lab changed how it is organised. SubjectId is the new form (1 flat, 2 functional, 3 squads); Amount is the weeks of disruption.</summary>
+        OrgChanged,
+        /// <summary>The structure is costing the lab. Amount is the loss in permille, SubjectId the form. Logged when it first crosses a quarter of the cap and again after a change.</summary>
+        OrgStrained,
+        /// <summary>The lab ordered a fabric tier. SubjectId is the tier, Amount the deposit.</summary>
+        FabricOrdered,
+        /// <summary>A fabric tier was delivered. SubjectId is the tier, Amount the balance paid.</summary>
+        FabricDelivered,
+        /// <summary>A fabric order was cancelled. SubjectId is the tier, Amount the deposit lost.</summary>
+        FabricCancelled,
+        /// <summary>The lab joined or left the incident register. Pick 1 joined, 0 left.</summary>
+        RegisterChanged,
+        /// <summary>A report was filed. SubjectId is the model, Pick 1 a summary, 2 a full report; Amount the trust gained.</summary>
+        ReportFiled,
+        /// <summary>A report was late. SubjectId is the model, Amount the fine.</summary>
+        ReportLate,
+        /// <summary>An inspection of the register. Pick 1 clean, 0 fined; Amount the fine.</summary>
+        InspectionHeld
     }
 
     /// <summary>

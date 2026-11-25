@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 110;
+        public const int CurrentSchema = 115;
 
         public int Schema;
         public string ConfigVersion;
@@ -495,6 +495,34 @@ namespace AiLabs.Rules.State
         /// <summary>How many support pledges the lab kept to their end, and how many it broke.</summary>
         public int LtsKept;
         public int LtsBroken;
+        /// <summary>How many integrations the lab has moved to successor models, and how many it lost on the way or stranded.</summary>
+        public int ApiMoved;
+        public int ApiLost;
+        /// <summary>How many conformity certificates the lab was granted, how many reviews ended in findings, and how many certificates were suspended.</summary>
+        public int CfGranted;
+        public int CfFindings;
+        public int CfSuspended;
+        /// <summary>The lab structure (0 none, 1 flat, 2 functional, 3 squads), the week it was set, the weeks of disruption left and how many times it was changed.</summary>
+        public int OrgForm;
+        public int OrgSince;
+        public int OrgDisrupt;
+        public int OrgReorgs;
+        /// <summary>The fabric tier the lab has (0 none), the tier being built (0 none), the weeks left to build it, the GPUs the cost was worked out on, and how many tiers were delivered and cancelled.</summary>
+        public int FabTier;
+        public int FabBuild;
+        public int FabLeft;
+        public int FabGpus;
+        public int FabBuilt;
+        public int FabCancelled;
+        /// <summary>The incident register: joined (1), reports waiting, weeks left on the oldest, weeks left preparing a full report, findings on file, reports filed, weeks to the next inspection, and the model of the latest incident.</summary>
+        public int DiscOn;
+        public int DiscOpen;
+        public int DiscLeft;
+        public int DiscPrep;
+        public int DiscFindings;
+        public int DiscFiled;
+        public int DiscInspect;
+        public int DiscModel;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -928,6 +956,29 @@ namespace AiLabs.Rules.State
             s.Int("licSuspended", ref LicSuspended);
             s.Int("ltsKept", ref LtsKept);
             s.Int("ltsBroken", ref LtsBroken);
+            s.Int("apiMoved", ref ApiMoved);
+            s.Int("apiLost", ref ApiLost);
+            s.Int("cfGranted", ref CfGranted);
+            s.Int("cfFindings", ref CfFindings);
+            s.Int("cfSuspended", ref CfSuspended);
+            s.Int("orgForm", ref OrgForm);
+            s.Int("orgSince", ref OrgSince);
+            s.Int("orgDisrupt", ref OrgDisrupt);
+            s.Int("orgReorgs", ref OrgReorgs);
+            s.Int("fabTier", ref FabTier);
+            s.Int("fabBuild", ref FabBuild);
+            s.Int("fabLeft", ref FabLeft);
+            s.Int("fabGpus", ref FabGpus);
+            s.Int("fabBuilt", ref FabBuilt);
+            s.Int("fabCancelled", ref FabCancelled);
+            s.Int("discOn", ref DiscOn);
+            s.Int("discOpen", ref DiscOpen);
+            s.Int("discLeft", ref DiscLeft);
+            s.Int("discPrep", ref DiscPrep);
+            s.Int("discFindings", ref DiscFindings);
+            s.Int("discFiled", ref DiscFiled);
+            s.Int("discInspect", ref DiscInspect);
+            s.Int("discModel", ref DiscModel);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1113,6 +1164,16 @@ namespace AiLabs.Rules.State
         public int QueueLevel;
         /// <summary>Weeks left of the model's long-term support pledge, or 0 when it has none.</summary>
         public int LtsLeft;
+        /// <summary>Customer integrations built on the model, its API state (0 none, 1 open, 2 deprecating), weeks to the deprecation deadline and the successor model id.</summary>
+        public int Integrations;
+        public int ApiState;
+        public int ApiLeft;
+        public int ApiSuccessor;
+        /// <summary>Conformity assessment: the stage (0 none, 1 dossier, 2 evidence, 3 review, 4 certified), the weeks left in it, the scope (1 narrow, 2 broad) and how many reviews found problems.</summary>
+        public int CertStage;
+        public int CertLeft;
+        public int CertScope;
+        public int CertTries;
         public int AuditedUntil;
         /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
         public int SunsetStart;
@@ -1153,6 +1214,14 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("certStage", ref CertStage);
+            s.Int("certLeft", ref CertLeft);
+            s.Int("certScope", ref CertScope);
+            s.Int("certTries", ref CertTries);
+            s.Int("integrations", ref Integrations);
+            s.Int("apiState", ref ApiState);
+            s.Int("apiLeft", ref ApiLeft);
+            s.Int("apiSuccessor", ref ApiSuccessor);
             s.Int("ltsLeft", ref LtsLeft);
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);

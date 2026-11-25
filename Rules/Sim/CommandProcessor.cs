@@ -107,6 +107,18 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.JoinRegister: return JoinRegister(c, state, lab, cmd);
+                case CommandKind.LeaveRegister: return LeaveRegister(c, state, lab, cmd);
+                case CommandKind.FileReport: return FileReport(c, state, lab, cmd);
+                case CommandKind.OrderFabric: return OrderFabric(c, state, lab, cmd);
+                case CommandKind.CancelFabric: return CancelFabric(c, state, lab, cmd);
+                case CommandKind.SetOrg: return SetOrg(c, state, lab, cmd);
+                case CommandKind.StartConformity: return StartConformity(c, state, lab, cmd);
+                case CommandKind.SubmitEvidence: return SubmitEvidence(c, state, lab, cmd);
+                case CommandKind.WithdrawConformity: return WithdrawConformity(c, state, lab, cmd);
+                case CommandKind.OpenApi: return OpenApi(c, state, lab, cmd);
+                case CommandKind.DeprecateApi: return DeprecateApi(c, state, lab, cmd);
+                case CommandKind.CancelDeprecation: return CancelDeprecation(c, state, lab, cmd);
                 case CommandKind.PledgeSupport: return PledgeSupport(c, state, lab, cmd);
                 case CommandKind.BreakSupportPledge: return BreakSupportPledge(c, state, lab, cmd);
                 case CommandKind.ApplyLicence: return ApplyLicence(c, state, lab, cmd);

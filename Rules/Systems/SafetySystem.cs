@@ -34,7 +34,8 @@ namespace AiLabs.Rules.Systems
         public static int WeeklyChancePermille(GameConfig c, GameState state, LabState lab, ModelState model)
         {
             long before = IncidentChancePermille(c, state.Tick, model) + OverloadPermille(c, state, lab) + Crunch.IncidentPermille(c, lab) + Optimisation.IncidentPermille(c, lab) + TechDebt.IncidentPermille(c, lab);
-            return IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before) + BugBounty.IncidentChange(c, lab, before));
+            long chance = IncidentFloor.Chance(c, before, before + Chiefs.IncidentChange(c, lab, before) + BugBounty.IncidentChange(c, lab, before));
+            return (int)MathI.MulPermille(chance, MathI.Permille - Conformity.ChanceCutPermille(c, model));
         }
 
         /// <summary>The weekly chance before a rushed launch adds to it.</summary>
@@ -137,6 +138,8 @@ namespace AiLabs.Rules.Systems
             TrustSystem.OnIncident(c, state, lab, model);
             SafetyAudit.OnIncident(state, lab, model);
             MarketingCampaign.OnIncident(c, state, lab, model);
+            Disclosure.OnIncident(c, lab, model);
+            Integrations.OnIncident(c, state, lab, model);
 
             Litigation.OnIncident(c, state, lab, model, fine + makeGood);
             GameEvent e = Events.Add(state, EventKind.Incident, lab.Id, model.Id, fine + makeGood, model.Name);

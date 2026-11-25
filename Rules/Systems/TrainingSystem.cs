@@ -41,7 +41,7 @@ namespace AiLabs.Rules.Systems
             }
             gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
                 + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
-            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab) + Crunch.ResearchPermille(c, lab) + HackWeek.ResearchPermille(c, lab) + Chiefs.ResearchPermille(c, lab) + Labour.ResearchPermille(c, lab) - Interpretability.ResearchCostPermille(c, lab))
+            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab) + Crunch.ResearchPermille(c, lab) + HackWeek.ResearchPermille(c, lab) + Chiefs.ResearchPermille(c, lab) + Labour.ResearchPermille(c, lab) + Org.ResearchPermille(c, lab) - Interpretability.ResearchCostPermille(c, lab))
                 + Chairs.Research(c, lab);
         }
 
@@ -63,6 +63,8 @@ namespace AiLabs.Rules.Systems
                 + lab.LeadSpeedPermille
                 + Crunch.TrainingPermille(c, lab)
                 + Labour.TrainingPermille(c, lab)
+                + Org.TrainingPermille(c, lab)
+                + Fabric.Permille(c, lab)
                 - HackWeek.TrainingCutPermille(c, lab);
         }
 
