@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`1ecfc559`**; **LOCAL** **258–265** (HOLD ≥~**13:26 ICT**) |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`c6ac9d28`**; **LOCAL** **266–273** (HOLD ≥~**13:56 ICT**); main **`618c864b`** |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -218,7 +218,8 @@ and says why in the commit message.
 - ~~**Batches 238–245 grouped squash**~~ **pushed @ `a285199b`** — Q13446–Q14265 (**560**) + NEXT **#4–#7** host breakdowns; gate **17547/17547** (`/tmp/rivals-b238-245-prepush.log`); GO ~**11:42 ICT** Nov 25; plain FF (`bc70a1c5..a285199b`).
 - ~~**Batches 246–249 grouped squash**~~ **pushed @ `45ba4b85`** — Q13716–Q14195 (**280**) + cross-system host; gate **17830/17830** (`/tmp/rivals-b246-249-prepush.log`); GO ~**12:20 ICT** Nov 25; plain FF (`a285199b..45ba4b85`).
 - ~~**Batches 250–257 grouped squash**~~ **pushed @ `1ecfc559`** — Q14206–Q14755 (**560**) + NEXT **#8–#11**; gate **18394/18394** (`/tmp/rivals-b250-257-prepush.log`); GO ~**12:55 ICT** Nov 25; plain FF (`45ba4b85..1ecfc559`).
-- **Batches 258–265 (LOCAL — HOLD PUSH):** Q13516–Q14265 (**560** filter green); **no push** until ≥~**13:26 ICT** after **`1ecfc559`**.
+- ~~**Batches 258–265 grouped squash**~~ **pushed @ `c6ac9d28`** — Q13516–Q14265 (**560**); gate **18954/18954** (`/tmp/rivals-b258-265-prepush.log`); GO ~**13:26 ICT** Nov 25; plain FF (`1ecfc559..c6ac9d28`); main ack **`618c864b`**.
+- **Batches 266–273 (LOCAL — HOLD PUSH):** Q13786–Q14555 (**560** filter green); **no push** until ≥~**13:56 ICT** after **`c6ac9d28`**.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 

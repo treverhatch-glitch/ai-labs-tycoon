@@ -1300,6 +1300,14 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** in `EconomyBoundsTests`; the sweep over seeds 1 to 70 was run by hand and is not a test.
 - Why: each seed costs about 3 seconds, so the soak stays inside the suite; the floor, ceiling and revenue-under-pools checks catch both a runaway and a collapse.
 
+### Q13516–Q14265. Batches 258–265 cross bars? DECIDED: test-only (pushed @ `c6ac9d28` grouped squash, Nov 25)
+
+Eight schema-29 hatch bars; parent `1ecfc559`; prepush **18954/18954**.
+
+### Q13786–Q14555. Batches 266–273 cross bars? DECIDED: test-only (LOCAL HOLD after `c6ac9d28`)
+
+Eight-bar bible rotation (funding/pop/treaty/world + model/exit/bubble/soak).
+
 ## Open
 
 None.
