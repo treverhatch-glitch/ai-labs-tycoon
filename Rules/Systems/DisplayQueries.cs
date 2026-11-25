@@ -79,6 +79,33 @@ namespace AiLabs.Rules.Systems
             public long Total { get { return SpotRentedGpus + ReservedDiscounted + CloudChips; } }
         }
 
+        public struct ReservedComputeBreakdown
+        {
+            public int ReservedGpus;
+            public int ActiveContracts;
+            public long WeeklySpotEquivalent;
+            public long WeeklyDiscounted;
+            public int VendorQueuedGpus;
+
+            public long WeeklySavings { get { return WeeklySpotEquivalent - WeeklyDiscounted; } }
+        }
+
+        public struct RivalDecisionSlice
+        {
+            public DecisionAction Action;
+            public string Ref;
+            public long Amount;
+            public ReasonCode PrimaryReason;
+            public bool HasReason;
+        }
+
+        public struct SignReservedQuote
+        {
+            public int GpuCount;
+            public long Deposit;
+            public long WeeklyRentAfterSign;
+        }
+
         public struct FundingRoundQuote
         {
             public string RoundId;
@@ -219,6 +246,31 @@ namespace AiLabs.Rules.Systems
             return b;
         }
 
+        public static ReservedComputeBreakdown ReservedComputeParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new ReservedComputeBreakdown();
+            if (lab == null) return b;
+            b.ReservedGpus = ComputeContractSystem.ReservedGpus(lab);
+            b.ActiveContracts = lab.ReservedContracts.Count;
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.WeeklySpotEquivalent = gen.RentPerGpuWeek * b.ReservedGpus;
+            b.WeeklyDiscounted = ComputeContractSystem.WeeklyReservedRent(c, state, lab);
+            VendorStanding standing = state.Vendor.Standing(lab.Id);
+            b.VendorQueuedGpus = standing == null ? 0 : standing.QueuedGpus;
+            return b;
+        }
+
+        public static bool TrySignReservedQuote(GameConfig c, GameState state, LabState lab, int gpuCount, out SignReservedQuote quote)
+        {
+            quote = new SignReservedQuote();
+            if (lab == null || gpuCount < 1) return false;
+            quote.GpuCount = gpuCount;
+            quote.Deposit = ComputeContractSystem.Deposit(c, state, lab, gpuCount);
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            quote.WeeklyRentAfterSign = MathI.MulPermille(gpuCount * gen.RentPerGpuWeek, c.Compute.ReservedRentPermille);
+            return true;
+        }
+
         public static bool TryNextFundingQuote(GameConfig c, GameState state, LabState lab, out FundingRoundQuote quote)
         {
             quote = new FundingRoundQuote();
@@ -252,6 +304,27 @@ namespace AiLabs.Rules.Systems
             for (int i = start; i < lab.Log.Count; i++)
                 lines.Add(DecisionText.Line(c, state, lab, lab.Log[i]));
             return lines;
+        }
+
+        /// <summary>Structured tail of a plan-run lab's decision log. Empty for the player or bots.</summary>
+        public static List<RivalDecisionSlice> RivalDecisionSlices(GameConfig c, GameState state, LabState lab, int maxLines)
+        {
+            var slices = new List<RivalDecisionSlice>();
+            if (lab == null || lab.Controller != LabController.Plan || maxLines < 1) return slices;
+            int start = lab.Log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < lab.Log.Count; i++)
+            {
+                DecisionEntry e = lab.Log[i];
+                var slice = new RivalDecisionSlice();
+                slice.Action = e.Action;
+                slice.Ref = e.Ref;
+                slice.Amount = e.Amount;
+                slice.HasReason = e.Reasons.Count > 0;
+                if (slice.HasReason) slice.PrimaryReason = e.Reasons[0].Code;
+                slices.Add(slice);
+            }
+            return slices;
         }
     }
 }

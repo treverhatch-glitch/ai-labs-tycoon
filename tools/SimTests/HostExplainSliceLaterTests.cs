@@ -87,4 +87,43 @@ public class HostExplainSliceLaterTests
         Assert.True(DisplayQueries.TryNextFundingQuote(g.C, g.State, g.Me, out DisplayQueries.FundingRoundQuote q));
         Assert.Equal("series-a", q.RoundId);
     }
+
+    [Fact]
+    public void Reserved_compute_parts_align_with_gpu_rent_and_sign_quote()
+    {
+        var g = Game.Solo(tweak: c => c.Compute.ReservedRentPermille = 750);
+        int count = 5;
+        g.State.Vendor.Standing(g.Me.Id).QueuedGpus = 3;
+        Assert.True(DisplayQueries.TrySignReservedQuote(g.C, g.State, g.Me, count, out DisplayQueries.SignReservedQuote sign));
+        long cash = g.Me.Cash;
+        g.Do(Command.SignReservedCompute(g.Id, count));
+        Assert.Equal(cash - sign.Deposit, g.Me.Cash);
+        DisplayQueries.ReservedComputeBreakdown reserved = DisplayQueries.ReservedComputeParts(g.C, g.State, g.Me);
+        DisplayQueries.GpuRentBreakdown rent = DisplayQueries.GpuRentParts(g.C, g.State, g.Me);
+        Assert.Equal(count, reserved.ReservedGpus);
+        Assert.Equal(1, reserved.ActiveContracts);
+        Assert.Equal(rent.ReservedDiscounted, reserved.WeeklyDiscounted);
+        Assert.Equal(sign.WeeklyRentAfterSign, reserved.WeeklyDiscounted);
+        Assert.True(reserved.WeeklySavings > 0);
+        Assert.Equal(3, reserved.VendorQueuedGpus);
+    }
+
+    [Fact]
+    public void Rival_decision_slices_match_log_tail()
+    {
+        Game g = WithRival("openaye");
+        LabState rival = g.Rival("openaye");
+        g.Weeks(16);
+        int want = 4;
+        var slices = DisplayQueries.RivalDecisionSlices(g.C, g.State, rival, want);
+        var lines = DisplayQueries.RivalLogLines(g.C, g.State, rival, want);
+        Assert.Equal(lines.Count, slices.Count);
+        if (slices.Count > 0)
+        {
+            int i = rival.Log.Count - slices.Count;
+            Assert.Equal(rival.Log[i].Action, slices[0].Action);
+            Assert.Equal(rival.Log[i].Ref, slices[0].Ref);
+            Assert.Equal(DecisionText.Line(g.C, g.State, rival, rival.Log[i]), lines[0]);
+        }
+    }
 }
