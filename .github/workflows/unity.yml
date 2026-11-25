@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          lfs: true
+          lfs: false
 
       - name: Project present
         id: project
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          lfs: true
+          lfs: false
 
       - name: Prepare artifacts
         run: mkdir -p "$GITHUB_WORKSPACE/unity/artifacts"
