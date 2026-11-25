@@ -4636,3 +4636,5 @@ Vendor/funding ladder/balance soak host slices.
 ### Q839. Era public metrics HUD (157)? DECIDED: `CampusEraPublicMetricsHudChromePresentationSpec` — **390**.
 ### Q840. Era schema 161 HUD? DECIDED: `CampusEraSchema161HudChromePresentationSpec` — **391**.
 ### Q841. Era schema 162 HUD? DECIDED: `CampusEraSchema162HudChromePresentationSpec` — **392**.
+
+### Q842–Q853. Batches **393–404** (hub **393**, rhythm, era **163–164**, rules tail **404**).
