@@ -23,6 +23,11 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             c.Marketing.MinSales = 0;
             c.OnCall.StaffPerLevel = 0;
             c.RedTeam.RoleId = "";
+            c.Internships.Enabled = 0;
+            c.Support.Enabled = 0;
+            c.Sabbatical.Enabled = 0;
+            c.Requisitions.Enabled = 0;
+            c.Scholars.Enabled = 0;
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;

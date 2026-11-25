@@ -147,7 +147,7 @@ public class SupportDeskTests
         g.Me.SupportPeople = 99;
         Assert.Contains(SaveGame.Problems(g.C, g.State), p => p.Contains("support desk"));
         var (fresh, _) = Lab();
-        string old = SaveSchemaPretend.At(fresh.C, 77, fresh.Sim.Save());
+        string old = SaveSchemaPretend.At(fresh.C, 78, fresh.Sim.Save());
         Assert.DoesNotContain("supportPeople", old);
         Simulation back = Simulation.Load(fresh.C, old);
         Assert.Equal(0, back.State.Labs.First(l => l.Id == fresh.Id).SupportPeople);

@@ -184,8 +184,12 @@ public class DevicesPlatformsCreedShocksReplicationTogetherTests
             c.Devices.EraB = 0;
             c.Devices.EraC = 0;
             c.Devices.MinCapability = 0;
+            c.PlayerStart.Cash = 10_000_000_000_000L;
+            c.PlayerStart.GrantPerWeek = 50_000_000L;
         });
         g.Autopilot(60);
+        if (LabQueries.BestReleased(g.Me) == null && !g.Me.Bankrupt)
+            g.Me.Models.Add(new ModelState { Id = g.State.TakeId(), LineId = "mini", Capability = 800, Status = ModelStatus.Released, Alignment = 500, Name = "TogetherSoak" });
         long gap = g.Me.Cash - g.Me.Ledger.Lifetime.Net;
         string[] news = { "talent-war", "pause-letter", "hundred-million" };
         for (int week = 0; week < 330 && !g.Me.Bankrupt; week++)

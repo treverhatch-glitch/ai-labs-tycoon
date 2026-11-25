@@ -338,7 +338,7 @@ public class LobbyingTests
         Game g = Lab();
         Standing(g).Attention = 500;
         g.Do(Command.Lobby(g.Id, Home(g), Lobbying.Quiet));
-        string old = SaveSchemaPretend.At(g.C, 36, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 37, g.Sim.Save());
         Assert.DoesNotContain("lobbyUntilTick", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);

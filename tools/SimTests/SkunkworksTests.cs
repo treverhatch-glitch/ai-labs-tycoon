@@ -276,7 +276,7 @@ public class SkunkworksTests
     {
         Game g = Lab();
         g.Do(Command.StartSkunkworks(g.Id, "research", 2, 15));
-        string old = SaveSchemaPretend.At(g.C, 70, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 71, g.Sim.Save());
         foreach (string key in new[] { "skunkKind", "skunkPeople", "skunkStart", "skunkDue", "skunkWork", "skunkLockedUntil" }) Assert.DoesNotContain("\"" + key + "\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

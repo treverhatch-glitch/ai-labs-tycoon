@@ -290,11 +290,11 @@ public class InsuranceTests
     }
 
     [Fact]
-    public void A_schema_43_save_loads_with_no_policy_and_a_zero_premium_line()
+    public void A_schema_44_save_loads_with_no_policy_and_a_zero_premium_line()
     {
         Game g = Lab();
         g.Weeks(6);
-        string old = SaveSchemaPretend.At(g.C, 43, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 44, g.Sim.Save());
         Assert.DoesNotContain("insuranceLevel", old);
         Assert.DoesNotContain("\"insurance\"", old);
         Simulation sim = Simulation.Load(g.C, old);

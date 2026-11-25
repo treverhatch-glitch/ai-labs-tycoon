@@ -1,6 +1,6 @@
 # Promotions
 
-The player picks a person and makes them senior. A fee and a raise now buy someone who counts for more in their function, in the same chair. A function can only be so senior, and seniors are the last to go when people are let go (`seniority.*` in the data; Q337). Schema 62 adds one flag to each person.
+The player picks a person and makes them senior. A fee and a raise now buy someone who counts for more in their function, in the same chair. A function can only be so senior, and seniors are the last to go when people are let go (`seniority.*` in the data; Q337). Schema 63 adds one flag to each person.
 
 ## `PromoteStaff(person)`
 
@@ -23,4 +23,4 @@ Seniors are let go last: letting people go, and layoff rounds, take the lowest m
 
 - Event `StaffPromoted` (SubjectId the person, Amount the fee, Ref the role id).
 - The validator keeps the weight between 1000 and 3000, and keeps the raise from falling more than 400 permille below the extra weight, so a promotion is never a free gain.
-- Schema 62: `senior` on every person (older saves: 0). Only the player's lab has seniors; a save with a senior rival is flagged.
+- Schema 63: `senior` on every person (older saves: 0). Only the player's lab has seniors; a save with a senior rival is flagged.

@@ -157,7 +157,7 @@ public class AllowanceTests
         back.StepMany(30);
         g.Weeks(30);
         Assert.Equal(g.Sim.Digest(), back.Digest());
-        string old = SaveSchemaPretend.At(g.C, 88, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 89, g.Sim.Save());
         Assert.DoesNotContain("capPolicy", old);
         LabState lab = Simulation.Load(g.C, old).State.Labs.First(l => l.Id == g.Id);
         Assert.Equal(0, lab.CapPolicy);
