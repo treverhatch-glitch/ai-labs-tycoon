@@ -4573,3 +4573,29 @@ Vendor/funding ladder/balance soak host slices.
 ### Q805. Rivals/world tail index through batch 315? DECIDED: `CampusRivalWorldTailIndexRefreshThrough315PresentationSpec`
 
 - Recommendation and choice: **(b)** — batch **356**.
+
+### Q806–Q817. Batches 357–368 (LOCAL GO packet)? **FORK** — see entries below.
+
+### Q806. ALT-76 rollup through batch 220? DECIDED: `CampusAlt76RollupRefreshB220PresentationSpec` — batch **357**.
+
+### Q807. Seasonal/a11y tail through 318? DECIDED: `CampusSeasonalA11yChromeTailRefreshThrough318PresentationSpec` — batch **358**.
+
+### Q808. GO packet tail through 304? DECIDED: `CampusGoPacketTailRefreshThrough304PresentationSpec` — batch **359**.
+
+### Q809. Explainable HUD tail through 321? DECIDED: `CampusExplainableHudTailRefreshThrough321PresentationSpec` — batch **360**.
+
+### Q810. Index manifest tail through 220? DECIDED: `CampusIndexLaneManifestTailRefreshThrough220PresentationSpec` — batch **361**.
+
+### Q811. Presentation rollup through 220? DECIDED: `CampusPresentationTailRollupRefreshThrough220PresentationSpec` — batch **362**.
+
+### Q812. ALT-76 status sync through 223? DECIDED: `CampusAlt76StatusSyncThrough223PresentationSpec` — batch **363**.
+
+### Q813. Rivals/world tail through 318? DECIDED: `CampusRivalWorldTailIndexRefreshThrough318PresentationSpec` — batch **364**.
+
+### Q814. Era campaign-grace HUD chrome? DECIDED: `CampusEraCampaignGraceHudChromePresentationSpec` (schema **160**) — batch **365**.
+
+### Q815. Era open-weights throttle HUD chrome? DECIDED: `CampusEraOpenWeightsThrottleHudChromePresentationSpec` (schema **158**) — batch **366**.
+
+### Q816. Era eval-boost HUD chrome? DECIDED: `CampusEraEvalBoostHudChromePresentationSpec` (schema **159**) — batch **367**.
+
+### Q817. Rules-adjacent graphics tail refresh through 348? DECIDED: `CampusRulesAdjacentGraphicsTailRefreshThrough348PresentationSpec` — batch **368**.
