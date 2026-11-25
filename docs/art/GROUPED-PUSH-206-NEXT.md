@@ -1,5 +1,5 @@
-# Grouped 206–208 (LOCAL queue)
+# Grouped 206–208 — landed `ee8cad7`
 
-**Parent after land:** `0101c39`. **HOLD push ≥~10:57 ICT** (+30m).
+**Parent:** `0101c39` → **`ee8cad7`** (plain push). Next LOCAL: [GROUPED-PUSH-209-NEXT.md](GROUPED-PUSH-209-NEXT.md).
 
-Q655 STATUS **163** · Q656 tail rollup **160** · Q657 GO **202**.
+Q655–Q657 decided; STATUS **163** · tail rollup **160** · GO **202**.
