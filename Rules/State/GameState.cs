@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 76;
+        public const int CurrentSchema = 81;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,6 +42,8 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        /// <summary>True after the first sustained crash; decay floor applies only then.</summary>
+        public bool BubbleHadCrash;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -94,6 +96,7 @@ namespace AiLabs.Rules.State
             s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
             s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
             s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
+            s.Bool("bubbleHadCrash", ref BubbleHadCrash);
             s.ObjList("endings", ref Endings);
         }
     }
@@ -251,6 +254,23 @@ namespace AiLabs.Rules.State
         public List<Submission> Submissions = new List<Submission>();
         /// <summary>People who left the lab and can be asked back, oldest first.</summary>
         public List<Alumnus> Alumni = new List<Alumnus>();
+        /// <summary>The role of the cohort of interns in the lab now, empty when there is none.</summary>
+        public string InternRole = "";
+        /// <summary>How many interns are in the cohort.</summary>
+        public int InternCount;
+        /// <summary>The week the cohort began and the week it ends.</summary>
+        public int InternStart;
+        public int InternDue;
+        /// <summary>Engineers on the support desk.</summary>
+        public int SupportPeople;
+        /// <summary>Tickets the desk has not cleared.</summary>
+        public int SupportBacklog;
+        /// <summary>Open orders for people, soonest first.</summary>
+        public List<Requisition> Requisitions = new List<Requisition>();
+        /// <summary>Visiting scholars in the lab now, and the week they leave.</summary>
+        public int ScholarCount;
+        public int ScholarStart;
+        public int ScholarDue;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -493,6 +513,16 @@ namespace AiLabs.Rules.State
             s.ObjList("accountTeams", ref AccountTeams);
             s.ObjList("submissions", ref Submissions);
             s.ObjList("alumni", ref Alumni);
+            s.Str("internRole", ref InternRole);
+            s.Int("internCount", ref InternCount);
+            s.Int("internStart", ref InternStart);
+            s.Int("internDue", ref InternDue);
+            s.Int("supportPeople", ref SupportPeople);
+            s.Int("supportBacklog", ref SupportBacklog);
+            s.ObjList("requisitions", ref Requisitions);
+            s.Int("scholarCount", ref ScholarCount);
+            s.Int("scholarStart", ref ScholarStart);
+            s.Int("scholarDue", ref ScholarDue);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -600,6 +630,10 @@ namespace AiLabs.Rules.State
         public int MentorId;
         /// <summary>The weeks the pair has held.</summary>
         public int MentorWeeks;
+        /// <summary>The week the person is back from a sabbatical, 0 when they are not away.</summary>
+        public int LeaveDue;
+        /// <summary>Their morale on the day they went.</summary>
+        public int LeaveMorale;
 
         public void Sync(Syncer s)
         {
@@ -610,6 +644,8 @@ namespace AiLabs.Rules.State
             s.Int("senior", ref Senior);
             s.Int("mentorId", ref MentorId);
             s.Int("mentorWeeks", ref MentorWeeks);
+            s.Int("leaveDue", ref LeaveDue);
+            s.Int("leaveMorale", ref LeaveMorale);
         }
     }
 

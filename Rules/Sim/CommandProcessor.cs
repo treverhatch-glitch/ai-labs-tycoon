@@ -22,6 +22,8 @@ namespace AiLabs.Rules.Sim
             if (lab == null) return Fail(CommandError.UnknownLab, "There is no lab " + cmd.LabId + ".");
             if (cmd.LabId >= 0 && lab.Bankrupt && cmd.Kind != CommandKind.ContinueAfterEnding)
                 return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
+            if (cmd.LabId >= 0 && lab.AbsorbedByLabId >= 0 && cmd.Kind != CommandKind.ContinueAfterEnding)
+                return Fail(CommandError.LabAbsorbed, lab.Name + " was absorbed into another lab.");
             if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
                 return Fail(CommandError.UnknownLab, "That is not the player's lab.");
             if (cmd.Kind != CommandKind.ContinueAfterEnding && FundingSystem.PlayerCommandLocked(state, lab))
@@ -105,6 +107,15 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.OpenRequisition: return OpenRequisition(c, state, lab, cmd);
+                case CommandKind.CancelRequisition: return CancelRequisition(c, state, lab, cmd);
+                case CommandKind.HostScholars: return HostScholars(c, state, lab, cmd);
+                case CommandKind.SendScholarsHome: return SendScholarsHome(c, state, lab, cmd);
+                case CommandKind.SendOnSabbatical: return SendOnSabbatical(c, state, lab, cmd);
+                case CommandKind.RecallFromSabbatical: return RecallFromSabbatical(c, state, lab, cmd);
+                case CommandKind.StaffSupportDesk: return StaffSupportDesk(c, state, lab, cmd);
+                case CommandKind.StartInternships: return StartInternships(c, state, lab, cmd);
+                case CommandKind.EndInternships: return EndInternships(c, state, lab, cmd);
                 case CommandKind.RehireAlumnus: return RehireAlumnus(c, state, lab, cmd);
                 case CommandKind.SubmitPaper: return SubmitPaper(c, state, lab, cmd);
                 case CommandKind.WithdrawPaper: return WithdrawPaper(c, state, lab, cmd);
@@ -218,7 +229,7 @@ namespace AiLabs.Rules.Sim
             RoleConfig role = c.Role(cmd.Id);
             if (role == null) return Fail(CommandError.UnknownId, "There is no role \"" + cmd.Id + "\".");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Hire at least one person.");
-            int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
+            int free = LabQueries.FreeSeats(c, lab, role.Id);
             if (cmd.Count > free)
                 return Fail(CommandError.NoSeats, "There are " + free + " free seats for a " + role.Name + ". Build a room for them first.");
             long cost = RolePerks.HireCost(c, lab, role, cmd.Count, state.Tick);
@@ -326,6 +337,8 @@ namespace AiLabs.Rules.Sim
             foreach (HardwareBatch batch in Fleet.OldestFirst(c, lab, holdingId))
             {
                 if (left == 0) break;
+                if (batch.ResaleLockedUntilTick >= 0 && state.Tick < batch.ResaleLockedUntilTick)
+                    return Fail(CommandError.TargetNotEligible, "These GPUs are still tied up in post-acquisition integration.");
                 int take = left < batch.Count ? left : batch.Count;
                 proceeds += take * LabQueries.ResalePerUnit(c, c.Compute.Generation(batch.GpuGenId), state.Tick);
                 Fleet.Take(lab, batch, take);

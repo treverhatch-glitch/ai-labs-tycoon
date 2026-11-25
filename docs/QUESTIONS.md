@@ -626,6 +626,437 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `SellModel`; `DisplayQueries.ModelSaleParts`; cannot sell last active model.
 - Why: Hatch spec — liquidity vs lost weekly sector revenue.
 
+### Q150. Treaty ending trigger? DECIDED: multi-bloc foreign scrutiny on month end
+
+- Options: (a) stub forever; (b) count non-home blocs at Audit+ after `GovernmentSystem.CloseMonth`; (c) require foreign holdings footprint.
+- Recommendation and choice: **(b)**. `TryTreaty` on `Simulation.Step` month end; config `treatyForeignLevelMin` / `treatyForeignBlocCount`; no continue modes yet.
+- Why: systems-design §5.1 stub `treaty`; stack2 rules-forward (era thread owns Q118–Q140 founding, Q141–Q144 talent market).
+
+### Q151. Nationalised ending trigger? DECIDED: home Freeze on month end
+
+- Options: (a) stub; (b) home bloc level ≥ Freeze once attention is closed; (c) consecutive freeze months in save.
+- Recommendation and choice: **(b)**. `TryNationalised`; `nationalisedHomeLevelMin` default Freeze; record-only; no schema bump for triggers.
+- Why: pairs with permit freeze (Q45); endings list already in save since schema 6.
+
+### Q152. Treaty fork — both endings same month? DECIDED: independent triggers
+
+- Options: (a) one blocks the other; (b) both may record on one month end.
+- Recommendation and choice: **(b)**. Order: treaty then nationalised in `Simulation`; tests pin both records.
+- Why: orthogonal scrutiny stories (foreign vs home).
+
+### Q153. Bubble decay residual floor? DECIDED: only after first crash (schema 24)
+
+- Options: (a) always floor at `postCrashResidualPermille`; (b) floor only when `bubbleHadCrash`.
+- Recommendation and choice: **(b)**. `MigrateTo24` on stack2 (era thread owns schemas **21–23**); golden digest moved on seed-1 autopilot year (unchanged crash path, save field default false).
+- Why: Opus review — tiny meter should not jump to 75‰ residual before any crash.
+
+### Q154. Pop at permille before decay? DECIDED: yes
+
+- Options: (a) decay then grace/pop; (b) check `popAtPermille` before decay.
+- Recommendation and choice: **(b)**. Opus review — meter at 950 decayed below pop and never burst.
+- Why: matches bubble bible “overheating snaps” moment.
+
+### Q155. Bubble meter “last month” revenue display? DECIDED: closed ledger month
+
+- Options: (a) open `ThisMonth`; (b) sum last closed month in each lab ledger history.
+- Recommendation and choice: **(b)**. `BubbleSystem.MarketRevenueLastClosedMonth`; `DisplayQueries` uses it for returns context.
+- Why: systems-design hatch UI copy refers to last month, not month in progress.
+
+### Q156. Bubble pop warning margin? DECIDED: config `popWarningMarginPermille`
+
+- Options: (a) hard-code 50; (b) config default 50.
+- Recommendation and choice: **(b)**.
+- Why: Opus review DisplayQueries hard-code.
+
+### Q157. Rival crash rollup chance? DECIDED: config + buyer/target ordering
+
+- Options: (a) hard-coded 60‰; (b) `rivalRollupChancePermille` and sort buyers by cash, targets by distress (cash asc).
+- Recommendation and choice: **(b)**. Zero chance disables rollups.
+- Why: Opus review; bible survivors buy distressed peers.
+
+### Q158. Listed-chip trades and bubble capital? DECIDED: trade cash adds to `bubbleCapitalRaised`
+
+- Options: (a) permille boost only; (b) also count notional hot money like funding boosts.
+- Recommendation and choice: **(b)**. `OnListedChipTrade(c, state, tradeCash)`.
+- Why: circular financing thread; listed GPUs are bubble fuel.
+
+### Q159. Model sale income quote smoothing? DECIDED: blend toward lab last-week revenue
+
+- Options: (a) single-week sector `LastRevenue`; (b) `incomeSmoothingPermille` toward lab ledger last week by model share.
+- Recommendation and choice: **(b)**. Default 500‰ smooth in config.
+- Why: Opus review spiky weekly sector ticks.
+
+### Q170. Hatch ledger line hygiene? DECIDED: Acquisition and AssetSale lines
+
+- Options: (a) keep booking M&amp;A as `Hardware` and sales as `CapitalIn`; (b) dedicated `Acquisition` and `AssetSale` totals on the lab ledger.
+- Recommendation and choice: **(b)**. Save schema **28** adds zeroed `acquisition` / `assetSale` on every ledger total (era owns schemas **25–27**: press, Gauntlet, trust); exit-price query still uses cash on hand.
+- Why: Opus review — reports and exit breakdowns were misleading.
+
+### Q171. Reset `bubbleCapitalRaised` when a crash ends? DECIDED: yes (config default on)
+
+- Options: (a) cumulative forever (later bubbles always fail returns hurdle); (b) zero when crash months reach 0; (c) config toggle.
+- Recommendation and choice: **(c)** with default **(b)**. `BubbleConfig.resetCapitalRaisedAfterCrash`; no save schema bump.
+- Why: Opus review — hurdle should apply per bubble cycle, not all history.
+
+### Q172. Who is “distressed” during a bubble crash? DECIDED: weak revenue share or balance-sheet pain
+
+- Options: (a) every rival in crash; (b) bankrupt / in debt / revenue share below `survivorRevenuePpm` while `InCrash`.
+- Recommendation and choice: **(b)**. `AcquisitionSystem.IsDistressed`; player and rival rollups skip healthy giants; `CanAcquire` blocks non-distressed targets in crash.
+- Why: bible survivors consolidate weak labs — not mandatory fire sales for market leaders.
+
+### Q173. Player commands on absorbed labs? DECIDED: refuse with `LabAbsorbed`
+
+- Options: (a) ghost labs keep planning; (b) block hires, hardware, chips, and nested acquires on absorbed ids; chip listings cannot originate from absorbed sellers.
+- Recommendation and choice: **(b)**. `CommandProcessor` gate; `CommandProcessor.Chips` seller check.
+- Why: absorption is terminal for the target entity.
+
+### Q174. Training runs through M&amp;A? DECIDED: transfer in flight; quotes ignore training
+
+- Options: (a) scrap on absorb; (b) move `Training` models to buyer by id; sale/quote rules still exclude unreleased runs from valuation.
+- Recommendation and choice: **(b)**. `TransferModels` unchanged for training status; `Quote` skips training for parts; cross-tests for sell-after-acquire.
+- Why: crash consolidations should not wipe active science.
+
+### Q175. Bubble/chip/model paths stay coherent in crash? DECIDED: yes (gameplay bar)
+
+- Options: (a) ad hoc per hook; (b) unified checks in tests for pop news, listed-chip capital, crash GPU permille, `AssetSale` ledger during crash, bankrupt pop config, post-crash capital-reset hurdle for new listings.
+- Recommendation and choice: **(b)**. `HatchAcquisitionGameplayLaterTests` Q175 block; ties Q171 reset to listed-chip raises.
+- Why: rivals/chips/acquisitions/model sales are the Hatch economic fantasy — they must interoperate through crash months.
+
+### Q176. Crash distress fire-sale for listed models? DECIDED: haircut via `crashDistressOfferPermille`
+
+- Options: (a) flat disabled in crash; (b) permille haircut on quoted offers when seller distressed and `BubbleSystem.InCrash`.
+- Recommendation and choice: **(b)**. `ModelSalesConfig.crashDistressOfferPermille`; `ModelSalesSystem.Quote` applies; rivalry template `SoldModel` and `ReasonCode.CrashDistress`.
+- Why: rivals flush inventory when balance sheets crack — without bypassing normal quote rules.
+
+### Q177. Planner sells distressed models before debt? DECIDED: yes (`TrySellDistressModels`)
+
+- Options: (a) manual only; (b) monthly planner fire-sell when distressed in crash, logging `DecisionAction.SoldModel`.
+- Recommendation and choice: **(b)**. `LabPlanner.Distress`; skipped when `WeeksInDebt` blocks other normal ops.
+- Why: visible rival pain in the decision log.
+
+### Q178. Distress-listed chips when reserves fail? DECIDED: discount listings at `distressListingPricePermille`
+
+- Options: (a) delist only; (b) relist at distress permille via `TryDistressChipListings`; player `BuyListedChips` works in crash.
+- Recommendation and choice: **(b)**. `ChipsConfig.distressListingPricePermille`; `HatchRivalDistressLaterTests` Q178.
+- Why: chip market is the Hatch fantasy liquidity valve during busts.
+
+### Q179. Planner acquires in crash? DECIDED: optional, default off
+
+- Options: (a) same as player distressed roll; (b) `plannerAcquireChancePermille` default 0 until soak proves rival economies.
+- Recommendation and choice: **(b)**. Hook in `LabPlanner.Distress`; config validator bounds permille.
+- Why: avoid premature rival cannibalism before Q200 retrenchment bar is green.
+
+### Q200. Rival plan economies robust at 40 years? DECIDED: retrench before debt (no save schema)
+
+- Options: (a) loosen plans/data only; (b) `LabPlanner.Retrenchment` runway caps, liquidity model sales, optional staff/gpu trim; (c) disable wealth growth while retrenching.
+- Recommendation and choice: **(b)+(c)**. `Retrenching`/`Retrench`/`CapGrowthTarget`; `RivalEconomyRobustnessLaterTests` (forty seeds × forty years, seed-19 runway log).
+- Why: tiny perturbations should not flip rivals into bankruptcy spirals — retrench is visible in the decision log before `WeeksInDebt`.
+
+### Q201. Stack2 rival economy bar vs era sector flavours? DECIDED: fork — stack2 soak first; rivals pay flavours later on era chain
+
+- Options: (a) merge era PRs into stack2 and flip `safety.sectorFlavoursForRivals` here; (b) prove forty×forty solvent on stack2, defer flavours + `traitRollSalt` soak to era PRs #4–#10.
+- Recommendation and choice: **(b)**. Coordinator (Nov 21): do not merge `cursor/version-naming-af2f` into `cursor/later-rules-stack2-75cd` — it would stack all era work onto PR #3. Stack2 ships `RunwayRetrenchment`, rivalry retrench data when present, and `RivalEconomyRobustnessLaterTests` Q200–Q201 (forty×forty default harness, max distress permille scale, zero-cash and knife-edge retrench, save/load mid-retrench, seed-19 Q200 interaction, era-0 research perturbation). Era turns `sectorFlavoursForRivals` on after stack2 robustness lands.
+- Why: review stacks stay separable; knife-edge rival economics are gated before flavoured incident costs hit plan labs.
+
+### Q202. Post-acquisition GPU resale lock? DECIDED: `fleetResaleLockWeeks` + `resaleLockedUntilTick` (schema 29)
+
+- Options: (a) price fleet at full resale in quotes only; (b) refuse `SellGpus` until integration weeks elapse on transferred Envydia batches.
+- Recommendation and choice: **(b)**. Default 52 weeks; `HatchEconomyBarLaterTests` Q202.
+- Why: Hatch review — buy-distressed-sell-GPU arbitrage must not print cash.
+
+### Q203. Bubble return cooling via real month close? DECIDED: step bar + closed-month fallback
+
+- Options: (a) keep hand-setting `ThisMonth.Revenue` in tests; (b) `Simulation.Step` at month end with ledger revenue; fall back to `MarketRevenueLastClosedMonth` when the open month reads zero.
+- Recommendation and choice: **(b)**. `HatchEconomyBarLaterTests` Q203; golden re-record for fallback tweak.
+- Why: Opus review — grace/cooling must survive the real tick order.
+
+### Q204. Survivor haircut vs market share at pop? DECIDED: skip when `SurvivorRevenuePpm` met
+
+- Recommendation and choice: use `ThisMonth` share at pop; `HatchEconomyBarLaterTests` Q204 (no `Fines` for revenue leader).
+- Why: real revenue survival is the Hatch fantasy.
+
+### Q205. Chip designs in acquisition quotes and transfer? DECIDED: `readyChipBookPermille` + transfer designs
+
+- Recommendation and choice: book ready tapeouts into quote subtotal; `TransferChipDesigns` on apply; `HatchEconomyBarLaterTests` Q205–Q206.
+- Why: custom silicon is part of distressed lab value; designs must not orphan on absorbed ids.
+
+### Q206. Chip designs transfer on acquire? DECIDED: yes (`TransferChipDesigns`)
+
+- Recommendation and choice: move `ChipDesigns` to buyer before `SealAbsorbed`; `HatchEconomyBarLaterTests` Q206.
+- Why: absorbed labs stop participating in the economy; IP must live on the buyer.
+
+### Q218. Occasional rival bankruptcy on 200×40 soak? DECIDED (coordinator, Nov 22)
+
+- **Choice:** A plan rival may bankrupt; bar over seeds **1–200** × forty years (`BALANCE_SOAK_FULL` in CI): **(a)** ≤**10** seeds with any plan bankruptcy (≤5%); **(b)** no bankruptcy before calendar **2005**; **(c)** at most **one** of `openaye` / `anthoptics` bankrupt per game; **(d)** ≥**3** active plan rivals at week 40×`. `RivalEconomyRobustnessLaterTests` Q216+Q218. Q200 (40×40) stays **zero** bankruptcies.
+- **Structural fix for (b):** **OpenAye** startCash **400k** / backer **5k**; **AntHoptics** startCash **450k** / backer **6k** (Q218; not per-seed) so early-game failures land after 2005; retrench stack + wealthGrowth **50** unchanged.
+- **Known occasional seeds (≤10):** e.g. 42, 54, 121, 141, 160, 172, 187, 188 — all satisfy (b)–(d) after bump.
+
+### Q216. Two-hundred-seed rival economy soak on stack2? DECIDED: widen bar + runway-sale cooldown (no era merge)
+
+- Options: (a) forty seeds only; (b) seeds **1–200** × forty years behind `BALANCE_SOAK_FULL`; (c) merge era chain to repro.
+- Recommendation and choice: **(b)** + **Q218** design rules (not zero). Fixes: **3-month** growth pause after runway `SoldModel` until runway clears reserve; overstretched slow-bleed liquidity sales; GPU `CapGrowthTarget`; planner acquire runway gate; **OpenAye/AntHoptics** `wealthGrowthPermillePerMillion` **50** (was 75). Grace stays **12**.
+
+### Q217. Plan-lab `SolvencyHold` latch? **PARKED — out of PR #3 batch**
+
+- Implemented locally; **removed** because Q200 (incl. seed 16) failed with hold. Revisit on a side branch; schema **30** remap note in `claims.md` if revived.
+
+### Q207. Planner crash acquire conservative default after Q201? DECIDED: permille 35
+
+- Shipped `plannerAcquireChancePermille` 35 with `HatchEconomyBarLaterTests` Q207 soak (crash-only mass bankruptcy cap).
+
+### Q208. Acquisition cash ledger invariant through step? DECIDED: quote equals `Acquisition` ledger; survives month close
+
+- `HatchEconomyBarLaterTests` Q208: buyer cash delta matches quote; closed month history keeps acquisition total.
+
+### Q209. Listed-chip trades during crash × retrenchment × roll-up? DECIDED: distress listing + buyer trade + month rollup + save/load
+
+- `HatchEconomyBarLaterTests` Q209: distress-priced player listing, plan buyer `BuyListedChips`, `StepMonthEnd` crash rollup absorbs distressed rival, save/load round-trip.
+
+### Q210. Custom-chip fleet in M&A quotes (inventory batches)? DECIDED: `ChipFleetBookValue` in quote subtotal
+
+- `HatchEconomyBarLaterTests` Q210; on-fleet ready batches raise `ChipsPart` after Q205 book designs.
+
+### Q219. Distress listed chips while buyer runway-tight in crash? DECIDED: trade after knife-edge retrench
+
+- `HatchRivalDistressLaterTests` Q219: seed-19 soak, crash, Goggle distress list, OpenAye knife-edge tighten then `BuyListedChips` without debt.
+
+### Q220. Save/load mid-crash preserves distress listing trade? DECIDED: yes
+
+- `HatchRivalDistressLaterTests` Q220: save after distress list, load, player buy at same price.
+
+### Q221. Acquired chip listings trade to third rival? DECIDED: listings transfer on `AcquireLab`; other plans can buy
+
+- `HatchRivalDistressLaterTests` Q221: listing moves to buyer lab; AntHoptics buys listed chips post-M&amp;A.
+
+### Q222–Q232. Chip orders and listings through crash M&amp;A? DECIDED: transfer orders; remap design lab; consolidation bar
+
+- **`AcquisitionSystem`:** `TransferChipOrders` before `SealAbsorbed`; chip fleet `DesignLabId` remapped to buyer (no save schema).
+- **`HatchRivalsChipsConsolidationLaterTests` (11):** in-flight listed-chip orders move on acquire; delivery metadata; fleet remap; distress list while in debt; planner acquire runway gate; listing month reset; feelings in crash; save/load orders; multi-listing transfer; absorbed seller refused; distress fire-sale cap per quarter.
+
+### Q233–Q262. Chip orders outside quote; post-acquire continuity? DECIDED: in-flight orders not in acquisition quote; pipeline survives acquire/save
+
+- **`HatchRivalsChipsConsolidationLaterTests` (+36 on `98ace5f`):** quote/foundry/holding remap; non-ready designs; dual-order transfer; hall save/load; own-design M&amp;A; crash seal; feelings; absorbed `OrderChips`; fleet on hall; distress discount with orders; rival rollup with orders (Q249–Q262); plus Q233–Q248 bar listed in prior batch.
+
+### Q263–Q292. Chip delivery after crash M&amp;A? DECIDED: transfer before `SealAbsorbed`; deliver on buyer
+
+- **`HatchRivalsChipsDeliveryLaterTests` (30):** foundry/node/quote invariants; cloud/hall metadata; delivery events; save/schema 29; vendor standing; crash month roll; listings after acquire; compute split unchanged with pending orders.
+
+### Q293–Q330. M&amp;A × planner/vendor/cloud chip cross-bars? DECIDED: test-only bar (batch 9, local)
+
+- **`HatchRivalsChipsCrossBarLaterTests` (38):** cloud acquire; bubble; vendor; sector champion; planner; rollup; ledger quote; dual acquire; schema 29; registry threshold; economy participation.
+
+### Q331–Q365. Chips × distress acquire × listings rollup? DECIDED: test-only bar (batch 10, pushed @ `c58e395`)
+
+- **`HatchRivalsChipsIntegrateLaterTests` (35):** distressed acquire with listings and pending `BuyListedChips` orders; `TransferChipOrders` / holdings; refused absorbed commands; acquisition quote parts (cash, chips, staff, crash discount); planner retrench with foreign orders; chip month reset on transferred listings; delivery tick stability; save/schema **29**; ledger balance after acquire.
+
+### Q366–Q400. Chips tail closure after M&amp;A? DECIDED: test-only bar (batch 11, pushed @ `31e6c2a`)
+
+- **`HatchRivalsChipsTailLaterTests` (35):** post-acquire delivery and fleet; ledger `ChipSales`; listing caps and dual designs; feelings/vendor/compute; rollup chip-order transfer; refused commands; save/schema **29**; regulator attention; global order counts.
+
+### Q401–Q495. Grouped capstone chip × M&amp;A bar? DECIDED: test-only (batch 12, pushed @ `ee78b4e`)
+
+- **`HatchRivalsChipsCapstoneLaterTests` (95):** multi-lab orders; pipeline buy→acquire→deliver; hall/cloud remap; feelings/ledger/bubble; rollup; refused cmd sweep; epilogue hooks; save/schema **29**.
+
+### Q496–Q565. Grouped coda chip × M&amp;A? DECIDED: test-only (batch 13, pushed @ `3b3019e`)
+
+- **`HatchRivalsChipsCodaLaterTests` (70):** pipeline acquire; delivery; refused cmds; listings; rollup stub; save/schema **29**.
+
+### Q566–Q665. Epilogue hall/cloud × M&amp;A? DECIDED: test-only (batch 14, local GO #3)
+
+- **`HatchRivalsChipsEpilogueLaterTests` (100):** hall+cloud remap; dual listings; holdings; refused cmd sweep; ledger acquisition; save/schema **29**.
+
+### Q666–Q735. Rivals/chips finisher bar? DECIDED: test-only (batch 15, pushed @ `6827a12`)
+
+- **`HatchRivalsChipsFinisherLaterTests` (70):** hall/cloud pipeline; refuse absorbed cmds; delivery/quotes; global orders; schema **29** close.
+
+### Q736–Q805. Denouement rivals/chips bar? DECIDED: test-only (batch 16, local GO-ready @ `6f60391`)
+
+- **`HatchRivalsChipsDenouementLaterTests` (70):** acquire+listed pipeline; refuse cmds; ledger/schema **29** closers.
+
+### Q806–Q905. Sequel rivals/chips bar? DECIDED: test-only (batch 17, pushed @ `c90e29b`)
+
+- **`HatchRivalsChipsSequelLaterTests` (100):** hall/cloud buys; delivery tick; refuse absorbed; schema **29**; economy participation.
+
+### Q906–Q975. Coda2 rivals/chips bar? DECIDED: test-only (batch 18, pushed @ `4460d60`)
+
+- **`HatchRivalsChipsCoda2LaterTests` (70):** pipeline acquire; refuse cmds; schema **29**; save roundtrip.
+
+### Q976–Q1045. Finale rivals/chips bar? DECIDED: test-only (batch 19, pushed @ `a61660c`)
+
+- **`HatchRivalsChipsFinaleLaterTests` (70):** acquire+listed; refuse cmds; quotes; schema **29**.
+
+### Q1046–Q1115. Wind-down rivals/chips bar? DECIDED: test-only (batch 20, pushed @ `a87d35b`)
+
+- **`HatchRivalsChipsWinddownLaterTests` (70):** listings/buys/acquire; refuse absorbed; schema **29**; roundtrip.
+
+### Q1116–Q1185. Era/cast picker data bar? DECIDED: test-only (batch 21, pushed @ `eaa0701`)
+
+- **`HatchEraCastPickerLaterTests` (70):** era taglines; startable gate; rival join years; schema **29**.
+
+### Q1186–Q1255. Era feel / incident-load bar? DECIDED: test-only (batch 22, pushed @ `1a3b9db`)
+
+- **`HatchEraFeelLaterTests` (70):** era incident load vs dial-up baseline; headlines; parts total.
+
+### Q1256–Q1325. Rival arrival bar? DECIDED: test-only (batch 23, pushed @ `b14e047`)
+
+- **`HatchRivalArrivalLaterTests` (70):** join years; `PendingRivals`; solo no-arrival; schema **29**.
+
+### Q1326–Q1395. Sector/rival data bar? DECIDED: test-only (batch 24, pushed @ `c98a033`)
+
+- **`HatchSectorRivalLaterTests` (70):** sector table; founding rivals; schema **29** roundtrip.
+
+### Q1396–Q1465. Funding/bubble data bar? DECIDED: test-only (batch 25, pushed @ `5da29a0`)
+
+- **`HatchFundingBubbleLaterTests` (70):** `BubblePermille`; funding rounds; schema **29**.
+
+### Q1466–Q1535. Shady/china data bar? DECIDED: test-only (batch 26, pushed @ `f50900e`)
+
+- **`HatchShadyChinaBarLaterTests` (70):** shady cards; rival refuse; china deal config; schema **29**.
+
+### Q1536–Q1605. Freeze/audit bar? DECIDED: test-only (batch 27, pushed @ `d05c9cc`)
+
+- **`HatchFreezeAuditBarLaterTests` (70):** permit freeze refuses; attention thresholds; schema **29**.
+
+### Q1606–Q1675. Incident/bubble bar? DECIDED: test-only (batch 28, pushed @ `7fae71e`)
+
+- **`HatchIncidentBubbleBarLaterTests` (70):** rungs; bubble permille; schema **29**.
+
+### Q1676–Q1745. Containment/ending bar? DECIDED: test-only (batch 29, pushed @ `10f32fb`)
+
+- **`HatchContainmentEndingBarLaterTests` (70):** containment wing bonus; endings table; schema **29**.
+
+### Q1746–Q1815. Treaty/ending data bar? DECIDED: test-only (batch 30, pushed @ `dee894f`)
+
+- **`HatchTreatyEndingBarLaterTests` (70):** treaty/nationalised config; `monopoly`/`the-pop` neighbours; schema **29**; golden `55e673a0…` unchanged.
+
+### Q1816–Q1885. Pop/second-place data bar? DECIDED: test-only (batch 31, pushed @ `0e5e13d`)
+
+- **`HatchPopSecondPlaceBarLaterTests` (70):** `ThePopEndingForPlayer`; `second-place` ending; crown-runner-up years; rivalry `secondPlacePermille` (negative delta — assert non-zero, not &gt; 0); schema **29**.
+
+### Q1886–Q1955. Forward-queue data bar? DECIDED: test-only (batch 32, pushed @ `e3a5a6d`)
+
+- **`HatchForwardQueueBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; era `incidentLoadPermille` (agents ≥ 1000); `SaveGame.Problems` long-horizon anchor; schema **29** only.
+
+### Q1956–Q2025. Balance/soak data bar? DECIDED: test-only (batch 33, pushed @ `2c15504`)
+
+- **`HatchBalanceSoakBarLaterTests` (70):** `BalanceSoak.DefaultPresets` (≥ 3); eight-year week math; schema **29** roundtrip; schema **29** only.
+
+### Q2026–Q2095. Rival/plan data bar? DECIDED: test-only (batch 34, pushed @ `fc167aa`)
+
+- **`HatchRivalPlanBarLaterTests` (70):** rival cast + `planId`; `WealthGrowthPermillePerMillion`; distress listing permille neighbours; schema **29** only.
+
+### Q2096–Q2165. Acquisition gameplay data bar? DECIDED: test-only (batch 35, pushed @ `ec6f1a9`)
+
+- **`HatchAcquireGameplayBarLaterTests` (70):** `Acquisitions` quote fields; bubble/chip distress neighbours; schema **29** only.
+
+### Q2166–Q2235. Distress/acquire data bar? DECIDED: test-only (batch 36, pushed @ `ae38c65`)
+
+- **`HatchDistressAcquireBarLaterTests` (70):** model-sales distress offers; acquisition crash quotes; schema **29** only.
+
+### Q2236–Q2305. Bubble/distress data bar? DECIDED: test-only (batch 37, pushed @ `0a9afc3`)
+
+- **`HatchBubbleDistressBarLaterTests` (70):** `BubbleConfig` crash permille; weak-player haircut; acquisition crash quote neighbours; schema **29** only.
+
+### Q2306–Q2375. Capital/bubble data bar? DECIDED: test-only (batch 38, pushed @ `b268afb`)
+
+- **`HatchCapitalBubbleBarLaterTests` (70):** `ResetCapitalRaisedAfterCrash`; `FounderStartPermille`; crash/residual permilles; schema **29** only.
+
+### Q2376–Q2445. Funding follow-on data bar? DECIDED: test-only (batch 39, pushed @ `f4a7e4f`)
+
+- **`HatchFundingFollowOnBarLaterTests` (70):** `Funding.FollowOn` down-round + board drama; funding rounds table; schema **29** only.
+
+### Q2446–Q2515. Model-sales/chip data bar? DECIDED: test-only (batch 40, pushed @ `4fdf674`)
+
+- **`HatchModelSalesChipBarLaterTests` (70):** `CrashDistressOfferPermille`; `Chips.TapeoutWeeks`; income smoothing; schema **29** only.
+
+### Q2516–Q2585. Acquisition/listing data bar? DECIDED: test-only (batch 41, pushed @ `dcf79d8`)
+
+- **`HatchAcquireListingBarLaterTests` (70):** `ReadyChipBookPermille`; `CrashDistressPricePermille`; chip listing neighbours; schema **29** only.
+
+### Q2586–Q2655. Rival/economy data bar? DECIDED: test-only (batch 42, pushed @ `38f5385`)
+
+- **`HatchRivalEconomyBarLaterTests` (70):** `RivalRollupChancePermille`; `PlannerAcquireChancePermille`; `WealthGrowthPermillePerMillion`; schema **29** only.
+
+### Q2656–Q2725. World-map economy data bar? DECIDED: test-only (batch 43, pushed @ `5937e90`)
+
+- **`HatchWorldMapEconomyBarLaterTests` (70):** `World.Blocs`/`Sites`; `Attention`; `Heatwave`; schema **29** only.
+
+### Q2726–Q2795. Shady/china data bar coda? DECIDED: test-only (batch 44, pushed @ `32fc117`)
+
+- **`HatchShadyChinaBarLaterTests2` (70):** `ChinaDeals` cooldown/power; shady cards; schema **29** only.
+
+### Q2796–Q2865. Incident/safety data bar? DECIDED: test-only (batch 45, pushed @ `6dbc3ac`)
+
+- **`HatchIncidentSafetyBarLaterTests` (70):** `Safety.IncidentRungs`; shady investigation thresholds; schema **29** only.
+
+### Q2866–Q2935. Containment/ending data bar coda? DECIDED: test-only (batch 46, pushed @ `77ff014`)
+
+- **`HatchContainmentEndingBarLaterTests2` (70):** `Endings`/`Superintelligence`; treaty/monopoly knobs; schema **29** only.
+
+### Q2936–Q3005. Regulator/bubble data bar? DECIDED: test-only (batch 47, commit-ready — push with GO)
+
+- **`HatchRegulatorBubbleBarLaterTests` (70):** `BubbleScrutinyAtPermille`; crash/decay neighbours; schema **29** only; gates **3609/0** / **3607/0** WT.
+
+### Q3006–Q3075. Era/incident data bar? DECIDED: test-only (batch 48, pushed @ `d0aca54`)
+
+- **`HatchEraIncidentBarLaterTests` (70):** `incidentLoadPermille` era table; schema **29** only; gates **3679/0** / **3677/0** WT.
+
+### Q3076–Q3145. Exit/sell data bar? DECIDED: test-only (batch 49, pushed @ `69e7282`)
+
+- **`HatchExitSellBarLaterTests` (70):** `DisplayQueries.ExitPriceParts`; schema **29** only; gate **3749/0** in-repo.
+
+### Q3146–Q3215. Bubble/acquire data bar? DECIDED: test-only (batch 50, pushed @ tip)
+
+- **`HatchBubbleAcquireBarLaterTests` (70):** `BubbleConfig` + `Acquisitions` stack2 neighbours; schema **29** only; gate **3819/0** in-repo.
+
+### Q3216–Q3285. Balance/soak data bar coda? DECIDED: test-only (batch 51, pushed @ tip)
+
+- **`HatchBalanceSoakBarLaterTests2` (70):** `BalanceSoak.DefaultPresets`; calendar weeks; schema **29** only; gate **3889/0** in-repo.
+
+### Q3286–Q3355. Rival/plan data bar coda? DECIDED: test-only (batch 52, pushed @ `b5d8265`)
+
+- **`HatchRivalPlanBarLaterTests2` (70):** rival cast + distress/plan neighbours; schema **29** only; gate **3959/0** in-repo.
+
+### Q3356–Q3425. Funding follow-on bar coda? DECIDED: test-only (batch 53, pushed @ `b661d1f`)
+
+- **`HatchFundingFollowOnBarLaterTests2` (70):** `Funding.FollowOn` + rounds table; schema **29** only; gate **4029/0** in-repo.
+
+### Q3426–Q3495. Model sales/chip bar coda? DECIDED: test-only (batch 54, pushed @ `a62fc4a`)
+
+- **`HatchModelSalesChipBarLaterTests2` (70):** distress offers + tapeout weeks; schema **29** only; gate **4099/0** in-repo.
+
+### Q3496–Q3565. World map/economy bar coda? DECIDED: test-only (batch 55, pushed @ `14428ec`)
+
+- **`HatchWorldMapEconomyBarLaterTests2` (70):** stack2 coda on batch 43; gate **4169/0** in-repo; schema **29** only.
+
+### Q3566–Q3635. Regulator/bubble bar coda? DECIDED: test-only (batch 56, pushed @ `3f88c5b`)
+
+- **`HatchRegulatorBubbleBarLaterTests2` (70):** scrutiny + `ListedChipBoostPermille` coda; gate **4239/0** in-repo; schema **29** only.
+
+### Q3636–Q3705. Acquisition/listing bar coda? DECIDED: test-only (batch 57, pushed @ `8744e8f`)
+
+- **`HatchAcquireListingBarLaterTests2` (70):** gate **4379/0** in-repo; schema **29** only.
+
+### Q3706–Q3775. Rival economy bar coda? DECIDED: test-only (batch 58, pushed @ `29a97d3`)
+
+- **`HatchRivalEconomyBarLaterTests2` (70):** gate **4449/0** in-repo; schema **29** only.
+
+### Q3776–Q3845. Shady/china bar coda? DECIDED: test-only (batch 59, pushed @ `7d877f6`)
+
+- **`HatchShadyChinaBarLaterTests3` (70):** gate **4519/0** in-repo; schema **29** only.
+
+### Q3846–Q3915. Incident/safety bar coda? DECIDED: test-only (batch 60, commit-ready — GO ≥ ~03:46 UTC)
+
+- **`HatchIncidentSafetyBarLaterTests2` (70):** investigation, safety rungs; **Q100**; 70-bar filter green.
+
+### Q3916–Q3985. Containment/ending bar coda? DECIDED: test-only (batch 61, LOCAL after 60)
+
+- **`HatchContainmentEndingBarLaterTests3` (70):** endings/treaty/containment wing; **Q540**; 70-bar filter green.
+
+### Q3986–Q4055. Era/incident bar coda? TBD: test-only (batch 62, queued)
+
+- **`HatchEraIncidentBarLaterTests2` (70):** schema **29** only.
+
 ### Q102. China deal re-offer after decline? DECIDED: month cooldown in save (schema 18)
 
 - Options: (a) re-offer every month; (b) `declineCooldownMonths` and `chinaDealDeclinedUntilTick` per lab.
@@ -1103,7 +1534,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(c)**. Dated: +15% upkeep, 20 morale off the resting level; beige: +30%, 40; museum piece: +50%, 60. The morale penalty is the average over the rooms that seat people, weighted by tiles, so one old broom cupboard does not sink the lab, and it is capped by `maxMoralePenalty` 60. `RefurbishRoom` costs `refurbishCostPermille` 250 of the room's build cost per tile times its tiles (paid on the construction ledger line), refused when the room is already fresh or the cash is short.
 - Why: the first two stages are free on purpose so a player has two eras of grace and the cost arrives as a warning (a `RoomDated` event, and a chat line) rather than a surprise. The economy guards (EconomyBounds seeds 1, 2, 4, 5, 20, 24, 27, 31, ContentFlow, the soak) stayed green with these values at the first scan, so the numbers were not tuned against them. Old workplace tests that run for hundreds of weeks set `ageing.maxMoralePenalty` to 0 so they still test comfort rooms alone.
 
-### Q232. Is a save change needed? DECIDED: yes, schema 31: one number per room
+### Q232. Is a save change needed? DECIDED: yes, schema 32: one number per room
 - Options: (a) store the tick each room was built and derive the age; (b) store the age.
 - Recommendation and choice: **(b)**: `eraAge` per room. An older save migrates with 0 on every room (fresh), so nothing in an old game changes until the next era change. (The first draft of NEXT said `builtTick`; the age is what a refurbish resets, so the age is what is saved.)
 - Why: a derived age would need the era history, and a refurbish would need a second field anyway. The golden digest moved and the cause was checked: with the ageing stages set to 0 upkeep and 0 morale, the saved number removed and the schema set back to 30, the digest of the pinned game equals the old golden `6b8ed8f9`. So the move is the new field, the schema number and the ageing itself (the pinned game crosses eras, so upkeep and morale changed).
@@ -1137,7 +1568,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**. `FollowLead` costs `followCostWeeks` 6 times the lab's research per week (never under `minCost` 100), so it scales with the era and the team. One lead at a time. After `followWeeks` 8 it ends in one of `leads.outcomes`, picked by weight from a hash of the lead (so the same lead always ends the same way, and no dice are used): a real insight (weight 4, 20 weeks of research back), a training trick (3, +3% training speed for good, all tricks capped at +15%), a data quirk (2, 8 weeks back), the cat (1, nothing) or Tuesday (1, nothing). Following a lead that is not there is refused (`LeadGone`), as is a second at once, or too few research points; a refusal changes nothing.
 - Why: following a lead is a gamble on research you pay for in the same currency, which fits the bible's "mystery becomes a research lead"; the two nothing outcomes are the joke the bible asks for. The expected return (about 9 weeks of research on a 6 week price, plus the speed trick) is mildly positive, never decisive. The autopilot never follows leads, so the economy guards see only the lead list, not the rewards.
 
-### Q238. Is a save change needed, and what did the id counter do? DECIDED: yes, schema 32: a lead list and one number per lab; a lead's id is its model's id
+### Q238. Is a save change needed, and what did the id counter do? DECIDED: yes, schema 33: a lead list and one number per lab; a lead's id is its model's id
 - Options: (a) take a fresh id for each lead; (b) reuse the model's id.
 - Recommendation and choice: **(b)**. `researchLeads` and `leadSpeedPermille` per lab; an older save migrates with an empty list and 0, so nothing in an old game changes. The golden digest moved and the cause was checked: with the two new fields removed, the schema set back to 31 and the lead-finding hook switched off, the digest of the pinned game equals the old golden `df0a8d9e`. So the move is the new fields, the schema number and the leads found in that game year.
 - Why (b): the first build took a fresh id from the shared counter, which shifted the ids of everything made later and nudged the eight-year soak's "careful" preset from 45.8% to 62.5% of crowns for one lab, over the 60% bar. It is the Q182 knife-edge again (a harmless-looking change moves a trajectory, not a rule), and the cure is not to touch shared counters: a lead is at most one per model, so the model's id is already unique. Logged here, nothing tuned.
@@ -1174,9 +1605,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**: the public repository, the cat, the wrapper, the leaked report, the town vote, the open letter, the earnings question, the mascot's drawings, Tuesday, the union joke and the fake video (the bible's "event ideas" list, ch. 14). The wrapper, drawings and Tuesday need a model on sale; the leaked report needs somebody in safety; the cat, town vote and union joke need anyone on the payroll. Every event has three answers, one of which can be to do nothing much.
 - Why: events that mention a model or a safety team make no sense without one. Each answer trades two things (reputation against culture, cash against research) so there is no best row.
 
-### Q245. Is a save change needed, and does the golden move? DECIDED: yes, schema 33; the golden moved with a verified cause
+### Q245. Is a save change needed, and does the golden move? DECIDED: yes, schema 34; the golden moved with a verified cause
 - Options: (a) store nothing and derive the event from the date; (b) save the event waiting, its deadline and the round's seen list.
-- Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo33` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
+- Recommendation and choice: **(b)**. `officeEventId`, `officeEventExpires` and `officeSeen` per lab (`MigrateTo34` gives older saves none waiting). The pinned golden game moved; with the new data removed, the new sync lines removed, the schema number put back and the hook off, the previous golden `e4f7f263...` came back exactly, so the move is only the new fields, the schema number and the events posed in that game's year.
 - Why: the answer must survive a save, and an event picked by date would be lost on an older save. Nothing derived is stored; `OfficeEvents.Waiting` is a view. All guards hold at 1481 tests.
 
 ### Q246. How does the player choose a training objective? DECIDED: a command while the model trains, with a neutral default
@@ -1412,8 +1843,16 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q291. What is the third share of compute, and what does it buy? DECIDED: a player-set share of general compute for research experiments, at +1.2 permille of research per permille set aside, up to 30%
 
 - Options: (a) research always needs compute at a fixed rate; (b) a share the player sets, taken off general compute before training and serving divide it; (c) a separate pool of experiment GPUs.
-- Recommendation and choice: **(b)**. `lab.researchSharePermille` (schema 42), `SetResearchShare`, limit `research.maxComputeSharePermille` 300, bonus `research.computeShareBonusPermille` 1200. The share comes off `LabQueries.Split` general compute and own-chip compute, so training and customers see the same smaller pool everywhere the split is used. The bonus multiplies the researchers' output (`TrainingSystem.ResearchPerWeek`), so a lab without researchers gets nothing.
-- Why: the bible says "split compute three ways" and only two ways existed. A fixed rate would change every lab's economy at once and the rivals' balance (Q182); a share starts at zero, is player-only and is refused for rivals, so defaults change nothing. A separate GPU pool would need new holdings and orders. Schema 42 is the one new saved field; the golden digest moved only because of it (checked by reverting the field and the schema number).
+- Recommendation and choice: **(b)**. `lab.researchSharePermille` (schema 43), `SetResearchShare`, limit `research.maxComputeSharePermille` 300, bonus `research.computeShareBonusPermille` 1200. The share comes off `LabQueries.Split` general compute and own-chip compute, so training and customers see the same smaller pool everywhere the split is used. The bonus multiplies the researchers' output (`TrainingSystem.ResearchPerWeek`), so a lab without researchers gets nothing.
+- Why: the bible says "split compute three ways" and only two ways existed. A fixed rate would change every lab's economy at once and the rivals' balance (Q182); a share starts at zero, is player-only and is refused for rivals, so defaults change nothing. A separate GPU pool would need new holdings and orders. Schema 43 is the one new saved field (loans took 42 on main); the golden digest moved only because of it (checked by reverting the field and the schema number).
+
+## CI and tooling
+
+### Q736. How long should the `rules` GitHub Actions job wait for Release SimTests? DECIDED: 60 minutes on `main`
+
+- Options: (a) keep raising the job cap as the era suite grows; (b) split or filter SimTests on pull requests (e.g. trait by era line); (c) both—headroom now, split later.
+- Recommendation and choice: **(a)** for now. Era/hardening merge refs run the full Release suite in about 36–40 minutes wall time (`internal/simtests-timing-2026-11-24.md`); a **40m** job cap cancelled green runs at the end of the suite, not a hung test. Bump `.github/workflows/rules.yml` `timeout-minutes` from **40** to **60** on `main` so PR heads that merge `main` inherit the budget; re-merge `main` into branches that timed out (e.g. **#48** @ `a2296efe`). Filtered PR CI remains a larger follow-up.
+- Why: cheap, matches measured runtime, and keeps one full-suite bar until the era line is trimmed or split.
 
 ### Q292. Can an office event belong to a stretch of years? DECIDED: yes, `fromYear` / `toYear` on the event (0 for open), six events use them
 - An office event may now name the first and last calendar year it can happen in. `OfficeEvents.Eligible` takes an optional tick and drops events outside their years; the weekly draw passes the current tick. Called without a tick (tests, tools) the years are ignored.
@@ -1450,7 +1889,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - The ticker is never saved and rolls no shared dice: the golden digest did not move and nothing in the economy changed.
 
 ### Q298. Can the player ask the team to work late? DECIDED: yes, crunch time: +25% research and +15% training speed for -8 morale a week and a rising incident risk, up to 26 weeks
-- New state `lab.crunchWeeks` (schema 43, `MigrateTo43`), command `SetCrunch(on)`, `Crunch` system, event `CrunchEnded`, command error `TeamTooTired`. Player only; nothing changes until it is turned on, so no rival, soak or economy guard moves.
+- New state `lab.crunchWeeks` (schema 44, `MigrateTo44`), command `SetCrunch(on)`, `Crunch` system, event `CrunchEnded`, command error `TeamTooTired`. Player only; nothing changes until it is turned on, so no rival, soak or economy guard moves.
 - It costs morale (8 a week against a 1-point drift), adds incident chance (2 permille per week up to 40) and ends when the team is worn out (average morale under 250), after 26 weeks, when the player says, or when no one is left.
 - It cannot start below an average morale of 450. A full 26-week crunch ends near 320, so the next one waits; the long-run gain is a few percent, not 25.
 - Morale below the baseline still does not slow research (Q180), so the real cost is the incident risk, the quits and the wait.
@@ -1458,7 +1897,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Alternatives: a research penalty from low morale (rejected: Q180 turned it off on purpose); a cash cost for overtime (rejected: morale and incidents are the cost the bible names for rushing).
 
 ### Q299. Can the player insure against incident fines? DECIDED: yes, three levels of 25% cover each, a premium on revenue, claims that load it, and a drop-out at three
-- New state on the lab (schema 44, `MigrateTo44`): `insuranceLevel`, `insuranceClaims`, `insuranceLockedUntil`; a new ledger line `insurance` (appended to `LedgerLine`, migrated into every ledger totals object as zero); command `SetInsurance(level)`; `Insurance` system; events `InsuranceClaimPaid` and `InsuranceDropped`; command errors `Uninsurable` and `InsuranceLocked`. All appended.
+- New state on the lab (schema 45, `MigrateTo45`): `insuranceLevel`, `insuranceClaims`, `insuranceLockedUntil`; a new ledger line `insurance` (appended to `LedgerLine`, migrated into every ledger totals object as zero); command `SetInsurance(level)`; `Insurance` system; events `InsuranceClaimPaid` and `InsuranceDropped`; command errors `Uninsurable` and `InsuranceLocked`. All appended.
 - Premium per level is the larger of $2,000 and 1.2% of last week's revenue, plus 30% for each remembered claim. The cover is 25% of the fine per level, so level 3 covers 75% and the validator keeps the top level at or under 100%.
 - Rung 5 and above (an escape) is never covered, make-good payments and reputation loss are not covered, a claim is forgotten every 52 weeks, and the third remembered claim ends the policy. Changing it locks the policy for 13 weeks.
 - Player only and opt-in: no rival buys, the autopilot does not buy, so economy bounds and the balance soak are unchanged. `EconomyBoundsTests` and the soak were not rerun for this item beyond the full suite, since defaults change nothing.
@@ -1865,6 +2304,41 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `LabourSunsetAccountsConferenceAlumniTogetherTests`: a layoff fills the pool with laid-off people and adds labour pressure, and taking one back leaves the pressure alone; a retirement moves its sectors to the successor and the account teams stay with them; an account team and an outside bonus share one cap and the outside hook is zero here; a paper is decided while the lab is in turmoil and layoffs go on filling the pool; a save with all five in flight is sound, loads and plays on identically; and a save from before them loads with all five idle.
 - `CareToolsTogetherTests` switches labour off in its start config: its fixed 260-week script only tries a pay change when the lab has over $1M at a set week, and with labour on, seed 2 (which pays the union its recognition rise) misses that week. The test is about the care tools, so it keeps the trajectory it was written against; labour has its own tests.
 - This is a set of pinned interactions, not a 260-week play-through over seeds: that was done for the previous batch and is left for the next one.
+
+### Q365. Can the lab grow its own juniors? DECIDED: internship cohorts with a stipend and an offer at the end
+- New `internships` data, commands `StartInternships` and `EndInternships`, `Internships` system, events `InternshipStarted` and `InternshipsEnded` and four saved lab fields (schema 77). One cohort of up to 4 interns in a role; the stipend (25% of the hiring fee each) is paid over 26 weeks and must be in the bank at the start; interns hold no seat and do no work.
+- At the end each is offered the job for 30% of the hiring fee, while there are free seats and cash, arriving in good spirits; the rest join the alumni pool on good terms. The choice is whether to pay half a year of stipend and have a seat ready then, against hiring at once at the full fee.
+- Reads the hiring fee, seats and the alumni pool (Q362); no random numbers; only the player's lab. The golden moved ef0b282a -> 824557c9 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: interns who do work at a discount (rejected: an output knob), a cohort that always converts (rejected: no seat or cash decision).
+
+### Q366. Do customers need looking after? DECIDED: a support desk of engineers against a ticket backlog that costs trust
+- New `support` data, command `StaffSupportDesk`, `SupportDesk` system, events `SupportDeskSet` and `SupportBacklogChanged` and two saved lab fields (schema 78). Released models bring tickets in proportion to what they earn ($4000 of weekly revenue per ticket); the sales team clears 6 a week with no desk and each engineer on the desk clears 4 more. What is not cleared piles up (to 100) and past 15 it costs trust in every sector the lab sells in, every week, until the desk catches up.
+- The choice is how many of the engineers (never the last one, at most 4) to take off building: the same people the account teams, skunkworks and training use. A small lab needs no desk; a lab with several models on sale does.
+- Reads revenue, trust and the staff lists; no random numbers; only the player's lab. The golden moved 824557c9 -> 743d4496 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a desk that is bought as a service (rejected: no decision over people), tickets that depend on incidents (rejected: on-call already covers those).
+
+### Q367. Can a burnt-out person be sent away to recover? DECIDED: sabbaticals that help the worn-down and spoil the happy
+- New `sabbatical` data, commands `SendOnSabbatical` and `RecallFromSabbatical`, `Sabbatical` system, events `SabbaticalStarted` and `SabbaticalEnded` and two saved fields on a person (schema 79). A person goes away for 8 weeks on full pay (two at a time at most, not a mentoring pair), does no work and cannot quit while away.
+- They come back by how they went: below 350 morale refreshed (850), above 650 restless (400), otherwise rested (settled plus 100). Calling them back early keeps the morale they left with. The choice is who: it is a cure for someone about to quit and a mistake for a star in good spirits, at the price of their output for two months.
+- Reads morale and the same away check the skunkworks, account teams and support desk use; no random numbers; only the player's lab. The golden moved 743d4496 -> 067ec37f only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a flat morale boost for pay (rejected: a pay-for-stat knob), sabbaticals that never end badly (rejected: no wrong choice).
+
+### Q368. Can the lab order people for later? DECIDED: open requisitions with a locked price, a deposit and seats that must be ready
+- New `requisitions` data, commands `OpenRequisition` and `CancelRequisition`, `Requisitions` system, events `RequisitionOpened` and `RequisitionClosed` and a saved list on the lab (schema 80, shared with Q369). Up to 3 orders of up to 3 people; the price is locked at 70% of the day's hiring fee, a 20% deposit is paid now and the people arrive 8 weeks later.
+- On the day each needs a free seat and the rest of the price; whoever cannot be seated or paid for is lost with their deposit; cancelling forfeits it. The choice is a cheaper hire against planning the seats and the cash two months ahead.
+- Reads hiring fees, seats and cash; the people are hired as normal. Only the player's lab.
+- Alternatives: a refundable deposit (rejected: no cost to over-ordering), people who wait for a seat (rejected: no seat decision).
+
+### Q369. Can outside scholars come to the lab? DECIDED: visiting scholars who sit at researchers' desks and add prestige when they leave on schedule
+- New `scholars` data, commands `HostScholars` and `SendScholarsHome`, `Scholars` system, events `ScholarsArrived` and `ScholarsLeft` and three saved lab fields (schema 80). A group of up to 3 sits at free researcher seats for 12 weeks (seats other hires cannot take), is paid a stipend, adds research points at 60% of a researcher's rate each and adds 20 prestige each when they leave on schedule; going home early earns none.
+- Reads seats, research points and prestige (Q308); no random numbers; only the player's lab. A new `LabQueries.FreeSeats` counts the scholars' seats and hiring, rehiring, internships and requisitions use it. The golden moved 067ec37f -> 1bbc3845 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: scholars who may be hired (rejected: internships are that road), prestige each week (rejected: it would reward keeping them for ever).
+
+### Q370. Do the new events talk, and do the five systems fit together? DECIDED: 17 headlines and 16 chat lines, and three rules where they meet
+- The ten new event kinds (internships, support desk, sabbaticals, requisitions, scholars) get headlines (125 -> 142) and chat lines (179 -> 195) in the data; the wildcard lines come last where the event's `Pick` is a number of weeks or people.
+- Where they meet: (1) people away on a skunkworks team, an account team or the support desk cannot also be sent on sabbatical (refused); (2) the support desk draws only on engineers who are not on leave, so a sabbatical never leaves a desk place empty; (3) scholars hold researcher seats through `LabQueries.FreeSeats`, so a hire, a rehire, an internship conversion or an arriving order is turned away while they sit there. Interns and scholars are not staff: layoffs and labour do not count them, and unconverted interns join the alumni pool on good terms.
+- `Support.Enabled = 0` was set in the sunset-trust and the care-tools autopilot tests, whose fixed scripts and trust comparisons the desk's backlog changes.
+- Alternatives: letting a desk member go on leave and keep clearing tickets (rejected: the person is not there), a shared "away" counter (rejected: each system keeps its own state).
 
 ## Open
 

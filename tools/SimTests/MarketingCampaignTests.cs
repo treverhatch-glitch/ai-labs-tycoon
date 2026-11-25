@@ -212,7 +212,7 @@ public class MarketingCampaignTests
     public void Against_rivals_the_campaign_wins_the_lab_a_bigger_share_over_the_weeks()
     {
         Game g = Game.New(2);
-        g.Autopilot(150);
+        g.Autopilot(260);
         SectorState sector = g.State.Sectors.FirstOrDefault(x => x.Entry(g.Id) != null && x.Entries.Count > 1 && x.Entry(g.Id).SharePpm < 400_000);
         Assert.NotNull(sector);
         string json = g.Sim.Save();

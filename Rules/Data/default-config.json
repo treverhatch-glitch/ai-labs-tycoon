@@ -4877,7 +4877,7 @@
     "payPoachStepPermille": 150,
     "payLockWeeks": 26,
     "payCutShock": 100,
-    "traitRollSalt": 15,
+    "traitRollSalt": 20,
     "starHirePermille": 120,
     "traits": [
       {
@@ -5761,6 +5761,52 @@
     "peerGood": 10,
     "peerLaidOff": -10,
     "peerQuit": -20
+  },
+  "internships": {
+    "enabled": 1,
+    "maxCohort": 4,
+    "weeks": 26,
+    "stipendPermille": 250,
+    "convertPermille": 300,
+    "convertMorale": 100
+  },
+  "support": {
+    "enabled": 1,
+    "maxPeople": 4,
+    "keepFree": 1,
+    "revenuePerTicket": 4000,
+    "baseClear": 6,
+    "perPerson": 4,
+    "backlogLimit": 15,
+    "maxBacklog": 100,
+    "trustPerTicket": 2,
+    "maxWeeklyTrust": 20
+  },
+  "sabbatical": {
+    "enabled": 1,
+    "weeks": 8,
+    "maxAway": 2,
+    "burnoutBelow": 350,
+    "refreshedMorale": 850,
+    "restlessAbove": 650,
+    "restlessMorale": 400,
+    "restedBonus": 100
+  },
+  "requisitions": {
+    "enabled": 1,
+    "maxOpen": 3,
+    "maxCount": 3,
+    "leadWeeks": 8,
+    "feePermille": 700,
+    "depositPermille": 200
+  },
+  "scholars": {
+    "enabled": 1,
+    "maxScholars": 3,
+    "weeks": 12,
+    "stipendPermille": 150,
+    "researchPermille": 600,
+    "prestigeEach": 20
   },
   "bugBounty": {
     "maxLevel": 3,
@@ -9447,6 +9493,108 @@
         "kind": "AlumniRehired",
         "pick": -1,
         "text": "{lab} rehires someone who quit. The farewell post is still up"
+      },
+      {
+        "id": "internship-started",
+        "kind": "InternshipStarted",
+        "pick": -1,
+        "text": "{lab} takes on {amount} interns. They have been told there will be a desk 'at some point'"
+      },
+      {
+        "id": "internship-done",
+        "kind": "InternshipsEnded",
+        "pick": 1,
+        "text": "{lab}'s interns finish their summer. {amount} get offers, the rest get a reference"
+      },
+      {
+        "id": "internship-early",
+        "kind": "InternshipsEnded",
+        "pick": 0,
+        "text": "{lab} sends its interns home early. 'It was a learning experience,' says {lab}"
+      },
+      {
+        "id": "support-desk-set",
+        "kind": "SupportDeskSet",
+        "pick": -1,
+        "text": "{lab} puts {amount} engineers on a support desk. Customers 'will notice the difference'"
+      },
+      {
+        "id": "support-backlog-up",
+        "kind": "SupportBacklogChanged",
+        "pick": 1,
+        "text": "{lab}'s support backlog hits {amount} tickets. Customers are 'being heard'"
+      },
+      {
+        "id": "support-backlog-clear",
+        "kind": "SupportBacklogChanged",
+        "pick": 0,
+        "text": "{lab} clears its support backlog. 'Zero is the new normal,' says {lab}"
+      },
+      {
+        "id": "sabbatical-started",
+        "kind": "SabbaticalStarted",
+        "pick": -1,
+        "text": "{lab} sends one of its {ref}s on sabbatical. The inbox 'will be watched'"
+      },
+      {
+        "id": "sabbatical-rested",
+        "kind": "SabbaticalEnded",
+        "pick": 1,
+        "text": "One of {lab}'s {ref}s returns from sabbatical, rested and tanned"
+      },
+      {
+        "id": "sabbatical-restless",
+        "kind": "SabbaticalEnded",
+        "pick": 0,
+        "text": "One of {lab}'s {ref}s returns from sabbatical restless. 'I had so many ideas,' they say"
+      },
+      {
+        "id": "sabbatical-back",
+        "kind": "SabbaticalEnded",
+        "pick": -1,
+        "text": "One of {lab}'s {ref}s is back from sabbatical, one way or another"
+      },
+      {
+        "id": "requisition-opened",
+        "kind": "RequisitionOpened",
+        "pick": -1,
+        "text": "{lab} orders {amount} {ref}s for later. The recruiters 'are optimistic'"
+      },
+      {
+        "id": "requisition-arrived",
+        "kind": "RequisitionClosed",
+        "pick": 1,
+        "text": "{lab}'s order of {ref}s arrives on time. The desks were ready"
+      },
+      {
+        "id": "requisition-short",
+        "kind": "RequisitionClosed",
+        "pick": 0,
+        "text": "{lab}'s order of {ref}s arrives short: no desk or no cash for the rest"
+      },
+      {
+        "id": "requisition-cancelled",
+        "kind": "RequisitionClosed",
+        "pick": -1,
+        "text": "{lab} cancels an order of {ref}s. The recruiters keep the deposit and the biscuits"
+      },
+      {
+        "id": "scholars-arrived",
+        "kind": "ScholarsArrived",
+        "pick": -1,
+        "text": "{lab} hosts {amount} visiting scholars. They have opinions about the whiteboards"
+      },
+      {
+        "id": "scholars-left",
+        "kind": "ScholarsLeft",
+        "pick": 1,
+        "text": "{lab}'s visiting scholars leave on schedule, with a good word and a mug"
+      },
+      {
+        "id": "scholars-early",
+        "kind": "ScholarsLeft",
+        "pick": 0,
+        "text": "{lab} sends its visiting scholars home early. The mugs were already printed"
       }
     ],
     "filler": [
@@ -11653,6 +11801,182 @@
         "text": "A familiar face is back at their old desk. The plant survived, barely.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "internship-started-chat",
+        "kind": "InternshipStarted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The interns have arrived. There is a spare chair and a lot of questions.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "internship-done-chat",
+        "kind": "InternshipsEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "Internship's over. Some of them are staying. Someone made a card.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "internship-early-chat",
+        "kind": "InternshipsEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The interns went home early. The chairs are very quiet.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "support-desk-chat",
+        "kind": "SupportDeskSet",
+        "roles": ["engineer"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Some of us are answering customers now. They are very specific.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "support-desk-chat-any",
+        "kind": "SupportDeskSet",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A few engineers moved onto the support desk. They look tired already.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "support-backlog-up-chat",
+        "kind": "SupportBacklogChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The ticket queue is long. Customers are using capital letters.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "support-backlog-clear-chat",
+        "kind": "SupportBacklogChanged",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "The queue is empty. I do not trust it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sabbatical-started-chat",
+        "kind": "SabbaticalStarted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone is on sabbatical. The out-of-office has a photo of a mountain.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sabbatical-rested-chat",
+        "kind": "SabbaticalEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "They're back and they look rested. I am not bitter.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sabbatical-restless-chat",
+        "kind": "SabbaticalEnded",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "They came back with a plan to rewrite everything. The mountain was inspiring.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "requisition-opened-chat",
+        "kind": "RequisitionOpened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Recruiting has a list. We have a seat plan. Allegedly.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "requisition-arrived-chat",
+        "kind": "RequisitionClosed",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The new people arrived on the day. We had desks. Nobody can believe it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "requisition-short-chat",
+        "kind": "RequisitionClosed",
+        "roles": [],
+        "trait": "",
+        "pick": 0,
+        "about": "lab",
+        "text": "Some of the new people did not turn up. Nobody had a desk anyway.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scholars-arrived-chat",
+        "kind": "ScholarsArrived",
+        "roles": ["researcher"],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We have visitors in the lab. They have already corrected a slide.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scholars-arrived-chat-any",
+        "kind": "ScholarsArrived",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Some professors are visiting. They keep asking where the library is.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scholars-left-chat",
+        "kind": "ScholarsLeft",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The scholars left. We have a citation and a coffee stain.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -11852,6 +12176,14 @@
       {
         "id": "PoachedStaff",
         "text": "{lab} poached a {ref} from the player's roster."
+      },
+      {
+        "id": "SoldModel",
+        "text": "{lab} fire-sold {ref} for ${amount}."
+      },
+      {
+        "id": "AcquiredLab",
+        "text": "{lab} acquired distressed rival {ref} for ${amount}."
       }
     ],
     "reasonTemplates": [
@@ -11974,6 +12306,10 @@
       {
         "id": "ChipsOwnedSharePermille",
         "text": "{pct}% of its compute is its own chips"
+      },
+      {
+        "id": "CrashDistress",
+        "text": "crash distress at {pct}%"
       }
     ]
   },
@@ -12060,6 +12396,7 @@
     "listingMaxPerMonth": 500,
     "cloudRentPermille": 1100,
     "plannerMinYieldPermille": 600,
+    "distressListingPricePermille": 820,
     "architectRoleId": "chip-architect",
     "testLabRoomId": "hw-test-lab",
     "targets": [
@@ -12413,6 +12750,9 @@
     "handcuffsShadyLockWeeks": 240,
     "handcuffsSuccessor": "The Interim CEO",
     "secondPlaceRunnerUpYears": 3,
+    "nationalisedHomeLevelMin": 4,
+    "treatyForeignLevelMin": 3,
+    "treatyForeignBlocCount": 2,
     "superintelligence": {
       "releasedCapabilityMin": 900,
       "paperclipMaxAlignment": 150,
@@ -12586,10 +12926,10 @@
       "leader": "Jam Saltmen",
       "familyName": "ChatGBT",
       "archetype": "ships first, apologises later",
-      "startCash": 250000,
+      "startCash": 400000,
       "lotId": "garage",
       "reputation": 500,
-      "backerPerWeek": 4000,
+      "backerPerWeek": 5000,
       "homeBlocId": "us",
       "joinsYear": 0,
       "plan": {
@@ -12641,7 +12981,7 @@
         "staffGrowthPermillePerYear": 300,
         "gpus": 8,
         "gpuGrowthPermillePerYear": 400,
-        "wealthGrowthPermillePerMillion": 75,
+        "wealthGrowthPermillePerMillion": 50,
         "ownGpus": false,
         "trainingSharePermille": 750,
         "alignmentSharePermille": 50,
@@ -12703,10 +13043,10 @@
       "leader": "Durian Amodayo",
       "familyName": "Clause",
       "archetype": "careful sniper",
-      "startCash": 300000,
+      "startCash": 450000,
       "lotId": "garage",
       "reputation": 500,
-      "backerPerWeek": 5000,
+      "backerPerWeek": 6000,
       "homeBlocId": "us",
       "joinsYear": 0,
       "plan": {
@@ -12763,7 +13103,7 @@
         "staffGrowthPermillePerYear": 250,
         "gpus": 7,
         "gpuGrowthPermillePerYear": 350,
-        "wealthGrowthPermillePerMillion": 75,
+        "wealthGrowthPermillePerMillion": 50,
         "ownGpus": false,
         "trainingSharePermille": 700,
         "alignmentSharePermille": 250,
@@ -14096,7 +14436,9 @@
     "crashCustomerSpendPermille": 780,
     "crashFundingCashPermille": 620,
     "crashGpuPricePermille": 860,
-    "crashFloatCutPpm": 35000
+    "crashFloatCutPpm": 35000,
+    "popWarningMarginPermille": 50,
+    "resetCapitalRaisedAfterCrash": true
   },
   "acquisitions": {
     "capabilityValuePerPoint": 8000,
@@ -14107,13 +14449,20 @@
     "crashDistressPricePermille": 450,
     "minInstalledModels": 1,
     "regulatorDealRevenue": 5000000,
-    "regulatorAttention": 80
+    "regulatorAttention": 80,
+    "rivalRollupChancePermille": 600,
+    "plannerAcquireChancePermille": 35,
+    "fleetResaleLockWeeks": 52,
+    "readyChipBookPermille": 400,
+    "chipFleetBookPermille": 350
   },
   "modelSales": {
     "unprofitableSalePermille": 350,
     "earningsMultipleWeeks": 52,
     "sectorReputationHit": 25,
-    "minOffer": 1000
+    "minOffer": 1000,
+    "incomeSmoothingPermille": 500,
+    "crashDistressOfferPermille": 650
   },
   "shares": {
     "rivalStartPublicFloatPpm": 120000,

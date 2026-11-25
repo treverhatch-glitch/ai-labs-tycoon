@@ -1,6 +1,6 @@
 # Labour relations
 
-Pressure to organise builds in the player's lab; when it tips the player recognises the union, resists it, or lets the window run out (`labour.*` in the data; Q358). Four saved lab fields (`labourStage`, `labourPressure`, `labourDue`, `labourHard`, schema 72); older saves have no organising.
+Pressure to organise builds in the player's lab; when it tips the player recognises the union, resists it, or lets the window run out (`labour.*` in the data; Q358). Four saved lab fields (`labourStage`, `labourPressure`, `labourDue`, `labourHard`, schema 73); older saves have no organising.
 
 ## Pressure
 

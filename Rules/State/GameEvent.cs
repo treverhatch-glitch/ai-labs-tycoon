@@ -258,7 +258,27 @@ namespace AiLabs.Rules.State
         /// <summary>A paper was decided. SubjectId is the venue, Amount the prestige it added (accepted) or the points given back (rejected or withdrawn), Pick 1 accepted, 0 rejected, 2 withdrawn, Ref the venue name.</summary>
         PaperDecided,
         /// <summary>A former employee came back. SubjectId is their old id, Amount the fee, Pick how they had left (1 good terms, 0 laid off, -1 quit), Ref the role id.</summary>
-        AlumniRehired
+        AlumniRehired,
+        /// <summary>A cohort of interns began. Amount is how many, Pick the weeks, Ref the role id.</summary>
+        InternshipStarted,
+        /// <summary>A cohort ended. SubjectId is how many there were, Amount how many were taken on, Pick 1 when it ran its course and 0 when it was cut short, Ref the role id.</summary>
+        InternshipsEnded,
+        /// <summary>The support desk was staffed or closed. Amount is the people on it now.</summary>
+        SupportDeskSet,
+        /// <summary>The backlog crossed its limit. Amount is the backlog, Pick 1 when it went over and trust began to suffer and 0 when it came back under.</summary>
+        SupportBacklogChanged,
+        /// <summary>A person went on sabbatical. SubjectId is the person, Amount the weeks, Ref the role id.</summary>
+        SabbaticalStarted,
+        /// <summary>A person came back. SubjectId is the person, Amount their morale now, Pick 2 refreshed, 1 rested, 0 restless, -1 called back early, Ref the role id.</summary>
+        SabbaticalEnded,
+        /// <summary>An order for people was placed. Amount is the people, Pick the weeks until they arrive, Ref the role id.</summary>
+        RequisitionOpened,
+        /// <summary>An order ended. SubjectId is the people ordered, Amount how many came, Pick 1 when all came, 0 when some or all were lost and -1 when it was cancelled, Ref the role id.</summary>
+        RequisitionClosed,
+        /// <summary>A group of visiting scholars arrived. Amount is how many, Pick the weeks they stay.</summary>
+        ScholarsArrived,
+        /// <summary>The scholars left. SubjectId is how many, Amount the prestige they added, Pick 1 when they left on schedule and 0 when they were sent home.</summary>
+        ScholarsLeft
     }
 
     /// <summary>

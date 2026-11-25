@@ -1,6 +1,6 @@
 # Model end-of-life notice
 
-The player gives a released model a retirement date; on the day its customers move to the successor the model helped design (`sunset.*` in the data; Q359). Two saved model fields (`sunsetStart`, `sunsetTick`, schema 73); older saves have no notices.
+The player gives a released model a retirement date; on the day its customers move to the successor the model helped design (`sunset.*` in the data; Q359). Two saved model fields (`sunsetStart`, `sunsetTick`, schema 74); older saves have no notices.
 
 ## The successor is the existing one
 
