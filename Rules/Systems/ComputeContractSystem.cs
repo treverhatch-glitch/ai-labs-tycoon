@@ -42,24 +42,11 @@ namespace AiLabs.Rules.Systems
             lab.ReservedContracts.Add(contract);
         }
 
-        /// <summary>Penalty to exit one reserved contract early (Q175).</summary>
-        public static long BreakPenalty(GameConfig c, GameState state, LabState lab, ReservedContract contract)
-        {
-            if (contract == null || contract.WeeksLeft < 1) return 0;
-            int permille = c.Compute.ReservedBreakPenaltyPermille;
-            if (permille < 1) return 0;
-            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
-            long weekRent = MathI.MulPermille(gen.RentPerGpuWeek * contract.GpuCount, c.Compute.ReservedRentPermille);
-            weekRent = ChipShortageSystem.ScalePrice(state, weekRent);
-            return MathI.MulPermille(weekRent * contract.WeeksLeft, permille);
-        }
-
         public static long Deposit(GameConfig c, GameState state, LabState lab, int count)
         {
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             long spot = gen.RentPerGpuWeek * count;
             long weekRent = MathI.MulPermille(spot, c.Compute.ReservedRentPermille);
-            weekRent = ChipShortageSystem.ScalePrice(state, weekRent);
             return weekRent * c.Compute.ReservedDepositWeeks;
         }
 

@@ -469,8 +469,6 @@ namespace AiLabs.Rules.Sim
                     if (designer == null || designer.Design(batch.ChipDesignId) == null) p.Add(who + " has chips of a design that does not exist");
                 }
                 foreach (string tech in lab.Techs) if (c.Tech(tech) == null) p.Add(who + " knows the unknown tech \"" + tech + "\"");
-                if (!string.IsNullOrEmpty(lab.TrainingDataSourceId) && c.Training.DataSource(lab.TrainingDataSourceId) == null)
-                    p.Add(who + " uses the unknown training data source \"" + lab.TrainingDataSourceId + "\"");
                 foreach (ModelState model in lab.Models)
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
@@ -515,8 +513,6 @@ namespace AiLabs.Rules.Sim
                         || ((model.ChkDone != 0 || model.ChkMissed != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                         p.Add(model.Name + " has checklist state (done " + model.ChkDone + ", missed " + model.ChkMissed + ") the data does not allow");
                     if (c.Line(model.LineId) == null) p.Add(who + " has a model of the unknown line \"" + model.LineId + "\"");
-                    if (!string.IsNullOrEmpty(model.DataSourceId) && c.Training.DataSource(model.DataSourceId) == null)
-                        p.Add(model.Name + " trained on the unknown data source \"" + model.DataSourceId + "\"");
                     foreach (string sector in model.Sectors) if (c.Sector(sector) == null) p.Add(model.Name + " sells into the unknown sector \"" + sector + "\"");
                 }
             }
@@ -536,8 +532,6 @@ namespace AiLabs.Rules.Sim
                 {
                     LabState lab = state.Lab(entry.LabId);
                     if (lab == null || lab.Model(entry.ModelId) == null) p.Add("sector " + sector.Id + " lists a model that does not exist");
-                    if (entry.PricePermille < c.Market.SectorPriceMinPermille || entry.PricePermille > c.Market.SectorPriceMaxPermille)
-                        p.Add("sector " + sector.Id + " entry for lab " + entry.LabId + " has pricePermille " + entry.PricePermille + " outside market bounds");
                 }
             }
             return p;

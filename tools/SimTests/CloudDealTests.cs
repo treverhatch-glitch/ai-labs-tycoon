@@ -230,7 +230,7 @@ public class CloudDealTests
         ChipDesign d = ReadyDesign(g);
         LabState buyer = RentOnlyBuyer(g);
         ChipSystem.AddChips(g.State, buyer, HardwareBatch.Cloud, g.Id, d.Id, 25);
-        Finance.GoBankrupt(g.C, g.State, buyer);
+        Finance.GoBankrupt(g.State, buyer);
         Assert.DoesNotContain(buyer.Fleet, b => b.HoldingId == HardwareBatch.Cloud);
     }
 

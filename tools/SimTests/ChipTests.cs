@@ -859,7 +859,7 @@ public class ChipTests
         g.Do(Command.SetChipListing(g.Id, d.Id, 5000, 10));
         int month = lab.ChipOrders.Single().FoundryMonth;
         Assert.Equal(30, ChipQueries.BookedIn(g.State, "n28", month));
-        Finance.GoBankrupt(g.C, g.State, lab);
+        Finance.GoBankrupt(g.State, lab);
         Assert.Empty(lab.ChipOrders);
         Assert.Empty(lab.ChipListings);
         Assert.Equal(0, ChipQueries.BookedIn(g.State, "n28", month));
@@ -888,7 +888,7 @@ public class ChipTests
         var options = new NewGameOptions { Seed = 3, RivalIds = new List<string> { "xay" } };
         GameConfig c = TestData.Config(cfg => cfg.Rivalry.LogMax = 100000);
         var g = new Game(Simulation.NewGame(c, options));
-        for (int w = 0; w < 36 * c.Calendar.WeeksPerYear; w++)
+        for (int w = 0; w < 31 * c.Calendar.WeeksPerYear; w++)
         {
             if (GameDate.IsMonthStart(c.Calendar, g.Tick)) g.Sim.RunPlan(g.Id, c.Autopilot);
             g.Sim.Step();

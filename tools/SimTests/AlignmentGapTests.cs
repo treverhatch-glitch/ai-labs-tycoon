@@ -132,7 +132,7 @@ public class AlignmentGapTests
         g.UntilTrained(model);
         g.Do(Command.ReleaseModel(g.Id, model.Id, "game-ai"));
         int incBefore = model.Incidents;
-        Finance.GoBankrupt(g.C, g.State, g.Me);
+        Finance.GoBankrupt(g.State, g.Me);
         g.Weeks(8);
         Assert.Equal(incBefore, model.Incidents);
         Assert.Equal(ModelStatus.Retired, model.Status);

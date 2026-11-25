@@ -128,7 +128,7 @@ public class ContentFlowTests
         {
             int before = run.PlayerTechsAtYearEnd[checkpoints[i - 1]];
             int after = run.PlayerTechsAtYearEnd[checkpoints[i]];
-            Assert.True(after >= before + 2, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
+            Assert.True(after >= before + 3, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
         }
     }
 
@@ -142,12 +142,7 @@ public class ContentFlowTests
         foreach (EraConfig era in c.Eras.Take(6))
         {
             foreach (TechConfig tech in c.Research.Techs.Where(t => t.Era == era.Id))
-            {
-                if (tech.IsDeadEnd) continue;
-                if (run.Game.Me.BlockedTechs.Contains(tech.Id)) continue;
-                if (!run.Game.Me.Techs.Contains(tech.Id) && !LabQueries.CanResearch(c, run.Game.Me, tech, run.Game.Tick)) continue;
                 Assert.Contains(tech.Id, run.Game.Me.Techs);
-            }
         }
     }
 

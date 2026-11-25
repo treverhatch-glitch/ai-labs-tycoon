@@ -12,8 +12,6 @@ namespace AiLabs.Rules.Sim
 
         static CommandResult StartChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
         {
-            if (state.Tick < lab.ChipAmbushUntilTick)
-                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before starting a new design.");
             ChipsConfig k = c.Chips;
             if (cmd.Ids == null || cmd.Ids.Count != 5) return Fail(CommandError.InvalidArgument, "A design needs a process, a die, a number format, a memory and a cooling.");
             ChipTargetConfig target = k.Target(cmd.Id);
@@ -23,12 +21,6 @@ namespace AiLabs.Rules.Sim
             ChipNodeConfig node = k.Node(cmd.Ids[0]);
             if (node == null) return Fail(CommandError.UnknownId, "There is no process \"" + cmd.Ids[0] + "\".");
             if (!ChipQueries.NodeOpen(c, node, state.Tick)) return Fail(CommandError.EraLocked, node.Name + " opens in " + node.OpensYear + ".");
-            if (!string.IsNullOrEmpty(node.RequiresTech) && !ChipQueries.NodeUnlocked(c, lab, node, state.Tick))
-            {
-                TechConfig tech = c.Tech(node.RequiresTech);
-                string name = tech == null ? node.RequiresTech : tech.Name;
-                return Fail(CommandError.MissingPrerequisite, node.Name + " needs " + name + " first.");
-            }
             for (int g = 0; g < OptionGroups.Length; g++)
             {
                 ChipOptionConfig option = k.Option(OptionGroups[g], cmd.Ids[g + 1]);
@@ -112,7 +104,7 @@ namespace AiLabs.Rules.Sim
                 if ((long)count * spec.Kw > freeKw)
                     return Fail(CommandError.NotEnoughPower, "That needs " + ((long)count * spec.Kw) + " kW and the hall has " + (freeKw < 0 ? 0 : freeKw) + " kW free.");
             }
-            month = ChipQueries.FirstFreeMonth(c, state, c.Chips.Node(d.NodeId), d, count);
+            month = ChipQueries.FirstFreeMonth(c, state, c.Chips.Node(d.NodeId), count);
             if (month < 0) return Fail(CommandError.FoundryFull, "The foundry has no room for " + count + " chips in the next " + c.Chips.BookAheadMonths + " months.");
             return CommandResult.Done(-1);
         }
@@ -132,7 +124,7 @@ namespace AiLabs.Rules.Sim
             order.FoundryMonth = month;
             order.NodeId = node.IdValue;
             buyer.ChipOrders.Add(order);
-            ChipSystem.Book(state, node.IdValue, month, ChipQueries.FoundrySlots(c, d, count));
+            ChipSystem.Book(state, node.IdValue, month, count);
             return order;
         }
 
@@ -141,14 +133,12 @@ namespace AiLabs.Rules.Sim
             ChipDesign d = lab.Design(cmd.TargetId);
             if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
             if (d.Status != ChipDesignStatus.Ready) return Fail(CommandError.DesignNotReady, d.Name + " has not come back from the foundry yet.");
-            if (state.Tick < lab.ChipAmbushUntilTick)
-                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before ordering chips.");
             ChipSpec spec;
             int month;
             Holding holding;
             CommandResult check = CheckChipDelivery(c, state, lab, lab, d, cmd.X, cmd.Count, out spec, out month, out holding);
             if (!check.Ok) return check;
-            long cost = ChipShortageSystem.ScalePrice(state, ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count));
+            long cost = ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count);
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             ChipOrder order = PlaceChipOrder(c, state, lab, lab, d, spec, holding, cmd.Count, month);
@@ -167,8 +157,6 @@ namespace AiLabs.Rules.Sim
             ChipDesign d = lab.Design(cmd.TargetId);
             if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
             if (d.Status != ChipDesignStatus.Ready) return Fail(CommandError.DesignNotReady, d.Name + " has not come back from the foundry yet.");
-            if (cmd.Count > 0 && state.Tick < lab.ChipAmbushUntilTick)
-                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before listing chips.");
             ChipListing listing = lab.Listing(d.Id);
             if (cmd.Count < 0 || cmd.X < 0) return Fail(CommandError.InvalidArgument, "A price and a monthly limit cannot be negative.");
             if (cmd.Count == 0)
@@ -182,12 +170,10 @@ namespace AiLabs.Rules.Sim
             {
                 listing = new ChipListing();
                 listing.DesignId = d.Id;
-                listing.ListedSinceTick = state.Tick;
                 lab.ChipListings.Add(listing);
             }
             listing.PricePerChip = cmd.Count;
             listing.MaxPerMonth = cmd.X;
-            if (listing.ListedSinceTick < 0) listing.ListedSinceTick = state.Tick;
 
             VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
             if (!standing.ListingSeen)
@@ -196,11 +182,6 @@ namespace AiLabs.Rules.Sim
                 VendorSystem.Change(c, state, lab.Id, -c.Vendor.ListingDrop, true);
             }
             return CommandResult.Done(-1);
-        }
-
-        static CommandResult SpotlightChipListing(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            return ChipListingSystem.SetSpotlight(c, state, lab, cmd.TargetId, cmd.Count != 0);
         }
 
         static CommandResult BuyListedChips(GameConfig c, GameState state, LabState lab, Command cmd)
@@ -212,10 +193,7 @@ namespace AiLabs.Rules.Sim
             ChipListing listing = seller.Listing(cmd.Y);
             ChipDesign d = seller.Design(cmd.Y);
             if (listing == null || d == null || d.Status != ChipDesignStatus.Ready) return Fail(CommandError.UnknownId, seller.Name + " has no such chips on offer.");
-            if (listing.Paused) return Fail(CommandError.InvalidArgument, seller.Name + " paused that listing.");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Buy at least one chip.");
-            if (state.Tick < lab.ChipAmbushUntilTick)
-                return Fail(CommandError.KeynoteAmbush, "Envydia's keynote buried your launch. Wait out the ambush before buying listed chips.");
             if (listing.SoldThisMonth + cmd.Count > listing.MaxPerMonth)
                 return Fail(CommandError.AllocationExhausted, seller.Name + " will sell " + (listing.MaxPerMonth - listing.SoldThisMonth) + " more of these this month.");
 
@@ -224,7 +202,7 @@ namespace AiLabs.Rules.Sim
             Holding holding;
             CommandResult check = CheckChipDelivery(c, state, lab, seller, d, cmd.X, cmd.Count, out spec, out month, out holding);
             if (!check.Ok) return check;
-            long price = ChipShortageSystem.ScalePrice(state, listing.PricePerChip * cmd.Count);
+            long price = listing.PricePerChip * cmd.Count;
             if (lab.Cash < price) return NeedCash(lab, price);
             long wafers = ChipQueries.OrderCost(spec, d.YieldPermille, cmd.Count);
             if (seller.Cash < wafers) return Fail(CommandError.NotEnoughCash, seller.Name + " cannot pay the foundry for that many chips right now.");
@@ -241,159 +219,6 @@ namespace AiLabs.Rules.Sim
             if (rival != null) RivalSystem.Feel(c, rival, c.Rivalry.Feelings.ChipOrderPermille);
             BubbleSystem.OnListedChipTrade(c, state, price);
             return CommandResult.Done(order.Id);
-        }
-
-        static ChipOrder FindOrder(LabState lab, int orderId)
-        {
-            for (int i = 0; i < lab.ChipOrders.Count; i++)
-                if (lab.ChipOrders[i].Id == orderId) return lab.ChipOrders[i];
-            return null;
-        }
-
-        static CommandResult RushChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            ChipDesign d = lab.Design(cmd.TargetId);
-            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
-            if (d.Status != ChipDesignStatus.Designing) return Fail(CommandError.InvalidArgument, d.Name + " is not in the design stage.");
-            if (ChipQueries.Architects(c, lab) < 1) return Fail(CommandError.NotEnoughStaff, "Rushing needs at least one chip architect.");
-            if (d.PointsDone >= d.PointsRequired) return Fail(CommandError.InvalidArgument, d.Name + " already has enough design points.");
-            long cost = k.RushDesignCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            d.PointsDone = System.Math.Min(d.PointsRequired, d.PointsDone + k.RushDesignPoints);
-            return CommandResult.Done(d.Id);
-        }
-
-        static CommandResult ExpediteChipOrder(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            ChipOrder order = FindOrder(lab, cmd.TargetId);
-            if (order == null) return Fail(CommandError.UnknownId, "The lab has no chip order " + cmd.TargetId + ".");
-            if (order.DeliveryTick <= state.Tick) return Fail(CommandError.InvalidArgument, "That order has already arrived or is due this week.");
-            if (k.ExpediteDeliveryWeeks < 1) return Fail(CommandError.InvalidArgument, "Foundry expedite is disabled.");
-            long cost = k.ExpediteOrderCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            order.DeliveryTick = System.Math.Max(state.Tick + 1, order.DeliveryTick - k.ExpediteDeliveryWeeks);
-            return CommandResult.Done(order.Id);
-        }
-
-        static CommandResult AccelerateChipTapeout(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            ChipDesign d = lab.Design(cmd.TargetId);
-            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
-            if (d.Status != ChipDesignStatus.TapingOut) return Fail(CommandError.InvalidArgument, d.Name + " is not taping out.");
-            if (d.StageEndsTick <= state.Tick) return Fail(CommandError.InvalidArgument, d.Name + " is already back from the fab.");
-            if (k.AccelerateTapeoutWeeks < 1) return Fail(CommandError.InvalidArgument, "Tapeout acceleration is disabled.");
-            long cost = k.AccelerateTapeoutCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            d.StageEndsTick = System.Math.Max(state.Tick + 1, d.StageEndsTick - k.AccelerateTapeoutWeeks);
-            return CommandResult.Done(d.Id);
-        }
-
-        static CommandResult BoostChipYield(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            ChipDesign d = lab.Design(cmd.TargetId);
-            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
-            if (d.Status != ChipDesignStatus.Ready) return Fail(CommandError.InvalidArgument, d.Name + " is not a ready design.");
-            ChipSpec spec = ChipQueries.Spec(c, d);
-            if (!spec.Valid) return Fail(CommandError.InvalidArgument, "That design is incomplete.");
-            if (d.YieldPermille >= spec.MaxYieldPermille) return Fail(CommandError.InvalidArgument, d.Name + " is already at full yield.");
-            if (k.BoostYieldPermille < 1) return Fail(CommandError.InvalidArgument, "Yield boost is disabled.");
-            long cost = k.BoostYieldCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            d.YieldPermille = (int)MathI.Min(spec.MaxYieldPermille, d.YieldPermille + k.BoostYieldPermille);
-            return CommandResult.Done(d.Id);
-        }
-
-        static CommandResult FinishDesignFromTapeOut(GameConfig c, GameState state, LabState lab, ChipDesign d, int yieldPermille)
-        {
-            ChipSpec spec = ChipQueries.Spec(c, d);
-            if (!spec.Valid) return Fail(CommandError.InvalidArgument, d.Name + " is incomplete.");
-            d.Status = ChipDesignStatus.Ready;
-            d.YieldPermille = yieldPermille;
-            d.ReadyTick = state.Tick;
-            d.StageEndsTick = state.Tick;
-            Events.Add(state, EventKind.ChipReady, lab.Id, d.Id, d.YieldPermille, d.Name).Pick = d.Version == 1 ? 1 : 0;
-            if (spec.Trains)
-            {
-                VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
-                if (!standing.TrainingChipSeen)
-                {
-                    standing.TrainingChipSeen = true;
-                    VendorSystem.Change(c, state, lab.Id, -c.Vendor.TrainingTapeOutDrop, true);
-                }
-            }
-            return CommandResult.Done(d.Id);
-        }
-
-        static CommandResult AbortChipRespin(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            ChipDesign d = lab.Design(cmd.TargetId);
-            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
-            if (d.Status != ChipDesignStatus.TapingOut) return Fail(CommandError.InvalidArgument, d.Name + " is not at the foundry.");
-            if (d.Respins < 1) return Fail(CommandError.InvalidArgument, d.Name + " has not hit a respin yet.");
-            if (d.StageEndsTick <= state.Tick) return Fail(CommandError.InvalidArgument, d.Name + " is already back from the fab.");
-            long cost = k.AbortRespinCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            ChipSpec spec = ChipQueries.Spec(c, d);
-            int yield = (int)MathI.MulPermille(spec.InitialYieldPermille, k.YieldCrashKeepPermille);
-            return FinishDesignFromTapeOut(c, state, lab, d, yield);
-        }
-
-        static CommandResult CancelChipOrder(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipOrder order = FindOrder(lab, cmd.TargetId);
-            if (order == null) return Fail(CommandError.UnknownId, "The lab has no chip order " + cmd.TargetId + ".");
-            if (order.DeliveryTick <= state.Tick) return Fail(CommandError.InvalidArgument, "That order has already arrived or is due this week.");
-            LabState designer = state.Lab(order.DesignLabId);
-            ChipDesign d = designer == null ? null : designer.Design(order.DesignId);
-            if (d == null) return Fail(CommandError.UnknownId, "The order's design is gone.");
-            ChipsConfig k = c.Chips;
-            long orderCost = ChipQueries.OrderCost(ChipQueries.Spec(c, d), d.YieldPermille, order.Count);
-            int slots = ChipQueries.OrderFoundrySlots(c, state, order);
-            ChipSystem.Unbook(state, order.NodeId, order.FoundryMonth, slots);
-            lab.ChipOrders.Remove(order);
-            if (k.CancelOrderRefundPermille > 0 && orderCost > 0)
-                Finance.Earn(lab, LedgerLine.ChipDevelopment, MathI.MulPermille(orderCost, k.CancelOrderRefundPermille));
-            return CommandResult.Done(-1);
-        }
-
-        static CommandResult ReviveChipDesign(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipDesign d = lab.Design(cmd.TargetId);
-            if (d == null) return Fail(CommandError.UnknownId, "The lab has no design " + cmd.TargetId + ".");
-            if (d.Status != ChipDesignStatus.Cancelled) return Fail(CommandError.InvalidArgument, d.Name + " is not cancelled.");
-            if (ChipQueries.DesignInProgress(lab) != null)
-                return Fail(CommandError.InvalidArgument, "The lab is already designing a chip.");
-            long cost = c.Chips.ReviveDesignCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            d.Status = ChipDesignStatus.Designing;
-            d.StageEndsTick = -1;
-            d.ReadyTick = -1;
-            d.YieldPermille = 0;
-            return CommandResult.Done(d.Id);
-        }
-
-        static CommandResult TuneChipSoftware(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            ChipsConfig k = c.Chips;
-            if (ChipQueries.Architects(c, lab) < 1) return Fail(CommandError.NotEnoughStaff, "Tuning needs at least one chip architect.");
-            if (lab.SoftwarePermille >= k.SoftwareCap) return Fail(CommandError.InvalidArgument, "The chip software stack is already at full maturity.");
-            long cost = k.SoftwareTuneCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.ChipDevelopment, cost);
-            lab.SoftwarePermille = (int)MathI.Min(k.SoftwareCap, lab.SoftwarePermille + k.SoftwareTuneGainPermille);
-            Events.Add(state, EventKind.TechResearched, lab.Id, -1, lab.SoftwarePermille, "chip-software-tune");
-            return CommandResult.Done(-1);
         }
     }
 }

@@ -62,18 +62,15 @@ public class ConfigTests
     public void The_model_family_has_mini_mid_and_flagship_lines_and_only_mini_is_open_at_the_start()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(new[] { "mini", "mid", "flagship", "code-specialist", "image-specialist" }, c.Training.Lines.Select(l => l.Id).ToArray());
+        Assert.Equal(new[] { "mini", "mid", "flagship" }, c.Training.Lines.Select(l => l.Id).ToArray());
         Assert.False(c.Line("mini").Locked);
         Assert.True(c.Line("mid").Locked);
         Assert.True(c.Line("flagship").Locked);
-        ModelLineConfig[] core = { c.Line("mini"), c.Line("mid"), c.Line("flagship") };
-        for (int i = 1; i < core.Length; i++)
+        for (int i = 1; i < c.Training.Lines.Count; i++)
         {
-            Assert.True(core[i].BaseCapability > core[i - 1].BaseCapability);
-            Assert.True(core[i].ComputeRequired > core[i - 1].ComputeRequired);
+            Assert.True(c.Training.Lines[i].BaseCapability > c.Training.Lines[i - 1].BaseCapability);
+            Assert.True(c.Training.Lines[i].ComputeRequired > c.Training.Lines[i - 1].ComputeRequired);
         }
-        Assert.True(c.Line("code-specialist").Locked);
-        Assert.True(c.Line("image-specialist").Locked);
     }
 
     [Fact]

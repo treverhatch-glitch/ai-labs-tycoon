@@ -73,138 +73,6 @@ namespace AiLabs.Rules.Systems
             return spec;
         }
 
-        /// <summary>Step deltas that sum to <see cref="Derive"/> compute.</summary>
-        public struct ChipComputeDeriveBreakdown
-        {
-            public long AfterNode;
-            public long FromTarget;
-            public long FromDie;
-            public long FromFormat;
-            public long FromMemory;
-            public long FromCooling;
-
-            public long Total { get { return AfterNode + FromTarget + FromDie + FromFormat + FromMemory + FromCooling; } }
-        }
-
-        public static ChipComputeDeriveBreakdown ComputeDeriveParts(GameConfig c, string targetId, string nodeId, string dieId, string formatId, string memoryId, string coolingId)
-        {
-            var b = new ChipComputeDeriveBreakdown();
-            ChipsConfig k = c.Chips;
-            ChipTargetConfig target = k.Target(targetId);
-            ChipNodeConfig node = k.Node(nodeId);
-            ChipOptionConfig die = k.Option(ChipOptionGroup.Die, dieId);
-            ChipOptionConfig format = k.Option(ChipOptionGroup.Format, formatId);
-            ChipOptionConfig memory = k.Option(ChipOptionGroup.Memory, memoryId);
-            ChipOptionConfig cooling = k.Option(ChipOptionGroup.Cooling, coolingId);
-            if (target == null || node == null || die == null || format == null || memory == null || cooling == null) return b;
-            long run = node.ComputePerChipWeek;
-            b.AfterNode = run;
-            long afterTarget = MathI.MulPermille(run, target.ComputePermille);
-            b.FromTarget = afterTarget - run;
-            run = afterTarget;
-            long afterDie = MathI.MulPermille(run, die.ComputePermille);
-            b.FromDie = afterDie - run;
-            run = afterDie;
-            long afterFormat = MathI.MulPermille(run, format.ComputePermille);
-            b.FromFormat = afterFormat - run;
-            run = afterFormat;
-            long afterMemory = MathI.MulPermille(run, memory.ComputePermille);
-            b.FromMemory = afterMemory - run;
-            run = afterMemory;
-            long afterCooling = MathI.MulPermille(run, cooling.ComputePermille);
-            b.FromCooling = afterCooling - run;
-            return b;
-        }
-
-        /// <summary>Step deltas that sum to <see cref="Derive"/> wafer cost.</summary>
-        public struct ChipWaferDeriveBreakdown
-        {
-            public long AfterNode;
-            public long FromDie;
-            public long FromMemory;
-            public long FromCooling;
-
-            public long Total { get { return AfterNode + FromDie + FromMemory + FromCooling; } }
-        }
-
-        public static ChipWaferDeriveBreakdown WaferDeriveParts(GameConfig c, string targetId, string nodeId, string dieId, string formatId, string memoryId, string coolingId)
-        {
-            var b = new ChipWaferDeriveBreakdown();
-            ChipsConfig k = c.Chips;
-            ChipTargetConfig target = k.Target(targetId);
-            ChipNodeConfig node = k.Node(nodeId);
-            ChipOptionConfig die = k.Option(ChipOptionGroup.Die, dieId);
-            ChipOptionConfig format = k.Option(ChipOptionGroup.Format, formatId);
-            ChipOptionConfig memory = k.Option(ChipOptionGroup.Memory, memoryId);
-            ChipOptionConfig cooling = k.Option(ChipOptionGroup.Cooling, coolingId);
-            if (target == null || node == null || die == null || format == null || memory == null || cooling == null) return b;
-            long run = node.WaferCostPerChip;
-            b.AfterNode = run;
-            long afterDie = MathI.MulPermille(run, die.CostPermille);
-            b.FromDie = afterDie - run;
-            run = afterDie;
-            long afterMemory = MathI.MulPermille(run, memory.CostPermille);
-            b.FromMemory = afterMemory - run;
-            run = afterMemory;
-            long afterCooling = MathI.MulPermille(run, cooling.CostPermille);
-            b.FromCooling = afterCooling - run;
-            return b;
-        }
-
-        public struct OrderCostBreakdown
-        {
-            public long WaferBase;
-            public long FromYield;
-            public long FromCount;
-
-            public long Total { get { return WaferBase + FromYield + FromCount; } }
-        }
-
-        public static OrderCostBreakdown OrderCostParts(ChipSpec spec, int yieldPermille, int count)
-        {
-            var b = new OrderCostBreakdown();
-            long one = OrderCost(spec, yieldPermille, 1);
-            b.WaferBase = spec.WaferCost;
-            b.FromYield = one - b.WaferBase;
-            b.FromCount = OrderCost(spec, yieldPermille, count) - one;
-            return b;
-        }
-
-        public struct FoundrySlotBreakdown
-        {
-            public int BaseChips;
-            public int FromChiplet;
-            public int Total { get { return BaseChips + FromChiplet; } }
-        }
-
-        public static FoundrySlotBreakdown FoundrySlotParts(GameConfig c, ChipDesign d, int chipCount)
-        {
-            var b = new FoundrySlotBreakdown { BaseChips = chipCount };
-            if (chipCount < 1 || d == null || !IsChipletDesign(c, d)) return b;
-            int slots = FoundrySlots(c, d, chipCount);
-            b.FromChiplet = slots - chipCount;
-            return b;
-        }
-
-        public struct RespinChanceBreakdown
-        {
-            public int FromNode;
-            public int FromEngineers;
-            public int Total;
-        }
-
-        public static RespinChanceBreakdown RespinChanceParts(GameConfig c, LabState lab, ChipNodeConfig node)
-        {
-            var b = new RespinChanceBreakdown();
-            if (node == null) return b;
-            b.FromNode = node.RespinPermille;
-            long engineers = MathI.Min(Engineers(c, lab), c.Chips.RespinEngineerCap);
-            int cut = (int)(engineers * c.Chips.RespinPerEngineerPermille);
-            b.FromEngineers = -cut;
-            b.Total = RespinChancePermille(c, lab, node);
-            return b;
-        }
-
         public static ChipSpec Spec(GameConfig c, ChipDesign d)
         {
             return Derive(c, d.Target, d.NodeId, d.DieId, d.FormatId, d.MemoryId, d.CoolingId);
@@ -249,28 +117,6 @@ namespace AiLabs.Rules.Systems
         {
             for (int i = 0; i < lab.Rooms.Count; i++) if (lab.Rooms[i].TypeId == c.Chips.TestLabRoomId) return true;
             return false;
-        }
-
-        /// <summary>Parts of owner chip software permille; each part sums to <see cref="EffectiveSoftware"/>.</summary>
-        public struct OwnerSoftwareBreakdown
-        {
-            public int FromLab;
-            public int FromTech;
-            /// <summary>Negative when <see cref="FromLab"/> + <see cref="FromTech"/> exceeds the config cap.</summary>
-            public int CapClip;
-
-            public int Total { get { return FromLab + FromTech + CapClip; } }
-        }
-
-        public static OwnerSoftwareBreakdown SoftwareParts(GameConfig c, LabState lab)
-        {
-            var b = new OwnerSoftwareBreakdown();
-            b.FromLab = lab.SoftwarePermille;
-            if (b.FromLab <= 0) return b;
-            b.FromTech = (int)LabQueries.TechBonus(c, lab, TechEffectKind.SoftwarePermille);
-            int capped = EffectiveSoftware(c, lab);
-            b.CapClip = capped - b.FromLab - b.FromTech;
-            return b;
         }
 
         /// <summary>The software a lab's chips run, in permille of paper speed: what its compiler has matured to, plus its compiler techs.</summary>
@@ -320,13 +166,6 @@ namespace AiLabs.Rules.Systems
         public static bool NodeOpen(GameConfig c, ChipNodeConfig node, int tick)
         {
             return GameDate.Year(c.Calendar, tick) >= node.OpensYear;
-        }
-
-        /// <summary>Whether the calendar year and the lab's techs allow using this foundry node.</summary>
-        public static bool NodeUnlocked(GameConfig c, LabState lab, ChipNodeConfig node, int tick)
-        {
-            if (node == null || !NodeOpen(c, node, tick)) return false;
-            return string.IsNullOrEmpty(node.RequiresTech) || LabQueries.HasTech(lab, node.RequiresTech);
         }
 
         /// <summary>The design in progress (Designing or TapingOut), or null.</summary>
@@ -387,60 +226,13 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The first foundry month from this one on with room for the whole order, or -1 when none within the booking window has.</summary>
-        public static bool IsChipletDie(GameConfig c, string dieId)
+        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, int count)
         {
-            if (string.IsNullOrEmpty(dieId) || c.Chips.ChipletDieIds == null) return false;
-            for (int i = 0; i < c.Chips.ChipletDieIds.Count; i++)
-                if (c.Chips.ChipletDieIds[i] == dieId) return true;
-            return false;
-        }
-
-        public static bool IsChipletDesign(GameConfig c, ChipDesign d)
-        {
-            return d != null && IsChipletDie(c, d.DieId);
-        }
-
-        /// <summary>How many foundry slots an order consumes (chiplet dies book extra room).</summary>
-        public static int FoundrySlots(GameConfig c, ChipDesign d, int chipCount)
-        {
-            if (chipCount < 1) return 0;
-            if (!IsChipletDesign(c, d)) return chipCount;
-            return (int)MathI.MulPermille(chipCount, c.Chips.ChipletFoundryRoomPermille);
-        }
-
-        public static bool RunsChipletTrainingChips(GameConfig c, GameState state, LabState lab)
-        {
-            for (int i = 0; i < lab.Fleet.Count; i++)
-            {
-                HardwareBatch batch = lab.Fleet[i];
-                if (batch.ChipDesignId < 0 || batch.DesignLabId != lab.Id || batch.Count < 1) continue;
-                if (!BatchTrains(c, state, batch)) continue;
-                ChipDesign design = lab.Design(batch.ChipDesignId);
-                if (design != null && IsChipletDesign(c, design)) return true;
-            }
-            return false;
-        }
-
-        public static int OrderFoundrySlots(GameConfig c, GameState state, ChipOrder order)
-        {
-            LabState designer = state.Lab(order.DesignLabId);
-            ChipDesign d = designer == null ? null : designer.Design(order.DesignId);
-            return FoundrySlots(c, d, order.Count);
-        }
-
-        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, int chipCount)
-        {
-            return FirstFreeMonth(c, state, node, null, chipCount);
-        }
-
-        public static int FirstFreeMonth(GameConfig c, GameState state, ChipNodeConfig node, ChipDesign design, int chipCount)
-        {
-            int slots = FoundrySlots(c, design, chipCount);
-            long room = ChipShortageSystem.EffectiveFoundryRoom(c, state, node);
-            if (slots > room) return -1;
+            long room = c.Chips.FoundryRoom(node);
+            if (count > room) return -1;
             int now = MonthIndex(c, state.Tick);
             for (int m = now; m < now + c.Chips.BookAheadMonths; m++)
-                if (BookedIn(state, node.IdValue, m) + slots <= room) return m;
+                if (BookedIn(state, node.IdValue, m) + count <= room) return m;
             return -1;
         }
 
@@ -453,10 +245,8 @@ namespace AiLabs.Rules.Systems
         public static int OwnChipsShare(GameConfig c, GameState state, LabState lab)
         {
             ComputeSplit split = LabQueries.Split(c, state, lab, false);
-            long passive = ExpansionSystem.PassiveExpansionGeneralCompute(c, state, lab);
-            long general = split.General - passive;
-            if (general <= 0) return 0;
-            return (int)(split.OwnChips * MathI.Permille / general);
+            if (split.General <= 0) return 0;
+            return (int)(split.OwnChips * MathI.Permille / split.General);
         }
 
         /// <summary>True when the lab has trained or run any training chip of its own: the vendor charges it more.</summary>
@@ -481,25 +271,18 @@ namespace AiLabs.Rules.Systems
             return null;
         }
 
-        public static long CloudBatchWeeklyRent(GameConfig c, GameState state, HardwareBatch batch)
-        {
-            if (batch.HoldingId != HardwareBatch.Cloud || batch.ChipDesignId < 0 || batch.Count <= 0) return 0;
-            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
-            if (gen.ComputePerGpuWeek < 1) return 0;
-            long compute = BatchCompute(c, state, batch);
-            long units = (compute + gen.ComputePerGpuWeek - 1) / gen.ComputePerGpuWeek;
-            long raw = MathI.MulPermille(units * gen.RentPerGpuWeek, c.Chips.CloudRentPermille);
-            return ChipShortageSystem.ScalePrice(state, raw);
-        }
-
         public static long WeeklyCloudChipRent(GameConfig c, GameState state, LabState lab)
         {
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            if (gen.ComputePerGpuWeek < 1) return 0;
             long rent = 0;
             for (int i = 0; i < lab.Fleet.Count; i++)
             {
                 HardwareBatch batch = lab.Fleet[i];
-                if (batch.HoldingId != HardwareBatch.Cloud) continue;
-                rent += CloudBatchWeeklyRent(c, state, batch);
+                if (batch.HoldingId != HardwareBatch.Cloud || batch.ChipDesignId < 0 || batch.Count <= 0) continue;
+                long compute = BatchCompute(c, state, batch);
+                long units = (compute + gen.ComputePerGpuWeek - 1) / gen.ComputePerGpuWeek;
+                rent += MathI.MulPermille(units * gen.RentPerGpuWeek, c.Chips.CloudRentPermille);
             }
             return rent;
         }

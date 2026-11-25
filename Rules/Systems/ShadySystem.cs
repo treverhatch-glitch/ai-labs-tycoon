@@ -19,17 +19,6 @@ namespace AiLabs.Rules.Systems
                 ResolveOne(c, state, lab, op);
                 lab.ShadyOps.RemoveAt(i);
             }
-            for (int i = 0; i < lab.ShadyOps.Count; i++)
-            {
-                ShadyOp op = lab.ShadyOps[i];
-                if (op.ResolveTick <= state.Tick) continue;
-                ShadyCardConfig card = c.Shady.Card(op.CardId);
-                if (card == null || card.Special != ShadySpecial.GreyCompute || op.AuxId < 0) continue;
-                long pay = ShadyQueries.GreyWeeklyPayout(c, state, lab, op.AuxId);
-                if (lab.GreyPayoutBoostUntilTick > state.Tick && c.Shady.GreyReserveBoostPermille > 0)
-                    pay = MathI.MulPermille(pay, MathI.Permille + c.Shady.GreyReserveBoostPermille);
-                Finance.Earn(lab, LedgerLine.GreyRevenue, pay);
-            }
             if (!resolved && lab.Heat > 0)
             {
                 int drop = ShadyQueries.PolicyHeatDecay(c, lab);
@@ -54,8 +43,8 @@ namespace AiLabs.Rules.Systems
                 return;
             }
             if (ShadyQueries.CaseOpen(lab, tick)) return;
-            int permille = ShadyQueries.InvestigationOpenPermille(c, lab);
-            if (permille < 1) return;
+            if (lab.Heat < c.Shady.InvestigationThreshold) return;
+            int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
             if (state.Rng.Shady.Chance(permille))
             {
                 lab.CaseEndsTick = tick + c.Shady.CaseWeeks;
@@ -77,15 +66,18 @@ namespace AiLabs.Rules.Systems
 
         static void TryOpenCase(GameConfig c, GameState state, LabState lab, string tag)
         {
-            int permille = ShadyQueries.InvestigationOpenPermille(c, lab);
-            if (permille < 1 || !state.Rng.Shady.Chance(permille)) return;
+            if (lab.Heat < c.Shady.InvestigationThreshold) return;
+            int permille = (int)(MathI.Max(0, lab.Heat - c.Shady.InvestigationThreshold) / c.Shady.InvestigationDivisor);
+            if (!state.Rng.Shady.Chance(permille)) return;
             lab.CaseEndsTick = state.Tick + c.Shady.CaseWeeks;
             Events.Add(state, EventKind.ShadyInvestigation, lab.Id, -1, lab.Heat, tag);
         }
 
         static void CloseCase(GameConfig c, GameState state, LabState lab)
         {
-            int chance = ShadyQueries.ConvictionChanceParts(c, state, lab).Total;
+            ShadyConfig cfg = c.Shady;
+            int staff = WorldQueries.PolicyStaff(c, lab);
+            int chance = (int)MathI.Clamp(lab.Heat / cfg.ConvictionDivisor - staff * cfg.ConvictionPolicyPerStaff, 0, 900);
             lab.CaseEndsTick = -1;
             if (state.Rng.Shady.Chance(chance))
             {
@@ -94,7 +86,7 @@ namespace AiLabs.Rules.Systems
             }
             else
             {
-                lab.Heat = (int)MathI.Max(0, lab.Heat - c.Shady.AcquittalHeatDrop);
+                lab.Heat = (int)MathI.Max(0, lab.Heat - cfg.AcquittalHeatDrop);
                 Events.Add(state, EventKind.ShadyAcquitted, lab.Id, -1, lab.Heat, "");
             }
         }
@@ -144,6 +136,7 @@ namespace AiLabs.Rules.Systems
                 case ShadySpecial.HackGovernment: HackGov(c, lab, op.TargetRef, false); break;
                 case ShadySpecial.SmuggleChips: Smuggle(c, state, lab, op); break;
                 case ShadySpecial.GreyCompute:
+                    if (op.AuxId >= 0) Finance.Earn(lab, LedgerLine.GreyRevenue, GreyPayout(c, state, lab, op.AuxId));
                     break;
             }
         }
@@ -180,6 +173,15 @@ namespace AiLabs.Rules.Systems
                 }
                 RivalSystem.Feel(c, target, c.Rivalry.Feelings.TracedShadyPermille);
             }
+        }
+
+        static long GreyPayout(GameConfig c, GameState state, LabState lab, int holdingId)
+        {
+            Holding h = lab.Holding(holdingId);
+            if (h == null) return 0;
+            long kw = WorldQueries.InstalledKw(c, state, lab, holdingId) / 2;
+            ShadyCardConfig card = c.Shady.Card("grey-compute");
+            return card == null ? 0 : card.BasePayout * kw;
         }
 
         static void CopyWeights(GameConfig c, GameState state, LabState lab, LabState target, ShadyOp op)

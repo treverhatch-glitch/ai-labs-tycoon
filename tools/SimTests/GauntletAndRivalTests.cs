@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AiLabs.Rules.Config;
-using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -74,14 +73,10 @@ public class GauntletAndRivalTests
             LabState champion = g.State.Lab(sector.ChampionLabId);
             ModelState model = champion.Model(sector.Entry(champion.Id).ModelId);
             SectorConfig config = g.C.Sector(sector.Id);
-            DisplayQueries.AppealBreakdown crowned = DisplayQueries.AppealParts(g.C, g.State, config, sector, champion, model);
-            Assert.True(crowned.ChampionBoost > 0);
-            int savedChampion = sector.ChampionLabId;
+            long asChampion = MarketSystem.Appeal(g.C, g.State, config, sector, champion, model);
             sector.ChampionLabId = -1;
-            DisplayQueries.AppealBreakdown plain = DisplayQueries.AppealParts(g.C, g.State, config, sector, champion, model);
-            Assert.Equal(0, plain.ChampionBoost);
-            Assert.True(plain.Total < crowned.Total);
-            sector.ChampionLabId = savedChampion;
+            long without = MarketSystem.Appeal(g.C, g.State, config, sector, champion, model);
+            Assert.Equal(without * (1000 + g.C.Gauntlet.BracketWinnerAppealPermille) / 1000, asChampion);
         }
         Assert.DoesNotContain(record.Entries, e => e.Bracket == "spam-search");
     }

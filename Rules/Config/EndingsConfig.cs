@@ -92,12 +92,6 @@ namespace AiLabs.Rules.Config
         public int GrowthPermille;
         public int MaxLevel;
         public int CapabilityPermillePerLevel;
-        /// <summary>Training speed permille gained per frontier level researched.</summary>
-        public int TrainingSpeedPermillePerLevel;
-        /// <summary>Flat research points granted weekly per frontier level.</summary>
-        public long ResearchPointsPerLevel;
-        /// <summary>Cash granted weekly per frontier level (museum stipend hook).</summary>
-        public long CashPerLevel;
 
         public void Sync(Syncer s)
         {
@@ -105,34 +99,16 @@ namespace AiLabs.Rules.Config
             s.Int("growthPermille", ref GrowthPermille);
             s.Int("maxLevel", ref MaxLevel);
             s.Int("capabilityPermillePerLevel", ref CapabilityPermillePerLevel);
-            s.Int("trainingSpeedPermillePerLevel", ref TrainingSpeedPermillePerLevel);
-            s.Long("researchPointsPerLevel", ref ResearchPointsPerLevel);
-            s.Long("cashPerLevel", ref CashPerLevel);
         }
     }
 
     public sealed class MuseumConfig : ISync
     {
-        /// <summary>Optional cash cost for <see cref="CommandKind.SalvageMuseumLine"/>.</summary>
-        public long ManualSalvageCashCost;
         public int PerLine;
-        /// <summary>Research points granted per point of stored capability when a retired model is pruned (permille).</summary>
-        public int ResearchPermillePerCapability;
-        /// <summary>Reputation gained each week for each model line kept at the retirement cap (museum full).</summary>
-        public int ReputationPerFullLine;
-        /// <summary>Flat research points each week for each model line at the retirement cap.</summary>
-        public long ResearchPointsPerFullLine;
-        /// <summary>Cash granted each week for each model line at the retirement cap.</summary>
-        public long CashPerFullLine;
 
         public void Sync(Syncer s)
         {
-            s.Long("manualSalvageCashCost", ref ManualSalvageCashCost);
             s.Int("perLine", ref PerLine);
-            s.Int("researchPermillePerCapability", ref ResearchPermillePerCapability);
-            s.Int("reputationPerFullLine", ref ReputationPerFullLine);
-            s.Long("researchPointsPerFullLine", ref ResearchPointsPerFullLine);
-            s.Long("cashPerFullLine", ref CashPerFullLine);
         }
     }
 }

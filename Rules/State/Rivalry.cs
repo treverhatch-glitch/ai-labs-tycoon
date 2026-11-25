@@ -6,7 +6,7 @@ namespace AiLabs.Rules.State
     /// <summary>What a lab did. New values are appended only: saves store the name.</summary>
     public enum DecisionAction
     {
-        StartedRun, SkippedRun, Released, HeldBack, Submitted, Hired, Built, BoughtLand, BuiltHall, BoughtGpus, RentedGpus, Tightened,
+        StartedRun, SkippedRun, Released, HeldBack, Hired, Built, BoughtLand, BuiltHall, BoughtGpus, RentedGpus, Tightened,
         StartedChip, OrderedChips, BoughtChips, Published, Paused, Lobbied,
         /// <summary>The vendor moved a lab's share of the supply.</summary>
         ShiftedAllocation,

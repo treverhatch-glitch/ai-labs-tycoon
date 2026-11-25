@@ -18,7 +18,7 @@ public class WorldTests
     /// One lab with plenty of cash, no town votes and attention that cannot move the vote: tests that are not about
     /// those things should not depend on a dice roll.
     /// </summary>
-    public static Game Rich(string eraId = null, Action<GameConfig> tweak = null, long seed = 1)
+    static Game Rich(string eraId = null, Action<GameConfig> tweak = null, long seed = 1)
     {
         var options = new NewGameOptions { Seed = seed, RivalIds = new List<string>(), StartEraId = eraId };
         GameConfig c = TestData.Config(cfg =>
@@ -34,7 +34,7 @@ public class WorldTests
     }
 
     /// <summary>The player and one rival, both with plenty of cash.</summary>
-    public static Game Duo(Action<GameConfig> tweak = null)
+    static Game Duo(Action<GameConfig> tweak = null)
     {
         var options = new NewGameOptions { Seed = 1, RivalIds = new List<string> { "openaye" } };
         GameConfig c = TestData.Config(cfg =>
@@ -58,7 +58,7 @@ public class WorldTests
         };
     }
 
-    public static Holding Hall(Game g, string siteId, int kw, LabState lab = null)
+    static Holding Hall(Game g, string siteId, int kw, LabState lab = null)
     {
         lab = lab ?? g.Me;
         int id = g.Do(Command.BuyLand(lab.Id, siteId)).CreatedId;

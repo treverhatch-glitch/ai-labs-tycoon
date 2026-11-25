@@ -88,7 +88,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < k.Nodes.Count; i++)
             {
                 ChipNodeConfig n = k.Nodes[i];
-                if (ChipQueries.NodeUnlocked(c, x.Lab, n, x.State.Tick) && n.TapeoutCost + ChipQueries.RespinCost(c, n) <= spare) node = n;
+                if (ChipQueries.NodeOpen(c, n, x.State.Tick) && n.TapeoutCost + ChipQueries.RespinCost(c, n) <= spare) node = n;
             }
             if (node == null) return;
 
@@ -172,7 +172,7 @@ namespace AiLabs.Rules.Systems
             if (perChip > 0) count = (int)Math.Min(count, spare / perChip);
             while (count >= 1)
             {
-                int month = ChipQueries.FirstFreeMonth(c, x.State, c.Chips.Node(best.NodeId), best, count);
+                int month = ChipQueries.FirstFreeMonth(c, x.State, c.Chips.Node(best.NodeId), count);
                 if (month >= 0)
                 {
                     Decide(x, Command.OrderChips(lab.Id, best.Id, holding.Id, count), DecisionAction.OrderedChips, best.Name, count,

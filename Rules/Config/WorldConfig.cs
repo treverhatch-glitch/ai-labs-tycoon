@@ -207,13 +207,6 @@ namespace AiLabs.Rules.Config
         public int RollDivisor;
         /// <summary>Cooling tech at or above this halves the throttle.</summary>
         public int HalvedByCoolingPermille;
-        /// <summary>Emergency diesel surcharge per kW each week a site is in heatwave (Q170).</summary>
-        public long WeeklySurchargeCashPerKw;
-        /// <summary>Up-front cost to buy a heatwave hedge (Q174).</summary>
-        public long HedgeCashCost = 25_000;
-        public int HedgeWeeks = 12;
-        /// <summary>Permille of surcharge waived while <see cref="LabState.PowerHedgeUntilTick"/> is active.</summary>
-        public int HedgeWaiverPermille = 800;
 
         public void Sync(Syncer s)
         {
@@ -223,10 +216,6 @@ namespace AiLabs.Rules.Config
             s.Int("toMonth", ref ToMonth);
             s.Int("rollDivisor", ref RollDivisor);
             s.Int("halvedByCoolingPermille", ref HalvedByCoolingPermille);
-            s.Long("weeklySurchargeCashPerKw", ref WeeklySurchargeCashPerKw);
-            s.Long("hedgeCashCost", ref HedgeCashCost);
-            s.Int("hedgeWeeks", ref HedgeWeeks);
-            s.Int("hedgeWaiverPermille", ref HedgeWaiverPermille);
         }
     }
 
@@ -255,14 +244,6 @@ namespace AiLabs.Rules.Config
         /// <summary>Policy staff it takes to face a hearing prepared.</summary>
         public int PreparedPolicyStaff;
         public int AuditFineRevenueWeeks;
-        public long ProtestOutreachCash = 8_000;
-        public int ProtestOutreachWeeks = 8;
-        /// <summary>Protest attention bump for this lab is multiplied by (1000 − this) while <see cref="LabState.ProtestMitigationUntilTick"/> is active.</summary>
-        public int ProtestOutreachCutPermille = 500;
-        /// <summary>When home-bloc attention is at or above this, dated protest events add <see cref="ProtestRevoltBonusPermille"/> on top.</summary>
-        public int ProtestRevoltAttentionAt;
-        /// <summary>Extra protest attention as permille of the event's base bump (0 = off).</summary>
-        public int ProtestRevoltBonusPermille;
 
         public void Sync(Syncer s)
         {
@@ -283,11 +264,6 @@ namespace AiLabs.Rules.Config
             s.Int("hearingReputationPrepared", ref HearingReputationPrepared);
             s.Int("preparedPolicyStaff", ref PreparedPolicyStaff);
             s.Int("auditFineRevenueWeeks", ref AuditFineRevenueWeeks);
-            s.Long("protestOutreachCash", ref ProtestOutreachCash);
-            s.Int("protestOutreachWeeks", ref ProtestOutreachWeeks);
-            s.Int("protestOutreachCutPermille", ref ProtestOutreachCutPermille);
-            s.Int("protestRevoltAttentionAt", ref ProtestRevoltAttentionAt);
-            s.Int("protestRevoltBonusPermille", ref ProtestRevoltBonusPermille);
         }
 
         /// <summary>The attention at which a level (1 to 4) is entered.</summary>

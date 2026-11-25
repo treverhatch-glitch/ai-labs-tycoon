@@ -57,10 +57,7 @@ namespace AiLabs.Rules.Systems
             LabState player = state.Player;
             BlocStanding standing = player.Bloc(player.HomeBlocId);
             if (standing == null || player.Bankrupt) return;
-            int bump = c.Rivalry.Feelings.FeudAttentionPerMonth;
-            if (player.LobbyDefenseUntilTick > state.Tick && c.Rivalry.Feelings.LobbyDefenseCutPermille > 0)
-                bump = (int)MathI.MulPermille(bump, MathI.Permille - c.Rivalry.Feelings.LobbyDefenseCutPermille);
-            standing.Attention = MathI.Clamp(standing.Attention + bump, 0, MathI.Permille);
+            standing.Attention = MathI.Clamp(standing.Attention + c.Rivalry.Feelings.FeudAttentionPerMonth, 0, MathI.Permille);
             DecisionLog.Add(c, lab, state.Tick, DecisionAction.Lobbied, player.HomeBlocId, c.Rivalry.Feelings.FeudAttentionPerMonth,
                 Reason.Of(ReasonCode.FeelingTowardPlayer, lab.FeelingToPlayer));
         }

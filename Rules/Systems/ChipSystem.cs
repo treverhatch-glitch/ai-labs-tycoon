@@ -33,7 +33,6 @@ namespace AiLabs.Rules.Systems
             RampYields(c, lab);
             ResolveTapeOuts(c, state, lab);
             Deliver(c, state, lab);
-            ChipListingSystem.RunWeek(c, state, lab);
         }
 
         static void RampYields(GameConfig c, LabState lab)
@@ -190,11 +189,10 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>A lab that closes loses its orders, its listings and the foundry room its orders held.</summary>
-        public static void OnBankrupt(GameConfig c, GameState state, LabState lab)
+        public static void OnBankrupt(GameState state, LabState lab)
         {
             for (int i = 0; i < lab.ChipOrders.Count; i++)
-                Unbook(state, lab.ChipOrders[i].NodeId, lab.ChipOrders[i].FoundryMonth,
-                    ChipQueries.OrderFoundrySlots(c, state, lab.ChipOrders[i]));
+                Unbook(state, lab.ChipOrders[i].NodeId, lab.ChipOrders[i].FoundryMonth, lab.ChipOrders[i].Count);
             lab.ChipOrders.Clear();
             lab.ChipListings.Clear();
         }
@@ -227,21 +225,8 @@ namespace AiLabs.Rules.Systems
                 for (int o = 0; o < state.Labs.Count; o++)
                     if (o != l && !state.Labs[o].Bankrupt) VendorSystem.Change(c, state, state.Labs[o].Id, c.Vendor.CourtingStandingBoost, false);
                 if (!VendorLoggedThisQuarter(c, state, DecisionAction.Courted, lab.Id.ToString()))
-                {
                     DecisionLog.AddVendor(c, state, DecisionAction.Courted, lab.Id.ToString(), c.Vendor.CourtingStandingBoost,
                         Reason.Of(ReasonCode.ChipsOwnedSharePermille, share));
-                    if (c.Vendor.CourtingMakerAttentionPermille > 0)
-                    {
-                        BlocStanding home = lab.Bloc(lab.HomeBlocId);
-                        if (home != null)
-                        {
-                            int before = home.Attention;
-                            home.Attention = (int)MathI.Min(MathI.Permille, home.Attention + c.Vendor.CourtingMakerAttentionPermille);
-                            if (home.Attention > before)
-                                Events.Add(state, EventKind.AttentionRose, lab.Id, -1, home.Attention - before, lab.HomeBlocId);
-                        }
-                    }
-                }
             }
         }
 

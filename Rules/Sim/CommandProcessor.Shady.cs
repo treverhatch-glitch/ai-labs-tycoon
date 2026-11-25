@@ -118,36 +118,5 @@ namespace AiLabs.Rules.Sim
             lab.Heat = (int)MathI.Min(MathI.Permille, lab.Heat + cmd.Count / c.Shady.LaunderHeatPer);
             return CommandResult.Done(-1);
         }
-
-        static ShadyOp FindShadyOp(LabState lab, int opId)
-        {
-            for (int i = 0; i < lab.ShadyOps.Count; i++)
-                if (lab.ShadyOps[i].Id == opId) return lab.ShadyOps[i];
-            return null;
-        }
-
-        static CommandResult CancelShadyOp(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can cancel shady jobs.");
-            ShadyOp op = FindShadyOp(lab, cmd.TargetId);
-            if (op == null) return Fail(CommandError.UnknownId, "There is no shady job " + cmd.TargetId + ".");
-            if (op.ResolveTick <= state.Tick) return Fail(CommandError.InvalidArgument, "That job has already resolved.");
-            lab.ShadyOps.Remove(op);
-            if (c.Shady.CancelShadyOpHeatPenalty > 0)
-                lab.Heat = (int)MathI.Min(MathI.Permille, lab.Heat + c.Shady.CancelShadyOpHeatPenalty);
-            return CommandResult.Done(op.Id);
-        }
-
-        static CommandResult PayDownHeat(GameConfig c, GameState state, LabState lab, Command cmd)
-        {
-            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can pay down heat.");
-            if (lab.Heat <= 0) return Fail(CommandError.InvalidArgument, "There is no heat to buy down.");
-            if (c.Shady.HeatBuydownAmount < 1) return Fail(CommandError.InvalidArgument, "Heat buydown is disabled.");
-            long cost = c.Shady.HeatBuydownCashCost;
-            if (cost > 0 && lab.Cash < cost) return NeedCash(lab, cost);
-            if (cost > 0) Finance.Spend(lab, LedgerLine.Fines, cost);
-            lab.Heat = (int)MathI.Max(0, lab.Heat - c.Shady.HeatBuydownAmount);
-            return CommandResult.Done(-1);
-        }
     }
 }

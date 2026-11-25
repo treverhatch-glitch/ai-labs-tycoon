@@ -102,7 +102,8 @@ public class EndingsContinuationTests
         g.Refused(Command.ResearchFrontier(g.Id), CommandError.FrontierUnavailable);
         g.Research(open);
         if (EndingSystem.AllOpenTechsDone(g.C, g.Me, g.Tick)) g.Do(Command.ResearchFrontier(g.Id));
-        else g.ResearchAllReachable();
+        else foreach (TechConfig tech in g.C.Research.Techs)
+            if (EraSystem.TechOpen(g.C, tech, g.Tick) && !g.Me.Techs.Contains(tech.Id)) g.Research(tech.Id);
         g.Do(Command.ResearchFrontier(g.Id));
         Assert.Equal(1, g.Me.FrontierLevel);
     }
@@ -156,7 +157,7 @@ public class EndingsContinuationTests
             var m = new ModelState { LineId = line, Version = v + 2, Status = ModelStatus.Retired, Name = "Old " + v };
             g.Me.Models.Add(m);
         }
-        MuseumSystem.RunWeek(g.C, g.State, g.Me);
+        MuseumSystem.RunWeek(g.C, g.Me);
         Assert.Contains(g.Me.Models, m => m.Status == ModelStatus.Released);
         Assert.Equal(6, g.Me.Models.Count(m => m.LineId == line && m.Status == ModelStatus.Retired));
     }

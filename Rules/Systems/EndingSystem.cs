@@ -225,49 +225,18 @@ namespace AiLabs.Rules.Systems
             {
                 TechConfig tech = c.Research.Techs[i];
                 if (!EraSystem.TechOpen(c, tech, tick)) continue;
-                if (tech.IsDeadEnd) continue;
-                if (ResearchQueries.IsBlocked(lab, tech.Id)) continue;
-                if (!LabQueries.HasTech(lab, tech.Id))
-                {
-                    if (!LabQueries.CanResearch(c, lab, tech, tick)) continue;
-                    return false;
-                }
+                if (!LabQueries.HasTech(lab, tech.Id)) return false;
             }
             return true;
         }
 
-        /// <summary>Next frontier purchase cost in parts: base plus growth from prior levels.</summary>
-        public struct FrontierCostBreakdown
-        {
-            public long Base;
-            public long FromGrowth;
-            public int Level;
-            public bool Capped;
-
-            public long Total { get { return Capped ? -1 : Base + FromGrowth; } }
-        }
-
-        public static FrontierCostBreakdown FrontierCostParts(GameConfig c, LabState lab)
-        {
-            FrontierConfig f = c.Endings.Frontier;
-            var b = new FrontierCostBreakdown();
-            b.Level = lab.FrontierLevel;
-            if (lab.FrontierLevel >= f.MaxLevel)
-            {
-                b.Capped = true;
-                return b;
-            }
-            b.Base = f.BaseCost;
-            long cost = f.BaseCost;
-            for (int i = 0; i < lab.FrontierLevel; i++) cost = MathI.MulPermille(cost, f.GrowthPermille);
-            b.FromGrowth = cost - b.Base;
-            return b;
-        }
-
         public static long FrontierCost(GameConfig c, LabState lab)
         {
-            FrontierCostBreakdown parts = FrontierCostParts(c, lab);
-            return parts.Total;
+            FrontierConfig f = c.Endings.Frontier;
+            if (lab.FrontierLevel >= f.MaxLevel) return -1;
+            long cost = f.BaseCost;
+            for (int i = 0; i < lab.FrontierLevel; i++) cost = MathI.MulPermille(cost, f.GrowthPermille);
+            return cost;
         }
 
         public static void RecordThePop(GameConfig c, GameState state, LabState player)

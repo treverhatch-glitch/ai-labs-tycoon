@@ -74,14 +74,11 @@ namespace AiLabs.Rules.Core
         public Rng Chips = new Rng();
         /// <summary>Shady operations and investigations.</summary>
         public Rng Shady = new Rng();
-        /// <summary>Training runs collapsing mid-flight.</summary>
-        public Rng TrainingCollapse = new Rng();
 
         /// <summary>The numbers a save migration mixes into the game's seed to start a stream an old save never had.</summary>
         public const long WorldMigrationKey = 0x57_0000_0001L;
         public const long ChipsMigrationKey = 0x57_0000_0002L;
         public const long ShadyMigrationKey = 0x57_0000_0003L;
-        public const long TrainingCollapseMigrationKey = 0x57_0000_0004L;
 
         /// <summary>The first state of a stream added after the save was made: one draw from the seed mixed with the stream's key.</summary>
         public static long MigratedState(long seed, long key) { return (long)new Rng(seed ^ key).NextU64(); }
@@ -98,7 +95,6 @@ namespace AiLabs.Rules.Core
             set.World.State = (long)root.NextU64();
             set.Chips.State = (long)root.NextU64();
             set.Shady.State = (long)root.NextU64();
-            set.TrainingCollapse.State = (long)root.NextU64();
             return set;
         }
 
@@ -111,7 +107,6 @@ namespace AiLabs.Rules.Core
             s.Obj("world", ref World);
             s.Obj("chips", ref Chips);
             s.Obj("shady", ref Shady);
-            s.Obj("trainingCollapse", ref TrainingCollapse);
         }
     }
 }

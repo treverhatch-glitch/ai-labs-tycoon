@@ -101,10 +101,6 @@ namespace AiLabs.Rules.Config
         public int FriendlyAbove;
         /// <summary>Attention a feuding rival adds against the player in the player's home bloc each month.</summary>
         public int FeudAttentionPerMonth;
-        public long LobbyDefenseCash = 9_000;
-        public int LobbyDefenseWeeks = 10;
-        /// <summary>Feud lobby bump is multiplied by (1000 − this) while <see cref="LabState.LobbyDefenseUntilTick"/> is active.</summary>
-        public int LobbyDefenseCutPermille = 600;
         /// <summary>A rival buys listed chips up to this share of the vendor's price per compute, and this share when friendly.</summary>
         public int ListedBuyLimitPermille;
         public int FriendlyBuyLimitPermille;
@@ -121,9 +117,6 @@ namespace AiLabs.Rules.Config
             s.Int("feudBelow", ref FeudBelow);
             s.Int("friendlyAbove", ref FriendlyAbove);
             s.Int("feudAttentionPerMonth", ref FeudAttentionPerMonth);
-            s.Long("lobbyDefenseCash", ref LobbyDefenseCash);
-            s.Int("lobbyDefenseWeeks", ref LobbyDefenseWeeks);
-            s.Int("lobbyDefenseCutPermille", ref LobbyDefenseCutPermille);
             s.Int("listedBuyLimitPermille", ref ListedBuyLimitPermille);
             s.Int("friendlyBuyLimitPermille", ref FriendlyBuyLimitPermille);
         }
@@ -177,18 +170,9 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab with this share of its general compute on its own chips makes the vendor court its rivals.</summary>
         public int CourtingSharePermille;
         public int CourtingStandingBoost;
-        /// <summary>Home-bloc attention the dominant chip maker draws when Envydia courts rivals.</summary>
-        public int CourtingMakerAttentionPermille;
         /// <summary>A lab's share of the supply moving by this much (as a share of itself) month to month gets a line in the vendor's log.</summary>
         public int ShareLogPermille;
         public int LogMax;
-        /// <summary>Weekly cash grant per standing point when standing is above this (Q169).</summary>
-        public int WeeklyGrantStandingAbove = 450;
-        public long WeeklyGrantPerStanding = 3;
-        /// <summary>Cash to lobby Envydia for standing (Q178).</summary>
-        public long AdvocateCashCost = 20_000;
-        public int AdvocateStandingGain = 40;
-        public int AdvocateCooldownWeeks = 12;
 
         public void Sync(Syncer s)
         {
@@ -212,14 +196,8 @@ namespace AiLabs.Rules.Config
             s.Int("ambushWeeks", ref AmbushWeeks);
             s.Int("courtingSharePermille", ref CourtingSharePermille);
             s.Int("courtingStandingBoost", ref CourtingStandingBoost);
-            s.Int("courtingMakerAttentionPermille", ref CourtingMakerAttentionPermille);
             s.Int("shareLogPermille", ref ShareLogPermille);
             s.Int("logMax", ref LogMax);
-            s.Int("weeklyGrantStandingAbove", ref WeeklyGrantStandingAbove);
-            s.Long("weeklyGrantPerStanding", ref WeeklyGrantPerStanding);
-            s.Long("advocateCashCost", ref AdvocateCashCost);
-            s.Int("advocateStandingGain", ref AdvocateStandingGain);
-            s.Int("advocateCooldownWeeks", ref AdvocateCooldownWeeks);
         }
 
         /// <summary>The monthly supply in a year: the last row that has begun.</summary>

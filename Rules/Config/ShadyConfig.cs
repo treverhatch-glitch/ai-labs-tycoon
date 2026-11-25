@@ -44,15 +44,6 @@ namespace AiLabs.Rules.Config
         public int CopyAlignmentPermille;
         public int CopyCorruption;
         public int SabotageProgressPermille;
-        public long HeatBuydownCashCost = 25_000;
-        public int HeatBuydownAmount = 100;
-        public int CancelShadyOpHeatPenalty = 50;
-        /// <summary>Weekly stash storage fee as permille of balance (Q172).</summary>
-        public int StashStoragePermillePerWeek;
-        public long GreyReserveCashCost = 6_000;
-        public int GreyReserveWeeks = 8;
-        /// <summary>Extra grey payout permille while <see cref="LabState.GreyPayoutBoostUntilTick"/> is active (Q190).</summary>
-        public int GreyReserveBoostPermille = 300;
 
         public ShadyCardConfig Card(string id)
         {
@@ -88,13 +79,6 @@ namespace AiLabs.Rules.Config
             s.Int("copyAlignmentPermille", ref CopyAlignmentPermille);
             s.Int("copyCorruption", ref CopyCorruption);
             s.Int("sabotageProgressPermille", ref SabotageProgressPermille);
-            s.Long("heatBuydownCashCost", ref HeatBuydownCashCost);
-            s.Int("heatBuydownAmount", ref HeatBuydownAmount);
-            s.Int("cancelShadyOpHeatPenalty", ref CancelShadyOpHeatPenalty);
-            s.Int("stashStoragePermillePerWeek", ref StashStoragePermillePerWeek);
-            s.Long("greyReserveCashCost", ref GreyReserveCashCost);
-            s.Int("greyReserveWeeks", ref GreyReserveWeeks);
-            s.Int("greyReserveBoostPermille", ref GreyReserveBoostPermille);
         }
     }
 
