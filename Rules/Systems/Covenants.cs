@@ -13,8 +13,8 @@ namespace AiLabs.Rules.Systems
         /// <summary>The chips' resale value over what is owed, in permille; 0 when nothing is owed (reported as no limit by <see cref="InBreach"/>).</summary>
         public static long Cover(GameConfig c, GameState state, LabState lab)
         {
-            long owed = Loans.Outstanding(lab);
-            return owed <= 0 ? 0 : Loans.Collateral(c, state, lab) * MathI.Permille / owed;
+            long loans = Loans.Outstanding(lab);
+            return loans <= 0 ? 0 : Loans.Collateral(c, state, lab) * MathI.Permille / (loans + lab.RbfOwed);
         }
 
         public static bool Waived(GameState state, LabState lab) { return state.Tick < lab.CovWaiverUntil; }
@@ -32,7 +32,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>What must be paid down for the chips to cover what is left as the covenant needs.</summary>
         public static long CureAmount(GameConfig c, GameState state, LabState lab)
         {
-            long keep = Loans.Collateral(c, state, lab) * MathI.Permille / c.Covenants.MinCoverPermille;
+            long keep = MathI.Max(0, Loans.Collateral(c, state, lab) * MathI.Permille / c.Covenants.MinCoverPermille - lab.RbfOwed);
             long pay = Loans.Outstanding(lab) - keep;
             return pay > 0 ? pay : 0;
         }

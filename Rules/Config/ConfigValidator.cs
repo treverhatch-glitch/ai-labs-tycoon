@@ -124,6 +124,11 @@ namespace AiLabs.Rules.Config
             ReliabilityProblems(p, c);
             CovenantsProblems(p, c);
             AllowancesProblems(p, c);
+            ListingProblems(p, c);
+            RbfProblems(p, c);
+            FoundationProblems(p, c);
+            LeasebackProblems(p, c);
+            NotesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1392,6 +1397,68 @@ namespace AiLabs.Rules.Config
             if (k.EnhancedPermille < 0 || k.EnhancedPermille > 2000) p.Add("allowances.enhancedPermille must be from 0 to 2000");
             if (k.EnhancedExposure < 0 || k.EnhancedExposure > 1000) p.Add("allowances.enhancedExposure must be from 0 to 1000");
             if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("allowances.lockWeeks must be from 0 to 520");
+        }
+
+        static void ListingProblems(List<string> p, GameConfig c)
+        {
+            ListingConfig k = c.Listing;
+            if (k == null) { p.Add("listing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("listing.enabled must be 0 or 1");
+            if (k.MinReputation < 0 || k.MinWeeklyRevenue < 0 || k.ValuationWeeks < 1 || k.ValuationWeeks > 1000) p.Add("listing.minReputation and minWeeklyRevenue must not be negative and valuationWeeks from 1 to 1000");
+            if (k.FloatPermille < 1 || k.FloatPermille > 600 || k.FollowOnPermille < 1 || k.FollowOnPermille > 300 || k.ListingFeePermille < 0 || k.ListingFeePermille > 500) p.Add("listing.floatPermille must be from 1 to 600, followOnPermille from 1 to 300 and listingFeePermille from 0 to 500");
+            if (k.ReportingCost < 0 || k.QuarterWeeks < 4 || k.QuarterWeeks > 52 || k.GuidanceWindow < 1 || k.GuidanceWindow >= k.QuarterWeeks) p.Add("listing.quarterWeeks must be from 4 to 52, guidanceWindow below it and reportingCost not negative");
+            if (k.Conservative < 100 || k.Base < k.Conservative || k.Stretch < k.Base || k.Stretch > 5000) p.Add("listing.stretch must be at least base, base at least conservative, and all from 100 to 5000");
+            if (k.BeatMargin < 0 || k.BeatMove < 0 || k.MeetMove < 0 || k.MissMove < 0 || k.NoGuidanceMove < 0 || k.BeatMove > 500 || k.MissMove > 300) p.Add("listing.beatMargin, beatMove, meetMove, missMove and noGuidanceMove must not be negative, beatMove at most 500 and missMove at most 300");
+            if (k.PriceFloor < 1 || k.PriceCap < 1000 || k.PriceFloor > 1000) p.Add("listing.priceFloor must be from 1 to 1000 and priceCap at least 1000");
+            if (k.FollowOnWeeks < 0 || k.BuybackImpact < 0 || k.BuybackImpact > 5000) p.Add("listing.followOnWeeks must not be negative and buybackImpact from 0 to 5000");
+            if (k.ActivistBelow < 0 || k.ActivistReputation < 0 || k.ActivistReputation > 500 || k.MaxActivist < 1 || k.MaxActivist > 10) p.Add("listing.activistBelow and activistReputation must not be negative (reputation up to 500) and maxActivist from 1 to 10");
+            if (k.TakePrivatePermille < MathI.Permille || k.TakePrivatePermille > 5000) p.Add("listing.takePrivatePermille must be from 1000 to 5000");
+        }
+
+        static void RbfProblems(List<string> p, GameConfig c)
+        {
+            RbfConfig k = c.Rbf;
+            if (k == null) { p.Add("rbf is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rbf.enabled must be 0 or 1");
+            if (k.MinWeeklyRevenue < 0 || k.AdvanceWeeks < 1 || k.AdvanceWeeks > 100) p.Add("rbf.minWeeklyRevenue must not be negative and advanceWeeks from 1 to 100");
+            if (k.ShareA < 1 || k.ShareB < k.ShareA || k.ShareC < k.ShareB || k.ShareC > 1000) p.Add("rbf.shareC must be at least shareB, shareB at least shareA, and all from 1 to 1000");
+            if (k.CapA < MathI.Permille || k.CapB < MathI.Permille || k.CapC < MathI.Permille || k.CapA > 5000 || k.CapB > 5000 || k.CapC > 5000) p.Add("rbf.capA, capB and capC must be from 1000 to 5000");
+            if (k.SlumpPermille < 0 || k.SlumpPermille > 1000 || k.SlumpCap < 0 || k.SlumpCap > 500) p.Add("rbf.slumpPermille must be from 0 to 1000 and slumpCap from 0 to 500");
+            if (k.BuyoutAfter < 0 || k.BuyoutPermille < 100 || k.BuyoutPermille > 1000) p.Add("rbf.buyoutAfter must not be negative and buyoutPermille from 100 to 1000");
+        }
+
+        static void FoundationProblems(List<string> p, GameConfig c)
+        {
+            FoundationConfig k = c.Foundation;
+            if (k == null) { p.Add("foundation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("foundation.enabled must be 0 or 1");
+            if (k.MinGift < 1 || k.ReturnPermille < 0 || k.ReturnPermille > 100) p.Add("foundation.minGift must be at least 1 and returnPermille from 0 to 100");
+            if (k.PayoutA < 0 || k.PayoutB < k.PayoutA || k.PayoutC < k.PayoutB || k.PayoutC > 200) p.Add("foundation.payoutC must be at least payoutB, payoutB at least payoutA, and all from 0 to 200");
+            if (k.GoodwillUnit < 1 || k.GoodwillDecay < 0 || k.GoodwillDecay > 1000 || k.MaxGoodwill < 1 || k.MaxGoodwill > 1000) p.Add("foundation.goodwillUnit must be at least 1, goodwillDecay from 0 to 1000 and maxGoodwill from 1 to 1000");
+            if (k.SafetyDamp < 0 || k.MaxDamp < 0 || k.MaxDamp > 800 || k.ScienceStrength < 0 || k.EducationEvery < 1 || k.EducationAt < 0) p.Add("foundation.safetyDamp, educationAt and scienceStrength must not be negative, maxDamp up to 800 and educationEvery at least 1");
+            if (k.SwitchLoss < 0 || k.SwitchLoss > 1000 || k.LockWeeks < 0 || k.WindUpPermille < 0 || k.WindUpPermille > 1000 || k.WindUpReputation < 0 || k.ReportWeeks < 1) p.Add("foundation.switchLoss and windUpPermille must be from 0 to 1000, lockWeeks and windUpReputation not negative and reportWeeks at least 1");
+        }
+
+        static void LeasebackProblems(List<string> p, GameConfig c)
+        {
+            LeasebackConfig k = c.Leaseback;
+            if (k == null) { p.Add("leaseback is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("leaseback.enabled must be 0 or 1");
+            if (k.AdvancePermille < 1 || k.AdvancePermille > MathI.Permille || k.RentPermille < 0 || k.RentPermille > 200) p.Add("leaseback.advancePermille must be from 1 to 1000 and rentPermille from 0 to 200");
+            if (k.TermWeeks < 1 || k.ExtendWeeks < 0 || k.ExtendRentPermille < MathI.Permille || k.ExtendRentPermille > 5000) p.Add("leaseback.termWeeks must be at least 1, extendWeeks not negative and extendRentPermille from 1000 to 5000");
+            if (k.BuybackPermille < 100 || k.BuybackPermille > 5000 || k.MissLimit < 1 || k.RepoReputation < 0 || k.RepoReputation > 500) p.Add("leaseback.buybackPermille must be from 100 to 5000, missLimit at least 1 and repoReputation from 0 to 500");
+        }
+
+        static void NotesProblems(List<string> p, GameConfig c)
+        {
+            NotesConfig k = c.ConvertibleNotes;
+            if (k == null) { p.Add("convertibleNotes is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("convertibleNotes.enabled must be 0 or 1");
+            if (k.MaxThousands < 1 || k.MaxThousands > 1000000) p.Add("convertibleNotes.maxThousands must be from 1 to 1000000");
+            if (k.RateA < 0 || k.RateB < k.RateA || k.RateC < k.RateB || k.RateC > 100) p.Add("convertibleNotes.rateC must be at least rateB, rateB at least rateA, and all from 0 to 100");
+            if (k.DiscountA < 0 || k.DiscountB < k.DiscountA || k.DiscountC < k.DiscountB || k.DiscountC > 800 || k.MaturityDiscount < 0 || k.MaturityDiscount > 800) p.Add("convertibleNotes.discountC must be at least discountB, discountB at least discountA, and all up to 800");
+            if (k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1 || k.ExtendWeeks < 0) p.Add("convertibleNotes.weeksA, weeksB and weeksC must be at least 1 and extendWeeks not negative");
+            if (k.MaxConvertPermille < 1 || k.MaxConvertPermille > 900 || k.ExtendRate < MathI.Permille || k.ExtendRate > 5000 || k.ExtendDiscount < 0 || k.ExtendDiscount > 500) p.Add("convertibleNotes.maxConvertPermille must be from 1 to 900, extendRate from 1000 to 5000 and extendDiscount from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

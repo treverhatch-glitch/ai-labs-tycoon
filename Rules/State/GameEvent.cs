@@ -350,7 +350,53 @@ namespace AiLabs.Rules.State
         /// <summary>The lender called the loans after the cure weeks. Amount is what was owed, Pick 1 when the lab paid it from cash.</summary>
         LoansCalled,
         /// <summary>The capital allowance policy changed. Amount is the new policy, SubjectId the pool written off at once when going back to expensing.</summary>
-        CapitalPolicySet
+        CapitalPolicySet,
+        /// <summary>The lab listed. Amount is the proceeds after the fee.</summary>
+        CompanyListed,
+        /// <summary>A quarter was reported. Amount is the share price now, Pick 0 a miss, 1 met guidance, 2 a beat.</summary>
+        EarningsReported,
+        /// <summary>The lab sold more shares. Amount is the proceeds.</summary>
+        FollowOnSold,
+        /// <summary>The lab bought shares back. Amount is what it spent.</summary>
+        SharesBoughtBack,
+        /// <summary>An activist moved closer. Amount is the step.</summary>
+        ActivistArrived,
+        /// <summary>The lab went private. Amount is what it paid.</summary>
+        CompanyDelisted,
+        /// <summary>The lab took a revenue advance. Amount is the cash, SubjectId the tier.</summary>
+        RevenueAdvanceTaken,
+        /// <summary>A revenue advance was cleared. Amount is what was paid at the end, Pick 0 swept out of revenue and 1 bought out.</summary>
+        RevenueAdvanceCleared,
+        /// <summary>A slump week stretched the advance. Amount is what it added.</summary>
+        RevenueAdvanceStretched,
+        /// <summary>The lab put money into its foundation. Amount is the gift, SubjectId the focus.</summary>
+        FoundationEndowed,
+        /// <summary>The foundation reported what it gave. Amount is the giving since the last report, SubjectId the goodwill.</summary>
+        FoundationReported,
+        /// <summary>The foundation changed its cause. Amount is the new focus.</summary>
+        FoundationRefocused,
+        /// <summary>The lab wound the foundation up. Amount is what it took back.</summary>
+        FoundationWoundUp,
+        /// <summary>The foundation gave until nothing was left. Amount is what it gave in all.</summary>
+        FoundationRanDry,
+        /// <summary>The lab sold GPUs and leased them back. Amount is the advance, SubjectId the units.</summary>
+        GpusLeasedBack,
+        /// <summary>The lab bought its leased GPUs back. Amount is the price.</summary>
+        LeaseBoughtBack,
+        /// <summary>A lease ended. Amount is the units that went, Pick 0 the term ran out, 1 handed back early, 2 repossessed.</summary>
+        LeaseEnded,
+        /// <summary>The lab could not pay the rent this week. Amount is the rent, SubjectId the weeks in a row.</summary>
+        LeaseRentMissed,
+        /// <summary>The lab extended its lease. Amount is the new rent.</summary>
+        LeaseExtended,
+        /// <summary>The lab issued a convertible note. Amount is the cash, SubjectId the tier.</summary>
+        NoteIssued,
+        /// <summary>A note turned into shares. Amount is what was owed, SubjectId the share of the lab it became in permille, Pick 0 at a funding round, 1 at a listing, 2 at maturity.</summary>
+        NoteConverted,
+        /// <summary>The lab repaid the note. Amount is what it paid.</summary>
+        NoteRepaid,
+        /// <summary>The lab extended the note. Amount is the new weekly rate.</summary>
+        NoteExtended
     }
 
     /// <summary>

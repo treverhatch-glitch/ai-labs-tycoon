@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 90;
+        public const int CurrentSchema = 95;
 
         public int Schema;
         public string ConfigVersion;
@@ -303,17 +303,21 @@ namespace AiLabs.Rules.State
         public int PolicyLockedUntil;
         public int PolicyHold;
         public int PolicyBreaks;
+        /// <summary>The tax structure kept (0 none, 1 a holding company, 2 an offshore one), the one being built (0 when none) and the week it opens.</summary>
         public int TaxStructure;
         public int TaxBuilding;
         public int TaxDue;
+        /// <summary>Tax owed so far this year, what the structure has saved and the credit claims have taken off since the last audit, the year's training spend and the credit claimed but not yet used.</summary>
         public long TaxAccrued;
         public long TaxSaved;
         public long TaxResearch;
         public long TaxCredit;
         public long TaxClaimed;
+        /// <summary>How exposed the lab is to a tax audit, the week an open audit must be answered by (0 when none) and what it is about.</summary>
         public int TaxExposure;
         public int TaxAuditDue;
         public long TaxAuditOwed;
+        /// <summary>The standards ratified so far, the level being drafted (0 when none), the support it has, the lab's part in the draft, the week the next draft starts, the level the lab has adopted and the times it released a capable model without complying.</summary>
         public int StdLevel;
         public int StdDraft;
         public int StdSupport;
@@ -321,20 +325,72 @@ namespace AiLabs.Rules.State
         public int StdNext;
         public int StdAdopted;
         public int StdLapses;
+        /// <summary>The warranty tier, the spare GPUs held, the part-failures carried over in millionths of a unit, the units waiting to be replaced, the week they come and the failures so far.</summary>
         public int WarrantyTier;
         public int Spares;
         public long FailCarry;
         public int RmaUnits;
         public int RmaDue;
         public int GpuFailures;
+        /// <summary>The weeks in breach of a loan covenant, the week a waiver lasts to, the waivers used and the times the lender has called the loans.</summary>
         public int CovBreach;
         public int CovWaiverUntil;
         public int CovWaivers;
         public int CovCalls;
+        /// <summary>The capital allowance policy (0 expense, 1 capitalise, 2 enhanced), the pool still to write off, the week it was last changed and the total written off.</summary>
         public int CapPolicy;
         public long CapPool;
         public int CapSwitchTick;
         public long CapWritten;
+        /// <summary>Whether the lab is listed, the share price (1000 at the listing), the guidance level set for the quarter (0 none), the revenue it promises and the revenue so far.</summary>
+        public int Listed;
+        public int ListPrice;
+        public int ListGuidance;
+        public long ListTarget;
+        public long ListQuarter;
+        /// <summary>The lab's smoothed weekly revenue, the week the quarter ends, the share of the lab still held in permille, the quarters in a row that met guidance, the week of the last follow-on offering and the activist's steps.</summary>
+        public long ListBase;
+        public int ListNext;
+        public int ListKeep;
+        public int ListStreak;
+        public int ListFollowOn;
+        public int ListActivist;
+        /// <summary>The revenue advance taken, what is still owed on it, and the weekly revenue when it was taken.</summary>
+        public long RbfAdvance;
+        public long RbfOwed;
+        public long RbfBase;
+        /// <summary>The share of each week's revenue swept in permille, the tier, the weeks since it was taken and the weeks of slump.</summary>
+        public int RbfShare;
+        public int RbfTier;
+        public int RbfWeeks;
+        public int RbfSlump;
+        /// <summary>The foundation's fund and what it has given in all.</summary>
+        public long FoundFund;
+        public long FoundGiven;
+        /// <summary>Its focus (1 safety, 2 education, 3 open science), the giving level (0 to 3), the goodwill, the week the focus last changed and the weeks counted toward a reputation point or a report.</summary>
+        public int FoundFocus;
+        public int FoundPayout;
+        public int FoundGoodwill;
+        public int FoundSwitch;
+        public int FoundDrip;
+        /// <summary>GPUs sold and leased back, their value at the sale, the weekly rent and the price of buying them back.</summary>
+        public int LeaseUnits;
+        public long LeaseValue;
+        public long LeaseRent;
+        public long LeaseBuyback;
+        /// <summary>Weeks of the lease left, weeks of rent missed in a row and whether it was extended (0 or 1).</summary>
+        public int LeaseLeft;
+        public int LeaseMissed;
+        public int LeaseExtended;
+        /// <summary>What is owed on the convertible note (with the interest) and what was borrowed.</summary>
+        public long NoteOwed;
+        public long NotePrincipal;
+        /// <summary>Its weekly interest and discount in permille, the weeks to maturity, whether it was extended (0 or 1) and its tier.</summary>
+        public int NoteRate;
+        public int NoteDiscount;
+        public int NoteLeft;
+        public int NoteExtended;
+        public int NoteTier;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -644,6 +700,45 @@ namespace AiLabs.Rules.State
             s.Long("capPool", ref CapPool);
             s.Int("capSwitchTick", ref CapSwitchTick);
             s.Long("capWritten", ref CapWritten);
+            s.Int("listed", ref Listed);
+            s.Int("listPrice", ref ListPrice);
+            s.Int("listGuidance", ref ListGuidance);
+            s.Long("listTarget", ref ListTarget);
+            s.Long("listQuarter", ref ListQuarter);
+            s.Long("listBase", ref ListBase);
+            s.Int("listNext", ref ListNext);
+            s.Int("listKeep", ref ListKeep);
+            s.Int("listStreak", ref ListStreak);
+            s.Int("listFollowOn", ref ListFollowOn);
+            s.Int("listActivist", ref ListActivist);
+            s.Long("rbfAdvance", ref RbfAdvance);
+            s.Long("rbfOwed", ref RbfOwed);
+            s.Long("rbfBase", ref RbfBase);
+            s.Int("rbfShare", ref RbfShare);
+            s.Int("rbfTier", ref RbfTier);
+            s.Int("rbfWeeks", ref RbfWeeks);
+            s.Int("rbfSlump", ref RbfSlump);
+            s.Long("foundFund", ref FoundFund);
+            s.Long("foundGiven", ref FoundGiven);
+            s.Int("foundFocus", ref FoundFocus);
+            s.Int("foundPayout", ref FoundPayout);
+            s.Int("foundGoodwill", ref FoundGoodwill);
+            s.Int("foundSwitch", ref FoundSwitch);
+            s.Int("foundDrip", ref FoundDrip);
+            s.Int("leaseUnits", ref LeaseUnits);
+            s.Long("leaseValue", ref LeaseValue);
+            s.Long("leaseRent", ref LeaseRent);
+            s.Long("leaseBuyback", ref LeaseBuyback);
+            s.Int("leaseLeft", ref LeaseLeft);
+            s.Int("leaseMissed", ref LeaseMissed);
+            s.Int("leaseExtended", ref LeaseExtended);
+            s.Long("noteOwed", ref NoteOwed);
+            s.Long("notePrincipal", ref NotePrincipal);
+            s.Int("noteRate", ref NoteRate);
+            s.Int("noteDiscount", ref NoteDiscount);
+            s.Int("noteLeft", ref NoteLeft);
+            s.Int("noteExtended", ref NoteExtended);
+            s.Int("noteTier", ref NoteTier);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -118,7 +118,25 @@ namespace AiLabs.Rules.Sim
         ExpediteReplacements,
         WaiveCovenant,
         CureCovenant,
-        SetCapitalPolicy
+        SetCapitalPolicy,
+        ListCompany,
+        SetGuidance,
+        FollowOn,
+        BuyBackShares,
+        TakePrivate,
+        TakeRevenueAdvance,
+        BuyOutAdvance,
+        EndowFoundation,
+        SetFoundationFocus,
+        SetFoundationPayout,
+        WindUpFoundation,
+        SaleLeaseback,
+        BuyBackLease,
+        ExtendLease,
+        ReturnLease,
+        IssueNote,
+        RepayNote,
+        ExtendNote
     }
 
     /// <summary>
@@ -1048,6 +1066,133 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.SetCapitalPolicy, labId);
             c.Count = policy;
             return c;
+        }
+
+        /// <summary>Lists the company: sells a slice of it to the public for cash, pays a fee, and from then on reports every quarter. Needs reputation and revenue, and not a nonprofit.</summary>
+        public static Command ListCompany(int labId)
+        {
+            return Make(CommandKind.ListCompany, labId);
+        }
+
+        /// <summary>Sets the guidance for the quarter (1 conservative, 2 base, 3 stretch) in its first weeks. The quarter is judged against it.</summary>
+        public static Command SetGuidance(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetGuidance, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Sells more shares at the current price for cash, which dilutes the founders again. Not often.</summary>
+        public static Command FollowOn(int labId)
+        {
+            return Make(CommandKind.FollowOn, labId);
+        }
+
+        /// <summary>Spends cash, in thousands, to buy shares back: the price rises and the founders own more of the lab again.</summary>
+        public static Command BuyBackShares(int labId, int thousands)
+        {
+            Command c = Make(CommandKind.BuyBackShares, labId);
+            c.Count = thousands;
+            return c;
+        }
+
+        /// <summary>Buys all the public's shares back and ends the listing.</summary>
+        public static Command TakePrivate(int labId)
+        {
+            return Make(CommandKind.TakePrivate, labId);
+        }
+
+        /// <summary>Takes a revenue advance: tier 1, 2 or 3 (a bigger share of each week's revenue swept for a lower total), for a share of the largest the lab's revenue allows, in permille. One at a time.</summary>
+        public static Command TakeRevenueAdvance(int labId, int tier, int permille)
+        {
+            Command c = Make(CommandKind.TakeRevenueAdvance, labId);
+            c.Count = tier;
+            c.Permille = permille;
+            return c;
+        }
+
+        /// <summary>Buys the advance out: pays most of what is still owed, once it has run a while.</summary>
+        public static Command BuyOutAdvance(int labId)
+        {
+            return Make(CommandKind.BuyOutAdvance, labId);
+        }
+
+        /// <summary>Puts cash, in thousands, into the foundation's fund. The first gift sets its focus (1 safety, 2 education, 3 open science).</summary>
+        public static Command EndowFoundation(int labId, int thousands, int focus)
+        {
+            Command c = Make(CommandKind.EndowFoundation, labId);
+            c.Count = thousands;
+            c.TargetId = focus;
+            return c;
+        }
+
+        /// <summary>Points the foundation at another cause. It loses part of its goodwill and cannot change again for a while.</summary>
+        public static Command SetFoundationFocus(int labId, int focus)
+        {
+            Command c = Make(CommandKind.SetFoundationFocus, labId);
+            c.TargetId = focus;
+            return c;
+        }
+
+        /// <summary>Sets how much of the fund the foundation gives away each week (0 none, 1, 2 or 3).</summary>
+        public static Command SetFoundationPayout(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetFoundationPayout, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Winds the foundation up and takes most of the fund back; the goodwill goes with it.</summary>
+        public static Command WindUpFoundation(int labId)
+        {
+            return Make(CommandKind.WindUpFoundation, labId);
+        }
+
+        /// <summary>Sells some of the head office's own GPUs for most of their value and leases them straight back. One lease at a time.</summary>
+        public static Command SaleLeaseback(int labId, int count)
+        {
+            Command c = Make(CommandKind.SaleLeaseback, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Buys the leased GPUs back at the price set at the sale.</summary>
+        public static Command BuyBackLease(int labId)
+        {
+            return Make(CommandKind.BuyBackLease, labId);
+        }
+
+        /// <summary>Extends the lease once, at a higher rent.</summary>
+        public static Command ExtendLease(int labId)
+        {
+            return Make(CommandKind.ExtendLease, labId);
+        }
+
+        /// <summary>Hands the leased GPUs back now and stops the rent.</summary>
+        public static Command ReturnLease(int labId)
+        {
+            return Make(CommandKind.ReturnLease, labId);
+        }
+
+        /// <summary>Issues a convertible note of tier 1, 2 or 3 (a bigger discount and more interest for less time), for an amount in thousands. One at a time.</summary>
+        public static Command IssueNote(int labId, int tier, int thousands)
+        {
+            Command c = Make(CommandKind.IssueNote, labId);
+            c.Count = thousands;
+            c.TargetId = tier;
+            return c;
+        }
+
+        /// <summary>Repays the note with its interest.</summary>
+        public static Command RepayNote(int labId)
+        {
+            return Make(CommandKind.RepayNote, labId);
+        }
+
+        /// <summary>Extends the note once: more time for a higher rate and a deeper discount.</summary>
+        public static Command ExtendNote(int labId)
+        {
+            return Make(CommandKind.ExtendNote, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

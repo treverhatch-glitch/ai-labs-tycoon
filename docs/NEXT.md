@@ -322,6 +322,13 @@ and says why in the commit message.
 139. **Hardware reliability (failures, spares and warranties).** ~~Done~~: `reliability` data, `SetWarranty`, `StockSpares`, `ExpediteReplacements`, `HardwareReliability`, schema 87, `ReliabilityTests`, `docs/content/reliability.md` (Q381).
 140. **Loan covenants (cover, cure, waiver or a call).** ~~Done~~: `covenants` data, `WaiveCovenant`, `CureCovenant`, `Covenants`, schema 88, `CovenantTests`, `docs/content/covenants.md` (Q382).
 141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
+142. **Public listing and guidance.** ~~Done~~: `listing` data, `ListCompany`, `SetGuidance`, `FollowOn`, `BuyBackShares`, `TakePrivate`, `Listing`, schema 90, `ListingTests`, `docs/content/listing.md` (Q386).
+143. **Revenue-based financing.** ~~Done~~: `rbf` data, `TakeRevenueAdvance`, `BuyOutAdvance`, `RevenueFinancing`, schema 91, `RevenueFinancingTests`, `docs/content/revenue-financing.md` (Q387).
+144. **Endowed foundation.** ~~Done~~: `foundation` data, `EndowFoundation`, `SetFoundationFocus`, `SetFoundationPayout`, `WindUpFoundation`, `Foundation`, schema 92, `FoundationTests`, `docs/content/foundation.md` (Q388).
+145. **Sale-leaseback of GPUs.** ~~Done~~: `leaseback` data, `SaleLeaseback`, `BuyBackLease`, `ExtendLease`, `ReturnLease`, `Leaseback`, schema 93, `LeasebackTests`, `docs/content/leaseback.md` (Q389).
+146. **Convertible notes.** ~~Done~~: `convertibleNotes` data, `IssueNote`, `RepayNote`, `ExtendNote`, `Notes`, schema 94, `NotesTests`, `docs/content/convertible-notes.md` (Q390).
+147. **News and chat for the fifth batch.** ~~Done~~: 30 headlines and 23 chat lines, `ListingRevenueFoundationLeasebackNotesNewsChatTests`, pins at 233 and 260 (Q391).
+148. **How the fifth batch meets.** ~~Done~~: the covenant counts a revenue advance as debt, `ListingRevenueFoundationLeasebackNotesTogetherTests` (Q392).
 
 ## Rules: later
 

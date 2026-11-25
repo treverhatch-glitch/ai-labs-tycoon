@@ -207,6 +207,31 @@ namespace AiLabs.Rules.Sim
                 if (lab.CapPolicy < 0 || lab.CapPolicy > 2 || lab.CapPool < 0 || lab.CapSwitchTick < 0 || lab.CapWritten < 0
                     || ((lab.CapPolicy != 0 || lab.CapPool != 0 || lab.CapSwitchTick != 0 || lab.CapWritten != 0) && (lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)))
                     p.Add(who + " has a capital allowance policy or pool (policy " + lab.CapPolicy + ", pool " + lab.CapPool + ") that the data does not allow");
+                if (lab.Listed < 0 || lab.Listed > 1 || lab.ListPrice < 0 || lab.ListGuidance < 0 || lab.ListGuidance > 3 || lab.ListTarget < 0 || lab.ListQuarter < 0 || lab.ListBase < 0 || lab.ListNext < 0 || lab.ListKeep < 0 || lab.ListKeep > 1000 || lab.ListStreak < 0 || lab.ListFollowOn < 0 || lab.ListActivist < 0 || lab.ListActivist > c.Listing.MaxActivist
+                    || (lab.Listed == 1 && (lab.ListPrice < c.Listing.PriceFloor || lab.ListPrice > c.Listing.PriceCap || lab.ListKeep < 1 || lab.ListNext < 1))
+                    || (lab.Listed == 0 && (lab.ListPrice != 0 || lab.ListGuidance != 0 || lab.ListTarget != 0 || lab.ListQuarter != 0 || lab.ListNext != 0 || lab.ListKeep != 0 || lab.ListStreak != 0 || lab.ListActivist != 0))
+                    || ((lab.Listed != 0 || lab.ListBase != 0 || lab.ListFollowOn != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " is listed (price " + lab.ListPrice + ", guidance " + lab.ListGuidance + ", activist " + lab.ListActivist + ") in a way the data does not allow");
+                if (lab.RbfAdvance < 0 || lab.RbfOwed < 0 || lab.RbfBase < 0 || lab.RbfShare < 0 || lab.RbfShare > 1000 || lab.RbfTier < 0 || lab.RbfTier > 3 || lab.RbfWeeks < 0 || lab.RbfSlump < 0
+                    || (lab.RbfOwed > 0 && (lab.RbfAdvance < 1 || lab.RbfTier < 1 || lab.RbfShare < 1))
+                    || (lab.RbfOwed == 0 && (lab.RbfAdvance != 0 || lab.RbfBase != 0 || lab.RbfShare != 0 || lab.RbfTier != 0 || lab.RbfWeeks != 0 || lab.RbfSlump != 0))
+                    || (lab.RbfOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " owes " + lab.RbfOwed + " on a revenue advance (tier " + lab.RbfTier + ") in a way the data does not allow");
+                if (lab.FoundFund < 0 || lab.FoundGiven < 0 || lab.FoundFocus < 0 || lab.FoundFocus > 3 || lab.FoundPayout < 0 || lab.FoundPayout > 3 || lab.FoundGoodwill < 0 || lab.FoundGoodwill > c.Foundation.MaxGoodwill || lab.FoundSwitch < 0 || lab.FoundDrip < 0
+                    || (lab.FoundFund > 0 && lab.FoundFocus < 1)
+                    || (lab.FoundFund == 0 && (lab.FoundGiven != 0 || lab.FoundFocus != 0 || lab.FoundPayout != 0 || lab.FoundGoodwill != 0 || lab.FoundSwitch != 0 || lab.FoundDrip != 0))
+                    || (lab.FoundFund != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a foundation of " + lab.FoundFund + " (focus " + lab.FoundFocus + ", goodwill " + lab.FoundGoodwill + ") in a way the data does not allow");
+                if (lab.LeaseUnits < 0 || lab.LeaseValue < 0 || lab.LeaseRent < 0 || lab.LeaseBuyback < 0 || lab.LeaseLeft < 0 || lab.LeaseMissed < 0 || lab.LeaseExtended < 0 || lab.LeaseExtended > 1
+                    || (lab.LeaseUnits > 0 && (lab.LeaseLeft < 1 || lab.LeaseValue < 1))
+                    || (lab.LeaseUnits == 0 && (lab.LeaseValue != 0 || lab.LeaseRent != 0 || lab.LeaseBuyback != 0 || lab.LeaseLeft != 0 || lab.LeaseMissed != 0 || lab.LeaseExtended != 0))
+                    || (lab.LeaseUnits != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has " + lab.LeaseUnits + " GPUs leased back (value " + lab.LeaseValue + ", " + lab.LeaseLeft + " weeks left) in a way the data does not allow");
+                if (lab.NoteOwed < 0 || lab.NotePrincipal < 0 || lab.NoteRate < 0 || lab.NoteDiscount < 0 || lab.NoteDiscount > 1000 || lab.NoteLeft < 0 || lab.NoteExtended < 0 || lab.NoteExtended > 1 || lab.NoteTier < 0 || lab.NoteTier > 3
+                    || (lab.NoteOwed > 0 && (lab.NotePrincipal < 1 || lab.NoteLeft < 1 || lab.NoteTier < 1))
+                    || (lab.NoteOwed == 0 && (lab.NotePrincipal != 0 || lab.NoteRate != 0 || lab.NoteDiscount != 0 || lab.NoteLeft != 0 || lab.NoteExtended != 0 || lab.NoteTier != 0))
+                    || (lab.NoteOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " owes " + lab.NoteOwed + " on a convertible note (tier " + lab.NoteTier + ", " + lab.NoteLeft + " weeks left) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

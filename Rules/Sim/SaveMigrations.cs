@@ -105,6 +105,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 88) MigrateTo88(root);
             if (fromSchema < 89) MigrateTo89(root);
             if (fromSchema < 90) MigrateTo90(root);
+            if (fromSchema < 91) MigrateTo91(root);
+            if (fromSchema < 92) MigrateTo92(root);
+            if (fromSchema < 93) MigrateTo93(root);
+            if (fromSchema < 94) MigrateTo94(root);
+            if (fromSchema < 95) MigrateTo95(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -1020,6 +1025,56 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 foreach (string key in new[] { "capPolicy", "capPool", "capSwitchTick", "capWritten" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 91: no lab is listed.</summary>
+        static void MigrateTo91(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "listed", "listPrice", "listGuidance", "listTarget", "listQuarter", "listBase", "listNext", "listKeep", "listStreak", "listFollowOn", "listActivist" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 92: no lab has a revenue advance.</summary>
+        static void MigrateTo92(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "rbfAdvance", "rbfOwed", "rbfBase", "rbfShare", "rbfTier", "rbfWeeks", "rbfSlump" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 93: no lab has a foundation.</summary>
+        static void MigrateTo93(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "foundFund", "foundGiven", "foundFocus", "foundPayout", "foundGoodwill", "foundSwitch", "foundDrip" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 94: no lab has sold its GPUs and leased them back.</summary>
+        static void MigrateTo94(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "leaseUnits", "leaseValue", "leaseRent", "leaseBuyback", "leaseLeft", "leaseMissed", "leaseExtended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 95: no lab has a convertible note.</summary>
+        static void MigrateTo95(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "noteOwed", "notePrincipal", "noteRate", "noteDiscount", "noteLeft", "noteExtended", "noteTier" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }

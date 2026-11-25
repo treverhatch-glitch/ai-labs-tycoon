@@ -5967,6 +5967,99 @@
     "enhancedExposure": 8,
     "lockWeeks": 48
   },
+  "listing": {
+    "enabled": 1,
+    "minReputation": 200,
+    "minWeeklyRevenue": 50000,
+    "valuationWeeks": 100,
+    "floatPermille": 200,
+    "listingFeePermille": 60,
+    "reportingCost": 3000,
+    "quarterWeeks": 12,
+    "guidanceWindow": 3,
+    "conservative": 900,
+    "base": 1000,
+    "stretch": 1150,
+    "beatMargin": 30,
+    "beatMove": 80,
+    "meetMove": 20,
+    "missMove": 150,
+    "noGuidanceMove": 40,
+    "priceFloor": 100,
+    "priceCap": 10000,
+    "followOnPermille": 100,
+    "followOnWeeks": 24,
+    "buybackImpact": 600,
+    "activistBelow": 450,
+    "activistReputation": 20,
+    "maxActivist": 3,
+    "takePrivatePermille": 1300
+  },
+  "rbf": {
+    "enabled": 1,
+    "minWeeklyRevenue": 10000,
+    "advanceWeeks": 10,
+    "shareA": 50,
+    "shareB": 100,
+    "shareC": 200,
+    "capA": 1400,
+    "capB": 1300,
+    "capC": 1200,
+    "slumpPermille": 500,
+    "slumpCap": 20,
+    "buyoutAfter": 12,
+    "buyoutPermille": 950
+  },
+  "foundation": {
+    "enabled": 1,
+    "minGift": 100000,
+    "returnPermille": 2,
+    "payoutA": 2,
+    "payoutB": 4,
+    "payoutC": 8,
+    "goodwillUnit": 500,
+    "goodwillDecay": 30,
+    "maxGoodwill": 1000,
+    "safetyDamp": 500,
+    "maxDamp": 250,
+    "educationEvery": 6,
+    "educationAt": 150,
+    "scienceStrength": 300,
+    "switchLoss": 300,
+    "lockWeeks": 24,
+    "windUpPermille": 700,
+    "windUpReputation": 15,
+    "reportWeeks": 12
+  },
+  "leaseback": {
+    "enabled": 1,
+    "advancePermille": 900,
+    "rentPermille": 3,
+    "termWeeks": 96,
+    "buybackPermille": 1100,
+    "extendWeeks": 48,
+    "extendRentPermille": 1250,
+    "missLimit": 3,
+    "repoReputation": 25
+  },
+  "convertibleNotes": {
+    "enabled": 1,
+    "maxThousands": 5000,
+    "rateA": 2,
+    "rateB": 4,
+    "rateC": 6,
+    "discountA": 100,
+    "discountB": 200,
+    "discountC": 300,
+    "weeksA": 96,
+    "weeksB": 72,
+    "weeksC": 48,
+    "maxConvertPermille": 400,
+    "maturityDiscount": 400,
+    "extendWeeks": 24,
+    "extendRate": 1500,
+    "extendDiscount": 50
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
@@ -10120,6 +10213,186 @@
         "kind": "CapitalPolicySet",
         "pick": -1,
         "text": "{lab} claims an enhanced capital allowance. The tax office takes note"
+      },
+      {
+        "id": "listing-listed",
+        "kind": "CompanyListed",
+        "pick": -1,
+        "text": "{lab} lists on the market and raises {amount}. The founders ring a bell and pretend they meant to"
+      },
+      {
+        "id": "earnings-missed",
+        "kind": "EarningsReported",
+        "pick": 0,
+        "text": "{lab} misses its own guidance. The share price falls to {amount} and the analysts sharpen their pencils"
+      },
+      {
+        "id": "earnings-met",
+        "kind": "EarningsReported",
+        "pick": 1,
+        "text": "{lab} meets its guidance exactly. The share price settles at {amount} and nobody is thrilled"
+      },
+      {
+        "id": "earnings-beat",
+        "kind": "EarningsReported",
+        "pick": -1,
+        "text": "{lab} beats its guidance. The share price rises to {amount} and the quarter is declared a triumph"
+      },
+      {
+        "id": "listing-follow-on",
+        "kind": "FollowOnSold",
+        "pick": -1,
+        "text": "{lab} sells more shares and raises {amount}. The word 'opportunistic' is used"
+      },
+      {
+        "id": "listing-buyback",
+        "kind": "SharesBoughtBack",
+        "pick": -1,
+        "text": "{lab} spends {amount} buying its own shares. It is, the founders say, a bargain"
+      },
+      {
+        "id": "listing-activist",
+        "kind": "ActivistArrived",
+        "pick": -1,
+        "text": "An activist investor arrives at {lab} with a slide deck. The deck is titled 'Opportunity'"
+      },
+      {
+        "id": "listing-delisted",
+        "kind": "CompanyDelisted",
+        "pick": -1,
+        "text": "{lab} goes private again for {amount}. The quarterly calls end and the sighing stops"
+      },
+      {
+        "id": "rbf-taken",
+        "kind": "RevenueAdvanceTaken",
+        "pick": -1,
+        "text": "{lab} takes a revenue advance of {amount}. The lender will be paid in a slice of every sale"
+      },
+      {
+        "id": "rbf-swept",
+        "kind": "RevenueAdvanceCleared",
+        "pick": 0,
+        "text": "{lab} finishes paying off its revenue advance. Every sale is whole again"
+      },
+      {
+        "id": "rbf-bought-out",
+        "kind": "RevenueAdvanceCleared",
+        "pick": 1,
+        "text": "{lab} buys out its revenue advance for {amount}. The lender sends a warm note"
+      },
+      {
+        "id": "rbf-stretched",
+        "kind": "RevenueAdvanceStretched",
+        "pick": -1,
+        "text": "A weak week stretches {lab}'s revenue advance by {amount}. The lender is patient, and charges for it"
+      },
+      {
+        "id": "foundation-endowed",
+        "kind": "FoundationEndowed",
+        "pick": -1,
+        "text": "{lab} puts {amount} into a new foundation. The press release uses the word 'legacy' twice"
+      },
+      {
+        "id": "foundation-reported",
+        "kind": "FoundationReported",
+        "pick": -1,
+        "text": "{lab}'s foundation reports {amount} given away so far. The annual letter has photographs"
+      },
+      {
+        "id": "foundation-refocused",
+        "kind": "FoundationRefocused",
+        "pick": -1,
+        "text": "{lab}'s foundation turns to a new cause. The old one is thanked in a footnote"
+      },
+      {
+        "id": "foundation-wound-up",
+        "kind": "FoundationWoundUp",
+        "pick": -1,
+        "text": "{lab} winds up its foundation and takes back {amount}. The goodwill does not come back with it"
+      },
+      {
+        "id": "foundation-dry",
+        "kind": "FoundationRanDry",
+        "pick": -1,
+        "text": "{lab}'s foundation runs dry after giving {amount}. The letterhead outlasts the money"
+      },
+      {
+        "id": "lease-sold",
+        "kind": "GpusLeasedBack",
+        "pick": -1,
+        "text": "{lab} sells its GPUs for {amount} and leases them straight back. The racks do not notice"
+      },
+      {
+        "id": "lease-bought-back",
+        "kind": "LeaseBoughtBack",
+        "pick": -1,
+        "text": "{lab} buys its leased GPUs back for {amount}. They have never left the racks"
+      },
+      {
+        "id": "lease-expired",
+        "kind": "LeaseEnded",
+        "pick": 0,
+        "text": "{lab}'s GPU lease runs out and the chips go back to the lessor. A van is involved"
+      },
+      {
+        "id": "lease-returned",
+        "kind": "LeaseEnded",
+        "pick": 1,
+        "text": "{lab} hands its leased GPUs back early to stop the rent. The racks look thin"
+      },
+      {
+        "id": "lease-repossessed",
+        "kind": "LeaseEnded",
+        "pick": -1,
+        "text": "The lessor repossesses the GPUs it leased to {lab}. The rent was missed and so was the warning"
+      },
+      {
+        "id": "lease-missed",
+        "kind": "LeaseRentMissed",
+        "pick": -1,
+        "text": "{lab} misses the rent on its leased GPUs. The lessor sends a firm email"
+      },
+      {
+        "id": "lease-extended",
+        "kind": "LeaseExtended",
+        "pick": -1,
+        "text": "{lab} extends its GPU lease at a higher rent. The lessor sends flowers"
+      },
+      {
+        "id": "note-issued",
+        "kind": "NoteIssued",
+        "pick": -1,
+        "text": "{lab} issues a convertible note for {amount}. It is a loan that would like to be shares"
+      },
+      {
+        "id": "note-round",
+        "kind": "NoteConverted",
+        "pick": 0,
+        "text": "{lab}'s convertible note of {amount} turns into shares in the new round. The founders do the sum again"
+      },
+      {
+        "id": "note-listing",
+        "kind": "NoteConverted",
+        "pick": 1,
+        "text": "{lab}'s convertible note of {amount} turns into shares at the listing. The cap table gets longer"
+      },
+      {
+        "id": "note-matured",
+        "kind": "NoteConverted",
+        "pick": -1,
+        "text": "{lab}'s convertible note of {amount} matures and turns into shares on harsh terms. The founders stare at the cap table"
+      },
+      {
+        "id": "note-repaid",
+        "kind": "NoteRepaid",
+        "pick": -1,
+        "text": "{lab} repays its convertible note with {amount}. Nobody gets any shares and everyone is relieved"
+      },
+      {
+        "id": "note-extended",
+        "kind": "NoteExtended",
+        "pick": -1,
+        "text": "{lab} gets its convertible note extended. The holders ask for a little more interest"
       }
     ],
     "filler": [
@@ -12962,6 +13235,259 @@
         "pick": -1,
         "about": "lab",
         "text": "Finance changed how we deduct hardware. We asked for a summary and received a diagram.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "listing-listed-chat",
+        "kind": "CompanyListed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are listed now. The stock ticker is on the big screen and nobody can look away.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "earnings-chat",
+        "kind": "EarningsReported",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Earnings call at noon. Please do not say 'vibes' to the analysts.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "listing-follow-on-chat",
+        "kind": "FollowOnSold",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We sold more shares. The word on the wall is 'runway'.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "listing-buyback-chat",
+        "kind": "SharesBoughtBack",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We bought our own shares back. Finance says it shows confidence. Finance is nervous.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "listing-activist-chat",
+        "kind": "ActivistArrived",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "There is an activist investor in the lobby. He has brought a binder.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "listing-delisted-chat",
+        "kind": "CompanyDelisted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We are private again. The quarterly calls are over and the room has relaxed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rbf-taken-chat",
+        "kind": "RevenueAdvanceTaken",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The revenue advance landed. Every invoice now has a small passenger.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rbf-cleared-chat",
+        "kind": "RevenueAdvanceCleared",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The revenue advance is finished. Sales belong to us again.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rbf-stretched-chat",
+        "kind": "RevenueAdvanceStretched",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A slow week made the advance last longer. Finance is looking at the graph.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "foundation-endowed-chat",
+        "kind": "FoundationEndowed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundation exists. It has a logo before it has a bank account.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "foundation-reported-chat",
+        "kind": "FoundationReported",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundation sent its report. It is mostly photographs of people holding cheques.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "foundation-refocused-chat",
+        "kind": "FoundationRefocused",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundation changed its cause. The old cause has been told gently.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "foundation-wound-up-chat",
+        "kind": "FoundationWoundUp",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundation is wound up. We kept the mug.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "foundation-dry-chat",
+        "kind": "FoundationRanDry",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The foundation has given everything away. The reception desk is still there.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lease-sold-chat",
+        "kind": "GpusLeasedBack",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We sold the GPUs and now rent them. They are still warm and still ours, sort of.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lease-bought-back-chat",
+        "kind": "LeaseBoughtBack",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We own the GPUs again. They look exactly the same, which is the point.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lease-ended-chat",
+        "kind": "LeaseEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The leased GPUs are gone. Someone has to explain the gaps in the racks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lease-missed-chat",
+        "kind": "LeaseRentMissed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We missed the GPU rent. The lessor has our full attention.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "lease-extended-chat",
+        "kind": "LeaseExtended",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The GPU lease was extended. The rent is higher and so is the sighing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "note-issued-chat",
+        "kind": "NoteIssued",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The convertible note is in. It is a loan that dreams of being shares.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "note-converted-chat",
+        "kind": "NoteConverted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The note turned into shares. The founders are doing percentages quietly.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "note-repaid-chat",
+        "kind": "NoteRepaid",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The note is repaid. Nobody gets shares, and that is somehow the best news.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "note-extended-chat",
+        "kind": "NoteExtended",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The note was extended. The holders smiled in a way I did not like.",
         "fromYear": 0,
         "toYear": 0
       }

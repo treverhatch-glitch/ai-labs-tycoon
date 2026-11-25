@@ -369,6 +369,52 @@ namespace AiLabs.Rules.Sim
                     return "The lender called " + who + "'s loans, " + e.Amount + " owed" + (e.Pick == 1 ? ", paid from cash." : ", taken from its chips.");
                 case EventKind.CapitalPolicySet:
                     return who + " now " + (e.Amount == 0 ? "expenses its hardware and building spend." : e.Amount == 1 ? "capitalises its hardware and building spend." : "claims an enhanced capital allowance.");
+                case EventKind.CompanyListed:
+                    return who + " listed on the market and raised " + e.Amount + ".";
+                case EventKind.EarningsReported:
+                    return who + (e.Pick == 2 ? " beat its guidance" : e.Pick == 1 ? " met its guidance" : " missed its guidance") + "; the share price is " + e.Amount + ".";
+                case EventKind.FollowOnSold:
+                    return who + " sold more shares and raised " + e.Amount + ".";
+                case EventKind.SharesBoughtBack:
+                    return who + " bought back " + e.Amount + " of its shares.";
+                case EventKind.ActivistArrived:
+                    return "An activist investor took a step toward " + who + "'s board (" + e.Amount + ").";
+                case EventKind.CompanyDelisted:
+                    return who + " went private again for " + e.Amount + ".";
+                case EventKind.RevenueAdvanceTaken:
+                    return who + " took a revenue advance of " + e.Amount + ".";
+                case EventKind.RevenueAdvanceCleared:
+                    return who + (e.Pick == 1 ? " bought out" : " finished paying") + " its revenue advance.";
+                case EventKind.RevenueAdvanceStretched:
+                    return "A weak week stretched " + who + "'s revenue advance by " + e.Amount + ".";
+                case EventKind.FoundationEndowed:
+                    return who + " put " + e.Amount + " into its foundation.";
+                case EventKind.FoundationReported:
+                    return who + "'s foundation gave " + e.Amount + " in the last stretch; goodwill stands at " + e.SubjectId + ".";
+                case EventKind.FoundationRefocused:
+                    return who + "'s foundation turned to a new cause.";
+                case EventKind.FoundationWoundUp:
+                    return who + " wound up its foundation and took back " + e.Amount + ".";
+                case EventKind.FoundationRanDry:
+                    return who + "'s foundation ran dry after giving " + e.Amount + ".";
+                case EventKind.GpusLeasedBack:
+                    return who + " sold " + e.SubjectId + " GPUs and leased them back for an advance of " + e.Amount + ".";
+                case EventKind.LeaseBoughtBack:
+                    return who + " bought its leased GPUs back for " + e.Amount + ".";
+                case EventKind.LeaseEnded:
+                    return (e.Pick == 2 ? "The lessor repossessed " : e.Pick == 1 ? who + " handed back " : "The lease ran out and ") + e.Amount + " GPUs" + (e.Pick == 2 ? " from " + who + "." : e.Pick == 1 ? "." : " went back.");
+                case EventKind.LeaseRentMissed:
+                    return who + " missed the GPU rent (" + e.SubjectId + " in a row).";
+                case EventKind.LeaseExtended:
+                    return who + " extended its GPU lease at a rent of " + e.Amount + ".";
+                case EventKind.NoteIssued:
+                    return who + " issued a convertible note for " + e.Amount + ".";
+                case EventKind.NoteConverted:
+                    return who + "'s convertible note of " + e.Amount + " turned into " + (e.SubjectId / 10) + "." + (e.SubjectId % 10) + "% of the company" + (e.Pick == 2 ? " at maturity." : e.Pick == 1 ? " at the listing." : " in the new round.");
+                case EventKind.NoteRepaid:
+                    return who + " repaid its convertible note with " + e.Amount + ".";
+                case EventKind.NoteExtended:
+                    return who + " extended its convertible note.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

@@ -61,7 +61,7 @@ namespace AiLabs.Rules.Systems
     {
       bool down = IsDownRound(c, state);
       long cash = Charter.FundingCash(c, lab, EffectiveCash(c, state, round));
-      int dilution = EffectiveDilution(c, state, round);
+      int dilution = Notes.OnRaise(c, state, lab, cash, EffectiveDilution(c, state, round));
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
       BubbleSystem.OnFundingRaise(c, state, round, cash);
