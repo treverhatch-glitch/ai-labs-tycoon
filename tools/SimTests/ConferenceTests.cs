@@ -218,7 +218,7 @@ public class ConferenceTests
     {
         Game g = Lab();
         g.Do(Command.SubmitPaper(g.Id, 1, 1));
-        string old = SaveSchemaPretend.At(g.C, 74, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 75, g.Sim.Save());
         Assert.DoesNotContain("\"submissions\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

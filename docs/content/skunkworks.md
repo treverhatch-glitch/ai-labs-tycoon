@@ -1,6 +1,6 @@
 # Skunkworks
 
-The player can pull a team out of research, safety or engineering to work on one project for a set number of weeks (`skunkworks.*` in the data; Q357). Six saved lab fields (`skunkKind`, `skunkPeople`, `skunkStart`, `skunkDue`, `skunkWork`, `skunkLockedUntil`, schema 71); older saves run no project.
+The player can pull a team out of research, safety or engineering to work on one project for a set number of weeks (`skunkworks.*` in the data; Q357). Six saved lab fields (`skunkKind`, `skunkPeople`, `skunkStart`, `skunkDue`, `skunkWork`, `skunkLockedUntil`, schema 72); older saves run no project.
 
 ## `StartSkunkworks` and `WrapUpSkunkworks`
 

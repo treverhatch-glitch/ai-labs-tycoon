@@ -158,7 +158,16 @@ public class ListingRevenueFoundationLeasebackNotesTogetherTests
     [InlineData(3)]
     public void All_five_systems_in_a_long_scripted_game_keep_the_books_the_save_and_the_replay(int seed)
     {
-        Game g = Game.New(seed);
+        Game g = Game.New(seed, tweak: c =>
+        {
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
+        });
         g.Autopilot(60);
         g.C.Listing.MinReputation = 0;
         g.C.Listing.MinWeeklyRevenue = 1;

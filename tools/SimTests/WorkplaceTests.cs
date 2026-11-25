@@ -14,11 +14,18 @@ namespace AiLabs.SimTests;
 /// <summary>The workplace: comfort rooms lift where morale settles, defend against rival offers, and morale moves research.</summary>
 public class WorkplaceTests
 {
+    /// <summary>These tests isolate comfort and morale, not the trait roll on hire (Q184).</summary>
+    static void OnlySteadyTraits(GameConfig c)
+    {
+        foreach (StaffTraitConfig t in c.StaffPeople.Traits)
+            if (t.Id != "steady") t.HirePermille = 0;
+    }
+
     static Game Lab(string eraId = "it-sees", Action<GameConfig> tweak = null, bool rivals = false)
     {
         var options = new NewGameOptions { Seed = 3, StartEraId = eraId };
         if (!rivals) options.RivalIds = new List<string>();
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.Ageing.MaxMoralePenalty = 0; c.Shocks.Enabled = 0; if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.Ageing.MaxMoralePenalty = 0; OnlySteadyTraits(c); c.Shocks.Enabled = 0; if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000_000;
         return g;
     }

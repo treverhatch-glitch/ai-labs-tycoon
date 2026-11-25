@@ -1,6 +1,6 @@
 # The treasury reserve
 
-Spare cash can be parked in a reserve (`treasury.*` in the data; Q349). It leaves the lab's cash, earns a small yield every week, and comes back for a fee. If the weekly bill leaves the lab in debt, the reserve pays first, at a steeper fee. One saved lab field (`reserve`, schema 67); older saves start with nothing set aside.
+Spare cash can be parked in a reserve (`treasury.*` in the data; Q349). It leaves the lab's cash, earns a small yield every week, and comes back for a fee. If the weekly bill leaves the lab in debt, the reserve pays first, at a steeper fee. One saved lab field (`reserve`, schema 68); older saves start with nothing set aside.
 
 ## `SetAsideReserve` and `DrawReserve`
 
