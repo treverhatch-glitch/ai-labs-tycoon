@@ -1,5 +1,5 @@
-# Grouped 228–230 (LOCAL queue)
+# Grouped 228–230 — landed `eb1cea3`
 
-**Parent after land:** `c044999`. **HOLD push ≥~14:47 ICT** (+30m).
+**Parent:** `c044999` → **`eb1cea3`**. **HOLD ≥~15:17 ICT**.
 
-Q677 rollup **172** · Q678 manifest **172** · Q679 GO **223**.
+Q677–Q679 decided. Next: [GROUPED-PUSH-231-NEXT.md](GROUPED-PUSH-231-NEXT.md).

@@ -111,7 +111,7 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; graphics tokens in `docs/art/MASCOT-PRESENTATION.md` + `GLOW-PRESENTATION.md` (batch 8); batch 33 adds row HUD spec for mascot strip polish on PC.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches. Graphics batch 34 documents PR #41 branch landing notes for studio (`STUDIO-GRAPHICS-HANDOFF.md`); does not change `studio/` on this branch.
 
-**Graphics PR #41** (`cursor/graphics-pipeline-5032`): remote **`c044999`** (batches **225–227**, Q674–Q676; **239** `*Tests.cs`; **504** meta). LOCAL **228–230** (rollup **172** / manifest **172** / GO **223**). **HOLD push ≥~14:47 ICT**. Playbooks [GROUPED-PUSH-228-NEXT.md](art/GROUPED-PUSH-228-NEXT.md), [GROUPED-PUSH-225-NEXT.md](art/GROUPED-PUSH-225-NEXT.md).
+**Graphics PR #41** (`cursor/graphics-pipeline-5032`): remote **`eb1cea3`** (batches **228–230**, Q677–Q679; **242** `*Tests.cs`; **510** meta). LOCAL **231–233** (STATUS **175** / tail **172** / GO **226**). **HOLD push ≥~15:17 ICT**. Playbooks [GROUPED-PUSH-231-NEXT.md](art/GROUPED-PUSH-231-NEXT.md), [GROUPED-PUSH-228-NEXT.md](art/GROUPED-PUSH-228-NEXT.md).
 Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
