@@ -629,7 +629,11 @@ namespace AiLabs.Rules.State
         HearingShareNudged,
         ScenarioGoalMet,
         ScenarioGoalMissed,
-        LawTargetSet
+        LawTargetSet,
+        ReservedComputeSigned,
+        RivalIntentSurfaced,
+        GpuTierLocked,
+        ScenarioEndlessAck
     }
 
     /// <summary>

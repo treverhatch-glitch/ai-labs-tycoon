@@ -10,11 +10,11 @@ bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[130]=ef2013acb94413309e2c62450ad26c29aa4051b0042b6f99301ee92cad79af4e
-GOLDEN[131]=1e7ddf174f425b8df3185782a8d85782f8b172a7ed25d8f8190e9a0bde5e3ec6
-GOLDEN[132]=bcc59a2f0d593c51e827f729ccc004750959e5c9f39b197febf6d42c14de1cba
-GOLDEN[133]=7375ea4bab6cf5f2f19dd459c0724038dbe8bfaf016a1b2815960c98e1687ad7
-GOLDEN[134]=ac9b5e749c6fc78c97f338fcd7f38fdde9221974bbec1cf0f28e93c55e20ea8b
+GOLDEN[130]=afe8a03e8e5f37a3a8af3259e5b2132a7c36dcafa9ca55f60d53de09a5913884
+GOLDEN[131]=66846daf9a773b010478d756dc71dbcfb0141a7f19ca9cad15d8ec67f35ef676
+GOLDEN[132]=500ef83369cb223a9a9fe1795aa46f79fb85e195b8ba17ae914b60352908e925
+GOLDEN[133]=ac9b6c2686b06c9cd9d464d1b87c7ccc6134f8dbc7f0dc70af1b86f896f7e308
+GOLDEN[134]=9627f49e5f4e99ac18f0ff1e95961e6faf2a817287e37e4f9ebc587096b1b7bd
 
 PREV=$((N - 1))
 BK="/tmp/b13-rev-bak-$N"
@@ -88,6 +88,9 @@ disable_batch15_at_tip
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"

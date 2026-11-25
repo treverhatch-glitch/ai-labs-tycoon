@@ -19205,5 +19205,26 @@
   },
   "lawTarget": {
     "enabled": 1
+  },
+  "reservedComputeGate": {
+    "enabled": 1,
+    "minReputationPermille": 400,
+    "cooldownWeeks": 8
+  },
+  "rivalIntentNews": {
+    "enabled": 1,
+    "minWeeksBetween": 4
+  },
+  "gpuTierUnlock": {
+    "enabled": 1,
+    "unlockPermille": 450,
+    "minEra": 2,
+    "tierMin": 3
+  },
+  "endlessScenario": {
+    "enabled": 1
+  },
+  "shadyFreezeAudit": {
+    "enabled": 1
   }
 }

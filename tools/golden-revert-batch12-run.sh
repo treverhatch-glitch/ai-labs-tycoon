@@ -7,16 +7,16 @@ LOCK="${TMPDIR:-/tmp}/b12-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-$(command -v dotnet)}"
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[125]=a02fd101a39954ba24ca296a154ae97e52a3b2fa5d546c26d0050925236cd9fe
-GOLDEN[126]=2debb2710173b4fb639d5d8c88707d752fa55bcdef8d39c1d49f293e48065b6d
-GOLDEN[127]=df6af8a854d83cfb048952dc9c54eb1b517d74f70efb8c1bed195f8544255815
-GOLDEN[128]=fd25659126ed48bf369bea521263958427a13030d25e3029ea80251997b49da7
-GOLDEN[129]=55c5c356e024838979a242dca3af659a103b8af258bae658fc75d491edb1a883
+GOLDEN[125]=35d91fc94a772c8c37fe63690e09678d2cee0d041bf002cdeca71d2c5c692763
+GOLDEN[126]=e729f70bf50a9c9e571451b1d40f50bddfcf103e8081fdf0c0cba13c9f6d9cd0
+GOLDEN[127]=1711d20667c26960080b9cbd9e010b7a2aa5d46f71532a941effe3f11eb7b051
+GOLDEN[128]=6330a3944d044269ff37f07584840c223a464505dc8608d7600accb3983f4c01
+GOLDEN[129]=aac912b13255624466c15e6c733cdccd0e1f271ef7eb3f0deab9828015ccb024
 
 PREV=$((N - 1))
 BK="/tmp/b12-rev-bak-$N"
@@ -105,6 +105,9 @@ disable_batch15_at_tip
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 if [ "$N" -le 126 ]; then
   sed -i 's|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(lift, HumanQueue.LiftKeep(c, lab) \* ToolPolicy.LiftBonus(c, m) / 1000));|total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(Lift(c, m.AgentLevel), MathI.Permille));|' Rules/Systems/Agency.cs

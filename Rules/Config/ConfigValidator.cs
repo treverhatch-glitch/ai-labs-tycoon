@@ -182,6 +182,11 @@ namespace AiLabs.Rules.Config
             RungSixCrisisProblems(p, c);
             ScenarioGoalsProblems(p, c);
             LawTargetProblems(p, c);
+            ReservedComputeGateProblems(p, c);
+            RivalIntentNewsProblems(p, c);
+            GpuTierUnlockProblems(p, c);
+            EndlessScenarioProblems(p, c);
+            ShadyFreezeAuditProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -441,10 +446,6 @@ namespace AiLabs.Rules.Config
             if (a.MinInstalledModels < 0) p.Add("acquisitions.minInstalledModels is negative");
             if (a.RegulatorDealRevenue < 0) p.Add("acquisitions.regulatorDealRevenue is negative");
             if (a.RegulatorAttention < 0) p.Add("acquisitions.regulatorAttention is negative");
-            Permille(p, "acquisitions.plannerAcquireChancePermille", a.PlannerAcquireChancePermille);
-            if (a.FleetResaleLockWeeks < 0) p.Add("acquisitions.fleetResaleLockWeeks is negative");
-            Permille(p, "acquisitions.readyChipBookPermille", a.ReadyChipBookPermille);
-            Permille(p, "acquisitions.chipFleetBookPermille", a.ChipFleetBookPermille);
         }
 
         static void ModelSalesProblems(List<string> p, GameConfig c)
@@ -455,7 +456,6 @@ namespace AiLabs.Rules.Config
             if (m.EarningsMultipleWeeks < 0) p.Add("modelSales.earningsMultipleWeeks is negative");
             if (m.SectorReputationHit < 0) p.Add("modelSales.sectorReputationHit is negative");
             if (m.MinOffer < 0) p.Add("modelSales.minOffer is negative");
-            Permille(p, "modelSales.crashDistressOfferPermille", m.CrashDistressOfferPermille);
         }
 
         static void SharesProblems(List<string> p, GameConfig c)
@@ -2052,6 +2052,47 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTarget.enabled must be 0 or 1");
         }
 
+        static void ReservedComputeGateProblems(List<string> p, GameConfig c)
+        {
+            ReservedComputeGateConfig k = c.ReservedComputeGate;
+            if (k == null) { p.Add("reservedComputeGate is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("reservedComputeGate.enabled must be 0 or 1");
+            if (k.MinReputationPermille < 0 || k.MinReputationPermille > MathI.Permille) p.Add("reservedComputeGate.minReputationPermille must be from 0 to 1000");
+            if (k.CooldownWeeks < 0) p.Add("reservedComputeGate.cooldownWeeks must not be negative");
+        }
+
+        static void RivalIntentNewsProblems(List<string> p, GameConfig c)
+        {
+            RivalIntentNewsConfig k = c.RivalIntentNews;
+            if (k == null) { p.Add("rivalIntentNews is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rivalIntentNews.enabled must be 0 or 1");
+            if (k.MinWeeksBetween < 0) p.Add("rivalIntentNews.minWeeksBetween must not be negative");
+        }
+
+        static void GpuTierUnlockProblems(List<string> p, GameConfig c)
+        {
+            GpuTierUnlockConfig k = c.GpuTierUnlock;
+            if (k == null) { p.Add("gpuTierUnlock is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("gpuTierUnlock.enabled must be 0 or 1");
+            if (k.UnlockPermille < 0 || k.UnlockPermille > MathI.Permille) p.Add("gpuTierUnlock.unlockPermille must be from 0 to 1000");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("gpuTierUnlock.minEra must be a valid era index");
+            if (k.TierMin < 0) p.Add("gpuTierUnlock.tierMin must not be negative");
+        }
+
+        static void EndlessScenarioProblems(List<string> p, GameConfig c)
+        {
+            EndlessScenarioConfig k = c.EndlessScenario;
+            if (k == null) { p.Add("endlessScenario is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("endlessScenario.enabled must be 0 or 1");
+        }
+
+        static void ShadyFreezeAuditProblems(List<string> p, GameConfig c)
+        {
+            ShadyFreezeAuditConfig k = c.ShadyFreezeAudit;
+            if (k == null) { p.Add("shadyFreezeAudit is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("shadyFreezeAudit.enabled must be 0 or 1");
+        }
+
         static void BugBountyProblems(List<string> p, GameConfig c)
         {
             BugBountyConfig k = c.BugBounty;
@@ -2731,7 +2772,6 @@ namespace AiLabs.Rules.Config
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
-            Permille(p, "chips.distressListingPricePermille", k.DistressListingPricePermille);
             RoleConfig architect = c.Role(k.ArchitectRoleId);
             if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
             else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");
