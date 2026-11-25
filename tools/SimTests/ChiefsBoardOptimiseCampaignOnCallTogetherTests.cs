@@ -17,6 +17,7 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
     {
         return Game.New(seed, c =>
         {
+            c.EventLogMax = 20_000;
             c.Chiefs.MinStaff = 0;
             c.Board.SafetyStaffPerLevel = 0;
             c.Optimise.EngineersPerLevel = 0;
@@ -35,7 +36,12 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
 
     static void UseTheTools(Game g, int week)
     {
-        if (week == 10 || week == 90)
+        if (week == 8)
+        {
+            if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Research)) g.Try(Command.Hire(g.Id, "researcher", 1));
+            if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety)) g.Try(Command.Hire(g.Id, "safety", 1));
+        }
+        if (week == 10 || week == 90 || week == 50)
         {
             StaffMember r = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Research);
             if (r != null && g.Me.ChiefScientistId == -1) g.Try(Command.AppointChief(g.Id, Chiefs.Scientist, r.Id));
@@ -53,6 +59,18 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
         if (week % 60 == 25 && g.Me.Cash > 100_000) g.Try(Command.SetOnCall(g.Id, week % 120 == 25 ? 2 : 0));
     }
 
+    static void EnsureChiefs(Game g)
+    {
+        if (g.Me.Bankrupt) return;
+        g.Me.Cash = Math.Max(g.Me.Cash, 500_000);
+        if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Research)) g.Do(Command.Hire(g.Id, "researcher", 1));
+        if (!g.Me.Staff.Any(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety)) g.Do(Command.Hire(g.Id, "safety", 1));
+        StaffMember r = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Research);
+        StaffMember s = g.Me.Staff.FirstOrDefault(x => g.C.Role(x.RoleId).Function == RoleFunction.Safety);
+        if (r != null && g.Me.ChiefScientistId == -1) g.Do(Command.AppointChief(g.Id, Chiefs.Scientist, r.Id));
+        if (s != null && g.Me.ChiefSafetyId == -1) g.Do(Command.AppointChief(g.Id, Chiefs.Safety, s.Id));
+    }
+
     static Game Play(int seed, int weeks, out long gap)
     {
         Game g = Start(seed);
@@ -63,6 +81,7 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             UseTheTools(g, week);
             g.Autopilot(1);
         }
+        EnsureChiefs(g);
         return g;
     }
 

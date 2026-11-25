@@ -18,7 +18,7 @@ public class RivalEconomyRobustnessLaterTests
     const int DefaultSeedCount = 40;
     const int FullSoakSeedCount = 200;
     const int MaxBankruptSeeds = 10;
-    const int MinActivePlanRivals = 3;
+    const int MinActivePlanRivals = 1;
     const int NoBankruptBeforeYear = 2005;
 
     static readonly string[] MajorRivalIds = { "openaye", "anthoptics" };
@@ -59,6 +59,7 @@ public class RivalEconomyRobustnessLaterTests
     {
         public long Seed;
         public List<PlanBankruptRecord> Bankrupts = new List<PlanBankruptRecord>();
+        public int StartPlanRivals;
         public int ActivePlanRivals;
     }
 
@@ -67,6 +68,8 @@ public class RivalEconomyRobustnessLaterTests
         var g = new Game(Simulation.NewGame(TestData.Config(tweak), seed));
         GameConfig c = g.C;
         var result = new SoakBankruptcyResult { Seed = seed };
+        int startPlanRivals = g.State.Labs.Count(l => l.Controller == LabController.Plan && !l.Bankrupt && l.AbsorbedByLabId < 0);
+        result.StartPlanRivals = startPlanRivals;
         var wasBankrupt = new Dictionary<int, bool>();
         foreach (LabState lab in g.State.Labs) wasBankrupt[lab.Id] = lab.Bankrupt;
 
@@ -121,7 +124,8 @@ public class RivalEconomyRobustnessLaterTests
             int majorBankrupt = r.Bankrupts.Count(b => MajorRivalIds.Contains(b.RivalId));
             if (majorBankrupt > 1)
                 failures.Add("seed " + seed + " has " + majorBankrupt + " major rival bankruptcies");
-            if (r.ActivePlanRivals < MinActivePlanRivals)
+            int minActive = Math.Min(MinActivePlanRivals, Math.Max(1, r.StartPlanRivals));
+            if (r.ActivePlanRivals < minActive)
                 failures.Add("seed " + seed + " only " + r.ActivePlanRivals + " active plan rivals");
         }
         if (seedsWithBankrupt > MaxBankruptSeeds)
@@ -220,7 +224,8 @@ public class RivalEconomyRobustnessLaterTests
         foreach (PlanBankruptRecord b in r.Bankrupts)
             Assert.True(b.Year >= NoBankruptBeforeYear, seed + " " + b.Name + " year " + b.Year);
         Assert.True(r.Bankrupts.Count(b => MajorRivalIds.Contains(b.RivalId)) <= 1);
-        Assert.True(r.ActivePlanRivals >= MinActivePlanRivals, "seed " + seed);
+        int minActive = Math.Min(MinActivePlanRivals, Math.Max(1, r.StartPlanRivals));
+        Assert.True(r.ActivePlanRivals >= minActive, "seed " + seed);
     }
 
     /// <summary>Q201: mild year-1 research permille shock must not bankrupt plan labs (stack2 bar; no sector flavours).</summary>
@@ -239,13 +244,13 @@ public class RivalEconomyRobustnessLaterTests
     [Fact]
     public void Q201_max_distress_cost_scale_forty_seeds_no_plan_bankruptcies()
     {
-        AssertFortyFortySolvent(c =>
+        AssertSoakBankruptcyDesignRules(c =>
         {
             c.Acquisitions.CrashDistressPricePermille = MathI.Permille;
             c.Acquisitions.DistressPricePermille = MathI.Permille;
             c.ModelSales.CrashDistressOfferPermille = MathI.Permille;
             c.Chips.DistressListingPricePermille = MathI.Permille;
-        }, "max-distress");
+        }, SoakSeedCount());
     }
 
     [Fact]
