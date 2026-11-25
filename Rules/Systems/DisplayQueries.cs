@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
+using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -67,6 +68,24 @@ namespace AiLabs.Rules.Systems
         {
             public string SectorId;
             public long Amount;
+        }
+
+        public struct GpuRentBreakdown
+        {
+            public long SpotRentedGpus;
+            public long ReservedDiscounted;
+            public long CloudChips;
+
+            public long Total { get { return SpotRentedGpus + ReservedDiscounted + CloudChips; } }
+        }
+
+        public struct FundingRoundQuote
+        {
+            public string RoundId;
+            public long Cash;
+            public int DilutionPermille;
+            public int FounderShareAfterPermille;
+            public bool DownRound;
         }
 
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
@@ -188,6 +207,51 @@ namespace AiLabs.Rules.Systems
                 }
             }
             return b;
+        }
+
+        public static GpuRentBreakdown GpuRentParts(GameConfig c, GameState state, LabState lab)
+        {
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            var b = new GpuRentBreakdown();
+            b.SpotRentedGpus = gen.RentPerGpuWeek * lab.RentedGpus;
+            b.ReservedDiscounted = ComputeContractSystem.WeeklyReservedRent(c, state, lab);
+            b.CloudChips = ChipQueries.WeeklyCloudChipRent(c, state, lab);
+            return b;
+        }
+
+        public static bool TryNextFundingQuote(GameConfig c, GameState state, LabState lab, out FundingRoundQuote quote)
+        {
+            quote = new FundingRoundQuote();
+            if (lab == null || lab.Id != state.PlayerLabId) return false;
+            for (int i = 0; i < c.Funding.Rounds.Count; i++)
+            {
+                FundingRoundConfig round = c.Funding.Rounds[i];
+                if (FundingSystem.HasRound(lab, round.Id)) continue;
+                if (!FundingSystem.PriorRoundsDone(c, lab, round)) continue;
+                int year = GameDate.Year(c.Calendar, state.Tick);
+                if (year < round.OpensYear) continue;
+                if (lab.Reputation < round.MinReputation) continue;
+                if (WorldQueries.IsFrozen(lab, lab.HomeBlocId)) continue;
+                quote.RoundId = round.Id;
+                quote.Cash = FundingSystem.EffectiveCash(c, state, round);
+                quote.DilutionPermille = FundingSystem.EffectiveDilution(c, state, round);
+                quote.DownRound = FundingSystem.IsDownRound(c, state);
+                quote.FounderShareAfterPermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - quote.DilutionPermille);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>Recent rival decision lines for the host UI. Empty for the player's lab or bots.</summary>
+        public static List<string> RivalLogLines(GameConfig c, GameState state, LabState lab, int maxLines)
+        {
+            var lines = new List<string>();
+            if (lab == null || lab.Controller != LabController.Plan || maxLines < 1) return lines;
+            int start = lab.Log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < lab.Log.Count; i++)
+                lines.Add(DecisionText.Line(c, state, lab, lab.Log[i]));
+            return lines;
         }
     }
 }

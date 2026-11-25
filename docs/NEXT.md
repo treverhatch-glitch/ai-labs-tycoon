@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | squash **202–209** GO ≥**09:07 ICT**; **210–213** LOCAL HOLD |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`3e3662f8`**; **LOCAL** **210–213** + host slices (HOLD push ≥**09:37 ICT**) |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -74,6 +74,8 @@ and says why in the commit message.
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
 3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
    odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
+3b. ~~**Host explain slices (rival log, reserved compute, funding ladder).**~~ Done (local): `DisplayQueries.GpuRentParts`,
+   `TryNextFundingQuote`, `RivalLogLines`; `HostExplainSliceLaterTests` (**5**).
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
@@ -189,7 +191,7 @@ and says why in the commit message.
 - ~~**Hatch capital/bubble batch 67**~~ **pushed @ `b9c1d5a`** — Q4336–Q4405 (`HatchCapitalBubbleBarLaterTests3`, **70**); squash via commit-tree off `5b52104`; gate **5074/5074**; landed ~**09:49 UTC** (~**16:49 ICT**).
 - ~~**Hatch bubble/distress batch 68**~~ **pushed @ `47f9787`** — Q4406–Q4475 (`HatchBubbleDistressBarLaterTests3`, **70**); squash `e90c37d` onto `b9c1d5a`; gate **5144/5144**; ~**10:26+ UTC** (~**17:26 ICT**).
   - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
-- **Push policy:** plain FF / commit-tree squash only; grouped batches; **no force-push**. Before each grouped push: `git log -1 --format=%B` on **new** commit(s) — **no `Co-authored-by`**; also grep push range. Fix **unpushed** commits via `commit-tree` replay locally only; **never** amend/rewrite **already on origin** (including `main`) — leave violations alone.
+- **Push policy:** grouped **commit-tree** squashes; **no `--force` / `--force-with-lease` ever** (firm Nov 25). Before each GO: read project store `internal/push-policy-standing.md` + `internal/standing-rules-rivals.md`. Prepush, coauth grep, plain **`git push`** only. On non-FF: `fetch`, rebuild squash with **`commit-tree` parent = `origin` tip**, plain push — or stop and report.
 - ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
 - ~~**Batches 70–73 grouped squash**~~ **pushed @ `516404f`** — Q4546–Q4825 (**280** tests); gate **5494/5494**; parent `f320b6b`; ~**19:26 ICT**.
 - ~~**Batches 74–77 grouped squash**~~ **pushed @ `a727a84`** — Q4826–Q5105 (**280** tests); gate **5774/5774**; parent `516404f`; ~**20:12 ICT**.
@@ -205,8 +207,9 @@ and says why in the commit message.
 - ~~**Batches 178–185 grouped squash**~~ **pushed @ `d6765bc0`** — Q11956–Q12495 (**560**); gate **13334/13334** (`/tmp/rivals-b178-185-prepush.log`); GO ~**07:36 ICT** Nov 25.
 - ~~**Batches 186–193 grouped squash**~~ **pushed @ `92587abf`** — Q12496–Q13035 (**560**); gate **13894/13894** (`/tmp/rivals-b186-193-prepush.log`); GO ~**08:07 ICT** Nov 25.
 - ~~**Batches 194–201 grouped squash**~~ **pushed @ `893386d5`** — Q13036–Q13575 (**560**); gate **14454/14454** (`/tmp/rivals-b194-201-prepush.log`); GO ~**08:36 ICT** Nov 25.
-- **Batches 202–209 (squash pending):** Q13576–Q14065 (**560**); prepush **~15014**; GO ≥**09:07 ICT** after **`893386d5`**.
-- **Batches 210–213 (LOCAL after push):** model/chip, exit, bubble/acquire, soak — **280**; HOLD **~30m** after new tip.
+- ~~**Batches 202–209 grouped squash**~~ **pushed @ `3e3662f8`** — Q13576–Q14065 (**560**); gate **15014/15014** (`/tmp/rivals-b202-209-prepush.log`); GO ~**09:07 ICT** Nov 25. **Remote tip frozen** at **`3e3662f8`** (no rewrite).
+- **Batches 210–217 (squash pending):** Q14066–Q14615 (**560**); prepush **~15299**; parent **`3e3662f8`**; plain push only.
+- **Batches 218–221 (LOCAL after push):** regulator/shady/incident/rival — **280**; HOLD **~30m**.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
