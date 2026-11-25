@@ -1343,3 +1343,17 @@ Vendor/funding ladder/balance soak host slices.
 ## Open
 
 None.
+
+## Graphics pipeline (ALT-76, merged from PR #41)
+
+### Q455-alt76. Gauntlet reveal overlay? DECIDED: seasonal HQ overlay, not separate scene
+
+- Options: (a) full-screen gauntlet scene; (b) HQ overlay with lectern + mascots; (c) text-only modal.
+- Recommendation and choice: **(b)** — see `docs/art/GAUNTLET-STAGE.md`; build panel hidden, global chrome kept.
+- Why: reuses `HqGridView` and mascot row; avoids new scene graph before tab rail ships.
+
+### Q456-alt76. Tab rail v1 art binding? DECIDED: SVG icons + plaque prop stub
+
+- Options: (a) text-only tabs; (b) SVG sprites + `CampusTabIconBindings`; (c) full 3D plaques only.
+- Recommendation and choice: **(b)** with optional `ui-tab-rail-plaque` mesh until sprites import; see `TAB-RAIL-INTEGRATION.md`.
+- Why: matches Q452 phased tab rail without blocking on UI code.

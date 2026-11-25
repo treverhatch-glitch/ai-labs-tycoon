@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1112 tests pass (schemas 19–27: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards, sector trust; the workplace needs no schema), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 27. There is no Unity project yet.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). SimTests pass in the hundreds, including balance soaks and saves through schema 11. The Unity project lives under `unity/` (garage grid, HUD, week button in code); GameCI runs on PRs that touch `unity/**`; full editor verification is on the PC.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -648,12 +648,28 @@ and says why in the commit message.
 
 Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
-1. Create the Unity 6 project in `unity/` with `Rules/` as a local package. No rules in Unity scripts: Unity sends
-   `Command`s and draws `GameState`.
-2. A first scene built in code: the garage lot as a grid, rooms as coloured blocks, a week button, cash and date.
-3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
-4. The model mascots and their three states; the glow.
-5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
+1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
+2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3 (graphics batch 38 documents `RoomBuildPanel` chrome only).
+3. ~~**Room building, hire/GPU, training, Gauntlet show.**~~ On `cursor/unity-hq-views` (local); editor verification in SETUP-PC §2.
+4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; graphics tokens in `docs/art/MASCOT-PRESENTATION.md` + `GLOW-PRESENTATION.md` (batch 8); batch 33 adds row HUD spec for mascot strip polish on PC.
+5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches. Graphics batch 34 documents PR #41 branch landing notes for studio (`STUDIO-GRAPHICS-HANDOFF.md`); does not change `studio/` on this branch.
+
+**Graphics PR #41** (`cursor/graphics-pipeline-5032`): base **`main`**; integration tip **`c905b7e`**. Graphics land **`2245601`** (253–256). **Grouped push PAUSED** until rules CI green + coordinator GO (≥30m spacing). **LOCAL 257–260** ready (rollup/manifest **184**, GO **247**, world-era **260**); fork **261+** (STATUS **187**). Playbooks [GROUPED-PUSH-257-NEXT.md](art/GROUPED-PUSH-257-NEXT.md), [GROUPED-PUSH-261-NEXT.md](art/GROUPED-PUSH-261-NEXT.md).
+Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
+start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
+
+## Art / presentation (active)
+
+| Track | Status |
+| --- | --- |
+| PR #41 graphics batches | Spaced squashes on `cursor/graphics-pipeline-5032`; gate `./tools/art/prepush.sh`; rules-adjacent index batch **240** |
+| Unity import (`bc-93b5443a`) | `UNITY-INTEGRATION.md`, prop placement hints, tab icons |
+| Explainable HUD | Index (`EXPLAINABLE-HUD-INDEX.md`, batch 56); `DisplayQueries` in rules; HQ (batch 20), research drawer (batch 25), research screen 62/38 (batch 47) |
+| Hire / staff UI | Index (`STAFF-PRESENTATION-INDEX.md`, batch 57); staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
+| HQ chrome | Cash/grant (batch 27), date/week row (batch 31); breakdowns from `DisplayQueries` |
+| Seasonal overlays | Index (`SEASONAL-OVERLAY-INDEX.md`, batch 53); Gauntlet chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
+| Screen layouts | Research (47), rivals (48), training (49) — `UI-HUD-LAYOUTS` + `Campus*ScreenPresentationSpec` |
+| A11y chrome | Index (`A11Y-CHROME-INDEX.md`, batch 59); focus ring (batch 30); capture HUD (batch 35) + `CAPTURE-REGRESSION.md` |
 
 ## Studio and CI
 

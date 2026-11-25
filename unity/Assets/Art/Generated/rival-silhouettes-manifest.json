@@ -1,0 +1,20 @@
+{
+  "silhouettes": [
+    {
+      "id": "openaye",
+      "path": "Assets/Art/Generated/rival-silhouettes/silhouette-openaye.svg"
+    },
+    {
+      "id": "anthoptics",
+      "path": "Assets/Art/Generated/rival-silhouettes/silhouette-anthoptics.svg"
+    },
+    {
+      "id": "xay",
+      "path": "Assets/Art/Generated/rival-silhouettes/silhouette-xay.svg"
+    },
+    {
+      "id": "envydia",
+      "path": "Assets/Art/Generated/rival-silhouettes/silhouette-envydia.svg"
+    }
+  ]
+}

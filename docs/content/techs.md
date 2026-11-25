@@ -11,6 +11,7 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `state-machines` | Finite State Machines | 120 | - | CapabilityPermille +100 | Guards that patrol, spot you, and forget you five seconds later. |
 | `regression-tests` | Regression Test Suites | 200 | - | AlignmentPermille +200 | Find out the bot cheats before the customer does. |
 | `pathfinding` | A* Pathfinding | 240 | `state-machines` | CapabilityPermille +150 | Enemies can now find the player. Most of the time. Doors remain a problem. |
+| `go-fish-heuristic` | Go Fish Heuristics | 420 | `minimax` | CapabilityPermille +40 | A promising dead end. The grant committee loves it. |
 | `minimax` | Minimax & Alpha-Beta Search | 300 | - | CapabilityPermille +150 | Think ahead by assuming everyone else is as smart as you. Bold. |
 | `rules-engines` | Rules Engines | 450 | - | CapabilityPermille +100 | Ten thousand IF statements in a trench coat. |
 | `expert-shells` | Expert System Shells | 700 | `rules-engines` | unlocks `mid` | Bottle a senior expert. The expert has questions about this. |
@@ -115,6 +116,7 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | --- | --- | --- | --- | --- | --- |
 | `multi-agent` | Multi-Agent Orchestration | 80,000 | `reasoning-models`, `agent-sandboxes` | CapabilityPermille +16000 | Ten agents, one task, nine meetings. |
 | `ai-assisted-research` | AI-Assisted Research | 110,000 | `reasoning-models` | CapabilityPermille +18000 | The model reads the papers, runs the experiments and thanks itself in the acknowledgements. |
+| `chiplet-packaging` | Chiplet Packaging | 48,000 | `reticle-dies` | - | Many dies on one package. The foundry charges for the glue between them. |
 | `synthetic-data` | Synthetic Data at Scale | 86,000 | `reasoning-models` | CapabilityPermille +12000, TrainingSpeedPermille +1500 | Train on text written by the last model. What could possibly echo? |
 | `interp-v2` | Interpretability v2 | 92,000 | `interp-v1` | AlignmentPermille +1200 | We can read its thoughts now. They are mostly about lunch. Mostly. |
 | `long-horizon` | Long-Horizon Harnesses | 120,000 | `multi-agent` | CapabilityPermille +14000 | It works for a week without supervision. You are not sure that is a good thing. |

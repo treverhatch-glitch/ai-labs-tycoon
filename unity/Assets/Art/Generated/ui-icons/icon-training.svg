@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="training">
+  <rect width="64" height="64" rx="8" fill="#14171D"/>
+  <rect x="18" y="22" width="28" height="6" rx="2" fill="#8C66F2"/>  <rect x="18" y="32" width="22" height="6" rx="2" fill="#6A46D0"/>  <rect x="18" y="42" width="14" height="6" rx="2" fill="#4A26B0"/>
+</svg>
