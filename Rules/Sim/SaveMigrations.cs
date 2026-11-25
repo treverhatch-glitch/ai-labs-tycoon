@@ -42,6 +42,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
@@ -473,14 +474,15 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
         }
 
-        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
         static void MigrateTo24(JsonValue root)
         {
             bool hadCrash = JsonPatch.IntOr(root, "bubbleCrashMonthsRemaining", 0) > 0;
             JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
         }
 
-                static void MigrateTo25(JsonValue root)
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
         }
@@ -507,9 +509,22 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
+
+        /// <summary>Acquisition and asset-sale ledger lines (Q170).</summary>
+        static void MigrateTo28(JsonValue root)
+        {
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals =>
+                {
+                    foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
+                });
+        }
+
+        /// <summary>M&amp;A fleet resale lock (Q202) and safety culture / release gate (merged era schema 29).</summary>
         static void MigrateTo29(JsonValue root)
         {
+            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 JsonPatch.AddIfMissing(lab, "cultureShift", JsonValue.Of(0L));
