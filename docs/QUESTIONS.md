@@ -4533,9 +4533,43 @@ Vendor/funding ladder/balance soak host slices.
 - Options: (a) staff panel only; (b) staff + GPU tier affordance; (c) skip.
 - Recommendation and choice: **(b)** — batch **346**.
 
-### Q796. Era reserved-compute bible HUD thickener? DRAFT: `CampusEraReservedComputeBibleThickenerPresentationSpec`
+### Q796. Era reserved-compute bible HUD thickener? DECIDED: `CampusEraReservedComputeBibleThickenerPresentationSpec`
 
 - Options: (a) defer; (b) thickener on schema 149; (c) skip.
-- Recommendation: **(b)** — batch **347**.
-- Status: LOCAL fork (NO PUSH).
->>>>>>> Stashed changes
+- Recommendation and choice: **(b)** — batch **347**.
+
+### Q797. ALT-76 rollup refresh through batch 347? DECIDED: `CampusAlt76RollupRefreshB347PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **348**.
+
+### Q798. Presentation index hub through batch 347? DECIDED: `CampusPresentationIndexHubThrough347PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **349**.
+
+### Q799. GO packet tail through batch 298? DECIDED: `CampusGoPacketTailRefreshThrough298PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **350**.
+
+### Q800. Explainable HUD tail through batch 318? DECIDED: `CampusExplainableHudTailRefreshThrough318PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **351**.
+
+### Q801. Index manifest tail through batch 217? DECIDED: `CampusIndexLaneManifestTailRefreshThrough217PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **352**.
+
+### Q802. Presentation tail rollup through batch 217? DECIDED: `CampusPresentationTailRollupRefreshThrough217PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **353**.
+
+### Q803. ALT-76 status sync through batch 220? DECIDED: `CampusAlt76StatusSyncThrough220PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **354**.
+
+### Q804. GO packet tail through batch 301? DECIDED: `CampusGoPacketTailRefreshThrough301PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **355**.
+
+### Q805. Rivals/world tail index through batch 315? DECIDED: `CampusRivalWorldTailIndexRefreshThrough315PresentationSpec`
+
+- Recommendation and choice: **(b)** — batch **356**.
