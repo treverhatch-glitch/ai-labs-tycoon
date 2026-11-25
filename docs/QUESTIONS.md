@@ -1328,9 +1328,13 @@ Prepush **21757/21757**; GO ≥**16:18 ICT**.
 
 Prepush **22320/22320**; GO ≥**16:49 ICT**.
 
-### Q14206–Q14975. Batches 314–321 + HostExplainNext314? DECIDED: test-only (LOCAL HOLD after `bef51859`)
+### Q14206–Q14975. Batches 314–321 + HostExplainNext314? DECIDED: test-only (pushed @ `71a0d490`, Nov 25)
 
-Rival log bounds, two-step funding ladder, balance soak game-count prep.
+Prepush **22883/22883**; GO window ≥**17:19 ICT** (landed ~**17:11 ICT**).
+
+### Q14276–Q15045. Batches 322–329 cross bars? DECIDED: test-only (LOCAL HOLD after `71a0d490`)
+
+Eight-bar bible rotation.
 
 ## Open
 
