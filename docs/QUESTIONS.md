@@ -1308,9 +1308,13 @@ Eight schema-29 hatch bars; parent `1ecfc559`; prepush **18954/18954**.
 
 Eight schema-29 hatch bars; parent `c6ac9d28`; prepush **19514/19514**.
 
-### Q13856–Q14625. Batches 274–281 cross bars? DECIDED: test-only (LOCAL HOLD after `1f535b41`)
+### Q13856–Q14625. Batches 274–281 cross bars? DECIDED: test-only (pushed @ `8e8296a7` grouped squash, Nov 25)
 
-Bible rotation +70Q/clone from 266–273 lineage.
+Eight schema-29 hatch bars; parent `1f535b41`; prepush **20074/20074**.
+
+### Q13926–Q14695. Batches 282–289 cross bars? DECIDED: test-only (LOCAL HOLD after `8e8296a7`)
+
++70Q clone from 274–281 lineage.
 
 ## Open
 
