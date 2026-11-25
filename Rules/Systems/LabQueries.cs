@@ -479,7 +479,7 @@ namespace AiLabs.Rules.Systems
         public static long WeeklyGpuRent(GameConfig c, GameState state, LabState lab)
         {
             GpuGenerationConfig gen = CurrentGeneration(c, state.Tick);
-            long rent = gen.RentPerGpuWeek * lab.RentedGpus;
+            long rent = gen.RentPerGpuWeek * lab.RentedGpus - Spot.Saving(c, gen.RentPerGpuWeek * lab.RentedGpus, lab);
             return rent + ComputeContractSystem.WeeklyReservedRent(c, state, lab) + ChipQueries.WeeklyCloudChipRent(c, state, lab);
         }
 

@@ -514,7 +514,33 @@ namespace AiLabs.Rules.State
         /// <summary>A report was late. SubjectId is the model, Amount the fine.</summary>
         ReportLate,
         /// <summary>An inspection of the register. Pick 1 clean, 0 fined; Amount the fine.</summary>
-        InspectionHeld
+        InspectionHeld,
+        /// <summary>Raw data came in. SubjectId is the source (1 scraped, 2 licensed, 3 synthetic, 4 users), Amount the units.</summary>
+        DataAcquired,
+        /// <summary>A cleaning job finished. SubjectId is the source, Amount the units that came through.</summary>
+        DataCleaned,
+        /// <summary>Scraped units were licensed after the fact. Amount is the units.</summary>
+        DataLicensed,
+        /// <summary>A claim landed over scraped data. SubjectId is the units purged, Amount the fine.</summary>
+        DataSuit,
+        /// <summary>The lab changed what it does with its users' data. SubjectId is the policy (0 none, 1 opt-in, 2 default).</summary>
+        UserDataChanged,
+        /// <summary>A privacy complaint landed. Amount is the fine, SubjectId the units collected since the last one.</summary>
+        UserDataComplaint,
+        /// <summary>Users' data was deleted when the lab moved off a default policy. Amount is the units lost.</summary>
+        UserDataDeleted,
+        /// <summary>The lab changed how it is controlled. SubjectId is the form (1 dual-class, 2 non-profit parent).</summary>
+        GovernanceChanged,
+        /// <summary>An independent director joined. SubjectId is how many there are now.</summary>
+        DirectorSeated,
+        /// <summary>An independent director resigned because the lab could not pay. SubjectId is how many are left.</summary>
+        DirectorResigned,
+        /// <summary>The lab bought a funding round back. Amount is the price, Text the round.</summary>
+        RoundBoughtBack,
+        /// <summary>A training run was preempted and lost progress. SubjectId is the model, Amount the compute lost, Ref the model name.</summary>
+        SpotPreempted,
+        /// <summary>The board voted on buying a round back. Pick is 1 passed or 0 refused, Amount the yes votes in permille of all, Ref the round.</summary>
+        BoardVoted
     }
 
     /// <summary>

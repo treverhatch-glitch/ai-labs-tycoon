@@ -354,6 +354,12 @@ and says why in the commit message.
 171. **Organisation structure.** ~~Done~~: `SetOrg`, schema 112, `OrgTests` (Q419).
 172. **Cluster fabric.** ~~Done~~: `OrderFabric`, `CancelFabric`, schema 113, `FabricTests` (Q420).
 173. **Incident register.** ~~Done~~: `JoinRegister`, `LeaveRegister`, `FileReport`, schema 114, `DisclosureTests` (Q421).
+174. **Training-data pipeline.** ~~Done~~: `AcquireData`, `CleanData`, `LicenseScraped`, schema 115, `DatasetsTests` (Q427).
+175. **User data.** ~~Done~~: `SetUserData`, schema 116, `UserDataTests` (Q428).
+176. **Governance.** ~~Done~~: `SetGovernance`, `SeatDirector`, schema 117, `GovernanceTests` (Q429).
+177. **Round buyback by board vote.** ~~Done~~: `BuyBackRound`, schema 118, `BuybackTests` (Q430).
+178. **Spot capacity.** ~~Done~~: `SetSpotShare`, schema 119, `SpotTests` (Q431).
+179. **Batch ten news, chat and combination rules.** ~~Done~~: headlines and chat (Q432), directors and data suits (Q433), complaints and directors (Q434), waves and cleaning (Q435), waves and buyback votes (Q436).
 
 ## Rules: later
 

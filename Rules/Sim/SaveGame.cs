@@ -312,6 +312,27 @@ namespace AiLabs.Rules.Sim
                     || (lab.DiscOpen == 0 && lab.DiscLeft != 0)
                     || ((lab.DiscOn != 0 || lab.DiscFindings != 0 || lab.DiscFiled != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has an incident register (" + lab.DiscOpen + " waiting, " + lab.DiscFindings + " findings) the data does not allow");
+                if (lab.DataRaw1 < 0 || lab.DataRaw2 < 0 || lab.DataRaw3 < 0 || lab.DataRaw4 < 0 || lab.DataClean1 < 0 || lab.DataClean2 < 0 || lab.DataClean3 < 0 || lab.DataClean4 < 0
+                    || lab.DataJobKind < 0 || lab.DataJobKind > 4 || lab.DataJobUnits < 0 || lab.DataJobLeft < 0 || lab.DataSuits < 0 || lab.DataBackfilled < 0
+                    || (lab.DataJobKind == 0) != (lab.DataJobUnits == 0) || (lab.DataJobUnits == 0) != (lab.DataJobLeft == 0)
+                    || ((lab.DataRaw1 + lab.DataRaw2 + lab.DataRaw3 + lab.DataRaw4 + lab.DataClean1 + lab.DataClean2 + lab.DataClean3 + lab.DataClean4 + lab.DataJobUnits + lab.DataSuits + lab.DataBackfilled) != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has data (" + lab.DataJobUnits + " in a job of kind " + lab.DataJobKind + ") in a way the data does not allow");
+                if (lab.UserPolicy < 0 || lab.UserPolicy > 2 || lab.UserSince < 0 || lab.UserBanked < 0 || lab.UserTotal < lab.UserBanked || lab.UserComplaints < 0
+                    || (lab.UserPolicy == 0 && lab.UserSince == 0 && lab.UserBanked != 0)
+                    || ((lab.UserPolicy != 0 || lab.UserTotal != 0 || lab.UserComplaints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " collects its users' data (policy " + lab.UserPolicy + ", " + lab.UserBanked + " since the last complaint) in a way the data does not allow");
+                if (lab.GovForm < 0 || lab.GovForm > 2 || lab.GovSince < 0 || lab.GovDirectors < 0 || lab.GovDirectors > 9 || lab.GovSearch < 0 || lab.GovResigned < 0
+                    || (lab.GovForm == 0 && lab.GovSince != 0 && lab.GovDirectors == 0 && lab.GovResigned == 0 && lab.GovSearch == 0)
+                    || ((lab.GovForm != 0 || lab.GovDirectors != 0 || lab.GovSearch != 0 || lab.GovResigned != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " is governed (form " + lab.GovForm + ", " + lab.GovDirectors + " directors) in a way the data does not allow");
+                if (lab.BoardVoteWeek < 0 || lab.BoardWon < 0 || lab.BoardLost < 0 || lab.BoardWon != lab.BoughtRounds.Count)
+                    p.Add(who + " has a board vote record that does not match its buybacks");
+                for (int br = 0; br < lab.BoughtRounds.Count; br++)
+                    if (!lab.FundingRounds.Contains(lab.BoughtRounds[br]) || lab.BoughtRounds.IndexOf(lab.BoughtRounds[br]) != br)
+                        p.Add(who + " bought back round " + lab.BoughtRounds[br] + " which it never raised, or twice");
+                if (lab.SpotPermille < 0 || lab.SpotPermille > 1000 || lab.SpotSince < 0 || lab.SpotSaved < 0 || lab.SpotPreempts < 0 || lab.SpotLost < 0 || lab.SpotOut < 0 || lab.SpotOut > c.Spot.ReclaimWeeks || lab.SpotWaves < 0
+                    || ((lab.SpotPermille != 0 || lab.SpotSince != 0 || lab.SpotSaved != 0 || lab.SpotPreempts != 0 || lab.SpotLost != 0 || lab.SpotOut != 0 || lab.SpotWaves != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " runs spot capacity in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

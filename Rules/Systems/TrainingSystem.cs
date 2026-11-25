@@ -91,6 +91,7 @@ namespace AiLabs.Rules.Systems
             var f = new CapabilityForecast();
             f.Base = line.BaseCapability;
             f.Tech = (int)MathI.MulPermille(line.BaseCapability, LabQueries.TechBonus(c, lab, TechEffectKind.CapabilityPermille));
+            f.Tech += (int)MathI.MulPermille(line.BaseCapability, Datasets.BonusPermille(c, lab));
             ModelState previous = LabQueries.LatestOfLine(lab, line.Id);
             f.Carryover = previous == null ? 0 : (int)MathI.MulPermille(previous.Capability, c.Training.CarryoverPermille);
             return f;
@@ -132,7 +133,7 @@ namespace AiLabs.Rules.Systems
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Training) continue;
 
-                long allotted = shares[run++];
+                long allotted = Spot.Allotted(c, lab, model, shares[run++]);
 
                 long effective = MathI.MulPermille(allotted, speed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);

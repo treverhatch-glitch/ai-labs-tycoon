@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 115;
+        public const int CurrentSchema = 120;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,7 +42,6 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
-        /// <summary>Set once the economy has already seen a bubble crash.</summary>
         public bool BubbleHadCrash;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
@@ -523,6 +522,47 @@ namespace AiLabs.Rules.State
         public int DiscFiled;
         public int DiscInspect;
         public int DiscModel;
+        /// <summary>Raw units of data by source (1 scraped, 2 licensed, 3 synthetic, 4 users), clean units by source, the source and units and weeks left of the cleaning job, and counts of claims and of units licensed after the fact.</summary>
+        public int DataRaw1;
+        public int DataRaw2;
+        public int DataRaw3;
+        public int DataRaw4;
+        public int DataClean1;
+        public int DataClean2;
+        public int DataClean3;
+        public int DataClean4;
+        public int DataJobKind;
+        public int DataJobUnits;
+        public int DataJobLeft;
+        public int DataSuits;
+        public int DataBackfilled;
+        /// <summary>The users-data policy (0 none, 1 opt-in, 2 on by default), one more than the week it was set, units collected since the last complaint, units collected in all and complaints so far.</summary>
+        public int UserPolicy;
+        public int UserSince;
+        public int UserBanked;
+        public int UserTotal;
+        public int UserComplaints;
+        /// <summary>How the company is controlled (0 ordinary, 1 dual-class shares, 2 non-profit parent), one more than the week it was set, seated independent directors, weeks left on the search for the next, and how many have resigned.</summary>
+        public int GovForm;
+        public int GovSince;
+        public int GovDirectors;
+        public int GovSearch;
+        public int GovResigned;
+        /// <summary>Ids of the funding rounds the lab has bought back.</summary>
+        public List<string> BoughtRounds = new List<string>();
+        /// <summary>One more than the week the board last voted a buyback down (0 never), buybacks it passed, and buybacks it refused.</summary>
+        public int BoardVoteWeek;
+        public int BoardWon;
+        public int BoardLost;
+        /// <summary>Share of the rented GPUs on spot capacity (permille), one more than the week it was set, the rent saved so far, runs preempted, and compute they lost.</summary>
+        public int SpotPermille;
+        public int SpotSince;
+        public long SpotSaved;
+        public int SpotPreempts;
+        public long SpotLost;
+        /// <summary>Weeks left in the current reclaim wave, and how many waves the cloud has called.</summary>
+        public int SpotOut;
+        public int SpotWaves;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -979,6 +1019,40 @@ namespace AiLabs.Rules.State
             s.Int("discFiled", ref DiscFiled);
             s.Int("discInspect", ref DiscInspect);
             s.Int("discModel", ref DiscModel);
+            s.Int("dataRaw1", ref DataRaw1);
+            s.Int("dataRaw2", ref DataRaw2);
+            s.Int("dataRaw3", ref DataRaw3);
+            s.Int("dataRaw4", ref DataRaw4);
+            s.Int("dataClean1", ref DataClean1);
+            s.Int("dataClean2", ref DataClean2);
+            s.Int("dataClean3", ref DataClean3);
+            s.Int("dataClean4", ref DataClean4);
+            s.Int("dataJobKind", ref DataJobKind);
+            s.Int("dataJobUnits", ref DataJobUnits);
+            s.Int("dataJobLeft", ref DataJobLeft);
+            s.Int("dataSuits", ref DataSuits);
+            s.Int("dataBackfilled", ref DataBackfilled);
+            s.Int("userPolicy", ref UserPolicy);
+            s.Int("userSince", ref UserSince);
+            s.Int("userBanked", ref UserBanked);
+            s.Int("userTotal", ref UserTotal);
+            s.Int("userComplaints", ref UserComplaints);
+            s.Int("govForm", ref GovForm);
+            s.Int("govSince", ref GovSince);
+            s.Int("govDirectors", ref GovDirectors);
+            s.Int("govSearch", ref GovSearch);
+            s.Int("govResigned", ref GovResigned);
+            s.StrList("boughtRounds", ref BoughtRounds);
+            s.Int("boardVoteWeek", ref BoardVoteWeek);
+            s.Int("boardWon", ref BoardWon);
+            s.Int("boardLost", ref BoardLost);
+            s.Int("spotPermille", ref SpotPermille);
+            s.Int("spotSince", ref SpotSince);
+            s.Long("spotSaved", ref SpotSaved);
+            s.Int("spotPreempts", ref SpotPreempts);
+            s.Long("spotLost", ref SpotLost);
+            s.Int("spotOut", ref SpotOut);
+            s.Int("spotWaves", ref SpotWaves);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

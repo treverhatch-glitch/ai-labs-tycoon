@@ -2620,6 +2620,48 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Each incident on a model with integrations loses `integrations.incidentPermille` (60) of them, so the lift and the lock-in that integrations bring are exposed to the model's safety record. A model with none, and a lab with the integrations switched off, are unchanged. The loss is not counted in the stranded count, which is for closing an API.
 - Alternatives: lose trust only (rejected: integrations are the thing built up).
 
+### Q427. Where does a model's data come from? DECIDED: raw units from four sources, cleaning jobs, a legal clock on scraped data and a collapse limit on synthetic data
+- Scraping is cheap and loses the most in cleaning, and it is the only source that brings claims; licensing is dear and clean; synthetic is cheap but turns models strange past a share; users' data comes from the flywheel. Cleaning is a job that takes engineers and weeks, so the corpus has a pipeline. The claim is on a fixed cycle from a fixed era, so it is a clock to plan for, not dice.
+- It feeds capability through the tech part of a new model's capability, so no model field was added and the capability identity holds.
+- Alternatives: a data quality knob (rejected: nothing to decide), claims by chance (rejected: not plannable), consuming data per run (rejected: bookkeeping with no choice).
+
+### Q428. Do the lab's own users feed its models? DECIDED: a policy that turns revenue into raw data, with complaints under a default policy and a deletion cost for backing off
+- Opt-in collects less and is free of trouble. Default collects all it can and builds a corpus that is then exposed: complaints fine it and cost trust, and a lab that backs off loses most of what it built. The data is raw units, so it still needs cleaning and counts toward the same stock cap and corpus as the other sources.
+- Alternatives: a bonus for collecting (rejected: no downside), complaints by chance (rejected: not plannable).
+
+### Q429. Who controls the company? DECIDED: dual-class or a non-profit parent chosen early at a price in later rounds, plus independent directors found over weeks and paid weekly
+- The founders can buy control only early, permanently, and by giving investors a worse deal on every round after. Directors are a slow, paid way to a calmer board, and walk if the lab cannot pay.
+- Alternatives: control as a free setting (rejected: no price), a reversible structure (rejected: no commitment).
+
+### Q430. Can a lab pay its investors to leave? DECIDED: only if the board votes it through, on votes that follow the equity, and each passed buyback changes every later vote
+- Founders, each round still held and each independent director carry votes; the round being bought votes no, other investors say no to a drain on the cash, directors say no to a thin runway. Dual-class and a non-profit parent matter because they decide whether the founders can carry the vote alone. A refusal shuts the board for weeks.
+- Alternatives: buying a round on any day at a price (rejected: a fee for an ownership bump), a random vote (rejected: nothing to plan).
+
+### Q431. Should rented compute come cheaper if it can be taken away? DECIDED: a spot share whose reclaim waves interrupt runs by checkpoint habit, starve the spot share of every run that is not rushed, and spare rushed runs
+- It joins four things the lab already decides: rent, checkpoint habit, engineers and the run queue. A rushed run sits on reserved capacity, so the queue priority (which costs progress to change) decides which runs the cloud may hit.
+- Alternatives: a flat cheaper rent (rejected: no risk), a random loss per run (rejected: nothing to plan around).
+
+### Q432. What does the world say about the data, governance and compute systems? DECIDED: headlines for every event and chat for the ones that land
+- Data acquired, cleaned, licensed or sued over, users' data changed, fined or deleted, governance changed, a director seated or resigned, a buyback voted down or through, a round bought back and a spot reclaim each have a headline; the vote has one line for each result. Chat for the ones people would talk about.
+- Pins: 334 headlines and 316 chat lines.
+- Alternatives: one line for the whole batch (rejected: the branches are the story).
+
+### Q433. Do directors soften a data suit? DECIDED: each independent director takes 10% off the fine, so a board with three takes 30%
+- Directors cost money every week and can walk; this is one thing they are for.
+- Alternatives: directors stop the suit (rejected: the clock is the point of the pipeline).
+
+### Q434. What does a privacy complaint do to the board? DECIDED: one independent director resigns for each complaint
+- A default policy collects more and costs a seat. A lab with no directors loses none.
+- Alternatives: a bigger fine (rejected: the lab already pays by the unit).
+
+### Q435. Does a reclaim wave touch the data pipeline? DECIDED: a cleaning job makes no progress in a week of a wave
+- Cleaning runs on the same cloud. A lab on a large spot share can find its data late as well as its runs.
+- Alternatives: the wave destroys the job (rejected: the run already loses progress).
+
+### Q436. Do directors vote on a buyback in a wave? DECIDED: they vote no while a reclaim wave is on
+- It makes the timing of a buyback depend on compute, as a prudent board would see it.
+- Alternatives: the wave raises the price (rejected: the price already follows the bubble).
+
 ## Open
 
 None.

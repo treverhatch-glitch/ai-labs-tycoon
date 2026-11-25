@@ -6396,6 +6396,85 @@
     "certifiedFindings": 1,
     "orgFasterWeeks": 1
   },
+  "datasets": {
+    "enabled": 1,
+    "maxBuy": 200,
+    "stockCap": 5000,
+    "costScrape": 400,
+    "costLicense": 6000,
+    "costSynth": 150,
+    "cleanWeeks": 3,
+    "cleanMax": 100,
+    "cleanCost": 300,
+    "perEngineer": 25,
+    "yieldScrape": 600,
+    "yieldLicense": 950,
+    "yieldSynth": 800,
+    "yieldUsers": 700,
+    "qScrape": 800,
+    "qLicense": 1000,
+    "qSynth": 600,
+    "qUsers": 900,
+    "bonusPer100": 25,
+    "bonusCap": 300,
+    "collapseShare": 400,
+    "collapseSlope": 2,
+    "collapseCap": 600,
+    "suitEra": 4,
+    "suitWeeks": 26,
+    "suitFine": 800,
+    "backfillCost": 2500,
+    "directorSuitPermille": 100,
+    "waveStallsCleaning": 1
+  },
+  "userData": {
+    "enabled": 1,
+    "revenuePerUnit": 25000,
+    "optInPermille": 300,
+    "defaultPermille": 1000,
+    "lockWeeks": 13,
+    "complaintWeeks": 26,
+    "complaintMin": 40,
+    "complaintFine": 1500,
+    "complaintTrust": 15,
+    "keepPermille": 300,
+    "complaintResigns": 1
+  },
+  "governance": {
+    "enabled": 1,
+    "dualMaxRounds": 1,
+    "dualVoteMult": 4000,
+    "dualCashCut": 150,
+    "nonprofitMaxRounds": 0,
+    "nonprofitCashCut": 400,
+    "directorWeeks": 12,
+    "maxDirectors": 3,
+    "directorFee": 150000,
+    "directorWeekly": 3000,
+    "directorMinRep": 300,
+    "dramaCut": 250
+  },
+  "buyback": {
+    "enabled": 1,
+    "priceMult": 2000,
+    "bubblePrice": 1000,
+    "buybackTrust": 2000,
+    "voteCooldown": 8,
+    "directorVote": 60,
+    "spendCapPermille": 400,
+    "runwayWeeks": 26,
+    "passPermille": 500,
+    "waveBlocksDirectors": 1
+  },
+  "spot": {
+    "enabled": 1,
+    "maxPermille": 600,
+    "discountPermille": 400,
+    "preemptPermille": 120,
+    "defaultLossPermille": 500,
+    "changeWeeks": 4,
+    "reclaimWeeks": 2
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
@@ -11251,6 +11330,90 @@
         "kind": "InspectionHeld",
         "pick": 0,
         "text": "The incident register inspects {lab} and fines it for what is on file. The list was long"
+      },
+      {
+        "id": "data-acquired",
+        "kind": "DataAcquired",
+        "pick": -1,
+        "text": "{lab} takes delivery of a new pile of training data. Nobody has opened it yet"
+      },
+      {
+        "id": "data-cleaned",
+        "kind": "DataCleaned",
+        "pick": -1,
+        "text": "{lab} finishes cleaning a batch of training data. Most of it survives"
+      },
+      {
+        "id": "data-licensed",
+        "kind": "DataLicensed",
+        "pick": -1,
+        "text": "{lab} signs a data licence and a backfill for what it scraped. Legal exhales"
+      },
+      {
+        "id": "data-suit",
+        "kind": "DataSuit",
+        "pick": -1,
+        "text": "{lab} is sued over scraped training data and has to wipe the lot. The corpus is a lot smaller"
+      },
+      {
+        "id": "user-data-changed",
+        "kind": "UserDataChanged",
+        "pick": -1,
+        "text": "{lab} changes what it does with its users' data. The privacy page gets a new date"
+      },
+      {
+        "id": "user-data-complaint",
+        "kind": "UserDataComplaint",
+        "pick": -1,
+        "text": "A privacy regulator fines {lab} over data taken by default. The settings page is rewritten"
+      },
+      {
+        "id": "user-data-deleted",
+        "kind": "UserDataDeleted",
+        "pick": -1,
+        "text": "{lab} deletes most of the user data it held. The corpus shrinks overnight"
+      },
+      {
+        "id": "governance-changed",
+        "kind": "GovernanceChanged",
+        "pick": -1,
+        "text": "{lab} changes who controls the company. The investors read the small print twice"
+      },
+      {
+        "id": "director-seated",
+        "kind": "DirectorSeated",
+        "pick": -1,
+        "text": "{lab} seats an independent director. The board room gets another chair"
+      },
+      {
+        "id": "director-resigned",
+        "kind": "DirectorResigned",
+        "pick": -1,
+        "text": "An independent director resigns from {lab}. The letter is short and polite"
+      },
+      {
+        "id": "board-passed",
+        "kind": "BoardVoted",
+        "pick": 1,
+        "text": "The board of {lab} votes to buy its investors out. The vote is not close"
+      },
+      {
+        "id": "board-refused",
+        "kind": "BoardVoted",
+        "pick": 0,
+        "text": "The board of {lab} votes down a buyback. The investors keep their seats"
+      },
+      {
+        "id": "round-bought",
+        "kind": "RoundBoughtBack",
+        "pick": -1,
+        "text": "{lab} buys a funding round back from its investors. The cap table gets simpler"
+      },
+      {
+        "id": "spot-preempted",
+        "kind": "SpotPreempted",
+        "pick": -1,
+        "text": "The cloud takes back {lab}'s spot capacity and {ref} loses a stretch of its run"
       }
     ],
     "filler": [
@@ -14874,6 +15037,94 @@
         "pick": -1,
         "about": "lab",
         "text": "The inspector has been and gone. Safety is reading the findings.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-cleaned-chat",
+        "kind": "DataCleaned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The clean batch is in. The yield is less than we hoped.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-suit-chat",
+        "kind": "DataSuit",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Legal says the scraped data has to go. Every run that used it is being looked at.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "user-data-complaint-chat",
+        "kind": "UserDataComplaint",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The regulator wrote about the default setting. We are all rereading the privacy page.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "director-seated-chat",
+        "kind": "DirectorSeated",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The new director has been shown round. Nobody is sure what to say to them.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "director-resigned-chat",
+        "kind": "DirectorResigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A director has walked. The board room feels bigger.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "board-voted-chat",
+        "kind": "BoardVoted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board has voted on the buyback. Everyone is working out who voted how.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "round-bought-chat",
+        "kind": "RoundBoughtBack",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The investors are out. The founders have more say, and a lot less cash.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "spot-preempted-chat",
+        "kind": "SpotPreempted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The cloud took the spot machines back mid-run. People are checking the checkpoints.",
         "fromYear": 0,
         "toYear": 0
       }

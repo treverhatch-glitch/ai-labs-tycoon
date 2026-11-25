@@ -149,6 +149,11 @@ namespace AiLabs.Rules.Config
             OrgProblems(p, c);
             FabricProblems(p, c);
             DisclosureProblems(p, c);
+            DatasetsProblems(p, c);
+            UserDataProblems(p, c);
+            GovernanceProblems(p, c);
+            BuybackProblems(p, c);
+            SpotProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1690,6 +1695,63 @@ namespace AiLabs.Rules.Config
             if (k.TrustGain < 0 || k.TrustFull < k.TrustGain || k.LateFine < 0 || k.InspectFine < 0) p.Add("disclosure.trustFull must not be below trustGain and the fines must not be negative");
             if (k.CertifiedFindings < 0) p.Add("disclosure.certifiedFindings must not be negative");
             if (k.OrgFasterWeeks < 0) p.Add("disclosure.orgFasterWeeks must not be negative");
+        }
+
+        static void DatasetsProblems(List<string> p, GameConfig c)
+        {
+            DatasetsConfig k = c.Datasets;
+            if (k == null) { p.Add("datasets is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("datasets.enabled must be 0 or 1");
+            if (k.MaxBuy < 1 || k.StockCap < k.MaxBuy || k.CleanWeeks < 1 || k.CleanMax < 1 || k.PerEngineer < 1 || k.SuitWeeks < 1 || k.SuitEra < 0 || k.SuitEra >= c.Eras.Count) p.Add("datasets.maxBuy, cleanWeeks, cleanMax, perEngineer and suitWeeks must be at least 1, stockCap at least maxBuy and suitEra a real era");
+            if (k.CostScrape < 0 || k.CostLicense < 0 || k.CostSynth < 0 || k.CleanCost < 0 || k.SuitFine < 0 || k.BackfillCost < 0 || k.BonusPer100 < 0 || k.CollapseSlope < 0) p.Add("datasets costs, fines and bonuses must not be negative");
+            if (k.YieldScrape < 0 || k.YieldScrape > 1000 || k.YieldLicense < 0 || k.YieldLicense > 1000 || k.YieldSynth < 0 || k.YieldSynth > 1000 || k.YieldUsers < 0 || k.YieldUsers > 1000 || k.QScrape < 0 || k.QScrape > 1000 || k.QLicense < 0 || k.QLicense > 1000 || k.QSynth < 0 || k.QSynth > 1000 || k.QUsers < 0 || k.QUsers > 1000) p.Add("datasets yields and values must be from 0 to 1000");
+            if (k.BonusCap < 0 || k.BonusCap > 900 || k.CollapseShare < 0 || k.CollapseShare > 1000 || k.CollapseCap < 0 || k.CollapseCap > 1000) p.Add("datasets.bonusCap must be from 0 to 900 and the collapse values from 0 to 1000");
+            if (k.DirectorSuitPermille < 0 || k.DirectorSuitPermille > 300) p.Add("datasets.directorSuitPermille must be from 0 to 300");
+            if (k.WaveStallsCleaning < 0 || k.WaveStallsCleaning > 1) p.Add("datasets.waveStallsCleaning must be 0 or 1");
+        }
+
+        static void UserDataProblems(List<string> p, GameConfig c)
+        {
+            UserDataConfig k = c.UserData;
+            if (k == null) { p.Add("userData is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("userData.enabled must be 0 or 1");
+            if (k.RevenuePerUnit < 1 || k.LockWeeks < 0 || k.ComplaintWeeks < 1 || k.ComplaintMin < 1) p.Add("userData.revenuePerUnit, complaintWeeks and complaintMin must be at least 1 and lockWeeks not negative");
+            if (k.OptInPermille < 0 || k.OptInPermille > 1000 || k.DefaultPermille < k.OptInPermille || k.DefaultPermille > 1000 || k.KeepPermille < 0 || k.KeepPermille > 1000) p.Add("userData.optInPermille must not be above defaultPermille and shares must be from 0 to 1000");
+            if (k.ComplaintResigns < 0) p.Add("userData.complaintResigns must not be negative");
+            if (k.ComplaintFine < 0 || k.ComplaintTrust < 0) p.Add("userData fines and trust losses must not be negative");
+        }
+
+        static void GovernanceProblems(List<string> p, GameConfig c)
+        {
+            GovernanceConfig k = c.Governance;
+            if (k == null) { p.Add("governance is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("governance.enabled must be 0 or 1");
+            if (k.DualMaxRounds < 0 || k.NonprofitMaxRounds < 0 || k.DualVoteMult < 1000 || k.DirectorWeeks < 1 || k.MaxDirectors < 0 || k.MaxDirectors > 9) p.Add("governance rounds must not be negative, dualVoteMult at least 1000, directorWeeks at least 1 and maxDirectors from 0 to 9");
+            if (k.DualCashCut < 0 || k.DualCashCut > 900 || k.NonprofitCashCut < 0 || k.NonprofitCashCut > 900 || k.DramaCut < 0 || k.DramaCut > 1000) p.Add("governance cuts must be from 0 to 900 and dramaCut from 0 to 1000");
+            if (k.DirectorFee < 0 || k.DirectorWeekly < 0 || k.DirectorMinRep < 0 || k.DirectorMinRep > 1000) p.Add("governance fees must not be negative and directorMinRep must be from 0 to 1000");
+        }
+
+        static void BuybackProblems(List<string> p, GameConfig c)
+        {
+            BuybackConfig k = c.Buyback;
+            if (k == null) { p.Add("buyback is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("buyback.enabled must be 0 or 1");
+            if (k.VoteCooldown < 0) p.Add("buyback.voteCooldown must not be negative");
+            if (k.DirectorVote < 0 || k.DirectorVote > 500) p.Add("buyback.directorVote must be from 0 to 500");
+            if (k.SpendCapPermille < 0 || k.SpendCapPermille > 1000) p.Add("buyback.spendCapPermille must be from 0 to 1000");
+            if (k.RunwayWeeks < 0) p.Add("buyback.runwayWeeks must not be negative");
+            if (k.PassPermille < 1 || k.PassPermille > 999) p.Add("buyback.passPermille must be from 1 to 999");
+            if (k.WaveBlocksDirectors < 0 || k.WaveBlocksDirectors > 1) p.Add("buyback.waveBlocksDirectors must be 0 or 1");
+            if (k.PriceMult < 1000 || k.PriceMult > 20000 || k.BubblePrice < 0 || k.BubblePrice > 5000 || k.BuybackTrust < 0) p.Add("buyback priceMult must be from 1000 to 20000, bubblePrice from 0 to 5000 and buybackTrust not negative");
+        }
+
+        static void SpotProblems(List<string> p, GameConfig c)
+        {
+            SpotConfig k = c.Spot;
+            if (k == null) { p.Add("spot is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("spot.enabled must be 0 or 1");
+            if (k.ReclaimWeeks < 1) p.Add("spot.reclaimWeeks must be at least 1");
+            if (k.MaxPermille < 0 || k.MaxPermille > 1000 || k.DiscountPermille < 0 || k.DiscountPermille > 900 || k.PreemptPermille < 0 || k.PreemptPermille > 1000 || k.DefaultLossPermille < 0 || k.DefaultLossPermille > 1000 || k.ChangeWeeks < 0) p.Add("spot shares must be from 0 to 1000 (discount to 900) and changeWeeks not negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)
