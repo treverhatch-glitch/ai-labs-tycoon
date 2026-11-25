@@ -7,27 +7,29 @@ LOCK="${TMPDIR:-/tmp}/b14-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-(cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
+(cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[135]=113cd5aa5a9ccfdda1139cc8ee6dc080a28f41002a4d3181b1daa16888248589
-GOLDEN[136]=85c66f4593f2115a57d149c6f9c0e92d85b0946c50e36d2243db0959f2b67676
-GOLDEN[137]=820b04eaeb423034b9b27a01ac91dcec48334d98d2a6b5f0b7153ac6e9e17ea9
-GOLDEN[138]=eb968ab3537da88b6871002f946cf1de5ad990a5d8d6f4344e1aac97beba22b7
+GOLDEN[135]=62314037470a7e6b6f4d06db022b26272992723b8551236839d0d0fe9e6e1adb
+GOLDEN[136]=18c1bcc0bee031035d1df660b7b360fcd1bf214945878228ef22ed46b5a72eb4
+GOLDEN[137]=bff0382393222989f5cf1b7cba427ec1d0dae0575f9c772bc4766ed18b38ab21
+GOLDEN[138]=cdf05e4a96498c65e7b0e06dbf527c9147fbdbcd8770bbee01413ebe072fe256
 
 PREV=$((N - 1))
 BK="/tmp/b14-rev-bak-$N"
 mkdir -p "$BK"
 for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/MarketSystem.cs Rules/Systems/SafetySystem.cs Rules/Systems/TrainingSystem.cs \
-  Rules/Systems/BubbleSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
   cp "$f" "$BK/$(echo $f | tr '/' '_')"
 done
 restore() {
   for f in Rules/State/GameState.cs Rules/Sim/Simulation.cs Rules/Systems/MarketSystem.cs Rules/Systems/SafetySystem.cs Rules/Systems/TrainingSystem.cs \
-    Rules/Systems/BubbleSystem.cs Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
+  Rules/Systems/DisplayQueries.cs Rules/Systems/EraRules.cs Rules/Data/default-config.json tools/SimTests/SaveAndDeterminismTests.cs; do
     cp "$BK/$(echo $f | tr '/' '_')" "$REPO/$f"
   done
-  (cd "$REPO/tools/SimTests" && dotnet build -v q -nologo) || true
+  (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 }
 trap restore EXIT
 
@@ -57,13 +59,16 @@ disable_batch15_at_tip
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"
 cd tools/SimTests
-dotnet build -v q -nologo
-OUT=$(dotnet test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
+"$DOTNET" build -v q -nologo
+OUT=$("$DOTNET" test --no-build --filter "FullyQualifiedName~The_golden_run" 2>&1) || true
 echo "$OUT" | grep -E "Passed!|Failed!|New digest" | head -3
 if echo "$OUT" | grep -q "Passed!"; then
   echo "schema $N revert: Passed!"

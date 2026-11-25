@@ -42,7 +42,6 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
-            if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
@@ -163,6 +162,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 146) MigrateTo146(root);
             if (fromSchema < 147) MigrateTo147(root);
             if (fromSchema < 148) MigrateTo148(root);
+            if (fromSchema < 149) MigrateTo149(root);
+            if (fromSchema < 150) MigrateTo150(root);
+            if (fromSchema < 151) MigrateTo151(root);
+            if (fromSchema < 152) MigrateTo152(root);
+            if (fromSchema < 153) MigrateTo153(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -469,15 +473,14 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
         }
 
-        /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
         static void MigrateTo24(JsonValue root)
         {
             bool hadCrash = JsonPatch.IntOr(root, "bubbleCrashMonthsRemaining", 0) > 0;
             JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
         }
 
-        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
-        static void MigrateTo25(JsonValue root)
+                static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
         }
@@ -504,22 +507,9 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
-
-        /// <summary>Acquisition and asset-sale ledger lines (Q170).</summary>
-        static void MigrateTo28(JsonValue root)
-        {
-            foreach (string place in LedgerPlaces)
-                JsonPatch.ForEach(root, place, totals =>
-                {
-                    foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
-                });
-        }
-
-        /// <summary>M&amp;A fleet resale lock (Q202) and safety culture / release gate (merged era schema 29).</summary>
+        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
         static void MigrateTo29(JsonValue root)
         {
-            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 JsonPatch.AddIfMissing(lab, "cultureShift", JsonValue.Of(0L));
@@ -629,6 +619,25 @@ namespace AiLabs.Rules.Sim
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "lawTarget", JsonValue.Of("")));
         }
+
+        static void MigrateTo149(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reservedSignCooldownUntil", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo150(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "rivalIntentLastTick", JsonValue.Of(-1L));
+        }
+
+        static void MigrateTo151(JsonValue root) { }
+
+        static void MigrateTo152(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "scenarioEndlessAck", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo153(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

@@ -314,6 +314,11 @@ namespace AiLabs.Rules.Systems
                 state.PlayerLabId = -1;
                 return;
             }
+            if (mode == "keep-going" && record.EndingId == EndlessScenario.WinEndingId)
+            {
+                EndlessScenario.OnKeepGoing(c, state, lab);
+                return;
+            }
             // acknowledge, keep-going, and bailout handled elsewhere: no further state change.
         }
 

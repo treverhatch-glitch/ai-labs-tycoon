@@ -8,16 +8,16 @@ exec 9>"$LOCK"
 flock -x -w 600 9
 # Pre-restore only after batch 15 is committed on this branch (restore-golden-tip checks out HEAD).
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-$(command -v dotnet)}"
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[139]=f29ce861a9f6c17465d03b4ef2824a1bc5631462ebcbc4dd66ac4c78955a7815
-GOLDEN[140]=eebdfc687af75771ccad8e910c3dec52346a2582e967087368444363291275b8
-GOLDEN[141]=cdddaa45835757e1fa30391f4a2f7ca8a8fef6682f7c39f5ce44628cf79b3d1d
-GOLDEN[142]=2bda70526854c58f1233f2cef38a30ef32a18472a6c05bccc5b4ccaaf824cf14
-GOLDEN[143]=0c947127a632be4520ffb51eff1af36f48f68c32f46c35058ac5b01f654bffbe
+GOLDEN[139]=1213af6a0d7417bebf2e9b26186f4f76842cb1a86ecd9ce8421abcde6d94a97c
+GOLDEN[140]=40b7f1cf8594736bed730ef66444af7b944bc6751e9434786bf295ab025d4a75
+GOLDEN[141]=05b962d3bcae352f0ec8a0d905dbb589817ba1a3187a1081f42b0f97f70593f0
+GOLDEN[142]=8b561be679dc58807a262d9b199b0d4da3282502edd3a01678e4b5e9b383143a
+GOLDEN[143]=376fd553585bdaa9820441e7b557d770b5c1ec4e3a749053e3d401c185b906d3
 
 PREV=$((N - 1))
 BK="/tmp/b15-rev-bak-$N"
@@ -57,6 +57,9 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 # shellcheck source=golden-revert-disable-batch16-tip.sh
 source "$REPO/tools/golden-revert-disable-batch16-tip.sh"
 disable_batch16_at_tip
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"

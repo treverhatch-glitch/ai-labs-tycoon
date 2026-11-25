@@ -140,7 +140,7 @@ namespace AiLabs.Rules.Sim
             {
                 LabState lab = state.Labs[i];
                 lab.LastWeek = new WeekReport();
-                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
+                if (lab.Bankrupt) continue;
                 TrainingSystem.RunResearch(c, lab, tick);
                 ChipSystem.RunWeek(c, state, lab);
                 TrainingSystem.RunWeek(c, state, lab);
@@ -150,7 +150,7 @@ namespace AiLabs.Rules.Sim
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
-                if (LabQueries.ParticipatesInEconomy(state.Labs[i]))
+                if (!state.Labs[i].Bankrupt)
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
                     Crunch.RunWeek(c, state, state.Labs[i]);
@@ -252,7 +252,7 @@ namespace AiLabs.Rules.Sim
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
-                if (LabQueries.ParticipatesInEconomy(state.Labs[i]))
+                if (!state.Labs[i].Bankrupt)
                 {
                     Finance.RunWeek(c, state, state.Labs[i]);
                     ComputeContractSystem.RunWeek(c, state.Labs[i]);
@@ -263,13 +263,11 @@ namespace AiLabs.Rules.Sim
             if (GameDate.IsMonthEnd(c.Calendar, tick))
             {
                 for (int i = 0; i < state.Labs.Count; i++)
-                    if (LabQueries.ParticipatesInEconomy(state.Labs[i])) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
-                EndingSystem.TryTreaty(c, state);
-                EndingSystem.TryNationalised(c, state);
+                    if (!state.Labs[i].Bankrupt) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
                 LabState player = state.Player;
-                if (player != null && LabQueries.ParticipatesInEconomy(player)) ShadySystem.RunMonth(c, state, player);
-                BubbleSystem.RunMonth(c, state);
+                if (player != null && !player.Bankrupt) ShadySystem.RunMonth(c, state, player);
                 for (int i = 0; i < state.Labs.Count; i++) Finance.CloseMonth(c, state, state.Labs[i]);
+                BubbleSystem.RunMonth(c, state);
                 AcquisitionSystem.RunMonth(c, state);
                 ShareSystem.RunMonth(c, state);
                 RegulatorSystem.RunMonth(c, state);

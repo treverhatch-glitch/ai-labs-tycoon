@@ -7,16 +7,16 @@ LOCK="${TMPDIR:-/tmp}/b16-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-$(command -v dotnet)}"
+DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[144]=c382db55f615232b4327d8953bf57e0728b2155404bd060bd0ac05c747c0b833
-GOLDEN[145]=d9a7db7daf2c4d30fc83a91c9be11af3edc2d287d347978c8414f2225f3ecf27
-GOLDEN[146]=b85293fbf4ff6bf816ab9df45ce8693bd79779185bfd8efde4f876543f940470
-GOLDEN[147]=c1d0e11d57a8d5b3a1d7dfec8d5bcff405c518f160c2bac8618083b665d402fd
-GOLDEN[148]=bf08074e1f49a5c61757cc2f7e68b72628fa32088f4a9768427c4e3227798111
+GOLDEN[144]=5ff2995196a68720af1612888d840123ce4a7bd59650173e83c743cfb32fa6a3
+GOLDEN[145]=9aea1d33813ae72b35627df0553f1b2c88d14f09843b4a2f9deb6b35b9dfbd50
+GOLDEN[146]=073ebffe1a0fe94a2869c2d76a3f407118ddf3dcddd0651d67a68f0493afd684
+GOLDEN[147]=ee9a0e134bbed458174deb6a13d392311b2f1c8921d3e7cd9a60773e7477b703
+GOLDEN[148]=78a76c64eb38ae969492e10f4acd618ccccb4886c556024475685bf5d687d4b5
 
 PREV=$((N - 1))
 BK="/tmp/b16-rev-bak-$N"
@@ -52,6 +52,10 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 [ "$N" -le 146 ] && { disable_cfg rungSixCrisis; comment_hook 'RungSixCrisis.RunWeek'; sed -i 's/^[[:space:]]*HearingSharePrice.OnAnswered/            \/\/ HearingSharePrice.OnAnswered/' Rules/Systems/OfficeEvents.cs; sed -i 's/^[[:space:]]*if (e.Trigger == OfficeTrigger.Escape/            \/\/ if (e.Trigger == OfficeTrigger.Escape/' Rules/Systems/OfficeEvents.cs; sed -i 's/^[[:space:]]*RungSixCrisis.OnArcAnswered/                \/\/ RungSixCrisis.OnArcAnswered/' Rules/Systems/OfficeEvents.cs; }
 [ "$N" -le 145 ] && { disable_cfg hearingSharePrice; }
 [ "$N" -le 144 ] && { disable_cfg marginCall; sed -i 's|MarginCall.RunWeek(c, state, lab);||' Rules/Systems/Finance.cs; }
+
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"

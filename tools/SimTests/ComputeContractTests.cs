@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
@@ -11,10 +12,17 @@ namespace AiLabs.SimTests;
 
 public class ComputeContractTests
 {
+    static Game SoloContracts(long seed = 1, Action<GameConfig> tweak = null) =>
+        Game.Solo(seed, c =>
+        {
+            c.ReservedComputeGate.Enabled = 0;
+            tweak?.Invoke(c);
+        });
+
     [Fact]
     public void Reserved_compute_adds_general_compute_and_discounted_rent()
     {
-        Game g = Game.Solo();
+        Game g = SoloContracts();
         GpuGenerationConfig gen = LabQueries.CurrentGeneration(g.C, g.Tick);
         long cash = g.Me.Cash;
         int count = 8;
@@ -31,7 +39,7 @@ public class ComputeContractTests
     [Fact]
     public void Reserved_rent_hits_the_ledger_each_week_the_contract_lasts()
     {
-        var g = Game.Solo(tweak: c =>
+        var g = SoloContracts(tweak: c =>
         {
             c.Compute.ReservedContractWeeks = 3;
             c.PlayerStart.GrantPerWeek = 0;
@@ -54,14 +62,14 @@ public class ComputeContractTests
     [Fact]
     public void Signing_zero_gpus_is_refused()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Refused(Command.SignReservedCompute(g.Id, 0), CommandError.InvalidArgument);
     }
 
     [Fact]
     public void Signing_is_refused_when_cash_cannot_cover_the_deposit()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         int count = 4;
         long deposit = ComputeContractSystem.Deposit(g.C, g.State, g.Me, count);
         g.Me.Cash = deposit - 1;
@@ -71,7 +79,7 @@ public class ComputeContractTests
     [Fact]
     public void A_bankrupt_lab_cannot_sign_or_queue_more_hardware()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Me.Bankrupt = true;
         g.Refused(Command.SignReservedCompute(g.Id, 2), CommandError.LabBankrupt);
         g.Refused(Command.QueueGpuPurchase(g.Id, 1, HardwareBatch.Hq), CommandError.LabBankrupt);
@@ -80,7 +88,7 @@ public class ComputeContractTests
     [Fact]
     public void Reserved_contracts_expire_and_stop_supplying_compute()
     {
-        var g = Game.Solo(tweak: c => c.Compute.ReservedContractWeeks = 2);
+        var g = SoloContracts(tweak: c => c.Compute.ReservedContractWeeks = 2);
         int count = 5;
         g.Do(Command.SignReservedCompute(g.Id, count));
         GpuGenerationConfig gen = LabQueries.CurrentGeneration(g.C, g.Tick);
@@ -95,7 +103,7 @@ public class ComputeContractTests
     [Fact]
     public void Multiple_signings_stack_compute_and_rent()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Do(Command.SignReservedCompute(g.Id, 3));
         g.Do(Command.SignReservedCompute(g.Id, 2));
         Assert.Equal(5, ComputeContractSystem.ReservedGpus(g.Me));
@@ -108,7 +116,7 @@ public class ComputeContractTests
     [Fact]
     public void The_queue_buys_when_a_new_months_allocation_opens()
     {
-        Game g = Game.Solo();
+        Game g = SoloContracts();
         g.Build("server-closet", 3, 3);
         g.Build("server-closet", 3, 3);
         g.Me.Cash += 50_000_000;
@@ -126,7 +134,7 @@ public class ComputeContractTests
     [Fact]
     public void Queued_units_do_not_buy_while_the_lab_is_bankrupt()
     {
-        Game g = Game.Solo();
+        Game g = SoloContracts();
         g.Build("server-closet", 3, 3);
         g.Me.Cash += 10_000_000;
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
@@ -143,7 +151,7 @@ public class ComputeContractTests
     [Fact]
     public void Bankruptcy_clears_reserved_contracts()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Do(Command.SignReservedCompute(g.Id, 6));
         Assert.NotEmpty(g.Me.ReservedContracts);
         Finance.GoBankrupt(g.State, g.Me);
@@ -154,7 +162,7 @@ public class ComputeContractTests
     [Fact]
     public void Reserved_rent_uses_the_gpu_generation_open_in_that_year()
     {
-        var g = Game.Solo(tweak: c => c.Compute.ReservedContractWeeks = 600);
+        var g = SoloContracts(tweak: c => c.Compute.ReservedContractWeeks = 600);
         g.Me.Cash += 100_000_000;
         g.Do(Command.SignReservedCompute(g.Id, 4));
         GpuGenerationConfig v1 = LabQueries.CurrentGeneration(g.C, g.Tick);
@@ -172,7 +180,7 @@ public class ComputeContractTests
     [Fact]
     public void Reserved_and_owned_gpus_both_count_in_the_compute_split()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Build("server-closet", 3, 3);
         g.Me.Cash += 5_000_000;
         g.Do(Command.SignReservedCompute(g.Id, 2));
@@ -186,7 +194,7 @@ public class ComputeContractTests
     [Fact]
     public void Contract_and_queue_state_survives_a_save_round_trip()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Do(Command.SignReservedCompute(g.Id, 4));
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
         standing.QueuedGpus = 2;
@@ -214,7 +222,7 @@ public class ComputeContractTests
     [Fact]
     public void Queue_count_zero_clears_a_standing_queue()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
         standing.QueuedGpus = 5;
         standing.QueueHoldingId = HardwareBatch.Hq;
@@ -225,7 +233,7 @@ public class ComputeContractTests
     [Fact]
     public void A_second_holding_cannot_queue_while_another_is_pending()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Build("server-closet", 3, 3);
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
         g.Do(Command.QueueGpuPurchase(g.Id, 2, HardwareBatch.Hq));
@@ -236,7 +244,7 @@ public class ComputeContractTests
     [Fact]
     public void A_stalled_queue_clears_and_raises_an_event_when_cash_runs_out()
     {
-        Game g = Game.Solo();
+        Game g = SoloContracts();
         g.Build("server-closet", 3, 3);
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
         standing.BoughtThisMonth = standing.AllocationThisMonth;
@@ -251,7 +259,7 @@ public class ComputeContractTests
     [Fact]
     public void The_queue_buys_as_many_gpus_as_cash_allows_in_one_month()
     {
-        Game g = Game.Solo();
+        Game g = SoloContracts();
         g.Build("server-closet", 3, 3);
         g.Build("server-closet", 3, 3);
         VendorStanding standing = VendorSystem.EnsureStanding(g.C, g.State, g.Id);
@@ -268,7 +276,7 @@ public class ComputeContractTests
     [Fact]
     public void Loading_from_schema_10_adds_empty_reserved_and_queue_slots()
     {
-        var g = Game.Solo();
+        var g = SoloContracts();
         g.Do(Command.SignReservedCompute(g.Id, 2));
         string at10 = SaveSchemaPretend.At(g.C, 10, g.Sim.Save());
         Simulation loaded = Simulation.Load(g.C, at10);
