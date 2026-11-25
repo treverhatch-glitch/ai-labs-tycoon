@@ -1652,11 +1652,35 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — batch **252**.
 - Why: Thickener after **248** staff land.
 
-### Q702. ALT-76 STATUS sync through batch 184? DRAFT: `CampusAlt76StatusSyncThrough184PresentationSpec`
+### Q702. ALT-76 STATUS sync through batch 184? DECIDED: `CampusAlt76StatusSyncThrough184PresentationSpec`
 
 - Options: (a) stop at 181; (b) through 184; (c) defer.
-- Recommendation: **(b)** — fork **253+** after **249–252** land.
-- Status: batch **253** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)**.
+- Why: Batch **253**.
+
+### Q703. Presentation tail rollup through batch 181? DECIDED: `CampusPresentationTailRollupRefreshThrough181PresentationSpec`
+
+- Options: (a) stop at 178; (b) through 181; (c) skip.
+- Recommendation and choice: **(b)**.
+- Why: Batch **254**.
+
+### Q704. GO packet tail through batch 244? DECIDED: `CampusGoPacketTailRefreshThrough244PresentationSpec`
+
+- Options: (a) stop at 241; (b) through 244; (c) skip.
+- Recommendation and choice: **(b)**.
+- Why: Batch **255**.
+
+### Q705. Studio land handoff from NEXT item 5? DECIDED: `CampusStudioLandGraphicsHandoffPresentationSpec`
+
+- Options: (a) STUDIO-GRAPHICS-HANDOFF only; (b) land script row + doc; (c) edit studio/ on agent.
+- Recommendation and choice: **(b)** — batch **256**.
+- Why: NEXT milestone table item **5**.
+
+### Q706. ALT-76 rollup refresh through batch 184? DRAFT: `CampusAlt76RollupRefreshB184PresentationSpec`
+
+- Options: (a) stop at 181; (b) through 184; (c) skip.
+- Recommendation: **(b)** — fork **257+** after **253–256** land.
+- Status: batch **257** LOCAL (NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
