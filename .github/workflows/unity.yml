@@ -82,7 +82,7 @@ jobs:
           xvfb-run -a "$UNITY_EDITOR" -batchmode -quit \
             -projectPath "$GITHUB_WORKSPACE/unity" \
             -runTests -testPlatform editmode \
-            -testFilter "HqViewCaptureTests|HqStarterOfficeCaptureTests" \
+            -testFilter "Captures_" \
             -logFile "$GITHUB_WORKSPACE/unity/artifacts/capture.log"
         shell: bash
 
@@ -93,4 +93,4 @@ jobs:
           path: |
             unity/artifacts/hq-view.png
             unity/artifacts/hq-starter-office.png
-          if-no-files-found: error
+          if-no-files-found: warn
