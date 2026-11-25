@@ -18,6 +18,8 @@ namespace AiLabs.Rules.State
         public int DesignLabId;
         public int Count;
         public int ArrivedTick;
+        /// <summary>Weekly tick until resale is allowed; -1 = never locked (normal hardware).</summary>
+        public int ResaleLockedUntilTick = -1;
 
         public const int Hq = -1;
         /// <summary>Listed chips run in a vendor cloud deal; no site or kilowatts on the lab's map.</summary>
@@ -32,6 +34,7 @@ namespace AiLabs.Rules.State
             s.Int("designLabId", ref DesignLabId);
             s.Int("count", ref Count);
             s.Int("arrivedTick", ref ArrivedTick);
+            s.Int("resaleLockedUntilTick", ref ResaleLockedUntilTick);
         }
     }
 }

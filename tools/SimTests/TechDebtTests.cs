@@ -276,7 +276,7 @@ public class TechDebtTests
         g.Do(Command.SetCrunch(g.Id, true));
         g.Weeks(3);
         Assert.True(g.Me.TechDebt > 0);
-        string old = SaveSchemaPretend.At(g.C, 60, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 61, g.Sim.Save());
         Assert.DoesNotContain("techDebt", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

@@ -310,11 +310,11 @@ public class CrunchTests
     }
 
     [Fact]
-    public void A_schema_42_save_loads_with_nobody_in_crunch()
+    public void A_schema_43_save_loads_with_nobody_in_crunch()
     {
         Game g = Lab();
         g.Weeks(4);
-        string old = SaveSchemaPretend.At(g.C, 42, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 43, g.Sim.Save());
         Assert.DoesNotContain("crunchWeeks", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

@@ -76,7 +76,7 @@ public class BubbleMeterTests
     {
         var g = Game.Solo(tweak: c => c.Bubble.ListedChipBoostPermille = 40);
         int before = g.State.BubblePermille;
-        BubbleSystem.OnListedChipTrade(g.C, g.State);
+        BubbleSystem.OnListedChipTrade(g.C, g.State, 0);
         Assert.Equal(before + 40, g.State.BubblePermille);
     }
 

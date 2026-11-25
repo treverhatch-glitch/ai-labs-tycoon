@@ -218,7 +218,7 @@ public class ReliabilityTests
         back.StepMany(40);
         g.Weeks(40);
         Assert.Equal(g.Sim.Digest(), back.Digest());
-        string old = SaveSchemaPretend.At(g.C, 86, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 87, g.Sim.Save());
         Assert.DoesNotContain("warrantyTier", old);
         LabState lab = Simulation.Load(g.C, old).State.Labs.First(l => l.Id == g.Id);
         Assert.Equal(0, lab.WarrantyTier);

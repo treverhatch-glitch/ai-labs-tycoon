@@ -1,6 +1,6 @@
 # The whistleblower
 
-Show more alignment than a model has and unhappy safety staff will eventually say so. The player gets a few weeks to answer; an unanswered concern leaks to the press (`whistle.*` in the data; Q342). Nothing here draws a random number. Schema 65 adds four numbers to each lab.
+Show more alignment than a model has and unhappy safety staff will eventually say so. The player gets a few weeks to answer; an unanswered concern leaks to the press (`whistle.*` in the data; Q342). Nothing here draws a random number. Schema 66 adds four numbers to each lab.
 
 ## What starts it
 
@@ -21,5 +21,5 @@ Refused with nothing changed for a rival, a game with `enabled` 0, no concern op
 ## Notes
 
 - Events: `WhistleRaised` (SubjectId model, Amount the gap), `WhistleAnswered` (Amount the cost, Pick 0 clean or 1 silence), `WhistleLeaked` (Amount the reputation lost, Pick 1 when a person resigned).
-- Schema 65: `whistleWeeks`, `whistleModel`, `whistleDue`, `silenced` on every lab (older saves: 0). The save check flags a concern about a model that does not exist, negative numbers, a model with no deadline and any of them on a rival.
+- Schema 66: `whistleWeeks`, `whistleModel`, `whistleDue`, `silenced` on every lab (older saves: 0). The save check flags a concern about a model that does not exist, negative numbers, a model with no deadline and any of them on a rival.
 - The leak is never worth less than coming clean (the validator keeps `leakReputation` at or above `cleanReputation`), so staying quiet is only worth it for what the cost buys.

@@ -1,6 +1,6 @@
 # Mentoring
 
-The player can pair a senior with a junior in the same function (`mentoring.*` in the data; Q356). Two saved fields on a person (`mentorId`, `mentorWeeks`, schema 70); older saves have nobody mentored.
+The player can pair a senior with a junior in the same function (`mentoring.*` in the data; Q356). Two saved fields on a person (`mentorId`, `mentorWeeks`, schema 71); older saves have nobody mentored.
 
 ## `AssignMentor` and `EndMentoring`
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 89;
+        public const int CurrentSchema = 90;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,6 +42,8 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        /// <summary>True after the first sustained crash; decay floor applies only then.</summary>
+        public bool BubbleHadCrash;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
         public LabState Player
@@ -94,6 +96,7 @@ namespace AiLabs.Rules.State
             s.Long("bubbleCapitalRaised", ref BubbleCapitalRaised);
             s.Int("bubbleGraceMonths", ref BubbleGraceMonths);
             s.Int("bubbleCrashMonthsRemaining", ref BubbleCrashMonthsRemaining);
+            s.Bool("bubbleHadCrash", ref BubbleHadCrash);
             s.ObjList("endings", ref Endings);
         }
     }
@@ -300,21 +303,17 @@ namespace AiLabs.Rules.State
         public int PolicyLockedUntil;
         public int PolicyHold;
         public int PolicyBreaks;
-        /// <summary>The tax structure kept (0 none, 1 a holding company, 2 an offshore one), the one being built (0 when none) and the week it opens.</summary>
         public int TaxStructure;
         public int TaxBuilding;
         public int TaxDue;
-        /// <summary>Tax owed so far this year, what the structure has saved and the credit claims have taken off since the last audit, the year's training spend and the credit claimed but not yet used.</summary>
         public long TaxAccrued;
         public long TaxSaved;
         public long TaxResearch;
         public long TaxCredit;
         public long TaxClaimed;
-        /// <summary>How exposed the lab is to a tax audit, the week an open audit must be answered by (0 when none) and what it is about.</summary>
         public int TaxExposure;
         public int TaxAuditDue;
         public long TaxAuditOwed;
-        /// <summary>The standards ratified so far, the level being drafted (0 when none), the support it has, the lab's part in the draft, the week the next draft starts, the level the lab has adopted and the times it released a capable model without complying.</summary>
         public int StdLevel;
         public int StdDraft;
         public int StdSupport;
@@ -322,19 +321,16 @@ namespace AiLabs.Rules.State
         public int StdNext;
         public int StdAdopted;
         public int StdLapses;
-        /// <summary>The warranty tier, the spare GPUs held, the part-failures carried over in millionths of a unit, the units waiting to be replaced, the week they come and the failures so far.</summary>
         public int WarrantyTier;
         public int Spares;
         public long FailCarry;
         public int RmaUnits;
         public int RmaDue;
         public int GpuFailures;
-        /// <summary>The weeks in breach of a loan covenant, the week a waiver lasts to, the waivers used and the times the lender has called the loans.</summary>
         public int CovBreach;
         public int CovWaiverUntil;
         public int CovWaivers;
         public int CovCalls;
-        /// <summary>The capital allowance policy (0 expense, 1 capitalise, 2 enhanced), the pool still to write off, the week it was last changed and the total written off.</summary>
         public int CapPolicy;
         public long CapPool;
         public int CapSwitchTick;
