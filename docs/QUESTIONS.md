@@ -4623,3 +4623,16 @@ Vendor/funding ladder/balance soak host slices.
 ### Q828. Era sector-pricing HUD chrome (schema 155)? DECIDED: `CampusEraSectorPricingHudChromePresentationSpec` — batch **379**.
 
 ### Q829. Era data-pairing HUD chrome (schema 156)? DECIDED: `CampusEraDataPairingHudChromePresentationSpec` — batch **380**.
+
+### Q830. Rules-adjacent tail through 368? DECIDED: `CampusRulesAdjacentGraphicsTailRefreshThrough368PresentationSpec` — **381**.
+### Q831. ALT-76 rollup through 226? DECIDED: `CampusAlt76RollupRefreshB226PresentationSpec` — **382**.
+### Q832. GO packet through 310? DECIDED: `CampusGoPacketTailRefreshThrough310PresentationSpec` — **383**.
+### Q833. Explainable HUD through 327? DECIDED: `CampusExplainableHudTailRefreshThrough327PresentationSpec` — **384**.
+### Q834. Manifest tail through 226? DECIDED: `CampusIndexLaneManifestTailRefreshThrough226PresentationSpec` — **385**.
+### Q835. Rollup through 226? DECIDED: `CampusPresentationTailRollupRefreshThrough226PresentationSpec` — **386**.
+### Q836. ALT-76 sync through 229? DECIDED: `CampusAlt76StatusSyncThrough229PresentationSpec` — **387**.
+### Q837. Seasonal tail through 324? DECIDED: `CampusSeasonalA11yChromeTailRefreshThrough324PresentationSpec` — **388**.
+### Q838. Rivals/world through 324? DECIDED: `CampusRivalWorldTailIndexRefreshThrough324PresentationSpec` — **389**.
+### Q839. Era public metrics HUD (157)? DECIDED: `CampusEraPublicMetricsHudChromePresentationSpec` — **390**.
+### Q840. Era schema 161 HUD? DECIDED: `CampusEraSchema161HudChromePresentationSpec` — **391**.
+### Q841. Era schema 162 HUD? DECIDED: `CampusEraSchema162HudChromePresentationSpec` — **392**.
