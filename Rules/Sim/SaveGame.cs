@@ -232,6 +232,31 @@ namespace AiLabs.Rules.Sim
                     || (lab.NoteOwed == 0 && (lab.NotePrincipal != 0 || lab.NoteRate != 0 || lab.NoteDiscount != 0 || lab.NoteLeft != 0 || lab.NoteExtended != 0 || lab.NoteTier != 0))
                     || (lab.NoteOwed != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " owes " + lab.NoteOwed + " on a convertible note (tier " + lab.NoteTier + ", " + lab.NoteLeft + " weeks left) in a way the data does not allow");
+                if (lab.DevLine < 0 || lab.DevLine > 3 || lab.DevStage < 0 || lab.DevStage > 2 || lab.DevWeeks < 0 || lab.DevQuality < 0 || lab.DevQuality > 1000 || lab.DevTier < 0 || lab.DevTier > 3 || lab.DevSold < 0 || lab.DevBase < 0
+                    || (lab.DevLine > 0 && (lab.DevStage < 1 || lab.DevTier < 1))
+                    || (lab.DevLine == 0 && (lab.DevStage != 0 || lab.DevWeeks != 0 || lab.DevQuality != 0 || lab.DevTier != 0 || lab.DevSold != 0 || lab.DevBase != 0))
+                    || (lab.DevLine != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a device line " + lab.DevLine + " (stage " + lab.DevStage + ", quality " + lab.DevQuality + ") in a way the data does not allow");
+                if (lab.PlatPlat < 0 || lab.PlatPlat > 3 || lab.PlatLeft < 0 || lab.PlatCut < 0 || lab.PlatRenewals < 0 || lab.PlatReliance < 0 || lab.PlatReliance > MathI.Permille || lab.PlatHoldup < 0 || lab.PlatHoldup > 1 || lab.PlatPaid < 0 || lab.PlatKept < 0
+                    || (lab.PlatPlat > 0 && lab.PlatLeft < 1)
+                    || (lab.PlatPlat == 0 && (lab.PlatLeft != 0 || lab.PlatCut != 0 || lab.PlatRenewals != 0 || lab.PlatReliance != 0 || lab.PlatHoldup != 0 || lab.PlatPaid != 0 || lab.PlatKept != 0))
+                    || (lab.PlatPlat != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a deal with platform " + lab.PlatPlat + " (" + lab.PlatLeft + " weeks left, cut " + lab.PlatCut + ") in a way the data does not allow");
+                if (lab.CreedA < 0 || lab.CreedA > 5 || lab.CreedB < 0 || lab.CreedB > 5 || lab.CreedIntegrity < 0 || lab.CreedIntegrity > MathI.Permille || lab.CreedBand < 0 || lab.CreedBand > 2 || lab.CreedLock < 0 || lab.CreedTown < 0 || lab.CreedKept < 0 || lab.CreedBroken < 0
+                    || (lab.CreedA > 0 && (lab.CreedB < 1 || lab.CreedB == lab.CreedA))
+                    || (lab.CreedA == 0 && (lab.CreedB != 0 || lab.CreedIntegrity != 0 || lab.CreedBand != 0 || lab.CreedLock != 0 || lab.CreedTown != 0 || lab.CreedKept != 0 || lab.CreedBroken != 0))
+                    || (lab.CreedA != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a creed of " + lab.CreedA + " and " + lab.CreedB + " (integrity " + lab.CreedIntegrity + ") in a way the data does not allow");
+                if (lab.ShockKind < 0 || lab.ShockKind > 3 || lab.ShockRef < 0 || lab.ShockRef > c.WorldEvents.Count || lab.ShockLeft < 0 || lab.ShockBraced < 0 || lab.ShockRode < 0 || lab.ShockCountered < 0
+                    || (lab.ShockKind > 0 && (lab.ShockLeft < 1 || lab.ShockRef < 1))
+                    || (lab.ShockKind == 0 && (lab.ShockRef != 0 || lab.ShockLeft != 0))
+                    || ((lab.ShockKind != 0 || lab.ShockBraced != 0 || lab.ShockRode != 0 || lab.ShockCountered != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a shock " + lab.ShockKind + " waiting (" + lab.ShockLeft + " weeks left) in a way the data does not allow");
+                if (lab.ReplPending < 0 || lab.ReplWait < 0 || lab.ReplLeft < 0 || lab.ReplRigor < 0 || lab.ReplRigor > MathI.Permille || lab.ReplWins < 0 || lab.ReplFails < 0
+                    || (lab.ReplPending == 0 && lab.ReplWait != 0)
+                    || (lab.ReplLeft == 0 && lab.ReplRigor != 0)
+                    || ((lab.ReplPending != 0 || lab.ReplLeft != 0 || lab.ReplWins != 0 || lab.ReplFails != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has " + lab.ReplPending + " papers waiting on their code and one being replicated (" + lab.ReplLeft + " weeks) in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

@@ -136,7 +136,19 @@ namespace AiLabs.Rules.Sim
         ReturnLease,
         IssueNote,
         RepayNote,
-        ExtendNote
+        ExtendNote,
+        DesignDevice,
+        SetDevicePrice,
+        WithdrawDevice,
+        SignPlatform,
+        RenewPlatform,
+        WalkFromPlatform,
+        SetCreed,
+        HoldTownHall,
+        OwnUp,
+        AnswerShock,
+        ReleaseCode,
+        WithholdCode
     }
 
     /// <summary>
@@ -1193,6 +1205,92 @@ namespace AiLabs.Rules.Sim
         public static Command ExtendNote(int labId)
         {
             return Make(CommandKind.ExtendNote, labId);
+        }
+
+        /// <summary>Starts designing a device (1 speaker, 2 glasses, 3 home robot) with some weeks of testing before the launch, which buys quality. One line at a time.</summary>
+        public static Command DesignDevice(int labId, int line, int testWeeks)
+        {
+            Command c = Make(CommandKind.DesignDevice, labId);
+            c.TargetId = line;
+            c.Count = testWeeks;
+            return c;
+        }
+
+        /// <summary>Sets the device's price tier: 1 low (more units, thin margin), 2 middle, 3 high.</summary>
+        public static Command SetDevicePrice(int labId, int tier)
+        {
+            Command c = Make(CommandKind.SetDevicePrice, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Ends the device line: stops selling it or drops the design.</summary>
+        public static Command WithdrawDevice(int labId)
+        {
+            return Make(CommandKind.WithdrawDevice, labId);
+        }
+
+        /// <summary>Signs a distribution deal with a platform (1 phone maker, 2 browser, 3 office suite). One at a time.</summary>
+        public static Command SignPlatform(int labId, int platform)
+        {
+            Command c = Make(CommandKind.SignPlatform, labId);
+            c.TargetId = platform;
+            return c;
+        }
+
+        /// <summary>Renews the deal in its last weeks, at the price the platform has named.</summary>
+        public static Command RenewPlatform(int labId)
+        {
+            return Make(CommandKind.RenewPlatform, labId);
+        }
+
+        /// <summary>Ends the deal now. The users who came through the platform go with it.</summary>
+        public static Command WalkFromPlatform(int labId)
+        {
+            return Make(CommandKind.WalkFromPlatform, labId);
+        }
+
+        /// <summary>States the lab's values: two of 1 safety, 2 speed, 3 openness, 4 people, 5 profit. Changing them later starts from distrust.</summary>
+        public static Command SetCreed(int labId, int first, int second)
+        {
+            Command c = Make(CommandKind.SetCreed, labId);
+            c.TargetId = first;
+            c.Count = second;
+            return c;
+        }
+
+        /// <summary>Holds a town hall on the values, which lifts integrity. Not while the creed is a joke.</summary>
+        public static Command HoldTownHall(int labId)
+        {
+            return Make(CommandKind.HoldTownHall, labId);
+        }
+
+        /// <summary>Admits to the staff that the lab has not lived up to its values. Costs reputation, brings integrity back.</summary>
+        public static Command OwnUp(int labId)
+        {
+            return Make(CommandKind.OwnUp, labId);
+        }
+
+        /// <summary>Answers the shock waiting at the lab: 1 brace for it, 2 ride it out, 3 counter it with the lab's best model.</summary>
+        public static Command AnswerShock(int labId, int stance)
+        {
+            Command c = Make(CommandKind.AnswerShock, labId);
+            c.Count = stance;
+            return c;
+        }
+
+        /// <summary>Puts the code and data of the oldest waiting paper out after some weeks of cleaning it up, which costs research points and makes it likelier to replicate.</summary>
+        public static Command ReleaseCode(int labId, int effort)
+        {
+            Command c = Make(CommandKind.ReleaseCode, labId);
+            c.Count = effort;
+            return c;
+        }
+
+        /// <summary>Keeps the code and data of the oldest waiting paper back. It costs some standing.</summary>
+        public static Command WithholdCode(int labId)
+        {
+            return Make(CommandKind.WithholdCode, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

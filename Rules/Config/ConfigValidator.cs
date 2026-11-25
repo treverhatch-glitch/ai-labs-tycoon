@@ -129,6 +129,11 @@ namespace AiLabs.Rules.Config
             FoundationProblems(p, c);
             LeasebackProblems(p, c);
             NotesProblems(p, c);
+            DevicesProblems(p, c);
+            PlatformsProblems(p, c);
+            CreedProblems(p, c);
+            ShocksProblems(p, c);
+            ReplicationProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1459,6 +1464,65 @@ namespace AiLabs.Rules.Config
             if (k.DiscountA < 0 || k.DiscountB < k.DiscountA || k.DiscountC < k.DiscountB || k.DiscountC > 800 || k.MaturityDiscount < 0 || k.MaturityDiscount > 800) p.Add("convertibleNotes.discountC must be at least discountB, discountB at least discountA, and all up to 800");
             if (k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1 || k.ExtendWeeks < 0) p.Add("convertibleNotes.weeksA, weeksB and weeksC must be at least 1 and extendWeeks not negative");
             if (k.MaxConvertPermille < 1 || k.MaxConvertPermille > 900 || k.ExtendRate < MathI.Permille || k.ExtendRate > 5000 || k.ExtendDiscount < 0 || k.ExtendDiscount > 500) p.Add("convertibleNotes.maxConvertPermille must be from 1 to 900, extendRate from 1000 to 5000 and extendDiscount from 0 to 500");
+        }
+
+        static void DevicesProblems(List<string> p, GameConfig c)
+        {
+            DevicesConfig k = c.Devices;
+            if (k == null) { p.Add("devices is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("devices.enabled must be 0 or 1");
+            if (k.MinCapability < 0 || k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB) p.Add("devices.minCapability and eraA must not be negative, eraB at least eraA and eraC at least eraB");
+            if (k.CostA < 0 || k.CostB < 0 || k.CostC < 0 || k.WeeksA < 1 || k.WeeksB < 1 || k.WeeksC < 1) p.Add("devices.costA, costB and costC must not be negative and weeksA, weeksB and weeksC at least 1");
+            if (k.DemandA < 0 || k.DemandB < 0 || k.DemandC < 0 || k.MarginA < 0 || k.MarginB < 0 || k.MarginC < 0) p.Add("devices.demandA, demandB, demandC, marginA, marginB and marginC must not be negative");
+            if (k.BaseQuality < 0 || k.ModelQuality < 0 || k.CapForMax < 1 || k.TestQuality < 0 || k.MaxTestWeeks < 0 || k.MaxTestWeeks > 12) p.Add("devices.baseQuality, modelQuality and testQuality must not be negative, capForMax at least 1 and maxTestWeeks from 0 to 12");
+            if (k.LaunchBar < 0 || k.LaunchBar > MathI.Permille || k.RecallBar < 0 || k.RecallBar > MathI.Permille || k.FlopReputation < 0 || k.HitReputation < 0 || k.FlopReputation > 500 || k.HitReputation > 500) p.Add("devices.launchBar and recallBar must be from 0 to 1000, flopReputation and hitReputation from 0 to 500");
+            if (k.FlopDemand < 0 || k.FlopDemand > MathI.Permille || k.FadePermille < 0 || k.FadePermille > 500 || k.RecallWeeks < 1 || k.RecallCost < 0) p.Add("devices.flopDemand must be from 0 to 1000, fadePermille from 0 to 500, recallWeeks at least 1 and recallCost not negative");
+            if (k.LowPrice < 100 || k.LowPrice > MathI.Permille || k.HighPrice < MathI.Permille || k.HighPrice > 5000 || k.LowDemand < MathI.Permille || k.LowDemand > 5000 || k.HighDemand < 0 || k.HighDemand > MathI.Permille) p.Add("devices.lowPrice must be from 100 to 1000, highPrice from 1000 to 5000, lowDemand from 1000 to 5000 and highDemand from 0 to 1000");
+        }
+
+        static void PlatformsProblems(List<string> p, GameConfig c)
+        {
+            PlatformsConfig k = c.Platforms;
+            if (k == null) { p.Add("platforms is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("platforms.enabled must be 0 or 1");
+            if (k.MinCapability < 0 || k.MinReputation < 0 || k.MinReputation > MathI.Permille || k.EraA < 0 || k.EraB < 0 || k.EraC < 0) p.Add("platforms.minCapability, eraA, eraB and eraC must not be negative and minReputation from 0 to 1000");
+            if (k.LiftA < 0 || k.LiftB < 0 || k.LiftC < 0 || k.LiftA > 2000 || k.LiftB > 2000 || k.LiftC > 2000) p.Add("platforms.liftA, liftB and liftC must be from 0 to 2000");
+            if (k.CutA < 0 || k.CutB < 0 || k.CutC < 0 || k.MaxCut < k.CutA || k.MaxCut < k.CutB || k.MaxCut < k.CutC || k.MaxCut > 950) p.Add("platforms.cutA, cutB and cutC must not be negative and no more than maxCut, which is at most 950");
+            if (k.TermWeeks < 2 || k.WindowWeeks < 1 || k.WindowWeeks >= k.TermWeeks) p.Add("platforms.termWeeks must be at least 2 and windowWeeks at least 1 and under termWeeks");
+            if (k.RelianceStep < 0 || k.RelianceStep > MathI.Permille || k.HoldupBar < 0 || k.HoldupBar > MathI.Permille || k.HoldupCut < 0 || k.RenewCutStep < 0 || k.WalkReputation < 0 || k.WalkReputation > 500) p.Add("platforms.relianceStep and holdupBar must be from 0 to 1000, holdupCut and renewCutStep not negative and walkReputation from 0 to 500");
+        }
+
+        static void CreedProblems(List<string> p, GameConfig c)
+        {
+            CreedConfig k = c.Creed;
+            if (k == null) { p.Add("creed is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("creed.enabled must be 0 or 1");
+            if (k.KeptPoints < 0 || k.BrokenPoints < 0 || k.KeptPoints > MathI.Permille || k.BrokenPoints > MathI.Permille) p.Add("creed.keptPoints and brokenPoints must be from 0 to 1000");
+            if (k.StartIntegrity < 0 || k.StartIntegrity > MathI.Permille || k.FlipIntegrity < 0 || k.FlipIntegrity > MathI.Permille || k.OwnUpRestore < 0 || k.OwnUpRestore > MathI.Permille || k.FlipLockWeeks < 0) p.Add("creed.startIntegrity, flipIntegrity and ownUpRestore must be from 0 to 1000 and flipLockWeeks not negative");
+            if (k.LowBar < 0 || k.HighBar > MathI.Permille || k.LowBar + k.Gap >= k.HighBar - k.Gap || k.Gap < 0) p.Add("creed.lowBar must be under highBar by more than twice gap, and highBar at most 1000");
+            if (k.HighReputation < 0 || k.LowReputation < 0 || k.OwnUpReputation < 0 || k.HighReputation > 500 || k.LowReputation > 500 || k.OwnUpReputation > 500 || k.HighMorale < 0 || k.LowMorale < 0 || k.HighMorale > MathI.Permille || k.LowMorale > MathI.Permille) p.Add("creed.highReputation, lowReputation and ownUpReputation must be from 0 to 500 and highMorale and lowMorale from 0 to 1000");
+            if (k.ShieldPermille < 0 || k.ShieldPermille > MathI.Permille || k.ExposePermille < MathI.Permille || k.ExposePermille > 5000) p.Add("creed.shieldPermille must be from 0 to 1000 and exposePermille from 1000 to 5000");
+            if (k.TownCost < 0 || k.TownGain < 0 || k.TownGain > MathI.Permille || k.TownCooldown < 0) p.Add("creed.townCost, townGain and townCooldown must not be negative and townGain at most 1000");
+        }
+
+        static void ShocksProblems(List<string> p, GameConfig c)
+        {
+            ShocksConfig k = c.Shocks;
+            if (k == null) { p.Add("shocks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("shocks.enabled must be 0 or 1");
+            if (k.WindowWeeks < 1 || k.BraceCost < 0 || k.HitCash < 0 || k.BracePermille < 0 || k.BracePermille > MathI.Permille) p.Add("shocks.windowWeeks must be at least 1, braceCost and hitCash not negative and bracePermille from 0 to 1000");
+            if (k.HitReputation < 0 || k.HitReputation > 500 || k.BoomReputation < 0 || k.BoomReputation > 500 || k.CounterGain < 0 || k.CounterGain > 500 || k.HitMorale < 0 || k.HitMorale > MathI.Permille) p.Add("shocks.hitReputation, boomReputation and counterGain must be from 0 to 500 and hitMorale from 0 to 1000");
+            if (k.BoomBrace < MathI.Permille || k.BoomBrace > 10000 || k.CounterBoom < MathI.Permille || k.CounterBoom > 10000 || k.CounterMiss < MathI.Permille || k.CounterMiss > 10000 || k.CounterBar < 0) p.Add("shocks.boomBrace, counterBoom and counterMiss must be from 1000 to 10000 and counterBar not negative");
+        }
+
+        static void ReplicationProblems(List<string> p, GameConfig c)
+        {
+            ReplicationConfig k = c.Replication;
+            if (k == null) { p.Add("replication is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("replication.enabled must be 0 or 1");
+            if (k.PendingMax < 1 || k.PendingWeeks < 1 || k.Weeks < 1 || k.MaxEffort < 0 || k.MaxEffort > 12 || k.EffortPoints < 0) p.Add("replication.pendingMax, pendingWeeks and weeks must be at least 1, maxEffort from 0 to 12 and effortPoints not negative");
+            if (k.RigorBase < 0 || k.RigorStep < 0 || k.RigorPerWriter < 0 || k.BarBase < 0 || k.BarBase > MathI.Permille || k.BarPerPrestige < 0 || k.BarPerPrestige > MathI.Permille) p.Add("replication.rigorBase, rigorStep and rigorPerWriter must not be negative, barBase and barPerPrestige from 0 to 1000");
+            if (k.WinPrestige < 0 || k.LossPrestige < 0 || k.WithholdPrestige < 0 || k.WinReputation < 0 || k.LossReputation < 0 || k.WinReputation > 500 || k.LossReputation > 500) p.Add("replication.winPrestige, lossPrestige and withholdPrestige must not be negative and winReputation and lossReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

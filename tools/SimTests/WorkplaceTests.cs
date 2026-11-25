@@ -25,7 +25,7 @@ public class WorkplaceTests
     {
         var options = new NewGameOptions { Seed = 3, StartEraId = eraId };
         if (!rivals) options.RivalIds = new List<string>();
-        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.Ageing.MaxMoralePenalty = 0; OnlySteadyTraits(c); if (tweak != null) tweak(c); }), options));
+        var g = new Game(Simulation.NewGame(TestData.Config(c => { c.RolePerks.Clear(); c.Ageing.MaxMoralePenalty = 0; OnlySteadyTraits(c); c.Shocks.Enabled = 0; if (tweak != null) tweak(c); }), options));
         g.Me.Cash = 1_000_000_000_000;
         return g;
     }

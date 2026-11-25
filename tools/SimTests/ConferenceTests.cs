@@ -21,6 +21,7 @@ public class ConferenceTests
             foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
             c.Office.ChancePermille = 0;
             c.Safety.IncidentChancePermille = 0;
+            c.Replication.Enabled = 0;
             c.PlayerStart.Cash = 1_000_000_000_000;
             if (tweak != null) tweak(c);
         }).WithStarterLab(researchers: 4, engineers: 4, safety: 3, sales: 2, gpus: 8);

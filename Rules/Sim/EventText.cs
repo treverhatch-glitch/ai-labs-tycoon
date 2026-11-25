@@ -415,6 +415,42 @@ namespace AiLabs.Rules.Sim
                     return who + " repaid its convertible note with " + e.Amount + ".";
                 case EventKind.NoteExtended:
                     return who + " extended its convertible note.";
+                case EventKind.DeviceDesigned:
+                    return who + " started designing a device for " + e.Amount + ".";
+                case EventKind.DeviceLaunched:
+                    return who + (e.Pick == 1 ? "'s device launches to applause." : "'s device flops on stage.");
+                case EventKind.DeviceRecalled:
+                    return who + " recalled its device at a cost of " + e.Amount + ".";
+                case EventKind.DeviceWithdrawn:
+                    return who + " ended its device line after " + e.Amount + " units.";
+                case EventKind.PlatformSigned:
+                    return who + " signed a distribution deal, the platform taking " + e.Amount / 10 + "% of the lift.";
+                case EventKind.PlatformHoldup:
+                    return "The platform raised its cut on " + who + " to " + e.Amount / 10 + "% as the deal came up.";
+                case EventKind.PlatformRenewed:
+                    return who + " renewed its distribution deal at a " + e.Amount / 10 + "% cut.";
+                case EventKind.PlatformEnded:
+                    return who + (e.Pick == 1 ? "'s distribution deal ran out." : " walked from its distribution deal.");
+                case EventKind.CreedSet:
+                    return who + " put its values in writing.";
+                case EventKind.TownHallHeld:
+                    return who + " held a town hall on its values.";
+                case EventKind.CreedOwnedUp:
+                    return who + " told its staff it had not lived up to its values.";
+                case EventKind.CreedHollow:
+                    return who + "'s staff now laugh at its values.";
+                case EventKind.CreedProud:
+                    return who + " is held up as a lab that lives its values.";
+                case EventKind.ShockStruck:
+                    return e.SubjectId == 3 ? who + " is in the middle of a boom and has to decide how to meet it." : who + " is hit by the news and has to decide how to meet it.";
+                case EventKind.ShockAnswered:
+                    return who + (e.Pick == 1 ? " braced and took the news in its stride." : e.Pick == 3 ? " turned the news round." : e.Pick == 4 ? " tried to turn the news round and could not." : e.Pick == 5 ? " let the news happen to it." : " rode the news out.");
+                case EventKind.CodeReleased:
+                    return who + " put a paper's code and data out for anyone to run.";
+                case EventKind.CodeWithheld:
+                    return who + " kept a paper's code and data back.";
+                case EventKind.PaperReplicated:
+                    return e.Pick == 1 ? "Another lab reproduced " + who + "'s paper." : "Another lab could not reproduce " + who + "'s paper.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

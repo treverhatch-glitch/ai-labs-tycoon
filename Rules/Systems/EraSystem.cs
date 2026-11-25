@@ -97,6 +97,7 @@ namespace AiLabs.Rules.Systems
                 }
                 Events.Add(state, EventKind.WorldNews, -1, -1, e.PoolPermille, e.Id);
                 BubbleSystem.OnWorldEvent(c, state, e);
+                Shocks.OnWorldEvent(c, state, i);
             }
         }
     }

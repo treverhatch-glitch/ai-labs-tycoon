@@ -30,6 +30,7 @@ public class RushedLaunchTests
             c.Tax.Enabled = 0;
             c.Standards.Enabled = 0;
             c.Reliability.Enabled = 0;
+            c.Shocks.Enabled = 0;
             if (tweak != null) tweak(c);
         }), options));
         g.WithStarterLab();

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 95;
+        public const int CurrentSchema = 100;
 
         public int Schema;
         public string ConfigVersion;
@@ -391,6 +391,51 @@ namespace AiLabs.Rules.State
         public int NoteLeft;
         public int NoteExtended;
         public int NoteTier;
+        /// <summary>The device line (1 speaker, 2 glasses, 3 home robot, 0 none), its stage (1 designing, 2 on sale), the weeks left to design or on sale so far, and its quality.</summary>
+        public int DevLine;
+        public int DevStage;
+        public int DevWeeks;
+        public int DevQuality;
+        /// <summary>The price tier (1 low, 2 middle, 3 high), the units sold in all and the weekly demand it started at.</summary>
+        public int DevTier;
+        public long DevSold;
+        public long DevBase;
+        /// <summary>The platform the lab has a deal with (1 phone, 2 browser, 3 office suite, 0 none), the weeks left of the term and the cut it takes, in permille.</summary>
+        public int PlatPlat;
+        public int PlatLeft;
+        public int PlatCut;
+        /// <summary>Renewals so far, how much of the lab's users come through the platform (permille), whether it has raised its price this term (0 or 1), and what the deal has paid the platform and left the lab, in all.</summary>
+        public int PlatRenewals;
+        public int PlatReliance;
+        public int PlatHoldup;
+        public long PlatPaid;
+        public long PlatKept;
+        /// <summary>The two values the lab states (1 safety, 2 speed, 3 openness, 4 people, 5 profit; 0 none), how much of them it lives up to (permille) and the band that puts it in (0 neither, 1 held up, 2 a joke).</summary>
+        public int CreedA;
+        public int CreedB;
+        public int CreedIntegrity;
+        public int CreedBand;
+        /// <summary>Weeks before the creed can be changed, weeks before another town hall or owning up, and how many acts have kept it and broken it.</summary>
+        public int CreedLock;
+        public int CreedTown;
+        public long CreedKept;
+        public long CreedBroken;
+        /// <summary>The shock waiting for an answer (1 squeeze, 2 backlash, 3 boom; 0 none), the world event behind it (its place in the data plus one) and the weeks left to answer.</summary>
+        public int ShockKind;
+        public int ShockRef;
+        public int ShockLeft;
+        /// <summary>How many shocks the lab braced for, rode out and countered.</summary>
+        public int ShockBraced;
+        public int ShockRode;
+        public int ShockCountered;
+        /// <summary>Papers waiting for the lab to decide about their code, the weeks the oldest has waited, the weeks left before another lab finishes trying to reproduce the one that went out (0 when none) and how reproducible it is.</summary>
+        public int ReplPending;
+        public int ReplWait;
+        public int ReplLeft;
+        public int ReplRigor;
+        /// <summary>How many papers replicated and how many did not.</summary>
+        public int ReplWins;
+        public int ReplFails;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -739,6 +784,41 @@ namespace AiLabs.Rules.State
             s.Int("noteLeft", ref NoteLeft);
             s.Int("noteExtended", ref NoteExtended);
             s.Int("noteTier", ref NoteTier);
+            s.Int("devLine", ref DevLine);
+            s.Int("devStage", ref DevStage);
+            s.Int("devWeeks", ref DevWeeks);
+            s.Int("devQuality", ref DevQuality);
+            s.Int("devTier", ref DevTier);
+            s.Long("devSold", ref DevSold);
+            s.Long("devBase", ref DevBase);
+            s.Int("platPlat", ref PlatPlat);
+            s.Int("platLeft", ref PlatLeft);
+            s.Int("platCut", ref PlatCut);
+            s.Int("platRenewals", ref PlatRenewals);
+            s.Int("platReliance", ref PlatReliance);
+            s.Int("platHoldup", ref PlatHoldup);
+            s.Long("platPaid", ref PlatPaid);
+            s.Long("platKept", ref PlatKept);
+            s.Int("creedA", ref CreedA);
+            s.Int("creedB", ref CreedB);
+            s.Int("creedIntegrity", ref CreedIntegrity);
+            s.Int("creedBand", ref CreedBand);
+            s.Int("creedLock", ref CreedLock);
+            s.Int("creedTown", ref CreedTown);
+            s.Long("creedKept", ref CreedKept);
+            s.Long("creedBroken", ref CreedBroken);
+            s.Int("shockKind", ref ShockKind);
+            s.Int("shockRef", ref ShockRef);
+            s.Int("shockLeft", ref ShockLeft);
+            s.Int("shockBraced", ref ShockBraced);
+            s.Int("shockRode", ref ShockRode);
+            s.Int("shockCountered", ref ShockCountered);
+            s.Int("replPending", ref ReplPending);
+            s.Int("replWait", ref ReplWait);
+            s.Int("replLeft", ref ReplLeft);
+            s.Int("replRigor", ref ReplRigor);
+            s.Int("replWins", ref ReplWins);
+            s.Int("replFails", ref ReplFails);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

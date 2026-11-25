@@ -329,6 +329,13 @@ and says why in the commit message.
 146. **Convertible notes.** ~~Done~~: `convertibleNotes` data, `IssueNote`, `RepayNote`, `ExtendNote`, `Notes`, schema 94, `NotesTests`, `docs/content/convertible-notes.md` (Q390).
 147. **News and chat for the fifth batch.** ~~Done~~: 30 headlines and 23 chat lines, `ListingRevenueFoundationLeasebackNotesNewsChatTests`, pins at 233 and 260 (Q391).
 148. **How the fifth batch meets.** ~~Done~~: the covenant counts a revenue advance as debt, `ListingRevenueFoundationLeasebackNotesTogetherTests` (Q392).
+149. **Devices.** ~~Done~~: `DesignDevice`, `SetDevicePrice`, `WithdrawDevice`, schema 95, `DevicesTests` (Q393).
+150. **Platform deals.** ~~Done~~: `SignPlatform`, `RenewPlatform`, `WalkFromPlatform`, schema 96, `PlatformsTests` (Q394).
+151. **Lab values.** ~~Done~~: `SetCreed`, `HoldTownHall`, `OwnUp`, schema 97, `CreedTests` (Q395).
+152. **World shocks.** ~~Done~~: `AnswerShock`, schema 98, `ShocksTests` (Q396).
+153. **Replication.** ~~Done~~: `ReleaseCode`, `WithholdCode`, schema 99, `ReplicationTests` (Q397).
+154. **News and chat for the sixth batch.** ~~Done~~: 22 headlines and 18 chat lines, `DevicesPlatformsCreedShocksReplicationNewsChatTests`, pins at 255 and 278 (Q398).
+155. **How the sixth batch meets.** ~~Done~~: values read the other systems, a creed shields or exposes a lab to a backlash, `DevicesPlatformsCreedShocksReplicationTogetherTests` (Q399).
 
 ## Rules: later
 

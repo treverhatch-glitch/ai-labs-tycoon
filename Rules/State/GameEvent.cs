@@ -396,7 +396,43 @@ namespace AiLabs.Rules.State
         /// <summary>The lab repaid the note. Amount is what it paid.</summary>
         NoteRepaid,
         /// <summary>The lab extended the note. Amount is the new weekly rate.</summary>
-        NoteExtended
+        NoteExtended,
+        /// <summary>The lab started designing a device. Amount is the cost, SubjectId the line.</summary>
+        DeviceDesigned,
+        /// <summary>A device launched. Amount is its quality, SubjectId the line, Pick 1 a hit and 0 a flop.</summary>
+        DeviceLaunched,
+        /// <summary>A poor device was recalled. Amount is what the recall cost, SubjectId the line.</summary>
+        DeviceRecalled,
+        /// <summary>The lab ended its device line. Amount is the units sold in all, SubjectId the line.</summary>
+        DeviceWithdrawn,
+        /// <summary>The lab signed a distribution deal. Amount is the platform's cut in permille, SubjectId the platform.</summary>
+        PlatformSigned,
+        /// <summary>A platform raised its price in the renewal window. Amount is the new cut, SubjectId the platform.</summary>
+        PlatformHoldup,
+        /// <summary>The lab renewed a deal. Amount is the cut, SubjectId the platform.</summary>
+        PlatformRenewed,
+        /// <summary>A deal ended. Amount is the reputation lost, SubjectId the platform, Pick 0 the lab walked, 1 the term ran out.</summary>
+        PlatformEnded,
+        /// <summary>The lab stated its values. Amount is the integrity it starts at, SubjectId is first times ten plus second.</summary>
+        CreedSet,
+        /// <summary>The lab held a town hall. Amount is the integrity after.</summary>
+        TownHallHeld,
+        /// <summary>The lab owned up. Amount is the reputation it cost.</summary>
+        CreedOwnedUp,
+        /// <summary>The lab's integrity fell far enough for the creed to be a joke. Amount is the reputation lost.</summary>
+        CreedHollow,
+        /// <summary>The lab's integrity rose far enough for it to be held up as an example. Amount is the reputation earned.</summary>
+        CreedProud,
+        /// <summary>A shock landed on the lab. SubjectId is the kind (1 squeeze, 2 backlash, 3 boom), Ref the world event.</summary>
+        ShockStruck,
+        /// <summary>A shock was answered. Amount is the reputation it changed, SubjectId the kind, Ref the world event, Pick 1 braced, 2 rode, 3 countered and it worked, 4 countered and it failed, 5 nobody answered.</summary>
+        ShockAnswered,
+        /// <summary>The lab put a paper's code out. Amount is the research points the clean-up cost, Pick the weeks of clean-up, SubjectId how reproducible it is.</summary>
+        CodeReleased,
+        /// <summary>The lab kept a paper's code back. Amount is the prestige it cost, Pick 0 the lab chose to, 1 it waited too long.</summary>
+        CodeWithheld,
+        /// <summary>Another lab tried to reproduce a paper. Amount is the prestige it changed, SubjectId how reproducible the paper was, Pick 1 it replicated and 0 it did not.</summary>
+        PaperReplicated
     }
 
     /// <summary>

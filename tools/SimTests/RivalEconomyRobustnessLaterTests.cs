@@ -73,6 +73,11 @@ public class RivalEconomyRobustnessLaterTests
             c.Tax.Enabled = 0;
             c.Standards.Enabled = 0;
             c.Reliability.Enabled = 0;
+            c.Devices.Enabled = 0;
+            c.Platforms.Enabled = 0;
+            c.Creed.Enabled = 0;
+            c.Shocks.Enabled = 0;
+            c.Replication.Enabled = 0;
             tweak?.Invoke(c);
         }), seed));
         GameConfig c = g.C;

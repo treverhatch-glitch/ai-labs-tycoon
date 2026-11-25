@@ -83,7 +83,7 @@ public class SaveAndDeterminismTests
 
         Assert.Contains("not readable", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Substring(0, save.Length / 2))).Message);
         Assert.Contains("no schema", Assert.Throws<SaveException>(() => Simulation.Load(c, "{\"hello\":1}")).Message);
-        Assert.Contains("newer version", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"schema\":" + GameState.CurrentSchema + ",", "\"schema\":99,"))).Message);
+        Assert.Contains("newer version", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"schema\":" + GameState.CurrentSchema + ",", "\"schema\":" + (GameState.CurrentSchema + 1) + ","))).Message);
         Assert.Contains("unknown key", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"tick\":", "\"tock\":0,\"tick\":"))).Message);
         Assert.Contains("research-lab-deluxe", Assert.Throws<SaveException>(() => Simulation.Load(c, save.Replace("\"research-lab\"", "\"research-lab-deluxe\""))).Message);
     }
@@ -184,7 +184,7 @@ public class SaveAndDeterminismTests
         // One pinned game: seed 1, the autopilot, one year. Any change to the rules or to the numbers in
         // default-config.json moves this digest. If you meant to change behaviour, run the test, copy the
         // new digest from the failure message into Golden below, and say why in the commit message.
-        const string Golden = "33dcf21bdf20e9413afdc4b0827857d9268a7cc6db40c1546a768a08048e6d97";
+        const string Golden = "9c8388c6bb27ef3f5ff7377e8713700f55e0aea61ae9ff90092f12a74a25f0df";
 
         string digest = PlayedFor(48, seed: 1).Sim.Digest();
         Assert.True(digest == Golden, "The golden digest moved. New digest: " + digest);
