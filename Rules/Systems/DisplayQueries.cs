@@ -264,7 +264,8 @@ namespace AiLabs.Rules.Systems
             long beforeAccount = beforeCampaign + b.CampaignEffect;
             b.AccountEffect = MathI.MulPermille(beforeAccount, MathI.Permille + AccountTeams.AppealPermille(c, state, lab, sector.Id)) - beforeAccount;
             long beforeSpec = b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost + b.ObjectiveEffect + b.LaunchEffect + b.PivotConfusion + b.CampaignEffect + b.AccountEffect;
-            int spec = SpecialistLines.AppealPermille(c, model, sector.Id) + OpenWeights.AppealPermille(c, model, sector.Id);
+            int spec = SpecialistLines.AppealPermille(c, model, sector.Id) + OpenWeights.AppealPermille(c, model, sector.Id)
+                + SpecialistEraHooks.AppealPermille(c, state, model, sector.Id);
             if (spec != 0)
             {
                 long afterSpec = MathI.MulPermille(beforeSpec, MathI.Permille + spec);
@@ -351,6 +352,11 @@ namespace AiLabs.Rules.Systems
             b.CovenantCalls = ExitDebt.CovenantCalls(c, lab);
             b.Total = gross - b.StaffShare - b.Loans - b.Notes - b.Rbf - b.CovenantCalls;
             return b;
+        }
+
+        public static SectorPricingBreakdown.Parts SectorPriceParts(GameConfig c, LabState lab, string sectorId)
+        {
+            return SectorPricingBreakdown.Query(c, lab, sectorId);
         }
 
         public static RevenueBreakdown WeeklyRevenueParts(GameState state, LabState lab)

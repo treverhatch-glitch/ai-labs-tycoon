@@ -15,6 +15,8 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.ShadyLocked, lab.Name + " is locked out of shady work.");
             if (ShadyQueries.CaseOpen(lab, state.Tick))
                 return Fail(CommandError.CaseOpen, "An investigation is open; no shady work until it closes.");
+            if (ShadyFreezeAudit.Enabled(c) && WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return FrozenIn(c, lab, lab.HomeBlocId);
 
             ShadyCardConfig card = c.Shady.Card(cmd.Id);
             if (card == null) return Fail(CommandError.UnknownId, "There is no shady card \"" + cmd.Id + "\".");

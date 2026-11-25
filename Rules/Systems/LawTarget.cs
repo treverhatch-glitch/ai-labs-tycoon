@@ -11,6 +11,7 @@ namespace AiLabs.Rules.Systems
         {
             lab.LawTarget = goal;
             Events.Add(state, EventKind.LawTargetSet, lab.Id, goal == LawShaping.Strict ? 1 : 0, 0, goal);
+            LawTargetEraAmplify.OnSet(c, state, lab, goal);
         }
     }
 }

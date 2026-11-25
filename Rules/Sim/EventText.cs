@@ -668,6 +668,46 @@ namespace AiLabs.Rules.Sim
                     return who + " missed scenario goal \"" + e.Ref + "\".";
                 case EventKind.LawTargetSet:
                     return who + " set law target \"" + e.Ref + "\" before lobbying.";
+                case EventKind.ReservedComputeSigned:
+                    return who + " signed a reserved compute block for " + e.Amount + " GPUs.";
+                case EventKind.RivalIntentSurfaced:
+                    return rivalName(c, state, e) + " tipped a rival move (" + e.Ref + ").";
+                case EventKind.GpuTierLocked:
+                    return who + " was refused " + e.Ref + " tier hardware (gate " + e.SubjectId + ").";
+                case EventKind.ScenarioEndlessAck:
+                    return who + " keeps playing after scenario \"" + e.Ref + "\" win.";
+                case EventKind.SpecialistEraUnlocked:
+                    return "Specialist and open-weights hooks unlock in the " + e.Ref + " era.";
+                case EventKind.SectorPriceLadderPeak:
+                    return who + " pegged premium pricing on \"" + e.Ref + "\" at tier " + e.SubjectId + ".";
+                case EventKind.DataSourceSpecialistPaired:
+                    return who + " paired data source \"" + e.Ref + "\" with a specialist line.";
+                case EventKind.PublicMetricsEraBoost:
+                    return who + " published metrics with an era-load trust boost of " + e.Amount + " on " + e.Ref + ".";
+                case EventKind.OpenWeightsEraThrottled:
+                    return who + "'s open weights were copied despite era throttle on " + e.Ref + ".";
+                case EventKind.EvalHarnessEraBoosted:
+                    return who + " registered " + e.Ref + " in the eval harness with era trust +" + e.Amount + ".";
+                case EventKind.CampaignDeadlineElongated:
+                    return who + " got " + e.Amount + " grace weeks on its campaign deadline.";
+                case EventKind.LawShapingCooldownShortened:
+                    return who + " shaped " + e.Ref + " law with a shorter lobby cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.DataSourceRenewEraBonused:
+                    return who + " renewed data source \"" + e.Ref + "\" with +" + e.Amount + " era bonus weeks.";
+                case EventKind.SectorPricingEraRelieved:
+                    return who + " set " + e.Ref + " pricing to tier " + e.SubjectId + " with era overload relief " + e.Amount + " permille.";
+                case EventKind.LawTargetEraAmplified:
+                    return who + " locked a " + e.Ref + " law target with era weight in era index " + e.SubjectId + ".";
+                case EventKind.SpecialistBranchEraDiscounted:
+                    return who + " branched specialist \"" + e.Ref + "\" with $" + e.Amount + " era discount on model " + e.SubjectId + ".";
+                case EventKind.MarginCallEraGraced:
+                    return who + " got a margin call with " + e.Amount + " extra cure weeks (" + e.SubjectId + " total).";
+                case EventKind.HearingShareEraBoosted:
+                    return who + " nudged the bubble +" + e.Amount + " permille after a hearing (total +" + e.SubjectId + ").";
+                case EventKind.RungSixEraCooldownShortened:
+                    return who + " answered a rung-six crisis with a shorter cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.DataSourceAcquireEraDiscounted:
+                    return who + " acquired data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
@@ -910,6 +950,12 @@ namespace AiLabs.Rules.Sim
         {
             bool vowel = name.Length > 0 && "AEIOUaeiou".IndexOf(name[0]) >= 0;
             return (vowel ? "an " : "a ") + name;
+        }
+
+        static string rivalName(GameConfig c, GameState state, GameEvent e)
+        {
+            LabState lab = state.Lab(e.LabId);
+            return lab == null ? "A rival" : lab.Name;
         }
     }
 }

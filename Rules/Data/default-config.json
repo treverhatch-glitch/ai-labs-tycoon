@@ -12331,6 +12331,144 @@
         "kind": "LawTargetSet",
         "pick": -1,
         "text": "{lab} picks strict or loose law before lobbying"
+      },
+      {
+        "id": "reserved-signed",
+        "kind": "ReservedComputeSigned",
+        "pick": -1,
+        "text": "{lab} signs a reserved GPU block with Envydia"
+      },
+      {
+        "id": "reserved-blocked",
+        "kind": "ReservedComputeSigned",
+        "pick": 1,
+        "text": "{lab} is turned down for reserved compute on reputation"
+      },
+      {
+        "id": "rival-intent",
+        "kind": "RivalIntentSurfaced",
+        "pick": -1,
+        "text": "{lab} telegraphs its next move on the wire"
+      },
+      {
+        "id": "gpu-tier-buy",
+        "kind": "GpuTierLocked",
+        "pick": 0,
+        "text": "{lab} cannot buy {generation} yet under the era ladder"
+      },
+      {
+        "id": "gpu-tier-queue",
+        "kind": "GpuTierLocked",
+        "pick": 1,
+        "text": "{lab}'s Envydia queue stalls on a locked GPU tier"
+      },
+      {
+        "id": "scenario-endless",
+        "kind": "ScenarioEndlessAck",
+        "pick": -1,
+        "text": "{lab} keeps running after a scenario win"
+      },
+      {
+        "id": "specialist-era-unlock",
+        "kind": "SpecialistEraUnlocked",
+        "pick": -1,
+        "text": "Specialist branches and open weights unlock in the {ref} era"
+      },
+      {
+        "id": "sector-price-peak",
+        "kind": "SectorPriceLadderPeak",
+        "pick": -1,
+        "text": "{lab} pegs premium pricing on {ref}"
+      },
+      {
+        "id": "data-source-specialist-pair",
+        "kind": "DataSourceSpecialistPaired",
+        "pick": -1,
+        "text": "{lab} paired specialist training data with {ref}"
+      },
+      {
+        "id": "public-metrics-era-boost",
+        "kind": "PublicMetricsEraBoost",
+        "pick": -1,
+        "text": "{lab} published metrics with an era-load trust bump on {ref}"
+      },
+      {
+        "id": "open-weights-era-throttle",
+        "kind": "OpenWeightsEraThrottled",
+        "pick": -1,
+        "text": "Rivals copied {lab}'s open weights despite an era throttle on {ref}"
+      },
+      {
+        "id": "eval-harness-era-boost",
+        "kind": "EvalHarnessEraBoosted",
+        "pick": -1,
+        "text": "{lab} registered {ref} on the public eval harness with era trust"
+      },
+      {
+        "id": "campaign-deadline-grace",
+        "kind": "CampaignDeadlineElongated",
+        "pick": -1,
+        "text": "{lab} won extra campaign deadline weeks in the {ref} era"
+      },
+      {
+        "id": "law-shaping-era-cooldown",
+        "kind": "LawShapingCooldownShortened",
+        "pick": -1,
+        "text": "{lab} shaped {ref} lobbying law with a shorter cooldown in the era"
+      },
+      {
+        "id": "data-renew-era-bonus",
+        "kind": "DataSourceRenewEraBonused",
+        "pick": -1,
+        "text": "{lab} renewed {ref} with extra licensed-data weeks"
+      },
+      {
+        "id": "sector-pricing-era-relief",
+        "kind": "SectorPricingEraRelieved",
+        "pick": -1,
+        "text": "{lab} eased overload on {ref} sector pricing"
+      },
+      {
+        "id": "law-target-era-amplify",
+        "kind": "LawTargetEraAmplified",
+        "pick": -1,
+        "text": "{lab} set a {ref} law target with era backing"
+      },
+      {
+        "id": "specialist-branch-era-discount",
+        "kind": "SpecialistBranchEraDiscounted",
+        "pick": -1,
+        "text": "{lab} branched a {ref} specialist line on the cheap"
+      },
+      {
+        "id": "margin-call-era-grace",
+        "kind": "MarginCallEraGraced",
+        "pick": -1,
+        "text": "{lab} caught a margin call with extra cure time"
+      },
+      {
+        "id": "hearing-share-era-boost",
+        "kind": "HearingShareEraBoosted",
+        "pick": -1,
+        "text": "{lab} boosted the bubble after a hearing in a late era"
+      },
+      {
+        "id": "rung-six-era-cooldown",
+        "kind": "RungSixEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} shortened rung-six cooldown after a crisis answer"
+      },
+      {
+        "id": "data-acquire-era-discount",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "pick": -1,
+        "text": "{lab} acquired {ref} with an era licensing discount"
+      },
+      {
+        "id": "rival-intent-lobby",
+        "kind": "RivalIntentSurfaced",
+        "pick": 1,
+        "text": "{lab} lobbies in the open, rivals read the tea leaves"
       }
     ],
     "filler": [
@@ -16504,6 +16642,248 @@
         "text": "Law target set before the lobby push.",
         "fromYear": 0,
         "toYear": 0
+      },
+      {
+        "id": "reserved-signed-chat",
+        "kind": "ReservedComputeSigned",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Envydia took our reserved deposit. Block is live.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rival-intent-chat",
+        "kind": "RivalIntentSurfaced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "subject",
+        "text": "Ticker picked up a rival plan from the decision log.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpu-tier-chat",
+        "kind": "GpuTierLocked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Hardware tier gate blocked our purchase.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-endless-chat",
+        "kind": "ScenarioEndlessAck",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We acknowledged the win and chose to keep going.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "specialist-era-chat",
+        "kind": "SpecialistEraUnlocked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Specialist lanes and open weights finally match this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sector-price-peak-chat",
+        "kind": "SectorPriceLadderPeak",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "We set sector pricing at the top ladder rung.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-pair-chat",
+        "kind": "DataSourceSpecialistPaired",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Our specialist line finally has a matching data contract.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-era-chat",
+        "kind": "PublicMetricsEraBoost",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Publishing metrics picked up an era-load trust bonus.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "weights-throttle-chat",
+        "kind": "OpenWeightsEraThrottled",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "A rival copy still landed despite our era throttle.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-era-chat",
+        "kind": "EvalHarnessEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Eval harness registration came with era trust.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "deadline-grace-chat",
+        "kind": "CampaignDeadlineElongated",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board gave us extra campaign runway.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-cooldown-chat",
+        "kind": "LawShapingCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Regulators let us lobby again sooner after shaping law.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "renew-bonus-chat",
+        "kind": "DataSourceRenewEraBonused",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Renewing the corpus came with bonus licensed weeks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "sector-relief-chat",
+        "kind": "SectorPricingEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Premium pricing tier overload eased this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "law-target-amplify-chat",
+        "kind": "LawTargetEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board noted our era-weighted law target.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "branch-discount-chat",
+        "kind": "SpecialistBranchEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Branching a specialist line cost less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "margin-grace-chat",
+        "kind": "MarginCallEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Lenders gave us longer to cure the margin call.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hearing-boost-chat",
+        "kind": "HearingShareEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The float got an extra bump after that hearing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rung-six-cooldown-chat",
+        "kind": "RungSixEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Crisis ladder cooldown came back faster this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-acquire-discount-chat",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "First payment on licensed data was cheaper than usual.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rival-lobby-chat",
+        "kind": "RivalIntentSurfaced",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "subject",
+        "text": "A rival's lobbying line hit the news wire.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "gpu-queue-chat",
+        "kind": "GpuTierLocked",
+        "roles": [],
+        "trait": "",
+        "pick": 1,
+        "about": "lab",
+        "text": "The vendor queue bounced on tier unlock rules.",
+        "fromYear": 0,
+        "toYear": 0
       }
     ]
   },
@@ -17289,7 +17669,8 @@
         "kind": "Neutral",
         "blurbKey": "scenario-win",
         "continueModes": [
-          "acknowledge"
+          "acknowledge",
+          "keep-going"
         ]
       }
     ],
@@ -19205,5 +19586,116 @@
   },
   "lawTarget": {
     "enabled": 1
+  },
+  "reservedComputeGate": {
+    "enabled": 1,
+    "minReputationPermille": 400,
+    "cooldownWeeks": 8
+  },
+  "rivalIntentNews": {
+    "enabled": 1,
+    "minWeeksBetween": 4
+  },
+  "gpuTierUnlock": {
+    "enabled": 1,
+    "unlockPermille": 450,
+    "minEra": 2,
+    "tierMin": 3
+  },
+  "endlessScenario": {
+    "enabled": 1
+  },
+  "shadyFreezeAudit": {
+    "enabled": 1
+  },
+  "specialistEraHooks": {
+    "enabled": 1,
+    "minEra": 3,
+    "specialistPermille": 40,
+    "openWeightsPermille": 25
+  },
+  "sectorPricingBreakdown": {
+    "enabled": 1,
+    "peakTierNotify": 1
+  },
+  "dataSourceSpecialistPairing": {
+    "enabled": 1,
+    "minEra": 3,
+    "pairs": [
+      {
+        "specialistKindId": "code",
+        "dataSourceId": "expert-labels",
+        "bonusPermille": 40
+      },
+      {
+        "specialistKindId": "image",
+        "dataSourceId": "licensed-corpus",
+        "bonusPermille": 35
+      }
+    ]
+  },
+  "publicMetricsEraLoad": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustBoostPermille": 15
+  },
+  "openWeightsEraThrottle": {
+    "enabled": 1,
+    "minEra": 4,
+    "copyChanceCutPermille": 8
+  },
+  "evalHarnessEraBoost": {
+    "enabled": 1,
+    "minEra": 3,
+    "trustBoostPermille": 20
+  },
+  "campaignDeadlineEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
+  },
+  "lawShapingEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 4
+  },
+  "dataSourceRenewEraBonus": {
+    "enabled": 1,
+    "minEra": 3,
+    "bonusWeeks": 6
+  },
+  "sectorPricingEraRelief": {
+    "enabled": 1,
+    "minEra": 3,
+    "reliefPermille": 12
+  },
+  "lawTargetEraAmplify": {
+    "enabled": 1,
+    "minEra": 2
+  },
+  "specialistBranchEraDiscount": {
+    "enabled": 1,
+    "minEra": 3,
+    "discountPermille": 250
+  },
+  "marginCallEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 2
+  },
+  "hearingSharePriceEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "boostPermille": 50
+  },
+  "rungSixEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 4
+  },
+  "dataSourceAcquireEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
   }
 }

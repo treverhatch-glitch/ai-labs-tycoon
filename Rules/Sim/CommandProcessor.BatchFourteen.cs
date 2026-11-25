@@ -17,7 +17,8 @@ namespace AiLabs.Rules.Sim
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) return Fail(CommandError.WrongModelStatus, model.Name + " must be trained first.");
             if (model.SpecKind > 0) return Fail(CommandError.InvalidArgument, model.Name + " is already a specialist.");
             if (SpecialistLines.FindKind(c, cmd.Id) == null) return Fail(CommandError.UnknownId, "There is no specialist kind \"" + cmd.Id + "\".");
-            if (lab.Cash < c.SpecialistLines.Cost) return NeedCash(lab, c.SpecialistLines.Cost);
+            long branchCost = SpecialistBranchEraDiscount.BranchCost(c, state);
+            if (lab.Cash < branchCost) return NeedCash(lab, branchCost);
             SpecialistLines.Branch(c, state, lab, model, cmd.Id);
             return CommandResult.Done(model.Id);
         }

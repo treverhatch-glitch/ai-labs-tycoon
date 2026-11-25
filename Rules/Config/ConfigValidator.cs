@@ -182,6 +182,27 @@ namespace AiLabs.Rules.Config
             RungSixCrisisProblems(p, c);
             ScenarioGoalsProblems(p, c);
             LawTargetProblems(p, c);
+            ReservedComputeGateProblems(p, c);
+            RivalIntentNewsProblems(p, c);
+            GpuTierUnlockProblems(p, c);
+            EndlessScenarioProblems(p, c);
+            ShadyFreezeAuditProblems(p, c);
+            SpecialistEraHooksProblems(p, c);
+            SectorPricingBreakdownProblems(p, c);
+            DataSourceSpecialistPairingProblems(p, c);
+            PublicMetricsEraLoadProblems(p, c);
+            OpenWeightsEraThrottleProblems(p, c);
+            EvalHarnessEraBoostProblems(p, c);
+            CampaignDeadlineEraGraceProblems(p, c);
+            LawShapingEraCooldownProblems(p, c);
+            DataSourceRenewEraBonusProblems(p, c);
+            SectorPricingEraReliefProblems(p, c);
+            LawTargetEraAmplifyProblems(p, c);
+            SpecialistBranchEraDiscountProblems(p, c);
+            MarginCallEraGraceProblems(p, c);
+            HearingSharePriceEraBoostProblems(p, c);
+            RungSixEraCooldownProblems(p, c);
+            DataSourceAcquireEraDiscountProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -441,10 +462,6 @@ namespace AiLabs.Rules.Config
             if (a.MinInstalledModels < 0) p.Add("acquisitions.minInstalledModels is negative");
             if (a.RegulatorDealRevenue < 0) p.Add("acquisitions.regulatorDealRevenue is negative");
             if (a.RegulatorAttention < 0) p.Add("acquisitions.regulatorAttention is negative");
-            Permille(p, "acquisitions.plannerAcquireChancePermille", a.PlannerAcquireChancePermille);
-            if (a.FleetResaleLockWeeks < 0) p.Add("acquisitions.fleetResaleLockWeeks is negative");
-            Permille(p, "acquisitions.readyChipBookPermille", a.ReadyChipBookPermille);
-            Permille(p, "acquisitions.chipFleetBookPermille", a.ChipFleetBookPermille);
         }
 
         static void ModelSalesProblems(List<string> p, GameConfig c)
@@ -455,7 +472,6 @@ namespace AiLabs.Rules.Config
             if (m.EarningsMultipleWeeks < 0) p.Add("modelSales.earningsMultipleWeeks is negative");
             if (m.SectorReputationHit < 0) p.Add("modelSales.sectorReputationHit is negative");
             if (m.MinOffer < 0) p.Add("modelSales.minOffer is negative");
-            Permille(p, "modelSales.crashDistressOfferPermille", m.CrashDistressOfferPermille);
         }
 
         static void SharesProblems(List<string> p, GameConfig c)
@@ -2052,6 +2068,201 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTarget.enabled must be 0 or 1");
         }
 
+        static void ReservedComputeGateProblems(List<string> p, GameConfig c)
+        {
+            ReservedComputeGateConfig k = c.ReservedComputeGate;
+            if (k == null) { p.Add("reservedComputeGate is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("reservedComputeGate.enabled must be 0 or 1");
+            if (k.MinReputationPermille < 0 || k.MinReputationPermille > MathI.Permille) p.Add("reservedComputeGate.minReputationPermille must be from 0 to 1000");
+            if (k.CooldownWeeks < 0) p.Add("reservedComputeGate.cooldownWeeks must not be negative");
+        }
+
+        static void RivalIntentNewsProblems(List<string> p, GameConfig c)
+        {
+            RivalIntentNewsConfig k = c.RivalIntentNews;
+            if (k == null) { p.Add("rivalIntentNews is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rivalIntentNews.enabled must be 0 or 1");
+            if (k.MinWeeksBetween < 0) p.Add("rivalIntentNews.minWeeksBetween must not be negative");
+        }
+
+        static void GpuTierUnlockProblems(List<string> p, GameConfig c)
+        {
+            GpuTierUnlockConfig k = c.GpuTierUnlock;
+            if (k == null) { p.Add("gpuTierUnlock is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("gpuTierUnlock.enabled must be 0 or 1");
+            if (k.UnlockPermille < 0 || k.UnlockPermille > MathI.Permille) p.Add("gpuTierUnlock.unlockPermille must be from 0 to 1000");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("gpuTierUnlock.minEra must be a valid era index");
+            if (k.TierMin < 0) p.Add("gpuTierUnlock.tierMin must not be negative");
+        }
+
+        static void EndlessScenarioProblems(List<string> p, GameConfig c)
+        {
+            EndlessScenarioConfig k = c.EndlessScenario;
+            if (k == null) { p.Add("endlessScenario is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("endlessScenario.enabled must be 0 or 1");
+        }
+
+        static void ShadyFreezeAuditProblems(List<string> p, GameConfig c)
+        {
+            ShadyFreezeAuditConfig k = c.ShadyFreezeAudit;
+            if (k == null) { p.Add("shadyFreezeAudit is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("shadyFreezeAudit.enabled must be 0 or 1");
+        }
+
+        static void SpecialistEraHooksProblems(List<string> p, GameConfig c)
+        {
+            SpecialistEraHooksConfig k = c.SpecialistEraHooks;
+            if (k == null) { p.Add("specialistEraHooks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistEraHooks.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistEraHooks.minEra must be a valid era index");
+            if (k.SpecialistPermille < 0 || k.OpenWeightsPermille < 0) p.Add("specialistEraHooks permille fields must not be negative");
+        }
+
+        static void SectorPricingBreakdownProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingBreakdownConfig k = c.SectorPricingBreakdown;
+            if (k == null) { p.Add("sectorPricingBreakdown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingBreakdown.enabled must be 0 or 1");
+            if (k.PeakTierNotify < 0 || k.PeakTierNotify > 1) p.Add("sectorPricingBreakdown.peakTierNotify must be 0 or 1");
+        }
+
+        static void DataSourceSpecialistPairingProblems(List<string> p, GameConfig c)
+        {
+            DataSourceSpecialistPairingConfig k = c.DataSourceSpecialistPairing;
+            if (k == null) { p.Add("dataSourceSpecialistPairing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceSpecialistPairing.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceSpecialistPairing.minEra must be a valid era index");
+            for (int i = 0; i < k.Pairs.Count; i++)
+            {
+                DataSourceSpecialistPairingItemConfig pair = k.Pairs[i];
+                if (pair.BonusPermille < 0) p.Add("dataSourceSpecialistPairing.pairs[" + i + "].bonusPermille must not be negative");
+                bool kindOk = false;
+                for (int j = 0; j < c.SpecialistLines.Kinds.Count; j++)
+                    if (c.SpecialistLines.Kinds[j].Id == pair.SpecialistKindId) { kindOk = true; break; }
+                if (!kindOk) p.Add("dataSourceSpecialistPairing.pairs[" + i + "] has unknown specialist kind \"" + pair.SpecialistKindId + "\"");
+                bool srcOk = false;
+                for (int j = 0; j < c.DataSources.Sources.Count; j++)
+                    if (c.DataSources.Sources[j].Id == pair.DataSourceId) { srcOk = true; break; }
+                if (!srcOk) p.Add("dataSourceSpecialistPairing.pairs[" + i + "] has unknown data source \"" + pair.DataSourceId + "\"");
+            }
+        }
+
+        static void PublicMetricsEraLoadProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsEraLoadConfig k = c.PublicMetricsEraLoad;
+            if (k == null) { p.Add("publicMetricsEraLoad is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsEraLoad.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraLoad.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0) p.Add("publicMetricsEraLoad.trustBoostPermille must not be negative");
+        }
+
+        static void OpenWeightsEraThrottleProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsEraThrottleConfig k = c.OpenWeightsEraThrottle;
+            if (k == null) { p.Add("openWeightsEraThrottle is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeightsEraThrottle.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("openWeightsEraThrottle.minEra must be a valid era index");
+            if (k.CopyChanceCutPermille < 0) p.Add("openWeightsEraThrottle.copyChanceCutPermille must not be negative");
+        }
+
+        static void EvalHarnessEraBoostProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessEraBoostConfig k = c.EvalHarnessEraBoost;
+            if (k == null) { p.Add("evalHarnessEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarnessEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalHarnessEraBoost.minEra must be a valid era index");
+            if (k.TrustBoostPermille < 0) p.Add("evalHarnessEraBoost.trustBoostPermille must not be negative");
+        }
+
+        static void CampaignDeadlineEraGraceProblems(List<string> p, GameConfig c)
+        {
+            CampaignDeadlineEraGraceConfig k = c.CampaignDeadlineEraGrace;
+            if (k == null) { p.Add("campaignDeadlineEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("campaignDeadlineEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("campaignDeadlineEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("campaignDeadlineEraGrace.graceWeeks must not be negative");
+        }
+
+        static void LawShapingEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            LawShapingEraCooldownConfig k = c.LawShapingEraCooldown;
+            if (k == null) { p.Add("lawShapingEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShapingEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawShapingEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("lawShapingEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void DataSourceRenewEraBonusProblems(List<string> p, GameConfig c)
+        {
+            DataSourceRenewEraBonusConfig k = c.DataSourceRenewEraBonus;
+            if (k == null) { p.Add("dataSourceRenewEraBonus is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceRenewEraBonus.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceRenewEraBonus.minEra must be a valid era index");
+            if (k.BonusWeeks < 0) p.Add("dataSourceRenewEraBonus.bonusWeeks must not be negative");
+        }
+
+        static void SectorPricingEraReliefProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingEraReliefConfig k = c.SectorPricingEraRelief;
+            if (k == null) { p.Add("sectorPricingEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("sectorPricingEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0) p.Add("sectorPricingEraRelief.reliefPermille must not be negative");
+        }
+
+        static void LawTargetEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LawTargetEraAmplifyConfig k = c.LawTargetEraAmplify;
+            if (k == null) { p.Add("lawTargetEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTargetEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawTargetEraAmplify.minEra must be a valid era index");
+        }
+
+        static void SpecialistBranchEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            SpecialistBranchEraDiscountConfig k = c.SpecialistBranchEraDiscount;
+            if (k == null) { p.Add("specialistBranchEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistBranchEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("specialistBranchEraDiscount.discountPermille must be from 0 to 1000");
+        }
+
+        static void MarginCallEraGraceProblems(List<string> p, GameConfig c)
+        {
+            MarginCallEraGraceConfig k = c.MarginCallEraGrace;
+            if (k == null) { p.Add("marginCallEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginCallEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("marginCallEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("marginCallEraGrace.graceWeeks must not be negative");
+        }
+
+        static void HearingSharePriceEraBoostProblems(List<string> p, GameConfig c)
+        {
+            HearingSharePriceEraBoostConfig k = c.HearingSharePriceEraBoost;
+            if (k == null) { p.Add("hearingSharePriceEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingSharePriceEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("hearingSharePriceEraBoost.minEra must be a valid era index");
+            if (k.BoostPermille < 0) p.Add("hearingSharePriceEraBoost.boostPermille must not be negative");
+        }
+
+        static void RungSixEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            RungSixEraCooldownConfig k = c.RungSixEraCooldown;
+            if (k == null) { p.Add("rungSixEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("rungSixEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("rungSixEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void DataSourceAcquireEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            DataSourceAcquireEraDiscountConfig k = c.DataSourceAcquireEraDiscount;
+            if (k == null) { p.Add("dataSourceAcquireEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("dataSourceAcquireEraDiscount.discountPermille must be from 0 to 1000");
+        }
+
         static void BugBountyProblems(List<string> p, GameConfig c)
         {
             BugBountyConfig k = c.BugBounty;
@@ -2731,7 +2942,6 @@ namespace AiLabs.Rules.Config
             if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
             if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
             Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
-            Permille(p, "chips.distressListingPricePermille", k.DistressListingPricePermille);
             RoleConfig architect = c.Role(k.ArchitectRoleId);
             if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
             else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");

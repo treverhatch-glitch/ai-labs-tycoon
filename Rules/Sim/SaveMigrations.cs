@@ -163,6 +163,27 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 146) MigrateTo146(root);
             if (fromSchema < 147) MigrateTo147(root);
             if (fromSchema < 148) MigrateTo148(root);
+            if (fromSchema < 149) MigrateTo149(root);
+            if (fromSchema < 150) MigrateTo150(root);
+            if (fromSchema < 151) MigrateTo151(root);
+            if (fromSchema < 152) MigrateTo152(root);
+            if (fromSchema < 153) MigrateTo153(root);
+            if (fromSchema < 154) MigrateTo154(root);
+            if (fromSchema < 155) MigrateTo155(root);
+            if (fromSchema < 156) MigrateTo156(root);
+            if (fromSchema < 157) MigrateTo157(root);
+            if (fromSchema < 158) MigrateTo158(root);
+            if (fromSchema < 159) MigrateTo159(root);
+            if (fromSchema < 160) MigrateTo160(root);
+            if (fromSchema < 161) MigrateTo161(root);
+            if (fromSchema < 162) MigrateTo162(root);
+            if (fromSchema < 163) MigrateTo163(root);
+            if (fromSchema < 164) MigrateTo164(root);
+            if (fromSchema < 165) MigrateTo165(root);
+            if (fromSchema < 166) MigrateTo166(root);
+            if (fromSchema < 167) MigrateTo167(root);
+            if (fromSchema < 168) MigrateTo168(root);
+            if (fromSchema < 169) MigrateTo169(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -629,6 +650,57 @@ namespace AiLabs.Rules.Sim
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "lawTarget", JsonValue.Of("")));
         }
+
+        static void MigrateTo149(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reservedSignCooldownUntil", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo150(JsonValue root)
+        {
+            JsonPatch.AddIfMissing(root, "rivalIntentLastTick", JsonValue.Of(-1L));
+        }
+
+        static void MigrateTo151(JsonValue root) { }
+
+        static void MigrateTo152(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "scenarioEndlessAck", JsonValue.Of(0L)));
+        }
+
+        static void MigrateTo153(JsonValue root) { }
+
+        static void MigrateTo154(JsonValue root) { }
+
+        static void MigrateTo155(JsonValue root) { }
+
+        static void MigrateTo156(JsonValue root) { }
+
+        static void MigrateTo157(JsonValue root) { }
+
+        static void MigrateTo158(JsonValue root) { }
+
+        static void MigrateTo159(JsonValue root) { }
+
+        static void MigrateTo160(JsonValue root) { }
+
+        static void MigrateTo161(JsonValue root) { }
+
+        static void MigrateTo162(JsonValue root) { }
+
+        static void MigrateTo163(JsonValue root) { }
+
+        static void MigrateTo164(JsonValue root) { }
+
+        static void MigrateTo165(JsonValue root) { }
+
+        static void MigrateTo166(JsonValue root) { }
+
+        static void MigrateTo167(JsonValue root) { }
+
+        static void MigrateTo168(JsonValue root) { }
+
+        static void MigrateTo169(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

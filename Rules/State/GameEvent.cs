@@ -629,7 +629,27 @@ namespace AiLabs.Rules.State
         HearingShareNudged,
         ScenarioGoalMet,
         ScenarioGoalMissed,
-        LawTargetSet
+        LawTargetSet,
+        ReservedComputeSigned,
+        RivalIntentSurfaced,
+        GpuTierLocked,
+        ScenarioEndlessAck,
+        SpecialistEraUnlocked,
+        SectorPriceLadderPeak,
+        DataSourceSpecialistPaired,
+        PublicMetricsEraBoost,
+        OpenWeightsEraThrottled,
+        EvalHarnessEraBoosted,
+        CampaignDeadlineElongated,
+        LawShapingCooldownShortened,
+        DataSourceRenewEraBonused,
+        SectorPricingEraRelieved,
+        LawTargetEraAmplified,
+        SpecialistBranchEraDiscounted,
+        MarginCallEraGraced,
+        HearingShareEraBoosted,
+        RungSixEraCooldownShortened,
+        DataSourceAcquireEraDiscounted
     }
 
     /// <summary>

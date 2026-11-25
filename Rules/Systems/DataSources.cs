@@ -20,17 +20,24 @@ namespace AiLabs.Rules.Systems
             int i = Index(c, sourceId);
             DataSourceItemConfig src = c.DataSources.Sources[i];
             SetWeeks(lab, i, src.DurationWeeks);
-            Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
+            long listCost = src.WeeklyCost;
+            long paid = DataSourceAcquireEraDiscount.AcquireCost(c, state, listCost);
+            Finance.Spend(lab, LedgerLine.Training, paid);
             Events.Add(state, EventKind.DataSourceAcquired, lab.Id, i, src.DurationWeeks, sourceId);
+            DataSourceAcquireEraDiscount.OnAcquire(c, state, lab, i, sourceId, listCost, paid);
+            DataSourceSpecialistPairing.OnAcquire(c, state, lab, sourceId);
         }
 
         public static void Renew(GameConfig c, GameState state, LabState lab, string sourceId)
         {
             int i = Index(c, sourceId);
             DataSourceItemConfig src = c.DataSources.Sources[i];
-            SetWeeks(lab, i, src.DurationWeeks);
+            int bonus = DataSourceRenewEraBonus.BonusWeeks(c, state);
+            int weeks = src.DurationWeeks + bonus;
+            SetWeeks(lab, i, weeks);
             Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
-            Events.Add(state, EventKind.DataSourceRenewed, lab.Id, i, src.DurationWeeks, sourceId);
+            Events.Add(state, EventKind.DataSourceRenewed, lab.Id, i, weeks, sourceId);
+            DataSourceRenewEraBonus.OnRenew(c, state, lab, sourceId, bonus);
         }
 
         public static void RunWeek(GameConfig c, GameState state, LabState lab)
@@ -54,6 +61,13 @@ namespace AiLabs.Rules.Systems
             int total = 0;
             for (int i = 0; i < c.DataSources.Sources.Count; i++)
                 if (Weeks(lab, i) > 0) total += c.DataSources.Sources[i].QualityPermille;
+            return total;
+        }
+
+        public static int QualityPermille(GameConfig c, GameState state, LabState lab)
+        {
+            int total = QualityPermille(c, lab);
+            if (state != null) total += DataSourceSpecialistPairing.BonusPermille(c, state, lab);
             return total;
         }
 

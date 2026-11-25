@@ -36,8 +36,11 @@ namespace AiLabs.Rules.Systems
 
         public static void OnAnswered(GameConfig c, GameState state, LabState lab)
         {
-            lab.RungSixCooldownUntil = state.Tick + c.RungSixCrisis.CooldownWeeks;
+            int cd = RungSixEraCooldown.EffectiveCooldownWeeks(c, state);
+            int cut = c.RungSixCrisis.CooldownWeeks - cd;
+            lab.RungSixCooldownUntil = state.Tick + cd;
             lab.RungSixArcUntil = 0;
+            RungSixEraCooldown.OnAnswered(c, state, lab, cd, cut);
         }
     }
 }

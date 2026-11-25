@@ -12,11 +12,11 @@ export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[144]=c382db55f615232b4327d8953bf57e0728b2155404bd060bd0ac05c747c0b833
-GOLDEN[145]=d9a7db7daf2c4d30fc83a91c9be11af3edc2d287d347978c8414f2225f3ecf27
-GOLDEN[146]=b85293fbf4ff6bf816ab9df45ce8693bd79779185bfd8efde4f876543f940470
-GOLDEN[147]=c1d0e11d57a8d5b3a1d7dfec8d5bcff405c518f160c2bac8618083b665d402fd
-GOLDEN[148]=bf08074e1f49a5c61757cc2f7e68b72628fa32088f4a9768427c4e3227798111
+GOLDEN[144]=11b8fefc1ba63eff8d763f3a11165417f6009bceaacc88a0665458b318bc72c5
+GOLDEN[145]=1b50a747b73395d65bfa1d437c889a29d0c276e3613ffaf65bf85e8236c30e7a
+GOLDEN[146]=5d36e4909fb325cf846583716934015ab8c419bf7c9a913729ac6fa09e13e245
+GOLDEN[147]=3788ec3c5e23ab065a77fb804b91e48c15c000ba0eb22ab3a8b47e38aa591e43
+GOLDEN[148]=07de1f633a175627b6266b1c2cdadfe5f9ed3134bcb05637324398d0affb4439
 
 PREV=$((N - 1))
 BK="/tmp/b16-rev-bak-$N"
@@ -52,6 +52,10 @@ comment_hook() { sed -i "s|^[[:space:]]*$1|                    // $1|" Rules/Sim
 [ "$N" -le 146 ] && { disable_cfg rungSixCrisis; comment_hook 'RungSixCrisis.RunWeek'; sed -i 's/^[[:space:]]*HearingSharePrice.OnAnswered/            \/\/ HearingSharePrice.OnAnswered/' Rules/Systems/OfficeEvents.cs; sed -i 's/^[[:space:]]*if (e.Trigger == OfficeTrigger.Escape/            \/\/ if (e.Trigger == OfficeTrigger.Escape/' Rules/Systems/OfficeEvents.cs; sed -i 's/^[[:space:]]*RungSixCrisis.OnArcAnswered/                \/\/ RungSixCrisis.OnArcAnswered/' Rules/Systems/OfficeEvents.cs; }
 [ "$N" -le 145 ] && { disable_cfg hearingSharePrice; }
 [ "$N" -le 144 ] && { disable_cfg marginCall; sed -i 's|MarginCall.RunWeek(c, state, lab);||' Rules/Systems/Finance.cs; }
+
+# shellcheck source=golden-revert-disable-batch17-tip.sh
+source "$REPO/tools/golden-revert-disable-batch17-tip.sh"
+disable_batch17_at_tip
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"
