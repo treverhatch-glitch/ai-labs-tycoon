@@ -4361,542 +4361,73 @@ Vendor/funding ladder/balance soak host slices.
 - Options: (a) stop at 205; (b) through 208; (c) skip.
 - Recommendation and choice: **(b)** — batch **312**.
 
-### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
+### Q762. ALT-76 rollup refresh through batch 205? DECIDED: `CampusAlt76RollupRefreshB205PresentationSpec`
 
-- Options: (a) batch 41 doc only; (b) index + strip/row layers + mascot cap alias; (c) implement mascot meshes in graphics PR.
-- Recommendation and choice: **(b)** — HQ band rollup; batch 8 mesh tokens unchanged.
-- Why: Completes HQ stack index lane band for batches 38–42.
+- Options: (a) stop at 202; (b) through 205; (c) skip.
+- Recommendation and choice: **(b)** — batch **313**.
 
-### Q520. Training peek index? DECIDED: `CampusTrainingPeekIndexPresentationSpec`
+### Q763. GO packet tail through batch 283? DECIDED: `CampusGoPacketTailRefreshThrough283PresentationSpec`
 
-- Options: (a) batch 40 peek doc only; (b) index + peek/screen layers + fraction aliases; (c) implement training panel in graphics PR.
-- Recommendation and choice: **(b)** — links HQ peek (40) with full screen (49); incident index via batch 55.
-- Why: Index-lane refill; training rules unchanged on cloud agent.
+- Options: (a) stop at 280; (b) through 283; (c) skip.
+- Recommendation and choice: **(b)** — batch **314**.
 
-### Q519. Staff/GPU panel index? DECIDED: `CampusStaffGpuPanelIndexPresentationSpec`
+### Q764. Presentation tail rollup through batch 205? DECIDED: `CampusPresentationTailRollupRefreshThrough205PresentationSpec`
 
-- Options: (a) batch 57 staff index only; (b) HQ panel index for batches 26+39; (c) implement hire panel in graphics PR.
-- Recommendation and choice: **(b)** — HQ band rollup; batch 57 remains canonical staff index.
-- Why: Index-lane refill on PR #41; hire/GPU commands unchanged in rules.
+- Options: (a) stop at 202; (b) through 205; (c) skip.
+- Recommendation and choice: **(b)** — batch **315**.
 
-### Q518. HQ stage stack rollup? DECIDED: `CampusHqStageStackRollupPresentationSpec`
+### Q765. Index manifest tail through batch 208? DECIDED: `CampusIndexLaneManifestTailRefreshThrough208PresentationSpec`
 
-- Options: (a) refresh `HQ-STAGE-STACK.md` only; (b) rollup doc + band/build aliases; (c) implement HQ scene in graphics PR.
-- Recommendation and choice: **(b)** — links batches 38–42 with batch 68 build index; stack doc unchanged.
-- Why: Index-lane refill; HQ scene wiring stays Unity thread.
+- Options: (a) stop at 205; (b) through 208; (c) skip.
+- Recommendation and choice: **(b)** — batch **316**.
 
-### Q517. Room build panel index? DECIDED: `CampusRoomBuildIndexPresentationSpec`
+### Q766. ALT-76 status sync through batch 211? DECIDED: `CampusAlt76StatusSyncThrough211PresentationSpec`
 
-- Options: (a) batch 38 doc only; (b) index + build/breakdown layers + fraction aliases; (c) implement `RoomBuildPanel` in graphics PR.
-- Recommendation and choice: **(b)** — ties build chrome (38) to explainable HUD (20); HQ stage stack (batch 42) unchanged.
-- Why: Index-lane refill; `RoomBuildController` wiring stays Unity thread.
+- Options: (a) stop at 208; (b) through 211; (c) skip.
+- Recommendation and choice: **(b)** — batch **317**.
 
-### Q516. Tab rail integration index? DECIDED: `CampusTabRailIntegrationIndexPresentationSpec`
+### Q767. ALT-76 rollup refresh through batch 208? DECIDED: `CampusAlt76RollupRefreshB208PresentationSpec`
 
-- Options: (a) integration doc only (batch 7); (b) index + 3 layers + tab count alias; (c) wire tab rail in graphics PR.
-- Recommendation and choice: **(b)** — rollup for batches 7, 28, 44; world tab panel via batch 66 host index.
-- Why: Index-lane refill on PR #41; `CampusTabRailMock` unchanged.
+- Options: (a) stop at 205; (b) through 208; (c) skip.
+- Recommendation and choice: **(b)** — batch **318**.
 
-### Q515. World map host index? DECIDED: `CampusWorldMapHostIndexPresentationSpec`
+### Q768. GO packet tail through batch 286? DECIDED: `CampusGoPacketTailRefreshThrough286PresentationSpec`
 
-- Options: (a) host + panel docs only; (b) index + layer count + bloc alias; (c) implement world map UI in graphics PR.
-- Recommendation and choice: **(b)** — links batch 36 host shell with batch 4 panel mock; freeze via seasonal index.
-- Why: Store NEXT refill; rules world map commands unchanged on cloud agent.
+- Options: (a) stop at 283; (b) through 286; (c) skip.
+- Recommendation and choice: **(b)** — batch **319**.
 
-### Q514. Studio handoff cross-link to index hub? DECIDED: extend `CampusGraphicsStudioHandoffSpec`
+### Q769. Seasonal/a11y chrome tail through batch 312? DECIDED: `CampusSeasonalA11yChromeTailRefreshThrough312PresentationSpec`
 
-- Options: (a) STUDIO doc prose only; (b) hub doc aliases on studio spec + test; (c) studio/game.json change.
-- Recommendation and choice: **(b)** — `PresentationHubDoc` / `HandoffRollupDoc` match `CampusUnityIntegrationHubPresentationSpec`.
-- Why: Studio land step references same index lane as Unity thread; no studio/ edits.
+- Options: (a) stop at 300; (b) through 312; (c) skip.
+- Recommendation and choice: **(b)** — batch **320**.
 
-### Q513. Unity integration hub links? DECIDED: `CampusUnityIntegrationHubPresentationSpec`
+### Q770. Explainable HUD tail through batch 312? DECIDED: `CampusExplainableHudTailRefreshThrough312PresentationSpec`
 
-- Options: (a) edit UNITY-INTEGRATION prose only; (b) hub section + spec with handoff prop count; (c) Unity import script in graphics PR.
-- Recommendation and choice: **(b)** — links presentation hub + handoff rollup for `bc-93b5443a`.
-- Why: Unity thread lands after index lane; no editor wiring on cloud agent.
+- Options: (a) stop at 300; (b) through 312; (c) skip.
+- Recommendation and choice: **(b)** — batch **321**.
 
-### Q512. GO packet template for index lane? DECIDED: `CampusGoPacketTemplatePresentationSpec`
+### Q771. Era reserved-compute HUD chrome (schema 149)? DECIDED: `CampusEraReservedComputeHudChromePresentationSpec`
 
-- Options: (a) prose template only; (b) template doc + spacing/batch constants; (c) automate packets from CI.
-- Recommendation and choice: **(b)** — 30m spacing, index lane from batch 50, store path prefix.
-- Why: Coordinator GO packets batches 50–62; single Edit Mode anchor for cloud agents.
+- Options: (a) doc only; (b) spec + doc (presentation); (c) skip until #82 gate SHA.
+- Recommendation and choice: **(b)** — batch **322** (bible/systems refill).
 
-### Q511. ALT-76 rollup spec? DECIDED: `CampusAlt76RollupPresentationSpec`
+### Q772. Era rival-intent news ticker chrome (schema 150)? DECIDED: `CampusEraRivalIntentNewsTickerChromePresentationSpec`
 
-- Options: (a) markdown-only status refresh; (b) rollup doc + last-batch spec tying to hub; (c) automate status from git.
-- Recommendation and choice: **(b)** — documents batch 43 remote tip + rows through 61; `LastRemoteDocumentedBatch` = 61.
-- Why: Coordinator/Unity thread read single Edit Mode anchor for PR #41 index lane completeness.
+- Options: (a) doc only; (b) spec + doc; (c) skip.
+- Recommendation and choice: **(b)** — batch **323**.
 
-### Q510. Presentation index hub? DECIDED: `CampusPresentationIndexHubPresentationSpec`
+### Q773. Era GPU tier unlock affordance index (schema 151)? DECIDED: `CampusEraGpuTierUnlockAffordanceIndexPresentationSpec`
 
-- Options: (a) README links only; (b) hub doc + batch span spec; (c) generate hub from code.
-- Recommendation and choice: **(b)** — batches 50–60 (11 entries); table links index/rollup docs from this lane.
-- Why: Unity thread navigation after ALT-76 index rollout; batch 54 folded into seasonal index.
+- Options: (a) staff panel index only; (b) era affordance index; (c) skip.
+- Recommendation and choice: **(b)** — batch **324**.
 
-### Q509. Handoff rollup spec? DECIDED: `CampusHandoffRollupPresentationSpec`
+### Q774. Era endless-scenario HUD chrome (schema 152)? DECIDED: `CampusEraEndlessScenarioHudChromePresentationSpec`
 
-- Options: (a) `HANDOFF-INDEX` only; (b) rollup doc + expected count spec; (c) change prepush counts in graphics PR.
-- Recommendation and choice: **(b)** — 5 kinds with 30/10/4/6/4 anchors for Unity thread.
-- Why: Pairs batch 18 index with Edit Mode constants; prepush remains source of truth.
+- Options: (a) defer; (b) presentation chrome; (c) skip.
+- Recommendation and choice: **(b)** — batch **325**.
 
-### Q508. A11y chrome index? DECIDED: `CampusA11yChromeIndexPresentationSpec`
+### Q775. Era shady-freeze audit HUD chrome (schema 153)? DECIDED: `CampusEraShadyFreezeAuditHudChromePresentationSpec`
 
-- Options: (a) batch 11 ACCESSIBILITY doc only; (b) index + 44px hit + capture top-bar alias; (c) implement focus ring in graphics PR.
-- Recommendation and choice: **(b)** — links focus ring (batch 30) and capture HUD (batch 35).
-- Why: Matches `docs/NEXT.md` a11y chrome row; PC runs `HqViewCaptureTests`.
+- Options: (a) defer; (b) presentation chrome; (c) skip.
+- Recommendation and choice: **(b)** — batch **326**.
 
-### Q507. Rival feeling index? DECIDED: `CampusRivalFeelingIndexPresentationSpec`
-
-- Options: (a) batch 21 meter only; (b) index doc + layer count + meter height alias; (c) wire rivals UI in graphics PR.
-- Recommendation and choice: **(b)** — links feeling meter (batch 21) to rivals screen (batch 48); 6px alias.
-- Why: Parody cast feelings from `docs/DESIGN.md`; no `LabState` in cloud graphics.
-
-### Q506. Staff presentation index? DECIDED: `CampusStaffPresentationIndexPresentationSpec`
-
-- Options: (a) row + panel docs only; (b) index doc + layer count + shared row height; (c) wire `StaffGpuPanel` in graphics PR.
-- Recommendation and choice: **(b)** — links roster rows (batch 26) to side panel (batch 39); 36px alias.
-- Why: Matches `docs/DESIGN.md` staff-as-people hire UI; rules `StaffSystem` unchanged on cloud agent.
-
-### Q505. Explainable HUD index? DECIDED: `CampusExplainableHudIndexPresentationSpec`
-
-- Options: (a) per-drawer docs only; (b) index doc + drawer count + shared row height; (c) wire `DisplayQueries` in graphics PR.
-- Recommendation and choice: **(b)** — HQ breakdown (batch 20) + research drawer (batch 25); 22px row alias.
-- Why: Matches `docs/NEXT.md` explainable HUD row; no rules `DisplayQueries` on cloud agent.
-
-### Q504. Training incident index? DECIDED: `CampusTrainingIncidentIndexPresentationSpec`
-
-- Options: (a) `TRAINING-INCIDENT-PRESENTATION` only; (b) index doc + tier count spec; (c) wire rung UI in graphics PR.
-- Recommendation and choice: **(b)** — links batch 23 rings to training screen (batch 49); pulse alias only.
-- Why: Matches systems design incident rungs; rules `SafetySystem` unchanged on cloud agent.
-
-### Q503. World freeze in overlay index? DECIDED: extend `CampusSeasonalOverlayIndexPresentationSpec`
-
-- Options: (a) separate world overlay index; (b) second slot in seasonal index + pin alpha alias; (c) wire freeze UI in graphics PR.
-- Recommendation and choice: **(b)** — documents batch 22 freeze chrome beside Gauntlet; count → 2.
-- Why: `docs/NEXT.md` world map host shell (batch 36) needs freeze cross-ref; no map rules on cloud agent.
-
-### Q502. Seasonal overlay index? DECIDED: `CampusSeasonalOverlayIndexPresentationSpec`
-
-- Options: (a) extend `GAUNTLET-STAGE-HUD` only; (b) index doc + count/fade spec; (c) implement overlay host in graphics PR.
-- Recommendation and choice: **(b)** — documents Gauntlet (batch 24); aliases fade from `CampusHudLayoutSpec`.
-- Why: Matches `docs/NEXT.md` seasonal overlays row; world freeze deferred to batch 54 index slot.
-
-### Q501. HUD era label chrome? DECIDED: `CampusHudEraLabelPresentationSpec`
-
-- Options: (a) `UI-HUD-LAYOUTS` row only; (b) era label doc + spec + top-bar index slot; (c) wire `HqHudView` in graphics PR.
-- Recommendation and choice: **(b)** — 420×28 top-right; shares transition with `CampusEraSkinTokens`; top-bar index → 4 slots.
-- Why: Completes global chrome table from systems design era names; no era rules on cloud agent.
-
-### Q500. Global top bar token index? DECIDED: `CampusTopBarTokenIndexPresentationSpec`
-
-- Options: (a) extend `UI-HUD-LAYOUTS` only; (b) index doc + height/slot spec; (c) wire `HqHudView` in graphics PR.
-- Recommendation and choice: **(b)** — links cash (batch 27), date/week (batch 31), advance week (batch 46).
-- Why: Navigation hub for Unity chrome wiring; no sim or HUD code changes on cloud agent.
-
-### Q499. Full-screen layout index? DECIDED: `CampusFullScreenLayoutIndexPresentationSpec`
-
-- Options: (a) markdown index only; (b) index doc + count spec; (c) merge screen specs.
-- Recommendation and choice: **(b)** — documents 3 full-screen layouts (research, rivals, training).
-- Why: Navigation hub for Unity thread; HQ bands stay in `HQ-STAGE-STACK.md`.
-
-### Q498. Training screen layout tokens? DECIDED: `CampusTrainingScreenPresentationSpec`
-
-- Options: (a) `TRAINING-PANEL` only; (b) 60/40 screen spec; (c) wire `TrainingRunPanel` in graphics PR.
-- Recommendation and choice: **(b)** — queue/split fractions + slider count reuse.
-- Why: Aligns UI-HUD training scene with batch 32 compute split.
-
-### Q497. Rivals screen layout tokens? DECIDED: `CampusRivalsScreenPresentationSpec`
-
-- Options: (a) batch 21 feeling meter only; (b) 35/65 screen spec + doc; (c) rivals UI in graphics PR.
-- Recommendation and choice: **(b)** — list/log fractions from `CampusHudLayoutSpec`.
-- Why: Completes rivals track in `UI-HUD-LAYOUTS`; rules feeling unchanged.
-
-### Q496. Research screen layout tokens? DECIDED: `CampusResearchScreenPresentationSpec`
-
-- Options: (a) batch 25 breakdown only; (b) full-screen 62/38 split spec; (c) wire research scene in graphics PR.
-- Recommendation and choice: **(b)** — 62/38 + 120px leads band per `UI-HUD-LAYOUTS`.
-- Why: Matches research track in NEXT art table; no tech-tree rules on cloud agent.
-
-### Q495. Advance week button tokens? DECIDED: `CampusAdvanceWeekPresentationSpec`
-
-- Options: (a) `CampusHudLayoutSpec` only; (b) advance-week doc + spec; (c) wire button in graphics PR.
-- Recommendation and choice: **(b)** — 200×48 constants + link to date row doc.
-- Why: Pairs global chrome table with batch 31 HUD date row.
-
-### Q494. Safe area / reference resolution tokens? DECIDED: `CampusSafeAreaPresentationSpec`
-
-- Options: (a) `UI-HUD-LAYOUTS` prose; (b) safe-area spec + doc; (c) canvas scaler in graphics PR.
-- Recommendation and choice: **(b)** — 1920×1080 + 24px inset alias to `CampusHudLayoutSpec`.
-- Why: Single Edit Mode anchor for HUD polish; no runtime changes on cloud agent.
-
-### Q493. Future tab rail v2 tokens? DECIDED: `CampusTabRailFuturePresentationSpec`
-
-- Options: (a) batch 7/28 docs only; (b) future-rail spec + doc; (c) implement v2 shell in graphics PR.
-- Recommendation and choice: **(b)** — 64px width + tab count; defers mock replacement to Unity thread.
-- Why: Documents UI-HUD future chrome without changing v1 HQ panels.
-
-### Q492. HQ stage stack index? DECIDED: `CampusHqStageStackPresentationSpec`
-
-- Options: (a) markdown index only; (b) spec + `HQ-STAGE-STACK.md`; (c) merge all HQ specs into one class.
-- Recommendation and choice: **(b)** — band count (5) and viewport alias; index links batches 38–42.
-- Why: Gives Unity thread one entry point without duplicating per-band specs.
-
-### Q491. HQ lot viewport band tokens? DECIDED: `CampusHqLotViewportPresentationSpec`
-
-- Options: (a) `ROOM-BUILD` 70% fraction only; (b) viewport spec + doc; (c) wire `HqGridView` layout in graphics PR.
-- Recommendation and choice: **(b)** — 0.70 width + camera yaw from `CampusPresentationSpec`.
-- Why: Left HQ band documented; props still from `CampusPropPlacementHints`.
-
-### Q490. HQ mascot strip band tokens? DECIDED: `CampusHqMascotStripPresentationSpec`
-
-- Options: (a) batch 33 row spec only; (b) band doc + layout alias spec; (c) wire `ModelMascotRow` in graphics PR.
-- Recommendation and choice: **(b)** — 0.18 band fraction + reuses row height/max mascots from batch 33.
-- Why: Documents bottom HQ band in `UI-HUD-LAYOUTS` without duplicating mood logic.
-
-### Q489. Training peek band tokens? DECIDED: `CampusTrainingPeekPresentationSpec`
-
-- Options: (a) `COMPUTE-SPLIT` only; (b) peek band spec + doc; (c) wire collapsed `TrainingRunPanel` in graphics PR.
-- Recommendation and choice: **(b)** — 28×22% band, `icon-training`, reuses 8px split bar constant.
-- Why: Completes HQ right-column stack in `UI-HUD-LAYOUTS`; training sim unchanged.
-
-### Q488. Staff/GPU side panel tokens? DECIDED: `CampusStaffGpuPanelPresentationSpec`
-
-- Options: (a) staff row spec only; (b) panel band spec + doc; (c) wire `StaffGpuPanel` in graphics PR.
-- Recommendation and choice: **(b)** — 28×30% band reuses row height + staff/compute icons.
-- Why: HQ layout mid column in `UI-HUD-LAYOUTS`; hire/GPU rules unchanged.
-
-### Q487. Room build panel layout tokens? DECIDED: `CampusRoomBuildPresentationSpec`
-
-- Options: (a) `UI-HUD-LAYOUTS` prose only; (b) spec + ROOM-BUILD doc; (c) implement ghost/build UI in graphics PR.
-- Recommendation and choice: **(b)** — 70/28/40 fractions and `icon-hq`; links existing `CampusPropPlacementHints`.
-- Why: NEXT Unity item 3 presentation tail; no `RoomBuildController` changes on cloud agent.
-
-### Q486. Start-era picker layout tokens? DECIDED: `CampusStartEraPickerPresentationSpec`
-
-- Options: (a) rely on ERA-SKIN-PREVIEW only; (b) picker spec + doc; (c) wire full new-game screen in graphics PR.
-- Recommendation and choice: **(b)** — card width, tagline line cap, swatch size reuse; `StartEraId` unchanged.
-- Why: NEXT item 12 is UI-only; documents chrome for Unity without new rule systems.
-
-### Q485. World map host shell tokens? DECIDED: `CampusWorldMapHostPresentationSpec`
-
-- Options: (a) NEXT prose only; (b) spec + host doc; (c) implement host UI in graphics PR.
-- Recommendation and choice: **(b)** — documents 0.38 drawer fraction and icon; rules/commands unchanged.
-- Why: Closes presentation gap called out in NEXT without Unity host wiring on cloud agent.
-
-### Q484. Capture HUD snapshot regions? DECIDED: `CampusCaptureHudSnapshotPresentationSpec`
-
-- Options: (a) CAPTURE-REGRESSION only; (b) HUD snapshot doc + spec; (c) per-region PNG crops in CI.
-- Recommendation and choice: **(b)** — documents what `hq-view.png` should include without new CI jobs yet.
-- Why: Batch 12 contract stays; a11y chrome batches 30–31 visible in future baselines.
-
-### Q483. Studio graphics land handoff? DECIDED: `CampusGraphicsStudioHandoffSpec` + doc
-
-- Options: (a) NEXT prose only; (b) spec constants + STUDIO-GRAPHICS-HANDOFF; (c) edit `studio/game.json` in graphics PR.
-- Recommendation and choice: **(b)** — documents branch/gate paths; studio thread still owns `game.json`.
-- Why: Aligns with NEXT Unity item 5 without crossing studio/graphics folder boundaries.
-
-### Q482. Mascot row HUD tokens? DECIDED: `CampusMascotRowHudPresentationSpec`
-
-- Options: (a) only MASCOT-PRESENTATION table; (b) row spec + HUD doc; (c) duplicate `CampusHudLayoutSpec` in UI.
-- Recommendation and choice: **(b)** — exposes 48px row + max 4 without changing layout fraction source.
-- Why: Unity mascot strip polish on PC can bind row chrome before rigged meshes land.
-
-### Q481. Training compute split bars? DECIDED: `CampusComputeSplitPresentationSpec`
-
-- Options: (a) TRAINING-PANEL only; (b) spec + doc; (c) embed in rules ComputeSplit UI.
-- Recommendation and choice: **(b)** — three sliders are presentation; split math stays rules.
-- Why: `icon-compute` already in catalog; bar height stable for Unity training view.
-
-### Q480. HUD date/week row tokens? DECIDED: `CampusHudDateWeekPresentationSpec`
-
-- Options: (a) only `CampusHudLayoutSpec`; (b) presentation spec + doc; (c) duplicate week button size in HUD doc only.
-- Recommendation and choice: **(b)** — ties 44px target to focus spec and documents date row height for restyle.
-- Why: `HqHudView` already places week button; graphics batch documents alignment with a11y batch 30.
-
-### Q479. Focus ring / hit target tokens? DECIDED: `CampusFocusRingPresentationSpec`
-
-- Options: (a) only in ACCESSIBILITY doc; (b) spec class + focus doc; (c) UI Toolkit theme only.
-- Recommendation and choice: **(b)** — centralizes 44px target and 2px ring from batch 11 a11y doc.
-- Why: Tab rail, drawers, and hire rows share one keyboard focus treatment.
-
-### Q478. Era skin preview swatches? DECIDED: `CampusEraSkinPreviewPresentationSpec`
-
-- Options: (a) settings UI only; (b) spec + preview doc; (c) duplicate `ERA-SKIN-TOKENS.md` table in C#.
-- Recommendation and choice: **(b)** — path points at `era-skin-tokens.json`; era ids stay data.
-- Why: Start-era picker (NEXT item 12) needs swatch sizing before Unity settings screen.
-
-### Q477. Tab rail active state tokens? DECIDED: `CampusTabRailActivePresentationSpec`
-
-- Options: (a) hard-code in tab rail prefab; (b) spec + doc; (c) animation-only with no constants.
-- Recommendation and choice: **(b)** — pairs with batch 7 `TAB-RAIL-INTEGRATION.md` and `ui-tab-rail-plaque`.
-- Why: Inactive affordance is presentation-only; selection stays in Unity host.
-
-### Q476. HQ cash readout tokens? DECIDED: `CampusHqCashDisplayPresentationSpec`
-
-- Options: (a) duplicate font sizes in HUD prefab; (b) spec + doc; (c) bind only from IMGUI.
-- Recommendation and choice: **(b)** — cash/grant are always visible; grant line opacity is presentation-only.
-- Why: Matches DESIGN cash+grant model without investor UI in graphics.
-
-### Q475. Staff roster row chrome? DECIDED: `CampusStaffRowPresentationSpec`
-
-- Options: (a) STAFF-PRESENTATION prose only; (b) row spec + doc; (c) wait for rigged staff meshes.
-- Recommendation and choice: **(b)** — hire panel can size rows before PC art pass (STAFF-ROW-PRESENTATION.md).
-- Why: Morale bar and `icon-staff` are presentation-only; rules keep `StaffMember` data.
-
-### Q474. Research breakdown drawer layout? DECIDED: `CampusResearchBreakdownPresentationSpec`
-
-- Options: (a) reuse breakdown spec only; (b) research-specific constants + doc; (c) merge with RESEARCH-PANEL fractions in UI Toolkit.
-- Recommendation and choice: **(b)** — 0.38 drawer matches RESEARCH-PANEL; part row height aligns with batch 20.
-- Why: Research quality/appeal drawers share explainable-number UX with HQ HUD.
-
-### Q473. Gauntlet stage overlay tokens? DECIDED: `CampusGauntletStagePresentationSpec`
-
-- Options: (a) duplicate GAUNTLET-STAGE timings in UI code; (b) spec + HUD doc; (c) Timeline asset only.
-- Recommendation and choice: **(b)** — keeps fade/mascot scale with lectern prop ids for Unity cutscene wiring.
-- Why: Gauntlet is seasonal overlay; rules unchanged (GAUNTLET-STAGE-HUD.md).
-
-### Q472. Training incident rung presentation? DECIDED: `CampusTrainingIncidentPresentationSpec`
-
-- Options: (a) TRAINING-PANEL prose only; (b) spec + doc rings; (c) per-rung SVG set.
-- Recommendation and choice: **(b)** — matches freeze/rival meter pattern; rung source stays in rules.
-- Why: Unity training view can stage cone/icon before SafetySystem UI bind.
-
-### Q471. World map freeze overlay tokens? DECIDED: `CampusWorldMapFreezePresentationSpec`
-
-- Options: (a) duplicate constants in UI; (b) spec class + doc; (c) extend `world-bloc-tints.json`.
-- Recommendation and choice: **(b)** — freeze is rules-driven; JSON stays palette-only (WORLD-MAP-FREEZE-PRESENTATION).
-- Why: matches Q454/Q16 config boundary and batch 21 rival meter pattern.
-
-### Q470. Rival feeling bar thresholds? DECIDED: `CampusRivalFeelingPresentationSpec`
-
-- Options: (a) hard-code in UI; (b) shared spec class + doc bands; (c) ScriptableObject theme.
-- Recommendation and choice: **(b)** — matches batch 20 breakdown pattern and DESIGN -1000…1000 range.
-- Why: Unity rivals list can bind fill width before rules wire `FeelingToPlayer`.
-
-### Q469. Breakdown drawer layout tokens? DECIDED: `CampusBreakdownPresentationSpec`
-
-- Options: (a) Unity-only layout; (b) graphics constants + doc; (c) UI Toolkit theme file.
-- Recommendation and choice: **(b)** — aligns with `DISPLAY-BREAKDOWN-PRESENTATION.md` and DESIGN explainable-numbers rule.
-- Why: keeps drawer row height stable before DisplayQueries UI wiring.
-
-### Q468. Handoff list smoke test? DECIDED: `verify_handoff_lists.py` in prepush
-
-- Options: (a) manual; (b) count check on list_* stdout; (c) CI job only.
-- Recommendation and choice: **(b)** — catches partial catalog edits before Unity import.
-- Why: complements manifest sync checks with human-paste sanity.
-
-### Q467. Silhouette manifest sync check? DECIDED: `check_silhouette_manifest.py` in prepush
-
-- Options: (a) manual; (b) prepush check like props/icons; (c) Unity-only.
-- Recommendation and choice: **(b)** + `HANDOFF-INDEX.md` for all list/check pairs.
-- Why: rivals batch added SVGs without a third sync guard.
-
-### Q466. Icon id listing mirror? DECIDED: `list_icon_ids.py` + `ICON-HANDOFF.md`
-
-- Options: (a) share one script; (b) parallel list scripts; (c) dump full manifest JSON only.
-- Recommendation and choice: **(b)** — symmetric with props (Q465).
-- Why: Unity paste lists stay one id per line.
-
-### Q465. Prop id listing for handoff? DECIDED: `list_catalog_ids.py` (no codegen)
-
-- Options: (a) manual copy from manifest; (b) small list script; (c) generated C# enum.
-- Recommendation and choice: **(b)** — see `CATALOG-HANDOFF.md`; enums stay manual to avoid rules coupling.
-- Why: Unity import checklist only needs a pasteable list.
-
-### Q464. HUD icon set size? DECIDED: 10 SVGs including staff + danger
-
-- Options: (a) keep 8; (b) add staff/danger; (c) per-screen packs only.
-- Recommendation and choice: **(b)** — `check_ui_icons_manifest.py` in prepush.
-- Why: a11y and staff docs reference concrete icon ids.
-
-### Q463. Staff avatars v1? DECIDED: capsule placeholders + `CampusStaffPresentationSpec`
-
-- Options: (a) no staff meshes; (b) procedural placeholders; (c) rigged characters in repo.
-- Recommendation and choice: **(b)** — document in `STAFF-PRESENTATION.md`; rigs deferred to Hatch PC.
-- Why: P4 polish needs scale constants without scope creep.
-
-### Q462. ALT-76 status doc in repo? DECIDED: `ALT-76-STATUS.md` + `GO-PACKET-TEMPLATE.md`
-
-- Options: (a) PR description only; (b) committed rollup in `docs/art/`; (c) external wiki.
-- Recommendation and choice: **(b)** — updated each release batch for Unity + coordinator.
-- Why: PR #41 spans many squashed pushes; single pointer for handoff.
-
-### Q461. CI capture constants centralized? DECIDED: `CampusCapturePresentationSpec`
-
-- Options: (a) magic numbers in test only; (b) shared spec class; (c) drop PNG CI.
-- Recommendation and choice: **(b)** — `HqViewCaptureTests` reads spec; see `CAPTURE-REGRESSION.md`.
-- Why: graphics and Unity agree on artifact contract without duplicating 960×540.
-
-### Q460. Accessibility tokens in graphics? DECIDED: `CampusAccessibilitySpec` (presentation targets only)
-
-- Options: (a) Unity-only; (b) graphics docs + constants; (c) defer to UI Toolkit theme.
-- Recommendation and choice: **(b)** — see `ACCESSIBILITY-PRESENTATION.md`; no legal claims.
-- Why: keeps 44px CTA rule testable before full UI rebuild.
-
-### Q459. Material smoothness constants? DECIDED: `CampusMaterialTokens` (not duplicated in `CampusUiTokens`)
-
-- Options: (a) only `CampusUiTokens`; (b) split material vs HUD tokens; (c) ShaderGraph only.
-- Recommendation and choice: **(b)** — see `MATERIAL-ERA-SKINS.md`.
-- Why: floor vs prop smoothness differ; HUD tokens stay UI-only.
-
-### Q458. Era skin data in repo? DECIDED: `era-skin-tokens.json` + `CampusEraSkinTokens`
-
-- Options: (a) only in `HqVisualPalette`; (b) JSON + presentation constants; (c) ScriptableObjects in Unity.
-- Recommendation and choice: **(b)** — Unity thread may still read `HqVisualPalette.EraSkin` until materials land.
-- Why: documents P3 skin targets without forking rules era ids.
-
-### Q457. Mascot bob amplitudes in code? DECIDED: `CampusMascotPresentationSpec` + `ModelMascotPresentation`
-
-- Options: (a) magic numbers in `ModelMascotRow`; (b) shared spec constants; (c) animation clips only.
-- Recommendation and choice: **(b)** — document in `MASCOT-PRESENTATION.md`; row keeps procedural bob.
-- Why: aligns with `GlowSpreadMap` presentation-only pattern (NEXT.md Unity §4).
-
-### Q456. Tab rail v1 art binding? DECIDED: SVG icons + plaque prop stub
-
-- Options: (a) text-only tabs; (b) SVG sprites + `CampusTabIconBindings`; (c) full 3D plaques only.
-- Recommendation and choice: **(b)** with optional `ui-tab-rail-plaque` mesh until sprites import; see `TAB-RAIL-INTEGRATION.md`.
-- Why: matches Q452 phased tab rail without blocking on UI code.
-
-### Q455. Gauntlet reveal overlay? DECIDED: seasonal HQ overlay, not separate scene
-
-- Options: (a) full-screen gauntlet scene; (b) HQ overlay with lectern + mascots; (c) text-only modal.
-- Recommendation and choice: **(b)** — see `docs/art/GAUNTLET-STAGE.md`; build panel hidden, global chrome kept.
-- Why: reuses `HqGridView` and mascot row; avoids new scene graph before tab rail ships.
-
-## Open
-
-None.
-
-## Graphics pipeline (ALT-76, merged from PR #41)
-
-### Q455-alt76. Gauntlet reveal overlay? DECIDED: seasonal HQ overlay, not separate scene
-
-- Options: (a) full-screen gauntlet scene; (b) HQ overlay with lectern + mascots; (c) text-only modal.
-- Recommendation and choice: **(b)** — see `docs/art/GAUNTLET-STAGE.md`; build panel hidden, global chrome kept.
-- Why: reuses `HqGridView` and mascot row; avoids new scene graph before tab rail ships.
-
-### Q456-alt76. Tab rail v1 art binding? DECIDED: SVG icons + plaque prop stub
-
-- Options: (a) text-only tabs; (b) SVG sprites + `CampusTabIconBindings`; (c) full 3D plaques only.
-- Recommendation and choice: **(b)** with optional `ui-tab-rail-plaque` mesh until sprites import; see `TAB-RAIL-INTEGRATION.md`.
-- Why: matches Q452 phased tab rail without blocking on UI code.
-
-### Q706. ALT-76 rollup refresh through batch 184? DECIDED: `CampusAlt76RollupRefreshB184PresentationSpec`
-
-- Options: (a) stop at 181; (b) through 184; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **257**.
-
-### Q707. Index manifest tail through batch 184? DECIDED: `CampusIndexLaneManifestTailRefreshThrough184PresentationSpec`
-
-- Options: (a) stop at 181; (b) through 184; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **258**.
-
-### Q708. GO packet tail through batch 247? DECIDED: `CampusGoPacketTailRefreshThrough247PresentationSpec`
-
-- Options: (a) stop at 244; (b) through 247; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **259**.
-
-### Q709. World map / start-era tail from NEXT 12–13? DECIDED: `CampusWorldMapStartEraTailRefreshPresentationSpec`
-
-- Options: (a) world map only; (b) map + start-era rows; (c) implement host UI on agent.
-- Recommendation and choice: **(b)** — batch **260**.
-- Why: NEXT host UI rows; presentation tokens only.
-
-### Q710. ALT-76 STATUS sync through batch 187? DECIDED: `CampusAlt76StatusSyncThrough187PresentationSpec`
-
-- Options: (a) stop at 184; (b) through 187; (c) defer.
-- Recommendation and choice: **(b)**.
-- Why: Batch **261**.
-
-### Q711. Presentation tail rollup through batch 184? DECIDED: `CampusPresentationTailRollupRefreshThrough184PresentationSpec`
-
-- Options: (a) stop at 181; (b) through 184; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **262**.
-
-### Q712. GO packet tail through batch 250? DECIDED: `CampusGoPacketTailRefreshThrough250PresentationSpec`
-
-- Options: (a) stop at 247; (b) through 250; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **263**.
-
-### Q713. Explainable HUD DisplayQueries tail? DECIDED: `CampusExplainableHudDisplayQueriesTailPresentationSpec`
-
-- Options: (a) EXPLAINABLE-HUD-INDEX only; (b) tail spec + DisplayQueries row; (c) implement drawers on agent.
-- Recommendation and choice: **(b)** — batch **264** (NEXT art table).
-- Why: HQ/research breakdown presentation; rules unchanged.
-
-### Q714. ALT-76 rollup refresh through batch 187? DECIDED: `CampusAlt76RollupRefreshB187PresentationSpec`
-
-- Options: (a) stop at 184; (b) through 187; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **265**.
-
-### Q715. Index manifest tail through batch 187? DECIDED: `CampusIndexLaneManifestTailRefreshThrough187PresentationSpec`
-
-- Options: (a) stop at 184; (b) through 187; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **266**.
-
-### Q716. GO packet tail through batch 253? DECIDED: `CampusGoPacketTailRefreshThrough253PresentationSpec`
-
-- Options: (a) stop at 250; (b) through 253; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **267**.
-
-### Q717. Seasonal + a11y chrome tail? DECIDED: `CampusSeasonalA11yChromeTailPresentationSpec`
-
-- Options: (a) seasonal only; (b) seasonal + a11y index; (c) meshes on agent.
-- Recommendation and choice: **(b)** — batch **268** (NEXT rows 53/59).
-- Why: Presentation tail after rollup quad.
-
-### Q718. ALT-76 STATUS sync through batch 190? DECIDED: `CampusAlt76StatusSyncThrough190PresentationSpec`
-
-- Options: (a) stop at 187; (b) through 190; (c) defer.
-- Recommendation and choice: **(b)**.
-- Why: Batch **269**.
-
-### Q719. Presentation tail rollup through batch 187? DECIDED: `CampusPresentationTailRollupRefreshThrough187PresentationSpec`
-
-- Options: (a) stop at 184; (b) through 187; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **270**.
-
-### Q720. GO packet tail through batch 256? DECIDED: `CampusGoPacketTailRefreshThrough256PresentationSpec`
-
-- Options: (a) stop at 253; (b) through 256; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **271**.
-
-### Q721. Training screen HUD tail (layout 49)? DECIDED: `CampusTrainingScreenHudTailPresentationSpec`
-
-- Options: (a) TRAINING-SCREEN doc only; (b) tail spec + UI-HUD row; (c) implement panel on agent.
-- Recommendation and choice: **(b)** — batch **272** (NEXT Unity/HUD table).
-- Why: Screen layout 49 presentation tokens.
-
-### Q722. Rivals screen HUD tail (layout 48)? DECIDED: `CampusRivalsScreenHudTailPresentationSpec`
-
-- Options: (a) defer; (b) tail after training **272**; (c) meshes on agent.
-- Recommendation and choice: **(b)** — batch **276**.
-- Why: NEXT screen layout row **48**.
-
-### Q723. ALT-76 rollup refresh through batch 190? DECIDED: `CampusAlt76RollupRefreshB190PresentationSpec`
-
-- Options: (a) stop at 187; (b) through 190; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **273**.
-
-### Q724. Index manifest tail through batch 190? DECIDED: `CampusIndexLaneManifestTailRefreshThrough190PresentationSpec`
-
-- Options: (a) stop at 187; (b) through 190; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **274**.
-
-### Q725. GO packet tail through batch 259? DECIDED: `CampusGoPacketTailRefreshThrough259PresentationSpec`
-
-- Options: (a) stop at 256; (b) through 259; (c) skip.
-- Recommendation and choice: **(b)**.
-- Why: Batch **275**.
