@@ -177,6 +177,11 @@ namespace AiLabs.Rules.Config
         public RungSixCrisisConfig RungSixCrisis = new RungSixCrisisConfig();
         public ScenarioGoalsConfig ScenarioGoals = new ScenarioGoalsConfig();
         public LawTargetConfig LawTarget = new LawTargetConfig();
+        public ReservedComputeGateConfig ReservedComputeGate = new ReservedComputeGateConfig();
+        public RivalIntentNewsConfig RivalIntentNews = new RivalIntentNewsConfig();
+        public GpuTierUnlockConfig GpuTierUnlock = new GpuTierUnlockConfig();
+        public EndlessScenarioConfig EndlessScenario = new EndlessScenarioConfig();
+        public ShadyFreezeAuditConfig ShadyFreezeAudit = new ShadyFreezeAuditConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -352,6 +357,11 @@ namespace AiLabs.Rules.Config
             s.Obj("rungSixCrisis", ref RungSixCrisis);
             s.Obj("scenarioGoals", ref ScenarioGoals);
             s.Obj("lawTarget", ref LawTarget);
+            s.Obj("reservedComputeGate", ref ReservedComputeGate);
+            s.Obj("rivalIntentNews", ref RivalIntentNews);
+            s.Obj("gpuTierUnlock", ref GpuTierUnlock);
+            s.Obj("endlessScenario", ref EndlessScenario);
+            s.Obj("shadyFreezeAudit", ref ShadyFreezeAudit);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

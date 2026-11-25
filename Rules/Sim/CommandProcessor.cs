@@ -408,6 +408,8 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Buy at least one GPU.");
             int holdingId = cmd.TargetId;
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            if (!GpuTierUnlock.Unlocked(c, state, lab, gen))
+                return GpuPurchaseBlocked(c, state, lab, gen, 0, gen.Name + " is not on sale for " + lab.Name + " in " + EraSystem.AtTick(c, state.Tick).Name + " yet.");
             CommandResult place = CheckPlaceForHardware(c, state, lab, holdingId, gen, cmd.Count);
             if (!place.Ok) return place;
             int allocation = VendorSystem.AllocationLeft(state, lab);
@@ -462,8 +464,7 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Sell at least one GPU.");
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
-            int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
-            if (holdingId == HardwareBatch.Hq && lab.LeaseUnits > 0) owned -= lab.LeaseUnits;
+            int owned = LabQueries.OwnedGpuUnits(lab, holdingId) - (holdingId == HardwareBatch.Hq ? lab.LeaseUnits : 0);
             if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there" + (lab.LeaseUnits > 0 && holdingId == HardwareBatch.Hq ? " that are not leased back" : "") + ".");
 
             long proceeds = 0;
