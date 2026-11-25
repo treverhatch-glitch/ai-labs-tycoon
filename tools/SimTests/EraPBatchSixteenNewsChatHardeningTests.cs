@@ -46,8 +46,8 @@ public class EraPBatchSixteenNewsChatHardeningTests
     {
         Game g = Game.Solo(150, c => c.Office.ChancePermille = 0).WithStarterLab();
         GameConfig c = TestData.Config();
-        Assert.Equal(398, c.News.Headlines.Count);
-        Assert.Equal(352, c.Chat.Lines.Count);
+        Assert.Equal(405, c.News.Headlines.Count);
+        Assert.Equal(358, c.Chat.Lines.Count);
         foreach (EventKind kind in Kinds)
         {
             Assert.Contains(c.News.Headlines, h => h.Kind == kind.ToString());

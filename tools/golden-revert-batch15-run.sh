@@ -8,7 +8,7 @@ exec 9>"$LOCK"
 flock -x -w 600 9
 # Pre-restore only after batch 15 is committed on this branch (restore-golden-tip checks out HEAD).
 bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
-DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
+DOTNET="${DOTNET:-$(command -v dotnet)}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
