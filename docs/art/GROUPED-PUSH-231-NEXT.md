@@ -1,5 +1,5 @@
-# Grouped 231–233 (LOCAL queue)
+# Grouped 231–233 — landed `f0c5ff6`
 
-**Parent after land:** `eb1cea3`. **HOLD push ≥~15:17 ICT**.
+**Parent:** `eb1cea3` → **`f0c5ff6`**. **HOLD ≥~15:47 ICT**.
 
-Q680 STATUS **175** · Q681 tail **172** · Q682 GO **226**.
+Q680–Q682 decided. Next: [GROUPED-PUSH-234-NEXT.md](GROUPED-PUSH-234-NEXT.md).
