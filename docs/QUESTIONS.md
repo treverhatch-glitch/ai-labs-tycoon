@@ -4599,3 +4599,27 @@ Vendor/funding ladder/balance soak host slices.
 ### Q816. Era eval-boost HUD chrome? DECIDED: `CampusEraEvalBoostHudChromePresentationSpec` (schema **159**) — batch **367**.
 
 ### Q817. Rules-adjacent graphics tail refresh through 348? DECIDED: `CampusRulesAdjacentGraphicsTailRefreshThrough348PresentationSpec` — batch **368**.
+
+### Q818. Presentation index hub through batch 368? DECIDED: `CampusPresentationIndexHubThrough368PresentationSpec` — batch **369**.
+
+### Q819. ALT-76 rollup through batch 223? DECIDED: `CampusAlt76RollupRefreshB223PresentationSpec` — batch **370**.
+
+### Q820. GO packet tail through batch 307? DECIDED: `CampusGoPacketTailRefreshThrough307PresentationSpec` — batch **371**.
+
+### Q821. Explainable HUD tail through batch 324? DECIDED: `CampusExplainableHudTailRefreshThrough324PresentationSpec` — batch **372**.
+
+### Q822. Index manifest tail through batch 223? DECIDED: `CampusIndexLaneManifestTailRefreshThrough223PresentationSpec` — batch **373**.
+
+### Q823. Presentation rollup through batch 223? DECIDED: `CampusPresentationTailRollupRefreshThrough223PresentationSpec` — batch **374**.
+
+### Q824. ALT-76 status sync through batch 226? DECIDED: `CampusAlt76StatusSyncThrough226PresentationSpec` — batch **375**.
+
+### Q825. Seasonal/a11y tail through batch 321? DECIDED: `CampusSeasonalA11yChromeTailRefreshThrough321PresentationSpec` — batch **376**.
+
+### Q826. Rivals/world tail through batch 321? DECIDED: `CampusRivalWorldTailIndexRefreshThrough321PresentationSpec` — batch **377**.
+
+### Q827. Era specialist-hooks HUD chrome (schema 154)? DECIDED: `CampusEraSpecialistHooksHudChromePresentationSpec` — batch **378**.
+
+### Q828. Era sector-pricing HUD chrome (schema 155)? DECIDED: `CampusEraSectorPricingHudChromePresentationSpec` — batch **379**.
+
+### Q829. Era data-pairing HUD chrome (schema 156)? DECIDED: `CampusEraDataPairingHudChromePresentationSpec` — batch **380**.
