@@ -223,7 +223,7 @@ public class PledgeTests
     {
         Game g = Lab();
         g.Do(Command.SetPledge(g.Id, 2));
-        string old = SaveSchemaPretend.At(g.C, 67, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 68, g.Sim.Save());
         Assert.DoesNotContain("\"pledgeLevel\"", old);
         Assert.DoesNotContain("\"pledgeLockedUntil\"", old);
         Simulation sim = Simulation.Load(g.C, old);

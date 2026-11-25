@@ -184,7 +184,7 @@ public class TreasuryTests
     {
         Game g = Lab();
         g.Do(Command.SetAsideReserve(g.Id, 1_000_000));
-        string old = SaveSchemaPretend.At(g.C, 66, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 67, g.Sim.Save());
         Assert.DoesNotContain("\"reserve\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

@@ -1,6 +1,6 @@
 # Alumni network
 
-People who leave the player's lab stay in a pool for a while and can be asked back (`alumni.*` in the data; Q362). A saved list on the lab (`alumni`: old id, role, trait, week left, how they left; schema 76); older saves have an empty pool.
+People who leave the player's lab stay in a pool for a while and can be asked back (`alumni.*` in the data; Q362). A saved list on the lab (`alumni`: old id, role, trait, week left, how they left; schema 77); older saves have an empty pool.
 
 ## Who goes in
 

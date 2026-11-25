@@ -15,7 +15,7 @@ The player's lab can insure against incident fines. Each level covers a share of
 | Loading | +30% of the premium for each claim the insurer remembers (`insuranceClaimLoadingPermille`) |
 | Not covered | incidents at rung 5 and above (`insuranceExcludedRung`), the make-good payments of sector flavours, and the reputation loss |
 
-The premium has its own ledger line (`insurance`, schema 44) so cash stays explained. A claim is logged as `InsuranceClaimPaid`.
+The premium has its own ledger line (`insurance`, schema 45) so cash stays explained. A claim is logged as `InsuranceClaimPaid`.
 
 ## Claims
 
