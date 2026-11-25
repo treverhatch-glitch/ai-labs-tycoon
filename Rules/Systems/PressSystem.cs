@@ -28,7 +28,7 @@ namespace AiLabs.Rules.Systems
 
         public static int Damping(GameConfig c, LabState lab)
         {
-            return (int)MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.ScandalDamping), c.Press.MaxDampingPermille);
+            return (int)MathI.Min(RoomPerks.Permille(c, lab, RoomPerkKind.ScandalDamping), c.Press.MaxDampingPermille) + ScalingPolicy.DampPermille(c, lab);
         }
 
         public static int Buzz(GameConfig c, LabState lab)

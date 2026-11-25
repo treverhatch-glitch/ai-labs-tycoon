@@ -94,7 +94,19 @@ namespace AiLabs.Rules.Sim
         OpenRequisition,
         CancelRequisition,
         HostScholars,
-        SendScholarsHome
+        SendScholarsHome,
+        SettleCase,
+        RetainFirm,
+        AppealCase,
+        BuildSecurity,
+        AnswerBreach,
+        AcceptContract,
+        DeclineContract,
+        AbandonContract,
+        ConvertCharter,
+        CancelCharterChange,
+        AdoptPolicy,
+        BreakPolicy
     }
 
     /// <summary>
@@ -856,6 +868,90 @@ namespace AiLabs.Rules.Sim
         public static Command SendScholarsHome(int labId)
         {
             return Make(CommandKind.SendScholarsHome, labId);
+        }
+
+        /// <summary>Settles a claim before its hearing (TargetId is the claim) for a share of what it asks. It ends there.</summary>
+        public static Command SettleCase(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.SettleCase, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Retains an outside firm for a claim before its hearing (TargetId is the claim): a fee now, and the firm takes more off the claim's strength than the lab's own counsel.</summary>
+        public static Command RetainFirm(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.RetainFirm, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Appeals a lost claim once (TargetId is the claim): a fee now, a new ruling after the appeal weeks, and the appeal takes something more off the claim's strength.</summary>
+        public static Command AppealCase(int labId, int caseId)
+        {
+            Command c = Make(CommandKind.AppealCase, labId);
+            c.TargetId = caseId;
+            return c;
+        }
+
+        /// <summary>Starts building the next security tier. It is paid for now and done after the build weeks; the lab pays upkeep for every tier it holds.</summary>
+        public static Command BuildSecurity(int labId)
+        {
+            return Make(CommandKind.BuildSecurity, labId);
+        }
+
+        /// <summary>Answers an open breach: 0 pays the ransom, 1 discloses it, 2 locks everything down at once (the next tier now, at double the price).</summary>
+        public static Command AnswerBreach(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerBreach, labId);
+            c.Count = choice;
+            return c;
+        }
+
+        /// <summary>Accepts the contract on offer. It needs the security tier, free engineers and no other contract; accepting can cost reputation and the safety staff's morale.</summary>
+        public static Command AcceptContract(int labId)
+        {
+            return Make(CommandKind.AcceptContract, labId);
+        }
+
+        /// <summary>Turns the contract on offer down. The next offer comes after the usual wait.</summary>
+        public static Command DeclineContract(int labId)
+        {
+            return Make(CommandKind.DeclineContract, labId);
+        }
+
+        /// <summary>Walks away from the contract in force: the penalty is paid and reputation is lost.</summary>
+        public static Command AbandonContract(int labId)
+        {
+            return Make(CommandKind.AbandonContract, labId);
+        }
+
+        /// <summary>Starts a change of charter (Count is the form: 0 for-profit, 1 capped-profit, 2 nonprofit). The fee is paid now and the change takes effect after the review weeks.</summary>
+        public static Command ConvertCharter(int labId, int form)
+        {
+            Command c = Make(CommandKind.ConvertCharter, labId);
+            c.Count = form;
+            return c;
+        }
+
+        /// <summary>Drops the change of charter under review. The fee is not given back.</summary>
+        public static Command CancelCharterChange(int labId)
+        {
+            return Make(CommandKind.CancelCharterChange, labId);
+        }
+
+        /// <summary>Sets the scaling policy level, 0 to the data's top. Raising it costs a fee for each level up; lowering it costs reputation and is refused while the level is locked; either change locks lowering for some weeks. Level k has a tripwire at a capability: a trained model that reaches a tripwire of the policy is held back, and so is every new run, until the safeguards for that level are in place.</summary>
+        public static Command AdoptPolicy(int labId, int level)
+        {
+            Command c = Make(CommandKind.AdoptPolicy, labId);
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Breaks the policy while a tripwire holds the lab up: the level drops below the tripwire, the lab loses reputation and the safety staff lose morale.</summary>
+        public static Command BreakPolicy(int labId)
+        {
+            return Make(CommandKind.BreakPolicy, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

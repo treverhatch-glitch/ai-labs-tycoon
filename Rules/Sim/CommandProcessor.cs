@@ -107,6 +107,18 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.AdoptPolicy: return AdoptPolicy(c, state, lab, cmd);
+                case CommandKind.BreakPolicy: return BreakPolicy(c, state, lab, cmd);
+                case CommandKind.ConvertCharter: return ConvertCharter(c, state, lab, cmd);
+                case CommandKind.CancelCharterChange: return CancelCharterChange(c, state, lab, cmd);
+                case CommandKind.AcceptContract: return AcceptContract(c, state, lab, cmd);
+                case CommandKind.DeclineContract: return DeclineContract(c, state, lab, cmd);
+                case CommandKind.AbandonContract: return AbandonContract(c, state, lab, cmd);
+                case CommandKind.SettleCase: return SettleCase(c, state, lab, cmd);
+                case CommandKind.RetainFirm: return RetainFirm(c, state, lab, cmd);
+                case CommandKind.AppealCase: return AppealCase(c, state, lab, cmd);
+                case CommandKind.BuildSecurity: return BuildSecurity(c, state, lab, cmd);
+                case CommandKind.AnswerBreach: return AnswerBreach(c, state, lab, cmd);
                 case CommandKind.OpenRequisition: return OpenRequisition(c, state, lab, cmd);
                 case CommandKind.CancelRequisition: return CancelRequisition(c, state, lab, cmd);
                 case CommandKind.HostScholars: return HostScholars(c, state, lab, cmd);
@@ -444,6 +456,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.InvalidArgument, "The alignment share is from 0 to " + MaxAlignmentSharePermille + ": some of the run has to train the model.");
             if (LabQueries.ActiveRuns(lab) >= c.Training.MaxConcurrentRuns)
                 return Fail(CommandError.TooManyRuns, "The lab can train " + c.Training.MaxConcurrentRuns + " models at once.");
+            if (ScalingPolicy.Tripped(c, lab) > 0) return Fail(CommandError.InvalidArgument, "A trained model reached a tripwire of the lab's scaling policy: no new run starts until the safeguards are in place.");
             long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
@@ -472,6 +485,7 @@ namespace AiLabs.Rules.Sim
             if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released)
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
+            if (ScalingPolicy.Holds(c, lab, model)) return Fail(CommandError.InvalidArgument, model.Name + " reached a tripwire of the lab's scaling policy and the safeguards for it are not in place.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
             if (SafetyCulture.GateBlocks(lab, model))
                 return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");

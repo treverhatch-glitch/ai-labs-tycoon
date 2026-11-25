@@ -309,6 +309,14 @@ and says why in the commit message.
 126. **Visiting scholars (outside researchers at researchers' desks; prestige when they leave on schedule).** ~~Done~~: `scholars` data, `HostScholars`, `SendScholarsHome`, `Scholars`, schema 80, `ScholarsTests`, `docs/content/visiting-scholars.md` (Q369).
 127. **News and chat for the new systems.** ~~Done~~: 17 headlines and 16 chat lines in the data, `InternsSupportSabbaticalRequisitionsScholarsNewsChatTests` (Q370).
 128. **The five new systems together.** ~~Done~~: sabbaticals refused for people already away, the desk skips people on leave, scholars' seats against hires, `InternsSupportSabbaticalRequisitionsScholarsTogetherTests` (Q370).
+129. **The litigation docket (claims with a strength, settlement, counsel, one appeal).** ~~Done~~: `litigation` data, `SettleCase`, `RetainFirm`, `AppealCase`, `Litigation`, schema 81, `LitigationTests`, `docs/content/litigation.md` (Q371).
+130. **Information security (tiers, exposure, breach answers).** ~~Done~~: `security` data, `BuildSecurity`, `AnswerBreach`, `Security`, schema 81, `SecurityTests`, `docs/content/security.md` (Q372).
+131. **Government contracts (offers in turn, clearance, kept-free engineers, instalments).** ~~Done~~: `govContracts` data, `AcceptContract`, `DeclineContract`, `AbandonContract`, `GovContracts`, schema 82, `GovContractsTests`, `docs/content/government-contracts.md` (Q373).
+132. **The charter (for-profit, capped-profit, nonprofit; a reviewed change).** ~~Done~~: `charter` data, `ConvertCharter`, `CancelCharterChange`, `Charter`, schema 83, `CharterTests`, `docs/content/charter.md` (Q374).
+133. **The scaling policy (capability tripwires, safeguards, breaking it).** ~~Done~~: `scaling` data, `AdoptPolicy`, `BreakPolicy`, `ScalingPolicy`, schema 84, `ScalingPolicyTests`, `docs/content/scaling-policy.md` (Q375).
+134. **News and chat for the new systems.** ~~Done~~: 32 headlines and 24 chat lines in the data (174 and 219), `LitigationSecurityContractsCharterScalingNewsChatTests` (Q376).
+135. **The five new systems together.** ~~Done~~: clearance and leaks, claims from breaches and charters, contract engineers against the desk and sabbaticals, safeguards and the policy, a long scripted game, `LitigationSecurityContractsCharterScalingTogetherTests` (Q377).
+136. **The ledger identity across schemas.** ~~Done~~: the schema-5 bankrupt fixture was wrong, not the migration; `LedgerIdentityMigrationTests` (Q378).
 
 ## Rules: later
 

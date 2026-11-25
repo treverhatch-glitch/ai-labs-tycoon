@@ -114,6 +114,11 @@ namespace AiLabs.Rules.Config
             SabbaticalProblems(p, c);
             RequisitionsProblems(p, c);
             ScholarsProblems(p, c);
+            LitigationProblems(p, c);
+            SecurityProblems(p, c);
+            GovContractsProblems(p, c);
+            CharterProblems(p, c);
+            ScalingProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1221,6 +1226,95 @@ namespace AiLabs.Rules.Config
             if (k.StipendPermille < 0 || k.StipendPermille > MathI.Permille) p.Add("scholars.stipendPermille must be from 0 to 1000");
             if (k.ResearchPermille < 0 || k.ResearchPermille > MathI.Permille) p.Add("scholars.researchPermille must be from 0 to 1000, no more than a researcher");
             if (k.PrestigeEach < 0 || k.PrestigeEach > 200) p.Add("scholars.prestigeEach must be from 0 to 200");
+        }
+
+        static void LitigationProblems(List<string> p, GameConfig c)
+        {
+            LitigationConfig k = c.Litigation;
+            if (k == null) { p.Add("litigation is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("litigation.enabled must be 0 or 1");
+            if (k.MaxOpen < 1 || k.MaxOpen > 20) p.Add("litigation.maxOpen must be from 1 to 20");
+            if (k.HearingWeeks < 1 || k.HearingWeeks > 104) p.Add("litigation.hearingWeeks must be from 1 to 104");
+            if (k.AppealWeeks < 1 || k.AppealWeeks > 104) p.Add("litigation.appealWeeks must be from 1 to 104");
+            if (k.MinClaim < 1 || k.PrivacyClaim < k.MinClaim) p.Add("litigation.minClaim must be at least 1 and no more than privacyClaim");
+            if (k.IncidentPermille < 0 || k.IncidentPermille > 20000 || k.DismissalPermille < 0 || k.DismissalPermille > 20000) p.Add("litigation.incidentPermille and dismissalPermille must be from 0 to 20000");
+            if (k.SettlePermille < 1 || k.SettlePermille >= k.JudgmentPermille) p.Add("litigation.settlePermille must be from 1 and under judgmentPermille, or nobody would defend");
+            if (k.JudgmentPermille < 1 || k.JudgmentPermille > 5000) p.Add("litigation.judgmentPermille must be from 1 to 5000");
+            if (k.InHouseStrength < 0 || k.FirmStrength < k.InHouseStrength || k.FirmStrength > MathI.Permille) p.Add("litigation.firmStrength must be from inHouseStrength (at least 0) to 1000");
+            if (k.FirmFeePermille < 0 || k.FirmFeePermille > MathI.Permille || k.AppealFeePermille < 0 || k.AppealFeePermille > MathI.Permille) p.Add("litigation.firmFeePermille and appealFeePermille must be from 0 to 1000");
+            if (k.JudgeAt < 1 || k.JudgeAt > MathI.Permille) p.Add("litigation.judgeAt must be from 1 to 1000");
+            if (k.AppealStrength < 0 || k.AppealStrength > MathI.Permille) p.Add("litigation.appealStrength must be from 0 to 1000");
+            if (k.LossReputation < 0 || k.LossReputation > 500 || k.WinReputation < 0 || k.WinReputation > 500) p.Add("litigation.lossReputation and winReputation must be from 0 to 500");
+        }
+
+        static void SecurityProblems(List<string> p, GameConfig c)
+        {
+            SecurityConfig k = c.Security;
+            if (k == null) { p.Add("security is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("security.enabled must be 0 or 1");
+            if (k.MaxTier < 1 || k.MaxTier > 10) p.Add("security.maxTier must be from 1 to 10");
+            if (k.TierCost < 1 || k.Ransom < 1) p.Add("security.tierCost and ransom must be at least 1");
+            if (k.BuildWeeks < 1 || k.BuildWeeks > 104 || k.AnswerWeeks < 1 || k.AnswerWeeks > 104) p.Add("security.buildWeeks and answerWeeks must be from 1 to 104");
+            if (k.UpkeepPerTier < 0) p.Add("security.upkeepPerTier must not be negative");
+            if (k.ExposurePerModel < 1 || k.ExposurePerModel > 1000 || k.ReliefPerTier < 0 || k.ReliefPerTier > 1000) p.Add("security.exposurePerModel must be from 1 to 1000 and reliefPerTier from 0 to 1000");
+            if (k.Threshold < 1 || k.Threshold > 100000) p.Add("security.threshold must be from 1 to 100000");
+            if (k.DiscloseReputation < 0 || k.DiscloseReputation > 500 || k.LeakReputation < k.DiscloseReputation || k.LeakReputation > 500) p.Add("security.leakReputation must be at least discloseReputation and no more than 500");
+        }
+
+        static void GovContractsProblems(List<string> p, GameConfig c)
+        {
+            GovContractsConfig k = c.GovContracts;
+            if (k == null) { p.Add("govContracts is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("govContracts.enabled must be 0 or 1");
+            if (k.OfferEveryWeeks < 1 || k.OfferEveryWeeks > 520 || k.OfferWeeks < 1 || k.OfferWeeks > 104) p.Add("govContracts.offerEveryWeeks must be from 1 to 520 and offerWeeks from 1 to 104");
+            if (k.Installments < 1 || k.Installments > 20) p.Add("govContracts.installments must be from 1 to 20");
+            if (k.MissLimit < 1 || k.MissLimit > k.Installments) p.Add("govContracts.missLimit must be from 1 to installments");
+            if (k.PenaltyPermille < 0 || k.PenaltyPermille > 5000) p.Add("govContracts.penaltyPermille must be from 0 to 5000");
+            if (k.AbandonReputation < 0 || k.AbandonReputation > 500) p.Add("govContracts.abandonReputation must be from 0 to 500");
+            if (k.KeepFree < 0 || k.KeepFree > 20) p.Add("govContracts.keepFree must be from 0 to 20");
+            if (c.Role(k.MoraleRole) == null) p.Add("govContracts.moraleRole names the unknown role \"" + k.MoraleRole + "\"");
+            if (k.Kinds.Count == 0) p.Add("govContracts.kinds is empty");
+            UniqueIds(p, "govContracts.kinds", k.Kinds);
+            for (int i = 0; i < k.Kinds.Count; i++)
+            {
+                ContractKindConfig kind = k.Kinds[i];
+                string who = "govContracts.kinds[" + i + "]";
+                if (kind.Clearance < 0 || kind.Clearance > 10) p.Add(who + " needs a clearance from 0 to 10");
+                if (kind.Weeks < k.Installments || kind.Weeks > 520) p.Add(who + " must last from installments to 520 weeks");
+                if (kind.Pay < k.Installments) p.Add(who + " must pay at least one a instalment");
+                if (kind.People < 1 || kind.People > 20) p.Add(who + " must need from 1 to 20 engineers");
+                if (kind.Morale < 0 || kind.Morale > MathI.Permille) p.Add(who + " has a morale cost from 0 to 1000");
+                if (kind.AcceptReputation < -500 || kind.AcceptReputation > 500 || kind.DoneReputation < 0 || kind.DoneReputation > 500) p.Add(who + " has a reputation outside the allowed range");
+            }
+        }
+
+        static void CharterProblems(List<string> p, GameConfig c)
+        {
+            CharterConfig k = c.Charter;
+            if (k == null) { p.Add("charter is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("charter.enabled must be 0 or 1");
+            if (k.ReviewWeeks < 1 || k.ReviewWeeks > 104) p.Add("charter.reviewWeeks must be from 1 to 104");
+            if (k.ConvertFee < 0 || k.CapAmount < 1 || k.ChallengeClaim < 1) p.Add("charter.convertFee must not be negative and capAmount and challengeClaim must be at least 1");
+            if (k.CappedFundingPermille < 1 || k.CappedFundingPermille > MathI.Permille) p.Add("charter.cappedFundingPermille must be from 1 to 1000");
+            if (k.ForProfitGrantPermille < 0 || k.CappedGrantPermille < 0 || k.NonprofitGrantPermille < 0 || k.ForProfitGrantPermille > 5000 || k.CappedGrantPermille > 5000 || k.NonprofitGrantPermille > 5000) p.Add("charter grant shares must be from 0 to 5000");
+            if (k.DonationPerPrestige < 0 || k.DonationPerPrestige > 100000) p.Add("charter.donationPerPrestige must be from 0 to 100000");
+            if (k.DistributionPermille < 0 || k.DistributionPermille > MathI.Permille) p.Add("charter.distributionPermille must be from 0 to 1000");
+            if (k.ChallengeStrength < 1 || k.ChallengeStrength > MathI.Permille) p.Add("charter.challengeStrength must be from 1 to 1000");
+            if (k.ProfitMorale < 0 || k.ProfitMorale > MathI.Permille || k.MissionMorale < 0 || k.MissionMorale > MathI.Permille) p.Add("charter morale changes must be from 0 to 1000");
+        }
+
+        static void ScalingProblems(List<string> p, GameConfig c)
+        {
+            ScalingConfig k = c.Scaling;
+            if (k == null) { p.Add("scaling is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scaling.enabled must be 0 or 1");
+            if (k.MaxLevel < 1 || k.MaxLevel > 10) p.Add("scaling.maxLevel must be from 1 to 10");
+            if (k.FirstTripwire < 1 || k.TripwireStep < 1) p.Add("scaling.firstTripwire and tripwireStep must be at least 1");
+            if (k.SafetyPerTier < 0 || k.SafetyPerTier > 20 || k.AdoptFee < 0) p.Add("scaling.safetyPerTier must be from 0 to 20 and adoptFee must not be negative");
+            if (k.DampPermille < 0 || k.DampPermille * k.MaxLevel > MathI.Permille) p.Add("scaling.dampPermille times maxLevel must be from 0 to 1000");
+            if (k.ClaimStrength < 0 || k.ClaimStrength > MathI.Permille) p.Add("scaling.claimStrength must be from 0 to 1000");
+            if (k.WalkBackReputation < 0 || k.WalkBackReputation > 500 || k.OverrideReputation < k.WalkBackReputation || k.OverrideReputation > 500) p.Add("scaling.overrideReputation must be at least walkBackReputation and no more than 500");
+            if (k.OverrideMorale < 0 || k.OverrideMorale > MathI.Permille || k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("scaling.overrideMorale must be from 0 to 1000 and lockWeeks from 0 to 520");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

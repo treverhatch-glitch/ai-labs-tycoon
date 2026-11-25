@@ -23,7 +23,7 @@ namespace AiLabs.Rules.Systems
             return n;
         }
 
-        public static int MostPeople(GameConfig c, LabState lab) { return (int)MathI.Max(0, MathI.Min(c.Support.MaxPeople, Available(lab) - c.Support.KeepFree)); }
+        public static int MostPeople(GameConfig c, LabState lab) { return (int)MathI.Max(0, MathI.Min(c.Support.MaxPeople, Available(lab) - c.Support.KeepFree - GovContracts.People(c, lab))); }
 
         /// <summary>The engineers actually on the desk: the number set, never more than the lab has left.</summary>
         public static int OnDesk(GameConfig c, LabState lab) { return (int)MathI.Min(lab.SupportPeople, Available(lab)); }

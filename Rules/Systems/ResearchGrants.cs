@@ -31,7 +31,7 @@ namespace AiLabs.Rules.Systems
 
         public static long Clawback(GameConfig c, LabState lab)
         {
-            return MathI.MulPermille(Award(c, lab.ResearchGrantTier), c.ResearchGrants.ClawbackPermille);
+            return MathI.MulPermille(Charter.GrantAward(c, lab, Award(c, lab.ResearchGrantTier)), c.ResearchGrants.ClawbackPermille);
         }
 
         public static void Apply(GameConfig c, GameState state, LabState lab, int tier, long cost)
@@ -73,7 +73,7 @@ namespace AiLabs.Rules.Systems
             {
                 if (WouldPass(c, lab, tier))
                 {
-                    long award = Award(c, tier);
+                    long award = Charter.GrantAward(c, lab, Award(c, tier));
                     Finance.Earn(lab, LedgerLine.Grants, award);
                     lab.ResearchGrantStage = Owed;
                     lab.ResearchGrantOwed = tier;

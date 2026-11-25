@@ -109,6 +109,11 @@ namespace AiLabs.Rules.Config
         public SabbaticalConfig Sabbatical = new SabbaticalConfig();
         public RequisitionsConfig Requisitions = new RequisitionsConfig();
         public ScholarsConfig Scholars = new ScholarsConfig();
+        public LitigationConfig Litigation = new LitigationConfig();
+        public SecurityConfig Security = new SecurityConfig();
+        public GovContractsConfig GovContracts = new GovContractsConfig();
+        public CharterConfig Charter = new CharterConfig();
+        public ScalingConfig Scaling = new ScalingConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -216,6 +221,11 @@ namespace AiLabs.Rules.Config
             s.Obj("sabbatical", ref Sabbatical);
             s.Obj("requisitions", ref Requisitions);
             s.Obj("scholars", ref Scholars);
+            s.Obj("litigation", ref Litigation);
+            s.Obj("security", ref Security);
+            s.Obj("govContracts", ref GovContracts);
+            s.Obj("charter", ref Charter);
+            s.Obj("scaling", ref Scaling);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

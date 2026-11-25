@@ -96,6 +96,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 79) MigrateTo79(root);
             if (fromSchema < 80) MigrateTo80(root);
             if (fromSchema < 81) MigrateTo81(root);
+            if (fromSchema < 82) MigrateTo82(root);
+            if (fromSchema < 83) MigrateTo83(root);
+            if (fromSchema < 84) MigrateTo84(root);
+            if (fromSchema < 85) MigrateTo85(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -919,6 +923,49 @@ namespace AiLabs.Rules.Sim
                 JsonPatch.AddIfMissing(lab, "scholarCount", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "scholarStart", JsonValue.Of(0L));
                 JsonPatch.AddIfMissing(lab, "scholarDue", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 82: nobody has been sued and every lab starts with no security built.</summary>
+        static void MigrateTo82(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "cases", JsonValue.Array());
+                foreach (string key in new[] { "caseSeq", "securityTier", "securityBuilding", "securityDue", "exposure", "breachDue", "ransoms" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 83: no lab has a government contract or an offer.</summary>
+        static void MigrateTo83(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "contractKind", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "offerKind", JsonValue.Of(""));
+                foreach (string key in new[] { "contractStart", "contractDue", "contractPaid", "contractMissed", "offerDue", "offerSeq", "contractNext" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 84: every lab is a for-profit company with no change of charter under review.</summary>
+        static void MigrateTo84(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "charter", "charterTo", "charterDue", "capPaid" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 85: no lab has a scaling policy.</summary>
+        static void MigrateTo85(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "policyLevel", "policyLockedUntil", "policyHold", "policyBreaks" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 

@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 81;
+        public const int CurrentSchema = 85;
 
         public int Schema;
         public string ConfigVersion;
@@ -271,6 +271,38 @@ namespace AiLabs.Rules.State
         public int ScholarCount;
         public int ScholarStart;
         public int ScholarDue;
+        /// <summary>Claims against the lab, soonest hearing first, and the number the next one takes.</summary>
+        public List<LawCase> Cases = new List<LawCase>();
+        public int CaseSeq;
+        /// <summary>The lab's security tier, the tier being built (0 when none) and the week it is done.</summary>
+        public int SecurityTier;
+        public int SecurityBuilding;
+        public int SecurityDue;
+        /// <summary>How exposed the lab is, the week an open breach leaks (0 when none) and the ransoms paid since the last disclosure.</summary>
+        public int Exposure;
+        public int BreachDue;
+        public int Ransoms;
+        /// <summary>The government contract in force (empty when none), the week it began and ends, the instalments paid and missed.</summary>
+        public string ContractKind = "";
+        public int ContractStart;
+        public int ContractDue;
+        public int ContractPaid;
+        public int ContractMissed;
+        /// <summary>The contract on offer (empty when none), the week the offer lapses, which offer comes next and the week the next one is due.</summary>
+        public string OfferKind = "";
+        public int OfferDue;
+        public int OfferSeq;
+        public int ContractNext;
+        /// <summary>The lab's charter (0 for-profit, 1 capped-profit, 2 nonprofit), the charter under review (0 none, otherwise the form plus one), the week the review ends and what investors have taken so far under a cap.</summary>
+        public int Charter;
+        public int CharterTo;
+        public int CharterDue;
+        public long CapPaid;
+        /// <summary>The scaling policy level, the week until which it cannot be lowered, the level of the tripwire now holding the lab up (0 when none) and the times the policy was broken.</summary>
+        public int PolicyLevel;
+        public int PolicyLockedUntil;
+        public int PolicyHold;
+        public int PolicyBreaks;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -523,6 +555,31 @@ namespace AiLabs.Rules.State
             s.Int("scholarCount", ref ScholarCount);
             s.Int("scholarStart", ref ScholarStart);
             s.Int("scholarDue", ref ScholarDue);
+            s.ObjList("cases", ref Cases);
+            s.Int("caseSeq", ref CaseSeq);
+            s.Int("securityTier", ref SecurityTier);
+            s.Int("securityBuilding", ref SecurityBuilding);
+            s.Int("securityDue", ref SecurityDue);
+            s.Int("exposure", ref Exposure);
+            s.Int("breachDue", ref BreachDue);
+            s.Int("ransoms", ref Ransoms);
+            s.Str("contractKind", ref ContractKind);
+            s.Int("contractStart", ref ContractStart);
+            s.Int("contractDue", ref ContractDue);
+            s.Int("contractPaid", ref ContractPaid);
+            s.Int("contractMissed", ref ContractMissed);
+            s.Str("offerKind", ref OfferKind);
+            s.Int("offerDue", ref OfferDue);
+            s.Int("offerSeq", ref OfferSeq);
+            s.Int("contractNext", ref ContractNext);
+            s.Int("charter", ref Charter);
+            s.Int("charterTo", ref CharterTo);
+            s.Int("charterDue", ref CharterDue);
+            s.Long("capPaid", ref CapPaid);
+            s.Int("policyLevel", ref PolicyLevel);
+            s.Int("policyLockedUntil", ref PolicyLockedUntil);
+            s.Int("policyHold", ref PolicyHold);
+            s.Int("policyBreaks", ref PolicyBreaks);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

@@ -60,7 +60,7 @@ namespace AiLabs.Rules.Systems
     public static void ApplyRaise(GameConfig c, GameState state, LabState lab, FundingRoundConfig round)
     {
       bool down = IsDownRound(c, state);
-      long cash = EffectiveCash(c, state, round);
+      long cash = Charter.FundingCash(c, lab, EffectiveCash(c, state, round));
       int dilution = EffectiveDilution(c, state, round);
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);

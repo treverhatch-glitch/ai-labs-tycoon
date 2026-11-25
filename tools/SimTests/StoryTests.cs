@@ -221,6 +221,10 @@ public class StoryTests
             c.Naming.ConfusionPermille = 0;
             c.Safety.SectorFlavoursForRivals = false;
             c.Safety.OverloadIncidentPermille = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
         }
         Game careful = Game.New(seed: 44, tweak: SameWorld);
         Game reckless = Game.New(seed: 44, tweak: SameWorld);

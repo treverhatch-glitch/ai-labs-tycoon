@@ -278,7 +278,43 @@ namespace AiLabs.Rules.State
         /// <summary>A group of visiting scholars arrived. Amount is how many, Pick the weeks they stay.</summary>
         ScholarsArrived,
         /// <summary>The scholars left. SubjectId is how many, Amount the prestige they added, Pick 1 when they left on schedule and 0 when they were sent home.</summary>
-        ScholarsLeft
+        ScholarsLeft,
+        /// <summary>A claim was filed against the lab. SubjectId is the claim, Amount what it asks, Pick the kind (0 incident, 1 layoff round, 2 breach, 3 charter), Ref a name.</summary>
+        CaseFiled,
+        /// <summary>A hearing was lost. SubjectId is the claim, Amount what the lab will pay, Pick 1 when it is the appeal's ruling.</summary>
+        CaseJudged,
+        /// <summary>A claim ended. SubjectId is the claim, Amount what the lab paid, Pick 0 settled, 1 won, 2 lost and paid, 3 overturned on appeal.</summary>
+        CaseClosed,
+        /// <summary>A security tier was built. Amount is the tier.</summary>
+        SecurityBuilt,
+        /// <summary>A breach opened. Amount is the week it leaks if nobody answers.</summary>
+        BreachOpened,
+        /// <summary>A breach was answered. Amount is the cost, Pick 0 ransom, 1 disclosure, 2 lockdown.</summary>
+        BreachAnswered,
+        /// <summary>An unanswered breach leaked. Amount is the reputation it cost.</summary>
+        BreachLeaked,
+        /// <summary>A government offered a contract. Ref is its kind, Amount its pay, Pick the weeks it lasts.</summary>
+        ContractOffered,
+        /// <summary>A contract was accepted. Ref is its kind, Amount its pay.</summary>
+        ContractAccepted,
+        /// <summary>An offer ended without a contract. Ref is its kind, Pick 1 when the lab turned it down and 0 when it lapsed.</summary>
+        ContractDeclined,
+        /// <summary>An instalment fell due. Ref is the kind, Amount what was paid, Pick 1 paid and 0 missed.</summary>
+        ContractInstalment,
+        /// <summary>A contract ended. Ref is the kind, Amount the penalty paid, Pick 1 completed, 0 ended for misses, -1 abandoned, 2 lost to a leak.</summary>
+        ContractEnded,
+        /// <summary>A change of charter went under review. Amount is the fee, Pick the form it is heading for.</summary>
+        CharterReviewStarted,
+        /// <summary>A change of charter was dropped. Pick is the form it was heading for.</summary>
+        CharterReviewDropped,
+        /// <summary>The lab's charter changed. Pick is the new form, Amount the old one.</summary>
+        CharterChanged,
+        /// <summary>A trained model reached a tripwire of the lab's policy. SubjectId is the model, Amount the level of the tripwire.</summary>
+        TripwireHit,
+        /// <summary>The lab is no longer held up by a tripwire. Amount is the level that held it, Pick 1 when the safeguards were put in place and 0 when the lab broke or lowered its policy or the model was gone.</summary>
+        TripwireCleared,
+        /// <summary>The policy level changed. Amount is the new level, Pick the old one, Ref is "raise", "lower" or "break".</summary>
+        PolicyChanged
     }
 
     /// <summary>

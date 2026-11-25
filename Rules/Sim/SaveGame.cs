@@ -164,6 +164,34 @@ namespace AiLabs.Rules.Sim
                     if (lab.ScholarCount < 0 || lab.ScholarStart < 0 || lab.ScholarDue < 0 || lab.ScholarCount > c.Scholars.MaxScholars || (lab.ScholarCount > 0) != (lab.ScholarDue > 0) || (lab.ScholarCount > 0 && (lab.ScholarDue <= lab.ScholarStart || lab.Id != state.PlayerLabId)) || (lab.ScholarCount == 0 && lab.ScholarStart != 0))
                         p.Add(who + " has visiting scholars (" + lab.ScholarCount + ", weeks " + lab.ScholarStart + " to " + lab.ScholarDue + ") that the data does not allow");
                 }
+                {
+                    if (lab.Cases.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has claims against it but is not the player's lab");
+                    if (lab.Cases.Count > c.Litigation.MaxOpen) p.Add(who + " has more claims open than the data allows");
+                    foreach (LawCase lawCase in lab.Cases)
+                        if (lawCase.Id < 1 || lawCase.Id > lab.CaseSeq || lawCase.Kind < 0 || lawCase.Kind > 3 || lawCase.Claim < 1 || lawCase.Strength < 1 || lawCase.Strength > MathI.Permille || lawCase.Stage < 0 || lawCase.Stage > 1 || lawCase.Counsel < 0 || lawCase.Counsel > 1 || lawCase.Appealed < 0 || lawCase.Appealed > 1 || lawCase.Due < 1 || (lawCase.Appealed == 1 && lawCase.Stage != 1))
+                            p.Add(who + " has a claim (" + lawCase.Id + ") that the data does not allow");
+                    if (lab.CaseSeq < 0 || lab.Cases.Count > lab.CaseSeq) p.Add(who + " has a claim count that does not add up");
+                    if (lab.SecurityTier < 0 || lab.SecurityTier > c.Security.MaxTier || lab.SecurityBuilding < 0 || lab.SecurityBuilding > c.Security.MaxTier || lab.SecurityDue < 0 || (lab.SecurityBuilding > 0) != (lab.SecurityDue > 0) || (lab.SecurityBuilding > 0 && lab.SecurityBuilding != lab.SecurityTier + 1))
+                        p.Add(who + " has security (tier " + lab.SecurityTier + ", building " + lab.SecurityBuilding + ", week " + lab.SecurityDue + ") that the data does not allow");
+                    if (lab.Exposure < 0 || lab.BreachDue < 0 || lab.Ransoms < 0 || ((lab.SecurityTier > 0 || lab.SecurityBuilding > 0 || lab.Exposure > 0 || lab.BreachDue > 0 || lab.Ransoms > 0) && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has security exposure (" + lab.Exposure + ", breach week " + lab.BreachDue + ", ransoms " + lab.Ransoms + ") that the data does not allow");
+                }
+                {
+                    bool contract = lab.ContractKind.Length > 0;
+                    bool offer = lab.OfferKind.Length > 0;
+                    if (contract && (c.GovContracts.Kind(lab.ContractKind) == null || lab.ContractDue <= lab.ContractStart || lab.ContractPaid < 0 || lab.ContractMissed < 0 || lab.ContractPaid + lab.ContractMissed > c.GovContracts.Installments || lab.ContractMissed >= c.GovContracts.MissLimit))
+                        p.Add(who + " has a government contract (" + lab.ContractKind + ", weeks " + lab.ContractStart + " to " + lab.ContractDue + ") that the data does not allow");
+                    if (!contract && (lab.ContractStart != 0 || lab.ContractDue != 0 || lab.ContractPaid != 0 || lab.ContractMissed != 0))
+                        p.Add(who + " has contract dates but no contract");
+                    if (offer && (contract || c.GovContracts.Kind(lab.OfferKind) == null || lab.OfferDue < 1)) p.Add(who + " has an offer (" + lab.OfferKind + ") that the data does not allow");
+                    if (!offer && lab.OfferDue != 0) p.Add(who + " has an offer date but no offer");
+                    if (lab.OfferSeq < 0 || lab.ContractNext < 0 || ((contract || offer || lab.OfferSeq > 0 || lab.ContractNext > 0) && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has government contract state that the data does not allow");
+                }
+                if (lab.Charter < 0 || lab.Charter > 2 || lab.CharterTo < 0 || lab.CharterTo > 3 || lab.CharterDue < 0 || (lab.CharterTo > 0) != (lab.CharterDue > 0) || (lab.CharterTo > 0 && lab.CharterTo - 1 == lab.Charter) || lab.CapPaid < 0 || ((lab.Charter != 0 || lab.CharterTo != 0 || lab.CapPaid != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a charter (" + lab.Charter + ", under review " + lab.CharterTo + ", week " + lab.CharterDue + ", investors paid " + lab.CapPaid + ") that the data does not allow");
+                if (lab.PolicyLevel < 0 || lab.PolicyLevel > c.Scaling.MaxLevel || lab.PolicyLockedUntil < 0 || lab.PolicyHold < 0 || lab.PolicyHold > lab.PolicyLevel || lab.PolicyBreaks < 0 || ((lab.PolicyLevel != 0 || lab.PolicyLockedUntil != 0 || lab.PolicyBreaks != 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a scaling policy (level " + lab.PolicyLevel + ", hold " + lab.PolicyHold + ", locked until " + lab.PolicyLockedUntil + ") that the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))

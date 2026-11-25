@@ -297,6 +297,42 @@ namespace AiLabs.Rules.Sim
                     return who + " hosted " + e.Amount + " visiting " + (e.Amount == 1 ? "scholar" : "scholars") + " for " + e.Pick + " weeks.";
                 case EventKind.ScholarsLeft:
                     return e.Pick == 1 ? who + "'s visiting scholars left, adding " + e.Amount + " prestige." : who + " sent its visiting scholars home early.";
+                case EventKind.CaseFiled:
+                    return "A claim for " + e.Amount + " was filed against " + who + ": " + (e.Pick == 0 ? "an incident" : e.Pick == 1 ? "a layoff round" : e.Pick == 2 ? "a breach of security" : "its change of charter") + ".";
+                case EventKind.CaseJudged:
+                    return who + " lost a hearing and owes " + e.Amount + (e.Pick == 1 ? " after its appeal." : ", unless it appeals.");
+                case EventKind.CaseClosed:
+                    return e.Pick == 0 ? who + " settled a claim for " + e.Amount + "." : e.Pick == 1 ? who + " won a claim in court." : e.Pick == 2 ? who + " paid " + e.Amount + " on a lost claim." : who + " had a judgment overturned on appeal.";
+                case EventKind.SecurityBuilt:
+                    return who + " finished security tier " + e.Amount + ".";
+                case EventKind.BreachOpened:
+                    return who + " found a breach of its systems.";
+                case EventKind.BreachAnswered:
+                    return e.Pick == 0 ? who + " paid " + e.Amount + " to the people behind a breach." : e.Pick == 1 ? who + " told everyone about a breach." : who + " locked its systems down after a breach for " + e.Amount + ".";
+                case EventKind.BreachLeaked:
+                    return "A breach at " + who + " leaked; the lab lost " + e.Amount + " reputation.";
+                case EventKind.ContractOffered:
+                    return "A government offered " + who + " a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract worth " + e.Amount + " over " + e.Pick + " weeks.";
+                case EventKind.ContractAccepted:
+                    return who + " took on a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract.";
+                case EventKind.ContractDeclined:
+                    return e.Pick == 1 ? who + " turned down a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract." : "An offer of a " + c.GovContracts.Kind(e.Ref).Name.ToLowerInvariant() + " contract to " + who + " lapsed.";
+                case EventKind.ContractInstalment:
+                    return e.Pick == 1 ? who + " was paid " + e.Amount + " on its government contract." : who + " missed an instalment on its government contract.";
+                case EventKind.ContractEnded:
+                    return e.Pick == 1 ? who + " completed its government contract." : e.Pick == 0 ? who + " lost its government contract after missed instalments and paid " + e.Amount + "." : e.Pick == 2 ? who + " lost its government contract to a leak and paid " + e.Amount + "." : who + " walked away from its government contract and paid " + e.Amount + ".";
+                case EventKind.CharterReviewStarted:
+                    return who + " applied to become " + Charter.Describe(e.Pick) + ".";
+                case EventKind.CharterReviewDropped:
+                    return who + " dropped its plan to become " + Charter.Describe(e.Pick) + ".";
+                case EventKind.CharterChanged:
+                    return who + " is now " + Charter.Describe(e.Pick) + ".";
+                case EventKind.TripwireHit:
+                    return who + "'s " + e.Ref + " reached a level " + e.Amount + " tripwire and is held back.";
+                case EventKind.TripwireCleared:
+                    return e.Pick == 1 ? who + " put the safeguards for its level " + e.Amount + " tripwire in place." : who + " is no longer held back by its level " + e.Amount + " tripwire.";
+                case EventKind.PolicyChanged:
+                    return e.Ref == "break" ? who + " broke its scaling policy." : who + " " + (e.Ref == "raise" ? "raised" : "lowered") + " its scaling policy to level " + e.Amount + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
