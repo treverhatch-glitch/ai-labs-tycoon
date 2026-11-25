@@ -1,6 +1,6 @@
 # The public roadmap
 
-The lab can tell the world its next model will be better than its best by a stated margin and by a stated date (`roadmap.*` in the data; Q351). Four saved lab fields (`roadmapLevel`, `roadmapStart`, `roadmapDue`, `roadmapGoal`, schema 69); older saves have none open.
+The lab can tell the world its next model will be better than its best by a stated margin and by a stated date (`roadmap.*` in the data; Q351). Four saved lab fields (`roadmapLevel`, `roadmapStart`, `roadmapDue`, `roadmapGoal`, schema 70); older saves have none open.
 
 ## `AnnounceRoadmap`
 

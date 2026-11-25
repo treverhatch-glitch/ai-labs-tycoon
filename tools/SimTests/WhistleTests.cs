@@ -275,7 +275,7 @@ public class WhistleTests
     public void An_older_save_loads_with_no_concern_open()
     {
         Game g = Raised();
-        string old = SaveSchemaPretend.At(g.C, 64, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 65, g.Sim.Save());
         foreach (string key in new[] { "whistleWeeks", "whistleModel", "whistleDue", "silenced" }) Assert.DoesNotContain("\"" + key + "\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

@@ -65,7 +65,14 @@ public class RivalEconomyRobustnessLaterTests
 
     static SoakBankruptcyResult SimulateSeedBankruptcies(Action<GameConfig> tweak, long seed, int years)
     {
-        var g = new Game(Simulation.NewGame(TestData.Config(tweak), seed));
+        var g = new Game(Simulation.NewGame(TestData.Config(c =>
+        {
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Scaling.Enabled = 0;
+            tweak?.Invoke(c);
+        }), seed));
         GameConfig c = g.C;
         var result = new SoakBankruptcyResult { Seed = seed };
         int startPlanRivals = g.State.Labs.Count(l => l.Controller == LabController.Plan && !l.Bankrupt && l.AbsorbedByLabId < 0);

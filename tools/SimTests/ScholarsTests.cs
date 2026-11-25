@@ -146,7 +146,7 @@ public class ScholarsTests
         g.Me.ScholarCount = 99;
         Assert.Contains(SaveGame.Problems(g.C, g.State), p => p.Contains("scholars"));
         Game fresh = Lab();
-        string old = SaveSchemaPretend.At(fresh.C, 79, fresh.Sim.Save());
+        string old = SaveSchemaPretend.At(fresh.C, 80, fresh.Sim.Save());
         Assert.DoesNotContain("scholarCount", old);
         Simulation back = Simulation.Load(fresh.C, old);
         Assert.Equal(0, back.State.Labs.First(l => l.Id == fresh.Id).ScholarCount);

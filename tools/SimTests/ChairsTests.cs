@@ -181,7 +181,7 @@ public class ChairsTests
     {
         Game g = Lab();
         g.Do(Command.EndowChair(g.Id));
-        string old = SaveSchemaPretend.At(g.C, 63, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 64, g.Sim.Save());
         Assert.DoesNotContain("\"chairs\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

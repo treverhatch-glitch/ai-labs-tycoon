@@ -180,7 +180,7 @@ public class CharterTests
         back.StepMany(40);
         g.Weeks(40);
         Assert.Equal(g.Sim.Digest(), back.Digest());
-        string old = SaveSchemaPretend.At(g.C, 82, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 83, g.Sim.Save());
         Assert.DoesNotContain("charterTo", old);
         LabState lab = Simulation.Load(g.C, old).State.Labs.First(l => l.Id == g.Id);
         Assert.Equal(Charter.ForProfit, lab.Charter);
