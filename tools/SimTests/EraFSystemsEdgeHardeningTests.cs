@@ -168,6 +168,37 @@ public class EraFSystemsEdgeHardeningTests
     }
 
     [Fact]
+    public void Platform_and_creed_mid_save_through_bankruptcy_matches_digest()
+    {
+        Game straight = Lab(20);
+        straight.Do(Command.SignPlatform(straight.Id, 1));
+        straight.Do(Command.SetCreed(straight.Id, Creed.Profit, Creed.Openness));
+        straight.Weeks(8);
+        straight.Me.GrantPerWeek = 0;
+        straight.Me.Cash = -50_000;
+        straight.Me.WeeksInDebt = straight.C.Finance.BankruptcyGraceWeeks - 1;
+        straight.Weeks(1);
+        Game choppy = Lab(20);
+        choppy.Do(Command.SignPlatform(choppy.Id, 1));
+        choppy.Do(Command.SetCreed(choppy.Id, Creed.Profit, Creed.Openness));
+        choppy.Weeks(4);
+        choppy = new Game(Simulation.Load(choppy.C, choppy.Sim.Save()));
+        choppy.Weeks(4);
+        choppy.Me.GrantPerWeek = 0;
+        choppy.Me.Cash = -50_000;
+        choppy.Me.WeeksInDebt = choppy.C.Finance.BankruptcyGraceWeeks - 1;
+        choppy.Weeks(1);
+        Assert.True(straight.Me.Bankrupt);
+        Assert.True(choppy.Me.Bankrupt);
+        Assert.Equal(straight.Sim.Digest(), choppy.Sim.Digest());
+        Assert.Empty(SaveGame.Problems(straight.C, straight.State));
+        Simulation back = Simulation.Load(straight.C, straight.Sim.Save());
+        back.StepMany(20);
+        straight.Weeks(20);
+        Assert.Equal(straight.Sim.Digest(), back.Digest());
+    }
+
+    [Fact]
     public void Schema_95_through_99_saves_round_trip_and_play_twenty_weeks()
     {
         Game g = Lab(19);
