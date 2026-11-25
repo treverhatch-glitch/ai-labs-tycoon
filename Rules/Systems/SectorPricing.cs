@@ -24,11 +24,13 @@ namespace AiLabs.Rules.Systems
                 if (lab.PriceSectors[i] != sectorId) continue;
                 lab.PriceTiers[i] = t;
                 Events.Add(state, EventKind.SectorPriceSet, lab.Id, t, 0, sectorId);
+                SectorPricingBreakdown.OnTierSet(c, state, lab, sectorId, t);
                 return;
             }
             lab.PriceSectors.Add(sectorId);
             lab.PriceTiers.Add(t);
             Events.Add(state, EventKind.SectorPriceSet, lab.Id, t, 0, sectorId);
+            SectorPricingBreakdown.OnTierSet(c, state, lab, sectorId, t);
         }
 
         public static int RevenuePermille(GameConfig c, LabState lab, string sectorId)

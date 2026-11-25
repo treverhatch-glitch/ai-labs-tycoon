@@ -62,6 +62,8 @@ os.replace(p+'.tmp',p)
 [ "$N" -le 151 ] && disable_cfg gpuTierUnlock
 [ "$N" -le 150 ] && disable_cfg rivalIntentNews
 [ "$N" -le 149 ] && disable_cfg reservedComputeGate
+[ "$N" -le 155 ] && disable_cfg sectorPricingBreakdown
+[ "$N" -le 154 ] && disable_cfg specialistEraHooks
 
 EXP="${GOLDEN[$N]}"
 sed -i "s/const string Golden = \"[0-9a-f]*\"/const string Golden = \"$EXP\"/" "$REPO/tools/SimTests/SaveAndDeterminismTests.cs"

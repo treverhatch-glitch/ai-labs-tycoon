@@ -29,6 +29,7 @@ namespace AiLabs.Rules.Systems
             model.EvalStreak = 0;
             GameEvent e = Events.Add(state, EventKind.EvalRegistered, lab.Id, model.Id, c.EvalHarness.Cadence, model.Name);
             e.Pick = suite;
+            EvalHarnessEraBoost.OnRegister(c, state, lab, model);
         }
 
         public static void Publish(GameConfig c, GameState state, LabState lab, ModelState model)

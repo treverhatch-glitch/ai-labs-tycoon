@@ -83,6 +83,7 @@ namespace AiLabs.Rules.Systems
                         RoomAge.OnEraBegan(c, state);
                         ControlStale.OnEraBegan(c, state);
                         Campaign.OnEraBegan(c, state, i);
+                        SpecialistEraHooks.OnEraBegan(c, state, i);
                         LabState player = state.Player;
                     }
                 }

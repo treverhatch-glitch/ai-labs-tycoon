@@ -676,6 +676,20 @@ namespace AiLabs.Rules.Sim
                     return who + " was refused " + e.Ref + " tier hardware (gate " + e.SubjectId + ").";
                 case EventKind.ScenarioEndlessAck:
                     return who + " keeps playing after scenario \"" + e.Ref + "\" win.";
+                case EventKind.SpecialistEraUnlocked:
+                    return "Specialist and open-weights hooks unlock in the " + e.Ref + " era.";
+                case EventKind.SectorPriceLadderPeak:
+                    return who + " pegged premium pricing on \"" + e.Ref + "\" at tier " + e.SubjectId + ".";
+                case EventKind.DataSourceSpecialistPaired:
+                    return who + " paired data source \"" + e.Ref + "\" with a specialist line.";
+                case EventKind.PublicMetricsEraBoost:
+                    return who + " published metrics with an era-load trust boost of " + e.Amount + " on " + e.Ref + ".";
+                case EventKind.OpenWeightsEraThrottled:
+                    return who + "'s open weights were copied despite era throttle on " + e.Ref + ".";
+                case EventKind.EvalHarnessEraBoosted:
+                    return who + " registered " + e.Ref + " in the eval harness with era trust +" + e.Amount + ".";
+                case EventKind.CampaignDeadlineElongated:
+                    return who + " got " + e.Amount + " grace weeks on its campaign deadline.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:
