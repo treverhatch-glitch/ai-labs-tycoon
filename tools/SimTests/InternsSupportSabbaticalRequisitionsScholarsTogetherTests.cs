@@ -151,7 +151,7 @@ public class InternsSupportSabbaticalRequisitionsScholarsTogetherTests
     public void An_old_save_from_before_all_five_loads_with_them_idle_and_plays_on()
     {
         var (g, _) = Lab();
-        string old = SaveSchemaPretend.At(g.C, 76, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 77, g.Sim.Save());
         foreach (string key in new[] { "internRole", "supportPeople", "leaveDue", "requisitions", "scholarCount" })
             Assert.DoesNotContain(key, old);
         Simulation loaded = Simulation.Load(g.C, old);

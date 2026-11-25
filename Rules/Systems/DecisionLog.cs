@@ -128,6 +128,7 @@ namespace AiLabs.Rules.Systems
                     { BlocConfig bloc = c.World.Bloc(r); return bloc == null ? r : bloc.Name; }
                 case DecisionAction.ShiftedAllocation:
                 case DecisionAction.Courted:
+                case DecisionAction.AcquiredLab:
                     {
                         int id;
                         if (int.TryParse(r, out id))

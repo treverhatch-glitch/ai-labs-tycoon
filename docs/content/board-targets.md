@@ -1,6 +1,6 @@
 # Board targets
 
-The player can promise the board a revenue number for the next quarter and is judged on what the lab actually makes. A met target earns reputation and a missed one costs more, so the decision is how hard to push (`revenueTargets.*` in the data; Q338). Nothing is judged until a target is set. Schema 63 adds four numbers to each lab.
+The player can promise the board a revenue number for the next quarter and is judged on what the lab actually makes. A met target earns reputation and a missed one costs more, so the decision is how hard to push (`revenueTargets.*` in the data; Q338). Nothing is judged until a target is set. Schema 64 adds four numbers to each lab.
 
 ## `SetRevenueTarget(level)`
 
@@ -20,5 +20,5 @@ Reputation stays between 0 and 1000, and the target clears itself so a new one c
 ## Notes
 
 - Events `TargetSet` (SubjectId the level, Amount the goal) and `TargetSettled` (SubjectId the level, Amount the revenue made, Pick 1 when met).
-- Schema 63: `revenueTargetLevel`, `revenueTargetEnd`, `revenueTargetGoal`, `revenueTargetSoFar` on every lab (older saves: 0). Only the player's lab sets one; a save with a rival target or a half-set target is flagged.
+- Schema 64: `revenueTargetLevel`, `revenueTargetEnd`, `revenueTargetGoal`, `revenueTargetSoFar` on every lab (older saves: 0). Only the player's lab sets one; a save with a rival target or a half-set target is flagged.
 - No random draws; the judge only reads the revenue the market already worked out.

@@ -155,7 +155,7 @@ public class RequisitionsTests
         g.Me.Requisitions[0].Count = 99;
         Assert.Contains(SaveGame.Problems(g.C, g.State), p => p.Contains("order for people"));
         Game fresh = Lab();
-        string old = SaveSchemaPretend.At(fresh.C, 79, fresh.Sim.Save());
+        string old = SaveSchemaPretend.At(fresh.C, 80, fresh.Sim.Save());
         Assert.DoesNotContain("requisitions", old);
         Simulation back = Simulation.Load(fresh.C, old);
         Assert.Empty(back.State.Labs.First(l => l.Id == fresh.Id).Requisitions);
