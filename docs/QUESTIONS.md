@@ -1183,11 +1183,19 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - **190–193** model/chip (**Q99**), exit, bubble/acquire (**Q95**), soak (**Q101**).
 
-### Q13036–Q13305. Batches 194–197 cross bars? DECIDED: test-only (LOCAL off **`92587abf`**)
+### Q13036–Q13305. Batches 194–197 cross bars? DECIDED: test-only (**pushed @ `893386d5`** in **194–201** packet)
 
 - **194–197** forward-queue (**Q97–Q101**), containment, acquire gameplay, distress/acquire.
 
-### Q13306+. Batch 198+ queue? OPEN
+### Q13306–Q13575. Batches 198–201 cross bars? DECIDED: test-only (**194–201** packet)
+
+- **198–201** regulator (**Q102**), shady/china, incident (**Q91**), rival economy (**Q111–Q115**).
+
+### Q13576–Q13845. Batches 202–205 cross bars? DECIDED: test-only (LOCAL off **`893386d5`**)
+
+- **202–205** funding (**Q95**), world-map economy, listings, era (**Q100**).
+
+### Q13846+. Batch 206+ queue? OPEN
 
 ### Q4826–Q5105. Batches 74–77 cross bars? DECIDED: test-only (**pushed @ `a727a84`**)
 
