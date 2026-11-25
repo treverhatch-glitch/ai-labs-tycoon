@@ -23,5 +23,11 @@ namespace AiLabs.Unity.Editor.Tests
         {
             Assert.AreEqual(7, CampusStaffPresentationTailIndexPresentationSpec.PostTailRollupLanes);
         }
+
+        [Test]
+        public void Batch_248()
+        {
+            Assert.AreEqual(248, CampusStaffPresentationTailIndexPresentationSpec.DocumentedPresentationBatch);
+        }
     }
 }

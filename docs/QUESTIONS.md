@@ -1604,35 +1604,35 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**.
 - Why: Batch **243**.
 
-### Q694. ALT-76 STATUS sync through batch 181? DRAFT: `CampusAlt76StatusSyncThrough181PresentationSpec`
+### Q694. ALT-76 STATUS sync through batch 181? DECIDED: `CampusAlt76StatusSyncThrough181PresentationSpec`
 
 - Options: (a) stop at 178; (b) through 181; (c) defer.
-- Recommendation: **(b)** — fork **245–247** LOCAL.
-- Status: batch **245** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)**.
+- Why: Batch **245**.
 
-### Q695. Presentation tail rollup through batch 178? DRAFT: `CampusPresentationTailRollupRefreshThrough178PresentationSpec`
+### Q695. Presentation tail rollup through batch 178? DECIDED: `CampusPresentationTailRollupRefreshThrough178PresentationSpec`
 
 - Options: (a) stop at 175; (b) through 178; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **246** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **246**.
 
-### Q696. GO packet tail through batch 238? DRAFT: `CampusGoPacketTailRefreshThrough238PresentationSpec`
+### Q696. GO packet tail through batch 238? DECIDED: `CampusGoPacketTailRefreshThrough238PresentationSpec`
 
 - Options: (a) stop at 235; (b) through 238; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **247** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **247**.
 
-### Q697. Hire/staff presentation tail from NEXT? DRAFT: `CampusStaffPresentationTailIndexPresentationSpec`
+### Q697. Hire/staff presentation tail from NEXT? DECIDED: `CampusStaffPresentationTailIndexPresentationSpec`
 
 - Options: (a) STAFF-PRESENTATION only; (b) index + NEXT hire row; (c) meshes on cloud agent.
-- Recommendation: **(b)** — batch **248** LOCAL thickener.
-- Status: **NO PUSH** until Q694–Q696 decided.
+- Recommendation and choice: **(b)** — batch **248** thickener (`STAFF-PRESENTATION-TAIL-INDEX.md`, NEXT hire index).
+- Why: Staff/GPU hire row from `docs/NEXT.md`.
 
 ### Q698. ALT-76 rollup refresh through batch 181? DRAFT: `CampusAlt76RollupRefreshB181PresentationSpec`
 
 - Options: (a) batch 178 only; (b) through 181; (c) skip.
-- Recommendation: **(b)** — fork **249+** after **245–247** land.
-- Status: **NO PUSH** until Q694–Q696 decided.
+- Recommendation: **(b)** — fork **249+** after **245–248** land.
+- Status: batch **249** LOCAL (NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 

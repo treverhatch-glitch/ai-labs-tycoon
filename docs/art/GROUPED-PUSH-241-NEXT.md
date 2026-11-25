@@ -1,5 +1,5 @@
-# Grouped 241–244 (LOCAL queue)
+# Grouped 241–244 — landed `7f7f369`
 
-**Parent after land:** `360247d`. **HOLD push ≥~16:47 ICT** (+30m).
+**Parent:** `360247d` → **`7f7f369`**. **HOLD ≥~17:17 ICT**.
 
-Q690 rollup **178** · Q692 manifest **178** · Q693 GO **235** · Q691 studio/CI adjacent **244**.
+Q690–Q693 decided. Next: [GROUPED-PUSH-245-NEXT.md](GROUPED-PUSH-245-NEXT.md).

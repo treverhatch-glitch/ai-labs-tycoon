@@ -15,5 +15,7 @@ namespace AiLabs.Unity.Hq
             CampusPresentationTailRollupPresentationSpec.DocumentedTailLanes;
 
         public const string TailIndexDoc = "STAFF-PRESENTATION-TAIL-INDEX.md";
+
+        public const int DocumentedPresentationBatch = 248;
     }
 }
