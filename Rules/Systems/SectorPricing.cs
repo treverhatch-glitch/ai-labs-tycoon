@@ -25,12 +25,14 @@ namespace AiLabs.Rules.Systems
                 lab.PriceTiers[i] = t;
                 Events.Add(state, EventKind.SectorPriceSet, lab.Id, t, 0, sectorId);
                 SectorPricingBreakdown.OnTierSet(c, state, lab, sectorId, t);
+                SectorPricingEraRelief.OnTierSet(c, state, lab, sectorId, t);
                 return;
             }
             lab.PriceSectors.Add(sectorId);
             lab.PriceTiers.Add(t);
             Events.Add(state, EventKind.SectorPriceSet, lab.Id, t, 0, sectorId);
             SectorPricingBreakdown.OnTierSet(c, state, lab, sectorId, t);
+            SectorPricingEraRelief.OnTierSet(c, state, lab, sectorId, t);
         }
 
         public static int RevenuePermille(GameConfig c, LabState lab, string sectorId)
@@ -39,18 +41,25 @@ namespace AiLabs.Rules.Systems
             return MathI.Permille + tier * c.SectorPricing.RevenuePerTier;
         }
 
-        public static int OverloadPermille(GameConfig c, LabState lab, string sectorId)
+        public static int OverloadPermille(GameConfig c, LabState lab, string sectorId) =>
+            OverloadPermille(c, null, lab, sectorId);
+
+        public static int OverloadPermille(GameConfig c, GameState state, LabState lab, string sectorId)
         {
             int tier = Tier(c, lab, sectorId);
-            return tier * c.SectorPricing.OverloadPerTier;
+            int raw = tier * c.SectorPricing.OverloadPerTier;
+            return SectorPricingEraRelief.AdjustOverload(c, state, tier, raw);
         }
 
-        public static int LabOverloadPermille(GameConfig c, LabState lab)
+        public static int LabOverloadPermille(GameConfig c, LabState lab) => LabOverloadPermille(c, null, lab);
+
+        public static int LabOverloadPermille(GameConfig c, GameState state, LabState lab)
         {
             if (!Enabled(c)) return 0;
             int max = 0;
             for (int i = 0; i < lab.PriceTiers.Count; i++) if (lab.PriceTiers[i] > max) max = lab.PriceTiers[i];
-            return max * c.SectorPricing.OverloadPerTier;
+            int raw = max * c.SectorPricing.OverloadPerTier;
+            return SectorPricingEraRelief.AdjustOverload(c, state, max, raw);
         }
     }
 }

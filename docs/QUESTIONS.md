@@ -2381,3 +2381,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q488. Era grace weeks on campaign deadline? DECIDED (schema 160): `campaignDeadlineEraGrace`; `CampaignDeadlineElongated`.
 
 ### Q489. Batch twenty news, chat and combos. DECIDED: three headlines, three chat lines (412/365); `BatchTwentyNewsChatTests`, `BatchTwentyTogetherTests`.
+
+### Q490. Era-shorten lobby cooldown after shaping law? DECIDED (schema 161): `lawShapingEraCooldown`; `LawShapingCooldownShortened` on `ShapeLaw`.
+
+### Q491. Extra weeks when renewing a data source in a late era? DECIDED (schema 162): `dataSourceRenewEraBonus`; `DataSourceRenewEraBonused` on `RenewDataSource`.
+
+### Q492. Cut sector-pricing overload once era unlocks relief? DECIDED (schema 163): `sectorPricingEraRelief`; `SectorPricingEraRelieved` when setting a priced tier.
+
+### Q493. Batch twenty-one news, chat and combos. DECIDED: three headlines, three chat lines (415/368); `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests`.

@@ -43,6 +43,9 @@ os.replace(t,p)
 "
 }
 
+[ "$N" -le 163 ] && disable_cfg sectorPricingEraRelief
+[ "$N" -le 162 ] && disable_cfg dataSourceRenewEraBonus
+[ "$N" -le 161 ] && disable_cfg lawShapingEraCooldown
 [ "$N" -le 160 ] && disable_cfg campaignDeadlineEraGrace
 [ "$N" -le 159 ] && disable_cfg evalHarnessEraBoost
 [ "$N" -le 158 ] && disable_cfg openWeightsEraThrottle
