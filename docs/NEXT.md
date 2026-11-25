@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`e546be75`**; **LOCAL** **218–229** + host slices (HOLD push ≥~**10:41 ICT**) |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`5c5e6f6f`**; **LOCAL** **230–237** (HOLD ≥~**11:11 ICT**) |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -74,9 +74,9 @@ and says why in the commit message.
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
 3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
    odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
-3b. ~~**Host explain slices (rival log, reserved compute, funding ladder).**~~ Done (local): `GpuRentParts`,
-   `ReservedComputeParts`, `TrySignReservedQuote`, `TryNextFundingQuote`, `RivalLogLines`, `RivalDecisionSlices`;
-   `HostExplainSliceLaterTests` (**7**). Next grouped push folds these with hatch bars.
+3b. ~~**Host explain slices (rival log, reserved compute, funding ladder).**~~ Done: `GpuRentParts`,
+   `ReservedComputeParts`, `TrySignReservedQuote`, `VendorQueueParts`, `VendorLogLines`, `TryNextFundingQuote`,
+   `RivalLogLines`, `RivalDecisionSlices`; `HostExplainSliceLaterTests` (**9**).
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
@@ -210,9 +210,8 @@ and says why in the commit message.
 - ~~**Batches 194–201 grouped squash**~~ **pushed @ `893386d5`** — Q13036–Q13575 (**560**); gate **14454/14454** (`/tmp/rivals-b194-201-prepush.log`); GO ~**08:36 ICT** Nov 25.
 - ~~**Batches 202–209 grouped squash**~~ **pushed @ `3e3662f8`** — Q13576–Q14065 (**560**); gate **15014/15014** (`/tmp/rivals-b202-209-prepush.log`); GO ~**09:07 ICT** Nov 25. **Remote tip frozen** at **`3e3662f8`** (no rewrite).
 - ~~**Batches 210–217 grouped squash**~~ **pushed @ `e546be75`** — Q14066–Q14615 (**560**) + host explain slices; gate **15579/15579** (`/tmp/rivals-b210-217-prepush.log`); GO ≥**09:37 ICT** Nov 25. Plain FF push (`3e3662f8..e546be75`); no force.
-- **Batches 218–221 (LOCAL):** Q13376–Q13655 (**280** filter green).
-- **Batches 222–229 (LOCAL):** Q13646–Q14195 (**560** filter green).
-- **HOLD PUSH:** **no push** until coordinator GO ≥~**10:41 ICT** after **`e546be75`** (packet **218–229** + host slices queued).
+- ~~**Batches 218–229 grouped squash**~~ **pushed @ `5c5e6f6f`** — Q13376–Q14195 (**840**) + host reserved/rival slices; gate **16421/16421** (`/tmp/rivals-b218-229-prepush.log`); GO ≥**10:41 ICT** Nov 25; plain FF (`e546be75..5c5e6f6f`).
+- **Batches 230–237 (LOCAL — HOLD PUSH):** Q14136–Q14685 (**560** filter green); **no push** until ≥~**11:11 ICT** after **`5c5e6f6f`**.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 

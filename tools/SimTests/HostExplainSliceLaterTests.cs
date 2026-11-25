@@ -126,4 +126,38 @@ public class HostExplainSliceLaterTests
             Assert.Equal(DecisionText.Line(g.C, g.State, rival, rival.Log[i]), lines[0]);
         }
     }
+
+    [Fact]
+    public void Vendor_queue_parts_match_vendor_system()
+    {
+        var g = Game.Solo();
+        VendorStanding st = g.State.Vendor.Standing(g.Me.Id);
+        st.QueuedGpus = 4;
+        st.QueueHoldingId = HardwareBatch.Hq;
+        DisplayQueries.VendorQueueBreakdown b = DisplayQueries.VendorQueueParts(g.C, g.State, g.Me);
+        Assert.Equal(st.Standing, b.Standing);
+        Assert.Equal(st.AllocationThisMonth, b.AllocationThisMonth);
+        Assert.Equal(VendorSystem.AllocationLeft(g.State, g.Me), b.AllocationLeft);
+        Assert.Equal(4, b.QueuedGpus);
+        Assert.Equal(HardwareBatch.Hq, b.QueueHoldingId);
+        Assert.Equal(VendorSystem.PricePermille(g.C, g.State, g.Me), b.PricePermille);
+        GpuGenerationConfig gen = LabQueries.CurrentGeneration(g.C, g.Tick);
+        Assert.Equal(VendorSystem.PricePerGpu(g.C, g.State, g.Me, gen), b.UnitPrice);
+    }
+
+    [Fact]
+    public void Vendor_log_lines_match_envydia_tail()
+    {
+        var g = Game.Solo();
+        int total = g.State.Vendor.Log.Count;
+        int want = 3;
+        var lines = DisplayQueries.VendorLogLines(g.C, g.State, want);
+        int expected = total < want ? total : want;
+        Assert.Equal(expected, lines.Count);
+        if (expected > 0)
+        {
+            int i = total - expected;
+            Assert.Equal(DecisionText.Line(g.C, g.State, null, g.State.Vendor.Log[i]), lines[0]);
+        }
+    }
 }

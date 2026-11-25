@@ -106,6 +106,18 @@ namespace AiLabs.Rules.Systems
             public long WeeklyRentAfterSign;
         }
 
+        public struct VendorQueueBreakdown
+        {
+            public int Standing;
+            public int AllocationThisMonth;
+            public int BoughtThisMonth;
+            public int AllocationLeft;
+            public int QueuedGpus;
+            public int QueueHoldingId;
+            public int PricePermille;
+            public long UnitPrice;
+        }
+
         public struct FundingRoundQuote
         {
             public string RoundId;
@@ -269,6 +281,36 @@ namespace AiLabs.Rules.Systems
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             quote.WeeklyRentAfterSign = MathI.MulPermille(gpuCount * gen.RentPerGpuWeek, c.Compute.ReservedRentPermille);
             return true;
+        }
+
+        public static VendorQueueBreakdown VendorQueueParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new VendorQueueBreakdown();
+            if (lab == null) return b;
+            VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
+            b.Standing = standing.Standing;
+            b.AllocationThisMonth = standing.AllocationThisMonth;
+            b.BoughtThisMonth = standing.BoughtThisMonth;
+            b.AllocationLeft = VendorSystem.AllocationLeft(state, lab);
+            b.QueuedGpus = standing.QueuedGpus;
+            b.QueueHoldingId = standing.QueueHoldingId;
+            b.PricePermille = VendorSystem.PricePermille(c, state, lab);
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.UnitPrice = VendorSystem.PricePerGpu(c, state, lab, gen);
+            return b;
+        }
+
+        /// <summary>Recent Envydia decision lines (allocation shifts, courting). Same templates as rivals.</summary>
+        public static List<string> VendorLogLines(GameConfig c, GameState state, int maxLines)
+        {
+            var lines = new List<string>();
+            if (state?.Vendor == null || maxLines < 1) return lines;
+            List<DecisionEntry> log = state.Vendor.Log;
+            int start = log.Count - maxLines;
+            if (start < 0) start = 0;
+            for (int i = start; i < log.Count; i++)
+                lines.Add(DecisionText.Line(c, state, null, log[i]));
+            return lines;
         }
 
         public static bool TryNextFundingQuote(GameConfig c, GameState state, LabState lab, out FundingRoundQuote quote)
