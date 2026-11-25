@@ -1,5 +1,5 @@
-# Grouped 209–211 (LOCAL queue)
+# Grouped 209–211 — landed `0e4c9b8`
 
-**Parent after land:** `ee8cad7`. **HOLD push ≥~11:27 ICT** (+30m).
+**Parent:** `ee8cad7` → **`0e4c9b8`**. Successor GO: [GROUPED-PUSH-212-NEXT.md](GROUPED-PUSH-212-NEXT.md).
 
-Q658 rollup **163** · Q659 manifest **163** · Q660 GO **205**.
+Q658–Q660 decided; rollup **163** · manifest **163** · GO **205**.
