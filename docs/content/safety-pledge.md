@@ -1,6 +1,6 @@
 # The public safety pledge
 
-The lab can promise customers that every model it launches will show at least some alignment (`pledge.*` in the data; Q350). Two saved lab fields (`pledgeLevel`, `pledgeLockedUntil`, schema 68); older saves start with no pledge.
+The lab can promise customers that every model it launches will show at least some alignment (`pledge.*` in the data; Q350). Two saved lab fields (`pledgeLevel`, `pledgeLockedUntil`, schema 69); older saves start with no pledge.
 
 ## `SetPledge`
 

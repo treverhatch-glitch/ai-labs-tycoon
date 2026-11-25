@@ -236,7 +236,7 @@ public class AccountTeamsTests
     {
         var (g, m) = Lab();
         g.Do(Command.AssignAccountTeam(g.Id, A, 1));
-        string old = SaveSchemaPretend.At(g.C, 73, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 74, g.Sim.Save());
         Assert.DoesNotContain("\"accountTeams\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
