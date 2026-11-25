@@ -426,6 +426,33 @@ and says why in the commit message.
 235. **Sector pricing era overload relief.** ~~Done (local)~~: `SectorPricingEraRelief`, schema 163 (Q492).
 236. **Batch twenty-one news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests` (Q493).
 
+### Era batch 22 (LOCAL prep on `v-af2f`, HOLD push)
+
+237. **Law target era amplify.** ~~Done (local)~~: `LawTargetEraAmplify`, schema 164 (Q494).
+238. **Specialist branch era discount.** ~~Done (local)~~: `SpecialistBranchEraDiscount`, schema 165 (Q495).
+239. **Margin call era grace weeks.** ~~Done (local)~~: `MarginCallEraGrace`, schema 166 (Q496).
+240. **Batch twenty-two news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests` (Q497).
+
+### Era batch 23 (LOCAL prep on `w-af2f`, HOLD push)
+
+241. **Hearing share-price era boost tail.** ~~Done (local)~~: `HearingSharePriceEraBoost`, schema 167 (Q498).
+
+242. **Rung-six era cooldown shortening.** ~~Done (local)~~: `RungSixEraCooldown`, schema 168 (Q499).
+
+243. **Data source acquire era discount.** ~~Done (local)~~: `DataSourceAcquireEraDiscount`, schema 169 (Q500).
+
+244. **Batch twenty-three news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests` (Q501).
+
+### Era batch 24 (LOCAL design — HOLD push)
+
+245. **Margin satisfy era relief.** *Planned:* `MarginSatisfyEraRelief`, schema 170 (Q502).
+
+246. **Scenario goals era slack.** *Planned:* `ScenarioGoalsEraSlack`, schema 171 (Q503).
+
+247. **Takeoff crisis era grace.** *Planned:* `TakeoffCrisisEraGrace`, schema 172 (Q504).
+
+248. **Batch twenty-four news, chat and combination rules.** *Planned:* `BatchTwentyFour*` (Q505); target 424/377.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

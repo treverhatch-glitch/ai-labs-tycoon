@@ -2389,3 +2389,27 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q492. Cut sector-pricing overload once era unlocks relief? DECIDED (schema 163): `sectorPricingEraRelief`; `SectorPricingEraRelieved` when setting a priced tier.
 
 ### Q493. Batch twenty-one news, chat and combos. DECIDED: three headlines, three chat lines (415/368); `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests`.
+
+### Q494. Era amplify notice on law target? DECIDED (schema 164): `lawTargetEraAmplify`; `LawTargetEraAmplified` on `SetLawTarget`.
+
+### Q495. Era discount on specialist branch cost? DECIDED (schema 165): `specialistBranchEraDiscount`; `SpecialistBranchEraDiscounted` on `BranchSpecialist`.
+
+### Q496. Extra margin-call cure weeks in late era? DECIDED (schema 166): `marginCallEraGrace`; `MarginCallEraGraced` when a call fires.
+
+### Q497. Batch twenty-two news, chat and combos. DECIDED: three headlines, three chat lines (418/371); `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests`.
+
+### Q498. Extra bubble nudge on positive hearing answers in late era? DECIDED (schema 167): `hearingSharePriceEraBoost`; `HearingShareEraBoosted` on hearing answers with float.
+
+### Q499. Shorter rung-six cooldown after crisis answer in late era? DECIDED (schema 168): `rungSixEraCooldown`; `RungSixEraCooldownShortened` on `RespondRungSix`.
+
+### Q500. Discount first acquire payment on data sources in late era? DECIDED (schema 169): `dataSourceAcquireEraDiscount`; `DataSourceAcquireEraDiscounted` on `AcquireDataSource`.
+
+### Q501. Batch twenty-three news, chat and combos. DECIDED: three headlines, three chat lines (421/374); `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests`.
+
+### Q502. Era relief on margin satisfy payment? *Planned (schema 170):* `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved`.
+
+### Q503. Extra slack on scenario goals deadline in late era? *Planned (schema 171):* `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked`.
+
+### Q504. Extra weeks to answer takeoff crisis in late era? *Planned (schema 172):* `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced`.
+
+### Q505. Batch twenty-four news, chat and combos. *Planned:* three headlines, three chat lines (424/377); `BatchTwentyFour*`.

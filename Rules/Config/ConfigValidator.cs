@@ -197,6 +197,12 @@ namespace AiLabs.Rules.Config
             LawShapingEraCooldownProblems(p, c);
             DataSourceRenewEraBonusProblems(p, c);
             SectorPricingEraReliefProblems(p, c);
+            LawTargetEraAmplifyProblems(p, c);
+            SpecialistBranchEraDiscountProblems(p, c);
+            MarginCallEraGraceProblems(p, c);
+            HearingSharePriceEraBoostProblems(p, c);
+            RungSixEraCooldownProblems(p, c);
+            DataSourceAcquireEraDiscountProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2202,6 +2208,59 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricingEraRelief.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("sectorPricingEraRelief.minEra must be a valid era index");
             if (k.ReliefPermille < 0) p.Add("sectorPricingEraRelief.reliefPermille must not be negative");
+        }
+
+        static void LawTargetEraAmplifyProblems(List<string> p, GameConfig c)
+        {
+            LawTargetEraAmplifyConfig k = c.LawTargetEraAmplify;
+            if (k == null) { p.Add("lawTargetEraAmplify is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTargetEraAmplify.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("lawTargetEraAmplify.minEra must be a valid era index");
+        }
+
+        static void SpecialistBranchEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            SpecialistBranchEraDiscountConfig k = c.SpecialistBranchEraDiscount;
+            if (k == null) { p.Add("specialistBranchEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistBranchEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("specialistBranchEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("specialistBranchEraDiscount.discountPermille must be from 0 to 1000");
+        }
+
+        static void MarginCallEraGraceProblems(List<string> p, GameConfig c)
+        {
+            MarginCallEraGraceConfig k = c.MarginCallEraGrace;
+            if (k == null) { p.Add("marginCallEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginCallEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("marginCallEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("marginCallEraGrace.graceWeeks must not be negative");
+        }
+
+        static void HearingSharePriceEraBoostProblems(List<string> p, GameConfig c)
+        {
+            HearingSharePriceEraBoostConfig k = c.HearingSharePriceEraBoost;
+            if (k == null) { p.Add("hearingSharePriceEraBoost is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingSharePriceEraBoost.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("hearingSharePriceEraBoost.minEra must be a valid era index");
+            if (k.BoostPermille < 0) p.Add("hearingSharePriceEraBoost.boostPermille must not be negative");
+        }
+
+        static void RungSixEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            RungSixEraCooldownConfig k = c.RungSixEraCooldown;
+            if (k == null) { p.Add("rungSixEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("rungSixEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("rungSixEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void DataSourceAcquireEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            DataSourceAcquireEraDiscountConfig k = c.DataSourceAcquireEraDiscount;
+            if (k == null) { p.Add("dataSourceAcquireEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("dataSourceAcquireEraDiscount.discountPermille must be from 0 to 1000");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

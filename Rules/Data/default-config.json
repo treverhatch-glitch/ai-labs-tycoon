@@ -12429,6 +12429,42 @@
         "text": "{lab} eased overload on {ref} sector pricing"
       },
       {
+        "id": "law-target-era-amplify",
+        "kind": "LawTargetEraAmplified",
+        "pick": -1,
+        "text": "{lab} set a {ref} law target with era backing"
+      },
+      {
+        "id": "specialist-branch-era-discount",
+        "kind": "SpecialistBranchEraDiscounted",
+        "pick": -1,
+        "text": "{lab} branched a {ref} specialist line on the cheap"
+      },
+      {
+        "id": "margin-call-era-grace",
+        "kind": "MarginCallEraGraced",
+        "pick": -1,
+        "text": "{lab} caught a margin call with extra cure time"
+      },
+      {
+        "id": "hearing-share-era-boost",
+        "kind": "HearingShareEraBoosted",
+        "pick": -1,
+        "text": "{lab} boosted the bubble after a hearing in a late era"
+      },
+      {
+        "id": "rung-six-era-cooldown",
+        "kind": "RungSixEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} shortened rung-six cooldown after a crisis answer"
+      },
+      {
+        "id": "data-acquire-era-discount",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "pick": -1,
+        "text": "{lab} acquired {ref} with an era licensing discount"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16762,6 +16798,72 @@
         "toYear": 0
       },
       {
+        "id": "law-target-amplify-chat",
+        "kind": "LawTargetEraAmplified",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The board noted our era-weighted law target.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "branch-discount-chat",
+        "kind": "SpecialistBranchEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Branching a specialist line cost less this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "margin-grace-chat",
+        "kind": "MarginCallEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Lenders gave us longer to cure the margin call.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "hearing-boost-chat",
+        "kind": "HearingShareEraBoosted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The float got an extra bump after that hearing.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "rung-six-cooldown-chat",
+        "kind": "RungSixEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Crisis ladder cooldown came back faster this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-acquire-discount-chat",
+        "kind": "DataSourceAcquireEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "First payment on licensed data was cheaper than usual.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19566,5 +19668,34 @@
     "enabled": 1,
     "minEra": 3,
     "reliefPermille": 12
+  },
+  "lawTargetEraAmplify": {
+    "enabled": 1,
+    "minEra": 2
+  },
+  "specialistBranchEraDiscount": {
+    "enabled": 1,
+    "minEra": 3,
+    "discountPermille": 250
+  },
+  "marginCallEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 2
+  },
+  "hearingSharePriceEraBoost": {
+    "enabled": 1,
+    "minEra": 2,
+    "boostPermille": 50
+  },
+  "rungSixEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 4
+  },
+  "dataSourceAcquireEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
   }
 }

@@ -46,5 +46,7 @@ for s in 154 155; do run_one "$REPO/tools/golden-revert-batch18-run.sh" "$s"; do
 for s in 156 157; do run_one "$REPO/tools/golden-revert-batch19-run.sh" "$s"; done
 for s in 158 159 160; do run_one "$REPO/tools/golden-revert-batch20-run.sh" "$s"; done
 for s in 161 162 163; do run_one "$REPO/tools/golden-revert-batch21-run.sh" "$s"; done
+for s in 164 165 166; do run_one "$REPO/tools/golden-revert-batch22-run.sh" "$s"; done
+for s in 167 168 169; do run_one "$REPO/tools/golden-revert-batch23-run.sh" "$s"; done
 
 echo "Done repin."

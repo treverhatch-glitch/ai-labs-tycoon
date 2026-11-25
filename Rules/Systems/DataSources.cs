@@ -20,8 +20,11 @@ namespace AiLabs.Rules.Systems
             int i = Index(c, sourceId);
             DataSourceItemConfig src = c.DataSources.Sources[i];
             SetWeeks(lab, i, src.DurationWeeks);
-            Finance.Spend(lab, LedgerLine.Training, src.WeeklyCost);
+            long listCost = src.WeeklyCost;
+            long paid = DataSourceAcquireEraDiscount.AcquireCost(c, state, listCost);
+            Finance.Spend(lab, LedgerLine.Training, paid);
             Events.Add(state, EventKind.DataSourceAcquired, lab.Id, i, src.DurationWeeks, sourceId);
+            DataSourceAcquireEraDiscount.OnAcquire(c, state, lab, i, sourceId, listCost, paid);
             DataSourceSpecialistPairing.OnAcquire(c, state, lab, sourceId);
         }
 
