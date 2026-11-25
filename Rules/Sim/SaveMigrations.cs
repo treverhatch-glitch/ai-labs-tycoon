@@ -38,9 +38,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 21) MigrateTo21(root);
             if (fromSchema < 22) MigrateTo22(root);
             if (fromSchema < 23) MigrateTo23(root);
+            if (fromSchema < 24) MigrateTo24(root);
             if (fromSchema < 25) MigrateTo25(root);
             if (fromSchema < 26) MigrateTo26(root);
             if (fromSchema < 27) MigrateTo27(root);
+            if (fromSchema < 28) MigrateTo28(root);
             if (fromSchema < 29) MigrateTo29(root);
             if (fromSchema < 30) MigrateTo30(root);
             if (fromSchema < 31) MigrateTo31(root);
@@ -122,6 +124,7 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 107) MigrateTo107(root);
             if (fromSchema < 108) MigrateTo108(root);
             if (fromSchema < 109) MigrateTo109(root);
+            if (fromSchema < 110) MigrateTo110(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -428,7 +431,14 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "poachOffers", JsonValue.Array()));
         }
 
-        /// <summary>The press (Q145): no journalist was ever waiting in an older save. Schema 24 is left to another thread.</summary>
+        /// <summary>Bubble decay floor only after a crash (Opus review / Q153).</summary>
+        static void MigrateTo24(JsonValue root)
+        {
+            bool hadCrash = JsonPatch.IntOr(root, "bubbleCrashMonthsRemaining", 0) > 0;
+            JsonPatch.AddIfMissing(root, "bubbleHadCrash", JsonValue.Of(hadCrash));
+        }
+
+        /// <summary>The press (Q145): no journalist was ever waiting in an older save.</summary>
         static void MigrateTo25(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "pressInquiries", JsonValue.Array()));
@@ -456,8 +466,26 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static readonly string[] HatchLedgerKeys = { "acquisition", "assetSale" };
+
+        /// <summary>Acquisition and asset-sale ledger lines (Q170).</summary>
+        static void MigrateTo28(JsonValue root)
+        {
+            foreach (string place in new[] { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" })
+                JsonPatch.ForEach(root, place, totals =>
+                {
+                    foreach (string key in HatchLedgerKeys) JsonPatch.AddIfMissing(totals, key, JsonValue.Of(0L));
+                });
+        }
+
+        /// <summary>M&amp;A fleet resale lock on hardware batches (Q202).</summary>
         static void MigrateTo29(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs.fleet", batch => JsonPatch.AddIfMissing(batch, "resaleLockedUntilTick", JsonValue.Of(-1L)));
+        }
+
+        /// <summary>Safety culture and the release gate: an older lab starts at the usual culture with no gate.</summary>
+        static void MigrateTo30(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
@@ -467,15 +495,215 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Schema 30: the version naming mess, tidy to start with.</summary>
-        static void MigrateTo30(JsonValue root)
+        /// <summary>Schema 31: the version naming mess, tidy to start with.</summary>
+        static void MigrateTo31(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "namingMess", JsonValue.Of(0L)));
         }
 
-        /// <summary>Schema 51: no model was ever audited from outside.</summary>
-        /// <summary>Schema 55: no lab has optimised its inference or run a marketing campaign.</summary>
+        /// <summary>Schema 32: rooms start fresh, as if built this era.</summary>
+        static void MigrateTo32(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonValue rooms = lab.Get("rooms");
+                if (rooms == null) return;
+                JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
+            });
+        }
+
+        /// <summary>Schema 33: no leads waiting and no tricks learned.</summary>
+        static void MigrateTo33(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchLeads", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "leadSpeedPermille", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 34: no office event waiting, none seen.</summary>
+        static void MigrateTo34(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "officeEventId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "officeEventExpires", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "officeSeen", JsonValue.Array());
+            });
+        }
+
+        /// <summary>Schema 35: every model was trained to be correct.</summary>
+        static void MigrateTo35(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "objective", JsonValue.Of(""))));
+        }
+
+        /// <summary>Schema 36: every model was designed by people alone.</summary>
+        static void MigrateTo36(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
+        }
+
+        /// <summary>Schema 37: every launch so far was a tested one.</summary>
+        static void MigrateTo37(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "rushWeeks", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 38: no government had been lobbied.</summary>
+        static void MigrateTo38(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.AddIfMissing(b, "lobbyUntilTick", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 39: no lab had pivoted.</summary>
+        static void MigrateTo39(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 40: no era had been scored.</summary>
+        static void MigrateTo40(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 41: every run was built the known way with checkpoints now and then.</summary>
+        static void MigrateTo41(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
+            }));
+        }
+
+        /// <summary>Schema 42: no lab had borrowed.</summary>
+        static void MigrateTo42(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "loans", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 43: no lab had set compute aside for research experiments.</summary>
+        static void MigrateTo43(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 44: no team was in crunch time.</summary>
+        static void MigrateTo44(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crunchWeeks", JsonValue.Of(0L)));
+        }
+
+        public static readonly string[] LedgerPlaces = { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" };
+
+        /// <summary>Schema 45: no lab had insurance, and the ledger gained a premium line (zero, so cash is still explained).</summary>
+        static void MigrateTo45(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "insuranceLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "insuranceClaims", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "insuranceLockedUntil", JsonValue.Of(0L));
+            });
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "insurance", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 46: no model was ever red-teamed.</summary>
+        static void MigrateTo46(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "redTeamUntil", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 47: no lab ran an interpretability programme.</summary>
+        static void MigrateTo47(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "interpLevel", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 48: every lab paid market rates and had never changed its pay.</summary>
+        static void MigrateTo48(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "payLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "payLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 49: no lab ran a compliance office.</summary>
+        static void MigrateTo49(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "complianceLevel", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 50: no lab had published a paper.</summary>
+        static void MigrateTo50(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "prestige", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 51: no lab sublet compute, so every ledger has an empty sublet line.</summary>
+        static void MigrateTo51(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "subletPermille", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "subletLockedUntil", JsonValue.Of(0L));
+            });
+            foreach (string place in LedgerPlaces)
+                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "sublet", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 52: no model was ever audited from outside.</summary>
+        static void MigrateTo52(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "auditedUntil", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 53: no lab has picked a research focus or held a hack week.</summary>
+        static void MigrateTo53(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "researchFocus", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "focusLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "hackLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 54: no lab gave its team equity.</summary>
+        static void MigrateTo54(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "equityLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "equityPermille", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 55: no lab has named a chief or seated an ethics board.</summary>
         static void MigrateTo55(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "ethicsLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ethicsLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "chiefScientistId", JsonValue.Of(-1L));
+                JsonPatch.AddIfMissing(lab, "chiefSafetyId", JsonValue.Of(-1L));
+            });
+        }
+
+        /// <summary>Schema 56: no lab optimised inference or ran a marketing campaign.</summary>
+        static void MigrateTo56(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
@@ -488,383 +716,145 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Schema 109: no model is under a support pledge.</summary>
-        static void MigrateTo109(JsonValue root)
+        /// <summary>Schema 57: no lab kept an on-call rota.</summary>
+        static void MigrateTo57(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "ltsKept", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "ltsBroken", JsonValue.Of(0L));
-                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "ltsLeft", JsonValue.Of(0L)));
+                JsonPatch.AddIfMissing(lab, "onCallLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "onCallLockedUntil", JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 108: no lab holds or has applied for a licence.</summary>
-        static void MigrateTo108(JsonValue root)
+        /// <summary>Schema 58: no lab has hired policy consultants.</summary>
+        static void MigrateTo58(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                foreach (string key in new[] { "licRegime", "licPhase", "licLeft", "licStrikes", "licCooldown", "licGranted", "licRefused", "licSuspended" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "consultantLockedUntil", JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 107: no lab has a project pod.</summary>
-        static void MigrateTo107(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "podIds", JsonValue.Array());
-                foreach (string key in new[] { "podWeeks", "podChem", "podSwapAfter", "podPoints", "podsFormed" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 106: no training run has a queue level.</summary>
-        static void MigrateTo106(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "queueLevel", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 105: no lab runs a research programme.</summary>
-        static void MigrateTo105(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "pgTech", "pgDone", "pgPhase", "pgLeft", "pgBold", "pgInsight", "pgSpent", "pgWins", "pgLosses" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 104: no lab keeps a launch watch desk.</summary>
-        static void MigrateTo104(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "lwOn", "lwRival", "lwLead", "lwWait", "lwHits", "lwAnswers" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 103: no lab runs a free tier.</summary>
-        static void MigrateTo103(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "ftLevel", "ftReach", "ftWeeks", "ftSpent", "ftEarned" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 102: no lab keeps a careers page.</summary>
-        static void MigrateTo102(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "brandOn", "brandScore", "brandReview", "brandLow", "brandReviews" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 101: no lab has a waitlist open.</summary>
-        static void MigrateTo101(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "wlModel", "wlHype", "wlLeft", "wlWins", "wlFlops" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 100: no lab has a public bet on a tech.</summary>
-        static void MigrateTo100(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "tbRef", "tbLeft", "tbWins", "tbLosses" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 99: no lab has a paper waiting for a decision about its code.</summary>
-        static void MigrateTo99(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "replPending", "replWait", "replLeft", "replRigor", "replWins", "replFails" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 98: no lab has a shock waiting.</summary>
-        static void MigrateTo98(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "shockKind", "shockRef", "shockLeft", "shockBraced", "shockRode", "shockCountered" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 97: no lab has stated its values.</summary>
-        static void MigrateTo97(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "creedA", "creedB", "creedIntegrity", "creedBand", "creedLock", "creedTown", "creedKept", "creedBroken" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 96: no lab has a deal with a platform.</summary>
-        static void MigrateTo96(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "platPlat", "platLeft", "platCut", "platRenewals", "platReliance", "platHoldup", "platPaid", "platKept" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 95: no lab has a device line.</summary>
-        static void MigrateTo95(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "devLine", "devStage", "devWeeks", "devQuality", "devTier", "devSold", "devBase" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 94: no lab has a convertible note.</summary>
-        static void MigrateTo94(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "noteOwed", "notePrincipal", "noteRate", "noteDiscount", "noteLeft", "noteExtended", "noteTier" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 93: no lab has sold its GPUs and leased them back.</summary>
-        static void MigrateTo93(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "leaseUnits", "leaseValue", "leaseRent", "leaseBuyback", "leaseLeft", "leaseMissed", "leaseExtended" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 92: no lab has a foundation.</summary>
-        static void MigrateTo92(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "foundFund", "foundGiven", "foundFocus", "foundPayout", "foundGoodwill", "foundSwitch", "foundDrip" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 91: no lab has a revenue advance.</summary>
-        static void MigrateTo91(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "rbfAdvance", "rbfOwed", "rbfBase", "rbfShare", "rbfTier", "rbfWeeks", "rbfSlump" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 90: no lab is listed.</summary>
-        static void MigrateTo90(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "listed", "listPrice", "listGuidance", "listTarget", "listQuarter", "listBase", "listNext", "listKeep", "listStreak", "listFollowOn", "listActivist" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 89: no lab has a capital allowance policy or pool.</summary>
-        static void MigrateTo89(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "capPolicy", "capPool", "capSwitchTick", "capWritten" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 88: no lab is in breach of a covenant or has used a waiver.</summary>
-        static void MigrateTo88(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "covBreach", "covWaiverUntil", "covWaivers", "covCalls" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 87: no lab has a warranty or spares and no GPU has failed.</summary>
-        static void MigrateTo87(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "warrantyTier", "spares", "failCarry", "rmaUnits", "rmaDue", "gpuFailures" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 86: no standard has been drafted and no lab has a part in one.</summary>
-        static void MigrateTo86(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "stdLevel", "stdDraft", "stdSupport", "stdRole", "stdNext", "stdAdopted", "stdLapses" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 85: no lab pays corporate tax or keeps a tax structure.</summary>
-        static void MigrateTo85(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "taxStructure", "taxBuilding", "taxDue", "taxAccrued", "taxSaved", "taxResearch", "taxCredit", "taxClaimed", "taxExposure", "taxAuditDue", "taxAuditOwed" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 84: no lab has a scaling policy.</summary>
-        static void MigrateTo84(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "policyLevel", "policyLockedUntil", "policyHold", "policyBreaks" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 83: every lab is a for-profit company with no change of charter under review.</summary>
-        static void MigrateTo83(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "charter", "charterTo", "charterDue", "capPaid" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 82: no lab has a government contract or an offer.</summary>
-        static void MigrateTo82(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "contractKind", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "offerKind", JsonValue.Of(""));
-                foreach (string key in new[] { "contractStart", "contractDue", "contractPaid", "contractMissed", "offerDue", "offerSeq", "contractNext" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 81: nobody has been sued and every lab starts with no security built.</summary>
-        static void MigrateTo81(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "cases", JsonValue.Array());
-                foreach (string key in new[] { "caseSeq", "securityTier", "securityBuilding", "securityDue", "exposure", "breachDue", "ransoms" })
-                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 80: nobody has open orders or visiting scholars.</summary>
-        static void MigrateTo80(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "requisitions", JsonValue.Array());
-                JsonPatch.AddIfMissing(lab, "scholarCount", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "scholarStart", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "scholarDue", JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 79: nobody is on a sabbatical.</summary>
-        static void MigrateTo79(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
-            {
-                JsonPatch.AddIfMissing(person, "leaveDue", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(person, "leaveMorale", JsonValue.Of(0L));
-            }));
-        }
-
-        /// <summary>Schema 78: nobody has a support desk.</summary>
-        static void MigrateTo78(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "supportPeople", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "supportBacklog", JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 77: nobody has interns.</summary>
-        static void MigrateTo77(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "internRole", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "internCount", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "internStart", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "internDue", JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 76: nobody has left a lab into the alumni pool.</summary>
-        static void MigrateTo76(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "alumni", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 75: no lab has a paper out for review.</summary>
-        static void MigrateTo75(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "submissions", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 74: no lab has account teams.</summary>
-        static void MigrateTo74(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "accountTeams", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 73: no model has an end-of-life notice.</summary>
-        static void MigrateTo73(JsonValue root)
+        /// <summary>Schema 59: no incident was ever written up.</summary>
+        static void MigrateTo59(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
             {
-                JsonPatch.AddIfMissing(m, "sunsetStart", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(m, "sunsetTick", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "incidentRepLoss", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "postMortemDone", JsonValue.Of(0L));
             }));
         }
 
-        /// <summary>Schema 72: no lab has organised.</summary>
-        static void MigrateTo72(JsonValue root)
+        /// <summary>Schema 60: no lab has made a service-level pledge.</summary>
+        static void MigrateTo60(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "labourStage", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "labourPressure", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "labourDue", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "labourHard", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaLockedUntil", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "slaStrikes", JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 71: no lab runs a skunkworks project.</summary>
+        /// <summary>Schema 61: no lab has an outstanding research grant.</summary>
+        static void MigrateTo61(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "researchGrantStage", "researchGrantTier", "researchGrantTick", "researchGrantOwed", "researchGrantLockedUntil" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 62: no lab has any technical debt.</summary>
+        static void MigrateTo62(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "techDebt", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 63: nobody has been promoted to senior.</summary>
+        static void MigrateTo63(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person => JsonPatch.AddIfMissing(person, "senior", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 64: no board revenue target is active.</summary>
+        static void MigrateTo64(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "revenueTargetLevel", "revenueTargetEnd", "revenueTargetGoal", "revenueTargetSoFar" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 65: no lab has endowed a chair.</summary>
+        static void MigrateTo65(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chairs", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 66: no lab has a whistleblower concern open or a silence bought.</summary>
+        static void MigrateTo66(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "whistleWeeks", "whistleModel", "whistleDue", "silenced" }) JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 67: no lab has set a bug bounty level.</summary>
+        static void MigrateTo67(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "bountyLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "bountyLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 68: no lab has set cash aside in reserve.</summary>
+        static void MigrateTo68(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reserve", JsonValue.Of(0L)));
+        }
+
+        /// <summary>Schema 69: no lab has made a public safety pledge.</summary>
+        static void MigrateTo69(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "pledgeLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "pledgeLockedUntil", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 70: no lab has announced a roadmap.</summary>
+        static void MigrateTo70(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "roadmapLevel", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "roadmapGoal", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 71: nobody is in a mentoring pair.</summary>
         static void MigrateTo71(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
+            {
+                JsonPatch.AddIfMissing(person, "mentorId", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "mentorWeeks", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 72: no lab runs a skunkworks project.</summary>
+        static void MigrateTo72(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
@@ -877,340 +867,378 @@ namespace AiLabs.Rules.Sim
             });
         }
 
-        /// <summary>Schema 70: nobody is being mentored.</summary>
-        static void MigrateTo70(JsonValue root)
+        /// <summary>Schema 73: no lab has organised labour pressure.</summary>
+        static void MigrateTo73(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "labourStage", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourPressure", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "labourHard", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 74: no model has an end-of-life notice.</summary>
+        static void MigrateTo74(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
+            {
+                JsonPatch.AddIfMissing(m, "sunsetStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(m, "sunsetTick", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 75: no lab has account teams.</summary>
+        static void MigrateTo75(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "accountTeams", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 76: no lab has a paper out for review.</summary>
+        static void MigrateTo76(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "submissions", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 77: nobody has left a lab into the alumni pool.</summary>
+        static void MigrateTo77(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "alumni", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 78: nobody has interns.</summary>
+        static void MigrateTo78(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "internRole", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "internCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internDue", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 79: nobody has a support desk.</summary>
+        static void MigrateTo79(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "supportPeople", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "supportBacklog", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 80: nobody is on a sabbatical.</summary>
+        static void MigrateTo80(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
             {
-                JsonPatch.AddIfMissing(person, "mentorId", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(person, "mentorWeeks", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "leaveDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "leaveMorale", JsonValue.Of(0L));
             }));
         }
 
-        /// <summary>Schema 69: no lab has announced a roadmap.</summary>
-        static void MigrateTo69(JsonValue root)
+        /// <summary>Schema 81: no open requisitions and no visiting scholars.</summary>
+        static void MigrateTo81(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "roadmapLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "roadmapStart", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "roadmapDue", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "roadmapGoal", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "requisitions", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "scholarCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarDue", JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 68: no lab has made a safety pledge.</summary>
-        static void MigrateTo68(JsonValue root)
+        /// <summary>Schema 82: nobody has been sued and every lab starts with no security built.</summary>
+        static void MigrateTo82(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "pledgeLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "pledgeLockedUntil", JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 67: no lab has set cash aside.</summary>
-        static void MigrateTo67(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "reserve", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 66: no lab runs a bug bounty.</summary>
-        static void MigrateTo66(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "bountyLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "bountyLockedUntil", JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 65: no lab has a whistleblower's concern open or a silence bought.</summary>
-        static void MigrateTo65(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "whistleWeeks", "whistleModel", "whistleDue", "silenced" }) JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
-            });
-        }
-
-        /// <summary>Schema 64: no lab has endowed a chair.</summary>
-        static void MigrateTo64(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "chairs", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 63: no lab has committed to a revenue target.</summary>
-        static void MigrateTo63(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                foreach (string key in new[] { "revenueTargetLevel", "revenueTargetEnd", "revenueTargetGoal", "revenueTargetSoFar" })
+                JsonPatch.AddIfMissing(lab, "cases", JsonValue.Array());
+                foreach (string key in new[] { "caseSeq", "securityTier", "securityBuilding", "securityDue", "exposure", "breachDue", "ransoms" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 62: nobody has been promoted to senior.</summary>
-        static void MigrateTo62(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person => JsonPatch.AddIfMissing(person, "senior", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 61: no lab has any technical debt.</summary>
-        static void MigrateTo61(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "techDebt", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 60: no lab has applied for a research grant.</summary>
-        static void MigrateTo60(JsonValue root)
+        /// <summary>Schema 83: no lab has a government contract or an offer.</summary>
+        static void MigrateTo83(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                foreach (string key in new[] { "researchGrantStage", "researchGrantTier", "researchGrantTick", "researchGrantOwed", "researchGrantLockedUntil" })
+                JsonPatch.AddIfMissing(lab, "contractKind", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "offerKind", JsonValue.Of(""));
+                foreach (string key in new[] { "contractStart", "contractDue", "contractPaid", "contractMissed", "offerDue", "offerSeq", "contractNext" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 59: no lab has made a service-level pledge.</summary>
-        static void MigrateTo59(JsonValue root)
+        /// <summary>Schema 84: every lab is a for-profit company with no change of charter under review.</summary>
+        static void MigrateTo84(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "slaLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "slaLockedUntil", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "slaStrikes", JsonValue.Of(0L));
+                foreach (string key in new[] { "charter", "charterTo", "charterDue", "capPaid" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 58: no incident was ever written up.</summary>
-        static void MigrateTo58(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
-            {
-                JsonPatch.AddIfMissing(m, "incidentRepLoss", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(m, "postMortemDone", JsonValue.Of(0L));
-            }));
-        }
-
-        /// <summary>Schema 57: no lab has hired policy consultants.</summary>
-        static void MigrateTo57(JsonValue root)
+        /// <summary>Schema 85: no lab has a scaling policy.</summary>
+        static void MigrateTo85(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "consultantLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "consultantWeeks", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "consultantLockedUntil", JsonValue.Of(0L));
+                foreach (string key in new[] { "policyLevel", "policyLockedUntil", "policyHold", "policyBreaks" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 56: no lab has an on-call rota.</summary>
-        static void MigrateTo56(JsonValue root)
+        /// <summary>Schema 86: no lab pays corporate tax or keeps a tax structure.</summary>
+        static void MigrateTo86(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "onCallLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "onCallLockedUntil", JsonValue.Of(0L));
+                foreach (string key in new[] { "taxStructure", "taxBuilding", "taxDue", "taxAccrued", "taxSaved", "taxResearch", "taxCredit", "taxClaimed", "taxExposure", "taxAuditDue", "taxAuditOwed" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 54: no lab has named a chief or seated an ethics board.</summary>
-        static void MigrateTo54(JsonValue root)
+        /// <summary>Schema 87: no standard has been drafted and no lab has a part in one.</summary>
+        static void MigrateTo87(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "ethicsLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "ethicsLockedUntil", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "chiefScientistId", JsonValue.Of(-1L));
-                JsonPatch.AddIfMissing(lab, "chiefSafetyId", JsonValue.Of(-1L));
+                foreach (string key in new[] { "stdLevel", "stdDraft", "stdSupport", "stdRole", "stdNext", "stdAdopted", "stdLapses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 53: no lab gave its team equity.</summary>
-        static void MigrateTo53(JsonValue root)
+        /// <summary>Schema 88: no lab has a warranty or spares and no GPU has failed.</summary>
+        static void MigrateTo88(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "equityLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "equityPermille", JsonValue.Of(0L));
+                foreach (string key in new[] { "warrantyTier", "spares", "failCarry", "rmaUnits", "rmaDue", "gpuFailures" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 52: no lab has picked a research focus or held a hack week.</summary>
-        static void MigrateTo52(JsonValue root)
+        /// <summary>Schema 89: no lab is in breach of a covenant or has used a waiver.</summary>
+        static void MigrateTo89(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "researchFocus", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "focusLockedUntil", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "hackWeeks", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "hackLockedUntil", JsonValue.Of(0L));
+                foreach (string key in new[] { "covBreach", "covWaiverUntil", "covWaivers", "covCalls" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        static void MigrateTo51(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "auditedUntil", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 50: no lab sublet compute, so every ledger has an empty sublet line.</summary>
-        static void MigrateTo50(JsonValue root)
+        /// <summary>Schema 90: no lab has capital allowance policy or pool.</summary>
+        static void MigrateTo90(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "subletPermille", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "subletLockedUntil", JsonValue.Of(0L));
-            });
-            foreach (string place in LedgerPlaces)
-                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "sublet", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 49: no lab had published a paper.</summary>
-        static void MigrateTo49(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "prestige", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 48: no lab ran a compliance office.</summary>
-        static void MigrateTo48(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "complianceLevel", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 47: every lab paid market rates and had never changed its pay.</summary>
-        static void MigrateTo47(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "payLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "payLockedUntil", JsonValue.Of(0L));
+                foreach (string key in new[] { "capPolicy", "capPool", "capSwitchTick", "capWritten" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 46: no lab ran an interpretability programme.</summary>
-        static void MigrateTo46(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "interpLevel", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 45: no model was ever red-teamed.</summary>
-        static void MigrateTo45(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "redTeamUntil", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 44: no lab had insurance, and the ledger gained a premium line (zero, so cash is still explained).</summary>
-        static void MigrateTo44(JsonValue root)
+        /// <summary>Schema 91: no lab is listed.</summary>
+        static void MigrateTo91(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "insuranceLevel", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "insuranceClaims", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "insuranceLockedUntil", JsonValue.Of(0L));
-            });
-            foreach (string place in LedgerPlaces)
-                JsonPatch.ForEach(root, place, totals => JsonPatch.AddIfMissing(totals, "insurance", JsonValue.Of(0L)));
-        }
-
-        public static readonly string[] LedgerPlaces = { "labs.ledger.thisWeek", "labs.ledger.lastWeek", "labs.ledger.thisMonth", "labs.ledger.lifetime", "labs.ledger.history.totals" };
-
-        /// <summary>Schema 43: no team was in crunch time.</summary>
-        static void MigrateTo43(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "crunchWeeks", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 42: no lab had set compute aside for research experiments.</summary>
-        static void MigrateTo42(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "researchSharePermille", JsonValue.Of(0L)));
-        }
-
-        /// <summary>Schema 41: no lab had borrowed.</summary>
-        static void MigrateTo41(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "loans", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 40: every run was built the known way with checkpoints now and then.</summary>
-        static void MigrateTo40(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m =>
-            {
-                JsonPatch.AddIfMissing(m, "approach", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(m, "checkpoints", JsonValue.Of(""));
-            }));
-        }
-
-        /// <summary>Schema 39: no era had been scored.</summary>
-        static void MigrateTo39(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "eraScores", JsonValue.Array()));
-        }
-
-        /// <summary>Schema 38: no lab had pivoted.</summary>
-        static void MigrateTo38(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab =>
-            {
-                JsonPatch.AddIfMissing(lab, "pivotEraId", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "pivotUntilTick", JsonValue.Of(0L));
+                foreach (string key in new[] { "listed", "listPrice", "listGuidance", "listTarget", "listQuarter", "listBase", "listNext", "listKeep", "listStreak", "listFollowOn", "listActivist" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 37: no government had been lobbied.</summary>
-        static void MigrateTo37(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "blocs", b => JsonPatch.AddIfMissing(b, "lobbyUntilTick", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 36: every launch so far was a tested one.</summary>
-        static void MigrateTo36(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "rushWeeks", JsonValue.Of(0L))));
-        }
-
-        /// <summary>Schema 35: every model was designed by people alone.</summary>
-        static void MigrateTo35(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "designerId", JsonValue.Of(-1L))));
-        }
-
-        /// <summary>Schema 34: every model was trained to be correct.</summary>
-        static void MigrateTo34(JsonValue root)
-        {
-            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "objective", JsonValue.Of(""))));
-        }
-
-        /// <summary>Schema 33: no office event waiting, none seen.</summary>
-        static void MigrateTo33(JsonValue root)
+        /// <summary>Schema 92: no lab has a revenue advance.</summary>
+        static void MigrateTo92(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "officeEventId", JsonValue.Of(""));
-                JsonPatch.AddIfMissing(lab, "officeEventExpires", JsonValue.Of(0L));
-                JsonPatch.AddIfMissing(lab, "officeSeen", JsonValue.Array());
+                foreach (string key in new[] { "rbfAdvance", "rbfOwed", "rbfBase", "rbfShare", "rbfTier", "rbfWeeks", "rbfSlump" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 32: no leads waiting and no tricks learned.</summary>
-        static void MigrateTo32(JsonValue root)
+        /// <summary>Schema 93: no lab has a foundation.</summary>
+        static void MigrateTo93(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonPatch.AddIfMissing(lab, "researchLeads", JsonValue.Array());
-                JsonPatch.AddIfMissing(lab, "leadSpeedPermille", JsonValue.Of(0L));
+                foreach (string key in new[] { "foundFund", "foundGiven", "foundFocus", "foundPayout", "foundGoodwill", "foundSwitch", "foundDrip" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }
 
-        /// <summary>Schema 31: rooms start fresh, as if built this era.</summary>
-        static void MigrateTo31(JsonValue root)
+        /// <summary>Schema 94: no lab has sold its GPUs and leased them back.</summary>
+        static void MigrateTo94(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab =>
             {
-                JsonValue rooms = lab.Get("rooms");
-                if (rooms == null) return;
-                JsonPatch.ForEach(lab, "rooms", room => JsonPatch.AddIfMissing(room, "eraAge", JsonValue.Of(0L)));
+                foreach (string key in new[] { "leaseUnits", "leaseValue", "leaseRent", "leaseBuyback", "leaseLeft", "leaseMissed", "leaseExtended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 95: no lab has a convertible note.</summary>
+        static void MigrateTo95(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "noteOwed", "notePrincipal", "noteRate", "noteDiscount", "noteLeft", "noteExtended", "noteTier" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 96: no lab has a device line.</summary>
+        static void MigrateTo96(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "devLine", "devStage", "devWeeks", "devQuality", "devTier", "devSold", "devBase" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 97: no lab has a deal with a platform.</summary>
+        static void MigrateTo97(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "platPlat", "platLeft", "platCut", "platRenewals", "platReliance", "platHoldup", "platPaid", "platKept" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 98: no lab has stated its values.</summary>
+        static void MigrateTo98(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "creedA", "creedB", "creedIntegrity", "creedBand", "creedLock", "creedTown", "creedKept", "creedBroken" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 99: no lab has a shock waiting.</summary>
+        static void MigrateTo99(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "shockKind", "shockRef", "shockLeft", "shockBraced", "shockRode", "shockCountered" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 100: no lab has a paper waiting for a decision about its code.</summary>
+        static void MigrateTo100(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "replPending", "replWait", "replLeft", "replRigor", "replWins", "replFails" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 101: no lab has a public bet on a tech.</summary>
+        static void MigrateTo101(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "tbRef", "tbLeft", "tbWins", "tbLosses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 102: no lab has a waitlist open.</summary>
+        static void MigrateTo102(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "wlModel", "wlHype", "wlLeft", "wlWins", "wlFlops" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 103: no lab keeps a careers page.</summary>
+        static void MigrateTo103(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "brandOn", "brandScore", "brandReview", "brandLow", "brandReviews" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 104: no lab runs a free tier.</summary>
+        static void MigrateTo104(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "ftLevel", "ftReach", "ftWeeks", "ftSpent", "ftEarned" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 105: no lab keeps a launch watch desk.</summary>
+        static void MigrateTo105(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "lwOn", "lwRival", "lwLead", "lwWait", "lwHits", "lwAnswers" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 106: no lab runs a research programme.</summary>
+        static void MigrateTo106(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "pgTech", "pgDone", "pgPhase", "pgLeft", "pgBold", "pgInsight", "pgSpent", "pgWins", "pgLosses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 107: no model has a training queue level.</summary>
+        static void MigrateTo107(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "queueLevel", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 108: no lab keeps project pods.</summary>
+        static void MigrateTo108(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "podIds", JsonValue.Array());
+                foreach (string key in new[] { "podWeeks", "podChem", "podSwapAfter", "podPoints", "podsFormed" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 109: no lab holds a licence.</summary>
+        static void MigrateTo109(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "licRegime", "licPhase", "licLeft", "licStrikes", "licCooldown", "licGranted", "licRefused", "licSuspended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 110: no model has a support pledge.</summary>
+        static void MigrateTo110(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "ltsKept", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ltsBroken", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "ltsLeft", JsonValue.Of(0L)));
             });
         }
 

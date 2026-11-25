@@ -282,7 +282,7 @@ public class SunsetTests
     {
         var (g, old, next) = Fleet();
         g.Do(Command.AnnounceSunset(g.Id, old.Id, 10));
-        string older = SaveSchemaPretend.At(g.C, 72, g.Sim.Save());
+        string older = SaveSchemaPretend.At(g.C, 73, g.Sim.Save());
         foreach (string key in new[] { "sunsetStart", "sunsetTick" }) Assert.DoesNotContain("\"" + key + "\"", older);
         Simulation sim = Simulation.Load(g.C, older);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

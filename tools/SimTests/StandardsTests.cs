@@ -234,7 +234,7 @@ public class StandardsTests
         back.StepMany(60);
         g.Weeks(60);
         Assert.Equal(g.Sim.Digest(), back.Digest());
-        string old = SaveSchemaPretend.At(g.C, 85, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 86, g.Sim.Save());
         Assert.DoesNotContain("stdLevel", old);
         LabState lab = Simulation.Load(g.C, old).State.Labs.First(l => l.Id == g.Id);
         Assert.Equal(0, lab.StdLevel);

@@ -151,7 +151,7 @@ public class SabbaticalTests
         g.Me.Staff[0].LeaveMorale = 5;
         Assert.Contains(SaveGame.Problems(g.C, g.State), p => p.Contains("sabbatical"));
         Game fresh = Lab();
-        string old = SaveSchemaPretend.At(fresh.C, 78, fresh.Sim.Save());
+        string old = SaveSchemaPretend.At(fresh.C, 79, fresh.Sim.Save());
         Assert.DoesNotContain("leaveDue", old);
         Simulation back = Simulation.Load(fresh.C, old);
         Assert.Equal(0, Sabbatical.Away(back.State.Labs.First(l => l.Id == fresh.Id)));

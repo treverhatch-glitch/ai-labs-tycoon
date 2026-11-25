@@ -349,7 +349,7 @@ public class LoanTests
         Simulation again = Simulation.Load(g.C, json);
         Assert.Equal(2, again.State.Labs.First(l => l.Id == g.Id).Loans.Count);
 
-        string old = SaveSchemaPretend.At(g.C, 40, json);
+        string old = SaveSchemaPretend.At(g.C, 41, json);
         Assert.DoesNotContain("\"loans\"", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
