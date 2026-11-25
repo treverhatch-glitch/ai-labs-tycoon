@@ -1,4 +1,4 @@
-# Grouped 197–199 · GO (≥~09:27 ICT)
+# Grouped 197–199 · GO (≥~09:27 ICT) — landed **`a44983d`**
 
 **Parent (must match `origin/cursor/graphics-pipeline-5032` before squash):** `ca28446`.
 
