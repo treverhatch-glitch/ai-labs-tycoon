@@ -13,7 +13,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
-                if (lab.Bankrupt) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab)) continue;
                 if (GovernmentSystem.RevenueSharePpm(state, lab) < r.ScrutinyRevenuePpm) continue;
                 BlocStanding home = lab.Bloc(lab.HomeBlocId);
                 if (home == null) continue;

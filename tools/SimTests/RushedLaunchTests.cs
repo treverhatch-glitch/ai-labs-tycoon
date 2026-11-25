@@ -265,7 +265,7 @@ public class RushedLaunchTests
         Game g = Lab();
         ModelState m = Trained(g);
         g.Release(m, Sector);
-        string old = SaveSchemaPretend.At(g.C, 35, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 36, g.Sim.Save());
         Assert.DoesNotContain("rushWeeks", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);

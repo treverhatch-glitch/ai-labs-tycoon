@@ -14,7 +14,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
-                if (lab.Bankrupt || lab.Controller != LabController.Plan) continue;
+                if (!LabQueries.ParticipatesInEconomy(lab) || lab.Controller != LabController.Plan) continue;
                 if (lab.PublicFloatPpm >= s.RivalMaxPublicFloatPpm) continue;
                 int next = (int)MathI.Min(s.RivalMaxPublicFloatPpm, lab.PublicFloatPpm + s.IpoStepPpm);
                 if (next <= lab.PublicFloatPpm) continue;

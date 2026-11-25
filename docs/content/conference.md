@@ -1,6 +1,6 @@
 # Conference submissions
 
-Beside the instant paper (`PublishPaper`), the player can send a paper to a venue and wait for the decision (`conference.*` in the data; Q361). A saved list on the lab (`submissions`: venue, effort, points paid, decision week; schema 75); older saves have none out.
+Beside the instant paper (`PublishPaper`), the player can send a paper to a venue and wait for the decision (`conference.*` in the data; Q361). A saved list on the lab (`submissions`: venue, effort, points paid, decision week; schema 76); older saves have none out.
 
 ## `SubmitPaper` and `WithdrawPaper`
 

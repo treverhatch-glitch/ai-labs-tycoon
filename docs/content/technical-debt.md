@@ -1,6 +1,6 @@
 # Technical debt
 
-Cutting corners piles up debt in the player's lab. Debt never wears off. It raises the weekly chance of an incident in proportion to how much there is, and the only way to clear it is to pay for it with cash and engineers (`techDebt.*` in the data; Q336). Schema 61 adds one number to each lab.
+Cutting corners piles up debt in the player's lab. Debt never wears off. It raises the weekly chance of an incident in proportion to how much there is, and the only way to clear it is to pay for it with cash and engineers (`techDebt.*` in the data; Q336). Schema 62 adds one number to each lab.
 
 ## Where it comes from
 
@@ -22,5 +22,5 @@ Debt stops at 1000. Only the player's lab keeps it; rivals never do, and a save 
 
 ## Notes
 
-- Schema 61: `techDebt` on every lab (older saves: 0).
+- Schema 62: `techDebt` on every lab (older saves: 0).
 - No timers and no new random draws: every effect is a number the player can read.

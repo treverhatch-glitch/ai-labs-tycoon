@@ -129,7 +129,7 @@ public class LabourSunsetAccountsConferenceAlumniTogetherTests
     public void An_old_save_from_before_all_five_loads_with_them_idle_and_plays_on()
     {
         var (g, _, _) = Lab();
-        string old = SaveSchemaPretend.At(g.C, 71, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 72, g.Sim.Save());
         Assert.DoesNotContain("alumni", old);
         Assert.DoesNotContain("accountTeams", old);
         Assert.DoesNotContain("labourStage", old);

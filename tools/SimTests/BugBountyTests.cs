@@ -207,7 +207,7 @@ public class BugBountyTests
     {
         Game g = Shipped();
         g.Do(Command.SetBugBounty(g.Id, 2));
-        string old = SaveSchemaPretend.At(g.C, 65, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 66, g.Sim.Save());
         Assert.DoesNotContain("\"bountyLevel\"", old);
         Assert.DoesNotContain("\"bountyLockedUntil\"", old);
         Simulation sim = Simulation.Load(g.C, old);

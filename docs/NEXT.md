@@ -230,25 +230,25 @@ and says why in the commit message.
 47. **Foundry snub (bible ch. 7 chip risk events).** ~~Done~~: `chips.snubStandingBelow`/`snubChancePermille`/`snubWeeks`, `ChipSystem.SnubWeeks`, `EventKind.ChipSlotSnubbed`, `FoundrySnubTests`, `docs/content/chips.md` (Q288). No schema.
 48. **Overload costs reliability (bible ch. 6 model states, "overworked: serving load too high; reliability drops").** ~~Done~~: `safety.overloadIncidentPermille` / `overloadForRivals`, `SafetySystem.OverloadPermille` and `WeeklyChancePermille`, `IncidentBreakdown.FromOverload`, `OverloadTests`, `docs/content/overload.md` (Q289). No schema.
 49. **Release notes (bible ch. 14 "its release notes").** ~~Done~~: `OfficeTrigger.Release`, `OfficeEvents.OnRelease`, three events, `ReleaseNotesTests`, `docs/content/office-events.md` (Q290). No schema.
-50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 42, `MigrateTo42`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
+50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 43, `MigrateTo43`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
 51. **Era-flavoured office events (bible "events by era").** ~~Done~~: `fromYear` / `toYear` on `OfficeEventConfig`, `OfficeEvents.InYears`, six events, `EraOfficeEventsTests`, `docs/content/office-events.md` (Q292).
 52. **Era-flavoured filler headlines (bible ch. 12 "the ticker").** ~~Done~~: `toYear` on `FillerConfig`, `NewsTicker.PickFiller`, 18 new lines, `EraFillerTests`, `docs/content/news-ticker.md` (Q293).
 53. **Era-flavoured company chat (bible ch. 10).** ~~Done~~: `fromYear` / `toYear` on `ChatLineConfig`, `CompanyChat.Fits`, seven lines, `EraChatTests`, `docs/content/company-chat-and-glow.md` (Q294).
 54. **Headlines for chip and loan events.** ~~Done~~: eight lines in `news.headlines`, `ChipLoanNewsTests`, `docs/content/news-ticker.md` (Q295).
 55. **Chat lines for chip and loan events.** ~~Done~~: ten lines in `chat.lines`, `ChipLoanChatTests`, `docs/content/company-chat-and-glow.md` (Q296).
 56. **Headlines for press, poaching and Gauntlet events.** ~~Done~~: five lines in `news.headlines`, `PressNewsTests`, `docs/content/news-ticker.md` (Q297).
-57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 43, `MigrateTo43`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
-58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 44, `MigrateTo44`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
+57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 44, `MigrateTo44`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
+58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 45, `MigrateTo45`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
 59. **The offsite (staff).** ~~Done~~: `HoldOffsite`, `Offsite`, `staffPeople.offsite*`, `OffsiteHeld`, `OffsiteTests`, `docs/content/offsite.md` (Q300).
-60. **Red team a model (safety).** ~~Done~~: `RedTeamModel`, `RedTeam`, `redTeam` data, model `redTeamUntil` (schema 45, `MigrateTo45`), `FromRedTeam` in the incident breakdown, `RedTeamTests`, `docs/content/red-team.md` (Q301).
-61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 46, `MigrateTo46`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
-62. **Pay policy (staff).** ~~Done~~: `SetPayLevel`, `Pay`, `staffPeople.pay*` data, lab `payLevel`/`payLockedUntil` (schema 47, `MigrateTo47`), `PayPolicyTests`, `docs/content/pay-policy.md` (Q303).
+60. **Red team a model (safety).** ~~Done~~: `RedTeamModel`, `RedTeam`, `redTeam` data, model `redTeamUntil` (schema 46, `MigrateTo46`), `FromRedTeam` in the incident breakdown, `RedTeamTests`, `docs/content/red-team.md` (Q301).
+61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 47, `MigrateTo47`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
+62. **Pay policy (staff).** ~~Done~~: `SetPayLevel`, `Pay`, `staffPeople.pay*` data, lab `payLevel`/`payLockedUntil` (schema 48, `MigrateTo48`), `PayPolicyTests`, `docs/content/pay-policy.md` (Q303).
 63. **Headlines for the care tools (news).** ~~Done~~: seven lines for crunch, insurance, the offsite, red teams, interpretability and pay; data and `CareToolsNewsTests` only (Q304).
 64. **Chat lines for the care tools (chat).** ~~Done~~: 14 lines for crunch, insurance, the offsite, red teams, findings and pay; picks on `CrunchEnded` and `PayChanged`; `CareToolsChatTests` (Q305).
 65. **The care tools together (tests).** ~~Done~~: `CareToolsTogetherTests` over 260 weeks and three seeds (Q306).
-66. **Compliance office (government).** ~~Done~~: `SetCompliance`, `Compliance`, `compliance` data, lab `complianceLevel` (schema 48, `MigrateTo48`), `ComplianceTests`, `docs/content/compliance.md` (Q307).
-67. **Published papers and academic prestige (talent).** ~~Done~~: `PublishPaper`, `Prestige`, `prestige` data, lab `prestige` (schema 49, `MigrateTo49`), `PrestigeTests`, `docs/content/papers.md` (Q308).
-68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 50, `MigrateTo50`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
+66. **Compliance office (government).** ~~Done~~: `SetCompliance`, `Compliance`, `compliance` data, lab `complianceLevel` (schema 49, `MigrateTo49`), `ComplianceTests`, `docs/content/compliance.md` (Q307).
+67. **Published papers and academic prestige (talent).** ~~Done~~: `PublishPaper`, `Prestige`, `prestige` data, lab `prestige` (schema 50, `MigrateTo50`), `PrestigeTests`, `docs/content/papers.md` (Q308).
+68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 51, `MigrateTo51`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
 69. **Headlines and chat for the office, papers and the sublet (news, chat).** ~~Done~~: three headlines and four chat lines, `OfficePapersSubletNewsChatTests`, `news-ticker.md`, `company-chat-and-glow.md` (Q310).
 70. **The office, papers and the sublet together (tests).** ~~Done~~: `OfficePapersSubletTogetherTests` (Q311).
 71. **External safety audit (safety, reputation).** ~~Done~~: `CommissionAudit`, `SafetyAudit`, `audit` data, model `auditedUntil` (schema 51, `MigrateTo51`), `SafetyAuditTests`, `docs/content/safety-audit.md` (Q312).
@@ -369,9 +369,79 @@ and says why in the commit message.
 - ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
 - ~~**Shady path depth and China deals (Q93).**~~ Done: player-only shady jobs, model corruption carry/mood/side jobs, China state requests and export vs smuggle; `ShadyChinaLaterTests`.
 - ~~**Containment rooms and superintelligence ending gates (Q94).**~~ Done: containment-wing alignment bonus, year-end `TrySuperintelligence` for paperclipped / long-summer / loose; schema 15; `ContainmentSuperintelLaterTests`.
-- **Specialist** model lines, data sources, **open weights**, sector pricing.
+- ~~**Specialist** model lines, data sources, **open weights**, sector pricing.~~ Done on `cursor/rules-side-items` (PR #2); rules-forward does not reimplement.
 - ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
-- Real **Bodies** and **Upward** expansions (era data is in, flagged `expansion`; mechanics and art are not).
+- Real **Bodies** and **Upward** expansions (mechanics): **owned by Unity thread** on `cursor/rules-side-items`; era **data** only on stack2.
+- ~~**Treaty & Nationalised** ending triggers (systems-design §5.1)~~ **done (local)** — Q150–Q153; schema **24** `bubbleHadCrash`; `TreatyNationalisedLaterTests` (15); **683** tests at local tip.
+- **Hatch follow-ups** (Opus review): **done (local)** — Q154–Q159; `HatchFollowUpLaterTests` (**41**).
+- ~~**Hatch ledger lines** (Opus review)~~ **done (local)** — Q170; schema **28**; `HatchLedgerLaterTests` (8).
+- ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
+- ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
+- ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
+- ~~**Rival retrenchment soak**~~ **done (pushed)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests`; golden `15fc3234…`.
+- ~~**Rival economy robustness (stack2)**~~ **done (pushed @ `477c3d2`)** — Q201 full bar (`RivalEconomyRobustnessLaterTests`); era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201). **795** tests at PR #3 tip.
+- ~~**Hatch economy bar batch 3**~~ **done (pushed @ `308463e`)** — Q202–Q214 + Q216/Q218 rival soak; schema **29** only (era owns **21–27**; **30** reserved for parked SolvencyHold). Golden `55e673a0…`.
+- ~~**Hatch rivals/chips batch 7**~~ **pushed @ `28de997`** — Q233–Q262 consolidation cross-bars (**41** tests in `HatchRivalsChipsConsolidationLaterTests`).
+- ~~**Hatch rivals/chips batch 8**~~ **pushed @ `3c4c8b7`** — Q263–Q292 (`HatchRivalsChipsDeliveryLaterTests`, **30**); schema **29** only.
+- ~~**Hatch rivals/chips batch 9**~~ **pushed @ `6c4d155`** — Q293–Q330 (`HatchRivalsChipsCrossBarLaterTests`, **38**).
+- ~~**Hatch rivals/chips batch 10**~~ **pushed @ `c58e395`** — Q331–Q365 (`HatchRivalsChipsIntegrateLaterTests`, **35**); schema **29** only; SolvencyHold **30** parked.
+- ~~**Hatch rivals/chips batch 11**~~ **pushed @ `31e6c2a`** — Q366–Q400 (`HatchRivalsChipsTailLaterTests`, **35**).
+- ~~**Hatch rivals/chips batch 12**~~ **pushed @ `ee78b4e`** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only.
+- ~~**Hatch rivals/chips batch 13**~~ **pushed @ `3b3019e`** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70**); schema **29** only.
+- ~~**Hatch rivals/chips batch 14**~~ **pushed @ `3454140` (GO #3, Nov 22 ~15:12 UTC)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100**); parent `3b3019e`; gate **1269/0** / **1267/0** WT.
+- ~~**Hatch rivals/chips batch 15**~~ **pushed @ `6827a12` (Nov 22 ≥15:42 UTC)** — Q666–Q735 (`HatchRivalsChipsFinisherLaterTests`, **70**); gate **1339/0** in-repo; parent `3454140`.
+- ~~**Hatch rivals/chips batch 16**~~ **pushed @ `6f60391` (Nov 22 ~16:31 UTC)** — Q736–Q805 (`HatchRivalsChipsDenouementLaterTests`, **70**); parent `6827a12`; gate **1409/0** / **1407/0** WT.
+- ~~**Hatch rivals/chips batch 17**~~ **pushed @ `c90e29b` (≥17:01 UTC GO)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100**); gate **1509/0** / **1507/0** WT.
+- ~~**Hatch rivals/chips batch 18**~~ **pushed @ `4460d60`** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70**); parent `c90e29b`; gate **1579/0** / **1577/0** WT.
+- ~~**Hatch rivals/chips batch 19**~~ **pushed @ `a61660c`** — Q976–Q1045 (`HatchRivalsChipsFinaleLaterTests`, **70**); parent `4460d60`; gate **1649/0** / **1647/0** WT.
+- ~~**Hatch rivals/chips batch 20**~~ **pushed @ `a87d35b`** — Q1046–Q1115 (**70**); gate **1719/0** / **1717/0** WT; parent `a61660c`.
+- ~~**Hatch era/cast batch 21**~~ **pushed @ `eaa0701`** — Q1116–Q1185 (**70**); gate **1789/0** / **1787/0** WT; parent `a87d35b`.
+- ~~**Hatch era-feel batch 22**~~ **pushed @ `1a3b9db`** — Q1186–Q1255 (**70**); gate **1859/0** / **1857/0** WT; parent `eaa0701`.
+- ~~**Hatch rival-arrival batch 23**~~ **pushed @ `b14e047`** — Q1256–Q1325 (**70**); gate **1929/0** / **1927/0** WT; parent `1a3b9db`.
+- ~~**Hatch sector-rival batch 24**~~ **pushed @ `c98a033`** — Q1326–Q1395 (**70**); gate **1999/0** / **1997/0** WT; parent `b14e047`.
+- ~~**Hatch funding/bubble batch 25**~~ **pushed @ `5da29a0`** — Q1396–Q1465 (**70**); gate **2069/0** / **2067/0** WT; parent `c98a033`.
+- ~~**Hatch shady/china batch 26**~~ **pushed @ `f50900e`** — Q1466–Q1535 (**70**); gate **2139/0** / **2137/0** WT; parent `5da29a0`.
+- ~~**Hatch freeze/audit batch 27**~~ **pushed @ `d05c9cc`** — Q1536–Q1605 (**70**); gate **2209/0** / **2207/0** WT; parent `f50900e`.
+- ~~**Hatch incident/bubble batch 28**~~ **pushed @ `7fae71e`** — Q1606–Q1675 (**70**); gate **2279/0** / **2277/0** WT; parent `d05c9cc`.
+- ~~**Hatch containment/ending batch 29**~~ **pushed @ `10f32fb`** — Q1676–Q1745 (**70**); gate **2349/0** / **2347/0** WT; parent `7fae71e`.
+- ~~**Hatch treaty/ending batch 30**~~ **pushed @ `dee894f`** — Q1746–Q1815 (`HatchTreatyEndingBarLaterTests`, **70**); gate **2419/0** / **2417/0** WT; parent `10f32fb`.
+- ~~**Hatch pop/second-place batch 31**~~ **pushed @ `0e5e13d`** — Q1816–Q1885 (`HatchPopSecondPlaceBarLaterTests`, **70**); gate **2489/0** / **2487/0** WT; parent `dee894f` (+ `c400fb5` test, `0e5e13d` docs).
+- ~~**Hatch forward-queue batch 32**~~ **pushed @ `e3a5a6d`** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); gate **2559/0** / **2557/0** WT; parent `0e5e13d` (+ `26258c2` test, `e3a5a6d` docs).
+- ~~**Hatch balance/soak batch 33**~~ **pushed @ `2c15504`** — Q1956–Q2025 (`HatchBalanceSoakBarLaterTests`, **70**); gate **2629/0** / **2627/0** WT; parent `e3a5a6d` (+ `29d5c6c` test, `2c15504` docs).
+- ~~**Hatch rival/plan batch 34**~~ **pushed @ `fc167aa`** — Q2026–Q2095 (`HatchRivalPlanBarLaterTests`, **70**); gate **2699/0** / **2697/0** WT; parent `2c15504` (+ `bae467b` test, `fc167aa` docs).
+- ~~**Hatch acquisition bar batch 35**~~ **pushed @ `ec6f1a9`** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa` (+ `4d1a26c` test, `ec6f1a9` docs).
+- ~~**Hatch distress/M&amp;A batch 36**~~ **pushed @ `ae38c65`** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); gate **2839/0** / **2837/0** WT; parent `ec6f1a9` (+ `62d23d9` test, `ae38c65` docs).
+- ~~**Hatch bubble/distress batch 37**~~ **pushed @ `0a9afc3`** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); gate **2909/0** / **2907/0** WT; parent `ae38c65` (+ `5e2aee5` test, `0a9afc3` docs).
+- ~~**Hatch capital/bubble batch 38**~~ **pushed @ `b268afb`** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); gate **2979/0** / **2977/0** WT; parent `0a9afc3` (+ `1f67dc0` test, `b268afb` docs).
+- ~~**Hatch funding follow-on batch 39**~~ **pushed @ `f4a7e4f`** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); gate **3049/0** / **3047/0** WT; parent `b268afb` (+ `d0e1303` test, `f4a7e4f` docs).
+- ~~**Hatch model-sales/chip batch 40**~~ **pushed @ `4fdf674`** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); gate **3119/0** / **3117/0** WT; parent `f4a7e4f` (+ `95bf36d` test, `4fdf674` docs).
+- ~~**Hatch acquisition/listing batch 41**~~ **pushed @ `dcf79d8`** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); gate **3189/0** / **3187/0** WT; parent `4fdf674` (+ `1507d5b` test, `dcf79d8` docs).
+- ~~**Hatch rival/economy batch 42**~~ **pushed @ `38f5385`** — Q2586–Q2655 (`HatchRivalEconomyBarLaterTests`, **70**); gate **3259/0** / **3257/0** WT; parent `dcf79d8` (+ `1e58224` test, `38f5385` docs).
+- ~~**Hatch world-map economy batch 43**~~ **pushed @ `5937e90`** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); gate **3329/0** / **3327/0** WT; parent `38f5385` (+ `d01f62b` test, `5937e90` docs).
+- ~~**Hatch shady/china batch 44**~~ **pushed @ `32fc117`** — Q2726–Q2795 (`HatchShadyChinaBarLaterTests2`, **70**); gate **3399/0** / **3397/0** WT; parent `5937e90` (+ `53261ee` test, `32fc117` docs).
+- ~~**Hatch incident/safety batch 45**~~ **pushed @ `6dbc3ac`** — Q2796–Q2865 (`HatchIncidentSafetyBarLaterTests`, **70**); gate **3469/0** / **3467/0** WT; parent `32fc117` (+ `5d681e6` test, `6dbc3ac` docs).
+- ~~**Hatch containment/ending batch 46**~~ **pushed @ `77ff014`** — Q2866–Q2935 (`HatchContainmentEndingBarLaterTests2`, **70**); gate **3539/0** / **3537/0** WT; parent `6dbc3ac` (+ `63295a9` test, `77ff014` docs).
+- ~~**Hatch regulators/bubble batch 47**~~ **pushed @ `e0b3311`** — Q2936–Q3005 (`HatchRegulatorBubbleBarLaterTests`, **70**); gate **3609/0** / **3607/0** WT; parent `77ff014` (+ `2c53e0d` test, `e0b3311` docs); Q200+golden **13/0** at tip prepush.
+- ~~**Hatch era/incident batch 48**~~ **pushed @ `d0aca54`** — Q3006–Q3075 (`HatchEraIncidentBarLaterTests`, **70**); gate **3679/0** / **3677/0** WT.
+- ~~**Hatch exit/sell batch 49**~~ **pushed @ `69e7282`** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; landed ~19:11 UTC.
+- ~~**Hatch bubble/acquire batch 50**~~ **pushed @ `afd2f0a`** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); gate **3819/0** in-repo; parent `69e7282` (+ `386df26`, `afd2f0a`).
+- ~~**Hatch balance/soak batch 51**~~ **pushed @ `b4186b0`** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); gate **3889/0** in-repo; parent `afd2f0a` (+ `66ff0bd`, `b4186b0`).
+- ~~**Hatch rival/plan batch 52**~~ **pushed @ `b5d8265`** — Q3286–Q3355 (`HatchRivalPlanBarLaterTests2`, **70**); gate **3959/0** in-repo; parent `b4186b0` (+ `3ca55e4`, `b5d8265`); landed ~21:23 UTC.
+- ~~**Hatch funding/follow-on batch 53**~~ **pushed @ `b661d1f`** — Q3356–Q3425 (`HatchFundingFollowOnBarLaterTests2`, **70**); gate **4029/0** in-repo; parent `b5d8265` (+ `ce6ace8`, `b661d1f`); landed ~21:53 UTC.
+- ~~**Hatch model-sales/chip batch 54**~~ **pushed @ `a62fc4a`** — Q3426–Q3495 (`HatchModelSalesChipBarLaterTests2`, **70**); gate **4099/0** in-repo; parent `b661d1f` (+ `230bfa8`, `b93c35f`, `a62fc4a`); landed ~22:42 UTC.
+- ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
+- ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
+- ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
+- ~~**Hatch rival/economy batch 58**~~ **pushed @ `29a97d3`** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); gate **4449/0** in-repo; parent `8744e8f` (+4); landed ~02:17 UTC Nov 24.
+- ~~**Hatch shady/china batch 59**~~ **pushed @ `7d877f6`** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); gate **4519/0** in-repo; landed ~03:16 UTC Nov 24.
+- ~~**Hatch incident/safety batch 60**~~ **pushed @ `d332207`** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); gate **4589/0** in-repo; parent `7d877f6` (+5); landed GO ~03:52 UTC Nov 24.
+- ~~**Hatch containment/ending batch 61**~~ **pushed @ `be476fc`** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); gate **4589/4589** in-repo; parent `d332207` (+6); landed ~04:48 UTC Nov 24.
+- ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
+- ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
+- **Hatch forward-queue batch 64 (LOCAL — NO PUSH until GO ≥ ~06:20 UTC)** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); parent `605edb0`; filter **70/0**; expected prepush **4799/4799**; cross-era + exit neighbours; schema **29** only.
+- **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
+  - **batch 65+ (TBD)** — balance-soak coda; **SolvencyHold** schema **30** parked.
+- **Refill (systems-only):** per store `internal/next-work-real-systems-only.md` — stack2 **data bars** on real config/state (no query-only `*Parts`); bible **Q100**/eras + **Q540** endings; cross-system bars keep save round-trip + runtime `Game.Solo` slots; rivals stack2 **52–62**; schema **29** only.
 
 ## Rules: forward queue (from bible / systems-design)
 

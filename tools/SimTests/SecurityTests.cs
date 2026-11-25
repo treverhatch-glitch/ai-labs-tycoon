@@ -189,7 +189,7 @@ public class SecurityTests
         back.StepMany(20);
         g.Weeks(20);
         Assert.Equal(g.Sim.Digest(), back.Digest());
-        string old = SaveSchemaPretend.At(g.C, 80, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 81, g.Sim.Save());
         Assert.DoesNotContain("securityTier", old);
         LabState lab = Simulation.Load(g.C, old).State.Labs.First(l => l.Id == g.Id);
         Assert.Equal(0, lab.SecurityTier);
