@@ -19212,19 +19212,19 @@
     "cooldownWeeks": 8
   },
   "rivalIntentNews": {
-    "enabled": 1,
+    "enabled": 0,
     "minWeeksBetween": 4
   },
   "gpuTierUnlock": {
-    "enabled": 1,
+    "enabled": 0,
     "unlockPermille": 450,
     "minEra": 2,
     "tierMin": 3
   },
   "endlessScenario": {
-    "enabled": 1
+    "enabled": 0
   },
   "shadyFreezeAudit": {
-    "enabled": 1
+    "enabled": 0
   }
 }
