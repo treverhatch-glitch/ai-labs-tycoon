@@ -62,4 +62,42 @@ public class HostExplainQueuePrepLaterTests
         Assert.Equal(24, preview.DefaultGamesPerPreset);
         Assert.All(presets, p => Assert.False(string.IsNullOrEmpty(p.Id)));
     }
+
+    [Fact]
+    public void Rival_relation_slices_expose_log_depth_for_host_badges()
+    {
+        var options = new NewGameOptions { Seed = 9, RivalIds = new List<string> { "openaye" } };
+        GameConfig c = TestData.Config();
+        Game g = new Game(Simulation.NewGame(c, options));
+        LabState rival = g.Rival("openaye");
+        g.Weeks(52);
+        var relations = DisplayQueries.RivalRelationSlices(g.C, g.State, 4);
+        Assert.Single(relations);
+        Assert.Equal(rival.Log.Count, relations[0].LogLineCount);
+        Assert.False(string.IsNullOrEmpty(relations[0].RivalId));
+    }
+
+    [Fact]
+    public void Funding_ladder_marks_completed_rung_after_raise()
+    {
+        var g = Game.Solo(tweak: OpenFunding);
+        Assert.True(DisplayQueries.TryNextFundingQuote(g.C, g.State, g.Me, out DisplayQueries.FundingRoundQuote q));
+        g.Do(Command.RaiseFunding(g.Id, q.RoundId));
+        List<DisplayQueries.FundingLadderStep> ladder = DisplayQueries.FundingLadderParts(g.C, g.State, g.Me);
+        Assert.Contains(ladder, s => s.RoundId == q.RoundId && s.Completed);
+        Assert.True(DisplayQueries.TryNextFundingQuote(g.C, g.State, g.Me, out _));
+    }
+
+    [Fact]
+    public void Balance_soak_preview_preset_count_matches_default_ids()
+    {
+        GameConfig c = TestData.Config();
+        DisplayQueries.BalanceSoakHostPreview preview = DisplayQueries.BalanceSoakPreview(c);
+        BalanceSoak.Preset[] presets = BalanceSoak.DefaultPresets(c);
+        HashSet<string> ids = new();
+        foreach (BalanceSoak.Preset p in presets)
+            ids.Add(p.Id);
+        Assert.Equal(ids.Count, preview.PresetCount);
+        Assert.True(preview.DefaultGamesPerPreset >= 1);
+    }
 }
