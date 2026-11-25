@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1326–Q1395: batch 24 sector/rival economy data bar (schema 42).</summary>
+/// <summary>Q1326–Q1395: batch 24 sector/rival economy data bar (schema 34).</summary>
 public class HatchSectorRivalLaterTests
 {
     [Fact] public void Q1326_sector_rival_1326() { GameConfig c = TestData.Config(); Assert.NotEmpty(c.Market.Sectors); Assert.All(c.Market.Sectors, s => Assert.False(string.IsNullOrEmpty(s.Era))); }

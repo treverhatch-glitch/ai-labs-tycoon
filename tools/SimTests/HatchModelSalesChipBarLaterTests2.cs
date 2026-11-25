@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3426–Q3495: batch 54 model-sales/chip data bar coda (schema 42).</summary>
+/// <summary>Q3426–Q3495: batch 54 model-sales/chip data bar coda (schema 34).</summary>
 public class HatchModelSalesChipBarLaterTests2
 {
     [Fact] public void Q3426_mschip2_3426() { GameConfig c = TestData.Config(); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); Assert.True(c.ModelSales.EarningsMultipleWeeks > 0); }

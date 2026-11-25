@@ -384,7 +384,7 @@ public class ResearchLeadTests
     {
         Game g = Staffed();
         g.Weeks(5);
-        string old = SaveSchemaPretend.At(g.C, 32, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 31, g.Sim.Save());
         Assert.DoesNotContain("researchLeads", old);
         Assert.DoesNotContain("leadSpeedPermille", old);
         Simulation loaded = Simulation.Load(g.C, old);

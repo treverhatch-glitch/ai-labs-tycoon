@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2516–Q2585: batch 41 acquisition/listing data bar (schema 42).</summary>
+/// <summary>Q2516–Q2585: batch 41 acquisition/listing data bar (schema 34).</summary>
 public class HatchAcquireListingBarLaterTests
 {
     [Fact] public void Q2516_acqlist_2516() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.CrashDistressPricePermille > 0); Assert.True(c.Acquisitions.ReadyChipBookPermille > 0); }

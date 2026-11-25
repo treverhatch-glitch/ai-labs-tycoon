@@ -78,10 +78,23 @@ namespace AiLabs.Rules.Systems
         /// <summary>The alignment a model must show before it can go on sale, or 0 when the era has no such law.</summary>
         public static int ReleaseBar(GameConfig c, int tick) { return EraSystem.AtTick(c, tick).MinReleaseAlignment; }
 
+        public static int ReleaseBar(GameConfig c, GameState state, LabState lab, int tick)
+        {
+            int bar = ReleaseBar(c, tick);
+            if (lab != null && state != null && lab.Id == state.PlayerLabId)
+                bar = (int)MathI.Clamp(bar + LawShaping.ReleaseBarDelta(c, lab, tick), 0, MathI.Permille);
+            return bar;
+        }
+
         /// <summary>True when the model clears the era's law. What counts is the alignment the lab can show, so a lab that sandbags passes on paper.</summary>
         public static bool MeetsReleaseBar(GameConfig c, ModelState model, int tick)
         {
             return SafetySystem.DisplayedAlignment(model) >= ReleaseBar(c, tick);
+        }
+
+        public static bool MeetsReleaseBar(GameConfig c, GameState state, LabState lab, ModelState model, int tick)
+        {
+            return SafetySystem.DisplayedAlignment(model) >= ReleaseBar(c, state, lab, tick);
         }
 
         /// <summary>Every rule of the era at this tick, in a fixed order, with the era before it and the first era for comparison.</summary>

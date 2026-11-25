@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2026–Q2095: batch 34 rival/plan data bar (schema 42).</summary>
+/// <summary>Q2026–Q2095: batch 34 rival/plan data bar (schema 34).</summary>
 public class HatchRivalPlanBarLaterTests
 {
     [Fact] public void Q2026_rival_plan_2026() { GameConfig c = TestData.Config(); Assert.True(c.Rivals.Count >= 3); Assert.True(c.Rivals[0].Plan.WealthGrowthPermillePerMillion >= 0); }

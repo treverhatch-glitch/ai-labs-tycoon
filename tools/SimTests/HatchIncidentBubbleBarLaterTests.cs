@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1606–Q1675: batch 28 incident/bubble bar (schema 42).</summary>
+/// <summary>Q1606–Q1675: batch 28 incident/bubble bar (schema 34).</summary>
 public class HatchIncidentBubbleBarLaterTests
 {
     [Fact] public void Q1606_incident_bubble_1606() { GameConfig c = TestData.Config(); Assert.True(c.Safety.IncidentRungs.Count >= 6); Assert.True(c.Bubble.PopAtPermille > 0); }

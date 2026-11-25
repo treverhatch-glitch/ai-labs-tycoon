@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q496–Q565: batch 13 grouped coda — chip × M&amp;A (schema 42).</summary>
+/// <summary>Q496–Q565: batch 13 grouped coda — chip × M&amp;A (schema 34).</summary>
 public class HatchRivalsChipsCodaLaterTests
 {
     static ModelState Released(Game g, int cap) => new ModelState

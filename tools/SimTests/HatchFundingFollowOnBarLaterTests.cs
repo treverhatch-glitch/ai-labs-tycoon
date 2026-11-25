@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2376–Q2445: batch 39 funding follow-on data bar (schema 42).</summary>
+/// <summary>Q2376–Q2445: batch 39 funding follow-on data bar (schema 34).</summary>
 public class HatchFundingFollowOnBarLaterTests
 {
     [Fact] public void Q2376_followon_2376() { GameConfig c = TestData.Config(); Assert.True(c.Funding.FollowOn.DownRoundBubblePermille > 0); Assert.True(c.Funding.FollowOn.DownRoundCashPermille > 0); }

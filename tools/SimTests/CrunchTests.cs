@@ -314,7 +314,7 @@ public class CrunchTests
     {
         Game g = Lab();
         g.Weeks(4);
-        string old = SaveSchemaPretend.At(g.C, 43, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 42, g.Sim.Save());
         Assert.DoesNotContain("crunchWeeks", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3846–Q3915: batch 60 incident/safety data bar coda (schema 42).</summary>
+/// <summary>Q3846–Q3915: batch 60 incident/safety data bar coda (schema 34).</summary>
 public class HatchIncidentSafetyBarLaterTests2
 {
     [Fact] public void Q3846_incsafe2_3846() { GameConfig c = TestData.Config(); Assert.True(c.Shady.InvestigationThreshold > 0); Assert.True(c.Shady.AuditInvestigationPermille >= 0); }

@@ -5,7 +5,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>The schema-5 bankrupt fixture still loads and plays without throwing even when cash and the ledger disagree at rest.</summary>
+/// <summary>The schema-5 bankrupt fixture still loads, balances the books at rest, and plays without throwing.</summary>
 public class Schema5BankruptFixtureHardeningTests
 {
     [Fact]
@@ -15,6 +15,7 @@ public class Schema5BankruptFixtureHardeningTests
         string json = File.ReadAllText(Path.Combine(TestData.RepoRoot(), "tools", "SimTests", "Fixtures", "schema5-bankrupt-save.json"));
         Simulation sim = Simulation.Load(c, json);
         Assert.Empty(SaveGame.Problems(c, sim.State));
+        HardeningInvariants.AssertBooksBalance(c, sim.State);
         for (int w = 0; w < 12; w++)
         {
             sim.Step();

@@ -155,6 +155,8 @@ namespace AiLabs.Rules.Systems
             model.CapTech = f.Tech;
             model.CapCarryover = f.Carryover;
             model.CapLuck = (int)MathI.MulPermille(f.Total, luck);
+            int src = DataSources.QualityPermille(c, lab) / 50;
+            model.CapLuck += src;
             if (f.Total + model.CapLuck < 1) model.CapLuck = 1 - f.Total;
             model.Capability = f.Total + model.CapLuck;
 

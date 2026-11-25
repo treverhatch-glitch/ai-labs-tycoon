@@ -24,6 +24,9 @@ namespace AiLabs.Rules.Sim
         public string StyleId = "";
         /// <summary>The bloc the lab is incorporated in; empty for the config's default.</summary>
         public string HomeBlocId = "";
+        /// <summary>Scenario baggage id for a new game (schema 143); empty for none.</summary>
+        public string BaggageId = "";
+        public string ScenarioId = "";
     }
 
     /// <summary>
@@ -169,6 +172,16 @@ namespace AiLabs.Rules.Sim
                     Mentoring.RunWeek(c, state, state.Labs[i]);
                     Skunkworks.RunWeek(c, state, state.Labs[i]);
                     Alumni.RunWeek(c, state, state.Labs[i]);
+                    ReleaseChecklist.RunWeek(c, state, state.Labs[i]);
+                    HumanQueue.RunWeek(c, state, state.Labs[i]);
+                    EvalHarness.RunWeek(c, state, state.Labs[i]);
+                    Drills.RunWeek(c, state, state.Labs[i]);
+                    AgentSandbox.RunWeek(c, state, state.Labs[i]);
+                    RunawayPlaybook.RunWeek(c, state, state.Labs[i]);
+                    OrchestrationBudget.RunWeek(c, state, state.Labs[i]);
+                    PublicMetrics.RunWeek(c, state, state.Labs[i]);
+                    DataSources.RunWeek(c, state, state.Labs[i]);
+                    OpenWeights.RunWeek(c, state, state.Labs[i]);
                     BoardMotions.RunWeek(c, state, state.Labs[i]);
                     Knowledge.RunWeek(c, state, state.Labs[i]);
                     PostTraining.RunWeek(c, state, state.Labs[i]);
@@ -228,6 +241,10 @@ namespace AiLabs.Rules.Sim
                     SafetyCulture.RunWeek(c, state, state.Labs[i]);
                     ResearchLeads.RunWeek(c, state, state.Labs[i]);
                     OfficeEvents.RunWeek(c, state, state.Labs[i]);
+                    TakeoffCrisis.RunWeek(c, state, state.Labs[i]);
+                    RungSixCrisis.RunWeek(c, state, state.Labs[i]);
+                    ScenarioGoals.RunWeek(c, state, state.Labs[i]);
+                    CampaignDeadline.RunWeek(c, state, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }
@@ -246,10 +263,7 @@ namespace AiLabs.Rules.Sim
             if (GameDate.IsMonthEnd(c.Calendar, tick))
             {
                 for (int i = 0; i < state.Labs.Count; i++)
-                {
-                    LabState lab = state.Labs[i];
-                    if (LabQueries.ParticipatesInEconomy(lab)) GovernmentSystem.CloseMonth(c, state, lab);
-                }
+                    if (LabQueries.ParticipatesInEconomy(state.Labs[i])) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
                 EndingSystem.TryTreaty(c, state);
                 EndingSystem.TryNationalised(c, state);
                 LabState player = state.Player;

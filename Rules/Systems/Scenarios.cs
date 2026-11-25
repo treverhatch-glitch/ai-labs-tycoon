@@ -25,6 +25,7 @@ namespace AiLabs.Rules.Systems
             o.Leader = s.Leader;
             o.FamilyName = s.FamilyName;
             o.RivalIds = s.RivalIds.Count == 0 ? null : new List<string>(s.RivalIds);
+            o.ScenarioId = scenarioId;
             return o;
         }
 

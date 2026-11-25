@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1396–Q1465: batch 25 funding/bubble data bar (schema 42).</summary>
+/// <summary>Q1396–Q1465: batch 25 funding/bubble data bar (schema 34).</summary>
 public class HatchFundingBubbleLaterTests
 {
     [Fact] public void Q1396_fund_bubble_1396() { GameConfig c = TestData.Config(); Assert.True(c.Bubble.PopAtPermille > 0); Assert.True(c.Bubble.HotPermille > 0); }

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q566–Q665: batch 14 epilogue (grown) — hall/cloud × M&amp;A closure (schema 42).</summary>
+/// <summary>Q566–Q665: batch 14 epilogue (grown) — hall/cloud × M&amp;A closure (schema 34).</summary>
 public class HatchRivalsChipsEpilogueLaterTests
 {
     static ModelState Released(Game g, int cap) => new ModelState

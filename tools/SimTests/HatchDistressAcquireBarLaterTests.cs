@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2166–Q2235: batch 36 distress/acquire data bar (schema 42).</summary>
+/// <summary>Q2166–Q2235: batch 36 distress/acquire data bar (schema 34).</summary>
 public class HatchDistressAcquireBarLaterTests
 {
     [Fact] public void Q2166_distress_2166() { GameConfig c = TestData.Config(); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); Assert.True(c.ModelSales.MinOffer > 0); }

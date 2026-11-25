@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3286–Q3355: batch 52 rival/plan data bar coda (schema 42).</summary>
+/// <summary>Q3286–Q3355: batch 52 rival/plan data bar coda (schema 34).</summary>
 public class HatchRivalPlanBarLaterTests2
 {
     [Fact] public void Q3286_rivplan2_3286() { GameConfig c = TestData.Config(); Assert.True(c.Rivals.Count >= 3); Assert.True(c.Rivals[0].Plan.WealthGrowthPermillePerMillion >= 0); }

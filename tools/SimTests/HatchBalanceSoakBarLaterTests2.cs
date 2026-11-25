@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3216–Q3285: batch 51 balance/soak data bar coda (schema 42).</summary>
+/// <summary>Q3216–Q3285: batch 51 balance/soak data bar coda (schema 34).</summary>
 public class HatchBalanceSoakBarLaterTests2
 {
     [Fact] public void Q3216_soak2_3216() { GameConfig c = TestData.Config(); var presets = BalanceSoak.DefaultPresets(c); Assert.True(presets.Length >= 3); }

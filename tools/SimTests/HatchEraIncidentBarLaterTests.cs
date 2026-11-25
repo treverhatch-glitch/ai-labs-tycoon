@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3006–Q3075: batch 48 era/incident data bar (schema 42).</summary>
+/// <summary>Q3006–Q3075: batch 48 era/incident data bar (schema 34).</summary>
 public class HatchEraIncidentBarLaterTests
 {
     [Fact] public void Q3006_erainc_3006() { GameConfig c = TestData.Config(); var agents = c.Eras.First(e => e.Id == "agents"); Assert.True(agents.IncidentLoadPermille >= 1000); Assert.All(c.Eras, e => Assert.True(e.IncidentLoadPermille > 0)); }

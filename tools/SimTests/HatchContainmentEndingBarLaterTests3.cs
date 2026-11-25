@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3916–Q3985: batch 61 containment/ending data bar coda (schema 42).</summary>
+/// <summary>Q3916–Q3985: batch 61 containment/ending data bar coda (schema 34).</summary>
 public class HatchContainmentEndingBarLaterTests3
 {
     [Fact] public void Q3916_contend3_3916() { GameConfig c = TestData.Config(); Assert.Contains(c.Endings.Endings, m => !string.IsNullOrEmpty(m.Id)); Assert.NotNull(c.Endings.Superintelligence); }

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3706–Q3775: batch 58 rival economy data bar coda (schema 42).</summary>
+/// <summary>Q3706–Q3775: batch 58 rival economy data bar coda (schema 34).</summary>
 public class HatchRivalEconomyBarLaterTests2
 {
     [Fact] public void Q3706_rivalecon2_3706() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.RivalRollupChancePermille > 0); Assert.True(c.Acquisitions.PlannerAcquireChancePermille > 0); }

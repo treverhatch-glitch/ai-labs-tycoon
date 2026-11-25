@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1676–Q1745: batch 29 containment/ending bar (schema 42).</summary>
+/// <summary>Q1676–Q1745: batch 29 containment/ending bar (schema 31).</summary>
 public class HatchContainmentEndingBarLaterTests
 {
     [Fact] public void Q1676_containment_1676() { var g = Game.Solo(); int baseWork = TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick); g.Me.Rooms.Add(new RoomState { Id = g.State.TakeId(), TypeId = "containment-wing", X = 8, Y = 0, Width = 4, Height = 4 }); Assert.True(LabQueries.ContainmentAlignmentBonus(g.C, g.Me) > 0); }

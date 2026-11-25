@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q401–Q495: grouped capstone — multi-lab chip × M&amp;A × economy (schema 42).</summary>
+/// <summary>Q401–Q495: grouped capstone — multi-lab chip × M&amp;A × economy (schema 34).</summary>
 public class HatchRivalsChipsCapstoneLaterTests
 {
     static ModelState Released(Game g, int cap) => new ModelState

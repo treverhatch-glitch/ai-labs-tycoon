@@ -54,6 +54,10 @@ public class MoreOfficeEventsTests
             Assert.Equal(3, e.Choices.Count);
             Assert.Equal(OfficeTrigger.Random, e.Trigger);
         }
+        OfficeEventConfig takeoff = c.Office.Event("takeoff-crisis");
+        Assert.NotNull(takeoff);
+        Assert.Equal(3, takeoff.Choices.Count);
+        Assert.Equal(OfficeTrigger.Takeoff, takeoff.Trigger);
         Assert.Empty(ConfigValidator.Problems(c));
     }
 
@@ -177,6 +181,7 @@ public class MoreOfficeEventsTests
         Assert.Equal("intern-repo", c.Office.Events[0].IdValue);
         int escape = c.Office.Events.FindIndex(e => e.IdValue == "escape-attempt");
         Assert.Equal(NewIds, c.Office.Events.Skip(escape + 1).Take(NewIds.Length).Select(e => e.IdValue).ToArray());
+        Assert.Equal("takeoff-crisis", c.Office.Events.Skip(escape + 1 + NewIds.Length).First().IdValue);
     }
 
     [Fact]

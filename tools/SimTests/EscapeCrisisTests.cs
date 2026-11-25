@@ -67,7 +67,7 @@ public class EscapeCrisisTests
         Assert.Contains(e.Choices, ch => ch.Effects.Any(f => f.Kind == OfficeEffectKind.CashWeeks && f.Amount < 0 && ch.Effects.Any(k => k.Kind == OfficeEffectKind.Corruption && k.Amount < 0)));
         Assert.Contains(e.Choice(e.LapseChoice).Effects, f => f.Kind == OfficeEffectKind.Corruption && f.Amount > 0);
         Assert.Empty(ConfigValidator.Problems(c));
-        Assert.DoesNotContain(c.Office.Events.Where(x => x.Trigger != OfficeTrigger.Escape), x => !string.IsNullOrEmpty(x.LapseChoice));
+        Assert.DoesNotContain(c.Office.Events.Where(x => x.Trigger != OfficeTrigger.Escape && x.Trigger != OfficeTrigger.Takeoff && x.Trigger != OfficeTrigger.RungSix && x.Trigger != OfficeTrigger.ShutdownCompute), x => !string.IsNullOrEmpty(x.LapseChoice));
     }
 
     [Fact]

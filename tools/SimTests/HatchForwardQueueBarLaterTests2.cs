@@ -8,7 +8,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q4126–Q4195: batch 64 forward-queue data bar coda (schema 42).</summary>
+/// <summary>Q4126–Q4195: batch 64 forward-queue data bar coda (schema 34).</summary>
 public class HatchForwardQueueBarLaterTests2
 {
     [Fact] public void Q4126_forward2_4126() { GameConfig c = TestData.Config(); var agents = c.Eras.First(e => e.Id == "agents"); Assert.True(agents.IncidentLoadPermille >= 1000); Assert.True(c.Calendar.WeeksPerYear > 0); }

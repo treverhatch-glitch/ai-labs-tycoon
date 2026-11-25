@@ -320,7 +320,7 @@ public class CampaignTests
     {
         Game g = Lab();
         ToNextEra(g);
-        string old = SaveSchemaPretend.At(g.C, 39, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 38, g.Sim.Save());
         Assert.DoesNotContain("eraScores", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);

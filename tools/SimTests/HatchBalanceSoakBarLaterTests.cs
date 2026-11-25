@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1956–Q2025: batch 33 balance/soak data bar (schema 42).</summary>
+/// <summary>Q1956–Q2025: batch 33 balance/soak data bar (schema 34).</summary>
 public class HatchBalanceSoakBarLaterTests
 {
     [Fact] public void Q1956_soak_1956() { GameConfig c = TestData.Config(); var presets = BalanceSoak.DefaultPresets(c); Assert.True(presets.Length >= 3); Assert.True(c.Calendar.WeeksPerYear > 0); }

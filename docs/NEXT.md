@@ -230,25 +230,25 @@ and says why in the commit message.
 47. **Foundry snub (bible ch. 7 chip risk events).** ~~Done~~: `chips.snubStandingBelow`/`snubChancePermille`/`snubWeeks`, `ChipSystem.SnubWeeks`, `EventKind.ChipSlotSnubbed`, `FoundrySnubTests`, `docs/content/chips.md` (Q288). No schema.
 48. **Overload costs reliability (bible ch. 6 model states, "overworked: serving load too high; reliability drops").** ~~Done~~: `safety.overloadIncidentPermille` / `overloadForRivals`, `SafetySystem.OverloadPermille` and `WeeklyChancePermille`, `IncidentBreakdown.FromOverload`, `OverloadTests`, `docs/content/overload.md` (Q289). No schema.
 49. **Release notes (bible ch. 14 "its release notes").** ~~Done~~: `OfficeTrigger.Release`, `OfficeEvents.OnRelease`, three events, `ReleaseNotesTests`, `docs/content/office-events.md` (Q290). No schema.
-50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 43, `MigrateTo43`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
+50. **Research experiments, the third share of compute (bible ch. 3 "split compute three ways").** ~~Done~~: `SetResearchShare`, `lab.researchSharePermille` (schema 42, `MigrateTo42`), `research.maxComputeSharePermille` / `computeShareBonusPermille`, `ResearchShareTests`, `docs/content/research-share.md` (Q291).
 51. **Era-flavoured office events (bible "events by era").** ~~Done~~: `fromYear` / `toYear` on `OfficeEventConfig`, `OfficeEvents.InYears`, six events, `EraOfficeEventsTests`, `docs/content/office-events.md` (Q292).
 52. **Era-flavoured filler headlines (bible ch. 12 "the ticker").** ~~Done~~: `toYear` on `FillerConfig`, `NewsTicker.PickFiller`, 18 new lines, `EraFillerTests`, `docs/content/news-ticker.md` (Q293).
 53. **Era-flavoured company chat (bible ch. 10).** ~~Done~~: `fromYear` / `toYear` on `ChatLineConfig`, `CompanyChat.Fits`, seven lines, `EraChatTests`, `docs/content/company-chat-and-glow.md` (Q294).
 54. **Headlines for chip and loan events.** ~~Done~~: eight lines in `news.headlines`, `ChipLoanNewsTests`, `docs/content/news-ticker.md` (Q295).
 55. **Chat lines for chip and loan events.** ~~Done~~: ten lines in `chat.lines`, `ChipLoanChatTests`, `docs/content/company-chat-and-glow.md` (Q296).
 56. **Headlines for press, poaching and Gauntlet events.** ~~Done~~: five lines in `news.headlines`, `PressNewsTests`, `docs/content/news-ticker.md` (Q297).
-57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 44, `MigrateTo44`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
-58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 45, `MigrateTo45`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
+57. **Crunch time (staff).** ~~Done~~: `SetCrunch`, `lab.crunchWeeks` (schema 43, `MigrateTo43`), `Crunch`, `staffPeople.crunch*`, `CrunchEnded`, `CrunchTests`, `docs/content/crunch-time.md` (Q298).
+58. **Incident insurance (finance).** ~~Done~~: `SetInsurance`, lab insurance fields and a ledger line (schema 44, `MigrateTo44`), `Insurance`, `finance.insurance*`, `InsuranceTests`, `docs/content/insurance.md` (Q299).
 59. **The offsite (staff).** ~~Done~~: `HoldOffsite`, `Offsite`, `staffPeople.offsite*`, `OffsiteHeld`, `OffsiteTests`, `docs/content/offsite.md` (Q300).
-60. **Red team a model (safety).** ~~Done~~: `RedTeamModel`, `RedTeam`, `redTeam` data, model `redTeamUntil` (schema 46, `MigrateTo46`), `FromRedTeam` in the incident breakdown, `RedTeamTests`, `docs/content/red-team.md` (Q301).
-61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 47, `MigrateTo47`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
-62. **Pay policy (staff).** ~~Done~~: `SetPayLevel`, `Pay`, `staffPeople.pay*` data, lab `payLevel`/`payLockedUntil` (schema 48, `MigrateTo48`), `PayPolicyTests`, `docs/content/pay-policy.md` (Q303).
+60. **Red team a model (safety).** ~~Done~~: `RedTeamModel`, `RedTeam`, `redTeam` data, model `redTeamUntil` (schema 45, `MigrateTo45`), `FromRedTeam` in the incident breakdown, `RedTeamTests`, `docs/content/red-team.md` (Q301).
+61. **Interpretability programme (safety).** ~~Done~~: `SetInterpretability`, `Interpretability`, `interp` data, lab `interpLevel` (schema 46, `MigrateTo46`), a stale-tech relief in `ControlStale`, `InterpretabilityTests`, `docs/content/interpretability.md` (Q302).
+62. **Pay policy (staff).** ~~Done~~: `SetPayLevel`, `Pay`, `staffPeople.pay*` data, lab `payLevel`/`payLockedUntil` (schema 47, `MigrateTo47`), `PayPolicyTests`, `docs/content/pay-policy.md` (Q303).
 63. **Headlines for the care tools (news).** ~~Done~~: seven lines for crunch, insurance, the offsite, red teams, interpretability and pay; data and `CareToolsNewsTests` only (Q304).
 64. **Chat lines for the care tools (chat).** ~~Done~~: 14 lines for crunch, insurance, the offsite, red teams, findings and pay; picks on `CrunchEnded` and `PayChanged`; `CareToolsChatTests` (Q305).
 65. **The care tools together (tests).** ~~Done~~: `CareToolsTogetherTests` over 260 weeks and three seeds (Q306).
-66. **Compliance office (government).** ~~Done~~: `SetCompliance`, `Compliance`, `compliance` data, lab `complianceLevel` (schema 49, `MigrateTo49`), `ComplianceTests`, `docs/content/compliance.md` (Q307).
-67. **Published papers and academic prestige (talent).** ~~Done~~: `PublishPaper`, `Prestige`, `prestige` data, lab `prestige` (schema 50, `MigrateTo50`), `PrestigeTests`, `docs/content/papers.md` (Q308).
-68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 51, `MigrateTo51`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
+66. **Compliance office (government).** ~~Done~~: `SetCompliance`, `Compliance`, `compliance` data, lab `complianceLevel` (schema 48, `MigrateTo48`), `ComplianceTests`, `docs/content/compliance.md` (Q307).
+67. **Published papers and academic prestige (talent).** ~~Done~~: `PublishPaper`, `Prestige`, `prestige` data, lab `prestige` (schema 49, `MigrateTo49`), `PrestigeTests`, `docs/content/papers.md` (Q308).
+68. **Compute sublet (compute).** ~~Done~~: `SetSublet`, `Sublet`, `sublet` data, lab `subletPermille`/`subletLockedUntil`, ledger `sublet` (schema 50, `MigrateTo50`), `SubletTests`, `docs/content/compute-sublet.md` (Q309).
 69. **Headlines and chat for the office, papers and the sublet (news, chat).** ~~Done~~: three headlines and four chat lines, `OfficePapersSubletNewsChatTests`, `news-ticker.md`, `company-chat-and-glow.md` (Q310).
 70. **The office, papers and the sublet together (tests).** ~~Done~~: `OfficePapersSubletTogetherTests` (Q311).
 71. **External safety audit (safety, reputation).** ~~Done~~: `CommissionAudit`, `SafetyAudit`, `audit` data, model `auditedUntil` (schema 51, `MigrateTo51`), `SafetyAuditTests`, `docs/content/safety-audit.md` (Q312).
@@ -366,8 +366,140 @@ and says why in the commit message.
 183. **Owners and documentation.** ~~Done~~: `AssignOwner`, `WriteDocs`, schema 123, `KnowledgeTests` (Q440).
 184. **Board motions.** ~~Done~~: `HoldBoardMeetings`, `AnswerMotion`, schema 124, `BoardMotionsTests` (Q441).
 185. **Batch eleven news and chat** and four combination rules. ~~Done~~: Q442 to Q446, `AgencyAnnotationPostTrainingKnowledgeBoardNewsChatTests`, `AgencyAnnotationPostTrainingKnowledgeBoardTogetherTests`.
+186. **Incident drills.** ~~Done~~: `StartDrill`, schema 125, `DrillsTests` (Q447).
+187. **Public eval harness.** ~~Done~~: `RegisterEval`, schema 126, `EvalHarnessTests` (Q448, Q450).
+188. **Tool policy for agents.** ~~Done~~: `SetToolPolicy`, schema 127, `ToolPolicyTests` (Q449).
+189. **Human escalation queue.** ~~Done~~: `StaffHumanQueue`, `ClearHumanQueue`, schema 128, `HumanQueueTests` (Q449).
+190. **Release checklist.** ~~Done~~: `SignChecklistItem`, schema 129, `ReleaseChecklistTests` (Q451).
+191. **Batch twelve news and chat** for drills, evals, tools, queue and checklist. ~~Done~~: `/tmp/f/news8.py`, `DrillsEvalToolHumanReleaseNewsChatTests` (Q451).
+192. **Batch twelve combination rules** (drills with on-call, tools with queue, eval with board, checklist trust). ~~Done~~: `DrillsEvalToolHumanReleaseTogetherTests` (Q448–Q451).
+193. **Agent sandbox.** ~~Done~~: `StartSandbox`, schema 130, `AgentSandboxTests` (Q452).
+194. **Runaway playbook.** ~~Done~~: `SetPlaybook`, `ArmPlaybook`, schema 131, `RunawayPlaybookTests` (Q453).
+195. **Orchestration budget.** ~~Done~~: `SetOrchBudget`, schema 132, `OrchestrationBudgetTests` (Q454).
+196. **Traffic router.** ~~Done~~: `SetRouteShare`, schema 133, `TrafficRouterTests` (Q455).
+197. **Public metrics.** ~~Done~~: `PublishMetrics`, `StopMetrics`, schema 134, `PublicMetricsTests` (Q456).
+198. **Batch thirteen news and chat** for sandbox, playbook, budget, routes and metrics. ~~Done~~: `SandboxPlaybookOrchRouteMetricsNewsChatTests` (Q456).
+199. **Batch thirteen combination rules** (sandbox with tools, playbook with blowups, budget with queue, routes with overload, metrics with eval). ~~Done~~: `SandboxPlaybookOrchRouteMetricsTogetherTests` (Q452–Q456).
+200. **Specialist lines.** ~~Done (local)~~: `BranchSpecialist`, schema 135, `SpecialistLinesTests` (Q457).
+201. **Data sources.** ~~Done (local)~~: `AcquireDataSource`, `RenewDataSource`, schema 136, `DataSourcesTests` (Q458).
+202. **Open weights.** ~~Done (local)~~: `SetWeightsPolicy`, schema 137, `OpenWeightsTests` (Q459).
+203. **Sector pricing desk.** ~~Done (local)~~: `SetSectorPrice`, schema 138, `SectorPricingTests` (Q460).
+204. **Batch fourteen news, chat and combination rules.** ~~Done~~: Q461; `SpecialistDataOpenPriceNewsChatTests`, `SpecialistDataOpenPriceTogetherTests`.
+205. **Campaign deadline.** ~~Done (local)~~: `SetCampaignDeadline`, schema 139, `CampaignDeadlineTests` (Q462).
+206. **Law shaping.** ~~Done (local)~~: `ShapeLaw`, schema 140, `LawShapingTests` (Q463).
+207. **Exit price net of debt.** ~~Done (local)~~: exit breakdown + `SellLab` net, schema 141, `ExitDebtTests` (Q464).
+208. **Takeoff crisis.** ~~Done (local)~~: `RespondTakeoff`, schema 142, `TakeoffCrisisTests` (Q465).
+209. **Scenario baggage.** ~~Done (local)~~: `PickScenarioBaggage`, schema 143, `ScenarioBaggageTests` (Q466).
+210. **Batch fifteen news, chat and combination rules.** ~~Done (local)~~: `BatchFifteenNewsChatTests`, `BatchFifteenTogetherTests` (Q467).
+211. **Margin call on loans (bible ch. 9 funding ladder tail).** ~~Done (local)~~: `MarginCall`, `SatisfyMarginCall`, schema 144 (Q468).
+212. **Hearing share-price effect (bible ch. 12 hearings tail).** ~~Done (local)~~: `HearingSharePrice`, schema 145 (Q469).
+213. **Rung-6 crisis or site shutdown (bible ch. 10 ladder tail).** ~~Done (local)~~: `RungSixCrisis`, `RespondRungSix`, schema 146 (Q470).
+214. **Per-scenario goals (bible ch. 15 tail).** ~~Done (local)~~: `ScenarioGoals`, schema 147 (Q471).
+215. **Targeted lobbying law (bible ch. 12 lobbying tail).** ~~Done (local)~~: `SetLawTarget`, schema 148 (Q472).
+216. **Batch sixteen news, chat and combination rules.** ~~Done (local)~~: `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests` (Q473).
+217. **Hardening polish: batch-16 chat @ schemas 145–148.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` hearing + law-target chat pretends (no rules).
+218. **Hardening polish: rung-six respond mid-save.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` respond → save → weeks keeps arc/cooldown.
+219. **Hardening polish: cross-soak EraP hooks.** ~~Done (local)~~: `HardeningCrossSystemSoakTests` week ≥470 — `SetLawTarget`, shape law, float, `ScenarioGoals.Check`, loan, `SatisfyMarginCall`, `SetCampaignDeadline`, `GovernmentSystem.CloseMonth` when floated; plus batch-16 margin/scenario chat pretends and law-target+loan mid-save (`EraPBatchSixteenNewsChatHardeningTests`, `EraPBatchSixteenTogetherHardeningTests`). Hardening filter **452/0** (local tip; origin **`c9a1147`**).
+220. **Hardening polish: rung-six + margin covenant.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` rung-six respond + margin mid-save; `EraPSystemsEdgeHardeningTests` satisfy margin while rung-six cooldown.
+221. **Hardening polish: campaign deadline + margin.** ~~Done (local)~~ ~~**PUSHED** @ `3f48328`~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + `MarginCallLeft` round-trip.
+222. **Hardening polish: scenario goal missed chat/headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147 round-trip.
+223. **Hardening polish: law target + scenario goal.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` goal result + `LawTarget` mid-save.
+224. **Hardening polish: float + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` float ppm + `ScenarioGoalResult` round-trip.
+225. **Hardening polish: hearing float + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` `PublicFloatPpm` + `LawTarget` mid-save.
+226. **Hardening polish: campaign deadline + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + law target.
+227. **Hardening polish: scenario goal met headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147.
+228. **Hardening polish: law target headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 148.
+229. **Hardening polish: law shape pending + margin.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` pending + `MarginCallLeft`.
+230. **Hardening polish: scenario id + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+231. **Hardening polish: rung-six cooldown + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+232. **Hardening polish: margin default headline.** ~~Done (local)~~: `MarginCallDefaulted` @ schema 144.
+233. **Hardening polish: campaign deadline hit news.** ~~Done (local)~~: headline + chat @ schema 139.
+234. **Hardening polish: law shaped chat.** ~~Done (local)~~: `LawShaped` @ schema 140.
+235. **Hardening polish: bubble + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+236. **Hardening polish: deadline + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+237. **Hardening polish: float + scenario goal + deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+238. **Hardening polish: law shaped headline @ 140.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests`.
+239. **Hardening polish: campaign deadline set chat.** ~~Done (local)~~: @ schema 139.
+240. **Hardening polish: scenario baggage chat.** ~~Done (local)~~: @ schema 143.
+241. **Hardening polish: baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+242. **Hardening polish: margin + law target.** ~~Done (local)~~: `MarginCallLeft` + `LawTarget` mid-save.
+243. **Hardening polish: hearing float + scenario goal.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+244. **Hardening polish: campaign deadline set headline.** ~~Done (local)~~: @ schema 139.
+245. **Hardening polish: scenario baggage headline.** ~~Done (local)~~: @ schema 143.
+246. **Hardening polish: baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+247. **Hardening polish: law pending + scenario goal.** ~~Done (local)~~: pending + `ScenarioGoalResult`.
+248. **Hardening polish: rung-six arc + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+249. **Hardening polish: bubble + law shape pending.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+250. **Hardening polish: baggage pick mid-save.** ~~Done (local)~~: `BaggageId` + `BaggagePicked`.
+251. **Hardening polish: baggage + campaign deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+252. **Hardening polish: loan + scenario id.** ~~Done (local)~~: `Loans.Outstanding` round-trip.
+253. **Hardening polish: margin + scenario id.** ~~Done (local)~~: together; soak week ≥460 sets `ScenarioId` after baggage.
+254. **Hardening polish: hearing bubble + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+255. **Hardening polish: rung-six arc + scenario id.** ~~Done (local)~~: edge mid-save.
+256. **Hardening polish: baggage + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+257. **Hardening polish: margin satisfy + scenario goal.** ~~Done (local)~~: clears call, keeps `ScenarioGoalResult`.
+258. **Hardening polish: margin + scenario id limits.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+259. **Hardening polish: float + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+260. **Hardening polish: rung-six cooldown + scenario id.** ~~Done (local)~~: edge.
+261. **Hardening polish: loan + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+262. **Hardening polish: baggage + goal + deadline.** ~~Done (local)~~: together triple.
+263. **Hardening polish: spectate + baggage.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak week ≥460 `SetLawTarget` after baggage.
+264. **Hardening polish: spectate + takeoff.** ~~Done (local)~~: `RespondTakeoff` while spectating.
+265. **Hardening polish: baggage + rung-six arc.** ~~Done (local)~~: edge.
+266. **Hardening polish: bubble + goal + law target.** ~~Done (local)~~: triple mid-save.
+267. **Hardening polish: law pending + deadline.** ~~Done (local)~~: edge.
+268. **Hardening polish: margin + baggage.** ~~Done (local)~~: together.
+269. **Hardening polish: float + baggage + rung cooldown.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+270. **Hardening polish: hearing float + baggage.** ~~Done (local)~~: edge mid-save.
+271. **Hardening polish: loan + baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+272. **Hardening polish: margin call + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+273. **Hardening polish: cross-soak scenario goals guard.** ~~Done (local)~~: `ScenarioGoals.Check` only when `ScenarioId` set.
+274. **Hardening polish: loan + baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
+275. **Hardening polish: hearing bubble + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+276. **Hardening polish: float + law target + scenario id.** ~~Done (local)~~: edge mid-save.
+277. **Hardening polish: rung arc + law pending + baggage.** ~~Done (local)~~: edge triple.
+278. **Hardening polish: spectate keeps baggage + soak loan guard.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak `TakeLoan` only with fleet collateral.
+279. **Hardening polish: bubble + baggage + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+280. **Hardening polish: loan + scenario goal + baggage.** ~~Done (local)~~: together.
+281. **Hardening polish: margin call + goal + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
+282. **Hardening polish: spectate keeps scenario id.** ~~Done (local)~~: governance mid-save.
+283. **Hardening polish: cross-soak shape-law guard.** ~~Done (local)~~: `TryShapeLaw` only when `LawTarget` set (weeks ≥460/470).
+284. **Hardening polish: hearing bubble + law + scenario.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
+285. **Hardening polish: float + scenario goal + baggage.** ~~Done (local)~~: edge triple.
+286. **Hardening polish: rung cooldown + baggage + scenario.** ~~Done (local)~~: edge.
+287. **Hardening polish: spectate keeps law target.** ~~Done (local)~~: governance.
+288. **Hardening polish: spectate keeps goal result + deadline soak.** ~~Done (local)~~: governance; soak `SetCampaignDeadline` only for active player lab. Shipped **`5168cc9`** (**522/0**).
+289. **Hardening polish: spectate keeps public float.** ~~Done (local)~~: governance.
+290. **Hardening polish: loan + law target + scenario goal.** ~~Done (local)~~: together.
+291. **Hardening polish: margin call + law + scenario goal.** ~~Done (local)~~: limits.
+292. **Hardening polish: deadline + bubble + baggage.** ~~Done (local)~~: edge.
+293. **Hardening polish: cross-soak baggage + scenario id.** ~~Done (local)~~: assign scenario before pick (week ≥460).
+294. **Hardening polish: spectate keeps deadline tick.** ~~Done (local)~~: governance.
+295. **Hardening polish: spectate keeps law shape pending.** ~~Done (local)~~: governance.
+296. **Hardening polish: spectate keeps margin call left.** ~~Done (local)~~: governance.
+297. **Hardening polish: loan + bubble + scenario id.** ~~Done (local)~~: together.
+298. **Hardening polish: hearing float + goal + law + soak margin guard.** ~~Done (local)~~: edge; soak `SatisfyMarginCall` only active player.
+299. **Hardening polish: spectate keeps rung cooldown + arc.** ~~Done (local)~~: governance.
+300. **Hardening polish: margin satisfy + baggage + law.** ~~Done (local)~~: together.
+301. **Hardening polish: margin call + bubble + law.** ~~Done (local)~~: limits.
+302. **Hardening polish: cross-soak set-law active player.** ~~Done (local)~~: week ≥460/470.
+303. **Hardening polish: spectate keeps baggage picked.** ~~Done (local)~~: governance.
+304. **Hardening polish: deadline + goal + law pending.** ~~Done (local)~~: edge triple.
+305. **Hardening polish: loan + law pending + scenario.** ~~Done (local)~~: together.
+306. **Hardening polish: rung cooldown + goal + law.** ~~Done (local)~~: edge.
+307. **Hardening polish: cross-soak shape-law active player.** ~~Done (local)~~: week ≥460/470.
+308. **Hardening polish: spectate bubble permille.** ~~Done (local)~~: governance (state bubble).
+309. **Hardening polish: float + bubble + scenario goal.** ~~Done (local)~~: edge.
+310. **Hardening polish: baggage + margin + goal.** ~~Done (local)~~: together.
+311. **Hardening polish: cross-soak baggage active player.** ~~Done (local)~~: week ≥460.
+312. **Hardening polish: spectate float + scenario.** ~~Done (local)~~: governance.
+313. **Hardening polish: loan + baggage + law.** ~~Done (local)~~: together.
+314. **Hardening polish: margin + law pending + scenario.** ~~Done (local)~~: limits.
+315. **Hardening polish: deadline + hearing bubble.** ~~Done (local)~~: edge; cross-soak TakeLoan active player. Hardening filter **546/0** (local tip).
 
 ## Rules: later
+
+- **P13** (PR **#48**): origin **`9b19488d`**; squash **`5168cc9`** **522/0**. LOCAL **546/0** (§289–315); **NO PUSH** until rules/test success + GO (`commit-tree` squash).
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.

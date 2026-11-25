@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2096–Q2165: batch 35 acquisition gameplay data bar (schema 42).</summary>
+/// <summary>Q2096–Q2165: batch 35 acquisition gameplay data bar (schema 34).</summary>
 public class HatchAcquireGameplayBarLaterTests
 {
     [Fact] public void Q2096_acquire_2096() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.DistressPricePermille > 0); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); }

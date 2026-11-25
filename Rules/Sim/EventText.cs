@@ -597,6 +597,77 @@ namespace AiLabs.Rules.Sim
                     return e.Pick == 1 ? "The board of " + who + " saw a commitment kept." : "The board of " + who + " saw a commitment broken.";
                 case EventKind.BoardForcedVote:
                     return "The board of " + who + " forced a vote on the founders.";
+                case EventKind.DrillStarted:
+                    return who + " started an incident drill.";
+                case EventKind.DrillFinished:
+                    return who + " finished its incident drill.";
+                case EventKind.EvalRegistered:
+                    return who + " put a model on a public eval schedule.";
+                case EventKind.EvalPublished:
+                    return who + " published a public eval score.";
+                case EventKind.ToolPolicySet:
+                    return who + " changed which tools the agents of a model may call.";
+                case EventKind.HumanQueueDeep:
+                    return who + " has a long human escalation queue.";
+                case EventKind.HumanQueueCleared:
+                    return who + " cleared its human escalation queue.";
+                case EventKind.ChecklistSigned:
+                    return who + " signed a release checklist item for a model.";
+                case EventKind.SandboxStarted:
+                    return who + " put a model in the agent sandbox for " + e.Amount + " weeks.";
+                case EventKind.SandboxFinished:
+                    return e.Pick == 1 ? who + " graduated a model from the agent sandbox with score " + e.Amount + "."
+                        : who + " failed the agent sandbox with score " + e.Amount + ".";
+                case EventKind.PlaybookSet:
+                    return who + " set the runaway playbook to level " + e.Amount + ".";
+                case EventKind.PlaybookArmed:
+                    return who + " armed the runaway playbook for " + e.Amount + " weeks.";
+                case EventKind.OrchBudgetSet:
+                    return who + " set the orchestration budget to level " + e.Amount + ".";
+                case EventKind.RouteShareSet:
+                    return who + " set a route share for a model.";
+                case EventKind.MetricsPublished:
+                    return who + " published customer metrics for a model (score " + e.Amount + ").";
+                case EventKind.MetricsStopped:
+                    return who + " stopped publishing customer metrics for a model.";
+                case EventKind.SpecialistBranched:
+                    return who + " branched a model into a specialist line.";
+                case EventKind.DataSourceAcquired:
+                    return who + " acquired a data source.";
+                case EventKind.DataSourceRenewed:
+                    return who + " renewed a data source.";
+                case EventKind.DataSourceLapsed:
+                    return who + " let a data source lapse.";
+                case EventKind.WeightsOpened:
+                    return who + " released a model's weights.";
+                case EventKind.WeightsClosed:
+                    return who + " closed a model's weights.";
+                case EventKind.WeightsCopied:
+                    return who + " saw competitors copy open weights.";
+                case EventKind.SectorPriceSet:
+                    return who + " set a sector price tier.";
+                case EventKind.CampaignDeadlineSet:
+                    return who + " set a campaign deadline.";
+                case EventKind.CampaignDeadlineHit:
+                    return who + " reached its campaign deadline.";
+                case EventKind.LawShaped:
+                    return who + " shaped the law for next era.";
+                case EventKind.ScenarioBaggagePicked:
+                    return who + " started with scenario baggage.";
+                case EventKind.MarginCall:
+                    return who + " got a margin call on $" + e.Amount + " of chip-backed debt.";
+                case EventKind.MarginCallSatisfied:
+                    return who + " satisfied a margin call (" + e.Ref + ").";
+                case EventKind.MarginCallDefaulted:
+                    return who + " defaulted after a margin call.";
+                case EventKind.HearingShareNudged:
+                    return who + "'s hearing answer moved the market bubble permille.";
+                case EventKind.ScenarioGoalMet:
+                    return who + " met scenario goal \"" + e.Ref + "\".";
+                case EventKind.ScenarioGoalMissed:
+                    return who + " missed scenario goal \"" + e.Ref + "\".";
+                case EventKind.LawTargetSet:
+                    return who + " set law target \"" + e.Ref + "\" before lobbying.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

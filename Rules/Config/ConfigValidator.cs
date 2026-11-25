@@ -159,6 +159,29 @@ namespace AiLabs.Rules.Config
             PostTrainingProblems(p, c);
             KnowledgeProblems(p, c);
             BoardAgendaProblems(p, c);
+            DrillsProblems(p, c);
+            EvalHarnessProblems(p, c);
+            ToolPolicyProblems(p, c);
+            HumanQueueProblems(p, c);
+            ReleaseChecklistProblems(p, c);
+            AgentSandboxProblems(p, c);
+            RunawayPlaybookProblems(p, c);
+            OrchestrationBudgetProblems(p, c);
+            TrafficRouterProblems(p, c);
+            PublicMetricsProblems(p, c);
+            SpecialistLinesProblems(p, c);
+            DataSourcesProblems(p, c);
+            OpenWeightsProblems(p, c);
+            SectorPricingProblems(p, c);
+            CampaignDeadlineProblems(p, c);
+            LawShapingProblems(p, c);
+            TakeoffCrisisProblems(p, c);
+            ScenarioBaggageProblems(p, c);
+            MarginCallProblems(p, c);
+            HearingSharePriceProblems(p, c);
+            RungSixCrisisProblems(p, c);
+            ScenarioGoalsProblems(p, c);
+            LawTargetProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1809,6 +1832,224 @@ namespace AiLabs.Rules.Config
             if (k.MinSeats < 1 || k.MeetingWeeks < 1 || k.AnswerWeeks < 1 || k.CommitWeeks < 1 || k.MeetingWeeks < k.AnswerWeeks) p.Add("boardAgenda minSeats, meetingWeeks, answerWeeks and commitWeeks must be at least 1 and a meeting no sooner than the answer");
             if (k.AcceptRelief < 0 || k.KeptRelief < 0 || k.DeclineTension < 0 || k.IgnoreTension < 0 || k.BrokenTension < 0 || k.DirectorCut < 0 || k.DirectorCut > 1000 || k.OustAt < 1 || k.OustAt > 1000 || k.OustMargin < 0 || k.OustMargin > 1000 || k.CalmBelow < 0 || k.CalmBelow > 1000) p.Add("boardAgenda tensions must not be negative, directorCut, oustMargin and calmBelow from 0 to 1000 and oustAt from 1 to 1000");
             if (k.RaiseBonus < 0 || k.RaiseBonus > 1000 || k.RunwayStretch < 0 || k.RunwayFloor < 0 || k.SafetyAdd < 1) p.Add("boardAgenda raiseBonus from 0 to 1000, runway values not negative and safetyAdd at least 1");
+        }
+
+        static void DrillsProblems(List<string> p, GameConfig c)
+        {
+            DrillsConfig k = c.Drills;
+            if (k == null) { p.Add("drills is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("drills.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Interval < 1 || k.Staff < 1 || k.PassGain < 0 || k.FailLoss < 0 || k.Decay < 0 || k.IdleDecay < 0 || k.IncidentCut < 0 || k.IncidentCut > 1000 || k.RepCut < 0 || k.RepCut > 1000 || k.OnCallRepStack < 0 || k.OnCallRepStack > 1000) p.Add("drills minEra, cost and decays must not be negative, weeks and interval and staff at least 1, cuts from 0 to 1000, and onCallRepStack from 0 to 1000");
+        }
+
+        static void EvalHarnessProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessConfig k = c.EvalHarness;
+            if (k == null) { p.Add("evalHarness is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarness.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Cadence < 1 || k.Points < 0 || k.TrustGain < 0 || k.TrustLoss > 0 || k.BarNarrow < 0 || k.BarNarrow > 1000 || k.BarBroad < k.BarNarrow || k.BarBroad > 1000 || k.ConformityPush < 0 || k.FailTension < 0) p.Add("evalHarness minEra and costs not negative, cadence at least 1, trustLoss not positive, bars from 0 to 1000 with broad at least narrow, conformityPush and failTension not negative");
+        }
+
+        static void ToolPolicyProblems(List<string> p, GameConfig c)
+        {
+            ToolPolicyConfig k = c.ToolPolicy;
+            if (k == null) { p.Add("toolPolicy is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("toolPolicy.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SetupCost < 0 || k.LiftWeb < 0 || k.LiftCode < 0 || k.LiftData < 0 || k.IncidentWeb < 0 || k.IncidentCode < 0 || k.IncidentData < 0 || k.BlowupWeb < 0 || k.BlowupCode < 0 || k.BlowupData < 0 || k.QueueWeb < 0 || k.QueueCode < 0 || k.QueueData < 0) p.Add("toolPolicy costs and shares must not be negative");
+        }
+
+        static void HumanQueueProblems(List<string> p, GameConfig c)
+        {
+            HumanQueueConfig k = c.HumanQueue;
+            if (k == null) { p.Add("humanQueue is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("humanQueue.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.StaffNeed < 1 || k.Capacity < 0 || k.LiftCut < 0 || k.LiftCut > 1000 || k.IncidentPer < 0 || k.ClearCost < 0 || k.BusyWeeks < 1) p.Add("humanQueue minEra and costs not negative, staffNeed and busyWeeks at least 1, capacity not negative, liftCut from 0 to 1000 and incidentPer not negative");
+        }
+
+        static void ReleaseChecklistProblems(List<string> p, GameConfig c)
+        {
+            ReleaseChecklistConfig k = c.ReleaseChecklist;
+            if (k == null) { p.Add("releaseChecklist is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("releaseChecklist.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.DocBar < 0 || k.DocBar > 10 || k.MissTrust > 0) p.Add("releaseChecklist minEra and docBar from 0 to 10 and missTrust not positive");
+        }
+
+        static void AgentSandboxProblems(List<string> p, GameConfig c)
+        {
+            AgentSandboxConfig k = c.AgentSandbox;
+            if (k == null) { p.Add("agentSandbox is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("agentSandbox.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0 || k.Weeks < 1 || k.Staff < 0 || k.PassBar < 0 || k.PassBar > 1000) p.Add("agentSandbox weeks at least 1, costs not negative, passBar from 0 to 1000");
+        }
+
+        static void RunawayPlaybookProblems(List<string> p, GameConfig c)
+        {
+            RunawayPlaybookConfig k = c.RunawayPlaybook;
+            if (k == null) { p.Add("runawayPlaybook is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("runawayPlaybook.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MaxLevel < 0 || k.MaxLevel > 5 || k.SetupPerLevel < 0 || k.Staff < 0 || k.CooldownWeeks < 0 || k.ArmWeeks < 1 || k.BlowupCut < 0 || k.TrustKeep < 0 || k.TrustKeep > 1000) p.Add("runawayPlaybook level and timing fields in range");
+        }
+
+        static void OrchestrationBudgetProblems(List<string> p, GameConfig c)
+        {
+            OrchestrationBudgetConfig k = c.OrchestrationBudget;
+            if (k == null) { p.Add("orchestrationBudget is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("orchestrationBudget.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SetupPerLevel < 0 || k.Slots1 < 0 || k.Slots2 < 0 || k.Slots3 < 0 || k.Keep1 < 0 || k.Keep1 > 1000 || k.Keep2 < 0 || k.Keep2 > 1000 || k.Keep3 < 0 || k.Keep3 > 1000 || k.OverDecay < 0 || k.QueuePerOver < 0) p.Add("orchestrationBudget slots and keep permille in range");
+        }
+
+        static void TrafficRouterProblems(List<string> p, GameConfig c)
+        {
+            TrafficRouterConfig k = c.TrafficRouter;
+            if (k == null) { p.Add("trafficRouter is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("trafficRouter.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.SkewBar < 0 || k.SkewBar > MathI.Ppm || k.OverloadAdd < 0 || k.ServedBelow < 0 || k.ServedBelow > 1000) p.Add("trafficRouter skew and serving bars in range");
+        }
+
+        static void PublicMetricsProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsConfig k = c.PublicMetrics;
+            if (k == null) { p.Add("publicMetrics is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetrics.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.PublishCost < 0 || k.Bar < 0 || k.Bar > 1000 || k.ConformityPush < 0) p.Add("publicMetrics costs and bar in range");
+        }
+
+        static void SpecialistLinesProblems(List<string> p, GameConfig c)
+        {
+            SpecialistLinesConfig k = c.SpecialistLines;
+            if (k == null) { p.Add("specialistLines is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("specialistLines.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.Cost < 0) p.Add("specialistLines minEra and cost not negative");
+            if (k.BoostPermille < 0 || k.PenaltyPermille < 0) p.Add("specialistLines appeal permille not negative");
+            for (int i = 0; i < k.Kinds.Count; i++) if (string.IsNullOrEmpty(k.Kinds[i].Id)) p.Add("specialistLines.kinds[" + i + "].id is empty");
+        }
+
+        static void DataSourcesProblems(List<string> p, GameConfig c)
+        {
+            DataSourcesConfig k = c.DataSources;
+            if (k == null) { p.Add("dataSources is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSources.enabled must be 0 or 1");
+            if (k.Sources.Count > 4) p.Add("dataSources.sources at most 4");
+            for (int i = 0; i < k.Sources.Count; i++)
+                if (string.IsNullOrEmpty(k.Sources[i].Id) || k.Sources[i].DurationWeeks < 1) p.Add("dataSources.sources[" + i + "] needs id and duration");
+        }
+
+        static void OpenWeightsProblems(List<string> p, GameConfig c)
+        {
+            OpenWeightsConfig k = c.OpenWeights;
+            if (k == null) { p.Add("openWeights is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("openWeights.enabled must be 0 or 1");
+            if (k.CopyChancePermille < 0 || k.CopyChancePermille > MathI.Permille) p.Add("openWeights.copyChancePermille out of range");
+        }
+
+        static void SectorPricingProblems(List<string> p, GameConfig c)
+        {
+            SectorPricingConfig k = c.SectorPricing;
+            if (k == null) { p.Add("sectorPricing is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("sectorPricing.enabled must be 0 or 1");
+            if (k.MaxTier < 0 || k.MaxTier > 5) p.Add("sectorPricing.maxTier from 0 to 5");
+        }
+
+        static void CampaignDeadlineProblems(List<string> p, GameConfig c)
+        {
+            CampaignDeadlineConfig k = c.CampaignDeadline;
+            if (k == null) { p.Add("campaignDeadline is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("campaignDeadline.enabled must be 0 or 1");
+            if (k.MinEra < 0) p.Add("campaignDeadline.minEra not negative");
+            if (k.ScoreBonusPermille < 0) p.Add("campaignDeadline.scoreBonusPermille not negative");
+            if (!string.IsNullOrEmpty(k.EndingId) && c.Endings.Def(k.EndingId) == null) p.Add("campaignDeadline.endingId \"" + k.EndingId + "\" is unknown");
+        }
+
+        static void LawShapingProblems(List<string> p, GameConfig c)
+        {
+            LawShapingConfig k = c.LawShaping;
+            if (k == null) { p.Add("lawShaping is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawShaping.enabled must be 0 or 1");
+            if (k.StrictDelta < 0 || k.LooseDelta < 0) p.Add("lawShaping deltas not negative");
+        }
+
+        static void TakeoffCrisisProblems(List<string> p, GameConfig c)
+        {
+            TakeoffCrisisConfig k = c.TakeoffCrisis;
+            if (k == null) { p.Add("takeoffCrisis is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffCrisis.enabled must be 0 or 1");
+            if (k.CapabilityMin < 0 || k.CorruptionMin < 0) p.Add("takeoffCrisis bars not negative");
+            bool has = false;
+            for (int i = 0; i < c.Office.Events.Count; i++) if (c.Office.Events[i].Trigger == OfficeTrigger.Takeoff) has = true;
+            if (k.Enabled > 0 && !has) p.Add("takeoffCrisis needs an office event with trigger Takeoff");
+        }
+
+        static void ScenarioBaggageProblems(List<string> p, GameConfig c)
+        {
+            ScenarioBaggageConfig k = c.ScenarioBaggage;
+            if (k == null) { p.Add("scenarioBaggage is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioBaggage.enabled must be 0 or 1");
+            UniqueIds(p, "scenarioBaggage.items", k.Items);
+            for (int i = 0; i < k.Items.Count; i++)
+                if (string.IsNullOrEmpty(k.Items[i].Kind)) p.Add("scenarioBaggage.items[" + i + "].kind is empty");
+        }
+
+        static void MarginCallProblems(List<string> p, GameConfig c)
+        {
+            MarginCallConfig k = c.MarginCall;
+            if (k == null) { p.Add("marginCall is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginCall.enabled must be 0 or 1");
+            if (k.CovenantPermille < 1 || k.CovenantPermille > MathI.Permille) p.Add("marginCall.covenantPermille must be from 1 to 1000");
+            if (k.CureWeeks < 1) p.Add("marginCall.cureWeeks must be at least 1");
+            if (k.PayPermille < 0 || k.PayPermille > MathI.Permille) p.Add("marginCall.payPermille must be from 0 to 1000");
+        }
+
+        static void HearingSharePriceProblems(List<string> p, GameConfig c)
+        {
+            HearingSharePriceConfig k = c.HearingSharePrice;
+            if (k == null) { p.Add("hearingSharePrice is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingSharePrice.enabled must be 0 or 1");
+            if (k.MinFloatPpm < 0) p.Add("hearingSharePrice.minFloatPpm not negative");
+        }
+
+        static void RungSixCrisisProblems(List<string> p, GameConfig c)
+        {
+            RungSixCrisisConfig k = c.RungSixCrisis;
+            if (k == null) { p.Add("rungSixCrisis is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixCrisis.enabled must be 0 or 1");
+            if (k.CorruptionMin < 0) p.Add("rungSixCrisis.corruptionMin not negative");
+            bool has = false;
+            for (int i = 0; i < c.Office.Events.Count; i++)
+            {
+                OfficeTrigger t = c.Office.Events[i].Trigger;
+                if (t == OfficeTrigger.RungSix || t == OfficeTrigger.ShutdownCompute) has = true;
+            }
+            if (k.Enabled > 0 && !has) p.Add("rungSixCrisis needs an office event with trigger RungSix or ShutdownCompute");
+        }
+
+        static void ScenarioGoalsProblems(List<string> p, GameConfig c)
+        {
+            ScenarioGoalsConfig k = c.ScenarioGoals;
+            if (k == null) { p.Add("scenarioGoals is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoals.enabled must be 0 or 1");
+            UniqueIds(p, "scenarioGoals.goals", k.Goals);
+            for (int i = 0; i < k.Goals.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(k.Goals[i].FailEndingId) && c.Endings.Def(k.Goals[i].FailEndingId) == null)
+                    p.Add("scenarioGoals.goals \"" + k.Goals[i].IdValue + "\" failEndingId unknown");
+                if (!string.IsNullOrEmpty(k.Goals[i].WinEndingId) && c.Endings.Def(k.Goals[i].WinEndingId) == null)
+                    p.Add("scenarioGoals.goals \"" + k.Goals[i].IdValue + "\" winEndingId unknown");
+            }
+            for (int i = 0; i < c.Scenarios.Scenarios.Count; i++)
+            {
+                ScenarioConfig sc = c.Scenarios.Scenarios[i];
+                if (string.IsNullOrEmpty(sc.GoalId)) continue;
+                if (k.Goal(sc.GoalId) == null) p.Add("scenarios \"" + sc.IdValue + "\" goalId \"" + sc.GoalId + "\" is unknown");
+                if (sc.GoalDeadlinePermille < 0 || sc.GoalDeadlinePermille > MathI.Permille)
+                    p.Add("scenarios \"" + sc.IdValue + "\" goalDeadlinePermille must be from 0 to 1000");
+            }
+        }
+
+        static void LawTargetProblems(List<string> p, GameConfig c)
+        {
+            LawTargetConfig k = c.LawTarget;
+            if (k == null) { p.Add("lawTarget is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("lawTarget.enabled must be 0 or 1");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

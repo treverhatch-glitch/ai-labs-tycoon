@@ -127,6 +127,27 @@ namespace AiLabs.Rules.Systems
             PoseTriggered(c, state, lab, OfficeTrigger.Escape);
         }
 
+        /// <summary>Released capability and corruption crossed the takeoff bar. Rivals have none.</summary>
+        public static void OnTakeoff(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab)) return;
+            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff);
+        }
+
+        public static void OnRungSix(GameConfig c, GameState state, LabState lab)
+        {
+            if (!Has(lab)) return;
+            List<OfficeEventConfig> all = WithTrigger(c, OfficeTrigger.RungSix);
+            if (all.Count == 0) all = WithTrigger(c, OfficeTrigger.ShutdownCompute);
+            if (all.Count == 0) return;
+            OfficeEventConfig chosen = all[(int)(Mix(state, lab, 7) % all.Count)];
+            if (IsPending(lab)) Lapse(c, state, lab);
+            lab.OfficeEventId = chosen.IdValue;
+            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            lab.OfficeSeen.Add(chosen.IdValue);
+            Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+        }
+
         /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>
         public static void OnRelease(GameConfig c, GameState state, LabState lab)
         {
@@ -175,6 +196,9 @@ namespace AiLabs.Rules.Systems
             lab.OfficeEventId = "";
             lab.OfficeEventExpires = 0;
             Events.Add(state, EventKind.OfficeEventAnswered, lab.Id, -1, 0, e.IdValue + "|" + choice.IdValue);
+            HearingSharePrice.OnAnswered(c, state, lab, e, choice);
+            if (e.Trigger == OfficeTrigger.Escape || e.Trigger == OfficeTrigger.Takeoff)
+                RungSixCrisis.OnArcAnswered(c, state, lab, e.Trigger);
         }
 
         static void Apply(GameConfig c, GameState state, LabState lab, OfficeEffectConfig effect)

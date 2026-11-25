@@ -294,7 +294,7 @@ public class InsuranceTests
     {
         Game g = Lab();
         g.Weeks(6);
-        string old = SaveSchemaPretend.At(g.C, 44, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 43, g.Sim.Save());
         Assert.DoesNotContain("insuranceLevel", old);
         Assert.DoesNotContain("\"insurance\"", old);
         Simulation sim = Simulation.Load(g.C, old);

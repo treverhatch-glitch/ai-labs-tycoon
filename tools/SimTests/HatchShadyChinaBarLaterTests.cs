@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1466–Q1535: batch 26 shady/china data bar (schema 42).</summary>
+/// <summary>Q1466–Q1535: batch 26 shady/china data bar (schema 34).</summary>
 public class HatchShadyChinaBarLaterTests
 {
     static readonly string[] Cards = { "intrusion-for-hire", "liberate-funds", "sabotage-run", "hack-government" };

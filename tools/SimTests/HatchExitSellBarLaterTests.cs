@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3076–Q3145: batch 49 exit/sell data bar (schema 42).</summary>
+/// <summary>Q3076–Q3145: batch 49 exit/sell data bar (schema 34).</summary>
 public class HatchExitSellBarLaterTests
 {
     [Fact] public void Q3076_exitsell_3076() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.DistressPricePermille > 0); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); }

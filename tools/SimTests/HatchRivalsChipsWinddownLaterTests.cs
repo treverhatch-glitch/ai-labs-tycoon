@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1046–Q1115: batch 20 wind-down — rivals/chips series (schema 42).</summary>
+/// <summary>Q1046–Q1115: batch 20 wind-down — rivals/chips series (schema 34).</summary>
 public class HatchRivalsChipsWinddownLaterTests
 {
     static ModelState M(Game g, int c) => new ModelState { Id = g.State.TakeId(), LineId = "mini", Capability = c, Status = ModelStatus.Released, Alignment = 500, Name = "W" };

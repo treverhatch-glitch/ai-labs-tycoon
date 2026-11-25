@@ -48,6 +48,7 @@ namespace AiLabs.Rules.Systems
             Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, state, lab));
 
             Loans.RunWeek(c, state, lab);
+            MarginCall.RunWeek(c, state, lab);
             Treasury.RunWeek(c, state, lab);
 
             if (lab.Cash < 0)

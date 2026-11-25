@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q4056–Q4125: batch 63 exit/sell data bar coda (schema 42).</summary>
+/// <summary>Q4056–Q4125: batch 63 exit/sell data bar coda (schema 34).</summary>
 public class HatchExitSellBarLaterTests2
 {
     [Fact] public void Q4056_exitsell2_4056() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.DistressPricePermille > 0); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); }

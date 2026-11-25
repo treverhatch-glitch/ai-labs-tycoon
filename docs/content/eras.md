@@ -124,7 +124,7 @@ Opens: Tool use and long context; Reasoning models; Agent sandboxes and the cont
 
 - Techs: `tool-use`, `long-context`, `reasoning-models`, `agent-sandboxes`, `interp-v1`, `coding-agents`, `inference-batching`, `computer-use`, `compiler-stack-3`, `low-precision`
 - Sectors: `coding-agents`, `enterprise-knowledge`, `companionship`, `government-services`, `cybersecurity`, `finance-trading`, `science-medicine`
-- Rooms: `agent-ops-room`, `containment-wing`
+- Rooms: `agent-ops-room`, `containment-wing`, `support-desk`
 
 ## Harnesses (2026)
 

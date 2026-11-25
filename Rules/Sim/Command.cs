@@ -202,7 +202,32 @@ namespace AiLabs.Rules.Sim
         AssignOwner,
         WriteDocs,
         HoldBoardMeetings,
-        AnswerMotion
+        AnswerMotion,
+        StartDrill,
+        RegisterEval,
+        SetToolPolicy,
+        StaffHumanQueue,
+        ClearHumanQueue,
+        SignChecklistItem,
+        StartSandbox,
+        SetPlaybook,
+        ArmPlaybook,
+        SetOrchBudget,
+        SetRouteShare,
+        PublishMetrics,
+        StopMetrics,
+        BranchSpecialist,
+        AcquireDataSource,
+        RenewDataSource,
+        SetWeightsPolicy,
+        SetSectorPrice,
+        SetCampaignDeadline,
+        ShapeLaw,
+        RespondTakeoff,
+        PickScenarioBaggage,
+        SatisfyMarginCall,
+        RespondRungSix,
+        SetLawTarget
     }
 
     /// <summary>
@@ -1755,6 +1780,193 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.AnswerMotion, labId);
             c.Count = accept;
+            return c;
+        }
+
+        /// <summary>Starts an incident drill at the lab.</summary>
+        public static Command StartDrill(int labId)
+        {
+            return Make(CommandKind.StartDrill, labId);
+        }
+
+        /// <summary>Registers a released model on a public eval suite: 1 narrow, 2 broad. TargetId is the model.</summary>
+        public static Command RegisterEval(int labId, int modelId, int suite)
+        {
+            Command c = Make(CommandKind.RegisterEval, labId);
+            c.TargetId = modelId;
+            c.Count = suite;
+            return c;
+        }
+
+        /// <summary>Sets the agent tool mask on a released model: Count 0 to 7 (bits 1 web, 2 code, 4 data). TargetId is the model.</summary>
+        public static Command SetToolPolicy(int labId, int modelId, int mask)
+        {
+            Command c = Make(CommandKind.SetToolPolicy, labId);
+            c.TargetId = modelId;
+            c.Count = mask;
+            return c;
+        }
+
+        /// <summary>Staffs the desk to drain up to Count items this week.</summary>
+        public static Command StaffHumanQueue(int labId, int count)
+        {
+            Command c = Make(CommandKind.StaffHumanQueue, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Pays to clear Count items from the queue now.</summary>
+        public static Command ClearHumanQueue(int labId, int count)
+        {
+            Command c = Make(CommandKind.ClearHumanQueue, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Signs a checklist item on a trained model: 1 red-team, 2 docs, 4 eval, 8 policy. TargetId is the model.</summary>
+        public static Command SignChecklistItem(int labId, int modelId, int item)
+        {
+            Command c = Make(CommandKind.SignChecklistItem, labId);
+            c.TargetId = modelId;
+            c.Count = item;
+            return c;
+        }
+
+        public static Command StartSandbox(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.StartSandbox, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command SetPlaybook(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetPlaybook, labId);
+            c.Count = level;
+            return c;
+        }
+
+        public static Command ArmPlaybook(int labId)
+        {
+            return Make(CommandKind.ArmPlaybook, labId);
+        }
+
+        public static Command SetOrchBudget(int labId, int level)
+        {
+            Command c = Make(CommandKind.SetOrchBudget, labId);
+            c.Count = level;
+            return c;
+        }
+
+        public static Command SetRouteShare(int labId, int modelId, int ppm)
+        {
+            Command c = Make(CommandKind.SetRouteShare, labId);
+            c.TargetId = modelId;
+            c.Count = ppm;
+            return c;
+        }
+
+        public static Command PublishMetrics(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.PublishMetrics, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command StopMetrics(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.StopMetrics, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command BranchSpecialist(int labId, int modelId, string kindId)
+        {
+            Command c = Make(CommandKind.BranchSpecialist, labId);
+            c.TargetId = modelId;
+            c.Id = kindId;
+            return c;
+        }
+
+        public static Command AcquireDataSource(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.AcquireDataSource, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command RenewDataSource(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.RenewDataSource, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command SetWeightsPolicy(int labId, int modelId, int policy)
+        {
+            Command c = Make(CommandKind.SetWeightsPolicy, labId);
+            c.TargetId = modelId;
+            c.Permille = policy;
+            return c;
+        }
+
+        public static Command SetSectorPrice(int labId, string sectorId, int tier)
+        {
+            Command c = Make(CommandKind.SetSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = tier;
+            return c;
+        }
+
+        public static Command SetCampaignDeadline(int labId, int deadlineTick)
+        {
+            Command c = Make(CommandKind.SetCampaignDeadline, labId);
+            c.Permille = deadlineTick;
+            return c;
+        }
+
+        public static Command ShapeLaw(int labId, string blocId, string goal)
+        {
+            Command c = Make(CommandKind.ShapeLaw, labId);
+            c.Id = blocId;
+            c.Ids = new List<string> { goal };
+            return c;
+        }
+
+        public static Command RespondTakeoff(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.RespondTakeoff, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
+        public static Command PickScenarioBaggage(int labId, string baggageId)
+        {
+            Command c = Make(CommandKind.PickScenarioBaggage, labId);
+            c.Id = baggageId;
+            return c;
+        }
+
+        /// <summary>Pays cash or sells GPUs to clear a margin call. Count sells that many units; pay uses Permille as cash when set.</summary>
+        public static Command SatisfyMarginCall(int labId, int gpuCount, int cash = 0)
+        {
+            Command c = Make(CommandKind.SatisfyMarginCall, labId);
+            c.Count = gpuCount;
+            c.Permille = cash;
+            return c;
+        }
+
+        public static Command RespondRungSix(int labId, string choiceId)
+        {
+            Command c = Make(CommandKind.RespondRungSix, labId);
+            c.Id = choiceId;
+            return c;
+        }
+
+        public static Command SetLawTarget(int labId, string goal)
+        {
+            Command c = Make(CommandKind.SetLawTarget, labId);
+            c.Id = goal;
             return c;
         }
 

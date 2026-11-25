@@ -41,7 +41,12 @@ public class OfficeEventTests
             c.Office.ChancePermille = chance;
             c.Office.FirstAfterWeeks = firstAfter;
             c.Office.ExpireWeeks = expire;
-            if (events.Length > 0) c.Office.Events = events.ToList();
+            if (events.Length > 0)
+            {
+                c.Office.Events = events.ToList();
+                c.TakeoffCrisis.Enabled = 0;
+                c.RungSixCrisis.Enabled = 0;
+            }
             if (tweak != null) tweak(c);
         }), options));
         g.WithStarterLab();

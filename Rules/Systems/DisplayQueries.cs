@@ -73,6 +73,10 @@ namespace AiLabs.Rules.Systems
             public long CashOnHand;
             /// <summary>What the people own of the price (taken off the total). Zero until the team has equity.</summary>
             public long StaffShare;
+            public long Loans;
+            public long Notes;
+            public long Rbf;
+            public long CovenantCalls;
             public long Total;
         }
 
@@ -154,6 +158,13 @@ namespace AiLabs.Rules.Systems
             b.CampaignEffect = MathI.MulPermille(beforeCampaign, MarketingCampaign.AppealPermille(c, state, lab, sector.Id)) - beforeCampaign;
             long beforeAccount = beforeCampaign + b.CampaignEffect;
             b.AccountEffect = MathI.MulPermille(beforeAccount, MathI.Permille + AccountTeams.AppealPermille(c, state, lab, sector.Id)) - beforeAccount;
+            long beforeSpec = b.Core + b.ReputationBoost + b.SalesBoost + b.RoleBoost + b.TrustBoost + b.NamingConfusion + b.ChampionBoost + b.ObjectiveEffect + b.LaunchEffect + b.PivotConfusion + b.CampaignEffect + b.AccountEffect;
+            int spec = SpecialistLines.AppealPermille(c, model, sector.Id) + OpenWeights.AppealPermille(c, model, sector.Id);
+            if (spec != 0)
+            {
+                long afterSpec = MathI.MulPermille(beforeSpec, MathI.Permille + spec);
+                b.RoleBoost += afterSpec - beforeSpec;
+            }
             return b;
         }
 
@@ -226,10 +237,14 @@ namespace AiLabs.Rules.Systems
             var b = new ExitPriceBreakdown();
             b.RevenueYears = EndingSystem.RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
             b.FleetResale = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
-            b.CashOnHand = lab.Cash;
+            b.CashOnHand = lab.Cash + lab.Reserve;
             long gross = b.RevenueYears + b.FleetResale + b.CashOnHand;
             b.StaffShare = StaffEquity.StaffShare(lab, gross);
-            b.Total = gross - b.StaffShare;
+            b.Loans = ExitDebt.LoanBalance(lab);
+            b.Notes = ExitDebt.NoteBalance(lab);
+            b.Rbf = ExitDebt.RbfBalance(lab);
+            b.CovenantCalls = ExitDebt.CovenantCalls(c, lab);
+            b.Total = gross - b.StaffShare - b.Loans - b.Notes - b.Rbf - b.CovenantCalls;
             return b;
         }
 

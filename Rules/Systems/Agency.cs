@@ -30,12 +30,15 @@ namespace AiLabs.Rules.Systems
             int cut = (int)MathI.Min(750, (long)Wings(lab) * c.Agency.RoomCut);
             long baseChance = BlowupBase(c, model.AgentLevel);
             if (Knowledge.Enabled(c)) baseChance += MathI.MulPermille(c.Agency.GapBlowup, model.KnowGap);
-            return (int)MathI.MulPermille(baseChance, MathI.Permille - cut);
+            baseChance += ToolPolicy.BlowupExtra(c, model);
+            int playCut = RunawayPlaybook.BlowupCutPermille(c, lab);
+            return (int)MathI.MulPermille(baseChance, MathI.Permille - cut - playCut);
         }
 
         public static int IncidentPermille(GameConfig c, ModelState model)
         {
-            return Enabled(c) && model.AgentLevel > 0 ? Incident(c, model.AgentLevel) : 0;
+            if (!Enabled(c) || model.AgentLevel <= 0) return 0;
+            return Incident(c, model.AgentLevel) + ToolPolicy.IncidentExtra(c, model);
         }
 
         /// <summary>What the agents of the lab's models add to this week's revenue.</summary>
@@ -47,7 +50,8 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState m = lab.Models[i];
                 if (m.AgentLevel <= 0 || m.Status != ModelStatus.Released) continue;
-                total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), Lift(c, m.AgentLevel));
+                int lift = (int)MathI.MulPermille(Lift(c, m.AgentLevel), OrchestrationBudget.KeepPermille(c, lab));
+                total += MathI.MulPermille(MarketSystem.ModelRevenue(state, lab.Id, m.Id), MathI.MulPermille(lift, HumanQueue.LiftKeep(c, lab) * ToolPolicy.LiftBonus(c, m) / 1000));
             }
             lab.AgentEarned += total;
             return total;
@@ -78,6 +82,7 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState m = lab.Models[i];
                 if (m.AgentLevel <= 0) continue;
+                HumanQueue.Accrue(c, state, lab, m);
                 if (m.Status != ModelStatus.Released)
                 {
                     m.AgentLevel = 0;
@@ -92,7 +97,10 @@ namespace AiLabs.Rules.Systems
                     m.AgentBlowups++;
                     m.AgentStreak = 0;
                     if (refund > 0) Finance.Spend(lab, LedgerLine.Fines, refund);
-                    for (int s = 0; s < m.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, m.Sectors[s], -c.Agency.BlowupTrust, false);
+                    int trust = -c.Agency.BlowupTrust;
+                    int keep = RunawayPlaybook.TrustKeepPermille(c, lab);
+                    if (keep > 0) trust = (int)MathI.MulPermille(trust, MathI.Permille - keep);
+                    for (int s = 0; s < m.Sectors.Count; s++) TrustSystem.Shift(c, state, lab, m.Sectors[s], trust, false);
                     BoardMotions.AddTension(c, lab, c.BoardAgenda.BlowupTension);
                     Events.Add(state, EventKind.AgentBlowup, lab.Id, m.Id, refund, m.Name);
                     continue;

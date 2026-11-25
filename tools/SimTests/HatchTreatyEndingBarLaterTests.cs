@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1746–Q1815: batch 30 treaty/ending data bar (schema 42).</summary>
+/// <summary>Q1746–Q1815: batch 30 treaty/ending data bar (schema 34).</summary>
 public class HatchTreatyEndingBarLaterTests
 {
     [Fact] public void Q1746_treaty_end_1746() { GameConfig c = TestData.Config(); Assert.True(c.Endings.TreatyForeignBlocCount > 0); Assert.True(c.Endings.NationalisedHomeLevelMin >= BlocStanding.Freeze); }

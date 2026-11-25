@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3146–Q3215: batch 50 bubble/acquire data bar (schema 42).</summary>
+/// <summary>Q3146–Q3215: batch 50 bubble/acquire data bar (schema 34).</summary>
 public class HatchBubbleAcquireBarLaterTests
 {
     [Fact] public void Q3146_bubacq_3146() { GameConfig c = TestData.Config(); Assert.True(c.Bubble.PopAtPermille > 0); Assert.True(c.Acquisitions.DistressPricePermille > 0); }

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1256–Q1325: batch 23 rival arrival bar (schema 42).</summary>
+/// <summary>Q1256–Q1325: batch 23 rival arrival bar (schema 34).</summary>
 public class HatchRivalArrivalLaterTests
 {
     [Fact] public void Q1256_rival_arrival_1256() { GameConfig c = TestData.Config(); Assert.Equal(2007, c.Rival("metta").JoinsYear); Assert.False(string.IsNullOrEmpty(c.Rival("metta").Leader)); }

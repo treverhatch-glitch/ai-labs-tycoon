@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2446–Q2515: batch 40 model-sales/chip data bar (schema 42).</summary>
+/// <summary>Q2446–Q2515: batch 40 model-sales/chip data bar (schema 34).</summary>
 public class HatchModelSalesChipBarLaterTests
 {
     [Fact] public void Q2446_mschip_2446() { GameConfig c = TestData.Config(); Assert.True(c.ModelSales.CrashDistressOfferPermille > 0); Assert.True(c.ModelSales.EarningsMultipleWeeks > 0); }

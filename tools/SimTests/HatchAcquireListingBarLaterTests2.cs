@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q3636–Q3705: batch 57 acquisition/listing data bar coda (schema 42).</summary>
+/// <summary>Q3636–Q3705: batch 57 acquisition/listing data bar coda (schema 34).</summary>
 public class HatchAcquireListingBarLaterTests2
 {
     [Fact] public void Q3636_acqlist2_3636() { GameConfig c = TestData.Config(); Assert.True(c.Acquisitions.CrashDistressPricePermille > 0); Assert.True(c.Acquisitions.ReadyChipBookPermille > 0); }

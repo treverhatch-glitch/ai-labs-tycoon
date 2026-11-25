@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 125;
+        public const int CurrentSchema = 148;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,6 +42,7 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
+        /// <summary>True once the bubble has crashed at least once (decay floor only after a crash).</summary>
         public bool BubbleHadCrash;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
@@ -586,6 +587,49 @@ namespace AiLabs.Rules.State
         public int MotionsKept;
         public int MotionsBroken;
         public int MotionsDeclined;
+        /// <summary>Drill preparedness (out of 1000), weeks left of the current drill, the week the next drill is due, and how many drills passed and failed.</summary>
+        public int DrillPrep;
+        public int DrillLeft;
+        public int DrillDue;
+        public int DrillPassed;
+        public int DrillFailed;
+        /// <summary>Human escalation: backlog depth, weeks the desk is busy after a clear, and how many items were cleared.</summary>
+        public int HumanQueue;
+        public int HumanBusy;
+        public int HumanCleared;
+        /// <summary>Runaway playbook level, armed flag, weeks left armed, and no arm before this tick.</summary>
+        public int PlayLevel;
+        public int PlayArmed;
+        public int PlayLeft;
+        public int PlayArmUntil;
+        /// <summary>Orchestration budget level and overrun accrual.</summary>
+        public int OrchLevel;
+        public int OrchOver;
+        /// <summary>Weeks left on named data sources 0–3 (schema 136).</summary>
+        public int SrcWeeks0;
+        public int SrcWeeks1;
+        public int SrcWeeks2;
+        public int SrcWeeks3;
+        /// <summary>Per-sector price tiers (schema 138).</summary>
+        public List<string> PriceSectors = new List<string>();
+        public List<int> PriceTiers = new List<int>();
+        /// <summary>Week when the campaign clock stops (0 sandbox), schema 139.</summary>
+        public int CampaignDeadlineTick;
+        /// <summary>Law shape waiting for the next era (schema 140).</summary>
+        public int LawShapePending;
+        public int LawShapeDelta;
+        public string LawShapeEra = "";
+        /// <summary>Takeoff crisis cannot repeat before this tick (schema 142).</summary>
+        public int TakeoffCooldownUntil;
+        /// <summary>Scenario baggage id and picked flag (schema 143).</summary>
+        public string BaggageId = "";
+        public int BaggagePicked;
+        public int MarginCallLeft;
+        public int RungSixArcUntil;
+        public int RungSixCooldownUntil;
+        public string ScenarioId = "";
+        public int ScenarioGoalResult;
+        public string LawTarget = "";
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -1096,6 +1140,39 @@ namespace AiLabs.Rules.State
             s.Int("motionsKept", ref MotionsKept);
             s.Int("motionsBroken", ref MotionsBroken);
             s.Int("motionsDeclined", ref MotionsDeclined);
+            s.Int("drillPrep", ref DrillPrep);
+            s.Int("drillLeft", ref DrillLeft);
+            s.Int("drillDue", ref DrillDue);
+            s.Int("drillPassed", ref DrillPassed);
+            s.Int("drillFailed", ref DrillFailed);
+            s.Int("humanQueue", ref HumanQueue);
+            s.Int("humanBusy", ref HumanBusy);
+            s.Int("humanCleared", ref HumanCleared);
+            s.Int("playLevel", ref PlayLevel);
+            s.Int("playArmed", ref PlayArmed);
+            s.Int("playLeft", ref PlayLeft);
+            s.Int("playArmUntil", ref PlayArmUntil);
+            s.Int("orchLevel", ref OrchLevel);
+            s.Int("orchOver", ref OrchOver);
+            s.Int("srcWeeks0", ref SrcWeeks0);
+            s.Int("srcWeeks1", ref SrcWeeks1);
+            s.Int("srcWeeks2", ref SrcWeeks2);
+            s.Int("srcWeeks3", ref SrcWeeks3);
+            s.StrList("priceSectors", ref PriceSectors);
+            s.IntList("priceTiers", ref PriceTiers);
+            s.Int("campaignDeadlineTick", ref CampaignDeadlineTick);
+            s.Int("lawShapePending", ref LawShapePending);
+            s.Int("lawShapeDelta", ref LawShapeDelta);
+            s.Str("lawShapeEra", ref LawShapeEra);
+            s.Int("takeoffCooldownUntil", ref TakeoffCooldownUntil);
+            s.Str("baggageId", ref BaggageId);
+            s.Int("baggagePicked", ref BaggagePicked);
+            s.Int("marginCallLeft", ref MarginCallLeft);
+            s.Int("rungSixArcUntil", ref RungSixArcUntil);
+            s.Int("rungSixCooldownUntil", ref RungSixCooldownUntil);
+            s.Str("scenarioId", ref ScenarioId);
+            s.Int("scenarioGoalResult", ref ScenarioGoalResult);
+            s.Str("lawTarget", ref LawTarget);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1296,6 +1373,17 @@ namespace AiLabs.Rules.State
         public int SunsetStart;
         /// <summary>The week the model leaves the market, 0 when it has no notice.</summary>
         public int SunsetTick;
+        /// <summary>Release checklist: done bits (1 red-team, 2 docs, 4 eval, 8 policy) and missed bits frozen at first release.</summary>
+        public int ChkDone;
+        public int ChkMissed;
+        /// <summary>Tool allow-list for agents as a bitmask: 1 web, 2 code, 4 data.</summary>
+        public int ToolMask;
+        /// <summary>Public eval: suite (0 none, 1 narrow, 2 broad), weeks until the next publish, last score (out of 1000), how many publishes ran, and consecutive beats of the bar.</summary>
+        public int EvalSuite;
+        public int EvalLeft;
+        public int EvalScore;
+        public int EvalRuns;
+        public int EvalStreak;
         /// <summary>Knowledge: the staff id of the person who owns the model (0 none), the level of its documentation, weeks since the documentation was last written, the knowledge gap (out of 1000) and how many owners have left it.</summary>
         public int OwnerId;
         public int DocLevel;
@@ -1312,6 +1400,18 @@ namespace AiLabs.Rules.State
         public int AgentSince;
         public int AgentStreak;
         public int AgentBlowups;
+        /// <summary>Agent sandbox weeks left and graduation (0 none, 1 passed).</summary>
+        public int SandLeft;
+        public int SandGrad;
+        /// <summary>Traffic route share in ppm across released models.</summary>
+        public int RoutePpm;
+        /// <summary>Public metrics on (0/1), last score (out of 1000), and incident misses while published.</summary>
+        public int PubOn;
+        public int PubScore;
+        public int PubMiss;
+        /// <summary>Specialist kind index + 1 (schema 135), open weights 0/1 (137).</summary>
+        public int SpecKind;
+        public int WgtOpen;
         /// <summary>The sectors this model is on sale in.</summary>
         public List<string> Sectors = new List<string>();
 
@@ -1359,6 +1459,14 @@ namespace AiLabs.Rules.State
             s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
+            s.Int("chkDone", ref ChkDone);
+            s.Int("chkMissed", ref ChkMissed);
+            s.Int("toolMask", ref ToolMask);
+            s.Int("evalSuite", ref EvalSuite);
+            s.Int("evalLeft", ref EvalLeft);
+            s.Int("evalScore", ref EvalScore);
+            s.Int("evalRuns", ref EvalRuns);
+            s.Int("evalStreak", ref EvalStreak);
             s.Int("ownerId", ref OwnerId);
             s.Int("docLevel", ref DocLevel);
             s.Int("docAge", ref DocAge);
@@ -1372,6 +1480,14 @@ namespace AiLabs.Rules.State
             s.Int("agentSince", ref AgentSince);
             s.Int("agentStreak", ref AgentStreak);
             s.Int("agentBlowups", ref AgentBlowups);
+            s.Int("sandLeft", ref SandLeft);
+            s.Int("sandGrad", ref SandGrad);
+            s.Int("routePpm", ref RoutePpm);
+            s.Int("pubOn", ref PubOn);
+            s.Int("pubScore", ref PubScore);
+            s.Int("pubMiss", ref PubMiss);
+            s.Int("specKind", ref SpecKind);
+            s.Int("wgtOpen", ref WgtOpen);
             s.Str("approach", ref Approach);
             s.Str("checkpoints", ref Checkpoints);
             s.StrList("sectors", ref Sectors);

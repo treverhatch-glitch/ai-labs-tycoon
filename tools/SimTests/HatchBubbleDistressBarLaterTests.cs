@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2236–Q2305: batch 37 bubble/distress data bar (schema 42).</summary>
+/// <summary>Q2236–Q2305: batch 37 bubble/distress data bar (schema 34).</summary>
 public class HatchBubbleDistressBarLaterTests
 {
     [Fact] public void Q2236_bubble_2236() { GameConfig c = TestData.Config(); Assert.True(c.Bubble.PopAtPermille > 0); Assert.True(c.Bubble.SurvivorRevenuePpm > 0); }

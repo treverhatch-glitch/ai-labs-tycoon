@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1536–Q1605: batch 27 freeze/audit bar (schema 42).</summary>
+/// <summary>Q1536–Q1605: batch 27 freeze/audit bar (schema 34).</summary>
 public class HatchFreezeAuditBarLaterTests
 {
     [Fact] public void Q1536_freeze_audit_1536() { var g = Game.Solo(tweak: c => { foreach (var r in c.Funding.Rounds) r.OpensYear = 1995; c.Funding.Round("angel").MinReputation = 0; }); g.Me.Bloc(g.Me.HomeBlocId).Level = BlocStanding.Freeze; g.Refused(Command.QueueGpuPurchase(g.Id, 1, HardwareBatch.Hq), CommandError.PermitFrozen); }

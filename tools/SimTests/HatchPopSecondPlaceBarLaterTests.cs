@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q1816–Q1885: batch 31 pop/second-place data bar (schema 42).</summary>
+/// <summary>Q1816–Q1885: batch 31 pop/second-place data bar (schema 34).</summary>
 public class HatchPopSecondPlaceBarLaterTests
 {
     [Fact] public void Q1816_pop_second_1816() { GameConfig c = TestData.Config(); Assert.True(c.Bubble.ThePopEndingForPlayer); Assert.True(c.Endings.SecondPlaceRunnerUpYears > 0); Assert.True(c.Bubble.WeakCashHaircutPermille > 0); }

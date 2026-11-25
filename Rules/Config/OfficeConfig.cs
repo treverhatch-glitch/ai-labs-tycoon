@@ -31,7 +31,13 @@ namespace AiLabs.Rules.Config
         /// <summary>One of the lab's models tried to escape (incident rung 5; bible ch. 10). Never drawn by the weekly chance.</summary>
         Escape,
         /// <summary>A model of the lab's first goes on sale (bible ch. 14, "let the model be funny: its mistakes, its release notes"). Never drawn by the weekly chance and never replaces an event already waiting.</summary>
-        Release
+        Release,
+        /// <summary>Capability and corruption crossed the takeoff bar (Q465). Never drawn by the weekly chance.</summary>
+        Takeoff,
+        /// <summary>Rung-six crisis after escape or takeoff arcs (Q470). Never drawn by the weekly chance.</summary>
+        RungSix,
+        /// <summary>One-site compute shutdown variant of the rung-six arc.</summary>
+        ShutdownCompute
     }
 
     /// <summary>What the lab needs before an office event can happen to it.</summary>

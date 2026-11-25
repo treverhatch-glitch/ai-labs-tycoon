@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2936–Q3005: batch 47 regulator/bubble data bar (schema 42).</summary>
+/// <summary>Q2936–Q3005: batch 47 regulator/bubble data bar (schema 34).</summary>
 public class HatchRegulatorBubbleBarLaterTests
 {
     [Fact] public void Q2936_regbubble_2936() { GameConfig c = TestData.Config(); Assert.True(c.Regulators.BubbleScrutinyAtPermille > 0); Assert.True(c.Regulators.MonopolyRegulatorAttention >= 0); }

@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2656–Q2725: batch 43 world-map economy data bar (schema 42).</summary>
+/// <summary>Q2656–Q2725: batch 43 world-map economy data bar (schema 34).</summary>
 public class HatchWorldMapEconomyBarLaterTests
 {
     [Fact] public void Q2656_world_2656() { GameConfig c = TestData.Config(); Assert.True(c.World.Blocs.Count >= 9); Assert.True(c.World.Sites.Count >= 10); }

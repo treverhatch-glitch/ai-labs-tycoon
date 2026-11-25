@@ -578,7 +578,58 @@ namespace AiLabs.Rules.State
         /// <summary>A commitment reached its deadline. SubjectId is the kind, Pick 1 kept, 0 broken.</summary>
         MotionJudged,
         /// <summary>The board forced a vote on the founders. Amount is the tension.</summary>
-        BoardForcedVote
+        BoardForcedVote,
+        /// <summary>A drill started. Amount is the weeks it will run.</summary>
+        DrillStarted,
+        /// <summary>A drill finished. Pick 1 passed, 0 failed, Amount is the new preparedness.</summary>
+        DrillFinished,
+        /// <summary>A model was registered on a public eval. SubjectId is the model, Pick is the suite, Amount the cadence in weeks.</summary>
+        EvalRegistered,
+        /// <summary>A public eval score was published. SubjectId is the model, Pick 1 beat the bar, 0 below, Amount the score.</summary>
+        EvalPublished,
+        /// <summary>The tool policy of a model changed. SubjectId is the model, Amount is the mask.</summary>
+        ToolPolicySet,
+        /// <summary>The human queue grew. Amount is the depth.</summary>
+        HumanQueueDeep,
+        /// <summary>The desk cleared queue items. Amount cleared, Pick 1 staffed, 0 paid.</summary>
+        HumanQueueCleared,
+        /// <summary>A release checklist item was signed. SubjectId is the model, Amount the item bit.</summary>
+        ChecklistSigned,
+        /// <summary>An agent sandbox started. SubjectId is the model, Amount the weeks.</summary>
+        SandboxStarted,
+        /// <summary>An agent sandbox finished. Pick 1 passed, 0 failed, Amount the score.</summary>
+        SandboxFinished,
+        /// <summary>The runaway playbook level changed. Amount is the level.</summary>
+        PlaybookSet,
+        /// <summary>The runaway playbook was armed. Amount is the weeks.</summary>
+        PlaybookArmed,
+        /// <summary>The orchestration budget level changed. Amount is the level.</summary>
+        OrchBudgetSet,
+        /// <summary>A model route share changed. SubjectId is the model, Amount ppm.</summary>
+        RouteShareSet,
+        /// <summary>Public metrics were published. SubjectId is the model, Amount the score.</summary>
+        MetricsPublished,
+        /// <summary>Public metrics were stopped. SubjectId is the model.</summary>
+        MetricsStopped,
+        SpecialistBranched,
+        DataSourceAcquired,
+        DataSourceRenewed,
+        DataSourceLapsed,
+        WeightsOpened,
+        WeightsClosed,
+        WeightsCopied,
+        SectorPriceSet,
+        CampaignDeadlineSet,
+        CampaignDeadlineHit,
+        LawShaped,
+        ScenarioBaggagePicked,
+        MarginCall,
+        MarginCallSatisfied,
+        MarginCallDefaulted,
+        HearingShareNudged,
+        ScenarioGoalMet,
+        ScenarioGoalMissed,
+        LawTargetSet
     }
 
     /// <summary>

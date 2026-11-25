@@ -6,7 +6,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q2726–Q2795: batch 44 shady/china data bar coda (schema 42).</summary>
+/// <summary>Q2726–Q2795: batch 44 shady/china data bar coda (schema 34).</summary>
 public class HatchShadyChinaBarLaterTests2
 {
     [Fact] public void Q2726_shchina2_2726() { GameConfig c = TestData.Config(); Assert.True(c.World.ChinaDeals.DeclineCooldownMonths >= 1); Assert.True(c.World.ChinaDeals.MinInstalledKw > 0); }
