@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | squash **186–193** GO ≥**08:06 ICT**; **194–197** LOCAL HOLD |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | squash **194–201** GO ≥**08:37 ICT**; **202–205** LOCAL HOLD |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -203,8 +203,9 @@ and says why in the commit message.
 - ~~**Batches 162–169 grouped squash**~~ **pushed @ `e5d2e62d`** — Q10976–Q11515 (**560**); gate **12214/12214** (`/tmp/rivals-b162-169-prepush.log`); GO ~**06:37 ICT** Nov 25.
 - ~~**Batches 170–177 grouped squash**~~ **pushed @ `518fe0d2`** — Q11516–Q11955 (**560**); gate **12774/12774** (`/tmp/rivals-b170-177-prepush.log`); GO ~**07:01 ICT** Nov 25.
 - ~~**Batches 178–185 grouped squash**~~ **pushed @ `d6765bc0`** — Q11956–Q12495 (**560**); gate **13334/13334** (`/tmp/rivals-b178-185-prepush.log`); GO ~**07:36 ICT** Nov 25.
-- **Batches 186–193 (squash pending):** Q12496–Q13035 (**560**); prepush **~13894**; GO ≥**08:06 ICT** after **`d6765bc0`**.
-- **Batches 194–197 (LOCAL after push):** forward-queue, containment, acquire, distress — **280**; HOLD **~30m** after new tip.
+- ~~**Batches 186–193 grouped squash**~~ **pushed @ `92587abf`** — Q12496–Q13035 (**560**); gate **13894/13894** (`/tmp/rivals-b186-193-prepush.log`); GO ~**08:07 ICT** Nov 25.
+- **Batches 194–201 (squash pending):** Q13036–Q13575 (**560**); prepush **~14454**; GO ≥**08:37 ICT** after **`92587abf`**.
+- **Batches 202–205 (LOCAL after push):** funding, world-map, listings, era — **280**; HOLD **~30m** after new tip.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 
