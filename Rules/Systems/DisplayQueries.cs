@@ -153,6 +153,27 @@ namespace AiLabs.Rules.Systems
             public int LogLineCount;
         }
 
+        public struct AlignmentGapBreakdown
+        {
+            public int EffectiveAlignment;
+            public int DisplayedAlignment;
+            public int GapPermille;
+            public long SandbagBoost;
+        }
+
+        public struct StaffRosterBreakdown
+        {
+            public int Headcount;
+            public int AverageMoralePermille;
+            public long WeeklySalaries;
+        }
+
+        public struct BalanceSoakHostPreview
+        {
+            public int PresetCount;
+            public int DefaultGamesPerPreset;
+        }
+
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
             int effective = SafetySystem.EffectiveAlignment(c, model);
@@ -343,6 +364,46 @@ namespace AiLabs.Rules.Systems
                 steps.Add(step);
             }
             return steps;
+        }
+
+        public static AlignmentGapBreakdown AlignmentGapParts(GameConfig c, ModelState model, int tick)
+        {
+            var b = new AlignmentGapBreakdown();
+            if (model == null) return b;
+            b.EffectiveAlignment = SafetySystem.EffectiveAlignment(c, model);
+            b.DisplayedAlignment = SafetySystem.DisplayedAlignment(model);
+            b.GapPermille = (int)MathI.Max(0, b.DisplayedAlignment - model.Alignment);
+            SectorConfig sector = c.Market.Sectors.Count > 0 ? c.Market.Sectors[0] : null;
+            if (sector != null)
+            {
+                QualityBreakdown q = QualityParts(c, sector, model, tick);
+                b.SandbagBoost = q.SandbagBoost;
+            }
+            return b;
+        }
+
+        public static StaffRosterBreakdown StaffRosterParts(GameConfig c, LabState lab)
+        {
+            var b = new StaffRosterBreakdown();
+            if (lab == null) return b;
+            b.Headcount = lab.Staff.Count;
+            if (b.Headcount > 0)
+            {
+                long morale = 0;
+                for (int i = 0; i < lab.Staff.Count; i++) morale += lab.Staff[i].Morale;
+                b.AverageMoralePermille = (int)(morale / b.Headcount);
+            }
+            b.WeeklySalaries = LabQueries.WeeklySalaries(c, lab);
+            return b;
+        }
+
+        public static BalanceSoakHostPreview BalanceSoakPreview(GameConfig c)
+        {
+            var b = new BalanceSoakHostPreview();
+            BalanceSoak.Preset[] presets = BalanceSoak.DefaultPresets(c);
+            b.PresetCount = presets == null ? 0 : presets.Length;
+            b.DefaultGamesPerPreset = 24;
+            return b;
         }
 
         public static List<RivalRelationSlice> RivalRelationSlices(GameConfig c, GameState state, int maxRivals)
