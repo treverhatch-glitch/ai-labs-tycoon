@@ -1424,35 +1424,53 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**.
 - Why: Closes **212–214**.
 
-### Q664. ALT-76 rollup refresh through batch 166? DRAFT: `CampusAlt76RollupRefreshB166PresentationSpec`
+### Q664. ALT-76 rollup refresh through batch 166? DECIDED: `CampusAlt76RollupRefreshB166PresentationSpec`
 
 - Options: (a) batch 163 only; (b) through 166; (c) skip.
-- Recommendation: **(b)** — fork **215–217** LOCAL (+ batch **218** HUD/style tail).
-- Status: batch **215** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)** — grouped **215–217+** (GO **≥~12:32 ICT**).
+- Why: Off `31c3289`.
 
-### Q665. Index manifest tail through batch 166? DRAFT: `CampusIndexLaneManifestTailRefreshThrough166PresentationSpec`
+### Q665. Index manifest tail through batch 166? DECIDED: `CampusIndexLaneManifestTailRefreshThrough166PresentationSpec`
 
 - Options: (a) stop at 163; (b) through 166; (c) regen.
-- Recommendation: **(b)**.
-- Status: batch **216** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **216**.
 
-### Q666. GO packet tail through batch 211? DRAFT: `CampusGoPacketTailRefreshThrough211PresentationSpec`
+### Q666. GO packet tail through batch 211? DECIDED: `CampusGoPacketTailRefreshThrough211PresentationSpec`
 
 - Options: (a) stop at 208; (b) through 211; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **217** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **217**.
 
-### Q667. HUD style guide pipeline tail index? DRAFT: `CampusHudStyleGuidePipelineTailIndexPresentationSpec`
+### Q667. HUD style guide pipeline tail index? DECIDED: `CampusHudStyleGuidePipelineTailIndexPresentationSpec`
 
 - Options: (a) STYLE-GUIDE only; (b) index doc + spec + NEXT pipeline rows; (c) wire HUD in Unity on cloud agent.
-- Recommendation: **(b)** — batch **218** LOCAL thickener.
-- Status: **NO PUSH** until Q664–Q666 decided.
+- Recommendation and choice: **(b)** — batch **218** + `CampusA11yHudPipelineTailIndexPresentationSpec`.
+- Why: Bible refill for art pipeline bar.
 
 ### Q668. ALT-76 STATUS sync through batch 169? DRAFT: `CampusAlt76StatusSyncThrough169PresentationSpec`
 
 - Options: (a) stop at 166; (b) through 169; (c) defer.
-- Recommendation: **(b)** — fork **219+** after **215–217** land.
-- Status: **NO PUSH** until Q664–Q666 decided.
+- Recommendation: **(b)** — fork **219–221** LOCAL.
+- Status: batch **219** LOCAL (NO PUSH).
+
+### Q669. Presentation tail rollup through batch 166? DRAFT: `CampusPresentationTailRollupRefreshThrough166PresentationSpec`
+
+- Options: (a) stop at 163; (b) through 166; (c) skip.
+- Recommendation: **(b)**.
+- Status: batch **220** LOCAL.
+
+### Q670. GO packet tail through batch 214? DRAFT: `CampusGoPacketTailRefreshThrough214PresentationSpec`
+
+- Options: (a) stop at 211; (b) through 214; (c) skip.
+- Recommendation: **(b)**.
+- Status: batch **221** LOCAL.
+
+### Q671. ALT-76 rollup refresh through batch 169? DRAFT: `CampusAlt76RollupRefreshB169PresentationSpec`
+
+- Options: (a) batch 166 only; (b) through 169; (c) skip.
+- Recommendation: **(b)** — fork **222+** after **219–221** land.
+- Status: **NO PUSH** until Q668–Q670 decided.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
