@@ -40,7 +40,7 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Branch / focus | Status |
 | --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`71a0d490`**; **LOCAL** **322+** (HOLD ≥~**17:41 ICT**) |
+| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`113be5fc`** (322–329 land); **LOCAL** **330+** (HOLD ≥~**18:11 ICT**) |
 | *(reserve)* | — | idle |
 | *(reserve)* | — | idle |
 
@@ -226,7 +226,8 @@ and says why in the commit message.
 - ~~**Batches 298–305 grouped squash**~~ **pushed @ `ac7fd7ae`** — Q14066–Q14835 (**560**) + `HostExplainQueuePrepLaterTests` (**3**); gate **21757/21757** (`/tmp/rivals-b298-305-prepush.log`); GO ≥**16:18 ICT** Nov 25; plain FF (`7e2f17b3..ac7fd7ae`).
 - ~~**Batches 306–313 grouped squash**~~ **pushed @ `bef51859`** — Q14136–Q14905 (**560**) + `HostExplainQueuePrepLaterTests` (**6**); gate **22320/22320** (`/tmp/rivals-b306-313-prepush.log`); GO ≥**16:49 ICT** Nov 25; plain FF (`ac7fd7ae..bef51859`).
 - ~~**Batches 314–321 grouped squash**~~ **pushed @ `71a0d490`** — Q14206–Q14975 (**560**) + `HostExplainNext314LaterTests` (**3**); gate **22883/22883** (`/tmp/rivals-b314-321-prepush.log`); GO ≥**17:19 ICT** Nov 25 (landed ~**17:11 ICT**); plain FF (`bef51859..71a0d490`).
-- **Batches 322+ (LOCAL — HOLD PUSH):** hatch **322–329** (**560** filter green); **no push** until ≥~**17:41 ICT** after **`71a0d490`**.
+- ~~**Batches 322–329 land**~~ **remote @ `113be5fc`** — Q14276–Q15045 (**560**); gate **23443/23443** (`/tmp/rivals-b322-329-prepush.log`); GO ≥**17:41 ICT** Nov 25 (content already FF from `71a0d490`; regular commit, not commit-tree squash — no rewrite).
+- **Batches 330+ (LOCAL — HOLD PUSH):** hatch **330–337** + `HostExplainNext330LaterTests` (**3**); **no push** until ≥~**18:11 ICT** after **`113be5fc`**.
 - **LOCAL hold:** batch **67** until **66** lands.
 - **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
 

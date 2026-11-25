@@ -1332,9 +1332,13 @@ Prepush **22320/22320**; GO ≥**16:49 ICT**.
 
 Prepush **22883/22883**; GO window ≥**17:19 ICT** (landed ~**17:11 ICT**).
 
-### Q14276–Q15045. Batches 322–329 cross bars? DECIDED: test-only (LOCAL HOLD after `71a0d490`)
+### Q14276–Q15045. Batches 322–329 cross bars? DECIDED: test-only (landed `113be5fc` FF, Nov 25)
 
-Eight-bar bible rotation.
+Prepush **23443/23443** @ GO ≥**17:41 ICT**; regular commit (not grouped squash).
+
+### Q14346–Q15115. Batches 330–337 + HostExplainNext330? DECIDED: test-only (LOCAL HOLD after `113be5fc`)
+
+Vendor/funding ladder/balance soak host slices.
 
 ## Open
 
