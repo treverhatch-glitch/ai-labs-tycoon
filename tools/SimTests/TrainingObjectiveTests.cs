@@ -277,7 +277,7 @@ public class TrainingObjectiveTests
         Game g = Lab();
         ModelState m = g.Train("mini", 600);
         g.UntilTrained(m);
-        string old = SaveSchemaPretend.At(g.C, 31, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 34, g.Sim.Save());
         Assert.DoesNotContain("\"objective\"", old);
         Simulation loaded = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, loaded.State.Schema);
