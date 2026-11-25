@@ -1316,9 +1316,13 @@ Eight schema-29 hatch bars; parent `1f535b41`; prepush **20074/20074**.
 
 Parent `8e8296a7`; prepush **20634/20634**; GO ≥**15:18 ICT**.
 
-### Q13996–Q14765. Batches 290–297 cross bars? DECIDED: test-only (LOCAL HOLD after `2ea59b0b`)
+### Q13996–Q14765. Batches 290–297 cross bars? DECIDED: test-only (pushed @ `7e2f17b3` grouped squash, Nov 25)
 
-+70Q clone from 282–289 lineage.
+Parent `2ea59b0b`; prepush **21194/21194**; GO ≥**15:48 ICT**.
+
+### Q14066–Q14835. Batches 298–305 + host queue prep? DECIDED: test-only (LOCAL HOLD after `7e2f17b3`)
+
+Eight hatch bars + `HostExplainQueuePrepLaterTests` (rival log, funding ladder, balance soak preview).
 
 ## Open
 
