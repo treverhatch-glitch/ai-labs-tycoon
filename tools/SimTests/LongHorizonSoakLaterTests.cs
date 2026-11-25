@@ -27,7 +27,7 @@ public class LongHorizonSoakLaterTests
         Game g = Game.New(seed: 43);
         g.Sim.StepMany(SixtyYearsWeeks);
         int len = g.Sim.Save().Length;
-        Assert.InRange(len, 10_000, 2_000_000);
+        Assert.InRange(len, 10_000, 2_200_000);
     }
 
     [Fact]

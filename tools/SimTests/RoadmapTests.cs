@@ -207,7 +207,7 @@ public class RoadmapTests
     {
         Game g = Lab();
         g.Do(Command.AnnounceRoadmap(g.Id, 2, 30));
-        string old = SaveSchemaPretend.At(g.C, 68, g.Sim.Save());
+        string old = SaveSchemaPretend.At(g.C, 69, g.Sim.Save());
         foreach (string key in new[] { "roadmapLevel", "roadmapStart", "roadmapDue", "roadmapGoal" }) Assert.DoesNotContain("\"" + key + "\"", old);
         Simulation sim = Simulation.Load(g.C, old);
         Assert.Equal(GameState.CurrentSchema, sim.State.Schema);
