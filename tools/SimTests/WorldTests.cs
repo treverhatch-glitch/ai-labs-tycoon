@@ -24,6 +24,7 @@ public class WorldTests
         GameConfig c = TestData.Config(cfg =>
         {
             cfg.PlayerStart.Cash = 500000000;
+            cfg.Reliability.Enabled = 0;
             cfg.World.Attention.DominanceFromPpm = MathI.Ppm;
             cfg.World.Halls.TownVoteAttentionDivisor = 1000000;
             foreach (SiteConfig site in cfg.World.Sites) site.TownVotePermille = 0;

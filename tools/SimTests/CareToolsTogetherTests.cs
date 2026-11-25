@@ -23,6 +23,9 @@ public class CareToolsTogetherTests
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Scaling.Enabled = 0;
             c.Interp.LevelTechs = new List<string> { "state-machines" };
         });

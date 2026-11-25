@@ -119,6 +119,11 @@ namespace AiLabs.Rules.Config
             GovContractsProblems(p, c);
             CharterProblems(p, c);
             ScalingProblems(p, c);
+            TaxProblems(p, c);
+            StandardsProblems(p, c);
+            ReliabilityProblems(p, c);
+            CovenantsProblems(p, c);
+            AllowancesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1315,6 +1320,78 @@ namespace AiLabs.Rules.Config
             if (k.ClaimStrength < 0 || k.ClaimStrength > MathI.Permille) p.Add("scaling.claimStrength must be from 0 to 1000");
             if (k.WalkBackReputation < 0 || k.WalkBackReputation > 500 || k.OverrideReputation < k.WalkBackReputation || k.OverrideReputation > 500) p.Add("scaling.overrideReputation must be at least walkBackReputation and no more than 500");
             if (k.OverrideMorale < 0 || k.OverrideMorale > MathI.Permille || k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("scaling.overrideMorale must be from 0 to 1000 and lockWeeks from 0 to 520");
+        }
+
+        static void TaxProblems(List<string> p, GameConfig c)
+        {
+            TaxConfig k = c.Tax;
+            if (k == null) { p.Add("tax is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("tax.enabled must be 0 or 1");
+            if (k.RatePermille < 0 || k.RatePermille > 900 || k.AllowancePerWeek < 0) p.Add("tax.ratePermille must be from 0 to 900 and allowancePerWeek must not be negative");
+            if (k.HoldingCost < 0 || k.OffshoreCost < k.HoldingCost || k.HoldingWeeks < 1 || k.OffshoreWeeks < k.HoldingWeeks || k.OffshoreWeeks > 520) p.Add("tax.offshoreCost and offshoreWeeks must be at least the holding company's, weeks from 1 to 520");
+            if (k.HoldingRelief < 0 || k.OffshoreRelief < k.HoldingRelief || k.OffshoreRelief > MathI.Permille) p.Add("tax.offshoreRelief must be at least holdingRelief and no more than 1000");
+            if (k.HoldingExposure < 0 || k.OffshoreExposure < k.HoldingExposure || k.OffshoreExposure > 1000 || k.FeePerTier < 0) p.Add("tax.offshoreExposure must be at least holdingExposure, no more than 1000, and feePerTier must not be negative");
+            if (k.CreditPermille < 0 || k.CreditPermille > MathI.Permille || k.ClaimExposure < 0 || k.ClaimExposure > 10000) p.Add("tax.creditPermille must be from 0 to 1000 and claimExposure from 0 to 10000");
+            if (k.AuditThreshold < 1 || k.AuditWeeks < 1 || k.AuditWeeks > 520) p.Add("tax.auditThreshold must be at least 1 and auditWeeks from 1 to 520");
+            if (k.CooperateInterest < 0 || k.CooperateInterest > 5000) p.Add("tax.cooperateInterest must be from 0 to 5000");
+            if (k.SettlePermille < 0 || k.SettlePermille > MathI.Permille) p.Add("tax.settlePermille must be from 0 to 1000");
+            if (k.ContestClaimPermille < 0 || k.ContestClaimPermille > 10000 || k.ContestStrength < 1 || k.StructureStrength < 0 || k.ContestStrength + 2 * k.StructureStrength > MathI.Permille) p.Add("tax.contestStrength plus two tiers of structureStrength must be from 1 to 1000 and contestClaimPermille from 0 to 10000");
+            if (k.LapsePermille < 0 || k.LapsePermille > 5000) p.Add("tax.lapsePermille must be from 0 to 5000");
+            if (k.ExposedReputation < 0 || k.ExposedReputation > 500) p.Add("tax.exposedReputation must be from 0 to 500");
+        }
+
+        static void StandardsProblems(List<string> p, GameConfig c)
+        {
+            StandardsConfig k = c.Standards;
+            if (k == null) { p.Add("standards is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("standards.enabled must be 0 or 1");
+            if (k.MaxLevel < 1 || k.MaxLevel > 10 || k.FirstWeeks < 1 || k.EveryWeeks < 1 || k.FirstWeeks > 2000 || k.EveryWeeks > 2000) p.Add("standards.maxLevel must be from 1 to 10 and firstWeeks and everyWeeks from 1 to 2000");
+            if (k.SupportNeeded < 1 || k.IndustryRate < 1 || k.MemberRate < 0 || k.SponsorRate < k.MemberRate || k.ObstructRate < 0) p.Add("standards.supportNeeded and industryRate must be at least 1, sponsorRate at least memberRate, and rates must not be negative");
+            if (k.MemberDues < 0 || k.SponsorDues < k.MemberDues || k.ObstructDues < 0 || k.SponsorFee < 0) p.Add("standards.sponsorDues must be at least memberDues and dues and fees must not be negative");
+            if (k.ObstructEvery < 1 || k.ObstructEvery > 520 || k.ObstructReputation < 0 || k.ObstructReputation > 500) p.Add("standards.obstructEvery must be from 1 to 520 and obstructReputation from 0 to 500");
+            if (k.AdoptCost < 0 || k.UpkeepPerLevel < 0 || k.BindingCapability < 0) p.Add("standards.adoptCost, upkeepPerLevel and bindingCapability must not be negative");
+            if (k.LapseFine < 0) p.Add("standards.lapseFine must not be negative");
+            if (k.LapseReputation < 0 || k.LapseReputation > 500) p.Add("standards.lapseReputation must be from 0 to 500");
+            if (k.ClaimStrength < 0 || k.ClaimStrength * k.MaxLevel > MathI.Permille) p.Add("standards.claimStrength times maxLevel must be from 0 to 1000");
+            if (k.SafetyRelief < 0 || k.SafetyRelief > 20) p.Add("standards.safetyRelief must be from 0 to 20");
+        }
+
+        static void ReliabilityProblems(List<string> p, GameConfig c)
+        {
+            ReliabilityConfig k = c.Reliability;
+            if (k == null) { p.Add("reliability is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("reliability.enabled must be 0 or 1");
+            if (k.BaseFailPpm < 0 || k.BaseFailPpm > 1000000 || k.AgePpm < 0 || k.AgePpm > 1000000) p.Add("reliability.baseFailPpm and agePpm must be from 0 to 1000000");
+            if (k.HeatwavePermille < MathI.Permille || k.HeatwavePermille > 20000) p.Add("reliability.heatwavePermille must be from 1000 to 20000");
+            if (k.FeeTier1 < 0 || k.FeeTier2 < k.FeeTier1) p.Add("reliability.feeTier2 must be at least feeTier1 and fees must not be negative");
+            if (k.RmaWeeksTier1 < 1 || k.RmaWeeksTier2 < 1 || k.RmaWeeksTier2 > k.RmaWeeksTier1 || k.RmaWeeksTier1 > 520) p.Add("reliability.rmaWeeksTier2 must be from 1 to rmaWeeksTier1, and rmaWeeksTier1 no more than 520");
+            if (k.SwitchFee < 0 || k.SpareUpkeep < 0) p.Add("reliability.switchFee and spareUpkeep must not be negative");
+            if (k.MaxSpares < 0 || k.MaxSpares > 10000) p.Add("reliability.maxSpares must be from 0 to 10000");
+            if (k.ExpeditePermille < 0 || k.ExpeditePermille > MathI.Permille) p.Add("reliability.expeditePermille must be from 0 to 1000");
+        }
+
+        static void CovenantsProblems(List<string> p, GameConfig c)
+        {
+            CovenantsConfig k = c.Covenants;
+            if (k == null) { p.Add("covenants is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("covenants.enabled must be 0 or 1");
+            if (k.MinCoverPermille < MathI.Permille || k.MinCoverPermille > 10000) p.Add("covenants.minCoverPermille must be from 1000 to 10000");
+            if (k.CureWeeks < 1 || k.CureWeeks > 520) p.Add("covenants.cureWeeks must be from 1 to 520");
+            if (k.SurchargePermille < 0 || k.SurchargePermille > 100) p.Add("covenants.surchargePermille must be from 0 to 100");
+            if (k.WaiverFeePermille < 0 || k.WaiverFeePermille > MathI.Permille) p.Add("covenants.waiverFeePermille must be from 0 to 1000");
+            if (k.WaiverWeeks < 1 || k.WaiverWeeks > 520) p.Add("covenants.waiverWeeks must be from 1 to 520");
+            if (k.MaxWaivers < 0 || k.MaxWaivers > 100) p.Add("covenants.maxWaivers must be from 0 to 100");
+        }
+
+        static void AllowancesProblems(List<string> p, GameConfig c)
+        {
+            AllowancesConfig k = c.Allowances;
+            if (k == null) { p.Add("allowances is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("allowances.enabled must be 0 or 1");
+            if (k.WriteOffPermille < 1 || k.WriteOffPermille > MathI.Permille) p.Add("allowances.writeOffPermille must be from 1 to 1000");
+            if (k.EnhancedPermille < 0 || k.EnhancedPermille > 2000) p.Add("allowances.enhancedPermille must be from 0 to 2000");
+            if (k.EnhancedExposure < 0 || k.EnhancedExposure > 1000) p.Add("allowances.enhancedExposure must be from 0 to 1000");
+            if (k.LockWeeks < 0 || k.LockWeeks > 520) p.Add("allowances.lockWeeks must be from 0 to 520");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

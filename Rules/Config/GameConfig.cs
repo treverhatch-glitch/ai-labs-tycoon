@@ -114,6 +114,11 @@ namespace AiLabs.Rules.Config
         public GovContractsConfig GovContracts = new GovContractsConfig();
         public CharterConfig Charter = new CharterConfig();
         public ScalingConfig Scaling = new ScalingConfig();
+        public TaxConfig Tax = new TaxConfig();
+        public StandardsConfig Standards = new StandardsConfig();
+        public ReliabilityConfig Reliability = new ReliabilityConfig();
+        public CovenantsConfig Covenants = new CovenantsConfig();
+        public AllowancesConfig Allowances = new AllowancesConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -226,6 +231,11 @@ namespace AiLabs.Rules.Config
             s.Obj("govContracts", ref GovContracts);
             s.Obj("charter", ref Charter);
             s.Obj("scaling", ref Scaling);
+            s.Obj("tax", ref Tax);
+            s.Obj("standards", ref Standards);
+            s.Obj("reliability", ref Reliability);
+            s.Obj("covenants", ref Covenants);
+            s.Obj("allowances", ref Allowances);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

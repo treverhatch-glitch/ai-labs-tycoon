@@ -314,7 +314,43 @@ namespace AiLabs.Rules.State
         /// <summary>The lab is no longer held up by a tripwire. Amount is the level that held it, Pick 1 when the safeguards were put in place and 0 when the lab broke or lowered its policy or the model was gone.</summary>
         TripwireCleared,
         /// <summary>The policy level changed. Amount is the new level, Pick the old one, Ref is "raise", "lower" or "break".</summary>
-        PolicyChanged
+        PolicyChanged,
+        /// <summary>A tax structure opened. Amount is the tier.</summary>
+        TaxStructureBuilt,
+        /// <summary>The year's tax was paid. Amount is what was paid, Pick 1 when the lab kept a structure that year.</summary>
+        TaxPaid,
+        /// <summary>The research credit was claimed. Amount is the credit.</summary>
+        TaxCreditClaimed,
+        /// <summary>A tax audit opened. Amount is what it is about, Pick 1 when the lab kept an offshore structure.</summary>
+        TaxAuditOpened,
+        /// <summary>A tax audit was answered. Amount is what the lab paid, Pick 0 cooperate, 1 settle, 2 contest, 3 left unanswered.</summary>
+        TaxAuditClosed,
+        /// <summary>The industry began drafting a standard. Amount is its level.</summary>
+        StandardDrafted,
+        /// <summary>A standard was ratified. Amount is its level, Pick the part the lab took in the draft.</summary>
+        StandardRatified,
+        /// <summary>The lab adopted the standards. Amount is the level it now complies with.</summary>
+        StandardAdopted,
+        /// <summary>The lab released a capable model without complying. SubjectId is the model, Amount the fine and Pick the levels it lacked.</summary>
+        StandardLapsed,
+        /// <summary>GPUs failed in a week. Amount is the units, Pick 0 lost, 1 swapped for spares, 2 sent for replacement under the warranty.</summary>
+        GpusFailed,
+        /// <summary>Units came back under the warranty. Amount is the units, Pick 1 when they were rushed.</summary>
+        ReplacementsArrived,
+        /// <summary>The warranty tier changed. Amount is the new tier.</summary>
+        WarrantyChanged,
+        /// <summary>Spares were bought. Amount is how many, SubjectId the spares held now.</summary>
+        SparesStocked,
+        /// <summary>The player's chips no longer cover its loans as the covenant needs. Amount is the cover in permille.</summary>
+        CovenantBreached,
+        /// <summary>The breach ended. Amount is the cover, Pick 0 when it came right by itself, 1 when the lab paid down.</summary>
+        CovenantCured,
+        /// <summary>The lender looked away for a fee. Amount is the fee.</summary>
+        CovenantWaived,
+        /// <summary>The lender called the loans after the cure weeks. Amount is what was owed, Pick 1 when the lab paid it from cash.</summary>
+        LoansCalled,
+        /// <summary>The capital allowance policy changed. Amount is the new policy, SubjectId the pool written off at once when going back to expensing.</summary>
+        CapitalPolicySet
     }
 
     /// <summary>

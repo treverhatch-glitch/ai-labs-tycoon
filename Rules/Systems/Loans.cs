@@ -101,7 +101,7 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The lender takes the most valuable chips first until what they would fetch covers what is owed; whatever is still owed is written off.</summary>
-        static void Default(GameConfig c, GameState state, LabState lab, Loan loan)
+        public static void Default(GameConfig c, GameState state, LabState lab, Loan loan)
         {
             var batches = new List<HardwareBatch>();
             for (int i = 0; i < lab.Fleet.Count; i++)

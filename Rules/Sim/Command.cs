@@ -106,7 +106,19 @@ namespace AiLabs.Rules.Sim
         ConvertCharter,
         CancelCharterChange,
         AdoptPolicy,
-        BreakPolicy
+        BreakPolicy,
+        BuildTaxStructure,
+        ClaimTaxCredit,
+        AnswerTaxAudit,
+        TakeStandardsRole,
+        AdoptStandards,
+        DropStandards,
+        SetWarranty,
+        StockSpares,
+        ExpediteReplacements,
+        WaiveCovenant,
+        CureCovenant,
+        SetCapitalPolicy
     }
 
     /// <summary>
@@ -952,6 +964,90 @@ namespace AiLabs.Rules.Sim
         public static Command BreakPolicy(int labId)
         {
             return Make(CommandKind.BreakPolicy, labId);
+        }
+
+        /// <summary>Builds a tax structure of this tier (1 a holding company, 2 an offshore one) over some weeks for a fee, or unwinds the structure at once when the tier is 0. A structure takes a share off the tax and adds a weekly fee and an exposure that builds toward an audit.</summary>
+        public static Command BuildTaxStructure(int labId, int tier)
+        {
+            Command c = Make(CommandKind.BuildTaxStructure, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Claims the research credit: a share of the year's training spend comes off the tax bill. It adds exposure to an audit.</summary>
+        public static Command ClaimTaxCredit(int labId)
+        {
+            return Make(CommandKind.ClaimTaxCredit, labId);
+        }
+
+        /// <summary>Answers an open tax audit: 0 cooperate (pay back what was saved with interest and unwind the structure), 1 settle (pay part and keep the structure), 2 contest (the claim goes on the litigation docket).</summary>
+        public static Command AnswerTaxAudit(int labId, int choice)
+        {
+            Command c = Make(CommandKind.AnswerTaxAudit, labId);
+            c.Count = choice;
+            return c;
+        }
+
+        /// <summary>Takes a part in the draft of the next standard: 0 observer, 1 member, 2 sponsor, 3 obstructor. A member and a sponsor speed the draft up for dues each week, a sponsor also pays a fee to become one, and an obstructor holds it back for dues and reputation.</summary>
+        public static Command TakeStandardsRole(int labId, int role)
+        {
+            Command c = Make(CommandKind.TakeStandardsRole, labId);
+            c.Count = role;
+            return c;
+        }
+
+        /// <summary>Adopts every standard ratified so far, for a cost on each new level and an upkeep each week.</summary>
+        public static Command AdoptStandards(int labId)
+        {
+            return Make(CommandKind.AdoptStandards, labId);
+        }
+
+        /// <summary>Stops complying with the standards: the upkeep ends, and a capable release is fined again.</summary>
+        public static Command DropStandards(int labId)
+        {
+            return Make(CommandKind.DropStandards, labId);
+        }
+
+        /// <summary>Sets the GPU warranty tier: 0 none, 1 or 2. A failed unit under a warranty is replaced with the current generation after some weeks (fewer at tier 2) instead of being lost. A fee for each unit every week; raising the tier costs a switch fee.</summary>
+        public static Command SetWarranty(int labId, int tier)
+        {
+            Command c = Make(CommandKind.SetWarranty, labId);
+            c.Count = tier;
+            return c;
+        }
+
+        /// <summary>Buys spare GPUs of the current generation to hold. A spare takes the place of a failed unit at once, for upkeep every week.</summary>
+        public static Command StockSpares(int labId, int count)
+        {
+            Command c = Make(CommandKind.StockSpares, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Pays to have the units waiting on a warranty replacement delivered now.</summary>
+        public static Command ExpediteReplacements(int labId)
+        {
+            return Make(CommandKind.ExpediteReplacements, labId);
+        }
+
+        /// <summary>Pays the lender a fee, a share of what is owed, to look away from a breach of the loan covenant for a spell. Only a few times in all.</summary>
+        public static Command WaiveCovenant(int labId)
+        {
+            return Make(CommandKind.WaiveCovenant, labId);
+        }
+
+        /// <summary>Pays the loans down, oldest first, until the chips cover what is left as the covenant needs.</summary>
+        public static Command CureCovenant(int labId)
+        {
+            return Make(CommandKind.CureCovenant, labId);
+        }
+
+        /// <summary>Sets how hardware and building spend is deducted for tax: 0 expense it now, 1 capitalise and write it off over time, 2 an enhanced allowance that deducts more than was spent for audit exposure. Locked for a time after a change.</summary>
+        public static Command SetCapitalPolicy(int labId, int policy)
+        {
+            Command c = Make(CommandKind.SetCapitalPolicy, labId);
+            c.Count = policy;
+            return c;
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

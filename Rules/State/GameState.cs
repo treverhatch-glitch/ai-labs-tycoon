@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 85;
+        public const int CurrentSchema = 90;
 
         public int Schema;
         public string ConfigVersion;
@@ -303,6 +303,38 @@ namespace AiLabs.Rules.State
         public int PolicyLockedUntil;
         public int PolicyHold;
         public int PolicyBreaks;
+        public int TaxStructure;
+        public int TaxBuilding;
+        public int TaxDue;
+        public long TaxAccrued;
+        public long TaxSaved;
+        public long TaxResearch;
+        public long TaxCredit;
+        public long TaxClaimed;
+        public int TaxExposure;
+        public int TaxAuditDue;
+        public long TaxAuditOwed;
+        public int StdLevel;
+        public int StdDraft;
+        public int StdSupport;
+        public int StdRole;
+        public int StdNext;
+        public int StdAdopted;
+        public int StdLapses;
+        public int WarrantyTier;
+        public int Spares;
+        public long FailCarry;
+        public int RmaUnits;
+        public int RmaDue;
+        public int GpuFailures;
+        public int CovBreach;
+        public int CovWaiverUntil;
+        public int CovWaivers;
+        public int CovCalls;
+        public int CapPolicy;
+        public long CapPool;
+        public int CapSwitchTick;
+        public long CapWritten;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -580,6 +612,38 @@ namespace AiLabs.Rules.State
             s.Int("policyLockedUntil", ref PolicyLockedUntil);
             s.Int("policyHold", ref PolicyHold);
             s.Int("policyBreaks", ref PolicyBreaks);
+            s.Int("taxStructure", ref TaxStructure);
+            s.Int("taxBuilding", ref TaxBuilding);
+            s.Int("taxDue", ref TaxDue);
+            s.Long("taxAccrued", ref TaxAccrued);
+            s.Long("taxSaved", ref TaxSaved);
+            s.Long("taxResearch", ref TaxResearch);
+            s.Long("taxCredit", ref TaxCredit);
+            s.Long("taxClaimed", ref TaxClaimed);
+            s.Int("taxExposure", ref TaxExposure);
+            s.Int("taxAuditDue", ref TaxAuditDue);
+            s.Long("taxAuditOwed", ref TaxAuditOwed);
+            s.Int("stdLevel", ref StdLevel);
+            s.Int("stdDraft", ref StdDraft);
+            s.Int("stdSupport", ref StdSupport);
+            s.Int("stdRole", ref StdRole);
+            s.Int("stdNext", ref StdNext);
+            s.Int("stdAdopted", ref StdAdopted);
+            s.Int("stdLapses", ref StdLapses);
+            s.Int("warrantyTier", ref WarrantyTier);
+            s.Int("spares", ref Spares);
+            s.Long("failCarry", ref FailCarry);
+            s.Int("rmaUnits", ref RmaUnits);
+            s.Int("rmaDue", ref RmaDue);
+            s.Int("gpuFailures", ref GpuFailures);
+            s.Int("covBreach", ref CovBreach);
+            s.Int("covWaiverUntil", ref CovWaiverUntil);
+            s.Int("covWaivers", ref CovWaivers);
+            s.Int("covCalls", ref CovCalls);
+            s.Int("capPolicy", ref CapPolicy);
+            s.Long("capPool", ref CapPool);
+            s.Int("capSwitchTick", ref CapSwitchTick);
+            s.Long("capWritten", ref CapWritten);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);

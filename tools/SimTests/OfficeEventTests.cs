@@ -35,6 +35,9 @@ public class OfficeEventTests
             c.RolePerks.Clear();
             c.Safety.RiskClasses.Clear();
             c.Safety.IncidentChancePermille = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Office.ChancePermille = chance;
             c.Office.FirstAfterWeeks = firstAfter;
             c.Office.ExpireWeeks = expire;

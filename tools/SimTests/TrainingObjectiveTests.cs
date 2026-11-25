@@ -27,6 +27,9 @@ public class TrainingObjectiveTests
             c.Safety.IncidentChancePermille = 0;
             c.Safety.SectorFlavours.Clear();
             c.Office.ChancePermille = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             if (tweak != null) tweak(c);
         }), options));
         g.WithStarterLab();

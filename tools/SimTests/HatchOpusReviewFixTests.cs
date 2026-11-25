@@ -65,6 +65,7 @@ public class HatchOpusReviewFixTests
         {
             c.Acquisitions.CrashDistressPricePermille = 450;
             c.Acquisitions.IntegrationCostPermille = 120;
+            c.Reliability.Enabled = 0;
         });
         LabState rival = g.Rival("openaye");
         rival.Models.Add(new ModelState

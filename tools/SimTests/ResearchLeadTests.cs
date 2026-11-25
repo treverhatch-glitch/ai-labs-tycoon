@@ -21,6 +21,9 @@ public class ResearchLeadTests
             foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
             c.RolePerks.Clear();
             c.RoomPerks.Clear();
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             if (tweak != null) tweak(c);
         });
         g.Me.Cash = 1_000_000_000_000_000;

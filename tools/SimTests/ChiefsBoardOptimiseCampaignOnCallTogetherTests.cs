@@ -31,6 +31,9 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Scaling.Enabled = 0;
         });
     }
@@ -133,6 +136,9 @@ public class ChiefsBoardOptimiseCampaignOnCallTogetherTests
             c.Litigation.Enabled = 0;
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             c.Scaling.Enabled = 0;
         });
         Game withTools = Start(3);

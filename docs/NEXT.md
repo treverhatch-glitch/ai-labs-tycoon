@@ -317,6 +317,11 @@ and says why in the commit message.
 134. **News and chat for the new systems.** ~~Done~~: 32 headlines and 24 chat lines in the data (174 and 219), `LitigationSecurityContractsCharterScalingNewsChatTests` (Q376).
 135. **The five new systems together.** ~~Done~~: clearance and leaks, claims from breaches and charters, contract engineers against the desk and sabbaticals, safeguards and the policy, a long scripted game, `LitigationSecurityContractsCharterScalingTogetherTests` (Q377).
 136. **The ledger identity across schemas.** ~~Done~~: the schema-5 bankrupt fixture was wrong, not the migration; `LedgerIdentityMigrationTests` (Q378).
+137. **Corporate tax (structures, research credit, audit).** ~~Done~~: `tax` data, `BuildTaxStructure`, `ClaimTaxCredit`, `AnswerTaxAudit`, `Tax`, schema 85, `TaxTests`, `docs/content/tax.md` (Q379).
+138. **Industry standards (a draft the lab shapes, then complies with or is fined).** ~~Done~~: `standards` data, `TakeStandardsRole`, `AdoptStandards`, `DropStandards`, `Standards`, schema 86, `StandardsTests`, `docs/content/standards.md` (Q380).
+139. **Hardware reliability (failures, spares and warranties).** ~~Done~~: `reliability` data, `SetWarranty`, `StockSpares`, `ExpediteReplacements`, `HardwareReliability`, schema 87, `ReliabilityTests`, `docs/content/reliability.md` (Q381).
+140. **Loan covenants (cover, cure, waiver or a call).** ~~Done~~: `covenants` data, `WaiveCovenant`, `CureCovenant`, `Covenants`, schema 88, `CovenantTests`, `docs/content/covenants.md` (Q382).
+141. **Capital allowances (expense, capitalise or enhanced).** ~~Done~~: `allowances` data, `SetCapitalPolicy`, `CapitalAllowances`, schema 89, `AllowanceTests`, `docs/content/allowances.md` (Q383).
 
 ## Rules: later
 

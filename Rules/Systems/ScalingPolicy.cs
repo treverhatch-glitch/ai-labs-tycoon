@@ -17,7 +17,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>True when the lab holds the safeguards for the level: a security tier and safety people for each level.</summary>
         public static bool Safeguarded(GameConfig c, LabState lab, int level)
         {
-            return lab.SecurityTier >= level && Safety(lab) >= level * c.Scaling.SafetyPerTier;
+            return lab.SecurityTier >= level && Safety(lab) + Standards.SafetyRelief(c, lab) >= level * c.Scaling.SafetyPerTier;
         }
 
         /// <summary>The highest tripwire of the lab's policy a trained model has reached without its safeguards, or 0. When the model is wanted it is returned too.</summary>

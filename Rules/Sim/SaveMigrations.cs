@@ -100,6 +100,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 83) MigrateTo83(root);
             if (fromSchema < 84) MigrateTo84(root);
             if (fromSchema < 85) MigrateTo85(root);
+            if (fromSchema < 86) MigrateTo86(root);
+            if (fromSchema < 87) MigrateTo87(root);
+            if (fromSchema < 88) MigrateTo88(root);
+            if (fromSchema < 89) MigrateTo89(root);
+            if (fromSchema < 90) MigrateTo90(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -965,6 +970,56 @@ namespace AiLabs.Rules.Sim
             JsonPatch.ForEach(root, "labs", lab =>
             {
                 foreach (string key in new[] { "policyLevel", "policyLockedUntil", "policyHold", "policyBreaks" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 86: no lab pays corporate tax or keeps a tax structure.</summary>
+        static void MigrateTo86(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "taxStructure", "taxBuilding", "taxDue", "taxAccrued", "taxSaved", "taxResearch", "taxCredit", "taxClaimed", "taxExposure", "taxAuditDue", "taxAuditOwed" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 87: no standard has been drafted and no lab has a part in one.</summary>
+        static void MigrateTo87(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "stdLevel", "stdDraft", "stdSupport", "stdRole", "stdNext", "stdAdopted", "stdLapses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 88: no lab has a warranty or spares and no GPU has failed.</summary>
+        static void MigrateTo88(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "warrantyTier", "spares", "failCarry", "rmaUnits", "rmaDue", "gpuFailures" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 89: no lab is in breach of a covenant or has used a waiver.</summary>
+        static void MigrateTo89(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "covBreach", "covWaiverUntil", "covWaivers", "covCalls" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 90: no lab has capital allowance policy or pool.</summary>
+        static void MigrateTo90(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "capPolicy", "capPool", "capSwitchTick", "capWritten" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
             });
         }

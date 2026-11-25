@@ -107,6 +107,18 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SetCapitalPolicy: return SetCapitalPolicy(c, state, lab, cmd);
+                case CommandKind.WaiveCovenant: return WaiveCovenant(c, state, lab, cmd);
+                case CommandKind.CureCovenant: return CureCovenant(c, state, lab, cmd);
+                case CommandKind.SetWarranty: return SetWarranty(c, state, lab, cmd);
+                case CommandKind.StockSpares: return StockSpares(c, state, lab, cmd);
+                case CommandKind.ExpediteReplacements: return ExpediteReplacements(c, state, lab, cmd);
+                case CommandKind.TakeStandardsRole: return TakeStandardsRole(c, state, lab, cmd);
+                case CommandKind.AdoptStandards: return AdoptStandards(c, state, lab, cmd);
+                case CommandKind.DropStandards: return DropStandards(c, state, lab, cmd);
+                case CommandKind.BuildTaxStructure: return BuildTaxStructure(c, state, lab, cmd);
+                case CommandKind.ClaimTaxCredit: return ClaimTaxCredit(c, state, lab, cmd);
+                case CommandKind.AnswerTaxAudit: return AnswerTaxAudit(c, state, lab, cmd);
                 case CommandKind.AdoptPolicy: return AdoptPolicy(c, state, lab, cmd);
                 case CommandKind.BreakPolicy: return BreakPolicy(c, state, lab, cmd);
                 case CommandKind.ConvertCharter: return ConvertCharter(c, state, lab, cmd);
@@ -540,6 +552,7 @@ namespace AiLabs.Rules.Sim
                 else if (model.DisplayedAlignment < model.Alignment)
                     model.DisplayedAlignment = model.Alignment;
                 Pledge.OnFirstRelease(c, state, lab, model);
+                Standards.OnFirstRelease(c, state, lab, model);
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
             if (firstRelease) OfficeEvents.OnRelease(c, state, lab);

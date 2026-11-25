@@ -70,6 +70,9 @@ public class RivalEconomyRobustnessLaterTests
             c.Security.Enabled = 0;
             c.GovContracts.Enabled = 0;
             c.Scaling.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
             tweak?.Invoke(c);
         }), seed));
         GameConfig c = g.C;
