@@ -1556,35 +1556,59 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)**.
 - Why: Closes **234–236**.
 
-### Q686. ALT-76 STATUS sync through batch 178? DRAFT: `CampusAlt76StatusSyncThrough178PresentationSpec`
+### Q686. ALT-76 STATUS sync through batch 178? DECIDED: `CampusAlt76StatusSyncThrough178PresentationSpec`
 
 - Options: (a) stop at 175; (b) through 178; (c) defer.
-- Recommendation: **(b)** — fork **237–239** LOCAL.
-- Status: batch **237** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)** — grouped **237–239+** (GO **≥16:17 ICT**).
+- Why: Off `52ceff1`.
 
-### Q687. Presentation tail rollup through batch 175? DRAFT: `CampusPresentationTailRollupRefreshThrough175PresentationSpec`
+### Q687. Presentation tail rollup through batch 175? DECIDED: `CampusPresentationTailRollupRefreshThrough175PresentationSpec`
 
 - Options: (a) stop at 172; (b) through 175; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **238** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **238**.
 
-### Q688. GO packet tail through batch 232? DRAFT: `CampusGoPacketTailRefreshThrough232PresentationSpec`
+### Q688. GO packet tail through batch 232? DECIDED: `CampusGoPacketTailRefreshThrough232PresentationSpec`
 
 - Options: (a) stop at 229; (b) through 232; (c) skip.
-- Recommendation: **(b)**.
-- Status: batch **239** LOCAL.
+- Recommendation and choice: **(b)**.
+- Why: Batch **239**.
 
-### Q689. Rules-adjacent graphics tail index? DRAFT: `CampusRulesAdjacentGraphicsTailIndexPresentationSpec`
+### Q689. Rules-adjacent graphics tail index? DECIDED: `CampusRulesAdjacentGraphicsTailIndexPresentationSpec`
 
 - Options: (a) rules PR only; (b) doc + spec cross-linking `DisplayQueries` / NEXT art table; (c) implement rules on cloud agent.
-- Recommendation: **(b)** — batch **240** LOCAL thickener.
-- Status: **NO PUSH** until Q686–Q688 decided.
+- Recommendation and choice: **(b)** — batch **240** in **237–239+** squash.
+- Why: `RULES-ADJACENT-GRAPHICS-TAIL.md`.
 
 ### Q690. ALT-76 rollup refresh through batch 178? DRAFT: `CampusAlt76RollupRefreshB178PresentationSpec`
 
 - Options: (a) batch 175 only; (b) through 178; (c) skip.
-- Recommendation: **(b)** — fork **241+** after **237–239** land.
-- Status: **NO PUSH** until Q686–Q688 decided.
+- Recommendation: **(b)** — fork **241–243** LOCAL.
+- Status: batch **241** LOCAL (NO PUSH).
+
+### Q691. Studio CI graphics-adjacent tail? DRAFT: `CampusStudioCiGraphicsAdjacentPresentationSpec`
+
+- Options: (a) studio folder only; (b) doc + spec per NEXT studio/CI rows; (c) wire workflows on cloud agent.
+- Recommendation: **(b)** — batch **244** LOCAL thickener.
+- Status: batch **244** LOCAL.
+
+### Q692. Index manifest tail through batch 178? DRAFT: `CampusIndexLaneManifestTailRefreshThrough178PresentationSpec`
+
+- Options: (a) stop at 175; (b) through 178; (c) regen.
+- Recommendation: **(b)**.
+- Status: batch **242** LOCAL.
+
+### Q693. GO packet tail through batch 235? DRAFT: `CampusGoPacketTailRefreshThrough235PresentationSpec`
+
+- Options: (a) stop at 232; (b) through 235; (c) skip.
+- Recommendation: **(b)**.
+- Status: batch **243** LOCAL.
+
+### Q694. ALT-76 STATUS sync through batch 181? DRAFT: `CampusAlt76StatusSyncThrough181PresentationSpec`
+
+- Options: (a) stop at 178; (b) through 181; (c) defer.
+- Recommendation: **(b)** — fork **245+** after **241–243** land.
+- Status: **NO PUSH** until Q690–Q693 decided.
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
