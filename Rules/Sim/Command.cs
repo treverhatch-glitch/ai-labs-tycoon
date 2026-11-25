@@ -85,7 +85,16 @@ namespace AiLabs.Rules.Sim
         AssignAccountTeam,
         SubmitPaper,
         WithdrawPaper,
-        RehireAlumnus
+        RehireAlumnus,
+        StartInternships,
+        EndInternships,
+        StaffSupportDesk,
+        SendOnSabbatical,
+        RecallFromSabbatical,
+        OpenRequisition,
+        CancelRequisition,
+        HostScholars,
+        SendScholarsHome
     }
 
     /// <summary>
@@ -777,6 +786,76 @@ namespace AiLabs.Rules.Sim
             Command c = Make(CommandKind.RehireAlumnus, labId);
             c.TargetId = personId;
             return c;
+        }
+
+        /// <summary>Takes on a cohort of interns in a role (Id the role, Count the interns). The stipend is paid weekly and must be in the bank now; interns hold no seat and do no work. At the end each is offered the job for a share of the hiring fee, if a seat and the cash are there.</summary>
+        public static Command StartInternships(int labId, string roleId, int count)
+        {
+            Command c = Make(CommandKind.StartInternships, labId);
+            c.Id = roleId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Sends the cohort home early. Nobody is offered a job; they join the alumni pool on good terms.</summary>
+        public static Command EndInternships(int labId)
+        {
+            return Make(CommandKind.EndInternships, labId);
+        }
+
+        /// <summary>Sets the engineers on the support desk (Count; 0 closes it). They leave engineering and training work, clear a set number of tickets each a week, and what is not cleared piles up as a backlog that costs trust once it passes a limit.</summary>
+        public static Command StaffSupportDesk(int labId, int people)
+        {
+            Command c = Make(CommandKind.StaffSupportDesk, labId);
+            c.Count = people;
+            return c;
+        }
+
+        /// <summary>Sends a person away for the sabbatical weeks on full pay (TargetId is the person). They do no work and cannot quit while away. A worn-down person comes back refreshed, a happy one restless, the rest a little better than settled.</summary>
+        public static Command SendOnSabbatical(int labId, int personId)
+        {
+            Command c = Make(CommandKind.SendOnSabbatical, labId);
+            c.TargetId = personId;
+            return c;
+        }
+
+        /// <summary>Calls a person back early (TargetId is the person). They return with the morale they left with.</summary>
+        public static Command RecallFromSabbatical(int labId, int personId)
+        {
+            Command c = Make(CommandKind.RecallFromSabbatical, labId);
+            c.TargetId = personId;
+            return c;
+        }
+
+        /// <summary>Orders people in a role for a future date (Id the role, Count the people). A deposit is paid now; the price is locked below the hiring fee of today. On the day each needs a free seat and the rest of the price, and anyone who cannot be seated or paid for is lost with their deposit.</summary>
+        public static Command OpenRequisition(int labId, string roleId, int count)
+        {
+            Command c = Make(CommandKind.OpenRequisition, labId);
+            c.Id = roleId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Cancels an open order (TargetId is its place in the lab's list, from 0). The deposit is lost.</summary>
+        public static Command CancelRequisition(int labId, int index)
+        {
+            Command c = Make(CommandKind.CancelRequisition, labId);
+            c.TargetId = index;
+            return c;
+        }
+
+        /// <summary>Hosts a group of visiting scholars (Count) at free researcher seats. They are paid a stipend, add research points each week and, when they leave on schedule, add prestige.</summary>
+        public static Command HostScholars(int labId, int count)
+        {
+            Command c = Make(CommandKind.HostScholars, labId);
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Sends the scholars home early. No prestige is earned.</summary>
+        public static Command SendScholarsHome(int labId)
+        {
+            return Make(CommandKind.SendScholarsHome, labId);
         }
 
         /// <summary>Changes what the lab is good at, once per era. It costs money and staff, and customers are confused for a year.</summary>

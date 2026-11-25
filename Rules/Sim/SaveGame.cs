@@ -104,9 +104,12 @@ namespace AiLabs.Rules.Sim
                 {
                     if (person.Senior < 0 || person.Senior > 1 || (person.Senior == 1 && lab.Id != state.PlayerLabId))
                         p.Add(who + " has a senior person (" + person.Senior + ") that the data does not allow");
+                    if (person.LeaveDue < 0 || person.LeaveMorale < 0 || person.LeaveMorale > 1000 || (person.LeaveDue == 0 && person.LeaveMorale != 0) || (person.LeaveDue > 0 && (lab.Id != state.PlayerLabId || person.MentorId != 0)))
+                        p.Add(who + " has a person on sabbatical until week " + person.LeaveDue + " (morale " + person.LeaveMorale + ") that the data does not allow");
                     if (person.MentorId < 0 || person.MentorWeeks < 0 || (person.MentorId == 0 && person.MentorWeeks != 0) || (person.MentorId > 0 && (lab.Id != state.PlayerLabId || person.MentorId == person.Id)))
                         p.Add(who + " has a person with mentor " + person.MentorId + " (" + person.MentorWeeks + " weeks), which does not fit the staff");
                 }
+                if (Sabbatical.Away(lab) > c.Sabbatical.MaxAway) p.Add(who + " has more people on sabbatical than the data allows");
                 if (lab.RevenueTargetLevel < 0 || lab.RevenueTargetLevel > c.RevenueTargets.MaxLevel || lab.RevenueTargetEnd < 0 || lab.RevenueTargetGoal < 0 || lab.RevenueTargetSoFar < 0
                     || (lab.RevenueTargetLevel == 0 && (lab.RevenueTargetEnd != 0 || lab.RevenueTargetGoal != 0 || lab.RevenueTargetSoFar != 0))
                     || (lab.RevenueTargetLevel > 0 && (lab.RevenueTargetEnd < 1 || lab.RevenueTargetGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -147,6 +150,19 @@ namespace AiLabs.Rules.Sim
                             p.Add(who + " has an alumnus (" + gone.Id + ", " + gone.RoleId + ", left week " + gone.Left + ") that the data does not allow");
                     if (lab.Alumni.Count > c.Alumni.MaxSize) p.Add(who + " has more alumni than the data allows");
                     if (lab.Alumni.Count > 0 && lab.Id != state.PlayerLabId) p.Add(who + " has alumni, which only the player's lab can have");
+                }
+                if (lab.InternCount < 0 || lab.InternStart < 0 || lab.InternDue < 0 || (lab.InternCount > 0) != (lab.InternRole.Length > 0) || (lab.InternCount > 0 && (lab.InternCount > c.Internships.MaxCohort || c.Role(lab.InternRole) == null || lab.InternDue <= lab.InternStart || lab.Id != state.PlayerLabId)) || (lab.InternCount == 0 && (lab.InternStart != 0 || lab.InternDue != 0)))
+                    p.Add(who + " has interns (" + lab.InternCount + " in " + lab.InternRole + ", weeks " + lab.InternStart + " to " + lab.InternDue + ") that the data does not allow");
+                if (lab.SupportPeople < 0 || lab.SupportBacklog < 0 || lab.SupportPeople > c.Support.MaxPeople || lab.SupportBacklog > c.Support.MaxBacklog || ((lab.SupportPeople > 0 || lab.SupportBacklog > 0) && lab.Id != state.PlayerLabId))
+                    p.Add(who + " has a support desk (" + lab.SupportPeople + " people, backlog " + lab.SupportBacklog + ") that the data does not allow");
+                {
+                    if (lab.Requisitions.Count > c.Requisitions.MaxOpen || (lab.Requisitions.Count > 0 && lab.Id != state.PlayerLabId))
+                        p.Add(who + " has more open orders for people than the data allows");
+                    foreach (Requisition order in lab.Requisitions)
+                        if (c.Role(order.RoleId) == null || order.Count < 1 || order.Count > c.Requisitions.MaxCount || order.Due < 1 || order.Fee < 1)
+                            p.Add(who + " has an order for people (" + order.Count + " " + order.RoleId + " due week " + order.Due + ") that the data does not allow");
+                    if (lab.ScholarCount < 0 || lab.ScholarStart < 0 || lab.ScholarDue < 0 || lab.ScholarCount > c.Scholars.MaxScholars || (lab.ScholarCount > 0) != (lab.ScholarDue > 0) || (lab.ScholarCount > 0 && (lab.ScholarDue <= lab.ScholarStart || lab.Id != state.PlayerLabId)) || (lab.ScholarCount == 0 && lab.ScholarStart != 0))
+                        p.Add(who + " has visiting scholars (" + lab.ScholarCount + ", weeks " + lab.ScholarStart + " to " + lab.ScholarDue + ") that the data does not allow");
                 }
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))

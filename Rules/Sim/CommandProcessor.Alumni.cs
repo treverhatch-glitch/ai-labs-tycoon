@@ -14,7 +14,7 @@ namespace AiLabs.Rules.Sim
             if (gone == null) return Fail(CommandError.UnknownId, "There is no former employee " + cmd.TargetId + " to ask back.");
             RoleConfig role = c.Role(gone.RoleId);
             if (role == null) return Fail(CommandError.UnknownId, "There is no role \"" + gone.RoleId + "\".");
-            int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
+            int free = LabQueries.FreeSeats(c, lab, role.Id);
             if (free < 1) return Fail(CommandError.NoSeats, "There is no free seat for a " + role.Name + ". Build a room for them first.");
             long fee = Alumni.Fee(c, state, lab, gone);
             if (lab.Cash < fee) return NeedCash(lab, fee);

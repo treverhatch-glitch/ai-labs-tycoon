@@ -55,7 +55,7 @@ namespace AiLabs.Rules.Systems
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
                 if (role == null || role.Function != function) continue;
-                if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person)) continue;
+                if (Skunkworks.Away(c, lab, person) || AccountTeams.Away(c, lab, person) || SupportDesk.Away(c, lab, person) || Sabbatical.Away(c, lab, person)) continue;
                 n += Mentoring.Weight(c, lab, person);
             }
             return n;
@@ -80,6 +80,12 @@ namespace AiLabs.Rules.Systems
                 if (type != null && type.SeatsRole == roleId) n += SeatsInRoom(c, lab.Rooms[i]);
             }
             return n;
+        }
+
+        /// <summary>Desks for a role that nobody holds: seats less the people in it, and less the visiting scholars who sit with the researchers.</summary>
+        public static int FreeSeats(GameConfig c, LabState lab, string roleId)
+        {
+            return Seats(c, lab, roleId) - StaffCount(lab, roleId) - (roleId == Scholars.RoleId ? lab.ScholarCount : 0);
         }
 
         public static int GpuSlotsInRoom(GameConfig c, RoomState room)

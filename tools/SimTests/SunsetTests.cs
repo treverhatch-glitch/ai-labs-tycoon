@@ -25,6 +25,7 @@ public class SunsetTests
             foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
             c.Safety.IncidentChancePermille = 0;
             c.Office.ChancePermille = 0;
+            c.Support.Enabled = 0;
             c.PlayerStart.Cash = 1_000_000_000_000;
             if (tweak != null) tweak(c);
         }), options));

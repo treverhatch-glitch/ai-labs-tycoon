@@ -46,7 +46,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.TargetNotEligible, "That lab has no people to poach.");
             StaffMember target = TalentSystem.BestTarget(c, rival, role.Id);
             if (target == null) return Fail(CommandError.NotEnoughStaff, rival.Name + " has no " + role.Name + " to poach.");
-            int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
+            int free = LabQueries.FreeSeats(c, lab, role.Id);
             if (free < 1) return Fail(CommandError.NoSeats, "There is no free seat for a " + role.Name + ". Build a room for them first.");
 
             long package = TalentSystem.Package(c, target, state.Tick);

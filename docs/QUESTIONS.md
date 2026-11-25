@@ -2305,6 +2305,41 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - `CareToolsTogetherTests` switches labour off in its start config: its fixed 260-week script only tries a pay change when the lab has over $1M at a set week, and with labour on, seed 2 (which pays the union its recognition rise) misses that week. The test is about the care tools, so it keeps the trajectory it was written against; labour has its own tests.
 - This is a set of pinned interactions, not a 260-week play-through over seeds: that was done for the previous batch and is left for the next one.
 
+### Q365. Can the lab grow its own juniors? DECIDED: internship cohorts with a stipend and an offer at the end
+- New `internships` data, commands `StartInternships` and `EndInternships`, `Internships` system, events `InternshipStarted` and `InternshipsEnded` and four saved lab fields (schema 77). One cohort of up to 4 interns in a role; the stipend (25% of the hiring fee each) is paid over 26 weeks and must be in the bank at the start; interns hold no seat and do no work.
+- At the end each is offered the job for 30% of the hiring fee, while there are free seats and cash, arriving in good spirits; the rest join the alumni pool on good terms. The choice is whether to pay half a year of stipend and have a seat ready then, against hiring at once at the full fee.
+- Reads the hiring fee, seats and the alumni pool (Q362); no random numbers; only the player's lab. The golden moved ef0b282a -> 824557c9 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: interns who do work at a discount (rejected: an output knob), a cohort that always converts (rejected: no seat or cash decision).
+
+### Q366. Do customers need looking after? DECIDED: a support desk of engineers against a ticket backlog that costs trust
+- New `support` data, command `StaffSupportDesk`, `SupportDesk` system, events `SupportDeskSet` and `SupportBacklogChanged` and two saved lab fields (schema 78). Released models bring tickets in proportion to what they earn ($4000 of weekly revenue per ticket); the sales team clears 6 a week with no desk and each engineer on the desk clears 4 more. What is not cleared piles up (to 100) and past 15 it costs trust in every sector the lab sells in, every week, until the desk catches up.
+- The choice is how many of the engineers (never the last one, at most 4) to take off building: the same people the account teams, skunkworks and training use. A small lab needs no desk; a lab with several models on sale does.
+- Reads revenue, trust and the staff lists; no random numbers; only the player's lab. The golden moved 824557c9 -> 743d4496 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a desk that is bought as a service (rejected: no decision over people), tickets that depend on incidents (rejected: on-call already covers those).
+
+### Q367. Can a burnt-out person be sent away to recover? DECIDED: sabbaticals that help the worn-down and spoil the happy
+- New `sabbatical` data, commands `SendOnSabbatical` and `RecallFromSabbatical`, `Sabbatical` system, events `SabbaticalStarted` and `SabbaticalEnded` and two saved fields on a person (schema 79). A person goes away for 8 weeks on full pay (two at a time at most, not a mentoring pair), does no work and cannot quit while away.
+- They come back by how they went: below 350 morale refreshed (850), above 650 restless (400), otherwise rested (settled plus 100). Calling them back early keeps the morale they left with. The choice is who: it is a cure for someone about to quit and a mistake for a star in good spirits, at the price of their output for two months.
+- Reads morale and the same away check the skunkworks, account teams and support desk use; no random numbers; only the player's lab. The golden moved 743d4496 -> 067ec37f only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: a flat morale boost for pay (rejected: a pay-for-stat knob), sabbaticals that never end badly (rejected: no wrong choice).
+
+### Q368. Can the lab order people for later? DECIDED: open requisitions with a locked price, a deposit and seats that must be ready
+- New `requisitions` data, commands `OpenRequisition` and `CancelRequisition`, `Requisitions` system, events `RequisitionOpened` and `RequisitionClosed` and a saved list on the lab (schema 80, shared with Q369). Up to 3 orders of up to 3 people; the price is locked at 70% of the day's hiring fee, a 20% deposit is paid now and the people arrive 8 weeks later.
+- On the day each needs a free seat and the rest of the price; whoever cannot be seated or paid for is lost with their deposit; cancelling forfeits it. The choice is a cheaper hire against planning the seats and the cash two months ahead.
+- Reads hiring fees, seats and cash; the people are hired as normal. Only the player's lab.
+- Alternatives: a refundable deposit (rejected: no cost to over-ordering), people who wait for a seat (rejected: no seat decision).
+
+### Q369. Can outside scholars come to the lab? DECIDED: visiting scholars who sit at researchers' desks and add prestige when they leave on schedule
+- New `scholars` data, commands `HostScholars` and `SendScholarsHome`, `Scholars` system, events `ScholarsArrived` and `ScholarsLeft` and three saved lab fields (schema 80). A group of up to 3 sits at free researcher seats for 12 weeks (seats other hires cannot take), is paid a stipend, adds research points at 60% of a researcher's rate each and adds 20 prestige each when they leave on schedule; going home early earns none.
+- Reads seats, research points and prestige (Q308); no random numbers; only the player's lab. A new `LabQueries.FreeSeats` counts the scholars' seats and hiring, rehiring, internships and requisitions use it. The golden moved 067ec37f -> 1bbc3845 only through the new saved fields and the schema number (verified by taking them out).
+- Alternatives: scholars who may be hired (rejected: internships are that road), prestige each week (rejected: it would reward keeping them for ever).
+
+### Q370. Do the new events talk, and do the five systems fit together? DECIDED: 17 headlines and 16 chat lines, and three rules where they meet
+- The ten new event kinds (internships, support desk, sabbaticals, requisitions, scholars) get headlines (125 -> 142) and chat lines (179 -> 195) in the data; the wildcard lines come last where the event's `Pick` is a number of weeks or people.
+- Where they meet: (1) people away on a skunkworks team, an account team or the support desk cannot also be sent on sabbatical (refused); (2) the support desk draws only on engineers who are not on leave, so a sabbatical never leaves a desk place empty; (3) scholars hold researcher seats through `LabQueries.FreeSeats`, so a hire, a rehire, an internship conversion or an arriving order is turned away while they sit there. Interns and scholars are not staff: layoffs and labour do not count them, and unconverted interns join the alumni pool on good terms.
+- `Support.Enabled = 0` was set in the sunset-trust and the care-tools autopilot tests, whose fixed scripts and trust comparisons the desk's backlog changes.
+- Alternatives: letting a desk member go on leave and keep clearing tickets (rejected: the person is not there), a shared "away" counter (rejected: each system keeps its own state).
+
 ## Open
 
 None.

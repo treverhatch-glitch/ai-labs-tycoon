@@ -107,6 +107,15 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
                 case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
                 case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.OpenRequisition: return OpenRequisition(c, state, lab, cmd);
+                case CommandKind.CancelRequisition: return CancelRequisition(c, state, lab, cmd);
+                case CommandKind.HostScholars: return HostScholars(c, state, lab, cmd);
+                case CommandKind.SendScholarsHome: return SendScholarsHome(c, state, lab, cmd);
+                case CommandKind.SendOnSabbatical: return SendOnSabbatical(c, state, lab, cmd);
+                case CommandKind.RecallFromSabbatical: return RecallFromSabbatical(c, state, lab, cmd);
+                case CommandKind.StaffSupportDesk: return StaffSupportDesk(c, state, lab, cmd);
+                case CommandKind.StartInternships: return StartInternships(c, state, lab, cmd);
+                case CommandKind.EndInternships: return EndInternships(c, state, lab, cmd);
                 case CommandKind.RehireAlumnus: return RehireAlumnus(c, state, lab, cmd);
                 case CommandKind.SubmitPaper: return SubmitPaper(c, state, lab, cmd);
                 case CommandKind.WithdrawPaper: return WithdrawPaper(c, state, lab, cmd);
@@ -220,7 +229,7 @@ namespace AiLabs.Rules.Sim
             RoleConfig role = c.Role(cmd.Id);
             if (role == null) return Fail(CommandError.UnknownId, "There is no role \"" + cmd.Id + "\".");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Hire at least one person.");
-            int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
+            int free = LabQueries.FreeSeats(c, lab, role.Id);
             if (cmd.Count > free)
                 return Fail(CommandError.NoSeats, "There are " + free + " free seats for a " + role.Name + ". Build a room for them first.");
             long cost = RolePerks.HireCost(c, lab, role, cmd.Count, state.Tick);

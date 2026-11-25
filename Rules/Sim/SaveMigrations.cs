@@ -92,6 +92,10 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 75) MigrateTo75(root);
             if (fromSchema < 76) MigrateTo76(root);
             if (fromSchema < 77) MigrateTo77(root);
+            if (fromSchema < 78) MigrateTo78(root);
+            if (fromSchema < 79) MigrateTo79(root);
+            if (fromSchema < 80) MigrateTo80(root);
+            if (fromSchema < 81) MigrateTo81(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -872,6 +876,50 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo77(JsonValue root)
         {
             JsonPatch.ForEach(root, "labs", lab => JsonPatch.AddIfMissing(lab, "alumni", JsonValue.Array()));
+        }
+
+        /// <summary>Schema 78: nobody has interns.</summary>
+        static void MigrateTo78(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "internRole", JsonValue.Of(""));
+                JsonPatch.AddIfMissing(lab, "internCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "internDue", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 79: nobody has a support desk.</summary>
+        static void MigrateTo79(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "supportPeople", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "supportBacklog", JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 80: nobody is on a sabbatical.</summary>
+        static void MigrateTo80(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "staff", person =>
+            {
+                JsonPatch.AddIfMissing(person, "leaveDue", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(person, "leaveMorale", JsonValue.Of(0L));
+            }));
+        }
+
+        /// <summary>Schema 81: no open requisitions and no visiting scholars.</summary>
+        static void MigrateTo81(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "requisitions", JsonValue.Array());
+                JsonPatch.AddIfMissing(lab, "scholarCount", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarStart", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "scholarDue", JsonValue.Of(0L));
+            });
         }
 
         static void MigrateTo10(GameConfig c, JsonValue root)
