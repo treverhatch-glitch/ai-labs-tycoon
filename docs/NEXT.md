@@ -654,8 +654,8 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; graphics tokens in `docs/art/MASCOT-PRESENTATION.md` + `GLOW-PRESENTATION.md` (batch 8); batch 33 adds row HUD spec for mascot strip polish on PC.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches. Graphics batch 34 documents PR #41 branch landing notes for studio (`STUDIO-GRAPHICS-HANDOFF.md`); does not change `studio/` on this branch.
 
-**Graphics PR #41** (`cursor/graphics-pipeline-5032`): fold **`25916f3`** = main **`4752e03`** (#81) + graphics **`ae97e43`**. **No graphics squash push** until **#41** on `main`; then coordinator GO **`commit-tree`** squash **staged 257–276** + `prepush`. **LOCAL:** index **257–276** staged · **277–284** built unstaged · **285+** Q734. Plans: `graphics-batch-plan-281-284.md`.
-Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
+**Graphics lane** (`cursor/graphics-pipeline-5032`): tip **`0bd1cd7`**. **Landed:** **257–276** @ **`0985b0b`**. **GO squash staged:** **277–288** (mega packet). Unity screens **HOLD**.
+
 start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
 
 ## Art / presentation (active)
