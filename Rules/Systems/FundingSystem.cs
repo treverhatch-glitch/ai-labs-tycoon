@@ -60,12 +60,13 @@ namespace AiLabs.Rules.Systems
     public static void ApplyRaise(GameConfig c, GameState state, LabState lab, FundingRoundConfig round)
     {
       bool down = IsDownRound(c, state);
-      long cash = EffectiveCash(c, state, round);
-      int dilution = EffectiveDilution(c, state, round);
+      long cash = BoardMotions.RaiseCash(c, lab, Governance.RaiseCash(c, lab, Charter.FundingCash(c, lab, EffectiveCash(c, state, round))));
+      int dilution = Notes.OnRaise(c, state, lab, cash, EffectiveDilution(c, state, round));
       lab.FundingRounds.Add(round.Id);
       Finance.Earn(lab, LedgerLine.CapitalIn, cash);
       BubbleSystem.OnFundingRaise(c, state, round, cash);
       lab.FounderSharePermille = (int)MathI.MulPermille(lab.FounderSharePermille, MathI.Permille - dilution);
+      StaffEquity.OnRaise(lab, dilution);
       lab.BoardInvestorSeats += round.BoardSeats;
       GameEvent closed = Events.Add(state, EventKind.FundingClosed, lab.Id, -1, cash, round.Id);
       closed.Pick = down ? 1 : 0;
@@ -88,7 +89,7 @@ namespace AiLabs.Rules.Systems
       if (f.BoardDramaMinInvestorSeats < 1 || lab.BoardInvestorSeats < f.BoardDramaMinInvestorSeats) return;
       if (f.BoardDramaPermillePerYear <= 0) return;
       if (state.Tick < lab.BoardLockedUntilTick) return;
-      if (!state.Rng.Rivals.Chance(f.BoardDramaPermillePerYear / c.Calendar.MonthsPerYear)) return;
+      if (!state.Rng.Rivals.Chance(Governance.DramaChance(c, lab, f.BoardDramaPermillePerYear) / c.Calendar.MonthsPerYear)) return;
       int weeks = f.BoardDramaWeeks > 0 ? f.BoardDramaWeeks : c.Rivalry.BoardDramaWeeks;
       lab.BoardLockedUntilTick = state.Tick + weeks;
       Events.Add(state, EventKind.BoardDrama, lab.Id, -1, weeks, "");
@@ -106,10 +107,15 @@ namespace AiLabs.Rules.Systems
       Events.Add(state, EventKind.InvestorBoardVisit, lab.Id, -1, f.InvestorEventReputation, "");
     }
 
+    public static void TryOustForced(GameConfig c, GameState state, LabState lab)
+    {
+      EndingSystem.RecordOusted(c, state, lab);
+    }
+
     public static void TryOust(GameConfig c, GameState state, LabState lab)
     {
       if (lab.Id != state.PlayerLabId) return;
-      if (lab.FounderSharePermille > c.Funding.ControlPermille) return;
+      if (Governance.ControlShare(c, lab) > c.Funding.ControlPermille + BoardMotions.OustMargin(c, lab)) return;
       EndingSystem.RecordOusted(c, state, lab);
     }
   }

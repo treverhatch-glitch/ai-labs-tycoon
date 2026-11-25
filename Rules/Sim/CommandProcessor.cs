@@ -22,7 +22,7 @@ namespace AiLabs.Rules.Sim
             if (lab == null) return Fail(CommandError.UnknownLab, "There is no lab " + cmd.LabId + ".");
             if (cmd.LabId >= 0 && lab.Bankrupt && cmd.Kind != CommandKind.ContinueAfterEnding)
                 return Fail(CommandError.LabBankrupt, lab.Name + " is bankrupt.");
-            if (cmd.LabId >= 0 && lab.AbsorbedByLabId >= 0 && cmd.Kind != CommandKind.ContinueAfterEnding)
+            if (lab.AbsorbedByLabId >= 0 && cmd.Kind != CommandKind.ContinueAfterEnding)
                 return Fail(CommandError.LabAbsorbed, lab.Name + " was absorbed into another lab.");
             if (state.PlayerLabId >= 0 && lab != null && lab.Controller == LabController.Player && cmd.LabId != state.PlayerLabId)
                 return Fail(CommandError.UnknownLab, "That is not the player's lab.");
@@ -67,6 +67,220 @@ namespace AiLabs.Rules.Sim
                 case CommandKind.DeclineChinaDeal: return DeclineChinaDeal(c, state, lab, cmd);
                 case CommandKind.AcquireLab: return AcquireLab(c, state, lab, cmd);
                 case CommandKind.SellModel: return SellModel(c, state, lab, cmd);
+                case CommandKind.CounterPoach: return CounterPoach(c, state, lab, cmd);
+                case CommandKind.PoachStaff: return PoachStaff(c, state, lab, cmd);
+                case CommandKind.AnswerPress: return AnswerPress(c, state, lab, cmd);
+                case CommandKind.LeakStory: return LeakStory(c, state, lab, cmd);
+                case CommandKind.AnswerComplaint: return AnswerComplaint(c, state, lab, cmd);
+                case CommandKind.SetGauntletTuning: return SetGauntletTuning(c, state, lab, cmd);
+                case CommandKind.FollowLead: return FollowLead(c, state, lab, cmd);
+                case CommandKind.RushRelease: return RushRelease(c, state, lab, cmd);
+                case CommandKind.Lobby: return Lobby(c, state, lab, cmd);
+                case CommandKind.PivotStyle: return PivotStyle(c, state, lab, cmd);
+                case CommandKind.TakeLoan: return TakeLoan(c, state, lab, cmd);
+                case CommandKind.RepayLoan: return RepayLoan(state, lab, cmd);
+                case CommandKind.SetResearchShare: return SetResearchShare(c, state, lab, cmd);
+                case CommandKind.SetCrunch: return SetCrunch(c, state, lab, cmd);
+                case CommandKind.SetInsurance: return SetInsurance(c, state, lab, cmd);
+                case CommandKind.HoldOffsite: return HoldOffsite(c, state, lab);
+                case CommandKind.RedTeamModel: return RedTeamModel(c, state, lab, cmd);
+                case CommandKind.SetInterpretability: return SetInterpretability(c, state, lab, cmd);
+                case CommandKind.SetPayLevel: return SetPayLevel(c, state, lab, cmd);
+                case CommandKind.SetCompliance: return SetCompliance(c, state, lab, cmd);
+                case CommandKind.PublishPaper: return PublishPaper(c, state, lab);
+                case CommandKind.SetSublet: return SetSublet(c, state, lab, cmd);
+                case CommandKind.CommissionAudit: return CommissionAudit(c, state, lab, cmd);
+                case CommandKind.RetrainStaff: return RetrainStaff(c, state, lab, cmd);
+                case CommandKind.RunCampaign: return RunCampaign(c, state, lab, cmd);
+                case CommandKind.ScrapRun: return ScrapRun(c, state, lab, cmd);
+                case CommandKind.Layoff: return Layoff(c, state, lab, cmd);
+                case CommandKind.PayDownDebt: return PayDownDebt(c, state, lab, cmd);
+                case CommandKind.PromoteStaff: return PromoteStaff(c, state, lab, cmd);
+                case CommandKind.SetRevenueTarget: return SetRevenueTarget(c, state, lab, cmd);
+                case CommandKind.EndowChair: return EndowChair(c, state, lab, cmd);
+                case CommandKind.AnswerWhistle: return AnswerWhistle(c, state, lab, cmd);
+                case CommandKind.SetBugBounty: return SetBugBounty(c, state, lab, cmd);
+                case CommandKind.PullOutOfSector: return PullOutOfSector(c, state, lab, cmd);
+                case CommandKind.RestructureLoan: return RestructureLoan(c, state, lab, cmd);
+                case CommandKind.AnnounceRoadmap: return AnnounceRoadmap(c, state, lab, cmd);
+                case CommandKind.AssignMentor: return AssignMentor(c, state, lab, cmd);
+                case CommandKind.EndMentoring: return EndMentoring(c, state, lab, cmd);
+                case CommandKind.StartSkunkworks: return StartSkunkworks(c, state, lab, cmd);
+                case CommandKind.WrapUpSkunkworks: return WrapUpSkunkworks(c, state, lab, cmd);
+                case CommandKind.SignChecklistItem: return SignChecklistItem(c, state, lab, cmd);
+                case CommandKind.StartSandbox: return StartSandbox(c, state, lab, cmd);
+                case CommandKind.SetPlaybook: return SetPlaybook(c, state, lab, cmd);
+                case CommandKind.ArmPlaybook: return ArmPlaybook(c, state, lab, cmd);
+                case CommandKind.SetOrchBudget: return SetOrchBudget(c, state, lab, cmd);
+                case CommandKind.SetRouteShare: return SetRouteShare(c, state, lab, cmd);
+                case CommandKind.PublishMetrics: return PublishMetrics(c, state, lab, cmd);
+                case CommandKind.StopMetrics: return StopMetrics(c, state, lab, cmd);
+                case CommandKind.BranchSpecialist: return BranchSpecialist(c, state, lab, cmd);
+                case CommandKind.AcquireDataSource: return AcquireDataSource(c, state, lab, cmd);
+                case CommandKind.RenewDataSource: return RenewDataSource(c, state, lab, cmd);
+                case CommandKind.SetWeightsPolicy: return SetWeightsPolicy(c, state, lab, cmd);
+                case CommandKind.SetSectorPrice: return SetSectorPrice(c, state, lab, cmd);
+                case CommandKind.SetCampaignDeadline: return SetCampaignDeadline(c, state, lab, cmd);
+                case CommandKind.ShapeLaw: return ShapeLaw(c, state, lab, cmd);
+                case CommandKind.RespondTakeoff: return RespondTakeoff(c, state, lab, cmd);
+                case CommandKind.PickScenarioBaggage: return PickScenarioBaggage(c, state, lab, cmd);
+                case CommandKind.SatisfyMarginCall: return SatisfyMarginCall(c, state, lab, cmd);
+                case CommandKind.RespondRungSix: return RespondRungSix(c, state, lab, cmd);
+                case CommandKind.SetLawTarget: return SetLawTarget(c, state, lab, cmd);
+                case CommandKind.StaffHumanQueue: return StaffHumanQueue(c, state, lab, cmd);
+                case CommandKind.ClearHumanQueue: return ClearHumanQueue(c, state, lab, cmd);
+                case CommandKind.SetToolPolicy: return SetToolPolicy(c, state, lab, cmd);
+                case CommandKind.RegisterEval: return RegisterEval(c, state, lab, cmd);
+                case CommandKind.StartDrill: return StartDrill(c, state, lab, cmd);
+                case CommandKind.HoldBoardMeetings: return HoldBoardMeetings(c, state, lab, cmd);
+                case CommandKind.AnswerMotion: return AnswerMotion(c, state, lab, cmd);
+                case CommandKind.AssignOwner: return AssignOwner(c, state, lab, cmd);
+                case CommandKind.WriteDocs: return WriteDocs(c, state, lab, cmd);
+                case CommandKind.PostTrain: return PostTrain(c, state, lab, cmd);
+                case CommandKind.AbandonPostTraining: return AbandonPostTraining(c, state, lab, cmd);
+                case CommandKind.ContractAnnotators: return ContractAnnotators(c, state, lab, cmd);
+                case CommandKind.EndAnnotators: return EndAnnotators(c, state, lab, cmd);
+                case CommandKind.AuditVendor: return AuditVendor(c, state, lab, cmd);
+                case CommandKind.SetAutonomy: return SetAutonomy(c, state, lab, cmd);
+                case CommandKind.SetSpotShare: return SetSpotShare(c, state, lab, cmd);
+                case CommandKind.BuyBackRound: return BuyBackRound(c, state, lab, cmd);
+                case CommandKind.SetGovernance: return SetGovernance(c, state, lab, cmd);
+                case CommandKind.SeatDirector: return SeatDirector(c, state, lab, cmd);
+                case CommandKind.SetUserData: return SetUserData(c, state, lab, cmd);
+                case CommandKind.AcquireData: return AcquireData(c, state, lab, cmd);
+                case CommandKind.CleanData: return CleanData(c, state, lab, cmd);
+                case CommandKind.LicenseScraped: return LicenseScraped(c, state, lab, cmd);
+                case CommandKind.JoinRegister: return JoinRegister(c, state, lab, cmd);
+                case CommandKind.LeaveRegister: return LeaveRegister(c, state, lab, cmd);
+                case CommandKind.FileReport: return FileReport(c, state, lab, cmd);
+                case CommandKind.OrderFabric: return OrderFabric(c, state, lab, cmd);
+                case CommandKind.CancelFabric: return CancelFabric(c, state, lab, cmd);
+                case CommandKind.SetOrg: return SetOrg(c, state, lab, cmd);
+                case CommandKind.StartConformity: return StartConformity(c, state, lab, cmd);
+                case CommandKind.SubmitEvidence: return SubmitEvidence(c, state, lab, cmd);
+                case CommandKind.WithdrawConformity: return WithdrawConformity(c, state, lab, cmd);
+                case CommandKind.OpenApi: return OpenApi(c, state, lab, cmd);
+                case CommandKind.DeprecateApi: return DeprecateApi(c, state, lab, cmd);
+                case CommandKind.CancelDeprecation: return CancelDeprecation(c, state, lab, cmd);
+                case CommandKind.PledgeSupport: return PledgeSupport(c, state, lab, cmd);
+                case CommandKind.BreakSupportPledge: return BreakSupportPledge(c, state, lab, cmd);
+                case CommandKind.ApplyLicence: return ApplyLicence(c, state, lab, cmd);
+                case CommandKind.RenewLicence: return RenewLicence(c, state, lab, cmd);
+                case CommandKind.SurrenderLicence: return SurrenderLicence(c, state, lab, cmd);
+                case CommandKind.FormPod: return FormPod(c, state, lab, cmd);
+                case CommandKind.SwapPodMember: return SwapPodMember(c, state, lab, cmd);
+                case CommandKind.DisbandPod: return DisbandPod(c, state, lab, cmd);
+                case CommandKind.SetRunPriority: return SetRunPriority(c, state, lab, cmd);
+                case CommandKind.StartProgramme: return StartProgramme(c, state, lab, cmd);
+                case CommandKind.ChooseApproach: return ChooseApproach(c, state, lab, cmd);
+                case CommandKind.RecoverStage: return RecoverStage(c, state, lab, cmd);
+                case CommandKind.AbandonProgramme: return AbandonProgramme(c, state, lab, cmd);
+                case CommandKind.OpenWatchDesk: return OpenWatchDesk(c, state, lab, cmd);
+                case CommandKind.CloseWatchDesk: return CloseWatchDesk(c, state, lab, cmd);
+                case CommandKind.AnswerLaunch: return AnswerLaunch(c, state, lab, cmd);
+                case CommandKind.OpenFreeTier: return OpenFreeTier(c, state, lab, cmd);
+                case CommandKind.CloseFreeTier: return CloseFreeTier(c, state, lab, cmd);
+                case CommandKind.OpenCareersPage: return OpenCareersPage(c, state, lab, cmd);
+                case CommandKind.AnswerReview: return AnswerReview(c, state, lab, cmd);
+                case CommandKind.OpenWaitlist: return OpenWaitlist(c, state, lab, cmd);
+                case CommandKind.CloseWaitlist: return CloseWaitlist(c, state, lab, cmd);
+                case CommandKind.BetOnTech: return BetOnTech(c, state, lab, cmd);
+                case CommandKind.WithdrawTechBet: return WithdrawTechBet(c, state, lab, cmd);
+                case CommandKind.ReleaseCode: return ReleaseCode(c, state, lab, cmd);
+                case CommandKind.WithholdCode: return WithholdCode(c, state, lab, cmd);
+                case CommandKind.AnswerShock: return AnswerShock(c, state, lab, cmd);
+                case CommandKind.SetCreed: return SetCreed(c, state, lab, cmd);
+                case CommandKind.HoldTownHall: return HoldTownHall(c, state, lab, cmd);
+                case CommandKind.OwnUp: return OwnUp(c, state, lab, cmd);
+                case CommandKind.SignPlatform: return SignPlatform(c, state, lab, cmd);
+                case CommandKind.RenewPlatform: return RenewPlatform(c, state, lab, cmd);
+                case CommandKind.WalkFromPlatform: return WalkFromPlatform(c, state, lab, cmd);
+                case CommandKind.DesignDevice: return DesignDevice(c, state, lab, cmd);
+                case CommandKind.SetDevicePrice: return SetDevicePrice(c, state, lab, cmd);
+                case CommandKind.WithdrawDevice: return WithdrawDevice(c, state, lab, cmd);
+                case CommandKind.IssueNote: return IssueNote(c, state, lab, cmd);
+                case CommandKind.RepayNote: return RepayNote(c, state, lab, cmd);
+                case CommandKind.ExtendNote: return ExtendNote(c, state, lab, cmd);
+                case CommandKind.SaleLeaseback: return SaleLeaseback(c, state, lab, cmd);
+                case CommandKind.BuyBackLease: return BuyBackLease(c, state, lab, cmd);
+                case CommandKind.ExtendLease: return ExtendLease(c, state, lab, cmd);
+                case CommandKind.ReturnLease: return ReturnLease(c, state, lab, cmd);
+                case CommandKind.EndowFoundation: return EndowFoundation(c, state, lab, cmd);
+                case CommandKind.SetFoundationFocus: return SetFoundationFocus(c, state, lab, cmd);
+                case CommandKind.SetFoundationPayout: return SetFoundationPayout(c, state, lab, cmd);
+                case CommandKind.WindUpFoundation: return WindUpFoundation(c, state, lab, cmd);
+                case CommandKind.TakeRevenueAdvance: return TakeRevenueAdvance(c, state, lab, cmd);
+                case CommandKind.BuyOutAdvance: return BuyOutAdvance(c, state, lab, cmd);
+                case CommandKind.ListCompany: return ListCompany(c, state, lab, cmd);
+                case CommandKind.SetGuidance: return SetGuidance(c, state, lab, cmd);
+                case CommandKind.FollowOn: return FollowOn(c, state, lab, cmd);
+                case CommandKind.BuyBackShares: return BuyBackShares(c, state, lab, cmd);
+                case CommandKind.TakePrivate: return TakePrivate(c, state, lab, cmd);
+                case CommandKind.SetCapitalPolicy: return SetCapitalPolicy(c, state, lab, cmd);
+                case CommandKind.WaiveCovenant: return WaiveCovenant(c, state, lab, cmd);
+                case CommandKind.CureCovenant: return CureCovenant(c, state, lab, cmd);
+                case CommandKind.SetWarranty: return SetWarranty(c, state, lab, cmd);
+                case CommandKind.StockSpares: return StockSpares(c, state, lab, cmd);
+                case CommandKind.ExpediteReplacements: return ExpediteReplacements(c, state, lab, cmd);
+                case CommandKind.TakeStandardsRole: return TakeStandardsRole(c, state, lab, cmd);
+                case CommandKind.AdoptStandards: return AdoptStandards(c, state, lab, cmd);
+                case CommandKind.DropStandards: return DropStandards(c, state, lab, cmd);
+                case CommandKind.BuildTaxStructure: return BuildTaxStructure(c, state, lab, cmd);
+                case CommandKind.ClaimTaxCredit: return ClaimTaxCredit(c, state, lab, cmd);
+                case CommandKind.AnswerTaxAudit: return AnswerTaxAudit(c, state, lab, cmd);
+                case CommandKind.AdoptPolicy: return AdoptPolicy(c, state, lab, cmd);
+                case CommandKind.BreakPolicy: return BreakPolicy(c, state, lab, cmd);
+                case CommandKind.ConvertCharter: return ConvertCharter(c, state, lab, cmd);
+                case CommandKind.CancelCharterChange: return CancelCharterChange(c, state, lab, cmd);
+                case CommandKind.AcceptContract: return AcceptContract(c, state, lab, cmd);
+                case CommandKind.DeclineContract: return DeclineContract(c, state, lab, cmd);
+                case CommandKind.AbandonContract: return AbandonContract(c, state, lab, cmd);
+                case CommandKind.SettleCase: return SettleCase(c, state, lab, cmd);
+                case CommandKind.RetainFirm: return RetainFirm(c, state, lab, cmd);
+                case CommandKind.AppealCase: return AppealCase(c, state, lab, cmd);
+                case CommandKind.BuildSecurity: return BuildSecurity(c, state, lab, cmd);
+                case CommandKind.AnswerBreach: return AnswerBreach(c, state, lab, cmd);
+                case CommandKind.OpenRequisition: return OpenRequisition(c, state, lab, cmd);
+                case CommandKind.CancelRequisition: return CancelRequisition(c, state, lab, cmd);
+                case CommandKind.HostScholars: return HostScholars(c, state, lab, cmd);
+                case CommandKind.SendScholarsHome: return SendScholarsHome(c, state, lab, cmd);
+                case CommandKind.SendOnSabbatical: return SendOnSabbatical(c, state, lab, cmd);
+                case CommandKind.RecallFromSabbatical: return RecallFromSabbatical(c, state, lab, cmd);
+                case CommandKind.StaffSupportDesk: return StaffSupportDesk(c, state, lab, cmd);
+                case CommandKind.StartInternships: return StartInternships(c, state, lab, cmd);
+                case CommandKind.EndInternships: return EndInternships(c, state, lab, cmd);
+                case CommandKind.RehireAlumnus: return RehireAlumnus(c, state, lab, cmd);
+                case CommandKind.SubmitPaper: return SubmitPaper(c, state, lab, cmd);
+                case CommandKind.WithdrawPaper: return WithdrawPaper(c, state, lab, cmd);
+                case CommandKind.AssignAccountTeam: return AssignAccountTeam(c, state, lab, cmd);
+                case CommandKind.AnnounceSunset: return AnnounceSunset(c, state, lab, cmd);
+                case CommandKind.CancelSunset: return CancelSunset(c, state, lab, cmd);
+                case CommandKind.RecogniseUnion: return RecogniseUnion(c, state, lab, cmd);
+                case CommandKind.ResistUnion: return ResistUnion(c, state, lab, cmd);
+                case CommandKind.SetPledge: return SetPledge(c, state, lab, cmd);
+                case CommandKind.SetAsideReserve: return SetAsideReserve(c, state, lab, cmd);
+                case CommandKind.DrawReserve: return DrawReserve(c, state, lab, cmd);
+                case CommandKind.ApplyForGrant: return ApplyForGrant(c, state, lab, cmd);
+                case CommandKind.SetSla: return SetSla(c, state, lab, cmd);
+                case CommandKind.PublishPostMortem: return PublishPostMortem(c, state, lab, cmd);
+                case CommandKind.HireConsultants: return HireConsultants(c, state, lab, cmd);
+                case CommandKind.SetOnCall: return SetOnCall(c, state, lab, cmd);
+                case CommandKind.SetOptimisation: return SetOptimisation(c, state, lab, cmd);
+                case CommandKind.SetEthicsBoard: return SetEthicsBoard(c, state, lab, cmd);
+                case CommandKind.AppointChief: return AppointChief(c, state, lab, cmd);
+                case CommandKind.GrantStaffEquity: return GrantStaffEquity(c, state, lab);
+                case CommandKind.HoldHackWeek: return HoldHackWeek(c, state, lab);
+                case CommandKind.SetResearchFocus: return SetResearchFocus(c, state, lab, cmd);
+                case CommandKind.SetRunApproach: return SetRunApproach(c, state, lab, cmd);
+                case CommandKind.SetCheckpoints: return SetCheckpoints(c, state, lab, cmd);
+                case CommandKind.DesignWithModel: return DesignWithModel(c, state, lab, cmd);
+                case CommandKind.SetTrainingObjective: return SetTrainingObjective(c, state, lab, cmd);
+                case CommandKind.AnswerOfficeEvent: return AnswerOfficeEvent(c, state, lab, cmd);
+                case CommandKind.FineTuneModel: return FineTuneModel(c, state, lab, cmd);
+                case CommandKind.RollBackModel: return RollBackModel(c, state, lab, cmd);
+                case CommandKind.SetReleaseGate: return SetReleaseGate(c, state, lab, cmd);
+                case CommandKind.CleanUpNaming: return CleanUpNaming(c, state, lab, cmd);
+                case CommandKind.RefurbishRoom: return RefurbishRoom(c, state, lab, cmd);
                 default: return Fail(CommandError.InvalidArgument, "Unknown kind of command.");
             }
         }
@@ -148,10 +362,10 @@ namespace AiLabs.Rules.Sim
             RoleConfig role = c.Role(cmd.Id);
             if (role == null) return Fail(CommandError.UnknownId, "There is no role \"" + cmd.Id + "\".");
             if (cmd.Count < 1) return Fail(CommandError.InvalidArgument, "Hire at least one person.");
-            int free = LabQueries.Seats(c, lab, role.Id) - LabQueries.StaffCount(lab, role.Id);
+            int free = LabQueries.FreeSeats(c, lab, role.Id);
             if (cmd.Count > free)
                 return Fail(CommandError.NoSeats, "There are " + free + " free seats for a " + role.Name + ". Build a room for them first.");
-            long cost = EraRules.HireCost(c, role, cmd.Count, state.Tick);
+            long cost = RolePerks.HireCost(c, lab, role, cmd.Count, state.Tick);
             if (lab.Cash < cost) return NeedCash(lab, cost);
 
             StaffSystem.Hire(c, state, lab, role, cmd.Count);
@@ -168,8 +382,12 @@ namespace AiLabs.Rules.Sim
             if (cmd.Count > LabQueries.StaffCount(lab, role.Id))
                 return Fail(CommandError.NotEnoughStaff, "The lab does not have that many people in that role.");
 
+            var leavers = Alumni.Roster(lab);
             StaffSystem.Fire(lab, role.Id, cmd.Count);
-            Finance.Spend(lab, LedgerLine.Hiring, role.Severance * cmd.Count);
+            Alumni.RecordGone(c, state, lab, leavers, Alumni.LaidOff);
+            ControlStale.OnFired(c, lab, role.Id, cmd.Count);
+            TalentSystem.DropGoneOffers(lab);
+            Finance.Spend(lab, LedgerLine.Hiring, Labour.Severance(c, lab, role.Severance * cmd.Count));
             Events.Add(state, EventKind.Fired, lab.Id, -1, cmd.Count, role.Id);
             return CommandResult.Done(-1);
         }
@@ -245,7 +463,8 @@ namespace AiLabs.Rules.Sim
             int holdingId = cmd.TargetId;
             if (holdingId != HardwareBatch.Hq && lab.Holding(holdingId) == null) return Fail(CommandError.UnknownId, "The lab has no holding " + holdingId + ".");
             int owned = LabQueries.OwnedGpuUnits(lab, holdingId);
-            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there.");
+            if (holdingId == HardwareBatch.Hq && lab.LeaseUnits > 0) owned -= lab.LeaseUnits;
+            if (cmd.Count > owned) return Fail(CommandError.NotEnoughGpus, "The lab owns " + owned + " GPUs there" + (lab.LeaseUnits > 0 && holdingId == HardwareBatch.Hq ? " that are not leased back" : "") + ".");
 
             long proceeds = 0;
             int left = cmd.Count;
@@ -261,6 +480,62 @@ namespace AiLabs.Rules.Sim
             }
             Finance.Earn(lab, LedgerLine.Hardware, proceeds);
             Events.Add(state, EventKind.GpusSold, lab.Id, holdingId, cmd.Count, "");
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetResearchShare(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab sets compute aside for research.");
+            if (cmd.Permille < 0 || cmd.Permille > c.Research.MaxComputeSharePermille)
+                return Fail(CommandError.InvalidArgument, "The research share is from 0 to " + c.Research.MaxComputeSharePermille + ".");
+            lab.ResearchSharePermille = cmd.Permille;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetCrunch(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can ask its people to work late.");
+            if (cmd.Count != 0 && cmd.Count != 1) return Fail(CommandError.InvalidArgument, "Crunch time is on (1) or off (0).");
+            if (cmd.Count == 0)
+            {
+                if (!Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is not in crunch time.");
+                Crunch.End(state, lab, "stopped", lab.CrunchWeeks - 1);
+                return CommandResult.Done(-1);
+            }
+            if (Crunch.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is already in crunch time.");
+            if (c.StaffPeople.CrunchMaxWeeks <= 0) return Fail(CommandError.InvalidArgument, "There is no crunch time in this game.");
+            if (HackWeek.Active(lab)) return Fail(CommandError.InvalidArgument, "The team is on a hack week; crunch time can start when it is over.");
+            if (Labour.CrunchBlocked(lab)) return Fail(CommandError.InvalidArgument, Labour.OnStrike(lab) ? "The staff are on strike." : "The union contract does not allow crunch time.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to work late.");
+            if (Crunch.AverageMorale(lab) < c.StaffPeople.CrunchMinMorale)
+                return Fail(CommandError.TeamTooTired, "The team is too tired for crunch time (morale " + Crunch.AverageMorale(lab) + ", needs " + c.StaffPeople.CrunchMinMorale + ").");
+            lab.CrunchWeeks = 1;
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult HoldOffsite(GameConfig c, GameState state, LabState lab)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab takes its team on an offsite.");
+            if (c.StaffPeople.OffsiteMoraleLift <= 0) return Fail(CommandError.InvalidArgument, "There are no offsites in this game.");
+            if (lab.Staff.Count == 0) return Fail(CommandError.NotEnoughStaff, "There is no one to take away.");
+            if (Offsite.Lifted(c, lab) == 0) return Fail(CommandError.InvalidArgument, "No one has room left to rise: everyone is as high as an offsite can take them.");
+            long cost = Offsite.Cost(c, lab);
+            if (lab.Cash < cost) return NeedCash(lab, cost);
+            Offsite.Hold(c, state, lab, cost);
+            return CommandResult.Done(-1);
+        }
+
+        static CommandResult SetInsurance(GameConfig c, GameState state, LabState lab, Command cmd)
+        {
+            if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab buys incident insurance.");
+            FinanceConfig f = c.Finance;
+            if (cmd.Count < 0 || cmd.Count > f.InsuranceMaxLevel) return Fail(CommandError.InvalidArgument, "Insurance is from level 0 to " + f.InsuranceMaxLevel + ".");
+            if (cmd.Count == lab.InsuranceLevel) return Fail(CommandError.InvalidArgument, "The lab already has that cover.");
+            if (state.Tick < lab.InsuranceLockedUntil) return Fail(CommandError.InsuranceLocked, "The policy was changed recently and cannot be changed before week " + lab.InsuranceLockedUntil + ".");
+            if (cmd.Count > lab.InsuranceLevel && lab.InsuranceClaims >= f.InsuranceDropClaims)
+                return Fail(CommandError.Uninsurable, "No insurer will sell cover to a lab with " + lab.InsuranceClaims + " recent claims.");
+            lab.InsuranceLevel = cmd.Count;
+            lab.InsuranceLockedUntil = state.Tick + f.InsuranceLockWeeks;
             return CommandResult.Done(-1);
         }
 
@@ -286,9 +561,11 @@ namespace AiLabs.Rules.Sim
             if (lab.ResearchPoints < cost)
                 return Fail(CommandError.NotEnoughResearch, tech.Name + " costs " + cost + " research points and the lab has " + lab.ResearchPoints + ".");
 
+            int lossBefore = ControlStale.LossNow(c, lab, state.Tick);
             lab.ResearchPoints -= cost;
             lab.Techs.Add(tech.Id);
             Events.Add(state, EventKind.TechResearched, lab.Id, -1, cost, tech.Id);
+            ControlStale.OnResearched(c, state, lab, lossBefore, tech);
             return CommandResult.Done(-1);
         }
 
@@ -301,6 +578,7 @@ namespace AiLabs.Rules.Sim
                 return Fail(CommandError.InvalidArgument, "The alignment share is from 0 to " + MaxAlignmentSharePermille + ": some of the run has to train the model.");
             if (LabQueries.ActiveRuns(lab) >= c.Training.MaxConcurrentRuns)
                 return Fail(CommandError.TooManyRuns, "The lab can train " + c.Training.MaxConcurrentRuns + " models at once.");
+            if (ScalingPolicy.Tripped(c, lab) > 0) return Fail(CommandError.InvalidArgument, "A trained model reached a tripwire of the lab's scaling policy: no new run starts until the safeguards are in place.");
             long prepCost = EraSystem.RunPrepCost(c, line, state.Tick);
             if (lab.Cash < prepCost) return NeedCash(lab, prepCost);
 
@@ -308,7 +586,8 @@ namespace AiLabs.Rules.Sim
             model.Id = state.TakeId();
             model.LineId = line.Id;
             model.Version = LabQueries.NextVersion(lab, line.Id);
-            model.Name = lab.FamilyName + " " + line.Name + " " + model.Version;
+            model.Name = VersionNaming.NameFor(c, lab, line, model.Version);
+            VersionNaming.OnVersionNamed(c, lab);
             model.Status = ModelStatus.Training;
             model.RequiredCompute = EraSystem.RunCompute(c, line, state.Tick);
             model.AlignmentSharePermille = cmd.Permille;
@@ -328,7 +607,15 @@ namespace AiLabs.Rules.Sim
             if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
             if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released)
                 return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a trained model can go on sale.");
+            if (ScalingPolicy.Holds(c, lab, model)) return Fail(CommandError.InvalidArgument, model.Name + " reached a tripwire of the lab's scaling policy and the safeguards for it are not in place.");
+            if (model.PostKind != 0) return Fail(CommandError.InvalidArgument, model.Name + " is still being tuned and cannot go on sale until that run is over or abandoned.");
+            if (model.Status == ModelStatus.Trained && ReleaseChecklist.Blocks(c, state, model))
+                return Fail(CommandError.InvalidArgument, model.Name + " still has open release checklist items.");
             if (cmd.Ids == null || cmd.Ids.Count == 0) return Fail(CommandError.InvalidArgument, "Name at least one sector to sell into.");
+            if (SafetyCulture.GateBlocks(lab, model))
+                return Fail(CommandError.BelowReleaseGate, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and your own release gate asks for " + lab.ReleaseGate + ".");
+            if (model.Status == ModelStatus.Trained && EthicsBoard.Vetoes(c, lab, model))
+                return Fail(CommandError.BoardVeto, "The ethics board will not let " + model.Name + " go on sale: its true alignment is " + model.Alignment + " and the board wants " + c.Board.VetoAlignment + ".");
             if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
                 return Fail(CommandError.BelowEraSafetyBar, model.Name + " shows alignment " + SafetySystem.DisplayedAlignment(model) + " and the law in " + EraSystem.AtTick(c, state.Tick).Name + " asks for " + EraRules.ReleaseBar(c, state.Tick) + " before a model goes on sale.");
 
@@ -341,6 +628,9 @@ namespace AiLabs.Rules.Sim
                     return Fail(CommandError.SectorClosed, sector.Name + " opens in " + sector.OpensYear + ".");
                 if (model.Capability < sector.MinCapability)
                     return Fail(CommandError.BelowSectorBar, sector.Name + " needs capability " + sector.MinCapability + " and " + model.Name + " has " + model.Capability + ".");
+                ModelState pledged = Pledges.Blocking(c, state, lab, model, sector.Id);
+                if (pledged != null)
+                    return Fail(CommandError.InvalidArgument, pledged.Name + " is under a support pledge in " + sector.Name + " for " + pledged.LtsLeft + " more weeks; keep it or break the pledge first.");
             }
 
             var replaced = new List<ModelState>();
@@ -366,16 +656,23 @@ namespace AiLabs.Rules.Sim
                 if (!model.Sectors.Contains(sectorState.Id)) model.Sectors.Add(sectorState.Id);
             }
 
+            bool firstRelease = model.Status != ModelStatus.Released;
             if (model.Status != ModelStatus.Released)
             {
                 model.Status = ModelStatus.Released;
                 model.ReleasedTick = state.Tick;
+                PressSystem.OnLaunch(c, state, lab, model);
+                SafetyCulture.OnFirstRelease(c, lab, model);
                 if (cmd.Permille > 0)
                     model.DisplayedAlignment = (int)MathI.Min(MathI.Permille, MathI.Max(model.Alignment, cmd.Permille));
                 else if (model.DisplayedAlignment < model.Alignment)
                     model.DisplayedAlignment = model.Alignment;
+                Pledge.OnFirstRelease(c, state, lab, model);
+                ReleaseChecklist.OnFirstRelease(c, state, model);
+                Standards.OnFirstRelease(c, state, lab, model);
             }
             Events.Add(state, EventKind.ModelReleased, lab.Id, model.Id, cmd.Ids.Count, model.Name);
+            if (firstRelease) OfficeEvents.OnRelease(c, state, lab);
 
             for (int i = 0; i < replaced.Count; i++)
             {

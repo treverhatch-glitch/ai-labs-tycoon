@@ -18,6 +18,15 @@ namespace AiLabs.Rules.Sim
         public List<string> RivalIds;
         /// <summary>The era to start in (the start-era picker), by config id. Empty for the first era, the 1995 default.</summary>
         public string StartEraId = "";
+        /// <summary>Who the player is (a founder id); empty for none.</summary>
+        public string FounderId = "";
+        /// <summary>How the player's lab is good (a style id); empty for none.</summary>
+        public string StyleId = "";
+        /// <summary>The bloc the lab is incorporated in; empty for the config's default.</summary>
+        public string HomeBlocId = "";
+        /// <summary>Scenario baggage id for a new game (schema 143); empty for none.</summary>
+        public string BaggageId = "";
+        public string ScenarioId = "";
     }
 
     /// <summary>
@@ -144,7 +153,98 @@ namespace AiLabs.Rules.Sim
                 if (LabQueries.ParticipatesInEconomy(state.Labs[i]))
                 {
                     SafetySystem.RunWeek(c, state, state.Labs[i]);
+                    Crunch.RunWeek(c, state, state.Labs[i]);
+                    HackWeek.RunWeek(c, state, state.Labs[i]);
+                    Chiefs.RunWeek(c, state, state.Labs[i]);
+                    MarketingCampaign.RunWeek(c, state, state.Labs[i]);
+                    OnCall.RunWeek(c, state, state.Labs[i]);
+                    PolicyConsultants.RunWeek(c, state, state.Labs[i]);
+                    Sla.RunWeek(c, state, state.Labs[i]);
+                    EthicsBoard.RunWeek(c, state, state.Labs[i]);
+                    Interpretability.RunWeek(c, state, state.Labs[i]);
+                    Compliance.RunWeek(c, state, state.Labs[i]);
+                    Prestige.RunWeek(c, state, state.Labs[i]);
+                    ResearchGrants.RunWeek(c, state, state.Labs[i]);
+                    RevenueTargets.RunWeek(c, state, state.Labs[i]);
+                    Whistle.RunWeek(c, state, state.Labs[i]);
+                    BugBounty.RunWeek(c, state, state.Labs[i]);
+                    Roadmap.RunWeek(c, state, state.Labs[i]);
+                    Mentoring.RunWeek(c, state, state.Labs[i]);
+                    Skunkworks.RunWeek(c, state, state.Labs[i]);
+                    Alumni.RunWeek(c, state, state.Labs[i]);
+                    ReleaseChecklist.RunWeek(c, state, state.Labs[i]);
+                    HumanQueue.RunWeek(c, state, state.Labs[i]);
+                    EvalHarness.RunWeek(c, state, state.Labs[i]);
+                    Drills.RunWeek(c, state, state.Labs[i]);
+                    AgentSandbox.RunWeek(c, state, state.Labs[i]);
+                    RunawayPlaybook.RunWeek(c, state, state.Labs[i]);
+                    OrchestrationBudget.RunWeek(c, state, state.Labs[i]);
+                    PublicMetrics.RunWeek(c, state, state.Labs[i]);
+                    DataSources.RunWeek(c, state, state.Labs[i]);
+                    OpenWeights.RunWeek(c, state, state.Labs[i]);
+                    BoardMotions.RunWeek(c, state, state.Labs[i]);
+                    Knowledge.RunWeek(c, state, state.Labs[i]);
+                    PostTraining.RunWeek(c, state, state.Labs[i]);
+                    Annotation.RunWeek(c, state, state.Labs[i]);
+                    Agency.RunWeek(c, state, state.Labs[i]);
+                    Spot.RunWeek(c, state, state.Labs[i]);
+                    Governance.RunWeek(c, state, state.Labs[i]);
+                    UserData.RunWeek(c, state, state.Labs[i]);
+                    Datasets.RunWeek(c, state, state.Labs[i]);
+                    Disclosure.RunWeek(c, state, state.Labs[i]);
+                    Fabric.RunWeek(c, state, state.Labs[i]);
+                    Org.RunWeek(c, state, state.Labs[i]);
+                    Conformity.RunWeek(c, state, state.Labs[i]);
+                    Integrations.RunWeek(c, state, state.Labs[i]);
+                    Pledges.RunWeek(c, state, state.Labs[i]);
+                    Licence.RunWeek(c, state, state.Labs[i]);
+                    Pods.RunWeek(c, state, state.Labs[i]);
+                    Programmes.RunWeek(c, state, state.Labs[i]);
+                    LaunchWatch.RunWeek(c, state, state.Labs[i]);
+                    FreeTier.RunWeek(c, state, state.Labs[i]);
+                    Brand.RunWeek(c, state, state.Labs[i]);
+                    Waitlist.RunWeek(c, state, state.Labs[i]);
+                    TechBets.RunWeek(c, state, state.Labs[i]);
+                    Replication.RunWeek(c, state, state.Labs[i]);
+                    Shocks.RunWeek(c, state, state.Labs[i]);
+                    Creed.RunWeek(c, state, state.Labs[i]);
+                    Platforms.RunWeek(c, state, state.Labs[i]);
+                    Devices.RunWeek(c, state, state.Labs[i]);
+                    Notes.RunWeek(c, state, state.Labs[i]);
+                    Leaseback.RunWeek(c, state, state.Labs[i]);
+                    Foundation.RunWeek(c, state, state.Labs[i]);
+                    RevenueFinancing.RunWeek(c, state, state.Labs[i]);
+                    Listing.RunWeek(c, state, state.Labs[i]);
+                    Covenants.RunWeek(c, state, state.Labs[i]);
+                    HardwareReliability.RunWeek(c, state, state.Labs[i]);
+                    Standards.RunWeek(c, state, state.Labs[i]);
+                    Tax.RunWeek(c, state, state.Labs[i]);
+                    ScalingPolicy.RunWeek(c, state, state.Labs[i]);
+                    Charter.RunWeek(c, state, state.Labs[i]);
+                    GovContracts.RunWeek(c, state, state.Labs[i]);
+                    Security.RunWeek(c, state, state.Labs[i]);
+                    Litigation.RunWeek(c, state, state.Labs[i]);
+                    Scholars.RunWeek(c, state, state.Labs[i]);
+                    Requisitions.RunWeek(c, state, state.Labs[i]);
+                    Sabbatical.RunWeek(c, state, state.Labs[i]);
+                    SupportDesk.RunWeek(c, state, state.Labs[i]);
+                    Internships.RunWeek(c, state, state.Labs[i]);
+                    Conference.RunWeek(c, state, state.Labs[i]);
+                    AccountTeams.RunWeek(c, state, state.Labs[i]);
+                    Sunset.RunWeek(c, state, state.Labs[i]);
+                    Labour.RunWeek(c, state, state.Labs[i]);
                     StaffSystem.RunWeek(c, state.Labs[i]);
+                    Traits.RunQuits(c, state, state.Labs[i]);
+                    TalentSystem.RunWeek(c, state, state.Labs[i]);
+                    PressSystem.RunWeek(c, state, state.Labs[i]);
+                    TrustSystem.RunWeek(c, state, state.Labs[i]);
+                    SafetyCulture.RunWeek(c, state, state.Labs[i]);
+                    ResearchLeads.RunWeek(c, state, state.Labs[i]);
+                    OfficeEvents.RunWeek(c, state, state.Labs[i]);
+                    TakeoffCrisis.RunWeek(c, state, state.Labs[i]);
+                    RungSixCrisis.RunWeek(c, state, state.Labs[i]);
+                    ScenarioGoals.RunWeek(c, state, state.Labs[i]);
+                    CampaignDeadline.RunWeek(c, state, state.Labs[i]);
                     ShadySystem.RunWeek(c, state, state.Labs[i]);
                     MuseumSystem.RunWeek(c, state.Labs[i]);
                 }
@@ -163,10 +263,7 @@ namespace AiLabs.Rules.Sim
             if (GameDate.IsMonthEnd(c.Calendar, tick))
             {
                 for (int i = 0; i < state.Labs.Count; i++)
-                {
-                    LabState lab = state.Labs[i];
-                    if (LabQueries.ParticipatesInEconomy(lab)) GovernmentSystem.CloseMonth(c, state, lab);
-                }
+                    if (LabQueries.ParticipatesInEconomy(state.Labs[i])) GovernmentSystem.CloseMonth(c, state, state.Labs[i]);
                 EndingSystem.TryTreaty(c, state);
                 EndingSystem.TryNationalised(c, state);
                 LabState player = state.Player;

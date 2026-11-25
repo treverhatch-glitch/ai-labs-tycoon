@@ -11,7 +11,7 @@ using AiLabs.Rules.Systems;
 namespace AiLabs.SimCli;
 
 /// <summary>
-/// Plays the rules without Unity. Add --era <id> to start in a later era (for example punchline).
+/// Plays the rules without Unity. Add --era <id> to start in a later era (for example punchline), and --founder, --style and --home to choose who you are.
 ///   simcli run   [--years 5] [--seed 1] [--player autopilot|idle] [--events]   a yearly table for every lab
 ///   simcli soak  [--games 50] [--years 5] [--seed 1] [--player autopilot|idle]  many seeds: who survives, who wins
 ///   simcli probe [--years 5] [--seed 1] [--player autopilot|idle]              "tick N digest" once a year
@@ -91,7 +91,14 @@ public static class Program
 
     static NewGameOptions NewGame(string[] args, long seed)
     {
-        return new NewGameOptions { Seed = seed, StartEraId = Option(args, "--era", "") };
+        return new NewGameOptions
+        {
+            Seed = seed,
+            StartEraId = Option(args, "--era", ""),
+            FounderId = Option(args, "--founder", ""),
+            StyleId = Option(args, "--style", ""),
+            HomeBlocId = Option(args, "--home", "")
+        };
     }
 
     static string Option(string[] args, string name, string fallback)

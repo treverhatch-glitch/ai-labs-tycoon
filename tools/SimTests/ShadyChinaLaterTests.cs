@@ -194,6 +194,7 @@ public class ShadyChinaLaterTests
         {
             c.World.ChinaDeals.MinInstalledKw = 8;
             c.World.ChinaDeals.DeclineCooldownMonths = 2;
+            c.Reliability.Enabled = 0;
         });
         ChinaFootprint(g);
         ChinaSystem.RunMonth(g.C, g.State, g.Me);

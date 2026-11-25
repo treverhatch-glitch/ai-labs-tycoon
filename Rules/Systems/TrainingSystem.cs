@@ -19,36 +19,64 @@ namespace AiLabs.Rules.Systems
     {
         public static void RunResearch(GameConfig c, LabState lab, int tick)
         {
+            long gained = ResearchPerWeek(c, lab, tick);
+            lab.ResearchPoints += gained;
+            lab.LastWeek.ResearchGained = gained;
+        }
+
+        /// <summary>The research points the lab's people make in a week at this date.</summary>
+        public static long ResearchPerWeek(GameConfig c, LabState lab, int tick)
+        {
             long perResearcher = MathI.MulPermille(c.Research.PointsPerResearcherWeek, EraSystem.AtTick(c, tick).ResearchPermille);
             long gained = 0;
             for (int i = 0; i < lab.Staff.Count; i++)
             {
                 StaffMember person = lab.Staff[i];
                 RoleConfig role = c.Role(person.RoleId);
-                if (role == null || role.Function != RoleFunction.Research) continue;
+                if (role == null || role.Function != RoleFunction.Research || Skunkworks.Away(c, lab, person) || SupportDesk.Away(c, lab, person) || GovContracts.Away(c, lab, person) || Sabbatical.Away(c, lab, person)) continue;
                 StaffTraitConfig trait = c.StaffPeople.Trait(person.TraitId);
-                int bonus = trait == null ? 0 : trait.ResearchPermille;
-                gained += MathI.MulPermille(perResearcher, MathI.Permille + bonus);
+                int bonus = trait == null ? 0 : trait.ResearchPermille + Traits.InterestingShift(c, lab, trait);
+                long one = MathI.MulPermille(MathI.MulPermille(perResearcher, MathI.Permille + bonus), Workplace.ResearchPermille(c, person.Morale));
+                gained += MathI.MulPermille(one, Mentoring.Weight(c, lab, person));
             }
-            lab.ResearchPoints += gained;
-            lab.LastWeek.ResearchGained = gained;
+            gained = MathI.MulPermille(gained, (int)MathI.Max(1, MathI.Permille + RoomPerks.Permille(c, lab, RoomPerkKind.ResearchSpeed) + Founding.ResearchPermille(c, lab)
+                + Traits.Report(c, lab).ResearchPermille - MathI.Permille));
+            return MathI.MulPermille(gained, MathI.Permille + ComputeShareBonusPermille(c, lab) + Crunch.ResearchPermille(c, lab) + HackWeek.ResearchPermille(c, lab) + Chiefs.ResearchPermille(c, lab) + Labour.ResearchPermille(c, lab) + Org.ResearchPermille(c, lab) - Interpretability.ResearchCostPermille(c, lab))
+                + Chairs.Research(c, lab);
+        }
+
+        /// <summary>The research bonus from compute set aside for experiments: the lab's share (kept inside the data's limit) times the bonus per permille.</summary>
+        public static int ComputeShareBonusPermille(GameConfig c, LabState lab)
+        {
+            long share = MathI.Clamp(lab.ResearchSharePermille, 0, c.Research.MaxComputeSharePermille);
+            return (int)(share * c.Research.ComputeShareBonusPermille / MathI.Permille);
         }
 
         /// <summary>How much training work a unit of compute does: techs plus engineers, who keep the runs from crashing.</summary>
         public static int SpeedPermille(GameConfig c, LabState lab)
         {
-            long engineers = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille;
+            long engineers = LabQueries.HeadsPermille(c, lab, RoleFunction.Engineering) * c.Training.EngineerBonusPermille / MathI.Permille;
             return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.TrainingSpeedPermille)
-                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille);
+                + (int)MathI.Min(engineers, c.Training.EngineerBonusCapPermille)
+                + RoomPerks.Permille(c, lab, RoomPerkKind.TrainingSpeed)
+                + Traits.Report(c, lab).TrainingSpeedPermille
+                + lab.LeadSpeedPermille
+                + Crunch.TrainingPermille(c, lab)
+                + Labour.TrainingPermille(c, lab)
+                + Org.TrainingPermille(c, lab)
+                + Fabric.Permille(c, lab)
+                - HackWeek.TrainingCutPermille(c, lab);
         }
 
         /// <summary>How much alignment work a unit of compute does: techs plus safety staff.</summary>
-        public static int AlignmentWorkPermille(GameConfig c, LabState lab)
+        public static int AlignmentWorkPermille(GameConfig c, LabState lab, int tick)
         {
-            long staff = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille;
-            return MathI.Permille + LabQueries.TechBonus(c, lab, TechEffectKind.AlignmentPermille)
+            long staff = LabQueries.HeadsPermille(c, lab, RoleFunction.Safety) * c.Safety.SafetyStaffBonusPermille / MathI.Permille;
+            return MathI.Permille + ControlStale.AlignmentBonusPermille(c, lab, tick)
                 + (int)MathI.Min(staff, c.Safety.SafetyStaffBonusCapPermille)
-                + LabQueries.ContainmentAlignmentBonus(c, lab);
+                + LabQueries.ContainmentAlignmentBonus(c, lab)
+                + RolePerks.Permille(c, lab, RolePerkKind.AlignmentWork)
+                + Traits.Report(c, lab).AlignmentWorkPermille;
         }
 
         /// <summary>This week's compute going to training. It is zero when nothing is training: idle GPUs serve customers.</summary>
@@ -63,6 +91,7 @@ namespace AiLabs.Rules.Systems
             var f = new CapabilityForecast();
             f.Base = line.BaseCapability;
             f.Tech = (int)MathI.MulPermille(line.BaseCapability, LabQueries.TechBonus(c, lab, TechEffectKind.CapabilityPermille));
+            f.Tech += (int)MathI.MulPermille(line.BaseCapability, Datasets.BonusPermille(c, lab));
             ModelState previous = LabQueries.LatestOfLine(lab, line.Id);
             f.Carryover = previous == null ? 0 : (int)MathI.MulPermille(previous.Capability, c.Training.CarryoverPermille);
             return f;
@@ -95,21 +124,20 @@ namespace AiLabs.Rules.Systems
             if (runs == 0) return;
 
             int speed = SpeedPermille(c, lab);
-            int alignmentWork = AlignmentWorkPermille(c, lab);
-            long each = training / runs;
-            long spare = training - each * runs;
+            int alignmentWork = AlignmentWorkPermille(c, lab, state.Tick);
+            long[] shares = RunQueue.Shares(c, lab, training);
+            int run = 0;
 
             for (int i = 0; i < lab.Models.Count; i++)
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Training) continue;
 
-                // The oldest run gets what does not divide evenly, so no compute is lost.
-                long allotted = each + spare;
-                spare = 0;
+                long allotted = Spot.Allotted(c, lab, model, shares[run++]);
 
                 long effective = MathI.MulPermille(allotted, speed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);
+                TrainingRuns.RunWeek(c, state, lab, model);
                 model.ProgressCompute += effective - alignmentPart;
                 model.AlignmentCompute += MathI.MulPermille(alignmentPart, alignmentWork);
 
@@ -127,6 +155,8 @@ namespace AiLabs.Rules.Systems
             model.CapTech = f.Tech;
             model.CapCarryover = f.Carryover;
             model.CapLuck = (int)MathI.MulPermille(f.Total, luck);
+            int src = DataSources.QualityPermille(c, lab) / 50;
+            model.CapLuck += src;
             if (f.Total + model.CapLuck < 1) model.CapLuck = 1 - f.Total;
             model.Capability = f.Total + model.CapLuck;
 
@@ -139,6 +169,10 @@ namespace AiLabs.Rules.Systems
             model.Status = ModelStatus.Trained;
             model.TrainedTick = state.Tick;
             Events.Add(state, EventKind.TrainingFinished, lab.Id, model.Id, model.Capability, model.Name);
+            TrainingObjectives.OnTrained(c, lab, model);
+            TrainingRuns.OnTrained(c, model);
+            SuccessorDesign.OnTrained(c, lab, model);
+            ResearchLeads.OnTrained(c, state, lab, model, luck);
         }
 
         /// <summary>The safety meter a run earns: its alignment work against what a full meter needs for a run this size.</summary>

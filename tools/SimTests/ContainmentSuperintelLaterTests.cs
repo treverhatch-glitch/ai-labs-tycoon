@@ -34,10 +34,10 @@ public class ContainmentSuperintelLaterTests
     public void Containment_wing_tiles_add_alignment_work_up_to_the_cap()
     {
         var g = Game.Solo();
-        int baseWork = TrainingSystem.AlignmentWorkPermille(g.C, g.Me);
+        int baseWork = TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick);
         Wing(g, 16);
         Assert.Equal(200, LabQueries.ContainmentAlignmentBonus(g.C, g.Me));
-        Assert.Equal(baseWork + 200, TrainingSystem.AlignmentWorkPermille(g.C, g.Me));
+        Assert.Equal(baseWork + 200, TrainingSystem.AlignmentWorkPermille(g.C, g.Me, g.State.Tick));
         Wing(g, 16);
         Assert.Equal(200, LabQueries.ContainmentAlignmentBonus(g.C, g.Me));
     }

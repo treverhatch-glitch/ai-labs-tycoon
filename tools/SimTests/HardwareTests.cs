@@ -76,7 +76,7 @@ public class HardwareTests
     [Fact]
     public void Selling_gives_up_the_oldest_generation_first_at_its_own_decayed_price()
     {
-        Game g = Game.Solo(tweak: c => c.PlayerStart.Cash = 2000000);
+        Game g = Game.Solo(tweak: c => { c.PlayerStart.Cash = 2000000; c.Reliability.Enabled = 0; });
         g.Build("server-closet", 2, 2);
         g.Do(Command.BuyGpus(g.Id, 4));
         int tick = (g.C.Compute.Generation("geforks").OpensYear - g.C.Calendar.StartYear) * g.C.Calendar.WeeksPerYear;
@@ -100,7 +100,7 @@ public class HardwareTests
     [Fact]
     public void Every_batch_works_at_the_speed_of_its_own_generation()
     {
-        Game g = Game.Solo(tweak: c => c.PlayerStart.Cash = 2000000);
+        Game g = Game.Solo(tweak: c => { c.PlayerStart.Cash = 2000000; c.Reliability.Enabled = 0; });
         g.Build("server-closet", 2, 2);
         g.Do(Command.BuyGpus(g.Id, 4));
         int tick = (g.C.Compute.Generation("geforks").OpensYear - g.C.Calendar.StartYear) * g.C.Calendar.WeeksPerYear;

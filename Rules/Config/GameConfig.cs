@@ -8,7 +8,7 @@ namespace AiLabs.Rules.Config
 
     public enum RoleFunction { Research, Engineering, Safety, Sales, Infrastructure, Policy, ChipDesign }
 
-    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest }
+    public enum RoomPurpose { Research, Engineering, Safety, Sales, Compute, Infrastructure, Policy, ChipDesign, HardwareTest, Press, Comfort }
 
     public enum TechEffectKind
     {
@@ -37,7 +37,15 @@ namespace AiLabs.Rules.Config
         public PlayerStartConfig PlayerStart;
         public List<LotConfig> Lots;
         public List<RoleConfig> Roles;
+        /// <summary>What roles do beyond their function (the recruiter's hiring discount and the rest).</summary>
+        public List<RolePerkConfig> RolePerks = new List<RolePerkConfig>();
         public List<RoomTypeConfig> RoomTypes;
+        /// <summary>What rooms do beyond seating people or holding GPUs.</summary>
+        public List<RoomPerkConfig> RoomPerks = new List<RoomPerkConfig>();
+        /// <summary>Who the player can be at the start: a lasting edge and cost each.</summary>
+        public List<FounderConfig> Founders = new List<FounderConfig>();
+        /// <summary>How the lab can be good at the start: appeal in a few sectors against the rest.</summary>
+        public List<StyleConfig> Styles = new List<StyleConfig>();
         public ComputeConfig Compute;
         public WorldConfig World;
         public ResearchConfig Research;
@@ -50,6 +58,143 @@ namespace AiLabs.Rules.Config
         public SharesConfig Shares;
         public RegulatorsConfig Regulators;
         public StaffPeopleConfig StaffPeople;
+        /// <summary>The talent market: offers, counters and poaching back.</summary>
+        public TalentConfig Talent = new TalentConfig();
+        /// <summary>The press: journalists, beats, answers and leaks.</summary>
+        public PressConfig Press = new PressConfig();
+        public TrustConfig Trust = new TrustConfig();
+        public CultureConfig Culture = new CultureConfig();
+        public NamingConfig Naming = new NamingConfig();
+        public AgeingConfig Ageing = new AgeingConfig();
+        public ControlConfig Control = new ControlConfig();
+        public LeadsConfig Leads = new LeadsConfig();
+        public RepairConfig Repair = new RepairConfig();
+        public RedTeamConfig RedTeam = new RedTeamConfig();
+        public InterpConfig Interp = new InterpConfig();
+        public ComplianceConfig Compliance = new ComplianceConfig();
+        public PrestigeConfig Prestige = new PrestigeConfig();
+        public SubletConfig Sublet = new SubletConfig();
+        public ResearchFocusConfig Focus = new ResearchFocusConfig();
+        public HackWeekConfig Hack = new HackWeekConfig();
+        public EquityConfig Equity = new EquityConfig();
+        public ChiefsConfig Chiefs = new ChiefsConfig();
+        public EthicsBoardConfig Board = new EthicsBoardConfig();
+        public OptimisationConfig Optimise = new OptimisationConfig();
+        public MarketingConfig Marketing = new MarketingConfig();
+        public OnCallConfig OnCall = new OnCallConfig();
+        public ConsultantsConfig Consultants = new ConsultantsConfig();
+        public PostMortemConfig PostMortem = new PostMortemConfig();
+        public SlaConfig Sla = new SlaConfig();
+        public ResearchGrantsConfig ResearchGrants = new ResearchGrantsConfig();
+        public AbandonConfig Abandon = new AbandonConfig();
+        public LayoffsConfig Layoffs = new LayoffsConfig();
+        public TechDebtConfig TechDebt = new TechDebtConfig();
+        public SeniorityConfig Seniority = new SeniorityConfig();
+        public RevenueTargetsConfig RevenueTargets = new RevenueTargetsConfig();
+        public ChairsConfig Chairs = new ChairsConfig();
+        public WhistleConfig Whistle = new WhistleConfig();
+        public BugBountyConfig BugBounty = new BugBountyConfig();
+        public TreasuryConfig Treasury = new TreasuryConfig();
+        public PledgeConfig Pledge = new PledgeConfig();
+        public RoadmapConfig Roadmap = new RoadmapConfig();
+        public MentoringConfig Mentoring = new MentoringConfig();
+        public SkunkworksConfig Skunkworks = new SkunkworksConfig();
+        public LabourConfig Labour = new LabourConfig();
+        public SunsetConfig Sunset = new SunsetConfig();
+        public AccountsConfig Accounts = new AccountsConfig();
+        public ConferenceConfig Conference = new ConferenceConfig();
+        public AlumniConfig Alumni = new AlumniConfig();
+        public InternshipsConfig Internships = new InternshipsConfig();
+        public SupportConfig Support = new SupportConfig();
+        public SabbaticalConfig Sabbatical = new SabbaticalConfig();
+        public RequisitionsConfig Requisitions = new RequisitionsConfig();
+        public ScholarsConfig Scholars = new ScholarsConfig();
+        public LitigationConfig Litigation = new LitigationConfig();
+        public SecurityConfig Security = new SecurityConfig();
+        public GovContractsConfig GovContracts = new GovContractsConfig();
+        public CharterConfig Charter = new CharterConfig();
+        public ScalingConfig Scaling = new ScalingConfig();
+        public TaxConfig Tax = new TaxConfig();
+        public StandardsConfig Standards = new StandardsConfig();
+        public ReliabilityConfig Reliability = new ReliabilityConfig();
+        public CovenantsConfig Covenants = new CovenantsConfig();
+        public AllowancesConfig Allowances = new AllowancesConfig();
+        public ListingConfig Listing = new ListingConfig();
+        public RbfConfig Rbf = new RbfConfig();
+        public FoundationConfig Foundation = new FoundationConfig();
+        public LeasebackConfig Leaseback = new LeasebackConfig();
+        public NotesConfig ConvertibleNotes = new NotesConfig();
+        public DevicesConfig Devices = new DevicesConfig();
+        public PlatformsConfig Platforms = new PlatformsConfig();
+        public CreedConfig Creed = new CreedConfig();
+        public ShocksConfig Shocks = new ShocksConfig();
+        public ReplicationConfig Replication = new ReplicationConfig();
+        public TechBetsConfig TechBets = new TechBetsConfig();
+        public WaitlistConfig Waitlist = new WaitlistConfig();
+        public BrandConfig Brand = new BrandConfig();
+        public FreeTierConfig FreeTier = new FreeTierConfig();
+        public LaunchWatchConfig LaunchWatch = new LaunchWatchConfig();
+        public ProgrammesConfig Programmes = new ProgrammesConfig();
+        public RunQueueConfig RunQueue = new RunQueueConfig();
+        public PodsConfig Pods = new PodsConfig();
+        public LicenceConfig Licence = new LicenceConfig();
+        public PledgesConfig Pledges = new PledgesConfig();
+        public IntegrationsConfig Integrations = new IntegrationsConfig();
+        public ConformityConfig Conformity = new ConformityConfig();
+        public OrgConfig Org = new OrgConfig();
+        public FabricConfig Fabric = new FabricConfig();
+        public DisclosureConfig Disclosure = new DisclosureConfig();
+        public DatasetsConfig Datasets = new DatasetsConfig();
+        public UserDataConfig UserData = new UserDataConfig();
+        public GovernanceConfig Governance = new GovernanceConfig();
+        public BuybackConfig Buyback = new BuybackConfig();
+        public SpotConfig Spot = new SpotConfig();
+        public AgencyConfig Agency = new AgencyConfig();
+        public AnnotationConfig Annotation = new AnnotationConfig();
+        public PostTrainingConfig PostTraining = new PostTrainingConfig();
+        public KnowledgeConfig Knowledge = new KnowledgeConfig();
+        public BoardAgendaConfig BoardAgenda = new BoardAgendaConfig();
+        public DrillsConfig Drills = new DrillsConfig();
+        public EvalHarnessConfig EvalHarness = new EvalHarnessConfig();
+        public ToolPolicyConfig ToolPolicy = new ToolPolicyConfig();
+        public HumanQueueConfig HumanQueue = new HumanQueueConfig();
+        public ReleaseChecklistConfig ReleaseChecklist = new ReleaseChecklistConfig();
+        public AgentSandboxConfig AgentSandbox = new AgentSandboxConfig();
+        public RunawayPlaybookConfig RunawayPlaybook = new RunawayPlaybookConfig();
+        public OrchestrationBudgetConfig OrchestrationBudget = new OrchestrationBudgetConfig();
+        public TrafficRouterConfig TrafficRouter = new TrafficRouterConfig();
+        public PublicMetricsConfig PublicMetrics = new PublicMetricsConfig();
+        public SpecialistLinesConfig SpecialistLines = new SpecialistLinesConfig();
+        public DataSourcesConfig DataSources = new DataSourcesConfig();
+        public OpenWeightsConfig OpenWeights = new OpenWeightsConfig();
+        public SectorPricingConfig SectorPricing = new SectorPricingConfig();
+        public CampaignDeadlineConfig CampaignDeadline = new CampaignDeadlineConfig();
+        public LawShapingConfig LawShaping = new LawShapingConfig();
+        public TakeoffCrisisConfig TakeoffCrisis = new TakeoffCrisisConfig();
+        public ScenarioBaggageConfig ScenarioBaggage = new ScenarioBaggageConfig();
+        public MarginCallConfig MarginCall = new MarginCallConfig();
+        public HearingSharePriceConfig HearingSharePrice = new HearingSharePriceConfig();
+        public RungSixCrisisConfig RungSixCrisis = new RungSixCrisisConfig();
+        public ScenarioGoalsConfig ScenarioGoals = new ScenarioGoalsConfig();
+        public LawTargetConfig LawTarget = new LawTargetConfig();
+        public PulloutConfig Pullout = new PulloutConfig();
+        public RestructureConfig Restructure = new RestructureConfig();
+        public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
+        public RetrainConfig Retrain = new RetrainConfig();
+        public SafetyAuditConfig Audit = new SafetyAuditConfig();
+        public OfficeConfig Office = new OfficeConfig();
+        public ObjectivesConfig Objectives = new ObjectivesConfig();
+        public SuccessorConfig Successor = new SuccessorConfig();
+        public RushConfig Rush = new RushConfig();
+        public LobbyConfig Lobbying = new LobbyConfig();
+        public LoansConfig Loans = new LoansConfig();
+        public ScenariosConfig Scenarios = new ScenariosConfig();
+        public PivotConfig Pivot = new PivotConfig();
+        public CampaignConfig Campaign = new CampaignConfig();
+        public RunsConfig Runs = new RunsConfig();
+        public NewsConfig News = new NewsConfig();
+        public ChatConfig Chat = new ChatConfig();
+        public GlowConfig Glow = new GlowConfig();
         public GauntletConfig Gauntlet;
         public RivalryConfig Rivalry;
         public VendorConfig Vendor;
@@ -73,7 +218,11 @@ namespace AiLabs.Rules.Config
             s.Obj("playerStart", ref PlayerStart);
             s.ObjList("lots", ref Lots);
             s.ObjList("roles", ref Roles);
+            s.ObjList("rolePerks", ref RolePerks);
             s.ObjList("roomTypes", ref RoomTypes);
+            s.ObjList("roomPerks", ref RoomPerks);
+            s.ObjList("founders", ref Founders);
+            s.ObjList("styles", ref Styles);
             s.Obj("compute", ref Compute);
             s.Obj("world", ref World);
             s.Obj("research", ref Research);
@@ -86,6 +235,141 @@ namespace AiLabs.Rules.Config
             s.Obj("shares", ref Shares);
             s.Obj("regulators", ref Regulators);
             s.Obj("staffPeople", ref StaffPeople);
+            s.Obj("talent", ref Talent);
+            s.Obj("press", ref Press);
+            s.Obj("trust", ref Trust);
+            s.Obj("culture", ref Culture);
+            s.Obj("naming", ref Naming);
+            s.Obj("ageing", ref Ageing);
+            s.Obj("control", ref Control);
+            s.Obj("leads", ref Leads);
+            s.Obj("repair", ref Repair);
+            s.Obj("redTeam", ref RedTeam);
+            s.Obj("interp", ref Interp);
+            s.Obj("compliance", ref Compliance);
+            s.Obj("prestige", ref Prestige);
+            s.Obj("sublet", ref Sublet);
+            s.Obj("focus", ref Focus);
+            s.Obj("hack", ref Hack);
+            s.Obj("equity", ref Equity);
+            s.Obj("chiefs", ref Chiefs);
+            s.Obj("ethicsBoard", ref Board);
+            s.Obj("optimise", ref Optimise);
+            s.Obj("marketing", ref Marketing);
+            s.Obj("onCall", ref OnCall);
+            s.Obj("consultants", ref Consultants);
+            s.Obj("postMortem", ref PostMortem);
+            s.Obj("sla", ref Sla);
+            s.Obj("researchGrants", ref ResearchGrants);
+            s.Obj("abandon", ref Abandon);
+            s.Obj("layoffs", ref Layoffs);
+            s.Obj("techDebt", ref TechDebt);
+            s.Obj("seniority", ref Seniority);
+            s.Obj("revenueTargets", ref RevenueTargets);
+            s.Obj("chairs", ref Chairs);
+            s.Obj("whistle", ref Whistle);
+            s.Obj("bugBounty", ref BugBounty);
+            s.Obj("treasury", ref Treasury);
+            s.Obj("pledge", ref Pledge);
+            s.Obj("roadmap", ref Roadmap);
+            s.Obj("mentoring", ref Mentoring);
+            s.Obj("skunkworks", ref Skunkworks);
+            s.Obj("labour", ref Labour);
+            s.Obj("sunset", ref Sunset);
+            s.Obj("accounts", ref Accounts);
+            s.Obj("conference", ref Conference);
+            s.Obj("alumni", ref Alumni);
+            s.Obj("internships", ref Internships);
+            s.Obj("support", ref Support);
+            s.Obj("sabbatical", ref Sabbatical);
+            s.Obj("requisitions", ref Requisitions);
+            s.Obj("scholars", ref Scholars);
+            s.Obj("litigation", ref Litigation);
+            s.Obj("security", ref Security);
+            s.Obj("govContracts", ref GovContracts);
+            s.Obj("charter", ref Charter);
+            s.Obj("scaling", ref Scaling);
+            s.Obj("tax", ref Tax);
+            s.Obj("standards", ref Standards);
+            s.Obj("reliability", ref Reliability);
+            s.Obj("covenants", ref Covenants);
+            s.Obj("allowances", ref Allowances);
+            s.Obj("listing", ref Listing);
+            s.Obj("rbf", ref Rbf);
+            s.Obj("foundation", ref Foundation);
+            s.Obj("leaseback", ref Leaseback);
+            s.Obj("convertibleNotes", ref ConvertibleNotes);
+            s.Obj("devices", ref Devices);
+            s.Obj("platforms", ref Platforms);
+            s.Obj("creed", ref Creed);
+            s.Obj("shocks", ref Shocks);
+            s.Obj("replication", ref Replication);
+            s.Obj("techBets", ref TechBets);
+            s.Obj("waitlist", ref Waitlist);
+            s.Obj("brand", ref Brand);
+            s.Obj("freeTier", ref FreeTier);
+            s.Obj("launchWatch", ref LaunchWatch);
+            s.Obj("programmes", ref Programmes);
+            s.Obj("runQueue", ref RunQueue);
+            s.Obj("pods", ref Pods);
+            s.Obj("licence", ref Licence);
+            s.Obj("pledges", ref Pledges);
+            s.Obj("integrations", ref Integrations);
+            s.Obj("conformity", ref Conformity);
+            s.Obj("org", ref Org);
+            s.Obj("fabric", ref Fabric);
+            s.Obj("disclosure", ref Disclosure);
+            s.Obj("datasets", ref Datasets);
+            s.Obj("userData", ref UserData);
+            s.Obj("governance", ref Governance);
+            s.Obj("buyback", ref Buyback);
+            s.Obj("spot", ref Spot);
+            s.Obj("agency", ref Agency);
+            s.Obj("annotation", ref Annotation);
+            s.Obj("postTraining", ref PostTraining);
+            s.Obj("knowledge", ref Knowledge);
+            s.Obj("boardAgenda", ref BoardAgenda);
+            s.Obj("drills", ref Drills);
+            s.Obj("evalHarness", ref EvalHarness);
+            s.Obj("toolPolicy", ref ToolPolicy);
+            s.Obj("humanQueue", ref HumanQueue);
+            s.Obj("releaseChecklist", ref ReleaseChecklist);
+            s.Obj("agentSandbox", ref AgentSandbox);
+            s.Obj("runawayPlaybook", ref RunawayPlaybook);
+            s.Obj("orchestrationBudget", ref OrchestrationBudget);
+            s.Obj("trafficRouter", ref TrafficRouter);
+            s.Obj("publicMetrics", ref PublicMetrics);
+            s.Obj("specialistLines", ref SpecialistLines);
+            s.Obj("dataSources", ref DataSources);
+            s.Obj("openWeights", ref OpenWeights);
+            s.Obj("sectorPricing", ref SectorPricing);
+            s.Obj("campaignDeadline", ref CampaignDeadline);
+            s.Obj("lawShaping", ref LawShaping);
+            s.Obj("takeoffCrisis", ref TakeoffCrisis);
+            s.Obj("scenarioBaggage", ref ScenarioBaggage);
+            s.Obj("marginCall", ref MarginCall);
+            s.Obj("hearingSharePrice", ref HearingSharePrice);
+            s.Obj("rungSixCrisis", ref RungSixCrisis);
+            s.Obj("scenarioGoals", ref ScenarioGoals);
+            s.Obj("lawTarget", ref LawTarget);
+            s.Obj("pullout", ref Pullout);
+            s.Obj("restructure", ref Restructure);
+            s.Obj("incidentFloor", ref IncidentFloor);
+            s.Obj("retrain", ref Retrain);
+            s.Obj("audit", ref Audit);
+            s.Obj("office", ref Office);
+            s.Obj("objectives", ref Objectives);
+            s.Obj("successor", ref Successor);
+            s.Obj("rush", ref Rush);
+            s.Obj("lobbying", ref Lobbying);
+            s.Obj("loans", ref Loans);
+            s.Obj("scenarios", ref Scenarios);
+            s.Obj("pivot", ref Pivot);
+            s.Obj("campaign", ref Campaign);
+            s.Obj("runs", ref Runs);
+            s.Obj("news", ref News);
+            s.Obj("chat", ref Chat);
+            s.Obj("glow", ref Glow);
             s.Obj("gauntlet", ref Gauntlet);
             s.Obj("rivalry", ref Rivalry);
             s.Obj("vendor", ref Vendor);
@@ -120,6 +404,8 @@ namespace AiLabs.Rules.Config
         public ModelLineConfig Line(string id) { return Find(Training.Lines, id); }
         public SectorConfig Sector(string id) { return Find(Market.Sectors, id); }
         public RivalConfig Rival(string id) { return Find(Rivals, id); }
+        public FounderConfig Founder(string id) { return Find(Founders, id); }
+        public StyleConfig Style(string id) { return Find(Styles, id); }
         public WorldEventConfig WorldEvent(string id) { return Find(WorldEvents, id); }
 
         static T Find<T>(List<T> list, string id) where T : class, IHasId
@@ -448,11 +734,17 @@ namespace AiLabs.Rules.Config
     public sealed class ResearchConfig : ISync
     {
         public int PointsPerResearcherWeek;
+        /// <summary>The most of its general compute a lab may set aside for research experiments (bible ch. 3, "split compute three ways").</summary>
+        public int MaxComputeSharePermille;
+        /// <summary>The research bonus, in permille, for each permille of compute set aside: 1200 turns a 10% share into +12% research.</summary>
+        public int ComputeShareBonusPermille;
         public List<TechConfig> Techs;
 
         public void Sync(Syncer s)
         {
             s.Int("pointsPerResearcherWeek", ref PointsPerResearcherWeek);
+            s.Int("maxComputeSharePermille", ref MaxComputeSharePermille);
+            s.Int("computeShareBonusPermille", ref ComputeShareBonusPermille);
             s.ObjList("techs", ref Techs);
         }
     }
@@ -566,6 +858,18 @@ namespace AiLabs.Rules.Config
         public int ReputationBaseline;
         public int ReputationRecoveryPerWeek;
         public List<IncidentRungConfig> IncidentRungs = new List<IncidentRungConfig>();
+        /// <summary>The weight of the era's plain mishap in the draw against the risk classes that bite a model.</summary>
+        public int GenericRiskWeight;
+        /// <summary>Kinds of trouble that open era by era.</summary>
+        public List<RiskClassConfig> RiskClasses = new List<RiskClassConfig>();
+        /// <summary>How each sector fails; a sector without an entry fails the plain way.</summary>
+        public List<SectorFlavourConfig> SectorFlavours = new List<SectorFlavourConfig>();
+        /// <summary>When false (the shipped value) only the player's labs pay what a flavour costs in fines, reputation, trust and refunds; rivals fail the plain way.</summary>
+        public bool SectorFlavoursForRivals;
+        /// <summary>The extra weekly incident chance, in permille, for a lab that serves none of its demand. It scales with the share left unserved (bible ch. 6, "overworked: serving load too high; reliability drops").</summary>
+        public int OverloadIncidentPermille;
+        /// <summary>When false (the shipped value) only the player's labs have the overload risk: rivals' economies are knife-edge (Q182).</summary>
+        public bool OverloadForRivals;
         /// <summary>Below this true alignment, jailbreak-class incidents are picked instead of screenshots.</summary>
         public int Rung2BelowAlignment;
         /// <summary>When displayed alignment beats the true meter by at least this much, sandbagging rungs apply.</summary>
@@ -574,6 +878,12 @@ namespace AiLabs.Rules.Config
         public int Rung5CorruptionMin;
         public int Rung6CorruptionMin;
         public ContainmentConfig Containment;
+
+        public SectorFlavourConfig SectorFlavour(string sectorId)
+        {
+            for (int i = 0; i < SectorFlavours.Count; i++) if (SectorFlavours[i].Sector == sectorId) return SectorFlavours[i];
+            return null;
+        }
 
         public IncidentRungConfig IncidentRung(int rung)
         {
@@ -595,6 +905,12 @@ namespace AiLabs.Rules.Config
             s.Int("reputationBaseline", ref ReputationBaseline);
             s.Int("reputationRecoveryPerWeek", ref ReputationRecoveryPerWeek);
             s.ObjList("incidentRungs", ref IncidentRungs);
+            s.Int("genericRiskWeight", ref GenericRiskWeight);
+            s.ObjList("riskClasses", ref RiskClasses);
+            s.ObjList("sectorFlavours", ref SectorFlavours);
+            s.Bool("sectorFlavoursForRivals", ref SectorFlavoursForRivals);
+            s.Int("overloadIncidentPermille", ref OverloadIncidentPermille);
+            s.Bool("overloadForRivals", ref OverloadForRivals);
             s.Int("rung2BelowAlignment", ref Rung2BelowAlignment);
             s.Int("sandbagGapPermille", ref SandbagGapPermille);
             s.Int("rung4CorruptionMin", ref Rung4CorruptionMin);
@@ -628,6 +944,8 @@ namespace AiLabs.Rules.Config
         /// <summary>The era the sector opens in. <see cref="OpensYear"/> falls inside it.</summary>
         public string Era;
         public string Buyers;
+        /// <summary>The group of sectors whose customers talk to each other: trust carries between them (see TrustConfig).</summary>
+        public string Family;
         public int OpensYear;
         /// <summary>What the whole sector would pay per week in the year it opens, once AI is good enough for all of it. It grows every year after that.</summary>
         public long PoolPerWeek;
@@ -651,6 +969,7 @@ namespace AiLabs.Rules.Config
             s.Str("name", ref Name);
             s.Str("era", ref Era);
             s.Str("buyers", ref Buyers);
+            s.Str("family", ref Family);
             s.Int("opensYear", ref OpensYear);
             s.Long("poolPerWeek", ref PoolPerWeek);
             s.Int("growthPermillePerYear", ref GrowthPermillePerYear);
@@ -668,11 +987,38 @@ namespace AiLabs.Rules.Config
         /// <summary>A lab whose cash stays below zero this many weeks in a row goes bankrupt.</summary>
         public int BankruptcyGraceWeeks;
         public int HistoryMonths;
+        /// <summary>The highest insurance level; 0 for no insurance in the game.</summary>
+        public int InsuranceMaxLevel;
+        /// <summary>The share of an incident fine each level covers, in permille.</summary>
+        public int InsuranceCoverPermille;
+        /// <summary>The weekly premium per level as a share of last week's revenue, in permille.</summary>
+        public int InsurancePremiumPermille;
+        /// <summary>The weekly premium per level is never less than this many dollars.</summary>
+        public long InsuranceMinPremium;
+        /// <summary>Added to the premium for each claim the insurer remembers, in permille.</summary>
+        public int InsuranceClaimLoadingPermille;
+        /// <summary>One remembered claim is forgotten this many weeks apart.</summary>
+        public int InsuranceForgetWeeks;
+        /// <summary>The insurer ends the policy at this many remembered claims, and will not sell one while the lab is at it.</summary>
+        public int InsuranceDropClaims;
+        /// <summary>Incidents at this rung or above are not covered.</summary>
+        public int InsuranceExcludedRung;
+        /// <summary>Weeks a change to the policy locks it for.</summary>
+        public int InsuranceLockWeeks;
 
         public void Sync(Syncer s)
         {
             s.Int("bankruptcyGraceWeeks", ref BankruptcyGraceWeeks);
             s.Int("historyMonths", ref HistoryMonths);
+            s.Int("insuranceMaxLevel", ref InsuranceMaxLevel);
+            s.Int("insuranceCoverPermille", ref InsuranceCoverPermille);
+            s.Int("insurancePremiumPermille", ref InsurancePremiumPermille);
+            s.Long("insuranceMinPremium", ref InsuranceMinPremium);
+            s.Int("insuranceClaimLoadingPermille", ref InsuranceClaimLoadingPermille);
+            s.Int("insuranceForgetWeeks", ref InsuranceForgetWeeks);
+            s.Int("insuranceDropClaims", ref InsuranceDropClaims);
+            s.Int("insuranceExcludedRung", ref InsuranceExcludedRung);
+            s.Int("insuranceLockWeeks", ref InsuranceLockWeeks);
         }
     }
 
@@ -689,6 +1035,33 @@ namespace AiLabs.Rules.Config
         /// <summary>How many years of results are kept.</summary>
         public int HistoryYears;
 
+        /// <summary>The most a lab can tune for the test. 0 switches tuning off.</summary>
+        public int MaxTuningPermille;
+        /// <summary>How much of the tuning shows up as score: a tuning of 200 with a share of 500 lifts every entry by 10%.</summary>
+        public int TuningScoreSharePermille;
+        /// <summary>The prep bill, in sales-role hire fees, for each 100 permille of tuning.</summary>
+        public int TuningCostHireFeesPer100;
+        /// <summary>The chance a tuned win is exposed, per 1000 permille of tuning (so 2000 makes a tuning of 100 a 20% risk).</summary>
+        public int ExposeChancePerTuningPermille;
+        /// <summary>Added to the chance for every rival that is in a feud with the tuned lab.</summary>
+        public int ExposeFeudBonusPermille;
+        public int ExposedReputationLoss;
+        /// <summary>A model on stage whose weekly incident chance is at or under this has a triumphant demo.</summary>
+        public int DemoTriumphBelowPermille;
+        /// <summary>A model whose weekly incident chance is at or over this becomes a meme on stage. 0 switches the demo round off.</summary>
+        public int DemoMemeFromPermille;
+        public int DemoTriumphReputation;
+        public int DemoMemeReputation;
+        /// <summary>The smallest gap between claimed and true alignment that earns "Most Confident While Wrong".</summary>
+        public int ConfidentWrongMinGap;
+        public int ConfidentWrongReputation;
+        /// <summary>A lab counts as a newcomer for this many years after its first release.</summary>
+        public int NewcomerYears;
+        public int NewcomerMorale;
+        public int NewcomerReputation;
+        public int SeasonCrownPoints;
+        public int SeasonBracketPoints;
+
         public void Sync(Syncer s)
         {
             s.Str("name", ref Name);
@@ -697,6 +1070,23 @@ namespace AiLabs.Rules.Config
             s.Int("safestReputation", ref SafestReputation);
             s.Int("bracketWinnerAppealPermille", ref BracketWinnerAppealPermille);
             s.Int("historyYears", ref HistoryYears);
+            s.Int("maxTuningPermille", ref MaxTuningPermille);
+            s.Int("tuningScoreSharePermille", ref TuningScoreSharePermille);
+            s.Int("tuningCostHireFeesPer100", ref TuningCostHireFeesPer100);
+            s.Int("exposeChancePerTuningPermille", ref ExposeChancePerTuningPermille);
+            s.Int("exposeFeudBonusPermille", ref ExposeFeudBonusPermille);
+            s.Int("exposedReputationLoss", ref ExposedReputationLoss);
+            s.Int("demoTriumphBelowPermille", ref DemoTriumphBelowPermille);
+            s.Int("demoMemeFromPermille", ref DemoMemeFromPermille);
+            s.Int("demoTriumphReputation", ref DemoTriumphReputation);
+            s.Int("demoMemeReputation", ref DemoMemeReputation);
+            s.Int("confidentWrongMinGap", ref ConfidentWrongMinGap);
+            s.Int("confidentWrongReputation", ref ConfidentWrongReputation);
+            s.Int("newcomerYears", ref NewcomerYears);
+            s.Int("newcomerMorale", ref NewcomerMorale);
+            s.Int("newcomerReputation", ref NewcomerReputation);
+            s.Int("seasonCrownPoints", ref SeasonCrownPoints);
+            s.Int("seasonBracketPoints", ref SeasonBracketPoints);
         }
     }
 

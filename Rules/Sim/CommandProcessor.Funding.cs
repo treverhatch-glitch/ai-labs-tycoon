@@ -10,6 +10,7 @@ namespace AiLabs.Rules.Sim
     static CommandResult RaiseFunding(GameConfig c, GameState state, LabState lab, Command cmd)
     {
       if (lab.Id != state.PlayerLabId) return Fail(CommandError.InvalidArgument, "Only the player's lab can raise funding.");
+      if (Charter.RefusesFunding(c, lab)) return Fail(CommandError.InvalidArgument, "A nonprofit cannot raise funding.");
       FundingRoundConfig round = c.Funding.Round(cmd.Id);
       if (round == null) return Fail(CommandError.UnknownId, "There is no funding round \"" + cmd.Id + "\".");
       if (FundingSystem.HasRound(lab, round.Id)) return Fail(CommandError.InvalidArgument, round.Name + " was already raised.");

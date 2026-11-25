@@ -37,7 +37,9 @@ namespace AiLabs.Rules.Systems
         public long FromDominance;
         /// <summary>What policy staff take off (zero or negative).</summary>
         public long PolicySaving;
-        public long Total { get { return FromFootprint + FromIncidents + FromDominance + PolicySaving; } }
+        /// <summary>What the compliance office and any audit certificate take off what policy staff left (zero or negative).</summary>
+        public long ComplianceSaving;
+        public long Total { get { return FromFootprint + FromIncidents + FromDominance + PolicySaving + ComplianceSaving; } }
     }
 
     /// <summary>Read-only answers about sites, holdings, power and governments.</summary>
@@ -137,6 +139,9 @@ namespace AiLabs.Rules.Systems
         public static int InfraStaff(GameConfig c, LabState lab) { return LabQueries.StaffByFunction(c, lab, RoleFunction.Infrastructure); }
 
         public static int PolicyStaff(GameConfig c, LabState lab) { return LabQueries.StaffByFunction(c, lab, RoleFunction.Policy); }
+
+        /// <summary>The policy staff for hearings, the monthly attention gain and lobbying: the people on the payroll plus any consultants in. The compliance office counts only the payroll.</summary>
+        public static int PolicyStaffWithConsultants(GameConfig c, LabState lab) { return PolicyStaff(c, lab) + PolicyConsultants.Staff(c, lab); }
 
         /// <summary>Weeks a hall extension of this size takes this lab: the base and the size, then trimmed by infrastructure staff, never under the floor.</summary>
         public static int BuildWeeks(GameConfig c, LabState lab, int kw)
@@ -265,8 +270,10 @@ namespace AiLabs.Rules.Systems
                 gain.FromDominance = MathI.Max(0, revenueSharePpm - a.DominanceFromPpm) / a.DominanceDivisor;
             }
             long before = gain.FromFootprint + gain.FromIncidents + gain.FromDominance;
-            long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaff(c, lab) * a.PolicySavingPermillePerStaff);
+            long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaffWithConsultants(c, lab) * a.PolicySavingPermillePerStaff);
             gain.PolicySaving = MathI.MulPermille(before, MathI.Permille - saving) - before;
+            long afterPolicy = before + gain.PolicySaving;
+            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab) - SafetyAudit.AttentionReliefPermille(c, state, lab) - EthicsBoard.AttentionReliefPermille(c, lab)) - afterPolicy;
             return gain;
         }
     }

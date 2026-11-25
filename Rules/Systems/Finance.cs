@@ -39,11 +39,17 @@ namespace AiLabs.Rules.Systems
                     Events.Add(state, EventKind.GrantEnded, lab.Id, -1, lab.GrantPerWeek, "");
             }
 
+            Insurance.RunWeek(c, state, lab);
+            Sublet.RunWeek(c, state, lab);
             Spend(lab, LedgerLine.Salaries, LabQueries.WeeklySalaries(c, lab));
             Spend(lab, LedgerLine.RoomUpkeep, LabQueries.WeeklyRoomUpkeep(c, lab));
             Spend(lab, LedgerLine.GpuRent, LabQueries.WeeklyGpuRent(c, state, lab));
             Spend(lab, LedgerLine.GpuUpkeep, LabQueries.WeeklyGpuUpkeep(c, lab));
             Spend(lab, LedgerLine.Power, WorldQueries.WeeklyPowerBill(c, state, lab));
+
+            Loans.RunWeek(c, state, lab);
+            MarginCall.RunWeek(c, state, lab);
+            Treasury.RunWeek(c, state, lab);
 
             if (lab.Cash < 0)
             {
@@ -75,6 +81,8 @@ namespace AiLabs.Rules.Systems
                 if (sector.ChampionLabId == lab.Id) sector.ChampionLabId = -1;
             }
             lab.Staff.Clear();
+            Knowledge.OnBankrupt(lab);
+            Loans.OnBankrupt(lab);
             lab.RentedGpus = 0;
             lab.ReservedContracts.Clear();
             lab.Fleet.RemoveAll(b => b.HoldingId != HardwareBatch.Hq);

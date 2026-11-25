@@ -199,8 +199,8 @@ public class LabTests
     public void Renting_is_cheaper_at_first_and_owning_wins_after_about_eighteen_months()
     {
         // Two labs that do nothing but hold ten GPUs: one rents, one buys. Same seed, same world.
-        Game renter = Game.Solo(tweak: c => c.PlayerStart.Cash = 1000000);
-        Game owner = Game.Solo(tweak: c => c.PlayerStart.Cash = 1000000);
+        Game renter = Game.Solo(tweak: c => { c.PlayerStart.Cash = 1000000; c.Reliability.Enabled = 0; c.Tax.Enabled = 0; });
+        Game owner = Game.Solo(tweak: c => { c.PlayerStart.Cash = 1000000; c.Reliability.Enabled = 0; c.Tax.Enabled = 0; });
         renter.Rent(10);
         owner.Build("server-closet", 3, 2);
         owner.Do(Command.BuyGpus(owner.Id, 10));

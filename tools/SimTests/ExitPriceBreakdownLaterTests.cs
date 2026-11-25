@@ -18,7 +18,7 @@ public class ExitPriceBreakdownLaterTests
         g.Me.Ledger.ThisMonth.Revenue = 80_000;
         g.Me.Cash = 25_000;
         DisplayQueries.ExitPriceBreakdown b = DisplayQueries.ExitPriceParts(g.C, g.State, g.Me);
-        Assert.Equal(b.RevenueYears + b.FleetResale + b.CashOnHand, b.Total);
+        Assert.Equal(b.RevenueYears + b.FleetResale + b.CashOnHand - b.StaffShare - b.Loans - b.Notes - b.Rbf - b.CovenantCalls, b.Total);
         Assert.Equal(EndingSystem.SellPrice(g.C, g.State, g.Me), b.Total);
     }
 

@@ -318,7 +318,7 @@ public class EconomyBoundsTests
 
     // ---- the lifetime: nobody breaks and the numbers stay in bounds
 
-    sealed class Lifetime
+    internal sealed class Lifetime
     {
         public long MaxCash = long.MinValue;
         public long MinCash = long.MaxValue;
@@ -326,7 +326,7 @@ public class EconomyBoundsTests
         public long MaxRevenueOverPool;
     }
 
-    static Lifetime Live(string startEra, int years, long seed)
+    internal static Lifetime Live(string startEra, int years, long seed)
     {
         var game = new Game(Simulation.NewGame(TestData.Config(), new NewGameOptions { Seed = seed, StartEraId = startEra }));
         GameConfig c = game.C;
@@ -353,7 +353,7 @@ public class EconomyBoundsTests
         }
     }
 
-    static void AssertInBounds(Lifetime life, string who)
+    internal static void AssertInBounds(Lifetime life, string who)
     {
         Assert.True(life.Bankrupt.Count == 0, who + ": " + string.Join(", ", life.Bankrupt) + " went bankrupt");
         Assert.True(life.MaxCash < CashCeiling, who + ": cash reached " + life.MaxCash);

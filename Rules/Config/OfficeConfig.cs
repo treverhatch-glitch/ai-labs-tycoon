@@ -1,0 +1,160 @@
+using System.Collections.Generic;
+using AiLabs.Rules.Core;
+
+namespace AiLabs.Rules.Config
+{
+    public enum OfficeEffectKind
+    {
+        /// <summary>Points of reputation (0 to 1000).</summary>
+        Reputation,
+        /// <summary>Points of safety culture.</summary>
+        Culture,
+        /// <summary>Points of morale for everyone on the payroll.</summary>
+        Morale,
+        /// <summary>Weeks of the lab's research output, as research points. Negative loses them (never below none).</summary>
+        ResearchWeeks,
+        /// <summary>Weeks of what the lab pays every week to stand still, as cash. Negative spends it (never more than the lab has).</summary>
+        CashWeeks,
+        /// <summary>Points of the home government's attention to the lab (0 to 1000). Negative eases it.</summary>
+        Attention,
+        /// <summary>Points of corruption on every model the lab has on sale (0 to 1000). Negative cleans them.</summary>
+        Corruption
+    }
+
+    /// <summary>What sets an office event off.</summary>
+    public enum OfficeTrigger
+    {
+        /// <summary>The weekly chance: the event can happen to any player lab that meets its needs.</summary>
+        Random,
+        /// <summary>A hearing at the lab's home government (bible ch. 12, "a short dialogue scene"). Never drawn by the weekly chance.</summary>
+        Hearing,
+        /// <summary>One of the lab's models tried to escape (incident rung 5; bible ch. 10). Never drawn by the weekly chance.</summary>
+        Escape,
+        /// <summary>A model of the lab's first goes on sale (bible ch. 14, "let the model be funny: its mistakes, its release notes"). Never drawn by the weekly chance and never replaces an event already waiting.</summary>
+        Release,
+        /// <summary>Capability and corruption crossed the takeoff bar (Q465). Never drawn by the weekly chance.</summary>
+        Takeoff,
+        /// <summary>Rung-six crisis after escape or takeoff arcs (Q470). Never drawn by the weekly chance.</summary>
+        RungSix,
+        /// <summary>One-site compute shutdown variant of the rung-six arc.</summary>
+        ShutdownCompute
+    }
+
+    /// <summary>What the lab needs before an office event can happen to it.</summary>
+    public enum OfficeRequires
+    {
+        Nothing,
+        /// <summary>A model on sale.</summary>
+        ReleasedModel,
+        /// <summary>Somebody in the safety function.</summary>
+        SafetyStaff,
+        /// <summary>At least one person on the payroll.</summary>
+        AnyStaff,
+        /// <summary>A chip design of the lab's own that is ready.</summary>
+        OwnChip,
+        /// <summary>Rented GPUs on the books.</summary>
+        RentedCompute
+    }
+
+    /// <summary>
+    /// Office events (bible ch. 14, "event ideas"): now and then something happens to the player's lab that has no right answer, and the player picks
+    /// a response. An event left unanswered lapses and changes nothing. Only the player's labs have them.
+    /// </summary>
+    public sealed class OfficeConfig : ISync
+    {
+        /// <summary>The weekly chance that an event happens when none is waiting, in permille. Worked out from the date and the game's seed, not from a dice stream.</summary>
+        public int ChancePermille;
+        /// <summary>No event happens before this week of the game's calendar (a game that starts in a later era is already past it).</summary>
+        public int FirstAfterWeeks;
+        /// <summary>Weeks an event waits for an answer before it lapses.</summary>
+        public int ExpireWeeks;
+        /// <summary>Cash effects are never worth less than this many dollars a week, so a lab with no running costs still feels them.</summary>
+        public long MinWeekCost;
+        public List<OfficeEventConfig> Events = new List<OfficeEventConfig>();
+
+        public OfficeEventConfig Event(string id)
+        {
+            for (int i = 0; i < Events.Count; i++) if (Events[i].IdValue == id) return Events[i];
+            return null;
+        }
+
+        public void Sync(Syncer s)
+        {
+            s.Int("chancePermille", ref ChancePermille);
+            s.Int("firstAfterWeeks", ref FirstAfterWeeks);
+            s.Int("expireWeeks", ref ExpireWeeks);
+            s.Long("minWeekCost", ref MinWeekCost);
+            s.ObjList("events", ref Events);
+        }
+    }
+
+    public sealed class OfficeEventConfig : ISync, IHasId
+    {
+        public string IdValue = "";
+        public string Name = "";
+        /// <summary>What happened, in a sentence or two.</summary>
+        public string Text = "";
+        public OfficeRequires Requires;
+        public OfficeTrigger Trigger;
+        /// <summary>The choice taken for the player when nobody answers in time (empty: nothing happens, the event blows over).</summary>
+        public string LapseChoice = "";
+        /// <summary>The first calendar year the event can happen in; 0 for no start.</summary>
+        public int FromYear;
+        /// <summary>The last calendar year the event can happen in; 0 for no end.</summary>
+        public int ToYear;
+        public List<OfficeChoiceConfig> Choices = new List<OfficeChoiceConfig>();
+
+        public string Id { get { return IdValue; } }
+
+        public OfficeChoiceConfig Choice(string id)
+        {
+            for (int i = 0; i < Choices.Count; i++) if (Choices[i].IdValue == id) return Choices[i];
+            return null;
+        }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("name", ref Name);
+            s.Str("text", ref Text);
+            s.Enum("requires", ref Requires);
+            s.Enum("trigger", ref Trigger);
+            s.Str("lapseChoice", ref LapseChoice);
+            s.Int("fromYear", ref FromYear);
+            s.Int("toYear", ref ToYear);
+            s.ObjList("choices", ref Choices);
+        }
+    }
+
+    public sealed class OfficeChoiceConfig : ISync, IHasId
+    {
+        public string IdValue = "";
+        /// <summary>The button.</summary>
+        public string Text = "";
+        /// <summary>What came of it, in a sentence.</summary>
+        public string Result = "";
+        public List<OfficeEffectConfig> Effects = new List<OfficeEffectConfig>();
+
+        public string Id { get { return IdValue; } }
+
+        public void Sync(Syncer s)
+        {
+            s.Str("id", ref IdValue);
+            s.Str("text", ref Text);
+            s.Str("result", ref Result);
+            s.ObjList("effects", ref Effects);
+        }
+    }
+
+    public sealed class OfficeEffectConfig : ISync
+    {
+        public OfficeEffectKind Kind;
+        public int Amount;
+
+        public void Sync(Syncer s)
+        {
+            s.Enum("kind", ref Kind);
+            s.Int("amount", ref Amount);
+        }
+    }
+}

@@ -187,7 +187,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 // Each hire costs the fee now and raises the reserve the lab wants to keep, so count both.
-                long perHire = EraRules.HireFee(c, role, x.State.Tick) + role.WeeklySalary * plan.ReserveWeeks;
+                long perHire = RolePerks.HireFee(c, lab, role, x.State.Tick) + role.WeeklySalary * plan.ReserveWeeks;
                 long spare = lab.Cash - Reserve(x);
                 int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
                 int hire = Math.Min(Math.Min(target - have, seats - have), affordable);

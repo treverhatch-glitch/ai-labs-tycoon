@@ -161,6 +161,28 @@ namespace AiLabs.Rules.Systems
             return false;
         }
 
+        public static bool HasOpenEnding(GameState state)
+        {
+            for (int i = 0; i < state.Endings.Count; i++)
+                if (state.Endings[i].Choice == "") return true;
+            return false;
+        }
+
+        public static void RecordCampaignStop(GameConfig c, GameState state, LabState lab, int runScore, int bonus)
+        {
+            string id = c.CampaignDeadline.EndingId;
+            if (string.IsNullOrEmpty(id) || HasOpen(state, id)) return;
+            Add(state, lab.Id, id);
+            Events.Add(state, EventKind.EndingReached, lab.Id, runScore, bonus, id);
+        }
+
+        public static void RecordScenario(GameConfig c, GameState state, LabState lab, string endingId)
+        {
+            if (string.IsNullOrEmpty(endingId) || HasOpen(state, endingId) || c.Endings.Def(endingId) == null) return;
+            Add(state, lab.Id, endingId);
+            Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, endingId);
+        }
+
         static bool HasRecorded(GameState state, string endingId)
         {
             for (int i = 0; i < state.Endings.Count; i++)
@@ -194,9 +216,7 @@ namespace AiLabs.Rules.Systems
 
         public static long SellPrice(GameConfig c, GameState state, LabState lab)
         {
-            long rev = RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
-            long fleet = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
-            return rev + fleet + lab.Cash;
+            return DisplayQueries.ExitPriceParts(c, state, lab).Total;
         }
 
         public static bool AllOpenTechsDone(GameConfig c, LabState lab, int tick)
