@@ -127,6 +127,32 @@ namespace AiLabs.Rules.Systems
             public bool DownRound;
         }
 
+        public struct HardwareFleetBreakdown
+        {
+            public string CurrentGenId;
+            public int OwnedHqGpus;
+            public int OwnedOffsiteGpus;
+            public int RentedGpus;
+            public int ReservedGpus;
+
+            public int TotalUnits { get { return OwnedHqGpus + OwnedOffsiteGpus + RentedGpus + ReservedGpus; } }
+        }
+
+        public struct FundingLadderStep
+        {
+            public string RoundId;
+            public bool Completed;
+            public bool Unlocked;
+        }
+
+        public struct RivalRelationSlice
+        {
+            public string RivalId;
+            public string Name;
+            public int FeelingToPlayer;
+            public int LogLineCount;
+        }
+
         public static QualityBreakdown QualityParts(GameConfig c, SectorConfig sector, ModelState model, int tick)
         {
             int effective = SafetySystem.EffectiveAlignment(c, model);
@@ -281,6 +307,63 @@ namespace AiLabs.Rules.Systems
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             quote.WeeklyRentAfterSign = MathI.MulPermille(gpuCount * gen.RentPerGpuWeek, c.Compute.ReservedRentPermille);
             return true;
+        }
+
+        public static HardwareFleetBreakdown HardwareFleetParts(GameConfig c, GameState state, LabState lab)
+        {
+            var b = new HardwareFleetBreakdown();
+            if (lab == null) return b;
+            GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
+            b.CurrentGenId = gen == null ? "" : gen.Id;
+            b.OwnedHqGpus = LabQueries.OwnedGpuUnits(lab, HardwareBatch.Hq);
+            int owned = 0;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+                if (lab.Fleet[i].ChipDesignId < 0) owned += lab.Fleet[i].Count;
+            b.OwnedOffsiteGpus = owned - b.OwnedHqGpus;
+            if (b.OwnedOffsiteGpus < 0) b.OwnedOffsiteGpus = 0;
+            b.RentedGpus = lab.RentedGpus;
+            b.ReservedGpus = ComputeContractSystem.ReservedGpus(lab);
+            return b;
+        }
+
+        public static List<FundingLadderStep> FundingLadderParts(GameConfig c, GameState state, LabState lab)
+        {
+            var steps = new List<FundingLadderStep>();
+            if (lab == null) return steps;
+            int year = GameDate.Year(c.Calendar, state.Tick);
+            bool frozen = WorldQueries.IsFrozen(lab, lab.HomeBlocId);
+            for (int i = 0; i < c.Funding.Rounds.Count; i++)
+            {
+                FundingRoundConfig round = c.Funding.Rounds[i];
+                var step = new FundingLadderStep();
+                step.RoundId = round.Id;
+                step.Completed = FundingSystem.HasRound(lab, round.Id);
+                step.Unlocked = !step.Completed && !frozen && year >= round.OpensYear
+                    && lab.Reputation >= round.MinReputation && FundingSystem.PriorRoundsDone(c, lab, round);
+                steps.Add(step);
+            }
+            return steps;
+        }
+
+        public static List<RivalRelationSlice> RivalRelationSlices(GameConfig c, GameState state, int maxRivals)
+        {
+            var slices = new List<RivalRelationSlice>();
+            if (state == null || maxRivals < 1) return slices;
+            int added = 0;
+            for (int i = 0; i < state.Labs.Count && added < maxRivals; i++)
+            {
+                LabState lab = state.Labs[i];
+                if (lab.Id == state.PlayerLabId) continue;
+                if (lab.Controller != LabController.Plan) continue;
+                var slice = new RivalRelationSlice();
+                slice.RivalId = lab.RivalId;
+                slice.Name = lab.Name;
+                slice.FeelingToPlayer = lab.FeelingToPlayer;
+                slice.LogLineCount = lab.Log.Count;
+                slices.Add(slice);
+                added++;
+            }
+            return slices;
         }
 
         public static VendorQueueBreakdown VendorQueueParts(GameConfig c, GameState state, LabState lab)

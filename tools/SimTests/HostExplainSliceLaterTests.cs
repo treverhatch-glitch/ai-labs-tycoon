@@ -160,4 +160,52 @@ public class HostExplainSliceLaterTests
             Assert.Equal(DecisionText.Line(g.C, g.State, null, g.State.Vendor.Log[i]), lines[0]);
         }
     }
+
+    [Fact]
+    public void Hardware_fleet_parts_cover_rent_own_and_reserve()
+    {
+        var g = Game.Solo();
+        g.Do(Command.SignReservedCompute(g.Id, 3));
+        DisplayQueries.HardwareFleetBreakdown fleet = DisplayQueries.HardwareFleetParts(g.C, g.State, g.Me);
+        Assert.Equal(LabQueries.CurrentGeneration(g.C, g.Tick).Id, fleet.CurrentGenId);
+        Assert.Equal(3, fleet.ReservedGpus);
+        Assert.Equal(fleet.OwnedHqGpus + fleet.OwnedOffsiteGpus + fleet.RentedGpus + fleet.ReservedGpus, fleet.TotalUnits);
+    }
+
+    [Fact]
+    public void Funding_ladder_marks_completed_and_unlocks_next_round()
+    {
+        var g = Game.Solo(tweak: OpenFunding);
+        var ladder = DisplayQueries.FundingLadderParts(g.C, g.State, g.Me);
+        Assert.True(ladder.Count >= 2);
+        Assert.False(ladder[0].Completed);
+        Assert.True(ladder[0].Unlocked);
+        g.Do(Command.RaiseFunding(g.Id, "angel"));
+        ladder = DisplayQueries.FundingLadderParts(g.C, g.State, g.Me);
+        Assert.True(ladder[0].Completed);
+        Assert.True(ladder[1].Unlocked);
+    }
+
+    [Fact]
+    public void Rival_relation_slices_list_plan_labs_with_logs()
+    {
+        Game g = WithRival("openaye");
+        g.Weeks(20);
+        var relations = DisplayQueries.RivalRelationSlices(g.C, g.State, 4);
+        Assert.Single(relations);
+        Assert.Equal("openaye", relations[0].RivalId);
+        Assert.Equal(g.Rival("openaye").Log.Count, relations[0].LogLineCount);
+        Assert.Equal(g.Rival("openaye").FeelingToPlayer, relations[0].FeelingToPlayer);
+    }
+
+    [Fact]
+    public void Vendor_and_reserved_slices_share_queue_counts()
+    {
+        var g = Game.Solo();
+        g.State.Vendor.Standing(g.Me.Id).QueuedGpus = 7;
+        DisplayQueries.VendorQueueBreakdown vendor = DisplayQueries.VendorQueueParts(g.C, g.State, g.Me);
+        DisplayQueries.ReservedComputeBreakdown reserved = DisplayQueries.ReservedComputeParts(g.C, g.State, g.Me);
+        Assert.Equal(7, vendor.QueuedGpus);
+        Assert.Equal(7, reserved.VendorQueuedGpus);
+    }
 }
