@@ -17,6 +17,7 @@ other labs. Numbers are read from `Rules/Data/default-config.json` (`chips`, `ve
 6. Order chips for a data centre. The cost is the wafers divided by the yield, the foundry has limited room each month, and the
    chips arrive that month's first week plus the process's lead time. The hall's kilowatts are held for them meanwhile.
 7. Deliveries have a 5% chance of a yield crash: only 30% of the chips arrive and the money is gone.
+8. The foundry can snub the player (bible ch. 7, "foundry snub"): when the vendor's standing with the lab is under 350 (`snubStandingBelow`; it starts at 500 and falls as the lab makes its own chips) a new order of the lab's own chips has a 25% chance (`snubChancePermille`) of losing its slot to a bigger customer, and the delivery slips 20 weeks (`snubWeeks`). The roll comes from the seed, the week, the lab and the order, so nothing is saved. Rivals are never snubbed.
 
 ## Targets
 

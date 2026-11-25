@@ -49,7 +49,7 @@ namespace AiLabs.Rules.Systems
                 BuildRoom(x, type, Math.Max(target - seats, MinSeatsPerRoom) * type.TilesPerSeat);
                 seats = LabQueries.Seats(c, lab, role.Id);
             }
-            long perHire = role.HireCost + role.WeeklySalary * x.Plan.ReserveWeeks;
+            long perHire = RolePerks.HireFee(x.C, lab, role, x.State.Tick) + role.WeeklySalary * x.Plan.ReserveWeeks;
             long spare = lab.Cash - Reserve(x);
             int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
             int hire = Math.Min(Math.Min(target - have, seats - have), affordable);
@@ -194,14 +194,23 @@ namespace AiLabs.Rules.Systems
                 if (d.Status != ChipDesignStatus.Ready) continue;
                 ChipSpec spec = ChipQueries.Spec(c, d);
                 if (!spec.Valid) continue;
-                long price = MathI.MulPermille(ChipQueries.CostPerGoodChip(spec, d.YieldPermille), MathI.Permille + x.Plan.ListsChipsMarkupPermille);
+                int listPermille = MathI.Permille + x.Plan.ListsChipsMarkupPermille;
+                if (BubbleSystem.InCrash(x.State) && AcquisitionSystem.IsDistressed(x.C, x.State, lab)
+                    && c.Chips.DistressListingPricePermille > 0)
+                    listPermille = c.Chips.DistressListingPricePermille;
+                long price = MathI.MulPermille(ChipQueries.CostPerGoodChip(spec, d.YieldPermille), listPermille);
                 if (price < 1 || price > int.MaxValue) continue;
                 ChipListing listing = lab.Listing(d.Id);
                 if (listing != null && listing.PricePerChip == price) continue;
                 bool first = listing == null;
                 CommandResult result = x.Apply(Command.SetChipListing(lab.Id, d.Id, (int)price, c.Chips.ListingMaxPerMonth));
                 if (result.Ok && first)
-                    DecisionLog.Add(c, lab, x.State.Tick, DecisionAction.ListedChips, d.Name, price, Reason.Of(ReasonCode.YieldPermille, d.YieldPermille));
+                {
+                    var reasons = new[] { Reason.Of(ReasonCode.YieldPermille, d.YieldPermille) };
+                    if (listPermille == c.Chips.DistressListingPricePermille && c.Chips.DistressListingPricePermille < MathI.Permille + x.Plan.ListsChipsMarkupPermille)
+                        reasons = new[] { Reason.Of(ReasonCode.YieldPermille, d.YieldPermille), Reason.Of(ReasonCode.CrashDistress, listPermille) };
+                    DecisionLog.Add(c, lab, x.State.Tick, DecisionAction.ListedChips, d.Name, price, reasons);
+                }
             }
         }
 

@@ -75,7 +75,17 @@ namespace AiLabs.Rules.Systems
         {
             int tick = state.Tick;
             for (int i = 0; i < c.Eras.Count; i++)
-                if (StartTick(c, c.Eras[i]) == tick) Events.Add(state, EventKind.EraBegan, -1, -1, c.Eras[i].StartYear, c.Eras[i].Id);
+                if (StartTick(c, c.Eras[i]) == tick)
+                {
+                    Events.Add(state, EventKind.EraBegan, -1, -1, c.Eras[i].StartYear, c.Eras[i].Id);
+                    if (tick > 0)
+                    {
+                        RoomAge.OnEraBegan(c, state);
+                        ControlStale.OnEraBegan(c, state);
+                        Campaign.OnEraBegan(c, state, i);
+                        LabState player = state.Player;
+                    }
+                }
 
             for (int i = 0; i < c.WorldEvents.Count; i++)
             {
@@ -87,8 +97,8 @@ namespace AiLabs.Rules.Systems
                     if (sector != null) sector.PoolPerWeek = MathI.MulPermille(sector.PoolPerWeek, e.PoolPermille);
                 }
                 Events.Add(state, EventKind.WorldNews, -1, -1, e.PoolPermille, e.Id);
-                ChipShortageSystem.OnWorldEvent(c, state, e);
-                ProtestSystem.OnWorldEvent(c, state, e);
+                BubbleSystem.OnWorldEvent(c, state, e);
+                Shocks.OnWorldEvent(c, state, i);
             }
         }
     }

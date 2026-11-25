@@ -11,7 +11,7 @@ using AiLabs.Rules.Systems;
 namespace AiLabs.SimCli;
 
 /// <summary>
-/// Plays the rules without Unity. Add --era <id> to start in a later era (for example punchline).
+/// Plays the rules without Unity. Add --era <id> to start in a later era (for example punchline), and --founder, --style and --home to choose who you are.
 ///   simcli run   [--years 5] [--seed 1] [--player autopilot|idle] [--events]   a yearly table for every lab
 ///   simcli soak  [--games 50] [--years 5] [--seed 1] [--player autopilot|idle]  many seeds: who survives, who wins
 ///   simcli probe [--years 5] [--seed 1] [--player autopilot|idle]              "tick N digest" once a year
@@ -91,7 +91,14 @@ public static class Program
 
     static NewGameOptions NewGame(string[] args, long seed)
     {
-        return new NewGameOptions { Seed = seed, StartEraId = Option(args, "--era", "") };
+        return new NewGameOptions
+        {
+            Seed = seed,
+            StartEraId = Option(args, "--era", ""),
+            FounderId = Option(args, "--founder", ""),
+            StyleId = Option(args, "--style", ""),
+            HomeBlocId = Option(args, "--home", "")
+        };
     }
 
     static string Option(string[] args, string name, string fallback)
@@ -105,12 +112,12 @@ public static class Program
         GameState state = sim.State;
         Console.WriteLine();
         Console.WriteLine("== End of " + (sim.Year - 1) + " (" + EraSystem.AtYear(c, sim.Year - 1).Name + ") ==");
-        Console.WriteLine($"{"lab",-14}{"cash",12}{"rev/wk",10}{"cost/wk",10}{"staff",7}{"gpus",6}{"rep",5}{"techs",6}  best model");
+        Console.WriteLine($"{"lab",-14}{"cash",20}{"rev/wk",15}{"cost/wk",12}{"staff",7}{"gpus",6}{"rep",5}{"techs",6}  best model");
         foreach (LabState lab in state.Labs)
         {
             ModelState best = LabQueries.BestReleased(lab);
             string model = lab.Bankrupt ? "(bankrupt)" : best == null ? "-" : $"{best.Name} cap {best.Capability} safety {best.Alignment} {LabQueries.Mood(c, lab, best, state.Tick)}";
-            Console.WriteLine($"{lab.Name,-14}{lab.Cash,12}{lab.LastWeek.Revenue,10}{LabQueries.WeeklyRunningCost(c, state, lab),10}{LabQueries.TotalStaff(lab),7}{LabQueries.TotalGpus(lab),6}{lab.Reputation,5}{lab.Techs.Count,6}  {model}");
+            Console.WriteLine($"{lab.Name,-14}{lab.Cash,20}{lab.LastWeek.Revenue,15}{LabQueries.WeeklyRunningCost(c, state, lab),12}{LabQueries.TotalStaff(lab),7}{LabQueries.TotalGpus(lab),6}{lab.Reputation,5}{lab.Techs.Count,6}  {model}");
         }
         foreach (SectorState sector in state.Sectors)
         {

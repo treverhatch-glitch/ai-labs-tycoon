@@ -37,7 +37,9 @@ namespace AiLabs.Rules.Systems
         public long FromDominance;
         /// <summary>What policy staff take off (zero or negative).</summary>
         public long PolicySaving;
-        public long Total { get { return FromFootprint + FromIncidents + FromDominance + PolicySaving; } }
+        /// <summary>What the compliance office and any audit certificate take off what policy staff left (zero or negative).</summary>
+        public long ComplianceSaving;
+        public long Total { get { return FromFootprint + FromIncidents + FromDominance + PolicySaving + ComplianceSaving; } }
     }
 
     /// <summary>Read-only answers about sites, holdings, power and governments.</summary>
@@ -138,11 +140,8 @@ namespace AiLabs.Rules.Systems
 
         public static int PolicyStaff(GameConfig c, LabState lab) { return LabQueries.StaffByFunction(c, lab, RoleFunction.Policy); }
 
-        /// <summary>Policy staff for hearings and investigations (era may add virtual staff on merge).</summary>
-        public static int EffectivePolicyStaff(GameConfig c, GameState state, LabState lab)
-        {
-            return PolicyStaff(c, lab);
-        }
+        /// <summary>The policy staff for hearings, the monthly attention gain and lobbying: the people on the payroll plus any consultants in. The compliance office counts only the payroll.</summary>
+        public static int PolicyStaffWithConsultants(GameConfig c, LabState lab) { return PolicyStaff(c, lab) + PolicyConsultants.Staff(c, lab); }
 
         /// <summary>Weeks a hall extension of this size takes this lab: the base and the size, then trimmed by infrastructure staff, never under the floor.</summary>
         public static int BuildWeeks(GameConfig c, LabState lab, int kw)
@@ -202,44 +201,20 @@ namespace AiLabs.Rules.Systems
             bill.PrivateKw = privateUsed;
             bill.GridKw = gridUsed;
             bill.GridCost = (long)gridUsed * site.PowerPricePerKwWeek;
+            if (lab.ChinaDealActive && c.World.ChinaDeals != null && site.BlocId == c.World.ChinaDeals.BlocId)
+                bill.GridCost = MathI.MulPermille(bill.GridCost, c.World.ChinaDeals.ActivePowerPermille);
             bill.PrivateCost = (long)privateUsed * dealPrice;
             long energy = MathI.MulPermille(bill.GridCost + bill.PrivateCost, EffectiveCooling(c, lab, site));
             bill.Cooling = energy - bill.GridCost - bill.PrivateCost;
-            int podCut = LiquidCoolingPodSystem.CoolingCostCutPermille(c, state, lab);
-            if (podCut > 0 && bill.Cooling > 0)
-                bill.Cooling = MathI.MulPermille(bill.Cooling, MathI.Permille - podCut);
             if (holding.Kind == HoldingKind.Colo) bill.ColoMarkup = (long)c.World.Colo.MarkupPerKwWeek * holding.HallKw;
             return bill;
         }
 
-        public struct PowerBillTotals
-        {
-            public long GridCost;
-            public long PrivateCost;
-            public long Cooling;
-            public long ColoMarkup;
-
-            public long Total { get { return GridCost + PrivateCost + Cooling + ColoMarkup; } }
-        }
-
-        /// <summary>Lab-wide power bill rolled up by line (sums per-holding <see cref="BillFor"/> rows).</summary>
-        public static PowerBillTotals WeeklyPowerBillTotals(GameConfig c, GameState state, LabState lab)
-        {
-            var t = new PowerBillTotals();
-            for (int i = 0; i < lab.Holdings.Count; i++)
-            {
-                PowerBill bill = BillFor(c, state, lab, lab.Holdings[i]);
-                t.GridCost += bill.GridCost;
-                t.PrivateCost += bill.PrivateCost;
-                t.Cooling += bill.Cooling;
-                t.ColoMarkup += bill.ColoMarkup;
-            }
-            return t;
-        }
-
         public static long WeeklyPowerBill(GameConfig c, GameState state, LabState lab)
         {
-            return WeeklyPowerBillTotals(c, state, lab).Total;
+            long total = 0;
+            for (int i = 0; i < lab.Holdings.Count; i++) total += BillFor(c, state, lab, lab.Holdings[i]).Total;
+            return total;
         }
 
         /// <summary>Upkeep of the halls on owned land. A colo's leased space is paid in its power bill.</summary>
@@ -295,8 +270,10 @@ namespace AiLabs.Rules.Systems
                 gain.FromDominance = MathI.Max(0, revenueSharePpm - a.DominanceFromPpm) / a.DominanceDivisor;
             }
             long before = gain.FromFootprint + gain.FromIncidents + gain.FromDominance;
-            long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaff(c, lab) * a.PolicySavingPermillePerStaff);
+            long saving = MathI.Min(a.PolicySavingCapPermille, (long)PolicyStaffWithConsultants(c, lab) * a.PolicySavingPermillePerStaff);
             gain.PolicySaving = MathI.MulPermille(before, MathI.Permille - saving) - before;
+            long afterPolicy = before + gain.PolicySaving;
+            gain.ComplianceSaving = MathI.MulPermille(afterPolicy, MathI.Permille - Compliance.AttentionReliefPermille(c, lab) - SafetyAudit.AttentionReliefPermille(c, state, lab) - EthicsBoard.AttentionReliefPermille(c, lab)) - afterPolicy;
             return gain;
         }
     }

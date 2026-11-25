@@ -13,7 +13,7 @@ namespace AiLabs.Rules.Systems
         /// <summary>How strongly a lab's sales force pulls customers, in permille (1000 = no sales staff).</summary>
         public static int SalesPermille(GameConfig c, LabState lab)
         {
-            long bonus = (long)LabQueries.StaffByFunction(c, lab, RoleFunction.Sales) * c.Market.SalesBonusPermille;
+            long bonus = LabQueries.HeadsPermille(c, lab, RoleFunction.Sales) * c.Market.SalesBonusPermille / MathI.Permille;
             return MathI.Permille + (int)MathI.Min(bonus, c.Market.SalesBonusCapPermille);
         }
 
@@ -33,11 +33,10 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < sectorState.Entries.Count; i++)
             {
                 SectorEntry entry = sectorState.Entries[i];
-                LabState entryLab = state.Lab(entry.LabId);
-                ModelState model = entryLab.Model(entry.ModelId);
-                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick, entryLab));
+                ModelState model = state.Lab(entry.LabId).Model(entry.ModelId);
+                best = MathI.Max(best, LabQueries.Quality(c, sector, model, state.Tick));
             }
-            return (int)MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability);
+            return EraRules.Adoption(c, MathI.Min(MathI.Permille, best * MathI.Permille / sector.SaturationCapability), state.Tick);
         }
 
         public static void RunWeek(GameConfig c, GameState state)
@@ -65,6 +64,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 long served = MathI.MulPermille(sectorState.PoolPerWeek, sectorState.AdoptionPermille);
+                served = MathI.MulPermille(served, BubbleSystem.CustomerSpendPermille(c, state));
                 for (int i = 0; i < appeals.Length; i++)
                 {
                     SectorEntry entry = sectorState.Entries[i];
@@ -74,21 +74,26 @@ namespace AiLabs.Rules.Systems
 
                     long potential = served * entry.SharePpm / MathI.Ppm;
                     int labIndex = IndexOfLab(state, entry.LabId);
-                    LabState entryLab = state.Labs[labIndex];
-                    ModelState entryModel = entryLab.Model(entry.ModelId);
-                    long entryRevenue = MathI.MulPermille(potential, entry.PricePermille);
-                    if (entryModel.OpenWeights)
-                        entryRevenue = MathI.MulPermille(entryRevenue, c.Market.OpenWeightsRevenuePermille);
-                    int workshopRev = DeviceWorkshopSystem.RevenueBonusPermille(c, state, entryLab, sector.Id);
-                    if (workshopRev > 0)
-                        entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + workshopRev);
-                    int campaignRev = ProductStudioSystem.CampaignRevenuePermille(c, state, entryLab, sector.Id);
-                    if (campaignRev > 0)
-                        entryRevenue = MathI.MulPermille(entryRevenue, MathI.Permille + campaignRev);
-                    entry.LastRevenue = entryRevenue;
-
-                    ModelLineConfig line = c.Line(entryModel.LineId);
-                    demand[labIndex] += ServingDemand(sector, line, entryRevenue);
+                    LabState demandLab = state.Labs[labIndex];
+                    if (SectorPricing.Enabled(c) && demandLab.Id == state.PlayerLabId)
+                        potential = MathI.MulPermille(potential, SectorPricing.RevenuePermille(c, demandLab, sector.Id));
+                    entry.LastRevenue = potential;
+                    ModelState demandModel = demandLab.Model(entry.ModelId);
+                    ModelLineConfig line = c.Line(demandModel.LineId);
+                    long piece = ServingDemand(sector, line, potential);
+                    if (TrafficRouter.Enabled(c) && demandLab.Id == state.PlayerLabId)
+                    {
+                        int routeTotal = TrafficRouter.RouteTotal(demandLab);
+                        if (routeTotal <= 0)
+                        {
+                            int n = 0;
+                            for (int ri = 0; ri < demandLab.Models.Count; ri++)
+                                if (demandLab.Models[ri].Status == ModelStatus.Released) n++;
+                            if (n > 0) piece /= n;
+                        }
+                        else piece = piece * demandModel.RoutePpm / routeTotal;
+                    }
+                    demand[labIndex] += piece;
                 }
             }
 
@@ -97,6 +102,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
+                demand[i] = Optimisation.Serve(c, lab, demand[i]);
                 long serving = lab.LastWeek.ServingCompute;
                 servedPermille[i] = demand[i] <= serving ? MathI.Permille : (int)(serving * MathI.Permille / demand[i]);
                 lab.LastWeek.ServingDemand = demand[i];
@@ -117,6 +123,12 @@ namespace AiLabs.Rules.Systems
 
             for (int i = 0; i < state.Labs.Count; i++)
             {
+                revenue[i] += Platforms.Lift(c, state, state.Labs[i], revenue[i]);
+                revenue[i] += FreeTier.RevenueLift(c, state, state.Labs[i], revenue[i]);
+                revenue[i] += Pledges.Lift(c, state, state.Labs[i]);
+                revenue[i] += Integrations.Lift(c, state, state.Labs[i]);
+                revenue[i] += Agency.Lift(c, state, state.Labs[i]);
+                revenue[i] += PostTraining.Lift(c, state, state.Labs[i]);
                 state.Labs[i].LastWeek.Revenue = revenue[i];
                 Finance.Earn(state.Labs[i], LedgerLine.Revenue, revenue[i]);
             }

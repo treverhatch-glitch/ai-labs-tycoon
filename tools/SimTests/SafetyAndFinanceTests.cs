@@ -25,9 +25,26 @@ public class SafetyAndFinanceTests
     [Fact]
     public void A_model_with_a_full_safety_meter_never_has_an_incident()
     {
-        Game g = SellOneMini(seed: 1, alignmentShare: 300, years: 10, out ModelState model);
+        Game g = Game.Solo(1, tweak: c =>
+        {
+            c.Bubble.PopAtPermille = 1000;
+            c.Bubble.HotPermille = 1000;
+            c.Bubble.GraceMonthsBeforeCrash = 999;
+            c.Bubble.WeakCashHaircutPermille = 0;
+            c.Litigation.Enabled = 0;
+            c.Security.Enabled = 0;
+            c.GovContracts.Enabled = 0;
+            c.Tax.Enabled = 0;
+            c.Standards.Enabled = 0;
+            c.Reliability.Enabled = 0;
+            c.Scaling.Enabled = 0;
+        }).WithStarterLab(gpus: 8);
+        ModelState model = g.Train("mini", 300);
+        g.UntilTrained(model);
+        g.Release(model, "game-ai", "game-bots");
+        g.Years(10);
         Assert.Equal(1000, model.Alignment);
-        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, model));
+        Assert.Equal(0, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(0, model.Incidents);
         Assert.Equal(0, g.Me.Ledger.Lifetime.Fines);
     }
@@ -57,7 +74,7 @@ public class SafetyAndFinanceTests
     public void An_incident_costs_reputation_and_a_fine_and_the_model_glitches_for_a_while()
     {
         // Find the first incident of a reckless lab and look at the week it happened.
-        Game g = Game.Solo(seed: 4).WithStarterLab(gpus: 8);
+        Game g = Game.Solo(seed: 4, tweak: c => c.Safety.SectorFlavours.Clear()).WithStarterLab(gpus: 8);
         ModelState model = g.Train("mini", 0);
         g.UntilTrained(model);
         g.Release(model, "game-ai", "game-bots");

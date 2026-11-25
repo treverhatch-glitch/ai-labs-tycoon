@@ -23,6 +23,8 @@ namespace AiLabs.Rules.Config
         public int HeatPolicyCap;
         public int InvestigationThreshold;
         public int InvestigationDivisor;
+        /// <summary>Minimum permille for the extra roll when a bloc reaches Audit.</summary>
+        public int AuditInvestigationPermille;
         public int CaseWeeks;
         public int ConvictionDivisor;
         public int ConvictionPolicyPerStaff;
@@ -66,6 +68,7 @@ namespace AiLabs.Rules.Config
             s.Int("heatPolicyCap", ref HeatPolicyCap);
             s.Int("investigationThreshold", ref InvestigationThreshold);
             s.Int("investigationDivisor", ref InvestigationDivisor);
+            s.Int("auditInvestigationPermille", ref AuditInvestigationPermille);
             s.Int("caseWeeks", ref CaseWeeks);
             s.Int("convictionDivisor", ref ConvictionDivisor);
             s.Int("convictionPolicyPerStaff", ref ConvictionPolicyPerStaff);

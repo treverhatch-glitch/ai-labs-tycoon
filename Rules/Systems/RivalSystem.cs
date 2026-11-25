@@ -18,7 +18,7 @@ namespace AiLabs.Rules.Systems
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 LabState lab = state.Labs[i];
-                if (lab.Controller != LabController.Plan || lab.Bankrupt) continue;
+                if (lab.Controller != LabController.Plan || lab.Bankrupt || lab.AbsorbedByLabId >= 0) continue;
 
                 if (lab.FeelingToPlayer > 0) lab.FeelingToPlayer = (int)MathI.Max(0, lab.FeelingToPlayer - f.DriftPerMonth);
                 else if (lab.FeelingToPlayer < 0) lab.FeelingToPlayer = (int)MathI.Min(0, lab.FeelingToPlayer + f.DriftPerMonth);

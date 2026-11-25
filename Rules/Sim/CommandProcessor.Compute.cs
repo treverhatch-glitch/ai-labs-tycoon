@@ -21,6 +21,8 @@ namespace AiLabs.Rules.Sim
         static CommandResult QueueGpuPurchase(GameConfig c, GameState state, LabState lab, Command cmd)
         {
             if (cmd.Count < 0) return Fail(CommandError.InvalidArgument, "Queue count cannot be negative.");
+            if (WorldQueries.IsFrozen(lab, lab.HomeBlocId))
+                return FrozenIn(c, lab, lab.HomeBlocId);
             VendorStanding standing = VendorSystem.EnsureStanding(c, state, lab.Id);
             if (cmd.Count == 0)
             {

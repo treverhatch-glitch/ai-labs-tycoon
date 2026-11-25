@@ -1,3 +1,4 @@
+using System;
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
@@ -13,7 +14,10 @@ public class ResearchAndTrainingTests
     [Fact]
     public void Researchers_earn_research_points_every_week()
     {
-        Game g = Game.Solo().WithStarterLab(researchers: 3);
+        Game g = Game.Solo(1, c =>
+        {
+            foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
+        }).WithStarterLab(researchers: 3);
         g.Weeks(5);
         Assert.Equal(5 * 3 * g.C.Research.PointsPerResearcherWeek, g.Me.ResearchPoints);
         Assert.Equal(3 * g.C.Research.PointsPerResearcherWeek, g.Me.LastWeek.ResearchGained);
@@ -121,9 +125,10 @@ public class ResearchAndTrainingTests
     [Fact]
     public void Engineers_and_cluster_tech_make_training_faster()
     {
-        Game slow = Game.Solo().WithStarterLab(engineers: 0);
-        Game fast = Game.Solo().WithStarterLab(engineers: 4);
-        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.State, slow.Me));
+        Action<GameConfig> plain = c => { foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; };
+        Game slow = Game.Solo(tweak: plain).WithStarterLab(engineers: 0);
+        Game fast = Game.Solo(tweak: plain).WithStarterLab(engineers: 4);
+        Assert.True(TrainingSystem.SpeedPermille(fast.C, fast.Me) > TrainingSystem.SpeedPermille(slow.C, slow.Me));
 
         int before = TrainingSystem.EstimateWeeks(fast.C, fast.State, fast.Me, fast.C.Line("mini"), 0);
         fast.GrantResearch(2000);
@@ -132,7 +137,7 @@ public class ResearchAndTrainingTests
 
         // Engineers help up to a cap: a hundred of them are no faster than the cap allows.
         while (LabQueries.StaffCount(fast.Me, "engineer") < 100) fast.Me.Staff.Add(new StaffMember { Id = fast.State.TakeId(), RoleId = "engineer", TraitId = "steady", Morale = 500 });
-        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.State, fast.Me));
+        Assert.Equal(1000 + 250 + fast.C.Training.EngineerBonusCapPermille, TrainingSystem.SpeedPermille(fast.C, fast.Me));
     }
 
     [Fact]

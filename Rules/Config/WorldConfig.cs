@@ -18,6 +18,7 @@ namespace AiLabs.Rules.Config
         public HeatwaveConfig Heatwave;
         public AttentionConfig Attention;
         public List<ExportRuleConfig> ExportRules;
+        public ChinaDealsConfig ChinaDeals;
 
         public void Sync(Syncer s)
         {
@@ -29,6 +30,7 @@ namespace AiLabs.Rules.Config
             s.Obj("heatwave", ref Heatwave);
             s.Obj("attention", ref Attention);
             s.ObjList("exportRules", ref ExportRules);
+            s.Obj("chinaDeals", ref ChinaDeals);
         }
 
         public BlocConfig Bloc(string id)

@@ -33,14 +33,19 @@ namespace AiLabs.Rules.Sim
             RivalConfig successor = c.Rival("successor");
             if (successor == null) return Fail(CommandError.UnknownId, "There is no successor plan.");
 
+            lab.EquityLevel = 0;
+            lab.EquityPermille = 0;
             string soldName = lab.Name;
+            string founderId = lab.FounderId, styleId = lab.StyleId;
+            lab.FounderId = "";
+            lab.StyleId = "";
             lab.Controller = LabController.Plan;
             lab.RivalId = "successor";
             if (!lab.Name.Contains("(new owners)")) lab.Name += " (new owners)";
 
             if (mode == "found-again")
             {
-                LabState fresh = WorldSetup.FoundAgain(c, state, soldName, lab.Leader, lab.FamilyName, price);
+                LabState fresh = WorldSetup.FoundAgain(c, state, soldName, lab.Leader, lab.FamilyName, price, founderId, styleId);
                 state.Labs.Insert(0, fresh);
                 state.PlayerLabId = fresh.Id;
             }
@@ -74,10 +79,8 @@ namespace AiLabs.Rules.Sim
 
             if (record.EndingId == EndingSystem.BankruptId && cmd.Id == "bailout")
                 EndingSystem.ApplyBailout(c, state, lab);
-            else if (record.EndingId == EndingSystem.BankruptId && cmd.Id == "spectate")
-            {
-                state.PlayerLabId = -1;
-            }
+            else
+                EndingSystem.ApplyContinue(c, state, lab, record, cmd.Id);
 
             record.Choice = cmd.Id;
             record.ChoiceTick = state.Tick;

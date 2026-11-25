@@ -12,6 +12,8 @@ namespace AiLabs.Rules.Config
         public int BailoutReputation;
         public int ExitRevenueYears;
         public int ExitFleetPermille;
+        /// <summary>When covenants are breached, this permille of loan balance is taken off exit price.</summary>
+        public int ExitCovenantCallPermille;
         public int MonopolyCrownYears;
         public int MonopolyRevenuePpm;
         public int MonopolyComputePpm;
@@ -22,6 +24,15 @@ namespace AiLabs.Rules.Config
         public string HandcuffsSuccessor = "";
         public FrontierConfig Frontier = new FrontierConfig();
         public MuseumConfig Museum = new MuseumConfig();
+        public SuperintelligenceConfig Superintelligence;
+        /// <summary>Crown runner-up years in a row before the Second Place ending fires.</summary>
+        public int SecondPlaceRunnerUpYears;
+        /// <summary>Home-bloc attention level at or above this for TryNationalised (4 = Freeze).</summary>
+        public int NationalisedHomeLevelMin;
+        /// <summary>Foreign blocs at or above this scrutiny level to count toward TryTreaty (3 = Audit).</summary>
+        public int TreatyForeignLevelMin;
+        /// <summary>How many foreign blocs must be at TreatyForeignLevelMin for TryTreaty.</summary>
+        public int TreatyForeignBlocCount;
 
         public EndingDefConfig Def(string id)
         {
@@ -36,6 +47,7 @@ namespace AiLabs.Rules.Config
             s.Int("bailoutReputation", ref BailoutReputation);
             s.Int("exitRevenueYears", ref ExitRevenueYears);
             s.Int("exitFleetPermille", ref ExitFleetPermille);
+            s.Int("exitCovenantCallPermille", ref ExitCovenantCallPermille);
             s.Int("monopolyCrownYears", ref MonopolyCrownYears);
             s.Int("monopolyRevenuePpm", ref MonopolyRevenuePpm);
             s.Int("monopolyComputePpm", ref MonopolyComputePpm);
@@ -46,6 +58,11 @@ namespace AiLabs.Rules.Config
             s.Str("handcuffsSuccessor", ref HandcuffsSuccessor);
             s.Obj("frontier", ref Frontier);
             s.Obj("museum", ref Museum);
+            s.Obj("superintelligence", ref Superintelligence);
+            s.Int("secondPlaceRunnerUpYears", ref SecondPlaceRunnerUpYears);
+            s.Int("nationalisedHomeLevelMin", ref NationalisedHomeLevelMin);
+            s.Int("treatyForeignLevelMin", ref TreatyForeignLevelMin);
+            s.Int("treatyForeignBlocCount", ref TreatyForeignBlocCount);
         }
     }
 

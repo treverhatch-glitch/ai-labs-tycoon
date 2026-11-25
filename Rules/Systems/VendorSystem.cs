@@ -1,6 +1,5 @@
 using AiLabs.Rules.Config;
 using AiLabs.Rules.Core;
-using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 
 namespace AiLabs.Rules.Systems
@@ -50,13 +49,12 @@ namespace AiLabs.Rules.Systems
             if (standing < v.LowStandingBelow) price += v.LowStandingMarkupPermille;
             if (standing > v.HighStandingAbove) price -= v.HighStandingDiscountPermille;
             if (ChipQueries.RunsOwnTrainingChips(c, state, lab)) price += v.OwnChipsMarkupPermille;
-            return price;
+            return (int)MathI.MulPermille(price, BubbleSystem.GpuPricePermille(c, state));
         }
 
         public static long PricePerGpu(GameConfig c, GameState state, LabState lab, GpuGenerationConfig gen)
         {
-            long basePrice = MathI.MulPermille(gen.BuyPrice, PricePermille(c, state, lab));
-            return ChipShortageSystem.ScalePrice(state, basePrice);
+            return EraRules.ChipPrice(c, MathI.MulPermille(gen.BuyPrice, PricePermille(c, state, lab)), state.Tick);
         }
 
         public static int StandingOf(GameState state, LabState lab)
@@ -119,7 +117,6 @@ namespace AiLabs.Rules.Systems
                 Events.Add(state, EventKind.Keynote, -1, -1, supply, opening.Id);
                 ChipSystem.OnKeynote(c, state);
             }
-            supply = ChipShortageSystem.ScaleVendorSupply(c, state, supply);
             state.Vendor.SupplyThisMonth = supply;
 
             RunAllocation(c, state, true);
@@ -137,14 +134,14 @@ namespace AiLabs.Rules.Systems
             VendorState vendor = state.Vendor;
             long total = 0;
             for (int i = 0; i < state.Labs.Count; i++)
-                if (!state.Labs[i].Bankrupt) total += v.AllocationBase + vendor.Standing(state.Labs[i].Id).Standing;
+                if (LabQueries.ParticipatesInEconomy(state.Labs[i])) total += v.AllocationBase + vendor.Standing(state.Labs[i].Id).Standing;
 
             long given = 0;
             VendorStanding top = null;
             for (int i = 0; i < state.Labs.Count; i++)
             {
                 VendorStanding s = vendor.Standing(state.Labs[i].Id);
-                if (state.Labs[i].Bankrupt) { s.AllocationThisMonth = 0; continue; }
+                if (!LabQueries.ParticipatesInEconomy(state.Labs[i])) { s.AllocationThisMonth = 0; continue; }
                 s.AllocationThisMonth = (int)((long)vendor.SupplyThisMonth * (v.AllocationBase + s.Standing) / total);
                 given += s.AllocationThisMonth;
                 if (top == null || s.Standing > top.Standing || (s.Standing == top.Standing && s.LabId < top.LabId)) top = s;
@@ -174,37 +171,6 @@ namespace AiLabs.Rules.Systems
                     s.FromChips = 0;
                 }
             }
-        }
-
-        /// <summary>Q169: favored customers get a small weekly allocation rebate as cash.</summary>
-        public static void RunWeek(GameConfig c, GameState state, LabState lab)
-        {
-            if (lab.Bankrupt) return;
-            if (!string.IsNullOrEmpty(lab.RivalId) && state.Tick < lab.PlanStartTick) return;
-            VendorConfig v = c.Vendor;
-            if (v.WeeklyGrantPerStanding <= 0) return;
-            int standing = StandingOf(state, lab);
-            if (standing <= v.WeeklyGrantStandingAbove) return;
-            Finance.Earn(lab, LedgerLine.Grants, v.WeeklyGrantPerStanding * standing);
-        }
-
-        /// <summary>Q178: pay Envydia for a standing bump and a cooldown before repeating.</summary>
-        public static CommandResult Advocate(GameConfig c, GameState state, LabState lab)
-        {
-            VendorConfig v = c.Vendor;
-            if (v.AdvocateCashCost < 1 || v.AdvocateStandingGain < 1)
-                return CommandResult.Fail(CommandError.InvalidArgument, "Vendor advocacy is not offered.");
-            if (state.Tick < lab.VendorAdvocateCooldownUntilTick)
-                return CommandResult.Fail(CommandError.InvalidArgument, "Wait out the advocacy cooldown.");
-            if (lab.Cash < v.AdvocateCashCost)
-                return CommandResult.Fail(CommandError.NotEnoughCash, "Need $" + v.AdvocateCashCost + " to advocate with the vendor.");
-            Finance.Spend(lab, LedgerLine.Grants, v.AdvocateCashCost);
-            VendorStanding standing = EnsureStanding(c, state, lab.Id);
-            standing.Standing = standing.Standing + v.AdvocateStandingGain;
-            if (standing.Standing > v.StandingMax) standing.Standing = v.StandingMax;
-            int cooldown = v.AdvocateCooldownWeeks;
-            if (cooldown > 0) lab.VendorAdvocateCooldownUntilTick = state.Tick + cooldown;
-            return CommandResult.Done(-1);
         }
 
         static int Abs(int x) { return x < 0 ? -x : x; }

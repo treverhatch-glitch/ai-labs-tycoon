@@ -27,7 +27,7 @@ public class AlignmentGapTests
         Assert.True(b.SandbagBoost > 0);
         Assert.True(LabQueries.Quality(g.C, sector, model, g.Tick) > LabQueries.Quality(g.C, sector,
             new ModelState { Capability = model.Capability, Alignment = model.Alignment, Corruption = 400, DisplayedAlignment = model.Alignment, Status = ModelStatus.Released }, g.Tick));
-        int odds = SafetySystem.IncidentChancePermille(g.C, model);
+        int odds = SafetySystem.IncidentChancePermille(g.C, g.Tick, model);
         Assert.True(odds > 0);
     }
 
@@ -75,7 +75,7 @@ public class AlignmentGapTests
     [Fact]
     public void A_sandbag_scandal_closes_the_gap_on_the_displayed_meter()
     {
-        var g = Game.Solo(tweak: c => c.Safety.IncidentChancePermille = 1000).WithStarterLab(gpus: 10);
+        var g = Game.Solo(tweak: c => { c.Safety.IncidentChancePermille = 1000; foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0; }).WithStarterLab(gpus: 10);
         var model = g.Train("mini", 200);
         g.UntilTrained(model);
         g.Do(Command.ReleaseModel(g.Id, model.Id, 950, "game-ai"));
@@ -107,8 +107,8 @@ public class AlignmentGapTests
     public void Honest_corruption_does_not_trigger_sandbag_rung_three()
     {
         var g = Game.Solo();
-        var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 400, Status = ModelStatus.Released };
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > 0);
+        var model = new ModelState { Alignment = 900, DisplayedAlignment = 900, Corruption = 200, Status = ModelStatus.Released };
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, model) > 0);
         Assert.Equal(0, SafetySystem.AlignmentGap(g.C, model));
         Assert.Equal(1, SafetySystem.PickIncidentRung(g.C, model));
     }
@@ -120,7 +120,7 @@ public class AlignmentGapTests
         var model = new ModelState { Alignment = 800, DisplayedAlignment = 800, Corruption = 400, Status = ModelStatus.Released };
         int effective = SafetySystem.EffectiveAlignment(g.C, model);
         Assert.True(effective < model.Alignment);
-        Assert.True(SafetySystem.IncidentChancePermille(g.C, model) > SafetySystem.IncidentChancePermille(g.C,
+        Assert.True(SafetySystem.IncidentChancePermille(g.C, g.Tick, model) > SafetySystem.IncidentChancePermille(g.C, g.Tick,
             new ModelState { Alignment = 800, DisplayedAlignment = 800, Corruption = 0, Status = ModelStatus.Released }));
     }
 
@@ -192,6 +192,7 @@ public class AlignmentGapTests
             c.Safety.IncidentChancePermille = 1000;
             c.Safety.IncidentFineMin = 50_000;
             c.Finance.BankruptcyGraceWeeks = 1;
+            foreach (StaffTraitConfig t in c.StaffPeople.Traits) t.HirePermille = 0;
         }).WithStarterLab(gpus: 12);
         g.Me.Cash = 80_000;
         g.Me.GrantPerWeek = 0;

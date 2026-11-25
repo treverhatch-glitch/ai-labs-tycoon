@@ -24,6 +24,7 @@ public class WorldTests
         GameConfig c = TestData.Config(cfg =>
         {
             cfg.PlayerStart.Cash = 500000000;
+            cfg.Reliability.Enabled = 0;
             cfg.World.Attention.DominanceFromPpm = MathI.Ppm;
             cfg.World.Halls.TownVoteAttentionDivisor = 1000000;
             foreach (SiteConfig site in cfg.World.Sites) site.TownVotePermille = 0;
@@ -645,7 +646,7 @@ public class WorldTests
     {
         Game g = Game.New(1);
         LabState xay = g.Rival("xay");
-        g.Years(8);
+        g.Years(4);
         Assert.NotEmpty(xay.Holdings);
         Assert.Contains(xay.Holdings, h => h.Kind == HoldingKind.Owned && h.HallKw > 0);
         Assert.Contains(xay.Fleet, b => b.HoldingId != HardwareBatch.Hq);

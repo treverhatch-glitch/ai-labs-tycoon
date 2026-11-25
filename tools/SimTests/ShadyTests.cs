@@ -39,8 +39,8 @@ public class ShadyTests
     {
         var g = Game.Solo();
         var model = new ModelState { Alignment = 500, Corruption = 500, Status = ModelStatus.Released };
-        int plain = SafetySystem.IncidentChancePermille(g.C, new ModelState { Alignment = 500, Corruption = 0, Status = ModelStatus.Released });
-        int corrupt = SafetySystem.IncidentChancePermille(g.C, model);
+        int plain = SafetySystem.IncidentChancePermille(g.C, g.Tick, new ModelState { Alignment = 500, Corruption = 0, Status = ModelStatus.Released });
+        int corrupt = SafetySystem.IncidentChancePermille(g.C, g.Tick, model);
         Assert.True(corrupt >= plain * 2 - 1);
         model.Corruption = g.C.Shady.CorruptedMood;
         Assert.Equal(ModelMood.Corrupted, LabQueries.Mood(g.C, g.Me, model, g.Tick));
@@ -88,7 +88,10 @@ public class ShadyTests
         var model = new ModelState { Capability = 200, Status = ModelStatus.Trained };
         ShadyOddsBreakdown b = ShadyQueries.SuccessOdds(g.C, g.State, g.Me, card, model, null);
         Assert.Equal(b.Base + b.FromCapability - b.FromHeat - b.FromDefense, b.SuccessPermille);
-        Assert.Equal(ShadyQueries.ClampedSuccess(b), (int)MathI.Clamp(b.SuccessPermille, 50, 950));
+        int clamped = ShadyQueries.ClampedSuccess(b);
+        Assert.InRange(clamped, 0, 950);
+        if (b.SuccessPermille > 0) Assert.True(clamped >= 50);
+        else Assert.Equal(0, clamped);
     }
 
     [Fact]

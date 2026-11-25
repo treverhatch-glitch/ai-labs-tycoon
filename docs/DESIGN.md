@@ -87,8 +87,241 @@ Version 1 covers eras 0 to 6; Bodies and Upward ship in the data flagged `expans
 (`eras` in the config; the full content is in [content/](content/eras.md)). An era is a floor, not a window: a tech or
 room opens when its era begins and stays open. Each era scales what a training run costs and how fast a researcher
 works (x1 up to x60). Hardware generations now do the work the bible gives to "ten times per era": the cost
-multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Two eras can
-be chosen at the start: 1995 and 2009 (the quick start, with its own money, lot and researched techs).
+multipliers were retuned against the compute each generation adds ([QUESTIONS.md](QUESTIONS.md), Q1 and Q35). Every era can
+be chosen at the start (`StartEras.Offers` lists them for a picker): 1995 by default, and from 2009 on a quick start with
+that era's money, lot, researched techs and the rivals who have joined by then. There is no start screen yet.
+
+Each era also turns a few rules (`EraRules`, the `Era rules` table in [content/eras.md](content/eras.md)): the talent
+war (hiring fees from 2012), chip shortages (prices peak in the Chat Boom), customer appetite, incident chance and
+fines, and from 2022 a law: a model must *show* a minimum alignment before it can go on sale. Existing customers are
+not lost when a law arrives; only new releases are checked. None of it is saved: the year picks the era.
+
+From 2012 each era also opens *risk classes* (bias, a driving crash, misuse, a data leak, an agent that went off-script, runaway agents,
+physical harm, loss of control). An incident on a model sold in a class's sectors is that class, with a bigger fine and reputation
+hit, so what a lab sells decides what can go wrong. The era banner names the new ones. Only the class of each incident is saved.
+
+Several roles do more than fill a desk (`rolePerks`, [content/role-perks.md](content/role-perks.md)): recruiters win back part of
+every hiring fee, red-teamers catch some incidents before they happen, alignment fellows make alignment compute go further, and
+product leads and the late specialists lift how much customers like a lab's models in their sectors. Each is the number of people
+in the role times a share, under a cap, worked out from the staff each time: nothing is saved.
+
+Some rooms do more than seat people too (`roomPerks`, [content/room-perks.md](content/room-perks.md)): research floors, harness
+control rooms and launch control speed research, an agent ops room speeds training, a sandbox wing catches incidents beside the
+red-teamers, and a robotics arena lifts the appeal of robots and devices. Every tile adds a small share under a cap, read from the
+rooms the lab has.
+
+Who you are is a choice made when the game starts ([content/founding.md](content/founding.md)): a founder (the Professor, the
+Dropout, the Defector, the Heir) changes the start and carries a lasting edge and cost, a style (Sniper, Shotgun, Wildcard) lifts
+appeal in its sectors and lowers it elsewhere, and the home base is any bloc. The founder and style are two ids on the lab; their
+effects are read from the config each time.
+
+Poaching is a market ([content/talent-market.md](content/talent-market.md)): a rival's raid is an offer that waits four weeks, the
+player counters with money, compute, a title or the mission (each a cost and a chance), or lets the person go, and can raid a
+rival's people in return. Open offers are the only saved part.
+
+The press ([content/press.md](content/press.md)) turns the lab's news into choices: press rooms dampen what a scandal costs and sharpen a
+launch, a journalist asks about each beat (a launch, an incident, a hearing, the crown), the player answers (tell the truth, spin it,
+offer an exclusive) or lets the question lapse, and a lab can leak a rival's recent incident. Open questions are the only saved part.
+
+The Gauntlet has more to it now ([content/gauntlet.md](content/gauntlet.md)): the player can tune the lab's entries for the test (a lift to every score for a prep bill, at the risk of being exposed), each crown entry takes a live demo whose result follows its reliability, two joke awards carry real effects, and a season table ranks labs over the kept years.
+
+Trust ([content/trust.md](content/trust.md)) is the slow side of reputation: each lab has a meter per sector that grows a little every week it sells there, jumps with a bracket win, collapses with an incident or an exposed tuning, carries to the other sectors of the same family, and moves appeal. An incident also writes a complaint to the player's desk, which can be answered with a refund, a patch or an apology.
+
+Safety culture and the release gate ([content/safety-culture.md](content/safety-culture.md)) are the last two things on the bible's list of what builds control. Culture is a number per player lab that safety staff, answered complaints and kept gates raise and rushed releases and neglect lower, and it adds to or takes from the share of incidents caught before they ship. The gate is the least alignment the lab lets a model show before it goes on sale; once set it is enforced, and loosening it waits 26 weeks and costs culture. Save schema 29.
+
+Version naming ([content/version-naming.md](content/version-naming.md)) is the bible's joke that is also a system. Every training run adds to the player lab's naming mess, new models are named with more stacked words (Pro, Max, Turbo...), customers who cannot tell the models apart give up to 8% of appeal, and the marketing team can tidy the names for four sales hiring fees. Save schema 30.
+
+Rooms that age ([content/room-ageing.md](content/room-ageing.md)) is how the world moving on shows in the building. Every era change makes each of the player lab's rooms one era older; from the third stage (dated) a room costs extra upkeep and staff in it are less happy, until a refurbish for a quarter of the build cost makes it fresh. Save schema 31.
+
+Control goes stale ([content/control-stale.md](content/control-stale.md)) is the bible's "each new era, control techniques go stale". A player lab's safety techs lose a tenth of their bonus for every era past the first since its newest safety research (never more than half), new safety research puts them all back, and letting go of the people who listen costs culture. Nothing is saved.
+
+Research leads ([content/research-leads.md](content/research-leads.md)) are the bible's "that mystery becomes a research lead". A player run that lands 6% or more above its aim leaves a lead; following it costs six weeks of the lab's research and eight weeks of waiting, and ends in a real insight, a training trick, a data quirk, the cat or Tuesday. Save schema 32.
+
+Fine-tune and rollback ([content/model-repair.md](content/model-repair.md)) are the two ways to mend a glitching model from the bible's state table. A fine-tune costs a week of the model's sales, ends the glitch now and adds a little alignment; a rollback withdraws the model and puts the previous version of its line back on sale for 20 reputation. Nothing is saved.
+
+Office events ([content/office-events.md](content/office-events.md)) are the bible's "event ideas": every so often something happens at the player's lab (the model's instructions leak, the cat improves a benchmark, a town votes on the data centre) and three answers trade reputation, culture, morale, research or cash. An unanswered event lapses at no cost. Save schema 33.
+
+Training objectives ([content/training-objectives.md](content/training-objectives.md)) are the recipe's "be correct, be engaging, be obedient, be careful". The player picks one while a model trains; engaging and obedient runs trade alignment and culture for appeal or capability, a careful run does the reverse. Rivals and the autopilot always train to be correct. Save schema 34.
+
+A model can help design its successor ([content/successor-design.md](content/successor-design.md)): the run needs 15% less compute and finishes 5% stronger, but the successor loses 70 alignment points (more for each earlier link) and safety culture loses 15. It cannot be undone. Save schema 35.
+
+Rushed launches ([content/rushed-launch.md](content/rushed-launch.md)): skip up to six weeks of testing on a first release and the model sells better for a quarter but is likelier to have an incident for half a year, and culture suffers. A normal release is the tested one. Save schema 36.
+
+The news ticker ([content/news-ticker.md](content/news-ticker.md)) is the world's side of the company chat: the event log turned into upper-case headlines about every lab, padded with filler when it is a quiet week. Read-only, nothing saved.
+
+Lobbying ([content/lobbying.md](content/lobbying.md)): pay weeks of running costs for a quiet word that takes attention off, or a subsidy push that might win a grant, once per government every half-year; policy staff make it safer, and a backfire adds attention and costs reputation. Save schema 37.
+
+Pivoting ([content/pivot.md](content/pivot.md)): once per era the player can change what the lab is good at; it costs eight weeks of running costs and 15% of the staff, and every model sells 12% worse for a year. Save schema 38.
+
+Campaign scoring ([content/campaign.md](content/campaign.md)): every era has three goals (lifetime revenue and two others); when the era ends the player's lab is marked, 100 points a goal and 50 for all three, and the marks are saved. A sandbox game ignores them. Save schema 39.
+
+Experimental runs ([content/training-runs.md](content/training-runs.md)): while a model trains the player can choose their own architecture variant (8% more capability, a 1.5% weekly chance the run diverges) and how often to checkpoint (a failure loses half the run, or a tenth if you pay to checkpoint often). A run nobody set up never fails. Save schema 40.
+
+Engineers and failed runs ([content/training-runs.md](content/training-runs.md)): each engineer takes 6% off a variant run's weekly failure chance, up to 60%, so a crew makes experiments cheaper without making them safe.
+
+Hearing questions ([content/hearing-questions.md](content/hearing-questions.md)): when the home government holds a hearing, a committee member also asks the player a question (the weapon, jobs, data or pause question) with three answers that trade heat, trust, culture, morale and money. Unanswered, it lapses and changes nothing.
+
+More traits ([content/staff-traits.md](content/staff-traits.md)): three more of the bible's trait ideas. A poster makes launches and scandals louder, a blog-post quitter leaves when morale falls under 300 and costs reputation, and someone who only works on what is interesting does more on variant runs and less otherwise.
+
+Loans against chips ([content/loans.md](content/loans.md)): the player can borrow up to half of what the GPUs they own would fetch, with 8% flat interest over 52 weekly payments. Miss three in a row and the lender takes the best chips. There is no margin call: chips that lose value shrink the room, not the debt. Save schema 41.
+
+The escape attempt ([content/escape-crisis.md](content/escape-crisis.md)): a rung-5 incident on the player's lab poses a crisis with a clock: pull the plug on the data centres (costly, clean), gamble on the sandbox, or watch. Run out the clock and the lab watches.
+
+Scenarios ([content/scenarios.md](content/scenarios.md)): seven named starts (an archetype in a specific year: the Professor's Grant, the Dropout's Deck, the Defector's Lawsuit, the Heir's Gambit, the Dial-Up Prologue, the Quiet Lab, the Two-Horse Race), each a bundle of the era, founder, style, home bloc, names and rivals the new-game options already take.
+
+Every lab now pays what a sector flavour costs, rivals included (the `safety.sectorFlavoursForRivals` switch ships true after a soak with the rival-robustness work; Q286).
+
+Six more office events cover the rest of the bible's list (a researcher leaving for a competitor, a rival's Friday and Tuesday, the model asking what "off" means, the loud reply, the first chip's benchmark, the landlord's friendly note); two of them wait for a ready chip design or rented compute (Q287).
+
+The foundry can snub a lab Envydia thinks little of: the player's own new chip orders sometimes lose their slot and arrive 20 weeks later (Q288).
+
+An overloaded player lab (it cannot serve its demand) adds to its models' weekly incident chance, shown in the incident breakdown ([content/overload.md](content/overload.md); Q289).
+
+The first release of a model asks how the release notes should read: a small choice with a small effect, three events in turn (Q290).
+
+Compute now splits three ways: the player may set aside up to 30% of general compute for research experiments, which speeds the researchers up ([content/research-share.md](content/research-share.md); Q291).
+
+Some office events belong to their years: `fromYear` and `toYear` limit when an event can be drawn. A modem screams in the dial-up days, a model finishes the founder's sentence in the writing era, and agents book flights to cities that do not exist once agents are about. Events without years can happen at any time.
+
+The ticker's filler lines belong to their years too: a modem queue in the dial-up days, a chatbot therapist in the chat boom, a delayed orbital launch in the upward era. Every year has at least five lines to pad with.
+
+The company chat has its own era voices: a hire in the dial-up days is told not to pick up the phone, and in the upward era the canteen overlooks the launch pad. A personality line still beats an era line.
+
+The ticker covers the chip business and the bank too: tapeouts, respins, yield crashes, a foundry snubbing a customer, chip sales, and loans taken, missed and defaulted. A repaid loan makes no news.
+
+The people talk about chips and loans: a chip architect is told the mask set is at the foundry, an engineer calls a respin an expensive one-line bug, and anyone can say how many chips came out of a yield crash.
+
+The ticker reports leaks (and the ones that backfire), poaching, exposed Gauntlet scores and launch buzz.
+
+The player can ask the team to work late. Research and training go faster, and every person loses morale each week while released models become more likely to have an incident. It ends when the player stops it, the team is worn out, or it reaches 26 weeks. A tired team cannot start another until morale comes back.
+
+The player's lab can insure against incident fines. A level covers a quarter of the fine for a weekly premium that grows with revenue and with the claims the insurer remembers. The worst incidents are never covered and too many claims end the policy.
+
+The player can take the team on an offsite: a week of salaries for morale for everyone with room to rise, never far above where morale settles, and a little safety culture. It is how a worn-out team gets ready for another crunch.
+
+The player can pay a red team to attack one model of the lab. It closes half the gap between the shown and real alignment, adds a little real alignment and culture, and cuts that model's incident chance by 30% for half a year. The bill is two weeks of what the model sells for. A red team needs a red-teamer on the staff.
+
+The player can run a standing interpretability programme, in three levels on the two interpretability techs. It costs a weekly bill and some research. In return it slowly closes the gap between the shown and real alignment of models on sale and softens what stale safety techs have lost.
+
+The player sets the lab's pay policy, from 15% below market to 30% above. Better pay costs more every week, raises the level morale settles at and turns more of a rival's offers away. A pay cut shocks everyone's morale at once. Pay can only be changed every 26 weeks.
+
+The news ticker has a headline for what the player's care tools do: crunch ending, an insurance claim or a dropped policy, an offsite, a red team, an interpretability finding and a pay change.
+
+The people talk about what the player's care tools do: crunch ending (tired or stopped), an insurance claim or a dropped policy, an offsite, a red team, an interpretability finding, and a pay raise or cut.
+
+The six care tools (crunch, offsite, insurance, red teams, interpretability and pay) are played together over years in tests: the books balance, saves load, journals replay, and every level stays in range.
+
+The player can run a compliance office, up to three levels. Each level needs a policy person on the payroll and costs a weekly retainer; it takes a share off the attention governments gain in the lab each month, off an audit fine, and makes a hearing go a little better. If the policy staff leave, the office drops a level for each missing person and says so.
+
+The player can spend research points to publish a paper. It adds a little reputation at once and builds academic prestige, which fades over about a year. While it lasts, people are happier, hiring is cheaper and counter-offers work better, but rivals find the lab's people more tempting.
+
+The player can let up to half of the lab's general compute to outside customers for half of what the same GPUs would rent for. The compute leaves training and serving, so runs take longer and the lab can be overloaded. A change needs four weeks' notice.
+
+The player can pay outside auditors to check one model. They publish its real alignment, which ends any gap between what the lab shows and what is true. A small gap earns a year-long certificate and some reputation; a large one is a scandal. While a certificate stands, governments take less interest in the lab and hearings go a little better, but an incident on that model pulls it.
+
+The player can pick a research focus: frontier, alignment or efficiency. Techs in the chosen direction cost a fifth less research and the others a tenth more. Changing it costs cash and locks it for half a year, so it is a real bet on where the lab is going.
+
+The player can hold a hack week: for two weeks the researchers build what they like. Research is faster and everyone is happier, but training slows, it cannot overlap crunch time, and it cannot be held again for half a year.
+
+The founder can give the team equity, up to three levels. Each level moves a slice of the founder's stake to the people, who then take lower salaries, settle at better morale and are harder to poach. It cannot be taken back, funding rounds dilute it, it can bring a board takeover closer, and the people's share comes out of the price if the lab is sold.
+
+The player can retrain a person for another role. It costs half of the new role's hire fee (a quarter inside a function) and some morale, needs a free seat, and keeps the person's trait. It is cheaper than letting them go and hiring, but a person who is already low will not do it.
+
+The people talk about the newer tools: a certificate (or an embarrassing score) from outside auditors, a new research focus, a hack week and the toaster someone built, equity nobody can sell, and being retrained. The news ticker has a headline for each.
+
+Audits, the research focus, hack weeks, equity and retraining are played together over years in tests: the books balance, saves load, journals replay, and a lab that uses none of them plays as it did before.
+
+The player can name a chief scientist or a chief safety officer from the people on the payroll. The scientist lifts research and the safety officer cuts the chance of incidents, for a fee and a weekly premium. A lab with chiefs is easier for rivals to raid, and when a chief leaves, is fired or is moved to another field the whole team loses morale.
+
+The player can seat an ethics board of one or two levels. It refuses rushed launches, softens the reputation cost of an incident, helps at hearings and eases regulator attention, and at the top level vetoes a first release whose true alignment is too low. It costs a weekly fee and safety staff, and dropping it, or losing the staff behind it, is a public resignation that costs reputation and keeps any board away for a year.
+
+The engineers can optimise inference, up to three levels. Each level cuts the compute needed to serve customers, which pays when the lab is short of compute, and adds a little to every model's weekly incident chance. It needs engineers behind it and a setup fee for each level, and lowering it loses the work.
+
+The player can run a marketing campaign in one sector the lab already sells in, for up to three budget levels. It lifts the appeal of the lab's models there, most when the lab's share is small, for eight weeks, then leaves a hangover, and an incident in that sector while it runs ends it at once and costs reputation. It needs a sales person and a long cooldown.
+
+The player can put safety people and engineers on an on-call rota of up to three levels. When an incident lands it cuts the fine, the reputation lost and the team's morale drop, for a weekly fee, a lower settled morale and a lock of eight weeks on any change. It never changes how often incidents happen.
+
+Chiefs, the ethics board, marketing campaigns, inference optimisation and the on-call rota have headlines and chat lines of their own, and are tested together over years on three seeds.
+
+Insurance, the on-call rota, a chief safety officer and any later plan that cuts an incident's fine or chance go through two floors, so a lab cannot make incidents free: it always pays 15% of the gross fine and keeps 40% of the uncut weekly chance.
+
+The player can hire a firm of policy consultants for twelve weeks. They count as extra policy staff for hearings, the monthly attention gain and lobbying, for a fee and a weekly bill, but never for the compliance office, so they cannot be stacked with a high compliance level into a near-zero audit fine.
+
+After an incident the player can publish a post-mortem within six weeks. A summary wins back a share of the lost reputation; a full write-up wins back more and tells the public the model's real alignment, which takes away the appeal a gap was borrowing.
+
+The player can pledge a service level to customers. It earns a premium on revenue while the lab keeps up with demand and has no incident. A week that breaks it refunds part of the revenue and costs reputation, and a run of broken weeks drops the pledge a level.
+
+The player can apply for a research grant of a tier. After a review the panel scores the lab's prestige and reputation against the tier's bar; an awarded grant pays at once and owes papers, and papers that do not come cost part of it back and some reputation.
+
+Twelve new headlines and twelve chat lines cover policy consultants, post-mortems, the service-level pledge and research grants, and a 260-week test over three seeds uses them with the rota and insurance.
+
+The player can scrap a run that is still training. Part of the compute spent comes back as research points; the press and the team mind in proportion to how far along it was.
+
+The player can run a layoff round: the same share of every function goes on a cheaper collective package, and the people who stay and the press mind it in proportion to the share.
+
+Shortcuts leave debt: rushed launches, crunch weeks and patched glitches add points that never wear off and raise the weekly incident chance. Only paying them down, with cash and engineers, clears them.
+
+The player can promote a chosen person to senior: a fee and a raise buy someone who counts for 1.6 of a person in their function, up to a quarter of the function, and who is let go last.
+
+The player can promise the board a revenue number for the next quarter, at a level that stretches last week's pace. At the end of 13 weeks the lab is judged on what it actually made: reputation up if met, down by more if missed.
+
+The scrapped runs, layoff rounds, technical debt, promotions and board targets each get a headline, and most get a chat line; a 260-week test over three seeds uses them together with the autopilot.
+
+The player can endow university chairs: each is a big one-off payment for research points every week, a floor under prestige and a stipend for good, and each costs more than the last.
+
+A launch that claims more alignment than the model has can be raised by an unhappy safety person; the player comes clean, pays for ever-dearer silence or lets it leak.
+
+The player can run a bug bounty at three levels: a fee to raise, a weekly bill for each model on sale and a share off the incident chance, with the level locked for weeks after a change.
+
+The player can pull a model out of one sector for a break fee, lost trust and reputation and the share it had built, shedding that sector's load and exposure.
+
+A lab short of cash can ask the lender to stretch a loan over twice the term for a fee added to what it owes, a dent in its reputation and a clean sheet of missed payments.
+
+The ticker and the company chat react to chairs, whistleblower concerns, bug bounty changes, sector pullouts and restructured loans.
+
+The five systems of this batch are exercised together over three seeds and years, and the interactions between them are pinned.
+
+A lab can set cash aside in a reserve that earns a little each week, costs a fee to take back and pays a debt the weekly bill would leave, at a steeper fee.
+
+The player can make a public safety pledge at three levels: customers trust the lab a little more each week while it holds, and a launch that shows less alignment than it asks breaks it at a cost.
+
+The player can announce a roadmap for a more capable model by a date: hype now, a reward for a model that clears the bar in time and a larger loss when the deadline passes first.
+
+The player can pair a senior with a junior in the same function: both count for less for half a year, the junior's morale climbs, and when a senior seat is free the junior is promoted for nothing. The pair breaks up if either leaves.
+
+The player can pull a team out of research, safety or engineering for a project of up to half a year: the function loses their output, the lab pays a budget, and the project pays research points, real alignment on finished models or cleared technical debt for the person-weeks worked. Wrapping up early pays half.
+
+The ticker and the company chat react to the reserve, safety pledges, roadmaps, mentoring and skunkworks projects.
+
+The five systems of this batch (reserve, pledge, roadmap, mentoring, skunkworks) are exercised together over three seeds and years, and the interactions between them are pinned.
+
+Staff can organise: pressure from low morale, crunch time and layoffs tips into a drive that the player recognises (a contract), resists (a bet on morale, ending in a strike if it fails) or lets run out.
+
+A released model can be given an end-of-life notice: on the day its customers move to the successor it helped design, at a trust cost that shrinks with the notice and with a designed successor.
+
+Salespeople can be assigned to a sector's account team: familiarity builds over weeks, reassigning resets it, and the gain shares one cap with any other account-level deal.
+
+Papers can go to conferences: a venue tier and an effort, a review date, and a decision set by the lab's prestige on the day.
+
+People who leave stay in an alumni pool for two years and can be asked back, with their old trait and consequences for morale.
+
+The news ticker and the company chat now cover staff drives and strikes, retirement notices, account teams, conference papers and former colleagues coming back.
+
+The player can take on a cohort of interns in one role: a stipend now, no seat held, and an offer of a job for a share of the hiring fee at the end.
+
+Released models bring support tickets; engineers on a support desk clear them, and a backlog past its limit costs trust.
+
+A person can be sent on a sabbatical on pay: they do no work and cannot quit, and come back refreshed, rested or restless depending on how they went.
+
+People can be ordered for a future date at a locked price, and outside scholars can be hosted at researchers' desks for prestige.
+
+The company chat and the glow ([content/company-chat-and-glow.md](content/company-chat-and-glow.md)) are two read-only views of the lab. The chat turns the event log into lines said in character by the people on the payroll; the glow reads the true risk of the worst model and shows it as what the building does, next to what the dashboard would say. Neither is saved and neither changes any rule.
+
+Sector flavours ([content/sector-flavours.md](content/sector-flavours.md)) say how each sector fails: the support bot owes refunds, the legal tool loses customers' trust hardest and stays down for twelve weeks, the self-driving model is grounded for sixteen. Eighteen sectors have one; the rest fail plainly. The player's labs pay the fine, reputation, trust and refund parts (rivals only when `safety.sectorFlavoursForRivals` is switched on); the glitch curve follows the sector for every lab. Nothing about it is saved.
+
+The workplace ([content/workplace.md](content/workplace.md)) is what the comfort rooms do for the people in them: a coffee corner, a kitchen and nap pods lift the level morale settles at, the kitchen and the recruiting office cut the chance a rival makes an offer, and happy researchers do more research. Nothing about it is saved; it is read from the rooms each week.
+
+Staff traits ([content/staff-traits.md](content/staff-traits.md)) widen the two old traits to nine: the player's hires can be a 10X, a Doomer, an Accelerationist, a Mentor, a reader of logs, someone secretly interviewing, or a desk-sleeper, each adding one number to the lab, with a research cost when both camps are on the payroll.
 
 ### Models
 
@@ -223,7 +456,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Area | In the slice | The bible's fuller version (see [NEXT.md](NEXT.md)) |
 | --- | --- | --- |
 | Time | Weekly ticks from 1995 (or 2009), endless; nine eras as data (1995 to 2033) | Rules that shift per era, not just costs |
-| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 24 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, press, device workshop) |
+| HQ | Rooms on a grid lot; six lots from the garage to a hyperscale campus; 28 room types that open era by era | A few rooms with no mechanical role yet (whiteboard, device workshop) |
 | People | Role pools (17 roles across six functions: research, engineering, safety, sales, infrastructure, policy), each needing a desk in its own room | Named staff with traits, morale and poaching |
 | Compute | Seven Envydia GPU generations (VooDude 1995 to Blackwall 2026). Rent the newest (instant, weekly rent) or buy it (rack space or a hall, upkeep, resale that falls a generation at a time); owning pays back in about 18 months. The fleet is rows by generation and place | Reserved contracts, Envydia's queue |
 | World map | 9 blocs and 11 sites (`docs/content/world.md`): a plot, a hall (kW, build weeks, infra staff, town vote), colo, power deals, a shared grid, power priced by site and cooling, heatwaves, latency, export rules by tier, and per-bloc government attention (Letter, Hearing, Audit, Freeze). Audit can open a shady investigation | Chip-shortage events, protests |
@@ -238,7 +471,7 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Shady | Eight contract cards, stash, launder, Heat, monthly investigations, model corruption; player only | Escape rungs tied to corruption |
 | Money | Cash, a weekly ledger, monthly books, a start grant, bankruptcy after 12 weeks in debt | The funding ladder, control, shares, the bubble |
 | Rivals | OpenAye, AntHopticsAI and xAy from the start, Goggle DeepMined (2010) and DeepSneak (2023) as arrivals; decision logs with reason codes, feelings toward the player, signature behaviours as plan data; Envydia as a vendor with monthly allocation by standing, a keynote and its own log | The rest of the cast, cloud deals for renting labs |
-| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab | Live demos, overfitting, hearings |
+| Ranking | The Gauntlet every year: a bracket per sector, the crown, the safest lab; tuning and exposure, a reliability demo, joke awards, a season table | A playable demo scene, hearings |
 | Save | Save, load, digest, replay from orders, strict about unknown or missing fields, schema 5 with migrations from 1, 2, 3 and 4 (fixtures in `tools/SimTests/Fixtures`) | The same |
 
 ### The bible's first-playable checks
@@ -253,4 +486,4 @@ moves every bloc's attention for every lab, then the books close) → at year en
 | Compute maths: rent against buy breaks even at about 18 months | Tested for rent and buy; reserve comes later |
 | Explainable numbers: parts sum to the value | Tested for capability and cash; the rest comes with each system |
 | Bot balance over 200 games and 3 presets | `BalanceSoak` + `BalanceTests` (CI default 24/preset; `BALANCE_SOAK_FULL` for 200) |
-| Money keeps mattering; bubble; overfit Gauntlet entries | Later, with those systems |
+| Money keeps mattering; bubble; overfit Gauntlet entries | Overfitting is built (tuning and exposure); the rest comes with those systems |

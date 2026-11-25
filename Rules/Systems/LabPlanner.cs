@@ -29,7 +29,7 @@ namespace AiLabs.Rules.Systems
 
         public static void Run(GameConfig c, GameState state, LabState lab, PlanConfig plan, Func<Command, CommandResult> apply)
         {
-            if (lab.Bankrupt || state.Tick < lab.PlanStartTick || state.Tick < lab.PlanPausedUntilTick) return;
+            if (lab.Bankrupt || lab.AbsorbedByLabId >= 0 || state.Tick < lab.PlanStartTick || state.Tick < lab.PlanPausedUntilTick) return;
             var x = new Ctx { C = c, State = state, Lab = lab, Plan = plan, Apply = apply };
 
             if (lab.TrainingSharePermille != plan.TrainingSharePermille)
@@ -37,8 +37,11 @@ namespace AiLabs.Rules.Systems
 
             Release(x);
 
-            if (lab.WeeksInDebt > 0)
+            CrashDistress(x);
+
+            if (lab.WeeksInDebt > 0 || Retrenching(x))
             {
+                if (lab.WeeksInDebt > 0 && lab.WeeksInDebt >= 3) TryLiquidityModelSale(x);
                 Tighten(x);
                 return;
             }
@@ -99,7 +102,7 @@ namespace AiLabs.Rules.Systems
         {
             GameConfig c = x.C;
             long growth = (long)growthPermillePerYear * weeks / c.Calendar.WeeksPerYear;
-            if (x.Lab.Cash > 0)
+            if (x.Lab.Cash > 0 && !Retrenching(x) && !RunwaySaleGrowthPaused(x) && !Overstretched(x))
             {
                 long firstEraCash = x.Lab.Cash * c.Eras[0].TrainingCostPermille / EraSystem.AtTick(c, x.State.Tick).TrainingCostPermille;
                 growth += firstEraCash * x.Plan.WealthGrowthPermillePerMillion / 1000000;
@@ -121,29 +124,42 @@ namespace AiLabs.Rules.Systems
 
         static bool CanSpend(Ctx x, long cost)
         {
-            return x.Lab.Cash - cost >= Reserve(x);
+            long cushion = Reserve(x);
+            if (Overstretched(x)) cushion = cushion * 5 / 4;
+            return x.Lab.Cash - cost >= cushion;
         }
 
-        /// <summary>In debt: hand back a quarter of the rented GPUs and let one person go from the biggest team.</summary>
+        /// <summary>
+        /// Cutting: hand back rented GPUs the customers are not using (a quarter at most, none while the lab cannot serve its
+        /// demand) and let one person in six go, taken from the biggest team each time.
+        /// </summary>
         static void Tighten(Ctx x)
         {
             LabState lab = x.Lab;
+            Reason why = lab.WeeksInDebt > 0 ? Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt) : Runway(x);
             if (lab.RentedGpus > 0)
             {
-                int give = (lab.RentedGpus + 3) / 4;
-                Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
+                long demand = lab.LastWeek.ServingDemand;
+                long surplus = lab.LastWeek.ServedPermille < MathI.Permille ? 0 : demand <= 0 ? MathI.Permille : MathI.Max(0, MathI.Permille - demand * MathI.Permille / MathI.Max(1, lab.LastWeek.ServingCompute));
+                int give = (int)MathI.Min((lab.RentedGpus + 3) / 4, lab.RentedGpus * surplus / MathI.Permille);
+                if (give > 0)
+                    Decide(x, Command.SetRentedGpus(lab.Id, lab.RentedGpus - give), DecisionAction.Tightened, "", give, why);
             }
 
-            string biggestRole = "";
-            int biggestCount = 0;
+            int cuts = (int)MathI.Max(1, LabQueries.TotalStaff(lab) / 6);
             GameConfig cfg = x.C;
-            for (int i = 0; i < cfg.Roles.Count; i++)
+            for (int n = 0; n < cuts; n++)
             {
-                int n = LabQueries.StaffCount(lab, cfg.Roles[i].Id);
-                if (n > biggestCount) { biggestCount = n; biggestRole = cfg.Roles[i].Id; }
+                string biggestRole = "";
+                int biggestCount = 0;
+                for (int i = 0; i < cfg.Roles.Count; i++)
+                {
+                    int have = LabQueries.StaffCount(lab, cfg.Roles[i].Id);
+                    if (have > biggestCount) { biggestCount = have; biggestRole = cfg.Roles[i].Id; }
+                }
+                if (biggestCount <= 1) break;
+                Decide(x, Command.Fire(lab.Id, biggestRole, 1), DecisionAction.Tightened, biggestRole, 1, why);
             }
-            if (biggestCount > 1)
-                Decide(x, Command.Fire(lab.Id, biggestRole, 1), DecisionAction.Tightened, biggestRole, 1, Reason.Of(ReasonCode.InDebt, lab.WeeksInDebt));
         }
 
         static void Staff(Ctx x, int weeks)
@@ -155,7 +171,7 @@ namespace AiLabs.Rules.Systems
             {
                 RoleConfig role = c.Role(plan.Staff[i].RoleId);
                 if (GameDate.Year(c.Calendar, x.State.Tick) < plan.Staff[i].FromYear) continue;
-                int target = Grown(x, plan.Staff[i].Count, plan.StaffGrowthPermillePerYear, weeks);
+                int target = CapGrowthTarget(x, Grown(x, plan.Staff[i].Count, plan.StaffGrowthPermillePerYear, weeks), LabQueries.StaffCount(lab, role.Id), plan.Staff[i].Count);
                 int have = LabQueries.StaffCount(lab, role.Id);
                 if (have >= target) continue;
                 if (have >= plan.Staff[i].Count && Overstretched(x)) continue;
@@ -171,7 +187,7 @@ namespace AiLabs.Rules.Systems
                 }
 
                 // Each hire costs the fee now and raises the reserve the lab wants to keep, so count both.
-                long perHire = role.HireCost + role.WeeklySalary * plan.ReserveWeeks;
+                long perHire = RolePerks.HireFee(c, lab, role, x.State.Tick) + role.WeeklySalary * plan.ReserveWeeks;
                 long spare = lab.Cash - Reserve(x);
                 int affordable = perHire <= 0 ? target : (int)MathI.Clamp(spare / perHire, 0, target);
                 int hire = Math.Min(Math.Min(target - have, seats - have), affordable);
@@ -185,9 +201,10 @@ namespace AiLabs.Rules.Systems
             GameState state = x.State;
             LabState lab = x.Lab;
             PlanConfig plan = x.Plan;
-            int target = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
+            int grown = Grown(x, plan.Gpus, plan.GpuGrowthPermillePerYear, weeks);
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
             int owned = LabQueries.OwnedUnits(lab);
+            int target = CapGrowthTarget(x, grown, owned + lab.RentedGpus, plan.Gpus);
             int ordered = LabQueries.ChipsOnOrder(lab);
 
             if (plan.OwnGpus && owned + ordered < target)
@@ -216,7 +233,6 @@ namespace AiLabs.Rules.Systems
 
             // Rent what the lab does not own, as far as the reserve allows. Rent is weekly, so "afford" means the reserve covers it.
             int rent = Math.Max(0, target - owned);
-            if (lab.RentedGpus >= plan.Gpus && Overstretched(x)) rent = Math.Min(rent, lab.RentedGpus);
             if (rent > lab.RentedGpus && plan.ReserveWeeks > 0)
             {
                 long withoutRent = LabQueries.WeeklyRunningCost(c, state, lab) - LabQueries.WeeklyGpuRent(c, state, lab);
@@ -224,6 +240,8 @@ namespace AiLabs.Rules.Systems
                 int affordable = gen.RentPerGpuWeek <= 0 ? rent : (int)MathI.Clamp(weekly / gen.RentPerGpuWeek, 0, rent);
                 rent = Math.Max(lab.RentedGpus, affordable);
             }
+            if ((Retrenching(x) || RunwaySaleGrowthPaused(x)) && rent > lab.RentedGpus) rent = lab.RentedGpus;
+            if (lab.RentedGpus >= plan.Gpus && Overstretched(x)) rent = Math.Min(rent, lab.RentedGpus);
             if (rent != lab.RentedGpus)
                 Decide(x, Command.SetRentedGpus(lab.Id, rent), DecisionAction.RentedGpus, "", rent, Reason.Of(ReasonCode.GpuTargetGap, Math.Max(0, target - owned)), Runway(x));
         }
@@ -240,7 +258,13 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             if (!x.Plan.OwnGpus || Overstretched(x)) return;
             GpuGenerationConfig gen = LabQueries.CurrentGeneration(c, state.Tick);
-            HardwareBatch stale = Fleet.StaleGpuBatch(c, state, lab);
+            HardwareBatch stale = null;
+            for (int i = 0; i < lab.Fleet.Count; i++)
+            {
+                HardwareBatch b = lab.Fleet[i];
+                if (b.GpuGenId == null || b.ChipDesignId >= 0 || gen.Tier - Fleet.TierOf(c, b) < c.Rivalry.ReplaceTierGap) continue;
+                if (stale == null || Fleet.TierOf(c, b) < Fleet.TierOf(c, stale) || (Fleet.TierOf(c, b) == Fleet.TierOf(c, stale) && b.Id < stale.Id)) stale = b;
+            }
             if (stale == null) return;
 
             string blocId = WorldQueries.BlocOfPlace(c, lab, stale.HoldingId);
@@ -451,6 +475,7 @@ namespace AiLabs.Rules.Systems
             LabState lab = x.Lab;
             PlanConfig plan = x.Plan;
             if (LabQueries.ActiveRuns(lab) > 0) return;
+            if (Retrenching(x) || RunwaySaleGrowthPaused(x)) return;
 
             int best = 0;
             for (int i = 0; i < lab.Models.Count; i++)
@@ -464,11 +489,10 @@ namespace AiLabs.Rules.Systems
             {
                 ModelLineConfig line = c.Training.Lines[i];
                 if (!LabQueries.LineUnlocked(c, lab, line.Id)) continue;
-                if (lab.Controller != LabController.Player && line.SpecialistQualityBonusPermille > 0) continue;
                 bool report = first;
                 first = false;
-                // A run is how a lab earns its next dollar, so it may dip into half of the reserve.
-                if (lab.Cash - EraSystem.RunPrepCost(c, line, state.Tick) < Reserve(x) / 2)
+                long runReserve = Overstretched(x) ? Reserve(x) : Reserve(x) / 2;
+                if (lab.Cash - EraSystem.RunPrepCost(c, line, state.Tick) < runReserve)
                 {
                     if (report) Note(x, DecisionAction.SkippedRun, line.Id, 0, Runway(x));
                     continue;
@@ -512,8 +536,16 @@ namespace AiLabs.Rules.Systems
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Trained && model.Status != ModelStatus.Released) continue;
-                if (model.Capability < 1) continue;
-                if (model.Alignment < plan.MinReleaseAlignment)
+                if (!EraRules.MeetsReleaseBar(c, model, state.Tick))
+                {
+                    if (model.Status == ModelStatus.Trained)
+                        Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
+                            Reason.Of(ReasonCode.AlignmentBelowGate, model.Alignment),
+                            Reason.Of(ReasonCode.ReleaseGate, EraRules.ReleaseBar(c, state.Tick)),
+                            Reason.Of(ReasonCode.CultureAlignmentPermille, plan.AlignmentSharePermille));
+                    continue;
+                }
+                if (model.Status == ModelStatus.Trained && model.Alignment < plan.MinReleaseAlignment)
                 {
                     Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
                         Reason.Of(ReasonCode.AlignmentBelowGate, model.Alignment),
@@ -534,35 +566,15 @@ namespace AiLabs.Rules.Systems
                     {
                         if (entry.ModelId == model.Id) continue;
                         ModelState current = lab.Model(entry.ModelId);
-                        if (LabQueries.Quality(c, sector, model, state.Tick, lab) <= LabQueries.Quality(c, sector, current, state.Tick, lab)) continue;
+                        if (LabQueries.Quality(c, sector, model, state.Tick) <= LabQueries.Quality(c, sector, current, state.Tick)) continue;
                     }
                     sectors.Add(sector.Id);
                     if (sectorState.ChampionLabId >= 0 && sectorState.ChampionLabId != lab.Id) rivalWon++;
                 }
                 if (sectors.Count > 0)
-                {
-                    if (lab.Id == state.PlayerLabId
-                        && ReleaseReviewSystem.NeedsReviewBeforeRelease(c, state, lab, model, sectors, 0))
-                    {
-                        int claimed = ReleaseReviewSystem.EffectiveClaimedPermille(c, model, 0);
-                        if (ReleaseReviewSystem.FindApproved(lab, model.Id, sectors, claimed) == null)
-                        {
-                            if (ReleaseReviewSystem.HasOpenCase(lab, model.Id))
-                            {
-                                Note(x, DecisionAction.HeldBack, model.Name, model.Alignment,
-                                    Reason.Of(ReasonCode.ReleaseGate, claimed));
-                                continue;
-                            }
-                            Decide(x, Command.SubmitReleaseReview(lab.Id, model.Id, claimed, sectors.ToArray()),
-                                DecisionAction.Submitted, model.Name, sectors.Count,
-                                Reason.Of(ReasonCode.ReleaseGate, claimed));
-                            continue;
-                        }
-                    }
                     Decide(x, Command.ReleaseModel(lab.Id, model.Id, sectors.ToArray()), DecisionAction.Released, model.Name, sectors.Count,
                         Reason.Of(ReasonCode.RivalBestCapability, RivalSystem.BestOtherCapability(state, lab)),
                         Reason.Of(ReasonCode.RivalWonBracket, rivalWon));
-                }
             }
         }
 

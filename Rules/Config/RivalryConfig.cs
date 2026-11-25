@@ -25,6 +25,10 @@ namespace AiLabs.Rules.Config
         public int GateBoostPermille;
         /// <summary>A plan replaces hardware that is this many generations behind the newest.</summary>
         public int ReplaceTierGap;
+        /// <summary>A plan that loses money starts cutting once its cash covers fewer than this many weeks of running costs, before it is in debt.</summary>
+        public int RetrenchRunwayWeeks;
+        /// <summary>Running costs above this share of weekly revenue (1000 = break-even) count as losing money.</summary>
+        public int RetrenchCostPermille;
         public FeelingsConfig Feelings;
         /// <summary>One sentence template per decision action, by the action's name.</summary>
         public List<TemplateConfig> ActionTemplates;
@@ -41,6 +45,8 @@ namespace AiLabs.Rules.Config
             s.Int("fastBuildWeeks", ref FastBuildWeeks);
             s.Int("gateBoostPermille", ref GateBoostPermille);
             s.Int("replaceTierGap", ref ReplaceTierGap);
+            s.Int("retrenchRunwayWeeks", ref RetrenchRunwayWeeks);
+            s.Int("retrenchCostPermille", ref RetrenchCostPermille);
             s.Obj("feelings", ref Feelings);
             s.ObjList("actionTemplates", ref ActionTemplates);
             s.ObjList("reasonTemplates", ref ReasonTemplates);

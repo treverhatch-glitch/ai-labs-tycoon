@@ -60,11 +60,11 @@ public class EraTests
     }
 
     [Fact]
-    public void The_last_two_eras_are_expansions_and_two_eras_can_be_started_in()
+    public void The_last_two_eras_are_expansions_and_every_era_can_be_started_in()
     {
         GameConfig c = TestData.Config();
         Assert.Equal(new[] { "bodies", "upward" }, c.Eras.Where(e => e.Expansion).Select(e => e.Id).ToArray());
-        Assert.Equal(new[] { "dial-up-days", "punchline" }, c.Eras.Where(e => e.Startable).Select(e => e.Id).ToArray());
+        Assert.Equal(c.Eras.Select(e => e.Id).ToArray(), c.Eras.Where(e => e.Startable).Select(e => e.Id).ToArray());
     }
 
     [Fact]
@@ -358,6 +358,7 @@ public class EraTests
     public void An_unknown_or_unstartable_era_is_refused_with_a_clear_message()
     {
         GameConfig c = TestData.Config();
+        c.Era("bodies").Startable = false;
         var unknown = new NewGameOptions { Seed = 1, StartEraId = "stone-age" };
         Assert.Contains("stone-age", Assert.Throws<ArgumentException>(() => Simulation.NewGame(c, unknown)).Message);
         var locked = new NewGameOptions { Seed = 1, StartEraId = "bodies" };

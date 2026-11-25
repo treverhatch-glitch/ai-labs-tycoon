@@ -19,9 +19,9 @@ public class BreakdownTests
         g.UntilTrained(model);
         g.Release(model, "game-ai");
         var sector = g.C.Sector("game-ai");
-        DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick, g.Me);
-        Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick, g.Me));
-        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment + b.MoodAdjustment + b.OpenWeightsBoost, b.Total);
+        DisplayQueries.QualityBreakdown b = DisplayQueries.QualityParts(g.C, sector, model, g.Tick);
+        Assert.Equal(b.Total, LabQueries.Quality(g.C, sector, model, g.Tick));
+        Assert.Equal(b.FromCapability + b.FromAlignment + b.SandbagBoost + b.GlitchAdjustment, b.Total);
         Assert.True(b.FromCapability > 0);
     }
 
@@ -38,7 +38,7 @@ public class BreakdownTests
         DisplayQueries.AppealBreakdown b = DisplayQueries.AppealParts(g.C, g.State, sector, sectorState, g.Me, model);
         long appeal = MarketSystem.Appeal(g.C, g.State, sector, sectorState, g.Me, model);
         Assert.Equal(appeal, b.Total);
-        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.ChampionBoost + b.ExpansionBoost + b.WorkshopBoost + b.DomainLeaderBoost + b.DomainChallengerBoost + b.MoodBoost, appeal);
+        Assert.Equal(b.Core + b.ReputationBoost + b.SalesBoost + b.TrustBoost + b.ChampionBoost + b.NamingConfusion, appeal);
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public class BreakdownTests
     {
         var g = Game.Solo();
         var model = new ModelState { Alignment = 400, Corruption = 200, Status = ModelStatus.Released };
-        DisplayQueries.IncidentBreakdown b = DisplayQueries.IncidentParts(g.C, model);
-        Assert.Equal(b.Total, SafetySystem.IncidentChancePermille(g.C, model));
+        DisplayQueries.IncidentBreakdown b = DisplayQueries.IncidentParts(g.C, g.Tick, model);
+        Assert.Equal(b.Total, SafetySystem.IncidentChancePermille(g.C, g.Tick, model));
         Assert.Equal(b.FromConfig + b.FromAlignment + b.FromCorruption, b.Total);
     }
 

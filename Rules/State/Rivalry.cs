@@ -17,7 +17,11 @@ namespace AiLabs.Rules.State
         TapedOut,
         ListedChips,
         /// <summary>A rival poached a star from the player's lab.</summary>
-        PoachedStaff
+        PoachedStaff,
+        /// <summary>A distressed lab sold a model for cash during the crash.</summary>
+        SoldModel,
+        /// <summary>A rival acquired a distressed lab during the crash.</summary>
+        AcquiredLab
     }
 
     /// <summary>The number behind a decision. New values are appended only.</summary>
@@ -27,7 +31,8 @@ namespace AiLabs.Rules.State
         AlignmentBelowGate, InDebt, AllocationLeft, CheapestSite, PowerPrice, GpuTargetGap, ChipProgramYear,
         PriceVsEnvydiaPermille, BoardDrama, FeelingTowardPlayer,
         ReleaseGate, GenerationsBehind, StandingNow, ShareNowPermille, SharePreviousPermille, StandingFromBuying, StandingFromChips,
-        ChipArchitects, YieldPermille, DesignPoints, DesignPointsNeeded, FoundryMonth, PricePerComputePermille, ChipsOwnedSharePermille
+        ChipArchitects, YieldPermille, DesignPoints, DesignPointsNeeded, FoundryMonth, PricePerComputePermille, ChipsOwnedSharePermille,
+        CrashDistress
     }
 
     public sealed class Reason : ISync

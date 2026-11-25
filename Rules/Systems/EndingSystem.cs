@@ -13,6 +13,13 @@ namespace AiLabs.Rules.Systems
         public const string ExitId = "exit";
         public const string MonopolyId = "monopoly";
         public const string OustedId = "ousted";
+        public const string PaperclippedId = "paperclipped";
+        public const string LongSummerId = "long-summer";
+        public const string LooseId = "loose";
+        public const string ThePopId = "the-pop";
+        public const string SecondPlaceId = "second-place";
+        public const string TreatyId = "treaty";
+        public const string NationalisedId = "nationalised";
 
         public static void RecordBankrupt(GameConfig c, GameState state, LabState lab)
         {
@@ -57,6 +64,44 @@ namespace AiLabs.Rules.Systems
             Events.Add(state, EventKind.EndingReached, labId, -1, 0, ExitId + ":" + mode);
         }
 
+        public static void TrySuperintelligence(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            SuperintelligenceConfig cfg = c.Endings.Superintelligence;
+            if (cfg == null || cfg.ReleasedCapabilityMin < 1) return;
+            ModelState model = LabQueries.BestReleasedModel(player);
+            if (model == null || model.Capability < cfg.ReleasedCapabilityMin) return;
+
+            if (model.Alignment <= cfg.PaperclipMaxAlignment)
+            {
+                if (!HasOpen(state, PaperclippedId) && !HasRecorded(state, PaperclippedId))
+                {
+                    Add(state, player.Id, PaperclippedId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, PaperclippedId);
+                }
+                return;
+            }
+            if (model.Alignment >= cfg.LongSummerMinAlignment && player.FrontierLevel >= cfg.LongSummerMinFrontier)
+            {
+                if (!HasOpen(state, LongSummerId) && !HasRecorded(state, LongSummerId))
+                {
+                    Add(state, player.Id, LongSummerId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LongSummerId);
+                }
+                return;
+            }
+            if (cfg.LooseRequiresZeroContainment && LabQueries.ContainmentTiles(c, player) <= 0)
+            {
+                if (!HasOpen(state, LooseId) && !HasRecorded(state, LooseId))
+                {
+                    Add(state, player.Id, LooseId);
+                    Events.Add(state, EventKind.EndingReached, player.Id, model.Id, model.Capability, LooseId);
+                }
+            }
+        }
+
         public static void TryMonopoly(GameConfig c, GameState state)
         {
             if (state.PlayerLabId < 0) return;
@@ -77,6 +122,7 @@ namespace AiLabs.Rules.Systems
                 BlocStanding s = player.Bloc(bloc);
                 if (s != null) s.Attention = (int)MathI.Min(MathI.Permille, s.Attention + cfg.MonopolyAttention);
             }
+            RegulatorSystem.OnMonopoly(c, state, player);
             Add(state, player.Id, MonopolyId);
             Events.Add(state, EventKind.EndingReached, player.Id, -1, 0, MonopolyId);
         }
@@ -115,6 +161,35 @@ namespace AiLabs.Rules.Systems
             return false;
         }
 
+        public static bool HasOpenEnding(GameState state)
+        {
+            for (int i = 0; i < state.Endings.Count; i++)
+                if (state.Endings[i].Choice == "") return true;
+            return false;
+        }
+
+        public static void RecordCampaignStop(GameConfig c, GameState state, LabState lab, int runScore, int bonus)
+        {
+            string id = c.CampaignDeadline.EndingId;
+            if (string.IsNullOrEmpty(id) || HasOpen(state, id)) return;
+            Add(state, lab.Id, id);
+            Events.Add(state, EventKind.EndingReached, lab.Id, runScore, bonus, id);
+        }
+
+        public static void RecordScenario(GameConfig c, GameState state, LabState lab, string endingId)
+        {
+            if (string.IsNullOrEmpty(endingId) || HasOpen(state, endingId) || c.Endings.Def(endingId) == null) return;
+            Add(state, lab.Id, endingId);
+            Events.Add(state, EventKind.EndingReached, lab.Id, -1, 0, endingId);
+        }
+
+        static bool HasRecorded(GameState state, string endingId)
+        {
+            for (int i = 0; i < state.Endings.Count; i++)
+                if (state.Endings[i].EndingId == endingId) return true;
+            return false;
+        }
+
         static EndingRecord Add(GameState state, int labId, string endingId)
         {
             var r = new EndingRecord();
@@ -141,9 +216,7 @@ namespace AiLabs.Rules.Systems
 
         public static long SellPrice(GameConfig c, GameState state, LabState lab)
         {
-            long rev = RevenueLast12Months(lab) * c.Endings.ExitRevenueYears;
-            long fleet = MathI.MulPermille(LabQueries.FleetResaleValue(c, state, lab), c.Endings.ExitFleetPermille);
-            return rev + fleet + lab.Cash;
+            return DisplayQueries.ExitPriceParts(c, state, lab).Total;
         }
 
         public static bool AllOpenTechsDone(GameConfig c, LabState lab, int tick)
@@ -195,6 +268,84 @@ namespace AiLabs.Rules.Systems
         {
             FrontierCostBreakdown parts = FrontierCostParts(c, lab);
             return parts.Total;
+        }
+
+        public static void RecordThePop(GameConfig c, GameState state, LabState player)
+        {
+            if (player == null || player.Bankrupt) return;
+            if (HasOpen(state, ThePopId)) return;
+            Add(state, player.Id, ThePopId);
+            Events.Add(state, EventKind.EndingReached, player.Id, -1, 0, ThePopId);
+        }
+
+        public static void TrySecondPlace(GameConfig c, GameState state, LabState player)
+        {
+            if (player == null || player.Bankrupt) return;
+            int need = c.Endings.SecondPlaceRunnerUpYears;
+            if (need < 1 || player.CrownRunnerUpStreak < need) return;
+            if (HasOpen(state, SecondPlaceId)) return;
+            if (HasRecorded(state, SecondPlaceId)) return;
+            int streak = player.CrownRunnerUpStreak;
+            Add(state, player.Id, SecondPlaceId);
+            player.CrownRunnerUpStreak = 0;
+            Events.Add(state, EventKind.EndingReached, player.Id, -1, streak, SecondPlaceId);
+        }
+
+        /// <summary>Home government has frozen the player out entirely.</summary>
+        public static void TryNationalised(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            EndingsConfig cfg = c.Endings;
+            if (cfg.NationalisedHomeLevelMin < 1) return;
+            if (HasOpen(state, NationalisedId) || HasRecorded(state, NationalisedId)) return;
+            BlocStanding home = player.Bloc(player.HomeBlocId);
+            if (home == null || home.Level < cfg.NationalisedHomeLevelMin) return;
+            Add(state, player.Id, NationalisedId);
+            Events.Add(state, EventKind.EndingReached, player.Id, home.Level, home.Attention, NationalisedId);
+        }
+
+        /// <summary>Several foreign blocs are auditing the player at once — a treaty is imposed.</summary>
+        public static void TryTreaty(GameConfig c, GameState state)
+        {
+            if (state.PlayerLabId < 0) return;
+            LabState player = state.Player;
+            if (player == null || player.Bankrupt) return;
+            EndingsConfig cfg = c.Endings;
+            if (cfg.TreatyForeignBlocCount < 1 || cfg.TreatyForeignLevelMin < 1) return;
+            if (HasOpen(state, TreatyId) || HasRecorded(state, TreatyId)) return;
+            int foreign = 0;
+            for (int i = 0; i < player.Blocs.Count; i++)
+            {
+                BlocStanding s = player.Blocs[i];
+                if (s.BlocId == player.HomeBlocId) continue;
+                if (s.Level >= cfg.TreatyForeignLevelMin) foreign++;
+            }
+            if (foreign < cfg.TreatyForeignBlocCount) return;
+            Add(state, player.Id, TreatyId);
+            Events.Add(state, EventKind.EndingReached, player.Id, foreign, 0, TreatyId);
+        }
+
+        public static void ApplyContinue(GameConfig c, GameState state, LabState lab, EndingRecord record, string mode)
+        {
+            if (record.EndingId == BankruptId && mode == "spectate")
+            {
+                state.PlayerLabId = -1;
+                return;
+            }
+            if (mode == "spectate" && (record.EndingId == PaperclippedId || record.EndingId == LongSummerId || record.EndingId == LooseId))
+            {
+                if (c.Rival("successor") != null)
+                {
+                    lab.Controller = LabController.Plan;
+                    lab.RivalId = "successor";
+                    if (!lab.Name.Contains("(new owners)")) lab.Name += " (new owners)";
+                }
+                state.PlayerLabId = -1;
+                return;
+            }
+            // acknowledge, keep-going, and bailout handled elsewhere: no further state change.
         }
 
         public static void ApplyBailout(GameConfig c, GameState state, LabState lab)
