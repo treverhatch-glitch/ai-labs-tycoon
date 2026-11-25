@@ -475,6 +475,34 @@ namespace AiLabs.Rules.Sim
                     return who + (e.Pick == 1 ? " watched a rival launch overtake its best model." : " watched a rival launch it already beats.");
                 case EventKind.LaunchAnswered:
                     return who + (e.Pick == 1 ? " counter-programmed a rival launch." : e.Pick == 3 ? " answered a rival launch with its safety record." : " let a rival launch land.");
+                case EventKind.ProgrammeStarted:
+                    return who + " started a research programme towards " + e.Ref + ".";
+                case EventKind.ProgrammeStageDone:
+                    return who + (e.Pick == 2 ? " got a bold stage of its programme working." : " finished a careful stage of its programme.");
+                case EventKind.ProgrammeStageFailed:
+                    return who + " lost a bold stage of its programme and has to decide what next.";
+                case EventKind.ProgrammeEnded:
+                    return who + (e.Pick == 1 ? " finished its programme and has " + e.Ref + "." : " gave up its programme towards " + e.Ref + ".");
+                case EventKind.RunPriorityChanged:
+                    return who + (e.Pick == 3 ? " rushed " : e.Pick == 1 ? " put " : " put ") + e.Ref + (e.Pick == 3 ? " to the front of the training queue." : e.Pick == 1 ? " at the back of the training queue." : " back in the training queue.");
+                case EventKind.PodFormed:
+                    return who + " formed a project pod of " + e.SubjectId + ".";
+                case EventKind.PodSwapped:
+                    return who + " swapped a member of its project pod.";
+                case EventKind.PodEnded:
+                    return who + (e.Pick == 1 ? " disbanded its project pod." : " lost its project pod when people left.");
+                case EventKind.LicenceApplied:
+                    return who + " applied for a licence.";
+                case EventKind.LicenceDecided:
+                    return who + (e.Pick == 1 ? " was granted its licence." : " was refused its licence.");
+                case EventKind.LicenceStrike:
+                    return who + " took a strike against its licence.";
+                case EventKind.LicenceEnded:
+                    return who + (e.Pick == 2 ? " had its licence suspended." : e.Pick == 1 ? " surrendered its licence." : " let its licence lapse.");
+                case EventKind.SupportPledged:
+                    return who + " promised to keep supporting " + e.Ref + ".";
+                case EventKind.SupportPledgeEnded:
+                    return who + (e.Pick == 1 ? " kept its support pledge for " : " broke its support pledge for ") + e.Ref + ".";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

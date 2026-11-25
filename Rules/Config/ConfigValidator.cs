@@ -139,6 +139,11 @@ namespace AiLabs.Rules.Config
             BrandProblems(p, c);
             FreeTierProblems(p, c);
             LaunchWatchProblems(p, c);
+            ProgrammesProblems(p, c);
+            RunQueueProblems(p, c);
+            PodsProblems(p, c);
+            LicenceProblems(p, c);
+            PledgesProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -1575,6 +1580,58 @@ namespace AiLabs.Rules.Config
             if (k.OpenCost < 0 || k.WeeklyCost < 0 || k.CounterPerStaff < 0 || k.WaitWeeks < 1) p.Add("launchWatch costs must not be negative and waitWeeks at least 1");
             if (k.CounterKeepPermille < 0 || k.CounterKeepPermille > 1000 || k.SafetyBar < 0 || k.SafetyBar > 1000) p.Add("launchWatch.counterKeepPermille and safetyBar must be from 0 to 1000");
             if (k.LossReputation < 0 || k.LossReputation > 500 || k.SafetyGain < 0 || k.SafetyGain > 500 || k.LeadGain < 0 || k.LeadGain > 500) p.Add("launchWatch reputation values must be from 0 to 500");
+        }
+
+        static void ProgrammesProblems(List<string> p, GameConfig c)
+        {
+            ProgrammesConfig k = c.Programmes;
+            if (k == null) { p.Add("programmes is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("programmes.enabled must be 0 or 1");
+            if (k.Stages < 1 || k.Stages > 6 || k.MinCost < 0 || k.SafeWeeks < 1 || k.BoldWeeks < 1) p.Add("programmes.stages must be from 1 to 6, minCost not negative and both weeks at least 1");
+            if (k.SafeCostPermille < 0 || k.BoldCostPermille < 0 || k.BoldChancePermille < 1 || k.BoldChancePermille > 999 || k.InsightPermille < 0 || k.InsightPrestige < 0 || k.RefundPermille < 0 || k.RefundPermille > 1000) p.Add("programmes costs must not be negative, boldChancePermille from 1 to 999 and refundPermille from 0 to 1000");
+        }
+
+        static void RunQueueProblems(List<string> p, GameConfig c)
+        {
+            RunQueueConfig k = c.RunQueue;
+            if (k == null) { p.Add("runQueue is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("runQueue.enabled must be 0 or 1");
+            if (k.WeightBackground < 1 || k.WeightNormal < k.WeightBackground || k.WeightRush < k.WeightNormal || k.WeightRush > 100) p.Add("runQueue weights must be at least 1, rising from background to rush, and at most 100");
+            if (k.SwitchCostPermille < 0 || k.SwitchCostPermille > 500 || k.MaxRush < 1) p.Add("runQueue.switchCostPermille must be from 0 to 500 and maxRush at least 1");
+        }
+
+        static void PodsProblems(List<string> p, GameConfig c)
+        {
+            PodsConfig k = c.Pods;
+            if (k == null) { p.Add("pods is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pods.enabled must be 0 or 1");
+            if (k.SharpChem < 0 || k.SharpChem > 1000 || k.ProgrammeWeeksSaved < 0) p.Add("pods.sharpChem must be from 0 to 1000 and programmeWeeksSaved not negative");
+            if (k.MinSize < 2 || k.MaxSize < k.MinSize || k.MaxSize > 10) p.Add("pods.minSize must be at least 2, maxSize at least minSize and at most 10");
+            if (k.KickoffCost < 0 || k.PointsPerMember < 0 || k.SwapCooldown < 0 || k.TenureStep < 0 || k.TenureCap < 0) p.Add("pods costs, points, steps and cooldown must not be negative");
+            if (k.BaseChem < 0 || k.BaseChem > 1000 || k.RolePoints < 0 || k.MixPoints < 0 || k.ClashPoints < 0 || k.MoraleShare < 0 || k.MoraleShare > 1000) p.Add("pods chemistry values must not be negative, baseChem and moraleShare at most 1000");
+        }
+
+        static void LicenceProblems(List<string> p, GameConfig c)
+        {
+            LicenceConfig k = c.Licence;
+            if (k == null) { p.Add("licence is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("licence.enabled must be 0 or 1");
+            if (k.RushPenalty < 0 || k.RushPenalty > 1000 || k.BreachStrike < 0 || k.BreachStrike > 1) p.Add("licence.rushPenalty must be from 0 to 1000 and breachStrike 0 or 1");
+            if (k.EraA < 0 || k.EraB < k.EraA || k.EraC < k.EraB || k.EraC >= c.Eras.Count) p.Add("licence eras must not fall and the last must be a real era");
+            if (k.FeeA < 0 || k.FeeB < k.FeeA || k.FeeC < k.FeeB || k.TermA < 1 || k.TermB < 1 || k.TermC < 1 || k.ReviewWeeks < 1 || k.CooldownWeeks < 0 || k.RenewWindow < 0) p.Add("licence fees must not fall, terms and reviewWeeks at least 1, cooldownWeeks and renewWindow not negative");
+            if (k.BarA < 0 || k.BarB < k.BarA || k.BarC < k.BarB || k.BarC > 1000 || k.CutA < 0 || k.CutB < k.CutA || k.CutC < k.CutB || k.CutC > 900) p.Add("licence bars and cuts must not fall, bars at most 1000 and cuts at most 900");
+            if (k.StrikeLimit < 1 || k.SuspendReputation < 0 || k.SuspendReputation > 500) p.Add("licence.strikeLimit must be at least 1 and suspendReputation from 0 to 500");
+        }
+
+        static void PledgesProblems(List<string> p, GameConfig c)
+        {
+            PledgesConfig k = c.Pledges;
+            if (k == null) { p.Add("pledges is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("pledges.enabled must be 0 or 1");
+            if (k.PodCutPermille < 0 || k.PodCutPermille > 900) p.Add("pledges.podCutPermille must be from 0 to 900");
+            if (k.MinWeeks < 26 || k.MaxWeeks < k.MinWeeks || k.MaxPledges < 1) p.Add("pledges.minWeeks must be at least 26, maxWeeks not below it and maxPledges at least 1");
+            if (k.LiftPermilleStep < 0 || k.LiftCapPermille < 0 || k.LiftCapPermille > 1000 || k.SupportPermille < 0 || k.SupportPermille > 900) p.Add("pledges lift and support must not be negative, the cap at most 1000 and support at most 900");
+            if (k.KeptTrust < 0 || k.BreachTrust < 0 || k.BreachWeeks < 0 || k.BreachReputation < 0 || k.BreachReputation > 500) p.Add("pledges.keptTrust, breachTrust and breachWeeks must not be negative and breachReputation from 0 to 500");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

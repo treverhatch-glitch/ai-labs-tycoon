@@ -122,17 +122,15 @@ namespace AiLabs.Rules.Systems
 
             int speed = SpeedPermille(c, lab);
             int alignmentWork = AlignmentWorkPermille(c, lab, state.Tick);
-            long each = training / runs;
-            long spare = training - each * runs;
+            long[] shares = RunQueue.Shares(c, lab, training);
+            int run = 0;
 
             for (int i = 0; i < lab.Models.Count; i++)
             {
                 ModelState model = lab.Models[i];
                 if (model.Status != ModelStatus.Training) continue;
 
-                // The oldest run gets what does not divide evenly, so no compute is lost.
-                long allotted = each + spare;
-                spare = 0;
+                long allotted = shares[run++];
 
                 long effective = MathI.MulPermille(allotted, speed);
                 long alignmentPart = MathI.MulPermille(effective, model.AlignmentSharePermille);

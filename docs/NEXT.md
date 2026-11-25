@@ -343,6 +343,12 @@ and says why in the commit message.
 160. **Launch watch.** ~~Done~~: `OpenWatchDesk`, `CloseWatchDesk`, `AnswerLaunch`, schema 104, `LaunchWatchTests` (Q404).
 161. **News and chat for the seventh batch.** ~~Done~~: 22 headlines and 12 chat lines, `TechBetsWaitlistBrandFreeTierLaunchWatchNewsChatTests` (Q405).
 162. **How the seventh batch meets.** ~~Done~~: the employer score reads bets and waitlists, a free tier cushions a rival launch, `TechBetsWaitlistBrandFreeTierLaunchWatchTogetherTests` (Q406).
+163. **Research programmes.** ~~Done~~: `StartProgramme`, `ChooseApproach`, `RecoverStage`, `AbandonProgramme`, schema 105, `ProgrammesTests` (Q407).
+164. **Training queue.** ~~Done~~: `SetRunPriority`, schema 106, `RunQueueTests` (Q408).
+165. **Project pods.** ~~Done~~: `FormPod`, `SwapPodMember`, `DisbandPod`, schema 107, `PodsTests` (Q409).
+166. **Licensing regimes.** ~~Done~~: `ApplyLicence`, `RenewLicence`, `SurrenderLicence`, schema 108, `LicenceTests` (Q410).
+167. **Support pledges.** ~~Done~~: `PledgeSupport`, `BreakSupportPledge`, schema 109, `PledgesTests` (Q411).
+168. **Cross-system rules.** ~~Done~~: sharp pods and programmes and pledges, rush and licence bar, pledge breach and licence strikes, `ProgrammesRunQueuePodsLicencePledgesTogetherTests` (Q413 to Q416).
 
 ## Rules: later
 

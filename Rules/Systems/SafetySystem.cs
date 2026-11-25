@@ -105,6 +105,7 @@ namespace AiLabs.Rules.Systems
             RiskClassConfig risk = RiskClasses.Draw(c, state, lab, model);
             if (risk != null) fine = MathI.MulPermille(fine, risk.FinePermille);
             fine = EraRules.Fine(c, fine, state.Tick);
+            fine = MathI.MulPermille(fine, MathI.Permille - Licence.FineCutPermille(c, lab));
             long gross = fine;
             fine = IncidentFloor.CutFine(c, gross, MathI.MulPermille(fine, MathI.Permille - OnCall.FineCutPermille(c, lab)));
             long makeGood = SectorFlavours.MakeGood(c, state, lab, model);
@@ -131,6 +132,7 @@ namespace AiLabs.Rules.Systems
             if (def != null && def.ClosesGap)
                 model.DisplayedAlignment = EffectiveAlignment(c, model);
 
+            Licence.OnIncident(c, state, lab);
             StaffSystem.OnIncident(c, lab);
             TrustSystem.OnIncident(c, state, lab, model);
             SafetyAudit.OnIncident(state, lab, model);

@@ -159,7 +159,20 @@ namespace AiLabs.Rules.Sim
         CloseFreeTier,
         OpenWatchDesk,
         CloseWatchDesk,
-        AnswerLaunch
+        AnswerLaunch,
+        StartProgramme,
+        ChooseApproach,
+        RecoverStage,
+        AbandonProgramme,
+        SetRunPriority,
+        FormPod,
+        SwapPodMember,
+        DisbandPod,
+        ApplyLicence,
+        RenewLicence,
+        SurrenderLicence,
+        PledgeSupport,
+        BreakSupportPledge
     }
 
     /// <summary>
@@ -1378,6 +1391,106 @@ namespace AiLabs.Rules.Sim
         {
             Command c = Make(CommandKind.AnswerLaunch, labId);
             c.Count = answer;
+            return c;
+        }
+
+        /// <summary>Starts a multi-stage research programme aimed at a costly tech (by id). Nothing is paid until the first approach is chosen.</summary>
+        public static Command StartProgramme(int labId, string techId)
+        {
+            Command c = Make(CommandKind.StartProgramme, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        /// <summary>Picks how the next stage is run: 1 carefully, 2 boldly. The stage's research points are paid now.</summary>
+        public static Command ChooseApproach(int labId, int approach)
+        {
+            Command c = Make(CommandKind.ChooseApproach, labId);
+            c.Count = approach;
+            return c;
+        }
+
+        /// <summary>Answers a failed bold stage: 1 retry it boldly, 2 fall back to the careful way, 3 give the programme up.</summary>
+        public static Command RecoverStage(int labId, int choice)
+        {
+            Command c = Make(CommandKind.RecoverStage, labId);
+            c.Count = choice;
+            return c;
+        }
+
+        /// <summary>Gives the programme up at any point and takes part of the points back.</summary>
+        public static Command AbandonProgramme(int labId)
+        {
+            return Make(CommandKind.AbandonProgramme, labId);
+        }
+
+        /// <summary>Sets the priority of a training run: 1 background, 2 normal, 3 rush. Changing it costs the run part of its progress.</summary>
+        public static Command SetRunPriority(int labId, int modelId, int level)
+        {
+            Command c = Make(CommandKind.SetRunPriority, labId);
+            c.TargetId = modelId;
+            c.Count = level;
+            return c;
+        }
+
+        /// <summary>Forms a project pod of the lab's own people (by staff id). It costs the data's cash for each person.</summary>
+        public static Command FormPod(int labId, params int[] staffIds)
+        {
+            Command c = Make(CommandKind.FormPod, labId);
+            c.Ids = new System.Collections.Generic.List<string>();
+            for (int i = 0; i < staffIds.Length; i++) c.Ids.Add(staffIds[i].ToString());
+            return c;
+        }
+
+        /// <summary>Swaps one member of the pod (TargetId) for another person (Count). The pod's weeks together are halved.</summary>
+        public static Command SwapPodMember(int labId, int outId, int inId)
+        {
+            Command c = Make(CommandKind.SwapPodMember, labId);
+            c.TargetId = outId;
+            c.Count = inId;
+            return c;
+        }
+
+        /// <summary>Disbands the pod.</summary>
+        public static Command DisbandPod(int labId)
+        {
+            return Make(CommandKind.DisbandPod, labId);
+        }
+
+        /// <summary>Files for a licence under a regime that is open this era (1 registry, 2 licence, 3 audit regime). The fee is paid now and is lost if the application is refused.</summary>
+        public static Command ApplyLicence(int labId, int regime)
+        {
+            Command c = Make(CommandKind.ApplyLicence, labId);
+            c.Count = regime;
+            return c;
+        }
+
+        /// <summary>Renews the licence in the last weeks of its term: the fee again and the same alignment bar. Clears the strikes.</summary>
+        public static Command RenewLicence(int labId)
+        {
+            return Make(CommandKind.RenewLicence, labId);
+        }
+
+        /// <summary>Gives the licence (or the application) up. Nothing is refunded.</summary>
+        public static Command SurrenderLicence(int labId)
+        {
+            return Make(CommandKind.SurrenderLicence, labId);
+        }
+
+        /// <summary>Promises to keep supporting a released model for this many weeks. It then cannot be replaced in a sector or given notice until the pledge ends or is broken.</summary>
+        public static Command PledgeSupport(int labId, int modelId, int weeks)
+        {
+            Command c = Make(CommandKind.PledgeSupport, labId);
+            c.TargetId = modelId;
+            c.Count = weeks;
+            return c;
+        }
+
+        /// <summary>Breaks a support pledge now, for a fee, trust in the model's sectors and some reputation.</summary>
+        public static Command BreakSupportPledge(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.BreakSupportPledge, labId);
+            c.TargetId = modelId;
             return c;
         }
 

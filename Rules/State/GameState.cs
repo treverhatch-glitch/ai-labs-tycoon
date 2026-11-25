@@ -9,7 +9,7 @@ namespace AiLabs.Rules.State
     /// </summary>
     public sealed class GameState : ISync
     {
-        public const int CurrentSchema = 105;
+        public const int CurrentSchema = 110;
 
         public int Schema;
         public string ConfigVersion;
@@ -42,7 +42,7 @@ namespace AiLabs.Rules.State
         public int BubbleGraceMonths;
         /// <summary>Months left in a market-wide crash, or 0.</summary>
         public int BubbleCrashMonthsRemaining;
-        /// <summary>True after the first sustained crash; decay floor applies only then.</summary>
+        /// <summary>Set once the economy has already seen a bubble crash.</summary>
         public bool BubbleHadCrash;
         public List<EndingRecord> Endings = new List<EndingRecord>();
 
@@ -466,6 +466,35 @@ namespace AiLabs.Rules.State
         public int LwWait;
         public int LwHits;
         public int LwAnswers;
+        /// <summary>The tech a research programme aims at (its place in the data plus one, 0 none), the stages done, the phase (1 a stage running, 2 a failed stage waiting, 3 the next approach waiting), the weeks left, whether the running stage is bold, the bold stages that worked, the points spent, and the programmes finished and given up.</summary>
+        public int PgTech;
+        public int PgDone;
+        public int PgPhase;
+        public int PgLeft;
+        public int PgBold;
+        public int PgInsight;
+        public long PgSpent;
+        public int PgWins;
+        public int PgLosses;
+        /// <summary>The people in the lab's project pod, the weeks they have been together, their chemistry (0 to 1000), the week a member may next be swapped, the research points the pod has added (or taken), and the pods formed.</summary>
+        public List<int> PodIds = new List<int>();
+        public int PodWeeks;
+        public int PodChem;
+        public int PodSwapAfter;
+        public long PodPoints;
+        public int PodsFormed;
+        /// <summary>The regime the lab has filed under (1 to 3, 0 none), the phase (1 in review, 2 licensed), the weeks left of the review or the term, the strikes against the licence, the week before which it may not apply again, and how many licences it was granted, refused and had suspended.</summary>
+        public int LicRegime;
+        public int LicPhase;
+        public int LicLeft;
+        public int LicStrikes;
+        public int LicCooldown;
+        public int LicGranted;
+        public int LicRefused;
+        public int LicSuspended;
+        /// <summary>How many support pledges the lab kept to their end, and how many it broke.</summary>
+        public int LtsKept;
+        public int LtsBroken;
         /// <summary>The level of the revenue target the lab has committed to, 0 when none.</summary>
         public int RevenueTargetLevel;
         /// <summary>The week the target is judged.</summary>
@@ -874,6 +903,31 @@ namespace AiLabs.Rules.State
             s.Int("lwWait", ref LwWait);
             s.Int("lwHits", ref LwHits);
             s.Int("lwAnswers", ref LwAnswers);
+            s.Int("pgTech", ref PgTech);
+            s.Int("pgDone", ref PgDone);
+            s.Int("pgPhase", ref PgPhase);
+            s.Int("pgLeft", ref PgLeft);
+            s.Int("pgBold", ref PgBold);
+            s.Int("pgInsight", ref PgInsight);
+            s.Long("pgSpent", ref PgSpent);
+            s.Int("pgWins", ref PgWins);
+            s.Int("pgLosses", ref PgLosses);
+            s.IntList("podIds", ref PodIds);
+            s.Int("podWeeks", ref PodWeeks);
+            s.Int("podChem", ref PodChem);
+            s.Int("podSwapAfter", ref PodSwapAfter);
+            s.Long("podPoints", ref PodPoints);
+            s.Int("podsFormed", ref PodsFormed);
+            s.Int("licRegime", ref LicRegime);
+            s.Int("licPhase", ref LicPhase);
+            s.Int("licLeft", ref LicLeft);
+            s.Int("licStrikes", ref LicStrikes);
+            s.Int("licCooldown", ref LicCooldown);
+            s.Int("licGranted", ref LicGranted);
+            s.Int("licRefused", ref LicRefused);
+            s.Int("licSuspended", ref LicSuspended);
+            s.Int("ltsKept", ref LtsKept);
+            s.Int("ltsBroken", ref LtsBroken);
             s.Int("revenueTargetLevel", ref RevenueTargetLevel);
             s.Int("revenueTargetEnd", ref RevenueTargetEnd);
             s.Long("revenueTargetGoal", ref RevenueTargetGoal);
@@ -1055,6 +1109,10 @@ namespace AiLabs.Rules.State
         /// <summary>The model is safer from red-team fixes until this tick; 0 when it was never red-teamed or the weeks are over.</summary>
         public int RedTeamUntil;
         /// <summary>The model holds an external audit certificate until this tick; 0 when it never had one, or it ran out or was pulled.</summary>
+        /// <summary>The priority of the model's training run: 0 not set (a normal run), 1 background, 2 normal, 3 rush.</summary>
+        public int QueueLevel;
+        /// <summary>Weeks left of the model's long-term support pledge, or 0 when it has none.</summary>
+        public int LtsLeft;
         public int AuditedUntil;
         /// <summary>The week the model's end-of-life notice was given, 0 when it has none.</summary>
         public int SunsetStart;
@@ -1095,6 +1153,8 @@ namespace AiLabs.Rules.State
             s.Int("rushWeeks", ref RushWeeks);
             s.Int("redTeamUntil", ref RedTeamUntil);
             s.Int("auditedUntil", ref AuditedUntil);
+            s.Int("ltsLeft", ref LtsLeft);
+            s.Int("queueLevel", ref QueueLevel);
             s.Int("sunsetStart", ref SunsetStart);
             s.Int("sunsetTick", ref SunsetTick);
             s.Str("approach", ref Approach);

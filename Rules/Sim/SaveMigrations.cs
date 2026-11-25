@@ -120,6 +120,11 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 103) MigrateTo103(root);
             if (fromSchema < 104) MigrateTo104(root);
             if (fromSchema < 105) MigrateTo105(root);
+            if (fromSchema < 106) MigrateTo106(root);
+            if (fromSchema < 107) MigrateTo107(root);
+            if (fromSchema < 108) MigrateTo108(root);
+            if (fromSchema < 109) MigrateTo109(root);
+            if (fromSchema < 110) MigrateTo110(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -1186,6 +1191,54 @@ namespace AiLabs.Rules.Sim
             {
                 foreach (string key in new[] { "lwOn", "lwRival", "lwLead", "lwWait", "lwHits", "lwAnswers" })
                     JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 106: no lab runs a research programme.</summary>
+        static void MigrateTo106(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "pgTech", "pgDone", "pgPhase", "pgLeft", "pgBold", "pgInsight", "pgSpent", "pgWins", "pgLosses" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 107: no model has a training queue level.</summary>
+        static void MigrateTo107(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab => JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "queueLevel", JsonValue.Of(0L))));
+        }
+
+        /// <summary>Schema 108: no lab keeps project pods.</summary>
+        static void MigrateTo108(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "podIds", JsonValue.Array());
+                foreach (string key in new[] { "podWeeks", "podChem", "podSwapAfter", "podPoints", "podsFormed" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 109: no lab holds a licence.</summary>
+        static void MigrateTo109(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                foreach (string key in new[] { "licRegime", "licPhase", "licLeft", "licStrikes", "licCooldown", "licGranted", "licRefused", "licSuspended" })
+                    JsonPatch.AddIfMissing(lab, key, JsonValue.Of(0L));
+            });
+        }
+
+        /// <summary>Schema 110: no model has a support pledge.</summary>
+        static void MigrateTo110(JsonValue root)
+        {
+            JsonPatch.ForEach(root, "labs", lab =>
+            {
+                JsonPatch.AddIfMissing(lab, "ltsKept", JsonValue.Of(0L));
+                JsonPatch.AddIfMissing(lab, "ltsBroken", JsonValue.Of(0L));
+                JsonPatch.ForEach(lab, "models", m => JsonPatch.AddIfMissing(m, "ltsLeft", JsonValue.Of(0L)));
             });
         }
 

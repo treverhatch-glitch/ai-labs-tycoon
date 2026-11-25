@@ -6230,6 +6230,83 @@
     "safetyGain": 10,
     "leadGain": 2
   },
+  "programmes": {
+    "enabled": 1,
+    "stages": 3,
+    "minCost": 400,
+    "safeWeeks": 6,
+    "boldWeeks": 4,
+    "safeCostPermille": 350,
+    "boldCostPermille": 250,
+    "boldChancePermille": 550,
+    "insightPermille": 150,
+    "insightPrestige": 20,
+    "refundPermille": 250
+  },
+  "runQueue": {
+    "enabled": 1,
+    "weightBackground": 1,
+    "weightNormal": 2,
+    "weightRush": 4,
+    "switchCostPermille": 20,
+    "maxRush": 1
+  },
+  "pods": {
+    "enabled": 1,
+    "minSize": 2,
+    "maxSize": 5,
+    "kickoffCost": 8000,
+    "pointsPerMember": 6,
+    "baseChem": 300,
+    "rolePoints": 100,
+    "mixPoints": 100,
+    "clashPoints": 90,
+    "tenureStep": 12,
+    "tenureCap": 240,
+    "moraleShare": 200,
+    "swapCooldown": 8,
+    "sharpChem": 700,
+    "programmeWeeksSaved": 1
+  },
+  "licence": {
+    "enabled": 1,
+    "eraA": 2,
+    "eraB": 4,
+    "eraC": 6,
+    "feeA": 60000,
+    "feeB": 200000,
+    "feeC": 600000,
+    "termA": 104,
+    "termB": 104,
+    "termC": 104,
+    "barA": 300,
+    "barB": 500,
+    "barC": 700,
+    "cutA": 150,
+    "cutB": 300,
+    "cutC": 500,
+    "reviewWeeks": 6,
+    "cooldownWeeks": 26,
+    "strikeLimit": 2,
+    "suspendReputation": 40,
+    "renewWindow": 12,
+    "rushPenalty": 60,
+    "breachStrike": 1
+  },
+  "pledges": {
+    "enabled": 1,
+    "minWeeks": 26,
+    "maxWeeks": 104,
+    "maxPledges": 2,
+    "liftPermilleStep": 40,
+    "liftCapPermille": 200,
+    "supportPermille": 60,
+    "keptTrust": 25,
+    "breachWeeks": 8,
+    "breachTrust": 60,
+    "breachReputation": 25,
+    "podCutPermille": 250
+  },
   "bugBounty": {
     "maxLevel": 3,
     "setupPerLevel": 40000,
@@ -10827,6 +10904,132 @@
         "kind": "LaunchAnswered",
         "pick": -1,
         "text": "{lab} answers a rival's launch in its own way. The comparison charts are redrawn"
+      },
+      {
+        "id": "programme-started",
+        "kind": "ProgrammeStarted",
+        "pick": -1,
+        "text": "{lab} announces a multi-year research programme on {ref}. The first milestone is next quarter"
+      },
+      {
+        "id": "programme-careful",
+        "kind": "ProgrammeStageDone",
+        "pick": 1,
+        "text": "{lab} finishes a stage of its research programme the careful way. Nothing exciting happens, on purpose"
+      },
+      {
+        "id": "programme-bold",
+        "kind": "ProgrammeStageDone",
+        "pick": -1,
+        "text": "{lab} takes the risky route on a stage of its research programme, and it works. The whiteboard is photographed"
+      },
+      {
+        "id": "programme-failed",
+        "kind": "ProgrammeStageFailed",
+        "pick": -1,
+        "text": "A stage of {lab}'s research programme falls through. The post-mortem is scheduled for after lunch"
+      },
+      {
+        "id": "programme-finished",
+        "kind": "ProgrammeEnded",
+        "pick": 1,
+        "text": "{lab} completes its research programme. The paper has more authors than the lab has rooms"
+      },
+      {
+        "id": "programme-dropped",
+        "kind": "ProgrammeEnded",
+        "pick": 0,
+        "text": "{lab} shelves its research programme half way. Three years of notes go in a drive"
+      },
+      {
+        "id": "priority-set",
+        "kind": "RunPriorityChanged",
+        "pick": -1,
+        "text": "{lab} reshuffles which training run gets the cluster. A calendar invite goes round"
+      },
+      {
+        "id": "pod-formed",
+        "kind": "PodFormed",
+        "pick": -1,
+        "text": "{lab} puts five people in a room and calls them a pod. The group chat gets a rocket emoji"
+      },
+      {
+        "id": "pod-swapped",
+        "kind": "PodSwapped",
+        "pick": -1,
+        "text": "{lab} swaps someone between pods. The team photo has to be retaken"
+      },
+      {
+        "id": "pod-disbanded",
+        "kind": "PodEnded",
+        "pick": 1,
+        "text": "{lab} wraps up a project pod on purpose. Everyone gets a handshake and a new desk"
+      },
+      {
+        "id": "pod-broke",
+        "kind": "PodEnded",
+        "pick": 0,
+        "text": "A project pod at {lab} falls apart when people leave. The standing desk is still there"
+      },
+      {
+        "id": "licence-applied",
+        "kind": "LicenceApplied",
+        "pick": -1,
+        "text": "{lab} files for a licence under the new rules. The lawyers bill by the page"
+      },
+      {
+        "id": "licence-granted",
+        "kind": "LicenceDecided",
+        "pick": 1,
+        "text": "{lab} is granted its licence. The certificate goes in the lobby"
+      },
+      {
+        "id": "licence-refused",
+        "kind": "LicenceDecided",
+        "pick": 0,
+        "text": "{lab} is refused its licence. The reviewer's note is polite and long"
+      },
+      {
+        "id": "licence-strike",
+        "kind": "LicenceStrike",
+        "pick": -1,
+        "text": "{lab} takes a strike against its licence after an incident. The regulator is watching"
+      },
+      {
+        "id": "licence-surrendered",
+        "kind": "LicenceEnded",
+        "pick": 1,
+        "text": "{lab} hands its licence back. The regulator says it will keep the file"
+      },
+      {
+        "id": "licence-lapsed",
+        "kind": "LicenceEnded",
+        "pick": 0,
+        "text": "{lab} lets its licence go. Nobody in the lobby says anything"
+      },
+      {
+        "id": "licence-suspended",
+        "kind": "LicenceEnded",
+        "pick": -1,
+        "text": "{lab} has its licence suspended. The certificate comes down from the lobby"
+      },
+      {
+        "id": "support-pledge-made",
+        "kind": "SupportPledged",
+        "pick": -1,
+        "text": "{lab} promises to keep supporting {ref} for years. The enterprise customers breathe out"
+      },
+      {
+        "id": "support-pledge-kept",
+        "kind": "SupportPledgeEnded",
+        "pick": 1,
+        "text": "{lab} keeps its support promise on {ref} to the last week. The customers send a cake"
+      },
+      {
+        "id": "support-pledge-broken",
+        "kind": "SupportPledgeEnded",
+        "pick": 0,
+        "text": "{lab} walks away from its support promise on {ref}. The forum thread is long"
       }
     ],
     "filler": [
@@ -14252,6 +14455,116 @@
         "pick": -1,
         "about": "lab",
         "text": "We answered the rival launch. Now we wait for the numbers.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "programme-chat",
+        "kind": "ProgrammeStageDone",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Another stage down. Nobody wants to say how many are left.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "programme-failed-chat",
+        "kind": "ProgrammeStageFailed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The stage failed. We are arguing about whether to retry the bold way.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "programme-ended-chat",
+        "kind": "ProgrammeEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The programme is over. Someone has already written the retrospective.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "priority-chat",
+        "kind": "RunPriorityChanged",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Someone moved the runs around. The cluster has a new favourite.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pod-formed-chat",
+        "kind": "PodFormed",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The pod is formed. We found out who sits next to whom.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pod-ended-chat",
+        "kind": "PodEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The pod is done. People are going back to their old desks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "licence-decided-chat",
+        "kind": "LicenceDecided",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The licence decision is in. The whole floor read it at once.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "licence-strike-chat",
+        "kind": "LicenceStrike",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "That incident counted against the licence. Nobody is joking about it.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "licence-ended-chat",
+        "kind": "LicenceEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The licence is gone. Compliance is already redrafting the plan.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "pledge-ended-chat",
+        "kind": "SupportPledgeEnded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The support pledge is over. Customers have views on how it went.",
         "fromYear": 0,
         "toYear": 0
       }

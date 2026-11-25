@@ -14,6 +14,7 @@ namespace AiLabs.Rules.Sim
             if (model == null) return Fail(CommandError.UnknownId, "The lab has no model " + cmd.TargetId + ".");
             if (model.Status != ModelStatus.Released) return Fail(CommandError.WrongModelStatus, model.Name + " is " + model.Status + "; only a model on sale can be retired.");
             if (Sunset.Pending(model)) return Fail(CommandError.InvalidArgument, model.Name + " already has a notice, leaving in week " + model.SunsetTick + ".");
+            if (Pledges.Held(model)) return Fail(CommandError.InvalidArgument, model.Name + " is under a support pledge for " + model.LtsLeft + " more weeks.");
             if (cmd.Count < c.Sunset.MinWeeks || cmd.Count > c.Sunset.MaxWeeks)
                 return Fail(CommandError.InvalidArgument, "A notice runs from " + c.Sunset.MinWeeks + " to " + c.Sunset.MaxWeeks + " weeks.");
             if (Sunset.SuccessorOf(lab, model) == null)

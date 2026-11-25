@@ -2523,6 +2523,57 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - All five are inert until the player uses a command, so no old test needed a new switch (Q400 to Q404).
 - Alternatives: all five default-on (rejected: every old game would change), a free tier that also changes waitlist hype (rejected: two numbers moving together with no choice).
 
+### Q407. Can research be a route and not a single purchase? DECIDED: yes, a three-stage programme where each stage is run carefully or boldly
+- Researching a tech is one command. A programme makes the way to a big tech a sequence of decisions with real branching: the careful way is dear and certain, the bold way is cheaper, faster and pays a dividend, but may fail and then the player must retry (more points, more luck), fall back (the careful price on top of what was lost) or give up (most of the points gone).
+- Everything is paid in research points the lab earned, and nothing is bought with cash; a failure run is a real threat to a lab that is short of points, and the player can choose how much variance to take.
+- The numbers make bold a small edge on average (about 30% against 35% net) so it is a gamble worth taking only for a lab that can afford to lose.
+- Alternatives: a cash shortcut to the tech (rejected: pay-for-progress), a random programme result with no decisions (rejected: nothing to choose), stages with different tech payoffs (rejected: too many knobs for one tech).
+
+### Q408. Can the lab decide which training run comes first? DECIDED: yes, a priority queue with levels, a reload cost and a limit on rushing
+- Runs shared the training compute equally whatever they were for. A queue lets the player put the model that matters first and starve the one that does not, so a lab with two runs has a real scheduling problem: rushing one slows the others by exactly what it gains, and a lab that keeps changing its mind loses progress to reloads.
+- The queue moves compute and never creates it; there is no cash cost and no pay-for-speed. Only one run may be rushed at a time so a rush is always at the expense of something.
+- With no level set the old equal split is exactly what happens, so every older game and save is unchanged.
+- Alternatives: a cash rush that adds compute (rejected: pay-for-stat), a strict first-in first-out queue (rejected: nothing to decide), per-run compute amounts (rejected: too fiddly, weights say the same thing).
+
+### Q409. Does who works together matter? DECIDED: yes, a project pod whose chemistry comes from the mix of people
+- Staff were counted by role. A pod makes composition a real choice: mixing roles and putting seniors with juniors helps, putting two people with the same quirk together hurts, the weeks together build it up, and a swap costs half of them. A pod made of the wrong people is worse than none, because its chemistry can go under the line and then it takes research points away.
+- The pod uses the people the lab has: it costs a one-off kick-off per person, not a bonus bought with cash. Its weekly points come only from how well the people fit.
+- It reads the people's roles, seniority, quirks and morale as they stand each week, so the other staff systems (promotions, morale, quitting, layoffs) all change a pod without a single hook.
+- Alternatives: a fixed bonus for any team (rejected: no composition), a team of only one role (rejected: no mix), a long lockout after a swap (rejected: the weeks together already make swapping costly).
+
+### Q410. Does regulation arrive on its own schedule? DECIDED: yes, regimes open with the eras and the lab picks which to join
+- Regulation was a set of fines that arrive whatever the lab does. Regimes make it a choice: join an early, cheap, forgiving one, wait for a dearer and stricter one with a better cut, or stay out. The better regimes ask for a more aligned best model, so joining one is a bet on the lab's own safety record, and an incident while licensed is a strike that can cost the licence and a heavy penalty.
+- The cut applies to the incident fine along with the other cuts (on-call, insurance, the floor), so it helps most when incidents are expensive and costs most when they come in pairs.
+- A refusal keeps the fee, so applying with a model that is not ready is a real loss, not a free roll.
+- Alternatives: a yearly levy (rejected: no choice), a licence needed to release at all (rejected: it would make the early game depend on it and touch release review), one regime that scales with the era (rejected: nothing to pick between).
+
+### Q411. What does it mean to stand behind an old version? DECIDED: a support pledge that pays only if the lab is willing to be stuck with the model
+- Releasing a new model quietly moves every customer to it. A pledge is the other choice: customers who value stability pay more for a version that will not be pulled, and the lab is held to it. The longer the promise the better it pays, and the worse it binds, because the newer model cannot take that sector over until the pledge ends or is broken.
+- It is not a purchase: a short pledge loses money, and the lift shrinks as weeks pass, so only a long promise on a model that really earns is worth making. Breaking one is dear in cash, trust and reputation, and keeping one pays a little trust at the end.
+- The lock is the whole point. Pledging the best seller in a sector locks the lab out of upgrading that sector, so the question is whether the next model is worth more than the pledge.
+- Alternatives: a pledge with no lock (rejected: free money), a flat bonus for old models (rejected: no choice), customers carried over only in part (rejected: it would change how every release works whether or not the player chose it).
+
+### Q412. What does the world say about the new systems? DECIDED: headlines for every turn and chat for the big ones
+- Programmes, the run queue, pods, licences and support pledges each log their own events. Every kind has a headline, and each branch (a bold stage that works, a careful one, a licence granted, refused, suspended, surrendered or lapsed, a pledge kept or broken) has its own line. Chat lines follow the stages that matter. Headline picks above 1 fall back to the line with no pick, so bold stages and suspensions use that line and come after the specific ones in the list.
+- Pins: 298 headlines and 300 chat lines.
+- Alternatives: one generic line per system (rejected: the branches are the story).
+
+### Q413. Does a good team speed up research? DECIDED: a sharp pod shortens programme stages by a week
+- A pod whose chemistry reaches the sharp mark (700) takes a week off a programme stage that starts while it exists, never going under a week. A blunt or absent pod changes nothing. The pod costs a kick-off per person and its chemistry can fall, so the saving is only there while the people fit.
+- Alternatives: more points per stage (rejected: it is already the pod's own job), a pod assigned to a programme (rejected: needs more state for no new decision).
+
+### Q414. Is a rushed model as safe as a careful one? DECIDED: a rush-priority run counts as less aligned for the licence bar
+- A run set to the rush level, which took the cluster from the others, counts 60 less aligned when the review or a renewal checks the best released model. Rushing a model to beat a licence date can cost the licence. Background and normal runs count in full. The model's real alignment is untouched.
+- Alternatives: no link (rejected: priority would be free), a penalty to real alignment (rejected: it would change how training works for a lab that has no licence).
+
+### Q415. Is a broken promise only a support matter? DECIDED: breaking a pledge, or losing one, while licensed is a strike
+- A lab that holds a licence and walks away from a support pledge, or lets a pledged model leave sale, takes a strike against the licence. At two strikes it is suspended. `licence.breachStrike` can switch this off. A lab with no licence is not affected.
+- Alternatives: a fine only (rejected: pledges and licences would not touch each other).
+
+### Q416. Is support cheaper with a good team? DECIDED: a sharp pod takes a quarter off the weekly support cost
+- While a pod is sharp, pledged models cost 25% less each week to keep supported. The lab still has to want a pod: it costs a kick-off and its chemistry can fall.
+- Alternatives: a flat cut (rejected: no choice), a pod bound to each model (rejected: more state than the saving is worth).
+
 ## Open
 
 None.

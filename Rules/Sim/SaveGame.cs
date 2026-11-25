@@ -279,6 +279,22 @@ namespace AiLabs.Rules.Sim
                     || (lab.LwRival == 0 && (lab.LwLead != 0 || lab.LwWait != 0))
                     || ((lab.LwOn != 0 || lab.LwHits != 0 || lab.LwAnswers != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
                     p.Add(who + " has a launch watch (on " + lab.LwOn + ", rival " + lab.LwRival + ", lead " + lab.LwLead + ") in a way the data does not allow");
+                if (lab.PgTech < 0 || lab.PgTech > c.Research.Techs.Count || lab.PgDone < 0 || lab.PgDone >= c.Programmes.Stages + (lab.PgTech == 0 ? 1 : 0) || lab.PgPhase < 0 || lab.PgPhase > 3 || lab.PgLeft < 0 || lab.PgBold < 0 || lab.PgBold > 1
+                    || lab.PgInsight < 0 || lab.PgInsight > lab.PgDone || lab.PgSpent < 0 || lab.PgWins < 0 || lab.PgLosses < 0
+                    || (lab.PgTech == 0 && (lab.PgPhase != 0 || lab.PgDone != 0 || lab.PgLeft != 0 || lab.PgBold != 0 || lab.PgInsight != 0 || lab.PgSpent != 0))
+                    || (lab.PgTech > 0 && lab.PgPhase == 0) || (lab.PgPhase == 1 && lab.PgLeft < 1) || (lab.PgPhase != 1 && lab.PgLeft != 0)
+                    || ((lab.PgTech != 0 || lab.PgWins != 0 || lab.PgLosses != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a research programme (tech " + lab.PgTech + ", phase " + lab.PgPhase + ", stage " + lab.PgDone + ") in a way the data does not allow");
+                if (lab.PodIds.Count > c.Pods.MaxSize || new System.Collections.Generic.HashSet<int>(lab.PodIds).Count != lab.PodIds.Count || lab.PodIds.Exists(id => id < 0) || lab.PodWeeks < 0 || lab.PodChem < 0 || lab.PodChem > 1000 || lab.PodSwapAfter < 0 || lab.PodsFormed < 0
+                    || (lab.PodIds.Count == 0 && (lab.PodWeeks != 0 || lab.PodChem != 0))
+                    || ((lab.PodIds.Count != 0 || lab.PodsFormed != 0 || lab.PodPoints != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a project pod (" + lab.PodIds.Count + " people, " + lab.PodWeeks + " weeks, chemistry " + lab.PodChem + ") in a way the data does not allow");
+                if (lab.LicRegime < 0 || lab.LicRegime > 3 || lab.LicPhase < 0 || lab.LicPhase > 2 || lab.LicLeft < 0 || lab.LicStrikes < 0 || lab.LicStrikes >= c.Licence.StrikeLimit || lab.LicCooldown < 0 || lab.LicGranted < 0 || lab.LicRefused < 0 || lab.LicSuspended < 0
+                    || (lab.LicRegime == 0 && (lab.LicPhase != 0 || lab.LicLeft != 0 || lab.LicStrikes != 0)) || (lab.LicRegime > 0 && (lab.LicPhase == 0 || lab.LicLeft < 1))
+                    || ((lab.LicRegime != 0 || lab.LicGranted != 0 || lab.LicRefused != 0 || lab.LicSuspended != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has a licence (regime " + lab.LicRegime + ", phase " + lab.LicPhase + ", " + lab.LicLeft + " weeks, " + lab.LicStrikes + " strikes) in a way the data does not allow");
+                if (lab.LtsKept < 0 || lab.LtsBroken < 0 || ((lab.LtsKept != 0 || lab.LtsBroken != 0) && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0))
+                    p.Add(who + " has kept " + lab.LtsKept + " and broken " + lab.LtsBroken + " support pledges in a way the data does not allow");
                 if (lab.RoadmapLevel < 0 || lab.RoadmapLevel > c.Roadmap.MaxLevel
                     || (lab.RoadmapLevel == 0 && (lab.RoadmapStart != 0 || lab.RoadmapDue != 0 || lab.RoadmapGoal != 0))
                     || (lab.RoadmapLevel > 0 && (lab.RoadmapStart < 0 || lab.RoadmapDue <= lab.RoadmapStart || lab.RoadmapGoal < 1 || lab.Id != state.PlayerLabId)))
@@ -399,6 +415,8 @@ namespace AiLabs.Rules.Sim
                 foreach (ModelState model in lab.Models)
                 {
                     if (!string.IsNullOrEmpty(model.Objective) && c.Objectives.Objective(model.Objective) == null) p.Add(model.Name + " was trained for the unknown objective \"" + model.Objective + "\"");
+                    if (model.QueueLevel < 0 || model.QueueLevel > 3 || (model.QueueLevel != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(model.Name + " has a queue level " + model.QueueLevel + " the data does not allow");
+                    if (model.LtsLeft < 0 || model.LtsLeft > c.Pledges.MaxWeeks || (model.LtsLeft != 0 && lab.Id != state.PlayerLabId && state.PlayerLabId >= 0)) p.Add(model.Name + " has a support pledge of " + model.LtsLeft + " weeks the data does not allow");
                     if (model.RedTeamUntil < 0 || model.RedTeamUntil > state.Tick + c.RedTeam.Weeks) p.Add(model.Name + " is safer from a red team until week " + model.RedTeamUntil);
                     if (model.IncidentRepLoss < 0 || model.PostMortemDone < 0 || model.PostMortemDone > PostMortem.Full) p.Add(model.Name + " has a post-mortem record (loss " + model.IncidentRepLoss + ", depth " + model.PostMortemDone + ") that does not fit");
                     if (model.AuditedUntil < 0 || model.AuditedUntil > state.Tick + c.Audit.Weeks) p.Add(model.Name + " holds an audit certificate until week " + model.AuditedUntil);
