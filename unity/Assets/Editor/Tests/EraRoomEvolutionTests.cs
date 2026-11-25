@@ -16,7 +16,7 @@ namespace AiLabs.Unity.Editor.Tests
             GameConfig config = GameConfig.FromJson(File.ReadAllText(path));
 
             int atStart = EraRoomEvolution.Step(config, "dial-up-days", "dial-up-days");
-            int later = EraRoomEvolution.Step(config, "dial-up-days", "the-chat-boom");
+            int later = EraRoomEvolution.Step(config, "dial-up-days", "chat-boom");
             Assert.AreEqual(0, atStart);
             Assert.Greater(later, atStart);
         }

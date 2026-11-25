@@ -1,5 +1,4 @@
-# GameCI compile gate for unity/ (Edit Mode). Secrets only on the test-runner step.
-# Unity 6000.3.0f1 — ULF via UNITY_LICENSE only (no account activation); docker ubuntu-6000.3.0f1-linux-il2cpp-3.
+# Self-hosted Unity on box-unity (6000.3.0f1); no GameCI docker / UNITY_LICENSE secret.
 name: unity
 
 on:
@@ -7,21 +6,25 @@ on:
     paths:
       - 'unity/**'
       - '.github/workflows/unity.yml'
+      - 'Rules/**'
   workflow_dispatch:
 
 concurrency:
   group: unity-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  UNITY_EDITOR: ${{ vars.UNITY_EDITOR || '/home/box/Unity/Hub/Editor/6000.3.0f1/Editor/Unity' }}
+
 jobs:
   editmode:
     name: Unity Edit Mode
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
+    runs-on: [self-hosted, unity-box]
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           lfs: true
 
       - name: Project present
@@ -37,34 +40,54 @@ jobs:
         if: steps.project.outputs.ready != 'true'
         run: echo "unity/ProjectSettings/ProjectVersion.txt missing; workflow passes without running Unity."
 
-      - uses: actions/cache@v4
+      - name: Prepare artifacts
         if: steps.project.outputs.ready == 'true'
-        with:
-          path: unity/Library
-          key: unity-Library-${{ hashFiles('unity/Assets/**', 'unity/Packages/**', 'unity/ProjectSettings/**', 'Rules/**') }}
-          restore-keys: |
-            unity-Library-
+        run: mkdir -p "$GITHUB_WORKSPACE/unity/artifacts"
 
-      - uses: game-ci/unity-test-runner@v4
+      - name: Edit Mode tests
         if: steps.project.outputs.ready == 'true'
-        id: unity
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          projectPath: unity
-          unityVersion: 6000.3.0f1
-          testMode: editmode
-          githubToken: ${{ secrets.GITHUB_TOKEN }}
-          cliVersion: v0.1.75
+        run: |
+          set -euo pipefail
+          "$UNITY_EDITOR" -batchmode -nographics -quit \
+            -projectPath "$GITHUB_WORKSPACE/unity" \
+            -runTests -testPlatform editmode \
+            -testResults "$GITHUB_WORKSPACE/unity/artifacts/editmode-results.xml" \
+            -logFile "$GITHUB_WORKSPACE/unity/artifacts/editmode.log"
+        shell: bash
 
       - uses: actions/upload-artifact@v4
-        if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome != 'skipped'
+        if: always() && steps.project.outputs.ready == 'true'
         with:
           name: Unity EditMode artifacts
-          path: ${{ steps.unity.outputs.artifactsPath }}
+          path: unity/artifacts/
+          if-no-files-found: warn
+
+  capture:
+    name: Unity HQ capture
+    runs-on: [self-hosted, unity-box]
+    needs: editmode
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          lfs: true
+
+      - name: Prepare artifacts
+        run: mkdir -p "$GITHUB_WORKSPACE/unity/artifacts"
+
+      - name: Capture screenshots (xvfb, graphics on)
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$UNITY_EDITOR" -batchmode -quit \
+            -projectPath "$GITHUB_WORKSPACE/unity" \
+            -runTests -testPlatform editmode \
+            -testFilter "HqViewCaptureTests|HqStarterOfficeCaptureTests" \
+            -logFile "$GITHUB_WORKSPACE/unity/artifacts/capture.log"
+        shell: bash
 
       - uses: actions/upload-artifact@v4
-        if: always() && steps.project.outputs.ready == 'true' && steps.unity.outcome == 'success'
+        if: always()
         with:
           name: HQ view capture
           path: |

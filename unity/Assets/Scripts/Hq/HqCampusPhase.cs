@@ -15,7 +15,7 @@ namespace AiLabs.Unity.Hq
             bool growing = cash >= start / 2;
 
             if (index <= 1 && !growing) return "Garage lot";
-            if (index <= 1 && growing) return "Garage → campus";
+            if (index <= 1 && growing) return "Campus HQ";
             if (index <= 4) return "Campus HQ";
             return "Global campus";
         }

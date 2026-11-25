@@ -20,8 +20,8 @@ namespace AiLabs.Unity.Editor.Tests
             var rich = new LabState { Cash = start };
 
             Assert.AreEqual("Garage lot", HqCampusPhase.LabelForEra(config, "dial-up-days", poor));
-            Assert.AreEqual("Garage → campus", HqCampusPhase.LabelForEra(config, "dial-up-days", rich));
-            Assert.AreEqual("Campus HQ", HqCampusPhase.LabelForEra(config, "the-chat-boom", rich));
+            Assert.AreEqual("Campus HQ", HqCampusPhase.LabelForEra(config, "dial-up-days", rich));
+            Assert.AreEqual("Campus HQ", HqCampusPhase.LabelForEra(config, "chat-boom", rich));
             Assert.AreEqual("Global campus", HqCampusPhase.LabelForEra(config, "harnesses", rich));
         }
     }
