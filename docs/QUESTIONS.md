@@ -1628,11 +1628,35 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Recommendation and choice: **(b)** — batch **248** thickener (`STAFF-PRESENTATION-TAIL-INDEX.md`, NEXT hire index).
 - Why: Staff/GPU hire row from `docs/NEXT.md`.
 
-### Q698. ALT-76 rollup refresh through batch 181? DRAFT: `CampusAlt76RollupRefreshB181PresentationSpec`
+### Q698. ALT-76 rollup refresh through batch 181? DECIDED: `CampusAlt76RollupRefreshB181PresentationSpec`
 
 - Options: (a) batch 178 only; (b) through 181; (c) skip.
-- Recommendation: **(b)** — fork **249+** after **245–248** land.
-- Status: batch **249** LOCAL (NO PUSH).
+- Recommendation and choice: **(b)**.
+- Why: Batch **249**.
+
+### Q699. Index manifest tail through batch 181? DECIDED: `CampusIndexLaneManifestTailRefreshThrough181PresentationSpec`
+
+- Options: (a) stop at 178; (b) through 181; (c) skip.
+- Recommendation and choice: **(b)**.
+- Why: Batch **250**.
+
+### Q700. GO packet tail through batch 241? DECIDED: `CampusGoPacketTailRefreshThrough241PresentationSpec`
+
+- Options: (a) stop at 238; (b) through 241; (c) skip.
+- Recommendation and choice: **(b)**.
+- Why: Batch **251**.
+
+### Q701. Rules-adjacent tail refresh after staff 248? DECIDED: `CampusRulesAdjacentGraphicsTailRefreshPresentationSpec`
+
+- Options: (a) doc only; (b) refresh spec + RULES-ADJACENT row; (c) rules code on agent.
+- Recommendation and choice: **(b)** — batch **252**.
+- Why: Thickener after **248** staff land.
+
+### Q702. ALT-76 STATUS sync through batch 184? DRAFT: `CampusAlt76StatusSyncThrough184PresentationSpec`
+
+- Options: (a) stop at 181; (b) through 184; (c) defer.
+- Recommendation: **(b)** — fork **253+** after **249–252** land.
+- Status: batch **253** LOCAL (NO PUSH).
 
 ### Q521. HQ mascot strip index? DECIDED: `CampusHqMascotStripIndexPresentationSpec`
 
