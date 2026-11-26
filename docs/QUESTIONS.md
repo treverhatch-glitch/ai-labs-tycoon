@@ -173,25 +173,25 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q27. Selling your chips: open listings or bilateral deals? DECIDED: open listings
 
 - Options: (a) a listing (price, monthly cap) that rival plans buy from by rule; (b) negotiated one-off deals.
-- Recommendation and choice: **(a)**; not built yet (phase E). The `ChipSales` ledger line already exists.
+- Recommendation and choice: **(a)**; built (phase D): `SetChipListing` and `BuyListedChips`, paid on the `ChipSales` and `Hardware` ledger lines.
 - Why: rivals must use the same commands with readable reasons; a listing is one rule and logs cleanly; deals can be added on top with the funding/Bubble systems.
 
 ### Q28. How many chip designs at once? DECIDED: one in design at a time
 
 - Options: (a) one in design at a time (any number Ready); (b) unlimited in parallel.
-- Recommendation and choice: **(a)**; not built yet (phase E).
+- Recommendation and choice: **(a)**; built (phase D): `StartChipDesign` refuses while another design is Designing or TapingOut.
 - Why: MGT2's console designer is one project at a time; keeps architects a real constraint.
 
 ### Q29. Inference chips: serving only? DECIDED: serving only
 
 - Options: (a) inference chips only serve; (b) they also train at a penalty.
-- Recommendation and choice: **(a)**; not built yet (phase E).
+- Recommendation and choice: **(a)**; built (phase D): `ChipQueries.BatchTrains` is false for inference chips, so they only add to `ComputeSplit.Inference`.
 - Why: the bible's Gen 1 is the inference chip for "cheaper serving for your Mini"; training chips are "the prize".
 
 ### Q30. New rivals mid-game? DECIDED: data-driven arrivals by year
 
 - Options: (a) data-driven arrivals by year (Goggle DeepMined 2010, DeepSneak 2023); (b) all labs from day one.
-- Recommendation and choice: **(a)**; not built yet (phase C).
+- Recommendation and choice: **(a)**; built (phase C): `RivalConfig.joinsYear`, `GameState.PendingRivals`, `RivalSystem.RunArrivals`.
 - Why: the bible says more labs arrive with the eras; a 1995 start with Goggle DeepMined would break the era fiction.
 
 ### Q31. Local politics and weather in v1? DECIDED: heatwaves and the town vote only
@@ -215,7 +215,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q34. Cast names for the arrivals? DECIDED: the bible's parody near-misses
 
 - Options: (a) the bible's suggested parodies (Goggle DeepMined / Sunder Pitchai / Gemeny; DeepSneak with no named boss); (b) fully invented names.
-- Recommendation and choice: **(a)**; not built yet (phase C), where the real-name test grows to keep the guardrail.
+- Recommendation and choice: **(a)**; built (phase C): the real-name test grew to keep the guardrail.
 - Why: Hatch chose parody near-miss names.
 
 ### Q35. Training costs after hardware generations? DECIDED: era `trainingCostPermille` retuned down
@@ -276,7 +276,7 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 - Options: (a) every plan builds; (b) a plan field `siteAppetitePermille` (with the allowed blocs) and the owned-fleet switch.
 - Recommendation and choice: **(b)**: xAy builds (appetite 1000, `us`), AntHopticsAI 300 and OpenAye 400 but both rent, the autopilot never. Hardware goes into the hall with most free power first; otherwise land at the cheapest open site (power price times cooling) in the plan's blocs, then a hall sized by appetite. The HQ keeps only `plan.gpus` for an appetite plan.
-- Why: it uses the same commands as the player so refusals stop it the same way; it is easy to turn off (appetite 0, test `A_lab_with_no_site_appetite_never_buys_land`). Replacing obsolete hardware is not planned yet.
+- Why: it uses the same commands as the player so refusals stop it the same way; it is easy to turn off (appetite 0, test `A_lab_with_no_site_appetite_never_buys_land`). Replacing obsolete hardware was added in phase C (Q52).
 
 ### Q45. Audit consequences? DECIDED: a fine of two weeks of revenue now; investigations wait for the shady path
 
@@ -295,6 +295,250 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 - Options: (a) one world event per site; (b) one event for every lab with a holding there.
 - Recommendation and choice: **(b)**, in config site order, with the roll made once per site.
 - Why: the event feed is a per-lab log; the roll stays one die per site so sharing a site does not change the dice.
+
+### Q48. Does the player's own lab keep a decision log? DECIDED: no, only plan-run labs do
+
+- Options: (a) the player's autopilot writes to the player's log (systems design 3.1); (b) only labs whose controller is a plan write a log.
+- Recommendation and choice: **(b)**. `DecisionLog.Add` returns at once for any lab that is not plan-run, so `LabState.Log` of the player stays empty.
+- Why: a replay re-applies only the journaled commands, not the planner that issued them, so a log written by an outside bot could never be rebuilt and the replay digest would drift (`A_recorded_game_replays_to_the_same_state_from_its_orders_alone` caught it). The host can keep its own player-side log.
+
+### Q49. How small is too small to log? DECIDED: under three units, and renting also needs a quarter move
+
+- Options: (a) only the 25% rule for renting; (b) the 25% rule and at least `rivalry.minLoggedUnits` (3) units.
+- Recommendation and choice: **(b)**. Hires, GPU buys and swaps below 3 units are not logged; `RentedGpus` needs both.
+- Why: a small lab that rents 0, 1, 0, 1 GPUs on alternate months would fill sixty lines with noise (seen in the xAy log) and push real decisions out.
+
+### Q50. How does the release gate boost the next run? DECIDED: derived from the models, not a stored number
+
+- Options: (a) a field `GateBoostPermille` on the lab; (b) count the trained, unreleased models below the gate, newest first (`LabPlanner.RunAlignmentShare`).
+- Recommendation and choice: **(b)**: +100 per model in a row that is waiting below the gate, capped by the 900 share limit; a model that passes (or any released model) ends the streak.
+- Why: no new state to sync or migrate and it cannot drift from the models it describes.
+
+### Q51. When does xAy's infra team start? DECIDED: 2008, not week 0
+
+- Options: (a) from the first week (systems design 3.4); (b) a plan staff entry with `fromYear` (new `PlanStaffConfig.FromYear`), set to 2008.
+- Recommendation and choice: **(b)**. Six infrastructure engineers grown like other staff from 1995 made xAy bankrupt in several seeds (and the 40-year survival test failed on seed 3); by 2008 it has the revenue and the halls to need them. Its site appetite (1000, `us`) and its 4-week hall floor are unchanged.
+- Why: "builds fast" is a trait of a lab that already builds halls; a start-up with a payroll of 12 and no revenue is just a lab that fails. The event text still fires whenever a hall opens within `fastBuildWeeks` (8).
+
+### Q52. How do plans replace obsolete hardware? DECIDED: a monthly Refresh for owning plans
+
+- Options: (a) never; (b) once a month the oldest batch that is `rivalry.replaceTierGap` (2) generations behind the current one is sold at resale and the same number is bought again, in the same place.
+- Recommendation and choice: **(b)**, only for plans with `ownGpus`, and only when the lab is not overstretched. The count is the smallest of the batch, the vendor's allocation left, the free racks or kilowatts after the sale, and what the cash allows above the reserve. Export rules and permit freezes are checked first so nothing is sold that cannot be bought back. Only the buy is logged (`Replaced`, reason `GenerationsBehind`).
+- Why: it closes the Q44 gap (fleets stuck on 1995 hardware in 2012) with the player's own commands. `Rules/Systems/LabPlanner.Refresh`; `Old_hardware_is_swapped_for_the_current_generation_and_only_the_buying_is_logged`.
+
+### Q53. Board drama: how often and what does it do? DECIDED: one twelfth of the yearly chance a month, a 4-week pause, an event
+
+- Options: (a) narration only; (b) a pause of `rivalry.boardDramaWeeks` (4) with an event and a `Paused` log line.
+- Recommendation and choice: **(b)**. Each month a plan-run lab rolls `dramaPermillePerYear / 12` on the `Rivals` stream (OpenAye 80, xAy 40, others 0); the plan returns without commands until `PlanPausedUntilTick`. Event `BoardDrama`: "OpenAye's board fired its boss on Friday. The boss was back on Tuesday." (no gendered pronoun, no quotes).
+- Why: it is the one signature behaviour that costs a lab something real, so a parody has a price.
+
+### Q54. Vendor allocation edge cases? DECIDED: bankrupt labs get 0 and drop out of the sum; the remainder goes to the top standing
+
+- Options: (a) bankrupt labs keep a share; (b) they get 0.
+- Recommendation and choice: **(b)**. Standing starts at 500, drifts 5 a month, rises 1 per 2 GPUs bought; the rounding remainder goes to the highest standing (ties to the lower lab id). A share that moves 10% or more month to month writes a `ShiftedAllocation` line in the vendor's log with the standing, share and buying causes.
+- Why: the shares must sum to the supply exactly (`Allocation_adds_up_to_the_supply_and_a_lab_past_its_share_is_refused`); a dead lab holding a share would waste chips.
+
+### Q55. How does a late rival enter? DECIDED: at the first month start of its year, with era catch-up
+
+- Options: (a) at the first week of the year only; (b) at the first month start whose year is its `joinsYear` or later (the first week of January in a normal game, the next month start in an old save).
+- Recommendation and choice: **(b)**. It gets its full `startCash`, the era's start lot, every tech of the eras before the current one (and what those need), its blocs, a vendor standing of 500, an event `RivalJoined`, and appends to `Labs` so the player stays first. `successor` has `joinsYear` 9999 and never spawns. A new game with no rivals picked gets no pending rivals; an old save gets `pendingRivals` filled from the config.
+- Why: Goggle DeepMined arrives in 2010 with $5M, "a sleeping giant" that is slow to ship; DeepSneak in 2023, home `china`, short runs, under the export rules.
+
+### Q56. Feelings: exact causes? DECIDED: as the design table, bracket loss counts per bracket
+
+- Options: (a) one penalty per Gauntlet; (b) the table: crown -30 for every non-bankrupt rival and -60 for the runner-up, -10 per bracket the player wins that the rival also entered.
+- Recommendation and choice: **(b)**, drift toward 0 by 5 a month, clamped to -1000..1000. A player who keeps winning ends every rival in a Feud (below -500), so rivals lobby the player's home bloc +15 attention a month (a `Lobbied` log line each time). Chip trades add `feelings.chipOrderPermille` (Q57+); shady causes arrive with their phase.
+- Why: it is what the design table says; it makes dominance cost something. If the 40-year runs show attention smothering a strong player, `feelings.feudAttentionPerMonth` is the knob.
+
+### Q57. Which techs open the chip screen, and how do the spec's years map to eras? DECIDED: ten techs, era-gated
+
+- Options: (a) copy the spec's years and make them the only gate; (b) put the techs in the era that opens nearest to the year and let the era be the floor (Q5).
+- Recommendation and choice: **(b)**. `chip-team` (It Sees, unlocks inference), `hbm-memory`, `training-silicon` (It Writes, unlocks training), three `compiler-stack` steps (+100 software each), `stacked-hbm`, `reticle-dies`, `low-precision`, `optical-interconnect` (+100 cooling and training speed). Foundry nodes still have their own `opensYear`, so a lab with the tech in 2012 cannot order 5 nm before 2022 (`EraLocked`).
+- Why: the content tables stay one place per era, and the node years are what the chip fiction needs.
+
+### Q58. Do the chip rooms need a tech as well as an era? DECIDED: yes, `RoomTypeConfig.requiresTech`
+
+- Options: (a) era only; (b) an optional tech. 
+- Recommendation and choice: **(b)**: `chip-design-lab` and `hw-test-lab` need `chip-team`; `BuildRoom` answers `MissingPrerequisite`. The planner's `RoomFor` skips locked rooms.
+- Why: the era opens in 2012 for everyone, but the room is the lab's own chip team; a lab without it has no reason to own the room.
+
+### Q59. How are derived chip numbers rounded? DECIDED: floor at each step, kilowatts ceil once
+
+- Options: (a) float-free but rounded at the end only; (b) `MulPermille` (floor) in a fixed order: target, die, format, memory, cooling; kilowatts as one `ceil(node.kw x die x format x memory x cooling / 1e12)`, at least 1.
+- Recommendation and choice: **(b)**. Pinned: inference/n28/small/fp16/ddr/air is 99 compute, 1 kW, 1,260 points, a wafer of 3,600; training/n5/medium/fp8/hbm-stacked/liquid is 4,118, 3, 15,444, 64,350.
+- Why: whole numbers must agree between the screen, the order and the tests; one documented order is enough.
+
+### Q60. Respin odds and the yield ramp: which knobs? DECIDED: two new knobs, the rest from the spec
+
+- Options: (a) fixed respin odds by node; (b) the node's odds less `respinPerEngineerPermille` (10) per engineer, capped at `respinEngineerCap` (10).
+- Recommendation and choice: **(b)**. The ramp is `(10 + min(engineers, 10))` a week, doubled by a test lab, up to the design's maximum; a respin costs 40% of the tape-out and 12 weeks. A tape-out comes back Ready with the node's initial yield.
+- Why: the spec asked for engineers to matter in both; two integer knobs in data keep them tunable.
+
+### Q61. How is the foundry room shared? DECIDED: per node and calendar month, labs book in order
+
+- Options: (a) a global queue; (b) `capacityPerMonth x (1000 - foundryVendorSharePermille) / 1000` chips per node per month, an order takes the first month with room from the current one, up to `bookAheadMonths` (24), and delivers `leadWeeks` after that month starts.
+- Recommendation and choice: **(b)**. `GameState.Foundry` holds only booked months; past months are dropped at month start; a lab that goes bankrupt gives its room back. A full book is `FoundryFull`.
+- Why: it makes a rival's order matter to the player without a queue to simulate, and it replays the same for the same seed.
+
+### Q62. Where do chips live, and what can be done with them? DECIDED: only in holdings, never moved or sold like GPUs
+
+- Options: (a) chips behave like any hardware batch; (b) chips are batches with `ChipDesignId >= 0`, delivered to a holding, never to the HQ.
+- Recommendation and choice: **(b)**. `SellGpus` and the oldest-first refresh count GPU batches only, `MoveHardware` refuses chips, `SellLand` is refused while orders are pending (`HoldingNotEmpty`), and pending orders reserve kilowatts (`WorldQueries.FreeKw`).
+- Why: a chip is made for a node and a site at order time; moving it would need export checks twice and a resale rule nobody asked for.
+
+### Q63. How do own chips feed compute? DECIDED: `ComputeSplit` with the software factor, an in-house bonus for the maker
+
+- Options: (a) chips add their paper compute; (b) paper compute times the maker's software permille (300 to 1000); training chips count as general compute, inference chips as serving only; own training chips get +15% when the lab trained them itself.
+- Recommendation and choice: **(b)**. `SoftwarePermille` stores the base (grown by architects, capped at 700) and the compiler techs are added at read time (cap 1000). A lab that buys another lab's chips runs the seller's software level and gets no bonus.
+- Why: it makes designing worth more than buying and keeps the two ways visible as numbers.
+
+### Q64. How does a rival plan run the chip programme? DECIDED: only labs that own GPUs and build sites
+
+- Options: (a) every plan with `chipProgramYear`; (b) `chipProgramYear`, `ownGpus`, `siteAppetitePermille > 0`, `chip-team` and not overstretched.
+- Recommendation and choice: **(b)**. xAy (2020), Goggle (2014) and DeepSneak (2023) run it; OpenAye (2024) and AntHopticsAI (2025) rent and have no halls, so their `buysListedChips` stays inert until a cloud-deal feature exists. The steps are staffing architects, one design at a time on the best open node, tape-out, own orders (half the gap, counted 1:1 as GPU units), buying listings, and listing.
+- Why: chips can only be delivered to holdings (Q62), so a lab without any cannot use them; every step is logged with its reasons.
+
+### Q65. Listings: what can a buyer and a seller do? DECIDED: the buyer pays the seller the order price, the seller pays the foundry
+
+- Options: (a) the buyer pays the foundry directly; (b) `BuyListedChips` pays `PricePerChip x count` to the seller (`ChipSales`, buyer `Hardware`), the seller pays the wafers; it is refused when the seller cannot pay them.
+- Recommendation and choice: **(b)**, capped by `maxPerMonth` and `listingMaxPerMonth`. A rival buys only at or below 90% of Envydia's price per unit of compute (95% when friendly) and delivers to its own holdings. A trade with the player moves the rival's feeling by `feelings.chipOrderPermille`.
+- Why: the seller carries the yield risk, so the price has to cover it.
+
+### Q66. When does Envydia notice? DECIDED: on the first Ready training chip, each delivery, the first listing, and a yearly ambush
+
+- Options: (a) at tape-out start; (b) when the first training tape-out comes back Ready.
+- Recommendation and choice: **(b)** -150 once; -50 per delivery of own chips; -100 at the first listing (`VendorStanding.ListingSeen`, schema 5); the price rises 10% for a lab that runs own training chips; the keynote ambushes a design that became Ready within 8 weeks before it (12 weeks of `ChipAmbushUntilTick`); when one lab runs 30% or more of its general compute on own chips, the vendor courts every other lab (+20, one log line a quarter).
+- Why: it is the spec's list; the ambush window is "just before the keynote".
+
+### Q67. Is chip compute counted in the planner's GPU target? DECIDED: yes, one unit for one unit
+
+- Options: (a) a chip counts as its compute in GPU units; (b) 1:1.
+- Recommendation and choice: **(b)**, with pending orders counted when deciding what to buy but rent covering the physical gap. 
+- Why: an own chip is worth several GPUs, so the lab ends up with less hardware by count and more by compute; the 45-year soak shows no lab failing and own-chip shares of 8% to 15%, below the courting line, so courting is exercised by a test, not yet by the cast.
+
+### Q68. Endings and `PlayerLabId`? DECIDED: schema 6, spectate at -1
+
+- Recommendation and choice: **(b)** from systems design section 5: `GameState.PlayerLabId`, bailouts via `ContinueAfterEnding`, `SellLab` with `found-again` or `spectate`; save problems accept spectating without a player lab.
+- Why: phases E/F implementation on schema 6 then 7 for shady.
+
+### Q69. Frontier research? DECIDED: research points, 1400‰ growth, cap 60
+
+- Recommendation and choice: **(b)**. `ResearchFrontier` after all open techs; `FrontierLevel` adds capability via `LabQueries.TechBonus`; rivals buy in `LabPlanner` after techs.
+- Why: endless content once the tree is done.
+
+### Q70. Model museum? DECIDED: six retired per line, oldest out weekly
+
+- Recommendation and choice: **(b)**. `MuseumSystem.RunWeek` prunes beyond `endings.museum.perLine`.
+- Why: long saves stay bounded.
+
+### Q71. Shady stash vs cash? DECIDED: stash off-books, `Laundered` ledger line
+
+- Recommendation and choice: **(b)**. Stash never touches cash except `Launder` at 700‰ keep; Heat from laundering and ops.
+- Why: cash invariant and section 6.
+
+### Q72. Rivals and shady? DECIDED: `shadyAppetite` 0, validator enforces
+
+- Recommendation and choice: **(b)**. Only the player's lab (and future player autopilot when appetite > 0) may `StartShadyOp`.
+- Why: parody guardrails.
+
+### Q73. Investigations? DECIDED: month-end on player lab, conviction → handcuffs ending
+
+- Recommendation and choice: **(b)**. `ShadySystem.RunMonth`, Audit level adds an extra roll; conviction uses Heat and policy staff.
+- Why: section 6.5 wired to section 5 handcuffs.
+
+### Q74. Corruption? DECIDED: incidents, quality trust, mood, carry-over, side jobs
+
+- Recommendation and choice: **(b)**. Weights in `shady` config; `ModelMood.Corrupted` at 600+; training finish carry-over 500‰.
+- Why: section 6.6.
+
+### Q75. Golden digest after endings and shady? DECIDED: re-recorded
+
+- Recommendation and choice: **(b)**. New digest `59cd8b60…` — weekly shady resolution, museum prune and frontier planner hooks change the autopilot year.
+- Why: firm rule on golden moves.
+
+### Q76. Bot balance soak and late-game cash? DECIDED: `BalanceSoak`, dial-up 1500‰, wealth growth down
+
+- Options: (a) leave the old 40-world story soak; (b) eight-year `BalanceSoak` over three player presets with crown, rival-survival and year-eight budget-pressure gates.
+- Recommendation and choice: **(b)**. CI runs 24 games per preset (`BALANCE_SOAK_GAMES_PER_PRESET` or `BALANCE_SOAK_FULL=1` for 200 each). Dial-up `trainingCostPermille` is 1500 (Q35 follow-through after hardware generations); plan `wealthGrowthPermillePerMillion` is 75/70 on rivals and the autopilot; golden digest `af2df07a…`.
+- Why: late-game cash after Q35 was swamping year-eight pressure; Envydia courting on rivals still waits on chip share (Q67), so courting stays a unit test, not a soak outcome.
+
+### Q77. How do breakdowns relate to the live formulas? DECIDED: one `DisplayQueries` helper, deltas that sum
+
+- Options: (a) duplicate the math in the UI; (b) a read-only `DisplayQueries` whose parts add to the same totals as `LabQueries.Quality`, `MarketSystem.Appeal`, `SafetySystem.IncidentChancePermille` and `lab.LastWeek.Revenue`.
+- Recommendation and choice: **(b)**. Appeal uses step deltas (core, reputation, sales, crown); incident splits config, alignment and corruption portions; no save or command changes (schema 7).
+- Why: alignment-gap sandbagging (NEXT item 8) will lie on the screen, so the honest breakdown must stay beside the real rules.
+
+### Q78. Funding rounds and ousting? DECIDED: three data rounds, permille dilution, ending at control
+
+- Options: (a) rival-only backers as today; (b) player `RaiseFunding` for angel, Series A and B with cash, reputation and year gates, `boardSeats`, founder `founderSharePermille` diluted each round, `RecordOusted` when share is at or below `controlPermille` (leader becomes `oustedSuccessor`).
+- Recommendation and choice: **(b)**. Rounds must close in config order; saves migrate with full founder share and no rounds (schema 8); the board can oust without spectating (continue modes still empty until phase F).
+- Why: matches DESIGN.md dilution and board fiction; golden digest `ca046311…` after schema bump.
+
+### Q79. Alignment on screen vs in the rules? DECIDED: displayed meter, gap, rungs 1–3
+
+- Options: (a) one alignment number; (b) true `alignment`, `displayedAlignment`, incident rungs screenshot/jailbreak/sandbag; release `claimedAlignmentPermille` sandbags; quality breakdown adds `SandbagBoost`; odds still use the true meter.
+- Recommendation and choice: **(b)**. Schema 9 copies displayed from true on migrate; rung 3 closes the gap. Golden digest `463eb18f…`.
+- Why: NEXT item 8 and DESIGN.md ladder fiction; item 8's sandbagging needed item 3's breakdown first (Q77).
+
+### Q81. Alignment and staff test depth? DECIDED: integration facts for gap, poach, stars
+
+- Options: (a) keep three smoke tests per feature; (b) add sandbag scandal gap-close, star research permille, feud poach, and migration count checks on the existing schema-2 fixture.
+- Recommendation and choice: **(b)**. No new golden for test-only commit unless a soak moves.
+- Why: user review expected deeper coverage before the branch ships.
+
+### Q83. Test depth for alignment, staff, and compute? DECIDED: paths, edges, migration, cross-system
+
+- Options: (a) ~3 smoke tests per feature; (b) a dozen-ish facts each covering main paths, zero/max/bankrupt edges, prior-schema load, save round-trip, and one cross-system tie (endings, feud feelings, GPU generations).
+- Recommendation and choice: **(b)**. `SaveSchemaPretend` rewinds saves for isolated migrations; the three expansion files hold 13 alignment, 12 staff, and 14 compute facts at first land; `64512a4` actually runs **370** tests (the earlier 372 count double-counted two removed parrots).
+- Why: owner quality bar before further NEXT items; behaviour assertions only, not config parroting.
+
+### Q84. Opus review must-fixes on alignment/staff? DECIDED: quality gap, billing order, queue, migrate, morale
+
+- Options: (a) ship as reviewed; (b) fix all six must-fixes with regression tests; cheap nice-to-haves where free.
+- Recommendation and choice: **(b)**. Market quality uses effective alignment and sandbag boost `max(0, displayed − alignment)` so corruption cannot cancel out; `AlignmentGap` compares displayed to true alignment; contract expiry runs after `Finance.RunWeek`; GPU queue can cancel (count 0), refuses a second holding, partial fulfilment, stalls with `GpuQueueStalled`; schema-10 staff ids come from root `nextId` with the first non-star trait; morale drifts down in debt and after incidents/poaches, poach picks the unhappiest star. Suite **380** after the review pass (+10 facts, weaker parrots removed).
+- Why: Opus review on `64512a4`; ledger-over-contract-life and corruption/gap tests would have caught the billing and quality regressions.
+
+### Q82. Reserved compute and the Envydia queue? DECIDED: contracts, deposit, queue at month start
+
+- Options: (a) keep instant rent and spot buys only; (b) multi-year reserved contracts at `reservedRentPermille` with an upfront `reservedDepositWeeks` block, general compute while the contract runs; (c) when allocation is gone, queue units and buy them when the next month opens.
+- Recommendation and choice: **(b)+(c)**. `SignReservedCompute` and `QueueGpuPurchase` commands; `FulfillQueues` after `RunAllocation` each month; schema 11 adds `reservedContracts` and vendor `queuedGpus`. Golden digest `61bacf6b…`.
+- Why: NEXT item 5 and DESIGN.md reserved line; allocation-by-standing was already in from phase C.
+
+### Q85. Wider cast arrivals? DECIDED: Metta (2007), Macrosoft (2012), Palantear (2017) as data
+
+- Options: (a) keep five playable rivals; (b) add bible parodies as `joinsYear` plans only, same arrival and planner rules as Goggle and DeepSneak.
+- Recommendation and choice: **(b)**. Metta rents consumer sectors; Macrosoft owns and buys listings; Palantear publishes safety, no halls. Twelve `WiderCastTests`; lifetime soaks retuned cash and growth so none go bankrupt.
+- Why: NEXT item 12 and DESIGN.md cast table; no new commands. Start-era picker remains host work.
+
+### Q86. Cloud chip deals for rent-only rivals? DECIDED: `HardwareBatch.Cloud`, weekly rent surcharge
+
+- Options: (a) leave `buysListedChips` inert for OpenAye and AntHopticsAI; (b) a cloud holding id (−2) with no kW reservation, foundry export checks on the buyer bloc, `cloudRentPermille` weekly bill counted in GPU rent; planner `usesCloudDeals` runs listing buys only.
+- Recommendation and choice: **(b)**. `BuyListedChips` and rival planner accept cloud when the lab has no halls; freeze still blocks the buyer home bloc. Twelve facts in `CloudDealTests.cs`.
+- Why: DESIGN.md chips row and Q decision for OpenAye (2024) / AntHopticsAI (2025); without halls, listed chips were unreachable.
+
+### Q80. Staff pools or people? DECIDED: `StaffMember`, traits, morale drift, feud poaching
+
+- Options: (a) keep role counts; (b) one save row per person with trait and morale, hire/fire by individual, stars poached when a rival is in a feud.
+- Recommendation and choice: **(b)**. Schema 10 expands pools on migrate; stars get research permille; fire drops lowest morale. Golden digest `e358c673…`.
+- Why: DESIGN.md "stars matter and get poached"; pool counts alone could not carry trait or morale state.
+
+### Q87. Endings continuation test depth? DECIDED: bailout, exit, monopoly, frontier, museum, ousted
+
+- Options: (a) smoke only; (b) ~12 facts for each continuation path and config stubs, spectate-safe where relevant.
+- Recommendation and choice: **(b)**. `EndingsContinuationTests.cs` at 12 facts; rules never block after an ending (Q23).
+- Why: NEXT endless-play slice; complements funding ousted flow (Q78).
+
+### Q88. Shady path later depth? DECIDED: cards, grey payout, freeze signup, audits
+
+- Options: (a) defer to expansion; (b) government hack attention, grey-compute kw payout, audit investigations, corruption trust, freeze blocks reserved signup, smuggle export bypass.
+- Recommendation and choice: **(b)**. `ShadyPathLaterTests.cs` at 12 facts; grey compute pays via `GreyCompute` special only (no double cash line); `SignReservedCompute` respects home freeze (Q42).
+- Why: NEXT shady path; pairs with alignment corruption trust (Q74).
+
+### Q89. Unity CI while the owner's PC is offline? DECIDED: path-filtered pull_request on unity.yml
+
+- Options: (a) keep unity workflow manual-only until Hatch opens the editor; (b) add `pull_request` on `unity/**` and the workflow file as a GameCI compile gate; (c) run Unity on every PR regardless of paths.
+- Recommendation and choice: **(b)** — `pull_request` with paths `unity/**` and `.github/workflows/unity.yml`, keep `workflow_dispatch` and `cancel-in-progress`, no `push` or `schedule`, drop the main-only job guard so PRs run Edit Mode tests; secrets only on the test-runner step.
+- Why: owner's assistant decision (2026-11-20): Hatch cannot verify compiles daily during batched pushes (~once per day); GameCI Edit Mode is the gate before more Unity screens land.
 
 ## Open
 

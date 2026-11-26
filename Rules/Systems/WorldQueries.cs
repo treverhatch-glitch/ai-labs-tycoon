@@ -43,7 +43,7 @@ namespace AiLabs.Rules.Systems
     /// <summary>Read-only answers about sites, holdings, power and governments.</summary>
     public static class WorldQueries
     {
-        public static int InstalledKw(GameConfig c, LabState lab, int holdingId)
+        public static int InstalledKw(GameConfig c, GameState state, LabState lab, int holdingId)
         {
             int kw = 0;
             for (int i = 0; i < lab.Fleet.Count; i++)
@@ -52,14 +52,15 @@ namespace AiLabs.Rules.Systems
                 if (b.HoldingId != holdingId) continue;
                 GpuGenerationConfig gen = c.Compute.Generation(b.GpuGenId);
                 if (gen != null) kw += b.Count * gen.KwPerGpu;
+                else if (b.ChipDesignId >= 0) kw += b.Count * ChipQueries.KwPerChip(c, state, b);
             }
             return kw;
         }
 
         /// <summary>Power the holding still has free for new hardware: built capacity less what is installed.</summary>
-        public static int FreeKw(GameConfig c, LabState lab, Holding holding)
+        public static int FreeKw(GameConfig c, GameState state, LabState lab, Holding holding)
         {
-            return holding.HallKw - InstalledKw(c, lab, holding.Id);
+            return holding.HallKw - InstalledKw(c, state, lab, holding.Id) - ChipQueries.ReservedKw(lab, holding.Id);
         }
 
         /// <summary>What a holding takes from the grid: its hall, built and being built, less the private power that covers part of it.</summary>
@@ -137,6 +138,12 @@ namespace AiLabs.Rules.Systems
 
         public static int PolicyStaff(GameConfig c, LabState lab) { return LabQueries.StaffByFunction(c, lab, RoleFunction.Policy); }
 
+        /// <summary>Policy staff for hearings and investigations (era may add virtual staff on merge).</summary>
+        public static int EffectivePolicyStaff(GameConfig c, GameState state, LabState lab)
+        {
+            return PolicyStaff(c, lab);
+        }
+
         /// <summary>Weeks a hall extension of this size takes this lab: the base and the size, then trimmed by infrastructure staff, never under the floor.</summary>
         public static int BuildWeeks(GameConfig c, LabState lab, int kw)
         {
@@ -170,13 +177,13 @@ namespace AiLabs.Rules.Systems
         /// <summary>The bloc a place is in: a holding's site, or the lab's home for the HQ.</summary>
         public static string BlocOfPlace(GameConfig c, LabState lab, int holdingId)
         {
-            if (holdingId == HardwareBatch.Hq) return lab.HomeBlocId;
+            if (holdingId == HardwareBatch.Hq || holdingId == HardwareBatch.Cloud) return lab.HomeBlocId;
             Holding holding = lab.Holding(holdingId);
             return holding == null ? "" : BlocOfHolding(c, holding);
         }
 
         /// <summary>The power bill of one holding for a week, in parts. A holding with nothing installed and nothing leased costs nothing.</summary>
-        public static PowerBill BillFor(GameConfig c, LabState lab, Holding holding)
+        public static PowerBill BillFor(GameConfig c, GameState state, LabState lab, Holding holding)
         {
             var bill = new PowerBill();
             bill.HoldingId = holding.Id;
@@ -184,7 +191,7 @@ namespace AiLabs.Rules.Systems
             SiteConfig site = c.World.Site(holding.SiteId);
             if (site == null) return bill;
 
-            int installed = InstalledKw(c, lab, holding.Id);
+            int installed = InstalledKw(c, state, lab, holding.Id);
             int privateUsed = installed < holding.PrivateKw ? installed : holding.PrivateKw;
             int gridUsed = installed - privateUsed;
             int dealPrice = site.PowerPricePerKwWeek;
@@ -198,15 +205,41 @@ namespace AiLabs.Rules.Systems
             bill.PrivateCost = (long)privateUsed * dealPrice;
             long energy = MathI.MulPermille(bill.GridCost + bill.PrivateCost, EffectiveCooling(c, lab, site));
             bill.Cooling = energy - bill.GridCost - bill.PrivateCost;
+            int podCut = LiquidCoolingPodSystem.CoolingCostCutPermille(c, state, lab);
+            if (podCut > 0 && bill.Cooling > 0)
+                bill.Cooling = MathI.MulPermille(bill.Cooling, MathI.Permille - podCut);
             if (holding.Kind == HoldingKind.Colo) bill.ColoMarkup = (long)c.World.Colo.MarkupPerKwWeek * holding.HallKw;
             return bill;
         }
 
-        public static long WeeklyPowerBill(GameConfig c, LabState lab)
+        public struct PowerBillTotals
         {
-            long total = 0;
-            for (int i = 0; i < lab.Holdings.Count; i++) total += BillFor(c, lab, lab.Holdings[i]).Total;
-            return total;
+            public long GridCost;
+            public long PrivateCost;
+            public long Cooling;
+            public long ColoMarkup;
+
+            public long Total { get { return GridCost + PrivateCost + Cooling + ColoMarkup; } }
+        }
+
+        /// <summary>Lab-wide power bill rolled up by line (sums per-holding <see cref="BillFor"/> rows).</summary>
+        public static PowerBillTotals WeeklyPowerBillTotals(GameConfig c, GameState state, LabState lab)
+        {
+            var t = new PowerBillTotals();
+            for (int i = 0; i < lab.Holdings.Count; i++)
+            {
+                PowerBill bill = BillFor(c, state, lab, lab.Holdings[i]);
+                t.GridCost += bill.GridCost;
+                t.PrivateCost += bill.PrivateCost;
+                t.Cooling += bill.Cooling;
+                t.ColoMarkup += bill.ColoMarkup;
+            }
+            return t;
+        }
+
+        public static long WeeklyPowerBill(GameConfig c, GameState state, LabState lab)
+        {
+            return WeeklyPowerBillTotals(c, state, lab).Total;
         }
 
         /// <summary>Upkeep of the halls on owned land. A colo's leased space is paid in its power bill.</summary>
@@ -219,14 +252,14 @@ namespace AiLabs.Rules.Systems
         }
 
         /// <summary>The footprint a government sees in a bloc, in kilowatts. A holding with a power deal counts as much as the deal's attention says.</summary>
-        public static long FootprintKw(GameConfig c, LabState lab, string blocId)
+        public static long FootprintKw(GameConfig c, GameState state, LabState lab, string blocId)
         {
             long kw = 0;
             for (int i = 0; i < lab.Holdings.Count; i++)
             {
                 Holding holding = lab.Holdings[i];
                 if (BlocOfHolding(c, holding) != blocId) continue;
-                long installed = InstalledKw(c, lab, holding.Id);
+                long installed = InstalledKw(c, state, lab, holding.Id);
                 PowerDealConfig deal = holding.PrivateKw > 0 && !string.IsNullOrEmpty(holding.DealId) ? c.World.PowerDeal(holding.DealId) : null;
                 kw += deal == null ? installed : MathI.MulPermille(installed, deal.AttentionPermille);
             }
@@ -252,7 +285,7 @@ namespace AiLabs.Rules.Systems
             BlocConfig bloc = c.World.Bloc(blocId);
             var gain = new AttentionGain();
             gain.BlocId = blocId;
-            gain.FootprintKw = FootprintKw(c, lab, blocId);
+            gain.FootprintKw = FootprintKw(c, state, lab, blocId);
             gain.NoticeKw = NoticeKw(c, GameDate.Year(c.Calendar, state.Tick));
             gain.Size = (int)MathI.Min(100, gain.FootprintKw * 100 / gain.NoticeKw);
             gain.FromFootprint = MathI.MulPermille(gain.Size, bloc.StrictnessPermille);

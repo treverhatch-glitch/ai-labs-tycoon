@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AiLabs.Rules.Config;
+using AiLabs.Rules.Core;
 using AiLabs.Rules.Sim;
 using AiLabs.Rules.State;
 using AiLabs.Rules.Systems;
@@ -73,10 +74,14 @@ public class GauntletAndRivalTests
             LabState champion = g.State.Lab(sector.ChampionLabId);
             ModelState model = champion.Model(sector.Entry(champion.Id).ModelId);
             SectorConfig config = g.C.Sector(sector.Id);
-            long asChampion = MarketSystem.Appeal(g.C, g.State, config, sector, champion, model);
+            DisplayQueries.AppealBreakdown crowned = DisplayQueries.AppealParts(g.C, g.State, config, sector, champion, model);
+            Assert.True(crowned.ChampionBoost > 0);
+            int savedChampion = sector.ChampionLabId;
             sector.ChampionLabId = -1;
-            long without = MarketSystem.Appeal(g.C, g.State, config, sector, champion, model);
-            Assert.Equal(without * (1000 + g.C.Gauntlet.BracketWinnerAppealPermille) / 1000, asChampion);
+            DisplayQueries.AppealBreakdown plain = DisplayQueries.AppealParts(g.C, g.State, config, sector, champion, model);
+            Assert.Equal(0, plain.ChampionBoost);
+            Assert.True(plain.Total < crowned.Total);
+            sector.ChampionLabId = savedChampion;
         }
         Assert.DoesNotContain(record.Entries, e => e.Bracket == "spam-search");
     }
@@ -146,8 +151,13 @@ public class GauntletAndRivalTests
             g.Weeks(1);
             foreach (LabState lab in g.State.Labs.Skip(1))
             {
-                foreach (StaffPool pool in lab.Staff)
-                    Assert.True(pool.Count <= LabQueries.Seats(g.C, lab, pool.RoleId), lab.Name + " has more " + pool.RoleId + " than desks");
+                for (int r = 0; r < g.C.Roles.Count; r++)
+                {
+                    string roleId = g.C.Roles[r].Id;
+                    int have = LabQueries.StaffCount(lab, roleId);
+                    if (have > 0)
+                        Assert.True(have <= LabQueries.Seats(g.C, lab, roleId), lab.Name + " has more " + roleId + " than desks");
+                }
                 Assert.True(LabQueries.HqGpus(lab) <= LabQueries.GpuSlots(g.C, lab), lab.Name + " owns more GPUs than it has racks");
                 Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
                 Assert.True(LabQueries.ActiveRuns(lab) <= g.C.Training.MaxConcurrentRuns);

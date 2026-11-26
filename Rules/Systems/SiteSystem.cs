@@ -30,8 +30,11 @@ namespace AiLabs.Rules.Systems
                     {
                         holding.HallKw += holding.HallBuildingKw;
                         Events.Add(state, EventKind.HallBuilt, lab.Id, holding.Id, holding.HallBuildingKw, holding.SiteId);
+                        if (holding.HallStartTick >= 0 && tick - holding.HallStartTick <= c.Rivalry.FastBuildWeeks)
+                            Events.Add(state, EventKind.FastBuild, lab.Id, holding.Id, tick - holding.HallStartTick, holding.SiteId);
                         holding.HallBuildingKw = 0;
                         holding.HallDoneTick = -1;
+                        holding.HallStartTick = -1;
                     }
                     if (holding.DealDoneTick >= 0 && tick >= holding.DealDoneTick)
                     {

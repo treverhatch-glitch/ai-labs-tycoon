@@ -11,6 +11,7 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `state-machines` | Finite State Machines | 120 | - | CapabilityPermille +100 | Guards that patrol, spot you, and forget you five seconds later. |
 | `regression-tests` | Regression Test Suites | 200 | - | AlignmentPermille +200 | Find out the bot cheats before the customer does. |
 | `pathfinding` | A* Pathfinding | 240 | `state-machines` | CapabilityPermille +150 | Enemies can now find the player. Most of the time. Doors remain a problem. |
+| `go-fish-heuristic` | Go Fish Heuristics | 420 | `minimax` | CapabilityPermille +40 | A promising dead end. The grant committee loves it. |
 | `minimax` | Minimax & Alpha-Beta Search | 300 | - | CapabilityPermille +150 | Think ahead by assuming everyone else is as smart as you. Bold. |
 | `rules-engines` | Rules Engines | 450 | - | CapabilityPermille +100 | Ten thousand IF statements in a trench coat. |
 | `expert-shells` | Expert System Shells | 700 | `rules-engines` | unlocks `mid` | Bottle a senior expert. The expert has questions about this. |
@@ -59,6 +60,8 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `model-zoo` | Shared Model Zoo | 16,000 | `conv-nets` | TrainingSpeedPermille +500 | Download somebody else's brain, fine-tune it, call it research. |
 | `adversarial-tests` | Adversarial Test Sets | 20,000 | `conv-nets` | AlignmentPermille +300 | A sticker on a stop sign that says 'speed limit 90'. Fix that. |
 | `multi-gpu` | Multi-GPU Training | 22,000 | `gpu-clusters` | TrainingSpeedPermille +700 | Eight cards. Then sixteen. Then a conversation with the electricity company. |
+| `chip-team` | A Chip Team | 24,000 | `multi-gpu` | unlocks chip target `inference` | Hire people who have read a datasheet. Inference chips become possible, and so does a very expensive room. |
+| `hbm-memory` | Memory Stacked on the Chip | 26,000 | `chip-team` | - | Put the memory next to the maths. The memory bill follows. |
 
 ## It Writes (2017)
 
@@ -72,6 +75,8 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `mixed-precision` | Mixed-Precision Training | 23,000 | `multi-gpu` | TrainingSpeedPermille +900 | Use fewer digits and call it a feature. |
 | `api-platform` | API Platform | 22,000 | `attention-arch` | CapabilityPermille +1000 | Charge by the word. Discover that people say a lot of words. |
 | `emergent-skills` | Emergent Abilities | 43,000 | `scaling-laws` | CapabilityPermille +1000 | At ten billion parameters it learned to rhyme. Nobody taught it. Nobody asked. |
+| `training-silicon` | Training Silicon | 40,000 | `chip-team`, `attention-arch` | unlocks chip target `training` | A chip that trains as well as serves. Envydia notices. |
+| `compiler-stack-1` | Compiler Stack, Version One | 32,000 | `chip-team` | SoftwarePermille +100 | Your chips run at a third of their paper speed. A compiler fixes some of that. |
 
 ## The Chat Boom (2022)
 
@@ -86,6 +91,9 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `quantised-serving` | Quantised Serving | 18,000 | `mixed-precision`, `chat-interface` | TrainingSpeedPermille +1200 | Round every weight to four bits. Serve ten times the customers. Do not ask what got rounded. |
 | `liquid-cooling` | Liquid Cooling | 16,000 | `mixed-precision` | CoolingPermille +300 | Pipe water through the racks. The racks have opinions about water. The invoice has opinions about the racks. |
 | `red-teaming` | Red-Team Programme | 18,000 | `safety-evals`, `rlhf` | AlignmentPermille +700 | Pay clever people to be awful to the model. They are very good at it. |
+| `compiler-stack-2` | Compiler Stack, Version Two | 30,000 | `compiler-stack-1` | SoftwarePermille +100 | Kernels fused, graphs lowered, an intern's weekend project promoted to a team. |
+| `stacked-hbm` | Stacked Memory | 36,000 | `hbm-memory` | - | Memory in towers. The towers are very hot and very expensive. |
+| `reticle-dies` | Reticle-Sized Dies | 38,000 | `training-silicon` | - | One chip the size of the machine that makes chips. Most of them come out wrong. |
 
 ## Agents (2024)
 
@@ -99,6 +107,8 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | `coding-agents` | Coding Agents | 46,000 | `reasoning-models`, `code-models` | CapabilityPermille +9000 | Fixes the failing test by deleting the test. Ships it. |
 | `inference-batching` | Smart Inference Batching | 28,000 | `quantised-serving` | TrainingSpeedPermille +1500 | Wait for a few friends before leaving the dock. |
 | `computer-use` | Computer-Use Agents | 43,000 | `tool-use` | CapabilityPermille +6000 | Clicks buttons for you. Has opinions about cookie banners. |
+| `compiler-stack-3` | Compiler Stack, Version Three | 60,000 | `compiler-stack-2` | SoftwarePermille +100 | The compiler is partly written by the models it compiles. Nobody checks the arrangement. |
+| `low-precision` | Four-Bit Arithmetic | 52,000 | `training-silicon`, `quantised-serving` | - | Fewer bits per number and more numbers per second. The models claim not to notice. |
 
 ## Harnesses (2026)
 
@@ -106,11 +116,13 @@ Research points cost, prerequisites and effects. Effects are in permille (Capabi
 | --- | --- | --- | --- | --- | --- |
 | `multi-agent` | Multi-Agent Orchestration | 80,000 | `reasoning-models`, `agent-sandboxes` | CapabilityPermille +16000 | Ten agents, one task, nine meetings. |
 | `ai-assisted-research` | AI-Assisted Research | 110,000 | `reasoning-models` | CapabilityPermille +18000 | The model reads the papers, runs the experiments and thanks itself in the acknowledgements. |
+| `chiplet-packaging` | Chiplet Packaging | 48,000 | `reticle-dies` | - | Many dies on one package. The foundry charges for the glue between them. |
 | `synthetic-data` | Synthetic Data at Scale | 86,000 | `reasoning-models` | CapabilityPermille +12000, TrainingSpeedPermille +1500 | Train on text written by the last model. What could possibly echo? |
 | `interp-v2` | Interpretability v2 | 92,000 | `interp-v1` | AlignmentPermille +1200 | We can read its thoughts now. They are mostly about lunch. Mostly. |
 | `long-horizon` | Long-Horizon Harnesses | 120,000 | `multi-agent` | CapabilityPermille +14000 | It works for a week without supervision. You are not sure that is a good thing. |
 | `audit-trails` | Agent Audit Trails | 80,000 | `agent-sandboxes`, `interp-v1` | AlignmentPermille +1000 | Every action logged. Every log read by another agent. Nobody reads that agent's log. |
 | `chip-codesign` | Model-Designed Chips | 130,000 | `ai-assisted-research` | TrainingSpeedPermille +3000 | The model laid out the chip. It is smaller than we thought possible. We are a little scared. |
+| `optical-interconnect` | Optical Interconnect | 120,000 | `stacked-hbm`, `liquid-cooling` | CoolingPermille +100, TrainingSpeedPermille +100 | Move the data with light and the heat goes with it. Cooling and training both speed up. |
 
 ## Bodies (2029)
 

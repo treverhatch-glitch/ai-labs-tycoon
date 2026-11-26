@@ -66,6 +66,7 @@ namespace AiLabs.Rules.Config
                 if (room.GpuSlotsPerTile < 0) p.Add("roomType " + room.Id + " has negative gpuSlotsPerTile");
                 if (room.MinWidth < 1 || room.MinHeight < 1) p.Add("roomType " + room.Id + " needs minWidth and minHeight of at least 1");
                 if (room.BuildCostPerTile < 0 || room.UpkeepPerTileWeek < 0) p.Add("roomType " + room.Id + " has a negative cost");
+                if (!string.IsNullOrEmpty(room.RequiresTech) && c.Tech(room.RequiresTech) == null) p.Add("roomType " + room.Id + " requires the unknown tech \"" + room.RequiresTech + "\"");
             }
             foreach (RoleConfig role in c.Roles)
             {
@@ -94,14 +95,43 @@ namespace AiLabs.Rules.Config
                 foreach (TechEffectConfig e in tech.Effects)
                 {
                     if (e.Kind == TechEffectKind.UnlockLine && c.Line(e.Id) == null) p.Add("tech " + tech.Id + " unlocks the unknown model line \"" + e.Id + "\"");
-                    if (e.Kind != TechEffectKind.UnlockLine && e.Amount <= 0) p.Add("tech " + tech.Id + " has an effect with no amount");
+                    if (e.Kind == TechEffectKind.UnlockChipTarget && c.Chips.Target(e.Id) == null) p.Add("tech " + tech.Id + " unlocks the unknown chip target \"" + e.Id + "\"");
+                    if (e.Kind != TechEffectKind.UnlockLine && e.Kind != TechEffectKind.UnlockChipTarget && e.Amount <= 0) p.Add("tech " + tech.Id + " has an effect with no amount");
                 }
             }
             TechCycles(p, c);
+            ResearchForkProblems(p, c);
 
             if (c.Training.MaxConcurrentRuns < 1) p.Add("training.maxConcurrentRuns must be at least 1");
             Permille(p, "training.carryoverPermille", c.Training.CarryoverPermille);
             if (c.Training.LuckPermille < 0 || c.Training.LuckPermille >= 1000) p.Add("training.luckPermille must be from 0 to 999");
+            Permille(p, "training.baseFailPermille", c.Training.BaseFailPermille);
+            if (c.Training.FailEngineerCutPermille < 0) p.Add("training.failEngineerCutPermille is negative");
+            if (c.Training.FailAlignmentCutPermille < 0) p.Add("training.failAlignmentCutPermille is negative");
+            Permille(p, "training.failAfterProgressPermille", c.Training.FailAfterProgressPermille);
+            SyntheticDataLabProblems(p, c);
+            Permille(p, "training.distillMinLeadPermille", c.Training.DistillMinLeadPermille);
+            Permille(p, "training.distillFinishCapabilityPermille", c.Training.DistillFinishCapabilityPermille);
+            Permille(p, "training.abortTrainingRefundPermille", c.Training.AbortTrainingRefundPermille);
+            UniqueIds(p, "training.recipes", c.Training.Recipes);
+            foreach (TrainingRecipeConfig recipe in c.Training.Recipes)
+            {
+                if (c.Line(recipe.LineId) == null) p.Add("recipe " + recipe.Id + " names unknown line \"" + recipe.LineId + "\"");
+                if (c.Training.DataSource(recipe.DataSourceId) == null) p.Add("recipe " + recipe.Id + " names unknown data source \"" + recipe.DataSourceId + "\"");
+                if (recipe.AlignmentSharePermille < 0 || recipe.AlignmentSharePermille > 900)
+                    p.Add("recipe " + recipe.Id + " alignmentSharePermille must be from 0 to 900");
+                Permille(p, "recipe " + recipe.Id + ".computePermille", recipe.ComputePermille);
+            }
+            if (c.Training.DataSources.Count == 0) p.Add("training.dataSources is empty");
+            UniqueIds(p, "training.dataSources", c.Training.DataSources);
+            foreach (DataSourceConfig src in c.Training.DataSources)
+            {
+                if (src.PrepCostPermille < 1) p.Add("data source " + src.Id + " needs prepCostPermille of at least 1");
+                if (src.FinishCorruption < 0 || src.FinishHeat < 0) p.Add("data source " + src.Id + " has negative finish risk");
+                Permille(p, "data source " + src.Id + ".homeAttentionPermille", src.HomeAttentionPermille);
+                Permille(p, "data source " + src.Id + ".weeklyFailRiskPermille", src.WeeklyFailRiskPermille);
+                if (src.OpensYear < 0) p.Add("data source " + src.Id + " has negative opensYear");
+            }
             if (c.Training.Lines.Count == 0) p.Add("training.lines is empty");
             foreach (ModelLineConfig line in c.Training.Lines)
             {
@@ -110,6 +140,11 @@ namespace AiLabs.Rules.Config
                 if (line.PrepCost < 0) p.Add("line " + line.Id + " has a negative prepCost");
                 if (line.ServingCostPermille < 1) p.Add("line " + line.Id + " needs servingCostPermille of at least 1");
                 if (line.Locked && !Unlockable(c, line.Id)) p.Add("line " + line.Id + " is locked and no tech unlocks it");
+                if (line.SpecialistQualityBonusPermille > 0 && line.SpecialistSectorIds.Count == 0)
+                    p.Add("line " + line.Id + " is a specialist but names no sectors");
+                for (int i = 0; i < line.SpecialistSectorIds.Count; i++)
+                    if (c.Sector(line.SpecialistSectorIds[i]) == null)
+                        p.Add("line " + line.Id + " names the unknown specialist sector \"" + line.SpecialistSectorIds[i] + "\"");
             }
 
             if (c.Safety.FullAlignmentComputePermille < 1) p.Add("safety.fullAlignmentComputePermille must be at least 1");
@@ -117,9 +152,45 @@ namespace AiLabs.Rules.Config
             if (c.Safety.GlitchWeeks < 0) p.Add("safety.glitchWeeks is negative");
             Permille(p, "safety.incidentChancePermille", c.Safety.IncidentChancePermille);
             Permille(p, "safety.glitchQualityPermille", c.Safety.GlitchQualityPermille);
+            Permille(p, "safety.overworkedQualityPermille", c.Safety.OverworkedQualityPermille);
+            Permille(p, "safety.overworkedAppealPermille", c.Safety.OverworkedAppealPermille);
+            Permille(p, "safety.corruptedMoodAppealPermille", c.Safety.CorruptedMoodAppealPermille);
+            Permille(p, "safety.overworkedTrainingSpeedPermille", c.Safety.OverworkedTrainingSpeedPermille);
+            Permille(p, "safety.glitchingAppealPermille", c.Safety.GlitchingAppealPermille);
+            Permille(p, "safety.glitchingTrainingSpeedPermille", c.Safety.GlitchingTrainingSpeedPermille);
+            if (c.Safety.SalesReputationRecoveryPermillePerStaff < 0)
+                p.Add("safety.salesReputationRecoveryPermillePerStaff is negative");
+            if (c.Safety.SafetyStaffIncidentCutPermillePerStaff < 0)
+                p.Add("safety.safetyStaffIncidentCutPermillePerStaff is negative");
+            Permille(p, "safety.overworkedAlignmentPermille", c.Safety.OverworkedAlignmentPermille);
+            Permille(p, "safety.corruptedMoodQualityPermille", c.Safety.CorruptedMoodQualityPermille);
             Permille(p, "safety.reputationBaseline", c.Safety.ReputationBaseline);
+            Permille(p, "safety.sandbagGapPermille", c.Safety.SandbagGapPermille);
+            Permille(p, "safety.rung2BelowAlignment", c.Safety.Rung2BelowAlignment);
+            if (c.Safety.IncidentRungs.Count != 3) p.Add("safety.incidentRungs must have exactly three rungs");
+            UniqueIds(p, "safety.incidentRungs", c.Safety.IncidentRungs);
+            var rungSeen = new bool[4];
+            for (int i = 0; i < c.Safety.IncidentRungs.Count; i++)
+            {
+                IncidentRungConfig r = c.Safety.IncidentRungs[i];
+                if (r.Rung < 1 || r.Rung > 3) p.Add("incident rung " + r.Id + " must be from 1 to 3");
+                else if (rungSeen[r.Rung]) p.Add("safety.incidentRungs has more than one entry for rung " + r.Rung);
+                else rungSeen[r.Rung] = true;
+                if (r.FinePermille < 0) p.Add("incident rung " + r.Id + " has negative finePermille");
+                if (r.ReputationLoss < 0) p.Add("incident rung " + r.Id + " has negative reputationLoss");
+            }
+            if (!rungSeen[1] || !rungSeen[2] || !rungSeen[3]) p.Add("safety.incidentRungs must name rungs 1, 2 and 3 exactly once each");
 
             Permille(p, "market.switchRatePermille", c.Market.SwitchRatePermille);
+            if (c.Market.SectorPriceMinPermille < 1) p.Add("market.sectorPriceMinPermille must be at least 1");
+            if (c.Market.SectorPriceMaxPermille < c.Market.SectorPriceMinPermille)
+                p.Add("market.sectorPriceMaxPermille must be at least sectorPriceMinPermille");
+            Permille(p, "market.openWeightsRevenuePermille", c.Market.OpenWeightsRevenuePermille);
+            if (c.Market.OpenWeightsAppealBonusPermille < 0) p.Add("market.openWeightsAppealBonusPermille must be non-negative");
+            if (c.Market.SectorChampionCashPerWeek < 0) p.Add("market.sectorChampionCashPerWeek is negative");
+            DeviceWorkshopProblems(p, c);
+            RoomProgramsProblems(p, c);
+            CapabilityDomainProblems(p, c);
             if (c.Market.Sectors.Count == 0) p.Add("market.sectors is empty");
             foreach (SectorConfig sector in c.Market.Sectors)
             {
@@ -140,9 +211,34 @@ namespace AiLabs.Rules.Config
                 if (sector.CapabilityWeightPermille < 0 || sector.SafetyWeightPermille < 0) p.Add("sector " + sector.Id + " has a negative weight");
                 if (sector.RevenuePerComputeUnit < 1) p.Add("sector " + sector.Id + " needs revenuePerComputeUnit of at least 1");
             }
+            for (int i = 0; i < c.Safety.SectorIncidentHeadlines.Count; i++)
+            {
+                for (int k = 0; k < i; k++)
+                    if (c.Safety.SectorIncidentHeadlines[k].SectorId == c.Safety.SectorIncidentHeadlines[i].SectorId)
+                        p.Add("safety.sectorIncidentHeadlines has sector \"" + c.Safety.SectorIncidentHeadlines[i].SectorId + "\" twice");
+            }
+            for (int i = 0; i < c.Safety.SectorIncidentHeadlines.Count; i++)
+            {
+                SectorIncidentHeadlineConfig flavour = c.Safety.SectorIncidentHeadlines[i];
+                if (c.Sector(flavour.SectorId) == null) p.Add("safety.sectorIncidentHeadlines[" + i + "] names unknown sector \"" + flavour.SectorId + "\"");
+                if (flavour.Headlines == null || flavour.Headlines.Count == 0)
+                    p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " needs at least one headline");
+                else foreach (string headline in flavour.Headlines)
+                {
+                    if (string.IsNullOrEmpty(headline)) p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " has an empty headline");
+                    else if (!headline.Contains("{model}")) p.Add("safety.sectorIncidentHeadlines for " + flavour.SectorId + " headline must contain {model}");
+                }
+            }
 
             if (c.Finance.BankruptcyGraceWeeks < 1) p.Add("finance.bankruptcyGraceWeeks must be at least 1");
             if (c.Finance.HistoryMonths < 1) p.Add("finance.historyMonths must be at least 1");
+            FundingProblems(p, c);
+            ReleaseReviewProblems(p, c);
+            EnterpriseDealsProblems(p, c);
+            DataLicensesProblems(p, c);
+            DistillSlotsProblems(p, c);
+            PublicBenchmarksProblems(p, c);
+            StaffPeopleProblems(p, c);
             if (c.Gauntlet.JitterPermille < 0 || c.Gauntlet.JitterPermille >= 1000) p.Add("gauntlet.jitterPermille must be from 0 to 999");
 
             if (c.Gauntlet.HistoryYears < 1) p.Add("gauntlet.historyYears must be at least 1");
@@ -156,14 +252,159 @@ namespace AiLabs.Rules.Config
             {
                 if (c.Lot(rival.LotId) == null) p.Add("rival " + rival.Id + " starts on the unknown lot \"" + rival.LotId + "\"");
                 Permille(p, "rival " + rival.Id + " reputation", rival.Reputation);
+                if (rival.JoinsYear < 0) p.Add("rival " + rival.Id + " has a negative joinsYear");
                 PlanProblems(p, c, "rival " + rival.Id, rival.Plan);
             }
 
             PlanProblems(p, c, "autopilot", c.Autopilot);
 
+            RivalryProblems(p, c);
+            VendorProblems(p, c);
+            ChipsProblems(p, c);
+            EndingsProblems(p, c);
+            ShadyProblems(p, c);
+            ExpansionsProblems(p, c);
             WorldEventProblems(p, c);
 
             return p;
+        }
+
+        static void EndingsProblems(List<string> p, GameConfig c)
+        {
+            if (c.Endings == null) { p.Add("endings is missing"); return; }
+            UniqueIds(p, "endings.endings", c.Endings.Endings);
+            if (c.Endings.BailoutCash < 0) p.Add("endings.bailoutCash is negative");
+            Permille(p, "endings.exitFleetPermille", c.Endings.ExitFleetPermille);
+            Permille(p, "endings.handcuffsFinePermille", c.Endings.HandcuffsFinePermille);
+            if (c.Endings.Frontier.BaseCost < 1) p.Add("endings.frontier.baseCost must be at least 1");
+            if (c.Endings.Frontier.MaxLevel < 1) p.Add("endings.frontier.maxLevel must be at least 1");
+            if (c.Endings.Museum.PerLine < 1) p.Add("endings.museum.perLine must be at least 1");
+            Permille(p, "endings.museum.researchPermillePerCapability", c.Endings.Museum.ResearchPermillePerCapability);
+            if (c.Endings.Museum.ReputationPerFullLine < 0) p.Add("endings.museum.reputationPerFullLine must not be negative");
+            if (c.Endings.Museum.ResearchPointsPerFullLine < 0) p.Add("endings.museum.researchPointsPerFullLine must not be negative");
+            if (c.Endings.Museum.CashPerFullLine < 0) p.Add("endings.museum.cashPerFullLine must not be negative");
+            if (c.Endings.Frontier.TrainingSpeedPermillePerLevel < 0) p.Add("endings.frontier.trainingSpeedPermillePerLevel is negative");
+            if (c.Endings.Frontier.ResearchPointsPerLevel < 0) p.Add("endings.frontier.researchPointsPerLevel is negative");
+            if (c.Endings.Frontier.CashPerLevel < 0) p.Add("endings.frontier.cashPerLevel is negative");
+        }
+
+        static void RoomProgramsProblems(List<string> p, GameConfig c)
+        {
+            RoomProgramsConfig programs = c.RoomPrograms;
+            if (programs == null) { p.Add("roomPrograms is missing"); return; }
+            RoomProgramGateProblems(p, c, "roomPrograms.productStudio", programs.ProductStudio.EraId, programs.ProductStudio.RoomTypeId, programs.ProductStudio.StaffRoleId);
+            if (programs.ProductStudio.CampaignWeeks < 1) p.Add("roomPrograms.productStudio.campaignWeeks must be at least 1");
+            Permille(p, "roomPrograms.productStudio.campaignAppealPermille", programs.ProductStudio.CampaignAppealPermille);
+            Permille(p, "roomPrograms.productStudio.campaignRevenuePermille", programs.ProductStudio.CampaignRevenuePermille);
+            if (programs.ProductStudio.ExtendCampaignWeeks < 0) p.Add("roomPrograms.productStudio.extendCampaignWeeks is negative");
+            if (programs.ProductStudio.CampaignWeeklyUpkeepCash < 0) p.Add("roomPrograms.productStudio.campaignWeeklyUpkeepCash is negative");
+            if (programs.ProductStudio.CampaignWeeklyMarketingCash < 0) p.Add("roomPrograms.productStudio.campaignWeeklyMarketingCash is negative");
+            RoomProgramGateProblems(p, c, "roomPrograms.aiFactoryHall", programs.AiFactoryHall.EraId, programs.AiFactoryHall.RoomTypeId, "");
+            if (programs.AiFactoryHall.FactoryWeeklyUpkeepCash < 0) p.Add("roomPrograms.aiFactoryHall.factoryWeeklyUpkeepCash is negative");
+            if (programs.AiFactoryHall.FactoryWeeklyResearchPoints < 0) p.Add("roomPrograms.aiFactoryHall.factoryWeeklyResearchPoints is negative");
+            if (programs.AiFactoryHall.ExtraConcurrentRuns < 1) p.Add("roomPrograms.aiFactoryHall.extraConcurrentRuns must be at least 1");
+            RoomProgramGateProblems(p, c, "roomPrograms.liquidCoolingPod", programs.LiquidCoolingPod.EraId, programs.LiquidCoolingPod.RoomTypeId, "");
+            Permille(p, "roomPrograms.liquidCoolingPod.coolingCostCutPermille", programs.LiquidCoolingPod.CoolingCostCutPermille);
+            if (programs.LiquidCoolingPod.FlushWeeklyRebateCash < 0) p.Add("roomPrograms.liquidCoolingPod.flushWeeklyRebateCash is negative");
+            Permille(p, "roomPrograms.liquidCoolingPod.maxFoulingPermille", programs.LiquidCoolingPod.MaxFoulingPermille);
+            if (programs.LiquidCoolingPod.FlushRebatePerRentedGpu < 0) p.Add("roomPrograms.liquidCoolingPod.flushRebatePerRentedGpu is negative");
+        }
+
+        static void RoomProgramGateProblems(List<string> p, GameConfig c, string path, string eraId, string roomTypeId, string roleId)
+        {
+            if (string.IsNullOrEmpty(eraId) || c.Era(eraId) == null) p.Add(path + " names an unknown era");
+            if (string.IsNullOrEmpty(roomTypeId) || c.RoomType(roomTypeId) == null) p.Add(path + " names an unknown room type");
+            if (!string.IsNullOrEmpty(roleId) && c.Role(roleId) == null) p.Add(path + " names an unknown role");
+        }
+
+        static void DeviceWorkshopProblems(List<string> p, GameConfig c)
+        {
+            DeviceWorkshopConfig w = c.Market.DeviceWorkshop;
+            if (w == null) { p.Add("market.deviceWorkshop is missing"); return; }
+            if (string.IsNullOrEmpty(w.EraId) || c.Era(w.EraId) == null) p.Add("market.deviceWorkshop names an unknown era");
+            if (string.IsNullOrEmpty(w.RoomTypeId) || c.RoomType(w.RoomTypeId) == null) p.Add("market.deviceWorkshop names an unknown room type");
+            if (string.IsNullOrEmpty(w.SectorId) || c.Sector(w.SectorId) == null) p.Add("market.deviceWorkshop names an unknown sector");
+            Permille(p, "market.deviceWorkshop.appealBonusPermille", w.AppealBonusPermille);
+            Permille(p, "market.deviceWorkshop.revenueBonusPermille", w.RevenueBonusPermille);
+            Permille(p, "market.deviceWorkshop.prepCostCutPermille", w.PrepCostCutPermille);
+            if (w.TrainingSpeedBonusPermille < 0) p.Add("market.deviceWorkshop.trainingSpeedBonusPermille is negative");
+        }
+
+        static void CapabilityDomainProblems(List<string> p, GameConfig c)
+        {
+            if (c.Market.CapabilityDomains == null) return;
+            var seen = new List<string>();
+            foreach (CapabilityDomainConfig d in c.Market.CapabilityDomains)
+            {
+                if (string.IsNullOrEmpty(d.IdValue)) { p.Add("market.capabilityDomains has an entry with no id"); continue; }
+                if (seen.Contains(d.IdValue)) p.Add("market.capabilityDomains has two entries called " + d.IdValue);
+                seen.Add(d.IdValue);
+                if (d.SectorIds == null || d.SectorIds.Count == 0) p.Add("capability domain " + d.IdValue + " needs at least one sector");
+                else foreach (string s in d.SectorIds)
+                    if (c.Sector(s) == null) p.Add("capability domain " + d.IdValue + " names the unknown sector \"" + s + "\"");
+                Permille(p, "capability domain " + d.IdValue + " leaderAppealPermille", d.LeaderAppealPermille);
+                Permille(p, "capability domain " + d.IdValue + " challengerAppealPermille", d.ChallengerAppealPermille);
+                Permille(p, "capability domain " + d.IdValue + " challengerNearLeaderPermille", d.ChallengerNearLeaderPermille);
+                if (d.LeaderReputationPerWeek < 0) p.Add("capability domain " + d.IdValue + " leaderReputationPerWeek is negative");
+                if (d.ChallengerReputationPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerReputationPerWeek is negative");
+                if (d.LeaderResearchPerWeek < 0) p.Add("capability domain " + d.IdValue + " leaderResearchPerWeek is negative");
+                if (d.ChallengerResearchPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerResearchPerWeek is negative");
+                if (d.LeaderCashPerWeek < 0) p.Add("capability domain " + d.IdValue + " leaderCashPerWeek is negative");
+                if (d.ChallengerCashPerWeek < 0) p.Add("capability domain " + d.IdValue + " challengerCashPerWeek is negative");
+            }
+        }
+
+        static void SyntheticDataLabProblems(List<string> p, GameConfig c)
+        {
+            SyntheticDataLabConfig lab = c.Training.SyntheticDataLab;
+            if (lab == null) { p.Add("training.syntheticDataLab is missing"); return; }
+            if (string.IsNullOrEmpty(lab.EraId) || c.Era(lab.EraId) == null) p.Add("training.syntheticDataLab names an unknown era");
+            if (string.IsNullOrEmpty(lab.RoomTypeId) || c.RoomType(lab.RoomTypeId) == null) p.Add("training.syntheticDataLab names an unknown room type");
+            if (string.IsNullOrEmpty(lab.DataSourceId) || c.Training.DataSource(lab.DataSourceId) == null)
+                p.Add("training.syntheticDataLab names an unknown data source");
+            Permille(p, "training.syntheticDataLab.corruptionCutPermille", lab.CorruptionCutPermille);
+            Permille(p, "training.syntheticDataLab.failRiskCutPermille", lab.FailRiskCutPermille);
+            if (lab.TrainingSpeedBonusPermille < 0) p.Add("training.syntheticDataLab.trainingSpeedBonusPermille is negative");
+            Permille(p, "training.syntheticDataLab.prepCostCutPermille", lab.PrepCostCutPermille);
+        }
+
+        static void ExpansionsProblems(List<string> p, GameConfig c)
+        {
+            if (c.Expansions == null) { p.Add("expansions is missing"); return; }
+            Kit(p, c, "expansions.bodies", c.Expansions.Bodies);
+            Kit(p, c, "expansions.upward", c.Expansions.Upward);
+        }
+
+        static void Kit(List<string> p, GameConfig c, string path, ExpansionEraKitConfig kit)
+        {
+            if (kit == null) { p.Add(path + " is missing"); return; }
+            if (string.IsNullOrEmpty(kit.EraId) || c.Era(kit.EraId) == null) p.Add(path + " names an unknown era");
+            if (string.IsNullOrEmpty(kit.RoomTypeId) || c.RoomType(kit.RoomTypeId) == null) p.Add(path + " names an unknown room type");
+            if (kit.SectorIds == null || kit.SectorIds.Count == 0) p.Add(path + " needs at least one sector");
+            else for (int i = 0; i < kit.SectorIds.Count; i++)
+                if (c.Sector(kit.SectorIds[i]) == null) p.Add(path + " names unknown sector " + kit.SectorIds[i]);
+            Permille(p, path + ".appealBonusPermille", kit.AppealBonusPermille);
+            Permille(p, path + ".capabilityBonusPermille", kit.CapabilityBonusPermille);
+            Permille(p, path + ".trainingSpeedBonusPermille", kit.TrainingSpeedBonusPermille);
+            Permille(p, path + ".passiveComputePermillePerTile", kit.PassiveComputePermillePerTile);
+        }
+
+        static void ShadyProblems(List<string> p, GameConfig c)
+        {
+            if (c.Shady == null) { p.Add("shady is missing"); return; }
+            UniqueIds(p, "shady.cards", c.Shady.Cards);
+            foreach (ShadyCardConfig card in c.Shady.Cards)
+            {
+                Permille(p, "shady card " + card.Id + " successPermille", card.SuccessPermille);
+                Permille(p, "shady card " + card.Id + " tracePermille", card.TracePermille);
+                if (card.Weeks < 1) p.Add("shady card " + card.Id + " needs at least one week");
+            }
+            Permille(p, "shady.launderKeepPermille", c.Shady.LaunderKeepPermille);
+            if (c.Shady.LaunderHeatPer < 1) p.Add("shady.launderHeatPer must be at least 1");
+            if (c.Shady.HeatBuydownCashCost < 0) p.Add("shady.heatBuydownCashCost is negative");
+            if (c.Shady.HeatBuydownAmount < 0) p.Add("shady.heatBuydownAmount is negative");
+            if (c.Shady.CancelShadyOpHeatPenalty < 0) p.Add("shady.cancelShadyOpHeatPenalty is negative");
+            Permille(p, "shady.stashStoragePermillePerWeek", c.Shady.StashStoragePermillePerWeek);
         }
 
         static void ComputeProblems(List<string> p, GameConfig c)
@@ -171,6 +412,14 @@ namespace AiLabs.Rules.Config
             ComputeConfig compute = c.Compute;
             Permille(p, "compute.resalePermille", compute.ResalePermille);
             Permille(p, "compute.generationDecayPermille", compute.GenerationDecayPermille);
+            Permille(p, "compute.reservedRentPermille", compute.ReservedRentPermille);
+            Permille(p, "compute.peerLeaseRentPermille", compute.PeerLeaseRentPermille);
+            if (compute.PeerLeaseDebtGpuTrimPerWeek < 0) p.Add("compute.peerLeaseDebtGpuTrimPerWeek is negative");
+            if (compute.PeerLeaseArrearsCashPerGpu < 0) p.Add("compute.peerLeaseArrearsCashPerGpu is negative");
+            if (compute.PeerLeaseShieldWeeks < 0) p.Add("compute.peerLeaseShieldWeeks is negative");
+            Permille(p, "compute.reservedBreakPenaltyPermille", compute.ReservedBreakPenaltyPermille);
+            if (compute.ReservedContractWeeks < 1) p.Add("compute.reservedContractWeeks must be at least 1");
+            if (compute.ReservedDepositWeeks < 0) p.Add("compute.reservedDepositWeeks is negative");
             if (compute.MoveCostPerUnit < 0) p.Add("compute.moveCostPerUnit is negative");
             UniqueIds(p, "compute.gpuGenerations", compute.GpuGenerations);
             if (compute.GpuGenerations.Count == 0) { p.Add("compute.gpuGenerations is empty"); return; }
@@ -289,6 +538,10 @@ namespace AiLabs.Rules.Config
             if (hw.FromMonth < 1 || hw.ToMonth > c.Calendar.MonthsPerYear || hw.FromMonth > hw.ToMonth)
                 p.Add("world.heatwave months must run from 1 to " + c.Calendar.MonthsPerYear + " with fromMonth not after toMonth");
             if (hw.RollDivisor < 1) p.Add("world.heatwave.rollDivisor must be at least 1");
+            if (hw.WeeklySurchargeCashPerKw < 0) p.Add("world.heatwave.weeklySurchargeCashPerKw is negative");
+            if (hw.HedgeCashCost < 0) p.Add("world.heatwave.hedgeCashCost is negative");
+            if (hw.HedgeWeeks < 0) p.Add("world.heatwave.hedgeWeeks is negative");
+            Permille(p, "world.heatwave.hedgeWaiverPermille", hw.HedgeWaiverPermille);
 
             AttentionConfig a = w.Attention;
             Permille(p, "world.attention.decayPermillePerMonth", a.DecayPermillePerMonth);
@@ -306,6 +559,8 @@ namespace AiLabs.Rules.Config
             if (a.FreezeExitBelow >= a.FreezeAt || a.FreezeExitBelow < 1) p.Add("world.attention.freezeExitBelow must be under the freeze level");
             if (a.DropMargin < 0) p.Add("world.attention.dropMargin is negative");
             if (a.AuditFineRevenueWeeks < 0) p.Add("world.attention.auditFineRevenueWeeks is negative");
+            if (a.ProtestRevoltAttentionAt < 0) p.Add("world.attention.protestRevoltAttentionAt is negative");
+            Permille(p, "world.attention.protestRevoltBonusPermille", a.ProtestRevoltBonusPermille);
 
             foreach (ExportRuleConfig rule in w.ExportRules)
             {
@@ -318,6 +573,152 @@ namespace AiLabs.Rules.Config
             if (w.Bloc(c.PlayerStart.HomeBlocId) == null) p.Add("playerStart.homeBlocId names the unknown bloc \"" + c.PlayerStart.HomeBlocId + "\"");
             foreach (RivalConfig rival in c.Rivals)
                 if (w.Bloc(rival.HomeBlocId) == null) p.Add("rival " + rival.Id + " has the unknown home bloc \"" + rival.HomeBlocId + "\"");
+        }
+
+        static void ChipsProblems(List<string> p, GameConfig c)
+        {
+            ChipsConfig k = c.Chips;
+            if (k.PointsPerArchitectWeek < 1) p.Add("chips.pointsPerArchitectWeek must be at least 1");
+            Permille(p, "chips.softwareStart", k.SoftwareStart);
+            if (k.SoftwareStart > k.SoftwareBaseCap || k.SoftwareBaseCap > k.SoftwareCap || k.SoftwareCap > 2 * MathI.Permille) p.Add("chips: softwareStart, softwareBaseCap and softwareCap must be in that order and no more than 2000");
+            if (k.SoftwarePerArchitectWeek < 0) p.Add("chips.softwarePerArchitectWeek is negative");
+            if (k.InHouseTrainingBonusPermille < 0) p.Add("chips.inHouseTrainingBonusPermille is negative");
+            if (k.TapeoutWeeks < 1 || k.RespinWeeks < 1) p.Add("chips.tapeoutWeeks and chips.respinWeeks must be at least 1");
+            Permille(p, "chips.respinCostPermille", k.RespinCostPermille);
+            if (k.RespinPerEngineerPermille < 0 || k.RespinEngineerCap < 0) p.Add("chips.respinPerEngineerPermille and respinEngineerCap must not be negative");
+            if (k.YieldRampPerWeek < 0 || k.YieldRampPerEngineer < 0 || k.YieldRampEngineerCap < 0) p.Add("chips: the yield ramp numbers must not be negative");
+            if (k.TestLabRampPermille < MathI.Permille) p.Add("chips.testLabRampPermille must be at least 1000: a test lab never slows the ramp");
+            Permille(p, "chips.yieldCrashPermille", k.YieldCrashPermille);
+            Permille(p, "chips.yieldCrashKeepPermille", k.YieldCrashKeepPermille);
+            if (k.AbortRespinCashCost < 0) p.Add("chips.abortRespinCashCost is negative");
+            Permille(p, "chips.cancelOrderRefundPermille", k.CancelOrderRefundPermille);
+            if (k.ReviveDesignCashCost < 0) p.Add("chips.reviveDesignCashCost is negative");
+            if (k.FoundryVendorSharePermille < 0 || k.FoundryVendorSharePermille >= MathI.Permille) p.Add("chips.foundryVendorSharePermille must be from 0 to 999");
+            if (k.BookAheadMonths < 1) p.Add("chips.bookAheadMonths must be at least 1");
+            if (k.ListingMaxPerMonth < 1) p.Add("chips.listingMaxPerMonth must be at least 1");
+            if (k.ListingWeeklyUpkeep < 0) p.Add("chips.listingWeeklyUpkeep is negative");
+            if (k.ListingMaxActive < 1) p.Add("chips.listingMaxActive must be at least 1");
+            if (k.ListingSpotlightUpkeepPermille < 0) p.Add("chips.listingSpotlightUpkeepPermille is negative");
+            if (k.ListingSpotlightCashCost < 0) p.Add("chips.listingSpotlightCashCost is negative");
+            if (k.CloudRentPermille < 0 || k.CloudRentPermille > 3000) p.Add("chips.cloudRentPermille must be from 0 to 3000");
+            Permille(p, "chips.cloudLandlordSharePermille", k.CloudLandlordSharePermille);
+            if (k.ChipletFoundryRoomPermille < 0 || k.ChipletFoundryRoomPermille > 3000)
+                p.Add("chips.chipletFoundryRoomPermille must be from 0 to 3000");
+            if (k.ChipletTrainingBonusPermille < 0) p.Add("chips.chipletTrainingBonusPermille is negative");
+            if (k.ChipletDieIds != null)
+                foreach (string id in k.ChipletDieIds)
+                    if (k.Option(ChipOptionGroup.Die, id) == null) p.Add("chips.chipletDieIds names the unknown die \"" + id + "\"");
+            Permille(p, "chips.plannerMinYieldPermille", k.PlannerMinYieldPermille);
+            if (k.Shortage == null) p.Add("chips.shortage is missing");
+            else
+            {
+                if (k.Shortage.DurationWeeks < 1) p.Add("chips.shortage.durationWeeks must be at least 1");
+                Permille(p, "chips.shortage.vendorSupplyFloorPermille", k.Shortage.VendorSupplyFloorPermille);
+                if (k.Shortage.VendorSupplyFloorPermille < 1) p.Add("chips.shortage.vendorSupplyFloorPermille must be at least 1");
+                if (k.Shortage.MinStrengthPermille < MathI.Permille || k.Shortage.MaxStrengthPermille < k.Shortage.MinStrengthPermille)
+                    p.Add("chips.shortage strength permilles must run from 1000 upward");
+            }
+            RoleConfig architect = c.Role(k.ArchitectRoleId);
+            if (architect == null) p.Add("chips.architectRoleId names the unknown role \"" + k.ArchitectRoleId + "\"");
+            else if (architect.Function != RoleFunction.ChipDesign) p.Add("chips.architectRoleId must name a role with the ChipDesign function");
+            RoomTypeConfig testLab = c.RoomType(k.TestLabRoomId);
+            if (testLab == null) p.Add("chips.testLabRoomId names the unknown room type \"" + k.TestLabRoomId + "\"");
+
+            UniqueIds(p, "chips.targets", k.Targets);
+            UniqueIds(p, "chips.nodes", k.Nodes);
+            if (k.Targets.Count == 0) p.Add("chips.targets is empty");
+            if (k.Nodes.Count == 0) p.Add("chips.nodes is empty");
+            foreach (ChipTargetConfig t in k.Targets)
+            {
+                if (t.Points < 1 || t.ComputePermille < 1) p.Add("chip target " + t.Id + " needs points and computePermille of at least 1");
+            }
+            for (int i = 0; i < k.Nodes.Count; i++)
+            {
+                ChipNodeConfig n = k.Nodes[i];
+                string who = "chip node " + n.Id;
+                if (n.PointsPermille < 1 || n.ComputePerChipWeek < 1 || n.KwPerChip < 1) p.Add(who + " needs pointsPermille, computePerChipWeek and kwPerChip of at least 1");
+                if (n.WaferCostPerChip < 1 || n.TapeoutCost < 0) p.Add(who + " has a bad cost");
+                Permille(p, who + " respinPermille", n.RespinPermille);
+                if (n.InitialYieldPermille < 1 || n.MaxYieldPermille > MathI.Permille || n.InitialYieldPermille > n.MaxYieldPermille) p.Add(who + " needs initialYieldPermille from 1 up to maxYieldPermille, which is at most 1000");
+                if (n.LeadWeeks < 1 || n.CapacityPerMonth < 1) p.Add(who + " needs leadWeeks and capacityPerMonth of at least 1");
+                if (n.OpensYear < c.Calendar.StartYear) p.Add(who + " opens before the game starts");
+                if (i > 0 && (n.OpensYear <= k.Nodes[i - 1].OpensYear || n.Tier < k.Nodes[i - 1].Tier)) p.Add(who + " must open after " + k.Nodes[i - 1].Id + " and not on a lower tier");
+                if (!string.IsNullOrEmpty(n.RequiresTech) && c.Tech(n.RequiresTech) == null) p.Add(who + " requires the unknown tech \"" + n.RequiresTech + "\"");
+            }
+            foreach (ChipOptionGroup group in Enum.GetValues(typeof(ChipOptionGroup)))
+            {
+                bool free = false;
+                var seen = new List<string>();
+                foreach (ChipOptionConfig o in k.Options)
+                {
+                    if (o.Group != group) continue;
+                    if (seen.Contains(o.Id)) p.Add("chips.options has two " + group + " options called " + o.Id);
+                    seen.Add(o.Id);
+                    if (o.ComputePermille < 1 || o.CostPermille < 1 || o.KwPermille < 1 || o.PointsPermille < 1) p.Add("chip option " + o.Id + " needs positive multipliers");
+                    if (!string.IsNullOrEmpty(o.RequiresTech) && c.Tech(o.RequiresTech) == null) p.Add("chip option " + o.Id + " requires the unknown tech \"" + o.RequiresTech + "\"");
+                    if (string.IsNullOrEmpty(o.RequiresTech) || o.RequiresTech == "chip-team") free = true;
+                }
+                if (!free) p.Add("chips.options has no " + group + " option a lab could use from the start of the chip programme");
+            }
+        }
+
+        static void RivalryProblems(List<string> p, GameConfig c)
+        {
+            RivalryConfig r = c.Rivalry;
+            if (r.LogMax < 1) p.Add("rivalry.logMax must be at least 1");
+            if (r.MinLoggedUnits < 1) p.Add("rivalry.minLoggedUnits must be at least 1");
+            Permille(p, "rivalry.rentLogPermille", r.RentLogPermille);
+            Permille(p, "rivalry.publishedDiscountPermille", r.PublishedDiscountPermille);
+            Permille(p, "rivalry.gateBoostPermille", r.GateBoostPermille);
+            if (r.BoardDramaWeeks < 1) p.Add("rivalry.boardDramaWeeks must be at least 1");
+            if (r.FastBuildWeeks < 1) p.Add("rivalry.fastBuildWeeks must be at least 1");
+            if (r.ReplaceTierGap < 1) p.Add("rivalry.replaceTierGap must be at least 1");
+
+            FeelingsConfig f = r.Feelings;
+            if (f.DriftPerMonth < 0) p.Add("rivalry.feelings.driftPerMonth is negative");
+            if (f.FeudBelow >= 0 || f.FeudBelow < -MathI.Permille) p.Add("rivalry.feelings.feudBelow must be from -1000 to -1");
+            if (f.FriendlyAbove <= 0 || f.FriendlyAbove > MathI.Permille) p.Add("rivalry.feelings.friendlyAbove must be from 1 to 1000");
+            if (f.FeudAttentionPerMonth < 0) p.Add("rivalry.feelings.feudAttentionPerMonth is negative");
+            Permille(p, "rivalry.feelings.listedBuyLimitPermille", f.ListedBuyLimitPermille);
+            Permille(p, "rivalry.feelings.friendlyBuyLimitPermille", f.FriendlyBuyLimitPermille);
+            if (f.FriendlyBuyLimitPermille < f.ListedBuyLimitPermille) p.Add("rivalry.feelings: a friendly rival must pay at least what a neutral one does");
+
+            foreach (string name in Enum.GetNames(typeof(AiLabs.Rules.State.DecisionAction)))
+                if (r.ActionTemplate(name) == null) p.Add("rivalry.actionTemplates has no sentence for the action " + name);
+            foreach (string name in Enum.GetNames(typeof(AiLabs.Rules.State.ReasonCode)))
+                if (r.ReasonTemplate(name) == null) p.Add("rivalry.reasonTemplates has no phrase for the reason " + name);
+            UniqueIds(p, "rivalry.actionTemplates", r.ActionTemplates);
+            UniqueIds(p, "rivalry.reasonTemplates", r.ReasonTemplates);
+        }
+
+        static void VendorProblems(List<string> p, GameConfig c)
+        {
+            VendorConfig v = c.Vendor;
+            if (v.SupplyByYear.Count == 0) { p.Add("vendor.supplyByYear is empty"); return; }
+            if (v.SupplyByYear[0].Year > c.Calendar.StartYear) p.Add("vendor.supplyByYear starts after the game does");
+            for (int i = 0; i < v.SupplyByYear.Count; i++)
+            {
+                if (v.SupplyByYear[i].Amount < 1) p.Add("vendor.supplyByYear has a month's supply below 1");
+                if (i > 0 && v.SupplyByYear[i].Year <= v.SupplyByYear[i - 1].Year) p.Add("vendor.supplyByYear must go up in years");
+            }
+            if (v.AllocationBase < 1) p.Add("vendor.allocationBase must be at least 1");
+            if (v.StandingMax < 1 || v.StandingStart < 0 || v.StandingStart > v.StandingMax) p.Add("vendor.standingStart must be from 0 to standingMax");
+            if (v.GpusPerStanding < 1) p.Add("vendor.gpusPerStanding must be at least 1");
+            if (v.TrainingTapeOutDrop < 0 || v.DeliveryDrop < 0 || v.ListingDrop < 0 || v.DriftPerMonth < 0) p.Add("vendor has a negative standing change");
+            if (v.KeynoteMonth < 1 || v.KeynoteMonth > c.Calendar.MonthsPerYear) p.Add("vendor.keynoteMonth must be from 1 to " + c.Calendar.MonthsPerYear);
+            Permille(p, "vendor.keynoteSupplyPermille", v.KeynoteSupplyPermille);
+            if (v.AmbushLookbackWeeks < 0 || v.AmbushWeeks < 0) p.Add("vendor has a negative ambush time");
+            Permille(p, "vendor.courtingSharePermille", v.CourtingSharePermille);
+            Permille(p, "vendor.courtingMakerAttentionPermille", v.CourtingMakerAttentionPermille);
+            Permille(p, "vendor.shareLogPermille", v.ShareLogPermille);
+            if (v.LogMax < 1) p.Add("vendor.logMax must be at least 1");
+            if (v.LowStandingMarkupPermille < 0 || v.OwnChipsMarkupPermille < 0 || v.HighStandingDiscountPermille < 0 || v.HighStandingDiscountPermille >= MathI.Permille)
+                p.Add("vendor has an impossible price change");
+            if (v.WeeklyGrantStandingAbove < 0) p.Add("vendor.weeklyGrantStandingAbove is negative");
+            if (v.WeeklyGrantPerStanding < 0) p.Add("vendor.weeklyGrantPerStanding is negative");
+            if (v.AdvocateCashCost < 0) p.Add("vendor.advocateCashCost is negative");
+            if (v.AdvocateStandingGain < 0) p.Add("vendor.advocateStandingGain is negative");
+            if (v.AdvocateCooldownWeeks < 0) p.Add("vendor.advocateCooldownWeeks is negative");
         }
 
         static void WorldEventProblems(List<string> p, GameConfig c)
@@ -340,6 +741,12 @@ namespace AiLabs.Rules.Config
                     else if (e.Year < sector.OpensYear) p.Add(who + " moves " + e.SectorId + " before it opens in " + sector.OpensYear);
                     if (e.PoolPermille < 100 || e.PoolPermille > 3000) p.Add(who + " has poolPermille " + e.PoolPermille + ": a single event moves a market from 100 to 3000");
                 }
+                if (e.ChipShortageStrengthPermille != 0 &&
+                    (e.ChipShortageStrengthPermille < 1000 || e.ChipShortageStrengthPermille > 2000))
+                    p.Add(who + " has chipShortageStrengthPermille " + e.ChipShortageStrengthPermille + ": use 0 or 1000 to 2000");
+                Permille(p, who + ".protestAttentionPermille", e.ProtestAttentionPermille);
+                if (!string.IsNullOrEmpty(e.ProtestBlocId) && c.World.Bloc(e.ProtestBlocId) == null)
+                    p.Add(who + " protests an unknown bloc \"" + e.ProtestBlocId + "\"");
                 if (i > 0)
                 {
                     WorldEventConfig before = c.WorldEvents[i - 1];
@@ -355,6 +762,7 @@ namespace AiLabs.Rules.Config
             {
                 if (c.Role(st.RoleId) == null) p.Add(who + " plans to hire the unknown role \"" + st.RoleId + "\"");
                 if (st.Count < 0) p.Add(who + " plans a negative head count");
+                if (st.FromYear < 0) p.Add(who + " plans to hire " + st.RoleId + " from a negative year");
             }
             foreach (string sector in plan.Sectors)
                 if (c.Sector(sector) == null) p.Add(who + " plans to sell into the unknown sector \"" + sector + "\"");
@@ -366,8 +774,159 @@ namespace AiLabs.Rules.Config
             if (plan.ReserveWeeks < 0) p.Add(who + " has a negative reserveWeeks");
             if (plan.MaxRunWeeks < 1) p.Add(who + " needs maxRunWeeks of at least 1");
             Permille(p, who + " siteAppetitePermille", plan.SiteAppetitePermille);
+            Permille(p, who + " minReleaseAlignment", plan.MinReleaseAlignment);
+            Permille(p, who + " dramaPermillePerYear", plan.DramaPermillePerYear);
+            if (plan.ChipProgramYear < 0) p.Add(who + " has a negative chipProgramYear");
+            if (plan.ListsChipsMarkupPermille < 0) p.Add(who + " has a negative listsChipsMarkupPermille");
             foreach (string bloc in plan.SiteBlocs)
                 if (c.World.Bloc(bloc) == null) p.Add(who + " plans to build in the unknown bloc \"" + bloc + "\"");
+            if (who.StartsWith("rival ") && plan.ShadyAppetite != 0)
+                p.Add(who + " must have shadyAppetite 0 (parody labs never run shady jobs)");
+        }
+
+        static void StaffPeopleProblems(List<string> p, GameConfig c)
+        {
+            StaffPeopleConfig s = c.StaffPeople;
+            if (s == null) { p.Add("staffPeople is missing"); return; }
+            Permille(p, "staffPeople.moraleBaseline", s.MoraleBaseline);
+            if (s.MoraleDriftPerWeek < 0) p.Add("staffPeople.moraleDriftPerWeek is negative");
+            if (s.MoraleDebtDriftPerWeek < 0) p.Add("staffPeople.moraleDebtDriftPerWeek is negative");
+            if (s.MoraleIncidentDrop < 0) p.Add("staffPeople.moraleIncidentDrop is negative");
+            if (s.MoralePoachWitnessDrop < 0) p.Add("staffPeople.moralePoachWitnessDrop is negative");
+            Permille(p, "staffPeople.poachChancePermille", s.PoachChancePermille);
+            Permille(p, "staffPeople.starHirePermille", s.StarHirePermille);
+            if (s.MoraleResearchPermillePerPoint < 0) p.Add("staffPeople.moraleResearchPermillePerPoint is negative");
+            if (s.MoraleAlignmentPermillePerPoint < 0) p.Add("staffPeople.moraleAlignmentPermillePerPoint is negative");
+            if (s.MoraleTrainingPermillePerPoint < 0) p.Add("staffPeople.moraleTrainingPermillePerPoint is negative");
+            if (s.MoraleFailCutPermillePerPoint < 0) p.Add("staffPeople.moraleFailCutPermillePerPoint is negative");
+            if (s.MoralePoachResistPermillePerPoint < 0) p.Add("staffPeople.moralePoachResistPermillePerPoint is negative");
+            if (s.MoraleIncidentMitigationPermillePerPoint < 0) p.Add("staffPeople.moraleIncidentMitigationPermillePerPoint is negative");
+            if (s.MoralePoachWitnessMitigationPermillePerPoint < 0) p.Add("staffPeople.moralePoachWitnessMitigationPermillePerPoint is negative");
+            if (s.MoraleDebtMitigationPermillePerPoint < 0) p.Add("staffPeople.moraleDebtMitigationPermillePerPoint is negative");
+            if (s.Traits.Count < 1) p.Add("staffPeople.traits is empty");
+            UniqueIds(p, "staffPeople.traits", s.Traits);
+            bool hasStar = false;
+            for (int i = 0; i < s.Traits.Count; i++)
+            {
+                if (s.Traits[i].Star) hasStar = true;
+                Permille(p, "trait " + s.Traits[i].Id + " researchPermille", s.Traits[i].ResearchPermille);
+            }
+            if (!hasStar) p.Add("staffPeople.traits needs one star trait");
+        }
+
+        static void ReleaseReviewProblems(List<string> p, GameConfig c)
+        {
+            ReleaseReviewConfig r = c.ReleaseReview;
+            if (r == null) { p.Add("releaseReview is missing"); return; }
+            if (r.OpensYear < c.Calendar.StartYear) p.Add("releaseReview.opensYear is before the calendar start");
+            if (r.BaseSlotsPerMonth < 0) p.Add("releaseReview.baseSlotsPerMonth is negative");
+            if (r.MaxSlotsPerMonth < 1) p.Add("releaseReview.maxSlotsPerMonth must be at least 1");
+            if (r.SandbagSendBackGapPermille < 1) p.Add("releaseReview.sandbagSendBackGapPermille must be at least 1");
+            Permille(p, "releaseReview.minAlignmentStrictSector", r.MinAlignmentStrictSector);
+            if (r.MaxRevisionRounds < 0) p.Add("releaseReview.maxRevisionRounds is negative");
+            if (r.StrictSectorIds.Count < 1) p.Add("releaseReview.strictSectorIds is empty");
+            for (int i = 0; i < r.StrictSectorIds.Count; i++)
+                if (c.Sector(r.StrictSectorIds[i]) == null) p.Add("releaseReview.strictSectorIds names unknown sector \"" + r.StrictSectorIds[i] + "\"");
+        }
+
+        static void EnterpriseDealsProblems(List<string> p, GameConfig c)
+        {
+            EnterpriseDealsConfig e = c.EnterpriseDeals;
+            if (e == null) { p.Add("enterpriseDeals is missing"); return; }
+            if (e.Tiers.Count < 1) p.Add("enterpriseDeals.tiers is empty");
+            UniqueIds(p, "enterpriseDeals.tiers", e.Tiers);
+            if (e.EligibleSectorIds.Count < 1) p.Add("enterpriseDeals.eligibleSectorIds is empty");
+            for (int i = 0; i < e.EligibleSectorIds.Count; i++)
+                if (c.Sector(e.EligibleSectorIds[i]) == null)
+                    p.Add("enterpriseDeals.eligibleSectorIds names unknown sector \"" + e.EligibleSectorIds[i] + "\"");
+            if (e.ProspectWindowWeeks < 1) p.Add("enterpriseDeals.prospectWindowWeeks must be at least 1");
+            for (int i = 0; i < e.Tiers.Count; i++)
+            {
+                EnterpriseDealTierConfig t = e.Tiers[i];
+                string who = "enterpriseDeals.tiers[" + t.Id + "]";
+                Permille(p, who + " slaServedPermille", t.SlaServedPermille);
+                if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
+                if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
+            }
+        }
+
+        static void DataLicensesProblems(List<string> p, GameConfig c)
+        {
+            DataLicensesConfig e = c.DataLicenses;
+            if (e == null) { p.Add("dataLicenses is missing"); return; }
+            if (e.Tiers.Count < 1) p.Add("dataLicenses.tiers is empty");
+            UniqueIds(p, "dataLicenses.tiers", e.Tiers);
+            if (e.LicenseableSourceIds.Count < 1) p.Add("dataLicenses.licenseableSourceIds is empty");
+            for (int i = 0; i < e.LicenseableSourceIds.Count; i++)
+            {
+                string id = e.LicenseableSourceIds[i];
+                if (c.Training.DataSource(id) == null)
+                    p.Add("dataLicenses.licenseableSourceIds names unknown source \"" + id + "\"");
+            }
+            if (e.ProspectWindowWeeks < 1) p.Add("dataLicenses.prospectWindowWeeks must be at least 1");
+            for (int i = 0; i < e.Tiers.Count; i++)
+            {
+                DataLicenseTierConfig t = e.Tiers[i];
+                string who = "dataLicenses.tiers[" + t.Id + "]";
+                if (t.TermWeeks < 4) p.Add(who + " termWeeks must be at least 4");
+                if (t.StrikeLimit < 1) p.Add(who + " strikeLimit must be at least 1");
+                Permille(p, who + " prepDiscountPermille", t.PrepDiscountPermille);
+            }
+        }
+
+        static void DistillSlotsProblems(List<string> p, GameConfig c)
+        {
+            DistillSlotsConfig e = c.DistillSlots;
+            if (e == null) { p.Add("distillSlots is missing"); return; }
+            if (e.Packs.Count < 1) p.Add("distillSlots.packs is empty");
+            UniqueIds(p, "distillSlots.packs", e.Packs);
+            for (int i = 0; i < e.Packs.Count; i++)
+            {
+                DistillSlotPackConfig pack = e.Packs[i];
+                string who = "distillSlots.packs[" + pack.Id + "]";
+                if (pack.Slots < 1) p.Add(who + " slots must be at least 1");
+                if (pack.ValidWeeks < 1) p.Add(who + " validWeeks must be at least 1");
+                Permille(p, who + " prepDiscountPermille", pack.PrepDiscountPermille);
+            }
+        }
+
+        static void PublicBenchmarksProblems(List<string> p, GameConfig c)
+        {
+            PublicBenchmarksConfig e = c.PublicBenchmarks;
+            if (e == null) { p.Add("publicBenchmarks is missing"); return; }
+            if (e.Benchmarks.Count < 1) p.Add("publicBenchmarks.benchmarks is empty");
+            UniqueIds(p, "publicBenchmarks.benchmarks", e.Benchmarks);
+            Permille(p, "publicBenchmarks.liveAppealPermille", e.LiveAppealPermille);
+            Permille(p, "publicBenchmarks.leaderAppealPermille", e.LeaderAppealPermille);
+            for (int i = 0; i < e.Benchmarks.Count; i++)
+            {
+                PublicBenchmarkConfig b = e.Benchmarks[i];
+                string who = "publicBenchmarks.benchmarks[" + b.Id + "]";
+                if (c.Sector(b.SectorId) == null) p.Add(who + " sectorId names unknown sector \"" + b.SectorId + "\"");
+                if (b.VettingWeeks < 1) p.Add(who + " vettingWeeks must be at least 1");
+                Permille(p, who + " minAlignmentPermille", b.MinAlignmentPermille);
+            }
+        }
+
+        static void FundingProblems(List<string> p, GameConfig c)
+        {
+            FundingConfig f = c.Funding;
+            if (f == null) { p.Add("funding is missing"); return; }
+            Permille(p, "funding.founderStartPermille", f.FounderStartPermille);
+            Permille(p, "funding.controlPermille", f.ControlPermille);
+            if (string.IsNullOrEmpty(f.OustedSuccessor)) p.Add("funding.oustedSuccessor is empty");
+            if (f.Rounds.Count == 0) p.Add("funding.rounds is empty");
+            UniqueIds(p, "funding.rounds", f.Rounds);
+            for (int i = 0; i < f.Rounds.Count; i++)
+            {
+                FundingRoundConfig r = f.Rounds[i];
+                string who = "funding.rounds[" + r.Id + "]";
+                if (r.Cash < 1) p.Add(who + " cash must be positive");
+                Permille(p, who + " dilutionPermille", r.DilutionPermille);
+                if (r.DilutionPermille < 1) p.Add(who + " dilutionPermille must be at least 1");
+                Permille(p, who + " minReputation", r.MinReputation);
+                if (r.BoardSeats < 0) p.Add(who + " boardSeats is negative");
+            }
         }
 
         static void Permille(List<string> p, string what, int value)
@@ -391,6 +950,39 @@ namespace AiLabs.Rules.Config
                 foreach (TechEffectConfig e in tech.Effects)
                     if (e.Kind == TechEffectKind.UnlockLine && e.Id == lineId) return true;
             return false;
+        }
+
+        static void ResearchForkProblems(List<string> p, GameConfig c)
+        {
+            if (c.Research.Patents != null)
+            {
+                if (c.Research.Patents.DurationWeeks < 0) p.Add("research.patents.durationWeeks is negative");
+                if (c.Research.Patents.FilingCostPermille < 0) p.Add("research.patents.filingCostPermille is negative");
+                if (c.Research.Patents.ReputationPerActivePatent < 0) p.Add("research.patents.reputationPerActivePatent is negative");
+                if (c.Research.Patents.ResearchPerActivePatent < 0) p.Add("research.patents.researchPerActivePatent is negative");
+                if (c.Research.Patents.CashPerActivePatent < 0) p.Add("research.patents.cashPerActivePatent is negative");
+                if (c.Research.Patents.LicenseCashPerInfringerPerWeek < 0) p.Add("research.patents.licenseCashPerInfringerPerWeek is negative");
+                if (c.Research.Patents.ExtendCashCost < 0) p.Add("research.patents.extendCashCost is negative");
+                if (c.Research.Patents.ExtendWeeks < 0) p.Add("research.patents.extendWeeks is negative");
+            }
+            UniqueIds(p, "research.forks", c.Research.Forks);
+            var forkCount = new Dictionary<string, int>();
+            foreach (ResearchForkConfig fork in c.Research.Forks)
+            {
+                if (fork.Techs == null || fork.Techs.Count < 2)
+                    p.Add("research fork " + fork.Id + " needs at least two techs");
+                if (fork.Techs != null)
+                {
+                    for (int i = 0; i < fork.Techs.Count; i++)
+                    {
+                        string techId = fork.Techs[i];
+                        if (c.Tech(techId) == null) p.Add("research fork " + fork.Id + " lists the unknown tech \"" + techId + "\"");
+                        if (!forkCount.ContainsKey(techId)) forkCount[techId] = 0;
+                        forkCount[techId]++;
+                        if (forkCount[techId] > 1) p.Add("tech " + techId + " appears in more than one research fork");
+                    }
+                }
+            }
         }
 
         /// <summary>A tech that (through others) requires itself could never be researched.</summary>

@@ -9,8 +9,25 @@ namespace AiLabs.Rules.Sim
         BuildRoom, DemolishRoom, BuyLot,
         Hire, Fire,
         SetRentedGpus, BuyGpus, SellGpus, SetTrainingShare,
-        ResearchTech, StartTraining, ReleaseModel,
-        BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware
+        ResearchTech, FilePatent, StartTraining, StartTrainingRecipe, ScrapFailedRun, ReleaseModel, SetSectorPrice, SetOpenWeights,
+        SetTrainingDataSource, SetDistillTarget,
+        BuyLand, SellLand, LeaseColo, BuildHall, AddPowerDeal, MoveHardware,
+        StartChipDesign, CancelChipDesign, TapeOut, OrderChips, SetChipListing, SpotlightChipListing, BuyListedChips,
+        ResearchFrontier, SellLab, ContinueAfterEnding, StartShadyOp, Launder, RaiseFunding,
+        SignReservedCompute, QueueGpuPurchase, RentPeerCompute, EndPeerCompute,
+        LaunchSectorCampaign, EndSectorCampaign, ExtendSectorCampaign, EngageFactoryLine, EndFactoryLine, FlushCoolant, EndCoolantFlush,
+        TuneChipSoftware, SalvageMuseumLine, RushChipDesign, ExpediteChipOrder, AccelerateChipTapeout, BoostChipYield,
+        AbortChipRespin, RenouncePatent, CancelChipOrder,
+        CancelShadyOp, PayDownHeat, AbortTrainingRun, ExtendPatent, ReviveChipDesign,
+        PayPeerLeaseArrears, BuyPowerHedge, BreakReservedContract, DiscloseModelAlignment, PauseChipListing, AdvocateVendor,
+        AdoptIncidentPlan, TakeResearchLoan, GrantPeerForbearance, PledgeSectorPrice,
+        FundLobbyDefense, ExtendGrantRunway, RequestDebtForbearance,
+        ReserveGreyPayout, PauseCloudRoyalties, FundProtestOutreach,
+        SubmitReleaseReview, ReviseReleaseReview, AppealReleaseReview, WithdrawReleaseReview, ExpediteReleaseReview,
+        PursueEnterpriseSeat, SignEnterpriseSeat, WalkEnterpriseSeat, TerminateEnterpriseSeat, RenewEnterpriseSeat,
+        PursueDataLicense, SignDataLicense, WalkDataLicense, TerminateDataLicense, RenewDataLicense,
+        PurchaseDistillSlots,
+        SubmitPublicBenchmark, WithdrawPublicBenchmark, PledgeBenchmarkDefense, RetargetPublicBenchmark
     }
 
     /// <summary>
@@ -141,12 +158,43 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        public static Command FilePatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.FilePatent, labId);
+            c.Id = techId;
+            return c;
+        }
+
         /// <summary>Starts training the next version of a line. The alignment share is the part of the run spent on safety work.</summary>
         public static Command StartTraining(int labId, string lineId, int alignmentSharePermille)
         {
             Command c = Make(CommandKind.StartTraining, labId);
             c.Id = lineId;
             c.Permille = alignmentSharePermille;
+            return c;
+        }
+
+        /// <summary>Starts training from a preset recipe in config training.recipes.</summary>
+        public static Command StartTrainingRecipe(int labId, string recipeId)
+        {
+            Command c = Make(CommandKind.StartTrainingRecipe, labId);
+            c.Id = recipeId;
+            return c;
+        }
+
+        /// <summary>Sets which rival lab to distill from, or -1 to clear.</summary>
+        public static Command SetDistillTarget(int labId, int rivalLabId)
+        {
+            Command c = Make(CommandKind.SetDistillTarget, labId);
+            c.TargetId = rivalLabId;
+            return c;
+        }
+
+        /// <summary>Removes a failed training run so the lab can start a new version.</summary>
+        public static Command ScrapFailedRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ScrapFailedRun, labId);
+            c.TargetId = modelId;
             return c;
         }
 
@@ -203,12 +251,513 @@ namespace AiLabs.Rules.Sim
             return c;
         }
 
+        /// <summary>Starts designing a chip: its target, then the node, die, number format, memory and cooling.</summary>
+        public static Command StartChipDesign(int labId, string target, string node, string die, string format, string memory, string cooling)
+        {
+            Command c = Make(CommandKind.StartChipDesign, labId);
+            c.Id = target;
+            c.Ids.AddRange(new[] { node, die, format, memory, cooling });
+            return c;
+        }
+
+        public static Command CancelChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.CancelChipDesign, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        /// <summary>Sends a finished design to the foundry.</summary>
+        public static Command TapeOut(int labId, int designId)
+        {
+            Command c = Make(CommandKind.TapeOut, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        /// <summary>Books chips of one of the lab's own working designs at the foundry, to arrive in a holding.</summary>
+        public static Command OrderChips(int labId, int designId, int holdingId, int count)
+        {
+            Command c = Make(CommandKind.OrderChips, labId);
+            c.TargetId = designId;
+            c.X = holdingId;
+            c.Count = count;
+            return c;
+        }
+
+        /// <summary>Offers chips of a working design to other labs at a price per chip, up to a number a month. A price of 0 takes the offer down.</summary>
+        public static Command SpotlightChipListing(int labId, int designId, bool on)
+        {
+            Command c = Make(CommandKind.SpotlightChipListing, labId);
+            c.TargetId = designId;
+            c.Count = on ? 1 : 0;
+            return c;
+        }
+
+        public static Command SetChipListing(int labId, int designId, int pricePerChip, int maxPerMonth)
+        {
+            Command c = Make(CommandKind.SetChipListing, labId);
+            c.TargetId = designId;
+            c.Count = pricePerChip;
+            c.X = maxPerMonth;
+            return c;
+        }
+
+        /// <summary>Buys chips another lab has listed; they arrive in the buyer's holding.</summary>
+        public static Command BuyListedChips(int labId, int sellerLabId, int designId, int holdingId, int count)
+        {
+            Command c = Make(CommandKind.BuyListedChips, labId);
+            c.TargetId = sellerLabId;
+            c.Y = designId;
+            c.X = holdingId;
+            c.Count = count;
+            return c;
+        }
+
         /// <summary>Puts a trained model on sale in the named sectors, replacing the lab's older model there.</summary>
         public static Command ReleaseModel(int labId, int modelId, params string[] sectorIds)
         {
+            return ReleaseModel(labId, modelId, 0, sectorIds);
+        }
+
+        /// <summary><paramref name="claimedAlignmentPermille"/> is the safety reading customers are sold (sandbagging when above the true meter).</summary>
+        public static Command ReleaseModel(int labId, int modelId, int claimedAlignmentPermille, params string[] sectorIds)
+        {
             Command c = Make(CommandKind.ReleaseModel, labId);
             c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
             c.Ids.AddRange(sectorIds);
+            return c;
+        }
+
+        /// <summary><paramref name="id"/> is the sector id; <paramref name="pricePermille"/> scales revenue from that listing.</summary>
+        public static Command SetSectorPrice(int labId, string sectorId, int pricePermille)
+        {
+            Command c = Make(CommandKind.SetSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = pricePermille;
+            return c;
+        }
+
+        /// <summary><paramref name="open"/> is 0 for closed weights, non-zero for open.</summary>
+        public static Command SetOpenWeights(int labId, int modelId, bool open)
+        {
+            Command c = Make(CommandKind.SetOpenWeights, labId);
+            c.TargetId = modelId;
+            c.Count = open ? 1 : 0;
+            return c;
+        }
+
+        public static Command SetTrainingDataSource(int labId, string dataSourceId)
+        {
+            Command c = Make(CommandKind.SetTrainingDataSource, labId);
+            c.Id = dataSourceId;
+            return c;
+        }
+
+        public static Command ResearchFrontier(int labId)
+        {
+            return Make(CommandKind.ResearchFrontier, labId);
+        }
+
+        /// <summary><paramref name="id"/> is <c>found-again</c> or <c>spectate</c>.</summary>
+        public static Command SellLab(int labId, string mode)
+        {
+            Command c = Make(CommandKind.SellLab, labId);
+            c.Id = mode;
+            return c;
+        }
+
+        /// <summary><paramref name="id"/> is the continue mode; <paramref name="targetId"/> is the index in <see cref="GameState.Endings"/>.</summary>
+        public static Command ContinueAfterEnding(int labId, int endingIndex, string mode)
+        {
+            Command c = Make(CommandKind.ContinueAfterEnding, labId);
+            c.Id = mode;
+            c.TargetId = endingIndex;
+            return c;
+        }
+
+        public static Command StartShadyOp(int labId, string cardId, int modelId, int targetLabId, int auxId, string extraRef)
+        {
+            Command c = Make(CommandKind.StartShadyOp, labId);
+            c.Id = cardId;
+            c.TargetId = modelId;
+            c.X = targetLabId;
+            c.Y = auxId;
+            if (!string.IsNullOrEmpty(extraRef)) c.Ids.Add(extraRef);
+            return c;
+        }
+
+        public static Command Launder(int labId, int amount)
+        {
+            Command c = Make(CommandKind.Launder, labId);
+            c.Count = amount;
+            return c;
+        }
+
+        public static Command RaiseFunding(int labId, string roundId)
+        {
+            Command c = Make(CommandKind.RaiseFunding, labId);
+            c.Id = roundId;
+            return c;
+        }
+
+        public static Command SignReservedCompute(int labId, int gpuCount)
+        {
+            Command c = Make(CommandKind.SignReservedCompute, labId);
+            c.Count = gpuCount;
+            return c;
+        }
+
+        public static Command QueueGpuPurchase(int labId, int count, int holdingId)
+        {
+            Command c = Make(CommandKind.QueueGpuPurchase, labId);
+            c.Count = count;
+            c.TargetId = holdingId;
+            return c;
+        }
+
+        public static Command RentPeerCompute(int renterLabId, int landlordLabId, int gpuCount)
+        {
+            Command c = Make(CommandKind.RentPeerCompute, renterLabId);
+            c.Count = gpuCount;
+            c.TargetId = landlordLabId;
+            return c;
+        }
+
+        public static Command EndPeerCompute(int renterLabId, int landlordLabId, int gpuCount)
+        {
+            Command c = Make(CommandKind.EndPeerCompute, renterLabId);
+            c.Count = gpuCount;
+            c.TargetId = landlordLabId;
+            return c;
+        }
+
+        public static Command LaunchSectorCampaign(int labId, string sectorId)
+        {
+            Command c = Make(CommandKind.LaunchSectorCampaign, labId);
+            c.Id = sectorId;
+            return c;
+        }
+
+        public static Command EndSectorCampaign(int labId) { return Make(CommandKind.EndSectorCampaign, labId); }
+
+        public static Command ExtendSectorCampaign(int labId)
+        {
+            return Make(CommandKind.ExtendSectorCampaign, labId);
+        }
+
+        public static Command EngageFactoryLine(int labId) { return Make(CommandKind.EngageFactoryLine, labId); }
+
+        public static Command EndFactoryLine(int labId) { return Make(CommandKind.EndFactoryLine, labId); }
+
+        public static Command FlushCoolant(int labId) { return Make(CommandKind.FlushCoolant, labId); }
+
+        public static Command EndCoolantFlush(int labId) { return Make(CommandKind.EndCoolantFlush, labId); }
+
+        public static Command TuneChipSoftware(int labId) { return Make(CommandKind.TuneChipSoftware, labId); }
+
+        public static Command SalvageMuseumLine(int labId, string lineId)
+        {
+            Command c = Make(CommandKind.SalvageMuseumLine, labId);
+            c.Id = lineId;
+            return c;
+        }
+
+        public static Command RushChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.RushChipDesign, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command ExpediteChipOrder(int labId, int orderId)
+        {
+            Command c = Make(CommandKind.ExpediteChipOrder, labId);
+            c.TargetId = orderId;
+            return c;
+        }
+
+        public static Command AccelerateChipTapeout(int labId, int designId)
+        {
+            Command c = Make(CommandKind.AccelerateChipTapeout, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command BoostChipYield(int labId, int designId)
+        {
+            Command c = Make(CommandKind.BoostChipYield, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command AbortChipRespin(int labId, int designId)
+        {
+            Command c = Make(CommandKind.AbortChipRespin, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command RenouncePatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.RenouncePatent, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        public static Command CancelChipOrder(int labId, int orderId)
+        {
+            Command c = Make(CommandKind.CancelChipOrder, labId);
+            c.TargetId = orderId;
+            return c;
+        }
+
+        public static Command CancelShadyOp(int labId, int opId)
+        {
+            Command c = Make(CommandKind.CancelShadyOp, labId);
+            c.TargetId = opId;
+            return c;
+        }
+
+        public static Command PayDownHeat(int labId) { return Make(CommandKind.PayDownHeat, labId); }
+
+        public static Command AbortTrainingRun(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AbortTrainingRun, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command ExtendPatent(int labId, string techId)
+        {
+            Command c = Make(CommandKind.ExtendPatent, labId);
+            c.Id = techId;
+            return c;
+        }
+
+        public static Command ReviveChipDesign(int labId, int designId)
+        {
+            Command c = Make(CommandKind.ReviveChipDesign, labId);
+            c.TargetId = designId;
+            return c;
+        }
+
+        public static Command PayPeerLeaseArrears(int labId) { return Make(CommandKind.PayPeerLeaseArrears, labId); }
+
+        public static Command BuyPowerHedge(int labId) { return Make(CommandKind.BuyPowerHedge, labId); }
+
+        public static Command BreakReservedContract(int labId, int contractIndex)
+        {
+            Command c = Make(CommandKind.BreakReservedContract, labId);
+            c.Count = contractIndex;
+            return c;
+        }
+
+        public static Command DiscloseModelAlignment(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.DiscloseModelAlignment, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PauseChipListing(int labId, int designId, bool pause)
+        {
+            Command c = Make(CommandKind.PauseChipListing, labId);
+            c.TargetId = designId;
+            c.Count = pause ? 1 : 0;
+            return c;
+        }
+
+        public static Command AdvocateVendor(int labId) { return Make(CommandKind.AdvocateVendor, labId); }
+
+        public static Command AdoptIncidentPlan(int labId) { return Make(CommandKind.AdoptIncidentPlan, labId); }
+
+        public static Command TakeResearchLoan(int labId) { return Make(CommandKind.TakeResearchLoan, labId); }
+
+        public static Command GrantPeerForbearance(int landlordLabId, int renterLabId)
+        {
+            Command c = Make(CommandKind.GrantPeerForbearance, landlordLabId);
+            c.TargetId = renterLabId;
+            return c;
+        }
+
+        public static Command PledgeSectorPrice(int labId, string sectorId, int pricePermille)
+        {
+            Command c = Make(CommandKind.PledgeSectorPrice, labId);
+            c.Id = sectorId;
+            c.Permille = pricePermille;
+            return c;
+        }
+
+        public static Command FundLobbyDefense(int labId) { return Make(CommandKind.FundLobbyDefense, labId); }
+
+        public static Command ExtendGrantRunway(int labId) { return Make(CommandKind.ExtendGrantRunway, labId); }
+
+        public static Command RequestDebtForbearance(int labId) { return Make(CommandKind.RequestDebtForbearance, labId); }
+
+        public static Command ReserveGreyPayout(int labId) { return Make(CommandKind.ReserveGreyPayout, labId); }
+
+        public static Command PauseCloudRoyalties(int labId) { return Make(CommandKind.PauseCloudRoyalties, labId); }
+
+        public static Command FundProtestOutreach(int labId) { return Make(CommandKind.FundProtestOutreach, labId); }
+
+        public static Command SubmitReleaseReview(int labId, int modelId, int claimedAlignmentPermille, params string[] sectorIds)
+        {
+            Command c = Make(CommandKind.SubmitReleaseReview, labId);
+            c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
+            if (sectorIds != null) for (int i = 0; i < sectorIds.Length; i++) c.Ids.Add(sectorIds[i]);
+            return c;
+        }
+
+        public static Command ReviseReleaseReview(int labId, int modelId, int claimedAlignmentPermille)
+        {
+            Command c = Make(CommandKind.ReviseReleaseReview, labId);
+            c.TargetId = modelId;
+            c.Permille = claimedAlignmentPermille;
+            return c;
+        }
+
+        public static Command AppealReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.AppealReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command WithdrawReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command ExpediteReleaseReview(int labId, int modelId)
+        {
+            Command c = Make(CommandKind.ExpediteReleaseReview, labId);
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PursueEnterpriseSeat(int labId, string sectorId, string tierId = null)
+        {
+            Command c = Make(CommandKind.PursueEnterpriseSeat, labId);
+            c.Id = sectorId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command SignEnterpriseSeat(int labId, string sectorId, int modelId, string tierId = null)
+        {
+            Command c = Make(CommandKind.SignEnterpriseSeat, labId);
+            c.Id = sectorId;
+            c.TargetId = modelId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command WalkEnterpriseSeat(int labId, string sectorId)
+        {
+            Command c = Make(CommandKind.WalkEnterpriseSeat, labId);
+            c.Id = sectorId;
+            return c;
+        }
+
+        public static Command TerminateEnterpriseSeat(int labId, int dealIndex)
+        {
+            Command c = Make(CommandKind.TerminateEnterpriseSeat, labId);
+            c.Count = dealIndex;
+            return c;
+        }
+
+        public static Command RenewEnterpriseSeat(int labId, string sectorId, string tierId = null)
+        {
+            Command c = Make(CommandKind.RenewEnterpriseSeat, labId);
+            c.Id = sectorId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command PursueDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.PursueDataLicense, labId);
+            c.Id = sourceId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command SignDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.SignDataLicense, labId);
+            c.Id = sourceId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        public static Command WalkDataLicense(int labId, string sourceId)
+        {
+            Command c = Make(CommandKind.WalkDataLicense, labId);
+            c.Id = sourceId;
+            return c;
+        }
+
+        public static Command TerminateDataLicense(int labId, int dealIndex)
+        {
+            Command c = Make(CommandKind.TerminateDataLicense, labId);
+            c.Count = dealIndex;
+            return c;
+        }
+
+        public static Command RenewDataLicense(int labId, string sourceId, string tierId = null)
+        {
+            Command c = Make(CommandKind.RenewDataLicense, labId);
+            c.Id = sourceId;
+            if (!string.IsNullOrEmpty(tierId)) c.Ids.Add(tierId);
+            return c;
+        }
+
+        /// <summary>Buy prepaid distill runs from a rival lab (<c>targetId</c>). <c>id</c> names the pack.</summary>
+        public static Command PurchaseDistillSlots(int labId, int rivalLabId, string packId = null)
+        {
+            Command c = Make(CommandKind.PurchaseDistillSlots, labId);
+            c.TargetId = rivalLabId;
+            c.Id = packId ?? "";
+            if (!string.IsNullOrEmpty(packId)) c.Ids.Add(packId);
+            return c;
+        }
+
+        public static Command SubmitPublicBenchmark(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.SubmitPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command WithdrawPublicBenchmark(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.WithdrawPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        public static Command PledgeBenchmarkDefense(int labId, string benchmarkId, int modelId)
+        {
+            Command c = Make(CommandKind.PledgeBenchmarkDefense, labId);
+            c.Id = benchmarkId;
+            c.TargetId = modelId;
+            return c;
+        }
+
+        /// <summary>Swap the model on an open entry. <c>count</c> is the replacement model id.</summary>
+        public static Command RetargetPublicBenchmark(int labId, string benchmarkId, int currentModelId, int newModelId)
+        {
+            Command c = Make(CommandKind.RetargetPublicBenchmark, labId);
+            c.Id = benchmarkId;
+            c.TargetId = currentModelId;
+            c.Count = newModelId;
             return c;
         }
     }
@@ -222,7 +771,18 @@ namespace AiLabs.Rules.Sim
         AlreadyResearched, MissingPrerequisite, NotEnoughResearch,
         LineLocked, TooManyRuns, WrongModelStatus, SectorClosed, BelowSectorBar,
         EraLocked,
-        SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty
+        SiteClosed, NoFreePlot, GridFull, NotEnoughPower, ExportBlocked, PermitFrozen, BuildRunning, HoldingNotEmpty,
+        AllocationExhausted,
+        DesignNotReady, FoundryFull,
+        ShadyLocked, NoModelForJob, TargetNotEligible, NotEnoughStash, CaseOpen,
+        EndingUnavailable, AlreadyChose, SellRefused, Spectating, FrontierUnavailable,
+        DataSourceBlocksOpenWeights,
+        DistillTargetRequired,
+        PlayerOnlyDataSource,
+        TechForkBlocked, PatentBlocked, NotPatentable, PatentAlreadyFiled,
+        KeynoteAmbush,
+        ReleaseReviewRequired,
+        ReleaseReviewNotReady
     }
 
     public struct CommandResult

@@ -9,7 +9,9 @@ namespace AiLabs.Rules.State
         Salaries, RoomUpkeep, GpuRent, GpuUpkeep,
         Hiring, Construction, Hardware, Training, Fines,
         Land, SiteBuild, Power, ChipDevelopment,
-        ChipSales, GreyRevenue, Laundered, CapitalIn
+        ChipSales, GreyRevenue, Laundered, CapitalIn,
+        /// <summary>Weekly patent license paid to or received from another lab (Q163).</summary>
+        PatentLicense
     }
 
     /// <summary>
@@ -41,6 +43,7 @@ namespace AiLabs.Rules.State
         public long Laundered;
         /// <summary>Money put into the lab from outside: a bailout, the proceeds of selling a lab.</summary>
         public long CapitalIn;
+        public long PatentLicense;
 
         public long Income { get { return Revenue + Grants; } }
 
@@ -49,7 +52,7 @@ namespace AiLabs.Rules.State
             get
             {
                 return Revenue + Grants + Salaries + RoomUpkeep + GpuRent + GpuUpkeep + Hiring + Construction + Hardware + Training + Fines
-                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn;
+                + Land + SiteBuild + Power + ChipDevelopment + ChipSales + GreyRevenue + Laundered + CapitalIn + PatentLicense;
             }
         }
 
@@ -75,6 +78,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: return ChipSales;
                 case LedgerLine.GreyRevenue: return GreyRevenue;
                 case LedgerLine.Laundered: return Laundered;
+                case LedgerLine.PatentLicense: return PatentLicense;
                 default: return CapitalIn;
             }
         }
@@ -101,6 +105,7 @@ namespace AiLabs.Rules.State
                 case LedgerLine.ChipSales: ChipSales += amount; break;
                 case LedgerLine.GreyRevenue: GreyRevenue += amount; break;
                 case LedgerLine.Laundered: Laundered += amount; break;
+                case LedgerLine.PatentLicense: PatentLicense += amount; break;
                 default: CapitalIn += amount; break;
             }
         }
@@ -126,6 +131,7 @@ namespace AiLabs.Rules.State
             s.Long("greyRevenue", ref GreyRevenue);
             s.Long("laundered", ref Laundered);
             s.Long("capitalIn", ref CapitalIn);
+            s.Long("patentLicense", ref PatentLicense);
         }
     }
 
@@ -179,6 +185,8 @@ namespace AiLabs.Rules.State
         public int ServedPermille;
         public long Revenue;
         public long ResearchGained;
+        /// <summary>Data sources with at least one active training run this week (Q215).</summary>
+        public System.Collections.Generic.List<string> TrainingSourceIds = new System.Collections.Generic.List<string>();
 
         public void Sync(Syncer s)
         {
@@ -189,6 +197,7 @@ namespace AiLabs.Rules.State
             s.Int("servedPermille", ref ServedPermille);
             s.Long("revenue", ref Revenue);
             s.Long("researchGained", ref ResearchGained);
+            s.StrList("trainingSourceIds", ref TrainingSourceIds);
         }
     }
 }

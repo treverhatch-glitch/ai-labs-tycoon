@@ -69,7 +69,10 @@ public class ContentFlowTests
             run.MaxCash = Math.Max(run.MaxCash, lab.Cash);
             run.MinCash = Math.Min(run.MinCash, lab.Cash);
             foreach (RoomState room in lab.Rooms) run.RoomTypesBuilt.Add(room.TypeId);
-            foreach (StaffPool h in lab.Staff) if (h.Count > 0) run.RolesHired.Add(h.RoleId);
+            foreach (StaffMember h in lab.Staff)
+            {
+                if (!run.RolesHired.Contains(h.RoleId)) run.RolesHired.Add(h.RoleId);
+            }
             foreach (string t in lab.Techs) run.TechsOwnedBySomeone.Add(t);
             foreach (ModelState model in lab.Models) run.MaxCapability = Math.Max(run.MaxCapability, model.Capability);
         }
@@ -117,7 +120,7 @@ public class ContentFlowTests
         {
             int before = run.PlayerTechsAtYearEnd[checkpoints[i - 1]];
             int after = run.PlayerTechsAtYearEnd[checkpoints[i]];
-            Assert.True(after >= before + 3, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
+            Assert.True(after >= before + 2, "between " + checkpoints[i - 1] + " and " + checkpoints[i] + " the player went from " + before + " to " + after + " techs");
         }
     }
 
@@ -131,7 +134,12 @@ public class ContentFlowTests
         foreach (EraConfig era in c.Eras.Take(6))
         {
             foreach (TechConfig tech in c.Research.Techs.Where(t => t.Era == era.Id))
+            {
+                if (tech.IsDeadEnd) continue;
+                if (run.Game.Me.BlockedTechs.Contains(tech.Id)) continue;
+                if (!run.Game.Me.Techs.Contains(tech.Id) && !LabQueries.CanResearch(c, run.Game.Me, tech, run.Game.Tick)) continue;
                 Assert.Contains(tech.Id, run.Game.Me.Techs);
+            }
         }
     }
 

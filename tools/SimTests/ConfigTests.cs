@@ -62,15 +62,18 @@ public class ConfigTests
     public void The_model_family_has_mini_mid_and_flagship_lines_and_only_mini_is_open_at_the_start()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(new[] { "mini", "mid", "flagship" }, c.Training.Lines.Select(l => l.Id).ToArray());
+        Assert.Equal(new[] { "mini", "mid", "flagship", "code-specialist", "image-specialist" }, c.Training.Lines.Select(l => l.Id).ToArray());
         Assert.False(c.Line("mini").Locked);
         Assert.True(c.Line("mid").Locked);
         Assert.True(c.Line("flagship").Locked);
-        for (int i = 1; i < c.Training.Lines.Count; i++)
+        ModelLineConfig[] core = { c.Line("mini"), c.Line("mid"), c.Line("flagship") };
+        for (int i = 1; i < core.Length; i++)
         {
-            Assert.True(c.Training.Lines[i].BaseCapability > c.Training.Lines[i - 1].BaseCapability);
-            Assert.True(c.Training.Lines[i].ComputeRequired > c.Training.Lines[i - 1].ComputeRequired);
+            Assert.True(core[i].BaseCapability > core[i - 1].BaseCapability);
+            Assert.True(core[i].ComputeRequired > core[i - 1].ComputeRequired);
         }
+        Assert.True(c.Line("code-specialist").Locked);
+        Assert.True(c.Line("image-specialist").Locked);
     }
 
     [Fact]
@@ -89,7 +92,13 @@ public class ConfigTests
     public void The_rivals_are_the_parody_cast()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy" }, c.Rivals.Select(r => r.Name).ToArray());
+        Assert.Equal(new[] { "OpenAye", "AntHopticsAI", "xAy", "Metta", "Macrosoft", "Palantear", "Goggle DeepMined", "DeepSneak", "Second Wind Labs" }, c.Rivals.Select(r => r.Name).ToArray());
+        Assert.Equal(new[] { 0, 0, 0, 2007, 2012, 2017, 2010, 2023, RivalConfig.NeverJoins }, c.Rivals.Select(r => r.JoinsYear).ToArray());
+        Assert.Equal("Marka Zuckerg", c.Rival("metta").Leader);
+        Assert.Equal("Taya Nadeva", c.Rival("macrosoft").Leader);
+        Assert.Equal("K. Palant", c.Rival("palantear").Leader);
+        Assert.Equal("Sunder Pitchai", c.Rival("goggle").Leader);
+        Assert.Equal("The Quiet Committee", c.Rival("deepsneak").Leader);
         Assert.Equal("Jam Saltmen", c.Rival("openaye").Leader);
         Assert.Equal("Durian Amodayo", c.Rival("anthoptics").Leader);
         Assert.Equal("Elton Husk", c.Rival("xay").Leader);
@@ -164,5 +173,9 @@ public class ConfigTests
         string json = TestData.ConfigJson();
         foreach (string real in new[] { "OpenAI", "Anthropic", "Altman", "Amodei", "Musk", "Nvidia", "ChatGPT", "Claude\"", "Grok\"", "Huang" })
             Assert.DoesNotContain(real, json);
+
+        // The arrivals and the chip designer add more names to keep out. Whole words, so "Voltage" is not "Volta".
+        foreach (string real in new[] { "Google", "DeepMind", "Gemini", "Pichai", "Hassabis", "DeepSeek", "Liang", "TSMC", "CUDA", "Blackwell", "Hopper", "Volta", "Kepler", "GeForce", "Voodoo" })
+            Assert.False(System.Text.RegularExpressions.Regex.IsMatch(json, "\\b" + real + "\\b"), "the config names " + real);
     }
 }

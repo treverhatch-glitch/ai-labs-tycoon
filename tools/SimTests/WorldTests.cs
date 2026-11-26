@@ -18,7 +18,7 @@ public class WorldTests
     /// One lab with plenty of cash, no town votes and attention that cannot move the vote: tests that are not about
     /// those things should not depend on a dice roll.
     /// </summary>
-    static Game Rich(string eraId = null, Action<GameConfig> tweak = null, long seed = 1)
+    public static Game Rich(string eraId = null, Action<GameConfig> tweak = null, long seed = 1)
     {
         var options = new NewGameOptions { Seed = seed, RivalIds = new List<string>(), StartEraId = eraId };
         GameConfig c = TestData.Config(cfg =>
@@ -33,7 +33,7 @@ public class WorldTests
     }
 
     /// <summary>The player and one rival, both with plenty of cash.</summary>
-    static Game Duo(Action<GameConfig> tweak = null)
+    public static Game Duo(Action<GameConfig> tweak = null)
     {
         var options = new NewGameOptions { Seed = 1, RivalIds = new List<string> { "openaye" } };
         GameConfig c = TestData.Config(cfg =>
@@ -57,7 +57,7 @@ public class WorldTests
         };
     }
 
-    static Holding Hall(Game g, string siteId, int kw, LabState lab = null)
+    public static Holding Hall(Game g, string siteId, int kw, LabState lab = null)
     {
         lab = lab ?? g.Me;
         int id = g.Do(Command.BuyLand(lab.Id, siteId)).CreatedId;
@@ -233,7 +233,7 @@ public class WorldTests
         Holding hall = Hall(g, "us-virginia", 50);
         g.Refused(Command.BuyGpus(g.Id, 51, hall.Id), CommandError.NotEnoughPower);
         g.Do(Command.BuyGpus(g.Id, 50, hall.Id));
-        Assert.Equal(0, WorldQueries.FreeKw(g.C, g.Me, hall));
+        Assert.Equal(0, WorldQueries.FreeKw(g.C, g.State, g.Me, hall));
         g.Refused(Command.BuyGpus(g.Id, 1, hall.Id), CommandError.NotEnoughPower);
         Assert.Equal(50, LabQueries.OwnedUnits(g.Me, hall.Id));
         Assert.Equal(0, LabQueries.HqGpus(g.Me));
@@ -245,7 +245,7 @@ public class WorldTests
     public void Colo_is_leased_by_the_kilowatt_grown_shrunk_and_ended_and_its_markup_is_on_the_bill()
     {
         Game g = Rich();
-        Assert.Equal(0, WorldQueries.WeeklyPowerBill(g.C, g.Me));
+        Assert.Equal(0, WorldQueries.WeeklyPowerBill(g.C, g.State, g.Me));
         g.Refused(Command.LeaseColo(g.Id, "us-oregon", 100000), CommandError.InvalidArgument);
         g.Refused(Command.LeaseColo(g.Id, "us-oregon", 0), CommandError.InvalidArgument);
         g.Refused(Command.LeaseColo(g.Id, "us-tennessee", 100), CommandError.SiteClosed);
@@ -253,7 +253,7 @@ public class WorldTests
         int colo = g.Do(Command.LeaseColo(g.Id, "us-oregon", 100)).CreatedId;
         Assert.Equal(HoldingKind.Colo, g.Me.Holding(colo).Kind);
         g.Do(Command.BuyGpus(g.Id, 100, colo));
-        PowerBill bill = WorldQueries.BillFor(g.C, g.Me, g.Me.Holding(colo));
+        PowerBill bill = WorldQueries.BillFor(g.C, g.State, g.Me, g.Me.Holding(colo));
         Assert.Equal(100 * g.C.World.Site("us-oregon").PowerPricePerKwWeek, bill.GridCost);
         Assert.Equal(100 * g.C.World.Colo.MarkupPerKwWeek, bill.ColoMarkup);
         Assert.Equal(bill.GridCost + bill.PrivateCost + bill.Cooling + bill.ColoMarkup, bill.Total);
@@ -265,7 +265,7 @@ public class WorldTests
         g.Do(Command.SellGpus(g.Id, 100, colo));
         g.Do(Command.LeaseColo(g.Id, "us-oregon", 0));
         Assert.Null(g.Me.Holding(colo));
-        Assert.Equal(0, WorldQueries.WeeklyPowerBill(g.C, g.Me));
+        Assert.Equal(0, WorldQueries.WeeklyPowerBill(g.C, g.State, g.Me));
     }
 
     [Fact]
@@ -321,13 +321,13 @@ public class WorldTests
         Holding hall = Hall(g, "us-texas", 100);
         g.Do(Command.BuyGpus(g.Id, 100, hall.Id));
 
-        PowerBill bill = WorldQueries.BillFor(g.C, g.Me, hall);
+        PowerBill bill = WorldQueries.BillFor(g.C, g.State, g.Me, hall);
         Assert.Equal(100, bill.InstalledKw);
         Assert.Equal(100 * 16, bill.GridCost);
         Assert.Equal(0, bill.PrivateCost);
         Assert.Equal(1600 * 300 / 1000, bill.Cooling);
         Assert.Equal(1600 + 480, bill.Total);
-        Assert.Equal(bill.Total, WorldQueries.WeeklyPowerBill(g.C, g.Me));
+        Assert.Equal(bill.Total, WorldQueries.WeeklyPowerBill(g.C, g.State, g.Me));
 
         long before = Power(g.Me);
         g.Weeks(1);
@@ -340,11 +340,11 @@ public class WorldTests
         Game g = Rich("punchline");
         Holding texas = Hall(g, "us-texas", 100);
         g.Do(Command.BuyGpus(g.Id, 100, texas.Id));
-        PowerBill hot = WorldQueries.BillFor(g.C, g.Me, texas);
+        PowerBill hot = WorldQueries.BillFor(g.C, g.State, g.Me, texas);
 
         Holding iceland = Hall(g, "nordics-iceland", 100);
         g.Do(Command.BuyGpus(g.Id, 100, iceland.Id));
-        PowerBill cool = WorldQueries.BillFor(g.C, g.Me, iceland);
+        PowerBill cool = WorldQueries.BillFor(g.C, g.State, g.Me, iceland);
         Assert.Equal(100 * 8 * 850 / 1000, cool.GridCost + cool.Cooling);
 
         g.Me.Techs.Add("liquid-cooling");
@@ -352,11 +352,11 @@ public class WorldTests
         Assert.Equal(850, WorldQueries.EffectiveCooling(g.C, g.Me, g.C.World.Site("nordics-iceland")));
         Assert.Equal(1000, WorldQueries.EffectiveCooling(g.C, g.Me, g.C.World.Site("us-oregon")));
 
-        PowerBill hotNow = WorldQueries.BillFor(g.C, g.Me, texas);
+        PowerBill hotNow = WorldQueries.BillFor(g.C, g.State, g.Me, texas);
         Assert.Equal(hot.GridCost, hotNow.GridCost);
         Assert.True(hotNow.Cooling < hot.Cooling);
         Assert.Equal(1600 * 210 / 1000, hotNow.Cooling);
-        PowerBill coolNow = WorldQueries.BillFor(g.C, g.Me, iceland);
+        PowerBill coolNow = WorldQueries.BillFor(g.C, g.State, g.Me, iceland);
         Assert.Equal(cool.Total, coolNow.Total);
     }
 
@@ -373,7 +373,7 @@ public class WorldTests
         Holding hall = Hall(g, "us-oregon", 100);
         long invested = g.C.World.Site("us-oregon").LandPrice + 100 * g.C.World.Halls.CostPerKw;
         g.Do(Command.BuyGpus(g.Id, 100, hall.Id));
-        long atTheSite = WorldQueries.WeeklyPowerBill(g.C, g.Me) + WorldQueries.WeeklyHallUpkeep(g.C, g.Me);
+        long atTheSite = WorldQueries.WeeklyPowerBill(g.C, g.State, g.Me) + WorldQueries.WeeklyHallUpkeep(g.C, g.Me);
 
         long weeks = invested / (atHome - atTheSite);
         Assert.InRange(weeks, 50, 56);
@@ -673,7 +673,7 @@ public class WorldTests
             foreach (LabState lab in g.State.Labs)
             {
                 Assert.Equal(lab.Ledger.StartCash + lab.Ledger.Lifetime.Net, lab.Cash);
-                foreach (Holding h in lab.Holdings) Assert.True(WorldQueries.FreeKw(g.C, lab, h) >= 0, "a hall holds more than its power");
+                foreach (Holding h in lab.Holdings) Assert.True(WorldQueries.FreeKw(g.C, g.State, lab, h) >= 0, "a hall holds more than its power");
             }
             foreach (SiteConfig site in g.C.World.Sites)
             {

@@ -1,0 +1,32 @@
+name: rules
+
+# The rules tests: plain C#, no Unity, about a minute.
+# Runs on pull requests and by hand only. No push trigger and no schedule, so a branch push never starts a run by
+# itself, and a new push to a pull request cancels the run before it.
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: rules-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Rules tests
+        run: dotnet test tools/SimTests -c Release --logger "console;verbosity=minimal"
+      - name: A two-year game still plays headless
+        run: dotnet run --project tools/SimCli -c Release -- run --years 2

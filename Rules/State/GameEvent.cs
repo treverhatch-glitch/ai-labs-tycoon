@@ -7,8 +7,8 @@ namespace AiLabs.Rules.State
         RoomBuilt, RoomDemolished, LotBought,
         Hired, Fired,
         GpusRented, GpusBought, GpusSold,
-        TechResearched,
-        TrainingStarted, TrainingFinished, ModelReleased, ModelRetired,
+        TechResearched, PatentFiled, PatentExpired,
+        TrainingStarted, TrainingFinished, TrainingFailed, DistillTargetSet, ModelReleased, ModelRetired,
         Incident,
         GauntletCrown, GauntletBracket, GauntletSafest,
         GrantEnded, InDebt, Bankrupt,
@@ -16,7 +16,77 @@ namespace AiLabs.Rules.State
         LandBought, LandSold, ColoLeased, ColoEnded,
         HallStarted, HallBuilt, TownVoteDelayed, PowerDealStarted, PowerDealReady,
         HardwareMoved, Heatwave,
-        AttentionRose, AttentionFell
+        AttentionRose, AttentionFell,
+        /// <summary>The vendor's yearly keynote. Ref is the generation, Amount the month's supply after it.</summary>
+        Keynote,
+        /// <summary>A lab joined the race. Ref is the rival's config id, Amount its starting cash.</summary>
+        RivalJoined,
+        /// <summary>A hall opened within a few weeks of its start.</summary>
+        FastBuild,
+        /// <summary>A plan-run lab's board had a fit and its plan pauses. Amount is the weeks.</summary>
+        BoardDrama,
+        /// <summary>A design went to the foundry. Subject is the design, Amount the tape-out cost.</summary>
+        ChipTapedOut,
+        /// <summary>A tape-out came back with a bug. Amount is what the respin costs.</summary>
+        ChipRespin,
+        /// <summary>A design works. Subject is the design, Amount its starting yield. Pick is 1 for the lab's first.</summary>
+        ChipReady,
+        /// <summary>Chips arrived. Subject is the design, Amount the chips that came, Ref the holding's site.</summary>
+        ChipsDelivered,
+        /// <summary>A delivery lost most of its chips to a yield crash. Amount is the chips that survived.</summary>
+        ChipYieldCrash,
+        /// <summary>Chips were bought from another lab's list. LabId is the buyer, Subject the seller's lab, Amount the count.</summary>
+        ChipsBought,
+        EndingReached,
+        ShadyOpStarted, ShadyOpResolved, ShadyTraced, ShadyInvestigation, ShadyConvicted, ShadyAcquitted, ShadySideJob, ShadyTemptation,
+        StaffPoached,
+        /// <summary>The vendor could not fulfil a GPU purchase queue. Amount is GPUs left; Ref holds the reason tag.</summary>
+        GpuQueueStalled,
+        /// <summary>The global chip crunch began. Amount is strength permille.</summary>
+        ChipShortageBegan,
+        /// <summary>The global chip crunch ended. Amount is the last strength permille.</summary>
+        ChipShortageEnded,
+        /// <summary>A lab took the weekly lead in a capability domain. Ref is the domain id; SubjectId is the previous leader or -1.</summary>
+        DomainLeaderChanged,
+        /// <summary>A product-studio sector campaign timer ended. Ref is the sector id.</summary>
+        SectorCampaignEnded,
+        /// <summary>A chip listing left the market (stale, over cap, or design no longer ready). Ref is the reason tag.</summary>
+        ChipListingEnded,
+        /// <summary>Debt forced a peer-compute lease down. SubjectId is the landlord lab.</summary>
+        PeerLeaseTrimmed,
+        /// <summary>A model package entered monthly release review. Ref is the model name.</summary>
+        ReleaseReviewSubmitted,
+        /// <summary>Review cleared the package. Amount is sector count; Ref is the model name.</summary>
+        ReleaseReviewApproved,
+        /// <summary>Review blocked the package. Amount is reputation lost; Ref is the model name.</summary>
+        ReleaseReviewRejected,
+        /// <summary>Review sent the package back for a lower alignment claim. Amount is the gap permille.</summary>
+        ReleaseReviewRevision,
+        EnterpriseSeatPursued,
+        EnterpriseSeatSigned,
+        EnterpriseSeatSlip,
+        EnterpriseSeatChurned,
+        EnterpriseSeatCompleted,
+        EnterpriseSeatRenewed,
+        EnterpriseSeatTerminated,
+        DataLicensePursued,
+        DataLicenseSigned,
+        DataLicenseMissed,
+        DataLicenseRevoked,
+        DataLicenseCompleted,
+        DataLicenseRenewed,
+        DataLicenseTerminated,
+        DistillSlotsPurchased,
+        DistillSlotsExpired,
+        DistillSlotsExhausted,
+        PublicBenchmarkSubmitted,
+        PublicBenchmarkLive,
+        PublicBenchmarkLeader,
+        PublicBenchmarkDemoted,
+        PublicBenchmarkWithdrawn,
+        PublicBenchmarkRejected,
+        PublicBenchmarkPledged,
+        PublicBenchmarkRetargeted
     }
 
     /// <summary>
