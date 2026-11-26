@@ -17,6 +17,7 @@ if [[ -n "$PUSH_BRANCH" ]]; then
       echo "FAIL: origin/${PUSH_BRANCH} is not an ancestor of HEAD (forward commits only)" >&2
       exit 1
     fi
+    echo "OK: merge-base (origin/${PUSH_BRANCH} ancestor of HEAD)"
   fi
 fi
 python3 tools/art/generate_campus_kit.py
@@ -36,6 +37,7 @@ python3 tools/art/check_silhouette_manifest.py
 python3 tools/art/verify_handoff_lists.py
 python3 tools/art/check_bloc_tints.py
 python3 tools/art/check_era_skin_tokens.py
+python3 tools/art/check_prop_server_rack_assembly.py
 HEAD_BODY=$(git log -1 --format=%B)
 HEAD_EMAIL=$(git log -1 --format='%ae')
 if echo "$HEAD_BODY" | grep -qiE 'Co-authored-by:'; then
