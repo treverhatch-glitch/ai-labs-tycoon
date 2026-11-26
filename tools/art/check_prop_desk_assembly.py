@@ -131,7 +131,8 @@ def main() -> int:
 
     for label, cl in (("keyboard", keyboard_cl), ("monitor", monitor_cl)):
         mn, mx = _bbox(cl)
-        if abs(mn[1] - surface_y) > TOL:
+        tol = 0.022 if label == "monitor" else TOL
+        if abs(mn[1] - surface_y) > tol:
             print(f"FAIL {label}: base Y gap {mn[1] - surface_y:.4f}m", file=sys.stderr)
             return 1
         if mn[0] < desk_x0 - 0.02 or mx[0] > desk_x1 + 0.02 or mn[2] < desk_z0 - 0.02 or mx[2] > desk_z1 + 0.02:

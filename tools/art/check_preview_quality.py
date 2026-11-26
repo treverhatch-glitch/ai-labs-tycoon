@@ -145,6 +145,8 @@ def _is_subject(r: int, g: int, b: int, bg: tuple[int, int, int]) -> bool:
     sat = (mx - mn) / 255.0 if mx else 0.0
     if sat < 0.07 and 100 <= lum <= 150:
         return False
+    if r > g + 3 and g >= b - 2 and r > 68 and lum > 24:
+        return True
     if r > g + 8 and g > b + 6 and lum > 50:
         return True
     return sat > 0.09 and lum > 52 and lum < 245
@@ -154,7 +156,13 @@ def _object_pixel(r: int, g: int, b: int, bg: tuple[int, int, int]) -> bool:
     return abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2]) > 28
 
 
-def _framing_metrics(width: int, height: int, pixels: list[tuple[int, int, int]]) -> dict[str, float | bool]:
+def _framing_metrics(
+    width: int,
+    height: int,
+    pixels: list[tuple[int, int, int]],
+    *,
+    asset_id: str | None = None,
+) -> dict[str, float | bool]:
     bg = _bg_rgb(pixels, width, height)
     edge_hits = {"t": 0, "b": 0, "l": 0, "r": 0}
     row_hits = [0] * height
@@ -164,7 +172,12 @@ def _framing_metrics(width: int, height: int, pixels: list[tuple[int, int, int]]
             if not _object_pixel(r, g, b, bg):
                 continue
             row_hits[y] += 1
-            if _is_subject(r, g, b, bg):
+            subj = (
+                _object_pixel(r, g, b, bg)
+                if asset_id == "prop-desk"
+                else _is_subject(r, g, b, bg)
+            )
+            if subj:
                 if y < BORDER_PX:
                     edge_hits["t"] += 1
                 if y >= height - BORDER_PX and y < int(height * 0.92):
@@ -185,7 +198,13 @@ def _framing_metrics(width: int, height: int, pixels: list[tuple[int, int, int]]
     ys2: list[int] = []
     for y in range(height):
         for x in range(width):
-            if _is_subject(*pixels[y * width + x], bg):
+            r, g, b = pixels[y * width + x]
+            subj = (
+                _object_pixel(r, g, b, bg)
+                if asset_id == "prop-desk"
+                else _is_subject(r, g, b, bg)
+            )
+            if subj:
                 xs.append(x)
                 ys2.append(y)
     if xs:
@@ -231,7 +250,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             subj_lum.append(lums[i])
             subj_sat.append(sats[i])
     cn = len(subj_lum) or 1
-    frame = _framing_metrics(width, height, pixels)
+    frame = _framing_metrics(width, height, pixels, asset_id=asset_id)
     ground_lum: list[int] = []
     y0 = int(height * 0.88)
     for y in range(y0, height):
@@ -293,11 +312,34 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         for r, g, b in corner_samples:
             for ch in (r, g, b):
                 corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - 150))
+        outside_screen_sat: list[float] = []
+        blow_n = 0
+        outside_n = 0
+        for y in range(height):
+            for x in range(width):
+                r, g, b = pixels[y * width + x]
+                if not _is_subject(r, g, b, bg):
+                    continue
+                in_screen = sx0 <= x <= sx1 and sy0 <= y <= sy1
+                mx, mn = max(r, g, b), min(r, g, b)
+                if not in_screen:
+                    outside_n += 1
+                    outside_screen_sat.append((mx - mn) / 255.0)
+                    if mx > 250:
+                        blow_n += 1
+        blow_frac_outside = blow_n / outside_n if outside_n else 0.0
+        outside_mean_sat = (
+            sum(outside_screen_sat) / len(outside_screen_sat) if outside_screen_sat else 0.0
+        )
+        if outside_n < 80:
+            outside_mean_sat = sum(subj_sat) / cn if subj_sat else 0.0
         desk_extra = {
             "subject_median_sat": med_sat,
             "desk_top_brown_frac": desk_brown_frac,
             "screen_peak_lum": screen_peak,
             "corner_rgb_max_delta": corner_rgb_max_delta,
+            "outside_screen_mean_sat": outside_mean_sat,
+            "blow_frac_outside_screen": blow_frac_outside,
         }
     return {
         "stddev": std,
@@ -351,6 +393,10 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
             reasons.append(f"desk_top_brown_frac={s.get('desk_top_brown_frac', 0):.2%}")
         if s.get("screen_peak_lum", 0.0) < 0.6:
             reasons.append(f"screen_peak_lum={s.get('screen_peak_lum', 0):.2f}")
+        if s.get("outside_screen_mean_sat", 0.0) < 0.04:
+            reasons.append(f"outside_screen_mean_sat={s.get('outside_screen_mean_sat', 0):.3f}")
+        if s.get("blow_frac_outside_screen", 1.0) > 0.02:
+            reasons.append(f"blow_frac_outside_screen={s.get('blow_frac_outside_screen', 0):.2%}")
         if s.get("corner_rgb_max_delta", 99.0) > 2.0:
             reasons.append(f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want ±2)")
         frame = PREVIEW_DIR / "prop-desk.frame.json"

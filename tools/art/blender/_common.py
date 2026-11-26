@@ -220,7 +220,7 @@ def _apply_baked_albedo(
     mat: bpy.types.Material,
     tex_path: Path,
     *,
-    asset_id: str | None = None,
+    emissive_strength: float = 0.0,
 ) -> None:
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
@@ -237,39 +237,39 @@ def _apply_baked_albedo(
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.48
-    if asset_id == "prop-desk":
-        sep = nodes.new("ShaderNodeSeparateColor")
-        links.new(tex.outputs["Color"], sep.inputs["Color"])
-        gate_b = nodes.new("ShaderNodeMath")
-        gate_b.operation = "GREATER_THAN"
-        gate_b.inputs[1].default_value = 0.48
-        links.new(sep.outputs["Blue"], gate_b.inputs[0])
-        gate_g = nodes.new("ShaderNodeMath")
-        gate_g.operation = "GREATER_THAN"
-        gate_g.inputs[1].default_value = 0.52
-        links.new(sep.outputs["Green"], gate_g.inputs[0])
-        gate_r = nodes.new("ShaderNodeMath")
-        gate_r.operation = "LESS_THAN"
-        gate_r.inputs[1].default_value = 0.38
-        links.new(sep.outputs["Red"], gate_r.inputs[0])
-        both = nodes.new("ShaderNodeMath")
-        both.operation = "MULTIPLY"
-        links.new(gate_b.outputs["Value"], both.inputs[0])
-        links.new(gate_g.outputs["Value"], both.inputs[1])
-        both2 = nodes.new("ShaderNodeMath")
-        both2.operation = "MULTIPLY"
-        links.new(both.outputs["Value"], both2.inputs[0])
-        links.new(gate_r.outputs["Value"], both2.inputs[1])
-        emit = nodes.new("ShaderNodeEmission")
-        links.new(tex.outputs["Color"], emit.inputs["Color"])
-        emit.inputs["Strength"].default_value = 3.2
-        mix = nodes.new("ShaderNodeMixShader")
-        links.new(both2.outputs["Value"], mix.inputs["Fac"])
-        links.new(bsdf.outputs["BSDF"], mix.inputs[1])
-        links.new(emit.outputs["Emission"], mix.inputs[2])
-        links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    if emissive_strength > 0.0:
+        em_in = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+        if em_in is not None:
+            links.new(tex.outputs["Color"], em_in)
+        strength = bsdf.inputs.get("Emission Strength")
+        if strength is not None:
+            strength.default_value = emissive_strength
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     else:
         links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+
+def _assign_prop_desk_material_slots(obj: bpy.types.Object) -> tuple[bpy.types.Material, bpy.types.Material]:
+    """Slot 0 = wood/peripherals; slot 1 = monitor screen (EmitMask)."""
+    mesh = obj.data
+    mask = mesh.color_attributes.get("EmitMask")
+    if mask is None:
+        raise RuntimeError("prop-desk missing EmitMask color attribute")
+    body = bpy.data.materials.new("M_prop-desk_body")
+    body.use_nodes = True
+    screen = bpy.data.materials.new("M_prop-desk_screen")
+    screen.use_nodes = True
+    mesh.materials.clear()
+    mesh.materials.append(body)
+    mesh.materials.append(screen)
+    for poly in mesh.polygons:
+        emit_votes = 0.0
+        nloops = len(poly.loop_indices) or 1
+        for li in poly.loop_indices:
+            emit_votes += float(mask.data[li].color[0])
+        emit_votes /= nloops
+        poly.material_index = 1 if emit_votes > 0.55 else 0
+    return body, screen
 
 
 def _smart_uv(obj: bpy.types.Object) -> None:
@@ -295,7 +295,7 @@ def _barycentric(
     v0x, v0y = bx - ax, by - ay
     v1x, v1y = cx - ax, cy - ay
     v2x, v2y = px - ax, py - ay
-    det = v0x * v1y - v1y * v0x
+    det = v0x * v1y - v0y * v1x
     if abs(det) < 1e-12:
         return None
     u = (v2x * v1y - v1x * v2y) / det
@@ -561,7 +561,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     _reset_scene()
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
-    grey150 = 147.0 / 255.0  # Raw view → PNG corners land on 150±2
+    grey150 = 150.0 / 255.0
     _setup_preview_hdri(
         world,
         PREVIEW_HDRI,
@@ -593,7 +593,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 1.05 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 1.18 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
@@ -603,8 +603,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
-    target_fill = 0.66 if asset_id == "prop-desk" else 0.50
-    pad = 1.06 if asset_id == "prop-desk" else 1.0
+    target_fill = 0.70 if asset_id == "prop-desk" else 0.50
+    pad = 1.04 if asset_id == "prop-desk" else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.12) / target_fill) * pad
 
     cam_data = bpy.data.cameras.new("PreviewCam")
@@ -643,13 +643,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_soft_shadows = True
         if hasattr(ee, "use_shadows"):
             ee.use_shadows = True
-        if asset_id == "prop-desk":
-            if hasattr(ee, "use_bloom"):
-                ee.use_bloom = True
-            if hasattr(ee, "bloom_threshold"):
-                ee.bloom_threshold = 0.88
-            if hasattr(ee, "bloom_intensity"):
-                ee.bloom_intensity = 0.08
+        if asset_id == "prop-desk" and hasattr(ee, "use_bloom"):
+            ee.use_bloom = False
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
     bpy.context.scene.render.resolution_y = 1024
@@ -750,10 +745,15 @@ def finish_baked_export(
             dest = tex_dir / f"{obj.name}_roughness.png"
             shutil.copy(WOOD092_ROUGH, dest)
             rough_rel = str(dest.relative_to(REPO))
-    urp_mat = _ensure_material(obj, asset_id)
-    _apply_baked_albedo(urp_mat, tex_path, asset_id=asset_id)
-    obj.data.materials.clear()
-    obj.data.materials.append(urp_mat)
+    if asset_id == "prop-desk":
+        body_mat, screen_mat = _assign_prop_desk_material_slots(obj)
+        _apply_baked_albedo(body_mat, tex_path, emissive_strength=0.0)
+        _apply_baked_albedo(screen_mat, tex_path, emissive_strength=2.2)
+    else:
+        urp_mat = _ensure_material(obj, asset_id)
+        _apply_baked_albedo(urp_mat, tex_path)
+        obj.data.materials.clear()
+        obj.data.materials.append(urp_mat)
     ao_path = tex_path.parent / f"{obj.name}_ao.png"
     glb = _export_gltf(obj, out_dir)
     fbx = _export_fbx(obj, out_dir)

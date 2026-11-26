@@ -50,6 +50,9 @@ def main() -> int:
     if not textured:
         print("FAIL: prop-desk GLB materials missing baseColorTexture", file=sys.stderr)
         return 1
+    if len(mats) < 2:
+        print("FAIL: prop-desk GLB needs body+screen materials", file=sys.stderr)
+        return 1
     print(f"OK: prop-desk GLB embeds {embedded} image(s), {len(mats)} material(s)")
     return 0
 
