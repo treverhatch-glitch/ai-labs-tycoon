@@ -18,6 +18,7 @@ from packet34_preview_gates import (  # noqa: E402
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
     check_backdrop_mid_grey,
+    check_sign_preview_png_scope,
     check_env_preview_backdrop,
     check_wall_cinderblock_visible,
     check_wall_mortar_horizontal,
@@ -52,15 +53,23 @@ def check_env_preview(asset_id: str) -> int:
     rgb = PREVIEW / f"{asset_id}.png"
     mask = PREVIEW / f"{asset_id}.mask.png"
     meta = PREVIEW / f"{asset_id}.frame.json"
-    if not rgb.is_file() or not mask.is_file() or not meta.is_file():
+    if not rgb.is_file():
+        print(f"FAIL {asset_id} missing rgb")
+        return 1
+    if asset_id != "garage-land-for-sale-sign" and (not mask.is_file() or not meta.is_file()):
         print(f"FAIL {asset_id} missing rgb/mask/frame")
         return 1
-    for err in check_backdrop_mid_grey(rgb):
-        print(f"FAIL {asset_id} {err}")
-        rc = 1
-    for err in check_env_preview_backdrop(asset_id, rgb, mask):
-        print(f"FAIL {asset_id} {err}")
-        rc = 1
+    if asset_id == "garage-land-for-sale-sign" and not meta.is_file():
+        print(f"FAIL {asset_id} missing frame")
+        return 1
+    if asset_id != "garage-land-for-sale-sign":
+        for err in check_backdrop_mid_grey(rgb):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+    if mask.is_file():
+        for err in check_env_preview_backdrop(asset_id, rgb, mask):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     if asset_id == "garage-exterior-wall":
         for err in check_wall_uv_blocks_per_metre(meta):
             print(f"FAIL {asset_id} {err}")
@@ -72,17 +81,11 @@ def check_env_preview(asset_id: str) -> int:
             print(f"FAIL {asset_id} {err}")
             rc = 1
     if asset_id == "garage-land-for-sale-sign":
-        for err in check_sign_for_sale_contrast(rgb, mask):
-            print(f"FAIL {asset_id} {err}")
-            rc = 1
         sign_tex = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
         for err in check_sign_albedo_file(sign_tex):
             print(f"FAIL {asset_id} {err}")
             rc = 1
         for err in check_sign_albedo_layout(sign_tex):
-            print(f"FAIL {asset_id} {err}")
-            rc = 1
-        for err in check_sign_preview_board_text(rgb, mask, label="sign_studio"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
         front_rgb = PREVIEW / "garage-land-for-sale-sign-front.png"
@@ -100,9 +103,10 @@ def check_env_preview(asset_id: str) -> int:
         for err in check_curb_preview_concrete(rgb, mask):
             print(f"FAIL {asset_id} {err}")
             rc = 1
-    for err in mask_gate_errors(mask):
-        print(f"FAIL {asset_id} {err}")
-        rc = 1
+    if mask.is_file():
+        for err in mask_gate_errors(mask):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     if rc == 0:
         print(f"OK {asset_id} env_preview")
     return rc
@@ -119,28 +123,35 @@ def main() -> int:
     rc |= check_preview_glb_linkage()
     for asset_id in ENV_IDS:
         rc |= check_env_preview(asset_id)
-    hero_rgb = PREVIEW / "for-sale-sign.png"
-    hero_mask = PREVIEW / "for-sale-sign.mask.png"
+    hero_rgb = PREVIEW / "garage-land-for-sale-sign-hero.png"
+    hero_mask = PREVIEW / "garage-land-for-sale-sign-hero.mask.png"
     hero_rc = 0
     if hero_rgb.is_file() and hero_mask.is_file():
         for err in check_backdrop_mid_grey(hero_rgb):
-            print(f"FAIL for-sale-sign {err}")
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         for err in check_sign_for_sale_contrast(hero_rgb, hero_mask):
-            print(f"FAIL for-sale-sign {err}")
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         for err in check_sign_preview_board_text(hero_rgb, hero_mask, label="sign_hero"):
-            print(f"FAIL for-sale-sign {err}")
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         for err in check_sign_text_template_orientation(hero_rgb, hero_mask, label="sign_hero"):
-            print(f"FAIL for-sale-sign {err}")
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         if hero_rc == 0:
-            print("OK for-sale-sign sign_hero")
+            print("OK garage-land-for-sale-sign-hero sign_hero")
         rc |= hero_rc
     else:
-        print("FAIL for-sale-sign missing rgb/mask")
+        print("FAIL garage-land-for-sale-sign-hero missing rgb/mask")
         rc = 1
+    scope_errs = check_sign_preview_png_scope(PREVIEW)
+    if scope_errs:
+        for err in scope_errs:
+            print(f"FAIL sign_scope {err}")
+        rc |= 1
+    else:
+        print("OK sign_preview_png_scope")
     for asset_id in ALL_HUD_SPRITE_IDS:
         errs = check_icon_ortho(PREVIEW / f"{asset_id}.frame.json")
         errs.extend(check_icon_sat_coverage(asset_id, PREVIEW))

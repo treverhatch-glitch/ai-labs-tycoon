@@ -9,6 +9,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "tools" / "art"))
 
 from packet34_preview_gates import (  # noqa: E402
+    SIGN_PREVIEW_ALLOWED_PNG,
     check_backdrop_mid_grey,
     check_sign_for_sale_contrast,
     check_sign_preview_board_text,
@@ -18,6 +19,7 @@ from packet34_preview_gates import (  # noqa: E402
 FIXTURES = (
     ("2b7b6e40", REPO / "tools/art/fixtures/preview_regression/sign-2b7b6e40"),
     ("a2c3e44c", REPO / "tools/art/fixtures/preview_regression/sign-a2c3e44c"),
+    ("419f4309", REPO / "tools/art/fixtures/preview_regression/sign-419f4309"),
 )
 
 
@@ -38,12 +40,27 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
     errs: list[str] = []
     errs.extend(check_backdrop_mid_grey(rgb))
     errs.extend(check_sign_text_template_orientation(rgb, mask, label=label))
-    if stem == "for-sale-sign":
+    if "hero" in stem or stem == "for-sale-sign":
         errs.extend(check_sign_for_sale_contrast(rgb, mask))
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_hero"))
     else:
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_front"))
     return _must_fail(sha, f"{stem}", errs)
+
+
+def _check_scope_manifest(sha: str, root: Path) -> int:
+    manifest = root / "preview-png-diff-manifest.txt"
+    if not manifest.is_file():
+        print(f"FAIL regression missing {manifest}")
+        return 1
+    names = [ln.strip() for ln in manifest.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    errs: list[str] = []
+    if len(names) > len(SIGN_PREVIEW_ALLOWED_PNG):
+        errs.append(f"sign_preview_png_diff_count={len(names)} max={len(SIGN_PREVIEW_ALLOWED_PNG)}")
+    extra = [n for n in names if n not in SIGN_PREVIEW_ALLOWED_PNG]
+    if extra:
+        errs.append(f"sign_preview_png_out_of_scope extra={extra[:6]}")
+    return _must_fail(sha, "preview_scope", errs)
 
 
 def main() -> int:
@@ -52,6 +69,11 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
+        if sha == "419f4309":
+            rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
+            rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
+            rc |= _check_scope_manifest(sha, root)
+            continue
         rc |= _check_sign_pair(sha, root, "for-sale-sign", "sign_hero")
         rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
     return rc

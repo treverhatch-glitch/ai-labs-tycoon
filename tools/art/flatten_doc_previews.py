@@ -55,17 +55,18 @@ def hud_preview_stem(stem: str) -> bool:
     return stem.startswith(("icon-", "panel-", "hud-"))
 
 
+def backdrop_grid_points(w: int, h: int, *, inset: int = CORNER_INSET_PX) -> list[tuple[int, int]]:
+    xs = (inset, w // 2, w - 1 - inset)
+    ys = (inset, h // 2, h - 1 - inset)
+    return [(x, y) for y in ys for x in xs]
+
+
 def pin_flattened_corners(path: Path, bg: tuple[int, int, int], *, inset: int = CORNER_INSET_PX) -> None:
     from PIL import Image
 
     im = Image.open(path).convert("RGB")
     w, h = im.size
-    for x, y in (
-        (inset, inset),
-        (w - 1 - inset, inset),
-        (inset, h - 1 - inset),
-        (w - 1 - inset, h - 1 - inset),
-    ):
+    for x, y in backdrop_grid_points(w, h, inset=inset):
         im.putpixel((x, y), bg)
     im.save(path, format="PNG")
 

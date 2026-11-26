@@ -286,6 +286,7 @@ def add_sign_mesh_text(
     *,
     face_dir: float = -1.0,
     extrude_m: float = 0.003,
+    text_size: float = 0.28,
 ) -> bpy.types.Object:
     """FOR SALE mesh on board face; positive scale only; LTR corrected before export."""
     bpy.ops.object.text_add(location=board.location)
@@ -297,8 +298,8 @@ def add_sign_mesh_text(
         ob.data.font = font
     ob.data.extrude = extrude_m
     ob.data.resolution_u = 6
-    ob.data.size = 0.28
-    ob.data.space_character = 0.95
+    ob.data.size = text_size
+    ob.data.space_character = 0.92
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
     thin_i = min(range(3), key=lambda i: board.dimensions[i])
@@ -318,8 +319,8 @@ def add_sign_mesh_text(
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = abs((board_w * 0.492) / dx)
-        sy = abs((board_h * 0.32) / dy)
+        sx = abs((board_w * 0.46) / dx)
+        sy = abs((board_h * 0.38) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -1332,46 +1333,53 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
     mesh_obs = [o for o in meshes if o.name != "PreviewShadowFloor"]
     tex_dir = ART_ROOT / category / "textures" / asset_id
     if asset_id == "garage-land-for-sale-sign" and len(mesh_obs) >= 2:
-        import blender_preview_rig as rig  # type: ignore
-
-        apply_sign_preview_materials(mesh_obs, tex_dir, studio_emit_board=True)
-        orient_sign_preview_for_camera(mesh_obs, face_dir=1.0)
-        preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+        sign_obs = [o for o in mesh_obs if o.name != "PreviewShadowFloor"]
         os.environ["PREVIEW_GLB_SHA256"] = glb_sha
         os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
         os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
+        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
+        os.environ["SIGN_PREVIEW_NO_VISIBLE_FLOOR"] = "1"
         os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
 
-        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "42"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "19"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.88"
-        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
-        render_preview(mesh_obs, preview_path)
+        def _render_sign_pass(out_path: Path, *, azimuth: str, elevation: str, margin: str) -> None:
+            reset_scene()
+            bpy.ops.import_scene.gltf(filepath=str(glb))
+            meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=False)
+            orient_sign_preview_for_camera(meshes, face_dir=1.0)
+            os.environ["PREVIEW_AZIMUTH_DEG"] = azimuth
+            os.environ["PREVIEW_ELEVATION_DEG"] = elevation
+            os.environ["PREVIEW_FRAMING_MARGIN"] = margin
+            os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
+            render_preview(meshes, out_path)
 
-        assembled = PREVIEW_ROOT / "for-sale-sign.png"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "21"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.76"
-        apply_sign_preview_materials(mesh_obs, tex_dir, studio_emit_board=False)
-        orient_sign_preview_for_camera(mesh_obs, face_dir=1.0)
-        render_preview(mesh_obs, assembled)
-
-        front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
-        reset_scene()
-        bpy.ops.import_scene.gltf(filepath=str(glb))
-        front_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-        apply_sign_preview_materials(front_meshes, tex_dir, studio_emit_board=False)
-        orient_sign_preview_for_camera(front_meshes, face_dir=1.0)
-        os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
-        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "18"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.80"
-        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
-        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
-        render_preview(front_meshes, front)
-        ob = mesh_obs[0]
+        _render_sign_pass(
+            PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
+            azimuth="36",
+            elevation="17",
+            margin="0.78",
+        )
+        _render_sign_pass(
+            PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
+            azimuth="42",
+            elevation="21",
+            margin="0.74",
+        )
+        preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
+        frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
+        frame_stub.write_text(
+            json.dumps(
+                {
+                    "glb_sha256": glb_sha,
+                    "glb_path": str(glb.relative_to(REPO_ROOT)),
+                    "mid_grey": True,
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        ob = sign_obs[0]
     else:
         if len(mesh_obs) > 1:
             bpy.ops.object.select_all(action="DESELECT")

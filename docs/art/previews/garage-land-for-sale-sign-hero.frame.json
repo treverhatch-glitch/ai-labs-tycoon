@@ -1,20 +1,13 @@
 {
-  "camera_dist": 18.04096893671232,
-  "bbox_radius": 4.2449338674617225,
-  "framing_margin": 1.02,
+  "camera_dist": 2.341304915867401,
+  "bbox_radius": 0.7593421348759138,
+  "framing_margin": 0.74,
   "lens_mm": 50.0,
-  "azimuth_deg": 36.0,
-  "elevation_deg": 10.0,
-  "up_axis": "Y",
+  "azimuth_deg": 42.0,
+  "elevation_deg": 21.0,
+  "up_axis": "Z",
   "mid_grey": true,
-  "contact_shadow": false,
-  "glb_sha256": "de4bcda9eacebdaddfc9957a58efdb221ee940912b595ec2cc50c4b49b822492",
-  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb",
-  "hero_assets": [
-    "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb",
-    "unity/Assets/Art/EarlyGame/garage-kit/garage-roll-door.glb",
-    "tools/art/cc0/incoming/kenney-city-kit-suburban/Models/GLB format/building-type-b.glb"
-  ],
-  "roll_door_preview": "docs/art/previews/garage-roll-door.png",
-  "roll_door_glb_sha256": "3f129561e77c684261377041f706234b466c90bf830a5b7f620ffa7e04b18dd5"
+  "contact_shadow": true,
+  "glb_sha256": "85fc9f1cccb430c4aa9d5d5488f25524f7f9f570140ed472af7ebfb97c981884",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb"
 }

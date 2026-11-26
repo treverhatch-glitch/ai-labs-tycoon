@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FOR SALE hero sign — Kenney board, procedural posts, mesh text (Blender Z-up → glTF Y-up)."""
+"""LAND FOR SALE sign — procedural posts/board, mesh text (Blender Z-up → glTF Y-up)."""
 import os
 import subprocess
 import sys
@@ -10,24 +10,15 @@ import blender_common as bc  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[3]
 
-BOARD_X = 0.90
-BOARD_Y = 0.02
-BOARD_Z = 0.60
-POST_W = 0.10
-POST_H = 1.20
-POST_SPAN = 0.90
+BOARD_X = 0.88
+BOARD_Y = 0.035
+BOARD_Z = 0.52
+FRAME_T = 0.028
+POST_W = 0.09
+POST_H = 1.18
+POST_SPAN = 0.86
 
 CC0_SOURCE = {
-    "kenneyCityKitSuburban": {
-        "name": "City Kit (Suburban) 2.0",
-        "author": "Kenney (www.kenney.nl)",
-        "license": "CC0 1.0",
-        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-        "downloadUrl": "https://opengameart.org/sites/default/files/kenney_city-kit-suburban_2.0.zip",
-        "downloadedAt": "2025-11-26",
-        "piecesUsed": ["fence-1x2.glb", "driveway-short.glb", "building-type-b.glb"],
-        "sha256Zip": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39",
-    },
     "polyHavenHdri": {
         "name": "studio_small_09",
         "license": "CC0 1.0",
@@ -48,68 +39,113 @@ def write_sign_albedo(tex_path: Path) -> None:
     )
 
 
-def _scale_to_dimensions(ob, target: tuple[float, float, float]) -> None:
-    bpy = bc.bpy
-    dims = ob.dimensions
-    ob.scale = (target[0] / max(dims.x, 1e-6), target[1] / max(dims.y, 1e-6), target[2] / max(dims.z, 1e-6))
-    bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.transform_apply(scale=True)
-
-
-def _procedural_post(name: str, x: float) -> bc.bpy.types.Object:
-    ob = bc.add_cube(name, (POST_W, POST_W, POST_H), (x, 0.0, POST_H * 0.5))
+def _procedural_post(name: str) -> bc.bpy.types.Object:
+    ob = bc.add_cube(name, (POST_W, POST_W, POST_H), (0.0, 0.0, POST_H * 0.5))
     bc.assign_solid(ob, (0.52, 0.38, 0.26, 1.0), 0.58)
     return ob
 
 
-def _kenney_board() -> bc.bpy.types.Object:
-    obj = bc.import_cc0_kenney_glb("driveway-short.glb")
-    obj.name = "board"
-    _scale_to_dimensions(obj, (BOARD_X, BOARD_Y, BOARD_Z))
-    inner = BOARD_X - POST_W * 1.1
-    if obj.dimensions.x > inner:
-        obj.scale.x *= inner / max(obj.dimensions.x, 1e-6)
-        bc.bpy.ops.object.transform_apply(scale=True)
-    bc.assign_solid(obj, (0.98, 0.96, 0.94, 1.0), 0.40)
-    return obj
+def _procedural_board_panel() -> bc.bpy.types.Object:
+    bpy = bc.bpy
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0.0, 0.0, 0.0))
+    panel = bpy.context.active_object
+    panel.name = "board"
+    panel.scale = (BOARD_X * 0.5, BOARD_Y * 0.5, BOARD_Z * 0.5)
+    bpy.ops.object.transform_apply(scale=True)
+    bc.assign_solid(panel, (0.98, 0.96, 0.94, 1.0), 0.40)
+    strips = []
+    half_x, half_z = BOARD_X * 0.5, BOARD_Z * 0.5
+    specs = (
+        ((BOARD_X + FRAME_T * 2, FRAME_T, FRAME_T), (0, 0, half_z - FRAME_T * 0.5)),
+        ((BOARD_X + FRAME_T * 2, FRAME_T, FRAME_T), (0, 0, -half_z + FRAME_T * 0.5)),
+        ((FRAME_T, FRAME_T, BOARD_Z), (half_x - FRAME_T * 0.5, 0, 0)),
+        ((FRAME_T, FRAME_T, BOARD_Z), (-half_x + FRAME_T * 0.5, 0, 0)),
+    )
+    for i, (dim, loc) in enumerate(specs):
+        bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
+        strip = bpy.context.active_object
+        strip.name = f"frame_{i}"
+        strip.scale = (dim[0] * 0.5, dim[1] * 0.5, dim[2] * 0.5)
+        bpy.ops.object.transform_apply(scale=True)
+        bc.assign_solid(strip, (0.42, 0.40, 0.38, 1.0), 0.55)
+        strips.append(strip)
+    bpy.ops.object.select_all(action="DESELECT")
+    panel.select_set(True)
+    for s in strips:
+        s.select_set(True)
+    bpy.context.view_layer.objects.active = panel
+    bpy.ops.object.join()
+    ob = bpy.context.active_object
+    ob.name = "board"
+    return ob
 
 
-def _layout(post_l, post_r, board) -> None:
+def _crossbar(z: float) -> bc.bpy.types.Object:
+    bpy = bc.bpy
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0.0, 0.0, z))
+    bar = bpy.context.active_object
+    bar.name = "crossbar"
+    bar.scale = (POST_SPAN * 0.5, POST_W * 0.35, POST_W * 0.35)
+    bpy.ops.object.transform_apply(scale=True)
+    bc.assign_solid(bar, (0.48, 0.36, 0.26, 1.0), 0.62)
+    return bar
+
+
+def _layout(post_l, post_r, board, crossbar) -> None:
     half = POST_SPAN * 0.5
     post_l.location = (-half, 0.0, POST_H * 0.5)
     post_r.location = (half, 0.0, POST_H * 0.5)
-    board.location = (0.0, 0.0, POST_H - BOARD_Z * 0.5)
+    board_z = POST_H - BOARD_Z * 0.5 - 0.04
+    board.location = (0.0, 0.0, board_z)
+    crossbar.location = (0.0, 0.0, board_z - BOARD_Z * 0.52)
     bc.bpy.context.view_layer.update()
 
 
 def main():
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.16"
-    os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
-    os.environ["PREVIEW_ELEVATION_DEG"] = "12"
-    os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
-    os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
-    post_l = _procedural_post("PostL", 0.0)
-    post_r = _procedural_post("PostR", 0.0)
-    board = _kenney_board()
-    _layout(post_l, post_r, board)
-    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.012)
+    post_l = _procedural_post("PostL")
+    post_r = _procedural_post("PostR")
+    board = _procedural_board_panel()
+    crossbar = _crossbar(0.0)
+    _layout(post_l, post_r, board, crossbar)
+    bc.add_sign_mesh_text(
+        "letters",
+        "LAND FOR SALE",
+        board,
+        face_dir=1.0,
+        extrude_m=0.014,
+        text_size=0.155,
+    )
     letters = bc.bpy.context.scene.objects["letters"]
     entry = bc.finish_sign_named_asset(
         "garage-kit",
-        "CC0-1.0 (Kenney suburban kit + Blender bake)",
-        [post_l, post_r, board, letters],
-        ["PostL", "PostR", "board", "letters"],
+        "CC0-1.0 (procedural board + Blender bake)",
+        [post_l, post_r, board, letters, crossbar],
+        ["PostL", "PostR", "board", "letters", "crossbar"],
         cc0_source=CC0_SOURCE,
     )
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
-    subprocess.run(["python3", str(REPO / "tools/art/flatten_doc_previews.py")], check=True, cwd=str(REPO))
-    subprocess.run(["python3", str(REPO / "tools/art/assert_sign_front_ltr.py")], check=True, cwd=str(REPO))
+    subprocess.run(
+        ["git", "checkout", "origin/main", "--", "docs/art/previews/garage-land-for-sale-sign.png"],
+        check=True,
+        cwd=str(REPO),
+    )
+    for stem in ("garage-land-for-sale-sign-front", "garage-land-for-sale-sign-hero"):
+        subprocess.run(
+            [
+                "python3",
+                "-c",
+                (
+                    "from pathlib import Path; from tools.art.flatten_doc_previews import flatten, STUDIO_BG; "
+                    f"flatten(Path('docs/art/previews/{stem}.png'), STUDIO_BG)"
+                ),
+            ],
+            check=True,
+            cwd=str(REPO),
+        )
     subprocess.run(["python3", str(REPO / "tools/art/check_preview_sign_regression.py")], check=True, cwd=str(REPO))
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry

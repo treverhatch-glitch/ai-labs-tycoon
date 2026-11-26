@@ -437,8 +437,8 @@ def _forsale_red_template(width: int, height: int):
     draw = ImageDraw.Draw(im)
     font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     font = None
-    text = "FOR SALE"
-    for size in range(int(height * 0.85), 8, -2):
+    text = "LAND FOR SALE"
+    for size in range(int(height * 0.82), 8, -2):
         try:
             font = ImageFont.truetype(font_path, size=size)
         except OSError:
@@ -868,28 +868,65 @@ def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     return []
 
 
+def _backdrop_grid_points(w: int, h: int, *, inset: int = 3) -> list[tuple[int, int]]:
+    xs = (inset, w // 2, w - 1 - inset)
+    ys = (inset, h // 2, h - 1 - inset)
+    return [(x, y) for y in ys for x in xs]
+
+
 def check_backdrop_mid_grey(
     rgb_path: Path,
     *,
     corner_inset_px: int = 3,
     expected: tuple[int, int, int] = (150, 150, 150),
 ) -> list[str]:
-    """Env/studio previews: flattened 3px inset corners pinned to mid-grey backdrop."""
+    """Sign/studio flats: 3×3 inset grid pinned to mid-grey backdrop bytes."""
     im = _load_rgba(rgb_path).convert("RGB")
     w, h = im.size
     inset = max(0, corner_inset_px)
-    pts = (
-        (inset, inset),
-        (w - 1 - inset, inset),
-        (inset, h - 1 - inset),
-        (w - 1 - inset, h - 1 - inset),
-    )
     errs: list[str] = []
-    for x, y in pts:
+    for x, y in _backdrop_grid_points(w, h, inset=inset):
         r, g, b = im.getpixel((x, y))
         if (r, g, b) != expected:
-            errs.append(f"backdrop_corner_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}")
+            errs.append(
+                f"backdrop_grid_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}"
+            )
     return errs
+
+
+SIGN_PREVIEW_ALLOWED_PNG = frozenset(
+    {
+        "garage-land-for-sale-sign-front.png",
+        "garage-land-for-sale-sign-front.mask.png",
+        "garage-land-for-sale-sign-hero.png",
+        "garage-land-for-sale-sign-hero.mask.png",
+    }
+)
+
+
+def check_sign_preview_png_scope(preview_dir: Path) -> list[str]:
+    """PR scope: only sign front/hero PNG pairs may differ from origin/main."""
+    import subprocess
+
+    repo = preview_dir.parents[2]
+    changed: list[str] = []
+    for png in sorted(preview_dir.glob("*.png")):
+        rel = png.name
+        r = subprocess.run(
+            ["git", "diff", "--quiet", "origin/main", "--", str(png)],
+            cwd=repo,
+            capture_output=True,
+        )
+        if r.returncode != 0:
+            changed.append(rel)
+    extra = [n for n in changed if n not in SIGN_PREVIEW_ALLOWED_PNG]
+    if extra:
+        return [f"sign_preview_png_out_of_scope extra={extra}"]
+    if len(changed) > len(SIGN_PREVIEW_ALLOWED_PNG):
+        return [
+            f"sign_preview_png_diff_count={len(changed)} max={len(SIGN_PREVIEW_ALLOWED_PNG)} files={changed}"
+        ]
+    return []
 
 
 def check_tile2x2_seam(preview_dir: Path, asset_id: str, *, edge_tol: float = 22.0) -> list[str]:

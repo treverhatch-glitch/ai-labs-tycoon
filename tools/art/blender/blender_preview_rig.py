@@ -463,37 +463,13 @@ def render_preview_studio(
             scene.eevee.gtao_distance = 0.42
             scene.eevee.gtao_factor = 2.4
     elif _contact_shadow_only():
-        center = (mins + maxs) * 0.5
-        span = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
-        if axis == "Y":
-            bpy.ops.mesh.primitive_plane_add(
-                size=span * 0.55,
-                location=(center.x, mins.y - 0.001, center.z),
-                rotation=(math.pi / 2, 0, 0),
-            )
+        if mid_grey and os.environ.get("SIGN_PREVIEW_NO_VISIBLE_FLOOR", "").strip() in ("1", "true", "yes"):
+            if hasattr(scene.eevee, "use_gtao"):
+                scene.eevee.use_gtao = True
+                scene.eevee.gtao_distance = 0.42
+                scene.eevee.gtao_factor = 2.1
         else:
-            bpy.ops.mesh.primitive_plane_add(
-                size=span * 1.05,
-                location=(center.x, center.y, mins.z - 0.004),
-            )
-        floor = bpy.context.active_object
-        floor.name = "PreviewShadowFloor"
-        mat = bpy.data.materials.new("ContactShadow")
-        mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        if bsdf:
-            if mid_grey:
-                grey = MID_GREY_RGBA
-                bsdf.inputs["Base Color"].default_value = grey
-            else:
-                bsdf.inputs["Base Color"].default_value = (0.12, 0.12, 0.13, 1.0)
-            bsdf.inputs["Roughness"].default_value = 0.92
-        floor.data.materials.append(mat)
-        floor.hide_render = False
-        if hasattr(scene.eevee, "use_gtao"):
-            scene.eevee.use_gtao = True
-            scene.eevee.gtao_distance = 0.38
-            scene.eevee.gtao_factor = 1.6
+            _add_contact_shadow_floor(axis, mins, maxs, mid_grey, scene)
     elif not mid_grey:
         if axis == "Y":
             add_shadow_floor_y(mins, maxs)
@@ -546,3 +522,32 @@ def render_preview_studio(
     bpy.ops.render.render(write_still=True)
     mask_path = path.with_name(path.stem + ".mask.png")
     render_hero_mask(hero_meshes, mask_path, resolution)
+
+def _add_contact_shadow_floor(axis, mins, maxs, mid_grey, scene) -> None:
+    center = (mins + maxs) * 0.5
+    span = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
+    if axis == "Y":
+        bpy.ops.mesh.primitive_plane_add(
+            size=span * 0.55,
+            location=(center.x, mins.y - 0.001, center.z),
+            rotation=(math.pi / 2, 0, 0),
+        )
+    else:
+        bpy.ops.mesh.primitive_plane_add(
+            size=span * 1.05,
+            location=(center.x, center.y, mins.z - 0.004),
+        )
+    floor = bpy.context.active_object
+    floor.name = "PreviewShadowFloor"
+    mat = bpy.data.materials.new("ContactShadow")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = MID_GREY_RGBA if mid_grey else (0.12, 0.12, 0.13, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.92
+    floor.data.materials.append(mat)
+    floor.hide_render = False
+    if hasattr(scene.eevee, "use_gtao"):
+        scene.eevee.use_gtao = True
+        scene.eevee.gtao_distance = 0.38
+        scene.eevee.gtao_factor = 1.6
