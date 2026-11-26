@@ -24,6 +24,9 @@ namespace AiLabs.Unity.Hq
             foreach (string wispId in EarlyGameWispCatalog.WispMoodIds)
                 EarlyGameArtPaths.LogResolve(EarlyGameWispCatalog.PathFor(wispId));
 
+            if (canvas != null)
+                EarlyGameWispSprite.Attach(canvas, "wisp-neutral", new Vector2(-24f, 120f));
+
             return decorator;
         }
     }

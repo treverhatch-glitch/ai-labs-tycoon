@@ -1,104 +1,118 @@
 #!/usr/bin/env python3
-"""AI wisp mascot mood SVGs (CC0 procedural)."""
+"""Glowing wisp mascot sprite sheets with 4-frame bob animation (CC0 PNG)."""
 from __future__ import annotations
 
 import json
+import math
+import shutil
+import struct
+import zlib
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "wisp-moods"
-SIZE = 64
+STREAM = REPO_ROOT / "unity/Assets/StreamingAssets/EarlyGame/wisp-moods"
+FRAME = 128
+FRAMES = 4
+SHEET_W = FRAME * FRAMES
 
 
-def svg_wrap(body: str, name: str, glow: str) -> str:
-    return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {SIZE} {SIZE}" '
-        f'role="img" aria-label="{name}">\n'
-        f'  <rect width="{SIZE}" height="{SIZE}" rx="12" fill="#14171D"/>\n'
-        f'  <circle cx="32" cy="32" r="22" fill="{glow}" opacity="0.35"/>\n'
-        f"{body}\n</svg>\n"
-    )
-
-
-def wisp_happy() -> str:
-    body = (
-        '  <ellipse cx="32" cy="36" rx="18" ry="20" fill="#8C66F2"/>'
-        '  <circle cx="26" cy="32" r="3" fill="#F4F0E8"/>'
-        '  <circle cx="38" cy="32" r="3" fill="#F4F0E8"/>'
-        '  <path d="M24 42 Q32 50 40 42" fill="none" stroke="#F4F0E8" stroke-width="2"/>'
-    )
-    return svg_wrap(body, "wisp happy", "#66BF73")
-
-
-def wisp_neutral() -> str:
-    body = (
-        '  <ellipse cx="32" cy="36" rx="18" ry="20" fill="#8C66F2"/>'
-        '  <circle cx="26" cy="32" r="3" fill="#F4F0E8"/>'
-        '  <circle cx="38" cy="32" r="3" fill="#F4F0E8"/>'
-        '  <rect x="26" y="42" width="12" height="2" fill="#F4F0E8"/>'
-    )
-    return svg_wrap(body, "wisp neutral", "#5A8CF2")
-
-
-def wisp_worried() -> str:
-    body = (
-        '  <ellipse cx="32" cy="36" rx="18" ry="20" fill="#8C66F2"/>'
-        '  <circle cx="26" cy="30" r="3" fill="#F4F0E8"/>'
-        '  <circle cx="38" cy="30" r="3" fill="#F4F0E8"/>'
-        '  <path d="M26 46 Q32 40 38 46" fill="none" stroke="#F4F0E8" stroke-width="2"/>'
-    )
-    return svg_wrap(body, "wisp worried", "#F2BF5A")
-
-
-def wisp_angry() -> str:
-    body = (
-        '  <ellipse cx="32" cy="36" rx="18" ry="20" fill="#8C66F2"/>'
-        '  <circle cx="26" cy="32" r="3" fill="#E85D4A"/>'
-        '  <circle cx="38" cy="32" r="3" fill="#E85D4A"/>'
-        '  <path d="M24 44 L40 44" stroke="#E85D4A" stroke-width="3"/>'
-    )
-    return svg_wrap(body, "wisp angry", "#E85D4A")
-
-
-def wisp_glowing() -> str:
-    body = (
-        '  <ellipse cx="32" cy="36" rx="18" ry="20" fill="#B080FF"/>'
-        '  <circle cx="26" cy="32" r="4" fill="#F4F0E8"/>'
-        '  <circle cx="38" cy="32" r="4" fill="#F4F0E8"/>'
-        '  <path d="M24 42 Q32 50 40 42" fill="none" stroke="#F4F0E8" stroke-width="2"/>'
-        '  <circle cx="32" cy="32" r="26" fill="none" stroke="#8C66F2" stroke-width="2" opacity="0.6"/>'
-    )
-    return svg_wrap(body, "wisp glowing", "#8C66F2")
-
-
-BUILDERS = {
-    "wisp-happy": wisp_happy,
-    "wisp-neutral": wisp_neutral,
-    "wisp-worried": wisp_worried,
-    "wisp-angry": wisp_angry,
-    "wisp-glowing": wisp_glowing,
+MOODS = {
+    "wisp-happy": ((140, 102, 242), (102, 191, 115), 0.85),
+    "wisp-neutral": ((90, 140, 242), (120, 140, 200), 0.65),
+    "wisp-worried": ((242, 191, 90), (180, 120, 80), 0.7),
+    "wisp-angry": ((232, 93, 74), (180, 40, 30), 0.9),
+    "wisp-glowing": ((176, 128, 255), (140, 220, 255), 1.0),
 }
 
 
+def write_rgba(path: Path, width: int, height: int, pixel_fn) -> None:
+    raw_rows = []
+    for y in range(height):
+        row = b"\x00"
+        for x in range(width):
+            r, g, b, a = pixel_fn(x, y)
+            row += bytes((r, g, b, a))
+        raw_rows.append(row)
+    compressed = zlib.compress(b"".join(raw_rows), 9)
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
+
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", compressed) + chunk(b"IEND", b""))
+
+
+def render_sheet(mood_id: str, core: tuple[int, int, int], glow: tuple[int, int, int], intensity: float) -> None:
+    def pixel_fn(gx: int, gy: int) -> tuple[int, int, int, int]:
+        return 0, 0, 0, 0
+
+    def frame_pixel(fi: int, lx: int, ly: int) -> tuple[int, int, int, int]:
+        bob = 4 * math.sin(fi * math.pi / 2)
+        cx, cy = FRAME / 2, FRAME / 2 + bob
+        dx, dy = lx - cx, ly - cy
+        dist = math.sqrt(dx * dx + dy * dy)
+        body_r = 22 + 2 * math.sin(fi * 0.8)
+        glow_r = 38 + 6 * intensity
+        if dist > glow_r:
+            return 0, 0, 0, 0
+        if dist <= body_r:
+            t = dist / body_r
+            r = int(core[0] * (1 - t * 0.2))
+            g = int(core[1] * (1 - t * 0.2))
+            b = int(core[2] * (1 - t * 0.2))
+            return r, g, b, 255
+        fall = (dist - body_r) / (glow_r - body_r)
+        alpha = int((1 - fall) * 180 * intensity)
+        r = int(glow[0] * (1 - fall * 0.5))
+        g = int(glow[1] * (1 - fall * 0.5))
+        b = int(glow[2] * (1 - fall * 0.5))
+        return r, g, b, max(0, min(255, alpha))
+
+    def sheet_pixel(x: int, y: int) -> tuple[int, int, int, int]:
+        fi = x // FRAME
+        lx, ly = x % FRAME, y
+        return frame_pixel(fi, lx, ly)
+
+    path = OUT / f"{mood_id}-sheet.png"
+    write_rgba(path, SHEET_W, FRAME, sheet_pixel)
+    STREAM.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(path, STREAM / path.name)
+
+    for fi in range(FRAMES):
+        single = OUT / f"{mood_id}_f{fi}.png"
+
+        def pix(sx: int, sy: int, frame_i: int = fi) -> tuple[int, int, int, int]:
+            return frame_pixel(frame_i, sx, sy)
+
+        write_rgba(single, FRAME, FRAME, pix)
+        shutil.copy2(single, STREAM / single.name)
+
+
 def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    # remove legacy SVG moods
+    for old in OUT.glob("*.svg"):
+        old.unlink()
     entries = []
-    for asset_id, fn in BUILDERS.items():
-        path = OUT / f"{asset_id}.svg"
-        path.write_text(fn(), encoding="utf-8")
+    for mood_id, (core, glow, intensity) in MOODS.items():
+        render_sheet(mood_id, core, glow, intensity)
         entries.append(
             {
-                "id": asset_id,
-                "path": f"Assets/Art/EarlyGame/wisp-moods/{asset_id}.svg",
+                "id": mood_id,
+                "path": f"Assets/Art/EarlyGame/wisp-moods/{mood_id}-sheet.png",
+                "frames": FRAMES,
+                "frameSizePx": FRAME,
                 "license": "CC0-1.0 (procedural, in-repo)",
+                "animation": "bob-glow",
             }
         )
-    manifest = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "wisp-manifest.json"
+    manifest = REPO_ROOT / "unity/Assets/Art/EarlyGame" / "wisp-manifest.json"
     manifest.write_text(
-        json.dumps({"generator": "tools/art/generate_wisp_mascot.py", "assets": entries}, indent=2) + "\n",
+        json.dumps({"generator": "tools/art/generate_wisp_mascot.py", "fidelity": "packet-2", "assets": entries}, indent=2) + "\n",
         encoding="utf-8",
     )
-    print(f"Wrote {len(entries)} wisp SVGs")
+    print(f"Wrote {len(entries)} wisp sprite sheets ({FRAMES} frames each)")
 
 
 if __name__ == "__main__":

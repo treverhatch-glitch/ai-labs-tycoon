@@ -20,5 +20,8 @@ namespace AiLabs.Unity.Hq
 
         public static string PathFor(string textureId) =>
             PngById.TryGetValue(textureId, out string path) ? path : null;
+
+        public static string NormalPathFor(string textureId) =>
+            PathFor(textureId)?.Replace(".png", "_normal.png");
     }
 }

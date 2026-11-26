@@ -1,53 +1,70 @@
 {
   "generator": "tools/art/generate_early_textures.py",
+  "fidelity": "packet-2",
   "assets": [
     {
       "id": "tex-garage-carpet",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-carpet.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-carpet_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 32
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-garage-concrete",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-concrete.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-concrete_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 32
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-garage-trim-orange",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-trim-orange.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-trim-orange_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 16
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-garage-wall-beige",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-wall-beige.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-wall-beige_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 32
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-garage-door-metal",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-door-metal.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-door-metal_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 24
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-garage-server-paint",
       "path": "Assets/Art/EarlyGame/textures/tex-garage-server-paint.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-garage-server-paint_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 24
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-hud-paper-warm",
       "path": "Assets/Art/EarlyGame/textures/tex-hud-paper-warm.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-hud-paper-warm_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 16
+      "sizePx": 512,
+      "tileable": true
     },
     {
       "id": "tex-crt-phosphor",
       "path": "Assets/Art/EarlyGame/textures/tex-crt-phosphor.png",
+      "normalPath": "Assets/Art/EarlyGame/textures/tex-crt-phosphor_normal.png",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "sizePx": 16
+      "sizePx": 512,
+      "tileable": true
     }
   ]
 }

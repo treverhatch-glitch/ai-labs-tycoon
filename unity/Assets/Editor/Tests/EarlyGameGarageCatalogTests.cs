@@ -36,5 +36,17 @@ namespace AiLabs.Unity.Editor.Tests
         {
             Assert.AreEqual(8, EarlyGameTextureCatalog.TextureIds.Count);
         }
+
+        [Test]
+        public void Wisp_paths_use_sprite_sheets()
+        {
+            Assert.IsTrue(EarlyGameWispCatalog.PathFor("wisp-neutral").EndsWith("-sheet.png"));
+        }
+
+        [Test]
+        public void Texture_normal_paths_exist()
+        {
+            Assert.IsNotNull(EarlyGameTextureCatalog.NormalPathFor("tex-garage-carpet"));
+        }
     }
 }

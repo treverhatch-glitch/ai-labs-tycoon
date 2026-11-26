@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Low-poly staff silhouettes for dial-up era (CC0 procedural)."""
+"""Distinct low-poly staff silhouettes (top-down readable, UVs + materials)."""
 from __future__ import annotations
 
 import json
@@ -7,77 +7,104 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from generate_campus_kit import Mesh, box, merge  # noqa: E402
+from garage_kit_builders import MATS  # noqa: E402
+from mesh_lib import MaterialDef, RichMesh, bevel_box, cylinder, merge_rich, mesh_stats, write_obj_with_mtl  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "staff-kit"
+MATERIAL_DEFS = {k: MaterialDef(k, v) for k, v in MATS.items()}
 
 
-def _person(body_scale: float = 1.0, hat: bool = False, arms_down: bool = True) -> Mesh:
-    torso = box(0.38 * body_scale, 0.55 * body_scale, 0.22 * body_scale, oy=0.95 * body_scale)
-    head = box(0.26 * body_scale, 0.26 * body_scale, 0.24 * body_scale, oy=1.42 * body_scale)
-    leg_l = box(0.12 * body_scale, 0.55 * body_scale, 0.12 * body_scale, -0.1, 0.275 * body_scale)
-    leg_r = box(0.12 * body_scale, 0.55 * body_scale, 0.12 * body_scale, 0.1, 0.275 * body_scale)
-    parts = merge(torso, head, leg_l, leg_r)
-    if arms_down:
-        arm_l = box(0.1 * body_scale, 0.42 * body_scale, 0.1 * body_scale, -0.28, 1.0 * body_scale)
-        arm_r = box(0.1 * body_scale, 0.42 * body_scale, 0.1 * body_scale, 0.28, 1.0 * body_scale)
-        parts = merge(parts, arm_l, arm_r)
-    else:
-        arm_l = box(0.1 * body_scale, 0.35 * body_scale, 0.1 * body_scale, -0.22, 1.15 * body_scale, 0.12)
-        arm_r = box(0.1 * body_scale, 0.35 * body_scale, 0.1 * body_scale, 0.22, 1.15 * body_scale, -0.08)
-        parts = merge(parts, arm_l, arm_r)
-    if hat:
-        brim = box(0.32 * body_scale, 0.04 * body_scale, 0.32 * body_scale, oy=1.58 * body_scale)
-        parts = merge(parts, brim)
-    return parts
+def _torso(mat_shirt: str, mat_pants: str, shoulder_w: float = 0.38) -> RichMesh:
+    return merge_rich(
+        bevel_box(shoulder_w, 0.52, 0.24, oy=0.92, mat=mat_shirt),
+        bevel_box(0.34, 0.52, 0.22, oy=0.46, mat=mat_pants),
+        cylinder(0.11, 0.52, segments=8, ox=-0.12, mat=mat_pants),
+        cylinder(0.11, 0.52, segments=8, ox=0.12, mat=mat_pants),
+    )
 
 
-def staff_researcher_idle() -> Mesh:
-    return _person(hat=False, arms_down=True)
+def staff_researcher_idle() -> RichMesh:
+    head = merge_rich(
+        bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys"),
+        bevel_box(0.08, 0.22, 0.12, ox=-0.18, oy=1.42, mat="wood_dark"),
+    )
+    body = _torso("fabric_back", "fabric_seat", 0.36)
+    m = merge_rich(head, body, bevel_box(0.18, 0.24, 0.04, 0.22, 0.95, 0.1, mat="plastic_keys"))
+    m.name = "staff-researcher-idle"
+    return m
 
 
-def staff_engineer_work() -> Mesh:
-    base = _person(hat=True, arms_down=False)
-    laptop = box(0.35, 0.03, 0.25, 0.0, 1.0, 0.2)
-    return merge(base, laptop)
+def staff_engineer_work() -> RichMesh:
+    hat = bevel_box(0.36, 0.08, 0.36, oy=1.52, mat="trim_orange")
+    head = bevel_box(0.26, 0.24, 0.26, oy=1.38, mat="plastic_keys")
+    body = _torso("rack_paint", "metal_frame", 0.42)
+    laptop = bevel_box(0.38, 0.04, 0.28, 0.0, 1.0, 0.18, mat="metal_scratched")
+    screen = bevel_box(0.32, 0.22, 0.03, 0.0, 1.08, 0.22, mat="crt_glass")
+    m = merge_rich(hat, head, body, laptop, screen)
+    m.name = "staff-engineer-work"
+    return m
 
 
-def staff_safety_idle() -> Mesh:
-    base = _person(hat=False, arms_down=True)
-    clip = box(0.12, 0.16, 0.04, 0.22, 0.95, 0.12)
-    return merge(base, clip)
+def staff_safety_idle() -> RichMesh:
+    vest = bevel_box(0.4, 0.45, 0.26, oy=0.98, mat="trim_orange")
+    head = bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys")
+    body = _torso("fabric_seat", "fabric_back")
+    clip = bevel_box(0.14, 0.2, 0.06, 0.24, 0.92, 0.12, mat="metal_scratched")
+    m = merge_rich(vest, head, body, clip)
+    m.name = "staff-safety-idle"
+    return m
 
 
-def staff_sales_idle() -> Mesh:
-    base = _person(hat=False, arms_down=True)
-    phone = box(0.08, 0.22, 0.06, 0.25, 1.05, 0.1)
-    return merge(base, phone)
+def staff_sales_idle() -> RichMesh:
+    head = bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys")
+    body = _torso("fabric_back", "fabric_seat", 0.4)
+    phone = merge_rich(
+        bevel_box(0.06, 0.14, 0.05, 0.28, 1.02, 0.1, mat="plastic_char"),
+        bevel_box(0.12, 0.22, 0.12, 0.28, 1.12, 0.12, mat="wood_oak"),
+    )
+    m = merge_rich(head, body, phone)
+    m.name = "staff-sales-idle"
+    return m
 
 
-def staff_recruiter_idle() -> Mesh:
-    base = _person(hat=False, arms_down=True)
-    folder = box(0.18, 0.24, 0.04, -0.25, 0.95, 0.08)
-    return merge(base, folder)
+def staff_recruiter_idle() -> RichMesh:
+    head = bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys")
+    body = _torso("wood_oak", "fabric_seat", 0.37)
+    folder = bevel_box(0.22, 0.28, 0.06, -0.28, 0.96, 0.1, mat="sign_board")
+    tie = bevel_box(0.06, 0.2, 0.03, 0.0, 1.05, 0.14, mat="trim_orange")
+    m = merge_rich(head, body, folder, tie)
+    m.name = "staff-recruiter-idle"
+    return m
 
 
-def staff_gpu_tech_idle() -> Mesh:
-    base = _person(hat=True, arms_down=False)
-    screwdriver = box(0.04, 0.18, 0.04, 0.3, 1.12, 0.05)
-    return merge(base, screwdriver)
+def staff_gpu_tech_idle() -> RichMesh:
+    cap = cylinder(0.14, 0.06, segments=10, oy=1.48, mat="gpu_green")
+    head = bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys")
+    body = _torso("rack_paint", "metal_frame")
+    tool = cylinder(0.02, 0.2, segments=6, ox=0.3, oy=1.05, oz=0.05, mat="metal_scratched")
+    m = merge_rich(cap, head, body, tool)
+    m.name = "staff-gpu-tech-idle"
+    return m
 
 
-def staff_founder_idle() -> Mesh:
-    base = _person(hat=False, arms_down=True)
-    mug = box(0.1, 0.12, 0.1, 0.28, 0.98, 0.05)
-    return merge(base, mug)
+def staff_founder_idle() -> RichMesh:
+    head = merge_rich(
+        bevel_box(0.26, 0.26, 0.26, oy=1.38, mat="plastic_keys"),
+        bevel_box(0.3, 0.06, 0.24, oy=1.52, mat="wood_dark"),
+    )
+    body = _torso("wood_oak", "fabric_seat")
+    mug = cylinder(0.05, 0.12, segments=8, ox=0.26, oy=0.98, mat="trim_orange")
+    m = merge_rich(head, body, mug)
+    m.name = "staff-founder-idle"
+    return m
 
 
-def staff_pose_typing() -> Mesh:
+def staff_pose_typing() -> RichMesh:
     return staff_engineer_work()
 
 
-MESH_BUILDERS: dict[str, callable] = {
+MESH_BUILDERS = {
     "staff-researcher-idle": staff_researcher_idle,
     "staff-engineer-work": staff_engineer_work,
     "staff-safety-idle": staff_safety_idle,
@@ -93,28 +120,21 @@ def main() -> None:
     manifest_entries = []
     for asset_id, builder in MESH_BUILDERS.items():
         mesh = builder()
-        mesh.name = asset_id
         out = OUT_DIR / f"{asset_id}.obj"
-        mesh.write_obj(out)
+        write_obj_with_mtl(mesh, out, MATERIAL_DEFS)
+        verts, tris = mesh_stats(mesh)
         manifest_entries.append(
             {
                 "id": asset_id,
                 "path": f"Assets/Art/EarlyGame/staff-kit/{asset_id}.obj",
                 "license": "CC0-1.0 (procedural, in-repo)",
-                "vertexCount": len(mesh.vertices),
-                "faceCount": len(mesh.faces),
+                "vertexCount": verts,
+                "triangleCount": tris,
             }
         )
-
     manifest_path = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "staff-manifest.json"
     manifest_path.write_text(
-        json.dumps(
-            {
-                "generator": "tools/art/generate_early_staff.py",
-                "assets": manifest_entries,
-            },
-            indent=2,
-        )
+        json.dumps({"generator": "tools/art/generate_early_staff.py", "fidelity": "packet-2", "assets": manifest_entries}, indent=2)
         + "\n",
         encoding="utf-8",
     )

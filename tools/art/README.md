@@ -19,6 +19,8 @@
 | `generate_early_staff.py` | `unity/Assets/Art/EarlyGame/staff-kit/*.obj` |
 | `generate_early_hud_icons.py` | `unity/Assets/Art/EarlyGame/hud-icons/*.svg` |
 | `generate_wisp_mascot.py` | `unity/Assets/Art/EarlyGame/wisp-moods/*.svg` |
-| `generate_early_textures.py` | `unity/Assets/Art/EarlyGame/textures/*.png` |
+| `generate_early_textures.py` | `unity/Assets/Art/EarlyGame/textures/*.png` + `*_normal.png` |
+| `mesh_lib.py` / `garage_kit_builders.py` | UVs + MTL garage hero props |
+| `noise_lib.py` | 512 tileable noise for early textures |
 
 All geometry is original, generated in Python, and safe to commit in a public repo.

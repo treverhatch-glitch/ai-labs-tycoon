@@ -13,10 +13,10 @@ namespace AiLabs.Unity.Hq
             "wisp-happy", "wisp-neutral", "wisp-worried", "wisp-angry", "wisp-glowing",
         };
 
-        public static readonly IReadOnlyDictionary<string, string> SvgById =
-            WispMoodIds.ToDictionary(id => id, id => Root + id + ".svg");
+        public static readonly IReadOnlyDictionary<string, string> SheetById =
+            WispMoodIds.ToDictionary(id => id, id => Root + id + "-sheet.png");
 
         public static string PathFor(string moodId) =>
-            SvgById.TryGetValue(moodId, out string path) ? path : null;
+            SheetById.TryGetValue(moodId, out string path) ? path : null;
     }
 }

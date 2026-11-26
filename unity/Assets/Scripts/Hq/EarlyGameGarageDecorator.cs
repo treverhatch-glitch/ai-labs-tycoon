@@ -36,47 +36,44 @@ namespace AiLabs.Unity.Hq
             Color trim = EarlyGameHudArt.TrimOrange;
             Color wall = CampusUiTokens.Hex("#D8C8B0");
 
-            PlaceCatalogProp("garage-roll-door", new Vector3(w * 0.5f, 0f, -0.15f), new Vector3(2f, 2.2f, 0.12f), trim);
-            PlaceCatalogProp("garage-server-closet", new Vector3(w - 0.8f, 0f, h - 0.6f), new Vector3(1.1f, 2f, 0.9f), wall);
-            PlaceCatalogProp("garage-land-for-sale-sign", new Vector3(-0.4f, 0f, h * 0.5f), new Vector3(0.3f, 1.6f, 0.3f), trim);
-            PlaceCatalogProp("garage-desk-crt", new Vector3(1.4f, 0f, 1.2f), new Vector3(1.2f, 0.8f, 0.7f), wall);
-            PlaceCatalogProp("garage-voodude-rack", new Vector3(w - 1.2f, 0f, 1.5f), new Vector3(0.6f, 1.8f, 0.75f), CampusUiTokens.Hex("#6A6E78"));
-            PlaceCatalogProp("garage-whiteboard-1995", new Vector3(3.2f, 0f, 0.35f), new Vector3(1.4f, 1.2f, 0.1f), Color.white);
-            PlaceCatalogProp("garage-coffee-drip", new Vector3(0.8f, 0f, 0.7f), new Vector3(0.3f, 0.6f, 0.25f), trim);
+            ApplyFloorTileTexture();
+            PlacePropRoot("garage-roll-door", new Vector3(w * 0.5f, 0f, -0.15f), trim);
+            PlacePropRoot("garage-server-closet", new Vector3(w - 0.8f, 0f, h - 0.6f), wall);
+            PlacePropRoot("garage-land-for-sale-sign", new Vector3(-0.4f, 0f, h * 0.5f), trim);
+            PlacePropRoot("garage-desk-crt", new Vector3(1.4f, 0f, 1.2f), wall);
+            PlacePropRoot("garage-voodude-rack", new Vector3(w - 1.2f, 0f, 1.5f), CampusUiTokens.Hex("#6A6E78"));
+            PlacePropRoot("garage-whiteboard-1995", new Vector3(3.2f, 0f, 0.35f), Color.white);
+            PlacePropRoot("garage-coffee-drip", new Vector3(0.8f, 0f, 0.7f), trim);
 
             for (int i = 0; i < EarlyGameStaffCatalog.AllAssetIds.Count && i < 4; i++)
             {
                 string id = EarlyGameStaffCatalog.AllAssetIds[i];
                 float x = 2.2f + i * 0.55f;
-                PlaceStaffProp(id, new Vector3(x, 0f, 2.5f), CampusUiTokens.Hex("#8C66F2"));
+                PlaceStaffRoot(id, new Vector3(x, 0f, 2.5f));
             }
         }
 
-        void PlaceCatalogProp(string assetId, Vector3 position, Vector3 scale, Color color)
+        void ApplyFloorTileTexture()
         {
-            EarlyGameArtPaths.LogResolve(EarlyGameGarageCatalog.PathFor(assetId));
-            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.name = "Garage_" + assetId;
-            cube.transform.SetParent(_propsRoot, false);
-            cube.transform.localPosition = position + Vector3.up * (scale.y * 0.5f);
-            cube.transform.localScale = scale;
-            var col = cube.GetComponent<Collider>();
-            if (col != null) Destroy(col);
-            var renderer = cube.GetComponent<Renderer>();
-            renderer.material = new Material(HqShaders.Lit()) { color = color };
+            var tex = EarlyGameTextureLoader.LoadAlbedo("tex-garage-carpet");
+            if (tex == null) return;
+            EarlyGameArtPaths.LogResolve(EarlyGameTextureCatalog.PathFor("tex-garage-carpet"));
         }
 
-        void PlaceStaffProp(string roleId, Vector3 position, Color color)
+        void PlacePropRoot(string assetId, Vector3 position, Color _)
         {
-            EarlyGameArtPaths.LogResolve(EarlyGameStaffCatalog.PathFor(roleId));
-            var cap = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            cap.name = "Staff_" + roleId;
-            cap.transform.SetParent(_propsRoot, false);
-            cap.transform.localPosition = position + Vector3.up * 0.85f;
-            cap.transform.localScale = new Vector3(0.35f, 0.85f, 0.35f);
-            var col = cap.GetComponent<Collider>();
-            if (col != null) Destroy(col);
-            cap.GetComponent<Renderer>().material = new Material(HqShaders.Lit()) { color = color };
+            var root = new GameObject("Garage_" + assetId);
+            root.transform.SetParent(_propsRoot, false);
+            root.transform.localPosition = position;
+            EarlyGamePropStandIn.Spawn(root.transform, assetId);
+        }
+
+        void PlaceStaffRoot(string roleId, Vector3 position)
+        {
+            var root = new GameObject("Staff_" + roleId);
+            root.transform.SetParent(_propsRoot, false);
+            root.transform.localPosition = position;
+            EarlyGamePropStandIn.SpawnStaff(root.transform, roleId);
         }
 
         void EnsureRoot()

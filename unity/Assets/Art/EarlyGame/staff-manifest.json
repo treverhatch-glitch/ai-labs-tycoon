@@ -1,61 +1,62 @@
 {
   "generator": "tools/art/generate_early_staff.py",
+  "fidelity": "packet-2",
   "assets": [
     {
       "id": "staff-researcher-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 48,
-      "faceCount": 36
+      "vertexCount": 252,
+      "triangleCount": 124
     },
     {
       "id": "staff-engineer-work",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-engineer-work.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 64,
-      "faceCount": 48
+      "vertexCount": 276,
+      "triangleCount": 136
     },
     {
       "id": "staff-safety-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-safety-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42
+      "vertexCount": 252,
+      "triangleCount": 124
     },
     {
       "id": "staff-sales-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-sales-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42
+      "vertexCount": 252,
+      "triangleCount": 124
     },
     {
       "id": "staff-recruiter-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-recruiter-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42
+      "vertexCount": 252,
+      "triangleCount": 124
     },
     {
       "id": "staff-gpu-tech-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 64,
-      "faceCount": 48
+      "vertexCount": 336,
+      "triangleCount": 164
     },
     {
       "id": "staff-founder-idle",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42
+      "vertexCount": 294,
+      "triangleCount": 144
     },
     {
       "id": "staff-pose-typing",
       "path": "Assets/Art/EarlyGame/staff-kit/staff-pose-typing.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 64,
-      "faceCount": 48
+      "vertexCount": 276,
+      "triangleCount": 136
     }
   ]
 }

@@ -82,8 +82,14 @@ namespace AiLabs.Unity.Hq
 
         public static Sprite SpriteFromCatalog(string assetPath)
         {
-            Texture2D tex = ProceduralSwatch.ForPath(assetPath);
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 64f);
+            if (assetPath != null && assetPath.Contains("textures/"))
+            {
+                string id = System.IO.Path.GetFileNameWithoutExtension(assetPath);
+                var tex = EarlyGameTextureLoader.LoadAlbedo(id);
+                return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 64f);
+            }
+            Texture2D flat = EarlyGameTextureLoader.LoadAlbedo("tex-hud-paper-warm");
+            return Sprite.Create(flat, new Rect(0, 0, flat.width, flat.height), new Vector2(0.5f, 0.5f), 64f);
         }
     }
 }
