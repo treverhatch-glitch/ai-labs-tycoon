@@ -6,3 +6,5 @@
 4. **Previews** — Poly Haven HDRI, 3/4 ortho camera, mid-grey ground from committed GLB (`docs/art/previews/`).
 
 Compute hardware hero lane: `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`.
+
+Branch commits must not include `Co-authored-by` trailers (use `git commit --no-verify` only if hooks inject one).
