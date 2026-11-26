@@ -2,7 +2,7 @@
   "assetId": "compute-server-rack",
   "preview": "docs/art/previews/compute-server-rack.png",
   "glb": "unity/Assets/Art/Cc0/compute-kit/compute-server-rack/compute-server-rack.glb",
-  "glb_sha256": "151dbb463d8e15c1aff43d8220c708b59fcdd866317aee87ca0049f33b3baea7",
+  "glb_sha256": "c3f920735163ac54e314a3eb0869777e6869b44074dd238fd4e8a345562ece64",
   "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
   "resolution": 1024,
   "silhouetteFill": 0.7,

@@ -396,7 +396,8 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
-    bevel_object(root, width=0.010, segments=2)
+    bevel_w = 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
+    bevel_object(root, width=bevel_w, segments=2)
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
     if not has_bake:
