@@ -11,6 +11,7 @@ sys.path.insert(0, str(REPO / "tools" / "art"))
 from packet34_preview_gates import (  # noqa: E402
     SIGN_PREVIEW_ALLOWED_PNG,
     check_backdrop_mid_grey,
+    check_sign_mask_studio_backdrop,
     check_sign_assembly_metadata,
     check_sign_for_sale_contrast,
     check_sign_front_board_frame_width,
@@ -34,6 +35,7 @@ FIXTURES = (
     ("e7d53735", REPO / "tools/art/fixtures/preview_regression/sign-e7d53735"),
     ("dd158f9e", REPO / "tools/art/fixtures/preview_regression/sign-dd158f9e"),
     ("55d06577", REPO / "tools/art/fixtures/preview_regression/sign-55d06577"),
+    ("df4e2874", REPO / "tools/art/fixtures/preview_regression/sign-df4e2874"),
 )
 
 
@@ -53,6 +55,7 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
         return 1
     errs: list[str] = []
     errs.extend(check_backdrop_mid_grey(rgb))
+    errs.extend(check_sign_mask_studio_backdrop(mask))
     errs.extend(check_sign_text_template_orientation(rgb, mask, label=label))
     errs.extend(check_sign_preview_subject_framing(rgb, mask, label=label))
     errs.extend(check_sign_text_inside_board_mask(rgb, mask, label=label))
@@ -99,7 +102,7 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
-        if sha in ("419f4309", "e7d53735", "dd158f9e", "55d06577"):
+        if sha in ("419f4309", "e7d53735", "dd158f9e", "55d06577", "df4e2874"):
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
             if sha == "419f4309":

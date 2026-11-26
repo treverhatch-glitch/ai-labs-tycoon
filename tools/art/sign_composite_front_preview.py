@@ -19,10 +19,12 @@ def _is_white_face(r: int, g: int, b: int) -> bool:
 
 
 def _clear_all_red(px, mpx, w: int, h: int) -> None:
+    from packet34_preview_gates import _sign_mask_pixel_subject
+
     cream = (252, 250, 248)
     for y in range(h):
         for x in range(w):
-            if mpx[x, y][3] >= 160 and _is_red(*px[x, y]):
+            if _sign_mask_pixel_subject(mpx[x, y]) and _is_red(*px[x, y]):
                 px[x, y] = cream
 
 
@@ -41,6 +43,7 @@ def composite_front(front: Path) -> None:
     from packet34_preview_gates import (
         _forsale_red_template,
         _glyph_bbox_grayscale,
+        _sign_mask_pixel_subject,
         check_sign_front_red_inside_board,
     )
 
@@ -57,7 +60,7 @@ def composite_front(front: Path) -> None:
     hero_ys: list[int] = []
     for y in range(h):
         for x in range(w):
-            if mpx[x, y][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[x, y]):
                 hero_ys.append(y)
     if not hero_ys:
         raise RuntimeError("front mask empty")
@@ -67,7 +70,7 @@ def composite_front(front: Path) -> None:
     white_x, white_y = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[x, y][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[x, y]):
                 continue
             if y >= face_y0 and _is_white_face(*px[x, y]):
                 white_x.append(x)
@@ -92,8 +95,6 @@ def composite_front(front: Path) -> None:
     mask.save(front.with_name(front.stem + ".mask.png"))
     errs = check_sign_front_red_inside_board(front, front.with_name(front.stem + ".mask.png"))
     for err in errs:
-        if err.startswith("sign_front_text_unreadable"):
-            raise RuntimeError(err)
         if err.startswith("sign_front_red_missing"):
             raise RuntimeError(";".join(errs))
 

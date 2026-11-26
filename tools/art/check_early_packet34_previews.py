@@ -29,6 +29,7 @@ from packet34_preview_gates import (  # noqa: E402
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
     check_backdrop_mid_grey,
+    check_sign_mask_studio_backdrop,
     check_sign_preview_png_scope,
     check_env_preview_backdrop,
     check_wall_cinderblock_visible,
@@ -104,6 +105,9 @@ def check_env_preview(asset_id: str) -> int:
         for err in check_backdrop_mid_grey(front_rgb):
             print(f"FAIL {asset_id} front {err}")
             rc = 1
+        for err in check_sign_mask_studio_backdrop(front_mask):
+            print(f"FAIL {asset_id} front mask {err}")
+            rc = 1
         for err in check_sign_preview_board_text(front_rgb, front_mask, label="sign_front"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
@@ -174,6 +178,9 @@ def main() -> int:
     if hero_rgb.is_file() and hero_mask.is_file():
         for err in check_backdrop_mid_grey(hero_rgb):
             print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_mask_studio_backdrop(hero_mask):
+            print(f"FAIL garage-land-for-sale-sign-hero mask {err}")
             hero_rc = 1
         for err in check_sign_for_sale_contrast(hero_rgb, hero_mask):
             print(f"FAIL garage-land-for-sale-sign-hero {err}")

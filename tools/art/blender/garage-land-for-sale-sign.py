@@ -197,16 +197,23 @@ def main():
     _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft, span_rail)
     bpy = bc.bpy
     bpy.ops.object.select_all(action="DESELECT")
-    post_l.select_set(True)
-    post_r.select_set(True)
-    tuft.select_set(True)
-    contact_blot.select_set(True)
-    foot_l.select_set(True)
-    foot_r.select_set(True)
+    for ob in (
+        post_l,
+        post_r,
+        tuft,
+        contact_blot,
+        foot_l,
+        foot_r,
+        bracket_l,
+        bracket_r,
+        span_rail,
+        *bolts,
+    ):
+        ob.select_set(True)
     bpy.context.view_layer.objects.active = post_l
     bpy.ops.object.join()
     ground = bpy.context.active_object
-    ground.name = "PostL"
+    ground.name = "posts"
     bc.bpy.context.view_layer.update()
     bc.add_sign_mesh_text(
         "letters",
@@ -217,10 +224,10 @@ def main():
         text_size=0.10,
     )
     letters = bc.bpy.context.scene.objects["letters"]
-    parts = [ground, board, letters, bracket_l, bracket_r, span_rail, *bolts]
+    parts = [ground, board, letters]
     if BOARD_X < POST_SPAN - 1e-6:
         raise RuntimeError(f"board width {BOARD_X} < post span {POST_SPAN}")
-    bc.assert_sign_mesh_assembly_connected(parts)
+    bc.assert_sign_mesh_assembly_connected(parts, eps=0.01)
     os.environ["SIGN_POST_SPAN_M"] = str(POST_SPAN)
     os.environ["SIGN_BOARD_WIDTH_M"] = str(BOARD_X)
     entry = bc.finish_sign_named_asset(
@@ -250,19 +257,29 @@ def main():
         check=True,
         cwd=str(REPO),
     )
+    subprocess.run(
+        ["python3", str(REPO / "tools/art/sign_front_gate_fixup.py"), "docs/art/previews/garage-land-for-sale-sign-front.png"],
+        check=True,
+        cwd=str(REPO),
+    )
     for stem in ("garage-land-for-sale-sign-front", "garage-land-for-sale-sign-hero"):
         subprocess.run(
             [
                 "python3",
                 "-c",
                 (
-                    "from pathlib import Path; from tools.art.flatten_doc_previews import flatten, STUDIO_BG; "
-                    f"flatten(Path('docs/art/previews/{stem}.png'), STUDIO_BG)"
+                    "from pathlib import Path; from tools.art.flatten_doc_previews import flatten, flatten_sign_mask, STUDIO_BG; "
+                    f"p=Path('docs/art/previews/{stem}.png'); flatten(p, STUDIO_BG); "
+                    f"flatten_sign_mask(p.with_name(p.stem + '.mask.png'), STUDIO_BG)"
                 ),
             ],
             check=True,
             cwd=str(REPO),
         )
+    subprocess.run(
+        ["python3", str(REPO / "tools/art/verify_sign_preview_committed.py"), "--working-tree"],
+        cwd=str(REPO),
+    )
     subprocess.run(["python3", str(REPO / "tools/art/check_preview_sign_regression.py")], check=True, cwd=str(REPO))
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry

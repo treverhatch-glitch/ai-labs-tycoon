@@ -34,6 +34,18 @@ def _load_rgba(path: Path):
     return Image.open(path).convert("RGBA")
 
 
+def _sign_mask_pixel_subject(pixel: tuple[int, int, int, int]) -> bool:
+    """True for hero silhouette on sign mask companions (RGBA alpha or RGB studio flatten)."""
+    r, g, b, a = pixel
+    if abs(r - 150) <= 4 and abs(g - 150) <= 4 and abs(b - 150) <= 4:
+        return False
+    if r < 36 and g < 36 and b < 36:
+        return False
+    if max(r, g, b) >= 200:
+        return True
+    return a >= 160
+
+
 def _pixel_sat(r: int, g: int, b: int) -> float:
     rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
     mx = max(rf, gf, bf)
@@ -236,7 +248,7 @@ def check_sign_for_sale_contrast(rgb_path: Path, mask_path: Path) -> list[str]:
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -251,7 +263,7 @@ def check_sign_for_sale_contrast(rgb_path: Path, mask_path: Path) -> list[str]:
     red_glyphs = 0
     for y in range(cy0, cy1 + 1):
         for x in range(cx0, cx1 + 1):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b, _a = rpx[y * w + x]
             lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
@@ -343,7 +355,7 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -358,7 +370,7 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
     rpx = list(rgb.getdata())
     for y in range(cy0, cy1 + 1):
         for x in range(cx0, cx1 + 1):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 r, g, b, _a = rpx[y * w + x]
                 samples.append((r, g, b))
     if len(samples) < 64:
@@ -547,7 +559,7 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     hero_ys: list[int] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 hero_ys.append(y)
     if not hero_ys:
         return [f"{label}_mask_empty"]
@@ -558,7 +570,7 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     red_x, red_y = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if y >= face_y0 and _is_white_face(r, g, b):
@@ -638,7 +650,7 @@ def check_sign_text_template_orientation(
     red_cols: dict[int, int] = {}
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_red(r, g, b):
@@ -649,7 +661,7 @@ def check_sign_text_template_orientation(
     ry0, ry1 = h, -1
     for y in range(h):
         for x in range(rx0, rx1 + 1):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 r, g, b = rpx[y * w + x]
                 if _is_red(r, g, b):
                     ry0 = min(ry0, y)
@@ -663,7 +675,7 @@ def check_sign_text_template_orientation(
     for y in range(rh):
         for x in range(rw):
             sx, sy = rx0 + x, ry0 + y
-            if mpx[sy * w + sx][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[sy * w + sx]):
                 r, g, b = rpx[sy * w + sx]
                 if _is_red(r, g, b):
                     red_mask[y][x] = 1
@@ -717,7 +729,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     hero_ys: list[int] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 hero_ys.append(y)
     if not hero_ys:
         return ["sign_front_mask_empty"]
@@ -728,7 +740,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     red_cols: dict[int, int] = {}
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if y >= face_y0 and _is_white_face(r, g, b):
@@ -755,7 +767,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     wood_on_face = 0
     for y in range(by0 + margin_y, by1 - margin_y + 1):
         for x in range(bx0 + margin_x, bx1 - margin_x + 1):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_post_wood(r, g, b):
@@ -768,7 +780,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     ry0, ry1 = h, -1
     for y in range(by0, by1 + 1):
         for x in range(rx0, rx1 + 1):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 r, g, b = rpx[y * w + x]
                 if _is_red(r, g, b):
                     ry0 = min(ry0, y)
@@ -784,7 +796,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     for y in range(red_h):
         for x in range(red_w):
             sx, sy = rx0 + x, ry0 + y
-            if mpx[sy * w + sx][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[sy * w + sx]):
                 r, g, b = rpx[sy * w + sx]
                 if _is_red(r, g, b):
                     red_mask[y][x] = 1
@@ -844,7 +856,7 @@ def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -858,7 +870,7 @@ def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     m = np.zeros((h, w), dtype=bool)
     for y in range(h):
         for x in range(w):
-            m[y, x] = mpx[y * w + x][3] >= 160
+            m[y, x] = _sign_mask_pixel_subject(mpx[y * w + x])
     crop = arr[cy0 : cy1 + 1, cx0 : cx1 + 1]
     mc = m[cy0 : cy1 + 1, cx0 : cx1 + 1]
     if crop.shape[0] < 8 or crop.shape[1] < 8:
@@ -886,23 +898,64 @@ def _backdrop_grid_points(w: int, h: int, *, inset: int = 3) -> list[tuple[int, 
     return [(x, y) for y in ys for x in xs]
 
 
+def _backdrop_border_grid_points(w: int, h: int, *, inset: int = 3) -> list[tuple[int, int]]:
+    """Eight perimeter samples of the inset 3×3 grid (excludes center)."""
+    cx, cy = w // 2, h // 2
+    pts = _backdrop_grid_points(w, h, inset=inset)
+    return [(x, y) for x, y in pts if not (x == cx and y == cy)]
+
+
 def check_backdrop_mid_grey(
     rgb_path: Path,
     *,
     corner_inset_px: int = 3,
     expected: tuple[int, int, int] = (150, 150, 150),
 ) -> list[str]:
-    """Sign/studio flats: 3×3 inset grid pinned to mid-grey backdrop bytes."""
+    """Sign/studio flats: border grid + full inset edge band must be exact backdrop RGB."""
     im = _load_rgba(rgb_path).convert("RGB")
     w, h = im.size
     inset = max(0, corner_inset_px)
     errs: list[str] = []
-    for x, y in _backdrop_grid_points(w, h, inset=inset):
+    for x, y in _backdrop_border_grid_points(w, h, inset=inset):
         r, g, b = im.getpixel((x, y))
         if (r, g, b) != expected:
             errs.append(
                 f"backdrop_grid_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}"
             )
+    non150 = 0
+    band = 0
+    for y in range(h):
+        for x in range(w):
+            if x <= inset or x >= w - 1 - inset or y <= inset or y >= h - 1 - inset:
+                band += 1
+                if im.getpixel((x, y)) != expected:
+                    non150 += 1
+    if non150:
+        errs.append(f"backdrop_edge_band_non150 count={non150} of {band} inset={inset}")
+    return errs
+
+
+def check_sign_mask_studio_backdrop(
+    mask_path: Path,
+    *,
+    expected: tuple[int, int, int] = (150, 150, 150),
+) -> list[str]:
+    """Sign mask companions: RGB backdrop must be studio grey outside subject."""
+    if not mask_path.is_file():
+        return ["sign_mask_missing"]
+    im = _load_rgba(mask_path).convert("RGB")
+    w, h = im.size
+    inset = 3
+    errs: list[str] = []
+    non150 = band = 0
+    for y in range(h):
+        for x in range(w):
+            if x <= inset or x >= w - 1 - inset or y <= inset or y >= h - 1 - inset:
+                band += 1
+                if im.getpixel((x, y)) != expected:
+                    non150 += 1
+    if non150:
+        errs.append(f"sign_mask_edge_band_non150 count={non150} of {band}")
     return errs
 
 
@@ -981,7 +1034,7 @@ def check_sign_front_board_frame_width(
     white_x: list[int] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_white_face(r, g, b):
@@ -1013,7 +1066,7 @@ def _mask_subject_bbox(mask) -> tuple[int, int, int, int] | None:
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] >= 160:
+            if _sign_mask_pixel_subject(mpx[y * w + x]):
                 xs.append(x)
                 ys.append(y)
     if not xs:
@@ -1073,11 +1126,16 @@ def check_sign_preview_subject_framing(
     xs, ys = [], []
     edge_hits: list[tuple[int, int]] = []
     edge = max(1, int(round(w * edge_clear_frac)))
+    backdrop_inset = 4
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if x <= backdrop_inset or x >= w - 1 - backdrop_inset or y <= backdrop_inset or y >= h - 1 - backdrop_inset:
+                continue
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
+            if (r, g, b) == (150, 150, 150):
+                continue
             if not _is_sign_pixel(r, g, b):
                 continue
             if y > int(h * 0.90) and not (
@@ -1092,9 +1150,8 @@ def check_sign_preview_subject_framing(
             ys.append(y)
             if x < edge or x >= w - edge or y < edge or y >= h - edge:
                 if y >= h - edge and (_is_tuft_green(r, g, b) or _is_post_wood(r, g, b)):
-                    pass
-                else:
-                    edge_hits.append((x, y))
+                    continue
+                edge_hits.append((x, y))
     if not xs:
         return [f"{label}_framing_subject_empty"]
     x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
@@ -1148,7 +1205,7 @@ def check_sign_text_inside_board_mask(
     text_x, text_y = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_board_cream(r, g, b):
@@ -1206,7 +1263,7 @@ def check_sign_text_board_wcag_contrast(
     text_lum: list[float] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             lum = _relative_luminance(r, g, b)
@@ -1260,7 +1317,7 @@ def check_sign_front_posts_to_ground(
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_post_wood(r, g, b) or _is_tuft_green(r, g, b) or _is_board_cream(r, g, b):
@@ -1271,7 +1328,7 @@ def check_sign_front_posts_to_ground(
     wood_pts: list[tuple[int, int]] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if _is_post_wood(r, g, b):
@@ -1299,6 +1356,8 @@ def check_sign_front_posts_to_ground(
 def _sign_subject_bbox(
     rgb: "Image.Image",
     mask: "Image.Image",
+    *,
+    edge_inset: int = 4,
 ) -> tuple[int, int, int, int] | None:
     w, h = rgb.size
     mpx = list(mask.getdata())
@@ -1321,7 +1380,9 @@ def _sign_subject_bbox(
     xs, ys = [], []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if x <= edge_inset or x >= w - 1 - edge_inset or y <= edge_inset or y >= h - 1 - edge_inset:
+                continue
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if (r, g, b) == (150, 150, 150):
@@ -1365,11 +1426,12 @@ def check_sign_subject_fill_extent(
     x0, x1, y0, y1 = bbox
     fw = (x1 - x0 + 1) / w
     fh = (y1 - y0 + 1) / h
-    fw = (x1 - x0 + 1) / w
-    fh = (y1 - y0 + 1) / h
-    fill = math.sqrt(fw * fh)
+    fill = max(fw, fh)
     if fill < min_fill or fill > max_fill:
         return [f"{label}_subject_fill={fill:.3f} w={fw:.3f} h={fh:.3f} need_{min_fill}-{max_fill}"]
+    margin = min(x0, y0, w - 1 - x1, h - 1 - y1) / min(w, h)
+    if margin < 0.03:
+        return [f"{label}_subject_margin={margin:.3f} need>=0.03"]
     return []
 
 
@@ -1378,9 +1440,9 @@ def check_sign_post_wood_hue(
     mask_path: Path,
     *,
     label: str = "sign",
-    min_hue_deg: float = 18.0,
+    min_hue_deg: float = 20.0,
     max_hue_deg: float = 40.0,
-    min_sat: float = 0.26,
+    min_sat: float = 0.30,
 ) -> list[str]:
     """Preview wood posts must read brown (HSV hue/sat), not cream."""
     import colorsys
@@ -1398,7 +1460,7 @@ def check_sign_post_wood_hue(
     sats: list[float] = []
     for y in range(h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if g > 150 and r > 175:
@@ -1414,7 +1476,7 @@ def check_sign_post_wood_hue(
             h_deg, s, _v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
             hues.append(h_deg * 360.0)
             sats.append(s)
-    if len(hues) < 32:
+    if len(hues) < 64:
         return [f"{label}_wood_hue_samples={len(hues)}"]
     hues.sort()
     sats.sort()
@@ -1430,10 +1492,10 @@ def check_sign_contact_shadow_under_base(
     mask_path: Path,
     *,
     label: str = "sign",
-    max_channel: int = 130,
-    min_dark_px: int = 12,
+    max_luminance: float = 130 / 255.0,
+    min_dark_px: int = 24,
 ) -> list[str]:
-    """Tuft/base band must include grass and a dark contact strip (peak < max_channel)."""
+    """Tuft/base band must include grass and contact shadow (luminance < 130)."""
 
     def _is_post_wood(r: int, g: int, b: int) -> bool:
         return 52 < r < 178 and 28 < g < 142 and 14 < b < 118 and r > g > b
@@ -1454,17 +1516,16 @@ def check_sign_contact_shadow_under_base(
     dark = 0
     for y in range(int(h * 0.62), h):
         for x in range(w):
-            if mpx[y * w + x][3] < 160:
+            if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
             if (r, g, b) == (150, 150, 150):
                 continue
             if _is_tuft_green(r, g, b):
                 green += 1
-            peak = max(r, g, b)
-            if peak < max_channel and not _is_tuft_green(r, g, b):
-                if _is_post_wood(r, g, b) or (r < 118 and g < 118 and b < 118):
-                    dark += 1
+            lum = _relative_luminance(r, g, b)
+            if lum * 255.0 < 130 and not _is_tuft_green(r, g, b):
+                dark += 1
     if green < 24:
         return [f"{label}_contact_tuft_sparse px={green}"]
     if dark < min_dark_px:

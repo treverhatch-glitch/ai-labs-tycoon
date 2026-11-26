@@ -2725,10 +2725,13 @@ def apply_sign_preview_materials(
     red.name = "SignTextRedPreview"
     post_mat = bpy.data.materials.new("SignPostWoodPreview")
     post_mat.use_nodes = True
-    bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
-    if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.52, 0.36, 0.16, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.58
+    nt_p = post_mat.node_tree
+    nt_p.nodes.clear()
+    out_p = nt_p.nodes.new("ShaderNodeOutputMaterial")
+    emit_p = nt_p.nodes.new("ShaderNodeEmission")
+    emit_p.inputs["Color"].default_value = (0.58, 0.38, 0.14, 1.0)
+    emit_p.inputs["Strength"].default_value = 1.08
+    nt_p.links.new(emit_p.outputs["Emission"], out_p.inputs["Surface"])
     tuft_mat = bpy.data.materials.new("SignTuftGreenPreview")
     tuft_mat.use_nodes = True
     nt_t = tuft_mat.node_tree

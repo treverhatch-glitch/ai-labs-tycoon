@@ -66,9 +66,28 @@ def pin_flattened_corners(path: Path, bg: tuple[int, int, int], *, inset: int = 
 
     im = Image.open(path).convert("RGB")
     w, h = im.size
-    for x, y in backdrop_grid_points(w, h, inset=inset):
-        im.putpixel((x, y), bg)
+    for y in range(h):
+        for x in range(w):
+            if x <= inset or x >= w - 1 - inset or y <= inset or y >= h - 1 - inset:
+                im.putpixel((x, y), bg)
     im.save(path, format="PNG")
+
+
+def flatten_sign_mask(path: Path, bg: tuple[int, int, int] = STUDIO_BG) -> None:
+    """RGBA mask companion -> RGB (150 backdrop, subject near-white)."""
+    from PIL import Image
+
+    im = Image.open(path).convert("RGBA")
+    w, h = im.size
+    out = Image.new("RGB", (w, h), bg)
+    px = im.load()
+    opx = out.load()
+    for y in range(h):
+        for x in range(w):
+            if px[x, y][3] >= 160:
+                opx[x, y] = (255, 255, 255)
+    out.save(path, format="PNG")
+    pin_flattened_corners(path, bg, inset=CORNER_INSET_PX)
 
 
 def flatten(path: Path, bg: tuple[int, int, int]) -> None:
@@ -78,7 +97,7 @@ def flatten(path: Path, bg: tuple[int, int, int]) -> None:
     plate = Image.new("RGB", im.size, bg)
     plate.paste(im, mask=im.split()[3])
     plate.save(path, format="PNG")
-    pin_flattened_corners(path, bg)
+    pin_flattened_corners(path, bg, inset=CORNER_INSET_PX)
 
 
 def process_preview(path: Path) -> None:
