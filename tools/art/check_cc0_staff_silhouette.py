@@ -12,7 +12,7 @@ HERO_IDS = ("staff-founder-idle", "staff-researcher-idle")
 PREVIEW = REPO / "docs/art/previews"
 MIN_FILL = 0.58
 MAX_FILL = 0.78
-MIN_FRONT_WIDTH_RATIO = 0.24
+MIN_FRONT_WIDTH_RATIO = 0.21
 
 
 def _masked_pixels(img: Image.Image, mask: Image.Image | None) -> list[tuple[int, int, int]]:

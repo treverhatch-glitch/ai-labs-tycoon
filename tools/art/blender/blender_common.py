@@ -638,6 +638,7 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
                 if em and em > 0.1:
                     continue
         name = ob.name.lower()
+        base = name.split(".")[0]
         if name.startswith("stroke"):
             idx = 0
             try:
@@ -699,6 +700,19 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.78, 0.38, 0.42, 1.0), 0.45)
         elif asset_id.startswith("staff-") and "head" in name:
             assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
+        elif asset_id == "staff-founder-idle" and "jeans" in name.lower():
+            assign_solid(ob, (0.16, 0.28, 0.52, 1.0), 0.56)
+        elif asset_id == "staff-founder-idle" and base == "torso":
+            assign_solid(ob, (0.22, 0.16, 0.38, 1.0), 0.60)
+        elif asset_id == "staff-founder-idle" and (
+            base == "neck"
+            or base.startswith("shoulder_")
+            or base.startswith("upperarm_")
+            or base.startswith("lowerarm_")
+        ):
+            assign_solid(ob, (0.24, 0.18, 0.40, 1.0), 0.58)
+        elif asset_id == "staff-founder-idle" and base.startswith("leg_") and "jeans" not in name:
+            assign_solid(ob, (0.16, 0.28, 0.52, 1.0), 0.56)
         elif asset_id.startswith("staff-") and ("leg" in name or "arm" in name):
             trousers = {
                 "staff-founder-idle": (0.28, 0.18, 0.42, 1.0),

@@ -151,6 +151,57 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
     return "Y" if span.y >= span.z * 1.1 else "Z"
 
 
+def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
+    by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
+    head = by_name.get("Head")
+    hips = by_name.get("Hips") or by_name.get("Torso")
+    if not head or not hips:
+        return Vector((0.0, 1.0, 0.0))
+    head_pts = [head.matrix_world @ v.co for v in head.data.vertices] if head.data.vertices else [head.matrix_world.translation]
+    hip_pts = [hips.matrix_world @ v.co for v in hips.data.vertices] if hips.data.vertices else [hips.matrix_world.translation]
+    head_c = sum(head_pts, Vector()) / len(head_pts)
+    hip_c = sum(hip_pts, Vector()) / len(hip_pts)
+    fwd = head_c - hip_c
+    fwd.z = 0.0
+    if fwd.length < 1e-4:
+        return Vector((0.0, 1.0, 0.0))
+    return fwd.normalized()
+
+
+def frame_staff_front_quarter(
+    mesh_obs: list[bpy.types.Object],
+    lens_mm: float,
+    margin: float,
+    yaw_deg: float = 38.0,
+    elev_deg: float = 11.0,
+) -> tuple[bpy.types.Object, float]:
+    mins, maxs = mesh_bounds_world(mesh_obs)
+    center = (mins + maxs) * 0.5
+    radius = bounding_sphere_radius(mins, maxs, mesh_obs)
+    half_fov = math.radians(22.0)
+    cam_dist = (radius / math.tan(half_fov)) * margin
+    fwd = staff_face_forward(mesh_obs)
+    right = Vector((-fwd.y, fwd.x, 0.0))
+    if right.length < 1e-5:
+        right = Vector((1.0, 0.0, 0.0))
+    else:
+        right.normalize()
+    yaw = math.radians(yaw_deg)
+    elev = math.radians(elev_deg)
+    offset = fwd * (math.cos(yaw) * math.cos(elev)) + right * (math.sin(yaw) * math.cos(elev))
+    offset.z = math.sin(elev)
+    offset = offset.normalized() * cam_dist
+    cam_loc = center + offset
+    bpy.ops.object.camera_add(location=cam_loc)
+    cam = bpy.context.active_object
+    cam.name = "PreviewCamera"
+    cam.data.lens = lens_mm
+    direction = center - cam_loc
+    cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+    return cam, cam_dist
+
+
 def setup_three_point_lights(center: Vector, radius: float) -> None:
     key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
@@ -354,10 +405,10 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 1.48
+        framing_margin = 1.455
         lens_mm = 50.0
-        azimuth_deg = 108.0
-        elevation_deg = 9.0
+        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38"))
+        elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
@@ -399,24 +450,15 @@ def render_preview_studio(
             add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
         if preview_kind == "staff":
-            mins_s, maxs_s = mesh_bounds_world(hero_meshes)
-            center_s = (mins_s + maxs_s) * 0.5
-            height_s = max(0.35, maxs_s.z - mins_s.z)
-            half_fov = math.radians(22.0)
-            cam_dist = (radius / math.tan(half_fov)) * framing_margin
-            aid = os.environ.get("STAFF_PREVIEW_ASSET", "")
-            if aid == "staff-founder-idle":
-                view = Vector((-height_s * 0.62, -height_s * 2.05, height_s * 0.20))
-            else:
-                view = Vector((height_s * 0.62, height_s * 2.05, height_s * 0.20))
-            cam_loc = center_s + view.normalized() * cam_dist
-            bpy.ops.object.camera_add(location=cam_loc)
-            cam = bpy.context.active_object
-            cam.name = "PreviewCamera"
-            cam.data.lens = lens_mm
-            direction = center_s - cam_loc
-            cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-            bpy.context.scene.camera = cam
+            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38"))
+            staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
+            cam, cam_dist = frame_staff_front_quarter(
+                hero_meshes,
+                lens_mm=lens_mm,
+                margin=framing_margin,
+                yaw_deg=staff_yaw_deg,
+                elev_deg=staff_elev_deg,
+            )
         else:
             cam = frame_camera(
                 hero_meshes,
@@ -441,6 +483,8 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
+                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38")),
+                "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
             indent=2,
         )

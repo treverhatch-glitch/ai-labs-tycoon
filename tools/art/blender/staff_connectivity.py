@@ -157,6 +157,13 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
         ("Hoodie", "Torso"),
+        ("HoodieTorso", "Torso"),
+        ("HoodieSleeve_-1", "Torso"),
+        ("HoodieSleeve_1", "Torso"),
+        ("HoodiePocket", "HoodieTorso"),
+        ("JeansHips", "Hips"),
+        ("JeansLeg_-1", "Leg_-1"),
+        ("JeansLeg_1", "Leg_1"),
         ("Shirt", "Torso"),
         ("Trousers", "Torso"),
         ("Tie", "Torso"),
@@ -272,6 +279,13 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
         ("Hoodie", "Torso"),
+        ("HoodieTorso", "Torso"),
+        ("HoodieSleeve_-1", "Torso"),
+        ("HoodieSleeve_1", "Torso"),
+        ("HoodiePocket", "HoodieTorso"),
+        ("JeansHips", "Hips"),
+        ("JeansLeg_-1", "Leg_-1"),
+        ("JeansLeg_1", "Leg_1"),
         ("Shirt", "Torso"),
         ("Trousers", "Torso"),
         ("BadgeLanyard", "Torso"),
@@ -348,11 +362,21 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             "BlazerRec",
             "LabCoat",
             "Hoodie",
+            "HoodieTorso",
+            "HoodieSleeve_-1",
+            "HoodieSleeve_1",
+            "HoodiePocket",
             "Shirt",
             "Trousers",
             "BadgeShield",
         ):
             anchor = "Torso"
+        if tag.startswith("JeansLeg_"):
+            leg = tag.replace("JeansLeg_", "Leg_")
+            if leg in names:
+                anchor = leg
+        elif tag == "JeansHips" and "Hips" in names:
+            anchor = "Hips"
         if tag.startswith("Shoe_"):
             foot = tag.replace("Shoe_", "Foot_")
             if foot in names:
