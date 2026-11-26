@@ -440,7 +440,7 @@ def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float
     ob.data.materials.append(mat)
 
 
-def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.65) -> tuple[float, float, float, float]:
+def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 3.05) -> tuple[float, float, float, float]:
     h, s, v = colorsys.rgb_to_hsv(rgba[0], rgba[1], rgba[2])
     s = min(1.0, s * scale)
     v = min(1.0, v * 1.08)
@@ -489,7 +489,7 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     attr.layer_name = "BakeCol"
     hue = nodes.new("ShaderNodeHueSaturation")
     hue.inputs["Value"].default_value = 1.08
-    hue.inputs["Saturation"].default_value = 3.05 if asset_id in glow_ids else 2.75
+    hue.inputs["Saturation"].default_value = 3.35 if asset_id in glow_ids else 3.15
     links.new(attr.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])

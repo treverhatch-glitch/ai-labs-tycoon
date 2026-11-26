@@ -1,39 +1,86 @@
 """
-Studio preview rig for early-art quality pass (43 assets).
-Auto-framing, three-point lights, warm gradient world, ground shadow catcher.
+Shared studio preview rig (garage / staff / HUD lanes).
+World bbox over all mesh vertices; camera at radius/tan(fov/2)*1.15; 3/4 ~30°.
+Writes RGB preview + `.mask.png` alpha pass for Hatch gates.
 """
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
 import bpy
+from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
-# Warm 1995 garage studio (matches Hatch brief)
-WORLD_TOP = (0.78, 0.62, 0.48, 1.0)
-WORLD_HORIZON = (0.62, 0.48, 0.36, 1.0)
-WORLD_BOTTOM = (0.04, 0.03, 0.03, 1.0)
-FLOOR_COLOR = (0.72, 0.48, 0.18, 1.0)
+# Neutral studio (does not inflate saturation gate)
+WORLD_TOP = (0.62, 0.61, 0.60, 1.0)
+WORLD_HORIZON = (0.48, 0.47, 0.46, 1.0)
+WORLD_BOTTOM = (0.28, 0.27, 0.26, 1.0)
+FLOOR_COLOR = (0.80, 0.48, 0.14, 1.0)
+
+FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
+DEFAULT_AZIMUTH_DEG = 45.0
+DEFAULT_ELEVATION_DEG = 30.0
+DEFAULT_LENS_MM = 50.0
 
 
-def _mesh_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
+def mesh_bounds_world(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     mins = Vector((1e9, 1e9, 1e9))
     maxs = Vector((-1e9, -1e9, -1e9))
+    any_pt = False
     for ob in objects:
-        if ob.type != "MESH":
+        if ob.type != "MESH" or not ob.data.vertices:
             continue
-        for corner in ob.bound_box:
-            world = ob.matrix_world @ Vector(corner)
+        for vert in ob.data.vertices:
+            world = ob.matrix_world @ vert.co
             mins.x = min(mins.x, world.x)
             mins.y = min(mins.y, world.y)
             mins.z = min(mins.z, world.z)
             maxs.x = max(maxs.x, world.x)
             maxs.y = max(maxs.y, world.y)
             maxs.z = max(maxs.z, world.z)
-    if mins.x > maxs.x:
+            any_pt = True
+    if not any_pt:
+        for ob in objects:
+            if ob.type != "MESH":
+                continue
+            for corner in ob.bound_box:
+                world = ob.matrix_world @ Vector(corner)
+                mins.x = min(mins.x, world.x)
+                mins.y = min(mins.y, world.y)
+                mins.z = min(mins.z, world.z)
+                maxs.x = max(maxs.x, world.x)
+                maxs.y = max(maxs.y, world.y)
+                maxs.z = max(maxs.z, world.z)
+                any_pt = True
+    if not any_pt or mins.x > maxs.x:
         return Vector((0, 0, 0)), Vector((1, 1, 1))
     return mins, maxs
+
+
+def bounding_sphere_radius(mins: Vector, maxs: Vector, objects: list[bpy.types.Object] | None = None) -> float:
+    center = (mins + maxs) * 0.5
+    r = 0.0
+    if objects:
+        for ob in objects:
+            if ob.type != "MESH":
+                continue
+            for vert in ob.data.vertices:
+                d = (ob.matrix_world @ vert.co - center).length
+                r = max(r, d)
+    if r < 1e-6:
+        span = maxs - mins
+        r = max(0.2, span.length * 0.5)
+    return max(0.2, r)
+
+
+def camera_half_fov_rad(cam_data: bpy.types.Camera) -> float:
+    """Smaller half-FOV (limits framing on square renders)."""
+    focal = max(cam_data.lens, 1e-3)
+    fov_h = 2.0 * math.atan(cam_data.sensor_width / (2.0 * focal))
+    fov_v = 2.0 * math.atan(cam_data.sensor_height / (2.0 * focal))
+    return min(fov_h, fov_v) * 0.5
 
 
 def setup_studio_world() -> None:
@@ -61,9 +108,14 @@ def setup_studio_world() -> None:
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
-def add_shadow_floor_y(y: float = 0.0) -> bpy.types.Object:
-    """Ground plane for garage scripts that use Y-up."""
-    bpy.ops.mesh.primitive_plane_add(size=4.5, location=(0, y - 0.002, 0), rotation=(math.pi / 2, 0, 0))
+def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
+    center = (mins + maxs) * 0.5
+    footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.5)
+    bpy.ops.mesh.primitive_plane_add(
+        size=footprint * 1.8,
+        location=(center.x, mins.y - 0.002, center.z),
+        rotation=(math.pi / 2, 0, 0),
+    )
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
@@ -71,13 +123,15 @@ def add_shadow_floor_y(y: float = 0.0) -> bpy.types.Object:
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
         bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
-        bsdf.inputs["Roughness"].default_value = 0.9
+        bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
 
 
-def add_shadow_floor(z: float = 0.0) -> bpy.types.Object:
-    bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, z - 0.002))
+def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
+    center = (mins + maxs) * 0.5
+    footprint = max(maxs.x - mins.x, maxs.y - mins.y, 0.5)
+    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.8, location=(center.x, center.y, mins.z - 0.002))
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
@@ -85,45 +139,57 @@ def add_shadow_floor(z: float = 0.0) -> bpy.types.Object:
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
         bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
-        bsdf.inputs["Roughness"].default_value = 0.9
+        bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
+
+
+def infer_up_axis(mins: Vector, maxs: Vector) -> str:
+    span = maxs - mins
+    return "Y" if span.y >= span.z * 1.1 else "Z"
 
 
 def setup_three_point_lights(center: Vector, radius: float) -> None:
-    key_loc = center + Vector((radius * 1.3, -radius * 1.1, radius * 1.4))
-    fill_loc = center + Vector((-radius * 1.0, -radius * 0.6, radius * 0.9))
-    rim_loc = center + Vector((radius * 0.2, radius * 1.4, radius * 1.1))
-    energy = max(180.0, radius * 220.0)
-    for name, loc, e_mul in (("Key", key_loc, 1.15), ("Fill", fill_loc, 0.22), ("Rim", rim_loc, 0.95)):
+    key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
+    fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
+    rim_loc = center + Vector((radius * 0.15, radius * 1.3, radius * 1.0))
+    energy = max(120.0, radius * 150.0)
+    for name, loc, e_mul in (("Key", key_loc, 0.85), ("Fill", fill_loc, 0.30), ("Rim", rim_loc, 0.40)):
         bpy.ops.object.light_add(type="AREA", location=loc)
         light = bpy.context.active_object
         light.name = name
         light.data.energy = energy * e_mul
-        light.data.size = max(0.5, radius * 0.8)
+        light.data.size = max(0.45, radius * 0.7)
         direction = center - loc
         light.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
 
 
-def frame_camera(
-    objects: list[bpy.types.Object],
-    lens_mm: float = 50.0,
-    margin: float = 1.25,
+def _place_camera(
+    center: Vector,
+    cam_dist: float,
+    lens_mm: float,
+    azimuth_deg: float,
+    elevation_deg: float,
+    up_axis: str = "Y",
 ) -> bpy.types.Object:
-    mins, maxs = _mesh_bounds(objects)
-    center = (mins + maxs) * 0.5
-    extent = (maxs - mins).length
-    radius = max(0.35, extent * 0.5) * margin
-    cam_dist = radius / math.tan(math.radians(lens_mm) / 2.0) * 0.85
-    azimuth = math.radians(38)
-    elev = math.radians(22)
-    offset = Vector(
-        (
-            math.cos(elev) * math.cos(azimuth),
-            math.cos(elev) * math.sin(azimuth),
-            math.sin(elev),
-        )
-    ) * cam_dist
+    azimuth = math.radians(azimuth_deg)
+    elev = math.radians(elevation_deg)
+    if up_axis == "Y":
+        offset = Vector(
+            (
+                math.cos(elev) * math.cos(azimuth),
+                math.sin(elev),
+                math.cos(elev) * math.sin(azimuth),
+            )
+        ) * cam_dist
+    else:
+        offset = Vector(
+            (
+                math.cos(elev) * math.cos(azimuth),
+                math.cos(elev) * math.sin(azimuth),
+                math.sin(elev),
+            )
+        ) * cam_dist
     bpy.ops.object.camera_add(location=center + offset)
     cam = bpy.context.active_object
     cam.name = "PreviewCamera"
@@ -134,39 +200,142 @@ def frame_camera(
     return cam
 
 
+def frame_camera(
+    objects: list[bpy.types.Object],
+    lens_mm: float = DEFAULT_LENS_MM,
+    margin: float = FRAMING_MARGIN,
+    azimuth_deg: float = DEFAULT_AZIMUTH_DEG,
+    elevation_deg: float = DEFAULT_ELEVATION_DEG,
+    up_axis: str = "Y",
+) -> bpy.types.Object:
+    mins, maxs = mesh_bounds_world(objects)
+    center = (mins + maxs) * 0.5
+    radius = bounding_sphere_radius(mins, maxs, objects)
+    cam = _place_camera(center, 1.0, lens_mm, azimuth_deg, elevation_deg, up_axis=up_axis)
+    half_fov = camera_half_fov_rad(cam.data)
+    cam_dist = (radius / math.tan(half_fov)) * margin
+    bpy.data.objects.remove(cam, do_unlink=True)
+    return _place_camera(center, cam_dist, lens_mm, azimuth_deg, elevation_deg, up_axis=up_axis)
+
+
+def _apply_mask_material(ob: bpy.types.Object, stash: list) -> None:
+    stash.append((ob, list(ob.data.materials)))
+    mat = bpy.data.materials.new("_PreviewMask")
+    mat.use_nodes = True
+    nt = mat.node_tree
+    nt.nodes.clear()
+    emit = nt.nodes.new("ShaderNodeEmission")
+    emit.inputs["Color"].default_value = (1.0, 1.0, 1.0, 1.0)
+    emit.inputs["Strength"].default_value = 1.0
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(emit.outputs["Emission"], out.inputs["Surface"])
+    mat.blend_method = "OPAQUE"
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def render_hero_mask(
+    hero_meshes: list[bpy.types.Object],
+    path: Path,
+    resolution: int,
+) -> None:
+    """RGBA alpha pass: heroes opaque, floor/lights/world hidden."""
+    scene = bpy.context.scene
+    floor = bpy.data.objects.get("PreviewShadowFloor")
+    if floor:
+        floor.hide_render = True
+    stash: list = []
+    for ob in list(scene.objects):
+        if ob.type == "LIGHT":
+            ob.hide_render = True
+        elif ob.type == "MESH" and ob.name != "PreviewShadowFloor":
+            ob.hide_render = ob not in hero_meshes
+    for ob in hero_meshes:
+        _apply_mask_material(ob, stash)
+    if scene.world and scene.world.use_nodes:
+        for n in scene.world.node_tree.nodes:
+            if n.type == "BACKGROUND":
+                n.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
+                n.inputs["Strength"].default_value = 0.0
+    scene.render.film_transparent = True
+    scene.render.image_settings.color_mode = "RGBA"
+    scene.render.resolution_x = resolution
+    scene.render.resolution_y = resolution
+    scene.render.filepath = str(path)
+    bpy.ops.render.render(write_still=True)
+    scene.render.film_transparent = False
+    if floor:
+        floor.hide_render = False
+    for ob, mats in stash:
+        ob.data.materials.clear()
+        for m in mats:
+            ob.data.materials.append(m)
+    for ob in scene.objects:
+        if ob.type in {"MESH", "LIGHT"}:
+            ob.hide_render = False
+
+
 def render_preview_studio(
     focus: bpy.types.Object | list[bpy.types.Object],
     path: Path,
     resolution: int = 512,
+    up_axis: str | None = None,
+    lens_mm: float = DEFAULT_LENS_MM,
 ) -> None:
-    """Render with studio rig; `focus` is hero object or join root."""
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
     if not hero_meshes:
-        hero_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.name != "PreviewShadowFloor"]
+        hero_meshes = [
+            o for o in bpy.context.scene.objects if o.type == "MESH" and o.name != "PreviewShadowFloor"
+        ]
 
-    bpy.context.scene.render.engine = "BLENDER_EEVEE"
-    if hasattr(bpy.context.scene, "eevee"):
-        bpy.context.scene.eevee.taa_render_samples = 32
-        if hasattr(bpy.context.scene.eevee, "use_gtao"):
-            bpy.context.scene.eevee.use_gtao = True
-            bpy.context.scene.eevee.gtao_distance = 0.35
-            bpy.context.scene.eevee.gtao_factor = 2.4
+    scene = bpy.context.scene
+    scene.render.engine = "BLENDER_EEVEE"
+    if hasattr(scene, "eevee"):
+        scene.eevee.taa_render_samples = 32
+        if hasattr(scene.eevee, "use_gtao"):
+            scene.eevee.use_gtao = True
+            scene.eevee.gtao_distance = 0.4
+            scene.eevee.gtao_factor = 1.4
+
     setup_studio_world()
-    mins, maxs = _mesh_bounds(hero_meshes)
+    mins, maxs = mesh_bounds_world(hero_meshes)
+    axis = (up_axis or infer_up_axis(mins, maxs)).upper()
+    if axis == "Y":
+        add_shadow_floor_y(mins, maxs)
+    else:
+        add_shadow_floor_z(mins, maxs)
     center = (mins + maxs) * 0.5
-    footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
-    floor = add_shadow_floor_y(mins.y)
-    floor.scale = (footprint * 0.55, footprint * 0.55, 1.0)
-    bpy.ops.object.select_all(action="DESELECT")
-    floor.select_set(True)
-    bpy.context.view_layer.objects.active = floor
-    bpy.ops.object.transform_apply(scale=True)
-    radius = max(0.4, (maxs - mins).length * 0.5)
+    radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     setup_three_point_lights(center, radius)
-    frame_camera(hero_meshes, margin=0.72)
-    bpy.context.scene.render.resolution_x = resolution
-    bpy.context.scene.render.resolution_y = resolution
-    bpy.context.scene.render.filepath = str(path)
+    cam = frame_camera(hero_meshes, lens_mm=lens_mm, up_axis=axis)
+    half_fov = camera_half_fov_rad(cam.data)
+    cam_dist = (radius / math.tan(half_fov)) * FRAMING_MARGIN
+
+    meta_path = path.with_name(path.stem + ".frame.json")
+    meta_path.write_text(
+        json.dumps(
+            {
+                "camera_dist": cam_dist,
+                "bbox_radius": radius,
+                "framing_margin": FRAMING_MARGIN,
+                "lens_mm": lens_mm,
+                "azimuth_deg": DEFAULT_AZIMUTH_DEG,
+                "elevation_deg": DEFAULT_ELEVATION_DEG,
+                "up_axis": axis,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    scene.render.film_transparent = False
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.resolution_x = resolution
+    scene.render.resolution_y = resolution
+    scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
+    mask_path = path.with_name(path.stem + ".mask.png")
+    render_hero_mask(hero_meshes, mask_path, resolution)
