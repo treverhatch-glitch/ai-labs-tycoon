@@ -1,19 +1,22 @@
 {
   "assetId": "prop-server-rack",
   "preview": "docs/art/previews/prop-server-rack.png",
-  "glb_sha256": "e1cecde1daed44ce75bf3ce3c8b80a31b9fcfb4c6729512013ad68f0365cc641",
+  "glb_sha256": "932a7028fde1f9a352e2abcdffb3c469913f9c0f97cbe8d1a1f94cb5283199d7",
   "resolution": 1024,
   "quality": {
-    "stddev": 41.396061725639974,
+    "stddev": 45.68619987148507,
     "coverage": 1.0,
-    "mean_lum": 89.42790108394726,
-    "mean_sat": 0.16060232173203381,
+    "mean_lum": 89.02513966480447,
+    "mean_sat": 0.25307262569832406,
     "border_touch": 0.0,
-    "silhouette_frac": 0.7490234375,
-    "subject_bbox_frac": 0.5126953125,
-    "min_margin_frac": 0.2353515625,
-    "flat_pixel_frac": 0.4639616012573242,
-    "ground_lum": 152.04279408028455,
-    "corner_lum_mean": 216.0
+    "silhouette_frac": 0.732421875,
+    "subject_bbox_frac": 0.732421875,
+    "min_margin_frac": 0.1337890625,
+    "flat_pixel_frac": 0.6814069747924805,
+    "ground_lum": 136.5310594512195,
+    "corner_lum_mean": 150.0,
+    "corner_rgb_max_delta": 0.0,
+    "backdrop_band_bad_px": 68.0,
+    "backdrop_grid_nine_delta": 1.0
   }
 }

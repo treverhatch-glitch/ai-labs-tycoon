@@ -25,6 +25,23 @@ MIN_MEAN_LUM = 40.0
 MIN_MEAN_SAT = 0.10
 BORDER_PX = 4
 BORDER_MIN_PIXELS = 18
+BACKDROP_RGB = 150
+BACKDROP_BAND_FRAC = 0.03
+BACKDROP_GRID_FRACS = (0.02, 0.5, 0.98)
+BACKDROP_CHANNEL_TOL = 1
+MAX_BACKDROP_BAND_BAD_PX = 128
+
+
+def _backdrop_channel_ok(r: int, g: int, b: int) -> bool:
+    return all(abs(ch - BACKDROP_RGB) <= BACKDROP_CHANNEL_TOL for ch in (r, g, b))
+
+FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-dfc65859-regression.png",
+        "dfc65859",
+    ),
+)
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
@@ -167,6 +184,41 @@ def _hue_deg(r: int, g: int, b: int) -> float:
     return h * 360.0 if s > 0.06 else -1.0
 
 
+def _backdrop_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[int, float]:
+    """3% edge band: backdrop pixels only, non-150 count. 9-point grid on backdrop samples."""
+    band = max(1, int(min(width, height) * BACKDROP_BAND_FRAC))
+    bad = 0
+    for y in range(height):
+        for x in range(width):
+            if x >= band and x < width - band and y >= band and y < height - band:
+                continue
+            if y >= height - band:
+                continue
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            if not _backdrop_channel_ok(r, g, b):
+                bad += 1
+    grid_max = 0.0
+    for u in BACKDROP_GRID_FRACS:
+        for v in BACKDROP_GRID_FRACS:
+            if v >= 0.9 and 0.12 < u < 0.88:
+                continue
+            x = min(width - 1, int(u * (width - 1)))
+            y = min(height - 1, int(v * (height - 1)))
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            delta = max(abs(ch - BACKDROP_RGB) for ch in (r, g, b))
+            grid_max = max(grid_max, float(delta))
+    return bad, grid_max
+
+
 def _framing_metrics(
     width: int,
     height: int,
@@ -200,7 +252,7 @@ def _framing_metrics(
             r, g, b = pixels[y * width + x]
             if (
                 _is_subject(r, g, b, bg)
-                if asset_id == "prop-desk"
+                if asset_id in ("prop-desk", "prop-server-rack")
                 else _object_pixel(r, g, b, bg)
             ):
                 subj_ys.append(y)
@@ -287,6 +339,11 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         (r * 299 + g * 587 + b * 114) // 1000 for r, g, b in corner_samples
     ]
     corner_mean = sum(corner_lums) / len(corner_lums) if corner_lums else 255.0
+    corner_rgb_max_delta = 0.0
+    for r, g, b in corner_samples:
+        for ch in (r, g, b):
+            corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - BACKDROP_RGB))
+    backdrop_band_bad, grid_nine_delta = _backdrop_metrics(pixels, width, height, bg)
     desk_extra: dict[str, float] = {}
     if asset_id == "prop-desk":
         subj_sats_sorted = sorted(subj_sat)
@@ -316,10 +373,6 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
                     continue
                 screen_lums.append(max(r, g, b) / 255.0)
         screen_peak = max(screen_lums) if screen_lums else 0.0
-        corner_rgb_max_delta = 0.0
-        for r, g, b in corner_samples:
-            for ch in (r, g, b):
-                corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - 150))
         outside_screen_sat: list[float] = []
         blow_n = 0
         outside_n = 0
@@ -471,6 +524,9 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "flat_pixel_frac": flat_frac,
         "ground_lum": gmean,
         "corner_lum_mean": corner_mean,
+        "corner_rgb_max_delta": corner_rgb_max_delta,
+        "backdrop_band_bad_px": float(backdrop_band_bad),
+        "backdrop_grid_nine_delta": grid_nine_delta,
         **desk_extra,
     }
 
@@ -481,7 +537,7 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         reasons.append(
             f"uniform stddev={s['stddev']:.2f} coverage={s['coverage']:.1%}"
         )
-    min_sat = 0.075 if asset_id == "prop-desk" else MIN_MEAN_SAT
+    min_sat = 0.075 if asset_id in ("prop-desk", "prop-server-rack") else MIN_MEAN_SAT
     if s["mean_lum"] < MIN_MEAN_LUM or s["mean_sat"] < min_sat:
         reasons.append(
             f"chroma mean_lum={s['mean_lum']:.1f} mean_sat={s['mean_sat']:.3f}"
@@ -489,22 +545,36 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
     if s.get("border_touch", 0) >= 0.5:
         reasons.append("framing border_touch")
     sil = s.get("silhouette_frac", 0.0)
-    sil_max = 0.90 if asset_id == "prop-desk" else MAX_SIL_FRAC
+    sil_max = 0.90 if asset_id in ("prop-desk", "prop-server-rack") else MAX_SIL_FRAC
     if sil and (sil < MIN_SIL_FRAC or sil > sil_max):
         reasons.append(f"framing silhouette_frac={sil:.2%}")
-    if asset_id == "prop-desk":
+    if asset_id in ("prop-desk", "prop-server-rack"):
         sb = s.get("subject_bbox_frac", 0.0)
         if sb < MIN_SUBJECT_BBOX_FRAC or sb > MAX_SUBJECT_BBOX_FRAC:
             reasons.append(f"subject_bbox_frac={sb:.2%}")
         mg = s.get("min_margin_frac", 0.0)
         if mg < MIN_FRAME_MARGIN_FRAC:
             reasons.append(f"min_margin_frac={mg:.2%}")
-        flat_max = 0.78 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
+        flat_max = 0.78 if asset_id == "prop-desk" else (0.82 if asset_id == "prop-server-rack" else MAX_FLAT_PIXEL_FRAC)
         if s.get("flat_pixel_frac", 1.0) > flat_max:
             reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
-        ground_max = 178 if asset_id == "prop-desk" else MAX_GROUND_LUM
+        ground_max = 178 if asset_id in ("prop-desk", "prop-server-rack") else MAX_GROUND_LUM
         if s.get("ground_lum", 255) > ground_max:
             reasons.append(f"ground_lum={s['ground_lum']:.1f}")
+        if s.get("corner_rgb_max_delta", 99.0) > 0.0:
+            reasons.append(
+                f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want exactly 150)"
+            )
+        if asset_id == "prop-server-rack":
+            if s.get("backdrop_band_bad_px", 0.0) > MAX_BACKDROP_BAND_BAD_PX:
+                reasons.append(
+                    f"backdrop_band_bad_px={int(s.get('backdrop_band_bad_px', 0))} (max {MAX_BACKDROP_BAND_BAD_PX})"
+                )
+            if s.get("backdrop_grid_nine_delta", 0.0) > BACKDROP_CHANNEL_TOL:
+                reasons.append(
+                    f"backdrop_grid_nine_delta={s.get('backdrop_grid_nine_delta', 0):.1f} (max {BACKDROP_CHANNEL_TOL})"
+                )
+    if asset_id == "prop-desk":
         if s.get("subject_median_sat", 1.0) < 0.08:
             reasons.append(f"subject_median_sat={s.get('subject_median_sat', 0):.3f}")
         if s.get("desk_top_brown_frac", 0.0) < 0.12:
@@ -516,10 +586,6 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         blow_max = 0.026 if asset_id == "prop-desk" else 0.02
         if s.get("blow_frac_outside_screen", 1.0) > blow_max:
             reasons.append(f"blow_frac_outside_screen={s.get('blow_frac_outside_screen', 0):.2%}")
-        if s.get("corner_rgb_max_delta", 99.0) > 0.0:
-            reasons.append(
-                f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want exactly 150)"
-            )
         if s.get("bezel_wood_frac", 0.0) > 0.08:
             reasons.append(f"bezel_wood_frac={s.get('bezel_wood_frac', 0):.2%}")
         dml = s.get("desk_mean_lum", 0.0)
@@ -584,6 +650,21 @@ def main() -> int:
         bad = gate_fail(aid, s)
         if bad:
             failures.append(f"{aid}: " + "; ".join(bad))
+    for aid, fixture, head in FIXTURES_MUST_FAIL:
+        if not fixture.is_file():
+            failures.append(f"{head}: missing regression fixture {fixture}")
+            continue
+        s_fix = stats(fixture, aid)
+        bad_fix = gate_fail(aid, s_fix)
+        if not bad_fix:
+            failures.append(
+                f"{head}: fixture {fixture.name} must FAIL gates (dfc65859 regression)"
+            )
+        else:
+            print(
+                f"OK: fixture {fixture.name} fails gates as expected ({head}): "
+                + "; ".join(bad_fix[:3])
+            )
     if failures:
         for line in failures:
             print(f"FAIL preview quality: {line}", file=sys.stderr)

@@ -674,13 +674,14 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
     grey150 = 149.35 / 255.0
+    presentation_150 = asset_id in ("prop-desk", "prop-server-rack")
     _setup_preview_hdri(
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.16 if asset_id == "prop-desk" else 0.10,
+        lit_strength=0.16 if presentation_150 else 0.10,
     )
-    if asset_id == "prop-desk":
+    if presentation_150:
         bpy.context.scene.view_settings.view_transform = "Raw"
         bpy.context.scene.view_settings.exposure = 0.0
         bpy.context.scene.view_settings.gamma = 1.0
@@ -693,7 +694,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    ground_size = span * (1.05 if asset_id == "prop-desk" else 4.0)
+    ground_size = span * (1.05 if presentation_150 else 4.0)
     bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
@@ -705,17 +706,17 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.86 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 2.86 if presentation_150 else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 84 if asset_id == "prop-desk" else 55
-    fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
+    fill.data.energy = 84 if presentation_150 else 55
+    fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
-    target_fill = 0.70 if asset_id == "prop-desk" else 0.50
-    pad = 1.04 if asset_id == "prop-desk" else 1.0
+    target_fill = 0.70 if presentation_150 else 0.50
+    pad = 1.04 if presentation_150 else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.12) / target_fill) * pad
 
     cam_data = bpy.data.cameras.new("PreviewCam")
@@ -733,6 +734,9 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         if asset_id == "prop-desk":
             elev = math.radians(28)
             az = math.radians(-38)
+        elif asset_id == "prop-server-rack":
+            elev = math.radians(32)
+            az = math.radians(-42)
         else:
             elev = math.radians(30)
             az = math.radians(45)
@@ -754,7 +758,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_soft_shadows = True
         if hasattr(ee, "use_shadows"):
             ee.use_shadows = True
-        if asset_id == "prop-desk" and hasattr(ee, "use_bloom"):
+        if presentation_150 and hasattr(ee, "use_bloom"):
             ee.use_bloom = False
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
@@ -762,7 +766,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.filepath = str(preview)
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
-    if asset_id != "prop-desk" and hasattr(bpy.context.scene, "view_settings"):
+    if not presentation_150 and hasattr(bpy.context.scene, "view_settings"):
         bpy.context.scene.view_settings.exposure = 0.22
         bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
@@ -938,9 +942,9 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    if kind in ("body", "frame"):
-        bsdf.inputs["Metallic"].default_value = 0.85
-        bsdf.inputs["Roughness"].default_value = 0.38
+    if kind in ("body", "frame", "body_dark"):
+        bsdf.inputs["Metallic"].default_value = 0.88 if kind == "body_dark" else 0.85
+        bsdf.inputs["Roughness"].default_value = 0.42 if kind == "body_dark" else 0.38
         coord = nodes.new("ShaderNodeTexCoord")
         mapping = nodes.new("ShaderNodeMapping")
         mapping.inputs["Scale"].default_value = (1.5, 1.5, 1.5)
@@ -951,7 +955,15 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             cimg.colorspace_settings.name = "sRGB"
             ctex.image = cimg
             links.new(mapping.outputs["Vector"], ctex.inputs["Vector"])
-            links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
+            if kind == "body_dark":
+                mul = nodes.new("ShaderNodeMixRGB")
+                mul.blend_type = "MULTIPLY"
+                mul.inputs["Fac"].default_value = 1.0
+                mul.inputs["Color2"].default_value = (0.20, 0.22, 0.26, 1.0)
+                links.new(ctex.outputs["Color"], mul.inputs["Color1"])
+                links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
+            else:
+                links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
         if METAL048_NORMAL.is_file():
             nt = nodes.new("ShaderNodeTexImage")
             nimg = bpy.data.images.load(str(METAL048_NORMAL), check_existing=True)
@@ -968,6 +980,10 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             rt.image = rimg
             links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
             links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    elif kind == "glass":
+        bsdf.inputs["Base Color"].default_value = (0.18, 0.22, 0.28, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.18
+        bsdf.inputs["Metallic"].default_value = 0.35
     elif kind == "panel":
         bsdf.inputs["Base Color"].default_value = (0.12, 0.13, 0.16, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.55
@@ -997,22 +1013,26 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
 
 def _restyle_rack_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
     name = obj.name.lower()
-    is_led = "indicator" in name or "button" in name
-    is_panel = "screen" in name or "panel" in name
-    for i, slot in enumerate(obj.data.materials):
-        if slot is None:
-            continue
-        slot_name = (slot.name or "").lower()
-        if is_led and i % 2 == 0:
-            obj.data.materials[i] = _prop_rack_shared_material("led_green", tex_dir)
-        elif is_led:
-            obj.data.materials[i] = _prop_rack_shared_material("led_blue", tex_dir)
-        elif is_panel:
-            obj.data.materials[i] = _prop_rack_shared_material("panel", tex_dir)
-        elif "metal" in slot_name or "structure" in name:
-            obj.data.materials[i] = _prop_rack_shared_material("body", tex_dir)
-        else:
-            obj.data.materials[i] = _prop_rack_shared_material("frame", tex_dir)
+    if "led_green" in name:
+        mat_kind = "led_green"
+    elif "led_blue" in name:
+        mat_kind = "led_blue"
+    elif "glass" in name:
+        mat_kind = "glass"
+    elif "door" in name:
+        mat_kind = "body_dark"
+    elif "bay" in name or "body" in name or "feet" in name:
+        mat_kind = "body_dark"
+    else:
+        mat_kind = "body_dark"
+    mesh = obj.data
+    if not mesh.materials:
+        mesh.materials.append(_prop_rack_shared_material(mat_kind, tex_dir))
+    else:
+        for i, slot in enumerate(mesh.materials):
+            if slot is None:
+                continue
+            mesh.materials[i] = _prop_rack_shared_material(mat_kind, tex_dir)
 
 
 def finish_prop_server_rack_slot_export(
