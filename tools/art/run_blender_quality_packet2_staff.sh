@@ -14,15 +14,10 @@ for script in "${SCRIPTS[@]}"; do
 done
 echo "=== wisp ==="
 "$BLENDER" -b --python tools/art/blender/blender_render_hud_wisp.py
-echo "=== hud packet2 ==="
-for hscript in tools/art/blender/hud-topbar-beige.py tools/art/blender/tex-hud-paper-warm.py; do
-  echo "=== $hscript ==="
-  "$BLENDER" -b --python "$hscript"
-done
 python3 tools/art/blender/merge_blender_manifests.py
 python3 tools/art/generate_wisp_mascot.py
 python3 tools/art/check_staff_mesh_topology.py
-python3 tools/art/check_staff_upright.py
+python3 tools/art/check_staff_gltf_upright.py
 python3 tools/art/check_staff_preview_upright.py
 python3 tools/art/check_staff_head_above_feet.py
 python3 tools/art/check_preview_no_backdrop_plate.py

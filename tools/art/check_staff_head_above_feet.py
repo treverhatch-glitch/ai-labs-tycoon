@@ -81,7 +81,7 @@ def analyze(asset_id: str) -> tuple[bool, str]:
         return False, "no_leg_pixels"
     mean_head = sum(head_ys) / len(head_ys)
     mean_leg = sum(leg_ys) / len(leg_ys)
-    if mean_head >= mean_leg - 4:
+    if mean_head >= mean_leg + 2:
         return False, f"head_below_feet mean_head={mean_head:.1f} mean_leg={mean_leg:.1f}"
     if top_skin < 45:
         return False, f"head_top={top_skin} need>=45"

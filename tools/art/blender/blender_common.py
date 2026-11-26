@@ -155,19 +155,52 @@ def snap_root_to_ground_z(ob: bpy.types.Object) -> None:
     bpy.context.view_layer.update()
 
 
+def reorient_staff_mesh_y_to_z(ob: bpy.types.Object) -> None:
+    """Art scripts build Y-up; Blender/glTF/Unity need height on Z before export."""
+    import bmesh
+    from mathutils import Matrix
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    rot = Matrix.Rotation(math.pi / 2, 4, "X")
+    bmesh.ops.rotate(bm, cent=(0, 0, 0), matrix=rot, verts=bm.verts)
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    ob.rotation_euler = (0.0, 0.0, 0.0)
+    ob.location = (0.0, 0.0, 0.0)
+
+
 def orient_staff_for_gltf(ob: bpy.types.Object, asset_id: str) -> None:
-    """Apply loc/rot/scale; Blender Y-up mesh maps to glTF +Y with export_apply."""
+    """Rotate art Y-up mesh to Blender Z-up, scale to ~1.72 m, ground, then export."""
     ensure_staff_upright(ob)
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    snap_root_to_ground(ob)
-    span = ob.dimensions
-    if span.y < max(span.x, span.z) * 0.9:
+    reorient_staff_mesh_y_to_z(ob)
+    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    zs = [p.z for p in verts]
+    height = max(zs) - min(zs)
+    target_h = 1.72
+    if height < 0.35:
+        raise RuntimeError(f"FAIL {asset_id}: height too small pre-scale z={height:.3f}")
+    scale = target_h / height
+    if abs(scale - 1.0) > 0.02:
+        ob.scale = (scale, scale, scale)
+        bpy.ops.object.transform_apply(scale=True)
+    snap_root_to_ground_z(ob)
+    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    xs = [p.x for p in verts]
+    ys = [p.y for p in verts]
+    zs = [p.z for p in verts]
+    sx, sy, sz = max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)
+    if sz < max(sx, sy) * 0.9:
         raise RuntimeError(
-            f"FAIL {asset_id}: gltf-upright span_y={span.y:.3f} span_x={span.x:.3f} span_z={span.z:.3f}"
+            f"FAIL {asset_id}: gltf-upright sz={sz:.3f} sx={sx:.3f} sy={sy:.3f}"
         )
+    if sz < 1.55 or sz > 2.05:
+        raise RuntimeError(f"FAIL {asset_id}: height sz={sz:.3f} want 1.55-2.05")
 
 
 def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:

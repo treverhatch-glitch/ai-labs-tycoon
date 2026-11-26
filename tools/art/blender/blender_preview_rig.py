@@ -339,9 +339,11 @@ def render_preview_studio(
     setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
-        axis = "Y"
-        framing_margin = 0.88
-        lens_mm = 50.0
+        axis = "Z"
+        framing_margin = 0.92
+        lens_mm = 46.0
+        azimuth_deg = 30.0
+        elevation_deg = 14.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
@@ -371,14 +373,21 @@ def render_preview_studio(
         if preview_kind == "wisp":
             add_shadow_floor_y(mins, maxs)
         elif preview_kind == "staff":
-            pass
+            add_shadow_floor_z(mins, maxs)
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
             add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
         if preview_kind == "staff":
-            cam = frame_camera_staff_front(hero_meshes, lens_mm=lens_mm, margin=framing_margin)
+            cam = frame_camera(
+                hero_meshes,
+                lens_mm=lens_mm,
+                margin=framing_margin,
+                azimuth_deg=azimuth_deg,
+                elevation_deg=elevation_deg,
+                up_axis=axis,
+            )
             half_fov = camera_half_fov_rad(cam.data)
             cam_dist = (radius / math.tan(half_fov)) * framing_margin
         else:

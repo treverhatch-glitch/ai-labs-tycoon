@@ -51,17 +51,21 @@ def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
     mood = mood_id.replace("wisp-", "")
     base_y = 0.72
     face_z = 0.43
-    eye_sep = 0.11
-    eye_w, eye_h = 0.13, 0.14
-    dark = (0.04, 0.03, 0.05, 1.0)
+    eye_sep = 0.12
+    eye_w, eye_h = 0.20, 0.20
+    dark = (0.02, 0.02, 0.04, 1.0)
     white = (0.99, 0.99, 0.97, 1.0)
-    pupil_w, pupil_h = 0.08, 0.09
+    pupil_w, pupil_h = 0.13, 0.14
 
     if mood == "glowing":
         for sx in (-1, 1):
-            lid = bc.add_cube(f"EyeLid_{sx}", (eye_w, 0.04, 0.03), (eye_sep * sx, base_y + 0.06, face_z))
-            bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=2.5)
-        mouth = bc.add_cube("GlowSmile", (0.18, 0.06, 0.025), (0, base_y - 0.10, face_z))
+            sclera = bc.add_cube(f"EyeWhite_{sx}", (eye_w, eye_h, 0.04), (eye_sep * sx, base_y + 0.08, face_z))
+            bc.assign_solid(sclera, white, 0.12)
+            pupil = bc.add_cube(f"Pupil_{sx}", (pupil_w, pupil_h, 0.028), (eye_sep * sx, base_y + 0.08, face_z + 0.02))
+            bc.assign_solid(pupil, dark, 0.1)
+            lid = bc.add_cube(f"EyeLid_{sx}", (eye_w + 0.02, 0.05, 0.04), (eye_sep * sx, base_y + 0.10, face_z - 0.01))
+            bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=2.2)
+        mouth = bc.add_cube("GlowSmile", (0.22, 0.09, 0.03), (0, base_y - 0.10, face_z))
         bc.assign_emission(mouth, (0.88, 0.78, 1.0, 1.0), strength=2.8)
         return
 
