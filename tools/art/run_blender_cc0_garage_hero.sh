@@ -11,6 +11,7 @@ if [[ ! -d tools/art/cc0/incoming/kenney_building-kit ]]; then
 fi
 echo "=== garage-interior-room-kit (CC0 hero) ==="
 "$BLENDER" -b --python tools/art/blender/garage-interior-room-kit.py
+python3 tools/art/check_no_tracked_pyc.py
 python3 tools/art/check_cc0_garage_hero.py
 python3 tools/art/check_cc0_garage_preview.py
 echo "cc0 garage hero OK"
