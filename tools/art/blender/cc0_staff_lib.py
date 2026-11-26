@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import math
-from collections import defaultdict
 
 import bpy
 import bmesh
@@ -290,6 +289,53 @@ def _add_glasses(head: bpy.types.Object, span: float) -> bpy.types.Object:
     return glass
 
 
+def _drop_modular_cloth() -> None:
+    for key in ("ClothTop", "ClothBottom"):
+        ob = bpy.data.objects.get(key)
+        if ob:
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def _union_bbox(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
+    import staff_connectivity as sc
+
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for ob in objects:
+        a, b = sc._world_bbox(ob)
+        lo.x = min(lo.x, a.x)
+        lo.y = min(lo.y, a.y)
+        lo.z = min(lo.z, a.z)
+        hi.x = max(hi.x, b.x)
+        hi.y = max(hi.y, b.y)
+        hi.z = max(hi.z, b.z)
+    return lo, hi
+
+
+def _fit_box_garment(
+    name: str,
+    anchors: list[bpy.types.Object],
+    scale: tuple[float, float, float],
+    color: tuple[float, float, float, float],
+    roughness: float,
+    y_shift: float = 0.0,
+) -> bpy.types.Object | None:
+    anchors = [o for o in anchors if o]
+    if not anchors:
+        return None
+    lo, hi = _union_bbox(anchors)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    center.y += y_shift
+    ob = bc.add_cube(
+        name,
+        (max(0.05, ext.x * scale[0]), max(0.05, ext.y * scale[1]), max(0.05, ext.z * scale[2])),
+        (center.x, center.y, center.z),
+    )
+    bc.assign_solid(ob, color, roughness)
+    return ob
+
+
 def _add_shoes(span: float) -> list[bpy.types.Object]:
     import staff_connectivity as sc
 
@@ -318,35 +364,40 @@ def _style_founder(
     cz: float,
     min_y: float,
 ) -> None:
-    top = objects.get("ClothTop")
-    bottom = objects.get("ClothBottom")
     hair = objects.get("Hair_Long")
     eyebrows = objects.get("Eyebrows")
+    torso = bpy.data.objects.get("Torso")
+    neck = bpy.data.objects.get("Neck")
+    ua_l = bpy.data.objects.get("UpperArm_-1")
+    ua_r = bpy.data.objects.get("UpperArm_1")
+    hips = bpy.data.objects.get("Hips")
+    leg_l = bpy.data.objects.get("Leg_-1")
+    leg_r = bpy.data.objects.get("Leg_1")
     if eyebrows:
         _rename_ob(eyebrows, "Eyebrows")
         bc.assign_solid(eyebrows, (0.14, 0.09, 0.07, 1.0), 0.45)
-    if top:
-        _rename_ob(top, "Hoodie")
-        bc.assign_solid(top, (0.28, 0.22, 0.48, 1.0), 0.58)
+    neck = bpy.data.objects.get("Neck")
     head = bpy.data.objects.get("Head")
-    if head:
-        import staff_connectivity as sc
-
-        lo, hi = sc._world_bbox(head)
-        center = (lo + hi) * 0.5
-        ext = hi - lo
-        hood = bc.add_cube(
-            "Hood",
-            (ext.x * 1.22, ext.y * 1.18, ext.z * 1.08),
-            (center.x, center.y + ext.y * 0.06, center.z),
-        )
-        bc.assign_solid(hood, (0.24, 0.18, 0.42, 1.0), 0.62)
-    if bottom:
-        _rename_ob(bottom, "Trousers")
-        bc.assign_solid(bottom, (0.16, 0.22, 0.48, 1.0), 0.55)
+    _fit_box_garment(
+        "Hoodie",
+        [o for o in (torso, ua_l, ua_r, neck, head) if o],
+        (1.18, 1.26, 0.98),
+        (0.20, 0.16, 0.34, 1.0),
+        0.62,
+        y_shift=span * 0.08,
+    )
+    _fit_box_garment(
+        "Trousers",
+        [o for o in (hips, leg_l, leg_r) if o],
+        (1.08, 1.02, 0.96),
+        (0.12, 0.16, 0.38, 1.0),
+        0.58,
+        y_shift=-span * 0.02,
+    )
     if hair:
         _rename_ob(hair, "Hair")
-        bc.assign_solid(hair, (0.14, 0.10, 0.08, 1.0), 0.42)
+        hair.scale = (1.0, 1.0, 1.05)
+        bc.assign_solid(hair, (0.10, 0.07, 0.05, 1.0), 0.42)
     shoes = _add_shoes(span)
     for ob in shoes:
         bc.assign_solid(ob, (0.92, 0.94, 0.96, 1.0), 0.38)
@@ -369,24 +420,42 @@ def _style_researcher(
     cz: float,
     min_y: float,
 ) -> None:
-    top = objects.get("ClothTop")
-    bottom = objects.get("ClothBottom")
     hair = objects.get("Hair_Long")
     eyebrows = objects.get("Eyebrows")
-    if top:
-        shirt = _rename_ob(top, "Shirt")
-        bc.assign_solid(shirt, (0.22, 0.38, 0.72, 1.0), 0.48)
-        coat = _dup_ob(shirt, "LabCoat")
-        coat.scale = (1.08, 1.18, 1.10)
-        coat.location.y += span * 0.02
-        bc.assign_solid(coat, (0.94, 0.95, 0.97, 1.0), 0.40)
-    if bottom:
-        _rename_ob(bottom, "Trousers")
-        bc.assign_solid(bottom, (0.20, 0.24, 0.34, 1.0), 0.58)
+    torso = bpy.data.objects.get("Torso")
+    neck = bpy.data.objects.get("Neck")
+    ua_l = bpy.data.objects.get("UpperArm_-1")
+    ua_r = bpy.data.objects.get("UpperArm_1")
+    hips = bpy.data.objects.get("Hips")
+    leg_l = bpy.data.objects.get("Leg_-1")
+    leg_r = bpy.data.objects.get("Leg_1")
+    _fit_box_garment(
+        "Shirt",
+        [o for o in (torso, ua_l, ua_r) if o],
+        (1.02, 0.98, 0.88),
+        (0.20, 0.36, 0.68, 1.0),
+        0.48,
+    )
+    _fit_box_garment(
+        "LabCoat",
+        [o for o in (torso, ua_l, ua_r, neck) if o],
+        (1.18, 1.14, 1.08),
+        (0.94, 0.95, 0.97, 1.0),
+        0.40,
+        y_shift=span * 0.01,
+    )
+    _fit_box_garment(
+        "Trousers",
+        [o for o in (hips, leg_l, leg_r) if o],
+        (1.06, 1.0, 0.95),
+        (0.14, 0.16, 0.24, 1.0),
+        0.58,
+        y_shift=-span * 0.02,
+    )
     if hair:
         _rename_ob(hair, "Hair")
-        hair.scale = (0.92, 0.75, 0.95)
-        bc.assign_solid(hair, (0.22, 0.18, 0.14, 1.0), 0.48)
+        hair.scale = (0.88, 0.62, 0.9)
+        bc.assign_solid(hair, (0.28, 0.22, 0.18, 1.0), 0.48)
     if eyebrows:
         _rename_ob(eyebrows, "Eyebrows")
         bc.assign_solid(eyebrows, (0.18, 0.12, 0.10, 1.0), 0.45)
@@ -412,6 +481,33 @@ def _scene_mesh_map() -> dict[str, bpy.types.Object]:
     return {o.name.split(".")[0]: o for o in bpy.context.scene.objects if o.type == "MESH"}
 
 
+def _tighten_skin_to_torso() -> None:
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    tc = _mesh_centroid(torso)
+    for tag in (
+        "Neck",
+        "Head",
+        "Shoulder_-1",
+        "Shoulder_1",
+        "UpperArm_-1",
+        "UpperArm_1",
+        "LowerArm_-1",
+        "LowerArm_1",
+        "Hand_-1",
+        "Hand_1",
+        "Hips",
+        "Leg_-1",
+        "Leg_1",
+    ):
+        ob = bpy.data.objects.get(tag)
+        if not ob:
+            continue
+        c = _mesh_centroid(ob)
+        ob.location += (tc - c) * 0.045
+
+
 def _snap_outfits_to_torso() -> None:
     import staff_connectivity as sc
 
@@ -427,12 +523,12 @@ def _snap_outfits_to_torso() -> None:
     torso = bpy.data.objects.get("Torso")
     head = bpy.data.objects.get("Head")
     if torso:
-        for name in ("Hoodie", "Hood", "Shirt", "LabCoat", "Trousers"):
+        for name in ("Hoodie", "Shirt", "LabCoat", "Trousers"):
             ob = bpy.data.objects.get(name)
             if ob:
                 nudge(ob, torso)
     if head:
-        for name in ("Hair", "Hood", "Eyebrows", "Glasses"):
+        for name in ("Hair", "Eyebrows", "Glasses"):
             ob = bpy.data.objects.get(name)
             if ob:
                 nudge(ob, head)
@@ -456,6 +552,7 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
         _split_eyes(eyes)
     _rotate_scene_z_to_y()
     _scale_scene_to_height()
+    _drop_modular_cloth()
     parts = _scene_mesh_map()
     torso = parts.get("Torso") or parts.get("Hips")
     if not torso:
@@ -466,6 +563,7 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
     cz = sum(v.z for v in co) / len(co)
     styler(parts, skin, span, cx, cz, _min)
     _snap_outfits_to_torso()
+    _tighten_skin_to_torso()
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue
@@ -473,6 +571,34 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
             bc.bevel_object(ob, width=0.004, segments=1)
         except RuntimeError:
             pass
+
+
+def check_spine_clearance(mesh_obs: list[bpy.types.Object], max_radius: float = 0.6) -> tuple[bool, str]:
+    by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
+    hips = by_name.get("Hips")
+    head = by_name.get("Head")
+    if not hips or not head:
+        return False, "spine_parts_missing"
+    p0 = _mesh_centroid(hips)
+    p1 = _mesh_centroid(head)
+    axis = p1 - p0
+    if axis.length < 0.2:
+        return False, "spine_axis_short"
+    axis_n = axis.normalized()
+    worst = ("", 0.0)
+    for ob in mesh_obs:
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        for v in ob.data.vertices:
+            rel = ob.matrix_world @ v.co - p0
+            perp = rel - axis_n * rel.dot(axis_n)
+            r = perp.length
+            if r > worst[1]:
+                worst = (base, r)
+    if worst[1] > max_radius:
+        return False, f"spine_clearance {worst[0]} r={worst[1]:.3f}m"
+    return True, f"spine_ok r={worst[1]:.3f}m"
 
 
 def build_founder_cc0() -> None:

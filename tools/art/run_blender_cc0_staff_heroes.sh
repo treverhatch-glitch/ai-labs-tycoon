@@ -28,6 +28,7 @@ for aid in staff-founder-idle staff-researcher-idle; do
 done
 python3 tools/art/check_cc0_staff_preview_upright.py
 python3 tools/art/check_cc0_staff_material_diversity.py
+python3 tools/art/check_cc0_staff_silhouette.py
 python3 tools/art/check_cc0_staff_floor_loose.py
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

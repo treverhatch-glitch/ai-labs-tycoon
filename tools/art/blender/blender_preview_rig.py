@@ -132,8 +132,8 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
 
 def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
-    footprint = max(maxs.x - mins.x, maxs.y - mins.y, 0.5)
-    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.8, location=(center.x, center.y, mins.z - 0.002))
+    footprint = max(maxs.x - mins.x, maxs.y - mins.y, 0.35)
+    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.12, location=(center.x, center.y, mins.z - 0.002))
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
@@ -354,10 +354,10 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 0.58
-        lens_mm = 46.0
-        azimuth_deg = 28.0
-        elevation_deg = 16.0
+        framing_margin = 1.48
+        lens_mm = 50.0
+        azimuth_deg = 108.0
+        elevation_deg = 9.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
@@ -388,22 +388,35 @@ def render_preview_studio(
             add_shadow_floor_y(mins, maxs)
         elif preview_kind == "staff":
             add_shadow_floor_z(mins, maxs)
+            floor_ob = bpy.data.objects.get("PreviewShadowFloor")
+            if floor_ob and floor_ob.active_material:
+                bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
+                if bsdf:
+                    bsdf.inputs["Base Color"].default_value = (0.48, 0.48, 0.50, 1.0)
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
             add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
         if preview_kind == "staff":
-            cam = frame_camera(
-                hero_meshes,
-                lens_mm=lens_mm,
-                margin=framing_margin,
-                azimuth_deg=azimuth_deg,
-                elevation_deg=elevation_deg,
-                up_axis=axis,
-            )
-            half_fov = camera_half_fov_rad(cam.data)
+            mins_s, maxs_s = mesh_bounds_world(hero_meshes)
+            center_s = (mins_s + maxs_s) * 0.5
+            height_s = max(0.35, maxs_s.z - mins_s.z)
+            half_fov = math.radians(22.0)
             cam_dist = (radius / math.tan(half_fov)) * framing_margin
+            aid = os.environ.get("STAFF_PREVIEW_ASSET", "")
+            if aid == "staff-founder-idle":
+                view = Vector((-height_s * 0.62, -height_s * 2.05, height_s * 0.20))
+            else:
+                view = Vector((height_s * 0.62, height_s * 2.05, height_s * 0.20))
+            cam_loc = center_s + view.normalized() * cam_dist
+            bpy.ops.object.camera_add(location=cam_loc)
+            cam = bpy.context.active_object
+            cam.name = "PreviewCamera"
+            cam.data.lens = lens_mm
+            direction = center_s - cam_loc
+            cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+            bpy.context.scene.camera = cam
         else:
             cam = frame_camera(
                 hero_meshes,

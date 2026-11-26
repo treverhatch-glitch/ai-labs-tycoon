@@ -471,6 +471,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
     if category == "staff-kit":
         import staff_connectivity as staff_conn
+        import cc0_staff_lib as staff_c0
+
+        ok_spine, msg_spine = staff_c0.check_spine_clearance(mesh_obs)
+        if not ok_spine:
+            raise RuntimeError(f"FAIL {asset_id}: {msg_spine}")
 
         ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
         if not ok_conn:
@@ -488,7 +493,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             smooth_shade(ob)
             bevel_object(ob, width=0.006, segments=1)
         glb_path = out_dir / f"{asset_id}.glb"
-        export_gltf_selection([staff_export_root, *mesh_obs], glb_path)
+        export_gltf_selection(mesh_obs, glb_path)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         try:
             render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
@@ -1147,6 +1152,10 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
     mesh_obs = [o for o in imported if o.type == "MESH" and o.name != "PreviewShadowFloor"]
     if not mesh_obs:
         raise RuntimeError(f"no meshes in {glb_path}")
+    if asset_id and asset_id.startswith("staff-"):
+        tint_garage_parts(mesh_obs, asset_id)
+    if asset_id:
+        os.environ["STAFF_PREVIEW_ASSET"] = asset_id
     try:
         render_preview(mesh_obs, path, asset_id=asset_id)
     finally:

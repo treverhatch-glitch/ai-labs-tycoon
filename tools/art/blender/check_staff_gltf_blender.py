@@ -14,6 +14,40 @@ manifest = json.loads((repo / "unity/Assets/Art/EarlyGame/staff-manifest.json").
 MIN_HEIGHT = 1.55
 MAX_HEIGHT = 2.05
 HEAD_FOOT_MIN_GAP = 0.45
+MAX_SPINE_RADIUS_M = 0.6
+HERO_IDS = frozenset({"staff-founder-idle", "staff-researcher-idle"})
+
+
+def _centroid(ob: bpy.types.Object) -> Vector:
+    pts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    return sum(pts, Vector()) / max(1, len(pts))
+
+
+def _spine_radius(meshes: list[bpy.types.Object]) -> tuple[bool, str]:
+    by_name = {o.name.split(".")[0]: o for o in meshes}
+    hips = by_name.get("Hips")
+    head = by_name.get("Head")
+    if not hips or not head:
+        return False, "spine_parts_missing"
+    p0 = _centroid(hips)
+    p1 = _centroid(head)
+    axis = p1 - p0
+    if axis.length < 0.2:
+        return False, "spine_axis_short"
+    axis_n = axis.normalized()
+    worst = ("", 0.0)
+    for ob in meshes:
+        base = ob.name.split(".")[0]
+        for v in ob.data.vertices:
+            p = ob.matrix_world @ v.co
+            rel = p - p0
+            perp = rel - axis_n * rel.dot(axis_n)
+            r = perp.length
+            if r > worst[1]:
+                worst = (base, r)
+    if worst[1] > MAX_SPINE_RADIUS_M:
+        return False, f"spine_r={worst[1]:.3f}m on {worst[0]} max={MAX_SPINE_RADIUS_M}m"
+    return True, f"spine_r={worst[1]:.3f}m"
 
 
 def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
@@ -41,6 +75,13 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
     head_z = sum(z for z in zs if z >= max_z - band) / max(1, sum(1 for z in zs if z >= max_z - band))
     if head_z <= foot_z + HEAD_FOOT_MIN_GAP:
         return False, f"head_below_feet head_z={head_z:.3f} foot_z={foot_z:.3f} gap={head_z-foot_z:.3f}"
+    if aid in HERO_IDS:
+        if any(n == "Cube" for n in (o.name.split(".")[0] for o in meshes)):
+            return False, "stray_cube_mesh"
+        ok_spine, spine_msg = _spine_radius(meshes)
+        if not ok_spine:
+            return False, spine_msg
+        return True, f"z_up sz={sz:.3f} {spine_msg} meshes={len(meshes)}"
     return True, f"z_up sz={sz:.3f} head_z={head_z:.3f} foot_z={foot_z:.3f} min_z={min_z:.3f} meshes={len(meshes)}"
 
 
