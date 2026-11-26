@@ -2,7 +2,7 @@
 
 Audit of migratable art across `main`, `cursor/early-game-art-bootstrap`, and `cursor/graphics-pipeline-5032`. Inventory only — no rebuilds in this commit.
 
-**Audited:** 2026-11-26 14:30 ICT (early Blender lane `bc-d48d70eb`)
+**Audited:** 2026-11-26 15:05 ICT (early Blender lane finish `bc-d48d70eb`)
 
 ## Lane split
 
@@ -42,18 +42,18 @@ Counts are the **union** of paths on the three refs (deduplicated by repo path).
 | `unity/Assets/Art/EarlyGame/garage-kit/garage-wall-panel.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_garage_kit.py`); packet-1 placeholder fidelity; target `tools/art/blender/garage-wall-panel.py` |
 | `unity/Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_garage_kit.py`); packet-1 placeholder fidelity; target `tools/art/blender/garage-whiteboard-1995.py` |
 | `unity/Assets/Art/EarlyGame/garage-kit/garage-window-frame.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_garage_kit.py`); packet-1 placeholder fidelity; target `tools/art/blender/garage-window-frame.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/hud-topbar-beige.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/hud-topbar-beige.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/hud-topbar-beige.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/hud-topbar-beige.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-build-panel.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-build-panel.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-cash-era0.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-cash-era0.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-date-era0.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-date-era0.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-era-bar.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-era-bar.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/icon-gpu-hire.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-gpu-hire.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/icon-gpu-hire.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-gpu-hire.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-hire-panel.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-hire-panel.py` |
 | `unity/Assets/Art/EarlyGame/hud-icons/icon-train-panel.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-train-panel.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/icon-week-advance.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-week-advance.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/panel-build-bg.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-build-bg.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/panel-hire-bg.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-hire-bg.py` |
-| `unity/Assets/Art/EarlyGame/hud-icons/panel-train-bg.svg` | early | icon | early | todo | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-train-bg.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/icon-week-advance.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/icon-week-advance.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/panel-build-bg.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-build-bg.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/panel-hire-bg.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-hire-bg.py` |
+| `unity/Assets/Art/EarlyGame/hud-icons/panel-train-bg.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_early_hud_icons.py`); target `tools/art/blender/panel-train-bg.py` |
 | `unity/Assets/Art/EarlyGame/staff-kit/staff-engineer-work.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_early_staff.py`); silhouettes need Blender rebuild; target `tools/art/blender/staff-engineer-work.py` |
 | `unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_early_staff.py`); silhouettes need Blender rebuild; target `tools/art/blender/staff-founder-idle.py` |
 | `unity/Assets/Art/EarlyGame/staff-kit/staff-gpu-tech-idle.glb` | early | mesh | early | rebuilt | Procedural OBJ (`tools/art/generate_early_staff.py`); silhouettes need Blender rebuild; target `tools/art/blender/staff-gpu-tech-idle.py` |
@@ -67,9 +67,9 @@ Counts are the **union** of paths on the three refs (deduplicated by repo path).
 | `unity/Assets/Art/EarlyGame/textures/tex-garage-concrete.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-concrete.py` |
 | `unity/Assets/Art/EarlyGame/textures/tex-garage-door-metal.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-door-metal.py` |
 | `unity/Assets/Art/EarlyGame/textures/tex-garage-server-paint.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-server-paint.py` |
-| `unity/Assets/Art/EarlyGame/textures/tex-garage-trim-orange.png` | early | texture | early | todo | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-trim-orange.py` |
-| `unity/Assets/Art/EarlyGame/textures/tex-garage-wall-beige.png` | early | texture | early | todo | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-wall-beige.py` |
-| `unity/Assets/Art/EarlyGame/textures/tex-hud-paper-warm.png` | early | texture | early | todo | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-hud-paper-warm.py` |
+| `unity/Assets/Art/EarlyGame/textures/tex-garage-trim-orange.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-trim-orange.py` |
+| `unity/Assets/Art/EarlyGame/textures/tex-garage-wall-beige.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-garage-wall-beige.py` |
+| `unity/Assets/Art/EarlyGame/textures/tex-hud-paper-warm.png` | early | texture | early | rebuilt | Procedural PNG (`tools/art/generate_early_textures.py`); rebake 1024 PBR in Blender; target `tools/art/blender/tex-hud-paper-warm.py` |
 | `unity/Assets/Art/EarlyGame/wisp-moods/wisp-angry.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_wisp_mascot.py`); animated glow target; target `tools/art/blender/wisp-angry.py` |
 | `unity/Assets/Art/EarlyGame/wisp-moods/wisp-glowing.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_wisp_mascot.py`); animated glow target; target `tools/art/blender/wisp-glowing.py` |
 | `unity/Assets/Art/EarlyGame/wisp-moods/wisp-happy.svg` | early | icon | early | rebuilt | Procedural SVG (`tools/art/generate_wisp_mascot.py`); animated glow target; target `tools/art/blender/wisp-happy.py` |

@@ -49,7 +49,11 @@ def main() -> int:
             new_status = "rebuilt"
         if kind == "texture" and (EARLY / "textures" / f"{stem}.png").exists():
             tex_norm = EARLY / "textures" / f"{stem}_normal.png"
-            if tex_norm.exists() and tex_norm.stat().st_size > 10000:
+            tex_rough = EARLY / "textures" / f"{stem}_roughness.png"
+            alb = EARLY / "textures" / f"{stem}.png"
+            if tex_rough.exists() or (tex_norm.exists() and tex_norm.stat().st_size > 50000):
+                new_status = "rebuilt"
+            elif alb.exists() and alb.stat().st_size > 120000:
                 new_status = "rebuilt"
         if new_status == status and new_path == path:
             out.append(line)
@@ -62,7 +66,7 @@ def main() -> int:
         header = out
         for i, ln in enumerate(header):
             if ln.startswith("**Audited:**"):
-                header[i] = "**Audited:** 2026-11-26 14:30 ICT (early Blender lane `bc-d48d70eb`)"
+                header[i] = "**Audited:** 2026-11-26 15:05 ICT (early Blender lane finish `bc-d48d70eb`)"
                 break
         MIGRATION.write_text("\n".join(header) + "\n", encoding="utf-8")
     print(f"OK migration rows updated: {changed}")

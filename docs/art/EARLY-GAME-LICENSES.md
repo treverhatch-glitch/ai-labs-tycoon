@@ -9,7 +9,8 @@ All assets on the `cursor/early-game-art-bootstrap` lane are **original, procedu
 | `unity/Assets/Art/EarlyGame/hud-icons/*.png` (primary) | `tools/art/blender/blender_render_hud_wisp.py` | CC0-1.0 |
 | `unity/Assets/Art/EarlyGame/hud-icons/*.svg` (fallback) | `tools/art/generate_early_hud_icons.py` | CC0-1.0 |
 | `unity/Assets/Art/EarlyGame/wisp-moods/*-sheet.png` | `tools/art/blender/blender_render_hud_wisp.py` (+ `generate_wisp_mascot.py` SVG fallback) | CC0-1.0 |
-| `unity/Assets/Art/EarlyGame/textures/*.png` + `*_normal.png` | `tools/art/generate_early_textures.py` (+ per-mesh Blender bakes) | CC0-1.0 |
+| `unity/Assets/Art/EarlyGame/textures/*.png` + `*_normal.png` + `*_roughness.png` | `tools/art/blender/tex-*.py` (1024 bake) + `generate_early_textures.py` fallback | CC0-1.0 |
+| `unity/Assets/Art/EarlyGame/hud-icons/*.png` (6 finish icons) | `tools/art/blender/hud-*.py`, `panel-*.py`, `icon-gpu-hire.py`, `icon-week-advance.py` | CC0-1.0 |
 | `docs/art/previews/*.png` | Blender EEVEE preview renders | CC0-1.0 |
 | `unity/Assets/StreamingAssets/EarlyGame/**` | copies from Blender HUD/wisp + texture generators | CC0-1.0 |
 | `tools/art/blender/blender_common.py` | shared Blender bpy helpers | GPL-3.0 (tooling; art output CC0) |

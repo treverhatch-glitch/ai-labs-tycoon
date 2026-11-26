@@ -10,7 +10,12 @@ if ! command -v "$BLENDER" >/dev/null; then
 fi
 VER=$("$BLENDER" --version | head -1)
 echo "Using $VER"
-mapfile -t SCRIPTS < <(find tools/art/blender -maxdepth 1 -name 'garage-*.py' -o -name 'staff-*.py' | sort)
+mapfile -t SCRIPTS < <(
+  find tools/art/blender -maxdepth 1 -type f \( \
+    -name 'garage-*.py' -o -name 'staff-*.py' -o -name 'hud-*.py' -o -name 'panel-*.py' \
+    -o -name 'icon-gpu-hire.py' -o -name 'icon-week-advance.py' -o -name 'tex-*.py' \) \
+    ! -name 'tex.py' | sort
+)
 for script in "${SCRIPTS[@]}"; do
   echo "=== $script ==="
   "$BLENDER" -b --python "$script" || { echo "FAIL $script" >&2; exit 1; }

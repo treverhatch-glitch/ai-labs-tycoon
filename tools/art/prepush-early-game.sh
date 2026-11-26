@@ -16,7 +16,6 @@ else
   python3 tools/art/blender/sync_migration_inventory.py
   python3 tools/art/generate_early_hud_icons.py
   python3 tools/art/generate_wisp_mascot.py
-  python3 tools/art/generate_early_textures.py
 fi
 ./tools/art/prepush.sh
 python3 tools/art/check_garage_manifest.py
