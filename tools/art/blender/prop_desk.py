@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bpy  # noqa: E402
-from mathutils import Vector  # noqa: E402
+from mathutils import Matrix, Vector  # noqa: E402
 
 import _common  # noqa: E402
 
@@ -26,10 +26,10 @@ KENNEY_OFFSETS = {
 }
 
 PALETTE = {
-    "legs_pedestal": (0.30, 0.28, 0.26),
-    "mouse": (0.36, 0.38, 0.42),
-    "plant_pot": (0.62, 0.34, 0.24),
-    "plant_leaf": (0.20, 0.58, 0.30),
+    "legs_pedestal": (0.48, 0.47, 0.46),
+    "mouse": (0.40, 0.42, 0.46),
+    "plant_pot": (0.74, 0.42, 0.28),
+    "plant_leaf": (0.28, 0.74, 0.38),
 }
 
 
@@ -103,28 +103,27 @@ def _paint_monitor(p: bpy.types.Object) -> None:
     emask = mesh.color_attributes["EmitMask"]
     mn, mx = _common._bbox_world([p])
     h = max(mx.z - mn.z, 1e-6)
+    cam_dir = Vector((0.22, -0.68, 0.48)).normalized()
     for poly in mesh.polygons:
+        n_world = (p.matrix_world.to_3x3() @ poly.normal).normalized()
+        face_screen = n_world.dot(cam_dir) > 0.42
         for li in poly.loop_indices:
             vi = mesh.loops[li].vertex_index
             co = p.matrix_world @ mesh.vertices[vi].co
             t = (co.z - mn.z) / h
-            if t > 0.54:
-                bg = (0.06, 0.08, 0.12)
-                line_h = 0.85 if abs(co.y * 14.0) % 1.0 < 0.09 else 0.0
-                line_v = 0.8 if abs(co.x * 11.0) % 1.0 < 0.07 else 0.0
-                chart = 0.45 + 0.4 * abs(math.sin(co.x * 22.0) * math.sin(co.z * 18.0))
-                accent = max(line_h, line_v, chart * 0.5)
-                col = _common._lerp3(bg, (0.38, 0.82, 0.95), min(1.0, accent))
-                if accent > 0.62:
-                    col = _common._lerp3(col, (0.72, 0.92, 1.0), 0.55)
-                    emask.data[li].color = (1.0, 0.0, 0.0, 1.0)
-                else:
-                    emask.data[li].color = (0.0, 0.0, 0.0, 1.0)
+            if face_screen or t > 0.52:
+                ui_bg = (0.14, 0.18, 0.24)
+                chart = 0.4 + 0.6 * abs(math.sin(co.x * 18.0) * math.sin(co.z * 15.0))
+                line = 0.55 if abs(co.y * 12.0) % 1.0 < 0.1 or abs(co.x * 10.0) % 1.0 < 0.08 else 0.0
+                accent = min(1.0, chart * 0.55 + line)
+                col = _common._lerp3(ui_bg, (0.52, 0.90, 0.98), accent)
+                col = _common._lerp3(col, (0.72, 0.88, 0.94), min(0.28, accent))
+                emask.data[li].color = (1.0, 0.0, 0.0, 1.0)
             elif t > 0.22:
-                col = (0.12, 0.13, 0.15)
+                col = (0.32, 0.34, 0.38)
                 emask.data[li].color = (0.0, 0.0, 0.0, 1.0)
             else:
-                col = (0.18, 0.19, 0.21)
+                col = (0.36, 0.38, 0.42)
                 emask.data[li].color = (0.0, 0.0, 0.0, 1.0)
             vcol.data[li].color = (*col, 1.0)
 
@@ -143,8 +142,8 @@ def _paint_keyboard(p: bpy.types.Object) -> None:
             co = p.matrix_world @ mesh.vertices[vi].co
             gx = math.sin(co.x * 110.0) * math.sin(co.y * 95.0)
             cap = 0.78 if co.z >= top_z and gx > -0.2 else 0.22
-            base = (0.14, 0.16, 0.19)
-            hi = (0.78, 0.80, 0.84)
+            base = (0.52, 0.54, 0.58)
+            hi = (0.74, 0.76, 0.80)
             rgb = _common._lerp3(base, hi, cap)
             vcol.data[li].color = (*rgb, 1.0)
 
@@ -207,6 +206,7 @@ def build_desk() -> bpy.types.Object:
         _place_on_desktop(parts, surface_z, xy, u, v)
         if "Screen" in fname:
             for o in parts:
+                o.matrix_world = o.matrix_world @ Matrix.Rotation(math.radians(17.0), 4, "X")
                 o.location.z -= 0.002
         if "Keyboard" in fname:
             for o in parts:
@@ -221,8 +221,8 @@ def build_desk() -> bpy.types.Object:
     plant = _add_potted_plant(surface_z, xy)
     all_obs.append(plant)
 
-    oak_light = (0.84, 0.62, 0.40)
-    oak_dark = (0.58, 0.38, 0.24)
+    oak_light = (1.0, 0.78, 0.52)
+    oak_dark = (0.78, 0.54, 0.36)
     for p in desk_parts:
         zspan = _common._bbox_world([p])[1].z - _common._bbox_world([p])[0].z
         if zspan < 0.12:
@@ -264,7 +264,7 @@ def main() -> None:
             "kenneyParts": ["desk.glb", "computerScreen.glb", "computerKeyboard.glb", "computerMouse.glb"],
             "kenneyOffsets": KENNEY_OFFSETS,
             "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
-            "restyle": "wood-grain-v6",
+            "restyle": "wood-grain-v8",
         },
     )
     print(__import__("json").dumps(manifest, indent=2))

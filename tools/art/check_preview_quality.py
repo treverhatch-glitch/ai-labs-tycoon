@@ -333,6 +333,41 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         )
         if outside_n < 80:
             outside_mean_sat = sum(subj_sat) / cn if subj_sat else 0.0
+        desk_lums: list[float] = []
+        desk_sats: list[float] = []
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                r, g, b = pixels[y * width + x]
+                if not _object_pixel(r, g, b, bg):
+                    continue
+                mx, mn = max(r, g, b), min(r, g, b)
+                desk_lums.append((r + g + b) / (3.0 * 255.0))
+                desk_sats.append((mx - mn) / 255.0)
+        desk_mean_lum = sum(desk_lums) / len(desk_lums) if desk_lums else 0.0
+        desk_mean_sat = sum(desk_sats) / len(desk_sats) if desk_sats else 0.0
+        dark_cells = 0
+        cell_total = 0
+        for gy in range(4):
+            for gx in range(4):
+                x0c = int(width * (0.08 + gx * 0.21))
+                x1c = int(width * (0.08 + (gx + 1) * 0.21))
+                y0c = int(height * (0.08 + gy * 0.21))
+                y1c = int(height * (0.08 + (gy + 1) * 0.21))
+                cell_lums: list[float] = []
+                for y in range(y0c, y1c):
+                    for x in range(x0c, x1c):
+                        r, g, b = pixels[y * width + x]
+                        if not _object_pixel(r, g, b, bg):
+                            continue
+                        if sx0 <= x <= sx1 and sy0 <= y <= sy1:
+                            continue
+                        cell_lums.append(max(r, g, b) / 255.0)
+                if len(cell_lums) < 12:
+                    continue
+                cell_total += 1
+                if sum(cell_lums) / len(cell_lums) < 0.08:
+                    dark_cells += 1
+        dark_cell_frac = dark_cells / cell_total if cell_total else 0.0
         desk_extra = {
             "subject_median_sat": med_sat,
             "desk_top_brown_frac": desk_brown_frac,
@@ -340,6 +375,9 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             "corner_rgb_max_delta": corner_rgb_max_delta,
             "outside_screen_mean_sat": outside_mean_sat,
             "blow_frac_outside_screen": blow_frac_outside,
+            "desk_mean_lum": desk_mean_lum,
+            "desk_mean_sat": desk_mean_sat,
+            "dark_subject_cell_frac": dark_cell_frac,
         }
     return {
         "stddev": std,
@@ -399,6 +437,13 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
             reasons.append(f"blow_frac_outside_screen={s.get('blow_frac_outside_screen', 0):.2%}")
         if s.get("corner_rgb_max_delta", 99.0) > 2.0:
             reasons.append(f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want ±2)")
+        dml = s.get("desk_mean_lum", 0.0)
+        if dml < 0.30 or dml > 0.60:
+            reasons.append(f"desk_mean_lum={dml:.2f} (want 0.30-0.60)")
+        if s.get("desk_mean_sat", 0.0) < 0.20:
+            reasons.append(f"desk_mean_sat={s.get('desk_mean_sat', 0):.2f}")
+        if s.get("dark_subject_cell_frac", 0.0) > 0.25:
+            reasons.append(f"dark_subject_cell_frac={s.get('dark_subject_cell_frac', 0):.2%}")
         frame = PREVIEW_DIR / "prop-desk.frame.json"
         glb = BLENDER_ROOT / "prop-desk" / "mesh_prop-desk.glb"
         if glb.is_file():

@@ -106,7 +106,7 @@ def _paint_wood_grain(
 def _blend_cc0_wood(
     obj: bpy.types.Object,
     color_jpg: Path,
-    blend: float = 0.94,
+    blend: float = 0.97,
     uv_tiles: float = 3.2,
 ) -> None:
     """Blend ambientCG wood albedo into BakeColor after UV (desk carcass only)."""
@@ -121,7 +121,7 @@ def _blend_cc0_wood(
     w, h = img.size
     px = list(img.pixels)
     desk_mn, desk_mx = _bbox_world([obj])
-    lift = (1.02, 1.01, 1.0)
+    lift = (1.08, 1.05, 1.02)
     for poly in mesh.polygons:
         for li in poly.loop_indices:
             bc = vcol.data[li].color
@@ -236,7 +236,7 @@ def _apply_baked_albedo(
     img.colorspace_settings.name = "sRGB"
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.48
+    bsdf.inputs["Roughness"].default_value = 0.34 if emissive_strength <= 0.0 else 0.42
     if emissive_strength > 0.0:
         em_in = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em_in is not None:
@@ -268,7 +268,7 @@ def _assign_prop_desk_material_slots(obj: bpy.types.Object) -> tuple[bpy.types.M
         for li in poly.loop_indices:
             emit_votes += float(mask.data[li].color[0])
         emit_votes /= nloops
-        poly.material_index = 1 if emit_votes > 0.55 else 0
+        poly.material_index = 1 if emit_votes > 0.12 else 0
     return body, screen
 
 
@@ -317,7 +317,7 @@ def _rasterize_vertex_colors(obj: bpy.types.Object, tex_path: Path) -> None:
     if tex_name in bpy.data.images:
         bpy.data.images.remove(bpy.data.images[tex_name])
     img = bpy.data.images.new(tex_name, TEX_SIZE, TEX_SIZE, alpha=False)
-    fill = (0.78, 0.56, 0.38, 1.0)
+    fill = (0.86, 0.64, 0.42, 1.0)
     px = list(fill) * (TEX_SIZE * TEX_SIZE)
 
     def put(x: int, y: int, rgb: tuple[float, float, float]) -> None:
@@ -473,7 +473,7 @@ def _export_gltf(obj: bpy.types.Object, out_dir: Path) -> Path:
     for img in bpy.data.images:
         if img.filepath and not img.packed_file:
             img.pack()
-    bpy.ops.export_scene.gltf(
+    gltf_kw = dict(
         filepath=str(glb),
         export_format="GLB",
         use_selection=True,
@@ -482,6 +482,9 @@ def _export_gltf(obj: bpy.types.Object, out_dir: Path) -> Path:
         export_image_format="AUTO",
         export_keep_originals=False,
     )
+    if obj.name == "mesh_prop-desk":
+        gltf_kw["export_colors"] = False
+    bpy.ops.export_scene.gltf(**gltf_kw)
     return glb
 
 
@@ -566,7 +569,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.06 if asset_id == "prop-desk" else 0.10,
+        lit_strength=0.10 if asset_id == "prop-desk" else 0.10,
     )
     if asset_id == "prop-desk":
         bpy.context.scene.view_settings.view_transform = "Raw"
@@ -593,12 +596,12 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 1.18 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 2.86 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 24 if asset_id == "prop-desk" else 55
+    fill.data.energy = 66 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
 
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
@@ -748,7 +751,7 @@ def finish_baked_export(
     if asset_id == "prop-desk":
         body_mat, screen_mat = _assign_prop_desk_material_slots(obj)
         _apply_baked_albedo(body_mat, tex_path, emissive_strength=0.0)
-        _apply_baked_albedo(screen_mat, tex_path, emissive_strength=2.2)
+        _apply_baked_albedo(screen_mat, tex_path, emissive_strength=0.94)
     else:
         urp_mat = _ensure_material(obj, asset_id)
         _apply_baked_albedo(urp_mat, tex_path)
