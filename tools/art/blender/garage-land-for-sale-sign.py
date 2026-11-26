@@ -85,9 +85,9 @@ def _layout(post_l, post_r, board) -> None:
 
 
 def main():
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.20"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.16"
     os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
-    os.environ["PREVIEW_ELEVATION_DEG"] = "8"
+    os.environ["PREVIEW_ELEVATION_DEG"] = "12"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
     os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
@@ -97,7 +97,7 @@ def main():
     post_r = _procedural_post("PostR", 0.0)
     board = _kenney_board()
     _layout(post_l, post_r, board)
-    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.014)
+    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.012)
     letters = bc.bpy.context.scene.objects["letters"]
     entry = bc.finish_sign_named_asset(
         "garage-kit",
@@ -108,9 +108,8 @@ def main():
     )
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
-    bc.rerender_garage_preview("garage-roll-door", "garage-kit")
+    subprocess.run(["python3", str(REPO / "tools/art/flatten_doc_previews.py")], check=True, cwd=str(REPO))
     subprocess.run(["python3", str(REPO / "tools/art/assert_sign_front_ltr.py")], check=True, cwd=str(REPO))
-    bc.render_sign_garage_hero("garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry
 

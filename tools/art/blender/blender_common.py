@@ -171,10 +171,20 @@ SIGN_TEXT_RED_RGBA = (200 / 255.0, 16 / 255.0, 46 / 255.0, 1.0)  # #C8102E
 
 
 def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
-    _ = preview
     mat = bpy.data.materials.new("SignTextRed")
     mat.use_nodes = True
     mat.use_backface_culling = False
+    if preview:
+        nt = mat.node_tree
+        nodes = nt.nodes
+        links = nt.links
+        nodes.clear()
+        out = nodes.new("ShaderNodeOutputMaterial")
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = SIGN_TEXT_RED_RGBA
+        emit.inputs["Strength"].default_value = 1.0
+        links.new(emit.outputs["Emission"], out.inputs["Surface"])
+        return mat
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
         bsdf.inputs["Base Color"].default_value = SIGN_TEXT_RED_RGBA
@@ -213,6 +223,33 @@ def assert_sign_text_positive_det(letters: bpy.types.Object) -> None:
     det = letters.matrix_world.to_3x3().determinant()
     if det <= 1e-8:
         raise RuntimeError(f"sign letters world det={det:.6f} must be > 0 (no negative scale)")
+
+
+def _center_sign_letters_on_board(board: bpy.types.Object, letters: bpy.types.Object) -> None:
+    """Snap glyph bounds to board face bounds on the thin board plane."""
+    bpy.context.view_layer.update()
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    corners_b = [board.matrix_world @ Vector(c) for c in board.bound_box]
+    corners_l = [letters.matrix_world @ Vector(c) for c in letters.bound_box]
+    if thin_i == 1:
+        b0, b1 = min(v.z for v in corners_b), max(v.z for v in corners_b)
+        l0, l1 = min(v.z for v in corners_l), max(v.z for v in corners_l)
+        letters.location.z += (b0 + b1 - l0 - l1) * 0.5
+        b0, b1 = min(v.x for v in corners_b), max(v.x for v in corners_b)
+        l0, l1 = min(v.x for v in corners_l), max(v.x for v in corners_l)
+        letters.location.x += (b0 + b1 - l0 - l1) * 0.5
+    elif thin_i == 2:
+        b0, b1 = min(v.y for v in corners_b), max(v.y for v in corners_b)
+        l0, l1 = min(v.y for v in corners_l), max(v.y for v in corners_l)
+        letters.location.y += (b0 + b1 - l0 - l1) * 0.5
+    else:
+        b0, b1 = min(v.z for v in corners_b), max(v.z for v in corners_b)
+        l0, l1 = min(v.z for v in corners_l), max(v.z for v in corners_l)
+        letters.location.z += (b0 + b1 - l0 - l1) * 0.5
+    bpy.ops.object.select_all(action="DESELECT")
+    letters.select_set(True)
+    bpy.context.view_layer.objects.active = letters
+    bpy.ops.object.transform_apply(location=True)
 
 
 def ensure_sign_text_ltr(board: bpy.types.Object, letters: bpy.types.Object, *, face_dir: float = -1.0) -> None:
@@ -259,14 +296,14 @@ def add_sign_mesh_text(
     if font:
         ob.data.font = font
     ob.data.extrude = extrude_m
-    ob.data.resolution_u = 4
-    ob.data.size = 0.24
-    ob.data.space_character = 0.98
+    ob.data.resolution_u = 6
+    ob.data.size = 0.28
+    ob.data.space_character = 0.95
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
     thin_i = min(range(3), key=lambda i: board.dimensions[i])
     if thin_i == 1:
-        ob.rotation_euler = (math.pi / 2, 0.0, math.pi)
+        ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
         board_w = float(board.dimensions.x)
         board_h = float(board.dimensions.z)
     elif thin_i == 2:
@@ -282,23 +319,20 @@ def add_sign_mesh_text(
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
         sx = abs((board_w * 0.492) / dx)
-        sy = abs((board_h * 0.385) / dy)
+        sy = abs((board_h * 0.32) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
-    board_c = board.matrix_world.translation.copy()
+    board_c = board.matrix_world @ (sum((Vector(c) for c in board.bound_box), Vector()) / 8.0)
     thin_h = float(min(board.dimensions)) * 0.5
     thin_i = min(range(3), key=lambda i: board.dimensions[i])
-    ob.location.x = board_c.x
-    ob.location.y = board_c.y
     if thin_i == 2:
-        ob.location.z = board_c.z + face_dir * (thin_h + extrude_m * 0.55)
+        ob.location = board_c + Vector((0, 0, face_dir * (thin_h + extrude_m * 0.55)))
     elif thin_i == 1:
-        ob.location.y = board_c.y + face_dir * (thin_h + extrude_m * 0.55)
-        ob.location.z = board_c.z
+        ob.location = board_c + Vector((0, face_dir * (thin_h + extrude_m * 0.55), 0))
     else:
-        ob.location.x = board_c.x + face_dir * (thin_h + extrude_m * 0.55)
+        ob.location = board_c + Vector((face_dir * (thin_h + extrude_m * 0.55), 0, 0))
     bpy.ops.object.transform_apply(location=True)
     assign_sign_text_red(ob)
     for _ in range(6):
@@ -306,7 +340,9 @@ def add_sign_mesh_text(
             break
         stitch_sign_mesh_islands(ob, max_bridge=0.06)
         weld_coincident_vertices(ob, threshold=0.004)
+    _center_sign_letters_on_board(board, ob)
     ensure_sign_text_ltr(board, ob, face_dir=face_dir)
+    _center_sign_letters_on_board(board, ob)
     assert_sign_text_positive_det(ob)
     return ob
 
@@ -1056,20 +1092,10 @@ def finish_sign_named_asset(
     letters.select_set(True)
     bpy.context.view_layer.objects.active = letters
     bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
-    bc = board.matrix_world.translation.copy()
-    thin_i = min(range(3), key=lambda i: board.dimensions[i])
-    half_b = board.dimensions[thin_i] * 0.5
-    half_l = letters.dimensions[thin_i] * 0.5
-    letters.location = Vector((bc.x, bc.y, bc.z))
-    if thin_i == 2:
-        letters.location.z = bc.z + (half_b + half_l + 0.002)
-    elif thin_i == 1:
-        letters.location.y = bc.y + (half_b + half_l + 0.002)
-    else:
-        letters.location.x = bc.x + (half_b + half_l + 0.002)
-    if thin_i == 1:
-        letters.location.z += board.dimensions.z * 0.06
+    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
+    _center_sign_letters_on_board(board, letters)
     ensure_sign_text_ltr(board, letters, face_dir=1.0)
+    _center_sign_letters_on_board(board, letters)
     assert_sign_text_positive_det(letters)
     bpy.context.view_layer.update()
     glb_path = out_dir / f"{asset_id}.glb"
@@ -1306,39 +1332,51 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
     mesh_obs = [o for o in meshes if o.name != "PreviewShadowFloor"]
     tex_dir = ART_ROOT / category / "textures" / asset_id
     if asset_id == "garage-land-for-sale-sign" and len(mesh_obs) >= 2:
+        import blender_preview_rig as rig  # type: ignore
+
         apply_sign_preview_materials(mesh_obs, tex_dir)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         os.environ["PREVIEW_GLB_SHA256"] = glb_sha
         os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
-        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Y"
+        os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
         post_obs = [o for o in mesh_obs if o.name == "posts"]
+
+        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "18"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.04"
+        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
+        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
         for o in post_obs:
             o.hide_render = True
         studio_focus = [o for o in mesh_obs if o.name != "posts"] or mesh_obs
         render_preview(studio_focus, preview_path)
-        studio_fix = REPO_ROOT / "tools/art/sign_studio_clip_fixup.py"
-        if studio_fix.is_file():
-            subprocess.run(["python3", str(studio_fix), str(preview_path)], check=True, cwd=str(REPO_ROOT))
         for o in post_obs:
             o.hide_render = False
-        import blender_preview_rig as rig  # type: ignore
 
         assembled = PREVIEW_ROOT / "for-sale-sign.png"
-        for o in post_obs:
-            o.hide_render = False
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.22"
-        render_preview(mesh_obs, assembled)
-        front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
-        saved_margin = os.environ.get("PREVIEW_FRAMING_MARGIN")
+        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "36"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "23"
         os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
-        rig.render_sign_lettered_face(mesh_obs, front, 512)
-        front_fix = REPO_ROOT / "tools/art/sign_front_gate_fixup.py"
-        if front_fix.is_file():
-            subprocess.run(["python3", str(front_fix), str(front)], check=True, cwd=str(REPO_ROOT))
-        if saved_margin is None:
-            os.environ.pop("PREVIEW_FRAMING_MARGIN", None)
-        else:
-            os.environ["PREVIEW_FRAMING_MARGIN"] = saved_margin
+        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
+        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
+        render_preview(mesh_obs, assembled)
+
+        front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
+        reset_scene()
+        bpy.ops.import_scene.gltf(filepath=str(glb))
+        front_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+        apply_sign_preview_materials(front_meshes, tex_dir)
+        front_posts = [o for o in front_meshes if o.name == "posts"]
+        for o in front_posts:
+            o.hide_render = True
+        face_obs = [o for o in front_meshes if o.name != "posts"]
+        os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
+        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
+        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.06"
+        rig.render_sign_lettered_face(face_obs, front, 512)
         ob = mesh_obs[0]
     else:
         if len(mesh_obs) > 1:
@@ -2529,16 +2567,16 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
             ob.data.materials.clear()
             flat = bpy.data.materials.new("SignBoardFlatPreview")
             flat.use_nodes = True
-            bsdf = flat.node_tree.nodes.get("Principled BSDF")
-            if bsdf:
-                bsdf.inputs["Base Color"].default_value = (0.98, 0.96, 0.94, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.32
-            for em_key in ("Emission Color", "Emission"):
-                if em_key in bsdf.inputs:
-                    bsdf.inputs[em_key].default_value = (0.98, 0.96, 0.94, 1.0)
-            for str_key in ("Emission Strength", "Emission Energy"):
-                if str_key in bsdf.inputs:
-                    bsdf.inputs[str_key].default_value = 0.42
+            nt = flat.node_tree
+            nodes = nt.nodes
+            links = nt.links
+            nodes.clear()
+            out = nodes.new("ShaderNodeOutputMaterial")
+            emit = nodes.new("ShaderNodeEmission")
+            flat_white = (0.98, 0.96, 0.94, 1.0)
+            emit.inputs["Color"].default_value = flat_white
+            emit.inputs["Strength"].default_value = 0.95
+            links.new(emit.outputs["Emission"], out.inputs["Surface"])
             ob.data.materials.append(flat)
         elif ob.name == "posts":
             ob.data.materials.clear()

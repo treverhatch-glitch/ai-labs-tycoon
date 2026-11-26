@@ -19,7 +19,7 @@ WORLD_TOP = (0.62, 0.61, 0.60, 1.0)
 WORLD_HORIZON = (0.48, 0.47, 0.46, 1.0)
 WORLD_BOTTOM = (0.28, 0.27, 0.26, 1.0)
 FLOOR_COLOR = (0.80, 0.48, 0.14, 1.0)
-MID_GREY_RGBA = (0.50, 0.50, 0.52, 1.0)
+MID_GREY_RGBA = (150 / 255.0, 150 / 255.0, 150 / 255.0, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -169,6 +169,10 @@ def _contact_shadow_only() -> bool:
     return os.environ.get("EARLY_PREVIEW_CONTACT_SHADOW", "").strip().lower() in ("1", "true", "yes")
 
 
+def _visible_ground_plane() -> bool:
+    return os.environ.get("EARLY_PREVIEW_VISIBLE_GROUND", "").strip().lower() in ("1", "true", "yes")
+
+
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
     footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.5)
@@ -210,12 +214,14 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
     return "Y" if span.y >= span.z * 1.1 else "Z"
 
 
-def setup_three_point_lights(center: Vector, radius: float, *, soft: bool = False) -> None:
+def setup_three_point_lights(center: Vector, radius: float, *, soft: bool = False, bright: bool = False) -> None:
     key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
     rim_loc = center + Vector((radius * 0.15, radius * 1.3, radius * 1.0))
-    energy = max(120.0, radius * 150.0)
+    energy = max(220.0 if bright else 120.0, radius * (220.0 if bright else 150.0))
     scale = (0.62, 0.14, 0.22) if soft else (0.85, 0.30, 0.40)
+    if bright:
+        scale = (1.05, 0.55, 0.45)
     for name, loc, e_mul in (("Key", key_loc, scale[0]), ("Fill", fill_loc, scale[1]), ("Rim", rim_loc, scale[2])):
         bpy.ops.object.light_add(type="AREA", location=loc)
         light = bpy.context.active_object
@@ -288,13 +294,10 @@ def render_sign_lettered_face(
     )[0]
     mins, maxs = mesh_bounds_world(hero_meshes)
     center = (mins + maxs) * 0.5
-    if letters is not None:
-        lc = board.matrix_world.inverted() @ letters.matrix_world.translation
-        center = board.matrix_world @ Vector((lc.x, lc.y, lc.z))
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     margin = margin if margin is not None else float(os.environ.get("PREVIEW_FRAMING_MARGIN", str(FRAMING_MARGIN)))
     half_fov = math.radians(25.0)
-    cam_dist = (radius / math.tan(half_fov)) * margin
+    cam_dist = max(1.2, (radius / math.tan(half_fov)) * margin)
     axis_vec = {"X": Vector((1, 0, 0)), "Y": Vector((0, 1, 0)), "Z": Vector((0, 0, 1))}[thin_axis]
     if letters is not None:
         if float(letters.matrix_world.translation.dot(axis_vec)) < float(
@@ -303,11 +306,12 @@ def render_sign_lettered_face(
             axis_vec = -axis_vec
         # Camera looks along axis_vec toward the board; letters on the nearer thin face.
         axis_vec = axis_vec.normalized()
-    setup_three_point_lights(center, radius, soft=mid_grey)
+    setup_three_point_lights(center, radius, soft=False, bright=mid_grey)
     bpy.ops.object.camera_add(location=center + axis_vec * cam_dist)
     cam = bpy.context.active_object
     cam.name = "PreviewCameraFront"
-    cam.data.lens = DEFAULT_LENS_MM
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = max(0.48, radius * 2.1 * margin)
     direction = center - cam.location
     cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
     bpy.context.scene.camera = cam
@@ -431,7 +435,34 @@ def render_preview_studio(
         axis = sign_up
     else:
         axis = (up_axis or infer_up_axis(mins, maxs)).upper()
-    if _contact_shadow_only():
+    if _visible_ground_plane():
+        center = (mins + maxs) * 0.5
+        span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.45)
+        if axis == "Y":
+            bpy.ops.mesh.primitive_plane_add(
+                size=span * 1.35,
+                location=(center.x, mins.y - 0.002, center.z),
+                rotation=(math.pi / 2, 0, 0),
+            )
+        else:
+            bpy.ops.mesh.primitive_plane_add(
+                size=span * 1.35,
+                location=(center.x, center.y, mins.z - 0.002),
+            )
+        floor = bpy.context.active_object
+        floor.name = "PreviewGroundDirt"
+        mat = bpy.data.materials.new("GroundDirt")
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if bsdf:
+            bsdf.inputs["Base Color"].default_value = (0.34, 0.42, 0.22, 1.0)
+            bsdf.inputs["Roughness"].default_value = 0.88
+        floor.data.materials.append(mat)
+        if hasattr(scene.eevee, "use_gtao"):
+            scene.eevee.use_gtao = True
+            scene.eevee.gtao_distance = 0.42
+            scene.eevee.gtao_factor = 2.4
+    elif _contact_shadow_only():
         center = (mins + maxs) * 0.5
         span = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
         if axis == "Y":
@@ -454,7 +485,6 @@ def render_preview_studio(
             bsdf.inputs["Base Color"].default_value = (0.12, 0.12, 0.13, 1.0)
             bsdf.inputs["Roughness"].default_value = 0.95
         floor.data.materials.append(mat)
-        # Contact card is for ground occlusion only (GTAO); never composite into RGB hero.
         floor.hide_render = True
     elif not mid_grey:
         if axis == "Y":
@@ -463,7 +493,8 @@ def render_preview_studio(
             add_shadow_floor_z(mins, maxs)
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
-    setup_three_point_lights(center, radius, soft=mid_grey)
+    sign_bright = sign_up == "Z" and os.environ.get("SIGN_PREVIEW_BRIGHT", "1").strip() != "0"
+    setup_three_point_lights(center, radius, soft=mid_grey and not sign_bright, bright=sign_bright)
     margin = float(os.environ.get("PREVIEW_FRAMING_MARGIN", str(FRAMING_MARGIN)))
     azimuth_deg = float(os.environ.get("PREVIEW_AZIMUTH_DEG", str(DEFAULT_AZIMUTH_DEG)))
     elevation_deg = float(os.environ.get("PREVIEW_ELEVATION_DEG", str(DEFAULT_ELEVATION_DEG)))
