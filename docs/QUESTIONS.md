@@ -2415,3 +2415,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q504. Extra weeks to answer takeoff crisis in late era? *Planned (schema 172):* `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced`.
 
 ### Q505. Batch twenty-four news, chat and combos. *Planned:* three headlines, three chat lines (424/377); `BatchTwentyFour*`.
+
+### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.
+
+### Q15536–Q16095. Batches 358–365 + host 358/362? DECIDED: packet **2** (refold on **`origin/main`** post-#84).
+
+### Q16096–Q16165. Batch 366+ bible refill? *Planned:* `HostExplainSystemsLaterTests` (**LOCAL**, Q16166+).
+
+### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.
