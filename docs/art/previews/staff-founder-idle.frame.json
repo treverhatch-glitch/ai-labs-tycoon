@@ -1,10 +1,10 @@
 {
-  "camera_dist": 3.112625113937532,
-  "bbox_radius": 0.8825969132148009,
-  "framing_margin": 0.92,
+  "camera_dist": 1.939101652282275,
+  "bbox_radius": 0.8721596636951763,
+  "framing_margin": 0.58,
   "lens_mm": 46.0,
-  "azimuth_deg": 30.0,
-  "elevation_deg": 14.0,
+  "azimuth_deg": 28.0,
+  "elevation_deg": 16.0,
   "up_axis": "Z",
   "preview_kind": "staff"
 }

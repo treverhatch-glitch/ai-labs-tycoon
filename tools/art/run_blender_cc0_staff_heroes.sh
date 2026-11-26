@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
 
-if [[ ! -f tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMedium.fbx ]]; then
+if [[ ! -f tools/art/cc0/incoming/quaternius/character.glb ]]; then
   ./tools/art/cc0/fetch_incoming.sh
 fi
 
@@ -27,6 +27,7 @@ for aid in staff-founder-idle staff-researcher-idle; do
   test -s "docs/art/previews/${aid}.png" || { echo "FAIL missing preview $aid"; exit 1; }
 done
 python3 tools/art/check_cc0_staff_preview_upright.py
+python3 tools/art/check_cc0_staff_material_diversity.py
 python3 tools/art/check_cc0_staff_floor_loose.py
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

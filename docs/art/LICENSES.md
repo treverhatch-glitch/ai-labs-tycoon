@@ -4,7 +4,8 @@ Hero staff on `cursor/art-staff-founder-researcher` restyle these packs in Blend
 
 | Pack | URL | Use on this branch |
 | --- | --- | --- |
-| Kenney Animated Characters 3 | https://kenney.nl/assets/animated-characters-3 | `staff-founder-idle` base mesh (`characterMedium.fbx`) |
+| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com | `staff-founder-idle`, `staff-researcher-idle` rigged modular base (`character.glb`) |
+| Kenney Animated Characters 3 | https://kenney.nl/assets/animated-characters-3 | legacy staff lane reference |
 | Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`); researcher hero bakes Kenney rig + lab-coat props |
 | Quaternius character (reference rig) | https://quaternius.com | Incoming reference (`character.glb`) |
 | Poly Haven `studio_small_08` | https://polyhaven.com/a/studio_small_08 | EEVEE preview HDRI |

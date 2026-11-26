@@ -16,7 +16,7 @@ SIGNIFICANT_ISLAND_VERTS = 14
 PROP_SUFFIX_SKIP = ("Screen", "ScreenEmit", "Led", "Handle", "ClipMetal", "Stripe", "Emit")
 
 CLOTHING_RE = re.compile(
-    r"(Hair|Hood|HardHat|Glasses|HiVis|Blazer|LabCoat|Headset|BadgeLanyard|Tie)",
+    r"(Hair|Hood|Hoodie|Shirt|Trousers|Shoes|HardHat|Glasses|HiVis|Blazer|LabCoat|Headset|BadgeLanyard|Tie)",
     re.I,
 )
 
@@ -65,8 +65,21 @@ def _parent_key(child_base: str) -> str | None:
     if child_base.startswith("Headset") or child_base in ("Hair", "Hood", "HardHat", "HardHatEng", "Glasses"):
         return "Head"
     if CLOTHING_RE.search(child_base) and not child_base.startswith("BadgeShield"):
-        if child_base in ("HiVisVest", "HiVisStripe", "Blazer", "BlazerRec", "LabCoat", "BadgeLanyard", "Tie"):
+        if child_base in (
+            "HiVisVest",
+            "HiVisStripe",
+            "Blazer",
+            "BlazerRec",
+            "LabCoat",
+            "Hoodie",
+            "Shirt",
+            "Trousers",
+            "BadgeLanyard",
+            "Tie",
+        ):
             return "Torso"
+        if child_base.startswith("Shoe_"):
+            return child_base.replace("Shoe_", "Foot_")
         return "Head"
     if PROP_RE.search(child_base):
         for h in ("Hand_1", "Hand_-1"):
@@ -112,8 +125,11 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
     for sx in ("-1", "1"):
         link(f"Shoulder_{sx}", "Torso")
         link(f"UpperArm_{sx}", f"Shoulder_{sx}")
-        link(f"Elbow_{sx}", f"UpperArm_{sx}")
-        link(f"LowerArm_{sx}", f"Elbow_{sx}")
+        if f"Elbow_{sx}" in names:
+            link(f"Elbow_{sx}", f"UpperArm_{sx}")
+            link(f"LowerArm_{sx}", f"Elbow_{sx}")
+        else:
+            link(f"LowerArm_{sx}", f"UpperArm_{sx}")
         link(f"Hand_{sx}", f"LowerArm_{sx}")
         link(f"Arm_{sx}", "Torso")
         link(f"Eye_{sx}", "Head")
@@ -128,6 +144,7 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
     for tag, parent in (
         ("Hair", "Head"),
         ("Hood", "Head"),
+        ("Eyebrows", "Head"),
         ("HardHat", "Head"),
         ("HardHatEng", "Head"),
         ("Glasses", "Head"),
@@ -139,6 +156,9 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("Hoodie", "Torso"),
+        ("Shirt", "Torso"),
+        ("Trousers", "Torso"),
         ("Tie", "Torso"),
         ("BadgeLanyard", "Torso"),
         ("Laptop", "Hand_1"),
@@ -153,6 +173,9 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("LaptopScreen", "LaptopBase"),
     ):
         link(tag, parent)
+
+    for tag, foot_parent in (("Shoe_-1", "Foot_-1"), ("Shoe_1", "Foot_1")):
+        link(tag, foot_parent)
 
     for ob in mesh_obs:
         base = ob.name.split(".")[0]
@@ -248,8 +271,12 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("Hoodie", "Torso"),
+        ("Shirt", "Torso"),
+        ("Trousers", "Torso"),
         ("BadgeLanyard", "Torso"),
         ("Hair", "Head"),
+        ("Eyebrows", "Head"),
         ("Hood", "Head"),
         ("HardHat", "Head"),
         ("HardHatEng", "Head"),
@@ -314,9 +341,30 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         if PROP_RE.search(tag):
             continue
         anchor = "Head"
-        if tag in ("HiVisVest", "HiVisStripe", "Blazer", "BlazerRec", "LabCoat", "BadgeShield"):
+        if tag in (
+            "HiVisVest",
+            "HiVisStripe",
+            "Blazer",
+            "BlazerRec",
+            "LabCoat",
+            "Hoodie",
+            "Shirt",
+            "Trousers",
+            "BadgeShield",
+        ):
             anchor = "Torso"
-        if tag.startswith("Headset") or tag in ("Hair", "Hood", "HardHat", "HardHatEng", "Glasses"):
+        if tag.startswith("Shoe_"):
+            foot = tag.replace("Shoe_", "Foot_")
+            if foot in names:
+                anchor = foot
+        if tag.startswith("Headset") or tag in (
+            "Hair",
+            "Hood",
+            "HardHat",
+            "HardHatEng",
+            "Glasses",
+            "Eyebrows",
+        ):
             anchor = "Head"
         if anchor in names:
             gap = bbox_gap(_world_bbox(names[anchor]), _world_bbox(names[tag]))

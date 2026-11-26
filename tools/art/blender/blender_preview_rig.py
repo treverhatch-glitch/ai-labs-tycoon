@@ -354,10 +354,10 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 0.92
+        framing_margin = 0.58
         lens_mm = 46.0
-        azimuth_deg = 30.0
-        elevation_deg = 14.0
+        azimuth_deg = 28.0
+        elevation_deg = 16.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:

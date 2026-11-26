@@ -38,7 +38,10 @@ def analyze(png: Path) -> tuple[bool, str]:
         return False, f"foot_cy={foot_cy:.1f} not in bottom band {bot_cut:.1f}"
     if head_cy <= foot_cy:
         return False, "inverted_head_below_feet"
-    return True, f"head={head_cy:.0f} foot={foot_cy:.0f} span={span}"
+    fill = span / h
+    if fill < 0.62:
+        return False, f"fill={fill:.2f} want>=0.62 span={span} h={h}"
+    return True, f"head={head_cy:.0f} foot={foot_cy:.0f} span={span} fill={fill:.2f}"
 
 
 def main() -> int:

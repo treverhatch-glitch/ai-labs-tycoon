@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CC0 Kenney humanoid → founder hero (idle + mug)."""
+"""CC0 Quaternius modular → founder hero (hoodie, jeans, mug)."""
 import sys
 from pathlib import Path
 
@@ -13,7 +13,7 @@ def main():
     entry = bc.finish_asset(
         "staff-founder-idle",
         "staff-kit",
-        license_note="CC0-1.0 (Kenney Animated Characters 3 + Quaternius-derived bake)",
+        license_note="CC0-1.0 (Quaternius Ultimate Modular Character + in-repo bake)",
     )
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry

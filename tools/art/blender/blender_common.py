@@ -491,7 +491,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         export_gltf_selection([staff_export_root, *mesh_obs], glb_path)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         try:
-            render_preview(mesh_obs, preview_path, asset_id=asset_id)
+            render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview {asset_id}: {exc}")
         verts = sum(len(o.data.vertices) for o in mesh_obs)
@@ -713,8 +713,16 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.22, 0.26, 0.42, 1.0), 0.62)
         elif asset_id.startswith("staff-") and ("vest" in name or "hivis" in name.lower()):
             assign_solid(ob, (0.98, 0.82, 0.08, 1.0), 0.35)
+        elif asset_id.startswith("staff-") and "hoodie" in name.lower():
+            assign_solid(ob, (0.28, 0.22, 0.48, 1.0), 0.58)
         elif asset_id.startswith("staff-") and "hood" in name.lower():
             assign_solid(ob, (0.42, 0.28, 0.52, 1.0), 0.48)
+        elif asset_id.startswith("staff-") and "shirt" in name.lower():
+            assign_solid(ob, (0.22, 0.38, 0.72, 1.0), 0.48)
+        elif asset_id.startswith("staff-") and "trouser" in name.lower():
+            assign_solid(ob, (0.18, 0.24, 0.42, 1.0), 0.58)
+        elif asset_id.startswith("staff-") and "shoe" in name.lower():
+            assign_solid(ob, (0.82, 0.84, 0.86, 1.0), 0.40)
         elif asset_id.startswith("staff-") and "labcoat" in name.lower():
             assign_solid(ob, (0.94, 0.94, 0.90, 1.0), 0.42)
         elif asset_id.startswith("staff-") and "blazer" in name.lower():
@@ -1126,6 +1134,27 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
+
+
+def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = None) -> None:
+    """Render studio preview from committed multi-mesh staff GLB (Z-up export)."""
+    glb_path = glb_path.resolve()
+    if not glb_path.is_file():
+        raise FileNotFoundError(glb_path)
+    before = set(bpy.context.scene.objects)
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    imported = [o for o in bpy.context.scene.objects if o not in before]
+    mesh_obs = [o for o in imported if o.type == "MESH" and o.name != "PreviewShadowFloor"]
+    if not mesh_obs:
+        raise RuntimeError(f"no meshes in {glb_path}")
+    try:
+        render_preview(mesh_obs, path, asset_id=asset_id)
+    finally:
+        for ob in imported:
+            try:
+                bpy.data.objects.remove(ob, do_unlink=True)
+            except ReferenceError:
+                pass
 
 
 def render_preview(

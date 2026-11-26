@@ -13,7 +13,7 @@ def main():
     entry = bc.finish_asset(
         "staff-researcher-idle",
         "staff-kit",
-        license_note="CC0-1.0 (Quaternius Animated Man + Kenney-derived bake)",
+        license_note="CC0-1.0 (Quaternius Ultimate Modular Character + in-repo bake)",
     )
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry
