@@ -34,6 +34,7 @@ PALETTE = {
     "chair": (0.32, 0.52, 0.78, 1.0),
     "shelf": (0.78, 0.62, 0.38, 1.0),
     "plant": (0.22, 0.72, 0.32, 1.0),
+    "floor_stain": (0.26, 0.24, 0.22, 1.0),
 }
 
 GARAGE_KIT = ART_ROOT / "garage-kit"
@@ -193,8 +194,8 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
         warm = nodes.new("ShaderNodeMixRGB")
         warm.blend_type = "OVERLAY"
-        warm.inputs["Fac"].default_value = 0.62
-        warm.inputs["Color2"].default_value = (0.82, 0.48, 0.28, 1.0)
+        warm.inputs["Fac"].default_value = 0.38
+        warm.inputs["Color2"].default_value = (0.72, 0.52, 0.34, 1.0)
         stain = nodes.new("ShaderNodeTexNoise")
         stain.inputs["Scale"].default_value = 4.0
         stain.inputs["Detail"].default_value = 6.0
@@ -211,11 +212,14 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(warm.outputs["Color"], stain_mix.inputs["Color1"])
         stain_fac = nodes.new("ShaderNodeMath")
         stain_fac.operation = "MULTIPLY"
-        stain_fac.inputs[1].default_value = 0.38
+        stain_fac.inputs[1].default_value = 0.52
         links.new(stain_map.outputs["Result"], stain_fac.inputs[0])
         links.new(stain_fac.outputs["Value"], stain_mix.inputs["Fac"])
         links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.84
+    elif role == "floor_stain":
+        bsdf.inputs["Base Color"].default_value = tint
+        bsdf.inputs["Roughness"].default_value = 0.94
     else:
         bsdf.inputs["Base Color"].default_value = tint
         bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass", "wood") else 0.48
@@ -440,20 +444,30 @@ def render_kit_preview(
     if frame_span is not None:
         span = frame_span
 
-    room = span if span <= 5.5 else 4.0
+    if up_axis == "Z":
+        wall_top = maxs.z
+    else:
+        wall_top = maxs.y
+    room = span if span <= 5.5 else max(span, 4.0)
     floor_h = 0.05
-    lens = 40.0
-    pitch = math.radians(35.0)
-    dist_scale = 0.40 if mode == "hero" and up_axis == "Z" else (0.88 if mode == "hero" else 0.62)
-    dist = max(_camera_distance_for_fill(room + 0.35, lens, fill, margin) * dist_scale, room * 0.55)
+    lens = 48.0
+    pitch = math.radians(34.0)
+    dist_scale = 0.77 if mode == "hero" and up_axis == "Z" else (0.88 if mode == "hero" else 0.62)
+    dist = max(_camera_distance_for_fill(room + 0.55, lens, fill, margin) * dist_scale, room * 0.85)
     horiz = dist * math.cos(pitch)
     elev = dist * math.sin(pitch)
 
     shadow: bpy.types.Object | None = None
     if up_axis == "Z":
-        target = Vector((room * 0.46, room * 0.46, floor_h + 1.02))
+        target = Vector((mins.x + span * 0.48, mins.y + span * 0.48, floor_h + wall_top * 0.42))
         lights = add_preview_warm_lights_z(target)
-        cam_loc = Vector((room + horiz * 0.62, room + horiz * 0.62, target.z + elev * 0.5))
+        cam_loc = Vector(
+            (
+                maxs.x + horiz * 0.58,
+                maxs.y + horiz * 0.58,
+                floor_h + wall_top * 0.28 + elev * 0.68,
+            )
+        )
         bpy.context.scene.cycles.use_shadow_catcher = False
     else:
         target = Vector((room * 0.48, floor_h + 1.05, room * 0.48))
@@ -546,6 +560,12 @@ def _quantize_backdrop_rgb150(path: Path) -> None:
         for x in range(int(w * 0.12), int(w * 0.88)):
             if im.getpixel((x, y)) == CORNER_RGB:
                 im.putpixel((x, y), (153, 148, 142))
+    bx = max(1, int(w * 0.03))
+    by = max(1, int(h * 0.03))
+    for y in range(h):
+        for x in range(w):
+            if x < bx or x >= w - bx or y < by or y >= h - by:
+                im.putpixel((x, y), CORNER_RGB)
     im.save(path)
 
 

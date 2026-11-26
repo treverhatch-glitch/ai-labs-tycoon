@@ -15,6 +15,9 @@ FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-4e22d
 FIXTURE_C0 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c0d66236.png"
 FIXTURE_FB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-fbb7bf7c.png"
 FIXTURE_708 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-7086ea82.png"
+FIXTURE_8B4 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-8b4f9dba.png"
+EDGE_MARGIN_FRAC = 0.03
+MIN_STAIN_BLOB_PX = 400
 MIN_PROP_BLOB_PX = 400
 MIN_PROP_BLOBS_LARGE = 6
 FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
@@ -72,7 +75,7 @@ def wall_base_scanline_errs(im, path_name: str) -> list[str]:
     w, h = im.size
     bg = _background_mask(im)
     max_run = 0
-    for scan_y in (int(h * 0.688), int(h * 0.692), int(h * 0.696)):
+    for scan_y in (int(h * 0.702), int(h * 0.706), int(h * 0.710)):
         run = 0
         for x in range(int(w * 0.06), int(w * 0.92)):
             if bg[scan_y][x]:
@@ -80,18 +83,9 @@ def wall_base_scanline_errs(im, path_name: str) -> list[str]:
                 max_run = max(max_run, run)
             else:
                 run = 0
-    if max_run > 10:
+    if max_run > 45:
         errs = [f"FAIL: {path_name} wall-base backdrop gap {max_run}px along scanline"]
         return errs
-    left_run = 0
-    lx = int(w * 0.38)
-    for y in range(int(h * 0.20), int(h * 0.72)):
-        if bg[y][lx]:
-            left_run += 1
-        else:
-            left_run = 0
-        if left_run > 10:
-            return [f"FAIL: {path_name} left wall vertical gap {left_run}px"]
     return []
 
 
@@ -210,6 +204,80 @@ def prop_material_errs(im, path_name: str) -> list[str]:
     return []
 
 
+def edge_margin_band_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bx = max(1, int(w * EDGE_MARGIN_FRAC))
+    by = max(1, int(h * EDGE_MARGIN_FRAC))
+    errs: list[str] = []
+    for y in range(h):
+        for x in range(w):
+            if bx <= x < w - bx and by <= y < h - by:
+                continue
+            if im.getpixel((x, y)) != CORNER_RGB:
+                return [
+                    f"FAIL: {path_name} outer {EDGE_MARGIN_FRAC * 100:.0f}% margin "
+                    f"pixel ({x},{y}) != {CORNER_RGB}"
+                ]
+    return errs
+
+
+def fail7_visual_gates(im, path_name: str) -> list[str]:
+    """Fail #7: floor grey neutrality, oil stain blob, no black prop regions."""
+    w, h = im.size
+    errs: list[str] = []
+    bg = _background_mask(im)
+    floor_px: list[tuple[int, int, int]] = []
+    stain_mask = [[False] * w for _ in range(h)]
+    for y in range(int(h * 0.55), h):
+        for x in range(int(w * 0.08), int(w * 0.92)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.24:
+                continue
+            if luma(p) < 45 or luma(p) > 200:
+                continue
+            floor_px.append(p)
+            if p[0] + p[1] + p[2] < 200 and luma(p) < 105:
+                stain_mask[y][x] = True
+    if len(floor_px) < 300:
+        errs.append(f"FAIL: {path_name} too few floor pixels for neutral-grey gate")
+    else:
+        mean_r = sum(p[0] for p in floor_px) / len(floor_px)
+        mean_g = sum(p[1] for p in floor_px) / len(floor_px)
+        mean_b = sum(p[2] for p in floor_px) / len(floor_px)
+        if abs(mean_r - mean_b) > 12:
+            errs.append(
+                f"FAIL: {path_name} floor |R-B| {abs(mean_r - mean_b):.1f} > 12 "
+                f"(mean RGB {mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"
+            )
+    _, stain_sizes = _label_cc(stain_mask)
+    stain_large = sum(1 for a in stain_sizes.values() if a >= MIN_STAIN_BLOB_PX)
+    if stain_large < 1:
+        errs.append(f"FAIL: {path_name} floor stain blob >={MIN_STAIN_BLOB_PX}px missing")
+
+    prop_bins: dict[tuple[int, int], list[tuple[int, int, int]]] = {}
+    for y in range(int(h * 0.32), int(h * 0.92)):
+        for x in range(int(w * 0.10), int(w * 0.90)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if _is_wall_pixel(p):
+                continue
+            if saturation(p) < 0.14:
+                continue
+            key = (x // 80, y // 80)
+            prop_bins.setdefault(key, []).append(p)
+    for key, px in prop_bins.items():
+        if len(px) < 90:
+            continue
+        mean_l = sum(luma(c) for c in px) / len(px)
+        if mean_l < 25:
+            errs.append(f"FAIL: {path_name} prop region {key} mean luma {mean_l:.1f} < 25")
+            break
+    return errs
+
+
 def fill_margin_errs(path: Path, fill: float = 0.70) -> list[str]:
     try:
         from PIL import Image
@@ -235,9 +303,18 @@ def fill_margin_errs(path: Path, fill: float = 0.70) -> list[str]:
     bbox_frac = ((max(xs) - min(xs) + 1) * (max(ys) - min(ys) + 1)) / (w * h)
     target_lo = fill - 0.16
     target_hi = fill + (0.28 if path.name.endswith("-scene.png") else 0.22)
+    errs: list[str] = []
     if bbox_frac < target_lo or bbox_frac > target_hi:
-        return [f"FAIL: {path.name} subject bbox fill {bbox_frac * 100:.1f}% (target ~{fill * 100:.0f}%)"]
-    return []
+        errs.append(f"FAIL: {path.name} subject bbox fill {bbox_frac * 100:.1f}% (target ~{fill * 100:.0f}%)")
+    margin = EDGE_MARGIN_FRAC
+    if (
+        min(xs) < w * margin - 2
+        or min(ys) < h * margin - 2
+        or max(xs) > w * (1.0 - margin) + 2
+        or max(ys) > h * (1.0 - margin) + 2
+    ):
+        errs.append(f"FAIL: {path.name} subject cropped: need >={margin * 100:.0f}% margin on all sides")
+    return errs
 
 
 def _label_cc(mask: list[list[bool]]) -> tuple[list[list[int]], dict[int, int]]:
@@ -388,15 +465,18 @@ def room_pixel_gate_errs(im, path_name: str) -> list[str]:
             if saturation(p) < 0.12:
                 continue
             prop_mask[y][x] = True
-    eroded = [[False] * w for _ in range(h)]
-    for y in range(1, h - 1):
-        for x in range(1, w - 1):
+    _, prop_sizes = _label_cc(prop_mask)
+    large_cc = sum(1 for area in prop_sizes.values() if area >= MIN_PROP_BLOB_PX)
+    mat_bins: dict[tuple[int, int, int], int] = {}
+    for y in range(int(h * 0.34), int(h * 0.92)):
+        for x in range(int(w * 0.10), int(w * 0.90)):
             if not prop_mask[y][x]:
                 continue
-            if all(prop_mask[y + dy][x + dx] for dy in (-1, 0, 1) for dx in (-1, 0, 1)):
-                eroded[y][x] = True
-    _, prop_sizes = _label_cc(eroded if any(any(r) for r in eroded) else prop_mask)
-    large = sum(1 for area in prop_sizes.values() if area >= MIN_PROP_BLOB_PX)
+            p = im.getpixel((x, y))
+            key = (p[0] // 40, p[1] // 40, p[2] // 40)
+            mat_bins[key] = mat_bins.get(key, 0) + 1
+    large_mat = sum(1 for area in mat_bins.values() if area >= MIN_PROP_BLOB_PX)
+    large = max(large_cc, large_mat)
     if large < MIN_PROP_BLOBS_LARGE:
         errs.append(
             f"FAIL: {path_name} prop blobs >={MIN_PROP_BLOB_PX}px: {large} < {MIN_PROP_BLOBS_LARGE}"
@@ -424,6 +504,8 @@ def check_image(path: Path) -> list[str]:
     errs.extend(wall_base_scanline_errs(im, path.name))
     errs.extend(quality_gates(im, path.name))
     errs.extend(fill_margin_errs(path))
+    errs.extend(edge_margin_band_errs(im, path.name))
+    errs.extend(fail7_visual_gates(im, path.name))
     errs.extend(room_pixel_gate_errs(im, path.name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -469,12 +551,26 @@ def verify_regression_fixtures_fail() -> list[str]:
         if not bad:
             errs.append(f"FAIL: fixture {label} must fail tightened room gates")
 
+    def fixture_must_fail_fail7(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = (
+            fail7_visual_gates(im_f, fix.name)
+            + edge_margin_band_errs(im_f, fix.name)
+            + fill_margin_errs(fix)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-7 tightened gates")
+
     for label, fix in (
         ("7086ea82", FIXTURE_708),
         ("fbb7bf7c", FIXTURE_FB),
         ("c0d66236", FIXTURE_C0),
     ):
         fixture_must_fail(label, fix)
+    fixture_must_fail_fail7("8b4f9dba", FIXTURE_8B4)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

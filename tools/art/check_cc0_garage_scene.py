@@ -28,6 +28,11 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         errs.append(f"FAIL: {prefix}roll door name {door_name!r} != kit_roll_door")
     if door_w < 2.5:
         errs.append(f"FAIL: {prefix}roll door width {door_w:.2f} m < 2.5 m")
+    door_min_z = float(data.get("rollDoorMinZM", 99.0))
+    if door_min_z > 0.02:
+        errs.append(f"FAIL: {prefix}roll door minZ {door_min_z:.3f} m > 0.02")
+    if data.get("rollDoorSingleMesh") is not True:
+        errs.append(f"FAIL: {prefix}roll door must be single merged mesh")
 
     props = data.get("propInstances") or []
     if len(props) < int(data.get("minPropCount", 8)):
@@ -41,6 +46,9 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
 
     for p in props:
         name = p.get("objectName", "?")
+        gap_m = float(p.get("floorContactGapM", 99.0))
+        if gap_m > tol:
+            errs.append(f"FAIL: {prefix}{name} floor gap {gap_m * 100:.1f} cm > 1 cm")
         if not p.get("grounded"):
             errs.append(f"FAIL: {prefix}{name} not grounded")
         if not p.get("insideFloorBounds", True):

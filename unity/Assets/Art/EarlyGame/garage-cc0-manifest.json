@@ -28,12 +28,13 @@
         "prop_workbench",
         "prop_plant",
         "prop_speaker",
-        "prop_rug",
+        "prop_crate",
+        "prop_tool_table",
         "prop_whiteboard",
         "prop_server",
         "kit_roll_door"
       ],
-      "triangleCount": 3650,
+      "triangleCount": 5237,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-interior-room-kit.py",
       "parts": [
@@ -51,9 +52,11 @@
         "prop_workbench",
         "prop_plant",
         "prop_speaker",
-        "prop_rug",
+        "prop_crate",
+        "prop_tool_table",
         "prop_whiteboard",
         "prop_server",
+        "kit_floor_stain",
         "kit_floor",
         "kit_wall_back",
         "kit_wall_left"
