@@ -36,6 +36,12 @@ BBOX_SPEC = {
     "garage-lot-curb": (4.0, 0.22, 0.38),
 }
 BBOX_TOL = 0.25
+PARTS_MIN = {
+    "garage-exterior-wall": 3,
+    "garage-lot-curb": 3,
+    "garage-land-for-sale-sign": 6,
+    "garage-window-frame": 6,
+}
 rc = 0
 
 
@@ -99,7 +105,8 @@ for entry in manifest["assets"]:
     height_z = max(zs) - min(zs)
     tris = int(entry.get("triangleCount", 0))
     shapes = int(entry.get("subShapeCount", 1))
-    parts_ok = tris >= 300 or shapes >= 3
+    min_parts = PARTS_MIN.get(asset_id, 3)
+    parts_ok = shapes >= min_parts
     if asset_id == "garage-lot-curb":
         upright_ok = height_z <= max(width_x, thick_y) * 0.55
     else:
@@ -129,7 +136,7 @@ for entry in manifest["assets"]:
     elif not bbox_ok:
         rc = 1
     elif not parts_ok:
-        print(f"FAIL {asset_id} tris={tris} shapes={shapes} (need 300+ tris or 3+ shapes)")
+        print(f"FAIL {asset_id} parts={shapes} need>={min_parts}")
         rc = 1
     else:
         print(

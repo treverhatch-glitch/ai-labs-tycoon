@@ -138,11 +138,11 @@ def _synthetic_swatch(
                 rib = int(12 * (0.5 + 0.5 * math.sin(x * 2 * math.pi / 16)))
                 c = tuple(max(0, min(255, base[i] + rib)) for i in range(3))
             elif pattern == "metal":
+                # Horizontal painted-trim grain; tile-periodic at 512.
                 u = x * 2 * math.pi / 512.0
-                v = y * 2 * math.pi / 512.0
-                scratch = math.sin(u * 13.0) * math.cos(v * 11.0)
-                wear = 0.5 + 0.5 * math.sin(u * 5.0 + v * 4.0)
-                mix = wear * 0.65 + scratch * 0.35
+                grain = 0.5 + 0.5 * math.sin(u * 28.0)
+                chip = 1.0 if math.sin(u * 6.5 + y * 0.031) > 0.86 else 0.0
+                mix = min(1.0, grain * 0.7 + chip * 0.35)
                 c = tuple(int(base_rgb[i] * (1 - mix) + accent_rgb[i] * mix) for i in range(3))
             elif pattern == "fibre":
                 n = random.random() * 0.4 + math.sin(x * 0.15) * 0.08 + math.sin(y * 0.19) * 0.08

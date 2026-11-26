@@ -12,12 +12,14 @@ REPO = Path(__file__).resolve().parents[3]
 def _paint_for_sale_albedo(tex_path: Path) -> None:
     from PIL import Image, ImageDraw, ImageFont
 
+    Image.MAX_IMAGE_PIXELS = max(Image.MAX_IMAGE_PIXELS, 512 * 512 * 4)
     im = Image.open(tex_path).convert("RGB")
     draw = ImageDraw.Draw(im)
     w, h = im.size
     draw.rectangle((w // 8, h // 6, 7 * w // 8, 5 * h // 6), fill=(252, 228, 56))
+    draw.rectangle((w // 8, h // 6, 7 * w // 8, h // 6 + 110), fill=(214, 72, 28))
     font = None
-    for name, size in (("DejaVuSans-Bold.ttf", 88), ("LiberationSans-Bold.ttf", 88)):
+    for name, size in (("DejaVuSans-Bold.ttf", 72), ("LiberationSans-Bold.ttf", 72)):
         try:
             font = ImageFont.truetype(name, size=size)
             break
@@ -42,7 +44,7 @@ def _paint_for_sale_albedo(tex_path: Path) -> None:
 def main():
     import os
 
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.26"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.12"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
     os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
     post_w, post_h = 0.11, 1.75
@@ -52,7 +54,8 @@ def main():
         bc.assign_solid(post, (0.42, 0.30, 0.16, 1.0), 0.62)
     board = bc.add_cube("Board", (1.28, 0.82, 0.10), (0, 1.48, 0.05))
     bc.assign_solid(board, (0.98, 0.92, 0.22, 1.0), 0.38)
-    bc.add_cube("Cap", (1.32, 0.08, 0.12), (0, 1.92, 0.05))
+    bc.add_cube("Header", (1.32, 0.14, 0.12), (0, 1.86, 0.06))
+    bc.add_cube("Cap", (1.32, 0.08, 0.12), (0, 1.94, 0.05))
     bc.add_cube("Crossbar", (1.34, 0.14, 0.18), (0, 1.05, 0.0))
     bc.add_cube("NailL", (0.12, 0.12, 0.16), (-span * 0.5, 1.05, 0.0))
     bc.add_cube("NailR", (0.12, 0.12, 0.16), (span * 0.5, 1.05, 0.0))

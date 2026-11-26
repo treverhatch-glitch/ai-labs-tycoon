@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exterior wall segment — ~4m x 3m x 0.2m corrugated panel."""
+"""Exterior wall — 4×3×0.2m beige block + orange trim."""
 import sys
 from pathlib import Path
 
@@ -12,7 +12,7 @@ W, H, D = 4.0, 3.0, 0.20
 def main():
     import os
 
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.24"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.10"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
     os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
     bc.add_cube("Core", (W, H, D), (0, H * 0.5, 0))
@@ -23,9 +23,9 @@ def main():
     for i in range(9):
         x = -W * 0.4 + i * (W * 0.8 / 8)
         bc.add_cube(f"Rib{i}", (0.07, H - 0.30, D * 0.82), (x, H * 0.5, 0.0))
-    bc.add_cube("Spine", (W * 0.55, H * 0.92, D * 0.55), (0, H * 0.5, 0))
+    bc.add_cube("Weld", (W * 0.35, H * 0.5, D * 0.35), (0, H * 0.5, 0))
     entry = bc.finish_asset("garage-exterior-wall", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry
 
 

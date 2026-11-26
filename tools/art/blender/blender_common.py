@@ -13,6 +13,12 @@ import bpy
 from mathutils import Vector
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+PACKET34_ENV_IDS = {
+    "garage-exterior-wall",
+    "garage-land-for-sale-sign",
+    "garage-lot-curb",
+    "garage-window-frame",
+}
 ART_ROOT = REPO_ROOT / "unity/Assets/Art/EarlyGame"
 PREVIEW_ROOT = REPO_ROOT / "docs/art/previews"
 BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2]}"
@@ -298,19 +304,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     weld_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
-    if islands > 1:
-        if asset_id == "garage-land-for-sale-sign":
-            voxel_shell_merge(root, voxel_size=min(0.038, weld_extent * 0.02))
-            islands = mesh_island_count(root)
-        else:
-            voxel = min(0.055, weld_extent * 0.014)
-            if asset_id == "garage-exterior-wall":
-                voxel = min(0.11, weld_extent * 0.026)
-            voxel_shell_merge(root, voxel_size=voxel)
-            islands = mesh_island_count(root)
-            if islands > 1 and asset_id == "garage-exterior-wall":
-                voxel_shell_merge(root, voxel_size=voxel * 1.15)
-                islands = mesh_island_count(root)
+    if islands > 1 and asset_id not in PACKET34_ENV_IDS:
+        voxel = min(0.055, weld_extent * 0.014)
+        voxel_shell_merge(root, voxel_size=voxel)
+        islands = mesh_island_count(root)
     if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
     snap_root_to_ground(root)
@@ -420,7 +417,39 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             continue
         elif "leg" in name or "rail" in name or "brace" in name:
             assign_solid(ob, (0.40, 0.44, 0.50, 1.0), 0.32)
-        elif "frame" in name or "tray" in name or "trim" in name or "baseboard" in name or name == "sill":
+        elif asset_id == "garage-exterior-wall":
+            if name in ("trim", "base"):
+                assign_solid(ob, (0.88, 0.52, 0.12, 1.0), 0.42)
+            elif "rib" in name or "course" in name:
+                assign_solid(ob, (0.68, 0.58, 0.46, 1.0), 0.58)
+            else:
+                assign_solid(ob, (0.72, 0.58, 0.44, 1.0), 0.62)
+        elif asset_id == "garage-window-frame":
+            if "glass" in name:
+                assign_solid(ob, (0.24, 0.52, 0.78, 1.0), 0.10)
+            elif "mullion" in name or name.startswith("stile") or name.startswith("rail"):
+                assign_solid(ob, (0.78, 0.62, 0.44, 1.0), 0.48)
+            elif name in ("sill", "lintel"):
+                assign_solid(ob, (0.90, 0.50, 0.12, 1.0), 0.40)
+            else:
+                assign_solid(ob, (0.75, 0.60, 0.46, 1.0), 0.52)
+        elif asset_id == "garage-lot-curb":
+            if "stain" in name:
+                assign_solid(ob, (0.38, 0.36, 0.34, 1.0), 0.90)
+            elif "gutter" in name:
+                assign_solid(ob, (0.52, 0.50, 0.48, 1.0), 0.75)
+            else:
+                assign_solid(ob, (0.60, 0.58, 0.56, 1.0), 0.82)
+        elif asset_id == "garage-land-for-sale-sign":
+            if "post" in name:
+                assign_solid(ob, (0.44, 0.32, 0.18, 1.0), 0.58)
+            elif "header" in name or "cap" in name:
+                assign_solid(ob, (0.92, 0.38, 0.12, 1.0), 0.36)
+            elif "board" in name:
+                assign_solid(ob, (0.96, 0.90, 0.24, 1.0), 0.34)
+            else:
+                assign_solid(ob, (0.55, 0.40, 0.28, 1.0), 0.50)
+        elif name in ("trim", "base", "baseboard", "lintel") or name.endswith("trim") or name == "sill":
             assign_solid(ob, (0.85, 0.48, 0.14, 1.0), 0.45)
         elif asset_id == "garage-floor-tile":
             assign_solid(ob, (0.86, 0.50, 0.16, 1.0), 0.62)
@@ -545,9 +574,7 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
 
     spec = spec_for(asset_id)
     glow_ids = {
-        "garage-land-for-sale-sign",
         "garage-whiteboard-1995",
-        "garage-window-frame",
         "garage-floor-tile",
     }
     mat = bpy.data.materials.new(f"{asset_id}_vcol")
@@ -561,7 +588,10 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     attr.layer_name = "BakeCol"
     hue = nodes.new("ShaderNodeHueSaturation")
     hue.inputs["Value"].default_value = 1.08
-    hue.inputs["Saturation"].default_value = 3.05 if asset_id in glow_ids else 2.75
+    if asset_id in PACKET34_ENV_IDS:
+        hue.inputs["Saturation"].default_value = 1.18
+    else:
+        hue.inputs["Saturation"].default_value = 3.05 if asset_id in glow_ids else 2.75
     links.new(attr.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
@@ -641,12 +671,7 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     emit_color = (0.15, 0.65, 0.38, 1.0)
     if "crt" in asset_id or "screen" in asset_id:
         emit_strength = 1.2
-    elif asset_id in {
-        "garage-land-for-sale-sign",
-        "garage-whiteboard-1995",
-        "garage-window-frame",
-        "garage-floor-tile",
-    }:
+    elif asset_id in {"garage-whiteboard-1995", "garage-floor-tile"}:
         emit_strength = 0.55
         emit_color = (0.92, 0.62, 0.12, 1.0)
     bsdf.inputs["Emission Strength"].default_value = emit_strength

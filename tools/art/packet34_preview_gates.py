@@ -126,6 +126,75 @@ def check_near_duplicates(preview_dir: Path, asset_ids: tuple[str, ...], *, min_
     return errs
 
 
+def check_vertical_backdrop_plane(rgb_path: Path, mask_path: Path) -> list[str]:
+    """Fail when curb preview has a second tall neutral slab in-frame (old grass wall)."""
+    from PIL import Image
+
+    mask_im = _load_rgba(mask_path)
+    w, h = mask_im.size
+    px = mask_im.getdata()
+    grid: list[list[bool]] = [[px[y * w + x][3] >= 160 for x in range(w)] for y in range(h)]
+
+    def flood(y: int, x: int, seen: set[tuple[int, int]]) -> tuple[int, int, int, int]:
+        stack = [(y, x)]
+        ys: list[int] = []
+        xs: list[int] = []
+        while stack:
+            cy, cx = stack.pop()
+            if (cy, cx) in seen or cy < 0 or cy >= h or cx < 0 or cx >= w or not grid[cy][cx]:
+                continue
+            seen.add((cy, cx))
+            ys.append(cy)
+            xs.append(cx)
+            stack.extend([(cy + 1, cx), (cy - 1, cx), (cy, cx + 1), (cy, cx - 1)])
+        if not ys:
+            return 0, 0, 0, 0
+        return min(xs), max(xs), min(ys), max(ys), len(xs)
+
+    seen: set[tuple[int, int]] = set()
+    islands: list[tuple[int, int, float]] = []
+    for y in range(h):
+        for x in range(w):
+            if grid[y][x] and (y, x) not in seen:
+                x0, x1, y0, y1, area = flood(y, x, seen)
+                height_cov = (y1 - y0 + 1) / h
+                islands.append((area, height_cov, height_cov))
+    if not islands:
+        return ["mask_empty"]
+    islands.sort(reverse=True)
+    hero_h = islands[0][1]
+    for area, height_cov, _ in islands[1:]:
+        if height_cov > 0.42 and area > 800:
+            return [f"extra_vertical_mask_island h={height_cov:.2f}"]
+    if hero_h > 0.40:
+        return [f"curb_too_tall h={hero_h:.2f} need<0.40"]
+    im = _load_rgba(rgb_path)
+    if mask_im.size != im.size:
+        mask_im = mask_im.resize(im.size)
+    mask_px = list(mask_im.getdata())
+    rgb_px = list(im.getdata())
+    xs = [x for y in range(h) for x in range(w) if mask_px[y * w + x][3] >= 160]
+    if not xs:
+        return []
+    x0, x1 = min(xs), max(xs)
+    tall_warm_cols = 0
+    for x in range(x0, x1 + 1):
+        warm_run = 0
+        for y in range(h):
+            if mask_px[y * w + x][3] >= 160:
+                warm_run = 0
+                continue
+            r, g, b, _a = rgb_px[y * w + x]
+            if g > r + 10 and g > b + 6 and r > 95:
+                warm_run += 1
+                if warm_run > h * 0.38:
+                    tall_warm_cols += 1
+                    break
+    if tall_warm_cols >= 8:
+        return [f"vertical_backdrop_slab_cols={tall_warm_cols}"]
+    return []
+
+
 def check_backdrop_mid_grey(rgb_path: Path, *, sample_margin: float = 0.04) -> list[str]:
     """Env previews: corners neutral grey (lit), not warm beige gradient."""
     im = _load_rgba(rgb_path)
