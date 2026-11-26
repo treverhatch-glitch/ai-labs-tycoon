@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Reject staff + wisp previews with washed-out color (mean saturation < threshold)."""
+"""Staff + wisp preview quality (shared rig metrics).
+
+Uses tools/art/preview_quality_lib.py:
+- Staff: object-mask mean saturation >= 0.15; floor 0.06 blocks gray blobs.
+- Wisp: pastel body (object sat 0.06–0.13); mood accent sat >= 0.15.
+- Distinctness: center-crop 32×32 mean RGB distance >= MIN_RGB_DISTANCE (14.0).
+"""
 from __future__ import annotations
 
 import json
@@ -9,43 +15,23 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 PREVIEW = REPO / "docs/art/previews"
 STAFF_MANIFEST = REPO / "unity/Assets/Art/EarlyGame/staff-manifest.json"
-MIN_SAT = 0.15
-MIN_SAT_WISP = 0.045
-MIN_LUMA_VAR = 0.0054
-MIN_LUMA_VAR_WISP = 0.0012
+MIN_SAT_STAFF = 0.15
+MIN_SAT_FLOOR = 0.06
+MIN_LUMA_VAR_STAFF = 0.0054
+MIN_LUMA_VAR_WISP = 0.0017
+WISP_ACCENT_SAT = 0.15
+WISP_BODY_SAT_MAX = 0.13
 WISP_IDS = ["wisp-happy", "wisp-neutral", "wisp-worried", "wisp-angry", "wisp-glowing"]
 
-
-def mean_saturation(path: Path) -> tuple[float, float]:
-    try:
-        from PIL import Image
-    except ImportError:
-        print("WARN: Pillow missing, skip saturation check")
-        return 1.0, 1.0
-    im = Image.open(path).convert("RGB")
-    w, h = im.size
-    margin_x, margin_y = int(w * 0.22), int(h * 0.22)
-    im = im.crop((margin_x, margin_y, w - margin_x, h - margin_y))
-    px = list(im.getdata())
-    sats: list[float] = []
-    lum: list[float] = []
-    for r, g, b in px:
-        rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
-        mx = max(rf, gf, bf)
-        mn = min(rf, gf, bf)
-        lum_v = 0.2126 * rf + 0.7152 * gf + 0.0722 * bf
-        lum.append(lum_v)
-        if mx <= 1e-6:
-            continue
-        if abs(rf - gf) < 0.04 and abs(gf - bf) < 0.04 and 0.34 < lum_v < 0.82:
-            continue
-        sats.append((mx - mn) / mx)
-    if not sats:
-        return 0.0, 0.0
-    mean_sat = sum(sats) / len(sats)
-    lbar = sum(lum) / len(lum)
-    var = sum((x - lbar) ** 2 for x in lum) / len(lum)
-    return mean_sat, var
+sys.path.insert(0, str(REPO / "tools/art"))
+from preview_quality_lib import (  # noqa: E402
+    MIN_RGB_DISTANCE,
+    downscale_rgb_crop,
+    mean_saturation_object_mask,
+    rgb_distance,
+    rgb_distance_full,
+    wisp_mood_accent_sat,
+)
 
 
 def main() -> int:
@@ -54,23 +40,63 @@ def main() -> int:
         ids.extend(a["id"] for a in json.loads(STAFF_MANIFEST.read_text())["assets"])
     ids.extend(WISP_IDS)
     rc = 0
+    signatures: dict[str, list[tuple[int, int, int]]] = {}
     for asset_id in ids:
         path = PREVIEW / f"{asset_id}.png"
         if not path.exists():
             print("FAIL missing preview", asset_id)
             rc = 1
             continue
-        sat, lvar = mean_saturation(path)
-        min_sat = MIN_SAT_WISP if asset_id.startswith("wisp-") else MIN_SAT
-        if sat < min_sat:
-            print(f"FAIL {asset_id} mean_sat={sat:.3f} < {min_sat}")
-            rc = 1
-        elif lvar < (MIN_LUMA_VAR_WISP if asset_id.startswith("wisp-") else MIN_LUMA_VAR):
-            min_lvar = MIN_LUMA_VAR_WISP if asset_id.startswith("wisp-") else MIN_LUMA_VAR
-            print(f"FAIL {asset_id} flat frame luma_var={lvar:.4f} < {min_lvar}")
-            rc = 1
-        else:
-            print(f"OK {asset_id} sat={sat:.3f} lvar={lvar:.4f}")
+        sat, lvar, _accent = mean_saturation_object_mask(path)
+        if asset_id.startswith("staff-"):
+            if sat < MIN_SAT_FLOOR:
+                print(f"FAIL {asset_id} object_sat={sat:.3f} < floor {MIN_SAT_FLOOR}")
+                rc = 1
+            elif sat < MIN_SAT_STAFF:
+                print(f"FAIL {asset_id} object_sat={sat:.3f} < {MIN_SAT_STAFF}")
+                rc = 1
+            elif lvar < MIN_LUMA_VAR_STAFF:
+                print(f"FAIL {asset_id} flat frame luma_var={lvar:.4f}")
+                rc = 1
+            else:
+                print(f"OK {asset_id} object_sat={sat:.3f} lvar={lvar:.4f}")
+        elif asset_id.startswith("wisp-"):
+            accent = wisp_mood_accent_sat(path)
+            if sat < 0.02:
+                print(f"FAIL {asset_id} wisp unreadable object_sat={sat:.3f}")
+                rc = 1
+            elif accent < WISP_ACCENT_SAT:
+                print(f"FAIL {asset_id} mood accent_sat={accent:.3f} < {WISP_ACCENT_SAT}")
+                rc = 1
+            elif sat > WISP_BODY_SAT_MAX:
+                print(f"FAIL {asset_id} body too saturated object_sat={sat:.3f} > {WISP_BODY_SAT_MAX}")
+                rc = 1
+            elif lvar < MIN_LUMA_VAR_WISP:
+                print(f"FAIL {asset_id} flat frame luma_var={lvar:.4f}")
+                rc = 1
+            else:
+                print(f"OK {asset_id} body_sat={sat:.3f} accent={accent:.3f} lvar={lvar:.4f}")
+        signatures[asset_id] = downscale_rgb_crop(path)
+
+    staff_ids = [i for i in signatures if i.startswith("staff-")]
+    for i, a in enumerate(staff_ids):
+        for b in staff_ids[i + 1 :]:
+            dist = rgb_distance(signatures[a], signatures[b])
+            if dist < MIN_RGB_DISTANCE:
+                print(f"FAIL previews near-identical {a} vs {b} dist={dist:.2f} < {MIN_RGB_DISTANCE}")
+                rc = 1
+            else:
+                print(f"OK distinct {a} vs {b} dist={dist:.2f}")
+
+    wisp_only = [i for i in signatures if i.startswith("wisp-")]
+    for i, a in enumerate(wisp_only):
+        for b in wisp_only[i + 1 :]:
+            dist = rgb_distance(signatures[a], signatures[b])
+            if dist < MIN_RGB_DISTANCE:
+                print(f"FAIL wisp near-identical {a} vs {b} dist={dist:.2f}")
+                rc = 1
+            else:
+                print(f"OK wisp distinct {a} vs {b} dist={dist:.2f}")
     return rc
 
 

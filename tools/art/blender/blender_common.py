@@ -97,18 +97,27 @@ def ground_scene_meshes() -> None:
 
 
 def snap_root_to_ground(ob: bpy.types.Object) -> None:
-    """Rest bottom vertices on y=0 (garage Y-up)."""
+    """Rest bottom vertices on y=0 (garage Y-up); edit-mesh snap survives remesh/voxel."""
     import bmesh
 
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    mat_loc, mat_rot, _ = ob.matrix_world.decompose()
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     if not bm.verts:
         bm.free()
         return
-    min_y = min((ob.matrix_world @ v.co).y for v in bm.verts)
+    world_min = min((mat_loc + v.co).y for v in bm.verts)
+    if abs(world_min) < 1e-4:
+        bm.free()
+        return
+    for v in bm.verts:
+        v.co.y -= world_min
+    bm.to_mesh(ob.data)
     bm.free()
-    if abs(min_y) > 1e-4:
-        ob.location.y -= min_y
+    ob.data.update()
+    ob.location.y = 0.0
 
 
 def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
@@ -231,15 +240,23 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if mesh_island_count(root) > 1 and (
         voxel_default or os.environ.get("EARLY_ART_VOXEL_SHELL", "0") not in ("0", "false")
     ):
-        voxel_size = 0.038 if category == "staff-kit" else 0.018
-        for _ in range(6):
-            if mesh_island_count(root) <= 1:
-                break
-            voxel_shell_merge(root, voxel_size=voxel_size)
-            voxel_size *= 0.78
-        if mesh_island_count(root) > 1:
-            voxel_shell_merge(root, voxel_size=0.098)
+        if category == "staff-kit":
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=0.045)
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=0.058)
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=0.072)
+        else:
+            voxel_size = 0.018
+            for _ in range(4):
+                if mesh_island_count(root) <= 1:
+                    break
+                voxel_shell_merge(root, voxel_size=voxel_size)
+                voxel_size *= 0.82
     snap_root_to_ground(root)
+    if category == "staff-kit":
+        snap_root_to_ground(root)
     islands = mesh_island_count(root)
     if islands > 1:
         print(f"WARN {asset_id}: {islands} mesh islands after spine/voxel")
@@ -257,12 +274,14 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
+    if asset_id.startswith("staff-"):
+        apply_staff_preview_material(root, asset_id)
     islands_export = mesh_island_count(root)
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
     try:
-        render_preview(root, preview_path)
+        render_preview(root, preview_path, asset_id=asset_id)
     except Exception as exc:  # noqa: BLE001 — headless apt build may lack denoiser
         print(f"WARN preview {asset_id}: {exc}")
 
@@ -374,8 +393,22 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.18, 0.22, 0.38, 1.0), 0.58)
         elif asset_id.startswith("staff-") and ("hips" in name or "pants" in name):
             assign_solid(ob, (0.22, 0.26, 0.42, 1.0), 0.62)
-        elif asset_id.startswith("staff-") and "vest" in name:
-            assign_solid(ob, (0.92, 0.52, 0.10, 1.0), 0.38)
+        elif asset_id.startswith("staff-") and ("vest" in name or "hivis" in name.lower()):
+            assign_solid(ob, (0.98, 0.82, 0.08, 1.0), 0.35)
+        elif asset_id.startswith("staff-") and "hood" in name.lower():
+            assign_solid(ob, (0.42, 0.28, 0.52, 1.0), 0.48)
+        elif asset_id.startswith("staff-") and "labcoat" in name.lower():
+            assign_solid(ob, (0.94, 0.94, 0.90, 1.0), 0.42)
+        elif asset_id.startswith("staff-") and "blazer" in name.lower():
+            assign_solid(ob, (0.22, 0.28, 0.38, 1.0), 0.48)
+        elif asset_id.startswith("staff-") and "glove" in name.lower():
+            assign_solid(ob, (0.12, 0.12, 0.14, 1.0), 0.32)
+        elif asset_id.startswith("staff-") and ("toolbelt" in name.lower() or "pouch" in name.lower()):
+            assign_solid(ob, (0.48, 0.32, 0.18, 1.0), 0.55)
+        elif asset_id.startswith("staff-") and "glasses" in name.lower():
+            assign_solid(ob, (0.18, 0.18, 0.20, 1.0), 0.22)
+        elif asset_id.startswith("staff-") and ("foot" in name.lower() or "hand" in name.lower()):
+            assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
         elif asset_id.startswith("staff-") and ("hat" in name or "hardhat" in name or "cap" in name):
             assign_solid(ob, (0.95, 0.72, 0.12, 1.0), 0.42)
         elif asset_id.startswith("staff-") and ("screen" in name or "monitorscreen" in name):
@@ -682,7 +715,56 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
     )
 
 
-def render_preview(ob: bpy.types.Object, path: Path) -> None:
+def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
+    """Saturated per-role colors for studio preview (Hatch readable silhouettes)."""
+    from blender_material_palette import spec_for
+
+    role_accents = {
+        "staff-founder-idle": (0.32, 0.22, 0.95, 1.0),
+        "staff-gpu-tech-idle": (0.12, 0.78, 0.42, 1.0),
+        "staff-safety-idle": (0.35, 0.92, 0.22, 1.0),
+        "staff-sales-idle": (0.14, 0.22, 0.68, 1.0),
+        "staff-researcher-idle": (0.22, 0.55, 0.95, 1.0),
+        "staff-engineer-work": (0.92, 0.42, 0.08, 1.0),
+        "staff-recruiter-idle": (0.92, 0.22, 0.38, 1.0),
+        "staff-pose-typing": (0.92, 0.18, 0.72, 1.0),
+    }
+    role_darks = {
+        "staff-founder-idle": (0.18, 0.08, 0.32, 1.0),
+        "staff-gpu-tech-idle": (0.05, 0.22, 0.12, 1.0),
+        "staff-safety-idle": (0.35, 0.32, 0.05, 1.0),
+        "staff-sales-idle": (0.06, 0.08, 0.22, 1.0),
+        "staff-researcher-idle": (0.08, 0.18, 0.38, 1.0),
+        "staff-engineer-work": (0.32, 0.16, 0.04, 1.0),
+        "staff-recruiter-idle": (0.02, 0.12, 0.28, 1.0),
+        "staff-pose-typing": (0.05, 0.22, 0.28, 1.0),
+    }
+    spec = spec_for(asset_id)
+    light = _boost_saturation(role_accents.get(asset_id, (*spec["light"], 1.0)), 1.55)
+    dark = _boost_saturation(role_darks.get(asset_id, (*spec["dark"], 1.0)), 1.35)
+    mat = bpy.data.materials.new(f"{asset_id}_staff_preview")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    ramp = nodes.new("ShaderNodeValToRGB")
+    texco = nodes.new("ShaderNodeTexCoord")
+    ramp.color_ramp.elements[0].color = dark
+    ramp.color_ramp.elements[1].color = light
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(texco.outputs["Generated"], sep.inputs["Vector"])
+    links.new(sep.outputs["Z"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def render_preview(ob: bpy.types.Object, path: Path, asset_id: str | None = None) -> None:
+    del asset_id  # shared rig; optional preview material applied by caller
     use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
     if use_rig not in ("0", "false", "no"):
         try:
