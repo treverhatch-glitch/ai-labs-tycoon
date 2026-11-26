@@ -255,7 +255,7 @@ def build() -> dict:
             "targetSizeM": [TARGET_W, TARGET_D, TARGET_H],
             "kenneyGlbs": list(KENNEY_GLBS_USED),
             "rackUnits": NUM_UNITS,
-            "pipelineNote": "procedural-cabinet-v6-readability-backdrop",
+            "pipelineNote": "procedural-cabinet-v7-gunmetal-front",
         },
     )
 

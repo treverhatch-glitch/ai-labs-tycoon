@@ -66,6 +66,11 @@ FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
         REPO / "tools/art/fixtures/prop-server-rack-7068d293-regression.png",
         "7068d293",
     ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-05ca3975-regression.png",
+        "05ca3975",
+    ),
 )
 MIN_RACK_SUBJECT_LUM_STDDEV = 0.038
 MIN_RACK_LED_PIXELS = 48
@@ -77,6 +82,10 @@ MAX_RACK_OBJECT_BROWN_FRAC = 0.22
 MAX_RACK_BODY_RB_DELTA = 8.0
 MIN_RACK_BODY_MEAN_GREY = 38.0
 MAX_RACK_BODY_MEAN_GREY = 70.0
+MAX_RACK_FRONT_CLIP_FRAC = 0.005
+MIN_RACK_FRONT_PANEL_MEAN_LUM = 58.0
+MAX_RACK_FRONT_PANEL_MEAN_LUM = 82.0
+MIN_RACK_PANEL_LUM_SAMPLE = 50
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
@@ -331,6 +340,50 @@ def _rack_body_charcoal_metrics(
     mb = sum(bs) / len(bs)
     grey = (mr + mg + mb) / 3.0
     return abs(mr - mb), grey
+
+
+def _rack_led_pixel(r: int, g: int, b: int) -> bool:
+    if g > r + 14 and g > 72 and b < g - 4:
+        return True
+    if b > r + 10 and b > 72 and g < b - 4:
+        return True
+    if b > 200 and g > 190 and r < 140:
+        return True
+    if g > 200 and b > 160 and r < 110:
+        return True
+    return False
+
+
+def _rack_front_face_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, float]:
+    """Front ROI: clip fraction (max>230, excl LEDs) and mean panel luminance."""
+    x0, x1 = int(width * 0.28), int(width * 0.72)
+    y0, y1 = int(height * 0.16), int(height * 0.84)
+    clip = 0
+    clip_n = 0
+    panel_lums: list[float] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                continue
+            if _rack_led_pixel(r, g, b):
+                continue
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            if lum < 28:
+                continue
+            clip_n += 1
+            if max(r, g, b) > 230:
+                clip += 1
+            if lum >= MIN_RACK_PANEL_LUM_SAMPLE:
+                panel_lums.append(float(lum))
+    clip_frac = (clip / clip_n) if clip_n else 1.0
+    mean_lum = (sum(panel_lums) / len(panel_lums)) if panel_lums else 0.0
+    return clip_frac, mean_lum
 
 
 def _rack_brown_object_frac(
@@ -595,6 +648,9 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         )
         rack_extra["rack_body_rb_delta"] = body_rb
         rack_extra["rack_body_mean_grey"] = body_grey
+        clip_f, panel_lum = _rack_front_face_metrics(pixels, width, height, bg)
+        rack_extra["rack_front_clip_frac"] = clip_f
+        rack_extra["rack_front_panel_mean_lum"] = panel_lum
         is_live = path.resolve() == (PREVIEW_DIR / f"{asset_id}.png").resolve()
         meta_path = PREVIEW_DIR / "prop-server-rack.preview_meta.json"
         if is_live and meta_path.is_file():
@@ -880,6 +936,16 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         if body_g < MIN_RACK_BODY_MEAN_GREY or body_g > MAX_RACK_BODY_MEAN_GREY:
             reasons.append(
                 f"rack_body_mean_grey={body_g:.1f} (want {MIN_RACK_BODY_MEAN_GREY:.0f}-{MAX_RACK_BODY_MEAN_GREY:.0f})"
+            )
+        clip_f = s.get("rack_front_clip_frac", 1.0)
+        if clip_f > MAX_RACK_FRONT_CLIP_FRAC:
+            reasons.append(
+                f"rack_front_clip_frac={clip_f:.3%} (max {MAX_RACK_FRONT_CLIP_FRAC:.1%})"
+            )
+        p_lum = s.get("rack_front_panel_mean_lum", 0.0)
+        if p_lum < MIN_RACK_FRONT_PANEL_MEAN_LUM or p_lum > MAX_RACK_FRONT_PANEL_MEAN_LUM:
+            reasons.append(
+                f"rack_front_panel_mean_lum={p_lum:.1f} (want {MIN_RACK_FRONT_PANEL_MEAN_LUM:.0f}-{MAX_RACK_FRONT_PANEL_MEAN_LUM:.0f})"
             )
     if asset_id == "prop-desk":
         if s.get("subject_median_sat", 1.0) < 0.08:

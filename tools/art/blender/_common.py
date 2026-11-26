@@ -827,18 +827,27 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
                 if es is not None:
                     es.default_value = 6.5
             elif "glass" in low:
-                bsdf.inputs["Alpha"].default_value = 0.25
+                bsdf.inputs["Base Color"].default_value = (0.14, 0.17, 0.22, 1.0)
+                bsdf.inputs["Alpha"].default_value = 0.22
+                bsdf.inputs["Roughness"].default_value = 0.42
+                bsdf.inputs["Metallic"].default_value = 0.12
                 mat.blend_method = "BLEND"
                 mat.show_transparent_back = False
+            elif "face_plate" in low:
+                bsdf.inputs["Base Color"].default_value = (0.76, 0.78, 0.82, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.46
+                bsdf.inputs["Metallic"].default_value = 0.30
             elif "frame_trim" in low or "handle" in low or "jamb" in low:
-                bsdf.inputs["Base Color"].default_value = (0.80, 0.82, 0.86, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.26
+                bsdf.inputs["Base Color"].default_value = (0.66, 0.68, 0.71, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.50
+                bsdf.inputs["Metallic"].default_value = 0.30
             elif "body_dark" in low or "body" in low:
-                bsdf.inputs["Base Color"].default_value = (84 / 255.0, 86 / 255.0, 90 / 255.0, 1.0)
+                bsdf.inputs["Base Color"].default_value = (86 / 255.0, 88 / 255.0, 92 / 255.0, 1.0)
                 bsdf.inputs["Metallic"].default_value = 0.42
-            elif "bay" in low or "face_plate" in low:
-                bsdf.inputs["Base Color"].default_value = (0.68, 0.71, 0.76, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.26
+            elif "bay" in low:
+                bsdf.inputs["Base Color"].default_value = (0.58, 0.60, 0.64, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.40
+                bsdf.inputs["Metallic"].default_value = 0.40
             elif "slot" in low:
                 bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
                 bsdf.inputs["Roughness"].default_value = 0.65
@@ -861,24 +870,15 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
     rack_lit = asset_id == "prop-server-rack"
-    key.data.energy = 3.05 if rack_lit else (2.86 if presentation_150 else 1.8)
+    key.data.energy = 2.62 if rack_lit else (2.86 if presentation_150 else 1.8)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 72 if rack_lit else (84 if presentation_150 else 55)
+    fill.data.energy = 70 if rack_lit else (84 if presentation_150 else 55)
     fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
-    if rack_lit:
-        bpy.ops.object.light_add(
-            type="AREA",
-            location=center + Vector((0.0, -obj_w * 1.45, obj_h * 0.28)),
-        )
-        front_fill = bpy.context.active_object
-        front_fill.data.energy = 52
-        front_fill.data.size = obj_w * 1.05
-        front_fill.rotation_euler = (math.radians(82), 0.0, 0.0)
     if asset_id == "prop-server-rack":
         target_fill = 0.70
         pad = 1.02
@@ -1187,9 +1187,9 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
             links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
     elif kind == "frame_trim":
-        bsdf.inputs["Base Color"].default_value = (0.78, 0.80, 0.84, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.28
-        bsdf.inputs["Metallic"].default_value = 0.72
+        bsdf.inputs["Base Color"].default_value = (0.58, 0.60, 0.63, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.32
+        bsdf.inputs["Metallic"].default_value = 0.62
     elif kind == "glass":
         bsdf.inputs["Base Color"].default_value = (0.18, 0.22, 0.28, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.18
@@ -1199,9 +1199,9 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
         bsdf.inputs["Roughness"].default_value = 0.32
         bsdf.inputs["Metallic"].default_value = 0.62
     elif kind == "bay_light":
-        bsdf.inputs["Base Color"].default_value = (0.70, 0.73, 0.78, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.26
-        bsdf.inputs["Metallic"].default_value = 0.52
+        bsdf.inputs["Base Color"].default_value = (0.64, 0.66, 0.70, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.30
+        bsdf.inputs["Metallic"].default_value = 0.50
     elif kind == "slot":
         bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.55
