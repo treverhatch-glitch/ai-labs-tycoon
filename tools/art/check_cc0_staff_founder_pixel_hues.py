@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Founder PNG: teal torso band, denim leg band (rendered pixels, not GLB metadata)."""
+"""Founder PNG: navy torso, denim legs — reject cyan mean hue on torso."""
 from __future__ import annotations
 
+import colorsys
 import sys
 from pathlib import Path
 
@@ -46,6 +47,10 @@ def main() -> int:
     # Navy hoodie: B highest, low R (not cyan/teal wash)
     if not (t_mean[2] > t_mean[1] > t_mean[0] + 5 and t_mean[2] - t_mean[0] > 18):
         print(f"FAIL staff-founder-idle torso_not_hoodie rgb={tuple(round(c) for c in t_mean)}")
+        return 1
+    th, ts, _ = colorsys.rgb_to_hsv(t_mean[0] / 255, t_mean[1] / 255, t_mean[2] / 255)
+    if 160.0 <= th * 360.0 <= 200.0 and ts > 0.22:
+        print(f"FAIL staff-founder-idle torso_cyan hue={th * 360:.0f} sat={ts:.2f}")
         return 1
     # Denim jeans: B > G > R
     if not (l_mean[2] > l_mean[1] > l_mean[0]):

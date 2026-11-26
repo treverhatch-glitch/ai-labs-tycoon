@@ -28,6 +28,8 @@ python3 tools/art/check_cc0_staff_founder_regression.py
 python3 tools/art/check_cc0_staff_founder_preview_upright.py
 python3 tools/art/check_cc0_staff_founder_preview_silhouette.py
 python3 tools/art/check_cc0_staff_founder_head_luma.py
+python3 tools/art/check_cc0_staff_founder_face_band.py
+python3 tools/art/check_cc0_staff_founder_floor_tile.py
 python3 tools/art/check_cc0_staff_founder_preview_orphans.py
 python3 tools/art/check_cc0_staff_founder_standing.py
 python3 tools/art/check_cc0_staff_founder_screen_up.py

@@ -22,10 +22,11 @@ KENNEY_IDLE_REST_ACTION = "Idle"
 KENNEY_IDLE_REST_FRAME = 1
 TARGET_HEIGHT = 1.72
 FOUNDER_SKIN = (0.84, 0.68, 0.54, 1.0)
-FOUNDER_HAIR = (0.22, 0.18, 0.32, 1.0)
-FOUNDER_HOODIE = (0.10, 0.22, 0.42, 1.0)
-FOUNDER_JEANS = (0.12, 0.24, 0.52, 1.0)
-FOUNDER_SHOE = (0.20, 0.22, 0.26, 1.0)
+FOUNDER_HAIR = (0.28, 0.16, 0.10, 1.0)
+FOUNDER_HOODIE = (0.08, 0.10, 0.32, 1.0)
+FOUNDER_HOODIE_RED = (0.62, 0.16, 0.14, 1.0)
+FOUNDER_JEANS = (0.14, 0.28, 0.52, 1.0)
+FOUNDER_SHOE = (0.14, 0.14, 0.16, 1.0)
 FOUNDER_EYE = (0.12, 0.10, 0.14, 1.0)
 FBX_KW = {
     "use_manual_orientation": True,
@@ -263,7 +264,7 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         ("Torso", 0.48, 0.78, None, FOUNDER_HOODIE, 0.62),
         ("Arm_-1", 0.52, 0.74, -1, FOUNDER_HOODIE, 0.58),
         ("Arm_1", 0.52, 0.74, 1, FOUNDER_HOODIE, 0.58),
-        ("Neck", 0.70, 0.83, None, FOUNDER_HOODIE, 0.60),
+        ("Neck", 0.70, 0.83, None, FOUNDER_HOODIE_RED, 0.52),
         ("Head", 0.73, 0.88, None, FOUNDER_SKIN, 0.52),
         ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
     ]
@@ -288,12 +289,12 @@ def _add_face_features() -> None:
     verts = [head.matrix_world @ v.co for v in head.data.vertices]
     hc = sum(verts, Vector()) / len(verts)
     nose_y = min(v.y for v in verts)
-    z_eye = hc.z + (max(v.z for v in verts) - hc.z) * 0.35
-    y_face = nose_y + (hc.y - nose_y) * 0.35
+    z_eye = hc.z + (max(v.z for v in verts) - hc.z) * 0.32
+    y_face = nose_y + (hc.y - nose_y) * 0.72
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
-        eye = bc.add_cube(name, (0.028, 0.022, 0.022), (hc.x + 0.055 * x_sign, y_face, z_eye))
+        eye = bc.add_cube(name, (0.042, 0.026, 0.024), (hc.x + 0.058 * x_sign, y_face, z_eye))
         bc.assign_solid(eye, FOUNDER_EYE, 0.35)
-    mouth = bc.add_cube("Mouth", (0.05, 0.015, 0.012), (hc.x, y_face - 0.03, z_eye - 0.055))
+    mouth = bc.add_cube("Mouth", (0.058, 0.02, 0.014), (hc.x, y_face - 0.034, z_eye - 0.052))
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
 

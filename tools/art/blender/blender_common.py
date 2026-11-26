@@ -505,7 +505,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             smooth_shade(ob)
             bevel_object(ob, width=0.006, segments=1)
         glb_path = out_dir / f"{asset_id}.glb"
+        _sanitize_solid_gltf_materials(mesh_obs)
+        if asset_id == "staff-founder-idle":
+            _strip_uv_layers(mesh_obs)
         export_gltf_selection(mesh_obs, glb_path)
+        log_staff_material_slots(mesh_obs, asset_id)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         try:
             render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
@@ -634,8 +638,62 @@ def assign_solid(
     ob.data.materials.append(mat)
 
 
+def log_staff_material_slots(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
+    for ob in mesh_obs:
+        if ob.type != "MESH":
+            continue
+        slots = []
+        for i, slot in enumerate(ob.material_slots):
+            mat = slot.material
+            base = (0.0, 0.0, 0.0, 1.0)
+            if mat and mat.use_nodes:
+                bsdf = mat.node_tree.nodes.get("Principled BSDF")
+                if bsdf:
+                    base = tuple(bsdf.inputs["Base Color"].default_value)
+            slots.append(f"{i}:{mat.name if mat else '-'} rgba={tuple(round(c, 2) for c in base)}")
+        print(f"OK {asset_id} slot {ob.name} " + " ".join(slots))
+
+
+def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
+    """1995 founder: skin, brown hair, navy/red hoodie, denim, dark shoes (no cyan atlas)."""
+    skin = (0.84, 0.68, 0.54, 1.0)
+    hair = (0.28, 0.16, 0.10, 1.0)
+    skin_rough = 0.72
+    hair_rough = 0.55
+    hoodie_navy = (0.08, 0.10, 0.32, 1.0)
+    hoodie_red = (0.62, 0.16, 0.14, 1.0)
+    denim = (0.14, 0.28, 0.52, 1.0)
+    shoe = (0.14, 0.14, 0.16, 1.0)
+    eye = (0.10, 0.08, 0.12, 1.0)
+    mouth = (0.52, 0.26, 0.28, 1.0)
+    for ob in mesh_obs:
+        base = ob.name.split(".")[0]
+        if base == "Hair":
+            assign_solid(ob, hair, hair_rough)
+        elif base == "Head":
+            assign_solid(ob, skin, skin_rough)
+        elif base.lower().startswith("eye"):
+            assign_solid(ob, eye, 0.35)
+        elif base == "Mouth":
+            assign_solid(ob, mouth, 0.42)
+        elif base in ("Torso", "Arm_-1", "Arm_1"):
+            assign_solid(ob, hoodie_navy, 0.55)
+        elif base == "Neck":
+            assign_solid(ob, hoodie_red, 0.52)
+        elif base in ("Hips", "Leg_-1", "Leg_1"):
+            assign_solid(ob, denim, 0.56)
+        elif base.startswith("Foot_"):
+            assign_solid(ob, shoe, 0.42)
+        else:
+            print(f"WARN staff-founder-idle tint_skip {ob.name}")
+    log_staff_material_slots(mesh_obs, "staff-founder-idle")
+
+
 def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
     """Per-part saturated materials before join/bake."""
+    if asset_id == "staff-founder-idle":
+        tint_staff_founder_parts(mesh_obs)
+        return
     stroke_colors = (
         (0.12, 0.42, 0.88, 1.0),
         (0.82, 0.18, 0.22, 1.0),
@@ -1092,6 +1150,36 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
     )
 
 
+def _strip_uv_layers(mesh_obs: list[bpy.types.Object]) -> None:
+    for ob in mesh_obs:
+        while ob.data.uv_layers:
+            ob.data.uv_layers.remove(ob.data.uv_layers.active)
+        if hasattr(ob.data, "color_attributes"):
+            for key in list(ob.data.color_attributes.keys()):
+                ob.data.color_attributes.remove(ob.data.color_attributes[key])
+        for key in list(getattr(ob.data, "vertex_colors", {}).keys()) if hasattr(ob.data, "vertex_colors") else []:
+            del ob.data.vertex_colors[key]
+
+
+def _sanitize_solid_gltf_materials(mesh_obs: list[bpy.types.Object]) -> None:
+    for ob in mesh_obs:
+        for slot in ob.material_slots:
+            mat = slot.material
+            if not mat or not mat.use_nodes:
+                continue
+            nodes = mat.node_tree.nodes
+            bsdf = nodes.get("Principled BSDF")
+            if not bsdf:
+                continue
+            if bsdf.inputs["Base Color"].is_linked:
+                for link in list(mat.node_tree.links):
+                    if link.to_socket == bsdf.inputs["Base Color"]:
+                        mat.node_tree.links.remove(link)
+            for node in list(nodes):
+                if node.type in ("TEX_IMAGE", "NORMAL_MAP", "BUMP"):
+                    nodes.remove(node)
+
+
 def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     mesh_list = [o for o in objects if o.type in ("MESH", "EMPTY")]
@@ -1171,7 +1259,7 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
     mesh_obs = [o for o in imported if o.type == "MESH" and o.name != "PreviewShadowFloor"]
     if not mesh_obs:
         raise RuntimeError(f"no meshes in {glb_path}")
-    if asset_id and asset_id.startswith("staff-"):
+    if asset_id and asset_id.startswith("staff-") and asset_id != "staff-founder-idle":
         tint_garage_parts(mesh_obs, asset_id)
     if asset_id:
         os.environ["STAFF_PREVIEW_ASSET"] = asset_id

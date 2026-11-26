@@ -16,9 +16,11 @@ FIXTURES = (
 )
 ARM_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-tpose-c17bca1a.glb"
 ARM_SCRIPT = REPO / "tools/art/blender/check_cc0_staff_founder_arm_pose_blender.py"
+FACE_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-cyan-face-fb35ba42.png"
 
 sys.path.insert(0, str(REPO / "tools/art"))
 from check_cc0_staff_founder_preview_silhouette import analyze as png_analyze  # noqa: E402
+from check_cc0_staff_founder_face_band import analyze_face_band, analyze_face_cyan_mask  # noqa: E402
 
 
 def main() -> int:
@@ -68,6 +70,20 @@ def main() -> int:
         print(f"FAIL staff-founder-idle fixture_arm_unexpected {tail}")
         return 1
     print(f"OK staff-founder-idle fixture_rejected {ARM_FIXTURE.name}: {fail_line}")
+    if not FACE_FIXTURE.is_file():
+        print(f"FAIL staff-founder-idle missing fixture {FACE_FIXTURE.name}")
+        return 1
+    ok_cyan, msg_cyan = analyze_face_cyan_mask(FACE_FIXTURE)
+    if ok_cyan:
+        print(f"FAIL staff-founder-idle fixture_face_passed {FACE_FIXTURE.name}: {msg_cyan}")
+        return 1
+    if "cyan" not in msg_cyan:
+        print(f"FAIL staff-founder-idle fixture_face_unexpected {FACE_FIXTURE.name}: {msg_cyan}")
+        return 1
+    ok_face, msg_face = analyze_face_band(FACE_FIXTURE)
+    if ok_face and "cyan" not in msg_face:
+        pass  # legacy fixture may pass eye-band; cyan mask gate is authoritative
+    print(f"OK staff-founder-idle fixture_rejected {FACE_FIXTURE.name}: {msg_cyan}")
     return 0
 
 

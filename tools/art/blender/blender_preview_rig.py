@@ -94,7 +94,7 @@ def setup_studio_world(*, staff_flat: bool = False) -> None:
     bg = nodes.new("ShaderNodeBackground")
     # Mid-grey visible backdrop; HDRI may light objects but stays hidden in the render.
     bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 1.0 if staff_flat else 1.0
+    bg.inputs["Strength"].default_value = 1.0
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
     if staff_flat or not hdr_path.is_file():
         bpy.context.scene.view_settings.view_transform = "Standard"
@@ -422,8 +422,8 @@ def render_preview_studio(
         scene.eevee.taa_render_samples = 32
         if hasattr(scene.eevee, "use_gtao"):
             scene.eevee.use_gtao = True
-            scene.eevee.gtao_distance = 0.4
-            scene.eevee.gtao_factor = 1.4
+            scene.eevee.gtao_distance = 0.55
+            scene.eevee.gtao_factor = 1.85 if preview_kind == "staff" else 1.4
 
     setup_studio_world(staff_flat=(preview_kind == "staff"))
     mins, maxs = mesh_bounds_world(hero_meshes)
@@ -462,12 +462,7 @@ def render_preview_studio(
         if preview_kind == "wisp":
             add_shadow_floor_y(mins, maxs)
         elif preview_kind == "staff":
-            add_shadow_floor_z(mins, maxs)
-            floor_ob = bpy.data.objects.get("PreviewShadowFloor")
-            if floor_ob and floor_ob.active_material:
-                bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
-                if bsdf:
-                    bsdf.inputs["Base Color"].default_value = FLOOR_GREY
+            pass  # contact shadow via GTAO on grey-150 only — no lit floor tile
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
@@ -477,7 +472,7 @@ def render_preview_studio(
         if preview_kind == "staff":
             key = bpy.data.objects.get("Key")
             if key and key.type == "LIGHT":
-                key.data.energy *= 0.52
+                key.data.energy *= 0.16
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
