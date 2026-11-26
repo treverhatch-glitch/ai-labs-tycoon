@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Render HUD icons and wisp mood sheets with studio previews."""
+import math
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 import blender_preview_rig as rig  # noqa: E402
+import wisp_face_geom as wfg  # noqa: E402
 import bpy  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[3]
@@ -47,61 +49,86 @@ def _wisp_body(mood_id: str) -> bpy.types.Object:
     return body
 
 
-def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
+def _add_eye(cx: float, cy: float, cz: float, r: float, phi: float, tag: str) -> None:
+    eye_sz, _mw, thick = wfg.face_dims(r)
+    theta = math.radians(92)
+    x, y, z = wfg.sphere_point(cx, cy, cz, r, theta, phi)
+    xn, yn, zn = x - cx, y - cy, z - cz
+    ln = math.sqrt(xn * xn + yn * yn + zn * zn) or 1.0
+    xn, yn, zn = xn / ln, yn / ln, zn / ln
+    ox, oy, oz = x + xn * thick * 0.5, y + yn * thick * 0.5, z + zn * thick * 0.5
+    sclera = bc.add_cube(f"EyeWhite_{tag}", (thick, eye_sz, eye_sz), (ox, oy, oz))
+    bc.assign_emission(sclera, (1.0, 1.0, 0.98, 1.0), strength=1.8)
+    pupil = bc.add_cube(
+        f"Pupil_{tag}",
+        (thick * 0.65, eye_sz * 0.55, eye_sz * 0.55),
+        (ox + xn * thick * 0.25, oy + yn * thick * 0.25, oz + zn * thick * 0.25),
+    )
+    bc.assign_solid(pupil, (0.02, 0.02, 0.04, 1.0), 0.85)
+
+
+def _add_mouth(cx: float, cy: float, cz: float, r: float, mouth_h: float, rgba, emit: float = 0.0) -> bpy.types.Object:
+    _es, mouth_w, thick = wfg.face_dims(r)
+    theta = math.radians(104)
+    phi = math.pi
+    x, y, z = wfg.sphere_point(cx, cy, cz, r, theta, phi)
+    xn, yn, zn = x - cx, y - cy, z - cz
+    ln = math.sqrt(xn * xn + yn * yn + zn * zn) or 1.0
+    xn, yn, zn = xn / ln, yn / ln, zn / ln
+    ox, oy, oz = x + xn * thick * 0.5, y + yn * thick * 0.5, z + zn * thick * 0.5
+    mouth = bc.add_cube("WispMouth", (thick, mouth_w, mouth_h), (ox, oy, oz))
+    if emit > 0.1:
+        bc.assign_emission(mouth, rgba, strength=emit)
+    else:
+        bc.assign_solid(mouth, rgba, 0.35)
+    return mouth
+
+
+def _wisp_face(mood_id: str, body: bpy.types.Object) -> None:
     mood = mood_id.replace("wisp-", "")
-    base_y = 0.72
-    face_z = 0.43
-    eye_sep = 0.12
-    eye_w, eye_h = 0.20, 0.20
-    dark = (0.02, 0.02, 0.04, 1.0)
-    white = (0.99, 0.99, 0.97, 1.0)
-    pupil_w, pupil_h = 0.13, 0.14
+    r = wfg.body_radius(body)
+    cx, cy, cz = body.matrix_world.translation.x, body.matrix_world.translation.y, body.matrix_world.translation.z
+    # Preview camera: azimuth 0° → view from +X; face sits on −X hemisphere (φ ≈ π).
+    phi_l = math.pi - math.radians(14)
+    phi_r = math.pi + math.radians(14)
+    _add_eye(cx, cy, cz, r, phi_l, "L")
+    _add_eye(cx, cy, cz, r, phi_r, "R")
 
     if mood == "glowing":
-        for sx in (-1, 1):
-            sclera = bc.add_cube(f"EyeWhite_{sx}", (eye_w, eye_h, 0.04), (eye_sep * sx, base_y + 0.08, face_z))
-            bc.assign_solid(sclera, white, 0.12)
-            pupil = bc.add_cube(f"Pupil_{sx}", (pupil_w, pupil_h, 0.028), (eye_sep * sx, base_y + 0.08, face_z + 0.02))
-            bc.assign_solid(pupil, dark, 0.1)
-            lid = bc.add_cube(f"EyeLid_{sx}", (eye_w + 0.02, 0.05, 0.04), (eye_sep * sx, base_y + 0.10, face_z - 0.01))
-            bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=2.2)
-        mouth_outer = bc.add_cube("GlowSmile", (0.24, 0.10, 0.04), (0, base_y - 0.16, face_z + 0.01))
-        bc.assign_emission(mouth_outer, (0.88, 0.78, 1.0, 1.0), strength=2.8)
-        inner = bc.add_cube("GlowSmileInner", (0.18, 0.06, 0.025), (0, base_y - 0.16, face_z + 0.02))
-        bc.assign_solid(inner, (0.45, 0.28, 0.72, 1.0), 0.25)
+        for sx, tag in ((-1, "L"), (1, "R")):
+            phi = phi_l if sx < 0 else phi_r
+            theta = math.radians(92)
+            x, y, z = wfg.sphere_point(cx, cy, cz, r, theta, phi)
+            xn, yn, zn = x - cx, y - cy, z - cz
+            ln = math.sqrt(xn * xn + yn * yn + zn * zn) or 1.0
+            xn, yn, zn = xn / ln, yn / ln, zn / ln
+            ox, oy, oz = x + xn * 0.008, y + yn * 0.008, z + zn * 0.008
+            lid = bc.add_cube(f"EyeLid_{tag}", (0.01, r * 0.2, r * 0.08), (ox, oy, oz))
+            bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=3.0)
+        _add_mouth(cx, cy, cz, r, r * 0.14, (0.88, 0.78, 1.0, 1.0), emit=4.0)
         return
 
-    eye_y = 0.09
-    for sx in (-1, 1):
-        sclera = bc.add_cube(f"EyeWhite_{sx}", (eye_w, eye_h, 0.035), (eye_sep * sx, base_y + eye_y, face_z))
-        bc.assign_solid(sclera, white, 0.15)
-        pupil = bc.add_cube(f"Pupil_{sx}", (pupil_w, pupil_h, 0.022), (eye_sep * sx, base_y + eye_y, face_z + 0.018))
-        bc.assign_solid(pupil, dark, 0.12)
-
     if mood == "angry":
-        for sx in (-1, 1):
-            brow = bc.add_cube(
-                f"Brow_{sx}",
-                (0.14, 0.035, 0.025),
-                (eye_sep * sx + sx * 0.02, base_y + 0.20, face_z + 0.01),
-            )
-            bc.assign_solid(brow, dark, 0.2)
-        mouth = bc.add_cube("Frown", (0.20, 0.08, 0.035), (0, base_y - 0.14, face_z + 0.01))
-        bc.assign_solid(mouth, (0.82, 0.10, 0.08, 1.0), 0.32)
+        for sx, tag in ((-1, "L"), (1, "R")):
+            phi = phi_l if sx < 0 else phi_r
+            x, y, z = wfg.sphere_point(cx, cy, cz, r, math.radians(88), phi + sx * 0.06)
+            brow = bc.add_cube(f"Brow_{tag}", (r * 0.18, r * 0.05, 0.004), (x, y, z))
+            bc.assign_solid(brow, (0.05, 0.05, 0.08, 1.0), 0.2)
+        _add_mouth(cx, cy, cz, r, r * 0.10, (0.82, 0.10, 0.08, 1.0))
     elif mood == "worried":
-        for sx in (-1, 1):
-            brow = bc.add_cube(f"BrowRaise_{sx}", (0.14, 0.04, 0.03), (eye_sep * sx, base_y + 0.22, face_z))
-            bc.assign_solid(brow, dark, 0.2)
-        mouth = bc.add_cube("WorriedMouth", (0.20, 0.10, 0.035), (0, base_y - 0.16, face_z + 0.01))
-        bc.assign_solid(mouth, (0.95, 0.55, 0.12, 1.0), 0.35)
+        for sx, tag in ((-1, "L"), (1, "R")):
+            phi = phi_l if sx < 0 else phi_r
+            x, y, z = wfg.sphere_point(cx, cy, cz, r, math.radians(86), phi)
+            brow = bc.add_cube(f"BrowRaise_{tag}", (r * 0.16, r * 0.05, 0.004), (x, y, z))
+            bc.assign_solid(brow, (0.05, 0.05, 0.08, 1.0), 0.2)
+        _add_mouth(cx, cy, cz, r, r * 0.12, (0.95, 0.55, 0.12, 1.0))
     elif mood == "happy":
-        mouth = bc.add_cube("Smile", (0.24, 0.09, 0.035), (0, base_y - 0.16, face_z + 0.01))
-        bc.assign_solid(mouth, (0.92, 0.22, 0.45, 1.0), 0.3)
-        cheek = bc.add_cube("CheekSparkle", (0.06, 0.05, 0.02), (0.20, base_y - 0.06, face_z))
-        bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
+        _add_mouth(cx, cy, cz, r, r * 0.11, (0.98, 0.12, 0.48, 1.0), emit=2.2)
+        x, y, z = wfg.sphere_point(cx, cy, cz, r, math.radians(72), math.pi - math.radians(18))
+        cheek = bc.add_cube("CheekSparkle", (r * 0.08, r * 0.06, 0.004), (x, y, z))
+        bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.2)
     else:
-        mouth = bc.add_cube("NeutralMouth", (0.20, 0.05, 0.035), (0, base_y - 0.14, face_z + 0.01))
-        bc.assign_solid(mouth, (0.35, 0.32, 0.36, 1.0), 0.35)
+        _add_mouth(cx, cy, cz, r, r * 0.06, (0.35, 0.32, 0.36, 1.0))
 
 
 def _body_color(core: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
@@ -121,10 +148,10 @@ def render_wisp(mood_id: str, core: tuple[float, float, float, float]) -> None:
             if bsdf:
                 bsdf.inputs["Emission Color"].default_value = accent
                 bsdf.inputs["Emission Strength"].default_value = 3.5
-    _wisp_face(mood_id, accent)
+    _wisp_face(mood_id, body)
+    bc.bevel_object(body, width=0.004, segments=1)
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    root = bc.link_or_join(mesh_obs) if len(mesh_obs) > 1 else body
-    bc.bevel_object(root, width=0.006, segments=1)
+    root = mesh_obs
     prev = REPO / "docs/art/previews" / f"{mood_id}.png"
     prev.parent.mkdir(parents=True, exist_ok=True)
     import os
