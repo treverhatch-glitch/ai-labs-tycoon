@@ -18,7 +18,11 @@ from packet34_preview_gates import (  # noqa: E402
     check_sign_assembly_metadata,
     check_sign_front_board_frame_width,
     check_sign_front_ocr_words,
+    check_sign_front_posts_to_ground,
+    check_sign_preview_subject_framing,
     check_sign_preview_yaw,
+    check_sign_text_board_wcag_contrast,
+    check_sign_text_inside_board_mask,
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
     check_backdrop_mid_grey,
@@ -116,6 +120,18 @@ def check_env_preview(asset_id: str) -> int:
         for err in check_sign_assembly_metadata(front_frame, label="sign_front"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
+        for err in check_sign_preview_subject_framing(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_text_inside_board_mask(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_text_board_wcag_contrast(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_front_posts_to_ground(front_rgb, front_mask):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     if asset_id == "garage-lot-curb":
         for err in check_curb_preview_concrete(rgb, mask):
             print(f"FAIL {asset_id} {err}")
@@ -161,6 +177,15 @@ def main() -> int:
             print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         for err in check_sign_assembly_metadata(hero_frame, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_preview_subject_framing(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_text_inside_board_mask(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_text_board_wcag_contrast(hero_rgb, hero_mask, label="sign_hero"):
             print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         if hero_rc == 0:

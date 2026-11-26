@@ -111,9 +111,9 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
-      "license": "CC0-1.0 (procedural board + Blender bake)",
-      "vertexCount": 1143,
-      "triangleCount": 1444,
+      "license": "CC0-1.0 (procedural board + Blender bake; ambientCG Wood051 ref)",
+      "vertexCount": 1456,
+      "triangleCount": 1595,
       "subShapeCount": 3,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py",
@@ -126,6 +126,14 @@
           "downloadedAt": "2025-11-26",
           "sha256": "36724313c0fc66dab126ff90f081b85a0b1ef47be65eda1417bd20b033f0573f",
           "fetchScript": "tools/art/cc0/fetch_cc0_assets.sh"
+        },
+        "ambientCGWood": {
+          "name": "Wood051",
+          "license": "CC0 1.0",
+          "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "downloadUrl": "https://ambientcg.com/view?id=Wood051",
+          "downloadedAt": "2025-11-27",
+          "note": "Brown 4x4 post reference swatch (procedural PBR match)"
         }
       }
     },

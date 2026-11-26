@@ -16,8 +16,12 @@ from packet34_preview_gates import (  # noqa: E402
     check_sign_front_board_frame_width,
     check_sign_front_ocr_words,
     check_sign_preview_board_text,
+    check_sign_preview_subject_framing,
     check_sign_preview_yaw,
+    check_sign_text_board_wcag_contrast,
+    check_sign_text_inside_board_mask,
     check_sign_text_template_orientation,
+    check_sign_front_posts_to_ground,
 )
 
 FIXTURES = (
@@ -25,6 +29,7 @@ FIXTURES = (
     ("a2c3e44c", REPO / "tools/art/fixtures/preview_regression/sign-a2c3e44c"),
     ("419f4309", REPO / "tools/art/fixtures/preview_regression/sign-419f4309"),
     ("e7d53735", REPO / "tools/art/fixtures/preview_regression/sign-e7d53735"),
+    ("dd158f9e", REPO / "tools/art/fixtures/preview_regression/sign-dd158f9e"),
 )
 
 
@@ -45,6 +50,9 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
     errs: list[str] = []
     errs.extend(check_backdrop_mid_grey(rgb))
     errs.extend(check_sign_text_template_orientation(rgb, mask, label=label))
+    errs.extend(check_sign_preview_subject_framing(rgb, mask, label=label))
+    errs.extend(check_sign_text_inside_board_mask(rgb, mask, label=label))
+    errs.extend(check_sign_text_board_wcag_contrast(rgb, mask, label=label))
     if "hero" in stem or stem == "for-sale-sign":
         errs.extend(check_sign_for_sale_contrast(rgb, mask))
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_hero"))
@@ -52,6 +60,7 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_front"))
         errs.extend(check_sign_front_ocr_words(rgb))
         errs.extend(check_sign_front_board_frame_width(rgb, mask))
+        errs.extend(check_sign_front_posts_to_ground(rgb, mask))
         frame = root / f"{stem}.frame.json"
         errs.extend(check_sign_preview_yaw(frame, expected_deg=0.0, label="sign_front"))
         errs.extend(check_sign_assembly_metadata(frame, label="sign_front"))
@@ -83,7 +92,7 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
-        if sha in ("419f4309", "e7d53735"):
+        if sha in ("419f4309", "e7d53735", "dd158f9e"):
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
             if sha == "419f4309":

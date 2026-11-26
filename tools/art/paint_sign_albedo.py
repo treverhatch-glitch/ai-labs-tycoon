@@ -10,7 +10,7 @@ def paint(path: Path, *, min_unique: int = 1, min_bytes: int = 2_500) -> None:
     from PIL import Image
 
     path.parent.mkdir(parents=True, exist_ok=True)
-    im = Image.new("RGB", (1024, 1024), (252, 252, 250))
+    im = Image.new("RGB", (1024, 1024), (239, 227, 200))
     uniq = len({px for px in im.getdata()})
     if uniq < min_unique:
         raise SystemExit(f"sign albedo flat unique={uniq}")

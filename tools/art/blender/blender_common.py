@@ -167,7 +167,8 @@ def _load_sign_bold_font() -> bpy.types.VectorFont | None:
     return None
 
 
-SIGN_TEXT_RED_RGBA = (120 / 255.0, 12 / 255.0, 18 / 255.0, 1.0)  # dark red on cream board
+SIGN_TEXT_RED_RGBA = (139 / 255.0, 26 / 255.0, 26 / 255.0, 1.0)  # #8B1A1A on cream board
+SIGN_BOARD_CREAM_RGBA = (239 / 255.0, 227 / 255.0, 200 / 255.0, 1.0)  # #EFE3C8
 
 
 def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
@@ -181,8 +182,8 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
         nodes.clear()
         out = nodes.new("ShaderNodeOutputMaterial")
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = (0.72, 0.09, 0.13, 1.0)
-        emit.inputs["Strength"].default_value = 2.35
+        emit.inputs["Color"].default_value = (0.05, 0.008, 0.008, 1.0)
+        emit.inputs["Strength"].default_value = 2.55
         links.new(emit.outputs["Emission"], out.inputs["Surface"])
         return mat
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
@@ -320,8 +321,8 @@ def add_sign_mesh_text(
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = abs((board_w * 0.50) / dx)
-        sy = abs((board_h * 0.40) / dy)
+        sx = abs((board_w * 0.40) / dx)
+        sy = abs((board_h * 0.34) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -1059,7 +1060,7 @@ def apply_sign_part_gltf_materials(
     post_mat.use_nodes = True
     bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.52, 0.38, 0.26, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.46, 0.33, 0.22, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.58
     for ob, mats in (
         (posts, [post_mat]),
@@ -1414,6 +1415,10 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
             _rotate_sign_face_for_front_camera(meshes)
             apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=False)
+            for ob in meshes:
+                if ob.type == "MESH":
+                    ob.location.z -= 0.14
+            bpy.context.view_layer.update()
             orient_sign_preview_for_camera(meshes, face_dir=1.0)
             os.environ["PREVIEW_AZIMUTH_DEG"] = azimuth
             os.environ["PREVIEW_ELEVATION_DEG"] = elevation
@@ -1424,14 +1429,14 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
             azimuth="0",
-            elevation="16",
-            margin="0.14",
+            elevation="15",
+            margin="0.68",
         )
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
             azimuth="35",
-            elevation="18",
-            margin="0.14",
+            elevation="15",
+            margin="0.68",
         )
         preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
@@ -2693,7 +2698,7 @@ def apply_sign_preview_materials(
     post_mat.use_nodes = True
     bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.52, 0.38, 0.26, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.46, 0.33, 0.22, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.58
     for ob in mesh_obs:
         if ob.name == "letters":
@@ -2712,8 +2717,8 @@ def apply_sign_preview_materials(
                 nodes.clear()
                 out = nodes.new("ShaderNodeOutputMaterial")
                 emit = nodes.new("ShaderNodeEmission")
-                emit.inputs["Color"].default_value = (0.98, 0.96, 0.94, 1.0)
-                emit.inputs["Strength"].default_value = 0.95
+                emit.inputs["Color"].default_value = SIGN_BOARD_CREAM_RGBA
+                emit.inputs["Strength"].default_value = 1.05
                 links.new(emit.outputs["Emission"], out.inputs["Surface"])
                 ob.data.materials.append(flat)
         elif ob.name == "posts":

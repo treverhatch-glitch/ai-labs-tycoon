@@ -535,11 +535,10 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     rpx = list(rgb.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 145 and r > g + 26 and r > b + 26
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
 
     def _is_white_face(r: int, g: int, b: int) -> bool:
-        # Preview renders (Cycles + emission) land a few steps below albedo 252 white.
-        return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
+        return r > 168 and g > 158 and b > 138 and not _is_red(r, g, b)
 
     def _is_grey_inset(r: int, g: int, b: int) -> bool:
         m = (r + g + b) / 3
@@ -921,7 +920,7 @@ def check_sign_front_ocr_words(rgb_path: Path) -> list[str]:
     px = rgb.load()
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 145 and r > g + 26 and r > b + 26
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
 
     bin_im = Image.new("L", (w, h), 255)
     bin_px = bin_im.load()
@@ -1005,6 +1004,292 @@ def check_sign_preview_yaw(frame_path: Path, *, expected_deg: float, label: str)
     yaw = float(meta.get("azimuth_deg", -999))
     if abs(yaw - expected_deg) > 6.0:
         return [f"{label}_yaw_deg={yaw:.1f} need≈{expected_deg}"]
+    return []
+
+
+def _mask_subject_bbox(mask) -> tuple[int, int, int, int] | None:
+    w, h = mask.size
+    mpx = list(mask.getdata())
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return None
+    return min(xs), max(xs), min(ys), max(ys)
+
+
+def _relative_luminance(r: int, g: int, b: int) -> float:
+    def _chan(c: int) -> float:
+        v = c / 255.0
+        return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * _chan(r) + 0.7152 * _chan(g) + 0.0722 * _chan(b)
+
+
+def _wcag_contrast(l_a: float, l_b: float) -> float:
+    hi, lo = max(l_a, l_b), min(l_a, l_b)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def check_sign_preview_subject_framing(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    min_margin_frac: float = 0.06,
+    edge_clear_frac: float = 0.03,
+) -> list[str]:
+    """Subject bbox (non-backdrop masked pixels) must clear frame edges."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_framing_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_text_red(r: int, g: int, b: int) -> bool:
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
+
+    def _is_post_wood(r: int, g: int, b: int) -> bool:
+        if _is_text_red(r, g, b):
+            return False
+        return 58 < r < 175 and 34 < g < 138 and 18 < b < 108 and r > g > b
+
+    def _is_tuft_green(r: int, g: int, b: int) -> bool:
+        return g > 90 and g > r + 8 and g > b + 6 and r < 140
+
+    def _is_sign_pixel(r: int, g: int, b: int) -> bool:
+        return _is_text_red(r, g, b) or _is_board_cream(r, g, b) or _is_post_wood(r, g, b) or _is_tuft_green(r, g, b)
+
+    xs, ys = [], []
+    edge_hits: list[tuple[int, int]] = []
+    edge = max(1, int(round(w * edge_clear_frac)))
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if not _is_sign_pixel(r, g, b):
+                continue
+            if y > int(h * 0.90) and not (
+                _is_post_wood(r, g, b) or _is_tuft_green(r, g, b) or _is_text_red(r, g, b)
+            ):
+                continue
+            if y < int(h * 0.04) and _is_board_cream(r, g, b) and not (
+                _is_post_wood(r, g, b) or _is_text_red(r, g, b)
+            ):
+                continue
+            xs.append(x)
+            ys.append(y)
+            if x < edge or x >= w - edge or y < edge or y >= h - edge:
+                edge_hits.append((x, y))
+    if not xs:
+        return [f"{label}_framing_subject_empty"]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    errs: list[str] = []
+    min_x = int(w * min_margin_frac)
+    min_y = int(h * min_margin_frac)
+    fill_y = (y1 - y0 + 1) / h
+    if fill_y > 0.78 and y0 < min_y:
+        min_y_top = max(2, int(h * 0.03))
+    else:
+        min_y_top = min_y
+    if x0 < min_x or (w - 1 - x1) < min_x:
+        errs.append(
+            f"{label}_framing_margin_x bbox=({x0},{x1}) w={w} need>={min_margin_frac}"
+        )
+    if y0 < min_y_top or (h - 1 - y1) < min_y:
+        errs.append(
+            f"{label}_framing_margin_y bbox=({y0},{y1}) h={h} need>={min_margin_frac}"
+        )
+    if edge_hits:
+        x, y = edge_hits[0]
+        errs.append(f"{label}_subject_touching_edge at=({x},{y}) edge_clear={edge_clear_frac}")
+    return errs
+
+
+def check_sign_text_inside_board_mask(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    pad_frac: float = 0.08,
+) -> list[str]:
+    """Red text bbox must fit inside cream board bbox shrunk by pad_frac."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_text_in_board_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_text_red(r: int, g: int, b: int) -> bool:
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
+
+    board_x, board_y = [], []
+    text_x, text_y = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_board_cream(r, g, b):
+                board_x.append(x)
+                board_y.append(y)
+            if _is_text_red(r, g, b):
+                text_x.append(x)
+                text_y.append(y)
+    if len(board_x) < 80:
+        return [f"{label}_board_cream_sparse px={len(board_x)}"]
+    if len(text_x) < 40:
+        return [f"{label}_text_red_sparse px={len(text_x)}"]
+    bx0, bx1, by0, by1 = min(board_x), max(board_x), min(board_y), max(board_y)
+    tx0, tx1, ty0, ty1 = min(text_x), max(text_x), min(text_y), max(text_y)
+    bw, bh = bx1 - bx0 + 1, by1 - by0 + 1
+    pad_x = int(bw * pad_frac)
+    pad_y = int(bh * pad_frac)
+    ix0, ix1 = bx0 + pad_x, bx1 - pad_x
+    iy0, iy1 = by0 + pad_y, by1 - pad_y
+    if ix1 <= ix0 or iy1 <= iy0:
+        return [f"{label}_board_inner_too_small"]
+    if tx0 < ix0 or tx1 > ix1 or ty0 < iy0 or ty1 > iy1:
+        return [
+            f"{label}_text_outside_board_pad text=({tx0}-{tx1},{ty0}-{ty1}) "
+            f"inner=({ix0}-{ix1},{iy0}-{iy1}) pad={pad_frac}"
+        ]
+    return []
+
+
+def check_sign_text_board_wcag_contrast(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    min_ratio: float = 7.0,
+) -> list[str]:
+    """WCAG luminance contrast between median cream board and median text red."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_wcag_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_text_red(r: int, g: int, b: int) -> bool:
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
+
+    board_lum: list[float] = []
+    text_lum: list[float] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            lum = _relative_luminance(r, g, b)
+            if _is_board_cream(r, g, b):
+                board_lum.append(lum)
+            elif _is_text_red(r, g, b):
+                text_lum.append(lum)
+    if len(board_lum) < 48 or len(text_lum) < 24:
+        return [f"{label}_wcag_samples board={len(board_lum)} text={len(text_lum)}"]
+    board_lum.sort()
+    text_lum.sort()
+    l_board = board_lum[int(len(board_lum) * 0.92)]
+    l_text = text_lum[int(len(text_lum) * 0.08)]
+    ratio = _wcag_contrast(l_board, l_text)
+    if ratio < min_ratio:
+        return [f"{label}_wcag_contrast={ratio:.2f} need>={min_ratio}"]
+    return []
+
+
+def check_sign_front_posts_to_ground(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    bottom_frac: float = 0.15,
+) -> list[str]:
+    """Front view: two side columns (wood/tuft) occupy lower 35% of sign subject."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return ["sign_front_posts_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_text_red(r: int, g: int, b: int) -> bool:
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
+
+    def _is_post_wood(r: int, g: int, b: int) -> bool:
+        if r > 150 and r > g + 24:
+            return False
+        return 52 < r < 178 and 30 < g < 142 and 14 < b < 112 and r > g > b
+
+    def _is_tuft_green(r: int, g: int, b: int) -> bool:
+        return g > 88 and g > r + 6 and g > b + 5
+
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_post_wood(r, g, b) or _is_tuft_green(r, g, b) or _is_board_cream(r, g, b):
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return ["sign_front_posts_subject_empty"]
+    wood_pts: list[tuple[int, int]] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_post_wood(r, g, b):
+                wood_pts.append((x, y))
+    if len(wood_pts) < 48:
+        return [f"sign_front_posts_wood_sparse px={len(wood_pts)}"]
+    ys_w = [p[1] for p in wood_pts]
+    xs_w = [p[0] for p in wood_pts]
+    y0w, y1w = min(ys_w), max(ys_w)
+    x0w, x1w = min(xs_w), max(xs_w)
+    y0s, y1s = min(ys), max(ys)
+    reach_y = y0s + int((y1s - y0s + 1) * 0.58)
+    if y1w < reach_y:
+        return [f"sign_front_posts_short wood_top={y1w} need_y>={reach_y}"]
+    mid_x = (x0w + x1w) // 2
+    left = sum(1 for x, _y in wood_pts if x < mid_x)
+    right = sum(1 for x, _y in wood_pts if x >= mid_x)
+    if left < 12 or right < 12:
+        return [f"sign_front_posts_two_blobs L={left} R={right}"]
+    if (x1w - x0w + 1) < int(w * 0.10):
+        return [f"sign_front_posts_narrow span={x1w - x0w + 1}"]
     return []
 
 
