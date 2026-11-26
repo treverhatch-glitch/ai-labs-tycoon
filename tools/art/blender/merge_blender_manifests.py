@@ -13,8 +13,16 @@ CATALOG_G = REPO / "unity/Assets/Scripts/Hq/EarlyGameGarageCatalog.cs"
 CATALOG_S = REPO / "unity/Assets/Scripts/Hq/EarlyGameStaffCatalog.cs"
 
 
-def collect(kit_dir: Path) -> list[dict]:
+def _extras(manifest_path: Path) -> dict[str, dict]:
+    if not manifest_path.exists():
+        return {}
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    return {a["id"]: a for a in data.get("assets", [])}
+
+
+def collect(kit_dir: Path, extra: dict[str, dict] | None = None) -> list[dict]:
     entries = []
+    extra = extra or {}
     for glb in sorted(kit_dir.glob("*.glb")):
         aid = glb.stem
         tex_base = kit_dir / "textures" / aid
@@ -24,15 +32,17 @@ def collect(kit_dir: Path) -> list[dict]:
                 p = tex_base / f"{aid}_{kind}.png"
                 if p.exists():
                     textures[kind] = f"Assets/Art/EarlyGame/{kit_dir.name}/textures/{aid}/{aid}_{kind}.png"
-        entries.append(
-            {
-                "id": aid,
-                "path": f"Assets/Art/EarlyGame/{kit_dir.name}/{aid}.glb",
-                "textures": textures,
-                "preview": f"docs/art/previews/{aid}.png",
-                "license": "CC0-1.0 (Blender-baked, in-repo)",
-            }
-        )
+        row = {
+            "id": aid,
+            "path": f"Assets/Art/EarlyGame/{kit_dir.name}/{aid}.glb",
+            "textures": textures,
+            "preview": f"docs/art/previews/{aid}.png",
+            "license": "CC0-1.0 (Blender-baked, in-repo)",
+        }
+        for key in ("meshIslands", "grounded", "vertexCount", "triangleCount", "generator", "blenderVersion"):
+            if key in extra.get(aid, {}):
+                row[key] = extra[aid][key]
+        entries.append(row)
     return entries
 
 
@@ -61,8 +71,10 @@ def patch_catalog(path: Path, ids: list[str], root_suffix: str) -> None:
 
 
 def main() -> int:
-    garage = collect(GARAGE)
-    staff = collect(STAFF)
+    garage_path = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
+    staff_path = REPO / "unity/Assets/Art/EarlyGame/staff-manifest.json"
+    garage = collect(GARAGE, _extras(garage_path))
+    staff = collect(STAFF, _extras(staff_path))
     (REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json").write_text(
         json.dumps({"fidelity": "blender-baked", "assets": garage}, indent=2) + "\n", encoding="utf-8"
     )
