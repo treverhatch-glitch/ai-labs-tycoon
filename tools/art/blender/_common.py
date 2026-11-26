@@ -674,7 +674,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.11 if asset_id == "prop-desk" else 0.10,
+        lit_strength=0.16 if asset_id == "prop-desk" else 0.10,
     )
     if asset_id == "prop-desk":
         bpy.context.scene.view_settings.view_transform = "Raw"
@@ -706,7 +706,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 78 if asset_id == "prop-desk" else 55
+    fill.data.energy = 84 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
@@ -875,7 +875,7 @@ def _prop_desk_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             links.new(tex.outputs["Color"], em_in)
         strength = bsdf.inputs.get("Emission Strength")
         if strength is not None:
-            strength.default_value = 1.15
+            strength.default_value = 0.92
         bsdf.inputs["Roughness"].default_value = 0.45
     elif kind == "pot":
         bsdf.inputs["Base Color"].default_value = (0.78, 0.45, 0.32, 1.0)
