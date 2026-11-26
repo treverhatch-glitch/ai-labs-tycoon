@@ -1,11 +1,13 @@
 {
-  "camera_dist": 4.996676560237315,
+  "camera_dist": 5.1270246444174195,
   "bbox_radius": 1.042784673440831,
-  "framing_margin": 1.15,
+  "framing_margin": 1.18,
   "lens_mm": 50.0,
-  "azimuth_deg": 45.0,
-  "elevation_deg": 30.0,
-  "up_axis": "Z",
-  "mid_grey": false,
-  "contact_shadow": false
+  "azimuth_deg": 34.0,
+  "elevation_deg": 6.0,
+  "up_axis": "Y",
+  "mid_grey": true,
+  "contact_shadow": true,
+  "glb_sha256": "3f129561e77c684261377041f706234b466c90bf830a5b7f620ffa7e04b18dd5",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-roll-door.glb"
 }

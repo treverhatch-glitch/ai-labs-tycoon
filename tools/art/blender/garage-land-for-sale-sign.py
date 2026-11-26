@@ -65,37 +65,39 @@ def _scale_to_dimensions(ob, target: tuple[float, float, float]) -> None:
 
 
 def _kenney_post(name: str, x: float) -> bc.bpy.types.Object:
+    """Kenney fence-1x2 scaled to a vertical Y-up post (feet on Y=0)."""
     obj = bc.import_cc0_kenney_glb("fence-1x2.glb")
     obj.name = name
-    obj.rotation_euler = (0.0, math.pi / 2.0, 0.0)
-    bc.bpy.ops.object.select_all(action="DESELECT")
-    obj.select_set(True)
-    bc.bpy.context.view_layer.objects.active = obj
-    bc.bpy.ops.object.transform_apply(rotation=True)
     _scale_to_dimensions(obj, (POST_W, POST_H, POST_W))
     obj.location = (x, POST_H * 0.5, 0.0)
+    obj.rotation_euler = (0.0, 0.0, 0.0)
     bc.assign_solid(obj, (0.52, 0.38, 0.26, 1.0), 0.58)
     return obj
 
 
 def _kenney_board() -> bc.bpy.types.Object:
+    """Y-up billboard: wide X, tall Y, thin Z (public face ±Z)."""
     obj = bc.import_cc0_kenney_glb("driveway-short.glb")
     obj.name = "board"
-    obj.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
-    bc.bpy.ops.object.select_all(action="DESELECT")
-    obj.select_set(True)
-    bc.bpy.context.view_layer.objects.active = obj
-    bc.bpy.ops.object.transform_apply(rotation=True)
-    _scale_to_dimensions(obj, (BOARD_X, BOARD_Y, BOARD_Z))
-    board_y = POST_H - BOARD_Z * 0.5
+    _scale_to_dimensions(obj, (BOARD_X, BOARD_Z, BOARD_Y))
     inner_span = BOARD_X - POST_W * 1.1
     if obj.dimensions.x > inner_span:
         obj.scale.x *= inner_span / max(obj.dimensions.x, 1e-6)
         bc.bpy.ops.object.transform_apply(scale=True)
-    obj.location = (0.0, board_y, 0.0)
-    obj.rotation_euler = (0.0, 0.0, 0.0)
     bc.assign_solid(obj, (0.98, 0.96, 0.94, 1.0), 0.40)
     return obj
+
+
+def _rigid_sign_layout(post_l, post_r, board) -> None:
+    """Board spans between posts; posts vertical on ground (no tilt)."""
+    post_x = BOARD_X * 0.5 - POST_W * 0.45
+    post_l.location = (-post_x, POST_H * 0.5, 0.0)
+    post_r.location = (post_x, POST_H * 0.5, 0.0)
+    post_l.rotation_euler = (0.0, 0.0, 0.0)
+    post_r.rotation_euler = (0.0, 0.0, 0.0)
+    board.location = (0.0, POST_H - BOARD_Z * 0.5, 0.0)
+    board.rotation_euler = (0.0, 0.0, 0.0)
+    bc.bpy.context.view_layer.update()
 
 
 def main():
@@ -108,11 +110,11 @@ def main():
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
 
-    post_x = BOARD_X * 0.5 - POST_W * 0.55
-    post_l = _kenney_post("PostL", -post_x)
-    post_r = _kenney_post("PostR", post_x)
+    post_l = _kenney_post("PostL", 0.0)
+    post_r = _kenney_post("PostR", 0.0)
     board = _kenney_board()
-    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=-1.0, extrude_m=0.010)
+    _rigid_sign_layout(post_l, post_r, board)
+    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.010)
     letters = bc.bpy.context.scene.objects["letters"]
 
     mesh_obs = [post_l, post_r, board, letters]
@@ -127,6 +129,7 @@ def main():
     )
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
+    bc.rerender_garage_preview("garage-roll-door", "garage-kit")
     subprocess.run(
         ["python3", str(REPO / "tools/art/assert_sign_front_ltr.py")],
         check=True,

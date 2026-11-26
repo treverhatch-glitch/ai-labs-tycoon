@@ -12,7 +12,7 @@ import subprocess
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
+from mathutils import Matrix, Vector
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PACKET34_ENV_IDS = {
@@ -235,10 +235,9 @@ def ensure_sign_text_ltr(board: bpy.types.Object, letters: bpy.types.Object, *, 
     bpy.ops.object.select_all(action="DESELECT")
     letters.select_set(True)
     bpy.context.view_layer.objects.active = letters
-    bpy.context.scene.tool_settings.transform_pivot_point = "CURSOR"
-    bpy.context.scene.cursor.location = pivot
-    bpy.ops.transform.rotate(value=math.pi, orient_axis="Y")
-    bpy.ops.object.transform_apply(rotation=True)
+    rot = Matrix.Rotation(math.pi, 4, view.normalized())
+    letters.matrix_world = Matrix.Translation(pivot) @ rot @ Matrix.Translation(-pivot) @ letters.matrix_world
+    bpy.ops.object.transform_apply(rotation=True, location=True)
     bpy.context.view_layer.update()
     assert_sign_text_positive_det(letters)
 
@@ -265,24 +264,30 @@ def add_sign_mesh_text(
     ob.data.space_character = 1.03
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
-    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
+    ob.rotation_euler = (0.0, 0.0, 0.0)
     board_w = float(board.dimensions.x)
-    board_h = float(board.dimensions.z)
+    board_h = float(board.dimensions.y)
     bpy.ops.object.convert(target="MESH")
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
         sx = abs((board_w * 0.64) / dx)
-        sy = abs((board_h * 0.50) / dy)
+        sy = abs((board_h * 0.42) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
-    board_y = float(board.matrix_world.translation.y)
-    thin_h = float(board.dimensions.y) * 0.5
-    ob.location.x = board.location.x
-    ob.location.z = board.location.z
-    ob.location.y = board_y + face_dir * (thin_h + extrude_m * 0.55)
+    board_c = board.matrix_world.translation.copy()
+    thin_h = float(min(board.dimensions)) * 0.5
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    ob.location.x = board_c.x
+    ob.location.y = board_c.y
+    if thin_i == 2:
+        ob.location.z = board_c.z + face_dir * (thin_h + extrude_m * 0.55)
+    elif thin_i == 1:
+        ob.location.y = board_c.y + face_dir * (thin_h + extrude_m * 0.55)
+    else:
+        ob.location.x = board_c.x + face_dir * (thin_h + extrude_m * 0.55)
     bpy.ops.object.transform_apply(location=True)
     assign_sign_text_red(ob)
     for _ in range(6):
@@ -1019,18 +1024,13 @@ def finish_sign_named_asset(
         for ob in (posts, board, letters):
             ob.location.y -= min_y
     bpy.context.view_layer.update()
-    bpy.ops.object.select_all(action="DESELECT")
-    for ob in (posts, board, letters):
-        ob.select_set(True)
-    bpy.context.view_layer.objects.active = posts
-    bpy.ops.transform.rotate(value=math.pi / 2, orient_axis="X")
-    bpy.ops.object.transform_apply(rotation=True)
-    bpy.ops.object.select_all(action="DESELECT")
-    letters.select_set(True)
-    bpy.context.view_layer.objects.active = letters
-    bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
-    _snap_sign_letters_to_board(board, letters, face_dir=-1.0)
-    ensure_sign_text_ltr(board, letters, face_dir=-1.0)
+    if letters.parent:
+        bpy.ops.object.select_all(action="DESELECT")
+        letters.select_set(True)
+        bpy.context.view_layer.objects.active = letters
+        bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
+    ensure_sign_text_ltr(board, letters, face_dir=1.0)
     min_up = min(mesh_world_min_on_axis(o, "y") for o in (posts, board, letters))
     if abs(min_up) > 1e-5:
         for ob in (posts, board, letters):
@@ -1041,9 +1041,22 @@ def finish_sign_named_asset(
         ob.select_set(True)
         bpy.context.view_layer.objects.active = ob
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-        bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
-    _snap_sign_letters_to_board(board, letters, face_dir=-1.0)
-    ensure_sign_text_ltr(board, letters, face_dir=-1.0)
+    bpy.ops.object.select_all(action="DESELECT")
+    letters.select_set(True)
+    bpy.context.view_layer.objects.active = letters
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
+    bc = board.matrix_world.translation.copy()
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    half_b = board.dimensions[thin_i] * 0.5
+    half_l = letters.dimensions[thin_i] * 0.5
+    letters.location = Vector((bc.x, bc.y, bc.z))
+    if thin_i == 2:
+        letters.location.z = bc.z + (half_b + half_l + 0.002)
+    elif thin_i == 1:
+        letters.location.y = bc.y + (half_b + half_l + 0.002)
+    else:
+        letters.location.x = bc.x + (half_b + half_l + 0.002)
+    ensure_sign_text_ltr(board, letters, face_dir=1.0)
     assert_sign_text_positive_det(letters)
     bpy.context.view_layer.update()
     glb_path = out_dir / f"{asset_id}.glb"
@@ -1366,6 +1379,7 @@ def render_sign_garage_hero(category: str = "garage-kit") -> None:
     facade.location.y -= min_y
     door_meshes = _import_glb_meshes(door_glb)
     door_ob = _join_mesh_objects(door_meshes)
+    door_ob.name = "GarageRollDoor"
     sign_imported = _import_glb_meshes(sign_glb)
     sign_meshes = [o for o in sign_imported if o.name in {"posts", "board", "letters"}]
     if len(sign_meshes) < 3:
@@ -1379,16 +1393,31 @@ def render_sign_garage_hero(category: str = "garage-kit") -> None:
         "z": fmax.z - fmin.z,
     }
     thin_axis = min(spans, key=spans.get)
+    bpy.context.view_layer.update()
+    ddx, ddy, ddz = (float(door_ob.dimensions.x), float(door_ob.dimensions.y), float(door_ob.dimensions.z))
+    door_ob.scale = (
+        2.55 / max(ddx, 1e-6),
+        max(1.0, 2.35 / max(ddy, 1e-6)),
+        2.35 / max(ddz, 1e-6),
+    )
+    bpy.ops.object.select_all(action="DESELECT")
+    door_ob.select_set(True)
+    bpy.context.view_layer.objects.active = door_ob
+    bpy.ops.object.transform_apply(scale=True)
+    bpy.context.view_layer.update()
     door_ob.location.x = fcenter.x
-    door_ob.location.z = fcenter.z - 0.45
+    door_ob.location.z = fcenter.z - 0.32
     if thin_axis == "y":
-        door_ob.location.y = fmax.y + 0.04
+        inset = float(door_ob.dimensions.y) * 0.52
+        door_ob.location.y = fmax.y - inset
     elif thin_axis == "z":
-        door_ob.location.z = fmax.z + 0.04
-        door_ob.location.y = fcenter.y - 0.45
+        inset = float(door_ob.dimensions.z) * 0.52
+        door_ob.location.z = fmax.z - inset
+        door_ob.location.y = fcenter.y - 0.32
     else:
-        door_ob.location.x = fmax.x + 0.04
-        door_ob.location.y = fcenter.y - 0.45
+        inset = float(door_ob.dimensions.x) * 0.52
+        door_ob.location.x = fmax.x - inset
+        door_ob.location.y = fcenter.y - 0.32
     bpy.context.view_layer.update()
     smin, smax = rig.mesh_bounds_world(sign_meshes)
     scenter = (smin + smax) * 0.5
@@ -1416,6 +1445,17 @@ def render_sign_garage_hero(category: str = "garage-kit") -> None:
     os.environ["PREVIEW_GLB_PATH"] = str(sign_glb.relative_to(REPO_ROOT))
     hero_meshes = sign_meshes + [facade, door_ob]
     render_preview(hero_meshes, hero)
+    meta_path = hero.with_name(hero.stem + ".frame.json")
+    if meta_path.is_file():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        meta["hero_assets"] = [
+            str(sign_glb.relative_to(REPO_ROOT)),
+            str(door_glb.relative_to(REPO_ROOT)),
+            "tools/art/cc0/incoming/kenney-city-kit-suburban/Models/GLB format/building-type-b.glb",
+        ]
+        meta["roll_door_preview"] = "docs/art/previews/garage-roll-door.png"
+        meta["roll_door_glb_sha256"] = file_sha256(door_glb)
+        meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
 
 def _billboard_face_axis(ob: bpy.types.Object) -> str:
