@@ -70,6 +70,58 @@ def _paint_mesh_vertex_color(obj: bpy.types.Object, rgb: tuple[float, float, flo
         vcol.data[corner_i].color = col
 
 
+def _lerp3(a: tuple[float, float, float], b: tuple[float, float, float], t: float) -> tuple[float, float, float]:
+    t = max(0.0, min(1.0, t))
+    return (a[0] * (1 - t) + b[0] * t, a[1] * (1 - t) + b[1] * t, a[2] * (1 - t) + b[2] * t)
+
+
+def _paint_wood_grain(
+    obj: bpy.types.Object,
+    light: tuple[float, float, float] = (0.78, 0.54, 0.34),
+    dark: tuple[float, float, float] = (0.52, 0.34, 0.22),
+    grain_scale: float = 42.0,
+) -> None:
+    """Procedural streak grain for cc0-restyle-v1 albedo bake (presentation hero)."""
+    mesh = obj.data
+    if mesh.color_attributes.get("BakeColor") is None:
+        mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+    vcol = mesh.color_attributes["BakeColor"]
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            vi = mesh.loops[li].vertex_index
+            co = obj.matrix_world @ mesh.vertices[vi].co
+            streak = math.sin(co.x * grain_scale + co.y * 3.7) * 0.55
+            ring = math.sin((co.x + co.y) * 18.0) * 0.25
+            bump = math.sin(co.z * 55.0) * 0.08
+            t = 0.48 + streak * 0.34 + ring * 0.16 + bump
+            rgb = _lerp3(light, dark, t)
+            vcol.data[li].color = (rgb[0], rgb[1], rgb[2], 1.0)
+
+
+def _paint_plastic_keys(
+    obj: bpy.types.Object,
+    base: tuple[float, float, float] = (0.16, 0.18, 0.22),
+    key_hi: tuple[float, float, float] = (0.72, 0.74, 0.78),
+) -> None:
+    """Keyboard: lighter caps on upper facets so it reads seated on the desk."""
+    mesh = obj.data
+    if mesh.color_attributes.get("BakeColor") is None:
+        mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+    vcol = mesh.color_attributes["BakeColor"]
+    mn, mx = _bbox_world([obj])
+    top_z = mx.z - (mx.z - mn.z) * 0.08
+    for poly in mesh.polygons:
+        normal = poly.normal
+        up = max(0.0, normal.z)
+        for li in poly.loop_indices:
+            vi = mesh.loops[li].vertex_index
+            co = obj.matrix_world @ mesh.vertices[vi].co
+            on_top = 1.0 if co.z >= top_z else 0.0
+            mix = min(1.0, up * 0.65 + on_top * 0.85 + math.sin(co.x * 90.0) * 0.08)
+            rgb = _lerp3(base, key_hi, mix)
+            vcol.data[li].color = (rgb[0], rgb[1], rgb[2], 1.0)
+
+
 def _import_obj(obj_path: Path) -> bpy.types.Object:
     bpy.ops.wm.obj_import(filepath=str(obj_path))
     objs = [o for o in bpy.context.selected_objects if o.type == "MESH"]
@@ -381,7 +433,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    floor_g = 142.0 / 255.0
+    floor_g = 132.0 / 255.0
     gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g + 0.01, 1)
     gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
@@ -393,7 +445,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 32 if asset_id == "prop-desk" else 55
+    fill.data.energy = 28 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
 
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
@@ -402,7 +454,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     pad = 1.04 if asset_id == "prop-desk" else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.12) / target_fill) * pad
     if asset_id == "prop-desk":
-        ortho *= 0.73
+        ortho *= 0.80
 
     cam_data = bpy.data.cameras.new("PreviewCam")
     cam = bpy.data.objects.new("PreviewCam", cam_data)
@@ -447,7 +499,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
     if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.14 if asset_id == "prop-desk" else 0.22
+        bpy.context.scene.view_settings.exposure = 0.12 if asset_id == "prop-desk" else 0.22
         bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
 

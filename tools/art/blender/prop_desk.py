@@ -15,19 +15,17 @@ TARGET_WIDTH = 1.14
 SURFACE_TOL = 0.012  # 1 cm Hatch bar (+ numeric slack)
 SOURCE_NOTE = "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse)"
 
-# Native snap: (u, v) fractions on desk top in X and Y (Blender Z-up horizontal plane).
 KENNEY_OFFSETS = {
-    "computerScreen.glb": (0.50, 0.54),
-    "computerKeyboard.glb": (0.36, 0.52),
-    "computerMouse.glb": (0.62, 0.54),
+    "computerScreen.glb": (0.50, 0.52),
+    "computerKeyboard.glb": (0.38, 0.56),
+    "computerMouse.glb": (0.64, 0.55),
 }
 
 PALETTE = {
-    "wood_top": (0.62, 0.52, 0.4),
-    "legs_pedestal": (0.26, 0.24, 0.22),
-    "monitor_glass": (0.12, 0.38, 0.72),
-    "keyboard": (0.2, 0.22, 0.26),
-    "mouse": (0.34, 0.36, 0.4),
+    "legs_pedestal": (0.30, 0.27, 0.24),
+    "monitor_glass": (0.10, 0.36, 0.74),
+    "monitor_bezel": (0.14, 0.15, 0.17),
+    "mouse": (0.36, 0.38, 0.42),
 }
 
 
@@ -52,17 +50,23 @@ def _desktop_xy_bounds(top_parts: list[bpy.types.Object]) -> tuple[float, float,
 
 
 def _snap_drawer_into_carcass(desk_parts: list[bpy.types.Object]) -> None:
+    """Seat drawer on runners inside carcass; slight pull, not a knee-space float."""
     drawers = [p for p in desk_parts if "drawer" in p.name.lower()]
     tops = _desk_top_parts(desk_parts)
     if not drawers or not tops:
         return
     tmn, tmx = _common._bbox_world(tops)
+    cavity_depth = tmx.y - tmn.y
     for dr in drawers:
         dmn, dmx = _common._bbox_world([dr])
-        runner_z = tmn.z + (tmx.z - tmn.z) * 0.26
+        runner_z = tmn.z + (tmx.z - tmn.z) * 0.20
         dr.location.z += runner_z - dmn.z
-        cavity_y = tmn.y + (tmx.y - tmn.y) * 0.42
+        cavity_y = tmn.y + cavity_depth * 0.62
         dr.location.y += cavity_y - (dmn.y + dmx.y) * 0.5
+        pull = cavity_depth * 0.02
+        dr.location.y -= pull
+        if dmx.y > tmx.y - 0.015:
+            dr.location.y -= dmx.y - (tmx.y - 0.015)
 
 
 def _place_on_desktop(
@@ -100,6 +104,20 @@ def _gate_peripheral_on_desktop(
         )
 
 
+def _paint_monitor(parts: list[bpy.types.Object]) -> None:
+    for p in parts:
+        mn, mx = _common._bbox_world([p])
+        for poly in p.data.polygons:
+            for li in poly.loop_indices:
+                vi = p.data.loops[li].vertex_index
+                co = p.matrix_world @ p.data.vertices[vi].co
+                t = (co.z - mn.z) / max(mx.z - mn.z, 1e-6)
+                col = PALETTE["monitor_glass"] if t > 0.35 else PALETTE["monitor_bezel"]
+                if p.data.color_attributes.get("BakeColor") is None:
+                    p.data.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+                p.data.color_attributes["BakeColor"].data[li].color = (*col, 1.0)
+
+
 def build_desk() -> bpy.types.Object:
     _common._reset_scene()
     desk_parts = _import_part("desk.glb")
@@ -107,7 +125,7 @@ def build_desk() -> bpy.types.Object:
     scale = TARGET_WIDTH / max(width, 0.01)
     _common._apply_scale_uniform(desk_parts, scale)
     top_parts = _desk_top_parts(desk_parts)
-    _common._bevel_meshes(desk_parts, width=0.006, segments=2)
+    _common._bevel_meshes(desk_parts, width=0.007, segments=2)
     _snap_drawer_into_carcass(desk_parts)
     surface_z = _desktop_surface_z(top_parts)
     xy = _desktop_xy_bounds(top_parts)
@@ -115,7 +133,7 @@ def build_desk() -> bpy.types.Object:
     all_obs: list[bpy.types.Object] = list(desk_parts)
     periph_files = (
         ("computerScreen.glb", scale * 1.02),
-        ("computerKeyboard.glb", scale),
+        ("computerKeyboard.glb", scale * 1.12),
         ("computerMouse.glb", scale * 1.05),
     )
     for fname, sc in periph_files:
@@ -125,7 +143,7 @@ def build_desk() -> bpy.types.Object:
         _place_on_desktop(parts, surface_z, xy, u, v)
         if "Keyboard" in fname:
             for o in parts:
-                o.location.z -= 0.0015
+                o.location.z -= 0.002
             bpy.context.view_layer.update()
         if "Screen" in fname:
             for o in parts:
@@ -137,17 +155,31 @@ def build_desk() -> bpy.types.Object:
             bpy.context.view_layer.update()
         _gate_peripheral_on_desktop(parts, surface_z, xy, fname)
         all_obs.extend(parts)
+
     for p in desk_parts:
-        col = PALETTE["legs_pedestal"] if "drawer" in p.name.lower() else PALETTE["wood_top"]
-        _common._paint_mesh_vertex_color(p, col)
+        if "drawer" in p.name.lower():
+            _common._paint_wood_grain(
+                p,
+                light=(0.58, 0.50, 0.40),
+                dark=(0.40, 0.34, 0.28),
+                grain_scale=55.0,
+            )
+        else:
+            z = _common._bbox_world([p])[1].z
+            mn = _common._bbox_world([p])[0].z
+            if z - mn < 0.08:
+                _common._paint_mesh_vertex_color(p, PALETTE["legs_pedestal"])
+            else:
+                _common._paint_wood_grain(p)
+
     for p in all_obs:
         if p in desk_parts:
             continue
         nm = p.name.lower()
         if "screen" in nm:
-            _common._paint_mesh_vertex_color(p, PALETTE["monitor_glass"])
+            _paint_monitor([p])
         elif "keyboard" in nm:
-            _common._paint_mesh_vertex_color(p, PALETTE["keyboard"])
+            _common._paint_plastic_keys(p)
         else:
             _common._paint_mesh_vertex_color(p, PALETTE["mouse"])
 
@@ -172,6 +204,7 @@ def main() -> None:
         extra_manifest={
             "kenneyParts": ["desk.glb", "computerScreen.glb", "computerKeyboard.glb", "computerMouse.glb"],
             "kenneyOffsets": KENNEY_OFFSETS,
+            "restyle": "wood-grain-v2",
         },
     )
     print(__import__("json").dumps(manifest, indent=2))

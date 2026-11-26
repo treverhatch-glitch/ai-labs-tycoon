@@ -1,18 +1,18 @@
 {
   "assetId": "prop-desk",
   "preview": "docs/art/previews/prop-desk.png",
-  "glb_sha256": "372d016b7f29dcc03c325b4c86cde46b67bcaf42c7a44cc7a73e92d8943f5eb9",
+  "glb_sha256": "bb9da1913aac6eefa150734e7321a8ac6a898d82964dca2d17a1939c109e67ae",
   "resolution": 1024,
   "quality": {
-    "stddev": 72.87064870484593,
-    "coverage": 0.9999990463256836,
-    "mean_lum": 90.56054931335831,
-    "mean_sat": 0.11575236836307556,
+    "stddev": 71.8637239395335,
+    "coverage": 0.9999971389770508,
+    "mean_lum": 57.8050106056606,
+    "mean_sat": 0.07974503574222755,
     "border_touch": 0.0,
-    "silhouette_frac": 0.892578125,
-    "subject_bbox_frac": 0.6748046875,
-    "min_margin_frac": 0.0966796875,
-    "flat_pixel_frac": 0.4860553741455078,
-    "ground_lum": 143.8532774390244
+    "silhouette_frac": 0.8134765625,
+    "subject_bbox_frac": 0.7802734375,
+    "min_margin_frac": 0.0869140625,
+    "flat_pixel_frac": 0.56976318359375,
+    "ground_lum": 176.6377826473577
   }
 }
