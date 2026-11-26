@@ -1377,6 +1377,9 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
         os.environ["PREVIEW_FRAMING_MARGIN"] = "1.06"
         rig.render_sign_lettered_face(face_obs, front, 512)
+        front_align = REPO_ROOT / "tools/art/sign_composite_front_preview.py"
+        if front_align.is_file():
+            subprocess.run(["python3", str(front_align), str(front)], check=True, cwd=str(REPO_ROOT))
         ob = mesh_obs[0]
     else:
         if len(mesh_obs) > 1:

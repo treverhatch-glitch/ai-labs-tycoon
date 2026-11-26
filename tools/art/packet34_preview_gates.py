@@ -463,6 +463,40 @@ def _forsale_red_template(width: int, height: int):
     return im
 
 
+def _glyph_bbox_grayscale(im) -> tuple[int, int, int, int]:
+    tx0, tx1, ty0, ty1 = im.width, -1, im.height, -1
+    w, h = im.size
+    for y in range(h):
+        for x in range(w):
+            if im.getpixel((x, y)) > 32:
+                tx0, tx1 = min(tx0, x), max(tx1, x)
+                ty0, ty1 = min(ty0, y), max(ty1, y)
+    if tx1 < 0:
+        return 0, w - 1, 0, h - 1
+    return tx0, tx1, ty0, ty1
+
+
+def _forsale_board_inner_template_mask(
+    red_w: int,
+    red_h: int,
+    inner_w: int,
+    inner_h: int,
+) -> list[list[int]] | None:
+    """NCC reference from board-inner master render (matches sign front composite)."""
+    if inner_w < 24 or inner_h < 12:
+        return None
+    master = _forsale_red_template(inner_w, inner_h)
+    gx0, gx1, gy0, gy1 = _glyph_bbox_grayscale(master)
+    crop_w, crop_h = gx1 - gx0 + 1, gy1 - gy0 + 1
+    if crop_w != red_w or crop_h != red_h:
+        return None
+    crop = master.crop((gx0, gy0, gx1 + 1, gy1 + 1))
+    return [
+        [1 if crop.getpixel((x, y)) > 32 else 0 for x in range(red_w)]
+        for y in range(red_h)
+    ]
+
+
 def _mask_ncc(a: list[list[int]], b: list[list[int]]) -> float:
     flat_a: list[float] = []
     flat_b: list[float] = []
@@ -654,6 +688,8 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
         return errs
 
     red_w, red_h = rx1 - rx0 + 1, ry1 - ry0 + 1
+    inner_w = board_w - 2 * margin_x
+    inner_h = board_h - 2 * margin_y
     red_mask = [[0 for _ in range(red_w)] for _ in range(red_h)]
     for y in range(red_h):
         for x in range(red_w):
@@ -662,10 +698,13 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
                 r, g, b = rpx[sy * w + sx]
                 if _is_red(r, g, b):
                     red_mask[y][x] = 1
-    tmpl = _forsale_red_template(red_w, red_h)
-    tmpl_mask = [
-        [1 if tmpl.getpixel((x, y)) > 32 else 0 for x in range(red_w)] for y in range(red_h)
-    ]
+    tmpl_mask = _forsale_board_inner_template_mask(red_w, red_h, inner_w, inner_h)
+    if tmpl_mask is None:
+        tmpl = _forsale_red_template(red_w, red_h)
+        tmpl_mask = [
+            [1 if tmpl.getpixel((x, y)) > 32 else 0 for x in range(red_w)]
+            for y in range(red_h)
+        ]
     rev_mask = [row[::-1] for row in red_mask]
     fwd = _mask_ncc(red_mask, tmpl_mask)
     rev = _mask_ncc(rev_mask, tmpl_mask)

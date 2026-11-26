@@ -27,6 +27,10 @@ def pin_studio_corner_backdrop(path: Path, bg: tuple[int, int, int], *, margin: 
         r, g, b = im.getpixel((x, y))
         if abs(r - g) < 24 and abs(g - b) < 24 and 110 <= r <= 220:
             im.putpixel((x, y), bg)
+    for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)):
+        r, g, b = im.getpixel((x, y))
+        if abs(r - g) < 24 and abs(g - b) < 24 and 110 <= r <= 220:
+            im.putpixel((x, y), bg)
     im.save(path, format="PNG")
 
 
