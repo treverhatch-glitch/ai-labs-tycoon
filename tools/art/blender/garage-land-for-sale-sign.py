@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""For-sale sign — two posts + one flat board facing preview camera."""
+"""For-sale sign — two posts + one white board (0.9×0.6 m face)."""
 import os
 import sys
 from pathlib import Path
@@ -12,22 +12,10 @@ REPO = Path(__file__).resolve().parents[3]
 
 
 def write_sign_albedo(tex_path: Path) -> None:
-    """Bake-friendly board albedo via system Python (Blender PIL text is unreliable)."""
     import subprocess
 
     painter = REPO / "tools/art/paint_sign_albedo.py"
     subprocess.run(["python3", str(painter), str(tex_path)], check=True, cwd=str(REPO))
-
-
-def _cube_uv(ob: bpy.types.Object) -> None:
-    bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
-    if bpy.ops.object.mode_set.poll():
-        bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.cube_project()
-    bpy.ops.object.mode_set(mode="OBJECT")
 
 
 def main():
@@ -39,14 +27,13 @@ def main():
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
     post_w, post_h = 0.10, 1.65
-    span = 1.05
+    span = 0.90
     post_l = bc.add_cube("PostL", (post_w, post_h, post_w), (-span * 0.5, post_h * 0.5, 0))
     post_r = bc.add_cube("PostR", (post_w, post_h, post_w), (span * 0.5, post_h * 0.5, 0))
     bc.assign_solid(post_l, (0.52, 0.38, 0.26, 1.0), 0.58)
     bc.assign_solid(post_r, (0.52, 0.38, 0.26, 1.0), 0.58)
-    board = bc.add_cube("Board", (1.2, 0.8, 0.08), (0, 1.42, 0))
-    _cube_uv(board)
-    bc.assign_image_texture(board, albedo, uv_scale=1.0, roughness=0.42)
+    board = bc.add_cube("Board", (0.90, 0.60, 0.06), (0, 1.35, 0))
+    bc.assign_billboard_face_texture(board, albedo, face_axis="Z", roughness=0.40)
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     write_sign_albedo(albedo)
     bc.reexport_packet34_glb("garage-land-for-sale-sign", "garage-kit")

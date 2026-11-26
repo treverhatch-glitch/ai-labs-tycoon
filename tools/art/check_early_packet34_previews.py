@@ -24,6 +24,7 @@ from packet34_preview_gates import (  # noqa: E402
     check_wall_uv_blocks_per_metre,
     check_sign_albedo_layout,
     check_sign_front_red_inside_board,
+    check_sign_preview_board_text,
     check_sign_for_sale_contrast,
     check_curb_preview_concrete,
     check_sign_albedo_file,
@@ -78,6 +79,9 @@ def check_env_preview(asset_id: str) -> int:
             print(f"FAIL {asset_id} {err}")
             rc = 1
         for err in check_sign_albedo_layout(sign_tex):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_preview_board_text(rgb, mask, label="sign_studio"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
         front_rgb = PREVIEW / "garage-land-for-sale-sign-front.png"

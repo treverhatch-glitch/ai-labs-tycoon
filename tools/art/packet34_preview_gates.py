@@ -417,10 +417,9 @@ def check_sign_albedo_layout(tex_dir: Path) -> list[str]:
     def _is_red(r: int, g: int, b: int) -> bool:
         return r > 150 and r > g + 35 and r > b + 35
 
-    outer_cream = sum(1 for r, g, b in px if (r, g, b) == (245, 238, 220))
-    inner_panel = sum(1 for r, g, b in px if (r, g, b) == (252, 245, 228))
-    if outer_cream > 0.12 * w * h and inner_panel > 0.22 * w * h:
-        return [f"sign_inner_board_layers outer={outer_cream} inner={inner_panel}"]
+    dup_board = sum(1 for r, g, b in px if (r, g, b) in ((245, 238, 220), (252, 245, 228)))
+    if dup_board > 0.35 * w * h:
+        return [f"sign_albedo_dual_cream_px={dup_board}"]
     inner_cream = 0
     for y in range(margin, h - margin):
         for x in range(margin, w - margin):
@@ -446,12 +445,12 @@ def check_sign_albedo_layout(tex_dir: Path) -> list[str]:
     return []
 
 
-def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list[str]:
-    """Front-on hero: red glyph bbox inside cream board bbox from mask."""
-    if not front_rgb.is_file() or not front_mask.is_file():
-        return ["sign_front_preview_missing"]
-    rgb = _load_rgba(front_rgb)
-    mask = _load_rgba(front_mask)
+def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str = "sign") -> list[str]:
+    """Committed preview PNG: full FOR SALE on one white face (not albedo file)."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_preview_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
     if mask.size != rgb.size:
         mask = mask.resize(rgb.size)
     w, h = rgb.size
@@ -459,44 +458,77 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     rpx = list(rgb.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 140 and r > g + 30 and r > b + 30
+        return r > 135 and r > g + 28 and r > b + 28
 
-    hero_x, hero_y = [], []
+    def _is_white_face(r: int, g: int, b: int) -> bool:
+        # Preview renders (Cycles + emission) land a few steps below albedo 252 white.
+        return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
+
+    def _is_grey_inset(r: int, g: int, b: int) -> bool:
+        m = (r + g + b) / 3
+        return 125 < m < 205 and abs(r - g) < 18 and abs(g - b) < 22 and not _is_red(r, g, b)
+
+    hero_ys: list[int] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                hero_ys.append(y)
+    if not hero_ys:
+        return [f"{label}_mask_empty"]
+    hy0, hy1 = min(hero_ys), max(hero_ys)
+    face_y0 = hy0 + int((hy1 - hy0) * 0.18)
+
+    white_x, white_y, grey_face = [], [], 0
     red_x, red_y = [], []
     for y in range(h):
         for x in range(w):
-            r, g, b, _a = rpx[y * w + x]
-            if mpx[y * w + x][3] >= 160:
-                hero_x.append(x)
-                hero_y.append(y)
-            if mpx[y * w + x][3] >= 160 and _is_red(r, g, b):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if y >= face_y0 and _is_white_face(r, g, b):
+                white_x.append(x)
+                white_y.append(y)
+            elif y >= face_y0 and _is_grey_inset(r, g, b):
+                grey_face += 1
+            if _is_red(r, g, b):
                 red_x.append(x)
                 red_y.append(y)
-    if not hero_x or not red_x:
-        return [f"sign_front_board_or_red_missing hero={len(hero_x)} red={len(red_x)}"]
-    hx0, hx1, hy0, hy1 = min(hero_x), max(hero_x), min(hero_y), max(hero_y)
-    face_h = hy1 - hy0
-    by0 = hy0 + int(face_h * 0.22)
-    by1 = hy1
-    bx0, bx1 = hx0, hx1
-    board_x, board_y = hero_x, [y for y in hero_y if y >= by0]
-    if not board_y:
-        return ["sign_front_board_face_empty"]
-    by0, by1 = min(board_y), max(board_y)
+    if len(white_x) < 200 or len(red_x) < 120:
+        return [f"{label}_board_or_red_missing white={len(white_x)} red={len(red_x)}"]
+    bx0, bx1 = min(white_x), max(white_x)
+    by0, by1 = min(white_y), max(white_y)
+    if grey_face > int(0.012 * (bx1 - bx0 + 1) * (by1 - by0 + 1)):
+        return [f"{label}_grey_inset_face_px={grey_face}"]
+    board_w, board_h = bx1 - bx0 + 1, by1 - by0 + 1
+    margin_x = max(3, int(board_w * 0.05))
+    margin_y = max(3, int(board_h * 0.05))
     rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
-    pad_x = max(2, int((bx1 - bx0) * 0.02))
-    pad_y = max(2, int((by1 - by0) * 0.03))
-    if rx1 > bx1 or ry1 > by1 or rx0 < bx0 or ry0 < by0:
+    red_w = rx1 - rx0 + 1
+    if red_w < int(board_w * 0.50):
+        return [f"{label}_text_incomplete red_w={red_w} board_w={board_w}"]
+    if rx0 < bx0 + margin_x or rx1 > bx1 - margin_x:
         return [
-            f"sign_front_text_outside_board red=({rx0},{ry0})-({rx1},{ry1}) "
-            f"board=({bx0},{by0})-({bx1},{by1})"
+            f"{label}_text_clip_h red=({rx0}-{rx1}) board=({bx0}-{bx1}) margin_x={margin_x}"
         ]
-    if rx0 < bx0 + pad_x or ry0 < by0 + pad_y:
+    if ry0 < by0 + margin_y or ry1 > by1 - margin_y:
         return [
-            f"sign_front_text_margin red=({rx0},{ry0})-({rx1},{ry1}) "
-            f"board=({bx0},{by0})-({bx1},{by1}) pad=({pad_x},{pad_y})"
+            f"{label}_text_clip_v red=({ry0}-{ry1}) board=({by0}-{by1}) margin_y={margin_y}"
         ]
+  # Clipped at edge often touches board bbox — require strict inset on right.
+    right_gap = bx1 - rx1
+    left_gap = rx0 - bx0
+    if right_gap < margin_x or left_gap < margin_x:
+        return [
+            f"{label}_text_margin_fail gaps L={left_gap} R={right_gap} need>={margin_x}"
+        ]
+    flush_right = sum(1 for x in red_x if x >= bx1 - 2)
+    if flush_right > 12:
+        return [f"{label}_text_flush_right_px={flush_right} board_right={bx1}"]
     return []
+
+
+def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list[str]:
+    return check_sign_preview_board_text(front_rgb, front_mask, label="sign_front")
 
 
 def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:

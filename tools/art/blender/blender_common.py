@@ -344,7 +344,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     ground_scene_meshes()
     if asset_id == "garage-exterior-wall":
         tint_garage_parts(mesh_obs, asset_id)
-    elif asset_id in PACKET34_ENV_IDS:
+    elif asset_id in PACKET34_ENV_IDS and asset_id != "garage-land-for-sale-sign":
         apply_packet34_authoring_textures(mesh_obs, asset_id)
     else:
         tint_garage_parts(mesh_obs, asset_id)
@@ -354,6 +354,8 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if len(parts) > 1:
         if asset_id == "garage-lot-curb":
             root = link_or_join(parts)
+        elif asset_id == "garage-land-for-sale-sign":
+            root = union_overlapping_meshes(parts)
         else:
             root = union_overlapping_meshes(parts)
     else:
@@ -379,9 +381,22 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if thin >= 0.14:
         bevel_object(root, width=min(0.010, thin * 0.08), segments=2)
     smooth_shade(root)
-    uv_unwrap(root)
+    if asset_id == "garage-land-for-sale-sign":
+        project_billboard_face_uvs(root, "Z")
+    else:
+        uv_unwrap(root)
     if asset_id == "garage-exterior-wall":
         apply_wall_post_union_textures(root, wall_w=4.0, wall_h=3.0, block_u=0.4, block_v=0.2)
+    if asset_id == "garage-land-for-sale-sign":
+        albedo = tex_dir / f"{asset_id}_albedo.png"
+        if albedo.is_file():
+            assign_billboard_face_texture(
+                root,
+                albedo,
+                face_axis="Z",
+                face_dir=1.0,
+                roughness=0.40,
+            )
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     if asset_id == "garage-exterior-wall":
@@ -509,6 +524,108 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
                     os.environ.pop(key, None)
                 else:
                     os.environ[key] = val
+
+
+def _billboard_face_axis(ob: bpy.types.Object) -> str:
+    dx, dy, dz = (float(ob.dimensions.x), float(ob.dimensions.y), float(ob.dimensions.z))
+    dims = (("X", dx), ("Y", dy), ("Z", dz))
+    return min(dims, key=lambda t: t[1])[0]
+
+
+def project_billboard_face_uvs(ob: bpy.types.Object, face_axis: str) -> None:
+    """Cube-project UVs onto ±face_axis so one albedo covers the sign board face only."""
+    import bmesh
+
+    if not ob.data.uv_layers:
+        ob.data.uv_layers.new(name="UVMap")
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    me = ob.data
+    bm = bmesh.from_edit_mesh(me)
+    bm.faces.ensure_lookup_table()
+    axis_idx = {"X": 0, "Y": 1, "Z": 2}[face_axis.upper()]
+    for face in bm.faces:
+        face.select = abs(face.normal[axis_idx]) > 0.82
+    bmesh.update_edit_mesh(me)
+    bpy.ops.uv.cube_project(cube_size=2.0, scale_to_bounds=True)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def assign_billboard_face_texture(
+    ob: bpy.types.Object,
+    image_path: Path,
+    *,
+    face_axis: str = "Y",
+    white: tuple[float, float, float, float] = (0.98, 0.98, 0.96, 1.0),
+    uv_scale: float | tuple[float, float, float] = 1.0,
+    roughness: float = 0.42,
+    flat_lit: bool = False,
+    face_dir: float = 1.0,
+    both_faces: bool = False,
+) -> None:
+    """Map albedo only on ±face_axis faces; solid white on edge faces (avoids UV bleed on cube)."""
+    image_path = image_path.resolve()
+    mat = bpy.data.materials.new(ob.name + "_billboard")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    geo = nodes.new("ShaderNodeNewGeometry")
+    axis_idx = {"X": 0, "Y": 1, "Z": 2}[face_axis.upper()]
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(geo.outputs["Normal"], sep.inputs["Vector"])
+    if both_faces:
+        abs_ax = nodes.new("ShaderNodeMath")
+        abs_ax.operation = "ABSOLUTE"
+        links.new(sep.outputs[face_axis], abs_ax.inputs[0])
+        is_face = nodes.new("ShaderNodeMath")
+        is_face.operation = "GREATER_THAN"
+        is_face.inputs[1].default_value = 0.82
+        abs_out = "Value" if "Value" in abs_ax.outputs else 0
+        links.new(abs_ax.outputs[abs_out], is_face.inputs[0])
+    else:
+        axis_vec = [0.0, 0.0, 0.0]
+        axis_vec[axis_idx] = float(face_dir)
+        facing = nodes.new("ShaderNodeVectorMath")
+        facing.operation = "DOT_PRODUCT"
+        facing.inputs[1].default_value = tuple(axis_vec)
+        links.new(geo.outputs["Normal"], facing.inputs[0])
+        is_face = nodes.new("ShaderNodeMath")
+        is_face.operation = "GREATER_THAN"
+        is_face.inputs[1].default_value = 0.82
+        dot_out = "Value" if "Value" in facing.outputs else "Scalar"
+        links.new(facing.outputs[dot_out], is_face.inputs[0])
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(str(image_path), check_existing=True)
+    tex.image.colorspace_settings.name = "sRGB"
+    if isinstance(uv_scale, (int, float)):
+        scale = (float(uv_scale), float(uv_scale), float(uv_scale))
+    else:
+        scale = uv_scale
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = scale
+    tco = nodes.new("ShaderNodeTexCoord")
+    links.new(tco.outputs["UV"], mapping.inputs["Vector"])
+    links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    mix = nodes.new("ShaderNodeMixRGB")
+    mix.inputs["Color1"].default_value = white
+    links.new(is_face.outputs[0], mix.inputs["Fac"])
+    links.new(tex.outputs["Color"], mix.inputs["Color2"])
+    links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = roughness
+    if flat_lit:
+        emit = nodes.new("ShaderNodeEmission")
+        links.new(mix.outputs["Color"], emit.inputs["Color"])
+        emit.inputs["Strength"].default_value = 1.0
+        links.new(emit.outputs["Emission"], out.inputs["Surface"])
+    else:
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
 
 
 def assign_image_texture(
@@ -811,6 +928,18 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
         apply_wall_preview_swatch_material(ob)
         return
     albedo = tex_dir / f"{asset_id}_albedo.png"
+    if asset_id == "garage-land-for-sale-sign" and albedo.is_file():
+        face_axis = _billboard_face_axis(ob)
+        project_billboard_face_uvs(ob, face_axis)
+        assign_billboard_face_texture(
+            ob,
+            albedo,
+            face_axis=face_axis,
+            both_faces=True,
+            roughness=0.40,
+            flat_lit=True,
+        )
+        return
     rough = tex_dir / f"{asset_id}_roughness.png"
     if not albedo.is_file():
         return
@@ -837,13 +966,7 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
     if asset_id == "garage-window-frame":
         key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
         bsdf.inputs[key].default_value = 0.35
-    if asset_id == "garage-land-for-sale-sign":
-        hue = nodes.new("ShaderNodeHueSaturation")
-        hue.inputs["Saturation"].default_value = 1.05
-        hue.inputs["Value"].default_value = 1.0
-        links.new(tex.outputs["Color"], hue.inputs["Color"])
-        links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
-    elif asset_id == "garage-lot-curb":
+    if asset_id == "garage-lot-curb":
         curb_tone = nodes.new("ShaderNodeBrightContrast")
         curb_tone.inputs["Bright"].default_value = -0.38
         curb_tone.inputs["Contrast"].default_value = 0.22
@@ -921,12 +1044,12 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             else:
                 assign_solid(ob, (0.60, 0.58, 0.56, 1.0), 0.82)
         elif asset_id == "garage-land-for-sale-sign":
+            if "board" in name:
+                continue
             if "post" in name:
                 assign_solid(ob, (0.44, 0.32, 0.18, 1.0), 0.58)
             elif "header" in name or "cap" in name:
                 assign_solid(ob, (0.92, 0.38, 0.12, 1.0), 0.36)
-            elif "board" in name:
-                assign_solid(ob, (0.96, 0.90, 0.24, 1.0), 0.34)
             else:
                 assign_solid(ob, (0.55, 0.40, 0.28, 1.0), 0.50)
         elif name in ("trim", "base", "baseboard", "lintel") or name.endswith("trim") or name == "sill":
