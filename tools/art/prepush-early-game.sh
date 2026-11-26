@@ -19,5 +19,7 @@ else
 fi
 ./tools/art/prepush.sh
 python3 tools/art/check_garage_manifest.py
+python3 tools/art/check_garage_quality_previews.py
+python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_early_hud_manifest.py
 echo "early-game art prepush OK"

@@ -28,6 +28,35 @@ def reset_scene() -> None:
         bpy.ops.preferences.addon_enable(module="cycles")
 
 
+def union_overlapping_meshes(objects: list[bpy.types.Object]) -> bpy.types.Object:
+    """Boolean-union kit parts that overlap (one manifold island)."""
+    if not objects:
+        raise RuntimeError("no objects to union")
+    if len(objects) == 1:
+        return objects[0]
+    base = objects[0]
+    bpy.ops.object.select_all(action="DESELECT")
+    base.select_set(True)
+    bpy.context.view_layer.objects.active = base
+    for ob in objects[1:]:
+        mod = base.modifiers.new(f"Union_{ob.name}", "BOOLEAN")
+        mod.operation = "UNION"
+        mod.object = ob
+        mod.solver = "EXACT"
+        try:
+            bpy.ops.object.modifier_apply(modifier=mod.name)
+        except RuntimeError:
+            mod.solver = "FLOAT"
+            bpy.ops.object.modifier_apply(modifier=mod.name)
+        bpy.data.objects.remove(ob, do_unlink=True)
+    bpy.context.view_layer.objects.active = base
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=0.0001)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    return base
+
+
 def link_or_join(objects: list[bpy.types.Object]) -> bpy.types.Object:
     if not objects:
         raise RuntimeError("no objects to join")
@@ -55,13 +84,36 @@ def add_cylinder(
     depth: float,
     location: tuple[float, float, float] = (0, 0, 0),
     vertices: int = 16,
+    rotation_euler: tuple[float, float, float] | None = None,
 ) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cylinder_add(
         radius=radius, depth=depth, vertices=vertices, location=location
     )
     ob = bpy.context.active_object
     ob.name = name
+    if rotation_euler:
+        ob.rotation_euler = rotation_euler
+        bpy.ops.object.transform_apply(rotation=True)
     return ob
+
+
+def weld_coincident_vertices(ob: bpy.types.Object, threshold: float = 0.06) -> int:
+    """Merge overlapping verts after join (returns removed count)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    result = bpy.ops.mesh.remove_doubles(threshold=threshold)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    if isinstance(result, set):
+        for r in result:
+            if "Removed" in str(r):
+                try:
+                    return int(str(r).split()[-2])
+                except (ValueError, IndexError):
+                    pass
+    return 0
 
 
 def bevel_object(ob: bpy.types.Object, width: float = 0.015, segments: int = 2) -> None:
@@ -96,11 +148,20 @@ def ground_scene_meshes() -> None:
         o.location.y += dy
 
 
+def mesh_world_min_y(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+
+
 def snap_root_to_ground(ob: bpy.types.Object) -> None:
-    """Rest bottom of bound box on y=0 (garage Y-up)."""
-    min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
-    if abs(min_y) > 1e-4:
+    """Rest lowest vertex on y=0 (garage Y-up)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    min_y = mesh_world_min_y(ob)
+    if abs(min_y) > 1e-5:
         ob.location.y -= min_y
+    bpy.context.view_layer.update()
 
 
 def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
@@ -113,32 +174,35 @@ def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
     bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
-def add_connecting_spine(ob: bpy.types.Object) -> None:
-    """Hidden internal strut so multi-part kits are one manifold island."""
+def _bounds_world(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     mins = Vector((1e9, 1e9, 1e9))
     maxs = Vector((-1e9, -1e9, -1e9))
-    for corner in ob.bound_box:
-        w = ob.matrix_world @ Vector(corner)
-        mins = Vector((min(mins.x, w.x), min(mins.y, w.y), min(mins.z, w.z)))
-        maxs = Vector((max(maxs.x, w.x), max(maxs.y, w.y), max(maxs.z, w.z)))
+    for ob in objects:
+        if ob.type != "MESH":
+            continue
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            mins = Vector((min(mins.x, w.x), min(mins.y, w.y), min(mins.z, w.z)))
+            maxs = Vector((max(maxs.x, w.x), max(maxs.y, w.y), max(maxs.z, w.z)))
+    return mins, maxs
+
+
+def add_connect_spine_part(objects: list[bpy.types.Object]) -> bpy.types.Object:
+    """Invisible overlap core so non-touching kit parts boolean-union to one island."""
+    mins, maxs = _bounds_world(objects)
     center = (mins + maxs) * 0.5
-    height = max(0.1, maxs.y - mins.y)
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(center.x, (mins.y + maxs.y) * 0.5, center.z))
+    span = maxs - mins
+    bpy.ops.mesh.primitive_cube_add(size=1, location=center)
     spine = bpy.context.active_object
     spine.name = "ConnectSpine"
-    span_x = max(0.08, (maxs.x - mins.x) * 0.45)
-    span_z = max(0.08, (maxs.z - mins.z) * 0.45)
-    spine.scale = (span_x, height * 0.5 + 0.02, span_z)
+    spine.scale = (
+        max(0.06, span.x * 0.45),
+        max(0.08, span.y * 0.92),
+        max(0.06, span.z * 0.45),
+    )
     bpy.ops.object.transform_apply(scale=True)
-    bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    spine.select_set(True)
-    bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.join()
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.remove_doubles(threshold=0.02)
-    bpy.ops.object.mode_set(mode="OBJECT")
+    assign_solid(spine, (0.5, 0.5, 0.5, 1.0), 0.5)
+    return spine
 
 
 def mesh_island_count(ob: bpy.types.Object) -> int:
@@ -171,9 +235,18 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.object.mode_set(mode="OBJECT")
+    if bpy.ops.object.mode_set.poll():
+        bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02)
+    try:
+        bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02)
+    except RuntimeError as exc:
+        print(f"WARN uv.smart_project: {exc}")
+        try:
+            bpy.ops.uv.unwrap(method="ANGLE_BASED", margin=0.02)
+        except RuntimeError:
+            pass
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
@@ -190,16 +263,24 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         raise RuntimeError(f"{asset_id}: no mesh")
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
-    root = link_or_join(mesh_obs)
-    snap_root_to_ground(root)
-    if mesh_island_count(root) > 1:
-        add_connecting_spine(root)
-    if mesh_island_count(root) > 1 and os.environ.get("EARLY_ART_VOXEL_SHELL", "0") not in ("0", "false"):
-        voxel_shell_merge(root, voxel_size=0.018)
+    parts = list(mesh_obs)
+    if len(parts) > 1:
+        parts.append(add_connect_spine_part(parts))
+        root = union_overlapping_meshes(parts)
+    else:
+        root = mesh_obs[0]
+    weld_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
+    weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
     if islands > 1:
-        print(f"WARN {asset_id}: {islands} mesh islands after spine/voxel")
-    bevel_object(root, width=0.012, segments=2)
+        raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
+    snap_root_to_ground(root)
+    min_y = mesh_world_min_y(root)
+    if min_y > 0.008:
+        raise RuntimeError(f"{asset_id}: not grounded (min_y={min_y:.4f})")
+    thin = min(root.dimensions)
+    if thin >= 0.14:
+        bevel_object(root, width=min(0.010, thin * 0.08), segments=2)
     smooth_shade(root)
     uv_unwrap(root)
 
@@ -271,16 +352,8 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.40, 0.44, 0.50, 1.0), 0.32)
         elif "frame" in name or "tray" in name or "trim" in name or "baseboard" in name or name == "sill":
             assign_solid(ob, (0.85, 0.48, 0.14, 1.0), 0.45)
-        elif asset_id == "garage-floor-tile" and "slab" in name:
-            assign_solid(ob, (0.42, 0.36, 0.30, 1.0), 0.85)
-        elif asset_id == "garage-floor-tile" and "pad" in name:
-            assign_solid(ob, (0.68, 0.56, 0.44, 1.0), 0.72)
-        elif asset_id == "garage-floor-tile" and "grout" in name:
-            assign_solid(ob, (0.30, 0.28, 0.26, 1.0), 0.90)
-        elif asset_id == "garage-floor-tile" and "accent" in name:
-            assign_solid(ob, (0.90, 0.48, 0.12, 1.0), 0.40)
-        elif asset_id == "garage-floor-tile" and "corner" in name:
-            assign_solid(ob, (0.78, 0.22, 0.18, 1.0), 0.38)
+        elif asset_id == "garage-floor-tile":
+            assign_solid(ob, (0.86, 0.50, 0.16, 1.0), 0.62)
         elif asset_id == "garage-cable-spool" and "hub" in name:
             assign_solid(ob, (0.52, 0.36, 0.22, 1.0), 0.55)
         elif asset_id == "garage-cable-spool" and "coil" in name:
@@ -297,14 +370,24 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.50, 0.54, 0.58, 1.0), 0.28)
         elif "rib" in name:
             assign_solid(ob, (0.35, 0.38, 0.42, 1.0), 0.38)
-        elif asset_id == "garage-coffee-drip" and any(k in name for k in ("body", "warmer", "pot", "spout")):
+        elif asset_id == "garage-coffee-drip" and any(
+            k in name for k in ("body", "warmer", "pot", "spout", "carafe", "housing", "warmercore")
+        ):
             assign_solid(ob, (0.86, 0.24, 0.10, 1.0), 0.32)
         elif asset_id == "garage-coffee-drip" and "base" in name:
             assign_solid(ob, (0.22, 0.22, 0.24, 1.0), 0.55)
         elif asset_id == "garage-coffee-drip" and "cord" in name:
             assign_solid(ob, (0.05, 0.05, 0.05, 1.0), 0.75)
         elif asset_id == "garage-land-for-sale-sign":
-            assign_solid(ob, (0.92, 0.82, 0.14, 1.0), 0.42)
+            assign_solid(ob, (1.0, 0.90, 0.02, 1.0), 0.34)
+        elif asset_id == "garage-roll-door" and "curtain" in name:
+            assign_solid(ob, (0.52, 0.54, 0.58, 1.0), 0.32)
+        elif asset_id == "garage-roll-door":
+            assign_solid(ob, (0.94, 0.50, 0.08, 1.0), 0.38)
+        elif asset_id == "garage-exterior-wall" and "core" in name:
+            assign_solid(ob, (0.72, 0.54, 0.38, 1.0), 0.58)
+        elif asset_id == "garage-whiteboard-1995":
+            assign_solid(ob, (0.96, 0.28, 0.05, 1.0), 0.30)
         elif asset_id == "garage-window-frame" and "pane" in name:
             assign_solid(ob, (0.22, 0.62, 0.88, 1.0), 0.12)
         elif asset_id == "garage-window-frame" and "mullion" in name:
@@ -313,16 +396,16 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.40)
         elif asset_id == "garage-window-frame":
             assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.42)
-        elif asset_id == "garage-folding-chair" and ("seat" in name or "back" in name):
+        elif asset_id == "garage-folding-chair":
             assign_solid(ob, (0.32, 0.52, 0.82, 1.0), 0.48)
         elif asset_id == "garage-desk-crt" and "desktop" in name:
-            assign_solid(ob, (0.62, 0.48, 0.32, 1.0), 0.52)
+            assign_solid(ob, (0.18, 0.12, 0.08, 1.0), 0.78)
         elif asset_id == "garage-desk-crt" and "drawer" in name:
             assign_solid(ob, (0.48, 0.36, 0.24, 1.0), 0.55)
         elif asset_id == "garage-desk-crt" and ("keyboard" in name or name.startswith("key")):
             assign_solid(ob, (0.78, 0.78, 0.80, 1.0), 0.35)
-        elif asset_id == "garage-desk-crt" and "crt" in name:
-            assign_solid(ob, (0.72, 0.70, 0.62, 1.0), 0.42)
+        elif asset_id == "garage-desk-crt" and ("crt" in name or "screen" in name or "crtblock" in name):
+            assign_solid(ob, (0.88, 0.82, 0.72, 1.0), 0.35)
         elif asset_id == "garage-crt-tower" and (
             "sidelabel" in name or "frontpanel" in name or "toptrim" in name
         ):
@@ -357,7 +440,7 @@ def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float
     ob.data.materials.append(mat)
 
 
-def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.1) -> tuple[float, float, float, float]:
+def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.65) -> tuple[float, float, float, float]:
     h, s, v = colorsys.rgb_to_hsv(rgba[0], rgba[1], rgba[2])
     s = min(1.0, s * scale)
     v = min(1.0, v * 1.08)
@@ -389,6 +472,12 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     from blender_material_palette import spec_for
 
     spec = spec_for(asset_id)
+    glow_ids = {
+        "garage-land-for-sale-sign",
+        "garage-whiteboard-1995",
+        "garage-window-frame",
+        "garage-floor-tile",
+    }
     mat = bpy.data.materials.new(f"{asset_id}_vcol")
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
@@ -398,16 +487,31 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     attr = nodes.new("ShaderNodeVertexColor")
     attr.layer_name = "BakeCol"
-    links.new(attr.outputs["Color"], bsdf.inputs["Base Color"])
+    hue = nodes.new("ShaderNodeHueSaturation")
+    hue.inputs["Value"].default_value = 1.08
+    hue.inputs["Saturation"].default_value = 3.05 if asset_id in glow_ids else 2.75
+    links.new(attr.outputs["Color"], hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     emit = nodes.new("ShaderNodeEmission")
-    emit.inputs["Strength"].default_value = 1.4 if "crt" in asset_id or "rack" in asset_id else 0.0
+    if "crt" in asset_id or "rack" in asset_id:
+        emit.inputs["Strength"].default_value = 1.4
+    elif asset_id == "garage-desk-crt":
+        emit.inputs["Strength"].default_value = 0.72
+    elif asset_id in glow_ids:
+        emit.inputs["Strength"].default_value = 0.85
+    else:
+        emit.inputs["Strength"].default_value = 0.0
     if emit.inputs["Strength"].default_value > 0:
         vcol_emit = nodes.new("ShaderNodeVertexColor")
         vcol_emit.layer_name = "BakeCol"
         links.new(vcol_emit.outputs["Color"], emit.inputs["Color"])
         mix = nodes.new("ShaderNodeMixShader")
-        mix.inputs["Fac"].default_value = 0.45 if "crt" in asset_id else 0.30
+        mix.inputs["Fac"].default_value = (
+            0.45
+            if "crt" in asset_id
+            else (0.48 if asset_id in glow_ids else (0.35 if asset_id == "garage-desk-crt" else 0.30))
+        )
         links.new(bsdf.outputs["BSDF"], mix.inputs[1])
         links.new(emit.outputs["Emission"], mix.inputs[2])
         links.new(mix.outputs["Shader"], out.inputs["Surface"])
@@ -452,16 +556,29 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(albedo))
-    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    hue = nodes.new("ShaderNodeHueSaturation")
+    hue.inputs["Saturation"].default_value = 1.45
+    hue.inputs["Value"].default_value = 1.05
+    links.new(tex.outputs["Color"], hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     if rough.exists():
         rtex = nodes.new("ShaderNodeTexImage")
         rtex.image = bpy.data.images.load(str(rough))
         links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
     emit_strength = 0.0
+    emit_color = (0.15, 0.65, 0.38, 1.0)
     if "crt" in asset_id or "screen" in asset_id:
         emit_strength = 1.2
+    elif asset_id in {
+        "garage-land-for-sale-sign",
+        "garage-whiteboard-1995",
+        "garage-window-frame",
+        "garage-floor-tile",
+    }:
+        emit_strength = 0.55
+        emit_color = (0.92, 0.62, 0.12, 1.0)
     bsdf.inputs["Emission Strength"].default_value = emit_strength
-    bsdf.inputs["Emission Color"].default_value = (0.15, 0.65, 0.38, 1.0)
+    bsdf.inputs["Emission Color"].default_value = emit_color
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)

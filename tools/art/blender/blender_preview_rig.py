@@ -11,10 +11,10 @@ import bpy
 from mathutils import Vector
 
 # Warm 1995 garage studio (matches Hatch brief)
-WORLD_TOP = (0.72, 0.68, 0.62, 1.0)
-WORLD_HORIZON = (0.55, 0.50, 0.46, 1.0)
-WORLD_BOTTOM = (0.38, 0.34, 0.30, 1.0)
-FLOOR_COLOR = (0.42, 0.38, 0.34, 1.0)
+WORLD_TOP = (0.78, 0.62, 0.48, 1.0)
+WORLD_HORIZON = (0.62, 0.48, 0.36, 1.0)
+WORLD_BOTTOM = (0.04, 0.03, 0.03, 1.0)
+FLOOR_COLOR = (0.72, 0.48, 0.18, 1.0)
 
 
 def _mesh_bounds(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
@@ -63,7 +63,7 @@ def setup_studio_world() -> None:
 
 def add_shadow_floor_y(y: float = 0.0) -> bpy.types.Object:
     """Ground plane for garage scripts that use Y-up."""
-    bpy.ops.mesh.primitive_plane_add(size=8, location=(0, y - 0.002, 0), rotation=(math.pi / 2, 0, 0))
+    bpy.ops.mesh.primitive_plane_add(size=4.5, location=(0, y - 0.002, 0), rotation=(math.pi / 2, 0, 0))
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
@@ -95,7 +95,7 @@ def setup_three_point_lights(center: Vector, radius: float) -> None:
     fill_loc = center + Vector((-radius * 1.0, -radius * 0.6, radius * 0.9))
     rim_loc = center + Vector((radius * 0.2, radius * 1.4, radius * 1.1))
     energy = max(180.0, radius * 220.0)
-    for name, loc, e_mul in (("Key", key_loc, 1.0), ("Fill", fill_loc, 0.45), ("Rim", rim_loc, 0.65)):
+    for name, loc, e_mul in (("Key", key_loc, 1.15), ("Fill", fill_loc, 0.22), ("Rim", rim_loc, 0.95)):
         bpy.ops.object.light_add(type="AREA", location=loc)
         light = bpy.context.active_object
         light.name = name
@@ -148,13 +148,23 @@ def render_preview_studio(
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
     if hasattr(bpy.context.scene, "eevee"):
         bpy.context.scene.eevee.taa_render_samples = 32
+        if hasattr(bpy.context.scene.eevee, "use_gtao"):
+            bpy.context.scene.eevee.use_gtao = True
+            bpy.context.scene.eevee.gtao_distance = 0.35
+            bpy.context.scene.eevee.gtao_factor = 2.4
     setup_studio_world()
     mins, maxs = _mesh_bounds(hero_meshes)
-    add_shadow_floor_y(mins.y)
     center = (mins + maxs) * 0.5
+    footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
+    floor = add_shadow_floor_y(mins.y)
+    floor.scale = (footprint * 0.55, footprint * 0.55, 1.0)
+    bpy.ops.object.select_all(action="DESELECT")
+    floor.select_set(True)
+    bpy.context.view_layer.objects.active = floor
+    bpy.ops.object.transform_apply(scale=True)
     radius = max(0.4, (maxs - mins).length * 0.5)
     setup_three_point_lights(center, radius)
-    frame_camera(hero_meshes, margin=1.02)
+    frame_camera(hero_meshes, margin=0.72)
     bpy.context.scene.render.resolution_x = resolution
     bpy.context.scene.render.resolution_y = resolution
     bpy.context.scene.render.filepath = str(path)

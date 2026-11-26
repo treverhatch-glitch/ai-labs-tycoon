@@ -1,6 +1,12 @@
 # Early art quality pass (post–#86)
 
-**Status:** PR #88 packet 1 **rework** (Hatch) — saturated palettes, silhouettes, Y-up preview floor; saturation gate in `check_garage_quality_previews.py`.
+**Status:** PR #88 packet 1 **pass 2** (Hatch @ `26a82f8d`) — topology + strict gates only; packets 2–4 held.
+
+### Packet 1 pass 2 (mesh join rules)
+
+- Every garage export is **one Blender mesh island** after join; overlaps + `remove_doubles` (no hidden spine unless `EARLY_ART_ALLOW_SPINE=1`).
+- Parts **overlap ~3–8 cm** where they meet; whole asset **grounded** (`min_y ≈ 0`).
+- Prepush hard fails: `check_garage_mesh_topology.py` (GLB islands) + `check_garage_quality_previews.py` (**full-frame** mean saturation ≥ **0.15**).
 
 **Parent merge:** `main` @ `1f62b217` (rules run 140 green on `52a7dd8d`).
 
