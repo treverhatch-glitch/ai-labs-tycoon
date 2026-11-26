@@ -310,11 +310,11 @@ def check_sign_albedo_file(tex_dir: Path) -> list[str]:
         from PIL import Image
     except ImportError:
         return []
-    if path.stat().st_size < 12_000:
+    if path.stat().st_size < 2_400:
         return [f"sign_albedo_too_small bytes={path.stat().st_size}"]
     im = Image.open(path).convert("RGB")
     uniq = len({px for px in im.getdata()})
-    if uniq < 120:
+    if uniq < 1:
         return [f"sign_albedo_flat unique={uniq}"]
     return []
 
@@ -405,44 +405,84 @@ def check_wall_uv_blocks_per_metre(frame_path: Path) -> list[str]:
 
 
 def check_sign_albedo_layout(tex_dir: Path) -> list[str]:
-    """No inner grey board frame; red FOR SALE fully inside 5% cream margin."""
+    """Bake albedo must be plain white board (FOR SALE lives in mesh text, not texture paint)."""
     path = tex_dir / "garage-land-for-sale-sign_albedo.png"
     if not path.is_file():
         return ["sign_albedo_missing"]
     im = _load_rgba(path).convert("RGB")
     w, h = im.size
-    margin = int(min(w, h) * 0.05)
     px = list(im.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
         return r > 150 and r > g + 35 and r > b + 35
 
-    dup_board = sum(1 for r, g, b in px if (r, g, b) in ((245, 238, 220), (252, 245, 228)))
-    if dup_board > 0.35 * w * h:
-        return [f"sign_albedo_dual_cream_px={dup_board}"]
-    inner_cream = 0
-    for y in range(margin, h - margin):
-        for x in range(margin, w - margin):
-            r, g, b = px[y * w + x]
-            if r > 235 and g > 228 and b > 210 and not _is_red(r, g, b):
-                inner_cream += 1
-    red_x, red_y = [], []
+    red_px = sum(1 for r, g, b in px if _is_red(r, g, b))
+    if red_px > 48:
+        return [f"sign_albedo_painted_text_px={red_px}"]
+    cream_px = sum(
+        1
+        for r, g, b in px
+        if r > 228 and g > 224 and b > 214 and not _is_red(r, g, b)
+    )
+    if cream_px < int(0.85 * w * h):
+        return [f"sign_albedo_not_white cream_px={cream_px}"]
+    return []
+
+
+def _forsale_red_template(width: int, height: int):
+    """Reference FOR SALE glyph mask for template match (same font stack as paint_sign_albedo)."""
+    from PIL import Image, ImageDraw, ImageFont
+
+    im = Image.new("L", (max(8, width), max(8, height)), 0)
+    draw = ImageDraw.Draw(im)
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    font = None
+    text = "FOR SALE"
+    for size in range(int(height * 0.85), 8, -2):
+        try:
+            font = ImageFont.truetype(font_path, size=size)
+        except OSError:
+            try:
+                font = ImageFont.truetype(
+                    "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+                    size=size,
+                )
+            except OSError:
+                continue
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        if tw <= width * 0.92 and th <= height * 0.92:
+            break
+    if font is None:
+        return im
+    bbox = draw.textbbox((0, 0), text, font=font)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    tx = (im.width - tw) // 2
+    ty = (im.height - th) // 2
+    draw.text((tx, ty), text, fill=255, font=font)
+    return im
+
+
+def _mask_ncc(a: list[list[int]], b: list[list[int]]) -> float:
+    flat_a: list[float] = []
+    flat_b: list[float] = []
+    h = min(len(a), len(b))
+    w = min(len(a[0]) if a else 0, len(b[0]) if b else 0)
+    if h < 4 or w < 4:
+        return 0.0
     for y in range(h):
         for x in range(w):
-            r, g, b = px[y * w + x]
-            if _is_red(r, g, b):
-                red_x.append(x)
-                red_y.append(y)
-    if len(red_x) < 400:
-        return [f"sign_red_glyphs_too_few px={len(red_x)}"]
-    rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
-    if rx0 < margin or ry0 < margin or rx1 > w - margin or ry1 > h - margin:
-        return [
-            f"sign_text_outside_board red_bbox=({rx0},{ry0})-({rx1},{ry1}) margin={margin}"
-        ]
-    if inner_cream < 800:
-        return [f"sign_board_field_small cream_px={inner_cream}"]
-    return []
+            flat_a.append(float(a[y][x]))
+            flat_b.append(float(b[y][x]))
+    n = len(flat_a)
+    mean_a = sum(flat_a) / n
+    mean_b = sum(flat_b) / n
+    var_a = sum((v - mean_a) ** 2 for v in flat_a)
+    var_b = sum((v - mean_b) ** 2 for v in flat_b)
+    if var_a < 1e-6 or var_b < 1e-6:
+        return 0.0
+    cov = sum((flat_a[i] - mean_a) * (flat_b[i] - mean_b) for i in range(n))
+    return cov / (var_a**0.5 * var_b**0.5)
 
 
 def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str = "sign") -> list[str]:
@@ -528,7 +568,136 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
 
 
 def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list[str]:
-    return check_sign_preview_board_text(front_rgb, front_mask, label="sign_front")
+    """Front preview: landscape board, readable FOR SALE, posts must not cover face."""
+    if not front_rgb.is_file() or not front_mask.is_file():
+        return ["sign_front_preview_missing"]
+    rgb = _load_rgba(front_rgb).convert("RGB")
+    mask = _load_rgba(front_mask)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 135 and r > g + 28 and r > b + 28
+
+    def _is_white_face(r: int, g: int, b: int) -> bool:
+        return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
+
+    def _is_post_wood(r: int, g: int, b: int) -> bool:
+        if _is_red(r, g, b) or _is_white_face(r, g, b):
+            return False
+        return 70 < r < 165 and 48 < g < 130 and 28 < b < 105 and r > g > b
+
+    hero_ys: list[int] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                hero_ys.append(y)
+    if not hero_ys:
+        return ["sign_front_mask_empty"]
+    hy0, hy1 = min(hero_ys), max(hero_ys)
+    face_y0 = hy0 + int((hy1 - hy0) * 0.18)
+
+    white_x, white_y = [], []
+    red_cols: dict[int, int] = {}
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if y >= face_y0 and _is_white_face(r, g, b):
+                white_x.append(x)
+                white_y.append(y)
+            if _is_red(r, g, b):
+                red_cols[x] = red_cols.get(x, 0) + 1
+
+    errs: list[str] = []
+    if len(white_x) < 200:
+        errs.append(f"sign_front_board_missing white={len(white_x)}")
+        return errs
+    if len(red_cols) < 40:
+        errs.append(f"sign_front_red_missing cols={len(red_cols)}")
+        return errs
+
+    bx0, bx1, by0, by1 = min(white_x), max(white_x), min(white_y), max(white_y)
+    board_w, board_h = bx1 - bx0 + 1, by1 - by0 + 1
+    if board_w <= board_h:
+        errs.append(f"sign_front_board_portrait {board_w}x{board_h} need_w>height")
+
+    margin_x = max(3, int(board_w * 0.05))
+    margin_y = max(3, int(board_h * 0.05))
+    wood_on_face = 0
+    for y in range(by0 + margin_y, by1 - margin_y + 1):
+        for x in range(bx0 + margin_x, bx1 - margin_x + 1):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_post_wood(r, g, b):
+                wood_on_face += 1
+    if wood_on_face > max(12, int(0.004 * board_w * board_h)):
+        errs.append(f"sign_front_post_occludes_face_px={wood_on_face}")
+
+    red_x = sorted(red_cols.keys())
+    rx0, rx1 = min(red_x), max(red_x)
+    ry0, ry1 = h, -1
+    for y in range(by0, by1 + 1):
+        for x in range(rx0, rx1 + 1):
+            if mpx[y * w + x][3] >= 160:
+                r, g, b = rpx[y * w + x]
+                if _is_red(r, g, b):
+                    ry0 = min(ry0, y)
+                    ry1 = max(ry1, y)
+    if ry1 < 0:
+        errs.append("sign_front_red_bbox_empty")
+        return errs
+
+    red_w, red_h = rx1 - rx0 + 1, ry1 - ry0 + 1
+    red_mask = [[0 for _ in range(red_w)] for _ in range(red_h)]
+    for y in range(red_h):
+        for x in range(red_w):
+            sx, sy = rx0 + x, ry0 + y
+            if mpx[sy * w + sx][3] >= 160:
+                r, g, b = rpx[sy * w + sx]
+                if _is_red(r, g, b):
+                    red_mask[y][x] = 1
+    tmpl = _forsale_red_template(red_w, red_h)
+    tmpl_mask = [
+        [1 if tmpl.getpixel((x, y)) > 32 else 0 for x in range(red_w)] for y in range(red_h)
+    ]
+    rev_mask = [row[::-1] for row in red_mask]
+    fwd = _mask_ncc(red_mask, tmpl_mask)
+    rev = _mask_ncc(rev_mask, tmpl_mask)
+    if fwd < 0.38:
+        errs.append(f"sign_front_text_unreadable ncc_fwd={fwd:.3f}")
+    if rev > fwd + 0.06:
+        errs.append(f"sign_front_text_mirrored ncc_fwd={fwd:.3f} ncc_rev={rev:.3f}")
+
+    # Left-right balance: mirrored / clipped strings bias mass to one edge inside red bbox.
+    col_mass = [red_cols.get(rx0 + i, 0) for i in range(red_w)]
+    left_mass = sum(col_mass[: max(1, red_w // 3)])
+    right_mass = sum(col_mass[max(0, (2 * red_w) // 3) :])
+    if max(left_mass, right_mass) > 2.6 * max(1.0, min(left_mass, right_mass)):
+        errs.append(
+            f"sign_front_text_asymmetric L={left_mass:.0f} R={right_mass:.0f}"
+        )
+
+    if rx0 < bx0 + margin_x or rx1 > bx1 - margin_x:
+        errs.append(
+            f"sign_front_text_clip_h red=({rx0}-{rx1}) board=({bx0}-{bx1})"
+        )
+    if ry0 < by0 + margin_y or ry1 > by1 - margin_y:
+        errs.append(
+            f"sign_front_text_clip_v red=({ry0}-{ry1}) board=({by0}-{by1})"
+        )
+    right_gap = bx1 - rx1
+    left_gap = rx0 - bx0
+    if right_gap < margin_x or left_gap < margin_x:
+        errs.append(
+            f"sign_front_text_margin_fail gaps L={left_gap} R={right_gap} need>={margin_x}"
+        )
+    return errs
 
 
 def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
