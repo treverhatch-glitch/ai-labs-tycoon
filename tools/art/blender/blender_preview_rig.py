@@ -13,9 +13,9 @@ import bpy
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
-# Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
-STUDIO_GREY = (0.48, 0.48, 0.50, 1.0)
-FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
+# Hatch garage hero: flat RGB ~150 backdrop, contact-shadow floor slightly darker
+STUDIO_GREY = (150 / 255, 150 / 255, 150 / 255, 1.0)
+FLOOR_GREY = (0.48, 0.48, 0.50, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -106,8 +106,8 @@ def setup_hdri_lighting_only(
     rotation_z_deg: float = 118.0,
     visible_hdri: bool = False,
 ) -> None:
-    """Neutral grey backdrop; HDRI path is for Unity—batch EEVEE uses area lights (no LightPath mix)."""
-    del strength, rotation_z_deg
+    """Grey 150 camera backdrop; HDRI lights scene only (Cycles-safe Light Path mix)."""
+    grey = STUDIO_GREY
     if visible_hdri and hdri_path.is_file():
         world = bpy.data.worlds.new("HdriVisibleWorld")
         bpy.context.scene.world = world
@@ -132,17 +132,32 @@ def setup_hdri_lighting_only(
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
-    coord = nodes.new("ShaderNodeTexCoord")
-    ramp = nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.0
-    ramp.color_ramp.elements[0].color = (0.62, 0.61, 0.63, 1.0)
-    ramp.color_ramp.elements[1].position = 1.0
-    ramp.color_ramp.elements[1].color = (0.40, 0.41, 0.43, 1.0)
     bg_cam = nodes.new("ShaderNodeBackground")
+    bg_cam.inputs["Color"].default_value = grey
     bg_cam.inputs["Strength"].default_value = 1.0
-    links.new(coord.outputs["Generated"], ramp.inputs["Fac"])
-    links.new(ramp.outputs["Color"], bg_cam.inputs["Color"])
-    links.new(bg_cam.outputs["Background"], out.inputs["Surface"])
+
+    use_light_path = bpy.context.scene.render.engine == "CYCLES"
+    if hdri_path.is_file() and use_light_path:
+        tex = nodes.new("ShaderNodeTexEnvironment")
+        tex.image = bpy.data.images.load(str(hdri_path))
+        tex.image.colorspace_settings.name = "Linear Rec.709"
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Rotation"].default_value[2] = math.radians(rotation_z_deg)
+        coord = nodes.new("ShaderNodeTexCoord")
+        bg_light = nodes.new("ShaderNodeBackground")
+        bg_light.inputs["Strength"].default_value = strength
+        links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
+        links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+        links.new(tex.outputs["Color"], bg_light.inputs["Color"])
+        light_path = nodes.new("ShaderNodeLightPath")
+        mix = nodes.new("ShaderNodeMixShader")
+        links.new(light_path.outputs["Is Camera Ray"], mix.inputs["Fac"])
+        links.new(bg_light.outputs["Background"], mix.inputs[1])
+        links.new(bg_cam.outputs["Background"], mix.inputs[2])
+        links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    else:
+        # EEVEE batch: flat grey 150 visible; HDRI path carried for Unity, area lights in rig.
+        links.new(bg_cam.outputs["Background"], out.inputs["Surface"])
 
 
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
@@ -168,7 +183,7 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
 def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
     footprint = max(maxs.x - mins.x, maxs.y - mins.y, 0.5)
-    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.8, location=(center.x, center.y, mins.z - 0.002))
+    bpy.ops.mesh.primitive_plane_add(size=footprint * 1.12, location=(center.x, center.y, mins.z - 0.002))
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
     mat = bpy.data.materials.new("PreviewFloor")
@@ -422,6 +437,8 @@ def render_preview_studio(
     hdri_strength: float = 0.55,
     hdri_rotation_deg: float = 118.0,
     hdri_lighting_only: bool = True,
+    render_engine: str = "BLENDER_EEVEE",
+    cycles_samples: int = 128,
 ) -> None:
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
@@ -436,9 +453,16 @@ def render_preview_studio(
         ]
 
     scene = bpy.context.scene
-    scene.render.engine = "BLENDER_EEVEE"
-    if hasattr(scene, "eevee"):
-        scene.eevee.taa_render_samples = 48
+    engine = render_engine.upper()
+    scene.render.engine = "CYCLES" if engine == "CYCLES" else "BLENDER_EEVEE"
+    if scene.render.engine == "CYCLES":
+        scene.cycles.device = "CPU"
+        scene.cycles.samples = max(128, int(cycles_samples))
+        scene.cycles.use_denoising = True
+        if hasattr(scene.cycles, "denoiser"):
+            scene.cycles.denoiser = "OPENIMAGEDENOISE"
+    elif hasattr(scene, "eevee"):
+        scene.eevee.taa_render_samples = max(128, int(cycles_samples))
         if hasattr(scene.eevee, "use_gtao"):
             scene.eevee.use_gtao = True
             scene.eevee.gtao_distance = 0.55
@@ -461,13 +485,20 @@ def render_preview_studio(
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     axis = (up_axis or infer_up_axis(mins, maxs)).upper()
-    if axis == "Y":
-        add_shadow_floor_y(mins, maxs)
-    else:
-        add_shadow_floor_z(mins, maxs)
+    add_contact_floor = path.stem != "garage-scene-urp-hero"
+    if add_contact_floor:
+        if axis == "Y":
+            add_shadow_floor_y(mins, maxs)
+        else:
+            add_shadow_floor_z(mins, maxs)
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
-    light_mul = 1.55 if hdri_path and hdri_lighting_only else 1.0
+    if path.stem == "garage-scene-urp-hero" and hdri_path and hdri_lighting_only:
+        light_mul = 1.25
+    elif hdri_path and hdri_lighting_only:
+        light_mul = 3.4
+    else:
+        light_mul = 1.0
     setup_three_point_lights(center, radius, energy_scale=light_mul)
     cam = frame_camera(
         hero_meshes,
@@ -514,6 +545,9 @@ def render_preview_studio(
         encoding="utf-8",
     )
 
+    scene.view_settings.view_transform = "Standard"
+    scene.view_settings.look = "None"
+    scene.view_settings.exposure = -0.72 if path.stem == "garage-scene-urp-hero" else 0.0
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = resolution
@@ -521,6 +555,5 @@ def render_preview_studio(
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
-    repair_eevee_magenta_speckles(path)
     mask_path = path.with_name(path.stem + ".mask.png")
     render_hero_mask(mask_heroes, mask_path, resolution)

@@ -209,13 +209,27 @@ def snap_to_floor_z(ob: bpy.types.Object, floor_z: float = 0.0) -> None:
     bpy.context.view_layer.update()
 
 
+def mesh_min_y(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+
+
+def snap_to_floor_y(ob: bpy.types.Object, floor_y: float = 0.0) -> None:
+    bpy.context.view_layer.update()
+    low = mesh_min_y(ob)
+    if abs(low - floor_y) > 1e-4:
+        ob.location.y += floor_y - low
+    bpy.context.view_layer.update()
+
+
 def import_kenney(
     pack: str,
     asset: str,
     location: tuple[float, float, float],
     rot_z_deg: float = 0.0,
+    rot_y_deg: float = 0.0,
     scale: float | tuple[float, float, float] = 1.0,
     palette_key: str = "wall",
+    up_axis: str = "Y",
 ) -> bpy.types.Object | None:
     glb = _extract_glb(pack, asset)
     before = {o.name for o in bpy.data.objects}
@@ -239,11 +253,15 @@ def import_kenney(
         root.scale = (scale, scale, scale)
     else:
         root.scale = Vector(scale)
+    root.rotation_euler[1] = math.radians(rot_y_deg)
     root.rotation_euler[2] = math.radians(rot_z_deg)
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     root.location = Vector(location)
     _bind_materials(root, pack, palette_key)
-    snap_to_floor_z(root)
+    if up_axis.upper() == "Y":
+        snap_to_floor_y(root)
+    else:
+        snap_to_floor_z(root)
     for name in spare_names:
         if name == root.name:
             continue
