@@ -542,6 +542,7 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
     """Per-part canonical materials (≤4 slots per prop) before join/bake."""
     from garage_canonical_materials import assign_slot  # type: ignore
 
+    cc0_import = os.environ.get("GARAGE_CC0_IMPORT", "").strip().lower() in ("1", "true", "yes")
     stroke_slots = ("marker_red", "marker_blue", "marker_green", "plastic_orange")
     for ob in mesh_obs:
         if ob.data.materials and ob.data.materials[0]:
@@ -618,6 +619,14 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_slot(ob, "wood")
         elif asset_id == "garage-folding-chair":
             assign_slot(ob, "steel")
+        elif cc0_import and asset_id == "garage-desk-crt" and name.startswith(("crt_", "keyboard")):
+            assign_slot(ob, "crt_bezel" if "bezel" in name else "keyboard_grey")
+        elif cc0_import and asset_id == "garage-desk-crt" and ("metal" in name or "frame" in name or "leg" in name):
+            assign_slot(ob, "steel")
+        elif cc0_import and asset_id == "garage-desk-crt":
+            assign_slot(ob, "desk_wood")
+        elif cc0_import and asset_id == "garage-roll-door" and name.startswith("slat"):
+            assign_slot(ob, "corrugated")
         elif asset_id == "garage-desk-crt" and "desktop" in name:
             assign_slot(ob, "desk_wood")
         elif asset_id == "garage-desk-crt" and "drawer" in name:
@@ -894,11 +903,12 @@ def _boost_garage_part_preview_material(ob: bpy.types.Object) -> None:
     base = bsdf.inputs["Base Color"]
     if base.is_linked:
         link = base.links[0]
+        src_sock = link.from_socket
         links.remove(link)
         hue = nodes.new("ShaderNodeHueSaturation")
         hue.inputs["Saturation"].default_value = 1.32
         hue.inputs["Value"].default_value = 1.10
-        links.new(link.from_socket, hue.inputs["Color"])
+        links.new(src_sock, hue.inputs["Color"])
         links.new(hue.outputs["Color"], base)
     else:
         base.default_value = _boost_saturation(tuple(base.default_value), scale=1.25)

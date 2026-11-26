@@ -32,6 +32,17 @@ def snap_prop_to_floor(ob: bpy.types.Object, floor_y: float = FLOOR_Y) -> None:
     bpy.context.view_layer.update()
 
 
+def _group_bounds_y(meshes: list[bpy.types.Object]) -> tuple[float, float]:
+    """World-space min/max Y over all mesh vertices."""
+    ymin, ymax = 1e9, -1e9
+    for ob in meshes:
+        for v in ob.data.vertices:
+            wy = (ob.matrix_world @ v.co).y
+            ymin = min(ymin, wy)
+            ymax = max(ymax, wy)
+    return ymin, ymax
+
+
 def import_prop(asset_id: str, loc: tuple[float, float, float], rot_y_deg: float) -> list[bpy.types.Object]:
     glb = KIT / f"{asset_id}.glb"
     if not glb.exists():
@@ -44,15 +55,22 @@ def import_prop(asset_id: str, loc: tuple[float, float, float], rot_y_deg: float
     rot_rad = rot_y_deg * 3.14159265 / 180.0
     import blender_common as common  # type: ignore
 
+    pivot = bpy.data.objects.new(f"prop_{asset_id}", None)
+    bpy.context.collection.objects.link(pivot)
+    pivot.location = Vector(loc)
+    pivot.rotation_euler[1] = rot_rad
+
     for ob in imported:
-        ob.location = Vector(loc)
-        ob.rotation_euler[1] = rot_rad
-        bpy.ops.object.select_all(action="DESELECT")
-        ob.select_set(True)
-        bpy.context.view_layer.objects.active = ob
-        bpy.ops.object.transform_apply(rotation=True)
-        snap_prop_to_floor(ob)
-        common._boost_garage_part_preview_material(ob)
+        ob.parent = pivot
+        ob.matrix_parent_inverse = pivot.matrix_world.inverted()
+
+    bpy.context.view_layer.update()
+    ymin, _ = _group_bounds_y(imported)
+    if abs(ymin - FLOOR_Y) > 1e-4:
+        pivot.location.y += FLOOR_Y - ymin
+    bpy.context.view_layer.update()
+
+    for ob in imported:
         common._boost_garage_part_preview_material(ob)
     return imported
 

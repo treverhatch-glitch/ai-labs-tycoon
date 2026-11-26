@@ -57,16 +57,57 @@ def _gltf_path(polyhaven_id: str) -> Path:
     return gltfs[0]
 
 
+def _mesh_top_z(mesh_obs: list[bpy.types.Object]) -> float:
+    top = -1e9
+    for ob in mesh_obs:
+        for corner in ob.bound_box:
+            wz = (ob.matrix_world @ Vector(corner)).z
+            top = max(top, wz)
+    return top
+
+
 def _extras_for_desk() -> None:
     import blender_common as bc  # type: ignore
 
-    def cb(n, w, h, d, x, y, z):
-        return bc.add_cube(n, (w, d, h), (x, z, y))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    top_z = _mesh_top_z(meshes)
+    desk_y = top_z + 0.04
 
-    cb("Monitor", 0.42, 0.32, 0.06, 0.22, 0.05, 0.92)
-    cb("Bezel", 0.46, 0.36, 0.08, 0.22, 0.03, 0.88)
-    led = cb("Screen", 0.36, 0.26, 0.02, 0.22, 0.09, 0.92)
+    def cb(n, w, h, d, x, z, thick):
+        return bc.add_cube(n, (w, d, h), (x, z, desk_y + thick * 0.5))
+
+    bezel = cb("crt_bezel", 0.46, 0.36, 0.08, 0.12, 0.02, 0.04)
+    led = cb("crt_screen", 0.38, 0.28, 0.03, 0.12, 0.08, 0.015)
     bc.assign_emission(led, (0.12, 0.72, 0.45, 1.0), 2.4)
+    cb("keyboard_grey", 0.55, 0.18, 0.03, -0.08, 0.38, 0.015)
+    _ = bezel
+
+
+def _extras_for_roll_door() -> None:
+    import blender_common as bc  # type: ignore
+
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    # Keep imported shutter frame; add corrugated slats so the curtain reads as a roll door.
+    top_z = _mesh_top_z(meshes)
+    for i in range(10):
+        z = 0.35 + i * 0.17
+        if z > top_z - 0.15:
+            break
+        bc.add_cube(f"slat{i}", (1.65, 0.035, 0.025), (0, 0.06, z))
+
+
+def _collapse_mesh_obs(mesh_obs: list[bpy.types.Object], asset_id: str) -> list[bpy.types.Object]:
+    join_max = 8
+    if asset_id in ("garage-desk-crt", "garage-roll-door"):
+        join_max = 64
+    if len(mesh_obs) <= join_max:
+        return mesh_obs
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in mesh_obs:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = mesh_obs[0]
+    bpy.ops.object.join()
+    return [bpy.context.view_layer.objects.active]
 
 
 def build_cc0_garage(asset_id: str) -> dict:
@@ -81,17 +122,13 @@ def build_cc0_garage(asset_id: str) -> dict:
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: import produced no meshes")
-    if len(mesh_obs) > 8:
-        bpy.ops.object.select_all(action="DESELECT")
-        for ob in mesh_obs:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = mesh_obs[0]
-        bpy.ops.object.join()
-        mesh_obs = [bpy.context.view_layer.objects.active]
+    mesh_obs = _collapse_mesh_obs(mesh_obs, asset_id)
     _normalize_scale(mesh_obs, float(row.get("targetMaxDim", 1.0)), float(row.get("scaleMul", 1.0)))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if asset_id == "garage-desk-crt":
         _extras_for_desk()
+    elif asset_id == "garage-roll-door":
+        _extras_for_roll_door()
     entry = bc.finish_asset(
         asset_id,
         "garage-kit",

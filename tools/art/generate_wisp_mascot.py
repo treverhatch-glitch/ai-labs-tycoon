@@ -88,6 +88,9 @@ def render_sheet(mood_id: str, core: tuple[int, int, int], glow: tuple[int, int,
 
         write_rgba(single, FRAME, FRAME, pix)
         shutil.copy2(single, STREAM / single.name)
+        preview_dir = REPO_ROOT / "docs/art/previews"
+        preview_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(single, preview_dir / f"{mood_id}.png")
 
 
 def main() -> None:

@@ -16,6 +16,17 @@ echo "=== cc0 garage hero (all props) ==="
 echo "=== garage-scene-preview ==="
 "$BLENDER" -b --python-exit-code 1 --python tools/art/blender/garage-scene-preview.py
 
+echo "=== hud icon previews ==="
+for script in tools/art/blender/icon-gpu-hire.py tools/art/blender/icon-week-advance.py \
+  tools/art/blender/panel-build-bg.py tools/art/blender/panel-hire-bg.py tools/art/blender/panel-train-bg.py \
+  tools/art/blender/hud-topbar-beige.py; do
+  "$BLENDER" -b --python-exit-code 1 --python "$script"
+done
+"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/blender_render_hud_wisp.py
+
+python3 tools/art/generate_early_hud_icons.py
+python3 tools/art/generate_wisp_mascot.py
+
 python3 tools/art/check_garage_quality_previews.py
 python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_garage_asset_complexity.py
