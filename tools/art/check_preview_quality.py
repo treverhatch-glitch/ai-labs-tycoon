@@ -16,6 +16,7 @@ BLENDER_ROOT = REPO / "unity" / "Assets" / "Art" / "BlenderBaked"
 
 GATED_ASSETS = (
     "prop-desk",
+    "prop-server-rack",
 )
 
 MIN_STDDEV = 8.0
@@ -24,6 +25,67 @@ MIN_MEAN_LUM = 40.0
 MIN_MEAN_SAT = 0.10
 BORDER_PX = 4
 BORDER_MIN_PIXELS = 18
+BACKDROP_RGB = 150
+BACKDROP_BAND_FRAC = 0.03
+BACKDROP_GRID_FRACS = (0.02, 0.5, 0.98)
+BACKDROP_CHANNEL_TOL = 1
+MAX_BACKDROP_BAND_BAD_PX = 128
+MAX_BACKDROP_BOTTOM_BAND_BAD_PX = 0
+
+
+def _backdrop_channel_ok(r: int, g: int, b: int) -> bool:
+    return all(abs(ch - BACKDROP_RGB) <= BACKDROP_CHANNEL_TOL for ch in (r, g, b))
+
+
+def _backdrop_exact_ok(r: int, g: int, b: int) -> bool:
+    return r == BACKDROP_RGB and g == BACKDROP_RGB and b == BACKDROP_RGB
+
+FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-dfc65859-regression.png",
+        "dfc65859",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-0125cd4d-regression.png",
+        "0125cd4d",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-aa299d14-regression.png",
+        "aa299d14",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-9d736ff6-regression.png",
+        "9d736ff6",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-7068d293-regression.png",
+        "7068d293",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-05ca3975-regression.png",
+        "05ca3975",
+    ),
+)
+MIN_RACK_SUBJECT_LUM_STDDEV = 0.038
+MIN_RACK_LED_PIXELS = 48
+MIN_RACK_FRONT_LED_PIXELS = 36
+MIN_RACK_FRONT_NORMAL_DOT = 0.30
+MIN_RACK_H_EDGE_FEATURES = 5
+MIN_RACK_CONTACT_SHADOW_FRAC = 0.015
+MAX_RACK_OBJECT_BROWN_FRAC = 0.22
+MAX_RACK_BODY_RB_DELTA = 8.0
+MIN_RACK_BODY_MEAN_GREY = 38.0
+MAX_RACK_BODY_MEAN_GREY = 70.0
+MAX_RACK_FRONT_CLIP_FRAC = 0.005
+MIN_RACK_FRONT_PANEL_MEAN_LUM = 58.0
+MAX_RACK_FRONT_PANEL_MEAN_LUM = 82.0
+MIN_RACK_PANEL_LUM_SAMPLE = 50
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
@@ -166,6 +228,281 @@ def _hue_deg(r: int, g: int, b: int) -> float:
     return h * 360.0 if s > 0.06 else -1.0
 
 
+def _rack_detail_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, int, int]:
+    """Reject flat brown-box previews: luminance spread, LED pixels, bay edges."""
+    all_lums: list[float] = []
+    led_px = 0
+    xs: list[int] = []
+    ys: list[int] = []
+    x_lo = int(width * 0.26)
+    x_hi = int(width * 0.80)
+    y_lo = int(height * 0.14)
+    y_hi = int(height * 0.90)
+    for y in range(height):
+        for x in range(width):
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                if r > g + 15 and g >= b - 8 and r > 105:
+                    continue
+                all_lums.append((r + g + b) / (3.0 * 255.0))
+            if not (x_lo <= x <= x_hi and y_lo <= y <= y_hi):
+                continue
+            if not _object_pixel(r, g, b, bg):
+                continue
+            xs.append(x)
+            ys.append(y)
+            if g > r + 14 and g > 72 and b < g - 5:
+                led_px += 1
+            elif b > r + 10 and b > 72 and g < b - 4:
+                led_px += 1
+    if len(all_lums) < 80 or len(xs) < 40:
+        return 0.0, led_px, 0
+    mean = sum(all_lums) / len(all_lums)
+    std = math.sqrt(sum((v - mean) ** 2 for v in all_lums) / len(all_lums))
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    edge_rows = 0
+    step = max(1, (y1 - y0) // 18)
+    for y in range(y0, y1, step):
+        prev: float | None = None
+        jumps = 0
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                prev = None
+                continue
+            lum = (r + g + b) / (3.0 * 255.0)
+            if prev is not None and abs(lum - prev) > 0.058:
+                jumps += 1
+            prev = lum
+        if jumps >= 2:
+            edge_rows += 1
+    return std, led_px, edge_rows
+
+
+def _rack_front_led_pixels(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> int:
+    x0, x1 = int(width * 0.26), int(width * 0.80)
+    y0, y1 = int(height * 0.14), int(height * 0.90)
+    led_px = 0
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                continue
+            if g > r + 14 and g > 72 and b < g - 5:
+                led_px += 1
+            elif b > r + 10 and b > 72 and g < b - 4:
+                led_px += 1
+    return led_px
+
+
+def _rack_body_charcoal_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, float]:
+    """Mean RGB on front-body object pixels; charcoal pass needs |R-B|<8 and grey 40-70."""
+    x0, x1 = int(width * 0.28), int(width * 0.72)
+    y0, y1 = int(height * 0.16), int(height * 0.84)
+    rs: list[float] = []
+    gs: list[float] = []
+    bs: list[float] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                continue
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            if lum > 132:
+                continue
+            if g > r + 18 and g > 78:
+                continue
+            if b > r + 12 and b > 78:
+                continue
+            rs.append(float(r))
+            gs.append(float(g))
+            bs.append(float(b))
+    if not rs:
+        return 99.0, 0.0
+    mr = sum(rs) / len(rs)
+    mg = sum(gs) / len(gs)
+    mb = sum(bs) / len(bs)
+    grey = (mr + mg + mb) / 3.0
+    return abs(mr - mb), grey
+
+
+def _rack_led_pixel(r: int, g: int, b: int) -> bool:
+    if g > r + 14 and g > 72 and b < g - 4:
+        return True
+    if b > r + 10 and b > 72 and g < b - 4:
+        return True
+    if b > 200 and g > 190 and r < 140:
+        return True
+    if g > 200 and b > 160 and r < 110:
+        return True
+    return False
+
+
+def _rack_front_face_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, float]:
+    """Front ROI: clip fraction (max>230, excl LEDs) and mean panel luminance."""
+    x0, x1 = int(width * 0.28), int(width * 0.72)
+    y0, y1 = int(height * 0.16), int(height * 0.84)
+    clip = 0
+    clip_n = 0
+    panel_lums: list[float] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                continue
+            if _rack_led_pixel(r, g, b):
+                continue
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            if lum < 28:
+                continue
+            clip_n += 1
+            if max(r, g, b) > 230:
+                clip += 1
+            if lum >= MIN_RACK_PANEL_LUM_SAMPLE:
+                panel_lums.append(float(lum))
+    clip_frac = (clip / clip_n) if clip_n else 1.0
+    mean_lum = (sum(panel_lums) / len(panel_lums)) if panel_lums else 0.0
+    return clip_frac, mean_lum
+
+
+def _rack_brown_object_frac(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> float:
+    brown = 0
+    total = 0
+    for r, g, b in pixels:
+        if not _object_pixel(r, g, b, bg):
+            continue
+        total += 1
+        if r > g + 12 and r > 88 and b < g:
+            brown += 1
+    return (brown / total) if total else 0.0
+
+
+def _rack_contact_shadow_frac(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> float:
+    y0 = int(height * 0.9)
+    dark = 0
+    total = 0
+    for y in range(y0, height):
+        for x in range(int(width * 0.25), int(width * 0.76)):
+            r, g, b = pixels[y * width + x]
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            total += 1
+            if 70 <= lum <= 142:
+                dist = abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2])
+                if dist > 8 or lum < BACKDROP_RGB - 4:
+                    dark += 1
+    return (dark / total) if total else 0.0
+
+
+def _backdrop_bottom_band_bad_px(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> int:
+    """Bottom 3% strip (horiz inset band): non-object pixels not exactly RGB 150."""
+    band = max(1, int(min(width, height) * BACKDROP_BAND_FRAC))
+    y0 = height - band
+    bad = 0
+    for y in range(y0, height):
+        for x in range(band, width - band):
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            if not _backdrop_exact_ok(r, g, b):
+                bad += 1
+    return bad
+
+
+def _backdrop_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[int, int, float]:
+    """3% edge band: backdrop pixels only, non-150 count. 9-point grid on backdrop samples."""
+    band = max(1, int(min(width, height) * BACKDROP_BAND_FRAC))
+    bad = 0
+    for y in range(height):
+        for x in range(width):
+            if x >= band and x < width - band and y >= band and y < height - band:
+                continue
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            if not _backdrop_channel_ok(r, g, b):
+                bad += 1
+    grid_max = 0.0
+    for u in BACKDROP_GRID_FRACS:
+        for v in BACKDROP_GRID_FRACS:
+            if v >= 0.9 and 0.12 < u < 0.88:
+                continue
+            x = min(width - 1, int(u * (width - 1)))
+            y = min(height - 1, int(v * (height - 1)))
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            delta = max(abs(ch - BACKDROP_RGB) for ch in (r, g, b))
+            grid_max = max(grid_max, float(delta))
+    bottom_bad = _backdrop_bottom_band_bad_px(pixels, width, height, bg)
+    return bad, bottom_bad, grid_max
+
+
+def _frame_pixel(
+    r: int,
+    g: int,
+    b: int,
+    bg: tuple[int, int, int],
+    *,
+    asset_id: str | None,
+    y: int | None = None,
+    height: int | None = None,
+) -> bool:
+    if asset_id == "prop-desk":
+        return _is_subject(r, g, b, bg)
+    if asset_id == "prop-server-rack":
+        if not _object_pixel(r, g, b, bg):
+            return False
+        if y is not None and height is not None and y >= int(height * 0.91):
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            if lum >= 122 and lum <= 150:
+                dist = abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2])
+                if dist < 48:
+                    return False
+        return True
+    return _object_pixel(r, g, b, bg)
+
+
 def _framing_metrics(
     width: int,
     height: int,
@@ -197,11 +534,7 @@ def _framing_metrics(
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[y * width + x]
-            if (
-                _is_subject(r, g, b, bg)
-                if asset_id == "prop-desk"
-                else _object_pixel(r, g, b, bg)
-            ):
+            if _frame_pixel(r, g, b, bg, asset_id=asset_id, y=y, height=height):
                 subj_ys.append(y)
                 break
     sil_frac = (max(subj_ys) - min(subj_ys) + 1) / height if subj_ys else 0.0
@@ -210,8 +543,7 @@ def _framing_metrics(
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[y * width + x]
-            subj = _is_subject(r, g, b, bg)
-            if subj:
+            if _frame_pixel(r, g, b, bg, asset_id=asset_id, y=y, height=height):
                 xs.append(x)
                 ys2.append(y)
     if xs:
@@ -286,7 +618,51 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         (r * 299 + g * 587 + b * 114) // 1000 for r, g, b in corner_samples
     ]
     corner_mean = sum(corner_lums) / len(corner_lums) if corner_lums else 255.0
+    corner_rgb_max_delta = 0.0
+    for r, g, b in corner_samples:
+        for ch in (r, g, b):
+            corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - BACKDROP_RGB))
+    backdrop_band_bad, bottom_band_bad, grid_nine_delta = _backdrop_metrics(
+        pixels, width, height, bg
+    )
     desk_extra: dict[str, float] = {}
+    rack_extra: dict[str, float] = {}
+    if asset_id == "prop-server-rack":
+        r_std, led_n, edge_n = _rack_detail_metrics(pixels, width, height, bg)
+        rack_extra = {
+            "rack_subject_lum_stddev": r_std,
+            "rack_led_pixel_count": float(led_n),
+            "rack_h_edge_features": float(edge_n),
+            "rack_front_led_pixel_count": float(
+                _rack_front_led_pixels(pixels, width, height, bg)
+            ),
+            "rack_contact_shadow_frac": _rack_contact_shadow_frac(
+                pixels, width, height, bg
+            ),
+            "rack_brown_object_frac": _rack_brown_object_frac(
+                pixels, width, height, bg
+            ),
+        }
+        body_rb, body_grey = _rack_body_charcoal_metrics(
+            pixels, width, height, bg
+        )
+        rack_extra["rack_body_rb_delta"] = body_rb
+        rack_extra["rack_body_mean_grey"] = body_grey
+        clip_f, panel_lum = _rack_front_face_metrics(pixels, width, height, bg)
+        rack_extra["rack_front_clip_frac"] = clip_f
+        rack_extra["rack_front_panel_mean_lum"] = panel_lum
+        is_live = path.resolve() == (PREVIEW_DIR / f"{asset_id}.png").resolve()
+        meta_path = PREVIEW_DIR / "prop-server-rack.preview_meta.json"
+        if is_live and meta_path.is_file():
+            try:
+                meta = json.loads(meta_path.read_text(encoding="utf-8"))
+                rack_extra["rack_front_normal_dot"] = float(
+                    meta.get("rack_front_normal_dot", 0.0)
+                )
+            except (json.JSONDecodeError, TypeError, ValueError):
+                rack_extra["rack_front_normal_dot"] = 0.0
+        elif asset_id == "prop-server-rack":
+            rack_extra["rack_front_normal_dot"] = 0.0
     if asset_id == "prop-desk":
         subj_sats_sorted = sorted(subj_sat)
         med_sat = (
@@ -315,10 +691,6 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
                     continue
                 screen_lums.append(max(r, g, b) / 255.0)
         screen_peak = max(screen_lums) if screen_lums else 0.0
-        corner_rgb_max_delta = 0.0
-        for r, g, b in corner_samples:
-            for ch in (r, g, b):
-                corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - 150))
         outside_screen_sat: list[float] = []
         blow_n = 0
         outside_n = 0
@@ -470,7 +842,12 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "flat_pixel_frac": flat_frac,
         "ground_lum": gmean,
         "corner_lum_mean": corner_mean,
+        "corner_rgb_max_delta": corner_rgb_max_delta,
+        "backdrop_band_bad_px": float(backdrop_band_bad),
+        "backdrop_bottom_band_bad_px": float(bottom_band_bad),
+        "backdrop_grid_nine_delta": grid_nine_delta,
         **desk_extra,
+        **rack_extra,
     }
 
 
@@ -480,7 +857,7 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         reasons.append(
             f"uniform stddev={s['stddev']:.2f} coverage={s['coverage']:.1%}"
         )
-    min_sat = 0.075 if asset_id == "prop-desk" else MIN_MEAN_SAT
+    min_sat = 0.075 if asset_id in ("prop-desk", "prop-server-rack") else MIN_MEAN_SAT
     if s["mean_lum"] < MIN_MEAN_LUM or s["mean_sat"] < min_sat:
         reasons.append(
             f"chroma mean_lum={s['mean_lum']:.1f} mean_sat={s['mean_sat']:.3f}"
@@ -488,22 +865,89 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
     if s.get("border_touch", 0) >= 0.5:
         reasons.append("framing border_touch")
     sil = s.get("silhouette_frac", 0.0)
-    sil_max = 0.90 if asset_id == "prop-desk" else MAX_SIL_FRAC
+    sil_max = 0.90 if asset_id in ("prop-desk", "prop-server-rack") else MAX_SIL_FRAC
     if sil and (sil < MIN_SIL_FRAC or sil > sil_max):
         reasons.append(f"framing silhouette_frac={sil:.2%}")
-    if asset_id == "prop-desk":
+    if asset_id in ("prop-desk", "prop-server-rack"):
         sb = s.get("subject_bbox_frac", 0.0)
         if sb < MIN_SUBJECT_BBOX_FRAC or sb > MAX_SUBJECT_BBOX_FRAC:
             reasons.append(f"subject_bbox_frac={sb:.2%}")
         mg = s.get("min_margin_frac", 0.0)
-        if mg < MIN_FRAME_MARGIN_FRAC:
+        if asset_id != "prop-server-rack" and mg < MIN_FRAME_MARGIN_FRAC:
             reasons.append(f"min_margin_frac={mg:.2%}")
-        flat_max = 0.78 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
+        flat_max = 0.78 if asset_id == "prop-desk" else (0.82 if asset_id == "prop-server-rack" else MAX_FLAT_PIXEL_FRAC)
         if s.get("flat_pixel_frac", 1.0) > flat_max:
             reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
-        ground_max = 178 if asset_id == "prop-desk" else MAX_GROUND_LUM
+        ground_max = 178 if asset_id in ("prop-desk", "prop-server-rack") else MAX_GROUND_LUM
         if s.get("ground_lum", 255) > ground_max:
             reasons.append(f"ground_lum={s['ground_lum']:.1f}")
+        if s.get("corner_rgb_max_delta", 99.0) > 0.0:
+            reasons.append(
+                f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want exactly 150)"
+            )
+        if asset_id == "prop-server-rack":
+            if s.get("backdrop_band_bad_px", 0.0) > MAX_BACKDROP_BAND_BAD_PX:
+                reasons.append(
+                    f"backdrop_band_bad_px={int(s.get('backdrop_band_bad_px', 0))} (max {MAX_BACKDROP_BAND_BAD_PX})"
+                )
+            if s.get("backdrop_grid_nine_delta", 0.0) > BACKDROP_CHANNEL_TOL:
+                reasons.append(
+                    f"backdrop_grid_nine_delta={s.get('backdrop_grid_nine_delta', 0):.1f} (max {BACKDROP_CHANNEL_TOL})"
+                )
+            if s.get("backdrop_bottom_band_bad_px", 0.0) > MAX_BACKDROP_BOTTOM_BAND_BAD_PX:
+                reasons.append(
+                    f"backdrop_bottom_band_bad_px={int(s.get('backdrop_bottom_band_bad_px', 0))} (max {MAX_BACKDROP_BOTTOM_BAND_BAD_PX})"
+                )
+    if asset_id == "prop-server-rack":
+        if s.get("rack_subject_lum_stddev", 0.0) < MIN_RACK_SUBJECT_LUM_STDDEV:
+            reasons.append(
+                f"rack_subject_lum_stddev={s.get('rack_subject_lum_stddev', 0):.3f} (min {MIN_RACK_SUBJECT_LUM_STDDEV})"
+            )
+        if s.get("rack_led_pixel_count", 0.0) < MIN_RACK_LED_PIXELS:
+            reasons.append(
+                f"rack_led_pixel_count={int(s.get('rack_led_pixel_count', 0))} (min {MIN_RACK_LED_PIXELS})"
+            )
+        if s.get("rack_h_edge_features", 0.0) < MIN_RACK_H_EDGE_FEATURES:
+            reasons.append(
+                f"rack_h_edge_features={int(s.get('rack_h_edge_features', 0))} (min {MIN_RACK_H_EDGE_FEATURES})"
+            )
+        if s.get("rack_front_led_pixel_count", 0.0) < MIN_RACK_FRONT_LED_PIXELS:
+            reasons.append(
+                f"rack_front_led_pixel_count={int(s.get('rack_front_led_pixel_count', 0))} (min {MIN_RACK_FRONT_LED_PIXELS})"
+            )
+        if s.get("rack_front_normal_dot", 0.0) < MIN_RACK_FRONT_NORMAL_DOT:
+            reasons.append(
+                f"rack_front_normal_dot={s.get('rack_front_normal_dot', 0):.2f} (min {MIN_RACK_FRONT_NORMAL_DOT})"
+            )
+        if s.get("rack_contact_shadow_frac", 0.0) < MIN_RACK_CONTACT_SHADOW_FRAC:
+            reasons.append(
+                f"rack_contact_shadow_frac={s.get('rack_contact_shadow_frac', 0):.3%} (min {MIN_RACK_CONTACT_SHADOW_FRAC:.1%})"
+            )
+        if s.get("rack_brown_object_frac", 0.0) > MAX_RACK_OBJECT_BROWN_FRAC:
+            reasons.append(
+                f"rack_brown_object_frac={s.get('rack_brown_object_frac', 0):.2%} (max {MAX_RACK_OBJECT_BROWN_FRAC:.0%})"
+            )
+        rb_d = s.get("rack_body_rb_delta", 99.0)
+        body_g = s.get("rack_body_mean_grey", 0.0)
+        if rb_d > MAX_RACK_BODY_RB_DELTA:
+            reasons.append(
+                f"rack_body_rb_delta={rb_d:.1f} (max {MAX_RACK_BODY_RB_DELTA:.0f})"
+            )
+        if body_g < MIN_RACK_BODY_MEAN_GREY or body_g > MAX_RACK_BODY_MEAN_GREY:
+            reasons.append(
+                f"rack_body_mean_grey={body_g:.1f} (want {MIN_RACK_BODY_MEAN_GREY:.0f}-{MAX_RACK_BODY_MEAN_GREY:.0f})"
+            )
+        clip_f = s.get("rack_front_clip_frac", 1.0)
+        if clip_f > MAX_RACK_FRONT_CLIP_FRAC:
+            reasons.append(
+                f"rack_front_clip_frac={clip_f:.3%} (max {MAX_RACK_FRONT_CLIP_FRAC:.1%})"
+            )
+        p_lum = s.get("rack_front_panel_mean_lum", 0.0)
+        if p_lum < MIN_RACK_FRONT_PANEL_MEAN_LUM or p_lum > MAX_RACK_FRONT_PANEL_MEAN_LUM:
+            reasons.append(
+                f"rack_front_panel_mean_lum={p_lum:.1f} (want {MIN_RACK_FRONT_PANEL_MEAN_LUM:.0f}-{MAX_RACK_FRONT_PANEL_MEAN_LUM:.0f})"
+            )
+    if asset_id == "prop-desk":
         if s.get("subject_median_sat", 1.0) < 0.08:
             reasons.append(f"subject_median_sat={s.get('subject_median_sat', 0):.3f}")
         if s.get("desk_top_brown_frac", 0.0) < 0.12:
@@ -515,10 +959,6 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         blow_max = 0.026 if asset_id == "prop-desk" else 0.02
         if s.get("blow_frac_outside_screen", 1.0) > blow_max:
             reasons.append(f"blow_frac_outside_screen={s.get('blow_frac_outside_screen', 0):.2%}")
-        if s.get("corner_rgb_max_delta", 99.0) > 0.0:
-            reasons.append(
-                f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want exactly 150)"
-            )
         if s.get("bezel_wood_frac", 0.0) > 0.08:
             reasons.append(f"bezel_wood_frac={s.get('bezel_wood_frac', 0):.2%}")
         dml = s.get("desk_mean_lum", 0.0)
@@ -583,6 +1023,21 @@ def main() -> int:
         bad = gate_fail(aid, s)
         if bad:
             failures.append(f"{aid}: " + "; ".join(bad))
+    for aid, fixture, head in FIXTURES_MUST_FAIL:
+        if not fixture.is_file():
+            failures.append(f"{head}: missing regression fixture {fixture}")
+            continue
+        s_fix = stats(fixture, aid)
+        bad_fix = gate_fail(aid, s_fix)
+        if not bad_fix:
+            failures.append(
+                f"{head}: fixture {fixture.name} must FAIL gates (dfc65859 regression)"
+            )
+        else:
+            print(
+                f"OK: fixture {fixture.name} fails gates as expected ({head}): "
+                + "; ".join(bad_fix[:3])
+            )
     if failures:
         for line in failures:
             print(f"FAIL preview quality: {line}", file=sys.stderr)

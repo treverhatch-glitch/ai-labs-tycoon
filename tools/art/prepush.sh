@@ -2,6 +2,14 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+PUSH_REMOTE="${ART_PREPUSH_PUSH_REMOTE:-origin/cursor/graphics-server-rack-5032}"
+if git rev-parse --verify "$PUSH_REMOTE" >/dev/null 2>&1; then
+  if ! git merge-base --is-ancestor "$PUSH_REMOTE" HEAD; then
+    echo "FAIL: $PUSH_REMOTE is not an ancestor of HEAD — force-push forbidden" >&2
+    exit 1
+  fi
+  echo "OK: merge-base ($PUSH_REMOTE ancestor of HEAD)"
+fi
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
@@ -19,6 +27,7 @@ python3 tools/art/check_silhouette_manifest.py
 python3 tools/art/verify_handoff_lists.py
 python3 tools/art/check_bloc_tints.py
 python3 tools/art/check_era_skin_tokens.py
+python3 tools/art/check_prop_server_rack_assembly.py
 HEAD_BODY=$(git log -1 --format=%B)
 HEAD_EMAIL=$(git log -1 --format='%ae')
 if echo "$HEAD_BODY" | grep -qiE 'Co-authored-by:'; then
