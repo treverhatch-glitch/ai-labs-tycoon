@@ -61,6 +61,21 @@ def setup_studio_world() -> None:
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
+def add_shadow_floor_y(y: float = 0.0) -> bpy.types.Object:
+    """Ground plane for garage scripts that use Y-up."""
+    bpy.ops.mesh.primitive_plane_add(size=8, location=(0, y - 0.002, 0), rotation=(math.pi / 2, 0, 0))
+    floor = bpy.context.active_object
+    floor.name = "PreviewShadowFloor"
+    mat = bpy.data.materials.new("PreviewFloor")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
+        bsdf.inputs["Roughness"].default_value = 0.9
+    floor.data.materials.append(mat)
+    return floor
+
+
 def add_shadow_floor(z: float = 0.0) -> bpy.types.Object:
     bpy.ops.mesh.primitive_plane_add(size=6, location=(0, 0, z - 0.002))
     floor = bpy.context.active_object
@@ -125,22 +140,21 @@ def render_preview_studio(
     resolution: int = 512,
 ) -> None:
     """Render with studio rig; `focus` is hero object or join root."""
-    objs = focus if isinstance(focus, list) else [focus]
-    mesh_objs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if not mesh_objs:
-        mesh_objs = objs
+    hero = focus if isinstance(focus, list) else [focus]
+    hero_meshes = [o for o in hero if o.type == "MESH"]
+    if not hero_meshes:
+        hero_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.name != "PreviewShadowFloor"]
 
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
     if hasattr(bpy.context.scene, "eevee"):
         bpy.context.scene.eevee.taa_render_samples = 32
     setup_studio_world()
-    mins, maxs = _mesh_bounds(mesh_objs)
-    floor_z = mins.z
-    add_shadow_floor(floor_z)
+    mins, maxs = _mesh_bounds(hero_meshes)
+    add_shadow_floor_y(mins.y)
     center = (mins + maxs) * 0.5
     radius = max(0.4, (maxs - mins).length * 0.5)
     setup_three_point_lights(center, radius)
-    frame_camera(mesh_objs, margin=1.3)
+    frame_camera(hero_meshes, margin=1.02)
     bpy.context.scene.render.resolution_x = resolution
     bpy.context.scene.render.resolution_y = resolution
     bpy.context.scene.render.filepath = str(path)

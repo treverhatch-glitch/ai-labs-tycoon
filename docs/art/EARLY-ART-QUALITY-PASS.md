@@ -1,6 +1,6 @@
 # Early art quality pass (post–#86)
 
-**Status:** Post–#86 PR — packet 1 (15 garage) materials + studio previews; staff/wisp/HUD in later packets.
+**Status:** PR #88 packet 1 **rework** (Hatch) — saturated palettes, silhouettes, Y-up preview floor; saturation gate in `check_garage_quality_previews.py`.
 
 **Parent merge:** `main` @ `1f62b217` (rules run 140 green on `52a7dd8d`).
 
