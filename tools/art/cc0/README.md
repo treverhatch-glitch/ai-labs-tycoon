@@ -8,3 +8,7 @@
 Compute hardware hero lane: `run_compute_heroes.sh` → `unity/Assets/Art/Cc0/compute-kit/`.
 
 Branch commits must not include `Co-authored-by` trailers (use `git commit --no-verify` only if hooks inject one).
+
+**Push (forward-only):** force-push is banned (`--force`, `--force-with-lease`, `+refspec`). Before every push run
+`./tools/art/cc0/prepush.sh` (ancestor check via `git merge-base --is-ancestor origin/<branch> HEAD` — abort if it fails).
+Plain `git push -u origin cursor/art-compute-hardware-cc0` only. If remote is already wrong, leave it as-is and fix with a new commit.
