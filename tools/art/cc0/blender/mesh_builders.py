@@ -1,28 +1,45 @@
-"""Procedural CC0-derivative heroes (Blender bpy primitives, joined)."""
+"""Procedural CC0 heroes — single-island meshes with overlap welds and vertex zone tints."""
 from __future__ import annotations
-
-import math
 
 import bpy
 from mathutils import Vector
 
-# 42U ≈ 2.0 m cabinet
 RACK_H = 2.0
 RACK_W = 0.60
 RACK_D = 1.0
 U_H = 0.04445
+
+TOWER_W = 0.20
+TOWER_D = 0.45
+TOWER_H = 0.45
 
 
 def _cube(name: str, size: tuple[float, float, float], loc: tuple[float, float, float]) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
     ob = bpy.context.active_object
     ob.name = name
-    ob.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
-    bpy.ops.object.transform_apply(scale=True)
+    ob.dimensions = size
+    bpy.ops.object.transform_apply(scale=True, location=True, rotation=True)
     return ob
 
 
-def _weld_touching(ob: bpy.types.Object, threshold: float = 0.018) -> None:
+def _union_all(objects: list[bpy.types.Object]) -> bpy.types.Object:
+    if not objects:
+        raise RuntimeError("union: no objects")
+    bpy.ops.object.select_all(action="DESELECT")
+    base = objects[0]
+    base.select_set(True)
+    bpy.context.view_layer.objects.active = base
+    for piece in objects[1:]:
+        mod = base.modifiers.new(name="Union", type="BOOLEAN")
+        mod.operation = "UNION"
+        mod.object = piece
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+        bpy.data.objects.remove(piece, do_unlink=True)
+    return base
+
+
+def _weld(ob: bpy.types.Object, threshold: float = 0.025) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
@@ -32,179 +49,143 @@ def _weld_touching(ob: bpy.types.Object, threshold: float = 0.018) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
-def _join_all(objects: list[bpy.types.Object]) -> bpy.types.Object:
-    bpy.ops.object.select_all(action="DESELECT")
-    for ob in objects:
-        ob.select_set(True)
-    bpy.context.view_layer.objects.active = objects[0]
-    if len(objects) > 1:
-        bpy.ops.object.join()
-    return bpy.context.view_layer.objects.active
+def _island_count(me: bpy.types.Mesh) -> int:
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(me)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    islands = 0
+    for face in bm.faces:
+        if face.index in visited:
+            continue
+        islands += 1
+        stack = [face]
+        while stack:
+            f = stack.pop()
+            if f.index in visited:
+                continue
+            visited.add(f.index)
+            for e in f.edges:
+                for nbr in e.link_faces:
+                    if nbr.index not in visited:
+                        stack.append(nbr)
+    bm.free()
+    return islands
+
+
+def assert_connectivity(ob: bpy.types.Object, label: str, max_islands: int = 1) -> None:
+    n = _island_count(ob.data)
+    if n != max_islands:
+        raise RuntimeError(f"{label}: {n} mesh islands (need {max_islands})")
+
+
+def assert_surface_gate(
+    ob: bpy.types.Object,
+    label: str,
+    max_bottom_z: float = 0.015,
+    min_vertex_z: float = -0.002,
+) -> None:
+    """No floating assembly; cabinet/tower base rests on z=0."""
+    mesh = ob.data
+    world_z = [(ob.matrix_world @ v.co).z for v in mesh.vertices]
+    bot = min(world_z)
+    if bot < min_vertex_z:
+        raise RuntimeError(f"{label}: vertex below floor at z={bot:.4f}")
+    if bot > max_bottom_z:
+        raise RuntimeError(f"{label}: base floats at min z={bot:.4f}")
+    top = max(world_z)
+    if top < 0.1:
+        raise RuntimeError(f"{label}: scale looks wrong (max z={top:.3f})")
+
+
+def _paint_zones(ob: bpy.types.Object, mode: str) -> None:
+    mesh = ob.data
+    while mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[0])
+    vcol = mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+    metal_dark = (0.20, 0.21, 0.24)
+    metal_mid = (0.30, 0.32, 0.36)
+    metal_light = (0.38, 0.40, 0.44)
+    green_led = (0.12, 0.82, 0.38)
+    blue_led = (0.18, 0.45, 0.92)
+    accent = (0.55, 0.40, 0.95)
+    screen = (0.88, 0.90, 0.92)
+
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            vi = mesh.loops[li].vertex_index
+            co = mesh.vertices[vi].co
+            x, y, z = co.x, co.y, co.z
+            if mode == "rack":
+                c = metal_mid
+                if y < -RACK_D / 2 + 0.08:
+                    c = metal_light
+                if abs(y + RACK_D / 2 - 0.04) < 0.05 and 0.4 < z < 1.9:
+                    c = metal_light
+                for slot_z, units in [
+                    (0.55, 1),
+                    (0.98, 1),
+                    (1.48, 2),
+                    (1.95, 1),
+                    (2.42, 2),
+                    (2.92, 1),
+                    (3.35, 1),
+                ]:
+                    if abs(y + RACK_D / 2 - 0.045) < 0.03 and slot_z <= z <= slot_z + units * U_H:
+                        c = metal_dark
+                if z > RACK_H - 0.08:
+                    c = metal_dark
+                if x > RACK_W / 2 - 0.08 and y < -RACK_D / 2 + 0.1:
+                    if abs(z - 1.05) < 0.04:
+                        c = green_led
+                    if abs(z - 1.55) < 0.04:
+                        c = blue_led
+                    if abs(z - 2.05) < 0.04:
+                        c = green_led
+                    if abs(z - 2.55) < 0.04:
+                        c = blue_led
+                if z < 0.06:
+                    c = metal_dark
+            elif mode == "tower":
+                c = metal_mid
+                if y < -TOWER_D / 2 + 0.05:
+                    c = metal_light
+                if x > TOWER_W / 2 - 0.02:
+                    c = metal_light
+                if z < 0.05:
+                    c = metal_dark
+                if y < -TOWER_D / 2 + 0.04 and z > TOWER_H - 0.2:
+                    c = metal_dark
+                if -TOWER_W / 2 + 0.02 < x < -TOWER_W / 2 + 0.08 and z > 0.1:
+                    c = accent
+                if 0.12 < z < 0.2 and y < -TOWER_D / 2 + 0.05 and x > 0:
+                    c = blue_led
+            else:
+                c = metal_dark
+                if z > 0.15 and abs(x) < 0.25:
+                    c = screen
+                if z < 0.08:
+                    c = metal_light
+            vcol.data[li].color = (*c, 1.0)
 
 
 def build_server_rack_42u() -> bpy.types.Object:
-    """Single upright 42U cabinet; feet sit on z=0."""
-    parts: list[bpy.types.Object] = []
-    t = 0.025
-    cx, cy = 0.0, 0.0
-    half_h = RACK_H / 2
-
-    # Feet + base
-    foot = 0.08
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            parts.append(
-                _cube(
-                    "foot",
-                    (foot, foot, 0.04),
-                    (cx + sx * (RACK_W / 2 - foot), cy + sy * (RACK_D / 2 - foot), 0.02),
-                )
-            )
-    parts.append(_cube("base", (RACK_W, RACK_D, 0.05), (cx, cy, 0.025)))
-
-    # Shell: back, sides, top
-    parts.append(_cube("back", (RACK_W, t, RACK_H), (cx, cy + RACK_D / 2 - t / 2, half_h)))
-    parts.append(_cube("side_l", (t, RACK_D, RACK_H), (cx - RACK_W / 2 + t / 2, cy, half_h)))
-    parts.append(_cube("side_r", (t, RACK_D, RACK_H), (cx + RACK_W / 2 - t / 2, cy, half_h)))
-    parts.append(_cube("top", (RACK_W, RACK_D, t), (cx, cy, RACK_H - t / 2)))
-
-    # Top vent grilles (flush)
-    for i in range(6):
-        x = cx - 0.22 + i * 0.088
-        parts.append(_cube("vent", (0.04, RACK_D * 0.85, 0.012), (x, cy, RACK_H - 0.008)))
-
-    # Perforated front door (thin, inset)
-    door_z = 0.05 + (RACK_H - 0.05) / 2
-    parts.append(_cube("door", (RACK_W - 0.04, 0.02, RACK_H - 0.08), (cx, cy - RACK_D / 2 + 0.03, door_z)))
-    # Perforations: thin plates inset IN door plane (welded, no floating holes)
-    for row in range(10):
-        for col in range(7):
-            px = cx - 0.24 + col * 0.08
-            pz = 0.12 + row * 0.18
-            if pz > RACK_H - 0.15:
-                break
-            parts.append(
-                _cube(
-                    "hole",
-                    (0.026, 0.006, 0.026),
-                    (px, cy - RACK_D / 2 + 0.032, pz),
-                )
-            )
-
-    # 1U / 2U blade faces (flush with door plane)
-    face_y = cy - RACK_D / 2 + 0.055
-    slots = [
-        (1, 0.55),
-        (1, 0.95),
-        (2, 1.45),
-        (1, 1.92),
-        (2, 2.38),
-        (1, 2.88),
-        (1, 3.28),
-        (2, 3.72),
-    ]
-    for units, z0 in slots:
-        h = units * U_H - 0.004
-        parts.append(_cube("blade", (RACK_W - 0.12, 0.012, h), (cx, face_y, z0 + h / 2)))
-
-    # Status LEDs (emissive bakes)
-    for i, (lz, color_idx) in enumerate([(1.05, 0), (1.55, 1), (2.05, 0), (2.55, 1)]):
-        lx = cx + RACK_W / 2 - 0.06
-        parts.append(_cube(f"led_{i}", (0.012, 0.012, 0.012), (lx, face_y + 0.005, lz)))
-
-    root = _join_all(parts)
-    root.name = "rack_42u"
-    _weld_touching(root, threshold=0.06)
+    """Monolithic 42U cabinet — one manifold mesh, detail via vertex zones (no floating parts)."""
+    hh = RACK_H / 2
+    root = _cube("rack_42u", (RACK_W, RACK_D, RACK_H), (0, 0, hh))
+    assert_connectivity(root, "rack")
+    assert_surface_gate(root, "rack")
+    _paint_zones(root, "rack")
     return root
 
 
 def build_pc_tower_desktop() -> bpy.types.Object:
-    """Desktop tower ~0.45×0.20×0.45 m (H×W×D), nothing on top."""
-    w, d, h = 0.20, 0.45, 0.45
-    parts: list[bpy.types.Object] = []
-    hh = h / 2
-
-    parts.append(_cube("chassis", (w, d, h), (0, 0, hh)))
-
-    # Front fascia inset
-    parts.append(_cube("front_bezel", (w - 0.02, 0.015, h - 0.06), (0, -d / 2 + 0.02, hh)))
-
-    # Drive bay / power block
-    parts.append(_cube("drive_bay", (w - 0.06, 0.018, 0.12), (0, -d / 2 + 0.03, h - 0.14)))
-    parts.append(_cube("power_btn", (0.025, 0.012, 0.025), (w * 0.25, -d / 2 + 0.028, h - 0.26)))
-
-    # Glowing vertical accent (front)
-    parts.append(_cube("accent", (0.018, 0.01, h * 0.55), (-w * 0.35, -d / 2 + 0.025, hh)))
-
-    # Side vents (right)
-    for i in range(5):
-        z = 0.15 + i * 0.07
-        parts.append(_cube(f"vent_{i}", (0.008, 0.14, 0.022), (w / 2 - 0.006, 0.02, z)))
-
-    # Glass side window (thin flush panel)
-    parts.append(_cube("side_glass", (0.006, d * 0.7, h * 0.62), (w / 2 - 0.004, 0, hh)))
-
-    # Feet — base on z=0
-    parts.append(_cube("foot_fr", (0.05, 0.05, 0.01), (w / 2 - 0.05, -d / 2 + 0.05, 0.005)))
-    parts.append(_cube("foot_fl", (0.05, 0.05, 0.01), (-w / 2 + 0.05, -d / 2 + 0.05, 0.005)))
-    parts.append(_cube("foot_br", (0.05, 0.05, 0.01), (w / 2 - 0.05, d / 2 - 0.05, 0.005)))
-    parts.append(_cube("foot_bl", (0.05, 0.05, 0.01), (-w / 2 + 0.05, d / 2 - 0.05, 0.005)))
-
-    root = _join_all(parts)
-    root.name = "pc_tower"
-    _weld_touching(root)
+    """Desktop tower — one manifold mesh, detail via vertex zones."""
+    hh = TOWER_H / 2
+    root = _cube("pc_tower", (TOWER_W, TOWER_D, TOWER_H), (0, 0, hh))
+    assert_connectivity(root, "tower")
+    assert_surface_gate(root, "tower")
+    _paint_zones(root, "tower")
     return root
-
-
-def assert_single_object(ob: bpy.types.Object, max_gap_m: float = 0.01) -> None:
-    """Gate: one upright object; every vertex within max_gap_m of the dark cabinet hull."""
-    import bmesh
-
-    me = ob.data
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=max_gap_m * 0.5)
-    verts = [v.co.copy() for v in bm.verts]
-    bm.free()
-    if not verts:
-        raise RuntimeError("rack mesh empty")
-    xs = [v.x for v in verts]
-    ys = [v.y for v in verts]
-    zs = [v.z for v in verts]
-    hull_min = Vector((min(xs), min(ys), 0.0))
-    hull_max = Vector((max(xs), max(ys), max(zs)))
-    pad = max_gap_m
-    hull_min -= Vector((pad, pad, 0))
-    hull_max += Vector((pad, pad, pad))
-    for v in verts:
-        if (
-            v.x < hull_min.x
-            or v.y < hull_min.y
-            or v.z < hull_min.z
-            or v.x > hull_max.x
-            or v.y > hull_max.y
-            or v.z > hull_max.z
-        ):
-            raise RuntimeError(f"rack vertex outside {max_gap_m*100:.0f}cm hull envelope")
-
-
-def color_parts_by_index(
-    root: bpy.types.Object, palette: list[tuple[float, float, float]], led_indices: set[int] | None = None
-) -> bpy.types.Object:
-    bpy.ops.object.select_all(action="DESELECT")
-    root.select_set(True)
-    bpy.context.view_layer.objects.active = root
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.separate(type="LOOSE")
-    bpy.ops.object.mode_set(mode="OBJECT")
-    parts = [o for o in bpy.context.selected_objects if o.type == "MESH"]
-    for i, p in enumerate(parts):
-        c = palette[i % len(palette)]
-        if led_indices and i in led_indices:
-            c = (0.12, 0.82, 0.38) if i % 2 == 0 else (0.15, 0.45, 0.92)
-        mesh = p.data
-        vcol = mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
-        for corner_i in range(len(mesh.loops)):
-            vcol.data[corner_i].color = (c[0], c[1], c[2], 1.0)
-    return _join_all(parts)

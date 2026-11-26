@@ -397,21 +397,24 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
     bevel_object(root, width=0.010, segments=2)
-    colors = part_palette(asset_id)
-    parts = _split_loose_parts(root)
-    for i, p in enumerate(parts):
-        c = colors[i % len(colors)]
-        is_led = "server-rack" in asset_id and (i % 7) in (5, 6)
-        if is_led:
-            c = (0.12, 0.82, 0.38) if (i % 2) == 0 else (0.15, 0.45, 0.92)
-        mesh = p.data
-        if mesh.color_attributes.get("BakeColor") is None:
-            mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
-        vcol = mesh.color_attributes["BakeColor"]
-        col = (c[0], c[1], c[2], 1.0)
-        for corner_i in range(len(mesh.loops)):
-            vcol.data[corner_i].color = col
-    root = join_meshes(parts) if len(parts) > 1 else parts[0]
+    mesh = root.data
+    has_bake = mesh.color_attributes.get("BakeColor") is not None
+    if not has_bake:
+        colors = part_palette(asset_id)
+        parts = _split_loose_parts(root)
+        for i, p in enumerate(parts):
+            c = colors[i % len(colors)]
+            is_led = "server-rack" in asset_id and (i % 7) in (5, 6)
+            if is_led:
+                c = (0.12, 0.82, 0.38) if (i % 2) == 0 else (0.15, 0.45, 0.92)
+            pm = p.data
+            if pm.color_attributes.get("BakeColor") is None:
+                pm.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+            vcol = pm.color_attributes["BakeColor"]
+            col = (c[0], c[1], c[2], 1.0)
+            for corner_i in range(len(pm.loops)):
+                vcol.data[corner_i].color = col
+        root = join_meshes(parts) if len(parts) > 1 else parts[0]
     root.name = f"mesh_{asset_id}"
     bake_mat = bake_material(root, asset_id)
     smart_uv(root)

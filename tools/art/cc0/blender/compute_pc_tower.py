@@ -11,16 +11,7 @@ import mesh_builders as mb  # noqa: E402
 def build() -> dict:
     cc.reset_scene()
     root = mb.build_pc_tower_desktop()
-    palette = [
-        (0.24, 0.25, 0.28),
-        (0.20, 0.21, 0.24),
-        (0.30, 0.32, 0.35),
-        (0.55, 0.40, 0.95),
-        (0.15, 0.55, 0.85),
-        (0.72, 0.75, 0.78),
-    ]
-    root = mb.color_parts_by_index(root, palette, led_indices={3, 4})
-    sources = ["procedural:bpy desktop tower (Kenney/Quaternius scale reference)"]
+    sources = ["procedural:bpy desktop tower (single island)"]
     return cc.finish_cc0_asset("compute-pc-tower", root, sources)
 
 

@@ -28,7 +28,7 @@
       "preview": "docs/art/previews/compute-pc-tower.png",
       "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
       "sources": [
-        "procedural:bpy desktop tower (Kenney/Quaternius scale reference)"
+        "procedural:bpy desktop tower (single island)"
       ],
       "generator": "tools/art/cc0/blender/compute_pc_tower.py"
     },
@@ -43,7 +43,7 @@
       "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
       "sources": [
         "tools/art/cc0/incoming/ambientcg/Metal048A (palette reference)",
-        "procedural:bpy 42U cabinet"
+        "procedural:bpy 42U cabinet (single island)"
       ],
       "generator": "tools/art/cc0/blender/compute_server_rack.py"
     }
