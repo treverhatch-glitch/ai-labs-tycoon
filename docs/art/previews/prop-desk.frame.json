@@ -1,20 +1,23 @@
 {
   "assetId": "prop-desk",
   "preview": "docs/art/previews/prop-desk.png",
-  "glb_sha256": "0095e9bfca4dfff5e549a6a28b1685e87c75b2ac777dc001dec8f7b499af2407",
+  "glb_sha256": "d7d333d7452de145443834b9ba1695243d503ee8e4f3751bbb9f236b73b5111f",
   "resolution": 1024,
   "quality": {
-    "stddev": 41.01108593263716,
-    "coverage": 0.9999980926513672,
-    "mean_lum": 89.71028037383178,
-    "mean_sat": 0.09862561847168774,
+    "stddev": 42.856679490332766,
+    "coverage": 1.0,
+    "mean_lum": 219.97578289044623,
+    "mean_sat": 0.4116310041152026,
     "border_touch": 0.0,
-    "silhouette_frac": 0.802734375,
-    "subject_bbox_frac": 0.6748046875,
-    "min_margin_frac": 0.150390625,
-    "flat_pixel_frac": 0.5696859359741211,
-    "ground_lum": 135.9176194105691,
-    "corner_lum_mean": 161.0,
-    "corner_lum_spread": 1.0
+    "silhouette_frac": 0.6337890625,
+    "subject_bbox_frac": 0.6123046875,
+    "min_margin_frac": 0.173828125,
+    "flat_pixel_frac": 0.6421995162963867,
+    "ground_lum": 152.514068851626,
+    "corner_lum_mean": 150.5,
+    "subject_median_sat": 0.49019607843137253,
+    "desk_top_brown_frac": 0.14275278177218303,
+    "screen_peak_lum": 1.0,
+    "corner_rgb_max_delta": 2
   }
 }

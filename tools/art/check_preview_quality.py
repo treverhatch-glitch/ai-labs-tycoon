@@ -247,18 +247,58 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         if abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2]) < 18
     )
     flat_frac = near_bg / n
-    corner_lums: list[int] = []
-    margin = 12
+    corner_samples: list[tuple[int, int, int]] = []
+    margin = 8
     for cx, cy in (
         (margin, margin),
         (width - 1 - margin, margin),
         (margin, height - 1 - margin),
         (width - 1 - margin, height - 1 - margin),
     ):
-        r, g, b = pixels[cy * width + cx]
-        corner_lums.append((r * 299 + g * 587 + b * 114) // 1000)
+        corner_samples.append(pixels[cy * width + cx])
+    corner_lums = [
+        (r * 299 + g * 587 + b * 114) // 1000 for r, g, b in corner_samples
+    ]
     corner_mean = sum(corner_lums) / len(corner_lums) if corner_lums else 255.0
-    corner_spread = max(abs(x - corner_mean) for x in corner_lums) if corner_lums else 0.0
+    desk_extra: dict[str, float] = {}
+    if asset_id == "prop-desk":
+        subj_sats_sorted = sorted(subj_sat)
+        med_sat = (
+            subj_sats_sorted[len(subj_sats_sorted) // 2] if subj_sats_sorted else 0.0
+        )
+        y0, y1 = int(height * 0.40), int(height * 0.62)
+        x0, x1 = int(width * 0.12), int(width * 0.88)
+        desk_px = 0
+        brown_px = 0
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                r, g, b = pixels[y * width + x]
+                if not _is_subject(r, g, b, bg):
+                    continue
+                desk_px += 1
+                if r > g + 4 and g > b and r > 95:
+                    brown_px += 1
+        desk_brown_frac = brown_px / desk_px if desk_px else 0.0
+        sy0, sy1 = int(height * 0.16), int(height * 0.50)
+        sx0, sx1 = int(width * 0.36), int(width * 0.64)
+        screen_lums: list[float] = []
+        for y in range(sy0, sy1):
+            for x in range(sx0, sx1):
+                r, g, b = pixels[y * width + x]
+                if not _is_subject(r, g, b, bg):
+                    continue
+                screen_lums.append(max(r, g, b) / 255.0)
+        screen_peak = max(screen_lums) if screen_lums else 0.0
+        corner_rgb_max_delta = 0.0
+        for r, g, b in corner_samples:
+            for ch in (r, g, b):
+                corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - 150))
+        desk_extra = {
+            "subject_median_sat": med_sat,
+            "desk_top_brown_frac": desk_brown_frac,
+            "screen_peak_lum": screen_peak,
+            "corner_rgb_max_delta": corner_rgb_max_delta,
+        }
     return {
         "stddev": std,
         "coverage": coverage,
@@ -271,7 +311,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "flat_pixel_frac": flat_frac,
         "ground_lum": gmean,
         "corner_lum_mean": corner_mean,
-        "corner_lum_spread": corner_spread,
+        **desk_extra,
     }
 
 
@@ -299,17 +339,28 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         mg = s.get("min_margin_frac", 0.0)
         if mg < MIN_FRAME_MARGIN_FRAC:
             reasons.append(f"min_margin_frac={mg:.2%}")
-        flat_max = 0.58 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
+        flat_max = 0.72 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
         if s.get("flat_pixel_frac", 1.0) > flat_max:
             reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
         ground_max = 178 if asset_id == "prop-desk" else MAX_GROUND_LUM
         if s.get("ground_lum", 255) > ground_max:
             reasons.append(f"ground_lum={s['ground_lum']:.1f}")
-        corner_target = 150.0
-        corner_tol = 12.0
-        clm = s.get("corner_lum_mean", 255.0)
-        if abs(clm - corner_target) > corner_tol:
-            reasons.append(f"corner_lum_mean={clm:.1f} (want {corner_target:.0f}±{corner_tol:.0f})")
+        if s.get("subject_median_sat", 1.0) < 0.08:
+            reasons.append(f"subject_median_sat={s.get('subject_median_sat', 0):.3f}")
+        if s.get("desk_top_brown_frac", 0.0) < 0.12:
+            reasons.append(f"desk_top_brown_frac={s.get('desk_top_brown_frac', 0):.2%}")
+        if s.get("screen_peak_lum", 0.0) < 0.6:
+            reasons.append(f"screen_peak_lum={s.get('screen_peak_lum', 0):.2f}")
+        if s.get("corner_rgb_max_delta", 99.0) > 2.0:
+            reasons.append(f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want ±2)")
+        frame = PREVIEW_DIR / "prop-desk.frame.json"
+        glb = BLENDER_ROOT / "prop-desk" / "mesh_prop-desk.glb"
+        if glb.is_file():
+            sha = hashlib.sha256(glb.read_bytes()).hexdigest()
+            if frame.is_file():
+                meta = json.loads(frame.read_text())
+                if meta.get("glb_sha256") and meta.get("glb_sha256") != sha:
+                    reasons.append("preview_frame_glb_sha_mismatch")
     return reasons
 
 

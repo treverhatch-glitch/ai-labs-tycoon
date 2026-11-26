@@ -105,7 +105,7 @@ def _orient_monitor(parts: list[bpy.types.Object], surface_z: float) -> None:
     """~20° yaw toward keyboard, ~8° upright tilt — stand stays on desktop."""
     mn, mx = _common._bbox_world(parts)
     pivot = Vector(((mn.x + mx.x) * 0.5, (mn.y + mx.y) * 0.5, mn.z))
-    _rotate_about(parts, pivot, Euler((math.radians(-8), math.radians(-20), 0.0), "XYZ"))
+    _rotate_about(parts, pivot, Euler((math.radians(-7), math.radians(-9), 0.0), "XYZ"))
     mn, mx = _common._bbox_world(parts)
     lift = surface_z - mn.z
     for o in parts:
@@ -224,8 +224,8 @@ def build_desk() -> bpy.types.Object:
     succulent = _add_succulent(surface_z, xy)
     all_obs.append(succulent)
 
-    oak_light = (0.95, 0.76, 0.50)
-    oak_dark = (0.68, 0.46, 0.30)
+    oak_light = (0.88, 0.66, 0.44)
+    oak_dark = (0.62, 0.40, 0.26)
     for p in desk_parts:
         zspan = _common._bbox_world([p])[1].z - _common._bbox_world([p])[0].z
         if zspan < 0.12:
@@ -266,7 +266,7 @@ def main() -> None:
             "kenneyParts": ["desk.glb", "computerScreen.glb", "computerKeyboard.glb", "computerMouse.glb"],
             "kenneyOffsets": KENNEY_OFFSETS,
             "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
-            "restyle": "wood-grain-v4",
+            "restyle": "wood-grain-v5",
         },
     )
     print(__import__("json").dumps(manifest, indent=2))
