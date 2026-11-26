@@ -1,6 +1,7 @@
 """Shared HUD icon renderer for headless Blender (one bpy script per icon)."""
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -18,8 +19,8 @@ def _hex(rgb: tuple[int, int, int]) -> tuple[float, float, float, float]:
 
     r, g, b = (rgb[0] / 255, rgb[1] / 255, rgb[2] / 255)
     h, light, sat = colorsys.rgb_to_hls(r, g, b)
-    sat = min(1.0, max(sat, 0.28) * 1.55)
-    light = min(0.82, max(light, 0.18))
+    sat = min(1.0, max(sat, 0.42) * 2.05)
+    light = min(0.72, max(light, 0.22))
     r, g, b = colorsys.hls_to_rgb(h, light, sat)
     return (r, g, b, 1.0)
 
@@ -30,7 +31,7 @@ def solid_mat(name: str, rgba: tuple[float, float, float, float], emission: floa
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = rgba
     bsdf.inputs["Roughness"].default_value = 0.42
-    emission = min(max(emission, 0.11), 0.22)
+    emission = min(emission, 0.16)
     if emission > 0:
         bsdf.inputs["Emission Color"].default_value = rgba
         bsdf.inputs["Emission Strength"].default_value = emission
@@ -49,7 +50,7 @@ def add_glyph_bar(
     return ob
 
 
-def _boost_material_saturation(root: bpy.types.Object, gain: float = 2.15) -> None:
+def _boost_material_saturation(root: bpy.types.Object, gain: float = 1.75) -> None:
     for slot in root.material_slots:
         mat = slot.material
         if not mat or not mat.use_nodes:
@@ -77,12 +78,9 @@ def finish_hud_icon(asset_id: str, root: bpy.types.Object) -> None:
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
     preview.parent.mkdir(parents=True, exist_ok=True)
     _boost_material_saturation(root)
-    try:
-        import blender_preview_rig as rig  # noqa: WPS433
-
-        rig.render_preview_hud(root, preview)
-    except Exception:
-        bc.render_preview(root, preview)
+    os.environ["EARLY_ART_PREVIEW_PROFILE"] = "hud"
+    os.environ.setdefault("HUD_ORTHO_FILL", "0.70")
+    bc.render_preview(root, preview)
     HUD_OUT.mkdir(parents=True, exist_ok=True)
     icon_path = HUD_OUT / f"{asset_id}.png"
     if preview.exists():

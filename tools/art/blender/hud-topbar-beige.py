@@ -12,13 +12,16 @@ ASSET_ID = "hud-topbar-beige"
 
 
 def main() -> None:
+    import os
+
+    os.environ["HUD_ORTHO_FILL"] = "0.40"
     bc.reset_scene()
-    slate = hi._hex((20, 23, 29))
-    trim = hi._hex((168, 88, 40))
+    slate = hi._hex((28, 32, 42))
+    trim = hi._hex((212, 96, 32))
     bar = bc.add_cube("Bar", (2.4, 0.36, 0.06))
-    bar.data.materials.append(hi.solid_mat("slate", slate, emission=0.15))
+    bar.data.materials.append(hi.solid_mat("slate", slate))
     stripe = bc.add_cube("Trim", (2.4, 0.04, 0.07), (0, -0.14, 0.04))
-    stripe.data.materials.append(hi.solid_mat("trim", trim, emission=0.18))
+    stripe.data.materials.append(hi.solid_mat("trim", trim, emission=0.14))
     root = bc.link_or_join([bar, stripe])
     hi.finish_hud_icon(ASSET_ID, root)
 

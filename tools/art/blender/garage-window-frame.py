@@ -9,7 +9,7 @@ import blender_common as bc  # noqa: E402
 
 def main():
     ob = bc.add_cube("Frame", (0.92, 0.72, 0.12), (0, 1.48, 0))
-    bc.assign_solid(ob, (1.0, 0.42, 0.02, 1.0), 0.32)
+    bc.assign_solid(ob, (0.95, 0.48, 0.08, 1.0), 0.32)
     entry = bc.finish_asset("garage-window-frame", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry

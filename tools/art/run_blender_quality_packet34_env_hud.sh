@@ -2,6 +2,8 @@
 # Packet 3–4: HUD glyphs, env props, HUD/garage tile textures (headless Blender).
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
+export EARLY_ART_PREVIEW_PROFILE=garage
+export EARLY_ART_ALPHA_FRAME=1
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"

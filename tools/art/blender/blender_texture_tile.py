@@ -1,6 +1,7 @@
 """Bake 1024 tileable albedo/normal/roughness for early-game texture swatches."""
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -51,11 +52,13 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
     links.new(ramp.outputs["Color"], mix.inputs[2])
     links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
     hue = nodes.new("ShaderNodeHueSaturation")
-    hue.inputs["Saturation"].default_value = 1.95
+    hue.inputs["Saturation"].default_value = 2.25
     hue.inputs["Value"].default_value = 1.08
     links.new(mix.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.48
+    bsdf.inputs["Emission Color"].default_value = (1.0, 0.72, 0.42, 1.0)
+    bsdf.inputs["Emission Strength"].default_value = 0.12
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     plane.data.materials.append(mat)
 
@@ -76,6 +79,8 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
 
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
     try:
+        os.environ["EARLY_ART_PREVIEW_PROFILE"] = "hud"
+        os.environ.setdefault("HUD_ORTHO_FILL", "0.68")
         bc.render_preview(plane, preview)
     except Exception as exc:  # noqa: BLE001
         print(f"WARN texture preview {asset_id}: {exc}")

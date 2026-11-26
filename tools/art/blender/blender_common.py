@@ -700,7 +700,11 @@ def render_preview(ob: bpy.types.Object, path: Path) -> None:
         try:
             import blender_preview_rig as rig  # type: ignore
 
-            rig.render_preview_studio(ob, path)
+            prof = os.environ.get("EARLY_ART_PREVIEW_PROFILE", "garage").strip().lower()
+            if prof == "hud":
+                rig.render_preview_hud_ortho(ob, path)
+            else:
+                rig.render_preview_studio(ob, path)
             return
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview rig, fallback legacy: {exc}")
