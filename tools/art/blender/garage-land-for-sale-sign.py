@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """For-sale sign — twin wood posts + board with baked FOR SALE decal."""
+import math
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+import bpy
 
 REPO = Path(__file__).resolve().parents[3]
 
@@ -13,7 +15,7 @@ def _paint_for_sale_albedo(tex_path: Path) -> None:
     from PIL import Image, ImageDraw, ImageFont
 
     _prev_bomb = Image.MAX_IMAGE_PIXELS
-    Image.MAX_IMAGE_PIXELS = max(_prev_bomb, 512 * 1024 * 1024)
+    Image.MAX_IMAGE_PIXELS = max(_prev_bomb or 0, 512 * 1024 * 1024)
     im = Image.open(tex_path).convert("RGB")
     draw = ImageDraw.Draw(im)
     w, h = im.size
@@ -22,14 +24,24 @@ def _paint_for_sale_albedo(tex_path: Path) -> None:
     header_h = max(130, h // 5)
     draw.rectangle((margin, h // 7, w - margin, h // 7 + header_h), fill=(214, 72, 28))
     font = None
-    for name, size in (("DejaVuSans-Bold.ttf", 92), ("LiberationSans-Bold.ttf", 92)):
+    candidates = (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        "DejaVuSans-Bold.ttf",
+        "LiberationSans-Bold.ttf",
+    )
+    for path in candidates:
         try:
-            font = ImageFont.truetype(name, size=size)
+            font = ImageFont.truetype(path, size=96)
             break
         except OSError:
             continue
     if font is None:
         font = ImageFont.load_default()
+        draw.text((w // 4, h // 3), "FOR SALE", fill=(32, 16, 8))
+        im.save(tex_path)
+        Image.MAX_IMAGE_PIXELS = _prev_bomb
+        return
     text = "FOR SALE"
     bbox = draw.textbbox((0, 0), text, font=font, stroke_width=3)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
@@ -64,6 +76,19 @@ def main():
     bc.add_cube("NailL", (0.12, 0.12, 0.16), (-span * 0.5, 1.05, 0.0))
     bc.add_cube("NailR", (0.12, 0.12, 0.16), (span * 0.5, 1.05, 0.0))
     bc.add_cube("Stud", (0.95, 0.72, 0.14), (0, 1.48, 0.0))
+    yaw = math.radians(42.0)
+    for ob in bpy.context.scene.objects:
+        if ob.type != "MESH":
+            continue
+        if any(tag in ob.name for tag in ("Board", "Header", "Cap", "Stud")):
+            ob.rotation_euler[1] = yaw
+            ob.select_set(True)
+        else:
+            ob.select_set(False)
+    if bpy.context.selected_objects:
+        bpy.context.view_layer.objects.active = bpy.context.selected_objects[0]
+        bpy.ops.object.transform_apply(rotation=True)
+    bpy.ops.object.select_all(action="DESELECT")
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"

@@ -218,6 +218,75 @@ def check_vertical_backdrop_plane(
     return []
 
 
+def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_textures: Path) -> list[str]:
+    """Fail when wall preview centre reads as blank white, not cinderblock."""
+    import math
+
+    from PIL import Image, ImageStat
+
+    ref_path = repo_textures / "tex-garage-wall-beige.png"
+    preview_ref = repo_textures.parents[2] / "docs/art/previews/tex-garage-wall-beige.png"
+    if ref_path.is_file():
+        if ImageStat.Stat(Image.open(ref_path).convert("RGB")).stddev[0] < 6.0 and preview_ref.is_file():
+            ref_path = preview_ref
+    elif preview_ref.is_file():
+        ref_path = preview_ref
+    else:
+        return []
+    rgb = _load_rgba(rgb_path)
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return ["wall_mask_empty"]
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    cx0 = x0 + (x1 - x0) // 5
+    cx1 = x1 - (x1 - x0) // 5
+    cy0 = y0 + (y1 - y0) // 5
+    cy1 = y1 - (y1 - y0) // 5
+    samples: list[tuple[int, int, int]] = []
+    rpx = list(rgb.getdata())
+    for y in range(cy0, cy1 + 1):
+        for x in range(cx0, cx1 + 1):
+            if mpx[y * w + x][3] >= 160:
+                r, g, b, _a = rpx[y * w + x]
+                samples.append((r, g, b))
+    if len(samples) < 64:
+        return ["wall_center_too_small"]
+    mean_r = sum(s[0] for s in samples) / len(samples)
+    mean_g = sum(s[1] for s in samples) / len(samples)
+    mean_b = sum(s[2] for s in samples) / len(samples)
+    if mean_r > 228 and mean_g > 225 and mean_b > 220:
+        return [f"wall_center_white ({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"]
+    sats = [_pixel_sat(s[0], s[1], s[2]) for s in samples]
+    mean_sat = sum(sats) / len(sats)
+    if mean_sat < 0.08:
+        return [f"wall_center_desat={mean_sat:.3f}"]
+    ref = Image.open(ref_path).convert("RGB")
+    ref_px = list(ref.getdata())
+    ref_sat = sum(_pixel_sat(r, g, b) for r, g, b in ref_px[::17]) / max(1, len(ref_px[::17]))
+    if mean_sat < ref_sat * 0.35:
+        return [f"wall_center_not_cinderblock sat={mean_sat:.3f} ref={ref_sat:.3f}"]
+    ref_mean = (
+        sum(p[0] for p in ref_px) / len(ref_px),
+        sum(p[1] for p in ref_px) / len(ref_px),
+        sum(p[2] for p in ref_px) / len(ref_px),
+    )
+    dist = math.sqrt((mean_r - ref_mean[0]) ** 2 + (mean_g - ref_mean[1]) ** 2 + (mean_b - ref_mean[2]) ** 2)
+    if dist > 95:
+        return [f"wall_center_color_far_from_swatch dist={dist:.1f}"]
+    return []
+
+
 def check_backdrop_mid_grey(rgb_path: Path, *, sample_margin: float = 0.04) -> list[str]:
     """Env previews: corners neutral grey (lit), not warm beige gradient."""
     im = _load_rgba(rgb_path)

@@ -19,12 +19,11 @@ def main():
     bc.add_cube("Core", (W, H, D), (0, H * 0.5, 0))
     bc.add_cube("Trim", (W + 0.08, 0.18, D + 0.04), (0, H - 0.06, 0))
     bc.add_cube("Base", (W + 0.06, 0.16, D + 0.04), (0, 0.08, 0))
-    for i, y in enumerate((0.65, 1.45, 2.25)):
-        bc.add_cube(f"Course{i}", (W - 0.12, 0.06, D - 0.02), (0, y, 0))
+    for i, y in enumerate((0.55, 1.35, 2.15)):
+        bc.add_cube(f"Course{i}", (W - 0.08, 0.05, D - 0.02), (0, y, 0))
     for i in range(9):
         x = -W * 0.4 + i * (W * 0.8 / 8)
-        bc.add_cube(f"Rib{i}", (0.07, H - 0.30, D * 0.82), (x, H * 0.5, 0.0))
-    bc.add_cube("Weld", (W * 0.35, H * 0.5, D * 0.35), (0, H * 0.5, 0))
+        bc.add_cube(f"Rib{i}", (0.06, 0.14, D * 0.55), (x, H * 0.5, 0.0))
     entry = bc.finish_asset("garage-exterior-wall", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry

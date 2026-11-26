@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -71,7 +72,7 @@
       "license": "CC0-1.0 (Blender-baked, in-repo)",
       "vertexCount": 174,
       "triangleCount": 674,
-      "subShapeCount": 16,
+      "subShapeCount": 15,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-exterior-wall.py"
     },
@@ -111,8 +112,8 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 672,
-      "triangleCount": 2594,
+      "vertexCount": 705,
+      "triangleCount": 2721,
       "subShapeCount": 9,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py"
@@ -127,9 +128,9 @@
       },
       "preview": "docs/art/previews/garage-lot-curb.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 156,
-      "triangleCount": 600,
-      "subShapeCount": 4,
+      "vertexCount": 56,
+      "triangleCount": 216,
+      "subShapeCount": 1,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-lot-curb.py"
     },
@@ -220,9 +221,9 @@
       },
       "preview": "docs/art/previews/garage-window-frame.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 275,
-      "triangleCount": 1042,
-      "subShapeCount": 11,
+      "vertexCount": 462,
+      "triangleCount": 1760,
+      "subShapeCount": 9,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-window-frame.py"
     }

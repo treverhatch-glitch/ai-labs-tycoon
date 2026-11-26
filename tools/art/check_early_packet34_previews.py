@@ -11,11 +11,15 @@ sys.path.insert(0, str(REPO / "tools/art"))
 
 from check_env_glb_packet34 import check_all_env_glbs  # noqa: E402
 from check_env_preview_glb_linkage import main as check_preview_glb_linkage  # noqa: E402
+
+TEX_DIR = REPO / "unity/Assets/Art/EarlyGame/textures"
+
 from packet34_preview_gates import (  # noqa: E402
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
     check_backdrop_mid_grey,
     check_env_preview_backdrop,
+    check_wall_cinderblock_visible,
     check_icon_ortho,
     check_icon_sat_coverage,
     check_icon_sheet,
@@ -48,6 +52,10 @@ def check_env_preview(asset_id: str) -> int:
     for err in check_env_preview_backdrop(asset_id, rgb, mask):
         print(f"FAIL {asset_id} {err}")
         rc = 1
+    if asset_id == "garage-exterior-wall":
+        for err in check_wall_cinderblock_visible(rgb, mask, TEX_DIR):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     for err in mask_gate_errors(mask):
         print(f"FAIL {asset_id} {err}")
         rc = 1

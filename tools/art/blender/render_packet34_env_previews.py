@@ -22,7 +22,7 @@ ENV_IDS = (
 
 PREVIEW_ENV: dict[str, dict[str, str]] = {
     "garage-exterior-wall": {"PREVIEW_FRAMING_MARGIN": "1.02", "PREVIEW_AZIMUTH_DEG": "52"},
-    "garage-land-for-sale-sign": {"PREVIEW_FRAMING_MARGIN": "1.12"},
+    "garage-land-for-sale-sign": {"PREVIEW_FRAMING_MARGIN": "1.12", "PREVIEW_AZIMUTH_DEG": "42"},
     "garage-lot-curb": {"PREVIEW_FRAMING_MARGIN": "1.14"},
     "garage-window-frame": {"PREVIEW_FRAMING_MARGIN": "1.12"},
 }

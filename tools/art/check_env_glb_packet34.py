@@ -19,7 +19,7 @@ ENV_IDS = (
 
 PARTS_MIN = {
     "garage-exterior-wall": 12,
-    "garage-lot-curb": 3,
+    "garage-lot-curb": 1,
     "garage-land-for-sale-sign": 8,
     "garage-window-frame": 9,
 }
@@ -118,6 +118,47 @@ def check_env_glb(asset_id: str) -> list[str]:
     if mesh_count != 1:
         errs.append(f"glb_meshes={mesh_count} need 1")
 
+    errs.extend(check_glb_proportions(asset_id, gltf))
+
+    return errs
+
+
+def _mesh_position_bounds(gltf: dict) -> tuple[list[float], list[float]] | None:
+    accs = gltf.get("accessors", [])
+    meshes = gltf.get("meshes", [])
+    if not accs or not meshes:
+        return None
+    prim = meshes[0].get("primitives", [{}])[0]
+    pos_idx = prim.get("attributes", {}).get("POSITION")
+    if pos_idx is None:
+        return None
+    acc = accs[pos_idx]
+    mn = acc.get("min")
+    mx = acc.get("max")
+    if not mn or not mx or len(mn) < 3 or len(mx) < 3:
+        return None
+    return mn, mx
+
+
+def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
+    """Reject tall backdrop slabs embedded in env GLBs (curb especially)."""
+    bounds = _mesh_position_bounds(gltf)
+    if not bounds:
+        return []
+    mn, mx = bounds
+    ex = sorted(mx[i] - mn[i] for i in range(3))
+    height, mid, long_axis = ex[0], ex[1], ex[2]
+    errs: list[str] = []
+    if asset_id == "garage-lot-curb":
+        if long_axis < 0.75 or long_axis > 1.35:
+            errs.append(f"curb_length={long_axis:.2f} need~1.0m")
+        if height > 0.22:
+            errs.append(f"curb_too_tall h={height:.2f} need~0.15")
+        if height > mid * 0.85:
+            errs.append(f"curb_backdrop_slab h={height:.2f} mid={mid:.2f}")
+    elif asset_id in {"garage-exterior-wall", "garage-window-frame", "garage-land-for-sale-sign"}:
+        if height > long_axis * 1.85 and asset_id != "garage-exterior-wall":
+            errs.append(f"vertical_slab_glb h={height:.2f} long={long_axis:.2f}")
     return errs
 
 

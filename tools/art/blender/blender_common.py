@@ -313,17 +313,27 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     part_names = [o.name for o in mesh_obs]
     sub_shape_count = len(mesh_obs)
     ground_scene_meshes()
-    if asset_id in PACKET34_ENV_IDS:
+    if asset_id == "garage-exterior-wall":
+        tint_garage_parts(mesh_obs, asset_id)
+    elif asset_id in PACKET34_ENV_IDS:
         apply_packet34_authoring_textures(mesh_obs, asset_id)
     else:
         tint_garage_parts(mesh_obs, asset_id)
     parts = list(mesh_obs)
     if len(parts) > 1:
         parts.append(add_connect_spine_part(parts))
-        root = union_overlapping_meshes(parts)
+    if len(parts) > 1:
+        if asset_id == "garage-lot-curb":
+            root = link_or_join(parts)
+        else:
+            root = union_overlapping_meshes(parts)
     else:
         root = mesh_obs[0]
     weld_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
+    islands = mesh_island_count(root)
+    if asset_id == "garage-lot-curb" and islands > 1:
+        voxel_shell_merge(root, voxel_size=min(0.018, weld_extent * 0.008))
+        islands = mesh_island_count(root)
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
     if islands > 1 and asset_id not in PACKET34_ENV_IDS:
@@ -341,6 +351,8 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         bevel_object(root, width=min(0.010, thin * 0.08), segments=2)
     smooth_shade(root)
     uv_unwrap(root)
+    if asset_id == "garage-exterior-wall":
+        apply_wall_post_union_textures(root, wall_w=4.0, wall_h=3.0, block_u=0.4, block_v=0.2)
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     packet34 = asset_id in PACKET34_ENV_IDS
@@ -446,12 +458,13 @@ def assign_image_texture(
     ob: bpy.types.Object,
     image_path: Path,
     *,
-    uv_scale: float = 1.0,
+    uv_scale: float | tuple[float, float, float] = 1.0,
+    coord: str = "UV",
     roughness: float = 0.55,
     metallic: float = 0.0,
     alpha: float = 1.0,
 ) -> None:
-    """UV-mapped PBR material from a tile swatch (used before bake on packet34 env)."""
+    """PBR material from a tile swatch (used before bake on packet34 env)."""
     image_path = image_path.resolve()
     mat = bpy.data.materials.new(ob.name + "_img")
     mat.use_nodes = True
@@ -463,10 +476,16 @@ def assign_image_texture(
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(image_path), check_existing=True)
     tex.image.name = image_path.name
+    tex.image.colorspace_settings.name = "sRGB"
     mapping = nodes.new("ShaderNodeMapping")
-    mapping.inputs["Scale"].default_value = (uv_scale, uv_scale, uv_scale)
-    coord = nodes.new("ShaderNodeTexCoord")
-    links.new(coord.outputs["UV"], mapping.inputs["Vector"])
+    if isinstance(uv_scale, (int, float)):
+        scale = (float(uv_scale), float(uv_scale), float(uv_scale))
+    else:
+        scale = uv_scale
+    mapping.inputs["Scale"].default_value = scale
+    tco = nodes.new("ShaderNodeTexCoord")
+    socket = tco.outputs["Generated"] if coord.upper() == "GENERATED" else tco.outputs["UV"]
+    links.new(socket, mapping.inputs["Vector"])
     links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = roughness
@@ -479,6 +498,97 @@ def assign_image_texture(
     ob.data.materials.append(mat)
 
 
+def _make_generated_image_material(
+    name: str,
+    image_path: Path,
+    scale: tuple[float, float, float],
+    *,
+    roughness: float = 0.55,
+) -> bpy.types.Material:
+    image_path = image_path.resolve()
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(str(image_path), check_existing=True)
+    tex.image.name = image_path.name
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = scale
+    tco = nodes.new("ShaderNodeTexCoord")
+    links.new(tco.outputs["Generated"], mapping.inputs["Vector"])
+    links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = roughness
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    return mat
+
+
+def apply_wall_post_union_textures(
+    ob: bpy.types.Object,
+    *,
+    wall_w: float = 4.0,
+    wall_h: float = 3.0,
+    block_u: float = 0.4,
+    block_v: float = 0.2,
+    trim_band: float = 0.18,
+    vertical_axis: str = "Y",
+) -> None:
+    """One bake-friendly cinderblock+trim shader using generated coords (post-union)."""
+    swatch = ART_ROOT / "textures"
+    wall = swatch / "tex-garage-wall-beige.png"
+    trim = swatch / "tex-garage-trim-orange.png"
+    if not wall.is_file() or not trim.is_file():
+        return
+    mat = bpy.data.materials.new("WallBakeCombined")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    coord = nodes.new("ShaderNodeTexCoord")
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(coord.outputs["Generated"], sep.inputs["Vector"])
+    top = nodes.new("ShaderNodeMath")
+    top.operation = "GREATER_THAN"
+    top.inputs[1].default_value = 1.0 - (trim_band / wall_h)
+    bot = nodes.new("ShaderNodeMath")
+    bot.operation = "LESS_THAN"
+    bot.inputs[1].default_value = trim_band / wall_h
+    or_trim = nodes.new("ShaderNodeMath")
+    or_trim.operation = "MAXIMUM"
+    v_axis = sep.outputs[vertical_axis]
+    links.new(v_axis, top.inputs[0])
+    links.new(v_axis, bot.inputs[0])
+    links.new(top.outputs[0], or_trim.inputs[0])
+    links.new(bot.outputs[0], or_trim.inputs[1])
+
+    def _tex(img_path: Path, scale: tuple[float, float, float]) -> bpy.types.Node:
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = scale
+        links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
+        tex = nodes.new("ShaderNodeTexImage")
+        tex.image = bpy.data.images.load(str(img_path), check_existing=True)
+        links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+        return tex
+
+    tex_wall = _tex(wall, (wall_w / block_u, wall_h / block_v, 1.0))
+    tex_trim = _tex(trim, (wall_w * 1.25, 3.5, 1.0))
+    mix = nodes.new("ShaderNodeMixRGB")
+    links.new(or_trim.outputs[0], mix.inputs["Fac"])
+    links.new(tex_wall.outputs["Color"], mix.inputs[1])
+    links.new(tex_trim.outputs["Color"], mix.inputs[2])
+    links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.58
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
 def apply_packet34_authoring_textures(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
     swatch = ART_ROOT / "textures"
     wall = swatch / "tex-garage-wall-beige.png"
@@ -486,10 +596,33 @@ def apply_packet34_authoring_textures(mesh_obs: list[bpy.types.Object], asset_id
     for ob in mesh_obs:
         name = ob.name.lower()
         if asset_id == "garage-exterior-wall":
-            if wall.is_file() and name not in ("trim", "base") and not name.startswith("course"):
-                assign_image_texture(ob, wall, uv_scale=1.35, roughness=0.62)
+            block_u, block_v = 0.4, 0.2
+            wall_w, wall_h = 4.0, 3.0
+            if wall.is_file() and (
+                name == "core"
+                or (
+                    name not in ("trim", "base")
+                    and not name.startswith("course")
+                    and "rib" not in name
+                    and "connect" not in name
+                    and name != "weld"
+                )
+            ):
+                assign_image_texture(
+                    ob,
+                    wall,
+                    uv_scale=(wall_w / block_u, wall_h / block_v, 1.0),
+                    coord="GENERATED",
+                    roughness=0.62,
+                )
             elif trim.is_file():
-                assign_image_texture(ob, trim, uv_scale=2.8, roughness=0.42)
+                assign_image_texture(
+                    ob,
+                    trim,
+                    uv_scale=(wall_w * 1.2, 4.0, 1.0),
+                    coord="GENERATED",
+                    roughness=0.42,
+                )
         elif asset_id == "garage-window-frame":
             if "glass" in name:
                 assign_solid(ob, (0.22, 0.55, 0.82, 1.0), 0.08)
@@ -524,8 +657,20 @@ def apply_packet34_authoring_textures(mesh_obs: list[bpy.types.Object], asset_id
             tint_garage_parts([ob], asset_id)
 
 
+def _wall_vertical_axis(ob: bpy.types.Object) -> str:
+    dx, dy, dz = (float(ob.dimensions.x), float(ob.dimensions.y), float(ob.dimensions.z))
+    if dz >= dy and dz >= dx:
+        return "Z"
+    if dy >= dx:
+        return "Y"
+    return "Z"
+
+
 def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir: Path) -> None:
-    """Preview render: always disk-baked albedo (+ glass/sign tweaks)."""
+    """Preview render: baked albedo; wall uses live cinderblock+trim shader (imported axis)."""
+    if asset_id == "garage-exterior-wall":
+        apply_wall_post_union_textures(ob, vertical_axis=_wall_vertical_axis(ob))
+        return
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
     if not albedo.is_file():
@@ -549,18 +694,15 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
     if asset_id == "garage-window-frame":
         key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
         bsdf.inputs[key].default_value = 0.35
+    hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id == "garage-land-for-sale-sign":
-        hue = nodes.new("ShaderNodeHueSaturation")
         hue.inputs["Saturation"].default_value = 1.32
         hue.inputs["Value"].default_value = 1.08
-        links.new(tex.outputs["Color"], hue.inputs["Color"])
-        links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     else:
-        hue = nodes.new("ShaderNodeHueSaturation")
         hue.inputs["Saturation"].default_value = 1.22
         hue.inputs["Value"].default_value = 1.04
-        links.new(tex.outputs["Color"], hue.inputs["Color"])
-        links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(tex.outputs["Color"], hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -875,6 +1017,9 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     """Bake albedo, normal, roughness image maps."""
     from blender_material_palette import spec_for
 
+    bpy.context.scene.render.engine = "CYCLES"
+    if bpy.context.preferences.addons.get("cycles") is None:
+        bpy.ops.preferences.addon_enable(module="cycles")
     spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
@@ -938,6 +1083,10 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         try:
             if kind == "albedo" and ob.data.vertex_colors and not packet34:
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
+            elif kind == "albedo" and packet34:
+                bpy.context.scene.render.bake.use_pass_direct = False
+                bpy.context.scene.render.bake.use_pass_indirect = False
+                bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
             elif kind == "albedo":
                 slot = ob.data.materials[0]
                 if slot and slot.use_nodes:
@@ -947,7 +1096,11 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
                     if bsdf and out:
                         prev = out.inputs["Surface"].links[0].from_socket if out.inputs["Surface"].links else None
                         emit = nt.nodes.new("ShaderNodeEmission")
-                        emit.inputs["Color"].default_value = bsdf.inputs["Base Color"].default_value
+                        base_in = bsdf.inputs["Base Color"]
+                        if base_in.links:
+                            nt.links.new(base_in.links[0].from_socket, emit.inputs["Color"])
+                        else:
+                            emit.inputs["Color"].default_value = base_in.default_value
                         emit.inputs["Strength"].default_value = 1.0
                         nt.links.new(emit.outputs["Emission"], out.inputs["Surface"])
                         restore.append((nt, emit, prev, out))
