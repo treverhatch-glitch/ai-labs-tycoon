@@ -10,7 +10,7 @@ The rules core plays a whole game headless from 1995 or 2035: rooms, staff, GPUs
 releases into 34 sectors, five parody rivals, the yearly Gauntlet, incidents, bankruptcy, save, load, replay, nine
 eras as data with their techs, rooms, sectors, headlines and dated world events, seven Envydia GPU generations, and a
 world map of 9 blocs and 11 sites (land, halls, colo, power, heatwaves, export rules, government attention), a chip design screen (own chips, a shared foundry, listings, Envydia's answer) and rivals
-that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption). SimTests pass in the hundreds, including balance soaks and saves through schema 11. The Unity project lives under `unity/` (garage grid, HUD, week button in code); GameCI runs on PRs that touch `unity/**`; full editor verification is on the PC.
+that design and buy chips, plus endless play (endings that continue, frontier research, model museum) and the shady path (Heat, stash, investigations, corruption), government attention through Freeze, a Bubble permille meter (schema 12), safety incident rungs 1–6, rival public floats and regulator scrutiny (schema 13), shady depth and China deals (schema 14–18 decline cooldown), containment and superintelligence endings (schema 15), funding follow-ons (schema 16), and forward queue Q97–Q101 (schema 17). 1112 tests pass (schemas 19–27: bubble crash, acquisitions, model sales, risk classes, founding choices, poach offers, press questions, Gauntlet tuning and awards, sector trust; the workplace needs no schema), including an 8-year balance soak (24 games × 3 presets by default), 40- and 60-year headless runs and saves through schema 27. There is no Unity project yet.
 
 Known limits of the slice, so nobody is surprised:
 
@@ -34,16 +34,6 @@ Known limits of the slice, so nobody is surprised:
 - **Money is cash and a grant.** No investors, shares, debt or bubble.
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
   the player's side.
-
-## Agent lanes (max **3** active)
-
-| Lane | Branch / focus | Status |
-| --- | --- | --- |
-| **Rivals hatch bar** | `cursor/later-rules-stack2-75cd` PR #3 | origin **`113be5fc`** (322–329 land); **LOCAL** **330+** (HOLD ≥~**18:11 ICT**) |
-| *(reserve)* | — | idle |
-| *(reserve)* | — | idle |
-
-Stay in-lane; grouped batch pushes only (no single-item).
 
 ## Who works where
 
@@ -73,12 +63,6 @@ and says why in the commit message.
    per-era incident headlines, from 1995 game AI to 2033 machine science. Tables in `docs/content/`.
 3. ~~**Explain every number.**~~ Done: `DisplayQueries` breakdowns for quality, appeal, weekly revenue and incident
    odds (parts sum to the displayed value); `BreakdownTests` (one fact each); `LabQueries` / `MarketSystem` delegate.
-3b. ~~**Host explain slices (rival log, reserved compute, funding ladder).**~~ Done: `GpuRentParts`,
-   `ReservedComputeParts`, `TrySignReservedQuote`, `VendorQueueParts`, `VendorLogLines`, `TryNextFundingQuote`,
-   `RivalLogLines`, `RivalDecisionSlices`, `HardwareFleetParts`, `FundingLadderParts`, `RivalRelationSlices`;
-   `HostExplainSliceLaterTests` (**13**).
-4–7 **host breakdowns:** rival relations/log, reserved+Envydia, hardware fleet, funding ladder (`DisplayQueries` + tests).
-8–11 **host breakdowns (LOCAL):** alignment gap, incident parts, staff roster, balance-soak preview; `HostExplainSystemsLaterTests` (**4**).
 4. ~~**Rival decision logs.**~~ Done (systems design phase C, schema 4): `LabPlanner` logs each order with reason codes,
    bounded at 60 and saved; feelings toward the player; Envydia's allocation, standing, price, keynote and log;
    signature behaviours; Goggle DeepMined and DeepSneak as arrivals; the Refresh step (Q52).
@@ -413,109 +397,63 @@ and says why in the commit message.
 214. **Per-scenario goals (bible ch. 15 tail).** ~~Done (local)~~: `ScenarioGoals`, schema 147 (Q471).
 215. **Targeted lobbying law (bible ch. 12 lobbying tail).** ~~Done (local)~~: `SetLawTarget`, schema 148 (Q472).
 216. **Batch sixteen news, chat and combination rules.** ~~Done (local)~~: `BatchSixteenNewsChatTests`, `BatchSixteenTogetherTests` (Q473).
-217. **Hardening polish: batch-16 chat @ schemas 145–148.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` hearing + law-target chat pretends (no rules).
-218. **Hardening polish: rung-six respond mid-save.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` respond → save → weeks keeps arc/cooldown.
-219. **Hardening polish: cross-soak EraP hooks.** ~~Done (local)~~: `HardeningCrossSystemSoakTests` week ≥470 — `SetLawTarget`, shape law, float, `ScenarioGoals.Check`, loan, `SatisfyMarginCall`, `SetCampaignDeadline`, `GovernmentSystem.CloseMonth` when floated; plus batch-16 margin/scenario chat pretends and law-target+loan mid-save (`EraPBatchSixteenNewsChatHardeningTests`, `EraPBatchSixteenTogetherHardeningTests`). Hardening filter **452/0** (local tip; origin **`c9a1147`**).
-220. **Hardening polish: rung-six + margin covenant.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` rung-six respond + margin mid-save; `EraPSystemsEdgeHardeningTests` satisfy margin while rung-six cooldown.
-221. **Hardening polish: campaign deadline + margin.** ~~Done (local)~~ ~~**PUSHED** @ `3f48328`~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + `MarginCallLeft` round-trip.
-222. **Hardening polish: scenario goal missed chat/headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147 round-trip.
-223. **Hardening polish: law target + scenario goal.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` goal result + `LawTarget` mid-save.
-224. **Hardening polish: float + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` float ppm + `ScenarioGoalResult` round-trip.
-225. **Hardening polish: hearing float + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests` `PublicFloatPpm` + `LawTarget` mid-save.
-226. **Hardening polish: campaign deadline + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` deadline tick + law target.
-227. **Hardening polish: scenario goal met headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 147.
-228. **Hardening polish: law target headline.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests` @ schema 148.
-229. **Hardening polish: law shape pending + margin.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests` pending + `MarginCallLeft`.
-230. **Hardening polish: scenario id + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-231. **Hardening polish: rung-six cooldown + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-232. **Hardening polish: margin default headline.** ~~Done (local)~~: `MarginCallDefaulted` @ schema 144.
-233. **Hardening polish: campaign deadline hit news.** ~~Done (local)~~: headline + chat @ schema 139.
-234. **Hardening polish: law shaped chat.** ~~Done (local)~~: `LawShaped` @ schema 140.
-235. **Hardening polish: bubble + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-236. **Hardening polish: deadline + scenario goal result.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-237. **Hardening polish: float + scenario goal + deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-238. **Hardening polish: law shaped headline @ 140.** ~~Done (local)~~: `EraPBatchSixteenNewsChatHardeningTests`.
-239. **Hardening polish: campaign deadline set chat.** ~~Done (local)~~: @ schema 139.
-240. **Hardening polish: scenario baggage chat.** ~~Done (local)~~: @ schema 143.
-241. **Hardening polish: baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-242. **Hardening polish: margin + law target.** ~~Done (local)~~: `MarginCallLeft` + `LawTarget` mid-save.
-243. **Hardening polish: hearing float + scenario goal.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-244. **Hardening polish: campaign deadline set headline.** ~~Done (local)~~: @ schema 139.
-245. **Hardening polish: scenario baggage headline.** ~~Done (local)~~: @ schema 143.
-246. **Hardening polish: baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-247. **Hardening polish: law pending + scenario goal.** ~~Done (local)~~: pending + `ScenarioGoalResult`.
-248. **Hardening polish: rung-six arc + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-249. **Hardening polish: bubble + law shape pending.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-250. **Hardening polish: baggage pick mid-save.** ~~Done (local)~~: `BaggageId` + `BaggagePicked`.
-251. **Hardening polish: baggage + campaign deadline.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-252. **Hardening polish: loan + scenario id.** ~~Done (local)~~: `Loans.Outstanding` round-trip.
-253. **Hardening polish: margin + scenario id.** ~~Done (local)~~: together; soak week ≥460 sets `ScenarioId` after baggage.
-254. **Hardening polish: hearing bubble + law target.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-255. **Hardening polish: rung-six arc + scenario id.** ~~Done (local)~~: edge mid-save.
-256. **Hardening polish: baggage + law shape pending.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-257. **Hardening polish: margin satisfy + scenario goal.** ~~Done (local)~~: clears call, keeps `ScenarioGoalResult`.
-258. **Hardening polish: margin + scenario id limits.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
-259. **Hardening polish: float + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-260. **Hardening polish: rung-six cooldown + scenario id.** ~~Done (local)~~: edge.
-261. **Hardening polish: loan + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-262. **Hardening polish: baggage + goal + deadline.** ~~Done (local)~~: together triple.
-263. **Hardening polish: spectate + baggage.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak week ≥460 `SetLawTarget` after baggage.
-264. **Hardening polish: spectate + takeoff.** ~~Done (local)~~: `RespondTakeoff` while spectating.
-265. **Hardening polish: baggage + rung-six arc.** ~~Done (local)~~: edge.
-266. **Hardening polish: bubble + goal + law target.** ~~Done (local)~~: triple mid-save.
-267. **Hardening polish: law pending + deadline.** ~~Done (local)~~: edge.
-268. **Hardening polish: margin + baggage.** ~~Done (local)~~: together.
-269. **Hardening polish: float + baggage + rung cooldown.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-270. **Hardening polish: hearing float + baggage.** ~~Done (local)~~: edge mid-save.
-271. **Hardening polish: loan + baggage + law target.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-272. **Hardening polish: margin call + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
-273. **Hardening polish: cross-soak scenario goals guard.** ~~Done (local)~~: `ScenarioGoals.Check` only when `ScenarioId` set.
-274. **Hardening polish: loan + baggage + scenario id.** ~~Done (local)~~: `EraPBatchSixteenTogetherHardeningTests`.
-275. **Hardening polish: hearing bubble + baggage.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-276. **Hardening polish: float + law target + scenario id.** ~~Done (local)~~: edge mid-save.
-277. **Hardening polish: rung arc + law pending + baggage.** ~~Done (local)~~: edge triple.
-278. **Hardening polish: spectate keeps baggage + soak loan guard.** ~~Done (local)~~: `EraGovernancePlayerOnlyHardeningTests`; soak `TakeLoan` only with fleet collateral.
-279. **Hardening polish: bubble + baggage + scenario id.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-280. **Hardening polish: loan + scenario goal + baggage.** ~~Done (local)~~: together.
-281. **Hardening polish: margin call + goal + baggage.** ~~Done (local)~~: `EraPSystemsLimitsAndMidSaveHardeningTests`.
-282. **Hardening polish: spectate keeps scenario id.** ~~Done (local)~~: governance mid-save.
-283. **Hardening polish: cross-soak shape-law guard.** ~~Done (local)~~: `TryShapeLaw` only when `LawTarget` set (weeks ≥460/470).
-284. **Hardening polish: hearing bubble + law + scenario.** ~~Done (local)~~: `EraPSystemsEdgeHardeningTests`.
-285. **Hardening polish: float + scenario goal + baggage.** ~~Done (local)~~: edge triple.
-286. **Hardening polish: rung cooldown + baggage + scenario.** ~~Done (local)~~: edge.
-287. **Hardening polish: spectate keeps law target.** ~~Done (local)~~: governance.
-288. **Hardening polish: spectate keeps goal result + deadline soak.** ~~Done (local)~~: governance; soak `SetCampaignDeadline` only for active player lab. Shipped **`5168cc9`** (**522/0**).
-289. **Hardening polish: spectate keeps public float.** ~~Done (local)~~: governance.
-290. **Hardening polish: loan + law target + scenario goal.** ~~Done (local)~~: together.
-291. **Hardening polish: margin call + law + scenario goal.** ~~Done (local)~~: limits.
-292. **Hardening polish: deadline + bubble + baggage.** ~~Done (local)~~: edge.
-293. **Hardening polish: cross-soak baggage + scenario id.** ~~Done (local)~~: assign scenario before pick (week ≥460).
-294. **Hardening polish: spectate keeps deadline tick.** ~~Done (local)~~: governance.
-295. **Hardening polish: spectate keeps law shape pending.** ~~Done (local)~~: governance.
-296. **Hardening polish: spectate keeps margin call left.** ~~Done (local)~~: governance.
-297. **Hardening polish: loan + bubble + scenario id.** ~~Done (local)~~: together.
-298. **Hardening polish: hearing float + goal + law + soak margin guard.** ~~Done (local)~~: edge; soak `SatisfyMarginCall` only active player.
-299. **Hardening polish: spectate keeps rung cooldown + arc.** ~~Done (local)~~: governance.
-300. **Hardening polish: margin satisfy + baggage + law.** ~~Done (local)~~: together.
-301. **Hardening polish: margin call + bubble + law.** ~~Done (local)~~: limits.
-302. **Hardening polish: cross-soak set-law active player.** ~~Done (local)~~: week ≥460/470.
-303. **Hardening polish: spectate keeps baggage picked.** ~~Done (local)~~: governance.
-304. **Hardening polish: deadline + goal + law pending.** ~~Done (local)~~: edge triple.
-305. **Hardening polish: loan + law pending + scenario.** ~~Done (local)~~: together.
-306. **Hardening polish: rung cooldown + goal + law.** ~~Done (local)~~: edge.
-307. **Hardening polish: cross-soak shape-law active player.** ~~Done (local)~~: week ≥460/470.
-308. **Hardening polish: spectate bubble permille.** ~~Done (local)~~: governance (state bubble).
-309. **Hardening polish: float + bubble + scenario goal.** ~~Done (local)~~: edge.
-310. **Hardening polish: baggage + margin + goal.** ~~Done (local)~~: together.
-311. **Hardening polish: cross-soak baggage active player.** ~~Done (local)~~: week ≥460.
-312. **Hardening polish: spectate float + scenario.** ~~Done (local)~~: governance.
-313. **Hardening polish: loan + baggage + law.** ~~Done (local)~~: together.
-314. **Hardening polish: margin + law pending + scenario.** ~~Done (local)~~: limits.
-315. **Hardening polish: deadline + hearing bubble.** ~~Done (local)~~: edge; cross-soak TakeLoan active player. Hardening filter **546/0** (local tip).
+217. **Reserved compute reputation and cooldown.** ~~Done~~: `ReservedComputeGate`, schema 149 (Q474); **PR [#51](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/51)** / `q-af2f` @ `34dc995`.
+218. **Rival intent on the news ticker.** ~~Done~~: `RivalIntentNews`, schema 150 (Q475).
+219. **GPU tier unlock permille.** ~~Done~~: `GpuTierUnlock`, schema 151 (Q476).
+220. **Endless play after scenario win.** ~~Done~~: `EndlessScenario`, schema 152 (Q477).
+221. **Shady jobs under permit freeze.** ~~Done~~: `ShadyFreezeAudit`, schema 153 (Q478).
+222. **Batch seventeen news, chat and combination rules.** ~~Done~~: `BatchSeventeenNewsChatTests`, `BatchSeventeenTogetherTests` (Q479).
+
+223. **Specialist and open-weights era hooks (bible tails lite).** ~~Done~~: `SpecialistEraHooks`, schema 154 (Q480); **PR [#52](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/52)** / land `2449d0d`.
+224. **Sector pricing breakdown for the player lab.** ~~Done~~: `SectorPricingBreakdown`, schema 155 (Q481).
+225. **Batch eighteen news, chat and combination rules.** ~~Done~~: `BatchEighteenNewsChatTests`, `BatchEighteenTogetherTests` (Q482).
+
+226. **Specialist data-source pairing soak.** ~~Done (local)~~: `DataSourceSpecialistPairing`, schema 156 (Q483).
+227. **Public metrics era load tail.** ~~Done (local)~~: `PublicMetricsEraLoad`, schema 157 (Q484).
+228. **Batch nineteen news, chat and combination rules.** ~~Done (local)~~: `BatchNineteenNewsChatTests`, `BatchNineteenTogetherTests` (Q485).
+
+### Era batch 20 (LOCAL prep on `t-af2f`, HOLD push)
+
+229. **Open weights era throttle tail.** ~~Done (local)~~: `OpenWeightsEraThrottle`, schema 158 (Q486).
+230. **Eval harness era trust tail.** ~~Done (local)~~: `EvalHarnessEraBoost`, schema 159 (Q487).
+231. **Campaign deadline era grace.** ~~Done (local)~~: `CampaignDeadlineEraGrace`, schema 160 (Q488).
+232. **Batch twenty news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyNewsChatTests`, `BatchTwentyTogetherTests` (Q489).
+
+### Era batch 21 (LOCAL prep on `u-af2f`, HOLD push)
+
+233. **Law shaping era cooldown tail.** ~~Done (local)~~: `LawShapingEraCooldown`, schema 161 (Q490).
+234. **Data source renew era bonus weeks.** ~~Done (local)~~: `DataSourceRenewEraBonus`, schema 162 (Q491).
+235. **Sector pricing era overload relief.** ~~Done (local)~~: `SectorPricingEraRelief`, schema 163 (Q492).
+236. **Batch twenty-one news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyOneNewsChatTests`, `BatchTwentyOneTogetherTests` (Q493).
+
+### Era batch 22 (LOCAL prep on `v-af2f`, HOLD push)
+
+237. **Law target era amplify.** ~~Done (local)~~: `LawTargetEraAmplify`, schema 164 (Q494).
+238. **Specialist branch era discount.** ~~Done (local)~~: `SpecialistBranchEraDiscount`, schema 165 (Q495).
+239. **Margin call era grace weeks.** ~~Done (local)~~: `MarginCallEraGrace`, schema 166 (Q496).
+240. **Batch twenty-two news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyTwoNewsChatTests`, `BatchTwentyTwoTogetherTests` (Q497).
+
+### Era batch 23 (LOCAL prep on `w-af2f`, HOLD push)
+
+241. **Hearing share-price era boost tail.** ~~Done (local)~~: `HearingSharePriceEraBoost`, schema 167 (Q498).
+
+242. **Rung-six era cooldown shortening.** ~~Done (local)~~: `RungSixEraCooldown`, schema 168 (Q499).
+
+243. **Data source acquire era discount.** ~~Done (local)~~: `DataSourceAcquireEraDiscount`, schema 169 (Q500).
+
+244. **Batch twenty-three news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests` (Q501).
+
+### Era batch 24 (LOCAL design — HOLD push)
+
+245. **Margin satisfy era relief.** *Planned:* `MarginSatisfyEraRelief`, schema 170 (Q502).
+
+246. **Scenario goals era slack.** *Planned:* `ScenarioGoalsEraSlack`, schema 171 (Q503).
+
+247. **Takeoff crisis era grace.** *Planned:* `TakeoffCrisisEraGrace`, schema 172 (Q504).
+
+248. **Batch twenty-four news, chat and combination rules.** *Planned:* `BatchTwentyFour*` (Q505); target 424/377.
 
 ## Rules: later
-
-- **P13** (PR **#48**): origin **`9b19488d`**; squash **`5168cc9`** **522/0**. LOCAL **546/0** (§289–315); **NO PUSH** until rules/test success + GO (`commit-tree` squash).
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.
 - ~~**Bubble meter (schema 12, Q90).**~~ Done: `BubbleConfig`, `BubbleSystem`, hooks on funding, chip listings, month roll and world events; `BubbleMeterTests`.
@@ -523,117 +461,9 @@ and says why in the commit message.
 - ~~**Circular financing and shares; monopoly vs regulators (Q92).**~~ Done: rival `publicFloatPpm`, monthly IPO loop feeding the bubble, regulator scrutiny when the meter is hot and extra antitrust on monopoly; `SharesRegulatorsLaterTests`.
 - ~~**Shady path depth and China deals (Q93).**~~ Done: player-only shady jobs, model corruption carry/mood/side jobs, China state requests and export vs smuggle; `ShadyChinaLaterTests`.
 - ~~**Containment rooms and superintelligence ending gates (Q94).**~~ Done: containment-wing alignment bonus, year-end `TrySuperintelligence` for paperclipped / long-summer / loose; schema 15; `ContainmentSuperintelLaterTests`.
-- ~~**Specialist** model lines, data sources, **open weights**, sector pricing.~~ Done on `cursor/rules-side-items` (PR #2); rules-forward does not reimplement.
+- **Specialist** model lines, data sources, **open weights**, sector pricing.
 - ~~**Funding ladder follow-ons (Q95).**~~ Done: down-round terms when the bubble is hot, player board lock and investor board visits; schema 16; `FundingFollowOnLaterTests`.
-- Real **Bodies** and **Upward** expansions (mechanics): **owned by Unity thread** on `cursor/rules-side-items`; era **data** only on stack2.
-- ~~**Treaty & Nationalised** ending triggers (systems-design §5.1)~~ **done (local)** — Q150–Q153; schema **24** `bubbleHadCrash`; `TreatyNationalisedLaterTests` (15); **683** tests at local tip.
-- **Hatch follow-ups** (Opus review): **done (local)** — Q154–Q159; `HatchFollowUpLaterTests` (**41**).
-- ~~**Hatch ledger lines** (Opus review)~~ **done (local)** — Q170; schema **28**; `HatchLedgerLaterTests` (8).
-- ~~**Bubble capital reset after crash**~~ **done (local)** — Q171; `BubbleCapitalResetLaterTests` (7).
-- ~~**Crash distress and M&amp;A gameplay**~~ **done (local)** — Q172–Q175; `HatchAcquisitionGameplayLaterTests` (**25**); golden unchanged (**758** tests).
-- ~~**Rival distress in crash**~~ **done (local)** — Q176–Q179; `LabPlanner.Distress`, `HatchRivalDistressLaterTests` (**28**).
-- ~~**Rival retrenchment soak**~~ **done (pushed)** — Q200; `LabPlanner.Retrenchment`, `RivalEconomyRobustnessLaterTests`; golden `15fc3234…`.
-- ~~**Rival economy robustness (stack2)**~~ **done (pushed @ `477c3d2`)** — Q201 full bar (`RivalEconomyRobustnessLaterTests`); era `sectorFlavoursForRivals` forked to PRs #4–#10 (see Q201). **795** tests at PR #3 tip.
-- ~~**Hatch economy bar batch 3**~~ **done (pushed @ `308463e`)** — Q202–Q214 + Q216/Q218 rival soak; schema **29** only (era owns **21–27**; **30** reserved for parked SolvencyHold). Golden `55e673a0…`.
-- ~~**Hatch rivals/chips batch 7**~~ **pushed @ `28de997`** — Q233–Q262 consolidation cross-bars (**41** tests in `HatchRivalsChipsConsolidationLaterTests`).
-- ~~**Hatch rivals/chips batch 8**~~ **pushed @ `3c4c8b7`** — Q263–Q292 (`HatchRivalsChipsDeliveryLaterTests`, **30**); schema **29** only.
-- ~~**Hatch rivals/chips batch 9**~~ **pushed @ `6c4d155`** — Q293–Q330 (`HatchRivalsChipsCrossBarLaterTests`, **38**).
-- ~~**Hatch rivals/chips batch 10**~~ **pushed @ `c58e395`** — Q331–Q365 (`HatchRivalsChipsIntegrateLaterTests`, **35**); schema **29** only; SolvencyHold **30** parked.
-- ~~**Hatch rivals/chips batch 11**~~ **pushed @ `31e6c2a`** — Q366–Q400 (`HatchRivalsChipsTailLaterTests`, **35**).
-- ~~**Hatch rivals/chips batch 12**~~ **pushed @ `ee78b4e`** — Q401–Q495 (`HatchRivalsChipsCapstoneLaterTests`, **95** grouped); schema **29** only.
-- ~~**Hatch rivals/chips batch 13**~~ **pushed @ `3b3019e`** — Q496–Q565 (`HatchRivalsChipsCodaLaterTests`, **70**); schema **29** only.
-- ~~**Hatch rivals/chips batch 14**~~ **pushed @ `3454140` (GO #3, Nov 22 ~15:12 UTC)** — Q566–Q665 (`HatchRivalsChipsEpilogueLaterTests`, **100**); parent `3b3019e`; gate **1269/0** / **1267/0** WT.
-- ~~**Hatch rivals/chips batch 15**~~ **pushed @ `6827a12` (Nov 22 ≥15:42 UTC)** — Q666–Q735 (`HatchRivalsChipsFinisherLaterTests`, **70**); gate **1339/0** in-repo; parent `3454140`.
-- ~~**Hatch rivals/chips batch 16**~~ **pushed @ `6f60391` (Nov 22 ~16:31 UTC)** — Q736–Q805 (`HatchRivalsChipsDenouementLaterTests`, **70**); parent `6827a12`; gate **1409/0** / **1407/0** WT.
-- ~~**Hatch rivals/chips batch 17**~~ **pushed @ `c90e29b` (≥17:01 UTC GO)** — Q806–Q905 (`HatchRivalsChipsSequelLaterTests`, **100**); gate **1509/0** / **1507/0** WT.
-- ~~**Hatch rivals/chips batch 18**~~ **pushed @ `4460d60`** — Q906–Q975 (`HatchRivalsChipsCoda2LaterTests`, **70**); parent `c90e29b`; gate **1579/0** / **1577/0** WT.
-- ~~**Hatch rivals/chips batch 19**~~ **pushed @ `a61660c`** — Q976–Q1045 (`HatchRivalsChipsFinaleLaterTests`, **70**); parent `4460d60`; gate **1649/0** / **1647/0** WT.
-- ~~**Hatch rivals/chips batch 20**~~ **pushed @ `a87d35b`** — Q1046–Q1115 (**70**); gate **1719/0** / **1717/0** WT; parent `a61660c`.
-- ~~**Hatch era/cast batch 21**~~ **pushed @ `eaa0701`** — Q1116–Q1185 (**70**); gate **1789/0** / **1787/0** WT; parent `a87d35b`.
-- ~~**Hatch era-feel batch 22**~~ **pushed @ `1a3b9db`** — Q1186–Q1255 (**70**); gate **1859/0** / **1857/0** WT; parent `eaa0701`.
-- ~~**Hatch rival-arrival batch 23**~~ **pushed @ `b14e047`** — Q1256–Q1325 (**70**); gate **1929/0** / **1927/0** WT; parent `1a3b9db`.
-- ~~**Hatch sector-rival batch 24**~~ **pushed @ `c98a033`** — Q1326–Q1395 (**70**); gate **1999/0** / **1997/0** WT; parent `b14e047`.
-- ~~**Hatch funding/bubble batch 25**~~ **pushed @ `5da29a0`** — Q1396–Q1465 (**70**); gate **2069/0** / **2067/0** WT; parent `c98a033`.
-- ~~**Hatch shady/china batch 26**~~ **pushed @ `f50900e`** — Q1466–Q1535 (**70**); gate **2139/0** / **2137/0** WT; parent `5da29a0`.
-- ~~**Hatch freeze/audit batch 27**~~ **pushed @ `d05c9cc`** — Q1536–Q1605 (**70**); gate **2209/0** / **2207/0** WT; parent `f50900e`.
-- ~~**Hatch incident/bubble batch 28**~~ **pushed @ `7fae71e`** — Q1606–Q1675 (**70**); gate **2279/0** / **2277/0** WT; parent `d05c9cc`.
-- ~~**Hatch containment/ending batch 29**~~ **pushed @ `10f32fb`** — Q1676–Q1745 (**70**); gate **2349/0** / **2347/0** WT; parent `7fae71e`.
-- ~~**Hatch treaty/ending batch 30**~~ **pushed @ `dee894f`** — Q1746–Q1815 (`HatchTreatyEndingBarLaterTests`, **70**); gate **2419/0** / **2417/0** WT; parent `10f32fb`.
-- ~~**Hatch pop/second-place batch 31**~~ **pushed @ `0e5e13d`** — Q1816–Q1885 (`HatchPopSecondPlaceBarLaterTests`, **70**); gate **2489/0** / **2487/0** WT; parent `dee894f` (+ `c400fb5` test, `0e5e13d` docs).
-- ~~**Hatch forward-queue batch 32**~~ **pushed @ `e3a5a6d`** — Q1886–Q1955 (`HatchForwardQueueBarLaterTests`, **70**); gate **2559/0** / **2557/0** WT; parent `0e5e13d` (+ `26258c2` test, `e3a5a6d` docs).
-- ~~**Hatch balance/soak batch 33**~~ **pushed @ `2c15504`** — Q1956–Q2025 (`HatchBalanceSoakBarLaterTests`, **70**); gate **2629/0** / **2627/0** WT; parent `e3a5a6d` (+ `29d5c6c` test, `2c15504` docs).
-- ~~**Hatch rival/plan batch 34**~~ **pushed @ `fc167aa`** — Q2026–Q2095 (`HatchRivalPlanBarLaterTests`, **70**); gate **2699/0** / **2697/0** WT; parent `2c15504` (+ `bae467b` test, `fc167aa` docs).
-- ~~**Hatch acquisition bar batch 35**~~ **pushed @ `ec6f1a9`** — Q2096–Q2165 (`HatchAcquireGameplayBarLaterTests`, **70**); gate **2769/0** / **2767/0** WT; parent `fc167aa` (+ `4d1a26c` test, `ec6f1a9` docs).
-- ~~**Hatch distress/M&amp;A batch 36**~~ **pushed @ `ae38c65`** — Q2166–Q2235 (`HatchDistressAcquireBarLaterTests`, **70**); gate **2839/0** / **2837/0** WT; parent `ec6f1a9` (+ `62d23d9` test, `ae38c65` docs).
-- ~~**Hatch bubble/distress batch 37**~~ **pushed @ `0a9afc3`** — Q2236–Q2305 (`HatchBubbleDistressBarLaterTests`, **70**); gate **2909/0** / **2907/0** WT; parent `ae38c65` (+ `5e2aee5` test, `0a9afc3` docs).
-- ~~**Hatch capital/bubble batch 38**~~ **pushed @ `b268afb`** — Q2306–Q2375 (`HatchCapitalBubbleBarLaterTests`, **70**); gate **2979/0** / **2977/0** WT; parent `0a9afc3` (+ `1f67dc0` test, `b268afb` docs).
-- ~~**Hatch funding follow-on batch 39**~~ **pushed @ `f4a7e4f`** — Q2376–Q2445 (`HatchFundingFollowOnBarLaterTests`, **70**); gate **3049/0** / **3047/0** WT; parent `b268afb` (+ `d0e1303` test, `f4a7e4f` docs).
-- ~~**Hatch model-sales/chip batch 40**~~ **pushed @ `4fdf674`** — Q2446–Q2515 (`HatchModelSalesChipBarLaterTests`, **70**); gate **3119/0** / **3117/0** WT; parent `f4a7e4f` (+ `95bf36d` test, `4fdf674` docs).
-- ~~**Hatch acquisition/listing batch 41**~~ **pushed @ `dcf79d8`** — Q2516–Q2585 (`HatchAcquireListingBarLaterTests`, **70**); gate **3189/0** / **3187/0** WT; parent `4fdf674` (+ `1507d5b` test, `dcf79d8` docs).
-- ~~**Hatch rival/economy batch 42**~~ **pushed @ `38f5385`** — Q2586–Q2655 (`HatchRivalEconomyBarLaterTests`, **70**); gate **3259/0** / **3257/0** WT; parent `dcf79d8` (+ `1e58224` test, `38f5385` docs).
-- ~~**Hatch world-map economy batch 43**~~ **pushed @ `5937e90`** — Q2656–Q2725 (`HatchWorldMapEconomyBarLaterTests`, **70**); gate **3329/0** / **3327/0** WT; parent `38f5385` (+ `d01f62b` test, `5937e90` docs).
-- ~~**Hatch shady/china batch 44**~~ **pushed @ `32fc117`** — Q2726–Q2795 (`HatchShadyChinaBarLaterTests2`, **70**); gate **3399/0** / **3397/0** WT; parent `5937e90` (+ `53261ee` test, `32fc117` docs).
-- ~~**Hatch incident/safety batch 45**~~ **pushed @ `6dbc3ac`** — Q2796–Q2865 (`HatchIncidentSafetyBarLaterTests`, **70**); gate **3469/0** / **3467/0** WT; parent `32fc117` (+ `5d681e6` test, `6dbc3ac` docs).
-- ~~**Hatch containment/ending batch 46**~~ **pushed @ `77ff014`** — Q2866–Q2935 (`HatchContainmentEndingBarLaterTests2`, **70**); gate **3539/0** / **3537/0** WT; parent `6dbc3ac` (+ `63295a9` test, `77ff014` docs).
-- ~~**Hatch regulators/bubble batch 47**~~ **pushed @ `e0b3311`** — Q2936–Q3005 (`HatchRegulatorBubbleBarLaterTests`, **70**); gate **3609/0** / **3607/0** WT; parent `77ff014` (+ `2c53e0d` test, `e0b3311` docs); Q200+golden **13/0** at tip prepush.
-- ~~**Hatch era/incident batch 48**~~ **pushed @ `d0aca54`** — Q3006–Q3075 (`HatchEraIncidentBarLaterTests`, **70**); gate **3679/0** / **3677/0** WT.
-- ~~**Hatch exit/sell batch 49**~~ **pushed @ `69e7282`** — Q3076–Q3145 (`HatchExitSellBarLaterTests`, **70**); gate **3749/0** in-repo; landed ~19:11 UTC.
-- ~~**Hatch bubble/acquire batch 50**~~ **pushed @ `afd2f0a`** — Q3146–Q3215 (`HatchBubbleAcquireBarLaterTests`, **70**); gate **3819/0** in-repo; parent `69e7282` (+ `386df26`, `afd2f0a`).
-- ~~**Hatch balance/soak batch 51**~~ **pushed @ `b4186b0`** — Q3216–Q3285 (`HatchBalanceSoakBarLaterTests2`, **70**); gate **3889/0** in-repo; parent `afd2f0a` (+ `66ff0bd`, `b4186b0`).
-- ~~**Hatch rival/plan batch 52**~~ **pushed @ `b5d8265`** — Q3286–Q3355 (`HatchRivalPlanBarLaterTests2`, **70**); gate **3959/0** in-repo; parent `b4186b0` (+ `3ca55e4`, `b5d8265`); landed ~21:23 UTC.
-- ~~**Hatch funding/follow-on batch 53**~~ **pushed @ `b661d1f`** — Q3356–Q3425 (`HatchFundingFollowOnBarLaterTests2`, **70**); gate **4029/0** in-repo; parent `b5d8265` (+ `ce6ace8`, `b661d1f`); landed ~21:53 UTC.
-- ~~**Hatch model-sales/chip batch 54**~~ **pushed @ `a62fc4a`** — Q3426–Q3495 (`HatchModelSalesChipBarLaterTests2`, **70**); gate **4099/0** in-repo; parent `b661d1f` (+ `230bfa8`, `b93c35f`, `a62fc4a`); landed ~22:42 UTC.
-- ~~**Hatch world-map/economy batch 55**~~ **pushed @ `14428ec`** — Q3496–Q3565 (`HatchWorldMapEconomyBarLaterTests2`, **70**); gate **4169/0** in-repo; parent `a62fc4a` (+ `8e17df7`, `182ed11`, `14428ec`); landed coordinator GO ~23:27 UTC.
-- ~~**Hatch regulator/bubble batch 56**~~ **pushed @ `3f88c5b`** — Q3566–Q3635 (`HatchRegulatorBubbleBarLaterTests2`, **70**); gate **4239/0** in-repo; parent `14428ec` (+ `6159ece`, `3f88c5b`); landed GO ~00:18 UTC Nov 24.
-- ~~**Hatch acquisition/listing batch 57**~~ **pushed @ `8744e8f`** — Q3636–Q3705 (`HatchAcquireListingBarLaterTests2`, **70**); gate **4379/0** in-repo; parent `3f88c5b` (+3 commits); landed ~01:20 UTC Nov 24.
-- ~~**Hatch rival/economy batch 58**~~ **pushed @ `29a97d3`** — Q3706–Q3775 (`HatchRivalEconomyBarLaterTests2`, **70**); gate **4449/0** in-repo; parent `8744e8f` (+4); landed ~02:17 UTC Nov 24.
-- ~~**Hatch shady/china batch 59**~~ **pushed @ `7d877f6`** — Q3776–Q3845 (`HatchShadyChinaBarLaterTests3`, **70**); gate **4519/0** in-repo; landed ~03:16 UTC Nov 24.
-- ~~**Hatch incident/safety batch 60**~~ **pushed @ `d332207`** — Q3846–Q3915 (`HatchIncidentSafetyBarLaterTests2`, **70**); gate **4589/0** in-repo; parent `7d877f6` (+5); landed GO ~03:52 UTC Nov 24.
-- ~~**Hatch containment/ending batch 61**~~ **pushed @ `be476fc`** — Q3916–Q3985 (`HatchContainmentEndingBarLaterTests3`, **70**); gate **4589/4589** in-repo; parent `d332207` (+6); landed ~04:48 UTC Nov 24.
-- ~~**Hatch era/incident batch 62**~~ **pushed @ `a618b3c`** — Q3986–Q4055 (`HatchEraIncidentBarLaterTests2`, **70**); gate **4659/4659** in-repo; parent `be476fc` (+2); landed ~05:19 UTC Nov 24.
-- ~~**Hatch exit/sell batch 63**~~ **pushed @ `605edb0`** — Q4056–Q4125 (`HatchExitSellBarLaterTests2`, **70**); gate **4729/4729** in-repo; parent `a618b3c` (+2); landed ~05:50 UTC Nov 24.
-- ~~**Hatch forward-queue batch 64**~~ **pushed @ `c63ab58`** — Q4126–Q4195 (`HatchForwardQueueBarLaterTests2`, **70**); gate **4799/4799** in-repo; parent `605edb0` (+2); landed ~06:24 UTC Nov 24.
-- ~~**Hatch balance/soak batch 65**~~ **pushed @ `07912df`** — Q4196–Q4265 (`HatchBalanceSoakBarLaterTests3`, **70**); gate **4869+** (full tree **5074** at land); parent `f2bbe8f` (+5); landed GO Nov 24 ~08:48 UTC.
-- ~~**Hatch bubble/acquire batch 66**~~ **pushed @ `5b52104`** — Q4266–Q4335 (`HatchBubbleAcquireBarLaterTests3`, **70**); gate **5004/5004** @ tip; parent `07912df` (+2); landed ~**09:18 UTC** (~**16:18 ICT**).
-- **Rivals hatch bar forward queue (bible / stack2 forks, test bar per item):**
-- ~~**Hatch capital/bubble batch 67**~~ **pushed @ `b9c1d5a`** — Q4336–Q4405 (`HatchCapitalBubbleBarLaterTests3`, **70**); squash via commit-tree off `5b52104`; gate **5074/5074**; landed ~**09:49 UTC** (~**16:49 ICT**).
-- ~~**Hatch bubble/distress batch 68**~~ **pushed @ `47f9787`** — Q4406–Q4475 (`HatchBubbleDistressBarLaterTests3`, **70**); squash `e90c37d` onto `b9c1d5a`; gate **5144/5144**; ~**10:26+ UTC** (~**17:26 ICT**).
-  - **batch 69+ (TBD)** — **SolvencyHold** schema **30** parked; chips/listings when merge opens phase **D**.
-- **Push policy:** grouped **commit-tree** squashes; **no `--force` / `--force-with-lease` ever** (firm Nov 25). Before each GO: read project store `internal/push-policy-standing.md` + `internal/standing-rules-rivals.md`. Prepush, coauth grep, plain **`git push`** only. On non-FF: `fetch`, rebuild squash with **`commit-tree` parent = `origin` tip**, plain push — or stop and report.
-- ~~**Hatch distress/acquire batch 69**~~ **pushed @ `f320b6b`** — Q4476–Q4545 (`HatchDistressAcquireBarLaterTests3`, **70**); grouped squash off `47f9787`; gate **5214/5214**; ~**18:20+ ICT**.
-- ~~**Batches 70–73 grouped squash**~~ **pushed @ `516404f`** — Q4546–Q4825 (**280** tests); gate **5494/5494**; parent `f320b6b`; ~**19:26 ICT**.
-- ~~**Batches 74–77 grouped squash**~~ **pushed @ `a727a84`** — Q4826–Q5105 (**280** tests); gate **5774/5774**; parent `516404f`; ~**20:12 ICT**.
-- ~~**Batches 78–81 grouped squash**~~ **pushed @ `b50d053`** — Q5106–Q5385 (**280** tests); gate **6054/6054**; ~**21:06+ ICT**.
-- ~~**Batches 82–85 grouped squash**~~ **pushed @ `976c420`** — Q5386–Q5665 (**280** tests); gate **6334/6334**; ~**21:19 ICT**.
-- ~~**Batches 86–89 grouped squash**~~ **pushed @ `fda05f6e`** — Q5666–Q5945 (**280** tests); gate **6614/6614**; ~**21:56 ICT**.
-- ~~**Batches 126–137 grouped squash**~~ **pushed @ `bc359ed5`** — Q8456–Q9295 (**840**).
-- ~~**Batches 138–145 grouped squash**~~ **pushed @ `8342ffb1`** — Q9296–Q9855 (**560**); gate **10534/10534** (`/tmp/rivals-b138-145-prepush.log`); GO ~04:56 ICT Nov 25.
-- ~~**Batches 146–153 grouped squash**~~ **pushed @ `21d27d72`** — Q9856–Q10415 (**560**); gate **11094/11094** (`/tmp/rivals-b146-153-prepush.log`); GO ~**05:31 ICT** Nov 25.
-- ~~**Batches 154–161 grouped squash**~~ **pushed @ `12e765f6`** — Q10416–Q10975 (**560**); gate **11654/11654** (`/tmp/rivals-b154-161-prepush.log`); GO ~**06:06 ICT** Nov 25.
-- ~~**Batches 162–169 grouped squash**~~ **pushed @ `e5d2e62d`** — Q10976–Q11515 (**560**); gate **12214/12214** (`/tmp/rivals-b162-169-prepush.log`); GO ~**06:37 ICT** Nov 25.
-- ~~**Batches 170–177 grouped squash**~~ **pushed @ `518fe0d2`** — Q11516–Q11955 (**560**); gate **12774/12774** (`/tmp/rivals-b170-177-prepush.log`); GO ~**07:01 ICT** Nov 25.
-- ~~**Batches 178–185 grouped squash**~~ **pushed @ `d6765bc0`** — Q11956–Q12495 (**560**); gate **13334/13334** (`/tmp/rivals-b178-185-prepush.log`); GO ~**07:36 ICT** Nov 25.
-- ~~**Batches 186–193 grouped squash**~~ **pushed @ `92587abf`** — Q12496–Q13035 (**560**); gate **13894/13894** (`/tmp/rivals-b186-193-prepush.log`); GO ~**08:07 ICT** Nov 25.
-- ~~**Batches 194–201 grouped squash**~~ **pushed @ `893386d5`** — Q13036–Q13575 (**560**); gate **14454/14454** (`/tmp/rivals-b194-201-prepush.log`); GO ~**08:36 ICT** Nov 25.
-- ~~**Batches 202–209 grouped squash**~~ **pushed @ `3e3662f8`** — Q13576–Q14065 (**560**); gate **15014/15014** (`/tmp/rivals-b202-209-prepush.log`); GO ~**09:07 ICT** Nov 25. **Remote tip frozen** at **`3e3662f8`** (no rewrite).
-- ~~**Batches 210–217 grouped squash**~~ **pushed @ `e546be75`** — Q14066–Q14615 (**560**) + host explain slices; gate **15579/15579** (`/tmp/rivals-b210-217-prepush.log`); GO ≥**09:37 ICT** Nov 25. Plain FF push (`3e3662f8..e546be75`); no force.
-- ~~**Batches 218–229 grouped squash**~~ **pushed @ `5c5e6f6f`** — Q13376–Q14195 (**840**) + host reserved/rival slices; gate **16421/16421** (`/tmp/rivals-b218-229-prepush.log`); GO ≥**10:41 ICT** Nov 25; plain FF (`e546be75..5c5e6f6f`).
-- ~~**Batches 230–237 grouped squash**~~ **pushed @ `bc70a1c5`** — Q14136–Q14685 (**560**) + vendor host slices; gate **16983/16983** (`/tmp/rivals-b230-237-prepush.log`); GO ≥**11:11 ICT** Nov 25; plain FF (`5c5e6f6..bc70a1c5`).
-- ~~**Batches 238–245 grouped squash**~~ **pushed @ `a285199b`** — Q13446–Q14265 (**560**) + NEXT **#4–#7** host breakdowns; gate **17547/17547** (`/tmp/rivals-b238-245-prepush.log`); GO ~**11:42 ICT** Nov 25; plain FF (`bc70a1c5..a285199b`).
-- ~~**Batches 246–249 grouped squash**~~ **pushed @ `45ba4b85`** — Q13716–Q14195 (**280**) + cross-system host; gate **17830/17830** (`/tmp/rivals-b246-249-prepush.log`); GO ~**12:20 ICT** Nov 25; plain FF (`a285199b..45ba4b85`).
-- ~~**Batches 250–257 grouped squash**~~ **pushed @ `1ecfc559`** — Q14206–Q14755 (**560**) + NEXT **#8–#11**; gate **18394/18394** (`/tmp/rivals-b250-257-prepush.log`); GO ~**12:55 ICT** Nov 25; plain FF (`45ba4b85..1ecfc559`).
-- ~~**Batches 258–265 grouped squash**~~ **pushed @ `c6ac9d28`** — Q13516–Q14265 (**560**); gate **18954/18954** (`/tmp/rivals-b258-265-prepush.log`); GO ~**13:26 ICT** Nov 25; plain FF (`1ecfc559..c6ac9d28`); main ack **`618c864b`**.
-- ~~**Batches 266–273 grouped squash**~~ **pushed @ `1f535b41`** — Q13786–Q14555 (**560**); gate **19514/19514** (`/tmp/rivals-b266-273-prepush.log`); GO ~**14:17 ICT** Nov 25; plain FF (`c6ac9d28..1f535b41`); main ack **`834a9ca7`**.
-- ~~**Batches 274–281 grouped squash**~~ **pushed @ `8e8296a7`** — Q13856–Q14625 (**560**); gate **20074/20074** (`/tmp/rivals-b274-281-prepush.log`); GO ~**14:48 ICT** Nov 25; plain FF (`1f535b41..8e8296a7`); main ack **`ac3aa9ad`**.
-- ~~**Batches 282–289 grouped squash**~~ **pushed @ `2ea59b0b`** — Q13926–Q14695 (**560**); gate **20634/20634** (`/tmp/rivals-b282-289-prepush.log`); GO ≥**15:18 ICT** Nov 25; plain FF (`8e8296a7..2ea59b0b`).
-- ~~**Batches 290–297 grouped squash**~~ **pushed @ `7e2f17b3`** — Q13996–Q14765 (**560**); gate **21194/21194** (`/tmp/rivals-b290-297-prepush.log`); GO ≥**15:48 ICT** Nov 25; plain FF (`2ea59b0b..7e2f17b3`).
-- ~~**Batches 298–305 grouped squash**~~ **pushed @ `ac7fd7ae`** — Q14066–Q14835 (**560**) + `HostExplainQueuePrepLaterTests` (**3**); gate **21757/21757** (`/tmp/rivals-b298-305-prepush.log`); GO ≥**16:18 ICT** Nov 25; plain FF (`7e2f17b3..ac7fd7ae`).
-- ~~**Batches 306–313 grouped squash**~~ **pushed @ `bef51859`** — Q14136–Q14905 (**560**) + `HostExplainQueuePrepLaterTests` (**6**); gate **22320/22320** (`/tmp/rivals-b306-313-prepush.log`); GO ≥**16:49 ICT** Nov 25; plain FF (`ac7fd7ae..bef51859`).
-- ~~**Batches 314–321 grouped squash**~~ **pushed @ `71a0d490`** — Q14206–Q14975 (**560**) + `HostExplainNext314LaterTests` (**3**); gate **22883/22883** (`/tmp/rivals-b314-321-prepush.log`); GO ≥**17:19 ICT** Nov 25 (landed ~**17:11 ICT**); plain FF (`bef51859..71a0d490`).
-- ~~**Batches 322–329 land**~~ **remote @ `113be5fc`** — Q14276–Q15045 (**560**); gate **23443/23443** (`/tmp/rivals-b322-329-prepush.log`); GO ≥**17:41 ICT** Nov 25 (content already FF from `71a0d490`; regular commit, not commit-tree squash — no rewrite).
-- **Batches 330+ (LOCAL — HOLD PUSH):** hatch **330–337** + `HostExplainNext330LaterTests` (**3**); **no push** until ≥~**18:11 ICT** after **`113be5fc`**.
-- **LOCAL hold:** batch **67** until **66** lands.
-- **Refill (systems-only):** store `docs/systems-design.md` §**world map**, §**4 chips**; bible **Q101**/**Q100**; `internal/next-work-real-systems-only.md`; stack2 **52–67** schema **29**.
+- Real **Bodies** and **Upward** expansions (era data is in, flagged `expansion`; mechanics and art are not).
 
 ## Rules: forward queue (from bible / systems-design)
 
@@ -648,28 +478,22 @@ and says why in the commit message.
 
 Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
-1. ~~**Create the Unity 6 project in `unity/`** with `Rules/` as a local package.~~ Scaffolded on branch `cursor/unity-scaffold`; Hatch verifies in the editor (SETUP-PC §2).
-2. ~~**First scene in code:** garage lot grid, room blocks, week button, cash and date.~~ In `GameBootstrap`; room building UI is item 3 (graphics batch 38 documents `RoomBuildPanel` chrome only).
-3. ~~**Room building, hire/GPU, training, Gauntlet show.**~~ On `cursor/unity-hq-views` (local); editor verification in SETUP-PC §2.
-4. ~~**Model mascots (Healthy / Overworked / Glitching) and room glow spread.**~~ Presentation uses `LabQueries.Mood` and `GlowSpreadMap`; graphics tokens in `docs/art/MASCOT-PRESENTATION.md` + `GLOW-PRESENTATION.md` (batch 8); batch 33 adds row HUD spec for mascot strip polish on PC.
-5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches. Graphics batch 34 documents PR #41 branch landing notes for studio (`STUDIO-GRAPHICS-HANDOFF.md`); does not change `studio/` on this branch.
+1. Create the Unity 6 project in `unity/` with `Rules/` as a local package. No rules in Unity scripts: Unity sends
+   `Command`s and draws `GameState`.
+2. A first scene built in code: the garage lot as a grid, rooms as coloured blocks, a week button, cash and date.
+3. Room building with the mouse; the hire and GPU panels; the training-run screen; the Gauntlet show.
+4. The model mascots and their three states; the glow.
+5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
 
-**Graphics lane** (`cursor/graphics-pipeline-5032`): **remote** `5750a5d6` (**501–512** pushed) · **main** `c3f461ec` (PR **#83** merged). **LOCAL:** **513–524** (Q962–Q973). Self-GO **≥50** + spacing; no CI on bare push. **NEXT:** **525+**. Next graphics **gate** fold onto `main` after rivals **#84** lands (coordinator). **Unity HOLD**.
-Unity thread imports meshes and wires bindings per `docs/art/UNITY-INTEGRATION.md`; host UI for the world map and
-start-era picker (items 12–13 below) stays rules/Unity presentation, not new rule systems.
+## Merge train (dependency order)
 
-## Art / presentation (active)
+Agents land **one gate at a time**; **`rules` must be success on the exact PR head** before `commit-tree` to `main` (~3m between `main` moves; noreply, no `Co-authored-by`, no force-push).
 
-| Track | Status |
-| --- | --- |
-| PR #41 graphics batches | Spaced squashes on `cursor/graphics-pipeline-5032`; gate `./tools/art/prepush.sh`; rules-adjacent index batch **240** |
-| Unity import (`bc-93b5443a`) | `UNITY-INTEGRATION.md`, prop placement hints, tab icons |
-| Explainable HUD | Index (`EXPLAINABLE-HUD-INDEX.md`, batch 56); `DisplayQueries` in rules; HQ (batch 20), research drawer (batch 25), research screen 62/38 (batch 47) |
-| Hire / staff UI | Index (`STAFF-PRESENTATION-INDEX.md`, batch 57); staff rows (batch 26); meshes still PC pass per `STAFF-PRESENTATION.md` |
-| HQ chrome | Cash/grant (batch 27), date/week row (batch 31); breakdowns from `DisplayQueries` |
-| Seasonal overlays | Index (`SEASONAL-OVERLAY-INDEX.md`, batch 53); Gauntlet chrome (`GAUNTLET-STAGE-HUD.md`, batch 24); sim outcomes stay in rules |
-| Screen layouts | Research (47), rivals (48), training (49) — `UI-HUD-LAYOUTS` + `Campus*ScreenPresentationSpec` |
-| A11y chrome | Index (`A11Y-CHROME-INDEX.md`, batch 59); focus ring (batch 30); capture HUD (batch 35) + `CAPTURE-REGRESSION.md` |
+1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
+2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
+3. **Graphics pipeline follow-on** — fold `cursor/graphics-pipeline-5032` onto `main` in a **new gate PR** (unity/docs-art/tools-art overlay; coordinator GO). See agent store `graphics-gate-pr-plan-post-84.md`.
+4. **Stack2 packet 2** — batches **358–365** on `later-rules-stack2` after refold on **`03bd9e73`** (rivals lane).
+5. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 
 ## Studio and CI
 
