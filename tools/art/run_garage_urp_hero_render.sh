@@ -6,6 +6,8 @@ cd "$ROOT"
 ./tools/art/cc0/fetch_polyhaven_hdri.sh
 chmod +x ./tools/art/cc0/fetch_kenney_cc0.sh 2>/dev/null || true
 ./tools/art/cc0/fetch_kenney_cc0.sh
+chmod +x ./tools/art/cc0/fetch_ambientcg_shell.sh 2>/dev/null || true
+./tools/art/cc0/fetch_ambientcg_shell.sh
 BLENDER="${BLENDER:-blender}"
 if ! command -v "$BLENDER" >/dev/null 2>&1; then
   for cand in /tmp/blender-4.0.2-linux-x64/blender /opt/blender/blender; do

@@ -224,7 +224,7 @@ def audit_grounding(
     ceiling_z: float = 2.15,
     wall_plane: str = "back",
     wall_coord: float = 0.0,
-    tol_floor: float = 0.09,
+    tol_floor: float = 0.02,
     tol_wall: float = 0.22,
 ) -> list[str]:
     """Fail gate when meshes float: floor props touch floor; wall props touch a wall plane."""
@@ -240,6 +240,8 @@ def audit_grounding(
 
     for ob in objects:
         if ob.type != "MESH" or ob.name == "PreviewShadowFloor":
+            continue
+        if ob.name.startswith("shell_"):
             continue
         if any(k in ob.name for k in exempt):
             continue

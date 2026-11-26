@@ -15,6 +15,9 @@ FRAME = REPO / "docs/art/previews/garage-scene-urp-hero.frame.json"
 
 MIN_EXTENT = 0.55
 MAX_EXTENT = 0.78
+FLOOR_FLOAT_MAX_M = 0.02
+MIN_ROUGH = 0.2
+MAX_MASK_HERO_EXTENT_DELTA = 0.12
 MAGENTA_FRAC_MAX = 0.002
 MAGENTA_MIN_R = 235
 MAGENTA_MAX_G = 45
@@ -213,9 +216,9 @@ def _quality_metrics(hero: Path) -> dict[str, float]:
                 continue
             total += 1
             spread = max(r, g0, b) - min(r, g0, b)
-            if g < LUM_MIN or g > LUM_MAX:
-                if spread < 42:
-                    continue
+            if g > 232 and spread >= 52:
+                lum_oob += 1
+            elif g < LUM_MIN and spread >= 40:
                 lum_oob += 1
             patch: list[int] = []
             for dy in (-2, -1, 0, 1, 2):
@@ -291,18 +294,21 @@ def main() -> int:
         errs.append(f"magenta_frac {mag:.4f} > {MAGENTA_FRAC_MAX}")
     if mean_r > 200 and mean_g < 80 and mean_b > 200:
         errs.append(f"frame_mean_rgb near magenta ({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})")
-    if mask.is_file():
-        ext = _subject_extent_from_mask(mask)
-    else:
-        ext = _subject_extent_from_hero(hero)
+    ext = _subject_extent_from_hero(hero)
+    mask_ext = _subject_extent_from_mask(mask) if mask.is_file() else 0.0
+    if mask.is_file() and abs(ext - mask_ext) > MAX_MASK_HERO_EXTENT_DELTA:
+        errs.append(f"hero_mask_extent_delta hero={ext:.3f} mask={mask_ext:.3f}")
     frame_meta = Path(sys.argv[3]) if len(sys.argv) > 3 else FRAME
     if frame_meta.is_file():
         meta = json.loads(frame_meta.read_text(encoding="utf-8"))
         floaters = meta.get("grounding_violations") or []
         if floaters:
             errs.append(f"floating_meshes ({len(floaters)}): {floaters[:4]}")
+        rough = meta.get("roughness_violations") or []
+        if rough:
+            errs.append(f"roughness_violations ({len(rough)}): {rough[:4]}")
     if ext < MIN_EXTENT or ext > MAX_EXTENT:
-        errs.append(f"mask_extent {ext:.3f} not in [{MIN_EXTENT},{MAX_EXTENT}]")
+        errs.append(f"hero_extent {ext:.3f} not in [{MIN_EXTENT},{MAX_EXTENT}]")
     q = _quality_metrics(hero)
     if q["noise_speckle_frac"] > NOISE_SPECKLE_FRAC_MAX or q["laplacian_p90"] > NOISE_LAPLACIAN_P90:
         errs.append(

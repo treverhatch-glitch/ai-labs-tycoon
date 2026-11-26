@@ -204,7 +204,7 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
 def setup_garage_hero_lights(center: Vector, radius: float, energy_scale: float = 1.0) -> None:
     """Warm interior key + cool fill (TPH-style) for furnished garage cut-away."""
     span = max(radius, 1.0) * energy_scale
-    energy = max(180.0, span * 220.0)
+    energy = max(105.0, span * 125.0)
     key_loc = center + Vector((span * 0.8, span * 0.35, span * 1.45))
     fill_loc = center + Vector((-span * 1.1, -span * 1.05, span * 0.95))
     rim_loc = center + Vector((span * 0.2, span * 1.15, span * 0.55))
@@ -512,7 +512,7 @@ def render_preview_studio(
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     axis = (up_axis or infer_up_axis(mins, maxs)).upper()
-    add_contact_floor = True
+    add_contact_floor = path.stem != "garage-scene-urp-hero"
     if add_contact_floor:
         if axis == "Y":
             add_shadow_floor_y(mins, maxs)
@@ -577,7 +577,7 @@ def render_preview_studio(
 
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "None"
-    scene.view_settings.exposure = -0.52 if path.stem == "garage-scene-urp-hero" else 0.0
+    scene.view_settings.exposure = -0.62 if path.stem == "garage-scene-urp-hero" else 0.0
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = resolution
