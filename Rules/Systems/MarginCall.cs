@@ -51,7 +51,7 @@ namespace AiLabs.Rules.Systems
             MarginCallEraGrace.OnCall(c, state, lab, cure, grace);
         }
 
-        public static long CashDue(GameConfig c, GameState state, LabState lab)
+        public static long RawCashDue(GameConfig c, GameState state, LabState lab)
         {
             long owed = Loans.Outstanding(lab);
             if (owed <= 0) return 0;
@@ -61,8 +61,14 @@ namespace AiLabs.Rules.Systems
             return MathI.MulPermille(gap, c.MarginCall.PayPermille);
         }
 
+        public static long CashDue(GameConfig c, GameState state, LabState lab)
+        {
+            return MarginSatisfyEraRelief.AdjustDue(c, state, RawCashDue(c, state, lab));
+        }
+
         public static void SatisfyPay(GameConfig c, GameState state, LabState lab, long pay)
         {
+            long listDue = RawCashDue(c, state, lab);
             Finance.Spend(lab, LedgerLine.CapitalIn, pay);
             long left = pay;
             for (int i = 0; i < lab.Loans.Count && left > 0; i++)
@@ -80,6 +86,7 @@ namespace AiLabs.Rules.Systems
             }
             lab.MarginCallLeft = 0;
             Events.Add(state, EventKind.MarginCallSatisfied, lab.Id, -1, pay, "cash");
+            MarginSatisfyEraRelief.OnPaid(c, state, lab, listDue, pay);
         }
 
         public static void SatisfySell(GameConfig c, GameState state, LabState lab, int count)
