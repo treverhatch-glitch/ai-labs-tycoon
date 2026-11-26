@@ -237,7 +237,7 @@ def _split_eyes(eyes: bpy.types.Object) -> list[bpy.types.Object]:
         me.update()
         bm.free()
         if len(ob.data.vertices) >= 4:
-            bc.assign_solid(ob, (0.95, 0.96, 0.98, 1.0), 0.32)
+            bc.assign_solid(ob, (0.12, 0.10, 0.14, 1.0), 0.35)
             out.append(ob)
         else:
             bpy.data.objects.remove(ob, do_unlink=True)
@@ -374,8 +374,10 @@ def _apply_founder_hospital_proportions() -> None:
     _reseal_skin_chain_gaps()
 
 
-FOUNDER_HOODIE = (0.10, 0.08, 0.18, 1.0)
-FOUNDER_JEANS = (0.14, 0.22, 0.46, 1.0)
+FOUNDER_HOODIE_NAVY = (0.08, 0.10, 0.32, 1.0)
+FOUNDER_HOODIE_RED = (0.62, 0.14, 0.12, 1.0)
+FOUNDER_JEANS = (0.08, 0.24, 0.62, 1.0)
+FOUNDER_HAIR = (0.36, 0.22, 0.14, 1.0)
 
 
 def _build_founder_hoodie_jeans(
@@ -395,19 +397,19 @@ def _build_founder_hoodie_jeans(
 
     built: list[bpy.types.Object] = []
     if torso:
-        bc.assign_solid(torso, FOUNDER_HOODIE, 0.62)
+        bc.assign_solid(torso, FOUNDER_HOODIE_RED, 0.58)
     for leg in (leg_l, leg_r):
         if leg:
             bc.assign_solid(leg, FOUNDER_JEANS, 0.56)
     if neck:
-        bc.assign_solid(neck, FOUNDER_HOODIE, 0.60)
+        bc.assign_solid(neck, FOUNDER_HOODIE_RED, 0.55)
 
     body = _fit_box_garment(
         "HoodieTorso",
         [o for o in (torso, neck) if o],
-        (1.42, 1.36, 1.14),
-        FOUNDER_HOODIE,
-        0.64,
+        (1.58, 1.48, 1.22),
+        FOUNDER_HOODIE_RED,
+        0.58,
         y_shift=span * 0.04,
     )
     if body:
@@ -417,7 +419,7 @@ def _build_founder_hoodie_jeans(
             f"HoodieSleeve_{tag}",
             [o for o in arms if o],
             (1.22, 1.08, 1.12),
-            FOUNDER_HOODIE,
+            FOUNDER_HOODIE_NAVY,
             0.62,
         )
         if slv:
@@ -431,7 +433,7 @@ def _build_founder_hoodie_jeans(
             (ext.x * 1.02, ext.y * 0.55, ext.z * 0.72),
             (center.x, center.y - ext.y * 0.12, center.z + ext.z * 0.18),
         )
-        bc.assign_solid(hood, (0.08, 0.06, 0.14, 1.0), 0.58)
+        bc.assign_solid(hood, FOUNDER_HOODIE_NAVY, 0.58)
         built.append(hood)
     if torso:
         tc = _mesh_centroid(torso)
@@ -440,7 +442,7 @@ def _build_founder_hoodie_jeans(
             (span * 0.14, span * 0.04, span * 0.11),
             (tc.x + span * 0.05, tc.y + span * 0.22, tc.z - span * 0.06),
         )
-        bc.assign_solid(pocket, (0.12, 0.10, 0.20, 1.0), 0.60)
+        bc.assign_solid(pocket, FOUNDER_HOODIE_RED, 0.58)
         built.append(pocket)
     hip_box = _fit_box_garment(
         "JeansHips",
@@ -538,19 +540,10 @@ def _style_founder(
     if hair:
         _rename_ob(hair, "Hair")
         hair.scale = (1.0, 1.0, 1.05)
-        bc.assign_solid(hair, (0.10, 0.07, 0.05, 1.0), 0.42)
+        bc.assign_solid(hair, FOUNDER_HAIR, 0.48)
     shoes = _add_shoes(span)
     for ob in shoes:
         bc.assign_solid(ob, (0.92, 0.94, 0.96, 1.0), 0.38)
-    hand_r = bpy.data.objects.get("Hand_1")
-    if hand_r:
-        hr = _mesh_centroid(hand_r)
-        mug = bc.add_cube(
-            "FounderMug",
-            (span * 0.09, span * 0.10, span * 0.08),
-            (hr.x + span * 0.04, hr.y + span * 0.01, hr.z + span * 0.03),
-        )
-        bc.assign_solid(mug, (0.94, 0.52, 0.12, 1.0), 0.38)
 
 
 def _style_researcher(

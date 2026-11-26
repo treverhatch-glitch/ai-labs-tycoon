@@ -174,11 +174,27 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     if head and head.data.vertices:
         pts = [head.matrix_world @ v.co for v in head.data.vertices]
         hc = sum(pts, Vector()) / len(pts)
+        eye_l = by_name.get("Eye_-1")
+        eye_r = by_name.get("Eye_1")
+        if eye_l and eye_r:
+            el = sum((eye_l.matrix_world @ v.co for v in eye_l.data.vertices), Vector())
+            el /= max(1, len(eye_l.data.vertices))
+            er = sum((eye_r.matrix_world @ v.co for v in eye_r.data.vertices), Vector())
+            er /= max(1, len(eye_r.data.vertices))
+            mid = (el + er) * 0.5
+            fwd = mid - hc
+            fwd.z = 0.0
+            if fwd.length > 1e-4:
+                if fwd.dot(Vector((0.0, 1.0, 0.0))) < 0:
+                    fwd = -fwd
+                return fwd.normalized()
         if up.z > 0.9:
             nose = min(pts, key=lambda v: v.y)
             back = max(pts, key=lambda v: v.y)
             fwd = Vector((nose.x - back.x, nose.y - back.y, 0.0))
             if fwd.length > 1e-4:
+                if fwd.dot(Vector((0.0, 1.0, 0.0))) < 0:
+                    fwd = -fwd
                 return fwd.normalized()
         fwd = hc - (
             sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector())
@@ -429,9 +445,9 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = float(os.environ.get("STAFF_PREVIEW_MARGIN", "1.52"))
+        framing_margin = float(os.environ.get("STAFF_PREVIEW_MARGIN", "1.46"))
         lens_mm = 50.0
-        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42"))
+        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
     elif preview_kind in ("wisp",):
         axis = "Y"
@@ -472,8 +488,12 @@ def render_preview_studio(
         if preview_kind == "staff":
             key = bpy.data.objects.get("Key")
             if key and key.type == "LIGHT":
-                key.data.energy *= 0.16
-            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42"))
+                key.data.energy *= 0.048
+            for soft_name, mul in (("Fill", 0.35), ("Rim", 0.12)):
+                lite = bpy.data.objects.get(soft_name)
+                if lite and lite.type == "LIGHT":
+                    lite.data.energy *= mul
+            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
                 hero_meshes,
@@ -506,7 +526,7 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
-                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42")),
+                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35")),
                 "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
             indent=2,

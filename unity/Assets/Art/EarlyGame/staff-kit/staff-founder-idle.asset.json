@@ -7,11 +7,11 @@
     "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_roughness.png"
   },
   "preview": "docs/art/previews/staff-founder-idle.png",
-  "license": "CC0-1.0 (Kenney Animated Characters 3 + in-repo bake)",
-  "vertexCount": 1728,
-  "triangleCount": 6060,
-  "meshIslands": 14,
-  "partCount": 14,
+  "license": "CC0-1.0 (Quaternius Ultimate Modular Character + in-repo bake)",
+  "vertexCount": 13854,
+  "triangleCount": 57166,
+  "meshIslands": 30,
+  "partCount": 30,
   "grounded": true,
   "blenderVersion": "4.0.2",
   "generator": "tools/art/blender/staff-founder-idle.py"

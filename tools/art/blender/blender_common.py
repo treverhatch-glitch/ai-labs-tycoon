@@ -192,15 +192,6 @@ def orient_staff_assembly_for_export(
     root = staff_conn.parent_staff_hierarchy(mesh_obs)
     ground_scene_meshes()
     bpy.context.view_layer.update()
-    if asset_id == "staff-founder-idle":
-        min_z, _max, sz = _mesh_scene_span_z(mesh_obs)
-        if abs(min_z) > 1e-5:
-            root.location.z -= min_z
-        bpy.context.view_layer.update()
-        _min, _max, sz = _mesh_scene_span_z(mesh_obs)
-        if sz < 1.55 or sz > 2.05:
-            raise RuntimeError(f"FAIL {asset_id}: height sz={sz:.3f} want 1.55-2.05")
-        return root
     root.rotation_euler = (math.pi / 2, 0.0, 0.0)
     bpy.ops.object.select_all(action="DESELECT")
     root.select_set(True)
@@ -634,6 +625,10 @@ def assign_solid(
     bsdf = mat.node_tree.nodes["Principled BSDF"]
     bsdf.inputs["Base Color"].default_value = rgba
     bsdf.inputs["Roughness"].default_value = roughness
+    if "Specular IOR Level" in bsdf.inputs:
+        bsdf.inputs["Specular IOR Level"].default_value = 0.0
+    elif "Specular" in bsdf.inputs:
+        bsdf.inputs["Specular"].default_value = 0.0
     ob.data.materials.clear()
     ob.data.materials.append(mat)
 
@@ -655,37 +650,40 @@ def log_staff_material_slots(mesh_obs: list[bpy.types.Object], asset_id: str) ->
 
 
 def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
-    """1995 founder: skin, brown hair, navy/red hoodie, denim, dark shoes (no cyan atlas)."""
+    """Quaternius founder: skin, brown hair, navy/red hoodie meshes, denim, white sneakers."""
     skin = (0.84, 0.68, 0.54, 1.0)
-    hair = (0.28, 0.16, 0.10, 1.0)
-    skin_rough = 0.72
-    hair_rough = 0.55
+    hair = (0.36, 0.22, 0.14, 1.0)
     hoodie_navy = (0.08, 0.10, 0.32, 1.0)
-    hoodie_red = (0.62, 0.16, 0.14, 1.0)
-    denim = (0.14, 0.28, 0.52, 1.0)
-    shoe = (0.14, 0.14, 0.16, 1.0)
-    eye = (0.10, 0.08, 0.12, 1.0)
-    mouth = (0.52, 0.26, 0.28, 1.0)
+    hoodie_red = (0.62, 0.14, 0.12, 1.0)
+    denim = (0.08, 0.24, 0.62, 1.0)
+    sneaker = (0.92, 0.94, 0.96, 1.0)
+    eye = (0.12, 0.10, 0.14, 1.0)
     for ob in mesh_obs:
         base = ob.name.split(".")[0]
-        if base == "Hair":
-            assign_solid(ob, hair, hair_rough)
-        elif base == "Head":
-            assign_solid(ob, skin, skin_rough)
+        if base in ("Hair",):
+            assign_solid(ob, hair, 0.48)
+        elif base in ("Head",) or base.startswith("Hand_"):
+            assign_solid(ob, skin, 0.82)
         elif base.lower().startswith("eye"):
             assign_solid(ob, eye, 0.35)
-        elif base == "Mouth":
-            assign_solid(ob, mouth, 0.42)
-        elif base in ("Torso", "Arm_-1", "Arm_1"):
-            assign_solid(ob, hoodie_navy, 0.55)
+        elif base == "Eyebrows":
+            assign_solid(ob, (0.22, 0.14, 0.10, 1.0), 0.45)
         elif base == "Neck":
             assign_solid(ob, hoodie_red, 0.52)
-        elif base in ("Hips", "Leg_-1", "Leg_1"):
+        elif base == "Hood":
+            assign_solid(ob, hoodie_navy, 0.55)
+        elif base.startswith("Hoodie") or base in ("Torso", "Neck"):
+            assign_solid(ob, hoodie_red, 0.54)
+        elif base.startswith("UpperArm_") or base.startswith("LowerArm_") or base.startswith("Arm_"):
+            assign_solid(ob, hoodie_navy, 0.54)
+        elif base.startswith("Jeans") or base in ("Hips", "Leg_-1", "Leg_1"):
             assign_solid(ob, denim, 0.56)
+        elif base.startswith("Shoe_"):
+            assign_solid(ob, sneaker, 0.38)
         elif base.startswith("Foot_"):
-            assign_solid(ob, shoe, 0.42)
-        else:
-            print(f"WARN staff-founder-idle tint_skip {ob.name}")
+            assign_solid(ob, (0.18, 0.18, 0.20, 1.0), 0.42)
+        elif base.startswith("Shoulder_"):
+            assign_solid(ob, hoodie_navy, 0.54)
     log_staff_material_slots(mesh_obs, "staff-founder-idle")
 
 

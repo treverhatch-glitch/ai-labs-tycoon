@@ -28,8 +28,8 @@ def main() -> None:
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
     neck = by.get("Neck")
-    arm_l = by.get("Arm_-1")
-    arm_r = by.get("Arm_1")
+    arm_l = by.get("Arm_-1") or by.get("Hand_-1") or by.get("LowerArm_-1")
+    arm_r = by.get("Arm_1") or by.get("Hand_1") or by.get("LowerArm_1")
     hips = by.get("Hips")
     if not neck or not hips or (not arm_l and not arm_r):
         print("FAIL staff-founder-idle arm_pose_parts")

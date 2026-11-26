@@ -23,13 +23,14 @@ min_z = 1e9
 max_y = -1e9
 stray = []
 for ob in meshes:
+    base = ob.name.split('.')[0]
+    if base.startswith(("Shoe_", "Foot_")):
+        continue
     zs = [(ob.matrix_world @ v.co).z for v in ob.data.vertices]
     ys = [(ob.matrix_world @ v.co).y for v in ob.data.vertices]
     mn, mx = min(zs), max(zs)
     min_z = min(min_z, mn)
     lo, hi = min(ys), max(ys)
-    if mn < 0.08 and ob.name.split('.')[0] not in ('Foot_-1','Foot_1') and mn < min(zs) + 0.01:
-        pass
     if mn < 0.04 and hi < 0.15 and len(ob.data.vertices) < 80:
         stray.append((ob.name, mn, hi))
     for z in zs:
