@@ -1,10 +1,19 @@
 {
   "assetId": "prop-desk",
   "scope": "presentation",
-  "sourceObj": "unity/Assets/Art/Generated/campus-kit/prop-desk.obj",
+  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse)",
+  "pipeline": "cc0-restyle-v1",
   "texture1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
+  "textureAo1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_ao.png",
   "urpAlbedoPath": "Assets/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
   "glb": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.glb",
   "fbx": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.fbx",
-  "preview": "docs/art/previews/prop-desk.png"
+  "preview": "docs/art/previews/prop-desk.png",
+  "previewHdri": "docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr",
+  "kenneyParts": [
+    "desk.glb",
+    "computerScreen.glb",
+    "computerKeyboard.glb",
+    "computerMouse.glb"
+  ]
 }

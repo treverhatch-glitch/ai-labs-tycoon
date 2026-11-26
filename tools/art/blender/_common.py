@@ -1,7 +1,6 @@
 """
-Shared headless Blender 4.x bake for campus-kit OBJ → PBR + glTF/FBX + preview.
+Shared headless Blender 4.x bake: CC0 kit imports or campus-kit OBJ → glTF/FBX + preview.
 Run only inside Blender: blender --background --python tools/art/blender/<asset>.py
-License: CC0 procedural pipeline (repo-owned meshes).
 """
 from __future__ import annotations
 
@@ -15,6 +14,8 @@ from mathutils import Vector
 
 REPO = Path(__file__).resolve().parents[3]
 OBJ_IN = REPO / "unity" / "Assets" / "Art" / "Generated" / "campus-kit"
+CC0_ROOT = REPO / "docs" / "art" / "cc0"
+PREVIEW_HDRI = CC0_ROOT / "polyhaven" / "hdr" / "studio_small_09_1k.hdr"
 OUT_ROOT = REPO / "unity" / "Assets" / "Art" / "BlenderBaked"
 PREVIEW_DIR = REPO / "docs" / "art" / "previews"
 TEX_SIZE = 1024
@@ -23,6 +24,50 @@ SCOPE = "presentation"  # outside EarlyGame/
 
 def _reset_scene() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
+
+
+def _import_gltf_mesh(glb_path: Path) -> list[bpy.types.Object]:
+    before = {o.name for o in bpy.data.objects}
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    added = [o for o in bpy.data.objects if o.name not in before and o.type == "MESH"]
+    return added or [o for o in bpy.context.selected_objects if o.type == "MESH"]
+
+
+def _bbox_world(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
+    return _world_bbox(objs)
+
+
+def _apply_scale_uniform(objs: list[bpy.types.Object], factor: float) -> None:
+    for o in objs:
+        o.scale = (o.scale.x * factor, o.scale.y * factor, o.scale.z * factor)
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objs:
+        o.select_set(True)
+    if objs:
+        bpy.context.view_layer.objects.active = objs[0]
+        bpy.ops.object.transform_apply(scale=True)
+
+
+def _bevel_meshes(objs: list[bpy.types.Object], width: float = 0.006, segments: int = 2) -> None:
+    for o in objs:
+        bpy.ops.object.select_all(action="DESELECT")
+        o.select_set(True)
+        bpy.context.view_layer.objects.active = o
+        mod = o.modifiers.new("Bevel", type="BEVEL")
+        mod.width = width
+        mod.segments = segments
+        mod.limit_method = "ANGLE"
+        bpy.ops.object.modifier_apply(modifier=mod.name)
+
+
+def _paint_mesh_vertex_color(obj: bpy.types.Object, rgb: tuple[float, float, float]) -> None:
+    mesh = obj.data
+    if mesh.color_attributes.get("BakeColor") is None:
+        mesh.color_attributes.new(name="BakeColor", type="FLOAT_COLOR", domain="CORNER")
+    vcol = mesh.color_attributes["BakeColor"]
+    col = (rgb[0], rgb[1], rgb[2], 1.0)
+    for corner_i in range(len(mesh.loops)):
+        vcol.data[corner_i].color = col
 
 
 def _import_obj(obj_path: Path) -> bpy.types.Object:
@@ -281,8 +326,28 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
+def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path) -> None:
+    if not hdr_path.is_file():
+        return
+    world.use_nodes = True
+    nodes = world.node_tree.nodes
+    links = world.node_tree.links
+    nodes.clear()
+    env = nodes.new("ShaderNodeTexEnvironment")
+    bg = nodes.new("ShaderNodeBackground")
+    out = nodes.new("ShaderNodeOutputWorld")
+    if str(hdr_path) not in bpy.data.images:
+        env.image = bpy.data.images.load(str(hdr_path), check_existing=True)
+    else:
+        env.image = bpy.data.images[str(hdr_path)]
+    env.image.colorspace_settings.name = "Linear Rec.709"
+    bg.inputs["Strength"].default_value = 0.82
+    links.new(env.outputs["Color"], bg.inputs["Color"])
+    links.new(bg.outputs["Background"], out.inputs["Surface"])
+
+
 def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
-    """Standard Hatch rig: grey ground, contact shadow, 3/4 camera, 1024, from committed GLB."""
+    """Poly Haven HDRI + mid-grey ground, 3/4 ortho camera, 1024, from committed GLB."""
     import hashlib
     import json
 
@@ -291,10 +356,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     _reset_scene()
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
-    world.use_nodes = True
-    bg = world.node_tree.nodes.get("Background") or world.node_tree.nodes.new("ShaderNodeBackground")
-    bg.inputs["Color"].default_value = (0.44, 0.44, 0.46, 1.0)
-    bg.inputs["Strength"].default_value = 0.85
+    _setup_preview_hdri(world, PREVIEW_HDRI)
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
@@ -308,7 +370,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.48, 0.48, 0.5, 1)
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.42, 0.42, 0.44, 1)
     gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.88
     ground.data.materials.append(gmat)
 
@@ -367,8 +429,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
     if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.32
-        bpy.context.scene.view_settings.view_transform = "Standard"
+        bpy.context.scene.view_settings.exposure = 0.35
+        bpy.context.scene.view_settings.view_transform = "Filmic"
     bpy.ops.render.render(write_still=True)
 
     sha = hashlib.sha256(glb_path.read_bytes()).hexdigest()
@@ -420,15 +482,58 @@ def _part_palette(asset_id: str, base: tuple[float, float, float]) -> list[tuple
             (0.25, 0.75, 0.35),
         ],
         "ui-rival-badge": [
-            (0.22, 0.24, 0.28),
-            (0.55, 0.58, 0.62),
-            (0.35, 0.38, 0.42),
-            (0.88, 0.22, 0.3),
-            (0.92, 0.85, 0.35),
-            (0.15, 0.45, 0.82),
+            (0.9, 0.18, 0.28),
+            (0.14, 0.42, 0.88),
+            (0.95, 0.78, 0.18),
+            (0.82, 0.12, 0.22),
+            (0.12, 0.55, 0.92),
+            (0.88, 0.22, 0.35),
         ],
     }
     return accents.get(asset_id, [base, (r * 1.1, g, b * 0.95), (r * 0.75, g * 0.75, b * 0.8)])
+
+
+def finish_baked_export(
+    asset_id: str,
+    obj: bpy.types.Object,
+    source_cc0: str,
+    extra_manifest: dict | None = None,
+) -> dict:
+    """UV, 1024 albedo + AO, glTF/FBX, HDRI preview for an already-assembled mesh."""
+    obj.name = f"mesh_{asset_id}"
+    bake_mat = _material_vertex_color(f"M_bake_{asset_id}")
+    obj.data.materials.clear()
+    obj.data.materials.append(bake_mat)
+    _smart_uv(obj)
+    out_dir = OUT_ROOT / asset_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tex_path = _bake_maps(obj, bake_mat, out_dir)
+    urp_mat = _ensure_material(obj, asset_id)
+    _apply_baked_albedo(urp_mat, tex_path)
+    obj.data.materials.clear()
+    obj.data.materials.append(urp_mat)
+    ao_path = tex_path.parent / f"{obj.name}_ao.png"
+    glb = _export_gltf(obj, out_dir)
+    fbx = _export_fbx(obj, out_dir)
+    preview_rel = f"docs/art/previews/{asset_id}.png"
+    manifest = {
+        "assetId": asset_id,
+        "scope": SCOPE,
+        "sourceCc0": source_cc0,
+        "pipeline": "cc0-restyle-v1",
+        "texture1024": str(tex_path.relative_to(REPO)),
+        "textureAo1024": str(ao_path.relative_to(REPO)),
+        "urpAlbedoPath": str(tex_path.relative_to(REPO)).replace("unity/", "Assets/"),
+        "glb": str(glb.relative_to(REPO)),
+        "fbx": str(fbx.relative_to(REPO)),
+        "preview": preview_rel,
+        "previewHdri": str(PREVIEW_HDRI.relative_to(REPO)),
+    }
+    if extra_manifest:
+        manifest.update(extra_manifest)
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    _render_preview_from_glb(glb, asset_id)
+    return manifest
 
 
 def bake_asset(asset_id: str, palette: tuple[float, float, float] | None = None) -> dict:
