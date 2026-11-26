@@ -1334,42 +1334,42 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
     if asset_id == "garage-land-for-sale-sign" and len(mesh_obs) >= 2:
         import blender_preview_rig as rig  # type: ignore
 
-        apply_sign_preview_materials(mesh_obs, tex_dir)
+        apply_sign_preview_materials(mesh_obs, tex_dir, studio_emit_board=True)
+        orient_sign_preview_for_camera(mesh_obs, face_dir=1.0)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         os.environ["PREVIEW_GLB_SHA256"] = glb_sha
         os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
         os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
-        post_obs = [o for o in mesh_obs if o.name == "posts"]
+        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
 
         os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "18"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.90"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "42"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "19"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.88"
         os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
-        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
         render_preview(mesh_obs, preview_path)
 
         assembled = PREVIEW_ROOT / "for-sale-sign.png"
-        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "20"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.78"
-        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
-        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "21"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.76"
+        apply_sign_preview_materials(mesh_obs, tex_dir, studio_emit_board=False)
+        orient_sign_preview_for_camera(mesh_obs, face_dir=1.0)
         render_preview(mesh_obs, assembled)
 
         front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         reset_scene()
         bpy.ops.import_scene.gltf(filepath=str(glb))
         front_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-        apply_sign_preview_materials(front_meshes, tex_dir)
+        apply_sign_preview_materials(front_meshes, tex_dir, studio_emit_board=False)
+        orient_sign_preview_for_camera(front_meshes, face_dir=1.0)
         os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
         os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "34"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "17"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.84"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "18"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.80"
         os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
-        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
+        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
         render_preview(front_meshes, front)
         ob = mesh_obs[0]
     else:
@@ -2533,7 +2533,60 @@ def export_gltf(ob: bpy.types.Object, path: Path, *, packet34: bool = False) -> 
     )
 
 
-def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path) -> None:
+def orient_sign_preview_for_camera(mesh_obs: list[bpy.types.Object], *, face_dir: float = 1.0) -> None:
+    """Face board toward preview camera; enforce LTR and positive world scale."""
+    board = next((o for o in mesh_obs if o.name == "board"), None)
+    letters = next((o for o in mesh_obs if o.name == "letters"), None)
+    if board is None or letters is None:
+        return
+    bpy.context.view_layer.update()
+    sx, sy, sz = letters.scale.x, letters.scale.y, letters.scale.z
+    if min(sx, sy, sz) < 0:
+        raise RuntimeError(f"sign letters negative scale ({sx:.4f},{sy:.4f},{sz:.4f})")
+    view_pos, u, _v = _sign_board_face_axes(board, face_dir=face_dir)
+    azimuth = math.radians(float(os.environ.get("PREVIEW_AZIMUTH_DEG", "40")))
+    elev = math.radians(float(os.environ.get("PREVIEW_ELEVATION_DEG", "18")))
+    to_cam = Vector(
+        (
+            math.cos(elev) * math.cos(azimuth),
+            math.cos(elev) * math.sin(azimuth),
+            math.sin(elev),
+        )
+    ).normalized()
+    use_dir = face_dir if view_pos.dot(to_cam) >= 0 else -face_dir
+    _snap_sign_letters_to_board(board, letters, face_dir=use_dir)
+    assert_sign_text_positive_det(letters)
+    ensure_sign_text_ltr(board, letters, face_dir=use_dir)
+    _center_sign_letters_on_board(board, letters)
+    view_axis, u, _v = _sign_board_face_axes(board, face_dir=use_dir)
+    right = to_cam.cross(Vector((0.0, 0.0, 1.0)))
+    if right.length < 1e-5:
+        right = u
+    else:
+        right.normalize()
+    verts = [letters.matrix_world @ Vector(v.co) for v in letters.data.vertices]
+    pos_mass = sum(1 for v in verts if v.dot(right) > 0)
+    neg_mass = sum(1 for v in verts if v.dot(right) < 0)
+    if neg_mass > pos_mass * 1.08:
+        pivot = board.matrix_world.translation.copy()
+        rot = Matrix.Rotation(math.pi, 4, view_axis.normalized())
+        bpy.ops.object.select_all(action="DESELECT")
+        letters.select_set(True)
+        bpy.context.view_layer.objects.active = letters
+        letters.matrix_world = (
+            Matrix.Translation(pivot) @ rot @ Matrix.Translation(-pivot) @ letters.matrix_world
+        )
+        bpy.ops.object.transform_apply(rotation=True)
+    assert_sign_text_positive_det(letters)
+    _center_sign_letters_on_board(board, letters)
+
+
+def apply_sign_preview_materials(
+    mesh_obs: list[bpy.types.Object],
+    tex_dir: Path,
+    *,
+    studio_emit_board: bool = False,
+) -> None:
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     rough = tex_dir / "garage-land-for-sale-sign_roughness.png"
     board_mat = None
@@ -2545,7 +2598,8 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
             if rough.is_file()
             else None,
         )
-    red = make_sign_text_red_material(preview=False)
+    red = make_sign_text_red_material(preview=True)
+    red.use_backface_culling = True
     red.name = "SignTextRedPreview"
     post_mat = bpy.data.materials.new("SignPostWoodPreview")
     post_mat.use_nodes = True
@@ -2559,19 +2613,21 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
             ob.data.materials.append(red)
         elif ob.name == "board":
             ob.data.materials.clear()
-            flat = bpy.data.materials.new("SignBoardFlatPreview")
-            flat.use_nodes = True
-            nt = flat.node_tree
-            nodes = nt.nodes
-            links = nt.links
-            nodes.clear()
-            out = nodes.new("ShaderNodeOutputMaterial")
-            emit = nodes.new("ShaderNodeEmission")
-            flat_white = (0.98, 0.96, 0.94, 1.0)
-            emit.inputs["Color"].default_value = flat_white
-            emit.inputs["Strength"].default_value = 0.95
-            links.new(emit.outputs["Emission"], out.inputs["Surface"])
-            ob.data.materials.append(flat)
+            if board_mat is not None and not studio_emit_board:
+                ob.data.materials.append(board_mat)
+            else:
+                flat = bpy.data.materials.new("SignBoardFlatPreview")
+                flat.use_nodes = True
+                nt = flat.node_tree
+                nodes = nt.nodes
+                links = nt.links
+                nodes.clear()
+                out = nodes.new("ShaderNodeOutputMaterial")
+                emit = nodes.new("ShaderNodeEmission")
+                emit.inputs["Color"].default_value = (0.98, 0.96, 0.94, 1.0)
+                emit.inputs["Strength"].default_value = 0.95
+                links.new(emit.outputs["Emission"], out.inputs["Surface"])
+                ob.data.materials.append(flat)
         elif ob.name == "posts":
             ob.data.materials.clear()
             ob.data.materials.append(post_mat)

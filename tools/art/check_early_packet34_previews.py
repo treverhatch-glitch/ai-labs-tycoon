@@ -25,6 +25,7 @@ from packet34_preview_gates import (  # noqa: E402
     check_sign_albedo_layout,
     check_sign_front_red_inside_board,
     check_sign_preview_board_text,
+    check_sign_text_template_orientation,
     check_sign_for_sale_contrast,
     check_curb_preview_concrete,
     check_sign_albedo_file,
@@ -92,6 +93,9 @@ def check_env_preview(asset_id: str) -> int:
         for err in check_sign_preview_board_text(front_rgb, front_mask, label="sign_front"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
+        for err in check_sign_text_template_orientation(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     if asset_id == "garage-lot-curb":
         for err in check_curb_preview_concrete(rgb, mask):
             print(f"FAIL {asset_id} {err}")
@@ -126,6 +130,9 @@ def main() -> int:
             print(f"FAIL for-sale-sign {err}")
             hero_rc = 1
         for err in check_sign_preview_board_text(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL for-sale-sign {err}")
+            hero_rc = 1
+        for err in check_sign_text_template_orientation(hero_rgb, hero_mask, label="sign_hero"):
             print(f"FAIL for-sale-sign {err}")
             hero_rc = 1
         if hero_rc == 0:

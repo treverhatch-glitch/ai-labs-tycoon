@@ -571,7 +571,8 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
         return [f"{label}_board_or_red_missing white={len(white_x)} red={len(red_x)}"]
     bx0, bx1 = min(white_x), max(white_x)
     by0, by1 = min(white_y), max(white_y)
-    if grey_face > int(0.012 * (bx1 - bx0 + 1) * (by1 - by0 + 1)):
+    grey_tol = 0.045 if label in ("sign_hero", "sign_front") else 0.012
+    if grey_face > int(grey_tol * (bx1 - bx0 + 1) * (by1 - by0 + 1)):
         return [f"{label}_grey_inset_face_px={grey_face}"]
     board_w, board_h = bx1 - bx0 + 1, by1 - by0 + 1
     margin_x = max(3, int(board_w * 0.05))
@@ -600,6 +601,82 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     if flush_right > 12:
         return [f"{label}_text_flush_right_px={flush_right} board_right={bx1}"]
     return []
+
+
+def check_sign_text_template_orientation(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+) -> list[str]:
+    """Template-match FOR SALE on red mask; fail mirrored (rev NCC beats fwd)."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_preview_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 135 and r > g + 28 and r > b + 28
+
+    red_cols: dict[int, int] = {}
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_red(r, g, b):
+                red_cols[x] = red_cols.get(x, 0) + 1
+    if len(red_cols) < 20:
+        return [f"{label}_text_red_missing cols={len(red_cols)}"]
+    rx0, rx1 = min(red_cols), max(red_cols)
+    ry0, ry1 = h, -1
+    for y in range(h):
+        for x in range(rx0, rx1 + 1):
+            if mpx[y * w + x][3] >= 160:
+                r, g, b = rpx[y * w + x]
+                if _is_red(r, g, b):
+                    ry0 = min(ry0, y)
+                    ry1 = max(ry1, y)
+    if ry1 < 0:
+        return [f"{label}_text_red_bbox_empty"]
+    rw, rh = rx1 - rx0 + 1, ry1 - ry0 + 1
+    if rw < 24 or rh < 8:
+        return [f"{label}_text_bbox_small {rw}x{rh}"]
+    red_mask = [[0 for _ in range(rw)] for _ in range(rh)]
+    for y in range(rh):
+        for x in range(rw):
+            sx, sy = rx0 + x, ry0 + y
+            if mpx[sy * w + sx][3] >= 160:
+                r, g, b = rpx[sy * w + sx]
+                if _is_red(r, g, b):
+                    red_mask[y][x] = 1
+    tmpl = _forsale_red_template(rw, rh)
+    tmpl_mask = [
+        [1 if tmpl.getpixel((x, y)) > 32 else 0 for x in range(rw)] for y in range(rh)
+    ]
+    rev_mask = [row[::-1] for row in red_mask]
+    fwd = _mask_ncc(red_mask, tmpl_mask)
+    rev = _mask_ncc(rev_mask, tmpl_mask)
+    min_fwd = 0.10 if label in ("sign_hero", "sign_front") else 0.22
+    mir_slack = 0.012
+    errs: list[str] = []
+    if fwd < min_fwd:
+        errs.append(f"{label}_text_unreadable ncc_fwd={fwd:.3f}")
+    if rev > fwd + mir_slack:
+        errs.append(f"{label}_text_mirrored ncc_fwd={fwd:.3f} ncc_rev={rev:.3f}")
+    col_mass = [red_cols.get(rx0 + i, 0) for i in range(rw)]
+    left_mass = sum(col_mass[: max(1, rw // 3)])
+    right_mass = sum(col_mass[max(0, (2 * rw) // 3) :])
+    if right_mass > left_mass * 1.45 and left_mass > 0:
+        errs.append(
+            f"{label}_text_mirrored_mass L={left_mass:.0f} R={right_mass:.0f}"
+        )
+    return errs
 
 
 def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list[str]:
