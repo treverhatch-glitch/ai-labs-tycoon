@@ -2,6 +2,24 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+
+# Hatch: force-push is banned (--force, --force-with-lease, +refspec). Run before every push.
+# If this fails, leave remote as-is and add forward commits only.
+PUSH_BRANCH="${ART_PREPUSH_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
+if [[ -n "$PUSH_BRANCH" && "$PUSH_BRANCH" != "HEAD" ]]; then
+  git fetch origin "$PUSH_BRANCH" 2>/dev/null || true
+  REMOTE_REF="origin/${PUSH_BRANCH}"
+  if git rev-parse --verify "$REMOTE_REF" >/dev/null 2>&1; then
+    if ! git merge-base --is-ancestor "$REMOTE_REF" HEAD; then
+      echo "FAIL: ${REMOTE_REF} is not an ancestor of HEAD" >&2
+      echo "No force-push. Fix with forward commits only; do not rewrite remote." >&2
+      exit 1
+    fi
+    echo "OK: ${REMOTE_REF} is ancestor of HEAD (plain push allowed)"
+  else
+    echo "WARN: ${REMOTE_REF} not found after fetch; set ART_PREPUSH_BRANCH or fetch before push" >&2
+  fi
+fi
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
