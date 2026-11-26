@@ -112,8 +112,8 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Kenney suburban kit + Blender bake)",
-      "vertexCount": 1145,
-      "triangleCount": 1081,
+      "vertexCount": 1057,
+      "triangleCount": 1023,
       "subShapeCount": 3,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py",
@@ -126,8 +126,9 @@
           "downloadUrl": "https://opengameart.org/sites/default/files/kenney_city-kit-suburban_2.0.zip",
           "downloadedAt": "2025-11-26",
           "piecesUsed": [
-            "fence-low.glb",
-            "driveway-short.glb"
+            "fence-1x2.glb",
+            "driveway-short.glb",
+            "building-type-b.glb"
           ],
           "sha256Zip": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39"
         },

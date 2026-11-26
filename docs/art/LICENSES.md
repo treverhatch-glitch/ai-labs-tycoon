@@ -14,7 +14,7 @@ Packet 3–4 env and hero props use **CC0-only** third-party sources. No asset-s
 | Downloaded | 2025-11-26 |
 | In repo | `tools/art/cc0/incoming/kenney_city-kit-suburban_2.0.zip`, `tools/art/cc0/incoming/KENNEY-LICENSE.txt` |
 | SHA-256 (zip) | `5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39` |
-| Pieces used | `fence-low.glb`, `driveway-short.glb` (sign posts + board) |
+| Pieces used | `fence-1x2.glb`, `driveway-short.glb`, `building-type-b.glb` (sign + hero facade) |
 
 Full license text (from pack):
 

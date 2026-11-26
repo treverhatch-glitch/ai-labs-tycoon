@@ -2,6 +2,7 @@
 """FOR SALE hero sign — Kenney CC0 posts/board + mesh text; garage facade hero."""
 import math
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -13,7 +14,7 @@ REPO = Path(__file__).resolve().parents[3]
 BOARD_X = 0.90
 BOARD_Y = 0.02
 BOARD_Z = 0.60
-POST_W = 0.12
+POST_W = 0.10
 POST_H = 1.20
 
 CC0_SOURCE = {
@@ -24,7 +25,11 @@ CC0_SOURCE = {
         "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
         "downloadUrl": "https://opengameart.org/sites/default/files/kenney_city-kit-suburban_2.0.zip",
         "downloadedAt": "2025-11-26",
-        "piecesUsed": ["fence-low.glb", "driveway-short.glb"],
+        "piecesUsed": [
+            "fence-1x2.glb",
+            "driveway-short.glb",
+            "building-type-b.glb",
+        ],
         "sha256Zip": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39",
     },
     "polyHavenHdri": {
@@ -40,8 +45,6 @@ CC0_SOURCE = {
 
 
 def write_sign_albedo(tex_path: Path) -> None:
-    import subprocess
-
     painter = REPO / "tools/art/paint_sign_albedo.py"
     subprocess.run(["python3", str(painter), str(tex_path)], check=True, cwd=str(REPO))
 
@@ -62,10 +65,15 @@ def _scale_to_dimensions(ob, target: tuple[float, float, float]) -> None:
 
 
 def _kenney_post(name: str, x: float) -> bc.bpy.types.Object:
-    obj = bc.import_cc0_kenney_glb("fence-low.glb")
+    obj = bc.import_cc0_kenney_glb("fence-1x2.glb")
     obj.name = name
+    obj.rotation_euler = (0.0, math.pi / 2.0, 0.0)
+    bc.bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bc.bpy.context.view_layer.objects.active = obj
+    bc.bpy.ops.object.transform_apply(rotation=True)
     _scale_to_dimensions(obj, (POST_W, POST_H, POST_W))
-    obj.location = (x, POST_H * 0.5, -0.04)
+    obj.location = (x, POST_H * 0.5, 0.0)
     bc.assign_solid(obj, (0.52, 0.38, 0.26, 1.0), 0.58)
     return obj
 
@@ -80,15 +88,19 @@ def _kenney_board() -> bc.bpy.types.Object:
     bc.bpy.ops.object.transform_apply(rotation=True)
     _scale_to_dimensions(obj, (BOARD_X, BOARD_Y, BOARD_Z))
     board_y = POST_H - BOARD_Z * 0.5
+    inner_span = BOARD_X - POST_W * 1.1
+    if obj.dimensions.x > inner_span:
+        obj.scale.x *= inner_span / max(obj.dimensions.x, 1e-6)
+        bc.bpy.ops.object.transform_apply(scale=True)
     obj.location = (0.0, board_y, 0.0)
+    obj.rotation_euler = (0.0, 0.0, 0.0)
     bc.assign_solid(obj, (0.98, 0.96, 0.94, 1.0), 0.40)
-    bc.bevel_object(obj, min(0.012, BOARD_Y * 0.45), 3)
     return obj
 
 
 def main():
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.20"
-    os.environ["PREVIEW_AZIMUTH_DEG"] = "32"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.18"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "34"
     os.environ["PREVIEW_ELEVATION_DEG"] = "6"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
     os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
@@ -96,11 +108,11 @@ def main():
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
 
-    post_x = BOARD_X * 0.5 + POST_W * 0.35
+    post_x = BOARD_X * 0.5 - POST_W * 0.55
     post_l = _kenney_post("PostL", -post_x)
     post_r = _kenney_post("PostR", post_x)
     board = _kenney_board()
-    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.010)
+    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=-1.0, extrude_m=0.010)
     letters = bc.bpy.context.scene.objects["letters"]
 
     mesh_obs = [post_l, post_r, board, letters]
@@ -115,6 +127,11 @@ def main():
     )
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
+    subprocess.run(
+        ["python3", str(REPO / "tools/art/assert_sign_front_ltr.py")],
+        check=True,
+        cwd=str(REPO),
+    )
     bc.render_sign_garage_hero("garage-kit")
     print(
         "OK",

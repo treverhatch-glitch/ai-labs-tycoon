@@ -296,10 +296,13 @@ def render_sign_lettered_face(
     half_fov = math.radians(25.0)
     cam_dist = (radius / math.tan(half_fov)) * margin
     axis_vec = {"X": Vector((1, 0, 0)), "Y": Vector((0, 1, 0)), "Z": Vector((0, 0, 1))}[thin_axis]
-    if letters is not None and float(letters.matrix_world.translation.dot(axis_vec)) < float(
-        board.matrix_world.translation.dot(axis_vec)
-    ):
-        axis_vec = -axis_vec
+    if letters is not None:
+        if float(letters.matrix_world.translation.dot(axis_vec)) < float(
+            board.matrix_world.translation.dot(axis_vec)
+        ):
+            axis_vec = -axis_vec
+        # Camera looks along axis_vec toward the board; letters on the nearer thin face.
+        axis_vec = axis_vec.normalized()
     setup_three_point_lights(center, radius, soft=mid_grey)
     bpy.ops.object.camera_add(location=center + axis_vec * cam_dist)
     cam = bpy.context.active_object

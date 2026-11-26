@@ -167,27 +167,24 @@ def _load_sign_bold_font() -> bpy.types.VectorFont | None:
     return None
 
 
+SIGN_TEXT_RED_RGBA = (200 / 255.0, 16 / 255.0, 46 / 255.0, 1.0)  # #C8102E
+
+
 def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
+    _ = preview
     mat = bpy.data.materials.new("SignTextRed")
     mat.use_nodes = True
     mat.use_backface_culling = False
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.92, 0.10, 0.06, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.42
-        if preview:
-            em_key = "Emission Color" if "Emission Color" in bsdf.inputs else "Emission"
-            str_key = (
-                "Emission Strength"
-                if "Emission Strength" in bsdf.inputs
-                else "Emission Energy"
-                if "Emission Energy" in bsdf.inputs
-                else None
-            )
+        bsdf.inputs["Base Color"].default_value = SIGN_TEXT_RED_RGBA
+        bsdf.inputs["Roughness"].default_value = 0.45
+        for em_key in ("Emission Color", "Emission"):
             if em_key in bsdf.inputs:
-                bsdf.inputs[em_key].default_value = (0.92, 0.08, 0.05, 1.0)
-            if str_key and str_key in bsdf.inputs:
-                bsdf.inputs[str_key].default_value = 10.0
+                bsdf.inputs[em_key].default_value = (0.0, 0.0, 0.0, 1.0)
+        for str_key in ("Emission Strength", "Emission Energy"):
+            if str_key in bsdf.inputs:
+                bsdf.inputs[str_key].default_value = 0.0
     return mat
 
 
@@ -195,6 +192,55 @@ def assign_sign_text_red(ob: bpy.types.Object) -> None:
     mat = make_sign_text_red_material()
     ob.data.materials.clear()
     ob.data.materials.append(mat)
+
+
+def _sign_board_face_axes(board: bpy.types.Object, *, face_dir: float) -> tuple[Vector, Vector, Vector]:
+    """Return (view_dir, u_left_to_right, v_up) for the public board face in world space."""
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    normal = Vector((0.0, 0.0, 0.0))
+    normal[thin_i] = float(face_dir)
+    normal = (board.matrix_world.to_3x3() @ normal).normalized()
+    up = Vector((0.0, 1.0, 0.0))
+    u = up.cross(normal)
+    if u.length < 1e-5:
+        u = Vector((1.0, 0.0, 0.0))
+    u.normalize()
+    v = normal.cross(u).normalized()
+    return normal, u, v
+
+
+def assert_sign_text_positive_det(letters: bpy.types.Object) -> None:
+    det = letters.matrix_world.to_3x3().determinant()
+    if det <= 1e-8:
+        raise RuntimeError(f"sign letters world det={det:.6f} must be > 0 (no negative scale)")
+
+
+def ensure_sign_text_ltr(board: bpy.types.Object, letters: bpy.types.Object, *, face_dir: float = -1.0) -> None:
+    """Rotate mesh text 180° on board normal when mirrored; keep det > 0."""
+    bpy.context.view_layer.update()
+    assert_sign_text_positive_det(letters)
+    _view, u, _v = _sign_board_face_axes(board, face_dir=face_dir)
+    verts = [letters.matrix_world @ Vector(v.co) for v in letters.data.vertices]
+    if len(verts) < 12:
+        return
+    us = sorted(v.dot(u) for v in verts)
+    u_min, u_max = us[0], us[-1]
+    span = max(1e-6, u_max - u_min)
+    left_mass = sum(1 for v in verts if v.dot(u) <= u_min + span * 0.2)
+    right_mass = sum(1 for v in verts if v.dot(u) >= u_max - span * 0.2)
+    if left_mass >= right_mass * 0.65:
+        return
+    pivot = board.matrix_world.translation.copy()
+    view, _u, _v = _sign_board_face_axes(board, face_dir=face_dir)
+    bpy.ops.object.select_all(action="DESELECT")
+    letters.select_set(True)
+    bpy.context.view_layer.objects.active = letters
+    bpy.context.scene.tool_settings.transform_pivot_point = "CURSOR"
+    bpy.context.scene.cursor.location = pivot
+    bpy.ops.transform.rotate(value=math.pi, orient_axis="Y")
+    bpy.ops.object.transform_apply(rotation=True)
+    bpy.context.view_layer.update()
+    assert_sign_text_positive_det(letters)
 
 
 def add_sign_mesh_text(
@@ -205,7 +251,7 @@ def add_sign_mesh_text(
     face_dir: float = -1.0,
     extrude_m: float = 0.003,
 ) -> bpy.types.Object:
-    """FOR SALE mesh on the board ±Y face (thin Y; −Y face is front at azimuth 90 after export)."""
+    """FOR SALE mesh on board face; positive scale only; LTR corrected before export."""
     bpy.ops.object.text_add(location=board.location)
     ob = bpy.context.active_object
     ob.name = name
@@ -215,19 +261,19 @@ def add_sign_mesh_text(
         ob.data.font = font
     ob.data.extrude = extrude_m
     ob.data.resolution_u = 4
-    ob.data.size = 0.22
+    ob.data.size = 0.24
     ob.data.space_character = 1.03
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
-    ob.rotation_euler = (math.pi / 2, 0.0, math.pi)
+    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
     board_w = float(board.dimensions.x)
     board_h = float(board.dimensions.z)
     bpy.ops.object.convert(target="MESH")
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = (board_w * 0.66) / dx
-        sy = (board_h * 0.46) / dy
+        sx = abs((board_w * 0.64) / dx)
+        sy = abs((board_h * 0.50) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -244,17 +290,8 @@ def add_sign_mesh_text(
             break
         stitch_sign_mesh_islands(ob, max_bridge=0.06)
         weld_coincident_vertices(ob, threshold=0.004)
-    bpy.ops.object.select_all(action="DESELECT")
-    ob.select_set(True)
-    bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
-    bpy.ops.object.transform_apply(location=True)
-    thin_h = float(board.dimensions.y) * 0.5
-    board_y = float(board.matrix_world.translation.y)
-    ob.location.x = board.location.x
-    ob.location.z = board.location.z
-    ob.location.y = board_y + face_dir * (thin_h + extrude_m * 0.55)
-    bpy.ops.object.transform_apply(location=True)
+    ensure_sign_text_ltr(board, ob, face_dir=face_dir)
+    assert_sign_text_positive_det(ob)
     return ob
 
 
@@ -992,7 +1029,8 @@ def finish_sign_named_asset(
     letters.select_set(True)
     bpy.context.view_layer.objects.active = letters
     bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
-    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
+    _snap_sign_letters_to_board(board, letters, face_dir=-1.0)
+    ensure_sign_text_ltr(board, letters, face_dir=-1.0)
     min_up = min(mesh_world_min_on_axis(o, "y") for o in (posts, board, letters))
     if abs(min_up) > 1e-5:
         for ob in (posts, board, letters):
@@ -1004,7 +1042,9 @@ def finish_sign_named_asset(
         bpy.context.view_layer.objects.active = ob
         bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
         bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
-    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
+    _snap_sign_letters_to_board(board, letters, face_dir=-1.0)
+    ensure_sign_text_ltr(board, letters, face_dir=-1.0)
+    assert_sign_text_positive_det(letters)
     bpy.context.view_layer.update()
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf_selection([posts, board, letters], glb_path, packet34=True)
@@ -1305,72 +1345,76 @@ def _import_glb_meshes(path: Path) -> list[bpy.types.Object]:
 
 
 def render_sign_garage_hero(category: str = "garage-kit") -> None:
-    """Hero: FOR SALE sign before roll-up door on garage-exterior-wall (3/4, facade ~50–70%)."""
+    """Hero: Kenney suburban facade + roll door + sign (facade ~50–70% of frame)."""
     import blender_preview_rig as rig  # type: ignore
 
     reset_scene()
-    wall_glb = (ART_ROOT / category / "garage-exterior-wall.glb").resolve()
     door_glb = (ART_ROOT / category / "garage-roll-door.glb").resolve()
     sign_glb = (ART_ROOT / category / "garage-land-for-sale-sign.glb").resolve()
-    for p in (wall_glb, door_glb, sign_glb):
-        if not p.is_file():
-            raise RuntimeError(f"hero: missing {p.name}")
-    wall_meshes = _import_glb_meshes(wall_glb)
+    if not door_glb.is_file() or not sign_glb.is_file():
+        raise RuntimeError("hero: missing roll door or sign GLB")
+    facade = import_cc0_kenney_glb("building-type-b.glb")
+    facade.name = "KenneyFacade"
+    bpy.context.view_layer.update()
+    dx, dy, dz = (float(facade.dimensions.x), float(facade.dimensions.y), float(facade.dimensions.z))
+    facade.scale = (4.8 / max(dx, 1e-6), 2.85 / max(dy, 1e-6), 2.55 / max(dz, 1e-6))
+    bpy.ops.object.select_all(action="DESELECT")
+    facade.select_set(True)
+    bpy.context.view_layer.objects.active = facade
+    bpy.ops.object.transform_apply(scale=True)
+    min_y = mesh_world_min_on_axis(facade, "y")
+    facade.location.y -= min_y
     door_meshes = _import_glb_meshes(door_glb)
+    door_ob = _join_mesh_objects(door_meshes)
     sign_imported = _import_glb_meshes(sign_glb)
     sign_meshes = [o for o in sign_imported if o.name in {"posts", "board", "letters"}]
-    if not wall_meshes or not door_meshes or len(sign_meshes) < 3:
-        raise RuntimeError("hero: wall, roll door, or sign parts missing after import")
-    wall_ob = _join_mesh_objects(wall_meshes)
-    door_ob = _join_mesh_objects(door_meshes)
-    wmins, wmaxs = rig.mesh_bounds_world([wall_ob])
-    dmins, dmaxs = rig.mesh_bounds_world([door_ob])
-    wcenter = (wmins + wmaxs) * 0.5
-    dcenter = (dmins + dmaxs) * 0.5
+    if len(sign_meshes) < 3:
+        raise RuntimeError("hero: sign parts missing after import")
+    bpy.context.view_layer.update()
+    fmin, fmax = rig.mesh_bounds_world([facade])
+    fcenter = (fmin + fmax) * 0.5
     spans = {
-        "x": wmaxs.x - wmins.x,
-        "y": wmaxs.y - wmins.y,
-        "z": wmaxs.z - wmins.z,
+        "x": fmax.x - fmin.x,
+        "y": fmax.y - fmin.y,
+        "z": fmax.z - fmin.z,
     }
     thin_axis = min(spans, key=spans.get)
-    bpy.context.view_layer.update()
-    door_ob.location.x = wcenter.x
-    door_ob.location.y = dcenter.y + (wmaxs.y + 0.02 - dcenter.y) if thin_axis == "y" else dcenter.y
-    door_ob.location.z = wcenter.z - 0.4
+    door_ob.location.x = fcenter.x
+    door_ob.location.z = fcenter.z - 0.45
     if thin_axis == "y":
-        door_ob.location.y = wmaxs.y + 0.02
+        door_ob.location.y = fmax.y + 0.04
     elif thin_axis == "z":
-        door_ob.location.z = wmaxs.z + 0.02
-        door_ob.location.y = wcenter.y - 0.4
+        door_ob.location.z = fmax.z + 0.04
+        door_ob.location.y = fcenter.y - 0.45
     else:
-        door_ob.location.x = wmaxs.x + 0.02
-        door_ob.location.y = wcenter.y - 0.4
+        door_ob.location.x = fmax.x + 0.04
+        door_ob.location.y = fcenter.y - 0.45
     bpy.context.view_layer.update()
-    smins, smaxs = rig.mesh_bounds_world(sign_meshes)
-    scenter = (smins + smaxs) * 0.5
-    sign_gap = 0.55
+    smin, smax = rig.mesh_bounds_world(sign_meshes)
+    scenter = (smin + smax) * 0.5
+    gap = 0.62
     for o in sign_meshes:
-        o.location.x = wcenter.x + (o.location.x - scenter.x)
-        o.location.z = wcenter.z - 0.15 + (o.location.z - scenter.z)
+        o.location.x = fcenter.x + (o.location.x - scenter.x)
+        o.location.z = fcenter.z - 0.22 + (o.location.z - scenter.z)
         if thin_axis == "y":
-            o.location.y = wmaxs.y + sign_gap
+            o.location.y = fmax.y + gap
         elif thin_axis == "z":
-            o.location.z = wmaxs.z + sign_gap
+            o.location.z = fmax.z + gap
         else:
-            o.location.x = wmaxs.x + sign_gap
+            o.location.x = fmax.x + gap
     bpy.context.view_layer.update()
-    apply_packet34_preview_material(wall_ob, "garage-exterior-wall", ART_ROOT / category / "textures/garage-exterior-wall")
+    assign_solid(facade, (0.72, 0.70, 0.66, 1.0), 0.52)
     apply_packet34_preview_material(door_ob, "garage-roll-door", ART_ROOT / category / "textures/garage-roll-door")
     apply_sign_preview_materials(sign_meshes, ART_ROOT / category / "textures/garage-land-for-sale-sign")
     hero = PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png"
     os.environ.setdefault("EARLY_PREVIEW_MID_GREY", "1")
     os.environ.setdefault("EARLY_PREVIEW_CONTACT_SHADOW", "1")
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
-    os.environ["PREVIEW_AZIMUTH_DEG"] = "32"
-    os.environ["PREVIEW_ELEVATION_DEG"] = "11"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.02"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "36"
+    os.environ["PREVIEW_ELEVATION_DEG"] = "10"
     os.environ["PREVIEW_GLB_SHA256"] = file_sha256(sign_glb)
     os.environ["PREVIEW_GLB_PATH"] = str(sign_glb.relative_to(REPO_ROOT))
-    hero_meshes = sign_meshes + [wall_ob, door_ob]
+    hero_meshes = sign_meshes + [facade, door_ob]
     render_preview(hero_meshes, hero)
 
 
@@ -2399,15 +2443,8 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
             if rough.is_file()
             else None,
         )
-    red = bpy.data.materials.new("SignTextRedPreview")
-    red.use_nodes = True
-    red_nt = red.node_tree
-    red_nt.nodes.clear()
-    emit = red_nt.nodes.new("ShaderNodeEmission")
-    emit.inputs["Color"].default_value = (1.0, 0.04, 0.02, 1.0)
-    emit.inputs["Strength"].default_value = 22.0
-    rout = red_nt.nodes.new("ShaderNodeOutputMaterial")
-    red_nt.links.new(emit.outputs["Emission"], rout.inputs["Surface"])
+    red = make_sign_text_red_material(preview=False)
+    red.name = "SignTextRedPreview"
     post_mat = bpy.data.materials.new("SignPostWoodPreview")
     post_mat.use_nodes = True
     bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
