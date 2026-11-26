@@ -1,13 +1,13 @@
 {
-  "camera_dist": 10.79208571923616,
+  "camera_dist": 12.908180958302074,
   "bbox_radius": 2.5393142868790965,
-  "framing_margin": 1.02,
+  "framing_margin": 1.22,
   "lens_mm": 50.0,
   "azimuth_deg": 52.0,
   "elevation_deg": 30.0,
   "up_axis": "Z",
   "mid_grey": true,
   "contact_shadow": true,
-  "glb_sha256": "7d97446346281d83ddd149a0a522f7907b218b47d83097ac7cd573b8debe3ea3",
+  "glb_sha256": "d206412f813ef1a9142d78c727b5febeb6fbbddbb3c72d13eb723fcab0874dc1",
   "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.glb"
 }

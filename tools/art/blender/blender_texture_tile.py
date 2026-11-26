@@ -38,7 +38,19 @@ def _build_material(
     ramp.color_ramp.elements[1].color = (*(c / 255 for c in accent_rgb), 1)
     links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
 
-    if pattern == "corrugated":
+    if pattern == "cinderblock":
+        brick = nodes.new("ShaderNodeTexBrick")
+        brick.inputs["Scale"].default_value = 5.0
+        brick.inputs["Mortar Size"].default_value = 0.04
+        brick.inputs["Mortar Smooth"].default_value = 0.02
+        brick.offset = 0.5
+        mix_b = nodes.new("ShaderNodeMixRGB")
+        mix_b.blend_type = "MULTIPLY"
+        mix_b.inputs["Fac"].default_value = 0.78
+        links.new(brick.outputs["Color"], mix_b.inputs[1])
+        links.new(ramp.outputs["Color"], mix_b.inputs[2])
+        color_src = mix_b.outputs["Color"]
+    elif pattern == "corrugated":
         wave = nodes.new("ShaderNodeTexWave")
         wave.wave_type = "BANDS"
         wave.inputs["Scale"].default_value = 24.0
@@ -145,16 +157,25 @@ def _synthetic_swatch(
     px = im.load()
     for y in range(512):
         for x in range(512):
-            if pattern == "corrugated":
-                block_h, block_w = 32, 64
+            if pattern in ("corrugated", "cinderblock"):
+                # 0.4 m × 0.2 m blocks, running bond, horizontal mortar (warm beige).
+                block_w, block_h = 128, 64
+                mortar_px = 5
                 row = y // block_h
                 shift = (block_w // 2) if row % 2 else 0
                 lx, ly = (x + shift) % block_w, y % block_h
-                mortar = lx < 3 or ly < 3 or lx >= block_w - 3
-                grime = int((math.sin(x * 0.11) + math.sin(y * 0.07)) * 14 + random.random() * 10)
-                base = tuple(max(0, min(255, (accent_rgb if mortar else base_rgb)[i] - grime)) for i in range(3))
-                rib = int(12 * (0.5 + 0.5 * math.sin(x * 2 * math.pi / 16)))
-                c = tuple(max(0, min(255, base[i] + rib)) for i in range(3))
+                mortar = (
+                    lx < mortar_px
+                    or ly < mortar_px
+                    or lx >= block_w - mortar_px
+                    or ly >= block_h - mortar_px
+                )
+                grime = int((math.sin(x * 0.09) + math.sin(y * 0.11)) * 12 + random.random() * 9)
+                block_col = accent_rgb if mortar else base_rgb
+                c = tuple(max(0, min(255, block_col[i] - grime)) for i in range(3))
+                if pattern == "corrugated":
+                    rib = int(12 * (0.5 + 0.5 * math.sin(x * 2 * math.pi / 16)))
+                    c = tuple(max(0, min(255, c[i] + rib)) for i in range(3))
             elif pattern in ("metal", "trim_horiz"):
                 u = x * 2 * math.pi / 512.0
                 grain = 0.5 + 0.5 * math.sin(u * 36.0)
@@ -237,7 +258,11 @@ def bake_tileable(
     albedo = TEX_OUT / f"{asset_id}.png"
     normal = TEX_OUT / f"{asset_id}_normal.png"
     rough = TEX_OUT / f"{asset_id}_roughness.png"
-    if baked_albedo.exists():
+    if pattern == "cinderblock":
+        im = _synthetic_swatch(asset_id, base_rgb, accent_rgb, "cinderblock")
+        im.convert("RGB").save(baked_albedo)
+        shutil.copy2(baked_albedo, albedo)
+    elif baked_albedo.exists():
         shutil.copy2(baked_albedo, albedo)
     _write_flat_previews(asset_id, albedo, base_rgb, accent_rgb, pattern)
 

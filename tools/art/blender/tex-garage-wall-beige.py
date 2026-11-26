@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Blender 1024 PBR tile: garage wall beige."""
+"""Tileable garage wall — warm beige cinderblock (running bond, no corrugated noise)."""
 import sys
 from pathlib import Path
 
@@ -10,7 +10,9 @@ ASSET_ID = "tex-garage-wall-beige"
 
 
 def main() -> None:
-    bt.bake_tileable(ASSET_ID, (128, 108, 88), (228, 198, 158), pattern="corrugated", noise_scale=8.0)
+    base = (146, 124, 100)
+    mortar = (108, 96, 84)
+    bt.bake_tileable(ASSET_ID, base, mortar, pattern="cinderblock", noise_scale=6.0)
 
 
 if __name__ == "__main__":

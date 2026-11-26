@@ -117,6 +117,10 @@ def check_env_glb(asset_id: str) -> list[str]:
         errs.append(f"glb_mesh_nodes={mesh_nodes} need 1")
     if mesh_count != 1:
         errs.append(f"glb_meshes={mesh_count} need 1")
+    if asset_id == "garage-lot-curb":
+        total_prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
+        if total_prims != 1:
+            errs.append(f"curb_glb_primitives={total_prims} need 1")
 
     errs.extend(check_glb_proportions(asset_id, gltf))
 
@@ -140,6 +144,23 @@ def _mesh_position_bounds(gltf: dict) -> tuple[list[float], list[float]] | None:
     return mn, mx
 
 
+def _each_primitive_extents(gltf: dict) -> list[tuple[float, float, float]]:
+    accs = gltf.get("accessors", [])
+    out: list[tuple[float, float, float]] = []
+    for mesh in gltf.get("meshes", []):
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None:
+                continue
+            acc = accs[pos_idx]
+            mn, mx = acc.get("min"), acc.get("max")
+            if not mn or not mx:
+                continue
+            ex = sorted(mx[i] - mn[i] for i in range(3))
+            out.append((ex[0], ex[1], ex[2]))
+    return out
+
+
 def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
     """Reject tall backdrop slabs embedded in env GLBs (curb especially)."""
     bounds = _mesh_position_bounds(gltf)
@@ -156,6 +177,11 @@ def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
             errs.append(f"curb_too_tall h={height:.2f} need~0.15")
         if height > mid * 0.85:
             errs.append(f"curb_backdrop_slab h={height:.2f} mid={mid:.2f}")
+        for i, (lo, md, hi) in enumerate(_each_primitive_extents(gltf)):
+            if hi > 0.55 and lo > 0.18:
+                errs.append(f"curb_primitive_{i}_tall_slab {lo:.2f}x{md:.2f}x{hi:.2f}")
+            if md > lo * 2.8 and hi > md * 2.5:
+                errs.append(f"curb_primitive_{i}_backdrop_aspect")
     elif asset_id in {"garage-exterior-wall", "garage-window-frame", "garage-land-for-sale-sign"}:
         if height > long_axis * 1.85 and asset_id != "garage-exterior-wall":
             errs.append(f"vertical_slab_glb h={height:.2f} long={long_axis:.2f}")

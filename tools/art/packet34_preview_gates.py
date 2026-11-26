@@ -188,8 +188,12 @@ def check_vertical_backdrop_plane(
         min_area = 0.035 * w * h if asset_id == "garage-land-for-sale-sign" else 0.05 * w * h
         if height_cov > 0.32 and area > min_area:
             return [f"extra_vertical_mask_island h={height_cov:.2f}"]
-    if asset_id == "garage-lot-curb" and hero_h > 0.40:
-        return [f"curb_too_tall h={hero_h:.2f} need<0.40"]
+    if asset_id == "garage-lot-curb" and hero_h > 0.72:
+        return [f"curb_too_tall h={hero_h:.2f} need<0.72"]
+    if asset_id == "garage-lot-curb":
+        for area, height_cov, _ in islands[1:]:
+            if height_cov > 0.22 and area > 0.02 * w * h:
+                return [f"curb_extra_tall_island h={height_cov:.2f}"]
     im = _load_rgba(rgb_path)
     if mask_im.size != im.size:
         mask_im = mask_im.resize(im.size)
@@ -284,6 +288,57 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
     dist = math.sqrt((mean_r - ref_mean[0]) ** 2 + (mean_g - ref_mean[1]) ** 2 + (mean_b - ref_mean[2]) ** 2)
     if dist > 95:
         return [f"wall_center_color_far_from_swatch dist={dist:.1f}"]
+    return []
+
+
+def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
+    """Centre region must show stronger horizontal than vertical mortar edge energy."""
+    try:
+        import numpy as np
+    except ImportError:
+        return []
+    rgb = _load_rgba(rgb_path).convert("L")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return ["wall_mask_empty"]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    cx0 = x0 + (x1 - x0) // 5
+    cx1 = x1 - (x1 - x0) // 5
+    cy0 = y0 + (y1 - y0) // 5
+    cy1 = y1 - (y1 - y0) // 5
+    arr = np.array(rgb, dtype=np.float32)
+    m = np.zeros((h, w), dtype=bool)
+    for y in range(h):
+        for x in range(w):
+            m[y, x] = mpx[y * w + x][3] >= 160
+    crop = arr[cy0 : cy1 + 1, cx0 : cx1 + 1]
+    mc = m[cy0 : cy1 + 1, cx0 : cx1 + 1]
+    if crop.shape[0] < 8 or crop.shape[1] < 8:
+        return ["wall_center_too_small"]
+    def _band_energy(sig: np.ndarray) -> float:
+        s = sig.astype(np.float64)
+        s = s - s.mean()
+        if len(s) < 16:
+            return 0.0
+        spec = np.abs(np.fft.rfft(s)[1 : min(24, len(s) // 2)])
+        return float(spec.max()) if spec.size else 0.0
+
+    row_prof = np.array([crop[y, :].mean() for y in range(crop.shape[0])])
+    col_prof = np.array([crop[:, x].mean() for x in range(crop.shape[1])])
+    h_energy = _band_energy(row_prof)
+    v_energy = _band_energy(col_prof)
+    if h_energy < v_energy * 1.1:
+        return [f"wall_mortar_vertical_dominant h={h_energy:.2f} v={v_energy:.2f}"]
     return []
 
 

@@ -567,12 +567,19 @@ def apply_wall_post_union_textures(
     links.new(top.outputs[0], or_trim.inputs[0])
     links.new(bot.outputs[0], or_trim.inputs[1])
 
+    flat_ax = "X"
+    vert_ax = vertical_axis
+    planar = nodes.new("ShaderNodeCombineXYZ")
+    links.new(sep.outputs[flat_ax], planar.inputs["X"])
+    links.new(sep.outputs[vert_ax], planar.inputs["Y"])
+
     def _tex(img_path: Path, scale: tuple[float, float, float]) -> bpy.types.Node:
         mapping = nodes.new("ShaderNodeMapping")
         mapping.inputs["Scale"].default_value = scale
-        links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
+        links.new(planar.outputs["Vector"], mapping.inputs["Vector"])
         tex = nodes.new("ShaderNodeTexImage")
         tex.image = bpy.data.images.load(str(img_path), check_existing=True)
+        tex.extension = "REPEAT"
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
         return tex
 

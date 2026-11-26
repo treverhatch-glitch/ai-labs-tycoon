@@ -72,7 +72,7 @@
       "license": "CC0-1.0 (Blender-baked, in-repo)",
       "vertexCount": 174,
       "triangleCount": 674,
-      "subShapeCount": 15,
+      "subShapeCount": 12,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-exterior-wall.py"
     },
@@ -112,8 +112,8 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 705,
-      "triangleCount": 2721,
+      "vertexCount": 925,
+      "triangleCount": 3572,
       "subShapeCount": 9,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py"

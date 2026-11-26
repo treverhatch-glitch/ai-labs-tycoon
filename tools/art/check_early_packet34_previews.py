@@ -20,6 +20,7 @@ from packet34_preview_gates import (  # noqa: E402
     check_backdrop_mid_grey,
     check_env_preview_backdrop,
     check_wall_cinderblock_visible,
+    check_wall_mortar_horizontal,
     check_icon_ortho,
     check_icon_sat_coverage,
     check_icon_sheet,
@@ -54,6 +55,9 @@ def check_env_preview(asset_id: str) -> int:
         rc = 1
     if asset_id == "garage-exterior-wall":
         for err in check_wall_cinderblock_visible(rgb, mask, TEX_DIR):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_wall_mortar_horizontal(rgb, mask):
             print(f"FAIL {asset_id} {err}")
             rc = 1
     for err in mask_gate_errors(mask):
