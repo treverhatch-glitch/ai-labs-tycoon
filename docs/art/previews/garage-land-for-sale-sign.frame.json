@@ -7,5 +7,7 @@
   "elevation_deg": 30.0,
   "up_axis": "Z",
   "mid_grey": true,
-  "contact_shadow": true
+  "contact_shadow": true,
+  "glb_sha256": "055f0248a167bd9bf78ba627c23988e959016003d08b46215c283284da9f3fdf",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb"
 }

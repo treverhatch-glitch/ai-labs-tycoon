@@ -12,14 +12,17 @@ REPO = Path(__file__).resolve().parents[3]
 def _paint_for_sale_albedo(tex_path: Path) -> None:
     from PIL import Image, ImageDraw, ImageFont
 
-    Image.MAX_IMAGE_PIXELS = max(Image.MAX_IMAGE_PIXELS, 512 * 512 * 4)
+    _prev_bomb = Image.MAX_IMAGE_PIXELS
+    Image.MAX_IMAGE_PIXELS = max(_prev_bomb, 512 * 1024 * 1024)
     im = Image.open(tex_path).convert("RGB")
     draw = ImageDraw.Draw(im)
     w, h = im.size
-    draw.rectangle((w // 8, h // 6, 7 * w // 8, 5 * h // 6), fill=(252, 228, 56))
-    draw.rectangle((w // 8, h // 6, 7 * w // 8, h // 6 + 110), fill=(214, 72, 28))
+    margin = w // 10
+    draw.rectangle((margin, h // 7, w - margin, h - h // 7), fill=(252, 228, 56))
+    header_h = max(130, h // 5)
+    draw.rectangle((margin, h // 7, w - margin, h // 7 + header_h), fill=(214, 72, 28))
     font = None
-    for name, size in (("DejaVuSans-Bold.ttf", 72), ("LiberationSans-Bold.ttf", 72)):
+    for name, size in (("DejaVuSans-Bold.ttf", 92), ("LiberationSans-Bold.ttf", 92)):
         try:
             font = ImageFont.truetype(name, size=size)
             break
@@ -35,10 +38,11 @@ def _paint_for_sale_albedo(tex_path: Path) -> None:
         text,
         fill=(198, 42, 28),
         font=font,
-        stroke_width=3,
+        stroke_width=2,
         stroke_fill=(32, 16, 8),
     )
     im.save(tex_path)
+    Image.MAX_IMAGE_PIXELS = _prev_bomb
 
 
 def main():

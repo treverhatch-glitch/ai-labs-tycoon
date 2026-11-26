@@ -7,5 +7,7 @@
   "elevation_deg": 30.0,
   "up_axis": "Z",
   "mid_grey": true,
-  "contact_shadow": true
+  "contact_shadow": true,
+  "glb_sha256": "1b5433297c11f3945518e00bf196d551e3d6c5fd0ec5b34592b88051f46a53c0",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.glb"
 }

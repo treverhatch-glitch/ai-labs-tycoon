@@ -4,6 +4,7 @@ Shared helpers for headless Blender early-game asset scripts (import from repo; 
 from __future__ import annotations
 
 import colorsys
+import hashlib
 import json
 import math
 import os
@@ -24,8 +25,25 @@ PREVIEW_ROOT = REPO_ROOT / "docs/art/previews"
 BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2]}"
 
 
+def file_sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def purge_all_data() -> None:
+    """Drop meshes/materials/images so GLB import cannot reuse stale assets."""
+    for block in (bpy.data.meshes, bpy.data.materials, bpy.data.images, bpy.data.cameras, bpy.data.lights):
+        for datablock in list(block):
+            if datablock.users == 0:
+                block.remove(datablock)
+
+
 def reset_scene() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    purge_all_data()
     bpy.context.scene.render.engine = "CYCLES"
     bpy.context.scene.cycles.device = "CPU"
     bpy.context.scene.cycles.samples = 32
@@ -295,7 +313,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     part_names = [o.name for o in mesh_obs]
     sub_shape_count = len(mesh_obs)
     ground_scene_meshes()
-    tint_garage_parts(mesh_obs, asset_id)
+    if asset_id in PACKET34_ENV_IDS:
+        apply_packet34_authoring_textures(mesh_obs, asset_id)
+    else:
+        tint_garage_parts(mesh_obs, asset_id)
     parts = list(mesh_obs)
     if len(parts) > 1:
         parts.append(add_connect_spine_part(parts))
@@ -391,18 +412,158 @@ def reexport_packet34_glb(asset_id: str, category: str = "garage-kit") -> None:
 
 
 def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None:
-    """Re-import exported GLB and re-render studio preview (after post-bake albedo edit)."""
+    """Re-import committed GLB in a clean scene and render studio preview."""
     reset_scene()
-    glb = ART_ROOT / category / f"{asset_id}.glb"
+    glb = (ART_ROOT / category / f"{asset_id}.glb").resolve()
+    if not glb.is_file():
+        raise RuntimeError(f"rerender {asset_id}: missing glb {glb}")
+    glb_sha = file_sha256(glb)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not meshes:
-        raise RuntimeError(f"rerender {asset_id}: no mesh")
-    ob = meshes[0]
+        raise RuntimeError(f"rerender {asset_id}: no mesh after glTF import")
+    mesh_obs = [o for o in meshes if o.name != "PreviewShadowFloor"]
+    if len(mesh_obs) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in mesh_obs:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = mesh_obs[0]
+        bpy.ops.object.join()
+        mesh_obs = [bpy.context.active_object]
+    ob = mesh_obs[0]
     tex_dir = ART_ROOT / category / "textures" / asset_id
-    apply_preview_material(ob, tex_dir, asset_id)
+    if asset_id in PACKET34_ENV_IDS:
+        apply_packet34_preview_material(ob, asset_id, tex_dir)
+    else:
+        apply_preview_material(ob, tex_dir, asset_id)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    os.environ["PREVIEW_GLB_SHA256"] = glb_sha
+    os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
     render_preview(ob, preview_path)
+
+
+def assign_image_texture(
+    ob: bpy.types.Object,
+    image_path: Path,
+    *,
+    uv_scale: float = 1.0,
+    roughness: float = 0.55,
+    metallic: float = 0.0,
+    alpha: float = 1.0,
+) -> None:
+    """UV-mapped PBR material from a tile swatch (used before bake on packet34 env)."""
+    image_path = image_path.resolve()
+    mat = bpy.data.materials.new(ob.name + "_img")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(str(image_path), check_existing=True)
+    tex.image.name = image_path.name
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (uv_scale, uv_scale, uv_scale)
+    coord = nodes.new("ShaderNodeTexCoord")
+    links.new(coord.outputs["UV"], mapping.inputs["Vector"])
+    links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = roughness
+    bsdf.inputs["Metallic"].default_value = metallic
+    if alpha < 0.99:
+        mat.blend_method = "BLEND"
+        bsdf.inputs["Alpha"].default_value = alpha
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def apply_packet34_authoring_textures(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
+    swatch = ART_ROOT / "textures"
+    wall = swatch / "tex-garage-wall-beige.png"
+    trim = swatch / "tex-garage-trim-orange.png"
+    for ob in mesh_obs:
+        name = ob.name.lower()
+        if asset_id == "garage-exterior-wall":
+            if wall.is_file() and name not in ("trim", "base") and not name.startswith("course"):
+                assign_image_texture(ob, wall, uv_scale=1.35, roughness=0.62)
+            elif trim.is_file():
+                assign_image_texture(ob, trim, uv_scale=2.8, roughness=0.42)
+        elif asset_id == "garage-window-frame":
+            if "glass" in name:
+                assign_solid(ob, (0.22, 0.55, 0.82, 1.0), 0.08)
+                if ob.data.materials:
+                    ob.data.materials[0].use_nodes = True
+                    bsdf = ob.data.materials[0].node_tree.nodes.get("Principled BSDF")
+                    if bsdf:
+                        key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
+                        bsdf.inputs[key].default_value = 0.92
+            elif trim.is_file() and name in ("sill", "lintel"):
+                assign_image_texture(ob, trim, uv_scale=3.0, roughness=0.40)
+            elif wall.is_file():
+                assign_image_texture(ob, wall, uv_scale=2.0, roughness=0.50)
+            else:
+                assign_image_texture(ob, wall if wall.is_file() else trim, uv_scale=2.0, roughness=0.48)
+        elif asset_id == "garage-lot-curb":
+            assign_solid(
+                ob,
+                (0.56, 0.54, 0.52, 1.0) if "stain" not in name else (0.40, 0.38, 0.36, 1.0),
+                0.88 if "gutter" not in name else 0.78,
+            )
+        elif asset_id == "garage-land-for-sale-sign":
+            if "post" in name:
+                assign_solid(ob, (0.44, 0.32, 0.18, 1.0), 0.58)
+            elif trim.is_file() and ("header" in name or "cap" in name):
+                assign_image_texture(ob, trim, uv_scale=4.0, roughness=0.36)
+            elif "board" in name:
+                assign_solid(ob, (0.98, 0.92, 0.22, 1.0), 0.34)
+            else:
+                assign_solid(ob, (0.52, 0.38, 0.26, 1.0), 0.52)
+        else:
+            tint_garage_parts([ob], asset_id)
+
+
+def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir: Path) -> None:
+    """Preview render: always disk-baked albedo (+ glass/sign tweaks)."""
+    albedo = tex_dir / f"{asset_id}_albedo.png"
+    rough = tex_dir / f"{asset_id}_roughness.png"
+    if not albedo.is_file():
+        return
+    mat = bpy.data.materials.new(f"{asset_id}_preview_glb")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(str(albedo.resolve()), check_existing=True)
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    if rough.is_file():
+        rtex = nodes.new("ShaderNodeTexImage")
+        rtex.image = bpy.data.images.load(str(rough.resolve()), check_existing=True)
+        links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
+    else:
+        bsdf.inputs["Roughness"].default_value = 0.52
+    if asset_id == "garage-window-frame":
+        key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
+        bsdf.inputs[key].default_value = 0.35
+    if asset_id == "garage-land-for-sale-sign":
+        hue = nodes.new("ShaderNodeHueSaturation")
+        hue.inputs["Saturation"].default_value = 1.32
+        hue.inputs["Value"].default_value = 1.08
+        links.new(tex.outputs["Color"], hue.inputs["Color"])
+        links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    else:
+        hue = nodes.new("ShaderNodeHueSaturation")
+        hue.inputs["Saturation"].default_value = 1.22
+        hue.inputs["Value"].default_value = 1.04
+        links.new(tex.outputs["Color"], hue.inputs["Color"])
+        links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
 
 
 def assign_solid(
@@ -717,7 +878,11 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
-    if len(ob.data.materials) > 1 or (ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name):
+    packet34 = asset_id in PACKET34_ENV_IDS
+    if not packet34 and (
+        len(ob.data.materials) > 1
+        or (ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name)
+    ):
         transfer_material_colors_to_vertex_layer(ob)
         unify_vertex_color_material(ob, asset_id)
 
@@ -771,7 +936,7 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         bpy.context.scene.render.bake.margin = 8
         restore: list[tuple] = []
         try:
-            if kind == "albedo" and ob.data.vertex_colors:
+            if kind == "albedo" and ob.data.vertex_colors and not packet34:
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
             elif kind == "albedo":
                 slot = ob.data.materials[0]

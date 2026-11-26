@@ -375,24 +375,24 @@ def render_preview_studio(
     cam_dist = (radius / math.tan(half_fov)) * margin
 
     meta_path = path.with_name(path.stem + ".frame.json")
-    meta_path.write_text(
-        json.dumps(
-            {
-                "camera_dist": cam_dist,
-                "bbox_radius": radius,
-                "framing_margin": margin,
-                "lens_mm": lens_mm,
-                "azimuth_deg": azimuth_deg,
-                "elevation_deg": DEFAULT_ELEVATION_DEG,
-                "up_axis": axis,
-                "mid_grey": mid_grey,
-                "contact_shadow": _contact_shadow_only(),
-            },
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
+    meta: dict = {
+        "camera_dist": cam_dist,
+        "bbox_radius": radius,
+        "framing_margin": margin,
+        "lens_mm": lens_mm,
+        "azimuth_deg": azimuth_deg,
+        "elevation_deg": DEFAULT_ELEVATION_DEG,
+        "up_axis": axis,
+        "mid_grey": mid_grey,
+        "contact_shadow": _contact_shadow_only(),
+    }
+    glb_sha = os.environ.get("PREVIEW_GLB_SHA256", "").strip()
+    glb_path = os.environ.get("PREVIEW_GLB_PATH", "").strip()
+    if glb_sha:
+        meta["glb_sha256"] = glb_sha
+    if glb_path:
+        meta["glb_path"] = glb_path
+    meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"

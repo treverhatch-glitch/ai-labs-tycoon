@@ -60,6 +60,24 @@ def _build_material(
         links.new(mix1.outputs["Color"], mix2.inputs[1])
         links.new(ramp.outputs["Color"], mix2.inputs[2])
         color_src = mix2.outputs["Color"]
+    elif pattern == "trim_horiz":
+        wave = nodes.new("ShaderNodeTexWave")
+        wave.wave_type = "BANDS"
+        wave.bands_direction = "X"
+        wave.inputs["Scale"].default_value = 32.0
+        noise2 = nodes.new("ShaderNodeTexNoise")
+        noise2.inputs["Scale"].default_value = 64.0
+        mix = nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = "OVERLAY"
+        mix.inputs["Fac"].default_value = 0.48
+        mix2 = nodes.new("ShaderNodeMixRGB")
+        mix2.blend_type = "MULTIPLY"
+        mix2.inputs["Fac"].default_value = 0.62
+        links.new(wave.outputs["Color"], mix.inputs[1])
+        links.new(ramp.outputs["Color"], mix.inputs[2])
+        links.new(mix.outputs["Color"], mix2.inputs[1])
+        links.new(noise2.outputs["Color"], mix2.inputs[2])
+        color_src = mix2.outputs["Color"]
     elif pattern == "metal":
         noise2 = nodes.new("ShaderNodeTexNoise")
         noise2.inputs["Scale"].default_value = noise_scale
@@ -137,12 +155,11 @@ def _synthetic_swatch(
                 base = tuple(max(0, min(255, (accent_rgb if mortar else base_rgb)[i] - grime)) for i in range(3))
                 rib = int(12 * (0.5 + 0.5 * math.sin(x * 2 * math.pi / 16)))
                 c = tuple(max(0, min(255, base[i] + rib)) for i in range(3))
-            elif pattern == "metal":
-                # Horizontal painted-trim grain; tile-periodic at 512.
+            elif pattern in ("metal", "trim_horiz"):
                 u = x * 2 * math.pi / 512.0
-                grain = 0.5 + 0.5 * math.sin(u * 28.0)
-                chip = 1.0 if math.sin(u * 6.5 + y * 0.031) > 0.86 else 0.0
-                mix = min(1.0, grain * 0.7 + chip * 0.35)
+                grain = 0.5 + 0.5 * math.sin(u * 36.0)
+                chip = 1.0 if math.sin(u * 9.0) > 0.90 else 0.0
+                mix = min(1.0, grain * 0.75 + chip * 0.28)
                 c = tuple(int(base_rgb[i] * (1 - mix) + accent_rgb[i] * mix) for i in range(3))
             elif pattern == "fibre":
                 n = random.random() * 0.4 + math.sin(x * 0.15) * 0.08 + math.sin(y * 0.19) * 0.08

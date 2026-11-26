@@ -10,6 +10,7 @@ PREVIEW = REPO / "docs/art/previews"
 sys.path.insert(0, str(REPO / "tools/art"))
 
 from check_env_glb_packet34 import check_all_env_glbs  # noqa: E402
+from check_env_preview_glb_linkage import main as check_preview_glb_linkage  # noqa: E402
 from packet34_preview_gates import (  # noqa: E402
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
@@ -63,6 +64,7 @@ def main() -> int:
         return 1
 
     rc = check_all_env_glbs()
+    rc |= check_preview_glb_linkage()
     for asset_id in ENV_IDS:
         rc |= check_env_preview(asset_id)
     for asset_id in ALL_HUD_SPRITE_IDS:
