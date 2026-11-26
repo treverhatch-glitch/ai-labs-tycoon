@@ -2,7 +2,9 @@
 """Preview gates: corners, exposure, saturation, grey bleed, prop materials."""
 from __future__ import annotations
 
+import io
 import json
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -18,6 +20,11 @@ FIXTURE_708 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-7086
 FIXTURE_8B4 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-8b4f9dba.png"
 FIXTURE_3C2 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-3c2deb99.png"
 FIXTURE_B198 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-b1985d85.png"
+FIXTURE_60BE = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-60be0ccb.png"
+HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
+HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
+MIN_STAIN_DELTA_LUMA_HI = 60.0
+MAX_STAIN_HARD_BLACK = 80
 MIN_FLOOR_LUMA = 140.0
 MIN_STAIN_DELTA_LUMA = 25.0
 CARD_HUE_LO = 25.0
@@ -34,6 +41,27 @@ MIN_WALL_CC_FRAC = 0.25
 MIN_PROP_BLOBS = 6
 CORNER_INSET = 3
 BLOWN_LUMA = 255 * 0.95
+
+
+def load_png_from_git(rel: str) -> "Image.Image":
+    """Load PNG bytes from git (HEAD, then index, then disk)."""
+    from PIL import Image
+
+    rel = rel.replace("\\", "/").lstrip("/")
+    for spec in (f":{rel}", f"HEAD:{rel}"):
+        try:
+            data = subprocess.check_output(
+                ["git", "show", spec],
+                cwd=REPO,
+                stderr=subprocess.DEVNULL,
+            )
+            return Image.open(io.BytesIO(data)).convert("RGB")
+        except (subprocess.CalledProcessError, OSError):
+            continue
+    path = REPO / rel
+    if not path.is_file():
+        raise FileNotFoundError(rel)
+    return Image.open(path).convert("RGB")
 
 
 def luma(rgb: tuple[int, int, int]) -> float:
@@ -264,7 +292,7 @@ def left_wall_column_backdrop_errs(im, path_name: str) -> list[str]:
                 max_run = max(max_run, run)
             else:
                 run = 0
-    if max_run > 20:
+    if max_run > 16:
         return [
             f"FAIL: {path_name} left-wall backdrop seam {max_run}px along scan "
             f"(y {y0}-{y1}, x {x0}-{x1})"
@@ -275,6 +303,135 @@ def left_wall_column_backdrop_errs(im, path_name: str) -> list[str]:
 def fail9_visual_gates(im, path_name: str) -> list[str]:
     errs = fail8_visual_gates(im, path_name)
     errs.extend(left_wall_column_backdrop_errs(im, path_name))
+    return errs
+
+
+def _frac_poly(w: int, h: int, pts: list[tuple[float, float]]) -> list[tuple[int, int]]:
+    return [(int(w * x), int(h * y)) for x, y in pts]
+
+
+def _shrink_poly(poly: list[tuple[int, int]], margin: float = 0.04) -> list[tuple[int, int]]:
+    if len(poly) < 3:
+        return poly
+    cx = sum(p[0] for p in poly) / len(poly)
+    cy = sum(p[1] for p in poly) / len(poly)
+    out: list[tuple[int, int]] = []
+    for x, y in poly:
+        out.append((int(cx + (x - cx) * (1.0 - margin)), int(cy + (y - cy) * (1.0 - margin))))
+    return out
+
+
+def _backdrop_inside_poly_errs(im, path_name: str, poly: list[tuple[int, int]], label: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    inner = _shrink_poly(poly, 0.05)
+    hits = 0
+    for y in range(h):
+        for x in range(w):
+            if not _point_in_poly(x, y, inner):
+                continue
+            p = im.getpixel((x, y))
+            if bg[y][x] and (p == CORNER_RGB or is_studio_backdrop(p)):
+                hits += 1
+    if hits > 0:
+        return [f"FAIL: {path_name} backdrop inside {label} wall ortho ({hits} px)"]
+    return []
+
+
+def _load_ortho_gate(rel_png: str) -> list[tuple[int, int]] | None:
+    rel_gate = rel_png + ".gate.json"
+    try:
+        raw = subprocess.check_output(["git", "show", f":{rel_gate}"], cwd=REPO, stderr=subprocess.DEVNULL)
+    except subprocess.CalledProcessError:
+        try:
+            raw = subprocess.check_output(["git", "show", f"HEAD:{rel_gate}"], cwd=REPO, stderr=subprocess.DEVNULL)
+        except subprocess.CalledProcessError:
+            gate_path = REPO / rel_gate
+            if not gate_path.is_file():
+                return None
+            raw = gate_path.read_bytes()
+    data = json.loads(raw.decode("utf-8"))
+    hull = data.get("hull") or []
+    if len(hull) < 3:
+        return None
+    return [(int(p[0]), int(p[1])) for p in hull]
+
+
+def ortho_wall_solid_errs(im, path_name: str, *, rel_png: str | None = None) -> list[str]:
+    rel = rel_png or f"docs/art/previews/{path_name}"
+    poly = _load_ortho_gate(rel)
+    if poly is None:
+        return [f"FAIL: {path_name} missing ortho gate hull JSON"]
+    return _backdrop_inside_poly_errs(im, path_name, poly, "projected")
+
+
+def box_dark_face_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    dark = 0
+    samples = 0
+    for y in range(int(h * 0.52), int(h * 0.84)):
+        for x in range(int(w * 0.18), int(w * 0.48)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) < 0.16:
+                continue
+            hue = _rgb_hue_deg(p)
+            if not (CARD_HUE_LO <= hue <= CARD_HUE_HI):
+                continue
+            lum = luma(p)
+            samples += 1
+            if lum < CARD_LUMA_MIN:
+                dark += 1
+    if samples >= 60:
+        if dark / max(samples, 1) > 0.22:
+            return [
+                f"FAIL: {path_name} cardboard dark-face ratio {dark}/{samples} "
+                f"(luma < {CARD_LUMA_MIN})"
+            ]
+    return []
+
+
+def stain_soft_patch_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    floor_px: list[tuple[int, int, int]] = []
+    stain_px: list[tuple[int, int, int]] = []
+    for y in range(int(h * 0.50), h):
+        for x in range(int(w * 0.12), int(w * 0.88)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.22:
+                continue
+            lum = luma(p)
+            if lum < 75 or lum > 225:
+                continue
+            floor_px.append(p)
+    if not floor_px:
+        return []
+    floor_l = sum(luma(p) for p in floor_px) / len(floor_px)
+    for y in range(int(h * 0.50), h):
+        for x in range(int(w * 0.12), int(w * 0.88)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            d = floor_l - luma(p)
+            if MIN_STAIN_DELTA_LUMA <= d <= MIN_STAIN_DELTA_LUMA_HI:
+                stain_px.append(p)
+    if not stain_px:
+        return [f"FAIL: {path_name} no soft stain patch {MIN_STAIN_DELTA_LUMA}-{MIN_STAIN_DELTA_LUMA_HI} luma delta"]
+    hard_black = sum(1 for p in stain_px if luma(p) < 55)
+    if hard_black > MAX_STAIN_HARD_BLACK:
+        return [f"FAIL: {path_name} stain is hard black rect ({hard_black} px luma<55)"]
+    return []
+
+
+def fail10_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail9_visual_gates(im, path_name)
+    errs.extend(box_dark_face_errs(im, path_name))
+    errs.extend(stain_soft_patch_errs(im, path_name))
     return errs
 
 
@@ -616,24 +773,46 @@ def quality_gates(im, path_name: str) -> list[str]:
     return errs
 
 
-def check_image(path: Path) -> list[str]:
+def check_image(rel: str) -> list[str]:
     try:
-        from PIL import Image
+        from PIL import Image  # noqa: F401
     except ImportError:
-        return [f"FAIL: Pillow required to check {path}"]
-    im = Image.open(path).convert("RGB")
+        return [f"FAIL: Pillow required to check {rel}"]
+    try:
+        im = load_png_from_git(rel)
+    except FileNotFoundError:
+        return [f"FAIL: missing {rel}"]
+    path_name = Path(rel).name
     errs = corner_rgb_150_errs(im)
-    errs.extend(backdrop_nine_point_errs(im, path.name))
-    errs.extend(wall_base_scanline_errs(im, path.name))
-    errs.extend(quality_gates(im, path.name))
-    errs.extend(fill_margin_errs(path))
-    errs.extend(edge_margin_band_errs(im, path.name))
-    errs.extend(full_backdrop_mask_errs(im, path.name))
-    errs.extend(fail9_visual_gates(im, path.name))
-    errs.extend(room_pixel_gate_errs(im, path.name))
+    errs.extend(backdrop_nine_point_errs(im, path_name))
+    errs.extend(wall_base_scanline_errs(im, path_name))
+    errs.extend(quality_gates(im, path_name))
+    disk_path = REPO / rel
+    if disk_path.is_file():
+        errs.extend(fill_margin_errs(disk_path))
+    errs.extend(edge_margin_band_errs(im, path_name))
+    errs.extend(full_backdrop_mask_errs(im, path_name))
+    errs.extend(fail10_visual_gates(im, path_name))
+    errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
-        errs.append(f"FAIL: {path.name} appears fully black")
+        errs.append(f"FAIL: {path_name} appears fully black")
+    return errs
+
+
+def check_ortho_images() -> list[str]:
+    errs: list[str] = []
+    for rel in (
+        "docs/art/previews/garage-interior-room-kit-ortho-top.png",
+        "docs/art/previews/garage-interior-room-kit-ortho-front.png",
+    ):
+        try:
+            im = load_png_from_git(rel)
+        except FileNotFoundError:
+            errs.append(f"FAIL: missing {rel}")
+            continue
+        errs.extend(ortho_wall_solid_errs(im, Path(rel).name, rel_png=rel))
+        errs.extend(full_backdrop_mask_errs(im, Path(rel).name))
     return errs
 
 
@@ -716,6 +895,25 @@ def verify_regression_fixtures_fail() -> list[str]:
         fixture_must_fail(label, fix)
     fixture_must_fail_fail8("3c2deb99", FIXTURE_3C2)
     fixture_must_fail_fail9("b1985d85", FIXTURE_B198)
+
+    def fixture_must_fail_fail10(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = (
+            fail10_visual_gates(im_f, fix.name)
+            + left_wall_column_backdrop_errs(im_f, fix.name)
+            + box_dark_face_errs(im_f, fix.name)
+            + stain_soft_patch_errs(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
+            + edge_margin_band_errs(im_f, fix.name)
+            + fill_margin_errs(fix)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-10 tightened gates")
+
+    fixture_must_fail_fail10("60be0ccb", FIXTURE_60BE)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():
@@ -733,10 +931,8 @@ def verify_regression_fixtures_fail() -> list[str]:
 def main() -> int:
     all_errs: list[str] = []
     all_errs.extend(verify_regression_fixtures_fail())
-    if not HERO.is_file():
-        all_errs.append(f"FAIL: missing {HERO}")
-    else:
-        all_errs.extend(check_image(HERO))
+    all_errs.extend(check_image("docs/art/previews/garage-interior-room-kit.png"))
+    all_errs.extend(check_ortho_images())
     if all_errs:
         for e in all_errs:
             print(e)

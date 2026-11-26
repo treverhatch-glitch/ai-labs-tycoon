@@ -12,7 +12,7 @@
   "rollDoorObjectName": "kit_roll_door",
   "rollDoorWidthM": 3.0,
   "rollDoorMinZM": 0.0,
-  "rollDoorMaxYM": 0.083,
+  "rollDoorMaxYM": 0.09,
   "rollDoorWallPlaneYM": 0.05,
   "rollDoorSingleMesh": true,
   "wallGapToleranceM": 0.01,

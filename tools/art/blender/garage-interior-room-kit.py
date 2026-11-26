@@ -125,67 +125,63 @@ def build_floor_tiles() -> list[bpy.types.Object]:
     return tiles
 
 
+def _solid_box(
+    name: str,
+    size: tuple[float, float, float],
+    center: tuple[float, float, float],
+) -> bpy.types.Object:
+    """1 m Blender cube scaled to full metric size (X, Y, Z)."""
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=center)
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.scale = size
+    bpy.ops.object.transform_apply(scale=True)
+    return ob
+
+
 def build_walls() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.types.Object]:
-    ws = _wall_scale()
+    """Single L-wall shell (metric boxes) with boolean roll-door cut on the back span."""
     wall_thick = 0.05
-    back: list[bpy.types.Object] = []
-    left: list[bpy.types.Object] = []
-    for ix in range(GRID):
-        cx = TILE * (ix + 0.5)
-        if ix in (1, 2):
-            continue
-        ob = kenney_piece(
-            "wall.glb",
-            f"wall_back_{ix}",
-            (cx, wall_thick / 2, 0.0),
-            scale=ws,
-            rot_z=-math.pi / 2,
-        )
-        snap_min_z(ob, 0.0)
-        back.append(ob)
+    door_w = ROLL_DOOR_TARGET_W
+    door_h = WALL_H * 0.68
+    header_h = WALL_H - door_h
 
-    for jx in (1.04, 2.96):
-        jamb = kenney_piece(
-            "wall.glb",
-            f"wall_jamb_{int(jx * 100)}",
-            (jx, wall_thick / 2, 0.0),
-            scale=(ws[0] * 0.52, ws[1], ws[2]),
-            rot_z=-math.pi / 2,
-        )
-        snap_min_z(jamb, 0.0)
-        back.append(jamb)
-
-    left_run = kenney_piece(
-        "wall.glb",
-        "wall_left_run",
-        (wall_thick / 2, ROOM / 2, 0.0),
-        scale=(ws[0] * 1.35, ws[1] * GRID * 1.02, ws[2]),
+    back_span = _solid_box(
+        "wall_back_solid",
+        (ROOM, wall_thick, WALL_H),
+        (ROOM / 2, wall_thick / 2, WALL_H / 2),
     )
-    snap_min_z(left_run, 0.0)
-    left.append(left_run)
-    base_fill = kenney_piece(
-        "wall.glb",
-        "wall_left_base_fill",
-        (wall_thick / 2, ROOM / 2, 0.0),
-        scale=(ws[0] * 1.55, ws[1] * GRID * 1.02, 0.07),
+    left_span = _solid_box(
+        "wall_left_solid",
+        (wall_thick, ROOM, WALL_H),
+        (wall_thick / 2, ROOM / 2, WALL_H / 2),
     )
-    snap_min_z(base_fill, 0.0)
-    left.append(base_fill)
+    cut_center = (ROOM / 2, wall_thick * 1.2, door_h / 2)
+    cutter = _solid_box(
+        "wall_door_cutter",
+        (door_w + 0.04, wall_thick * 3.0, door_h + 0.04),
+        cut_center,
+    )
+    cc0.mesh_boolean_difference(back_span, cutter)
+    shell = cc0.merge_mesh_objects([back_span, left_span], "wall_back_left_shell")
+    cc0.mesh_remove_doubles(shell, 0.002)
+    bpy.context.view_layer.update()
 
-    corner = kenney_piece(
-        "wall-corner.glb",
+    corner = _solid_box(
         "kit_wall_corner",
-        (wall_thick / 2, wall_thick / 2, 0.0),
-        scale=(TILE_SCALE, TILE_SCALE, WALL_Z_SCALE),
+        (wall_thick * 1.05, wall_thick * 1.05, WALL_H),
+        (wall_thick / 2, wall_thick / 2, WALL_H / 2),
     )
+    cc0.apply_palette_material(corner, "wall")
+    snap_min_z(shell, 0.0)
     snap_min_z(corner, 0.0)
-    return back, left, corner
+    return [shell], [], corner
 
 
 def build_roll_door() -> bpy.types.Object:
     """Merged slats flush in back-wall opening (~3 m), half-raised, header above."""
     wall_thick = 0.05
-    wall_plane_y = wall_thick / 2 + 0.003
+    wall_plane_y = wall_thick - 0.002
     door_w = ROLL_DOOR_TARGET_W
     curtain_h = WALL_H * 0.62
     slat_count = 12
@@ -241,6 +237,15 @@ def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float
         path=cc0.kenney_furniture_glb(glb),
     )
     snap_min_z(ob, FLOOR_TOP)
+    if "cardboard" in glb.lower():
+        cc0.mesh_remove_doubles(ob, 0.02)
+        bpy.context.view_layer.update()
+        _, mx = cc0.world_bbox(ob)
+        tall = mx.z - cc0.world_bbox(ob)[0].z
+        if tall > 0.42 * scale:
+            ob.scale.z *= 0.94
+            bpy.ops.object.transform_apply(scale=True)
+            snap_min_z(ob, FLOOR_TOP)
     return ob
 
 
@@ -311,15 +316,15 @@ def assert_scene_layout(
     if mx.x > 3.55 or mn.x < 0.45:
         failures.append(f"kit_roll_door not in ~3 m back opening (x {mn.x:.2f}-{mx.x:.2f})")
 
-    left_run = next((o for o in wall_parts if "wall_left_run" in o.name), None)
-    if left_run is None:
-        failures.append("missing wall_left_run")
+    shell = next((o for o in wall_parts if "wall_back_left_shell" in o.name), None)
+    if shell is None:
+        failures.append("missing wall_back_left_shell")
     else:
-        lmn, lmx = cc0.world_bbox(left_run)
-        if lmn.y > GAP_TOL or lmx.y < ROOM - GAP_TOL:
-            failures.append(f"left wall run span Y {lmn.y:.2f}-{lmx.y:.2f} != 0-{ROOM}")
-        if lmx.x - wall_thick > 0.05:
-            failures.append(f"left wall protrudes {(lmx.x - wall_thick):.3f} m into room")
+        lmn, lmx = cc0.world_bbox(shell)
+        if lmn.y > 0.03 or lmx.y < ROOM - 0.08:
+            failures.append(f"wall shell span Y {lmn.y:.2f}-{lmx.y:.2f} != 0-{ROOM}")
+        if lmn.x > 0.03:
+            failures.append(f"wall shell minX {lmn.x:.3f} > 3cm from origin")
 
     if "prop_whiteboard" in kit_objects:
         wmn, wmx = cc0.world_bbox(kit_objects["prop_whiteboard"])
@@ -378,8 +383,12 @@ def build_kenney_room() -> tuple[dict[str, bpy.types.Object], list[bpy.types.Obj
 
 def weld_room_meshes(kit: dict[str, bpy.types.Object]) -> None:
     kit["kit_floor"] = cc0.join_welded(kit.pop("_floor_tiles"), "kit_floor", "floor")
-    kit["kit_wall_back"] = cc0.join_welded(kit.pop("_wall_back"), "kit_wall_back", "wall")
-    kit["kit_wall_left"] = cc0.join_welded(kit.pop("_wall_left"), "kit_wall_left", "wall")
+    shells = kit.pop("_wall_back")
+    kit["kit_wall_back"] = shells[0]
+    kit["kit_wall_back"].name = "kit_wall_back"
+    cc0.apply_palette_material(kit["kit_wall_back"], "wall")
+    kit["kit_wall_left"] = kit["kit_wall_back"]
+    kit.pop("_wall_left", None)
 
 
 def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]:
@@ -444,7 +453,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
 
     stack_desk_props(kit_objects)
 
-    bpy.ops.mesh.primitive_plane_add(size=2.05, location=(2.28, 1.42, FLOOR_TOP + 0.004))
+    bpy.ops.mesh.primitive_plane_add(size=2.45, location=(2.28, 1.42, FLOOR_TOP + 0.003))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
     stain.rotation_euler = (0.0, 0.0, math.radians(14))
@@ -542,7 +551,13 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
 
 def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
     for key, ob in kit_objects.items():
-        cc0.apply_palette_material(ob, KIT_ROLES.get(key, "prop"))
+        if key.startswith("_") or key == "kit_wall_left":
+            continue
+        role = KIT_ROLES.get(key, "prop")
+        if key in ("prop_box_a", "prop_box_b", "prop_crate", "prop_chair", "prop_lamp"):
+            cc0.apply_palette_hierarchy(ob, role)
+        else:
+            cc0.apply_palette_material(ob, role)
 
 
 def main() -> dict:
@@ -557,7 +572,7 @@ def main() -> dict:
     gate_path = cc0.PREVIEW_ROOT / f"{ASSET_ID}-scene-gates.json"
     write_scene_gate_metadata(kit_objects, gate_path)
 
-    export_list = list(kit_objects.values())
+    export_list = list({id(ob): ob for ob in kit_objects.values() if ob is not None}.values())
     import os
 
     preview_only = os.environ.get("CC0_PREVIEW_ONLY") == "1"
@@ -581,6 +596,36 @@ def main() -> dict:
         frame_span=None,
         up_axis="Z",
     )
+    wall_thick = 0.05
+    header_h = WALL_H - WALL_H * 0.68
+    ortho_qa = [
+        _solid_box("ortho_qa_left", (wall_thick, ROOM, WALL_H), (wall_thick / 2, ROOM / 2, WALL_H / 2)),
+        _solid_box("ortho_qa_back_l", (0.5, wall_thick, WALL_H), (0.25, wall_thick / 2, WALL_H / 2)),
+        _solid_box("ortho_qa_back_r", (0.5, wall_thick, WALL_H), (3.75, wall_thick / 2, WALL_H / 2)),
+        _solid_box(
+            "ortho_qa_header",
+            (ROLL_DOOR_TARGET_W, wall_thick, header_h),
+            (ROOM / 2, wall_thick / 2, WALL_H - header_h / 2),
+        ),
+    ]
+    for ob in ortho_qa:
+        cc0.apply_palette_material(ob, "wall")
+    cc0.render_ortho_wall_check(
+        ortho_qa,
+        cc0.PREVIEW_ROOT / f"{ASSET_ID}-ortho-top.png",
+        view="top",
+        room=ROOM,
+        wall_h=WALL_H,
+    )
+    cc0.render_ortho_wall_check(
+        ortho_qa,
+        cc0.PREVIEW_ROOT / f"{ASSET_ID}-ortho-front.png",
+        view="front_left",
+        room=ROOM,
+        wall_h=WALL_H,
+    )
+    for ob in ortho_qa:
+        bpy.data.objects.remove(ob, do_unlink=True)
 
     if preview_only:
         print("OK preview-only", ASSET_ID)

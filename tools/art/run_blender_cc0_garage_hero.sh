@@ -18,5 +18,12 @@ echo "=== garage-interior-room-kit (CC0 hero) ==="
 python3 tools/art/check_no_tracked_pyc.py
 python3 tools/art/check_cc0_garage_hero.py
 python3 tools/art/check_cc0_garage_scene.py
+git add docs/art/previews/garage-interior-room-kit.png \
+  docs/art/previews/garage-interior-room-kit-ortho-top.png \
+  docs/art/previews/garage-interior-room-kit-ortho-front.png \
+  docs/art/previews/garage-interior-room-kit-scene-gates.json
+for f in docs/art/previews/garage-interior-room-kit-ortho-*.png.gate.json; do
+  [ -f "$f" ] && git add "$f"
+done
 python3 tools/art/check_cc0_garage_preview.py
 echo "cc0 garage hero OK"

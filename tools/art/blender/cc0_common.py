@@ -142,6 +142,35 @@ def join_welded(
     return ob
 
 
+def mesh_boolean_difference(target: bpy.types.Object, cutter: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    target.select_set(True)
+    bpy.context.view_layer.objects.active = target
+    mod = target.modifiers.new("WallCut", "BOOLEAN")
+    mod.operation = "DIFFERENCE"
+    mod.object = cutter
+    mod.solver = "EXACT"
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.data.objects.remove(cutter, do_unlink=True)
+
+
+def mesh_remove_doubles(ob: bpy.types.Object, threshold: float = 0.015) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=threshold)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def apply_palette_hierarchy(ob: bpy.types.Object, role: str) -> None:
+    if ob.type == "MESH":
+        apply_palette_material(ob, role)
+    for child in ob.children:
+        apply_palette_hierarchy(child, role)
+
+
 def merge_mesh_objects(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
     if not objects:
         raise RuntimeError(f"no meshes for {name}")
@@ -225,35 +254,105 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.84
     elif role == "floor_stain":
-        bsdf.inputs["Base Color"].default_value = (0.04, 0.038, 0.035, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.97
+        coord = nodes.new("ShaderNodeTexCoord")
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = (0.95, 0.95, 0.95)
+        links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        noise = nodes.new("ShaderNodeTexNoise")
+        noise.inputs["Scale"].default_value = 6.5
+        noise.inputs["Detail"].default_value = 5.0
+        sep = nodes.new("ShaderNodeSeparateXYZ")
+        links.new(mapping.outputs["Vector"], sep.inputs["Vector"])
+        dx = nodes.new("ShaderNodeMath")
+        dx.operation = "MULTIPLY"
+        dx.inputs[1].default_value = 2.2
+        links.new(sep.outputs["X"], dx.inputs[0])
+        dy = nodes.new("ShaderNodeMath")
+        dy.operation = "MULTIPLY"
+        dy.inputs[1].default_value = 2.2
+        links.new(sep.outputs["Y"], dy.inputs[0])
+        radial = nodes.new("ShaderNodeMath")
+        radial.operation = "SQRT"
+        add = nodes.new("ShaderNodeMath")
+        add.operation = "ADD"
+        sqx = nodes.new("ShaderNodeMath")
+        sqx.operation = "MULTIPLY"
+        sqy = nodes.new("ShaderNodeMath")
+        sqy.operation = "MULTIPLY"
+        links.new(dx.outputs["Value"], sqx.inputs[0])
+        links.new(dx.outputs["Value"], sqx.inputs[1])
+        links.new(dy.outputs["Value"], sqy.inputs[0])
+        links.new(dy.outputs["Value"], sqy.inputs[1])
+        links.new(sqx.outputs["Value"], add.inputs[0])
+        links.new(sqy.outputs["Value"], add.inputs[1])
+        links.new(add.outputs["Value"], radial.inputs[0])
+        ramp = nodes.new("ShaderNodeMapRange")
+        ramp.inputs["From Min"].default_value = 0.18
+        ramp.inputs["From Max"].default_value = 0.58
+        ramp.inputs["To Min"].default_value = 1.0
+        ramp.inputs["To Max"].default_value = 0.0
+        links.new(radial.outputs["Value"], ramp.inputs["Value"])
+        edge = nodes.new("ShaderNodeMath")
+        edge.operation = "MULTIPLY"
+        links.new(ramp.outputs["Result"], edge.inputs[0])
+        links.new(noise.outputs["Fac"], edge.inputs[1])
+        stain_mix = nodes.new("ShaderNodeMixRGB")
+        stain_mix.blend_type = "MIX"
+        stain_mix.inputs["Color1"].default_value = (0.78, 0.76, 0.73, 1.0)
+        stain_mix.inputs["Color2"].default_value = (0.52, 0.50, 0.47, 1.0)
+        links.new(edge.outputs["Value"], stain_mix.inputs["Fac"])
+        links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.92
     elif role in ("box", "box_open"):
-        bsdf.inputs["Base Color"].default_value = (0.88, 0.68, 0.42, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.78
+        card = (0.90, 0.70, 0.44, 1.0)
+        bsdf.inputs["Base Color"].default_value = card
+        bsdf.inputs["Roughness"].default_value = 0.76
         wr = nodes.new("ShaderNodeTexNoise")
-        wr.inputs["Scale"].default_value = 18.0
-        wr.inputs["Detail"].default_value = 4.0
+        wr.inputs["Scale"].default_value = 14.0
+        wr.inputs["Detail"].default_value = 5.0
         mix = nodes.new("ShaderNodeMixRGB")
         mix.blend_type = "OVERLAY"
-        mix.inputs["Fac"].default_value = 0.35
-        mix.inputs["Color1"].default_value = (0.88, 0.68, 0.42, 1.0)
-        mix.inputs["Color2"].default_value = (0.72, 0.54, 0.32, 1.0)
+        mix.inputs["Fac"].default_value = 0.42
+        mix.inputs["Color1"].default_value = card
+        mix.inputs["Color2"].default_value = (0.82, 0.62, 0.38, 1.0)
         links.new(wr.outputs["Fac"], mix.inputs["Fac"])
         links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = card
+        emit.inputs["Strength"].default_value = 0.14
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
     elif role == "chair":
-        bsdf.inputs["Base Color"].default_value = (0.28, 0.48, 0.82, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.55
-        wr = nodes.new("ShaderNodeTexNoise")
-        wr.inputs["Scale"].default_value = 24.0
+        bsdf.inputs["Base Color"].default_value = (0.32, 0.52, 0.84, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.48
+        wave = nodes.new("ShaderNodeTexWave")
+        wave.wave_type = "BANDS"
+        wave.inputs["Scale"].default_value = 9.0
+        wave.inputs["Distortion"].default_value = 2.2
         mix = nodes.new("ShaderNodeMixRGB")
         mix.blend_type = "OVERLAY"
-        mix.inputs["Fac"].default_value = 0.22
-        mix.inputs["Color2"].default_value = (0.18, 0.32, 0.62, 1.0)
-        links.new(wr.outputs["Fac"], mix.inputs["Fac"])
+        mix.inputs["Fac"].default_value = 0.28
+        mix.inputs["Color2"].default_value = (0.22, 0.38, 0.68, 1.0)
+        links.new(wave.outputs["Color"], mix.inputs["Fac"])
         links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+        bump = nodes.new("ShaderNodeBump")
+        bump.inputs["Strength"].default_value = 0.12
+        links.new(wave.outputs["Color"], bump.inputs["Height"])
+        links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     elif role == "lamp_accent":
         bsdf.inputs["Base Color"].default_value = (0.94, 0.82, 0.55, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.42
+        vor = nodes.new("ShaderNodeTexVoronoi")
+        vor.feature = "DISTANCE_TO_EDGE"
+        vor.inputs["Scale"].default_value = 12.0
+        mix = nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = "OVERLAY"
+        mix.inputs["Fac"].default_value = 0.25
+        mix.inputs["Color2"].default_value = (0.78, 0.62, 0.35, 1.0)
+        links.new(vor.outputs["Distance"], mix.inputs["Fac"])
+        links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
         emit = nodes.new("ShaderNodeEmission")
         emit.inputs["Color"].default_value = (1.0, 0.78, 0.35, 1.0)
         emit.inputs["Strength"].default_value = 0.28
@@ -282,7 +381,7 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
         links.new(add.outputs["Shader"], out.inputs["Surface"])
-    elif role != "lamp_accent":
+    elif role not in ("lamp_accent", "box", "box_open"):
         links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -545,6 +644,105 @@ def render_kit_preview(
         bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)
     _quantize_backdrop_rgb150(path)
+
+
+def render_ortho_wall_check(
+    objects: list[bpy.types.Object],
+    path: Path,
+    *,
+    view: str,
+    room: float = 4.0,
+    wall_h: float = 2.7,
+    resolution: int = 512,
+) -> None:
+    """Flat grey world; orthographic wall QA (top or front-left)."""
+    PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
+    setup_preview_world_grey_hdri(hdri_strength=0.55)
+    bpy.context.scene.render.engine = "CYCLES"
+    bpy.context.scene.cycles.samples = 48
+    bpy.context.scene.cycles.use_denoising = False
+    bpy.context.scene.render.film_transparent = False
+    mins = Vector((1e9, 1e9, 1e9))
+    maxs = Vector((-1e9, -1e9, -1e9))
+    for ob in objects:
+        mn, mx = world_bbox(ob)
+        mins.x = min(mins.x, mn.x)
+        mins.y = min(mins.y, mn.y)
+        mins.z = min(mins.z, mn.z)
+        maxs.x = max(maxs.x, mx.x)
+        maxs.y = max(maxs.y, mx.y)
+        maxs.z = max(maxs.z, mx.z)
+    center = (mins + maxs) * 0.5
+    span_x = max(maxs.x - mins.x, 0.05)
+    span_y = max(maxs.y - mins.y, 0.05)
+    span_z = max(maxs.z - mins.z, 0.05)
+    bpy.ops.object.camera_add()
+    cam = bpy.context.active_object
+    cam.data.type = "ORTHO"
+    if view == "top":
+        cam.data.ortho_scale = max(span_x, span_y) * 1.12
+        cam.location = Vector((center.x, center.y, maxs.z + max(span_x, span_y) * 1.6))
+        cam.rotation_euler = (0.0, 0.0, 0.0)
+    elif view == "front_left":
+        cam.data.ortho_scale = max(span_y, span_z) * 1.08
+        cam.location = Vector((mins.x - max(span_x, 1.0) * 1.2, center.y, center.z))
+        direction = Vector((1.0, 0.0, 0.0))
+        cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    else:
+        raise ValueError(view)
+    bpy.context.scene.camera = cam
+    bpy.context.scene.render.resolution_x = resolution
+    bpy.context.scene.render.resolution_y = resolution
+    bpy.context.scene.render.image_settings.file_format = "PNG"
+    bpy.context.scene.render.filepath = str(path)
+    bpy.ops.render.render(write_still=True)
+    hull = _ortho_project_hull(objects, cam, resolution, resolution)
+    gate_path = Path(f"{path}.gate.json")
+    gate_path.write_text(
+        json.dumps({"w": resolution, "h": resolution, "hull": hull}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    bpy.data.objects.remove(cam, do_unlink=True)
+    _quantize_backdrop_rgb150(path)
+
+
+def _ortho_project_hull(
+    objects: list[bpy.types.Object],
+    cam: bpy.types.Object,
+    w: int,
+    h: int,
+) -> list[list[int]]:
+    import bpy_extras.object_utils as object_utils
+
+    scene = bpy.context.scene
+    pts: list[tuple[float, float]] = []
+    for ob in objects:
+        if ob.type != "MESH" or not ob.data:
+            continue
+        for corner in ob.bound_box:
+            wco = ob.matrix_world @ Vector(corner)
+            co = object_utils.world_to_camera_view(scene, cam, wco)
+            if -0.08 <= co.x <= 1.08 and -0.08 <= co.y <= 1.08:
+                pts.append((co.x * w, (1.0 - co.y) * h))
+    if len(pts) < 3:
+        return []
+    pts.sort(key=lambda p: (p[0], p[1]))
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower: list[tuple[float, float]] = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper: list[tuple[float, float]] = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    hull = lower[:-1] + upper[:-1]
+    return [[int(round(x)), int(round(y))] for x, y in hull]
 
 
 def _quantize_backdrop_rgb150(path: Path) -> None:
