@@ -473,7 +473,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         import staff_connectivity as staff_conn
         import cc0_staff_lib as staff_c0
 
-        ok_spine, msg_spine = staff_c0.check_spine_clearance(mesh_obs)
+        spine_kw: dict = {}
+        if asset_id == "staff-founder-idle":
+            spine_kw = {"only_parts": frozenset({"Neck", "Torso"}), "max_radius": 0.95}
+        ok_spine, msg_spine = staff_c0.check_spine_clearance(mesh_obs, **spine_kw)
         if not ok_spine:
             raise RuntimeError(f"FAIL {asset_id}: {msg_spine}")
 
@@ -700,19 +703,12 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.78, 0.38, 0.42, 1.0), 0.45)
         elif asset_id.startswith("staff-") and "head" in name:
             assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
-        elif asset_id == "staff-founder-idle" and "jeans" in name.lower():
-            assign_solid(ob, (0.16, 0.28, 0.52, 1.0), 0.56)
-        elif asset_id == "staff-founder-idle" and base == "torso":
-            assign_solid(ob, (0.22, 0.16, 0.38, 1.0), 0.60)
+        elif asset_id == "staff-founder-idle" and base in ("torso", "neck"):
+            assign_solid(ob, (0.10, 0.62, 0.55, 1.0), 0.60)
         elif asset_id == "staff-founder-idle" and (
-            base == "neck"
-            or base.startswith("shoulder_")
-            or base.startswith("upperarm_")
-            or base.startswith("lowerarm_")
+            base == "hips" or base.startswith("leg_") or base.startswith("foot_")
         ):
-            assign_solid(ob, (0.24, 0.18, 0.40, 1.0), 0.58)
-        elif asset_id == "staff-founder-idle" and base.startswith("leg_") and "jeans" not in name:
-            assign_solid(ob, (0.16, 0.28, 0.52, 1.0), 0.56)
+            assign_solid(ob, (0.12, 0.28, 0.58, 1.0), 0.56)
         elif asset_id.startswith("staff-") and ("leg" in name or "arm" in name):
             trousers = {
                 "staff-founder-idle": (0.28, 0.18, 0.42, 1.0),

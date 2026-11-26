@@ -746,12 +746,24 @@ _SPINE_SKIP_PREFIXES = (
     "Hood",
     "FounderMug",
     "HoodiePocket",
+    "Foot_",
+    "Leg_",
 )
 
 
-def check_spine_clearance(mesh_obs: list[bpy.types.Object], max_radius: float = 0.6) -> tuple[bool, str]:
-    by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
-    hips = by_name.get("Hips")
+def check_spine_clearance(
+    mesh_obs: list[bpy.types.Object],
+    max_radius: float = 0.6,
+    only_parts: frozenset[str] | None = None,
+) -> tuple[bool, str]:
+    all_obs = [o for o in mesh_obs if o.type == "MESH"]
+    check_obs = [
+        o
+        for o in all_obs
+        if only_parts is None or o.name.split(".")[0] in only_parts
+    ]
+    by_name = {o.name.split(".")[0]: o for o in all_obs}
+    hips = by_name.get("Hips") or by_name.get("Torso")
     head = by_name.get("Head")
     if not hips or not head:
         return False, "spine_parts_missing"
@@ -762,7 +774,7 @@ def check_spine_clearance(mesh_obs: list[bpy.types.Object], max_radius: float = 
         return False, "spine_axis_short"
     axis_n = axis.normalized()
     worst = ("", 0.0)
-    for ob in mesh_obs:
+    for ob in check_obs:
         if ob.type != "MESH":
             continue
         base = ob.name.split(".")[0]

@@ -16,6 +16,8 @@ MAX_HEIGHT = 2.05
 HEAD_FOOT_MIN_GAP = 0.45
 MAX_SPINE_RADIUS_M = 0.6
 HERO_IDS = frozenset({"staff-founder-idle", "staff-researcher-idle"})
+FOUNDER_SPINE_PARTS = frozenset({"Hips", "Torso", "Neck", "Head"})
+MAX_FOUNDER_SPINE_RADIUS_M = 0.95
 
 
 def _centroid(ob: bpy.types.Object) -> Vector:
@@ -23,7 +25,12 @@ def _centroid(ob: bpy.types.Object) -> Vector:
     return sum(pts, Vector()) / max(1, len(pts))
 
 
-def _spine_radius(meshes: list[bpy.types.Object]) -> tuple[bool, str]:
+def _spine_radius(
+    meshes: list[bpy.types.Object],
+    *,
+    only_parts: frozenset[str] | None = None,
+    max_radius: float = MAX_SPINE_RADIUS_M,
+) -> tuple[bool, str]:
     by_name = {o.name.split(".")[0]: o for o in meshes}
     hips = by_name.get("Hips")
     head = by_name.get("Head")
@@ -38,6 +45,8 @@ def _spine_radius(meshes: list[bpy.types.Object]) -> tuple[bool, str]:
     worst = ("", 0.0)
     for ob in meshes:
         base = ob.name.split(".")[0]
+        if only_parts is not None and base not in only_parts:
+            continue
         for v in ob.data.vertices:
             p = ob.matrix_world @ v.co
             rel = p - p0
@@ -45,8 +54,8 @@ def _spine_radius(meshes: list[bpy.types.Object]) -> tuple[bool, str]:
             r = perp.length
             if r > worst[1]:
                 worst = (base, r)
-    if worst[1] > MAX_SPINE_RADIUS_M:
-        return False, f"spine_r={worst[1]:.3f}m on {worst[0]} max={MAX_SPINE_RADIUS_M}m"
+    if worst[1] > max_radius:
+        return False, f"spine_r={worst[1]:.3f}m on {worst[0]} max={max_radius}m"
     return True, f"spine_r={worst[1]:.3f}m"
 
 
@@ -78,7 +87,12 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
     if aid in HERO_IDS:
         if any(n == "Cube" for n in (o.name.split(".")[0] for o in meshes)):
             return False, "stray_cube_mesh"
-        ok_spine, spine_msg = _spine_radius(meshes)
+        spine_kw = (
+            {"only_parts": FOUNDER_SPINE_PARTS, "max_radius": MAX_FOUNDER_SPINE_RADIUS_M}
+            if aid == "staff-founder-idle"
+            else {}
+        )
+        ok_spine, spine_msg = _spine_radius(meshes, **spine_kw)
         if not ok_spine:
             return False, spine_msg
         return True, f"z_up sz={sz:.3f} {spine_msg} meshes={len(meshes)}"

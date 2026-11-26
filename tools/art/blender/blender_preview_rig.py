@@ -15,7 +15,8 @@ from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 # Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
-STUDIO_GREY = (150.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0, 1.0)
+_GREY_150 = 150.0 / 255.0
+STUDIO_GREY = (_GREY_150, _GREY_150, _GREY_150, 1.0)
 FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
@@ -93,9 +94,12 @@ def setup_studio_world(*, staff_flat: bool = False) -> None:
     bg = nodes.new("ShaderNodeBackground")
     # Mid-grey visible backdrop; HDRI may light objects but stays hidden in the render.
     bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 0.577 if staff_flat else 1.0
+    bg.inputs["Strength"].default_value = 1.0 if staff_flat else 1.0
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
     if staff_flat or not hdr_path.is_file():
+        bpy.context.scene.view_settings.view_transform = "Standard"
+        bpy.context.scene.view_settings.exposure = -0.962
+        bpy.context.scene.view_settings.gamma = 1.0
         links.new(bg.outputs["Background"], out.inputs["Surface"])
         return
     if hdr_path.is_file():
@@ -155,27 +159,29 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
 
 
 def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
+    """Horizontal vector from hips/torso toward head (Kenney after glTF import)."""
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
-    head = by_name.get("Head")
     hips = by_name.get("Hips") or by_name.get("Torso")
-    if not head or not hips:
-        return Vector((0.0, 1.0, 0.0))
-    head_pts = [head.matrix_world @ v.co for v in head.data.vertices] if head.data.vertices else [head.matrix_world.translation]
-    hip_pts = [hips.matrix_world @ v.co for v in hips.data.vertices] if hips.data.vertices else [hips.matrix_world.translation]
-    head_c = sum(head_pts, Vector()) / len(head_pts)
-    hip_c = sum(hip_pts, Vector()) / len(hip_pts)
-    fwd = head_c - hip_c
-    fwd.z = 0.0
-    if fwd.length < 1e-4:
-        return Vector((0.0, 1.0, 0.0))
-    return fwd.normalized()
+    head = by_name.get("Head")
+    if hips and head and head.data.vertices and hips.data.vertices:
+        hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
+            head.data.vertices
+        )
+        ic = sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector()) / len(
+            hips.data.vertices
+        )
+        fwd = hc - ic
+        fwd.z = 0.0
+        if fwd.length > 1e-4:
+            return fwd.normalized()
+    return Vector((0.0, 1.0, 0.0))
 
 
 def frame_staff_front_quarter(
     mesh_obs: list[bpy.types.Object],
     lens_mm: float,
     margin: float,
-    yaw_deg: float = 38.0,
+    yaw_deg: float = 30.0,
     elev_deg: float = 11.0,
 ) -> tuple[bpy.types.Object, float]:
     mins, maxs = mesh_bounds_world(mesh_obs)
@@ -408,9 +414,9 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 1.38
+        framing_margin = 1.46
         lens_mm = 50.0
-        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38"))
+        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
     elif preview_kind in ("wisp",):
         axis = "Y"
@@ -451,9 +457,10 @@ def render_preview_studio(
             add_shadow_floor_y(mins, maxs)
         else:
             add_shadow_floor_z(mins, maxs)
-        setup_three_point_lights(center, radius)
+        light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
+        setup_three_point_lights(center, light_r)
         if preview_kind == "staff":
-            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38"))
+            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
                 hero_meshes,
@@ -486,7 +493,7 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
-                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38")),
+                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30")),
                 "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
             indent=2,

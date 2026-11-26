@@ -11,7 +11,7 @@ REPO = Path(__file__).resolve().parents[2]
 AID = "staff-founder-idle"
 PNG = REPO / "docs/art/previews" / f"{AID}.png"
 TARGET = 150
-TOL = 2
+TOL = 0
 
 
 def main() -> int:

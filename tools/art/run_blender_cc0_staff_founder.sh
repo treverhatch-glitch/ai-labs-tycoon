@@ -31,6 +31,8 @@ python3 tools/art/check_cc0_staff_floor_loose.py
 python3 tools/art/check_cc0_staff_preview_front.py
 python3 tools/art/check_cc0_staff_preview_corner_grey.py
 python3 tools/art/check_cc0_staff_face_visible.py
+python3 tools/art/check_cc0_staff_founder_pixel_hues.py
+python3 tools/art/check_cc0_staff_founder_assembly.py
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

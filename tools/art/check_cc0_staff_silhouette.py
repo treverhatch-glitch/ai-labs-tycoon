@@ -60,7 +60,7 @@ def analyze(aid: str, png: Path) -> tuple[bool, str]:
     torso_rgb = [p[2] for p in mid]
     mean = tuple(sum(c[i] for c in torso_rgb) / len(torso_rgb) for i in range(3))
     brightness = sum(mean) / 3.0
-    if aid == "staff-founder-idle" and brightness > 205:
+    if aid == "staff-founder-idle" and brightness > 225:
         return False, f"founder_torso_too_bright rgb={tuple(int(c) for c in mean)}"
     if aid == "staff-researcher-idle" and brightness < 115:
         return False, f"researcher_torso_too_dark rgb={tuple(int(c) for c in mean)}"

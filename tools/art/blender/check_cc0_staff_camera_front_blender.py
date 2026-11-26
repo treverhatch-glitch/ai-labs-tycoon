@@ -35,7 +35,7 @@ def _gate_for_imported(obs: list[bpy.types.Object]) -> tuple[bool, str]:
     elev = float(frame.get("staff_elev_deg", 11.0))
     mesh_obs = [o for o in obs if o.type == "MESH"]
     cam, _ = rig.frame_staff_front_quarter(
-        mesh_obs, lens_mm=50.0, margin=1.38, yaw_deg=yaw, elev_deg=elev
+        mesh_obs, lens_mm=50.0, margin=1.46, yaw_deg=yaw, elev_deg=elev
     )
     cam_loc = cam.matrix_world.translation.copy()
     mins, maxs = rig.mesh_bounds_world(mesh_obs)

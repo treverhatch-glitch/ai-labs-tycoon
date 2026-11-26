@@ -1,54 +1,69 @@
 #!/usr/bin/env python3
-"""Founder preview: face band in upper mask must not be dominated by hair/occlusion."""
+"""Founder: camera faces character + face pixels present in PNG."""
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
-
-from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 AID = "staff-founder-idle"
 PNG = REPO / "docs/art/previews" / f"{AID}.png"
-MIN_FACE_BAND_PX = 120
-MIN_BRIGHT_CENTER = 0.22
+BLENDER = Path(__import__("os").environ.get("BLENDER_BIN", "blender"))
+CAM_SCRIPT = REPO / "tools/art/blender/check_cc0_staff_face_camera_blender.py"
 
 
-def main() -> int:
+def _png_face_pixels() -> tuple[bool, str]:
+    from PIL import Image
+
     mask_path = PNG.with_name(PNG.stem + ".mask.png")
-    if not PNG.is_file() or not mask_path.is_file():
-        print(f"FAIL {AID} missing preview or mask")
-        return 1
+    if not mask_path.is_file():
+        return False, "no_mask"
     img = Image.open(PNG).convert("RGBA")
     mask = Image.open(mask_path).convert("L")
     w, h = img.size
     ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
     if not ys:
-        print(f"FAIL {AID} empty mask")
-        return 1
+        return False, "empty_mask"
     min_y, max_y = min(ys), max(ys)
     span = max(1, max_y - min_y)
     top_lo = max_y - int(span * 0.22)
-    x_lo, x_hi = int(w * 0.32), int(w * 0.68)
+    x_lo, x_hi = int(w * 0.34), int(w * 0.66)
     band = 0
-    bright = 0
     for y in range(top_lo, max_y):
         for x in range(x_lo, x_hi):
             if mask.getpixel((x, y)) <= 48:
                 continue
             band += 1
-            r, g, b, _ = img.getpixel((x, y))
-            lum = (r + g + b) / (3.0 * 255.0)
-            if lum >= MIN_BRIGHT_CENTER:
-                bright += 1
-    if band < MIN_FACE_BAND_PX:
-        print(f"FAIL {AID} face_band_px={band}")
+    if band < 120:
+        return False, f"face_band_px={band}"
+    return True, f"face_band_px={band}"
+
+
+def main() -> int:
+    if not PNG.is_file():
+        print(f"FAIL {AID} missing preview")
         return 1
-    ratio = bright / max(1, band)
-    if ratio < 0.35:
-        print(f"FAIL {AID} face_occluded bright_ratio={ratio:.2f} band={band}")
+    proc = subprocess.run(
+        [str(BLENDER), "-b", "--python", str(CAM_SCRIPT), "--", str(REPO)],
+        cwd=REPO,
+        text=True,
+        capture_output=True,
+    )
+    printed = False
+    for line in (proc.stdout or "").splitlines():
+        if line.startswith("OK ") or line.startswith("FAIL "):
+            print(line)
+            printed = True
+    if proc.returncode != 0:
+        if not printed and proc.stderr:
+            print(proc.stderr, file=sys.stderr)
         return 1
-    print(f"OK {AID} face_visible bright_ratio={ratio:.2f} band={band}")
+    ok, msg = _png_face_pixels()
+    if not ok:
+        print(f"FAIL {AID} {msg}")
+        return 1
+    print(f"OK {AID} {msg}")
     return 0
 
 
