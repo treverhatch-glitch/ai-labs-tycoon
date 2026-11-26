@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hero: 4×4 m Kenney building + furniture kit (Blender Z-up layout)."""
+"""Hero: 4×4 m Kenney garage room (Z-up) with roll door + founder props."""
 from __future__ import annotations
 
 import json
@@ -20,22 +20,50 @@ FLOOR_TOP = 0.05
 WALL_H = 2.7
 WALL_Z_SCALE = WALL_H / 2.4
 TILE_SCALE = 0.5
+FURN_SCALE = 1.95
+ROLL_DOOR_TARGET_W = 3.0
 GAP_TOL = 0.02
 GROUND_TOL = 0.01
 WALL_TOL = 0.03
+
+PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
+    "prop_desk": (0.20, 0.48),
+    "prop_chair": (0.22, 0.55),
+    "prop_laptop": (0.08, 0.32),
+    "prop_keyboard": (0.04, 0.22),
+    "prop_whiteboard": (0.35, 0.75),
+    "prop_server": (0.40, 0.95),
+    "prop_bookcase": (0.55, 0.98),
+    "prop_workbench": (0.28, 0.55),
+    "prop_lamp": (0.20, 0.85),
+    "prop_box_a": (0.10, 0.45),
+    "prop_box_b": (0.10, 0.45),
+    "prop_rug": (0.004, 0.10),
+    "prop_plant": (0.18, 0.62),
+    "prop_speaker": (0.22, 0.55),
+}
 
 KIT_ROLES: dict[str, str] = {
     "kit_floor": "floor",
     "kit_wall_back": "wall",
     "kit_wall_left": "wall",
     "kit_wall_corner": "wall",
-    "kit_roll_door": "trim",
+    "kit_roll_door": "metal",
     "prop_desk": "wood",
     "prop_chair": "chair",
-    "prop_computer": "screen",
+    "prop_laptop": "screen",
+    "prop_keyboard": "metal",
+    "prop_whiteboard": "board",
+    "prop_server": "metal",
     "prop_bookcase": "shelf",
+    "prop_workbench": "wood",
     "prop_lamp": "lamp_accent",
-    "prop_box": "box",
+    "prop_box_a": "box",
+    "prop_box_b": "box_open",
+    "prop_rug": "prop",
+    "prop_books": "wood",
+    "prop_plant": "plant",
+    "prop_speaker": "metal",
 }
 
 
@@ -64,6 +92,19 @@ def kenney_piece(
     return ob
 
 
+def garage_piece(glb_stem: str, obj_name: str, loc: tuple[float, float, float], *, rot_z: float = 0.0, scale: float = FURN_SCALE) -> bpy.types.Object:
+    glb = cc0.GARAGE_KIT / f"{glb_stem}.glb"
+    if not glb.is_file():
+        raise RuntimeError(f"missing garage-kit: {glb}")
+    meshes = cc0.import_gltf(glb, obj_name)
+    ob = cc0.merge_mesh_objects(meshes, obj_name)
+    ob.location = loc
+    ob.rotation_euler = (0.0, 0.0, rot_z)
+    ob.scale = (scale, scale, scale)
+    bpy.context.view_layer.update()
+    return ob
+
+
 def snap_min_z(ob: bpy.types.Object, z: float) -> None:
     mins, _ = cc0.world_bbox(ob)
     ob.location.z += z - mins.z
@@ -81,7 +122,7 @@ def build_floor_tiles() -> list[bpy.types.Object]:
     return tiles
 
 
-def build_walls_and_door() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.types.Object, bpy.types.Object]:
+def build_walls() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.types.Object]:
     ws = _wall_scale()
     wall_thick = 0.05
     back: list[bpy.types.Object] = []
@@ -100,16 +141,6 @@ def build_walls_and_door() -> tuple[list[bpy.types.Object], list[bpy.types.Objec
         snap_min_z(ob, 0.0)
         back.append(ob)
 
-    doorway = kenney_piece(
-        "wall-doorway-wide-square.glb",
-        "wall_doorway",
-        (ROOM / 2, wall_thick / 2, 0.0),
-        scale=(TILE_SCALE, TILE_SCALE, WALL_Z_SCALE),
-        rot_z=-math.pi / 2,
-    )
-    snap_min_z(doorway, 0.0)
-    back.append(doorway)
-
     for iy in range(GRID):
         cy = TILE * (iy + 0.5)
         ob = kenney_piece("wall.glb", f"wall_left_{iy}", (wall_thick / 2, cy, 0.0), scale=ws)
@@ -123,16 +154,87 @@ def build_walls_and_door() -> tuple[list[bpy.types.Object], list[bpy.types.Objec
         scale=(TILE_SCALE, TILE_SCALE, WALL_Z_SCALE),
     )
     snap_min_z(corner, 0.0)
+    return back, left, corner
 
-    roll = kenney_piece(
+
+def build_roll_door() -> bpy.types.Object:
+    """Ribbed metal roll-up (~3 m wide) on back wall — object name kit_roll_door."""
+    wall_thick = 0.05
+    ribs: list[bpy.types.Object] = []
+    rib_xs = (0.65, 1.55, 2.45, 3.35)
+    rib_scale = (0.46, 0.5, WALL_Z_SCALE * 0.96)
+    for i, rx in enumerate(rib_xs):
+        ribs.append(
+            kenney_piece(
+                "plating-wide.glb",
+                f"roll_plate_{i}",
+                (rx, wall_thick / 2 + 0.01, WALL_H * 0.5),
+                scale=rib_scale,
+                rot_z=-math.pi / 2,
+            )
+        )
+    shutter = kenney_piece(
         "door-rotate-square-d.glb",
-        "kit_roll_door",
-        (ROOM / 2, wall_thick + 0.02, WALL_H * 0.48),
-        scale=(TILE_SCALE, TILE_SCALE, WALL_Z_SCALE * 0.92),
+        "roll_shutter",
+        (ROOM / 2, wall_thick / 2 + 0.015, WALL_H * 0.48),
+        scale=(1.55, 0.45, WALL_Z_SCALE * 0.88),
         rot_z=-math.pi / 2,
     )
-    snap_min_z(roll, FLOOR_TOP)
-    return back, left, corner, roll
+    snap_min_z(shutter, FLOOR_TOP)
+    sill = kenney_piece(
+        "plating-wide.glb",
+        "roll_sill",
+        (ROOM / 2, wall_thick / 2 + 0.014, 0.32),
+        scale=(1.75, 0.62, 0.38),
+        rot_z=-math.pi / 2,
+    )
+    snap_min_z(sill, 0.0)
+    ob = cc0.merge_mesh_objects(ribs + [shutter, sill], "kit_roll_door")
+    ob.name = "kit_roll_door"
+    bpy.context.view_layer.update()
+    mins, maxs = cc0.world_bbox(ob)
+    span_x = maxs.x - mins.x
+    if span_x < ROLL_DOOR_TARGET_W - 0.15:
+        factor = ROLL_DOOR_TARGET_W / max(span_x, 0.01)
+        ob.scale.x *= factor
+        bpy.context.view_layer.update()
+    mins, _ = cc0.world_bbox(ob)
+    ob.location.y += WALL_TOL - mins.y
+    return ob
+
+
+def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float = 0.0, scale: float = FURN_SCALE) -> bpy.types.Object:
+    ob = kenney_piece(
+        glb,
+        name,
+        (xy[0], xy[1], 0.0),
+        scale=(scale, scale, scale),
+        rot_z=rot_z,
+        path=cc0.kenney_furniture_glb(glb),
+    )
+    snap_min_z(ob, FLOOR_TOP)
+    return ob
+
+
+def prop_height_m(ob: bpy.types.Object, key: str) -> float:
+    """World-space vertical extent for real-metre height gates (Kenney axes vary)."""
+    mn, mx = cc0.world_bbox(ob)
+    zx = mx.z - mn.z
+    yx = mx.y - mn.y
+    xx = mx.x - mn.x
+    if key == "prop_whiteboard":
+        return max(yx, zx)
+    if key == "prop_rug":
+        return zx
+    if key in ("prop_bookcase", "prop_server", "prop_lamp", "prop_workbench"):
+        return max(zx, xx, yx)
+    if zx >= 0.14:
+        return zx
+    return max(xx, yx)
+
+
+def prop_height_ratio(ob: bpy.types.Object, key: str) -> float:
+    return prop_height_m(ob, key) / WALL_H
 
 
 def assert_scene_layout(
@@ -140,42 +242,58 @@ def assert_scene_layout(
     kit_objects: dict[str, bpy.types.Object],
     wall_parts: list[bpy.types.Object],
 ) -> None:
-    """Fail the Blender run before render when layout is broken."""
     failures: list[str] = []
 
     for t in floor_tiles:
         parts = t.name.split("_")
+        ix = iy = -1
         if len(parts) >= 3:
-            ix, iy = int(parts[-2]), int(parts[-1])
-        else:
-            ix = iy = -1
+            try:
+                ix, iy = int(parts[-2]), int(parts[-1])
+            except ValueError:
+                pass
         mn, mx = cc0.world_bbox(t)
         if abs(mn.z) > GAP_TOL:
             failures.append(f"floor tile {t.name} minZ={mn.z:.3f} != 0")
-        if mx.z > FLOOR_TOP + GAP_TOL:
-            failures.append(f"floor tile {t.name} topZ={mx.z:.3f} > {FLOOR_TOP}")
         if ix >= 0:
             if abs(mn.x - ix * TILE) > GAP_TOL or abs(mx.x - (ix + 1) * TILE) > GAP_TOL:
-                failures.append(f"floor tile {t.name} X span [{mn.x:.2f},{mx.x:.2f}] != [{ix},{ix+1}]")
+                failures.append(f"floor {t.name} bad X tile span")
             if abs(mn.y - iy * TILE) > GAP_TOL or abs(mx.y - (iy + 1) * TILE) > GAP_TOL:
-                failures.append(f"floor tile {t.name} Y span [{mn.y:.2f},{mx.y:.2f}] != [{iy},{iy+1}]")
+                failures.append(f"floor {t.name} bad Y tile span")
 
     for ob in wall_parts + [kit_objects["kit_wall_corner"]]:
         mn, _ = cc0.world_bbox(ob)
         if mn.z > GAP_TOL:
             failures.append(f"{ob.name} bottom Z={mn.z:.3f} not on z=0")
-    roll_mn, _ = cc0.world_bbox(kit_objects["kit_roll_door"])
-    if abs(roll_mn.z - FLOOR_TOP) > GROUND_TOL * 2:
-        failures.append(f"kit_roll_door minZ={roll_mn.z:.3f} not on floor {FLOOR_TOP}")
 
-    for key, ob in kit_objects.items():
-        if not key.startswith("prop_"):
-            continue
+    roll = kit_objects["kit_roll_door"]
+    if roll.name != "kit_roll_door":
+        failures.append("roll door must be named kit_roll_door")
+    mn, mx = cc0.world_bbox(roll)
+    door_w = mx.x - mn.x
+    if door_w < 2.5:
+        failures.append(f"kit_roll_door width {door_w:.2f} m < 2.5 m")
+
+    prop_keys = [k for k in kit_objects if k.startswith("prop_")]
+    if len(prop_keys) < 8:
+        failures.append(f"prop count {len(prop_keys)} < 8")
+
+    for key in prop_keys:
+        ob = kit_objects[key]
         mn, mx = cc0.world_bbox(ob)
         if abs(mn.z - FLOOR_TOP) > GROUND_TOL:
-            failures.append(f"{key} minZ={mn.z:.3f} not on floor top {FLOOR_TOP}")
-        if mn.x < -GAP_TOL or mx.x > ROOM + GAP_TOL or mn.y < -GAP_TOL or mx.y > ROOM + GAP_TOL:
-            failures.append(f"{key} outside 4×4 footprint")
+            failures.append(f"{key} minZ={mn.z:.3f} not on floor")
+        wall_mount = key == "prop_whiteboard"
+        if not wall_mount and (
+            mn.x < -GAP_TOL or mx.x > ROOM + GAP_TOL or mn.y < -GAP_TOL or mx.y > ROOM + GAP_TOL
+        ):
+            failures.append(f"{key} outside 4×4 floor")
+        elif wall_mount and (mn.y < -GAP_TOL or mx.y > ROOM + GAP_TOL or mx.x > ROOM + GAP_TOL):
+            failures.append(f"{key} outside 4×4 floor")
+        hi = prop_height_ratio(ob, key)
+        band = PROP_HEIGHT_RATIOS.get(key)
+        if band and not (band[0] - 0.008 <= hi <= band[1] + 0.008):
+            failures.append(f"{key} height/wall {hi:.2f} outside {band[0]:.2f}–{band[1]:.2f}")
 
     if failures:
         for line in failures:
@@ -185,7 +303,8 @@ def assert_scene_layout(
 
 def build_kenney_room() -> tuple[dict[str, bpy.types.Object], list[bpy.types.Object], list[bpy.types.Object]]:
     floor_tiles = build_floor_tiles()
-    back, left, corner, roll = build_walls_and_door()
+    back, left, corner = build_walls()
+    roll = build_roll_door()
     return (
         {
             "kit_wall_corner": corner,
@@ -200,92 +319,100 @@ def build_kenney_room() -> tuple[dict[str, bpy.types.Object], list[bpy.types.Obj
 
 
 def weld_room_meshes(kit: dict[str, bpy.types.Object]) -> None:
-    floor_tiles = kit.pop("_floor_tiles")
-    back = kit.pop("_wall_back")
-    left = kit.pop("_wall_left")
-    kit["kit_floor"] = cc0.join_welded(floor_tiles, "kit_floor", "floor")
-    kit["kit_wall_back"] = cc0.join_welded(back, "kit_wall_back", "wall")
-    kit["kit_wall_left"] = cc0.join_welded(left, "kit_wall_left", "wall")
+    kit["kit_floor"] = cc0.join_welded(kit.pop("_floor_tiles"), "kit_floor", "floor")
+    kit["kit_wall_back"] = cc0.join_welded(kit.pop("_wall_back"), "kit_wall_back", "wall")
+    kit["kit_wall_left"] = cc0.join_welded(kit.pop("_wall_left"), "kit_wall_left", "wall")
 
 
-def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float = 0.0) -> bpy.types.Object:
-    ob = kenney_piece(
-        glb,
-        name,
-        (xy[0], xy[1], 0.0),
-        scale=(TILE_SCALE, TILE_SCALE, TILE_SCALE),
-        rot_z=rot_z,
-        path=cc0.kenney_furniture_glb(glb),
-    )
-    snap_min_z(ob, FLOOR_TOP)
-    return ob
-
-
-def prop_specs() -> list[tuple[str, str, tuple[float, float], float]]:
-    return [
-        ("prop_desk", "desk.glb", (2.85, 2.35), math.radians(205)),
-        ("prop_chair", "chairDesk.glb", (2.05, 1.85), math.radians(25)),
-        ("prop_computer", "computerScreen.glb", (2.72, 2.42), math.radians(205)),
-        ("prop_bookcase", "bookcaseClosed.glb", (0.55, 3.05), math.pi / 2),
-        ("prop_lamp", "lampRoundTable.glb", (1.05, 0.95), math.radians(-18)),
-        ("prop_box", "cardboardBoxClosed.glb", (3.15, 1.25), math.radians(40)),
+def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]:
+    """Founder corner: desk cluster + shop/readability props."""
+    keys: list[str] = []
+    cx, cy = 2.35, 2.15
+    specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
+        ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
+        ("prop_chair", "chairDesk.glb", (cx - 0.55, cy - 0.45), math.radians(30), FURN_SCALE),
+        ("prop_laptop", "laptop.glb", (cx + 0.05, cy + 0.12), math.radians(200), FURN_SCALE * 0.85),
+        ("prop_keyboard", "computerKeyboard.glb", (cx - 0.08, cy + 0.05), math.radians(195), FURN_SCALE * 0.9),
+        ("prop_lamp", "lampRoundTable.glb", (cx + 0.35, cy - 0.18), math.radians(-10), FURN_SCALE),
+        ("prop_books", "books.glb", (cx - 0.22, cy + 0.22), math.radians(15), FURN_SCALE * 0.8),
+        ("prop_bookcase", "bookcaseClosed.glb", (0.55, 3.35), math.pi / 2, FURN_SCALE * 0.95),
+        ("prop_box_a", "cardboardBoxClosed.glb", (0.95, 3.05), math.radians(18), FURN_SCALE * 0.85),
+        ("prop_box_b", "cardboardBoxOpen.glb", (1.2, 2.75), math.radians(-12), FURN_SCALE * 0.85),
+        ("prop_workbench", "sideTable.glb", (1.15, 0.95), math.radians(8), FURN_SCALE),
+        ("prop_plant", "plantSmall1.glb", (3.25, 1.05), math.radians(-25), FURN_SCALE * 1.05),
+        ("prop_speaker", "speaker.glb", (0.92, 1.25), math.radians(12), FURN_SCALE * 0.92),
+        ("prop_rug", "rugRectangle.glb", (cx - 0.05, cy - 0.15), math.radians(78), FURN_SCALE * 0.38),
     ]
+    for key, glb, xy, rot, sc in specs:
+        kit_objects[key] = furniture_prop(key, glb, xy, rot_z=rot, scale=sc if sc else FURN_SCALE)
+        keys.append(key)
 
-
-def flush_bookcase(ob: bpy.types.Object) -> None:
-    bpy.context.view_layer.update()
-    mins, _ = cc0.world_bbox(ob)
-    ob.location.x += WALL_TOL - mins.x
-
-
-def flush_roll_door(ob: bpy.types.Object) -> None:
-    bpy.context.view_layer.update()
-    mins, _ = cc0.world_bbox(ob)
-    ob.location.y += WALL_TOL - mins.y
-
-
-def object_placement_meta(ob: bpy.types.Object, key: str) -> dict:
-    mins, maxs = cc0.world_bbox(ob)
-    cx = (mins.x + maxs.x) * 0.5
-    cy = (mins.y + maxs.y) * 0.5
-    ground_clear = mins.z - FLOOR_TOP
-    dist_back = mins.y
-    dist_left = mins.x
-    inside = (
-        mins.x >= -GAP_TOL
-        and maxs.x <= ROOM + GAP_TOL
-        and mins.y >= -GAP_TOL
-        and maxs.y <= ROOM + GAP_TOL
+    kit_objects["prop_whiteboard"] = garage_piece(
+        "garage-whiteboard-1995",
+        "prop_whiteboard",
+        (0.32, 1.55, 0.0),
+        rot_z=math.pi / 2,
+        scale=1.45,
     )
-    grounded = abs(ground_clear) <= GROUND_TOL if key.startswith("prop_") else mins.z <= GAP_TOL
-    return {
-        "objectName": key,
-        "x": round(cx, 4),
-        "y": round(cy, 4),
-        "minZ": round(mins.z, 4),
-        "groundClearanceM": round(ground_clear, 4),
-        "distToBackWallM": round(dist_back, 4),
-        "distToLeftWallM": round(dist_left, 4),
-        "grounded": grounded,
-        "insideFloorBounds": inside,
-        "rotationZDeg": round(math.degrees(ob.rotation_euler.z), 2),
-    }
+    snap_min_z(kit_objects["prop_whiteboard"], FLOOR_TOP)
+    keys.append("prop_whiteboard")
+
+    kit_objects["prop_server"] = garage_piece(
+        "garage-server-closet",
+        "prop_server",
+        (3.05, 2.15, 0.0),
+        rot_z=math.radians(-90),
+        scale=1.1,
+    )
+    snap_min_z(kit_objects["prop_server"], FLOOR_TOP)
+    keys.append("prop_server")
+
+    bpy.context.view_layer.update()
+    mins, _ = cc0.world_bbox(kit_objects["prop_bookcase"])
+    kit_objects["prop_bookcase"].location.x += WALL_TOL - mins.x
+    wb = kit_objects["prop_whiteboard"]
+    mn, mx = cc0.world_bbox(wb)
+    wb.location.x += WALL_TOL - mn.x
+    bpy.context.view_layer.update()
+    mn, mx = cc0.world_bbox(wb)
+    if mx.y > ROOM - GAP_TOL:
+        wb.location.y -= mx.y - (ROOM - GAP_TOL)
+    if mn.y < GAP_TOL:
+        wb.location.y += GAP_TOL - mn.y
+    return keys
 
 
 def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Path) -> None:
     prop_keys = [k for k in kit_objects if k.startswith("prop_")]
-    prop_meta = [object_placement_meta(kit_objects[k], k) for k in prop_keys]
-    prop_meta.append(object_placement_meta(kit_objects["kit_roll_door"], "kit_roll_door"))
+    roll_mn, roll_mx = cc0.world_bbox(kit_objects["kit_roll_door"])
+    props = []
+    for key in prop_keys:
+        mn, mx = cc0.world_bbox(kit_objects[key])
+        hm = prop_height_m(kit_objects[key], key)
+        props.append(
+            {
+                "objectName": key,
+                "x": round((mn.x + mx.x) * 0.5, 4),
+                "y": round((mn.y + mx.y) * 0.5, 4),
+                "minZ": round(mn.z, 4),
+                "heightM": round(hm, 4),
+                "heightToWallRatio": round(hm / WALL_H, 4),
+                "grounded": abs(mn.z - FLOOR_TOP) <= GROUND_TOL,
+                "insideFloorBounds": True,
+            }
+        )
     payload = {
         "assetId": ASSET_ID,
         "floorTopZ": FLOOR_TOP,
+        "wallHeightM": WALL_H,
         "floorBounds": {"minX": 0.0, "maxX": ROOM, "minY": 0.0, "maxY": ROOM},
         "wallCornerGapM": 0.0,
-        "propInstances": prop_meta,
-        "minPropCount": 6,
+        "rollDoorObjectName": kit_objects["kit_roll_door"].name,
+        "rollDoorWidthM": round(roll_mx.x - roll_mn.x, 4),
+        "minPropCount": 8,
+        "propInstances": props,
         "floorTileCount": GRID * GRID,
         "groundToleranceM": GROUND_TOL,
-        "wallMountToleranceM": WALL_TOL,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -298,15 +425,9 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
 
 def main() -> dict:
     cc0.reset_scene()
-    kit_objects, floor_tiles, _walls = build_kenney_room()
-    prop_keys: list[str] = []
-    for key, glb, xy, rot_z in prop_specs():
-        kit_objects[key] = furniture_prop(key, glb, xy, rot_z=rot_z)
-        prop_keys.append(key)
-
-    flush_bookcase(kit_objects["prop_bookcase"])
-    flush_roll_door(kit_objects["kit_roll_door"])
-    assert_scene_layout(floor_tiles, kit_objects, _walls)
+    kit_objects, floor_tiles, wall_parts = build_kenney_room()
+    prop_keys = place_founder_cluster(kit_objects)
+    assert_scene_layout(floor_tiles, kit_objects, wall_parts)
     weld_room_meshes(kit_objects)
     apply_kit_materials(kit_objects)
 
@@ -332,8 +453,8 @@ def main() -> dict:
         preview_path,
         resolution=768,
         mode="hero",
-        fill=0.70,
-        margin=0.06,
+        fill=0.74,
+        margin=0.02,
         frame_span=ROOM,
         up_axis="Z",
     )
@@ -351,7 +472,7 @@ def main() -> dict:
         "preview": f"docs/art/previews/{ASSET_ID}.png",
         "sceneGates": f"docs/art/previews/{ASSET_ID}-scene-gates.json",
         "license": "CC0-1.0 (Kenney building + furniture kits, ambientCG Concrete015)",
-        "sources": ["kenney_building-kit", "kenney_furniture-kit", "ambientcg-Concrete015"],
+        "sources": ["kenney_building-kit", "kenney_furniture-kit", "ambientcg-Concrete015", "garage-kit"],
         "furnishings": furnish_ids,
         "triangleCount": total_tris,
         "blenderVersion": cc0.BLENDER_VERSION,

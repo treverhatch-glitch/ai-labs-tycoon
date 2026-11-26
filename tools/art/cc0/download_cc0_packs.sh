@@ -61,7 +61,8 @@ echo "=== Kenney Furniture Kit (CC0 mirror subset) ==="
 mkdir -p "kenney_furniture-kit/Models/GLB format"
 FURN_MIRROR="https://raw.githubusercontent.com/RetroDECK/RetroQUEST/main/assets/kenney_furniture-kit/Models/GLTF%20format"
 for f in desk.glb chairDesk.glb computerScreen.glb computerKeyboard.glb \
-  bookcaseClosed.glb lampRoundTable.glb cardboardBoxClosed.glb cardboardBoxOpen.glb plantSmall1.glb; do
+  bookcaseClosed.glb lampRoundTable.glb cardboardBoxClosed.glb cardboardBoxOpen.glb \
+  laptop.glb rugRectangle.glb sideTable.glb speaker.glb books.glb; do
   if [[ ! -f "kenney_furniture-kit/Models/GLB format/$f" ]]; then
     curl -fsSL -o "kenney_furniture-kit/Models/GLB format/$f" "$FURN_MIRROR/$f"
   fi

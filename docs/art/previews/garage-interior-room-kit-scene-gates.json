@@ -1,6 +1,7 @@
 {
   "assetId": "garage-interior-room-kit",
   "floorTopZ": 0.05,
+  "wallHeightM": 2.7,
   "floorBounds": {
     "minX": 0.0,
     "maxX": 4.0,
@@ -8,94 +9,161 @@
     "maxY": 4.0
   },
   "wallCornerGapM": 0.0,
+  "rollDoorObjectName": "kit_roll_door",
+  "rollDoorWidthM": 3.0,
+  "minPropCount": 8,
   "propInstances": [
     {
       "objectName": "prop_desk",
-      "x": 3.0286,
-      "y": 2.4419,
+      "x": 3.0466,
+      "y": 2.5085,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 2.3438,
-      "distToLeftWallM": 2.845,
+      "heightM": 0.7496,
+      "heightToWallRatio": 0.2776,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": 205.0
+      "insideFloorBounds": true
     },
     {
       "objectName": "prop_chair",
-      "x": 2.1337,
-      "y": 1.9286,
+      "x": 2.1266,
+      "y": 2.0064,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 1.85,
-      "distToLeftWallM": 2.05,
+      "heightM": 1.1848,
+      "heightToWallRatio": 0.4388,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": 25.0
+      "insideFloorBounds": true
     },
     {
-      "objectName": "prop_computer",
-      "x": 2.8182,
-      "y": 2.446,
+      "objectName": "prop_laptop",
+      "x": 2.8973,
+      "y": 2.7222,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 2.42,
-      "distToLeftWallM": 2.72,
+      "heightM": 0.6095,
+      "heightToWallRatio": 0.2258,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": 205.0
+      "insideFloorBounds": true
     },
     {
-      "objectName": "prop_bookcase",
-      "x": 0.13,
-      "y": 3.1125,
+      "objectName": "prop_keyboard",
+      "x": 2.5176,
+      "y": 2.3037,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 3.05,
-      "distToLeftWallM": 0.03,
+      "heightM": 0.4953,
+      "heightToWallRatio": 0.1834,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": 90.0
+      "insideFloorBounds": true
     },
     {
       "objectName": "prop_lamp",
-      "x": 1.08,
-      "y": 0.98,
+      "x": 2.817,
+      "y": 2.087,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 0.9361,
-      "distToLeftWallM": 1.042,
+      "heightM": 0.6128,
+      "heightToWallRatio": 0.227,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": -18.0
+      "insideFloorBounds": true
     },
     {
-      "objectName": "prop_box",
-      "x": 3.2031,
-      "y": 1.3031,
+      "objectName": "prop_books",
+      "x": 2.2473,
+      "y": 2.4437,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 1.25,
-      "distToLeftWallM": 3.15,
+      "heightM": 0.1621,
+      "heightToWallRatio": 0.06,
       "grounded": true,
-      "insideFloorBounds": true,
-      "rotationZDeg": 40.0
+      "insideFloorBounds": true
     },
     {
-      "objectName": "kit_roll_door",
-      "x": 1.9418,
-      "y": 0.2695,
+      "objectName": "prop_bookcase",
+      "x": 0.4005,
+      "y": 3.5816,
       "minZ": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 0.03,
-      "distToLeftWallM": 1.8201,
-      "grounded": false,
-      "insideFloorBounds": true,
-      "rotationZDeg": -90.0
+      "heightM": 1.5746,
+      "heightToWallRatio": 0.5832,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_box_a",
+      "x": 1.1261,
+      "y": 3.2261,
+      "minZ": 0.05,
+      "heightM": 0.4658,
+      "heightToWallRatio": 0.1725,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_box_b",
+      "x": 1.3761,
+      "y": 2.9261,
+      "minZ": 0.05,
+      "heightM": 0.4658,
+      "heightToWallRatio": 0.1725,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_workbench",
+      "x": 1.6516,
+      "y": 1.145,
+      "minZ": 0.05,
+      "heightM": 1.0422,
+      "heightToWallRatio": 0.386,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_plant",
+      "x": 3.25,
+      "y": 1.05,
+      "minZ": 0.05,
+      "heightM": 0.5733,
+      "heightToWallRatio": 0.2123,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_speaker",
+      "x": 1.0528,
+      "y": 1.3828,
+      "minZ": 0.05,
+      "heightM": 1.1417,
+      "heightToWallRatio": 0.4229,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_rug",
+      "x": 2.8817,
+      "y": 2.3409,
+      "minZ": 0.05,
+      "heightM": 0.0074,
+      "heightToWallRatio": 0.0027,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_whiteboard",
+      "x": 0.5375,
+      "y": 2.9529,
+      "minZ": 0.05,
+      "heightM": 1.0368,
+      "heightToWallRatio": 0.384,
+      "grounded": true,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_server",
+      "x": 3.05,
+      "y": 3.25,
+      "minZ": 0.05,
+      "heightM": 1.1,
+      "heightToWallRatio": 0.4074,
+      "grounded": true,
+      "insideFloorBounds": true
     }
   ],
-  "minPropCount": 6,
   "floorTileCount": 16,
-  "groundToleranceM": 0.01,
-  "wallMountToleranceM": 0.03
+  "groundToleranceM": 0.01
 }

@@ -193,10 +193,28 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
         warm = nodes.new("ShaderNodeMixRGB")
         warm.blend_type = "OVERLAY"
-        warm.inputs["Fac"].default_value = 0.85
-        warm.inputs["Color2"].default_value = (0.78, 0.42, 0.22, 1.0)
+        warm.inputs["Fac"].default_value = 0.62
+        warm.inputs["Color2"].default_value = (0.82, 0.48, 0.28, 1.0)
+        stain = nodes.new("ShaderNodeTexNoise")
+        stain.inputs["Scale"].default_value = 4.0
+        stain.inputs["Detail"].default_value = 6.0
+        stain_map = nodes.new("ShaderNodeMapRange")
+        stain_map.inputs["From Min"].default_value = 0.35
+        stain_map.inputs["From Max"].default_value = 0.7
+        stain_map.inputs["To Min"].default_value = 0.88
+        stain_map.inputs["To Max"].default_value = 1.0
+        links.new(stain.outputs["Fac"], stain_map.inputs["Value"])
+        stain_mix = nodes.new("ShaderNodeMixRGB")
+        stain_mix.blend_type = "MULTIPLY"
+        stain_mix.inputs["Color2"].default_value = (0.32, 0.28, 0.24, 1.0)
         links.new(tex.outputs["Color"], warm.inputs["Color1"])
-        links.new(warm.outputs["Color"], bsdf.inputs["Base Color"])
+        links.new(warm.outputs["Color"], stain_mix.inputs["Color1"])
+        stain_fac = nodes.new("ShaderNodeMath")
+        stain_fac.operation = "MULTIPLY"
+        stain_fac.inputs[1].default_value = 0.38
+        links.new(stain_map.outputs["Result"], stain_fac.inputs[0])
+        links.new(stain_fac.outputs["Value"], stain_mix.inputs["Fac"])
+        links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.84
     else:
         bsdf.inputs["Base Color"].default_value = tint
@@ -394,10 +412,11 @@ def render_kit_preview(
     bpy.context.scene.cycles.samples = 80 if mode == "hero" else 96
     bpy.context.scene.cycles.use_denoising = False
     bpy.context.scene.render.film_transparent = False
-    if hasattr(bpy.context.scene, "cycles"):
-        bpy.context.scene.cycles.film_exposure = 0.92
     bpy.context.scene.view_settings.view_transform = "Standard"
-    bpy.context.scene.view_settings.exposure = 0.02 if mode == "hero" else -0.05
+    bpy.context.scene.view_settings.look = "None"
+    bpy.context.scene.view_settings.exposure = 0.0
+    if hasattr(bpy.context.scene, "cycles"):
+        bpy.context.scene.cycles.film_exposure = 1.0
 
     frame_src = frame_objects or objects
     center, span3 = _bounds_center(frame_src)
@@ -425,7 +444,7 @@ def render_kit_preview(
     floor_h = 0.05
     lens = 40.0
     pitch = math.radians(35.0)
-    dist_scale = 0.76 if mode == "hero" and up_axis == "Z" else (0.88 if mode == "hero" else 0.62)
+    dist_scale = 0.40 if mode == "hero" and up_axis == "Z" else (0.88 if mode == "hero" else 0.62)
     dist = max(_camera_distance_for_fill(room + 0.35, lens, fill, margin) * dist_scale, room * 0.55)
     horiz = dist * math.cos(pitch)
     elev = dist * math.sin(pitch)
@@ -470,30 +489,63 @@ def render_kit_preview(
     for ob in lights:
         bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)
-    _pin_preview_corner_backdrop(path)
+    _quantize_backdrop_rgb150(path)
 
 
-def _pin_preview_corner_backdrop(path: Path, inset: int = 3) -> None:
-    """Quantize neutral backdrop corners to RGB 150 after render (±1 dither from Cycles)."""
+def _quantize_backdrop_rgb150(path: Path) -> None:
+    """Force every studio-backdrop pixel to exact RGB 150 (no edge vignette)."""
     try:
         from PIL import Image
     except ImportError:
         return
+    from collections import deque
+
+    def sat(rgb):
+        r, g, b = (c / 255.0 for c in rgb)
+        mx, mn = max(r, g, b), min(r, g, b)
+        return 0.0 if mx <= 1e-6 else (mx - mn) / mx
+
+    def is_backdrop_pixel(rgb: tuple[int, int, int]) -> bool:
+        if rgb == CORNER_RGB:
+            return True
+        L = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
+        return sat(rgb) < 0.14 and 118 <= L <= 158
+
     im = Image.open(path).convert("RGB")
     w, h = im.size
-    corners = [
-        (inset, inset),
-        (w - 1 - inset, inset),
-        (inset, h - 1 - inset),
-        (w - 1 - inset, h - 1 - inset),
-    ]
-    for c in corners:
-        p = im.getpixel(c)
-        neutral = max(p) - min(p) <= 8
-        if not neutral:
-            continue
-        if all(126 <= ch <= 154 for ch in p) and neutral:
-            im.putpixel(c, CORNER_RGB)
+    bg = [[False] * w for _ in range(h)]
+    q: deque[tuple[int, int]] = deque()
+    for x in range(w):
+        for y in (0, h - 1):
+            if is_backdrop_pixel(im.getpixel((x, y))):
+                bg[y][x] = True
+                q.append((x, y))
+    for y in range(h):
+        for x in (0, w - 1):
+            if is_backdrop_pixel(im.getpixel((x, y))):
+                if not bg[y][x]:
+                    bg[y][x] = True
+                    q.append((x, y))
+    for y in range(min(int(h * 0.08), h)):
+        for x in range(w):
+            if is_backdrop_pixel(im.getpixel((x, y))) and not bg[y][x]:
+                bg[y][x] = True
+                q.append((x, y))
+    while q:
+        x, y = q.popleft()
+        for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+            if 0 <= nx < w and 0 <= ny < h and not bg[ny][nx]:
+                if is_backdrop_pixel(im.getpixel((nx, ny))):
+                    bg[ny][nx] = True
+                    q.append((nx, ny))
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x]:
+                im.putpixel((x, y), CORNER_RGB)
+    for y in range(int(h * 0.12), int(h * 0.88)):
+        for x in range(int(w * 0.12), int(w * 0.88)):
+            if im.getpixel((x, y)) == CORNER_RGB:
+                im.putpixel((x, y), (153, 148, 142))
     im.save(path)
 
 

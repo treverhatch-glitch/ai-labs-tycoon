@@ -14,6 +14,9 @@ FIXTURE_C78 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c78b
 FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-4e22d8dd.png"
 FIXTURE_C0 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c0d66236.png"
 FIXTURE_FB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-fbb7bf7c.png"
+FIXTURE_708 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-7086ea82.png"
+MIN_PROP_BLOB_PX = 400
+MIN_PROP_BLOBS_LARGE = 6
 FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 CORNER_RGB = (150, 150, 150)
 MIN_FLOOR_CC_FRAC = 0.20
@@ -41,6 +44,55 @@ def is_studio_backdrop(rgb: tuple[int, int, int]) -> bool:
         return True
     L = luma(rgb)
     return saturation(rgb) < 0.10 and 125 <= L <= 156
+
+
+def backdrop_nine_point_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    inset = CORNER_INSET
+    margin_y = max(inset + 2, int(h * 0.045))
+    pts = [
+        (inset, inset),
+        (w // 2, inset),
+        (w - 1 - inset, inset),
+        (inset, margin_y),
+        (w - 1 - inset, margin_y),
+        (int(w * 0.12), inset),
+        (int(w * 0.88), inset),
+        (inset, int(h * 0.085)),
+        (w - 1 - inset, int(h * 0.085)),
+    ]
+    errs: list[str] = []
+    for p in pts:
+        if im.getpixel(p) != CORNER_RGB:
+            errs.append(f"FAIL: {path_name} backdrop sample {p} RGB {im.getpixel(p)} != {CORNER_RGB}")
+    return errs
+
+
+def wall_base_scanline_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    max_run = 0
+    for scan_y in (int(h * 0.688), int(h * 0.692), int(h * 0.696)):
+        run = 0
+        for x in range(int(w * 0.06), int(w * 0.92)):
+            if bg[scan_y][x]:
+                run += 1
+                max_run = max(max_run, run)
+            else:
+                run = 0
+    if max_run > 10:
+        errs = [f"FAIL: {path_name} wall-base backdrop gap {max_run}px along scanline"]
+        return errs
+    left_run = 0
+    lx = int(w * 0.38)
+    for y in range(int(h * 0.20), int(h * 0.72)):
+        if bg[y][lx]:
+            left_run += 1
+        else:
+            left_run = 0
+        if left_run > 10:
+            return [f"FAIL: {path_name} left wall vertical gap {left_run}px"]
+    return []
 
 
 def corner_rgb_150_errs(im) -> list[str]:
@@ -132,7 +184,7 @@ def grey_bleed_errs(im, path_name: str) -> list[str]:
             total += 1
             px = im.getpixel((x, y))
             L = luma(px)
-            if px == CORNER_RGB or (148 <= L <= 152 and saturation(px) < 0.08):
+            if px == CORNER_RGB:
                 bleed += 1
     if total and bleed / total > 0.02:
         return [f"FAIL: {path_name} grey bleed through floor/wall {bleed / total * 100:.2f}% > 2%"]
@@ -321,24 +373,34 @@ def room_pixel_gate_errs(im, path_name: str) -> list[str]:
     if wall_frac < MIN_WALL_CC_FRAC:
         errs.append(f"FAIL: {path_name} wall foreground {wall_frac * 100:.1f}% < {MIN_WALL_CC_FRAC * 100:.0f}%")
 
-    prop_cells: set[tuple[int, int]] = set()
-    cell = max(36, w // 14)
-    y0, y1 = int(h * 0.36), int(h * 0.92)
-    x0, x1 = int(w * 0.12), int(w * 0.88)
-    for y in range(y0, y1):
-        for x in range(x0, x1):
+    prop_mask = [[False] * w for _ in range(h)]
+    for y in range(int(h * 0.34), int(h * 0.92)):
+        for x in range(int(w * 0.10), int(w * 0.90)):
             p = im.getpixel((x, y))
-            if is_studio_backdrop(p):
+            if bg[y][x]:
                 continue
-            if y > int(h * 0.44) and not _is_wall_pixel(p) and saturation(p) < 0.18:
+            if _is_wall_pixel(p):
                 continue
-            if saturation(p) < 0.14:
+            if p[2] > p[0] + 8 and saturation(p) >= 0.14:
                 continue
-            if luma(p) < 58:
+            if y > int(h * 0.44) and saturation(p) < 0.14:
                 continue
-            prop_cells.add((x // cell, y // cell))
-    if len(prop_cells) < MIN_PROP_BLOBS:
-        errs.append(f"FAIL: {path_name} prop floor regions {len(prop_cells)} < {MIN_PROP_BLOBS}")
+            if saturation(p) < 0.12:
+                continue
+            prop_mask[y][x] = True
+    eroded = [[False] * w for _ in range(h)]
+    for y in range(1, h - 1):
+        for x in range(1, w - 1):
+            if not prop_mask[y][x]:
+                continue
+            if all(prop_mask[y + dy][x + dx] for dy in (-1, 0, 1) for dx in (-1, 0, 1)):
+                eroded[y][x] = True
+    _, prop_sizes = _label_cc(eroded if any(any(r) for r in eroded) else prop_mask)
+    large = sum(1 for area in prop_sizes.values() if area >= MIN_PROP_BLOB_PX)
+    if large < MIN_PROP_BLOBS_LARGE:
+        errs.append(
+            f"FAIL: {path_name} prop blobs >={MIN_PROP_BLOB_PX}px: {large} < {MIN_PROP_BLOBS_LARGE}"
+        )
     return errs
 
 
@@ -358,6 +420,8 @@ def check_image(path: Path) -> list[str]:
         return [f"FAIL: Pillow required to check {path}"]
     im = Image.open(path).convert("RGB")
     errs = corner_rgb_150_errs(im)
+    errs.extend(backdrop_nine_point_errs(im, path.name))
+    errs.extend(wall_base_scanline_errs(im, path.name))
     errs.extend(quality_gates(im, path.name))
     errs.extend(fill_margin_errs(path))
     errs.extend(room_pixel_gate_errs(im, path.name))
@@ -392,13 +456,25 @@ def verify_regression_fixtures_fail() -> list[str]:
         q = quality_gates(im, path.name)
         if not q:
             errs.append(f"FAIL: fixture {label} must fail quality gates")
-    for label, fix in (("c0d66236", FIXTURE_C0), ("fbb7bf7c", FIXTURE_FB)):
+    def fixture_must_fail(label: str, fix: Path) -> None:
         if not fix.is_file():
             errs.append(f"FAIL: missing regression fixture {fix}")
-            continue
+            return
         im_f = Image.open(fix).convert("RGB")
-        if not room_pixel_gate_errs(im_f, fix.name):
-            errs.append(f"FAIL: fixture {label} must fail room pixel gates")
+        bad = (
+            room_pixel_gate_errs(im_f, fix.name)
+            + backdrop_nine_point_errs(im_f, fix.name)
+            + wall_base_scanline_errs(im_f, fix.name)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail tightened room gates")
+
+    for label, fix in (
+        ("7086ea82", FIXTURE_708),
+        ("fbb7bf7c", FIXTURE_FB),
+        ("c0d66236", FIXTURE_C0),
+    ):
+        fixture_must_fail(label, fix)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

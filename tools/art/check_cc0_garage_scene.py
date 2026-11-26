@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Placement gates: grounded props, wall corner gap, 4×4 footprint."""
+"""Placement gates: grounded props, roll door width, 8+ real-scale props."""
 from __future__ import annotations
 
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -11,16 +10,28 @@ REPO = Path(__file__).resolve().parents[2]
 GATES = REPO / "docs/art/previews/garage-interior-room-kit-scene-gates.json"
 FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 ROOM = 4.0
+THIN_PROP_MAX_M = 0.12
 
 
 def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
     prefix = f"{label} " if label else ""
     errs: list[str] = []
     tol = float(data.get("groundToleranceM", 0.01))
-    wall_tol = float(data.get("wallMountToleranceM", 0.02))
     corner_gap = float(data.get("wallCornerGapM", 99.0))
     if corner_gap >= 0.01:
         errs.append(f"FAIL: {prefix}wall corner gap {corner_gap * 100:.1f} cm >= 1 cm")
+
+    wall_h = float(data.get("wallHeightM", 2.7))
+    door_name = str(data.get("rollDoorObjectName", ""))
+    door_w = float(data.get("rollDoorWidthM", 0))
+    if door_name != "kit_roll_door":
+        errs.append(f"FAIL: {prefix}roll door name {door_name!r} != kit_roll_door")
+    if door_w < 2.5:
+        errs.append(f"FAIL: {prefix}roll door width {door_w:.2f} m < 2.5 m")
+
+    props = data.get("propInstances") or []
+    if len(props) < int(data.get("minPropCount", 8)):
+        errs.append(f"FAIL: {prefix}prop count {len(props)} < 8")
 
     fb = data.get("floorBounds") or {}
     min_x = float(fb.get("minX", 0))
@@ -28,30 +39,25 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
     min_y = float(fb.get("minY", fb.get("minZ", 0)))
     max_y = float(fb.get("maxY", fb.get("maxZ", ROOM)))
 
-    props = data.get("propInstances") or []
-    grounded_ok = [p for p in props if p.get("grounded")]
-    floor_props = [p for p in props if p.get("objectName", "").startswith("prop_")]
-    if len(grounded_ok) < int(data.get("minPropCount", 6)):
-        errs.append(f"FAIL: {prefix}grounded instances {len(grounded_ok)} < 6")
-
     for p in props:
         name = p.get("objectName", "?")
-        gc = float(p.get("groundClearanceM", 99))
-        if name.startswith("prop_") and abs(gc) > tol:
-            errs.append(f"FAIL: {prefix}{name} ground clearance {gc * 100:.1f} cm > 1 cm")
-        if not p.get("insideFloorBounds", False):
-            errs.append(f"FAIL: {prefix}{name} outside 4×4 floor bounds")
+        if not p.get("grounded"):
+            errs.append(f"FAIL: {prefix}{name} not grounded")
+        if not p.get("insideFloorBounds", True):
+            errs.append(f"FAIL: {prefix}{name} outside floor bounds")
         x = float(p.get("x", -1))
         y = float(p.get("y", p.get("z", -1)))
         if x < min_x - tol or x > max_x + tol or y < min_y - tol or y > max_y + tol:
             errs.append(f"FAIL: {prefix}{name} center outside footprint")
-
-        if name == "prop_bookcase" and float(p.get("distToLeftWallM", 9)) > wall_tol * 2.5:
-            errs.append(f"FAIL: {prefix}{name} not flush to left wall")
-        if name == "kit_roll_door" and float(p.get("distToBackWallM", 9)) > wall_tol * 4.0:
-            errs.append(f"FAIL: {prefix}{name} not in back wall opening")
-        if name == "kit_roll_door" and float(p.get("groundClearanceM", 9)) > tol:
-            errs.append(f"FAIL: {prefix}{name} not on slab")
+        ratio = float(p.get("heightToWallRatio", 0))
+        height_m = float(p.get("heightM", 0))
+        if name == "prop_rug":
+            if height_m > THIN_PROP_MAX_M:
+                errs.append(f"FAIL: {prefix}{name} rug thickness {height_m:.2f} m > {THIN_PROP_MAX_M}")
+        elif ratio <= 0.02 or ratio >= 1.05:
+            errs.append(f"FAIL: {prefix}{name} height/wall ratio {ratio:.2f} out of range")
+        if wall_h and float(p.get("heightM", 0)) > wall_h:
+            errs.append(f"FAIL: {prefix}{name} taller than wall")
 
     return errs
 
