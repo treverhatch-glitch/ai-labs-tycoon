@@ -701,7 +701,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 3.75 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 2.86 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
@@ -780,6 +780,200 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         encoding="utf-8",
     )
     return preview
+
+
+def _ide_dashboard_image(out_path: Path) -> bpy.types.Image:
+    """Dark IDE-style screen albedo for Kenney monitor glass slot."""
+    if out_path.is_file() and str(out_path) in bpy.data.images:
+        return bpy.data.images[str(out_path)]
+    size = 512
+    img = bpy.data.images.new("T_prop_desk_ide", size, size, alpha=False)
+    px: list[float] = []
+    for y in range(size):
+        for x in range(size):
+            bar = 0.52 if x < size * 0.24 and y > size * 0.12 else 0.0
+            line = 0.45 if (y % 32) < 2 and x > size * 0.26 else 0.0
+            pane = 0.35 if abs(math.sin(x * 0.08) * math.sin(y * 0.06)) > 0.72 and x > size * 0.3 else 0.0
+            acc = min(1.0, bar + line + pane)
+            bg = (0.05, 0.06, 0.09)
+            hi = (0.16, 0.48, 0.62)
+            accent = (0.22, 0.72, 0.48)
+            c = _lerp3(bg, hi, acc * 0.75)
+            c = _lerp3(c, accent, acc * 0.35)
+            px.extend([*c, 1.0])
+    img.pixels = px
+    img.filepath_raw = str(out_path)
+    img.file_format = "PNG"
+    img.save()
+    return img
+
+
+_MAT_CACHE: dict[str, bpy.types.Material] = {}
+
+
+def _prop_desk_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
+    if kind in _MAT_CACHE:
+        return _MAT_CACHE[kind]
+    mat = bpy.data.materials.new(f"M_prop_desk_{kind}")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    if kind == "wood":
+        bsdf.inputs["Roughness"].default_value = 0.42
+        bsdf.inputs["Metallic"].default_value = 0.0
+        coord = nodes.new("ShaderNodeTexCoord")
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = (2.0, 2.0, 2.0)
+        links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        if WOOD092_COLOR.is_file():
+            ctex = nodes.new("ShaderNodeTexImage")
+            cimg = bpy.data.images.load(str(WOOD092_COLOR), check_existing=True)
+            cimg.colorspace_settings.name = "sRGB"
+            ctex.image = cimg
+            ctex.interpolation = "Linear"
+            links.new(mapping.outputs["Vector"], ctex.inputs["Vector"])
+            links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
+        if WOOD092_NORMAL.is_file():
+            nt = nodes.new("ShaderNodeTexImage")
+            nimg = bpy.data.images.load(str(WOOD092_NORMAL), check_existing=True)
+            nimg.colorspace_settings.name = "Non-Color"
+            nt.image = nimg
+            nt.interpolation = "Linear"
+            links.new(mapping.outputs["Vector"], nt.inputs["Vector"])
+            nm = nodes.new("ShaderNodeNormalMap")
+            links.new(nt.outputs["Color"], nm.inputs["Color"])
+            links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+        if WOOD092_ROUGH.is_file():
+            rt = nodes.new("ShaderNodeTexImage")
+            rimg = bpy.data.images.load(str(WOOD092_ROUGH), check_existing=True)
+            rimg.colorspace_settings.name = "Non-Color"
+            rt.image = rimg
+            rt.interpolation = "Linear"
+            links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
+            links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    elif kind == "plastic":
+        g = 0.12
+        bsdf.inputs["Base Color"].default_value = (g, g, g * 1.02, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.40
+    elif kind == "key_cap":
+        bsdf.inputs["Base Color"].default_value = (0.62, 0.64, 0.68, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.35
+    elif kind == "screen":
+        tex_dir.mkdir(parents=True, exist_ok=True)
+        ide = tex_dir / "mesh_prop-desk_screen_ide.png"
+        img = _ide_dashboard_image(ide)
+        tex = nodes.new("ShaderNodeTexImage")
+        tex.image = img
+        tex.interpolation = "Linear"
+        links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+        em_in = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+        if em_in is not None:
+            links.new(tex.outputs["Color"], em_in)
+        strength = bsdf.inputs.get("Emission Strength")
+        if strength is not None:
+            strength.default_value = 1.15
+        bsdf.inputs["Roughness"].default_value = 0.45
+    elif kind == "pot":
+        bsdf.inputs["Base Color"].default_value = (0.78, 0.45, 0.32, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.55
+    elif kind == "leaf":
+        bsdf.inputs["Base Color"].default_value = (0.32, 0.86, 0.40, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.48
+    _MAT_CACHE[kind] = mat
+    return mat
+
+
+def _restyle_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
+    """Replace Kenney GLTF slots: wood → Wood092, metals → plastic/screen."""
+    is_screen = "screen" in obj.name.lower()
+    for i, slot in enumerate(obj.data.materials):
+        if slot is None:
+            continue
+        name = (slot.name or "").lower()
+        if name == "wood" or name.startswith("wood"):
+            obj.data.materials[i] = _prop_desk_shared_material("wood", tex_dir)
+        elif is_screen and name == "metal.001":
+            obj.data.materials[i] = _prop_desk_shared_material("screen", tex_dir)
+        elif name == "metalmedium":
+            obj.data.materials[i] = _prop_desk_shared_material("key_cap", tex_dir)
+        elif "metal" in name:
+            obj.data.materials[i] = _prop_desk_shared_material("plastic", tex_dir)
+
+
+def _assign_plant_materials(obj: bpy.types.Object, tex_dir: Path) -> None:
+    mesh = obj.data
+    pot = _prop_desk_shared_material("pot", tex_dir)
+    leaf = _prop_desk_shared_material("leaf", tex_dir)
+    mesh.materials.clear()
+    mesh.materials.append(pot)
+    mesh.materials.append(leaf)
+    mn, mx = _bbox_world([obj])
+    split_z = mn.z + (mx.z - mn.z) * 0.35
+    for poly in mesh.polygons:
+        zs = []
+        for li in poly.loop_indices:
+            vi = mesh.loops[li].vertex_index
+            zs.append((obj.matrix_world @ mesh.vertices[vi].co).z)
+        z = sum(zs) / len(zs) if zs else split_z
+        poly.material_index = 0 if z < split_z else 1
+
+
+def finish_prop_desk_slot_export(
+    parts: list[bpy.types.Object],
+    source_cc0: str,
+    extra_manifest: dict | None = None,
+) -> dict:
+    """Join multi-mesh Kenney desk hero with per-slot PBR; preview from committed GLB."""
+    asset_id = "prop-desk"
+    out_dir = OUT_ROOT / asset_id
+    tex_dir = out_dir / "textures"
+    tex_dir.mkdir(parents=True, exist_ok=True)
+    _MAT_CACHE.clear()
+    bpy.ops.object.select_all(action="DESELECT")
+    for p in parts:
+        if "plant" in p.name.lower():
+            _assign_plant_materials(p, tex_dir)
+        else:
+            _restyle_slot_by_name(p, tex_dir)
+        p.select_set(True)
+    bpy.context.view_layer.objects.active = parts[0]
+    if len(parts) > 1:
+        bpy.ops.object.join()
+    obj = bpy.context.view_layer.objects.active
+    obj.name = "mesh_prop-desk"
+    obj.location = Vector((0.0, 0.0, -_bbox_world([obj])[0].z))
+    if WOOD092_COLOR.is_file():
+        shutil.copy(WOOD092_COLOR, tex_dir / "Wood092_Color.jpg")
+    if WOOD092_NORMAL.is_file():
+        shutil.copy(WOOD092_NORMAL, tex_dir / "Wood092_NormalGL.jpg")
+    if WOOD092_ROUGH.is_file():
+        shutil.copy(WOOD092_ROUGH, tex_dir / "Wood092_Roughness.jpg")
+    glb = _export_gltf(obj, out_dir)
+    fbx = _export_fbx(obj, out_dir)
+    preview_rel = f"docs/art/previews/{asset_id}.png"
+    _render_preview_from_glb(glb, asset_id)
+    manifest = {
+        "assetId": asset_id,
+        "scope": SCOPE,
+        "sourceCc0": source_cc0,
+        "pipeline": "kenney-slot-v11",
+        "texture1024": str((tex_dir / "mesh_prop-desk_screen_ide.png").relative_to(REPO)),
+        "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Wood092_1K-JPG/Wood092_1K-JPG_Color.jpg",
+        "glb": str(glb.relative_to(REPO)),
+        "fbx": str(fbx.relative_to(REPO)),
+        "preview": preview_rel,
+        "previewHdri": str(PREVIEW_HDRI.relative_to(REPO)),
+        "textureNormal1024": str((tex_dir / "Wood092_NormalGL.jpg").relative_to(REPO)),
+        "textureRoughness1024": str((tex_dir / "Wood092_Roughness.jpg").relative_to(REPO)),
+    }
+    if extra_manifest:
+        manifest.update(extra_manifest)
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest
 
 
 def _part_palette(asset_id: str, base: tuple[float, float, float]) -> list[tuple[float, float, float]]:

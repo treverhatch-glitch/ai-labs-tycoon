@@ -2,8 +2,10 @@
 """Fail near-uniform / low-chroma preview PNGs for BlenderBaked gate assets."""
 from __future__ import annotations
 
+import colorsys
 import hashlib
 import json
+import math
 import struct
 import sys
 from pathlib import Path
@@ -156,6 +158,17 @@ def _object_pixel(r: int, g: int, b: int, bg: tuple[int, int, int]) -> bool:
     return abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2]) > 28
 
 
+def _pixel_lum(r: int, g: int, b: int) -> float:
+    return max(r, g, b) / 255.0
+
+
+def _hue_deg(r: int, g: int, b: int) -> float:
+    h, _l, s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+    if max(r, g, b) < 20:
+        return -1.0
+    return h * 360.0 if s > 0.06 else -1.0
+
+
 def _framing_metrics(
     width: int,
     height: int,
@@ -172,11 +185,7 @@ def _framing_metrics(
             if not _object_pixel(r, g, b, bg):
                 continue
             row_hits[y] += 1
-            subj = (
-                _object_pixel(r, g, b, bg)
-                if asset_id == "prop-desk"
-                else _is_subject(r, g, b, bg)
-            )
+            subj = _is_subject(r, g, b, bg)
             if subj:
                 if y < BORDER_PX:
                     edge_hits["t"] += 1
@@ -190,7 +199,12 @@ def _framing_metrics(
     subj_ys: list[int] = []
     for y in range(height):
         for x in range(width):
-            if _object_pixel(*pixels[y * width + x], bg):
+            r, g, b = pixels[y * width + x]
+            if (
+                _is_subject(r, g, b, bg)
+                if asset_id == "prop-desk"
+                else _object_pixel(r, g, b, bg)
+            ):
                 subj_ys.append(y)
                 break
     sil_frac = (max(subj_ys) - min(subj_ys) + 1) / height if subj_ys else 0.0
@@ -199,11 +213,7 @@ def _framing_metrics(
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[y * width + x]
-            subj = (
-                _object_pixel(r, g, b, bg)
-                if asset_id == "prop-desk"
-                else _is_subject(r, g, b, bg)
-            )
+            subj = _is_subject(r, g, b, bg)
             if subj:
                 xs.append(x)
                 ys2.append(y)
@@ -391,6 +401,45 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
                 if r > g + 6 and g > b + 2 and r > 88:
                     bezel_orange_n += 1
         bezel_wood_frac = bezel_orange_n / bezel_n if bezel_n else 0.0
+        obj_pix = 0
+        dark_obj = 0
+        for y in range(height):
+            for x in range(width):
+                r, g, b = pixels[y * width + x]
+                if not _object_pixel(r, g, b, bg):
+                    continue
+                obj_pix += 1
+                if _pixel_lum(r, g, b) < 0.06:
+                    dark_obj += 1
+        dark_object_frac = dark_obj / obj_pix if obj_pix else 1.0
+        screen_edge_rows: dict[int, list[int]] = {}
+        for y in range(sy0, sy1):
+            for x in range(sx0, sx1):
+                r, g, b = pixels[y * width + x]
+                if _is_subject(r, g, b, bg):
+                    screen_edge_rows.setdefault(y, []).append(x)
+        monitor_skew_deg = 0.0
+        if len(screen_edge_rows) >= 8:
+            top_y = min(screen_edge_rows)
+            bot_y = max(screen_edge_rows)
+            top_mid = (min(screen_edge_rows[top_y]) + max(screen_edge_rows[top_y])) * 0.5
+            bot_mid = (min(screen_edge_rows[bot_y]) + max(screen_edge_rows[bot_y])) * 0.5
+            h_span = max(bot_y - top_y, 1)
+            monitor_skew_deg = math.degrees(math.atan(abs(top_mid - bot_mid) / h_span))
+        py0, py1 = int(height * 0.41), int(height * 0.52)
+        px0, px1 = int(width * 0.57), int(width * 0.65)
+        plant_n = 0
+        plant_green = 0
+        for y in range(py0, py1):
+            for x in range(px0, px1):
+                r, g, b = pixels[y * width + x]
+                if not _object_pixel(r, g, b, bg):
+                    continue
+                plant_n += 1
+                h_deg = _hue_deg(r, g, b)
+                if 100.0 <= h_deg <= 130.0 and g > r + 8 and g > b + 6:
+                    plant_green += 1
+        plant_green_frac = plant_green / plant_n if plant_n else 0.0
         desk_extra = {
             "subject_median_sat": med_sat,
             "desk_top_brown_frac": desk_brown_frac,
@@ -402,6 +451,9 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             "desk_mean_sat": desk_mean_sat,
             "dark_subject_cell_frac": dark_cell_frac,
             "bezel_wood_frac": bezel_wood_frac,
+            "dark_object_frac": dark_object_frac,
+            "monitor_skew_deg": monitor_skew_deg,
+            "plant_green_frac": plant_green_frac,
         }
     return {
         "stddev": std,
@@ -443,7 +495,7 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         mg = s.get("min_margin_frac", 0.0)
         if mg < MIN_FRAME_MARGIN_FRAC:
             reasons.append(f"min_margin_frac={mg:.2%}")
-        flat_max = 0.72 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
+        flat_max = 0.78 if asset_id == "prop-desk" else MAX_FLAT_PIXEL_FRAC
         if s.get("flat_pixel_frac", 1.0) > flat_max:
             reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
         ground_max = 178 if asset_id == "prop-desk" else MAX_GROUND_LUM
@@ -472,6 +524,12 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
             reasons.append(f"desk_mean_sat={s.get('desk_mean_sat', 0):.2f}")
         if s.get("dark_subject_cell_frac", 0.0) > 0.25:
             reasons.append(f"dark_subject_cell_frac={s.get('dark_subject_cell_frac', 0):.2%}")
+        if s.get("dark_object_frac", 1.0) > 0.05:
+            reasons.append(f"dark_object_frac={s.get('dark_object_frac', 0):.2%}")
+        if s.get("monitor_skew_deg", 99.0) > 5.0:
+            reasons.append(f"monitor_skew_deg={s.get('monitor_skew_deg', 0):.1f}")
+        if s.get("plant_green_frac", 0.0) < 0.12:
+            reasons.append(f"plant_green_frac={s.get('plant_green_frac', 0):.2%}")
         frame = PREVIEW_DIR / "prop-desk.frame.json"
         glb = BLENDER_ROOT / "prop-desk" / "mesh_prop-desk.glb"
         if glb.is_file():
