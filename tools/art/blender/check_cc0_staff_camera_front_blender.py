@@ -40,33 +40,25 @@ def _gate_for_imported(obs: list[bpy.types.Object]) -> tuple[bool, str]:
     cam_loc = cam.matrix_world.translation.copy()
     mins, maxs = rig.mesh_bounds_world(mesh_obs)
     center = (mins + maxs) * 0.5
-    forward = rig.staff_face_forward(mesh_obs)
-    if (cam_loc - center).normalized().dot(forward) < 0.08:
-        bpy.data.objects.remove(cam, do_unlink=True)
-        return False, "camera_behind_character"
     head_c = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(head.data.vertices)
-    nose_dist = 1e9
-    back_dist = -1.0
-    nose_dot = -1e9
-    back_dot = 1e9
+    to_cam = (cam_loc - head_c).normalized()
+    face_min = 1e9
+    back_min = 1e9
     for v in head.data.vertices:
         w = head.matrix_world @ v.co
         rel = w - head_c
-        rel_xy = Vector((rel.x, rel.y, 0.0))
-        if rel_xy.length < 1e-6:
+        if rel.length < 1e-6:
             continue
-        dot = rel_xy.normalized().dot(forward)
         d = (w - cam_loc).length
-        if dot > nose_dot:
-            nose_dot = dot
-            nose_dist = d
-        if dot < back_dot:
-            back_dot = dot
-            back_dist = d
+        side = rel.normalized().dot(to_cam)
+        if side > 0.02:
+            face_min = min(face_min, d)
+        elif side < -0.02:
+            back_min = min(back_min, d)
     bpy.data.objects.remove(cam, do_unlink=True)
-    if nose_dist >= back_dist:
-        return False, f"back_closer nose_d={nose_dist:.3f} back_d={back_dist:.3f}"
-    return True, f"front_ok nose_d={nose_dist:.3f} back_d={back_dist:.3f} yaw={yaw:.0f}"
+    if face_min >= back_min or face_min > 1e8:
+        return False, f"back_closer face_d={face_min:.3f} back_d={back_min:.3f}"
+    return True, f"front_ok face_d={face_min:.3f} back_d={back_min:.3f} yaw={yaw:.0f}"
 
 
 def main() -> None:

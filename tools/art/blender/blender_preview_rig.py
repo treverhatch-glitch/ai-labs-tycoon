@@ -167,14 +167,21 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     mins, maxs = mesh_bounds_world(mesh_obs)
     if (maxs - mins).z < (maxs - mins).y:
         up = Vector((0.0, 1.0, 0.0))
-    if hips and head and head.data.vertices and hips.data.vertices:
-        hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
-            head.data.vertices
+    if head and head.data.vertices:
+        pts = [head.matrix_world @ v.co for v in head.data.vertices]
+        hc = sum(pts, Vector()) / len(pts)
+        if up.z > 0.9:
+            nose = min(pts, key=lambda v: v.y)
+            back = max(pts, key=lambda v: v.y)
+            fwd = Vector((nose.x - back.x, nose.y - back.y, 0.0))
+            if fwd.length > 1e-4:
+                return fwd.normalized()
+        fwd = hc - (
+            sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector())
+            / max(1, len(hips.data.vertices))
+            if hips and hips.data.vertices
+            else hc - Vector((0.0, 0.0, 0.35))
         )
-        ic = sum((hips.matrix_world @ v.co for v in hips.data.vertices), Vector()) / len(
-            hips.data.vertices
-        )
-        fwd = hc - ic
         fwd = fwd - up * fwd.dot(up)
         if fwd.length > 1e-4:
             return fwd.normalized()
@@ -193,7 +200,7 @@ def frame_staff_front_quarter(
     radius = bounding_sphere_radius(mins, maxs, mesh_obs)
     half_fov = math.radians(22.0)
     cam_dist = (radius / math.tan(half_fov)) * margin
-    fwd = staff_face_forward(mesh_obs)
+    fwd = staff_face_forward(mesh_obs).normalized()
     right = Vector((-fwd.y, fwd.x, 0.0))
     if right.length < 1e-5:
         right = Vector((1.0, 0.0, 0.0))
@@ -204,7 +211,7 @@ def frame_staff_front_quarter(
     offset = fwd * (math.cos(yaw) * math.cos(elev)) + right * (math.sin(yaw) * math.cos(elev))
     offset.z = math.sin(elev)
     offset = offset.normalized() * cam_dist
-    cam_loc = center + offset
+    cam_loc = center - offset
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.name = "PreviewCamera"
@@ -464,6 +471,9 @@ def render_preview_studio(
         light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
         setup_three_point_lights(center, light_r)
         if preview_kind == "staff":
+            key = bpy.data.objects.get("Key")
+            if key and key.type == "LIGHT":
+                key.data.energy *= 0.62
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(

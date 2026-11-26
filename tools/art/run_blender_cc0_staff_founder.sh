@@ -26,6 +26,7 @@ test -s "docs/art/previews/staff-founder-idle.png" || { echo "FAIL missing found
 
 python3 tools/art/check_cc0_staff_founder_regression.py
 python3 tools/art/check_cc0_staff_preview_upright.py
+python3 tools/art/check_cc0_staff_founder_preview_silhouette.py
 python3 tools/art/check_cc0_staff_founder_standing.py
 python3 tools/art/check_cc0_staff_founder_screen_up.py
 python3 tools/art/check_cc0_staff_material_diversity.py

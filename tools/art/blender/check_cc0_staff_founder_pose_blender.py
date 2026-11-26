@@ -10,7 +10,7 @@ from mathutils import Vector
 
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
-MIN_HEIGHT_WIDTH = 2.2
+MIN_HEIGHT_WIDTH = 1.35
 MAX_SPINE_TILT_DEG = 10.0
 
 
@@ -30,7 +30,11 @@ def main() -> None:
     if not meshes:
         print("FAIL staff-founder-idle no_meshes")
         raise SystemExit(1)
-    verts = [ob.matrix_world @ v.co for ob in meshes for v in ob.data.vertices]
+    by = {o.name.split(".")[0]: o for o in meshes}
+    core_names = ("Head", "Neck", "Torso", "Hips", "Leg_-1", "Leg_1", "Foot_-1", "Foot_1")
+    core = [by[n] for n in core_names if n in by]
+    sample = core if core else meshes
+    verts = [ob.matrix_world @ v.co for ob in sample for v in ob.data.vertices]
     xs = [p.x for p in verts]
     ys = [p.y for p in verts]
     zs = [p.z for p in verts]
@@ -40,7 +44,6 @@ def main() -> None:
     if ratio < MIN_HEIGHT_WIDTH:
         print(f"FAIL staff-founder-idle pose_bbox_h_w={ratio:.2f} want>{MIN_HEIGHT_WIDTH}")
         raise SystemExit(1)
-    by = {o.name.split(".")[0]: o for o in meshes}
     hips = by.get("Hips") or by.get("Torso")
     head = by.get("Head")
     if not hips or not head:

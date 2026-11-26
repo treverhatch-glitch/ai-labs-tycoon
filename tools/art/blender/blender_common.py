@@ -192,6 +192,15 @@ def orient_staff_assembly_for_export(
     root = staff_conn.parent_staff_hierarchy(mesh_obs)
     ground_scene_meshes()
     bpy.context.view_layer.update()
+    if asset_id == "staff-founder-idle":
+        min_z, _max, sz = _mesh_scene_span_z(mesh_obs)
+        if abs(min_z) > 1e-5:
+            root.location.z -= min_z
+        bpy.context.view_layer.update()
+        _min, _max, sz = _mesh_scene_span_z(mesh_obs)
+        if sz < 1.55 or sz > 2.05:
+            raise RuntimeError(f"FAIL {asset_id}: height sz={sz:.3f} want 1.55-2.05")
+        return root
     root.rotation_euler = (math.pi / 2, 0.0, 0.0)
     bpy.ops.object.select_all(action="DESELECT")
     root.select_set(True)
