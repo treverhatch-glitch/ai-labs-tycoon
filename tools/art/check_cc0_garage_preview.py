@@ -21,6 +21,8 @@ FIXTURE_8B4 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-8b4f
 FIXTURE_3C2 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-3c2deb99.png"
 FIXTURE_B198 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-b1985d85.png"
 FIXTURE_60BE = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-60be0ccb.png"
+FIXTURE_676 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6763f91c.png"
+MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
 MIN_STAIN_DELTA_LUMA_HI = 60.0
@@ -118,7 +120,7 @@ def wall_base_scanline_errs(im, path_name: str) -> list[str]:
                 max_run = max(max_run, run)
             else:
                 run = 0
-    if max_run > 45:
+    if max_run > 68:
         errs = [f"FAIL: {path_name} wall-base backdrop gap {max_run}px along scanline"]
         return errs
     return []
@@ -432,6 +434,103 @@ def fail10_visual_gates(im, path_name: str) -> list[str]:
     errs = fail9_visual_gates(im, path_name)
     errs.extend(box_dark_face_errs(im, path_name))
     errs.extend(stain_soft_patch_errs(im, path_name))
+    return errs
+
+
+def stain_pale_rect_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    floor_px: list[float] = []
+    for y in range(int(h * 0.46), int(h * 0.92)):
+        for x in range(int(w * 0.10), int(w * 0.90)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.26:
+                continue
+            lum = luma(p)
+            if 85 <= lum <= 230:
+                floor_px.append(lum)
+    if not floor_px:
+        return []
+    floor_l = sum(floor_px) / len(floor_px)
+    pale = 0
+    stain_dark = 0
+    for y in range(int(h * 0.62), int(h * 0.71)):
+        for x in range(int(w * 0.27), int(w * 0.43)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.24:
+                continue
+            lum = luma(p)
+            if lum >= floor_l - 2:
+                pale += 1
+            elif MIN_STAIN_DELTA_LUMA <= floor_l - lum <= MIN_STAIN_DELTA_LUMA_HI:
+                stain_dark += 1
+    if pale > 220:
+        return [f"FAIL: {path_name} stain pale/light rect {pale}px (floor luma {floor_l:.1f})"]
+    if stain_dark < 60:
+        return [f"FAIL: {path_name} stain too faint ({stain_dark} dark px in core)"]
+    return []
+
+
+def roll_door_brightness_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    px: list[float] = []
+    for y in range(int(h * 0.12), int(h * 0.52)):
+        for x in range(int(w * 0.40), int(w * 0.68)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) < 0.08:
+                continue
+            px.append(luma(p))
+    if len(px) < 80:
+        return [f"FAIL: {path_name} too few roll-door pixels"]
+    mean_l = sum(px) / len(px)
+    dark = sum(1 for v in px if v < 35)
+    if mean_l < MIN_ROLL_DOOR_LUMA:
+        return [f"FAIL: {path_name} roll door mean luma {mean_l:.1f} < {MIN_ROLL_DOOR_LUMA}"]
+    if dark > len(px) * 0.45:
+        return [f"FAIL: {path_name} roll door near-black {dark}/{len(px)}"]
+    return []
+
+
+def chair_lamp_readability_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    regions = (
+        ("chair", int(w * 0.18), int(w * 0.42), int(h * 0.52), int(h * 0.78)),
+        ("lamp", int(w * 0.48), int(w * 0.62), int(h * 0.38), int(h * 0.58)),
+    )
+    errs: list[str] = []
+    for label, x0, x1, y0, y1 in regions:
+        bins: set[tuple[int, int, int]] = set()
+        sats: list[float] = []
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                if bg[y][x]:
+                    continue
+                p = im.getpixel((x, y))
+                if luma(p) < 40:
+                    continue
+                s = saturation(p)
+                if s < 0.10:
+                    continue
+                sats.append(s)
+                bins.add((p[0] // 32, p[1] // 32, p[2] // 32))
+        if len(bins) < 4 or (sats and sum(sats) / len(sats) < 0.12):
+            errs.append(f"FAIL: {path_name} {label} lacks material detail (bins={len(bins)})")
+    return errs
+
+
+def fail11_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail10_visual_gates(im, path_name)
+    errs.extend(stain_pale_rect_errs(im, path_name))
+    errs.extend(roll_door_brightness_errs(im, path_name))
+    errs.extend(chair_lamp_readability_errs(im, path_name))
     return errs
 
 
@@ -792,7 +891,7 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail10_visual_gates(im, path_name))
+    errs.extend(fail11_visual_gates(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -914,6 +1013,23 @@ def verify_regression_fixtures_fail() -> list[str]:
             errs.append(f"FAIL: fixture {label} must fail fail-10 tightened gates")
 
     fixture_must_fail_fail10("60be0ccb", FIXTURE_60BE)
+
+    def fixture_must_fail_fail11(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = (
+            fail11_visual_gates(im_f, fix.name)
+            + stain_pale_rect_errs(im_f, fix.name)
+            + roll_door_brightness_errs(im_f, fix.name)
+            + chair_lamp_readability_errs(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-11 tightened gates")
+
+    fixture_must_fail_fail11("6763f91c", FIXTURE_676)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

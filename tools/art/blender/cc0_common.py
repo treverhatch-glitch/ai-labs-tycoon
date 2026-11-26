@@ -154,6 +154,104 @@ def mesh_boolean_difference(target: bpy.types.Object, cutter: bpy.types.Object) 
     bpy.data.objects.remove(cutter, do_unlink=True)
 
 
+def cardboard_lid_gap_m(ob: bpy.types.Object) -> float:
+    """Vertical gap between lowest and next-loose-part top (lid float), in metres."""
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+    parts: list[list[bmesh.types.BMVert]] = []
+    seen = set()
+    for v in bm.verts:
+        if v.index in seen:
+            continue
+        stack = [v]
+        comp: list[bmesh.types.BMVert] = []
+        while stack:
+            cur = stack.pop()
+            if cur.index in seen:
+                continue
+            seen.add(cur.index)
+            comp.append(cur)
+            for e in cur.link_edges:
+                other = e.other_vert(cur)
+                if other.index not in seen:
+                    stack.append(other)
+        if comp:
+            parts.append(comp)
+    bm.free()
+    if len(parts) < 2:
+        return 0.0
+    spans: list[tuple[float, float, float]] = []
+    for comp in parts:
+        zs = [ob.matrix_world @ v.co for v in comp]
+        zvals = [p.z for p in zs]
+        spans.append((min(zvals), max(zvals), max(zvals) - min(zvals)))
+    spans.sort(key=lambda t: t[0])
+    base_top = spans[0][1]
+    best = 0.0
+    for z0, z1, _ in spans[1:]:
+        gap = z0 - base_top
+        if gap > best:
+            best = gap
+    return best
+
+
+def snap_cardboard_lid(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
+    gap = cardboard_lid_gap_m(ob)
+    if gap <= max_gap:
+        return
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    seen: set[int] = set()
+    parts: list[list[bmesh.types.BMVert]] = []
+    for v in bm.verts:
+        if v.index in seen:
+            continue
+        stack = [v]
+        comp: list[bmesh.types.BMVert] = []
+        while stack:
+            cur = stack.pop()
+            if cur.index in seen:
+                continue
+            seen.add(cur.index)
+            comp.append(cur)
+            for e in cur.link_edges:
+                other = e.other_vert(cur)
+                if other.index not in seen:
+                    stack.append(other)
+        parts.append(comp)
+    spans = []
+    for comp in parts:
+        zvals = [(ob.matrix_world @ v.co).z for v in comp]
+        spans.append((min(zvals), max(zvals), comp))
+    spans.sort(key=lambda t: t[0])
+    if len(spans) < 2:
+        bm.free()
+        return
+    base_top = spans[0][1]
+    lid_mn, _, lid_verts = spans[-1]
+    gap = lid_mn - base_top
+    if gap <= max_gap:
+        bm.free()
+        return
+    inv = ob.matrix_world.inverted()
+    shift = gap - 0.001
+    for v in lid_verts:
+        w = ob.matrix_world @ v.co
+        w.z -= shift
+        v.co = inv @ w
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    bpy.context.view_layer.update()
+
+
 def mesh_remove_doubles(ob: bpy.types.Object, threshold: float = 0.015) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
@@ -296,13 +394,49 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         edge.operation = "MULTIPLY"
         links.new(ramp.outputs["Result"], edge.inputs[0])
         links.new(noise.outputs["Fac"], edge.inputs[1])
-        stain_mix = nodes.new("ShaderNodeMixRGB")
-        stain_mix.blend_type = "MIX"
-        stain_mix.inputs["Color1"].default_value = (0.78, 0.76, 0.73, 1.0)
-        stain_mix.inputs["Color2"].default_value = (0.52, 0.50, 0.47, 1.0)
-        links.new(edge.outputs["Value"], stain_mix.inputs["Fac"])
-        links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
-        bsdf.inputs["Roughness"].default_value = 0.92
+        base_dark = (0.36, 0.34, 0.32, 1.0)
+        oil = nodes.new("ShaderNodeMixRGB")
+        oil.blend_type = "MIX"
+        oil.inputs["Color1"].default_value = base_dark
+        oil.inputs["Color2"].default_value = (0.26, 0.24, 0.22, 1.0)
+        oil_fac = nodes.new("ShaderNodeMath")
+        oil_fac.operation = "MULTIPLY"
+        oil_fac.inputs[1].default_value = 1.0
+        links.new(edge.outputs["Value"], oil_fac.inputs[0])
+        links.new(noise.outputs["Fac"], oil_fac.inputs[1])
+        links.new(oil_fac.outputs["Value"], oil.inputs["Fac"])
+        smear = nodes.new("ShaderNodeMixRGB")
+        smear.blend_type = "OVERLAY"
+        smear.inputs["Fac"].default_value = 0.28
+        smear.inputs["Color1"].default_value = base_dark
+        smear.inputs["Color2"].default_value = (0.20, 0.19, 0.17, 1.0)
+        links.new(noise.outputs["Fac"], smear.inputs["Fac"])
+        links.new(oil.outputs["Color"], smear.inputs["Color1"])
+        links.new(smear.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.96
+        if "Specular IOR Level" in bsdf.inputs:
+            bsdf.inputs["Specular IOR Level"].default_value = 0.12
+    elif role == "roll_door":
+        bsdf.inputs["Base Color"].default_value = (0.78, 0.80, 0.84, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.38
+        bsdf.inputs["Metallic"].default_value = 0.42
+        bands = nodes.new("ShaderNodeTexWave")
+        bands.wave_type = "BANDS"
+        bands.inputs["Scale"].default_value = 28.0
+        bands.inputs["Distortion"].default_value = 4.0
+        grooves = nodes.new("ShaderNodeMixRGB")
+        grooves.blend_type = "MIX"
+        grooves.inputs["Color1"].default_value = (0.78, 0.80, 0.84, 1.0)
+        grooves.inputs["Color2"].default_value = (0.42, 0.44, 0.48, 1.0)
+        links.new(bands.outputs["Color"], grooves.inputs["Fac"])
+        links.new(grooves.outputs["Color"], bsdf.inputs["Base Color"])
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = (0.72, 0.74, 0.78, 1.0)
+        emit.inputs["Strength"].default_value = 0.08
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
     elif role in ("box", "box_open"):
         card = (0.90, 0.70, 0.44, 1.0)
         bsdf.inputs["Base Color"].default_value = card
@@ -325,37 +459,76 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(emit.outputs["Emission"], add.inputs[1])
         links.new(add.outputs["Shader"], out.inputs["Surface"])
     elif role == "chair":
-        bsdf.inputs["Base Color"].default_value = (0.32, 0.52, 0.84, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.48
-        wave = nodes.new("ShaderNodeTexWave")
-        wave.wave_type = "BANDS"
-        wave.inputs["Scale"].default_value = 9.0
-        wave.inputs["Distortion"].default_value = 2.2
-        mix = nodes.new("ShaderNodeMixRGB")
-        mix.blend_type = "OVERLAY"
-        mix.inputs["Fac"].default_value = 0.28
-        mix.inputs["Color2"].default_value = (0.22, 0.38, 0.68, 1.0)
-        links.new(wave.outputs["Color"], mix.inputs["Fac"])
-        links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+        coord = nodes.new("ShaderNodeTexCoord")
+        sep = nodes.new("ShaderNodeSeparateXYZ")
+        links.new(coord.outputs["Object"], sep.inputs["Vector"])
+        leg_mask = nodes.new("ShaderNodeMath")
+        leg_mask.operation = "LESS_THAN"
+        leg_mask.inputs[1].default_value = 0.22
+        seat_mask = nodes.new("ShaderNodeMath")
+        seat_mask.operation = "LESS_THAN"
+        seat_mask.inputs[1].default_value = 0.42
+        fabric = nodes.new("ShaderNodeTexNoise")
+        fabric.inputs["Scale"].default_value = 18.0
+        seat_col = nodes.new("ShaderNodeMixRGB")
+        seat_col.inputs["Color1"].default_value = (0.34, 0.56, 0.88, 1.0)
+        seat_col.inputs["Color2"].default_value = (0.26, 0.44, 0.72, 1.0)
+        links.new(fabric.outputs["Fac"], seat_col.inputs["Fac"])
+        back_wave = nodes.new("ShaderNodeTexWave")
+        back_wave.wave_type = "BANDS"
+        back_wave.inputs["Scale"].default_value = 14.0
+        back_col = nodes.new("ShaderNodeMixRGB")
+        back_col.inputs["Color1"].default_value = (0.28, 0.48, 0.82, 1.0)
+        back_col.inputs["Color2"].default_value = (0.20, 0.34, 0.62, 1.0)
+        links.new(back_wave.outputs["Color"], back_col.inputs["Fac"])
+        leg_col = nodes.new("ShaderNodeMixRGB")
+        leg_col.inputs["Color1"].default_value = (0.48, 0.50, 0.54, 1.0)
+        leg_col.inputs["Color2"].default_value = (0.32, 0.34, 0.38, 1.0)
+        links.new(fabric.outputs["Fac"], leg_col.inputs["Fac"])
+        stage1 = nodes.new("ShaderNodeMixRGB")
+        links.new(seat_mask.outputs["Value"], stage1.inputs["Fac"])
+        links.new(leg_col.outputs["Color"], stage1.inputs["Color1"])
+        links.new(seat_col.outputs["Color"], stage1.inputs["Color2"])
+        final = nodes.new("ShaderNodeMixRGB")
+        links.new(leg_mask.outputs["Value"], final.inputs["Fac"])
+        links.new(stage1.outputs["Color"], final.inputs["Color1"])
+        links.new(back_col.outputs["Color"], final.inputs["Color2"])
+        links.new(final.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.52
         bump = nodes.new("ShaderNodeBump")
-        bump.inputs["Strength"].default_value = 0.12
-        links.new(wave.outputs["Color"], bump.inputs["Height"])
+        bump.inputs["Strength"].default_value = 0.18
+        links.new(fabric.outputs["Fac"], bump.inputs["Height"])
         links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
     elif role == "lamp_accent":
-        bsdf.inputs["Base Color"].default_value = (0.94, 0.82, 0.55, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.42
-        vor = nodes.new("ShaderNodeTexVoronoi")
-        vor.feature = "DISTANCE_TO_EDGE"
-        vor.inputs["Scale"].default_value = 12.0
-        mix = nodes.new("ShaderNodeMixRGB")
-        mix.blend_type = "OVERLAY"
-        mix.inputs["Fac"].default_value = 0.25
-        mix.inputs["Color2"].default_value = (0.78, 0.62, 0.35, 1.0)
-        links.new(vor.outputs["Distance"], mix.inputs["Fac"])
-        links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+        coord = nodes.new("ShaderNodeTexCoord")
+        sep = nodes.new("ShaderNodeSeparateXYZ")
+        links.new(coord.outputs["Object"], sep.inputs["Vector"])
+        shade_mask = nodes.new("ShaderNodeMath")
+        shade_mask.operation = "GREATER_THAN"
+        shade_mask.inputs[1].default_value = 0.55
+        metal = nodes.new("ShaderNodeTexNoise")
+        metal.inputs["Scale"].default_value = 22.0
+        arm_col = nodes.new("ShaderNodeMixRGB")
+        arm_col.inputs["Color1"].default_value = (0.62, 0.64, 0.68, 1.0)
+        arm_col.inputs["Color2"].default_value = (0.42, 0.44, 0.48, 1.0)
+        links.new(metal.outputs["Fac"], arm_col.inputs["Fac"])
+        shade_col = nodes.new("ShaderNodeMixRGB")
+        shade_col.inputs["Color1"].default_value = (0.96, 0.86, 0.62, 1.0)
+        shade_col.inputs["Color2"].default_value = (0.88, 0.72, 0.38, 1.0)
+        links.new(metal.outputs["Fac"], shade_col.inputs["Fac"])
+        lamp_mix = nodes.new("ShaderNodeMixRGB")
+        links.new(shade_mask.outputs["Value"], lamp_mix.inputs["Fac"])
+        links.new(arm_col.outputs["Color"], lamp_mix.inputs["Color1"])
+        links.new(shade_col.outputs["Color"], lamp_mix.inputs["Color2"])
+        links.new(lamp_mix.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.35
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = (1.0, 0.78, 0.35, 1.0)
-        emit.inputs["Strength"].default_value = 0.28
+        emit_st = nodes.new("ShaderNodeMath")
+        emit_st.operation = "MULTIPLY"
+        emit_st.inputs[1].default_value = 0.35
+        links.new(shade_mask.outputs["Value"], emit_st.inputs[0])
+        emit.inputs["Color"].default_value = (1.0, 0.82, 0.42, 1.0)
+        links.new(emit_st.outputs["Value"], emit.inputs["Strength"])
         add = nodes.new("ShaderNodeAddShader")
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
@@ -381,7 +554,7 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
         links.new(add.outputs["Shader"], out.inputs["Surface"])
-    elif role not in ("lamp_accent", "box", "box_open"):
+    elif role not in ("lamp_accent", "box", "box_open", "roll_door"):
         links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -762,7 +935,7 @@ def _quantize_backdrop_rgb150(path: Path) -> None:
         if rgb == CORNER_RGB:
             return True
         L = 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]
-        return sat(rgb) < 0.14 and 118 <= L <= 158
+        return sat(rgb) < 0.10 and 125 <= L <= 156
 
     im = Image.open(path).convert("RGB")
     w, h = im.size

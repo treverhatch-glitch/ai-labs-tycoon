@@ -49,7 +49,7 @@ KIT_ROLES: dict[str, str] = {
     "kit_wall_back": "wall",
     "kit_wall_left": "wall",
     "kit_wall_corner": "wall",
-    "kit_roll_door": "metal",
+    "kit_roll_door": "roll_door",
     "prop_desk": "wood",
     "prop_chair": "chair",
     "prop_laptop": "screen",
@@ -239,12 +239,13 @@ def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float
     snap_min_z(ob, FLOOR_TOP)
     if "cardboard" in glb.lower():
         cc0.mesh_remove_doubles(ob, 0.02)
+        cc0.snap_cardboard_lid(ob, max_gap=0.01)
         bpy.context.view_layer.update()
-        _, mx = cc0.world_bbox(ob)
-        tall = mx.z - cc0.world_bbox(ob)[0].z
-        if tall > 0.42 * scale:
-            ob.scale.z *= 0.94
+        gap = cc0.cardboard_lid_gap_m(ob)
+        if gap > 0.01:
+            ob.scale.z *= 0.96
             bpy.ops.object.transform_apply(scale=True)
+            cc0.snap_cardboard_lid(ob, max_gap=0.01)
             snap_min_z(ob, FLOOR_TOP)
     return ob
 
@@ -337,6 +338,11 @@ def assert_scene_layout(
 
     desk = kit_objects.get("prop_desk")
     desk_top = cc0.world_bbox(desk)[1].z if desk else FLOOR_TOP
+
+    for key in ("prop_box_a", "prop_box_b", "prop_crate"):
+        ob = kit_objects.get(key)
+        if ob and cc0.cardboard_lid_gap_m(ob) > GROUND_TOL:
+            failures.append(f"{key} lid gap {cc0.cardboard_lid_gap_m(ob):.4f} m > {GROUND_TOL}")
 
     for key in prop_keys:
         ob = kit_objects[key]
@@ -453,7 +459,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
 
     stack_desk_props(kit_objects)
 
-    bpy.ops.mesh.primitive_plane_add(size=2.45, location=(2.28, 1.42, FLOOR_TOP + 0.003))
+    bpy.ops.mesh.primitive_plane_add(size=2.75, location=(2.05, 1.35, FLOOR_TOP + 0.006))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
     stain.rotation_euler = (0.0, 0.0, math.radians(14))
