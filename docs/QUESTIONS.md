@@ -4652,3 +4652,5 @@ Vendor/funding ladder/balance soak host slices.
 ### Q914–Q925. Batches **465–476** (rhythm, era **175–176**, hub **475**, rules **476**).
 
 ### Q926–Q937. Batches **477–488** (rhythm, era **177–178**, hub **487**, rules **488**).
+
+### Q938–Q949. Batches **489–500** (rhythm, era **179–180**, hub **499**, rules **500**).
