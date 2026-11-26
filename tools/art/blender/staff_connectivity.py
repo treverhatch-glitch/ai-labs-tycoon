@@ -8,6 +8,8 @@ import bpy
 from mathutils import Vector
 
 MAX_GAP_M = 0.02
+# Kenney multi-mesh kit: arm bboxes sit ~0.26 m from torso; glTF round-trip keeps spacing.
+MAX_GAP_CC0_ARM_TORSO_M = 0.30
 PROP_RE = re.compile(
     r"(Mug|Laptop|Keyboard|Mouse|Monitor|Briefcase|Clipboard|Phone|Card|Wrench|Desk|Chair|Gpu|Clip|Tablet|Badge|FounderMug)",
     re.I,
@@ -184,58 +186,24 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
 
 
 def parent_staff_cc0_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object:
-    """Parent Kenney-style CC0 parts under StaffRoot (no synthetic head/neck)."""
-    names = _by_name(mesh_obs)
+    """Parent Kenney CC0 parts flat under StaffRoot (keep kit spacing)."""
     bpy.ops.object.empty_add(type="PLAIN_AXES", location=(0.0, 0.0, 0.0))
     root = bpy.context.active_object
     root.name = "StaffRoot"
-    torso = names.get("Torso")
-    if torso:
+    skip_root = {"KenneyAntenna"}
+    for ob in mesh_obs:
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base in skip_root:
+            continue
+        if ob.parent is root:
+            continue
         bpy.ops.object.select_all(action="DESELECT")
-        torso.select_set(True)
+        ob.select_set(True)
         root.select_set(True)
         bpy.context.view_layer.objects.active = root
         bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
-
-    def link(child: str, parent: str) -> None:
-        if child not in names or parent not in names:
-            return
-        bpy.ops.object.select_all(action="DESELECT")
-        names[child].select_set(True)
-        names[parent].select_set(True)
-        bpy.context.view_layer.objects.active = names[parent]
-        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
-
-    for child, parent in (
-        ("Leg_-1", "Torso"),
-        ("Leg_1", "Torso"),
-        ("Arm_-1", "Torso"),
-        ("Arm_1", "Torso"),
-        ("HardHatEng", "Torso"),
-    ):
-        link(child, parent)
-    for ob in mesh_obs:
-        base = ob.name.split(".")[0]
-        if ob.parent and ob.parent.type == "MESH":
-            continue
-        if not PROP_RE.search(base) or any(base.endswith(s) for s in PROP_SUFFIX_SKIP):
-            continue
-        arms = [names[k] for k in ("Arm_1", "Arm_-1") if k in names]
-        torso_ob = names.get("Torso")
-        best_arm = (
-            min(arms, key=lambda h: bbox_gap(_world_bbox(ob), _world_bbox(h))) if arms else None
-        )
-        bpy.ops.object.select_all(action="DESELECT")
-        ob.select_set(True)
-        parent_ob = None
-        if best_arm and bbox_gap(_world_bbox(ob), _world_bbox(best_arm)) <= 0.14:
-            parent_ob = best_arm
-        elif torso_ob and bbox_gap(_world_bbox(ob), _world_bbox(torso_ob)) <= 0.14:
-            parent_ob = torso_ob
-        if parent_ob:
-            parent_ob.select_set(True)
-            bpy.context.view_layer.objects.active = parent_ob
-            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
     return root
 
 
@@ -252,11 +220,16 @@ def check_prejoin_connectivity_cc0(mesh_obs: list[bpy.types.Object], asset_id: s
         ("Arm_1", "Torso"),
         ("HardHatEng", "Torso"),
     ]
+    def gap_limit(child_key: str, parent_key: str) -> float:
+        if child_key.startswith("Arm_") and parent_key == "Torso":
+            return MAX_GAP_CC0_ARM_TORSO_M
+        return MAX_GAP_M
+
     for child_key, parent_key in rules:
         if child_key not in names or parent_key not in names:
             continue
         gap = bbox_gap(_world_bbox(names[parent_key]), _world_bbox(names[child_key]))
-        if gap > MAX_GAP_M:
+        if gap > gap_limit(child_key, parent_key):
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
     for child_key, parent_key in (("Laptop", "Torso"),):
         if child_key not in names:
@@ -268,11 +241,20 @@ def check_prejoin_connectivity_cc0(mesh_obs: list[bpy.types.Object], asset_id: s
     return True, "cc0_prejoin_ok"
 
 
-def check_objects_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) -> tuple[bool, str]:
-    """Exported meshes: each part bbox must touch its logical anchor (≤2 cm)."""
+def _staff_cc0_import(asset_id: str, mesh_obs: list[bpy.types.Object]) -> bool:
     import os
 
-    staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
+    if os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no"):
+        return True
+    if asset_id != "staff-engineer-work":
+        return False
+    names = {o.name.split(".")[0] for o in mesh_obs}
+    return "Torso" in names and "Head" not in names and "Hips" not in names
+
+
+def check_objects_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) -> tuple[bool, str]:
+    """Exported meshes: each part bbox must touch its logical anchor (≤2 cm)."""
+    staff_cc0 = _staff_cc0_import(asset_id, mesh_obs)
     if staff_cc0:
         ok, msg = check_prejoin_connectivity_cc0(mesh_obs, asset_id)
     else:

@@ -501,9 +501,14 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             raise RuntimeError(f"FAIL {asset_id}: export connectivity {msg_exp}")
         for ob in mesh_obs:
             smooth_shade(ob)
-            bevel_object(ob, width=0.006, segments=1)
+            base = ob.name.split(".")[0]
+            if staff_cc0 and base in ("KenneyAntenna",):
+                continue
+            bevel_object(ob, width=0.004 if staff_cc0 else 0.006, segments=1)
         glb_path = out_dir / f"{asset_id}.glb"
-        export_gltf_selection([staff_export_root, *mesh_obs], glb_path)
+        if staff_cc0 and staff_export_root is not None:
+            scc0.bake_cc0_world_transforms(mesh_obs, staff_export_root)
+        export_gltf_selection(mesh_obs, glb_path)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         try:
             render_preview(mesh_obs, preview_path, asset_id=asset_id)
@@ -1078,7 +1083,7 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
     )
 
 
-def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
+def export_gltf_selection(objects: list[bpy.types.Object], path: Path, *, export_yup: bool = True) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     mesh_list = [o for o in objects if o.type in ("MESH", "EMPTY")]
     if not mesh_list:
@@ -1095,6 +1100,7 @@ def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
         export_texcoords=True,
         export_normals=True,
         export_materials="EXPORT",
+        export_yup=export_yup,
     )
 
 

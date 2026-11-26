@@ -373,10 +373,10 @@ def render_preview_studio(
     staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
     if preview_kind == "staff":
         axis = "Z" if staff_cc0 or infer_up_axis(mins, maxs) == "Z" else "Y"
-        framing_margin = 0.70 if staff_cc0 else 0.94
-        lens_mm = 48.0
-        azimuth_deg = 42.0
-        elevation_deg = 12.0 if staff_cc0 else 10.0
+        framing_margin = 0.92 if staff_cc0 else 0.94
+        lens_mm = 46.0 if staff_cc0 else 48.0
+        azimuth_deg = 30.0 if staff_cc0 else 42.0
+        elevation_deg = 14.0 if staff_cc0 else 10.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
