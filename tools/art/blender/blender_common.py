@@ -151,8 +151,8 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
     mat.use_backface_culling = False
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.86, 0.14, 0.09, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.48
+        bsdf.inputs["Base Color"].default_value = (0.92, 0.10, 0.06, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.42
         if preview:
             em_key = "Emission Color" if "Emission Color" in bsdf.inputs else "Emission"
             str_key = (
@@ -163,9 +163,9 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
                 else None
             )
             if em_key in bsdf.inputs:
-                bsdf.inputs[em_key].default_value = (0.78, 0.12, 0.08, 1.0)
+                bsdf.inputs[em_key].default_value = (0.92, 0.08, 0.05, 1.0)
             if str_key and str_key in bsdf.inputs:
-                bsdf.inputs[str_key].default_value = 4.5
+                bsdf.inputs[str_key].default_value = 10.0
     return mat
 
 
@@ -206,7 +206,7 @@ def add_sign_mesh_text(
     if dx > 1e-4 and dy > 1e-4:
         sx = (board_w * 0.62) / dx
         sy = (board_h * 0.56) / dy
-        ob.scale = (-sx, sy, 1.0)
+        ob.scale = (-abs(sx), sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
@@ -1211,6 +1211,67 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             meta["wall_world_w_m"] = WALL_WORLD_W_M
             meta["wall_blocks_per_m_h"] = wall_blocks_per_metre_h(mapping_scale_x=sx)
             meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+
+
+def render_sign_garage_hero(category: str = "garage-kit") -> None:
+    """Hero shot: FOR SALE sign in front of committed garage-exterior-wall GLB."""
+    import blender_preview_rig as rig  # type: ignore
+
+    reset_scene()
+    wall_glb = (ART_ROOT / category / "garage-exterior-wall.glb").resolve()
+    sign_glb = (ART_ROOT / category / "garage-land-for-sale-sign.glb").resolve()
+    if not wall_glb.is_file() or not sign_glb.is_file():
+        raise RuntimeError("hero: missing wall or sign GLB")
+    bpy.ops.import_scene.gltf(filepath=str(wall_glb))
+    wall_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    bpy.ops.import_scene.gltf(filepath=str(sign_glb))
+    all_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    sign_meshes = [o for o in all_meshes if o.name in {"posts", "board", "letters"}]
+    wall_only = [o for o in all_meshes if o not in sign_meshes]
+    if not wall_only or not sign_meshes:
+        raise RuntimeError("hero: expected wall mesh + sign parts after import")
+    wall_ob = wall_only[0] if len(wall_only) == 1 else wall_only[0]
+    if len(wall_only) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in wall_only:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = wall_only[0]
+        bpy.ops.object.join()
+        wall_ob = bpy.context.active_object
+    wmins, wmaxs = rig.mesh_bounds_world([wall_ob])
+    smins, smaxs = rig.mesh_bounds_world(sign_meshes)
+    wcenter = (wmins + wmaxs) * 0.5
+    scenter = (smins + smaxs) * 0.5
+    # Place sign slightly in front of wall broad face (thin axis).
+    thin_axis = min(
+        (("x", wmaxs.x - wmins.x), ("y", wmaxs.y - wmins.y), ("z", wmaxs.z - wmins.z)),
+        key=lambda t: t[1],
+    )[0]
+    gap = 0.35
+    shift = Vector((0.0, 0.0, 0.0))
+    if thin_axis == "y":
+        shift.y = (wmaxs.y - scenter.y) + gap
+    elif thin_axis == "z":
+        shift.z = (wmaxs.z - scenter.z) + gap
+    else:
+        shift.x = (wmaxs.x - scenter.x) + gap
+    for o in sign_meshes:
+        o.location += shift
+    bpy.context.view_layer.update()
+    apply_packet34_preview_material(wall_ob, "garage-exterior-wall", ART_ROOT / category / "textures/garage-exterior-wall")
+    apply_sign_preview_materials(sign_meshes, ART_ROOT / category / "textures/garage-land-for-sale-sign")
+    hero = PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png"
+    os.environ.setdefault("EARLY_PREVIEW_MID_GREY", "1")
+    os.environ.setdefault("EARLY_PREVIEW_CONTACT_SHADOW", "1")
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.18"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
+    os.environ["PREVIEW_ELEVATION_DEG"] = "8"
+    os.environ["PREVIEW_GLB_SHA256"] = file_sha256(sign_glb)
+    os.environ["PREVIEW_GLB_PATH"] = str(sign_glb.relative_to(REPO_ROOT))
+    hero_meshes = sign_meshes + [wall_ob]
+    render_preview(hero_meshes, hero)
+
+
 def _billboard_face_axis(ob: bpy.types.Object) -> str:
     dx, dy, dz = (float(ob.dimensions.x), float(ob.dimensions.y), float(ob.dimensions.z))
     dims = (("X", dx), ("Y", dy), ("Z", dz))
@@ -1666,7 +1727,12 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
         bsdf.inputs["Roughness"].default_value = 0.90 if curb_matte else 0.52
     if asset_id == "garage-window-frame":
         key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
-        bsdf.inputs[key].default_value = 0.35
+        bsdf.inputs[key].default_value = 0.55
+        ior_key = "IOR" if "IOR" in bsdf.inputs else None
+        if ior_key:
+            bsdf.inputs[ior_key].default_value = 1.42
+        if "Roughness" in bsdf.inputs:
+            bsdf.inputs["Roughness"].default_value = 0.18
     if asset_id == "garage-lot-curb":
         curb_tone = nodes.new("ShaderNodeBrightContrast")
         curb_tone.inputs["Bright"].default_value = -0.38

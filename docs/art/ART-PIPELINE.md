@@ -3,7 +3,7 @@
 ## Principles
 
 1. **Rules vs pixels:** `Rules/` never references meshes, textures, or UI prefabs. Unity reads `GameState` and `DisplayQueries` only.
-2. **License safety:** No third-party asset store packs, no scraped logos, no real company marks. Rivals use parody silhouettes and palette swaps only.
+2. **License safety:** CC0 kits only for 3D env (Kenney, Quaternius, Poly Haven, ambientCG — see [LICENSES.md](LICENSES.md)). No asset-store packs, no scraped logos. Rivals use parody silhouettes and palette swaps only.
 3. **In-repo truth:** Every committed mesh is either (a) procedural output from `tools/art/` or (b) hand-authored ASCII/OBJ in `unity/Assets/Art/`.
 4. **One regen command:** `python3 tools/art/generate_campus_kit.py` rebuilds the starter campus kit and `manifest.json`.
 

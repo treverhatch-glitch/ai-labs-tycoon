@@ -1,0 +1,13 @@
+{
+  "camera_dist": 12.655276593657817,
+  "bbox_radius": 2.573954561421929,
+  "framing_margin": 1.18,
+  "lens_mm": 50.0,
+  "azimuth_deg": 38.0,
+  "elevation_deg": 8.0,
+  "up_axis": "Y",
+  "mid_grey": true,
+  "contact_shadow": true,
+  "glb_sha256": "5e6093ef9ec5227d4d55d3fabdc101a992e9991c2f7165266a6c746c0a579ef0",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb"
+}

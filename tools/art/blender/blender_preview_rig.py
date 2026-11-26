@@ -110,6 +110,42 @@ def setup_studio_world() -> None:
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
+def setup_hdri_world(hdr_path: Path, *, strength: float = 0.85) -> None:
+    """Poly Haven / CC0 HDR environment (when file exists under tools/art/cc0/hdri/)."""
+    world = bpy.data.worlds.new("EarlyPreviewWorld")
+    bpy.context.scene.world = world
+    world.use_nodes = True
+    nodes = world.node_tree.nodes
+    links = world.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputWorld")
+    bg = nodes.new("ShaderNodeBackground")
+    env = nodes.new("ShaderNodeTexEnvironment")
+    env.image = bpy.data.images.load(str(hdr_path.resolve()), check_existing=True)
+    links.new(env.outputs["Color"], bg.inputs["Color"])
+    bg.inputs["Strength"].default_value = strength
+    links.new(bg.outputs["Background"], out.inputs["Surface"])
+
+
+def pick_cc0_hdri() -> Path | None:
+    root = Path(__file__).resolve().parents[2] / "cc0" / "hdri"
+    for pattern in ("*.hdr", "*.exr"):
+        matches = sorted(root.glob(pattern))
+        if matches:
+            return matches[0]
+    return None
+
+
+def setup_preview_world() -> None:
+    hdr = pick_cc0_hdri()
+    if hdr and hdr.is_file():
+        setup_hdri_world(hdr)
+    elif _mid_grey_preview():
+        setup_mid_grey_world()
+    else:
+        setup_studio_world()
+
+
 def setup_mid_grey_world() -> None:
     """Pass-4: flat mid-grey backdrop (no gradient wall)."""
     world = bpy.data.worlds.new("EarlyPreviewWorld")
