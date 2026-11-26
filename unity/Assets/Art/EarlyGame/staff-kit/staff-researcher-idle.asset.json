@@ -1,0 +1,10 @@
+{
+  "id": "staff-researcher-idle",
+  "partCount": 20,
+  "meshIslands": 1,
+  "grounded": true,
+  "vertexCount": 15712,
+  "triangleCount": 62802,
+  "generator": "tools/art/blender/staff-researcher-idle.py",
+  "blenderVersion": "4.0.2"
+}

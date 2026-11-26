@@ -24,15 +24,10 @@ def _wisp_body(mood_id: str) -> bpy.types.Object:
         body.scale = (1.02, 1.05, 0.98)
         bpy.ops.object.transform_apply(scale=True)
     elif mood == "angry":
-        bpy.ops.mesh.primitive_ico_sphere_add(radius=0.42, subdivisions=2, location=(0, loc_y, 0))
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.42, segments=28, ring_count=12, location=(0, loc_y, 0))
         body = bpy.context.active_object
-        for i, (ox, oy, oz) in enumerate(
-            ((0.30, 0.16, 0.0), (-0.30, 0.16, 0.0), (0, 0.28, 0.0), (0, -0.22, 0.26), (0, -0.22, -0.26))
-        ):
-            bpy.ops.mesh.primitive_cone_add(radius1=0.07, depth=0.16, location=(ox, loc_y + oy, oz))
-            sp = bpy.context.active_object
-            sp.name = f"Spike_{i}"
-            bc.assign_solid(sp, (0.92, 0.22, 0.18, 1.0), 0.35)
+        body.scale = (1.04, 0.95, 1.0)
+        bpy.ops.object.transform_apply(scale=True)
     elif mood == "worried":
         bpy.ops.mesh.primitive_uv_sphere_add(radius=0.42, segments=28, ring_count=12, location=(0, loc_y, 0))
         body = bpy.context.active_object
@@ -41,8 +36,8 @@ def _wisp_body(mood_id: str) -> bpy.types.Object:
     elif mood == "glowing":
         bpy.ops.mesh.primitive_uv_sphere_add(radius=0.48, segments=36, ring_count=18, location=(0, loc_y, 0))
         body = bpy.context.active_object
-        halo = bc.add_cylinder("GlowHalo", 0.54, 0.05, (0, loc_y + 0.20, 0), vertices=24)
-        bc.assign_emission(halo, (0.72, 0.48, 1.0, 1.0), strength=6.0)
+        body.scale = (1.0, 1.08, 1.0)
+        bpy.ops.object.transform_apply(scale=True)
     else:
         bpy.ops.mesh.primitive_uv_sphere_add(radius=0.42, segments=30, ring_count=14, location=(0, loc_y, 0))
         body = bpy.context.active_object
@@ -62,14 +57,14 @@ def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
     elif mood == "angry":
         eye_y, eye_sep = 0.05, 0.11
     dark = (0.08, 0.06, 0.10, 1.0)
-    white = (0.98, 0.98, 1.0, 1.0)
     for sx in (-1, 1):
-        sclera = bc.add_cube(f"Sclera_{sx}", (0.10, 0.10, 0.03), (eye_sep * sx, base_y + eye_y, face_z))
-        bc.assign_solid(sclera, white, 0.2)
-        pupil = bc.add_cube(f"Eye_{sx}", (0.05, 0.06, 0.02), (eye_sep * sx, base_y + eye_y, face_z + 0.02))
+        pupil = bc.add_cube(f"Eye_{sx}", (0.07, 0.08, 0.025), (eye_sep * sx, base_y + eye_y, face_z + 0.02))
         bc.assign_solid(pupil, dark, 0.15)
     if mood == "happy":
-        mouth = bc.add_cube("Smile", (0.16, 0.04, 0.02), (0, base_y - 0.03, face_z))
+        cheek = bc.add_cube("CheekSparkle", (0.05, 0.04, 0.02), (0.18, base_y - 0.02, face_z))
+        bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
+    if mood == "happy":
+        mouth = bc.add_cube("Smile", (0.14, 0.05, 0.02), (0, base_y - 0.04, face_z))
         bc.assign_solid(mouth, (0.92, 0.22, 0.45, 1.0), 0.3)
     elif mood == "angry":
         mouth = bc.add_cube("Frown", (0.14, 0.035, 0.02), (0, base_y + 0.02, face_z))

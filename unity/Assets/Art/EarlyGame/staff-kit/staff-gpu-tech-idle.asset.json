@@ -1,0 +1,10 @@
+{
+  "id": "staff-gpu-tech-idle",
+  "partCount": 22,
+  "meshIslands": 1,
+  "grounded": true,
+  "vertexCount": 16487,
+  "triangleCount": 65874,
+  "generator": "tools/art/blender/staff-gpu-tech-idle.py",
+  "blenderVersion": "4.0.2"
+}

@@ -108,6 +108,7 @@ def analyze_alpha_mask(mask_path: Path) -> dict[str, float | bool | list[float]]
         return {
             "height_coverage": 0.0,
             "width_coverage": 0.0,
+            "extent_coverage": 0.0,
             "area_coverage": 0.0,
             "touches_edge": True,
             "bbox_norm": [0.0, 0.0, 0.0, 0.0],

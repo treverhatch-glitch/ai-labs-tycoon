@@ -5,6 +5,6 @@
   "lens_mm": 50.0,
   "azimuth_deg": 0.0,
   "elevation_deg": 10.0,
-  "up_axis": "Z",
+  "up_axis": "Y",
   "preview_kind": "wisp"
 }

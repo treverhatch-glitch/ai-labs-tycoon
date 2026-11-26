@@ -1,0 +1,10 @@
+{
+  "id": "staff-engineer-work",
+  "partCount": 21,
+  "meshIslands": 1,
+  "grounded": true,
+  "vertexCount": 17176,
+  "triangleCount": 68608,
+  "generator": "tools/art/blender/staff-engineer-work.py",
+  "blenderVersion": "4.0.2"
+}

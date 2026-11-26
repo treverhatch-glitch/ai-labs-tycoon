@@ -55,12 +55,16 @@ def add_cylinder(
     depth: float,
     location: tuple[float, float, float] = (0, 0, 0),
     vertices: int = 16,
+    axis: str = "Y",
 ) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cylinder_add(
         radius=radius, depth=depth, vertices=vertices, location=location
     )
     ob = bpy.context.active_object
     ob.name = name
+    if axis.upper() == "Y":
+        ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
+        bpy.ops.object.transform_apply(rotation=True)
     return ob
 
 
@@ -83,6 +87,14 @@ def solidify_object(ob: bpy.types.Object, thickness: float = 0.02) -> None:
     bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
+def mesh_world_min_y(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+
+
+def mesh_world_min_z(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+
+
 def ground_scene_meshes() -> None:
     """Early garage scripts use Blender Y as up; rest on y=0."""
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
@@ -96,28 +108,66 @@ def ground_scene_meshes() -> None:
         o.location.y += dy
 
 
-def snap_root_to_ground(ob: bpy.types.Object) -> None:
-    """Rest bottom vertices on y=0 (garage Y-up); edit-mesh snap survives remesh/voxel."""
+def ensure_staff_upright(ob: bpy.types.Object) -> None:
+    """Y is up: tallest bbox axis must be Y; head (+Y) above feet."""
     import bmesh
 
-    bpy.context.view_layer.objects.active = ob
-    ob.select_set(True)
-    mat_loc, mat_rot, _ = ob.matrix_world.decompose()
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     if not bm.verts:
         bm.free()
         return
-    world_min = min((mat_loc + v.co).y for v in bm.verts)
-    if abs(world_min) < 1e-4:
-        bm.free()
-        return
-    for v in bm.verts:
-        v.co.y -= world_min
-    bm.to_mesh(ob.data)
+    co = [ob.matrix_world @ v.co for v in bm.verts]
     bm.free()
-    ob.data.update()
-    ob.location.y = 0.0
+    xs = [p.x for p in co]
+    ys = [p.y for p in co]
+    zs = [p.z for p in co]
+    span_x, span_y, span_z = max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)
+    if span_y < max(span_x, span_z) * 0.92:
+        raise RuntimeError(
+            f"FAIL {ob.name}: not Y-up span_y={span_y:.3f} span_x={span_x:.3f} span_z={span_z:.3f}"
+        )
+    if max(ys) - min(ys) < 0.35:
+        raise RuntimeError(f"FAIL {ob.name}: staff too short height={span_y:.3f}")
+
+
+def snap_root_to_ground(ob: bpy.types.Object) -> None:
+    """Rest lowest vertex on y=0 (art/garage Y-up lane)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    min_y = mesh_world_min_y(ob)
+    if abs(min_y) > 1e-5:
+        ob.location.y -= min_y
+    bpy.context.view_layer.update()
+
+
+def snap_root_to_ground_z(ob: bpy.types.Object) -> None:
+    """After art-Y → Blender Z-up reorient, rest feet on z=0."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    min_z = mesh_world_min_z(ob)
+    if abs(min_z) > 1e-5:
+        ob.location.z -= min_z
+    bpy.context.view_layer.update()
+
+
+def orient_staff_for_gltf(ob: bpy.types.Object, asset_id: str) -> None:
+    """Apply loc/rot/scale; Blender Y-up mesh maps to glTF +Y with export_apply."""
+    ensure_staff_upright(ob)
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    snap_root_to_ground(ob)
+    span = ob.dimensions
+    if span.y < max(span.x, span.z) * 0.9:
+        raise RuntimeError(
+            f"FAIL {asset_id}: gltf-upright span_y={span.y:.3f} span_x={span.x:.3f} span_z={span.z:.3f}"
+        )
 
 
 def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
@@ -153,7 +203,7 @@ def add_prejoin_spine(mesh_obs: list[bpy.types.Object]) -> None:
     mesh_obs.append(spine)
 
 
-def add_connecting_spine(ob: bpy.types.Object) -> None:
+def add_connecting_spine(ob: bpy.types.Object, *, staff: bool = False) -> None:
     """Hidden internal strut so multi-part kits are one manifold island."""
     mins = Vector((1e9, 1e9, 1e9))
     maxs = Vector((-1e9, -1e9, -1e9))
@@ -166,9 +216,11 @@ def add_connecting_spine(ob: bpy.types.Object) -> None:
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center.x, (mins.y + maxs.y) * 0.5, center.z))
     spine = bpy.context.active_object
     spine.name = "ConnectSpine"
-    span_x = max(0.08, (maxs.x - mins.x) * 0.45)
-    span_z = max(0.08, (maxs.z - mins.z) * 0.45)
-    spine.scale = (span_x, height * 0.5 + 0.02, span_z)
+    widen = 0.94 if staff else 0.45
+    ht = 0.94 if staff else 0.5
+    span_x = max(0.08, (maxs.x - mins.x) * widen)
+    span_z = max(0.08, (maxs.z - mins.z) * widen)
+    spine.scale = (span_x, height * ht + 0.02, span_z)
     bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
@@ -179,6 +231,23 @@ def add_connecting_spine(ob: bpy.types.Object) -> None:
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.remove_doubles(threshold=0.02)
     bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def staff_merge_islands(root: bpy.types.Object, asset_id: str, max_pass: int = 4) -> None:
+    """Chibi staff props must export as one glTF mesh island."""
+    for _ in range(max_pass):
+        if mesh_island_count(root) <= 1:
+            return
+        add_connecting_spine(root, staff=True)
+    if mesh_island_count(root) <= 1:
+        return
+    for voxel_size in (0.012, 0.010, 0.008):
+        if mesh_island_count(root) <= 1:
+            return
+        voxel_shell_merge(root, voxel_size=voxel_size)
+    islands = mesh_island_count(root)
+    if islands > 1:
+        raise RuntimeError(f"FAIL {asset_id}: staff islands={islands} after spine/voxel merge")
 
 
 def mesh_island_count(ob: bpy.types.Object) -> int:
@@ -228,25 +297,31 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
+    part_count = len(mesh_obs)
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
-    if category == "staff-kit":
+    if category == "staff-kit" and part_count < 6:
+        raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
+    if category in ("garage-kit", "staff-kit"):
         add_prejoin_spine(mesh_obs)
     root = link_or_join(mesh_obs)
     snap_root_to_ground(root)
-    if mesh_island_count(root) > 1:
+    if category == "staff-kit":
+        bpy.context.view_layer.objects.active = root
+        root.select_set(True)
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.remove_doubles(threshold=0.003)
+        bpy.ops.object.mode_set(mode="OBJECT")
+        staff_merge_islands(root, asset_id)
+    elif mesh_island_count(root) > 1:
         add_connecting_spine(root)
-    voxel_default = category == "staff-kit"
+    voxel_default = category == "garage-kit"
     if mesh_island_count(root) > 1 and (
         voxel_default or os.environ.get("EARLY_ART_VOXEL_SHELL", "0") not in ("0", "false")
     ):
         if category == "staff-kit":
-            if mesh_island_count(root) > 1:
-                voxel_shell_merge(root, voxel_size=0.045)
-            if mesh_island_count(root) > 1:
-                voxel_shell_merge(root, voxel_size=0.058)
-            if mesh_island_count(root) > 1:
-                voxel_shell_merge(root, voxel_size=0.072)
+            pass
         else:
             voxel_size = 0.018
             for _ in range(4):
@@ -268,13 +343,22 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     bm.free()
     if min_y > 0.03:
         raise RuntimeError(f"FAIL {asset_id}: mesh floats above ground (min_y={min_y:.3f})")
-    bevel_object(root, width=0.012, segments=2)
+    if category == "staff-kit":
+        ensure_staff_upright(root)
+        bevel_object(root, width=0.014, segments=2)
+    else:
+        bevel_object(root, width=0.012, segments=2)
     smooth_shade(root)
     uv_unwrap(root)
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
     islands_export = mesh_island_count(root)
+    if category == "staff-kit":
+        orient_staff_for_gltf(root, asset_id)
+        islands_export = mesh_island_count(root)
+        if islands_export != 1:
+            raise RuntimeError(f"FAIL {asset_id}: export islands={islands_export} need 1")
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
@@ -285,7 +369,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
 
     verts = len(root.data.vertices)
     tris = sum(len(p.vertices) for p in root.data.polygons)
-    return {
+    entry = {
         "id": asset_id,
         "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
         "textures": {k: f"Assets/Art/EarlyGame/{category}/textures/{asset_id}/{asset_id}_{k}.png" for k in maps},
@@ -294,10 +378,13 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         "vertexCount": verts,
         "triangleCount": tris,
         "meshIslands": islands_export,
+        "partCount": part_count if category == "staff-kit" else part_count,
         "grounded": min_y <= 0.03,
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }
+    (out_dir / f"{asset_id}.asset.json").write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8")
+    return entry
 
 
 def assign_solid(
@@ -427,8 +514,12 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.12, 0.12, 0.14, 1.0), 0.25)
         elif asset_id.startswith("staff-") and "mug" in name:
             assign_solid(ob, (0.88, 0.48, 0.12, 1.0), 0.35)
-        elif asset_id.startswith("staff-") and ("rolebadge" in name or "rolesash" in name):
-            continue
+        elif asset_id.startswith("staff-") and "mug" in name:
+            assign_solid(ob, (0.92, 0.48, 0.12, 1.0), 0.35)
+        elif asset_id.startswith("staff-") and "gpucard" in name.lower():
+            assign_solid(ob, (0.12, 0.48, 0.82, 1.0), 0.28)
+        elif asset_id.startswith("staff-") and "headset" in name.lower():
+            assign_solid(ob, (0.22, 0.24, 0.28, 1.0), 0.32)
         elif asset_id.startswith("staff-") and "torso" in name:
             role_shirt = {
                 "staff-researcher-idle": (0.28, 0.52, 0.95, 1.0),
@@ -722,7 +813,7 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
     bpy.ops.export_scene.gltf(
         filepath=str(path),
         use_selection=True,
-        export_apply=False,
+        export_apply=True,
         export_format="GLB",
         export_image_format="AUTO",
         export_texcoords=True,

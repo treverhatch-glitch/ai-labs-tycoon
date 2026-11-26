@@ -39,9 +39,32 @@ def collect(kit_dir: Path, extra: dict[str, dict] | None = None) -> list[dict]:
             "preview": f"docs/art/previews/{aid}.png",
             "license": "CC0-1.0 (Blender-baked, in-repo)",
         }
-        for key in ("meshIslands", "grounded", "vertexCount", "triangleCount", "generator", "blenderVersion"):
-            if key in extra.get(aid, {}):
-                row[key] = extra[aid][key]
+        sidecar = kit_dir / f"{aid}.asset.json"
+        if sidecar.exists():
+            meta = json.loads(sidecar.read_text(encoding="utf-8"))
+            for key in (
+                "meshIslands",
+                "grounded",
+                "vertexCount",
+                "triangleCount",
+                "partCount",
+                "generator",
+                "blenderVersion",
+            ):
+                if key in meta:
+                    row[key] = meta[key]
+        else:
+            for key in (
+                "meshIslands",
+                "grounded",
+                "vertexCount",
+                "triangleCount",
+                "partCount",
+                "generator",
+                "blenderVersion",
+            ):
+                if key in extra.get(aid, {}):
+                    row[key] = extra[aid][key]
         entries.append(row)
     return entries
 

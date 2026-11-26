@@ -1,0 +1,10 @@
+{
+  "id": "staff-pose-typing",
+  "partCount": 16,
+  "meshIslands": 1,
+  "grounded": true,
+  "vertexCount": 15496,
+  "triangleCount": 61984,
+  "generator": "tools/art/blender/staff-pose-typing.py",
+  "blenderVersion": "4.0.2"
+}

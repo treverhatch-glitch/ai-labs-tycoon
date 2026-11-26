@@ -14,9 +14,9 @@ import bpy
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
-# Mid-grey studio: flat backdrop + neutral ground shadow only (no beige wall).
-MID_GREY_BACKDROP = (0.52, 0.52, 0.54, 1.0)
-FLOOR_COLOR = (0.46, 0.46, 0.48, 1.0)
+# Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
+STUDIO_GREY = (0.48, 0.48, 0.50, 1.0)
+FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -91,7 +91,7 @@ def setup_studio_world() -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
     bg = nodes.new("ShaderNodeBackground")
-    bg.inputs["Color"].default_value = MID_GREY_BACKDROP
+    bg.inputs["Color"].default_value = STUDIO_GREY
     bg.inputs["Strength"].default_value = 1.0
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
@@ -110,7 +110,7 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
+        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
@@ -126,7 +126,7 @@ def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
+        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
@@ -264,13 +264,12 @@ def render_hero_mask(
 
 
 def frame_camera_ortho(objects: list[bpy.types.Object], fill: float = 0.70) -> bpy.types.Object:
-    """HUD / texture swatch: straight-on ortho, ~60–80% frame fill."""
     mins, maxs = mesh_bounds_world(objects)
     center = (mins + maxs) * 0.5
-    height = max(0.15, maxs.y - mins.y)
-    span = max(maxs.x - mins.x, maxs.z - mins.z, height * 0.3)
+    height = max(0.15, maxs.z - mins.z, maxs.y - mins.y)
+    span = max(maxs.x - mins.x, height * 0.3)
     ortho_scale = max(height, span) / fill
-    bpy.ops.object.camera_add(location=center + Vector((0.0, 0.0, 4.0)))
+    bpy.ops.object.camera_add(location=center + Vector((0.0, -4.0, center.z)))
     cam = bpy.context.active_object
     cam.name = "PreviewCamera"
     cam.data.type = "ORTHO"
@@ -287,10 +286,19 @@ def render_preview_studio(
     resolution: int = 512,
     up_axis: str | None = None,
     lens_mm: float = DEFAULT_LENS_MM,
+    azimuth_deg: float = DEFAULT_AZIMUTH_DEG,
+    elevation_deg: float = DEFAULT_ELEVATION_DEG,
+    framing_margin: float = FRAMING_MARGIN,
+    mask_meshes: bpy.types.Object | list[bpy.types.Object] | None = None,
 ) -> None:
     preview_kind = os.environ.get("EARLY_ART_PREVIEW_KIND", "staff").lower()
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
+    if mask_meshes is not None:
+        mask_focus = mask_meshes if isinstance(mask_meshes, list) else [mask_meshes]
+        mask_heroes = [o for o in mask_focus if o.type == "MESH"]
+    else:
+        mask_heroes = hero_meshes
     if not hero_meshes:
         hero_meshes = [
             o for o in bpy.context.scene.objects if o.type == "MESH" and o.name != "PreviewShadowFloor"
@@ -307,24 +315,31 @@ def render_preview_studio(
 
     setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
-    axis = (up_axis or infer_up_axis(mins, maxs)).upper()
+    if preview_kind == "staff":
+        axis = "Y"
+    elif preview_kind in ("wisp",):
+        axis = "Y"
+    else:
+        axis = (up_axis or infer_up_axis(mins, maxs)).upper()
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
-    azimuth = DEFAULT_AZIMUTH_DEG
-    elevation = DEFAULT_ELEVATION_DEG
-    margin = FRAMING_MARGIN
     cam_dist = 0.0
     if preview_kind == "hud":
         setup_three_point_lights(center, max(radius, 0.35))
         frame_camera_ortho(hero_meshes)
     elif preview_kind == "wisp":
-        azimuth, elevation, margin = 0.0, 10.0, 1.20
+        azimuth_deg, elevation_deg, framing_margin = 0.0, 10.0, 1.20
         setup_three_point_lights(center, radius)
         cam = frame_camera(
-            hero_meshes, lens_mm=42.0, margin=margin, azimuth_deg=azimuth, elevation_deg=elevation, up_axis=axis
+            hero_meshes,
+            lens_mm=42.0,
+            margin=framing_margin,
+            azimuth_deg=azimuth_deg,
+            elevation_deg=elevation_deg,
+            up_axis=axis,
         )
         half_fov = camera_half_fov_rad(cam.data)
-        cam_dist = (radius / math.tan(half_fov)) * margin
+        cam_dist = (radius / math.tan(half_fov)) * framing_margin
         if hasattr(scene.eevee, "use_bloom"):
             scene.eevee.use_bloom = True
     else:
@@ -333,9 +348,16 @@ def render_preview_studio(
         else:
             add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
-        cam = frame_camera(hero_meshes, lens_mm=lens_mm, up_axis=axis)
+        cam = frame_camera(
+            hero_meshes,
+            lens_mm=lens_mm,
+            margin=framing_margin,
+            azimuth_deg=azimuth_deg,
+            elevation_deg=elevation_deg,
+            up_axis=axis,
+        )
         half_fov = camera_half_fov_rad(cam.data)
-        cam_dist = (radius / math.tan(half_fov)) * FRAMING_MARGIN
+        cam_dist = (radius / math.tan(half_fov)) * framing_margin
 
     meta_path = path.with_name(path.stem + ".frame.json")
     meta_path.write_text(
@@ -343,10 +365,10 @@ def render_preview_studio(
             {
                 "camera_dist": cam_dist,
                 "bbox_radius": radius,
-                "framing_margin": margin,
+                "framing_margin": framing_margin,
                 "lens_mm": lens_mm,
-                "azimuth_deg": azimuth,
-                "elevation_deg": elevation,
+                "azimuth_deg": azimuth_deg,
+                "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
             },
@@ -364,4 +386,4 @@ def render_preview_studio(
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
     mask_path = path.with_name(path.stem + ".mask.png")
-    render_hero_mask(hero_meshes, mask_path, resolution)
+    render_hero_mask(mask_heroes, mask_path, resolution)

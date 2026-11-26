@@ -18,6 +18,8 @@ def main() -> int:
     for entry in json.loads(MANIFEST.read_text())["assets"]:
         asset_id = entry["id"]
         islands = entry.get("meshIslands")
+        part_count = entry.get("partCount")
+        tris = entry.get("triangleCount", 0)
         grounded = entry.get("grounded", True)
         glb = REPO / "unity" / "Assets" / "Art" / "EarlyGame" / "staff-kit" / f"{asset_id}.glb"
         if not glb.exists():
@@ -27,14 +29,20 @@ def main() -> int:
         if islands is None:
             print(f"FAIL {asset_id} missing meshIslands in manifest")
             rc = 1
-        elif islands > 1:
-            print(f"FAIL {asset_id} islands={islands}")
+        elif islands != 1:
+            print(f"FAIL {asset_id} islands={islands} need=1")
+            rc = 1
+        elif part_count is not None and part_count < 6:
+            print(f"FAIL {asset_id} partCount={part_count} need>=6")
+            rc = 1
+        elif tris < 1500:
+            print(f"FAIL {asset_id} tris={tris} need>=1500")
             rc = 1
         elif not grounded:
             print(f"FAIL {asset_id} not grounded")
             rc = 1
         else:
-            print(f"OK {asset_id} islands={islands}")
+            print(f"OK {asset_id} islands={islands} parts={part_count} tris={tris}")
     return rc
 
 

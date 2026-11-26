@@ -1,6 +1,7 @@
 """Bake 1024 tileable albedo/normal/roughness for early-game texture swatches."""
 from __future__ import annotations
 
+import os
 import shutil
 from pathlib import Path
 
@@ -92,6 +93,7 @@ def bake_tileable(
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
     preview.parent.mkdir(parents=True, exist_ok=True)
     try:
+        os.environ["EARLY_ART_PREVIEW_KIND"] = "hud"
         bc.render_preview(plane, preview, asset_id=asset_id)
     except Exception as exc:  # noqa: BLE001
         print(f"WARN preview {asset_id}: {exc}")

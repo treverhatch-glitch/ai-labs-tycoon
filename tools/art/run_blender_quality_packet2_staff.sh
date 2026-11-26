@@ -22,6 +22,9 @@ done
 python3 tools/art/blender/merge_blender_manifests.py
 python3 tools/art/generate_wisp_mascot.py
 python3 tools/art/check_staff_mesh_topology.py
+python3 tools/art/check_staff_upright.py
+python3 tools/art/check_preview_no_backdrop_plate.py
+python3 tools/art/check_wisp_face_present.py
 bash tools/art/check_packet2_previews.sh
 python3 tools/art/render_early_composites.py
 echo "quality packet2 staff OK"

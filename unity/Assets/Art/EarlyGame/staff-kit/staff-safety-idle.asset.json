@@ -1,0 +1,10 @@
+{
+  "id": "staff-safety-idle",
+  "partCount": 18,
+  "meshIslands": 1,
+  "grounded": true,
+  "vertexCount": 14069,
+  "triangleCount": 56276,
+  "generator": "tools/art/blender/staff-safety-idle.py",
+  "blenderVersion": "4.0.2"
+}
