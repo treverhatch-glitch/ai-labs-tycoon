@@ -15,7 +15,7 @@ from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 # Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
-STUDIO_GREY = (0.48, 0.48, 0.50, 1.0)
+STUDIO_GREY = (150.0 / 255.0, 150.0 / 255.0, 150.0 / 255.0, 1.0)
 FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
@@ -82,7 +82,7 @@ def camera_half_fov_rad(cam_data: bpy.types.Camera) -> float:
     return min(fov_h, fov_v) * 0.5
 
 
-def setup_studio_world() -> None:
+def setup_studio_world(*, staff_flat: bool = False) -> None:
     world = bpy.data.worlds.new("EarlyPreviewWorld")
     bpy.context.scene.world = world
     world.use_nodes = True
@@ -93,8 +93,11 @@ def setup_studio_world() -> None:
     bg = nodes.new("ShaderNodeBackground")
     # Mid-grey visible backdrop; HDRI may light objects but stays hidden in the render.
     bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 1.0
+    bg.inputs["Strength"].default_value = 0.577 if staff_flat else 1.0
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
+    if staff_flat or not hdr_path.is_file():
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
+        return
     if hdr_path.is_file():
         env = nodes.new("ShaderNodeTexEnvironment")
         env.image = bpy.data.images.load(str(hdr_path))
@@ -401,11 +404,11 @@ def render_preview_studio(
             scene.eevee.gtao_distance = 0.4
             scene.eevee.gtao_factor = 1.4
 
-    setup_studio_world()
+    setup_studio_world(staff_flat=(preview_kind == "staff"))
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 1.455
+        framing_margin = 1.38
         lens_mm = 50.0
         azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "38"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
@@ -443,7 +446,7 @@ def render_preview_studio(
             if floor_ob and floor_ob.active_material:
                 bsdf = floor_ob.active_material.node_tree.nodes.get("Principled BSDF")
                 if bsdf:
-                    bsdf.inputs["Base Color"].default_value = (0.48, 0.48, 0.50, 1.0)
+                    bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         elif axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:

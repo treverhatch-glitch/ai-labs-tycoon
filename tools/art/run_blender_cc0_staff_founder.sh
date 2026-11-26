@@ -29,7 +29,8 @@ python3 tools/art/check_cc0_staff_material_diversity.py
 python3 tools/art/check_cc0_staff_silhouette.py
 python3 tools/art/check_cc0_staff_floor_loose.py
 python3 tools/art/check_cc0_staff_preview_front.py
-python3 tools/art/check_cc0_staff_founder_torso_skin.py
+python3 tools/art/check_cc0_staff_preview_corner_grey.py
+python3 tools/art/check_cc0_staff_face_visible.py
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

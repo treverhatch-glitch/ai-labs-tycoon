@@ -51,8 +51,9 @@ def analyze(png: Path) -> tuple[bool, str]:
     if head_cy <= foot_cy:
         return False, "inverted_head_below_feet"
     fill = span / h
-    if fill < 0.58 or fill > 0.78:
-        return False, f"fill={fill:.2f} want 0.58-0.78 span={span} h={h}"
+    lo, hi = (0.65, 0.75) if png.stem == "staff-founder-idle" else (0.58, 0.78)
+    if fill < lo or fill > hi:
+        return False, f"fill={fill:.2f} want {lo}-{hi} span={span} h={h}"
     return True, f"head={head_cy:.0f} foot={foot_cy:.0f} span={span} fill={fill:.2f}"
 
 
