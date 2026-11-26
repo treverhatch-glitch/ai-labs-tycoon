@@ -84,7 +84,7 @@ def build_desk() -> bpy.types.Object:
     _snap_min_y(screen, surface_y)
     sc = _center(screen)
     for o in screen:
-        o.location += Vector((0.08, 0.0, 0.14)) - Vector((sc.x, 0.0, sc.z))
+        o.location += Vector((0.02, 0.0, 0.02)) - Vector((sc.x, 0.0, sc.z))
     _face_chair_and_camera(screen)
     _snap_min_y(screen, surface_y)
 
@@ -93,7 +93,7 @@ def build_desk() -> bpy.types.Object:
     _snap_min_y(keyboard, surface_y)
     kc = _center(keyboard)
     for o in keyboard:
-        o.location += Vector((-0.2, 0.0, 0.08)) - Vector((kc.x, 0.0, kc.z))
+        o.location += Vector((-0.08, 0.0, 0.12)) - Vector((kc.x, 0.0, kc.z))
     _snap_min_y(keyboard, surface_y)
 
     mouse = _import_part("computerMouse.glb")

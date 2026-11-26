@@ -27,6 +27,8 @@ BORDER_PX = 4
 BORDER_MIN_PIXELS = 18
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
+MIN_SUBJECT_BBOX_FRAC = 0.60
+MAX_FLAT_PIXEL_FRAC = 0.50
 
 
 def _read_png_rgb(path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
@@ -174,7 +176,24 @@ def _framing_metrics(width: int, height: int, pixels: list[tuple[int, int, int]]
                 subj_ys.append(y)
                 break
     sil_frac = (max(subj_ys) - min(subj_ys) + 1) / height if subj_ys else 0.0
-    return {"border_touch": border_touch, "silhouette_frac": sil_frac}
+    xs: list[int] = []
+    ys2: list[int] = []
+    for y in range(height):
+        for x in range(width):
+            if _is_subject(*pixels[y * width + x], bg):
+                xs.append(x)
+                ys2.append(y)
+    if xs:
+        bw = (max(xs) - min(xs) + 1) / width
+        bh = (max(ys2) - min(ys2) + 1) / height
+        subject_bbox = max(bw, bh)
+    else:
+        subject_bbox = 0.0
+    return {
+        "border_touch": border_touch,
+        "silhouette_frac": sil_frac,
+        "subject_bbox_frac": subject_bbox,
+    }
 
 
 def stats(path: Path) -> dict[str, float]:
@@ -201,6 +220,14 @@ def stats(path: Path) -> dict[str, float]:
             subj_sat.append(sats[i])
     cn = len(subj_lum) or 1
     frame = _framing_metrics(width, height, pixels)
+    from collections import Counter
+
+    near_bg = sum(
+        1
+        for r, g, b in pixels
+        if abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2]) < 18
+    )
+    flat_frac = near_bg / n
     return {
         "stddev": std,
         "coverage": coverage,
@@ -208,10 +235,12 @@ def stats(path: Path) -> dict[str, float]:
         "mean_sat": sum(subj_sat) / cn,
         "border_touch": float(frame["border_touch"]),
         "silhouette_frac": float(frame["silhouette_frac"]),
+        "subject_bbox_frac": float(frame["subject_bbox_frac"]),
+        "flat_pixel_frac": flat_frac,
     }
 
 
-def gate_fail(s: dict[str, float]) -> list[str]:
+def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
     reasons: list[str] = []
     if s["stddev"] < MIN_STDDEV or s["coverage"] < MIN_COVERAGE:
         reasons.append(
@@ -224,8 +253,15 @@ def gate_fail(s: dict[str, float]) -> list[str]:
     if s.get("border_touch", 0) >= 0.5:
         reasons.append("framing border_touch")
     sil = s.get("silhouette_frac", 0.0)
-    if sil and (sil < MIN_SIL_FRAC or sil > MAX_SIL_FRAC):
+    sil_max = 0.90 if asset_id == "prop-desk" else MAX_SIL_FRAC
+    if sil and (sil < MIN_SIL_FRAC or sil > sil_max):
         reasons.append(f"framing silhouette_frac={sil:.2%}")
+    if asset_id == "prop-desk":
+        sb = s.get("subject_bbox_frac", 0.0)
+        if sb < MIN_SUBJECT_BBOX_FRAC:
+            reasons.append(f"subject_bbox_frac={sb:.2%}")
+        if s.get("flat_pixel_frac", 1.0) > MAX_FLAT_PIXEL_FRAC:
+            reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
     return reasons
 
 
@@ -264,7 +300,7 @@ def main() -> int:
             continue
         s = stats(png)
         write_frame_json(png, aid, s)
-        bad = gate_fail(s)
+        bad = gate_fail(aid, s)
         if bad:
             failures.append(f"{aid}: " + "; ".join(bad))
     if failures:

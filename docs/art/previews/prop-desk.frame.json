@@ -1,7 +1,16 @@
 {
   "assetId": "prop-desk",
   "preview": "docs/art/previews/prop-desk.png",
-  "glb": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.glb",
-  "glb_sha256": "31787f7bd4cee5327f4c95859893ad39dcf1c4bc6433ab327b9402038036ee6c",
-  "resolution": 1024
+  "glb_sha256": "0ee5c412d8a12bc02c3dba5192941e3e07fbed1065a3f5461849dc9691b5faa9",
+  "resolution": 1024,
+  "quality": {
+    "stddev": 58.239609741819095,
+    "coverage": 1.0,
+    "mean_lum": 65.12086687751581,
+    "mean_sat": 0.18933041301627035,
+    "border_touch": 0.0,
+    "silhouette_frac": 0.89453125,
+    "subject_bbox_frac": 0.6005859375,
+    "flat_pixel_frac": 0.2755317687988281
+  }
 }
