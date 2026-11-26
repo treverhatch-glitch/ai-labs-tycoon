@@ -18,7 +18,7 @@ def main() -> None:
     bar = bc.add_cube("Bar", (2.4, 0.36, 0.06))
     bar.data.materials.append(hi.solid_mat("slate", slate, emission=0.15))
     stripe = bc.add_cube("Trim", (2.4, 0.04, 0.07), (0, -0.14, 0.04))
-    stripe.data.materials.append(hi.solid_mat("trim", trim, emission=0.8))
+    stripe.data.materials.append(hi.solid_mat("trim", trim, emission=0.18))
     root = bc.link_or_join([bar, stripe])
     hi.finish_hud_icon(ASSET_ID, root)
 

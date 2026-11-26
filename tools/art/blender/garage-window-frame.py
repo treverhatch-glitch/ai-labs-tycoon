@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Headless Blender asset. Run: blender -b --python tools/art/blender/garage-window-frame.py"""
+"""Window frame — single block with blue glass tint."""
 import sys
 from pathlib import Path
 
@@ -8,12 +8,12 @@ import blender_common as bc  # noqa: E402
 
 
 def main():
-    bc.add_cube("Frame", (0.9, 0.7, 0.1), (0, 1.5, 0))
-    bc.add_cube("Pane", (0.7, 0.5, 0.04), (0, 1.5, 0.03))
+    ob = bc.add_cube("Frame", (0.92, 0.72, 0.12), (0, 1.48, 0))
+    bc.assign_solid(ob, (1.0, 0.42, 0.02, 1.0), 0.32)
     entry = bc.finish_asset("garage-window-frame", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry
 
+
 if __name__ == "__main__":
     bc.run_script(main)
-

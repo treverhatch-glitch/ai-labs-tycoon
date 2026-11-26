@@ -20,4 +20,8 @@ fi
 ./tools/art/prepush.sh
 python3 tools/art/check_garage_manifest.py
 python3 tools/art/check_early_hud_manifest.py
+if [[ -f docs/art/previews/icon-cash-era0.png ]]; then
+  python3 tools/art/check_env_mesh_topology.py
+  python3 tools/art/check_early_packet34_previews.py
+fi
 echo "early-game art prepush OK"

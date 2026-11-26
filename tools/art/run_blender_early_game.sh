@@ -13,7 +13,7 @@ echo "Using $VER"
 mapfile -t SCRIPTS < <(
   find tools/art/blender -maxdepth 1 -type f \( \
     -name 'garage-*.py' -o -name 'staff-*.py' -o -name 'hud-*.py' -o -name 'panel-*.py' \
-    -o -name 'icon-gpu-hire.py' -o -name 'icon-week-advance.py' -o -name 'tex-*.py' \) \
+    -o -name 'icon-*.py' -o -name 'tex-*.py' \) \
     ! -name 'tex.py' | sort
 )
 for script in "${SCRIPTS[@]}"; do

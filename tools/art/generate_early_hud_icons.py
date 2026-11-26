@@ -160,7 +160,15 @@ def main() -> None:
     )
     manifest = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "hud-manifest.json"
     manifest.write_text(
-        json.dumps({"generator": "tools/art/generate_early_hud_icons.py", "assets": entries}, indent=2) + "\n",
+        json.dumps(
+            {
+                "generator": "tools/art/generate_early_hud_icons.py",
+                "fidelity": "packet-3-4",
+                "assets": entries,
+            },
+            indent=2,
+        )
+        + "\n",
         encoding="utf-8",
     )
     print(f"Wrote {len(entries)} early HUD SVGs")

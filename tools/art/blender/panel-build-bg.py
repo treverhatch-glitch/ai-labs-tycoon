@@ -13,10 +13,14 @@ ASSET_ID = "panel-build-bg"
 def main() -> None:
     bc.reset_scene()
     plate = bc.add_cube("Plate", (1.0, 1.0, 0.06))
-    plate.data.materials.append(hi.solid_mat("fill", hi._hex((42, 34, 24))))
+    plate.data.materials.append(hi.solid_mat("fill", hi._hex((36, 52, 98)), emission=0.12))
     rim = bc.add_cube("Rim", (1.08, 1.08, 0.04))
-    rim.data.materials.append(hi.solid_mat("stroke", hi._hex((168, 88, 40)), emission=0.25))
-    root = bc.link_or_join([rim, plate])
+    rim.data.materials.append(hi.solid_mat("stroke", hi._hex((220, 128, 48)), emission=0.35))
+    accent = bc.add_cube("Wrench", (0.42, 0.12, 0.08), (0.28, -0.22, 0.08))
+    stripe = bc.add_cube("Stripe", (0.08, 1.0, 0.07), (-0.38, 0.0, 0.07))
+    stripe.data.materials.append(hi.solid_mat("stripe", hi._hex((240, 56, 48)), emission=0.2))
+    accent.data.materials.append(hi.solid_mat("accent", hi._hex((240, 168, 48)), emission=0.2))
+    root = bc.link_or_join([rim, plate, accent, stripe])
     bc.bevel_object(root, 0.04, 3)
     hi.finish_hud_icon(ASSET_ID, root)
 

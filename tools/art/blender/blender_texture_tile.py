@@ -36,8 +36,25 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
     ramp = nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].color = (*(c / 255 for c in base_rgb), 1)
     ramp.color_ramp.elements[1].color = (*(c / 255 for c in accent_rgb), 1)
+    mid = ramp.color_ramp.elements.new(0.55)
+    mid.color = (
+        *((base_rgb[i] * 0.35 + accent_rgb[i] * 0.65) / 255 for i in range(3)),
+        1,
+    )
+    wave = nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "BANDS"
+    wave.inputs["Scale"].default_value = 6.5
+    mix = nodes.new("ShaderNodeMixRGB")
+    mix.blend_type = "OVERLAY"
+    mix.inputs["Fac"].default_value = 0.35
+    links.new(wave.outputs["Color"], mix.inputs[1])
+    links.new(ramp.outputs["Color"], mix.inputs[2])
     links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
-    links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    hue = nodes.new("ShaderNodeHueSaturation")
+    hue.inputs["Saturation"].default_value = 1.95
+    hue.inputs["Value"].default_value = 1.08
+    links.new(mix.outputs["Color"], hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.48
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     plane.data.materials.append(mat)
@@ -61,5 +78,5 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
     try:
         bc.render_preview(plane, preview)
     except Exception as exc:  # noqa: BLE001
-        print(f"WARN preview {asset_id}: {exc}")
+        print(f"WARN texture preview {asset_id}: {exc}")
     print("OK texture", asset_id, f"blender {bc.BLENDER_VERSION}")
