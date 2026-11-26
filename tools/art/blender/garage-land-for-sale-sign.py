@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FOR SALE hero sign — restyled posts/board (CC0 lane; see docs/art/LICENSES.md)."""
+"""FOR SALE hero sign — Kenney CC0 posts/board + mesh text; garage facade hero."""
 import math
 import os
 import sys
@@ -13,9 +13,30 @@ REPO = Path(__file__).resolve().parents[3]
 BOARD_X = 0.90
 BOARD_Y = 0.02
 BOARD_Z = 0.60
-POST_W = 0.10
+POST_W = 0.12
 POST_H = 1.20
-POST_DEPTH = 0.10
+
+CC0_SOURCE = {
+    "kenneyCityKitSuburban": {
+        "name": "City Kit (Suburban) 2.0",
+        "author": "Kenney (www.kenney.nl)",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "downloadUrl": "https://opengameart.org/sites/default/files/kenney_city-kit-suburban_2.0.zip",
+        "downloadedAt": "2025-11-26",
+        "piecesUsed": ["fence-low.glb", "driveway-short.glb"],
+        "sha256Zip": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39",
+    },
+    "polyHavenHdri": {
+        "name": "studio_small_09",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://polyhaven.com/license",
+        "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr",
+        "downloadedAt": "2025-11-26",
+        "sha256": "36724313c0fc66dab126ff90f081b85a0b1ef47be65eda1417bd20b033f0573f",
+        "fetchScript": "tools/art/cc0/fetch_cc0_assets.sh",
+    },
+}
 
 
 def write_sign_albedo(tex_path: Path) -> None:
@@ -23,6 +44,46 @@ def write_sign_albedo(tex_path: Path) -> None:
 
     painter = REPO / "tools/art/paint_sign_albedo.py"
     subprocess.run(["python3", str(painter), str(tex_path)], check=True, cwd=str(REPO))
+
+
+def _scale_to_dimensions(ob, target: tuple[float, float, float]) -> None:
+    bpy = bc.bpy
+    bpy.context.view_layer.update()
+    dims = ob.dimensions
+    ob.scale = (
+        target[0] / max(dims.x, 1e-6),
+        target[1] / max(dims.y, 1e-6),
+        target[2] / max(dims.z, 1e-6),
+    )
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(scale=True)
+
+
+def _kenney_post(name: str, x: float) -> bc.bpy.types.Object:
+    obj = bc.import_cc0_kenney_glb("fence-low.glb")
+    obj.name = name
+    _scale_to_dimensions(obj, (POST_W, POST_H, POST_W))
+    obj.location = (x, POST_H * 0.5, -0.04)
+    bc.assign_solid(obj, (0.52, 0.38, 0.26, 1.0), 0.58)
+    return obj
+
+
+def _kenney_board() -> bc.bpy.types.Object:
+    obj = bc.import_cc0_kenney_glb("driveway-short.glb")
+    obj.name = "board"
+    obj.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+    bc.bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bc.bpy.context.view_layer.objects.active = obj
+    bc.bpy.ops.object.transform_apply(rotation=True)
+    _scale_to_dimensions(obj, (BOARD_X, BOARD_Y, BOARD_Z))
+    board_y = POST_H - BOARD_Z * 0.5
+    obj.location = (0.0, board_y, 0.0)
+    bc.assign_solid(obj, (0.98, 0.96, 0.94, 1.0), 0.40)
+    bc.bevel_object(obj, min(0.012, BOARD_Y * 0.45), 3)
+    return obj
 
 
 def main():
@@ -35,51 +96,23 @@ def main():
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
 
-    board_y = POST_H - BOARD_Z * 0.5
-    post_x = BOARD_X * 0.5 - POST_W * 0.5
-    post_z = -POST_DEPTH * 0.55
-    cyl_rot = (math.pi / 2, 0.0, 0.0)
-    post_l = bc.add_cylinder(
-        "PostL",
-        POST_W * 0.48,
-        POST_H,
-        (-post_x, POST_H * 0.5, post_z),
-        vertices=14,
-        rotation_euler=cyl_rot,
-    )
-    post_r = bc.add_cylinder(
-        "PostR",
-        POST_W * 0.48,
-        POST_H,
-        (post_x, POST_H * 0.5, post_z),
-        vertices=14,
-        rotation_euler=cyl_rot,
-    )
-    bc.assign_solid(post_l, (0.52, 0.38, 0.26, 1.0), 0.58)
-    bc.assign_solid(post_r, (0.52, 0.38, 0.26, 1.0), 0.58)
+    post_x = BOARD_X * 0.5 + POST_W * 0.35
+    post_l = _kenney_post("PostL", -post_x)
+    post_r = _kenney_post("PostR", post_x)
+    board = _kenney_board()
+    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.010)
+    letters = bc.bpy.context.scene.objects["letters"]
 
-    # Back rail + gussets tie posts to board (connected sign silhouette in preview).
-    back_z = post_z - POST_W * 0.08
-    rail = bc.add_cube(
-        "SignBackRail",
-        (BOARD_X - POST_W * 0.35, 0.07, 0.07),
-        (0, board_y - BOARD_Z * 0.42, back_z),
+    mesh_obs = [post_l, post_r, board, letters]
+    part_names = [o.name for o in mesh_obs]
+    license_note = "CC0-1.0 (Kenney suburban kit + Blender bake)"
+    entry = bc.finish_sign_named_asset(
+        "garage-kit",
+        license_note,
+        mesh_obs,
+        part_names,
+        cc0_source=CC0_SOURCE,
     )
-    bc.assign_solid(rail, (0.48, 0.34, 0.22, 1.0), 0.58)
-    for side, x_off in (("SignGussetL", -post_x), ("SignGussetR", post_x)):
-        gus = bc.add_cube(
-            side,
-            (0.07, 0.18, 0.07),
-            (x_off, board_y - BOARD_Z * 0.55, back_z + 0.02),
-        )
-        bc.assign_solid(gus, (0.48, 0.34, 0.22, 1.0), 0.58)
-
-    board = bc.add_cube("board", (BOARD_X, BOARD_Y, BOARD_Z), (0, board_y, 0))
-    bc.assign_solid(board, (0.98, 0.96, 0.94, 1.0), 0.40)
-    bc.bevel_object(board, min(0.012, BOARD_Y * 0.45), 3)
-    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.006)
-
-    entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
     bc.render_sign_garage_hero("garage-kit")

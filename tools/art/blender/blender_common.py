@@ -24,6 +24,8 @@ PACKET34_ENV_IDS = {
 ART_ROOT = REPO_ROOT / "unity/Assets/Art/EarlyGame"
 PREVIEW_ROOT = REPO_ROOT / "docs/art/previews"
 BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2]}"
+CC0_ROOT = REPO_ROOT / "tools/art/cc0"
+KENNEY_SUBURBAN_GLB = CC0_ROOT / "incoming/kenney-city-kit-suburban/Models/GLB format"
 
 # tex-garage-wall-beige swatch: 512px tile, 128×64px blocks → 4×8 blocks per repeat.
 WALL_BEIGE_TILE_BLOCKS_X = 4
@@ -45,6 +47,26 @@ def wall_swatch_mapping_scale(
     sx = (wall_w / block_u) / WALL_BEIGE_TILE_BLOCKS_X
     sy = (wall_h / block_v) / WALL_BEIGE_TILE_BLOCKS_Y
     return (sx, sy, 1.0)
+
+
+def import_cc0_kenney_glb(filename: str) -> bpy.types.Object:
+    """Import one Kenney City Kit (Suburban) GLB from tools/art/cc0/incoming."""
+    path = KENNEY_SUBURBAN_GLB / filename
+    if not path.is_file():
+        raise RuntimeError(f"CC0 Kenney missing: {path} (run tools/art/cc0/fetch_cc0_assets.sh)")
+    mesh_before = {o.name for o in bpy.context.scene.objects if o.type == "MESH"}
+    bpy.ops.import_scene.gltf(filepath=str(path))
+    imported = [o for o in bpy.context.scene.objects if o.type == "MESH" and o.name not in mesh_before]
+    if not imported:
+        imported = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if len(imported) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in imported:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = imported[0]
+        bpy.ops.object.join()
+        return bpy.context.active_object
+    return imported[0]
 
 
 def wall_blocks_per_metre_h(
@@ -197,16 +219,16 @@ def add_sign_mesh_text(
     ob.data.space_character = 1.03
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
-    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
+    ob.rotation_euler = (math.pi / 2, 0.0, math.pi)
     board_w = float(board.dimensions.x)
     board_h = float(board.dimensions.z)
     bpy.ops.object.convert(target="MESH")
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = (board_w * 0.62) / dx
-        sy = (board_h * 0.56) / dy
-        ob.scale = (-abs(sx), sy, 1.0)
+        sx = (board_w * 0.66) / dx
+        sy = (board_h * 0.46) / dy
+        ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
@@ -222,6 +244,17 @@ def add_sign_mesh_text(
             break
         stitch_sign_mesh_islands(ob, max_bridge=0.06)
         weld_coincident_vertices(ob, threshold=0.004)
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
+    bpy.ops.object.transform_apply(location=True)
+    thin_h = float(board.dimensions.y) * 0.5
+    board_y = float(board.matrix_world.translation.y)
+    ob.location.x = board.location.x
+    ob.location.z = board.location.z
+    ob.location.y = board_y + face_dir * (thin_h + extrude_m * 0.55)
+    bpy.ops.object.transform_apply(location=True)
     return ob
 
 
@@ -356,6 +389,11 @@ def mesh_world_min_y(ob: bpy.types.Object) -> float:
 
 def mesh_world_min_z(ob: bpy.types.Object) -> float:
     return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+
+
+def mesh_world_min_on_axis(ob: bpy.types.Object, axis: str = "y") -> float:
+    idx = {"x": 0, "y": 1, "z": 2}[axis.lower()]
+    return min((ob.matrix_world @ v.co)[idx] for v in ob.data.vertices)
 
 
 def rotate_script_y_to_export_up(ob: bpy.types.Object) -> None:
@@ -824,6 +862,17 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+def _snap_sign_letters_to_board(board: bpy.types.Object, letters: bpy.types.Object, *, face_dir: float = 1.0) -> None:
+    bpy.context.view_layer.update()
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    bc = board.matrix_world.translation
+    half_board = board.dimensions[thin_i] * 0.5
+    half_letters = letters.dimensions[thin_i] * 0.5
+    target = Vector(bc)
+    target[thin_i] += face_dir * (half_board + half_letters + 0.0015)
+    letters.matrix_world.translation = target
+
+
 def _assemble_sign_named_parts(mesh_obs: list[bpy.types.Object]) -> tuple[bpy.types.Object, bpy.types.Object, bpy.types.Object]:
     board = next(o for o in mesh_obs if o.name == "board")
     letters = next(o for o in mesh_obs if o.name == "letters")
@@ -909,6 +958,8 @@ def finish_sign_named_asset(
     license_note: str,
     mesh_obs: list[bpy.types.Object],
     part_names: list[str],
+    *,
+    cc0_source: dict | None = None,
 ) -> dict:
     """Y-up sign GLB: named nodes posts / board / letters (no voxel merge)."""
     asset_id = "garage-land-for-sale-sign"
@@ -924,16 +975,36 @@ def finish_sign_named_asset(
     maps = bake_pbr_set(board, tex_dir, asset_id, size=1024)
     _write_sign_white_albedo(tex_dir, asset_id)
     apply_sign_part_gltf_materials(posts, board, letters, tex_dir, part_names)
+    bpy.context.view_layer.update()
+    letters.parent = board
+    min_y = mesh_world_min_on_axis(posts, "y")
+    if abs(min_y) > 1e-5:
+        for ob in (posts, board, letters):
+            ob.location.y -= min_y
+    bpy.context.view_layer.update()
     bpy.ops.object.select_all(action="DESELECT")
     for ob in (posts, board, letters):
         ob.select_set(True)
     bpy.context.view_layer.objects.active = posts
     bpy.ops.transform.rotate(value=math.pi / 2, orient_axis="X")
     bpy.ops.object.transform_apply(rotation=True)
-    min_z = min(mesh_world_min_z(o) for o in (posts, board, letters))
-    if abs(min_z) > 1e-5:
+    bpy.ops.object.select_all(action="DESELECT")
+    letters.select_set(True)
+    bpy.context.view_layer.objects.active = letters
+    bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
+    min_up = min(mesh_world_min_on_axis(o, "y") for o in (posts, board, letters))
+    if abs(min_up) > 1e-5:
         for ob in (posts, board, letters):
-            ob.location.z -= min_z
+            ob.location.y -= min_up
+    bpy.context.view_layer.update()
+    for ob in (posts, board, letters):
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = ob
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
+    _snap_sign_letters_to_board(board, letters, face_dir=1.0)
     bpy.context.view_layer.update()
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf_selection([posts, board, letters], glb_path, packet34=True)
@@ -944,7 +1015,7 @@ def finish_sign_named_asset(
         print(f"WARN preview {asset_id}: {exc}")
     tris = sum(len(o.data.polygons) for o in (posts, board, letters))
     verts = sum(len(o.data.vertices) for o in (posts, board, letters))
-    return {
+    out = {
         "id": asset_id,
         "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
         "textures": {
@@ -958,6 +1029,9 @@ def finish_sign_named_asset(
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }
+    if cc0_source:
+        out["cc0Source"] = cc0_source
+    return out
 
 
 def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Blender-baked, in-repo)") -> dict:
@@ -1213,62 +1287,90 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
 
+def _join_mesh_objects(meshes: list[bpy.types.Object]) -> bpy.types.Object:
+    if len(meshes) == 1:
+        return meshes[0]
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in meshes:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    bpy.ops.object.join()
+    return bpy.context.active_object
+
+
+def _import_glb_meshes(path: Path) -> list[bpy.types.Object]:
+    n_before = len([o for o in bpy.context.scene.objects if o.type == "MESH"])
+    bpy.ops.import_scene.gltf(filepath=str(path))
+    return [o for o in bpy.context.scene.objects if o.type == "MESH"][n_before:]
+
+
 def render_sign_garage_hero(category: str = "garage-kit") -> None:
-    """Hero shot: FOR SALE sign in front of committed garage-exterior-wall GLB."""
+    """Hero: FOR SALE sign before roll-up door on garage-exterior-wall (3/4, facade ~50–70%)."""
     import blender_preview_rig as rig  # type: ignore
 
     reset_scene()
     wall_glb = (ART_ROOT / category / "garage-exterior-wall.glb").resolve()
+    door_glb = (ART_ROOT / category / "garage-roll-door.glb").resolve()
     sign_glb = (ART_ROOT / category / "garage-land-for-sale-sign.glb").resolve()
-    if not wall_glb.is_file() or not sign_glb.is_file():
-        raise RuntimeError("hero: missing wall or sign GLB")
-    bpy.ops.import_scene.gltf(filepath=str(wall_glb))
-    wall_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    bpy.ops.import_scene.gltf(filepath=str(sign_glb))
-    all_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    sign_meshes = [o for o in all_meshes if o.name in {"posts", "board", "letters"}]
-    wall_only = [o for o in all_meshes if o not in sign_meshes]
-    if not wall_only or not sign_meshes:
-        raise RuntimeError("hero: expected wall mesh + sign parts after import")
-    wall_ob = wall_only[0] if len(wall_only) == 1 else wall_only[0]
-    if len(wall_only) > 1:
-        bpy.ops.object.select_all(action="DESELECT")
-        for o in wall_only:
-            o.select_set(True)
-        bpy.context.view_layer.objects.active = wall_only[0]
-        bpy.ops.object.join()
-        wall_ob = bpy.context.active_object
+    for p in (wall_glb, door_glb, sign_glb):
+        if not p.is_file():
+            raise RuntimeError(f"hero: missing {p.name}")
+    wall_meshes = _import_glb_meshes(wall_glb)
+    door_meshes = _import_glb_meshes(door_glb)
+    sign_imported = _import_glb_meshes(sign_glb)
+    sign_meshes = [o for o in sign_imported if o.name in {"posts", "board", "letters"}]
+    if not wall_meshes or not door_meshes or len(sign_meshes) < 3:
+        raise RuntimeError("hero: wall, roll door, or sign parts missing after import")
+    wall_ob = _join_mesh_objects(wall_meshes)
+    door_ob = _join_mesh_objects(door_meshes)
     wmins, wmaxs = rig.mesh_bounds_world([wall_ob])
-    smins, smaxs = rig.mesh_bounds_world(sign_meshes)
+    dmins, dmaxs = rig.mesh_bounds_world([door_ob])
     wcenter = (wmins + wmaxs) * 0.5
-    scenter = (smins + smaxs) * 0.5
-    # Place sign slightly in front of wall broad face (thin axis).
-    thin_axis = min(
-        (("x", wmaxs.x - wmins.x), ("y", wmaxs.y - wmins.y), ("z", wmaxs.z - wmins.z)),
-        key=lambda t: t[1],
-    )[0]
-    gap = 0.35
-    shift = Vector((0.0, 0.0, 0.0))
+    dcenter = (dmins + dmaxs) * 0.5
+    spans = {
+        "x": wmaxs.x - wmins.x,
+        "y": wmaxs.y - wmins.y,
+        "z": wmaxs.z - wmins.z,
+    }
+    thin_axis = min(spans, key=spans.get)
+    bpy.context.view_layer.update()
+    door_ob.location.x = wcenter.x
+    door_ob.location.y = dcenter.y + (wmaxs.y + 0.02 - dcenter.y) if thin_axis == "y" else dcenter.y
+    door_ob.location.z = wcenter.z - 0.4
     if thin_axis == "y":
-        shift.y = (wmaxs.y - scenter.y) + gap
+        door_ob.location.y = wmaxs.y + 0.02
     elif thin_axis == "z":
-        shift.z = (wmaxs.z - scenter.z) + gap
+        door_ob.location.z = wmaxs.z + 0.02
+        door_ob.location.y = wcenter.y - 0.4
     else:
-        shift.x = (wmaxs.x - scenter.x) + gap
+        door_ob.location.x = wmaxs.x + 0.02
+        door_ob.location.y = wcenter.y - 0.4
+    bpy.context.view_layer.update()
+    smins, smaxs = rig.mesh_bounds_world(sign_meshes)
+    scenter = (smins + smaxs) * 0.5
+    sign_gap = 0.55
     for o in sign_meshes:
-        o.location += shift
+        o.location.x = wcenter.x + (o.location.x - scenter.x)
+        o.location.z = wcenter.z - 0.15 + (o.location.z - scenter.z)
+        if thin_axis == "y":
+            o.location.y = wmaxs.y + sign_gap
+        elif thin_axis == "z":
+            o.location.z = wmaxs.z + sign_gap
+        else:
+            o.location.x = wmaxs.x + sign_gap
     bpy.context.view_layer.update()
     apply_packet34_preview_material(wall_ob, "garage-exterior-wall", ART_ROOT / category / "textures/garage-exterior-wall")
+    apply_packet34_preview_material(door_ob, "garage-roll-door", ART_ROOT / category / "textures/garage-roll-door")
     apply_sign_preview_materials(sign_meshes, ART_ROOT / category / "textures/garage-land-for-sale-sign")
     hero = PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png"
     os.environ.setdefault("EARLY_PREVIEW_MID_GREY", "1")
     os.environ.setdefault("EARLY_PREVIEW_CONTACT_SHADOW", "1")
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.18"
-    os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
-    os.environ["PREVIEW_ELEVATION_DEG"] = "8"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "32"
+    os.environ["PREVIEW_ELEVATION_DEG"] = "11"
     os.environ["PREVIEW_GLB_SHA256"] = file_sha256(sign_glb)
     os.environ["PREVIEW_GLB_PATH"] = str(sign_glb.relative_to(REPO_ROOT))
-    hero_meshes = sign_meshes + [wall_ob]
+    hero_meshes = sign_meshes + [wall_ob, door_ob]
     render_preview(hero_meshes, hero)
 
 
@@ -2302,8 +2404,8 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
     red_nt = red.node_tree
     red_nt.nodes.clear()
     emit = red_nt.nodes.new("ShaderNodeEmission")
-    emit.inputs["Color"].default_value = (0.86, 0.12, 0.08, 1.0)
-    emit.inputs["Strength"].default_value = 8.0
+    emit.inputs["Color"].default_value = (1.0, 0.04, 0.02, 1.0)
+    emit.inputs["Strength"].default_value = 22.0
     rout = red_nt.nodes.new("ShaderNodeOutputMaterial")
     red_nt.links.new(emit.outputs["Emission"], rout.inputs["Surface"])
     post_mat = bpy.data.materials.new("SignPostWoodPreview")
@@ -2316,9 +2418,15 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
         if ob.name == "letters":
             ob.data.materials.clear()
             ob.data.materials.append(red)
-        elif ob.name == "board" and board_mat:
+        elif ob.name == "board":
             ob.data.materials.clear()
-            ob.data.materials.append(board_mat)
+            flat = bpy.data.materials.new("SignBoardFlatPreview")
+            flat.use_nodes = True
+            bsdf = flat.node_tree.nodes.get("Principled BSDF")
+            if bsdf:
+                bsdf.inputs["Base Color"].default_value = (0.98, 0.96, 0.94, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.38
+            ob.data.materials.append(flat)
         elif ob.name == "posts":
             ob.data.materials.clear()
             ob.data.materials.append(post_mat)

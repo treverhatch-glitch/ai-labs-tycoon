@@ -111,12 +111,36 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 649,
-      "triangleCount": 852,
+      "license": "CC0-1.0 (Kenney suburban kit + Blender bake)",
+      "vertexCount": 1145,
+      "triangleCount": 1081,
       "subShapeCount": 3,
       "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-land-for-sale-sign.py"
+      "generator": "tools/art/blender/garage-land-for-sale-sign.py",
+      "cc0Source": {
+        "kenneyCityKitSuburban": {
+          "name": "City Kit (Suburban) 2.0",
+          "author": "Kenney (www.kenney.nl)",
+          "license": "CC0 1.0",
+          "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "downloadUrl": "https://opengameart.org/sites/default/files/kenney_city-kit-suburban_2.0.zip",
+          "downloadedAt": "2025-11-26",
+          "piecesUsed": [
+            "fence-low.glb",
+            "driveway-short.glb"
+          ],
+          "sha256Zip": "5869c35cf30b1c87bdb2d197b6d325eebadd2ef08ea27f04797e8e08d77a9a39"
+        },
+        "polyHavenHdri": {
+          "name": "studio_small_09",
+          "license": "CC0 1.0",
+          "licenseUrl": "https://polyhaven.com/license",
+          "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr",
+          "downloadedAt": "2025-11-26",
+          "sha256": "36724313c0fc66dab126ff90f081b85a0b1ef47be65eda1417bd20b033f0573f",
+          "fetchScript": "tools/art/cc0/fetch_cc0_assets.sh"
+        }
+      }
     },
     {
       "id": "garage-lot-curb",

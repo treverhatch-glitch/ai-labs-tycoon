@@ -313,6 +313,8 @@ def render_sign_lettered_face(
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
+    mask_path = path.with_name(path.stem + ".mask.png")
+    render_hero_mask(hero_meshes, mask_path, resolution)
 
 
 def frame_camera(
