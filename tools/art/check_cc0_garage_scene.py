@@ -33,6 +33,10 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         errs.append(f"FAIL: {prefix}roll door minZ {door_min_z:.3f} m > 0.02")
     if data.get("rollDoorSingleMesh") is not True:
         errs.append(f"FAIL: {prefix}roll door must be single merged mesh")
+    door_max_y = float(data.get("rollDoorMaxYM", 99.0))
+    wall_plane = float(data.get("rollDoorWallPlaneYM", 0.05))
+    if door_max_y > wall_plane + 0.05:
+        errs.append(f"FAIL: {prefix}roll door maxY {door_max_y:.3f} > wall plane + 5 cm")
 
     props = data.get("propInstances") or []
     if len(props) < int(data.get("minPropCount", 8)):
@@ -46,9 +50,15 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
 
     for p in props:
         name = p.get("objectName", "?")
-        gap_m = float(p.get("floorContactGapM", 99.0))
-        if gap_m > tol:
-            errs.append(f"FAIL: {prefix}{name} floor gap {gap_m * 100:.1f} cm > 1 cm")
+        support = str(p.get("support", "floor"))
+        if support == "desk":
+            gap_m = float(p.get("supportContactGapM", 99.0))
+            if gap_m > tol:
+                errs.append(f"FAIL: {prefix}{name} desk support gap {gap_m * 100:.1f} cm > 1 cm")
+        else:
+            gap_m = float(p.get("floorContactGapM", p.get("supportContactGapM", 99.0)))
+            if gap_m > tol:
+                errs.append(f"FAIL: {prefix}{name} floor gap {gap_m * 100:.1f} cm > 1 cm")
         if not p.get("grounded"):
             errs.append(f"FAIL: {prefix}{name} not grounded")
         if not p.get("insideFloorBounds", True):

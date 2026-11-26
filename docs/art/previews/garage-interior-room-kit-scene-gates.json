@@ -12,7 +12,10 @@
   "rollDoorObjectName": "kit_roll_door",
   "rollDoorWidthM": 3.0,
   "rollDoorMinZM": 0.0,
+  "rollDoorMaxYM": 0.09,
+  "rollDoorWallPlaneYM": 0.05,
   "rollDoorSingleMesh": true,
+  "wallGapToleranceM": 0.01,
   "minPropCount": 8,
   "propInstances": [
     {
@@ -22,9 +25,11 @@
       "minZ": 0.05,
       "heightM": 0.7496,
       "heightToWallRatio": 0.2776,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_chair",
@@ -33,31 +38,37 @@
       "minZ": 0.05,
       "heightM": 1.1848,
       "heightToWallRatio": 0.4388,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_laptop",
       "x": 2.5972,
       "y": 2.5222,
-      "minZ": 0.05,
+      "minZ": 0.8016,
       "heightM": 0.6095,
       "heightToWallRatio": 0.2258,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "desk",
+      "supportContactGapM": 0.002,
+      "floorContactGapM": 0.0
     },
     {
       "objectName": "prop_keyboard",
       "x": 2.2176,
       "y": 2.1037,
-      "minZ": 0.05,
+      "minZ": 0.8016,
       "heightM": 0.4953,
       "heightToWallRatio": 0.1834,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "desk",
+      "supportContactGapM": 0.002,
+      "floorContactGapM": 0.0
     },
     {
       "objectName": "prop_lamp",
@@ -66,20 +77,24 @@
       "minZ": 0.05,
       "heightM": 0.6128,
       "heightToWallRatio": 0.227,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_books",
       "x": 1.9473,
       "y": 2.2437,
-      "minZ": 0.05,
+      "minZ": 0.8016,
       "heightM": 0.1621,
       "heightToWallRatio": 0.06,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "desk",
+      "supportContactGapM": 0.002,
+      "floorContactGapM": 0.0
     },
     {
       "objectName": "prop_bookcase",
@@ -88,9 +103,11 @@
       "minZ": 0.05,
       "heightM": 1.5249,
       "heightToWallRatio": 0.5648,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_box_a",
@@ -99,9 +116,11 @@
       "minZ": 0.05,
       "heightM": 0.4493,
       "heightToWallRatio": 0.1664,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_box_b",
@@ -110,9 +129,11 @@
       "minZ": 0.05,
       "heightM": 0.4493,
       "heightToWallRatio": 0.1664,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_workbench",
@@ -121,9 +142,11 @@
       "minZ": 0.05,
       "heightM": 0.9588,
       "heightToWallRatio": 0.3551,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_plant",
@@ -132,9 +155,11 @@
       "minZ": 0.05,
       "heightM": 0.546,
       "heightToWallRatio": 0.2022,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_speaker",
@@ -143,9 +168,11 @@
       "minZ": 0.05,
       "heightM": 1.0921,
       "heightToWallRatio": 0.4045,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_crate",
@@ -154,9 +181,11 @@
       "minZ": 0.05,
       "heightM": 0.4274,
       "heightToWallRatio": 0.1583,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_tool_table",
@@ -165,9 +194,11 @@
       "minZ": 0.05,
       "heightM": 0.6372,
       "heightToWallRatio": 0.236,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_whiteboard",
@@ -176,9 +207,11 @@
       "minZ": 0.05,
       "heightM": 1.0368,
       "heightToWallRatio": 0.384,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     },
     {
       "objectName": "prop_server",
@@ -187,9 +220,11 @@
       "minZ": 0.05,
       "heightM": 1.12,
       "heightToWallRatio": 0.4148,
-      "floorContactGapM": 0.0,
       "grounded": true,
-      "insideFloorBounds": true
+      "insideFloorBounds": true,
+      "support": "floor",
+      "floorContactGapM": 0.0,
+      "supportContactGapM": 0.0
     }
   ],
   "floorTileCount": 16,

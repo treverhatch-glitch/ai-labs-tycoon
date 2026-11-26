@@ -16,6 +16,12 @@ FIXTURE_C0 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c0d66
 FIXTURE_FB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-fbb7bf7c.png"
 FIXTURE_708 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-7086ea82.png"
 FIXTURE_8B4 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-8b4f9dba.png"
+FIXTURE_3C2 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-3c2deb99.png"
+MIN_FLOOR_LUMA = 140.0
+MIN_STAIN_DELTA_LUMA = 25.0
+CARD_HUE_LO = 25.0
+CARD_HUE_HI = 45.0
+CARD_LUMA_MIN = 80.0
 EDGE_MARGIN_FRAC = 0.03
 MIN_STAIN_BLOB_PX = 400
 MIN_PROP_BLOB_PX = 400
@@ -169,15 +175,17 @@ def mean_saturation_fg(im, path_name: str) -> list[str]:
 
 def grey_bleed_errs(im, path_name: str) -> list[str]:
     w, h = im.size
+    bg = _background_mask(im)
     x0, x1 = int(w * 0.22), int(w * 0.78)
     y0, y1 = int(h * 0.22), int(h * 0.78)
     bleed = 0
     total = 0
     for y in range(y0, y1):
         for x in range(x0, x1):
+            if bg[y][x]:
+                continue
             total += 1
             px = im.getpixel((x, y))
-            L = luma(px)
             if px == CORNER_RGB:
                 bleed += 1
     if total and bleed / total > 0.02:
@@ -204,6 +212,24 @@ def prop_material_errs(im, path_name: str) -> list[str]:
     return []
 
 
+def full_backdrop_mask_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x] and im.getpixel((x, y)) != CORNER_RGB:
+                return [f"FAIL: {path_name} backdrop mask pixel ({x},{y}) != {CORNER_RGB}"]
+    return []
+
+
+def _rgb_hue_deg(rgb: tuple[int, int, int]) -> float:
+    import colorsys
+
+    r, g, b = (c / 255.0 for c in rgb)
+    h, _s, _v = colorsys.rgb_to_hsv(r, g, b)
+    return h * 360.0
+
+
 def edge_margin_band_errs(im, path_name: str) -> list[str]:
     w, h = im.size
     bx = max(1, int(w * EDGE_MARGIN_FRAC))
@@ -218,6 +244,63 @@ def edge_margin_band_errs(im, path_name: str) -> list[str]:
                     f"FAIL: {path_name} outer {EDGE_MARGIN_FRAC * 100:.0f}% margin "
                     f"pixel ({x},{y}) != {CORNER_RGB}"
                 ]
+    return errs
+
+
+def fail8_visual_gates(im, path_name: str) -> list[str]:
+    """Fail #8: bright concrete floor, stain contrast, cardboard hue, no black props."""
+    errs = fail7_visual_gates(im, path_name)
+    w, h = im.size
+    bg = _background_mask(im)
+    floor_px: list[tuple[int, int, int]] = []
+    stain_px: list[tuple[int, int, int]] = []
+    for y in range(int(h * 0.52), h):
+        for x in range(int(w * 0.08), int(w * 0.92)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.28:
+                continue
+            lum = luma(p)
+            if lum < 70 or lum > 230:
+                continue
+            floor_px.append(p)
+            if lum < MIN_FLOOR_LUMA - 5:
+                stain_px.append(p)
+    if floor_px:
+        mean_l = sum(luma(p) for p in floor_px) / len(floor_px)
+        if mean_l < MIN_FLOOR_LUMA:
+            errs.append(f"FAIL: {path_name} floor mean luma {mean_l:.1f} < {MIN_FLOOR_LUMA}")
+        if stain_px:
+            stain_l = sum(luma(p) for p in stain_px) / len(stain_px)
+            if mean_l - stain_l < MIN_STAIN_DELTA_LUMA:
+                errs.append(
+                    f"FAIL: {path_name} stain contrast {mean_l - stain_l:.1f} < {MIN_STAIN_DELTA_LUMA}"
+                )
+    box_px: list[tuple[int, int, int]] = []
+    for y in range(int(h * 0.30), int(h * 0.88)):
+        for x in range(int(w * 0.08), int(w * 0.55)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) < 0.14:
+                continue
+            lum = luma(p)
+            if lum < 60:
+                continue
+            if p[0] <= p[2] + 8:
+                continue
+            hue = _rgb_hue_deg(p)
+            if not (CARD_HUE_LO - 12 <= hue <= CARD_HUE_HI + 25):
+                continue
+            box_px.append(p)
+    if len(box_px) >= 120:
+        mean_h = sum(_rgb_hue_deg(p) for p in box_px) / len(box_px)
+        mean_l = sum(luma(p) for p in box_px) / len(box_px)
+        if not (CARD_HUE_LO <= mean_h <= CARD_HUE_HI):
+            errs.append(f"FAIL: {path_name} cardboard hue {mean_h:.1f} outside {CARD_HUE_LO}-{CARD_HUE_HI}")
+        if mean_l < CARD_LUMA_MIN:
+            errs.append(f"FAIL: {path_name} cardboard mean luma {mean_l:.1f} < {CARD_LUMA_MIN}")
     return errs
 
 
@@ -251,6 +334,15 @@ def fail7_visual_gates(im, path_name: str) -> list[str]:
                 f"FAIL: {path_name} floor |R-B| {abs(mean_r - mean_b):.1f} > 12 "
                 f"(mean RGB {mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"
             )
+    if floor_px:
+        floor_mean_l = sum(luma(p) for p in floor_px) / len(floor_px)
+        for y in range(int(h * 0.55), h):
+            for x in range(int(w * 0.08), int(w * 0.92)):
+                if bg[y][x]:
+                    continue
+                p = im.getpixel((x, y))
+                if luma(p) < floor_mean_l - MIN_STAIN_DELTA_LUMA:
+                    stain_mask[y][x] = True
     _, stain_sizes = _label_cc(stain_mask)
     stain_large = sum(1 for a in stain_sizes.values() if a >= MIN_STAIN_BLOB_PX)
     if stain_large < 1:
@@ -505,7 +597,8 @@ def check_image(path: Path) -> list[str]:
     errs.extend(quality_gates(im, path.name))
     errs.extend(fill_margin_errs(path))
     errs.extend(edge_margin_band_errs(im, path.name))
-    errs.extend(fail7_visual_gates(im, path.name))
+    errs.extend(full_backdrop_mask_errs(im, path.name))
+    errs.extend(fail8_visual_gates(im, path.name))
     errs.extend(room_pixel_gate_errs(im, path.name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -547,30 +640,35 @@ def verify_regression_fixtures_fail() -> list[str]:
             room_pixel_gate_errs(im_f, fix.name)
             + backdrop_nine_point_errs(im_f, fix.name)
             + wall_base_scanline_errs(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
+            + fail8_visual_gates(im_f, fix.name)
+            + edge_margin_band_errs(im_f, fix.name)
         )
         if not bad:
             errs.append(f"FAIL: fixture {label} must fail tightened room gates")
 
-    def fixture_must_fail_fail7(label: str, fix: Path) -> None:
+    def fixture_must_fail_fail8(label: str, fix: Path) -> None:
         if not fix.is_file():
             errs.append(f"FAIL: missing regression fixture {fix}")
             return
         im_f = Image.open(fix).convert("RGB")
         bad = (
-            fail7_visual_gates(im_f, fix.name)
+            fail8_visual_gates(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
             + edge_margin_band_errs(im_f, fix.name)
             + fill_margin_errs(fix)
         )
         if not bad:
-            errs.append(f"FAIL: fixture {label} must fail fail-7 tightened gates")
+            errs.append(f"FAIL: fixture {label} must fail fail-8 tightened gates")
 
     for label, fix in (
         ("7086ea82", FIXTURE_708),
         ("fbb7bf7c", FIXTURE_FB),
         ("c0d66236", FIXTURE_C0),
+        ("8b4f9dba", FIXTURE_8B4),
     ):
         fixture_must_fail(label, fix)
-    fixture_must_fail_fail7("8b4f9dba", FIXTURE_8B4)
+    fixture_must_fail_fail8("3c2deb99", FIXTURE_3C2)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

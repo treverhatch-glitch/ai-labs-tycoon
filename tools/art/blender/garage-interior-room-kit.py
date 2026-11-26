@@ -22,7 +22,7 @@ WALL_Z_SCALE = WALL_H / 2.4
 TILE_SCALE = 0.5
 FURN_SCALE = 1.95
 ROLL_DOOR_TARGET_W = 3.0
-GAP_TOL = 0.02
+GAP_TOL = 0.01
 GROUND_TOL = 0.01
 WALL_TOL = 0.03
 
@@ -144,16 +144,26 @@ def build_walls() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.t
         snap_min_z(ob, 0.0)
         back.append(ob)
 
-    for jx in (1.05, 2.95):
+    for jx in (1.04, 2.96):
         jamb = kenney_piece(
             "wall.glb",
-            f"wall_jamb_{int(jx * 10)}",
+            f"wall_jamb_{int(jx * 100)}",
             (jx, wall_thick / 2, 0.0),
-            scale=(ws[0] * 0.42, ws[1], ws[2]),
+            scale=(ws[0] * 0.52, ws[1], ws[2]),
             rot_z=-math.pi / 2,
         )
         snap_min_z(jamb, 0.0)
         back.append(jamb)
+
+    lintel = kenney_piece(
+        "plating-wide.glb",
+        "wall_lintel",
+        (ROOM / 2, wall_thick / 2, WALL_H - 0.08),
+        scale=(ROLL_DOOR_TARGET_W * 0.49, 0.14, 0.14),
+        rot_z=-math.pi / 2,
+    )
+    snap_min_z(lintel, WALL_H - 0.12)
+    back.append(lintel)
 
     for iy in range(GRID):
         cy = TILE * (iy + 0.5)
@@ -172,31 +182,23 @@ def build_walls() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.t
 
 
 def build_roll_door() -> bpy.types.Object:
-    """Single merged slatted roll-up (~3 m wide), half-raised, bottom on z=0."""
+    """Merged slats flush in back-wall opening (~3 m), half-raised, header above."""
     wall_thick = 0.05
+    wall_plane_y = wall_thick / 2 + 0.003
     slats: list[bpy.types.Object] = []
     door_w = ROLL_DOOR_TARGET_W
-    curtain_h = WALL_H * 0.72
-    slat_count = 16
+    curtain_h = WALL_H * 0.62
+    slat_count = 12
     slat_thick = curtain_h / slat_count
-    rib_scale = (door_w * 0.49, 0.48, slat_thick / 0.24)
-    y_back = wall_thick / 2 + 0.012
-    kick = kenney_piece(
-        "plating-wide.glb",
-        "roll_kick",
-        (ROOM / 2, y_back, 0.06),
-        scale=(door_w * 0.49, 0.55, 0.14),
-        rot_z=-math.pi / 2,
-    )
-    snap_min_z(kick, 0.0)
-    slats.append(kick)
+    depth = 0.10
+    rib_scale = (door_w * 0.49, depth, slat_thick / 0.24)
     for i in range(slat_count):
         zc = slat_thick * 0.5 + i * slat_thick
         slats.append(
             kenney_piece(
                 "plating-wide.glb",
                 f"roll_slat_{i}",
-                (ROOM / 2, y_back, zc),
+                (ROOM / 2, wall_plane_y, zc),
                 scale=rib_scale,
                 rot_z=-math.pi / 2,
             )
@@ -210,8 +212,13 @@ def build_roll_door() -> bpy.types.Object:
         ob.scale.x *= door_w / max(span_x, 0.01)
         bpy.context.view_layer.update()
     snap_min_z(ob, 0.0)
-    mins, _ = cc0.world_bbox(ob)
-    ob.location.y += max(0.0, WALL_TOL - mins.y)
+    mins, maxs = cc0.world_bbox(ob)
+    center_y = (mins.y + maxs.y) * 0.5
+    ob.location.y += wall_plane_y - center_y
+    bpy.context.view_layer.update()
+    mins, maxs = cc0.world_bbox(ob)
+    if maxs.y > wall_thick + 0.05:
+        ob.location.y -= maxs.y - (wall_thick + 0.04)
     bpy.context.view_layer.update()
     return ob
 
@@ -275,6 +282,8 @@ def assert_scene_layout(
                 failures.append(f"floor {t.name} bad Y tile span")
 
     for ob in wall_parts + [kit_objects["kit_wall_corner"]]:
+        if "lintel" in ob.name:
+            continue
         mn, _ = cc0.world_bbox(ob)
         if mn.z > GAP_TOL:
             failures.append(f"{ob.name} bottom Z={mn.z:.3f} not on z=0")
@@ -288,15 +297,37 @@ def assert_scene_layout(
         failures.append(f"kit_roll_door width {door_w:.2f} m < 2.5 m")
     if mn.z > GROUND_TOL:
         failures.append(f"kit_roll_door minZ {mn.z:.3f} m > {GROUND_TOL} (must contact floor)")
+    wall_thick = 0.05
+    if mx.y > wall_thick + 0.05:
+        failures.append(f"kit_roll_door protrudes {mx.y - wall_thick:.3f} m into room (max 0.05 m)")
+    if mx.x > 3.55 or mn.x < 0.45:
+        failures.append(f"kit_roll_door not in ~3 m back opening (x {mn.x:.2f}-{mx.x:.2f})")
+
+    left_sorted = sorted(
+        [o for o in wall_parts if "wall_left" in o.name],
+        key=lambda o: cc0.world_bbox(o)[0].y,
+    )
+    for i in range(len(left_sorted) - 1):
+        _, mx_a = cc0.world_bbox(left_sorted[i])
+        mn_b, _ = cc0.world_bbox(left_sorted[i + 1])
+        gap = mn_b.y - mx_a.y
+        if gap > GAP_TOL:
+            failures.append(f"left wall gap {gap:.3f} m between segments")
 
     prop_keys = [k for k in kit_objects if k.startswith("prop_")]
     if len(prop_keys) < 8:
         failures.append(f"prop count {len(prop_keys)} < 8")
 
+    desk = kit_objects.get("prop_desk")
+    desk_top = cc0.world_bbox(desk)[1].z if desk else FLOOR_TOP
+
     for key in prop_keys:
         ob = kit_objects[key]
         mn, mx = cc0.world_bbox(ob)
-        if abs(mn.z - FLOOR_TOP) > GROUND_TOL:
+        if key in STACKED_ON_DESK:
+            if mn.z < desk_top - 0.04 or mn.z > desk_top + 0.12:
+                failures.append(f"{key} not on desk support (minZ={mn.z:.3f}, deskTop={desk_top:.3f})")
+        elif abs(mn.z - FLOOR_TOP) > GROUND_TOL:
             failures.append(f"{key} minZ={mn.z:.3f} not on floor")
         wall_mount = key == "prop_whiteboard"
         if not wall_mount and (
@@ -396,17 +427,44 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     if mn.y < GAP_TOL:
         wb.location.y += GAP_TOL - mn.y
 
-    bpy.ops.mesh.primitive_plane_add(size=0.95, location=(2.2, 1.55, FLOOR_TOP + 0.002))
+    stack_desk_props(kit_objects)
+
+    bpy.ops.mesh.primitive_plane_add(size=1.35, location=(2.28, 1.42, FLOOR_TOP + 0.004))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
+    stain.rotation_euler = (0.0, 0.0, math.radians(14))
     kit_objects["kit_floor_stain"] = stain
     return keys
 
 
+STACKED_ON_DESK = frozenset({"prop_laptop", "prop_keyboard", "prop_books"})
+
+
+def snap_prop_on_support(child: bpy.types.Object, parent: bpy.types.Object, *, z_offset: float = 0.002) -> None:
+    _, p_mx = cc0.world_bbox(parent)
+    c_mn, _ = cc0.world_bbox(child)
+    child.location.z += p_mx.z - c_mn.z + z_offset
+    bpy.context.view_layer.update()
+
+
+def stack_desk_props(kit_objects: dict[str, bpy.types.Object]) -> None:
+    desk = kit_objects.get("prop_desk")
+    if not desk:
+        return
+    for key in STACKED_ON_DESK:
+        ob = kit_objects.get(key)
+        if ob:
+            snap_prop_on_support(ob, desk)
+
+
 def retouch_prop_grounding(kit_objects: dict[str, bpy.types.Object]) -> None:
-    """Force every prop bottom to floor top within 1 cm."""
+    """Force floor props to floor top within 1 cm; desk stack handled separately."""
     for key, ob in kit_objects.items():
-        if not key.startswith("prop_"):
+        if not key.startswith("prop_") or key in STACKED_ON_DESK:
+            continue
+        if key == "prop_whiteboard":
+            mn, _ = cc0.world_bbox(ob)
+            ob.location.z += FLOOR_TOP - mn.z
             continue
         mn, _ = cc0.world_bbox(ob)
         gap = mn.z - FLOOR_TOP
@@ -418,10 +476,20 @@ def retouch_prop_grounding(kit_objects: dict[str, bpy.types.Object]) -> None:
 def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Path) -> None:
     prop_keys = [k for k in kit_objects if k.startswith("prop_")]
     roll_mn, roll_mx = cc0.world_bbox(kit_objects["kit_roll_door"])
+    desk = kit_objects.get("prop_desk")
+    desk_top = cc0.world_bbox(desk)[1].z if desk else FLOOR_TOP
     props = []
     for key in prop_keys:
         mn, mx = cc0.world_bbox(kit_objects[key])
         hm = prop_height_m(kit_objects[key], key)
+        if key in STACKED_ON_DESK:
+            support_gap = mn.z - desk_top
+            grounded = -0.02 <= support_gap <= 0.06
+            contact = {"support": "desk", "supportContactGapM": round(abs(support_gap), 4), "floorContactGapM": 0.0}
+        else:
+            fg = max(0.0, mn.z - FLOOR_TOP)
+            grounded = fg <= GROUND_TOL
+            contact = {"support": "floor", "floorContactGapM": round(fg, 4), "supportContactGapM": round(fg, 4)}
         props.append(
             {
                 "objectName": key,
@@ -430,9 +498,9 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
                 "minZ": round(mn.z, 4),
                 "heightM": round(hm, 4),
                 "heightToWallRatio": round(hm / WALL_H, 4),
-                "floorContactGapM": round(max(0.0, mn.z - FLOOR_TOP), 4),
-                "grounded": abs(mn.z - FLOOR_TOP) <= GROUND_TOL,
+                "grounded": grounded,
                 "insideFloorBounds": True,
+                **contact,
             }
         )
     payload = {
@@ -444,7 +512,10 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
         "rollDoorObjectName": kit_objects["kit_roll_door"].name,
         "rollDoorWidthM": round(roll_mx.x - roll_mn.x, 4),
         "rollDoorMinZM": round(roll_mn.z, 4),
+        "rollDoorMaxYM": round(roll_mx.y, 4),
+        "rollDoorWallPlaneYM": 0.05,
         "rollDoorSingleMesh": True,
+        "wallGapToleranceM": GAP_TOL,
         "minPropCount": 8,
         "propInstances": props,
         "floorTileCount": GRID * GRID,

@@ -29,12 +29,12 @@ PALETTE = {
     "board": (0.92, 0.90, 0.86, 1.0),
     "screen": (0.22, 0.48, 0.88, 1.0),
     "lamp_accent": (0.95, 0.58, 0.12, 1.0),
-    "box": (0.68, 0.52, 0.30, 1.0),
-    "box_open": (0.52, 0.40, 0.28, 1.0),
+    "box": (0.78, 0.62, 0.38, 1.0),
+    "box_open": (0.72, 0.56, 0.34, 1.0),
     "chair": (0.32, 0.52, 0.78, 1.0),
     "shelf": (0.78, 0.62, 0.38, 1.0),
     "plant": (0.22, 0.72, 0.32, 1.0),
-    "floor_stain": (0.26, 0.24, 0.22, 1.0),
+    "floor_stain": (0.06, 0.055, 0.05, 1.0),
 }
 
 GARAGE_KIT = ART_ROOT / "garage-kit"
@@ -194,7 +194,13 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
         warm = nodes.new("ShaderNodeMixRGB")
         warm.blend_type = "OVERLAY"
-        warm.inputs["Fac"].default_value = 0.38
+        bright = nodes.new("ShaderNodeMixRGB")
+        bright.blend_type = "MIX"
+        bright.inputs["Fac"].default_value = 0.55
+        bright.inputs["Color2"].default_value = (0.88, 0.86, 0.84, 1.0)
+        warm = nodes.new("ShaderNodeMixRGB")
+        warm.blend_type = "OVERLAY"
+        warm.inputs["Fac"].default_value = 0.22
         warm.inputs["Color2"].default_value = (0.72, 0.52, 0.34, 1.0)
         stain = nodes.new("ShaderNodeTexNoise")
         stain.inputs["Scale"].default_value = 4.0
@@ -207,12 +213,13 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(stain.outputs["Fac"], stain_map.inputs["Value"])
         stain_mix = nodes.new("ShaderNodeMixRGB")
         stain_mix.blend_type = "MULTIPLY"
-        stain_mix.inputs["Color2"].default_value = (0.32, 0.28, 0.24, 1.0)
-        links.new(tex.outputs["Color"], warm.inputs["Color1"])
+        stain_mix.inputs["Color2"].default_value = (0.55, 0.52, 0.50, 1.0)
+        links.new(tex.outputs["Color"], bright.inputs["Color1"])
+        links.new(bright.outputs["Color"], warm.inputs["Color1"])
         links.new(warm.outputs["Color"], stain_mix.inputs["Color1"])
         stain_fac = nodes.new("ShaderNodeMath")
         stain_fac.operation = "MULTIPLY"
-        stain_fac.inputs[1].default_value = 0.52
+        stain_fac.inputs[1].default_value = 0.28
         links.new(stain_map.outputs["Result"], stain_fac.inputs[0])
         links.new(stain_fac.outputs["Value"], stain_mix.inputs["Fac"])
         links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
@@ -556,10 +563,6 @@ def _quantize_backdrop_rgb150(path: Path) -> None:
         for x in range(w):
             if bg[y][x]:
                 im.putpixel((x, y), CORNER_RGB)
-    for y in range(int(h * 0.12), int(h * 0.88)):
-        for x in range(int(w * 0.12), int(w * 0.88)):
-            if im.getpixel((x, y)) == CORNER_RGB:
-                im.putpixel((x, y), (153, 148, 142))
     bx = max(1, int(w * 0.03))
     by = max(1, int(h * 0.03))
     for y in range(h):
