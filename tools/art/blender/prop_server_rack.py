@@ -193,16 +193,16 @@ def build() -> dict:
         parts.append(
             _bevel_box(
                 f"{led_kind}_{i}a",
-                (0.016, 0.014, 0.016),
-                (-TARGET_W * 0.28, y_front + 0.040, lz),
+                (0.022, 0.020, 0.022),
+                (-TARGET_W * 0.28, y_front + 0.044, lz),
                 0.0,
             )
         )
         parts.append(
             _bevel_box(
                 f"{alt_led}_{i}b",
-                (0.014, 0.012, 0.014),
-                (TARGET_W * 0.30, y_front + 0.040, lz),
+                (0.020, 0.018, 0.020),
+                (TARGET_W * 0.30, y_front + 0.044, lz),
                 0.0,
             )
         )
@@ -255,7 +255,7 @@ def build() -> dict:
             "targetSizeM": [TARGET_W, TARGET_D, TARGET_H],
             "kenneyGlbs": list(KENNEY_GLBS_USED),
             "rackUnits": NUM_UNITS,
-            "pipelineNote": "procedural-cabinet-v5-charcoal-front",
+            "pipelineNote": "procedural-cabinet-v6-readability-backdrop",
         },
     )
 

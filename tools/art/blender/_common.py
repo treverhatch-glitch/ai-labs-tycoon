@@ -650,7 +650,7 @@ def _composite_presentation_backdrop_150(
     for y in range(h):
         for x in range(w):
             r, g, b = pixels[y * w + x]
-            in_band = x < band or x >= w - band or y < band
+            in_band = x < band or x >= w - band or y < band or y >= h - band
             dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
             chroma = max(r, g, b) - min(r, g, b)
             if in_band:
@@ -676,7 +676,8 @@ def _composite_presentation_backdrop_150(
             foot_w = int((x1 - x0 + 1) * 1.28)
             rx = max(8, foot_w // 2)
             ry = max(5, int(h * 0.032))
-            cy = min(h - 2, y1 + max(2, int(h * 0.006)))
+            cy = min(h - band - 8, y1 + max(2, int(h * 0.006)))
+            ry = min(ry, max(4, int(h * 0.022)))
             mask = Image.new("L", (w, h), 0)
             mpix = mask.load()
             for y in range(h):
@@ -687,25 +688,45 @@ def _composite_presentation_backdrop_150(
                     dy = (y - cy) / ry
                     if dx * dx + dy * dy <= 1.0:
                         mpix[x, y] = 255
-            mask = mask.filter(ImageFilter.GaussianBlur(radius=14))
+            mask = mask.filter(ImageFilter.GaussianBlur(radius=11))
             shaded: list[tuple[int, int, int]] = []
             mdata = list(mask.getdata())
             for i, (r, g, b) in enumerate(flat):
                 m = mdata[i] / 255.0
+                y_i = i // w
                 dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
-                if m > 0.03 and dist < object_tol + 6:
-                    dark = 0.58
+                if y_i >= h - band:
+                    shaded.append((r, g, b))
+                elif m > 0.03 and dist < object_tol + 6:
+                    dark = 0.50
                     t = m * dark
                     shaded.append(
                         (
-                            max(0, min(255, int(r * (1 - t) + backdrop[0] * t * 0.68))),
-                            max(0, min(255, int(g * (1 - t) + backdrop[1] * t * 0.68))),
-                            max(0, min(255, int(b * (1 - t) + backdrop[2] * t * 0.68))),
+                            max(0, min(255, int(r * (1 - t) + backdrop[0] * t * 0.72))),
+                            max(0, min(255, int(g * (1 - t) + backdrop[1] * t * 0.72))),
+                            max(0, min(255, int(b * (1 - t) + backdrop[2] * t * 0.72))),
                         )
                     )
                 else:
                     shaded.append((r, g, b))
             flat = shaded
+
+    y_bottom = h - band
+    for i, (r, g, b) in enumerate(flat):
+        y_i, x_i = divmod(i, w)
+        dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
+        chroma = max(r, g, b) - min(r, g, b)
+        is_object = dist > object_tol and chroma >= 10
+        if y_i >= y_bottom and band <= x_i < w - band and not is_object:
+            flat[i] = backdrop
+        elif (
+            not is_object
+            and 148 <= r <= 152
+            and 148 <= g <= 152
+            and 148 <= b <= 152
+            and chroma <= 4
+        ):
+            flat[i] = backdrop
 
     out = Image.new("RGB", (w, h), backdrop)
     out.putdata(flat)
@@ -784,39 +805,40 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             if not bsdf:
                 continue
             if "led_green" in low:
-                col = (0.04, 0.98, 0.28, 1.0)
+                col = (0.06, 1.0, 0.34, 1.0)
                 bsdf.inputs["Base Color"].default_value = col
-                bsdf.inputs["Roughness"].default_value = 0.35
+                bsdf.inputs["Roughness"].default_value = 0.28
                 bsdf.inputs["Metallic"].default_value = 0.0
                 ec = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
                 if ec is not None:
-                    ec.default_value = (0.0, 0.0, 0.0, 1.0)
+                    ec.default_value = (0.05, 0.92, 0.30, 1.0)
                 es = bsdf.inputs.get("Emission Strength")
                 if es is not None:
-                    es.default_value = 0.0
+                    es.default_value = 6.5
             elif "led_blue" in low:
-                col = (0.08, 0.42, 0.98, 1.0)
+                col = (0.10, 0.50, 1.0, 1.0)
                 bsdf.inputs["Base Color"].default_value = col
-                bsdf.inputs["Roughness"].default_value = 0.35
+                bsdf.inputs["Roughness"].default_value = 0.28
                 bsdf.inputs["Metallic"].default_value = 0.0
                 ec = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
                 if ec is not None:
-                    ec.default_value = (0.0, 0.0, 0.0, 1.0)
+                    ec.default_value = (0.08, 0.44, 1.0, 1.0)
                 es = bsdf.inputs.get("Emission Strength")
                 if es is not None:
-                    es.default_value = 0.0
+                    es.default_value = 6.5
             elif "glass" in low:
                 bsdf.inputs["Alpha"].default_value = 0.25
                 mat.blend_method = "BLEND"
                 mat.show_transparent_back = False
             elif "frame_trim" in low or "handle" in low or "jamb" in low:
-                bsdf.inputs["Base Color"].default_value = (0.72, 0.75, 0.78, 1.0)
+                bsdf.inputs["Base Color"].default_value = (0.80, 0.82, 0.86, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.26
             elif "body_dark" in low or "body" in low:
                 bsdf.inputs["Base Color"].default_value = (84 / 255.0, 86 / 255.0, 90 / 255.0, 1.0)
                 bsdf.inputs["Metallic"].default_value = 0.42
-            elif "bay" in low:
-                bsdf.inputs["Base Color"].default_value = (0.52, 0.55, 0.60, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.32
+            elif "bay" in low or "face_plate" in low:
+                bsdf.inputs["Base Color"].default_value = (0.68, 0.71, 0.76, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.26
             elif "slot" in low:
                 bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
                 bsdf.inputs["Roughness"].default_value = 0.65
@@ -839,15 +861,24 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
     rack_lit = asset_id == "prop-server-rack"
-    key.data.energy = 2.85 if rack_lit else (2.86 if presentation_150 else 1.8)
+    key.data.energy = 3.05 if rack_lit else (2.86 if presentation_150 else 1.8)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 62 if rack_lit else (84 if presentation_150 else 55)
+    fill.data.energy = 72 if rack_lit else (84 if presentation_150 else 55)
     fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
+    if rack_lit:
+        bpy.ops.object.light_add(
+            type="AREA",
+            location=center + Vector((0.0, -obj_w * 1.45, obj_h * 0.28)),
+        )
+        front_fill = bpy.context.active_object
+        front_fill.data.energy = 52
+        front_fill.data.size = obj_w * 1.05
+        front_fill.rotation_euler = (math.radians(82), 0.0, 0.0)
     if asset_id == "prop-server-rack":
         target_fill = 0.70
         pad = 1.02
@@ -1156,9 +1187,9 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
             links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
     elif kind == "frame_trim":
-        bsdf.inputs["Base Color"].default_value = (0.70, 0.73, 0.78, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.34
-        bsdf.inputs["Metallic"].default_value = 0.78
+        bsdf.inputs["Base Color"].default_value = (0.78, 0.80, 0.84, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.28
+        bsdf.inputs["Metallic"].default_value = 0.72
     elif kind == "glass":
         bsdf.inputs["Base Color"].default_value = (0.18, 0.22, 0.28, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.18
@@ -1168,9 +1199,9 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
         bsdf.inputs["Roughness"].default_value = 0.32
         bsdf.inputs["Metallic"].default_value = 0.62
     elif kind == "bay_light":
-        bsdf.inputs["Base Color"].default_value = (0.62, 0.66, 0.72, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.28
-        bsdf.inputs["Metallic"].default_value = 0.58
+        bsdf.inputs["Base Color"].default_value = (0.70, 0.73, 0.78, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.26
+        bsdf.inputs["Metallic"].default_value = 0.52
     elif kind == "slot":
         bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.55
@@ -1179,21 +1210,21 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
         bsdf.inputs["Roughness"].default_value = 0.55
         bsdf.inputs["Metallic"].default_value = 0.2
     elif kind == "led_green":
-        bsdf.inputs["Base Color"].default_value = (0.05, 1.0, 0.42, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.08, 1.0, 0.46, 1.0)
         em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em is not None:
-            em.default_value = (0.05, 1.0, 0.42, 1.0)
+            em.default_value = (0.06, 0.92, 0.38, 1.0)
         strength = bsdf.inputs.get("Emission Strength")
         if strength is not None:
-            strength.default_value = 32.0
+            strength.default_value = 18.0
     elif kind == "led_blue":
-        bsdf.inputs["Base Color"].default_value = (0.12, 0.52, 1.0, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.14, 0.58, 1.0, 1.0)
         em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em is not None:
-            em.default_value = (0.12, 0.52, 1.0, 1.0)
+            em.default_value = (0.10, 0.48, 1.0, 1.0)
         strength = bsdf.inputs.get("Emission Strength")
         if strength is not None:
-            strength.default_value = 32.0
+            strength.default_value = 18.0
     else:
         bsdf.inputs["Base Color"].default_value = (0.32, 0.34, 0.38, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.42

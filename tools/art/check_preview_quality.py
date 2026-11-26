@@ -30,10 +30,15 @@ BACKDROP_BAND_FRAC = 0.03
 BACKDROP_GRID_FRACS = (0.02, 0.5, 0.98)
 BACKDROP_CHANNEL_TOL = 1
 MAX_BACKDROP_BAND_BAD_PX = 128
+MAX_BACKDROP_BOTTOM_BAND_BAD_PX = 0
 
 
 def _backdrop_channel_ok(r: int, g: int, b: int) -> bool:
     return all(abs(ch - BACKDROP_RGB) <= BACKDROP_CHANNEL_TOL for ch in (r, g, b))
+
+
+def _backdrop_exact_ok(r: int, g: int, b: int) -> bool:
+    return r == BACKDROP_RGB and g == BACKDROP_RGB and b == BACKDROP_RGB
 
 FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
     (
@@ -55,6 +60,11 @@ FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
         "prop-server-rack",
         REPO / "tools/art/fixtures/prop-server-rack-9d736ff6-regression.png",
         "9d736ff6",
+    ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-7068d293-regression.png",
+        "7068d293",
     ),
 )
 MIN_RACK_SUBJECT_LUM_STDDEV = 0.038
@@ -361,20 +371,38 @@ def _rack_contact_shadow_frac(
     return (dark / total) if total else 0.0
 
 
+def _backdrop_bottom_band_bad_px(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> int:
+    """Bottom 3% strip (horiz inset band): non-object pixels not exactly RGB 150."""
+    band = max(1, int(min(width, height) * BACKDROP_BAND_FRAC))
+    y0 = height - band
+    bad = 0
+    for y in range(y0, height):
+        for x in range(band, width - band):
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                continue
+            if not _backdrop_exact_ok(r, g, b):
+                bad += 1
+    return bad
+
+
 def _backdrop_metrics(
     pixels: list[tuple[int, int, int]],
     width: int,
     height: int,
     bg: tuple[int, int, int],
-) -> tuple[int, float]:
+) -> tuple[int, int, float]:
     """3% edge band: backdrop pixels only, non-150 count. 9-point grid on backdrop samples."""
     band = max(1, int(min(width, height) * BACKDROP_BAND_FRAC))
     bad = 0
     for y in range(height):
         for x in range(width):
             if x >= band and x < width - band and y >= band and y < height - band:
-                continue
-            if y >= height - band:
                 continue
             r, g, b = pixels[y * width + x]
             if _object_pixel(r, g, b, bg):
@@ -393,7 +421,8 @@ def _backdrop_metrics(
                 continue
             delta = max(abs(ch - BACKDROP_RGB) for ch in (r, g, b))
             grid_max = max(grid_max, float(delta))
-    return bad, grid_max
+    bottom_bad = _backdrop_bottom_band_bad_px(pixels, width, height, bg)
+    return bad, bottom_bad, grid_max
 
 
 def _frame_pixel(
@@ -540,7 +569,9 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
     for r, g, b in corner_samples:
         for ch in (r, g, b):
             corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - BACKDROP_RGB))
-    backdrop_band_bad, grid_nine_delta = _backdrop_metrics(pixels, width, height, bg)
+    backdrop_band_bad, bottom_band_bad, grid_nine_delta = _backdrop_metrics(
+        pixels, width, height, bg
+    )
     desk_extra: dict[str, float] = {}
     rack_extra: dict[str, float] = {}
     if asset_id == "prop-server-rack":
@@ -757,6 +788,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "corner_lum_mean": corner_mean,
         "corner_rgb_max_delta": corner_rgb_max_delta,
         "backdrop_band_bad_px": float(backdrop_band_bad),
+        "backdrop_bottom_band_bad_px": float(bottom_band_bad),
         "backdrop_grid_nine_delta": grid_nine_delta,
         **desk_extra,
         **rack_extra,
@@ -805,6 +837,10 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
             if s.get("backdrop_grid_nine_delta", 0.0) > BACKDROP_CHANNEL_TOL:
                 reasons.append(
                     f"backdrop_grid_nine_delta={s.get('backdrop_grid_nine_delta', 0):.1f} (max {BACKDROP_CHANNEL_TOL})"
+                )
+            if s.get("backdrop_bottom_band_bad_px", 0.0) > MAX_BACKDROP_BOTTOM_BAND_BAD_PX:
+                reasons.append(
+                    f"backdrop_bottom_band_bad_px={int(s.get('backdrop_bottom_band_bad_px', 0))} (max {MAX_BACKDROP_BOTTOM_BAND_BAD_PX})"
                 )
     if asset_id == "prop-server-rack":
         if s.get("rack_subject_lum_stddev", 0.0) < MIN_RACK_SUBJECT_LUM_STDDEV:
