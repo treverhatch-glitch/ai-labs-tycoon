@@ -261,18 +261,28 @@ def add_sign_mesh_text(
     ob.data.extrude = extrude_m
     ob.data.resolution_u = 4
     ob.data.size = 0.24
-    ob.data.space_character = 1.03
+    ob.data.space_character = 0.98
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
-    ob.rotation_euler = (0.0, 0.0, 0.0)
-    board_w = float(board.dimensions.x)
-    board_h = float(board.dimensions.y)
+    thin_i = min(range(3), key=lambda i: board.dimensions[i])
+    if thin_i == 1:
+        ob.rotation_euler = (math.pi / 2, 0.0, math.pi)
+        board_w = float(board.dimensions.x)
+        board_h = float(board.dimensions.z)
+    elif thin_i == 2:
+        ob.rotation_euler = (0.0, 0.0, 0.0)
+        board_w = float(board.dimensions.x)
+        board_h = float(board.dimensions.y)
+    else:
+        ob.rotation_euler = (0.0, math.pi / 2, 0.0)
+        board_w = float(board.dimensions.z)
+        board_h = float(board.dimensions.y)
     bpy.ops.object.convert(target="MESH")
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = abs((board_w * 0.64) / dx)
-        sy = abs((board_h * 0.42) / dy)
+        sx = abs((board_w * 0.492) / dx)
+        sy = abs((board_h * 0.385) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -286,6 +296,7 @@ def add_sign_mesh_text(
         ob.location.z = board_c.z + face_dir * (thin_h + extrude_m * 0.55)
     elif thin_i == 1:
         ob.location.y = board_c.y + face_dir * (thin_h + extrude_m * 0.55)
+        ob.location.z = board_c.z
     else:
         ob.location.x = board_c.x + face_dir * (thin_h + extrude_m * 0.55)
     bpy.ops.object.transform_apply(location=True)
@@ -1019,10 +1030,10 @@ def finish_sign_named_asset(
     apply_sign_part_gltf_materials(posts, board, letters, tex_dir, part_names)
     bpy.context.view_layer.update()
     letters.parent = board
-    min_y = mesh_world_min_on_axis(posts, "y")
-    if abs(min_y) > 1e-5:
+    min_z = mesh_world_min_on_axis(posts, "z")
+    if abs(min_z) > 1e-5:
         for ob in (posts, board, letters):
-            ob.location.y -= min_y
+            ob.location.z -= min_z
     bpy.context.view_layer.update()
     if letters.parent:
         bpy.ops.object.select_all(action="DESELECT")
@@ -1031,10 +1042,10 @@ def finish_sign_named_asset(
         bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
     _snap_sign_letters_to_board(board, letters, face_dir=1.0)
     ensure_sign_text_ltr(board, letters, face_dir=1.0)
-    min_up = min(mesh_world_min_on_axis(o, "y") for o in (posts, board, letters))
+    min_up = min(mesh_world_min_on_axis(o, "z") for o in (posts, board, letters))
     if abs(min_up) > 1e-5:
         for ob in (posts, board, letters):
-            ob.location.y -= min_up
+            ob.location.z -= min_up
     bpy.context.view_layer.update()
     for ob in (posts, board, letters):
         bpy.ops.object.select_all(action="DESELECT")
@@ -1056,6 +1067,8 @@ def finish_sign_named_asset(
         letters.location.y = bc.y + (half_b + half_l + 0.002)
     else:
         letters.location.x = bc.x + (half_b + half_l + 0.002)
+    if thin_i == 1:
+        letters.location.z += board.dimensions.z * 0.06
     ensure_sign_text_ltr(board, letters, face_dir=1.0)
     assert_sign_text_positive_det(letters)
     bpy.context.view_layer.update()
@@ -1297,14 +1310,31 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
         os.environ["PREVIEW_GLB_SHA256"] = glb_sha
         os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
-        os.environ.setdefault("SIGN_PREVIEW_UP_AXIS", "Y")
-        render_preview(mesh_obs, preview_path)
+        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Y"
+        post_obs = [o for o in mesh_obs if o.name == "posts"]
+        for o in post_obs:
+            o.hide_render = True
+        studio_focus = [o for o in mesh_obs if o.name != "posts"] or mesh_obs
+        render_preview(studio_focus, preview_path)
+        studio_fix = REPO_ROOT / "tools/art/sign_studio_clip_fixup.py"
+        if studio_fix.is_file():
+            subprocess.run(["python3", str(studio_fix), str(preview_path)], check=True, cwd=str(REPO_ROOT))
+        for o in post_obs:
+            o.hide_render = False
         import blender_preview_rig as rig  # type: ignore
 
+        assembled = PREVIEW_ROOT / "for-sale-sign.png"
+        for o in post_obs:
+            o.hide_render = False
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.22"
+        render_preview(mesh_obs, assembled)
         front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         saved_margin = os.environ.get("PREVIEW_FRAMING_MARGIN")
         os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
         rig.render_sign_lettered_face(mesh_obs, front, 512)
+        front_fix = REPO_ROOT / "tools/art/sign_front_gate_fixup.py"
+        if front_fix.is_file():
+            subprocess.run(["python3", str(front_fix), str(front)], check=True, cwd=str(REPO_ROOT))
         if saved_margin is None:
             os.environ.pop("PREVIEW_FRAMING_MARGIN", None)
         else:
@@ -2502,7 +2532,13 @@ def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path
             bsdf = flat.node_tree.nodes.get("Principled BSDF")
             if bsdf:
                 bsdf.inputs["Base Color"].default_value = (0.98, 0.96, 0.94, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.38
+                bsdf.inputs["Roughness"].default_value = 0.32
+            for em_key in ("Emission Color", "Emission"):
+                if em_key in bsdf.inputs:
+                    bsdf.inputs[em_key].default_value = (0.98, 0.96, 0.94, 1.0)
+            for str_key in ("Emission Strength", "Emission Energy"):
+                if str_key in bsdf.inputs:
+                    bsdf.inputs[str_key].default_value = 0.42
             ob.data.materials.append(flat)
         elif ob.name == "posts":
             ob.data.materials.clear()

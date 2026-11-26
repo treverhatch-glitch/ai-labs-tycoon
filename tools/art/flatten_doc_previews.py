@@ -34,6 +34,7 @@ def main() -> int:
     env_hud = [
         "garage-exterior-wall",
         "garage-land-for-sale-sign",
+        "for-sale-sign",
         "garage-lot-curb",
         "garage-window-frame",
     ]

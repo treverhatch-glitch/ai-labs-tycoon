@@ -414,9 +414,11 @@ def render_preview_studio(
     if hasattr(scene, "eevee"):
         scene.eevee.taa_render_samples = 32
         if hasattr(scene.eevee, "use_gtao"):
-            scene.eevee.use_gtao = True
-            scene.eevee.gtao_distance = 0.35 if _mid_grey_preview() else 0.4
-            scene.eevee.gtao_factor = 2.2 if _mid_grey_preview() else 1.4
+            sign_studio = os.environ.get("SIGN_PREVIEW_UP_AXIS", "").strip().upper() == "Z"
+            scene.eevee.use_gtao = not sign_studio
+            if scene.eevee.use_gtao:
+                scene.eevee.gtao_distance = 0.35 if _mid_grey_preview() else 0.4
+                scene.eevee.gtao_factor = 2.2 if _mid_grey_preview() else 1.4
 
     mid_grey = _mid_grey_preview()
     if mid_grey:
