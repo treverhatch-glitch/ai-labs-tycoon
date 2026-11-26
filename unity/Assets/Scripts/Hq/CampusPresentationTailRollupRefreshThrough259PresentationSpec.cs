@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusPresentationTailRollupRefreshThrough259PresentationSpec { public const int RefreshThroughBatch = 259; public static int PriorRefreshThroughBatch => CampusPresentationTailRollupRefreshThrough256.RefreshThroughBatch; public const string RefreshDoc = "PRESENTATION-TAIL-ROLLUP-REFRESH-259.md"; } }

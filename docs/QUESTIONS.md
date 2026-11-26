@@ -4656,3 +4656,5 @@ Vendor/funding ladder/balance soak host slices.
 ### Q938–Q949. Batches **489–500** (rhythm, era **179–180**, hub **499**, rules **500**).
 
 ### Q950–Q961. Batches **501–512** (rhythm, era **181–182**, hub **511**, rules **512**; batch **503** ties explainable HUD to world-map breakdown bible).
+
+### Q962–Q973. Batches **513–524** (rhythm, era **183–184**, hub **523**, rules **524**; batch **520** chip-design presentation bible tail).
