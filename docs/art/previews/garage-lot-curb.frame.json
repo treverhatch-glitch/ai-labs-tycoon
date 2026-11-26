@@ -7,7 +7,7 @@
   "elevation_deg": 30.0,
   "up_axis": "Y",
   "mid_grey": true,
-  "contact_shadow": true,
-  "glb_sha256": "8e9b1b38771b05f07d1e5387a0cfb2f8a5326c9151221c99f046a97f3ecda0ed",
+  "contact_shadow": false,
+  "glb_sha256": "4fc346f1cbd8c3853aeed2dc86eaf5b77b1f61506a5026851b8fcaf4b040fa52",
   "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-lot-curb.glb"
 }

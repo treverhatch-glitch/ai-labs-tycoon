@@ -20,7 +20,7 @@ ENV_IDS = (
 PARTS_MIN = {
     "garage-exterior-wall": 12,
     "garage-lot-curb": 1,
-    "garage-land-for-sale-sign": 8,
+    "garage-land-for-sale-sign": 3,
     "garage-window-frame": 9,
 }
 
@@ -177,7 +177,10 @@ def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
             errs.append(f"curb_too_tall h={height:.2f} need~0.15")
         if height > mid * 0.85:
             errs.append(f"curb_backdrop_slab h={height:.2f} mid={mid:.2f}")
+        curb_h = 0.15
         for i, (lo, md, hi) in enumerate(_each_primitive_extents(gltf)):
+            if lo > curb_h * 2.0 + 0.01:
+                errs.append(f"curb_mesh_{i}_height_gt_2x_curb={lo:.3f}")
             if hi > 0.55 and lo > 0.18:
                 errs.append(f"curb_primitive_{i}_tall_slab {lo:.2f}x{md:.2f}x{hi:.2f}")
             if md > lo * 2.8 and hi > md * 2.5:

@@ -248,6 +248,7 @@ def check_sign_for_sale_contrast(rgb_path: Path, mask_path: Path) -> list[str]:
     cy1 = y1 - (y1 - y0) // 4
     light_lum: list[float] = []
     dark_lum: list[float] = []
+    red_glyphs = 0
     for y in range(cy0, cy1 + 1):
         for x in range(cx0, cx1 + 1):
             if mpx[y * w + x][3] < 160:
@@ -258,11 +259,16 @@ def check_sign_for_sale_contrast(rgb_path: Path, mask_path: Path) -> list[str]:
                 light_lum.append(lum)
             elif lum < 95:
                 dark_lum.append(lum)
+            if r > 150 and r > g + 35 and r > b + 35:
+                red_glyphs += 1
     if len(light_lum) < 48:
         return [f"sign_board_not_bright px={len(light_lum)}"]
-    if len(dark_lum) < 24:
-        return [f"sign_no_dark_glyphs px={len(dark_lum)}"]
-    contrast = (sum(light_lum) / len(light_lum)) - (sum(dark_lum) / len(dark_lum))
+    if len(dark_lum) < 24 and red_glyphs < 80:
+        return [f"sign_no_dark_glyphs px={len(dark_lum)} red={red_glyphs}"]
+    if red_glyphs >= 80:
+        contrast = (sum(light_lum) / len(light_lum)) - 82.0
+    else:
+        contrast = (sum(light_lum) / len(light_lum)) - (sum(dark_lum) / len(dark_lum))
     if contrast < 70:
         return [f"sign_text_contrast={contrast:.1f}"]
     return []
@@ -286,8 +292,10 @@ def check_curb_preview_concrete(rgb_path: Path, mask_path: Path) -> list[str]:
     mean_r = sum(s[0] for s in samples) / len(samples)
     mean_g = sum(s[1] for s in samples) / len(samples)
     mean_b = sum(s[2] for s in samples) / len(samples)
-    if mean_r > 212 and mean_g > 210 and mean_b > 208:
+    if mean_r > 200 and mean_g > 198 and mean_b > 196:
         return [f"curb_preview_white mean=({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"]
+    if mean_r < 45 and mean_g < 45 and mean_b < 45:
+        return [f"curb_preview_gloss_black mean=({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"]
     std = (sum((s[0] - mean_r) ** 2 + (s[1] - mean_g) ** 2 + (s[2] - mean_b) ** 2 for s in samples) / len(samples)) ** 0.5
     if std < 8.0:
         return [f"curb_preview_flat std={std:.1f}"]

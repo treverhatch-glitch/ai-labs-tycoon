@@ -25,6 +25,7 @@ def main():
         x = -1.5 + (i % 3) * 1.5
         bc.add_cube(f"Marker{i}", (0.08, 0.08, 0.08), (x, y, 0))
     entry = bc.finish_asset("garage-exterior-wall", "garage-kit")
+    bc.rerender_garage_preview("garage-exterior-wall", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry
 

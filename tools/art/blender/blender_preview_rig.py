@@ -354,6 +354,8 @@ def render_preview_studio(
             bsdf.inputs["Base Color"].default_value = (0.12, 0.12, 0.13, 1.0)
             bsdf.inputs["Roughness"].default_value = 0.95
         floor.data.materials.append(mat)
+        # Contact card is for ground occlusion only (GTAO); never composite into RGB hero.
+        floor.hide_render = True
     elif not mid_grey:
         if axis == "Y":
             add_shadow_floor_y(mins, maxs)

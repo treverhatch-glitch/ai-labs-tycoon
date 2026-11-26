@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write cream sign albedo with dark FOR SALE (invoked from Blender or CI)."""
+"""Write cream sign albedo with red FOR SALE (~70% of board face)."""
 from __future__ import annotations
 
 import sys
@@ -13,27 +13,43 @@ def paint(path: Path, *, min_unique: int = 120, min_bytes: int = 12_000) -> None
     w = h = 1024
     im = Image.new("RGB", (w, h), (245, 238, 220))
     draw = ImageDraw.Draw(im)
-    margin = w // 14
+    margin = w // 16
     draw.rectangle((margin, margin, w - margin, h - margin), fill=(252, 245, 228))
     font = None
-    for ft in (
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-    ):
-        try:
-            font = ImageFont.truetype(ft, size=96)
+    for size in (168, 140, 120):
+        for ft in (
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+        ):
+            try:
+                font = ImageFont.truetype(ft, size=size)
+                break
+            except OSError:
+                continue
+        if font:
             break
-        except OSError:
-            continue
     if font is None:
         raise SystemExit("no bold font for FOR SALE albedo")
     text = "FOR SALE"
     bbox = draw.textbbox((0, 0), text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    face_w = w - 2 * margin
+    if tw < int(face_w * 0.68):
+        for size in range(200, 119, -4):
+            try:
+                font = ImageFont.truetype(
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                    size=size,
+                )
+            except OSError:
+                continue
+            bbox = draw.textbbox((0, 0), text, font=font)
+            tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+            if tw >= int(face_w * 0.68):
+                break
     tx, ty = (w - tw) // 2, (h - th) // 2
-    draw.text((tx, ty), text, fill=(22, 14, 10), font=font)
-    pad = 3
-    draw.rectangle((tx - pad, ty - pad, tx + tw + pad, ty + th + pad), outline=(12, 8, 6), width=4)
+    red = (196, 34, 28)
+    draw.text((tx, ty), text, fill=red, font=font)
     uniq = len({px for px in im.getdata()})
     if uniq < min_unique:
         raise SystemExit(f"sign albedo flat unique={uniq}")

@@ -357,8 +357,6 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     if asset_id == "garage-exterior-wall":
         _boost_wall_albedo_mortar(tex_dir, asset_id)
-    if asset_id == "garage-lot-curb":
-        _boost_curb_albedo(tex_dir, asset_id)
     packet34 = asset_id in PACKET34_ENV_IDS
     if packet34:
         apply_packet34_gltf_materials(root, asset_id, tex_dir, sub_shape_count, part_names)
@@ -622,8 +620,8 @@ def apply_wall_post_union_textures(
     bright.inputs["Bright"].default_value = 1.02
     bright.inputs["Contrast"].default_value = 0.52
     hue = nodes.new("ShaderNodeHueSaturation")
-    hue.inputs["Saturation"].default_value = 2.05
-    hue.inputs["Value"].default_value = 1.12
+    hue.inputs["Saturation"].default_value = 1.08
+    hue.inputs["Value"].default_value = 1.02
     links.new(mix.outputs["Color"], bright.inputs["Color"])
     links.new(bright.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
@@ -710,10 +708,43 @@ def _wall_vertical_axis(ob: bpy.types.Object) -> str:
     return "Z"
 
 
-def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir: Path) -> None:
-    """Preview render: baked albedo; wall uses live cinderblock+trim shader (imported axis)."""
-    if asset_id == "garage-exterior-wall":
+def apply_wall_preview_swatch_material(ob: bpy.types.Object) -> None:
+    """Matte cinderblock preview from committed tex-garage-wall-beige (world-scale UVs)."""
+    wall = ART_ROOT / "textures" / "tex-garage-wall-beige.png"
+    if not wall.is_file():
         apply_wall_post_union_textures(ob, vertical_axis=_wall_vertical_axis(ob))
+        return
+    mat = bpy.data.materials.new("WallPreviewSwatch")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    tco = nodes.new("ShaderNodeTexCoord")
+    mapping = nodes.new("ShaderNodeMapping")
+    mapping.inputs["Scale"].default_value = (10.0, 15.0, 1.0)
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = bpy.data.images.load(str(wall.resolve()), check_existing=True)
+    tex.image.colorspace_settings.name = "sRGB"
+    tex.extension = "REPEAT"
+    links.new(tco.outputs["UV"], mapping.inputs["Vector"])
+    links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+    bright = nodes.new("ShaderNodeBrightContrast")
+    bright.inputs["Bright"].default_value = 0.0
+    bright.inputs["Contrast"].default_value = 0.22
+    links.new(tex.outputs["Color"], bright.inputs["Color"])
+    links.new(bright.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.62
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir: Path) -> None:
+    """Preview render: baked albedo; wall uses committed swatch on UVs (matte)."""
+    if asset_id == "garage-exterior-wall":
+        apply_wall_preview_swatch_material(ob)
         return
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
@@ -730,42 +761,32 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(albedo.resolve()), check_existing=True)
     tex.image.colorspace_settings.name = "sRGB"
-    uv_socket = tco.outputs["Generated"] if asset_id == "garage-lot-curb" else tco.outputs["UV"]
-    links.new(uv_socket, tex.inputs["Vector"])
-    if rough.is_file():
+    links.new(tco.outputs["UV"], tex.inputs["Vector"])
+    curb_matte = asset_id == "garage-lot-curb"
+    if rough.is_file() and not curb_matte:
         rtex = nodes.new("ShaderNodeTexImage")
         rtex.image = bpy.data.images.load(str(rough.resolve()), check_existing=True)
         links.new(tco.outputs["UV"], rtex.inputs["Vector"])
         links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
     else:
-        bsdf.inputs["Roughness"].default_value = 0.78 if asset_id == "garage-lot-curb" else 0.52
+        bsdf.inputs["Roughness"].default_value = 0.90 if curb_matte else 0.52
     if asset_id == "garage-window-frame":
         key = "Transmission Weight" if "Transmission Weight" in bsdf.inputs else "Transmission"
         bsdf.inputs[key].default_value = 0.35
-    hue = nodes.new("ShaderNodeHueSaturation")
     if asset_id == "garage-land-for-sale-sign":
-        hue.inputs["Saturation"].default_value = 1.28
-        hue.inputs["Value"].default_value = 1.05
-    elif asset_id == "garage-lot-curb":
-        hue.inputs["Saturation"].default_value = 0.45
-        hue.inputs["Value"].default_value = 0.62
-        bright = nodes.new("ShaderNodeBrightContrast")
-        bright.inputs["Bright"].default_value = -0.20
-        bright.inputs["Contrast"].default_value = 0.38
-        links.new(tex.outputs["Color"], bright.inputs["Color"])
-        links.new(bright.outputs["Color"], hue.inputs["Color"])
+        hue = nodes.new("ShaderNodeHueSaturation")
+        hue.inputs["Saturation"].default_value = 1.05
+        hue.inputs["Value"].default_value = 1.0
+        links.new(tex.outputs["Color"], hue.inputs["Color"])
         links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
-        links.new(hue.outputs["Color"], bsdf.inputs["Emission Color"])
-        bsdf.inputs["Emission Strength"].default_value = 0.88
-        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-        ob.data.materials.clear()
-        ob.data.materials.append(mat)
-        return
+    elif asset_id == "garage-lot-curb":
+        curb_tone = nodes.new("ShaderNodeBrightContrast")
+        curb_tone.inputs["Bright"].default_value = -0.38
+        curb_tone.inputs["Contrast"].default_value = 0.22
+        links.new(tex.outputs["Color"], curb_tone.inputs["Color"])
+        links.new(curb_tone.outputs["Color"], bsdf.inputs["Base Color"])
     else:
-        hue.inputs["Saturation"].default_value = 1.22
-        hue.inputs["Value"].default_value = 1.04
-    links.new(tex.outputs["Color"], hue.inputs["Color"])
-    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+        links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
