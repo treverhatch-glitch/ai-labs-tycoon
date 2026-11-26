@@ -16,9 +16,6 @@ BLENDER_ROOT = REPO / "unity" / "Assets" / "Art" / "BlenderBaked"
 
 GATED_ASSETS = (
     "prop-desk",
-    "prop-server-rack",
-    "prop-whiteboard",
-    "ui-rival-badge",
 )
 
 MIN_STDDEV = 8.0
