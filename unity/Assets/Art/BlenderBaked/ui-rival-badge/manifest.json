@@ -1,0 +1,9 @@
+{
+  "assetId": "ui-rival-badge",
+  "scope": "presentation",
+  "sourceObj": "unity/Assets/Art/Generated/campus-kit/ui-rival-badge.obj",
+  "texture1024": "unity/Assets/Art/BlenderBaked/ui-rival-badge/textures/mesh_ui-rival-badge_basecolor.png",
+  "glb": "unity/Assets/Art/BlenderBaked/ui-rival-badge/mesh_ui-rival-badge.glb",
+  "fbx": "unity/Assets/Art/BlenderBaked/ui-rival-badge/mesh_ui-rival-badge.fbx",
+  "preview": "docs/art/previews/ui-rival-badge.png"
+}

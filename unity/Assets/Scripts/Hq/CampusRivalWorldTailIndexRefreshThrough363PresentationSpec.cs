@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusRivalWorldTailIndexRefreshThrough363PresentationSpec { public const int TailRefreshThroughBatch = 363; public static int PriorTailRefreshBatch => CampusRivalWorldTailIndexRefreshThrough360.TailRefreshThroughBatch; public const string RefreshDoc = "RIVAL-WORLD-TAIL-INDEX-REFRESH-363.md"; } }

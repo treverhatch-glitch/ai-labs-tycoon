@@ -1,0 +1,3 @@
+# Index lane manifest tail refresh (batch 664)
+
+Batch **664** · [INDEX-LANE-MANIFEST-TAIL.md](INDEX-LANE-MANIFEST-TAIL.md) spine; follows [INDEX-LANE-MANIFEST-TAIL-REFRESH-286.md](INDEX-LANE-MANIFEST-TAIL-REFRESH-286.md).
