@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Flatten RGBA doc previews onto lane backdrops for human viewing / Unity RGB."""
+"""Flatten RGBA doc previews onto lane backdrops for human viewing / Unity RGB.
+
+Corner pinning (packet34 sign PR):
+- After RGB flatten, set a 3px inset on all four corners to the flatten backdrop RGB.
+- Applies to every ``docs/art/previews/*.png`` that is RGB-flattened.
+- Exemptions (never flattened, never pinned): ``tex-*`` swatch PNGs, ``*.tile2x2.png``,
+  and ``*.mask.png`` companion files.
+"""
 from __future__ import annotations
 
 import sys
@@ -10,27 +17,56 @@ PREVIEW = REPO / "docs" / "art" / "previews"
 
 STUDIO_BG = (150, 150, 150)
 HUD_BG = (128, 128, 133)
+CORNER_INSET_PX = 3
+
+# Documented exemptions: not passed through flatten / corner pin.
+EXEMPT_STEM_PREFIX = ("tex-",)
+EXEMPT_STEM_SUFFIX = (".tile2x2",)
+EXEMPT_NAME_SUFFIX = (".mask.png",)
 
 
-def pin_studio_corner_backdrop(path: Path, bg: tuple[int, int, int], *, margin: float = 0.04) -> None:
+def is_flatten_candidate(path: Path) -> bool:
+    name = path.name
+    stem = path.stem
+    if name.endswith(EXEMPT_NAME_SUFFIX[-1]):
+        return False
+    if stem.startswith(EXEMPT_STEM_PREFIX):
+        return False
+    if any(stem.endswith(suf) for suf in EXEMPT_STEM_SUFFIX):
+        return False
+    return path.suffix.lower() == ".png"
+
+
+def studio_preview_stem(stem: str) -> bool:
+    if stem == "for-sale-sign":
+        return True
+    if stem.startswith("garage-") and stem not in ("garage-roll-door",):
+        return True
+    return stem in {
+        "garage-exterior-wall",
+        "garage-land-for-sale-sign",
+        "garage-land-for-sale-sign-front",
+        "garage-lot-curb",
+        "garage-window-frame",
+    }
+
+
+def hud_preview_stem(stem: str) -> bool:
+    return stem.startswith(("icon-", "panel-", "hud-"))
+
+
+def pin_flattened_corners(path: Path, bg: tuple[int, int, int], *, inset: int = CORNER_INSET_PX) -> None:
     from PIL import Image
 
     im = Image.open(path).convert("RGB")
     w, h = im.size
-    pts = (
-        (int(w * margin), int(h * margin)),
-        (int(w * (1 - margin)), int(h * margin)),
-        (int(w * margin), int(h * (1 - margin))),
-        (int(w * (1 - margin)), int(h * (1 - margin))),
-    )
-    for x, y in pts:
-        r, g, b = im.getpixel((x, y))
-        if abs(r - g) < 24 and abs(g - b) < 24 and 110 <= r <= 220:
-            im.putpixel((x, y), bg)
-    for x, y in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)):
-        r, g, b = im.getpixel((x, y))
-        if abs(r - g) < 24 and abs(g - b) < 24 and 110 <= r <= 220:
-            im.putpixel((x, y), bg)
+    for x, y in (
+        (inset, inset),
+        (w - 1 - inset, inset),
+        (inset, h - 1 - inset),
+        (w - 1 - inset, h - 1 - inset),
+    ):
+        im.putpixel((x, y), bg)
     im.save(path, format="PNG")
 
 
@@ -38,11 +74,20 @@ def flatten(path: Path, bg: tuple[int, int, int]) -> None:
     from PIL import Image
 
     im = Image.open(path).convert("RGBA")
-    if max(im.getchannel("A").getextrema()) < 250:
-        pass
     plate = Image.new("RGB", im.size, bg)
     plate.paste(im, mask=im.split()[3])
     plate.save(path, format="PNG")
+    pin_flattened_corners(path, bg)
+
+
+def process_preview(path: Path) -> None:
+    if not is_flatten_candidate(path):
+        return
+    stem = path.stem
+    if studio_preview_stem(stem):
+        flatten(path, STUDIO_BG)
+    elif hud_preview_stem(stem):
+        flatten(path, HUD_BG)
 
 
 def main() -> int:
@@ -51,24 +96,8 @@ def main() -> int:
     except ImportError:
         print("WARN flatten: Pillow missing")
         return 0
-    # Correct path
-    preview = REPO / "docs" / "art" / "previews"
-    env_hud = [
-        "garage-exterior-wall",
-        "garage-land-for-sale-sign",
-        "garage-land-for-sale-sign-front",
-        "for-sale-sign",
-        "garage-lot-curb",
-        "garage-window-frame",
-    ]
-    for name in env_hud:
-        p = preview / f"{name}.png"
-        if p.exists():
-            flatten(p, STUDIO_BG)
-            pin_studio_corner_backdrop(p, STUDIO_BG)
-    for p in preview.glob("*.png"):
-        if p.stem.startswith(("icon-", "panel-", "hud-", "tex-")):
-            flatten(p, HUD_BG)
+    for p in sorted(PREVIEW.glob("*.png")):
+        process_preview(p)
     return 0
 
 

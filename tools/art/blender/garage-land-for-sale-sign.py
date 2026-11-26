@@ -109,7 +109,7 @@ def main():
     write_sign_albedo(albedo)
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
     subprocess.run(["python3", str(REPO / "tools/art/flatten_doc_previews.py")], check=True, cwd=str(REPO))
-    subprocess.run(["python3", str(REPO / "tools/art/assert_sign_front_ltr.py")], check=True, cwd=str(REPO))
+    subprocess.run(["python3", str(REPO / "tools/art/check_preview_sign_regression.py")], check=True, cwd=str(REPO))
     print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
     return entry
 

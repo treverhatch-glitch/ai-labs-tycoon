@@ -1344,21 +1344,16 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
         os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
         os.environ["PREVIEW_ELEVATION_DEG"] = "18"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.04"
-        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
-        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
-        for o in post_obs:
-            o.hide_render = True
-        studio_focus = [o for o in mesh_obs if o.name != "posts"] or mesh_obs
-        render_preview(studio_focus, preview_path)
-        for o in post_obs:
-            o.hide_render = False
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.90"
+        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
+        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
+        render_preview(mesh_obs, preview_path)
 
         assembled = PREVIEW_ROOT / "for-sale-sign.png"
         os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
-        os.environ["PREVIEW_AZIMUTH_DEG"] = "36"
-        os.environ["PREVIEW_ELEVATION_DEG"] = "23"
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "38"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "20"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.78"
         os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
         os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
         render_preview(mesh_obs, assembled)
@@ -1368,18 +1363,14 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         bpy.ops.import_scene.gltf(filepath=str(glb))
         front_meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
         apply_sign_preview_materials(front_meshes, tex_dir)
-        front_posts = [o for o in front_meshes if o.name == "posts"]
-        for o in front_posts:
-            o.hide_render = True
-        face_obs = [o for o in front_meshes if o.name != "posts"]
         os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
-        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
-        os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
-        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.06"
-        rig.render_sign_lettered_face(face_obs, front, 512)
-        front_align = REPO_ROOT / "tools/art/sign_composite_front_preview.py"
-        if front_align.is_file():
-            subprocess.run(["python3", str(front_align), str(front)], check=True, cwd=str(REPO_ROOT))
+        os.environ["SIGN_PREVIEW_UP_AXIS"] = "Z"
+        os.environ["PREVIEW_AZIMUTH_DEG"] = "34"
+        os.environ["PREVIEW_ELEVATION_DEG"] = "17"
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "0.84"
+        os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
+        os.environ["EARLY_PREVIEW_VISIBLE_GROUND"] = "1"
+        render_preview(front_meshes, front)
         ob = mesh_obs[0]
     else:
         if len(mesh_obs) > 1:

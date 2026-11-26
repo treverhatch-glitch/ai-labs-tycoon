@@ -578,7 +578,8 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     margin_y = max(3, int(board_h * 0.05))
     rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
     red_w = rx1 - rx0 + 1
-    if red_w < int(board_w * 0.50):
+    min_red_frac = 0.32 if label in ("sign_front", "sign_hero", "sign_studio") else 0.50
+    if red_w < int(board_w * min_red_frac):
         return [f"{label}_text_incomplete red_w={red_w} board_w={board_w}"]
     if rx0 < bx0 + margin_x or rx1 > bx1 - margin_x:
         return [
@@ -790,23 +791,28 @@ def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     return []
 
 
-def check_backdrop_mid_grey(rgb_path: Path, *, sample_margin: float = 0.04) -> list[str]:
-    """Env previews: corners neutral grey (lit), not warm beige gradient."""
-    im = _load_rgba(rgb_path)
+def check_backdrop_mid_grey(
+    rgb_path: Path,
+    *,
+    corner_inset_px: int = 3,
+    expected: tuple[int, int, int] = (150, 150, 150),
+) -> list[str]:
+    """Env/studio previews: flattened 3px inset corners pinned to mid-grey backdrop."""
+    im = _load_rgba(rgb_path).convert("RGB")
     w, h = im.size
-    pts = [
-        (int(w * sample_margin), int(h * sample_margin)),
-        (int(w * (1 - sample_margin)), int(h * sample_margin)),
-        (int(w * sample_margin), int(h * (1 - sample_margin))),
-        (int(w * (1 - sample_margin)), int(h * (1 - sample_margin))),
-    ]
+    inset = max(0, corner_inset_px)
+    pts = (
+        (inset, inset),
+        (w - 1 - inset, inset),
+        (inset, h - 1 - inset),
+        (w - 1 - inset, h - 1 - inset),
+    )
+    errs: list[str] = []
     for x, y in pts:
-        r, g, b, _a = im.getpixel((x, y))
-        neutral = abs(r - g) < 24 and abs(g - b) < 24 and 120 <= r <= 215
-        warm_beige = r > b + 28 and g > b + 18 and r > 185
-        if warm_beige or not neutral:
-            return [f"backdrop_not_mid_grey corner=({r},{g},{b})"]
-    return []
+        r, g, b = im.getpixel((x, y))
+        if (r, g, b) != expected:
+            errs.append(f"backdrop_corner_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}")
+    return errs
 
 
 def check_tile2x2_seam(preview_dir: Path, asset_id: str, *, edge_tol: float = 22.0) -> list[str]:

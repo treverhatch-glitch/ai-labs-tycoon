@@ -86,7 +86,10 @@ def check_env_preview(asset_id: str) -> int:
             rc = 1
         front_rgb = PREVIEW / "garage-land-for-sale-sign-front.png"
         front_mask = PREVIEW / "garage-land-for-sale-sign-front.mask.png"
-        for err in check_sign_front_red_inside_board(front_rgb, front_mask):
+        for err in check_backdrop_mid_grey(front_rgb):
+            print(f"FAIL {asset_id} front {err}")
+            rc = 1
+        for err in check_sign_preview_board_text(front_rgb, front_mask, label="sign_front"):
             print(f"FAIL {asset_id} {err}")
             rc = 1
     if asset_id == "garage-lot-curb":
@@ -112,6 +115,25 @@ def main() -> int:
     rc |= check_preview_glb_linkage()
     for asset_id in ENV_IDS:
         rc |= check_env_preview(asset_id)
+    hero_rgb = PREVIEW / "for-sale-sign.png"
+    hero_mask = PREVIEW / "for-sale-sign.mask.png"
+    hero_rc = 0
+    if hero_rgb.is_file() and hero_mask.is_file():
+        for err in check_backdrop_mid_grey(hero_rgb):
+            print(f"FAIL for-sale-sign {err}")
+            hero_rc = 1
+        for err in check_sign_for_sale_contrast(hero_rgb, hero_mask):
+            print(f"FAIL for-sale-sign {err}")
+            hero_rc = 1
+        for err in check_sign_preview_board_text(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL for-sale-sign {err}")
+            hero_rc = 1
+        if hero_rc == 0:
+            print("OK for-sale-sign sign_hero")
+        rc |= hero_rc
+    else:
+        print("FAIL for-sale-sign missing rgb/mask")
+        rc = 1
     for asset_id in ALL_HUD_SPRITE_IDS:
         errs = check_icon_ortho(PREVIEW / f"{asset_id}.frame.json")
         errs.extend(check_icon_sat_coverage(asset_id, PREVIEW))
@@ -142,6 +164,9 @@ def main() -> int:
         rc |= 1
     else:
         print("OK icon-sheet-64")
+    from check_preview_sign_regression import main as check_sign_regression  # noqa: E402
+
+    rc |= check_sign_regression()
     return rc
 
 
