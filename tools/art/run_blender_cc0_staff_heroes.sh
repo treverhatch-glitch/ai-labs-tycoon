@@ -27,6 +27,7 @@ for aid in staff-founder-idle staff-researcher-idle; do
   test -s "docs/art/previews/${aid}.png" || { echo "FAIL missing preview $aid"; exit 1; }
 done
 python3 tools/art/check_cc0_staff_preview_upright.py
+python3 tools/art/check_cc0_staff_floor_loose.py
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)
 set -e

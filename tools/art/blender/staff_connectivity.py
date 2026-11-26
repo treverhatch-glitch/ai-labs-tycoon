@@ -115,6 +115,7 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         link(f"Elbow_{sx}", f"UpperArm_{sx}")
         link(f"LowerArm_{sx}", f"Elbow_{sx}")
         link(f"Hand_{sx}", f"LowerArm_{sx}")
+        link(f"Arm_{sx}", "Torso")
         link(f"Eye_{sx}", "Head")
         link(f"Pupil_{sx}", "Head")
     link("Mouth", "Head")
