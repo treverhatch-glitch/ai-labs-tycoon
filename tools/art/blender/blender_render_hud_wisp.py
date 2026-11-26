@@ -50,40 +50,52 @@ def _wisp_body(mood_id: str) -> bpy.types.Object:
 def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
     mood = mood_id.replace("wisp-", "")
     base_y = 0.72
-    eye_y, eye_sep = 0.10, 0.14
-    face_z = 0.44
-    if mood == "worried":
-        eye_y, eye_sep = 0.08, 0.15
-    elif mood == "angry":
-        eye_y, eye_sep = 0.07, 0.12
-    dark = (0.06, 0.05, 0.08, 1.0)
-    white = (0.98, 0.98, 0.96, 1.0)
-    for sx in (-1, 1):
-        sclera = bc.add_cube(f"EyeWhite_{sx}", (0.12, 0.13, 0.035), (eye_sep * sx, base_y + eye_y, face_z))
-        bc.assign_solid(sclera, white, 0.18)
-        pupil = bc.add_cube(f"Eye_{sx}", (0.06, 0.07, 0.02), (eye_sep * sx, base_y + eye_y, face_z + 0.02))
-        bc.assign_emission(pupil, dark, strength=0.35)
-    if mood == "happy":
-        cheek = bc.add_cube("CheekSparkle", (0.05, 0.04, 0.02), (0.18, base_y - 0.02, face_z))
-        bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
-    if mood == "happy":
-        mouth = bc.add_cube("Smile", (0.14, 0.05, 0.02), (0, base_y - 0.04, face_z))
-        bc.assign_solid(mouth, (0.92, 0.22, 0.45, 1.0), 0.3)
-    elif mood == "angry":
-        mouth = bc.add_cube("Frown", (0.14, 0.035, 0.02), (0, base_y + 0.02, face_z))
-        bc.assign_solid(mouth, (0.85, 0.12, 0.10, 1.0), 0.3)
+    face_z = 0.43
+    eye_sep = 0.11
+    eye_w, eye_h = 0.13, 0.14
+    dark = (0.04, 0.03, 0.05, 1.0)
+    white = (0.99, 0.99, 0.97, 1.0)
+    pupil_w, pupil_h = 0.08, 0.09
+
+    if mood == "glowing":
         for sx in (-1, 1):
-            brow = bc.add_cube(f"Brow_{sx}", (0.10, 0.03, 0.02), (eye_sep * sx, base_y + 0.14, face_z))
+            lid = bc.add_cube(f"EyeLid_{sx}", (eye_w, 0.04, 0.03), (eye_sep * sx, base_y + 0.06, face_z))
+            bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=2.5)
+        mouth = bc.add_cube("GlowSmile", (0.18, 0.06, 0.025), (0, base_y - 0.10, face_z))
+        bc.assign_emission(mouth, (0.88, 0.78, 1.0, 1.0), strength=2.8)
+        return
+
+    eye_y = 0.08 if mood != "worried" else 0.11
+    for sx in (-1, 1):
+        sclera = bc.add_cube(f"EyeWhite_{sx}", (eye_w, eye_h, 0.035), (eye_sep * sx, base_y + eye_y, face_z))
+        bc.assign_solid(sclera, white, 0.15)
+        pupil = bc.add_cube(f"Pupil_{sx}", (pupil_w, pupil_h, 0.022), (eye_sep * sx, base_y + eye_y, face_z + 0.018))
+        bc.assign_solid(pupil, dark, 0.12)
+
+    if mood == "angry":
+        for sx in (-1, 1):
+            brow = bc.add_cube(
+                f"Brow_{sx}",
+                (0.14, 0.035, 0.025),
+                (eye_sep * sx + sx * 0.02, base_y + 0.20, face_z + 0.01),
+            )
             bc.assign_solid(brow, dark, 0.2)
+        mouth = bc.add_cube("Frown", (0.16, 0.04, 0.025), (0, base_y - 0.02, face_z))
+        bc.assign_solid(mouth, (0.82, 0.10, 0.08, 1.0), 0.32)
     elif mood == "worried":
-        mouth = bc.add_cube("Omouth", (0.10, 0.10, 0.02), (0, base_y - 0.08, face_z))
+        for sx in (-1, 1):
+            brow = bc.add_cube(f"BrowRaise_{sx}", (0.12, 0.03, 0.025), (eye_sep * sx, base_y + 0.22, face_z))
+            bc.assign_solid(brow, dark, 0.2)
+        mouth = bc.add_cube("Omouth", (0.12, 0.12, 0.025), (0, base_y - 0.12, face_z))
         bc.assign_solid(mouth, (0.95, 0.55, 0.12, 1.0), 0.35)
-    elif mood == "glowing":
-        mouth = bc.add_cube("GlowSmile", (0.16, 0.05, 0.02), (0, base_y - 0.05, face_z))
-        bc.assign_emission(mouth, (0.85, 0.75, 1.0, 1.0), strength=2.2)
+    elif mood == "happy":
+        mouth = bc.add_cube("Smile", (0.20, 0.07, 0.025), (0, base_y - 0.12, face_z))
+        bc.assign_solid(mouth, (0.92, 0.22, 0.45, 1.0), 0.3)
+        cheek = bc.add_cube("CheekSparkle", (0.06, 0.05, 0.02), (0.20, base_y - 0.04, face_z))
+        bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
     else:
-        mouth = bc.add_cube("NeutralMouth", (0.14, 0.04, 0.02), (0, base_y - 0.06, face_z))
-        bc.assign_emission(mouth, core, strength=0.8)
+        mouth = bc.add_cube("NeutralMouth", (0.16, 0.035, 0.025), (0, base_y - 0.10, face_z))
+        bc.assign_solid(mouth, (0.35, 0.32, 0.36, 1.0), 0.35)
 
 
 def _body_color(core: tuple[float, float, float, float]) -> tuple[float, float, float, float]:

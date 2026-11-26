@@ -188,6 +188,29 @@ def _place_camera(
     return cam
 
 
+def frame_camera_staff_front(
+    objects: list[bpy.types.Object],
+    lens_mm: float,
+    margin: float,
+) -> bpy.types.Object:
+    """Orthographic front view from −Y: Y-up on screen, no depth shear between parts."""
+    mins, maxs = mesh_bounds_world(objects)
+    center = (mins + maxs) * 0.5
+    height = max(0.35, maxs.y - mins.y)
+    width = max(0.25, maxs.x - mins.x, (maxs.z - mins.z) * 0.65)
+    ortho_scale = max(height, width) * margin
+    cam_loc = Vector((center.x, center.y - 4.0, center.z))
+    bpy.ops.object.camera_add(location=cam_loc)
+    cam = bpy.context.active_object
+    cam.name = "PreviewCamera"
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = ortho_scale
+    direction = center - cam_loc
+    cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+    return cam
+
+
 def frame_camera(
     objects: list[bpy.types.Object],
     lens_mm: float = DEFAULT_LENS_MM,
@@ -317,9 +340,7 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Y"
-        azimuth_deg = 88.0
-        elevation_deg = 14.0
-        framing_margin = 1.15
+        framing_margin = 0.88
         lens_mm = 50.0
     elif preview_kind in ("wisp",):
         axis = "Y"
@@ -332,7 +353,7 @@ def render_preview_studio(
         setup_three_point_lights(center, max(radius, 0.35))
         frame_camera_ortho(hero_meshes)
     elif preview_kind == "wisp":
-        azimuth_deg, elevation_deg, framing_margin = 90.0, 8.0, 1.18
+        azimuth_deg, elevation_deg, framing_margin = 90.0, 10.0, 1.05
         setup_three_point_lights(center, radius)
         cam = frame_camera(
             hero_meshes,
@@ -347,22 +368,30 @@ def render_preview_studio(
         if hasattr(scene.eevee, "use_bloom"):
             scene.eevee.use_bloom = True
     else:
-        if preview_kind != "staff":
-            if axis == "Y":
-                add_shadow_floor_y(mins, maxs)
-            else:
-                add_shadow_floor_z(mins, maxs)
+        if preview_kind == "wisp":
+            add_shadow_floor_y(mins, maxs)
+        elif preview_kind == "staff":
+            pass
+        elif axis == "Y":
+            add_shadow_floor_y(mins, maxs)
+        else:
+            add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
-        cam = frame_camera(
-            hero_meshes,
-            lens_mm=lens_mm,
-            margin=framing_margin,
-            azimuth_deg=azimuth_deg,
-            elevation_deg=elevation_deg,
-            up_axis=axis,
-        )
-        half_fov = camera_half_fov_rad(cam.data)
-        cam_dist = (radius / math.tan(half_fov)) * framing_margin
+        if preview_kind == "staff":
+            cam = frame_camera_staff_front(hero_meshes, lens_mm=lens_mm, margin=framing_margin)
+            half_fov = camera_half_fov_rad(cam.data)
+            cam_dist = (radius / math.tan(half_fov)) * framing_margin
+        else:
+            cam = frame_camera(
+                hero_meshes,
+                lens_mm=lens_mm,
+                margin=framing_margin,
+                azimuth_deg=azimuth_deg,
+                elevation_deg=elevation_deg,
+                up_axis=axis,
+            )
+            half_fov = camera_half_fov_rad(cam.data)
+            cam_dist = (radius / math.tan(half_fov)) * framing_margin
 
     meta_path = path.with_name(path.stem + ".frame.json")
     meta_path.write_text(

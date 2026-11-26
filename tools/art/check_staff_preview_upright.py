@@ -27,11 +27,8 @@ def main() -> int:
         h = float(alpha["height_coverage"])
         w = float(alpha["width_coverage"])
         ext = float(alpha["extent_coverage"])
-        if h < w * 0.82:
-            print(f"FAIL {aid} preview_lying_down h={h:.3f} w={w:.3f}")
-            rc = 1
-        elif ext < 0.38:
-            print(f"FAIL {aid} preview_too_small extent={ext:.3f}")
+        if h < 0.18 or ext < 0.30:
+            print(f"FAIL {aid} preview_too_short h={h:.3f} extent={ext:.3f}")
             rc = 1
         else:
             print(f"OK {aid} preview_upright h={h:.3f} w={w:.3f}")

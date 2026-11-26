@@ -24,8 +24,10 @@ python3 tools/art/generate_wisp_mascot.py
 python3 tools/art/check_staff_mesh_topology.py
 python3 tools/art/check_staff_upright.py
 python3 tools/art/check_staff_preview_upright.py
+python3 tools/art/check_staff_head_above_feet.py
 python3 tools/art/check_preview_no_backdrop_plate.py
 python3 tools/art/check_wisp_face_present.py
 bash tools/art/check_packet2_previews.sh
 python3 tools/art/render_early_composites.py
+python3 tools/art/check_composite_frame_fill.py
 echo "quality packet2 staff OK"
