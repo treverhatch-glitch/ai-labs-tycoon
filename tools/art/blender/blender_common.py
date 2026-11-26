@@ -182,8 +182,8 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
         nodes.clear()
         out = nodes.new("ShaderNodeOutputMaterial")
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = (0.04, 0.006, 0.006, 1.0)
-        emit.inputs["Strength"].default_value = 2.75
+        emit.inputs["Color"].default_value = (0.018, 0.002, 0.002, 1.0)
+        emit.inputs["Strength"].default_value = 3.35
         links.new(emit.outputs["Emission"], out.inputs["Surface"])
         return mat
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
@@ -1459,13 +1459,13 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
             azimuth="0",
             elevation="15",
-            margin="0.59",
+            margin="0.92",
         )
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
             azimuth="35",
             elevation="15",
-            margin="0.570",
+            margin="0.84",
         )
         preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
@@ -2728,18 +2728,31 @@ def apply_sign_preview_materials(
     nt_p = post_mat.node_tree
     nt_p.nodes.clear()
     out_p = nt_p.nodes.new("ShaderNodeOutputMaterial")
-    emit_p = nt_p.nodes.new("ShaderNodeEmission")
-    emit_p.inputs["Color"].default_value = (0.82, 0.36, 0.06, 1.0)
-    emit_p.inputs["Strength"].default_value = 1.25
-    nt_p.links.new(emit_p.outputs["Emission"], out_p.inputs["Surface"])
+    bsdf_p = nt_p.nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf_p.inputs["Roughness"].default_value = 0.62
+    kenney_tex = Path(__file__).resolve().parents[2] / (
+        "cc0/incoming/kenney-city-kit-suburban/Models/Textures/variation-a.png"
+    )
+    if kenney_tex.is_file():
+        tex = nt_p.nodes.new("ShaderNodeTexImage")
+        tex.image = bpy.data.images.load(str(kenney_tex.resolve()), check_existing=True)
+        tex.interpolation = "Smart"
+        mul = nt_p.nodes.new("ShaderNodeMixRGB")
+        mul.blend_type = "MULTIPLY"
+        mul.inputs["Color2"].default_value = (0.72, 0.48, 0.22, 1.0)
+        nt_p.links.new(tex.outputs["Color"], mul.inputs["Color1"])
+        nt_p.links.new(mul.outputs["Color"], bsdf_p.inputs["Base Color"])
+    else:
+        bsdf_p.inputs["Base Color"].default_value = (0.55, 0.36, 0.18, 1.0)
+    nt_p.links.new(bsdf_p.outputs["BSDF"], out_p.inputs["Surface"])
     tuft_mat = bpy.data.materials.new("SignTuftGreenPreview")
     tuft_mat.use_nodes = True
     nt_t = tuft_mat.node_tree
     nt_t.nodes.clear()
     out_t = nt_t.nodes.new("ShaderNodeOutputMaterial")
     emit_t = nt_t.nodes.new("ShaderNodeEmission")
-    emit_t.inputs["Color"].default_value = (0.28, 0.52, 0.18, 1.0)
-    emit_t.inputs["Strength"].default_value = 1.05
+    emit_t.inputs["Color"].default_value = (0.22, 0.62, 0.14, 1.0)
+    emit_t.inputs["Strength"].default_value = 1.35
     nt_t.links.new(emit_t.outputs["Emission"], out_t.inputs["Surface"])
     shadow_mat = bpy.data.materials.new("SignContactShadowPreview")
     shadow_mat.use_nodes = True
@@ -2773,6 +2786,12 @@ def apply_sign_preview_materials(
                 ob.data.materials.append(flat)
         elif ob.name == "posts":
             _assign_sign_post_preview_slots(ob, post_mat, tuft_mat, shadow_mat)
+        elif "tuft" in ob.name.lower():
+            ob.data.materials.clear()
+            ob.data.materials.append(tuft_mat)
+        elif "contact" in ob.name.lower() or "blot" in ob.name.lower():
+            ob.data.materials.clear()
+            ob.data.materials.append(shadow_mat)
 
 
 def render_preview(ob: bpy.types.Object | list[bpy.types.Object], path: Path) -> None:

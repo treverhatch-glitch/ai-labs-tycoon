@@ -19,6 +19,11 @@ BOARD_Z = 0.55
 FRAME_T = 0.032
 BEVEL_W = 0.022
 
+KENNEY_DIR = REPO / "tools/art/cc0/incoming/kenney-city-kit-suburban/Models/GLB format"
+KENNEY_WOOD_TEX = (
+    REPO / "tools/art/cc0/incoming/kenney-city-kit-suburban/Models/Textures/variation-a.png"
+)
+
 CC0_SOURCE = {
     "polyHavenHdri": {
         "name": "studio_small_09",
@@ -37,7 +42,44 @@ CC0_SOURCE = {
         "downloadedAt": "2025-11-27",
         "note": "Brown 4x4 post reference swatch (procedural PBR match)",
     },
+    "kenneyCityKitSuburban": {
+        "name": "Kenney City Kit Suburban",
+        "license": "CC0 1.0",
+        "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "sourcePath": "tools/art/cc0/incoming/kenney-city-kit-suburban",
+        "downloadedAt": "2025-11-27",
+        "note": "fence-1x3 posts restyled for LAND FOR SALE sign",
+    },
 }
+
+
+def _kenney_post(name: str) -> bc.bpy.types.Object:
+    """Import Kenney fence segment, scale to POST_H tall vertical post."""
+    bpy = bc.bpy
+    if not (KENNEY_DIR / "fence-1x3.glb").is_file():
+        return _procedural_post(name)
+    bpy.ops.import_scene.gltf(filepath=str(KENNEY_DIR / "fence-1x3.glb"))
+    meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+    if not meshes:
+        return _procedural_post(name)
+    if len(meshes) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in meshes:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = meshes[0]
+        bpy.ops.object.join()
+    ob = bpy.context.view_layer.objects.active or meshes[0]
+    ob.name = name
+    ob.location = (0.0, 0.0, 0.0)
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
+    z0 = bc.mesh_world_min_on_axis(ob, "z")
+    ob.location.z -= z0
+    h = max(1e-6, bc.mesh_world_max_on_axis(ob, "z") - bc.mesh_world_min_on_axis(ob, "z"))
+    s = POST_H / h
+    ob.scale = (s * 0.85, s * 0.85, s)
+    bpy.ops.object.transform_apply(scale=True)
+    bc.bevel_object(ob, width=BEVEL_W * 0.5, segments=2)
+    return ob
 
 
 def write_sign_albedo(tex_path: Path) -> None:
@@ -134,7 +176,7 @@ def _footing(x: float, name: str) -> bc.bpy.types.Object:
 
 
 def _tuft() -> bc.bpy.types.Object:
-    ob = bc.add_cube("tuft", (POST_SPAN + POST_W + 0.14, POST_W + 0.34, 0.10), (0.0, 0.0, 0.05))
+    ob = bc.add_cube("tuft", (POST_SPAN + POST_W + 0.22, POST_W + 0.52, 0.12), (0.0, 0.0, 0.06))
     bc.assign_solid(ob, (0.30, 0.50, 0.22, 1.0), 0.88)
     return ob
 
@@ -182,8 +224,14 @@ def main():
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
-    post_l = _procedural_post("PostL")
-    post_r = _procedural_post("PostR")
+    post_l = _kenney_post("PostL")
+    bpy = bc.bpy
+    bpy.ops.object.select_all(action="DESELECT")
+    post_l.select_set(True)
+    bpy.context.view_layer.objects.active = post_l
+    bpy.ops.object.duplicate()
+    post_r = bpy.context.active_object
+    post_r.name = "PostR"
     board = _procedural_board_panel()
     bracket_l = _bracket("bracket_l")
     bracket_r = _bracket("bracket_r")
@@ -200,8 +248,6 @@ def main():
     for ob in (
         post_l,
         post_r,
-        tuft,
-        contact_blot,
         foot_l,
         foot_r,
         bracket_l,
@@ -214,6 +260,12 @@ def main():
     bpy.ops.object.join()
     ground = bpy.context.active_object
     ground.name = "posts"
+    bpy.ops.object.select_all(action="DESELECT")
+    tuft.select_set(True)
+    contact_blot.select_set(True)
+    ground.select_set(True)
+    bpy.context.view_layer.objects.active = ground
+    bpy.ops.object.join()
     bc.bpy.context.view_layer.update()
     bc.add_sign_mesh_text(
         "letters",
@@ -263,8 +315,8 @@ def main():
                 "python3",
                 "-c",
                 (
-                    "from pathlib import Path; from tools.art.flatten_doc_previews import flatten, flatten_sign_mask, STUDIO_BG; "
-                    f"p=Path('docs/art/previews/{stem}.png'); flatten(p, STUDIO_BG); "
+                    "from pathlib import Path; from tools.art.flatten_doc_previews import flatten_sign_rgb, flatten_sign_mask, STUDIO_BG; "
+                    f"p=Path('docs/art/previews/{stem}.png'); flatten_sign_rgb(p, STUDIO_BG); "
                     f"flatten_sign_mask(p.with_name(p.stem + '.mask.png'), STUDIO_BG)"
                 ),
             ],

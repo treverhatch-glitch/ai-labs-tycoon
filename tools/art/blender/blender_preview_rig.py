@@ -161,6 +161,14 @@ def setup_mid_grey_world() -> None:
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
+def _linear_studio_color_output(scene: bpy.types.Scene) -> None:
+    """Encode mid-grey (150/255) without Filmic lifting backdrop to ~177."""
+    scene.view_settings.view_transform = "Standard"
+    scene.view_settings.look = "None"
+    scene.view_settings.exposure = 0.0
+    scene.view_settings.gamma = 1.0
+
+
 def _mid_grey_preview() -> bool:
     return os.environ.get("EARLY_PREVIEW_MID_GREY", "").strip().lower() in ("1", "true", "yes")
 
@@ -513,8 +521,14 @@ def render_preview_studio(
         meta["glb_path"] = glb_path
     meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
 
-    scene.render.film_transparent = False
-    scene.render.image_settings.color_mode = "RGB"
+    sign_studio = sign_up in ("X", "Y", "Z") and mid_grey
+    if sign_studio:
+        _linear_studio_color_output(scene)
+        scene.render.film_transparent = True
+        scene.render.image_settings.color_mode = "RGBA"
+    else:
+        scene.render.film_transparent = False
+        scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = resolution
     scene.render.resolution_y = resolution
     scene.render.filepath = str(path)

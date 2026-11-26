@@ -74,7 +74,7 @@ def pin_flattened_corners(path: Path, bg: tuple[int, int, int], *, inset: int = 
 
 
 def flatten_sign_mask(path: Path, bg: tuple[int, int, int] = STUDIO_BG) -> None:
-    """RGBA mask companion -> RGB (150 backdrop, subject near-white)."""
+    """RGBA mask companion -> RGB silhouettes: backdrop bg, subject 0/255 white (no border paint)."""
     from PIL import Image
 
     im = Image.open(path).convert("RGBA")
@@ -87,17 +87,22 @@ def flatten_sign_mask(path: Path, bg: tuple[int, int, int] = STUDIO_BG) -> None:
             if px[x, y][3] >= 160:
                 opx[x, y] = (255, 255, 255)
     out.save(path, format="PNG")
-    pin_flattened_corners(path, bg, inset=CORNER_INSET_PX)
 
 
-def flatten(path: Path, bg: tuple[int, int, int]) -> None:
+def flatten(path: Path, bg: tuple[int, int, int], *, pin_corners: bool = True) -> None:
     from PIL import Image
 
     im = Image.open(path).convert("RGBA")
     plate = Image.new("RGB", im.size, bg)
     plate.paste(im, mask=im.split()[3])
     plate.save(path, format="PNG")
-    pin_flattened_corners(path, bg, inset=CORNER_INSET_PX)
+    if pin_corners:
+        pin_flattened_corners(path, bg, inset=CORNER_INSET_PX)
+
+
+def flatten_sign_rgb(path: Path, bg: tuple[int, int, int] = STUDIO_BG) -> None:
+    """Sign studio preview: composite transparent render over exact backdrop (no painted border)."""
+    flatten(path, bg, pin_corners=False)
 
 
 def process_preview(path: Path) -> None:

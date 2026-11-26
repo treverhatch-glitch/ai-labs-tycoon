@@ -36,6 +36,7 @@ FIXTURES = (
     ("dd158f9e", REPO / "tools/art/fixtures/preview_regression/sign-dd158f9e"),
     ("55d06577", REPO / "tools/art/fixtures/preview_regression/sign-55d06577"),
     ("df4e2874", REPO / "tools/art/fixtures/preview_regression/sign-df4e2874"),
+    ("e9f20cbb", REPO / "tools/art/fixtures/preview_regression/sign-e9f20cbb"),
 )
 
 
@@ -102,7 +103,7 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
-        if sha in ("419f4309", "e7d53735", "dd158f9e", "55d06577", "df4e2874"):
+        if sha in ("419f4309", "e7d53735", "dd158f9e", "55d06577", "df4e2874", "e9f20cbb"):
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
             if sha == "419f4309":

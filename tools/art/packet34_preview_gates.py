@@ -34,6 +34,11 @@ def _load_rgba(path: Path):
     return Image.open(path).convert("RGBA")
 
 
+def _sign_preview_text_red(r: int, g: int, b: int) -> bool:
+    """Dark red FOR SALE glyphs on studio previews (EEVEE lifts G channel slightly)."""
+    return r > 105 and g < 148 and b < 148 and r > g + 8 and r > b + 10
+
+
 def _sign_mask_pixel_subject(pixel: tuple[int, int, int, int]) -> bool:
     """True for hero silhouette on sign mask companions (RGBA alpha or RGB studio flatten)."""
     r, g, b, a = pixel
@@ -898,29 +903,29 @@ def _backdrop_grid_points(w: int, h: int, *, inset: int = 3) -> list[tuple[int, 
     return [(x, y) for y in ys for x in xs]
 
 
-def _backdrop_border_grid_points(w: int, h: int, *, inset: int = 3) -> list[tuple[int, int]]:
-    """Eight perimeter samples of the inset 3×3 grid (excludes center)."""
-    cx, cy = w // 2, h // 2
-    pts = _backdrop_grid_points(w, h, inset=inset)
-    return [(x, y) for x, y in pts if not (x == cx and y == cy)]
+def _studio_backdrop_inset_px(w: int, h: int, *, edge_frac: float = 0.03) -> int:
+    return max(3, int(round(min(w, h) * edge_frac)))
 
 
 def check_backdrop_mid_grey(
     rgb_path: Path,
     *,
-    corner_inset_px: int = 3,
+    edge_frac: float = 0.03,
     expected: tuple[int, int, int] = (150, 150, 150),
 ) -> list[str]:
-    """Sign/studio flats: border grid + full inset edge band must be exact backdrop RGB."""
+    """Sign/studio flats: full 3% edge band + 9-point border grid must be exact backdrop RGB."""
     im = _load_rgba(rgb_path).convert("RGB")
     w, h = im.size
-    inset = max(0, corner_inset_px)
+    inset = _studio_backdrop_inset_px(w, h, edge_frac=edge_frac)
     errs: list[str] = []
-    for x, y in _backdrop_border_grid_points(w, h, inset=inset):
+    cx, cy = w // 2, h // 2
+    for x, y in _backdrop_grid_points(w, h, inset=inset):
+        if x == cx and y == cy:
+            continue
         r, g, b = im.getpixel((x, y))
         if (r, g, b) != expected:
             errs.append(
-                f"backdrop_grid_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}"
+                f"backdrop_grid_not_150 inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}"
             )
     non150 = 0
     band = 0
@@ -938,15 +943,23 @@ def check_backdrop_mid_grey(
 def check_sign_mask_studio_backdrop(
     mask_path: Path,
     *,
+    edge_frac: float = 0.03,
     expected: tuple[int, int, int] = (150, 150, 150),
 ) -> list[str]:
-    """Sign mask companions: RGB backdrop must be studio grey outside subject."""
+    """Sign mask companions: 3% band outside 0/255 subject must be studio grey."""
     if not mask_path.is_file():
         return ["sign_mask_missing"]
     im = _load_rgba(mask_path).convert("RGB")
     w, h = im.size
-    inset = 3
+    inset = _studio_backdrop_inset_px(w, h, edge_frac=edge_frac)
     errs: list[str] = []
+    cx, cy = w // 2, h // 2
+    for x, y in _backdrop_grid_points(w, h, inset=inset):
+        if x == cx and y == cy:
+            continue
+        r, g, b = im.getpixel((x, y))
+        if (r, g, b) != expected:
+            errs.append(f"sign_mask_grid_not_150 at=({x},{y}) rgb=({r},{g},{b})")
     non150 = band = 0
     for y in range(h):
         for x in range(w):
@@ -973,7 +986,7 @@ def check_sign_front_ocr_words(rgb_path: Path) -> list[str]:
     px = rgb.load()
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     bin_im = Image.new("L", (w, h), 255)
     bin_px = bin_im.load()
@@ -1012,7 +1025,7 @@ def check_sign_front_board_frame_width(
     rgb_path: Path,
     mask_path: Path,
     *,
-    min_frac: float = 0.45,
+    min_frac: float = 0.55,
 ) -> list[str]:
     """Front preview white sign face must fill at least min_frac of image width."""
     if not rgb_path.is_file() or not mask_path.is_file():
@@ -1107,7 +1120,7 @@ def check_sign_preview_subject_framing(
     rpx = list(rgb.getdata())
 
     def _is_text_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     def _is_board_cream(r: int, g: int, b: int) -> bool:
         return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
@@ -1200,7 +1213,7 @@ def check_sign_text_inside_board_mask(
     rpx = list(rgb.getdata())
 
     def _is_text_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     def _is_board_cream(r: int, g: int, b: int) -> bool:
         return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
@@ -1258,7 +1271,7 @@ def check_sign_text_board_wcag_contrast(
     rpx = list(rgb.getdata())
 
     def _is_text_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     def _is_board_cream(r: int, g: int, b: int) -> bool:
         return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
@@ -1305,7 +1318,7 @@ def check_sign_front_posts_to_ground(
     rpx = list(rgb.getdata())
 
     def _is_text_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     def _is_board_cream(r: int, g: int, b: int) -> bool:
         return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
@@ -1368,7 +1381,7 @@ def _sign_subject_bbox(
     rpx = list(rgb.getdata())
 
     def _is_text_red(r: int, g: int, b: int) -> bool:
-        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+        return _sign_preview_text_red(r, g, b)
 
     def _is_board_cream(r: int, g: int, b: int) -> bool:
         return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
@@ -1418,7 +1431,7 @@ def check_sign_subject_fill_extent(
     *,
     label: str = "sign",
     min_fill: float = 0.60,
-    max_fill: float = 0.80,
+    max_fill: float = 0.75,
 ) -> list[str]:
     """Combined sign subject max(width_frac, height_frac) must sit in [min_fill, max_fill]."""
     if not rgb_path.is_file() or not mask_path.is_file():
