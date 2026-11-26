@@ -10,7 +10,7 @@ ASSET_ID = "tex-hud-paper-warm"
 
 
 def main() -> None:
-    bt.bake_tileable(ASSET_ID, (198, 108, 42), (248, 188, 88), noise_scale=9.0)
+    bt.bake_tileable(ASSET_ID, (218, 148, 68), (252, 208, 138), pattern="paper", noise_scale=11.0)
 
 
 if __name__ == "__main__":

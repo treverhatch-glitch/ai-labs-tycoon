@@ -2423,3 +2423,9 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q16096–Q16165. Batch 366+ bible refill? *Planned:* `HostExplainSystemsLaterTests` (**LOCAL**, Q16166+).
 
 ### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.
+
+### Q578. Packet34 HUD previews: 3D bpy cubes vs flat ortho sprites? DECIDED: flat 2D glyphs
+
+- Options: (a) keep headless Blender 3D cubes for HUD doc previews; (b) SVG → PNG orthographic sprites with transparent bg and stricter sat/coverage gates (Hatch FAIL #90).
+- Recommendation and choice: **(b)** — `generate_early_hud_icons.py` + `rasterize_early_hud_previews.py`; env props stay 3D with mid-grey + contact-shadow previews only.
+- Why: dial-up HUD must read at 32–64 px; 3D perspective previews failed Hatch art bar despite weak alpha-mask gates.

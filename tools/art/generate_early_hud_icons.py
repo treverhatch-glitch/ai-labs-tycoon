@@ -1,123 +1,150 @@
 #!/usr/bin/env python3
-"""Dial-up era HUD icons and panel chrome (CC0 SVG)."""
+"""Dial-up era HUD icons and panel chrome (CC0 SVG). Packet34: transparent ortho glyphs."""
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OUT = REPO_ROOT / "unity" / "Assets" / "Art" / "EarlyGame" / "hud-icons"
+OUT = REPO_ROOT / "unity/Assets/Art/EarlyGame/hud-icons"
 SIZE = 64
 
+# 1995 garage palette (saturated, 2–3 per icon)
+C_ORANGE = "#E87830"
+C_TRIM = "#A85828"
+C_BEIGE = "#D4A858"
+C_PAPER = "#F4E8C8"
+C_GREEN = "#3CB86A"
+C_PURPLE = "#7A52E8"
+C_BLUE = "#4088D9"
+C_INK = "#1A1D24"
+C_CHIP = "#5A5E68"
+C_OUTLINE = "#14171D"
 
-def svg_wrap(body: str, name: str, bg: str = "#14171D") -> str:
+
+def svg_icon(body: str, name: str, view: int = SIZE) -> str:
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {SIZE} {SIZE}" '
-        f'role="img" aria-label="{name}">\n'
-        f'  <rect width="{SIZE}" height="{SIZE}" rx="6" fill="{bg}"/>\n'
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {view} {view}" role="img" aria-label="{name}">\n'
         f"{body}\n</svg>\n"
     )
 
 
 def icon_cash_era0() -> str:
     body = (
-        '  <rect x="10" y="18" width="44" height="28" rx="4" fill="#C87830" stroke="#F4F0E8" stroke-width="2"/>'
-        '  <text x="32" y="38" text-anchor="middle" fill="#F4F0E8" font-size="20" font-family="sans-serif">$</text>'
+        f'  <rect x="8" y="16" width="48" height="32" rx="5" fill="{C_BEIGE}" stroke="{C_OUTLINE}" stroke-width="3"/>'
+        f'  <rect x="12" y="20" width="40" height="8" fill="{C_TRIM}" opacity="0.35"/>'
+        f'  <text x="32" y="40" text-anchor="middle" fill="{C_TRIM}" font-size="22" font-weight="bold" '
+        f'font-family="Arial,sans-serif">$</text>'
     )
-    return svg_wrap(body, "cash dial-up", "#2A2218")
+    return svg_icon(body, "cash bill")
 
 
 def icon_date_era0() -> str:
     body = (
-        '  <rect x="12" y="14" width="40" height="36" rx="3" fill="#C8B8A0"/>'
-        '  <rect x="12" y="14" width="40" height="12" fill="#A85828"/>'
-        '  <text x="32" y="40" text-anchor="middle" fill="#1A1D24" font-size="14" font-family="monospace">95</text>'
+        f'  <rect x="14" y="12" width="36" height="40" rx="4" fill="{C_PAPER}" stroke="{C_OUTLINE}" stroke-width="3"/>'
+        f'  <rect x="14" y="12" width="36" height="14" fill="{C_TRIM}"/>'
+        f'  <circle cx="22" cy="19" r="2" fill="{C_PAPER}"/><circle cx="42" cy="19" r="2" fill="{C_PAPER}"/>'
+        f'  <text x="32" y="38" text-anchor="middle" fill="{C_INK}" font-size="14" font-weight="bold" '
+        f'font-family="monospace">26</text>'
     )
-    return svg_wrap(body, "date dial-up")
+    return svg_icon(body, "calendar")
 
 
 def icon_era_bar() -> str:
     body = (
-        '  <rect x="8" y="28" width="48" height="8" rx="2" fill="#3A3A44"/>'
-        '  <rect x="8" y="28" width="14" height="8" rx="2" fill="#A85828"/>'
-        '  <text x="32" y="22" text-anchor="middle" fill="#F4F0E8" font-size="10" font-family="sans-serif">ERA</text>'
+        f'  <rect x="6" y="26" width="52" height="12" rx="3" fill="{C_CHIP}" stroke="{C_OUTLINE}" stroke-width="2"/>'
+        f'  <rect x="8" y="28" width="10" height="8" rx="1" fill="{C_ORANGE}"/>'
+        f'  <rect x="22" y="28" width="10" height="8" rx="1" fill="{C_TRIM}"/>'
+        f'  <rect x="36" y="28" width="10" height="8" rx="1" fill="{C_BEIGE}"/>'
     )
-    return svg_wrap(body, "era bar")
+    return svg_icon(body, "era progress ticks")
 
 
 def icon_build_panel() -> str:
     body = (
-        '  <polygon points="16,48 32,16 48,48" fill="#F2BF5A"/>'
-        '  <rect x="22" y="38" width="20" height="10" fill="#1A1D24"/>'
+        f'  <rect x="22" y="28" width="20" height="18" fill="{C_TRIM}" stroke="{C_OUTLINE}" stroke-width="2"/>'
+        f'  <path d="M18 46 L32 18 L46 46 Z" fill="{C_BEIGE}" stroke="{C_OUTLINE}" stroke-width="3" '
+        f'stroke-linejoin="round"/>'
+        f'  <rect x="28" y="34" width="8" height="14" fill="{C_ORANGE}" stroke="{C_OUTLINE}" stroke-width="1.5"/>'
     )
-    return svg_wrap(body, "build")
+    return svg_icon(body, "hammer brick")
 
 
 def icon_hire_panel() -> str:
     body = (
-        '  <circle cx="32" cy="22" r="8" fill="#F4F0E8"/>'
-        '  <path d="M18 50c0-10 28-10 28 0v4H18z" fill="#66BF73"/>'
-        '  <rect x="40" y="36" width="10" height="10" fill="#A85828"/>'
+        f'  <circle cx="32" cy="22" r="9" fill="{C_PAPER}" stroke="{C_OUTLINE}" stroke-width="3"/>'
+        f'  <path d="M16 52c0-12 32-12 32 0" fill="{C_GREEN}" stroke="{C_OUTLINE}" stroke-width="2"/>'
+        f'  <text x="44" y="42" font-size="18" font-weight="bold" fill="{C_ORANGE}" '
+        f'font-family="Arial,sans-serif">+</text>'
     )
-    return svg_wrap(body, "hire")
+    return svg_icon(body, "hire person plus")
 
 
 def icon_train_panel() -> str:
     body = (
-        '  <rect x="14" y="20" width="36" height="6" rx="2" fill="#8C66F2"/>'
-        '  <rect x="14" y="30" width="28" height="6" rx="2" fill="#6A46D0"/>'
-        '  <rect x="14" y="40" width="20" height="6" rx="2" fill="#4A26B0"/>'
+        f'  <rect x="16" y="14" width="32" height="38" rx="6" fill="{C_PAPER}" stroke="{C_OUTLINE}" stroke-width="3"/>'
+        f'  <ellipse cx="32" cy="26" rx="10" ry="8" fill="{C_PURPLE}" stroke="{C_OUTLINE}" stroke-width="2"/>'
+        f'  <path d="M22 36 h20 v12 h-6 v-6 h-8 v6 h-6 z" fill="{C_BLUE}" stroke="{C_OUTLINE}" stroke-width="1.5"/>'
     )
-    return svg_wrap(body, "train")
+    return svg_icon(body, "brain book")
 
 
 def icon_gpu_hire() -> str:
     body = (
-        '  <rect x="18" y="18" width="28" height="32" rx="2" fill="#5A5A66"/>'
-        '  <rect x="22" y="24" width="20" height="5" fill="#8C66F2"/>'
-        '  <rect x="22" y="32" width="20" height="5" fill="#66BF73"/>'
+        f'  <rect x="16" y="18" width="32" height="30" rx="3" fill="{C_CHIP}" stroke="{C_OUTLINE}" stroke-width="3"/>'
+        f'  <rect x="20" y="24" width="8" height="6" fill="{C_PURPLE}"/>'
+        f'  <rect x="30" y="24" width="8" height="6" fill="{C_GREEN}"/>'
+        f'  <rect x="20" y="34" width="18" height="5" fill="{C_ORANGE}"/>'
+        f'  <circle cx="48" cy="28" r="3" fill="{C_TRIM}"/><circle cx="48" cy="38" r="3" fill="{C_TRIM}"/>'
     )
-    return svg_wrap(body, "gpu")
+    return svg_icon(body, "gpu chip")
 
 
 def icon_week_advance() -> str:
     body = (
-        '  <polygon points="20,32 44,32 36,22 44,32 36,42" fill="#4088D9"/>'
-        '  <rect x="14" y="26" width="8" height="12" fill="#F4F0E8" opacity="0.4"/>'
+        f'  <polygon points="22,20 46,32 22,44" fill="{C_BLUE}" stroke="{C_OUTLINE}" stroke-width="3" '
+        f'stroke-linejoin="round"/>'
+        f'  <polygon points="22,24 38,32 22,40" fill="{C_PAPER}" opacity="0.45"/>'
+        f'  <rect x="12" y="22" width="6" height="20" rx="1" fill="{C_TRIM}" stroke="{C_OUTLINE}" stroke-width="1.5"/>'
     )
-    return svg_wrap(body, "advance week", "#1A1D24")
+    return svg_icon(body, "play ff advance")
 
 
 def panel_build_bg() -> str:
-    return svg_wrap(
-        '  <rect x="4" y="4" width="56" height="56" rx="8" fill="#2A2218" stroke="#A85828" stroke-width="2"/>',
-        "build panel",
-        "#14171D",
+    body = (
+        f'  <rect x="10" y="10" width="44" height="44" rx="8" fill="#2A2218" stroke="{C_ORANGE}" stroke-width="3"/>'
+        f'  <rect x="14" y="14" width="36" height="10" rx="3" fill="{C_TRIM}"/>'
+        f'  <rect x="16" y="26" width="32" height="24" rx="5" fill="#1E1810" stroke="{C_BEIGE}" stroke-width="2"/>'
     )
+    return svg_icon(body, "build nine slice")
 
 
 def panel_hire_bg() -> str:
-    return svg_wrap(
-        '  <rect x="4" y="4" width="56" height="56" rx="8" fill="#1E2420" stroke="#66BF73" stroke-width="2"/>',
-        "hire panel",
-        "#14171D",
+    body = (
+        f'  <rect x="10" y="10" width="44" height="44" rx="8" fill="#142018" stroke="{C_GREEN}" stroke-width="3"/>'
+        f'  <rect x="14" y="14" width="36" height="10" rx="3" fill="{C_GREEN}"/>'
+        f'  <rect x="16" y="26" width="32" height="24" rx="5" fill="#101814" stroke="#6AD080" stroke-width="2"/>'
     )
+    return svg_icon(body, "hire nine slice")
 
 
 def panel_train_bg() -> str:
-    return svg_wrap(
-        '  <rect x="4" y="4" width="56" height="56" rx="8" fill="#1A1824" stroke="#8C66F2" stroke-width="2"/>',
-        "train panel",
-        "#14171D",
+    body = (
+        f'  <rect x="10" y="10" width="44" height="44" rx="8" fill="#181424" stroke="{C_PURPLE}" stroke-width="3"/>'
+        f'  <rect x="14" y="14" width="36" height="10" rx="3" fill="{C_PURPLE}"/>'
+        f'  <rect x="16" y="26" width="32" height="24" rx="5" fill="#12101C" stroke="#A888F8" stroke-width="2"/>'
     )
+    return svg_icon(body, "train nine slice")
 
 
 def hud_topbar_beige() -> str:
     return (
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 48" role="img" aria-label="hud bar">\n'
-        f'  <rect width="256" height="48" fill="#14171D" opacity="0.92"/>\n'
-        f'  <rect x="0" y="44" width="256" height="4" fill="#A85828"/>\n'
-        f"</svg>\n"
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 48" role="img" aria-label="hud bar">\n'
+        f'  <rect x="12" y="6" width="232" height="36" rx="4" fill="#14171D" stroke="{C_BEIGE}" stroke-width="3"/>\n'
+        f'  <rect x="12" y="6" width="232" height="8" rx="4" fill="{C_TRIM}"/>\n'
+        f'  <rect x="18" y="18" width="220" height="20" fill="#1E1A14" stroke="{C_ORANGE}" stroke-width="2"/>\n'
+        "</svg>\n"
     )
 
 
@@ -137,6 +164,10 @@ BUILDERS: dict[str, callable] = {
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--packet34", action="store_true", help="Packet34 ortho transparent glyphs")
+    args = ap.parse_args()
+    _ = args.packet34
     OUT.mkdir(parents=True, exist_ok=True)
     entries = []
     for asset_id, fn in BUILDERS.items():
@@ -163,7 +194,7 @@ def main() -> None:
         json.dumps(
             {
                 "generator": "tools/art/generate_early_hud_icons.py",
-                "fidelity": "packet-3-4",
+                "fidelity": "packet34-ortho-glyphs",
                 "assets": entries,
             },
             indent=2,

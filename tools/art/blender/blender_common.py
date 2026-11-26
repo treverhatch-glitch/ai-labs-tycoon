@@ -261,6 +261,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
+    sub_shape_count = len(mesh_obs)
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
     parts = list(mesh_obs)
@@ -304,6 +305,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         "license": license_note,
         "vertexCount": verts,
         "triangleCount": tris,
+        "subShapeCount": sub_shape_count,
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }

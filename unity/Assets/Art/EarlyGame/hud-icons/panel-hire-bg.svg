@@ -1,4 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="hire panel">
-  <rect width="64" height="64" rx="6" fill="#14171D"/>
-  <rect x="4" y="4" width="56" height="56" rx="8" fill="#1E2420" stroke="#66BF73" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="hire nine slice">
+  <rect x="10" y="10" width="44" height="44" rx="8" fill="#142018" stroke="#3CB86A" stroke-width="3"/>  <rect x="14" y="14" width="36" height="10" rx="3" fill="#3CB86A"/>  <rect x="16" y="26" width="32" height="24" rx="5" fill="#101814" stroke="#6AD080" stroke-width="2"/>
 </svg>

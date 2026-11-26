@@ -44,6 +44,7 @@ def collect(kit_dir: Path) -> list[dict]:
         for key in (
             "vertexCount",
             "triangleCount",
+            "subShapeCount",
             "meshIslands",
             "grounded",
             "blenderVersion",

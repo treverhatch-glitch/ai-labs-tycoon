@@ -1,10 +1,5 @@
 {
-  "camera_dist": 7.542472332656508,
-  "bbox_radius": 1.4142135623730951,
-  "framing_margin": 1.28,
-  "lens_mm": 50.0,
-  "azimuth_deg": 45.0,
-  "elevation_deg": 30.0,
-  "up_axis": "Y",
-  "mid_grey": true
+  "orthographic": true,
+  "flat_swatch": true,
+  "tiled_proof": "tex-garage-trim-orange.tile2x2.png"
 }

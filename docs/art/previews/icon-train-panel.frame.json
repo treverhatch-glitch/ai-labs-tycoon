@@ -1,10 +1,10 @@
 {
-  "camera_dist": 1.5680282136643453,
-  "bbox_radius": 0.30348933167697006,
-  "framing_margin": 1.24,
-  "lens_mm": 50.0,
-  "azimuth_deg": 45.0,
-  "elevation_deg": 30.0,
-  "up_axis": "Y",
-  "mid_grey": true
+  "orthographic": true,
+  "transparent_bg": true,
+  "pixel_size": [
+    512,
+    512
+  ],
+  "lane": "hud-sprite-2d",
+  "asset_id": "icon-train-panel"
 }

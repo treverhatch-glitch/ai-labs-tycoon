@@ -129,6 +129,10 @@ def _mid_grey_preview() -> bool:
     return os.environ.get("EARLY_PREVIEW_MID_GREY", "").strip().lower() in ("1", "true", "yes")
 
 
+def _contact_shadow_only() -> bool:
+    return os.environ.get("EARLY_PREVIEW_CONTACT_SHADOW", "").strip().lower() in ("1", "true", "yes")
+
+
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     center = (mins + maxs) * 0.5
     footprint = max(maxs.x - mins.x, maxs.z - mins.z, 0.5)
@@ -327,7 +331,30 @@ def render_preview_studio(
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     axis = (up_axis or infer_up_axis(mins, maxs)).upper()
-    if not mid_grey:
+    if _contact_shadow_only():
+        center = (mins + maxs) * 0.5
+        span = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)
+        if axis == "Y":
+            bpy.ops.mesh.primitive_plane_add(
+                size=span * 0.55,
+                location=(center.x, mins.y - 0.001, center.z),
+                rotation=(math.pi / 2, 0, 0),
+            )
+        else:
+            bpy.ops.mesh.primitive_plane_add(
+                size=span * 0.55,
+                location=(center.x, center.y, mins.z - 0.001),
+            )
+        floor = bpy.context.active_object
+        floor.name = "PreviewShadowFloor"
+        mat = bpy.data.materials.new("ContactShadow")
+        mat.use_nodes = True
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if bsdf:
+            bsdf.inputs["Base Color"].default_value = (0.12, 0.12, 0.13, 1.0)
+            bsdf.inputs["Roughness"].default_value = 0.95
+        floor.data.materials.append(mat)
+    elif not mid_grey:
         if axis == "Y":
             add_shadow_floor_y(mins, maxs)
         else:
@@ -352,6 +379,7 @@ def render_preview_studio(
                 "elevation_deg": DEFAULT_ELEVATION_DEG,
                 "up_axis": axis,
                 "mid_grey": mid_grey,
+                "contact_shadow": _contact_shadow_only(),
             },
             indent=2,
         )

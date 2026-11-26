@@ -80,15 +80,31 @@ for entry in manifest["assets"]:
     bpy.ops.mesh.remove_doubles(threshold=0.0005)
     bpy.ops.object.mode_set(mode="OBJECT")
     islands = mesh_island_count(ob.data)
-    min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
+    corners = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+    min_y = min(c.y for c in corners)
+    xs = [c.x for c in corners]
+    ys = [c.y for c in corners]
+    zs = [c.z for c in corners]
+    height = max(ys) - min(ys)
+    depth = max(max(xs) - min(xs), max(zs) - min(zs), 1e-6)
+    tris = int(entry.get("triangleCount", 0))
+    shapes = int(entry.get("subShapeCount", 1))
+    parts_ok = tris >= 300 or shapes >= 3
+    upright_ok = height > depth * 1.02
     if islands > 1:
         print(f"FAIL {asset_id} islands={islands}")
         rc = 1
     elif min_y > 0.012:
         print(f"FAIL {asset_id} min_y={min_y:.4f}")
         rc = 1
+    elif not upright_ok:
+        print(f"FAIL {asset_id} not_upright height={height:.3f} depth={depth:.3f}")
+        rc = 1
+    elif not parts_ok:
+        print(f"FAIL {asset_id} tris={tris} shapes={shapes} (need 300+ tris or 3+ shapes)")
+        rc = 1
     else:
-        print(f"OK {asset_id} islands=1 min_y={min_y:.4f}")
+        print(f"OK {asset_id} islands=1 min_y={min_y:.4f} upright tris={tris}")
 sys.exit(rc)
 """
 
