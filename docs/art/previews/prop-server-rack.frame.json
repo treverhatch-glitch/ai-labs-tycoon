@@ -1,12 +1,14 @@
 {
   "assetId": "prop-server-rack",
   "preview": "docs/art/previews/prop-server-rack.png",
-  "glb_sha256": "5773d2aa4be002d07c4386d3ac030292383a58bc84c94a43042781c29ef62607",
+  "glb_sha256": "ef9de9b3a564648a601e8ee407804e2c71381b7e59a172b71ea07642ca1611a9",
   "resolution": 1024,
   "quality": {
-    "stddev": 94.40356793132791,
-    "coverage": 0.27453136444091797,
-    "mean_lum": 52.66381376784479,
-    "mean_sat": 0.17868734549188137
+    "stddev": 23.10626143377316,
+    "coverage": 1.0,
+    "mean_lum": 92.446425872752,
+    "mean_sat": 0.21267738771494696,
+    "border_touch": 0.0,
+    "silhouette_frac": 0.67578125
   }
 }

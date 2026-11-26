@@ -68,21 +68,21 @@ def merge(*parts: Mesh) -> Mesh:
 
 
 def desk() -> Mesh:
-    """~1.2 m desk; legs grounded, peripherals on top (chair gap at +x)."""
-    top_y = 0.74
-    top = box(1.15, 0.05, 0.68, oy=top_y + 0.025)
+    """~1.2 m desk: top, four floor-to-top legs, drawer unit, keyboard + monitor on stand."""
+    top_y = 0.72
+    top = box(1.18, 0.04, 0.66, oy=top_y + 0.02)
     leg_h = top_y
     legs = merge()
-    for ox, oz in ((-0.5, -0.28), (0.5, -0.28), (-0.5, 0.28), (0.5, 0.28)):
-        legs = merge(legs, box(0.07, leg_h, 0.07, ox, leg_h * 0.5, oz))
-    desk_surf = top_y + 0.05
-    keyboard = box(0.36, 0.025, 0.13, -0.18, desk_surf + 0.012, 0.12)
-    pad = box(0.14, 0.008, 0.16, 0.32, desk_surf + 0.004, 0.14)
-    stand = box(0.09, 0.16, 0.07, 0.22, desk_surf + 0.08, -0.12)
-    monitor = box(0.4, 0.24, 0.032, 0.22, desk_surf + 0.16 + 0.12, -0.12)
-    bezel = box(0.42, 0.04, 0.01, 0.22, desk_surf + 0.16 + 0.02, -0.135)
-    grommet = box(0.05, 0.02, 0.05, -0.42, desk_surf + 0.01, 0.2)
-    return merge(top, legs, keyboard, pad, stand, monitor, bezel, grommet)
+    for ox, oz in ((-0.52, -0.27), (0.52, -0.27), (-0.52, 0.27), (0.52, 0.27)):
+        legs = merge(legs, box(0.065, leg_h, 0.065, ox, leg_h * 0.5, oz))
+    drawer = box(0.38, 0.26, 0.42, 0.36, 0.15, 0.0)
+    surf = top_y + 0.04
+    keyboard = box(0.34, 0.018, 0.11, -0.15, surf + 0.009, 0.1)
+    stand_base = box(0.12, 0.012, 0.09, 0.18, surf + 0.006, -0.08)
+    stand_neck = box(0.04, 0.11, 0.035, 0.18, surf + 0.067, -0.08)
+    monitor = box(0.36, 0.21, 0.022, 0.18, surf + 0.11 + 0.105, -0.08)
+    screen = box(0.32, 0.17, 0.008, 0.18, surf + 0.11 + 0.105, -0.095)
+    return merge(top, legs, drawer, keyboard, stand_base, stand_neck, monitor, screen)
 
 
 def chair() -> Mesh:
@@ -95,23 +95,29 @@ def chair() -> Mesh:
 
 
 def server_rack() -> Mesh:
-    """~0.6×1.8 m rack with rails, blades, vents, status LEDs."""
-    h, d = 1.8, 0.78
-    body = box(0.54, h - 0.12, d - 0.12, oy=h / 2)
-    rail_l = box(0.035, h, 0.055, -0.285, h / 2, d / 2 - 0.05)
-    rail_r = box(0.035, h, 0.055, 0.285, h / 2, d / 2 - 0.05)
-    cap_t = box(0.62, 0.04, d, oy=h - 0.02)
-    cap_b = box(0.62, 0.04, d, oy=0.02)
+    """42U (~2 m) rack: frame, feet, stacked blades, vents, small status LEDs."""
+    h, w, d = 2.0, 0.6, 0.85
+    feet = merge()
+    for ox, oz in ((-0.26, -0.36), (0.26, -0.36), (-0.26, 0.36), (0.26, 0.36)):
+        feet = merge(feet, box(0.08, 0.06, 0.08, ox, 0.03, oz))
+    rail_l = box(0.03, h - 0.06, 0.04, -w / 2 + 0.025, h / 2, d / 2 - 0.04)
+    rail_r = box(0.03, h - 0.06, 0.04, w / 2 - 0.025, h / 2, d / 2 - 0.04)
+    frame_t = box(w, 0.035, d, oy=h - 0.025)
+    frame_b = box(w, 0.035, d, oy=0.05)
+    back = box(w - 0.12, h - 0.14, 0.025, oy=h / 2, oz=-d / 2 + 0.02)
     blades = merge()
-    for i in range(5):
-        y = 0.38 + i * 0.26
-        blades = merge(blades, box(0.46, 0.2, 0.035, oy=y, oz=d / 2 - 0.08))
-        blades = merge(blades, box(0.1, 0.035, 0.02, 0.2, y + 0.05, d / 2 - 0.05))
-        blades = merge(blades, box(0.04, 0.035, 0.02, -0.18, y + 0.05, d / 2 - 0.05))
+    for i in range(4):
+        y = 0.42 + i * 0.38
+        blades = merge(blades, box(0.44, 0.32, 0.03, oy=y, oz=d / 2 - 0.075))
+        blades = merge(
+            blades,
+            box(0.015, 0.025, 0.012, -0.16, y + 0.1, d / 2 - 0.055),
+            box(0.015, 0.025, 0.012, 0.16, y + 0.1, d / 2 - 0.055),
+        )
     vents = merge()
-    for i in range(7):
-        vents = merge(vents, box(0.035, 0.015, 0.025, -0.21 + i * 0.065, 1.52, d / 2 - 0.1))
-    return merge(body, rail_l, rail_r, cap_t, cap_b, blades, vents)
+    for i in range(6):
+        vents = merge(vents, box(0.05, 0.012, 0.02, -0.2 + i * 0.08, 1.65, d / 2 - 0.09))
+    return merge(feet, rail_l, rail_r, frame_t, frame_b, back, blades, vents)
 
 
 def potted_plant() -> Mesh:
@@ -123,21 +129,24 @@ def potted_plant() -> Mesh:
 
 
 def whiteboard() -> Mesh:
-    """Wall board on grounded posts; tray + dry-erase marks."""
-    post_l = box(0.055, 1.55, 0.055, -0.62, 0.775, 0.0)
-    post_r = box(0.055, 1.55, 0.055, 0.62, 0.775, 0.0)
-    board = box(1.15, 0.72, 0.035, oy=1.42, oz=0.02)
+    """White surface, aluminium frame, two legs + feet, tray, coloured strokes."""
+    board_y = 1.35
+    board = box(1.1, 0.68, 0.028, oy=board_y, oz=0.025)
     frame = merge(
-        box(1.24, 0.045, 0.055, oy=1.78),
-        box(1.24, 0.045, 0.055, oy=1.06),
-        box(0.045, 0.78, 0.055, -0.6, 1.42),
-        box(0.045, 0.78, 0.055, 0.6, 1.42),
+        box(1.16, 0.022, 0.038, oy=board_y + 0.36),
+        box(1.16, 0.022, 0.038, oy=board_y - 0.36),
+        box(0.022, 0.72, 0.038, -0.58, board_y),
+        box(0.022, 0.72, 0.038, 0.58, board_y),
     )
-    tray = box(0.55, 0.035, 0.09, oy=1.02, oz=0.05)
-    markers = merge()
-    for i, (dx, dy) in enumerate(((-0.25, 1.35), (0.05, 1.5), (0.28, 1.28))):
-        markers = merge(markers, box(0.18, 0.006, 0.012, dx, dy, 0.04))
-    return merge(post_l, post_r, board, frame, tray, markers)
+    post_l = box(0.045, board_y - 0.05, 0.045, -0.52, (board_y - 0.05) / 2, 0.0)
+    post_r = box(0.045, board_y - 0.05, 0.045, 0.52, (board_y - 0.05) / 2, 0.0)
+    foot_l = box(0.14, 0.025, 0.14, -0.52, 0.012, 0.06)
+    foot_r = box(0.14, 0.025, 0.14, 0.52, 0.012, 0.06)
+    tray = box(0.48, 0.032, 0.08, oy=board_y - 0.38, oz=0.055)
+    strokes = merge()
+    for dx, col_y, w in ((-0.22, 1.42, 0.2), (0.08, 1.52, 0.15), (0.25, 1.28, 0.12)):
+        strokes = merge(strokes, box(w, 0.005, 0.01, dx, col_y, 0.042))
+    return merge(board, frame, post_l, post_r, foot_l, foot_r, tray, strokes)
 
 
 def building_module() -> Mesh:
@@ -172,19 +181,14 @@ def world_map_pin() -> Mesh:
 
 
 def rival_badge() -> Mesh:
-    """Plaque with rim, emblem cross, and center gem (~0.55 m)."""
-    base = box(0.52, 0.07, 0.52, oy=0.035)
-    rim = merge(
-        box(0.5, 0.035, 0.04, oy=0.075, oz=0.21),
-        box(0.5, 0.035, 0.04, oy=0.075, oz=-0.21),
-        box(0.04, 0.035, 0.46, -0.23, 0.075),
-        box(0.04, 0.035, 0.46, 0.23, 0.075),
-    )
-    bar_v = box(0.075, 0.28, 0.045, oy=0.2)
-    bar_h = box(0.3, 0.075, 0.045, oy=0.2)
-    gem = box(0.12, 0.12, 0.04, oy=0.2)
-    notch = box(0.08, 0.04, 0.06, oy=0.14)
-    return merge(base, rim, bar_v, bar_h, gem, notch)
+    """Round badge (~0.5 m): rim, shield face, simple emblem, accent — face-on friendly."""
+    base = box(0.5, 0.5, 0.045, oy=0.25)
+    rim = box(0.54, 0.54, 0.028, oy=0.25)
+    face = box(0.42, 0.42, 0.022, oy=0.25)
+    emblem_v = box(0.07, 0.26, 0.024, oy=0.25)
+    emblem_h = box(0.26, 0.07, 0.024, oy=0.25)
+    accent = box(0.14, 0.14, 0.026, oy=0.36)
+    return merge(base, rim, face, emblem_v, emblem_h, accent)
 
 
 def gpu_blade() -> Mesh:

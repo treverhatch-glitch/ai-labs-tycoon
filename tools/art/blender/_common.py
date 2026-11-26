@@ -322,25 +322,35 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     fill.data.energy = 180
     fill.data.size = span
 
+    obj_h = max(maxs.y - mins.y, 0.01)
+    obj_w = max(maxs.x - mins.x, maxs.z - mins.z, 0.01)
+    target_fill = 0.50
+    pad = 1.0
+    ortho = max(obj_h / target_fill, (obj_w * 1.18) / target_fill) * pad
+
     cam_data = bpy.data.cameras.new("PreviewCam")
     cam = bpy.data.objects.new("PreviewCam", cam_data)
     bpy.context.collection.objects.link(cam)
-    vertical = max(maxs.y - mins.y, span * 0.4)
-    dist = vertical / math.tan(math.radians(20)) * 0.72
-    if span < 0.65:
-        dist *= 0.42
-    dist = max(dist, span * 1.2)
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = ortho
+
+    dist = span * 4.0
     if asset_id == "ui-rival-badge":
-        dist *= 0.38
-        key.data.energy = 4.2
-    elev = math.radians(30)
-    az = math.radians(45)
-    cam.location = center + Vector(
-        (dist * math.cos(elev) * math.cos(az), dist * math.cos(elev) * math.sin(az), dist * math.sin(elev) + span * 0.25)
-    )
+        elev = math.radians(6)
+        az = math.radians(0)
+        cam.location = center + Vector((0.0, -dist, obj_h * 0.05))
+    else:
+        elev = math.radians(30)
+        az = math.radians(45)
+        cam.location = center + Vector(
+            (
+                dist * math.cos(elev) * math.cos(az),
+                dist * math.cos(elev) * math.sin(az),
+                dist * math.sin(elev) * 0.35 + obj_h * 0.1,
+            )
+        )
     direction = center - cam.location
     cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
-    cam.data.lens = 52
     bpy.context.scene.camera = cam
 
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
@@ -355,8 +365,9 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.resolution_y = 1024
     bpy.context.scene.render.filepath = str(preview)
     bpy.context.scene.render.image_settings.file_format = "PNG"
+    bpy.context.scene.render.image_settings.color_mode = "RGB"
     if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.28
+        bpy.context.scene.view_settings.exposure = 0.32
         bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
 
@@ -384,33 +395,37 @@ def _part_palette(asset_id: str, base: tuple[float, float, float]) -> list[tuple
     r, g, b = base
     accents: dict[str, list[tuple[float, float, float]]] = {
         "prop-desk": [
-            (r, g, b),
-            (r * 0.85, g * 0.85, b * 0.9),
-            (0.2, 0.22, 0.25),
-            (0.88, 0.9, 0.93),
-            (0.15, 0.17, 0.2),
-            (0.35, 0.38, 0.42),
+            (0.62, 0.55, 0.48),
+            (0.52, 0.46, 0.4),
+            (0.28, 0.3, 0.34),
+            (0.12, 0.13, 0.15),
+            (0.85, 0.87, 0.9),
+            (0.22, 0.24, 0.26),
+            (0.15, 0.35, 0.55),
         ],
         "prop-server-rack": [
-            (0.32, 0.35, 0.4),
-            (0.45, 0.48, 0.52),
-            (0.25, 0.27, 0.3),
-            (0.12, 0.85, 0.35),
-            (0.9, 0.25, 0.2),
+            (0.22, 0.24, 0.28),
+            (0.34, 0.36, 0.4),
+            (0.42, 0.44, 0.48),
+            (0.18, 0.2, 0.22),
+            (0.12, 0.78, 0.38),
+            (0.18, 0.42, 0.88),
         ],
         "prop-whiteboard": [
-            (0.94, 0.95, 0.96),
-            (0.55, 0.5, 0.48),
-            (0.4, 0.42, 0.45),
-            (0.2, 0.35, 0.75),
-            (0.75, 0.2, 0.2),
+            (0.97, 0.98, 0.99),
+            (0.72, 0.74, 0.76),
+            (0.58, 0.6, 0.62),
+            (0.2, 0.45, 0.85),
+            (0.85, 0.2, 0.22),
+            (0.25, 0.75, 0.35),
         ],
         "ui-rival-badge": [
-            (0.18, 0.2, 0.24),
-            (0.85, 0.25, 0.3),
-            (0.92, 0.75, 0.2),
-            (0.95, 0.95, 0.97),
-            (0.35, 0.4, 0.85),
+            (0.22, 0.24, 0.28),
+            (0.55, 0.58, 0.62),
+            (0.35, 0.38, 0.42),
+            (0.88, 0.22, 0.3),
+            (0.92, 0.85, 0.35),
+            (0.15, 0.45, 0.82),
         ],
     }
     return accents.get(asset_id, [base, (r * 1.1, g, b * 0.95), (r * 0.75, g * 0.75, b * 0.8)])
@@ -434,10 +449,11 @@ def bake_asset(asset_id: str, palette: tuple[float, float, float] | None = None)
     obj.select_set(True)
     bpy.ops.object.modifier_apply(modifier=mod.name)
     parts = _split_loose_parts(obj)
-    emissive_led = asset_id == "prop-server-rack"
     for i, p in enumerate(parts):
         c = part_colors[i % len(part_colors)]
-        is_led = emissive_led and i % 5 == 3
+        is_led = asset_id == "prop-server-rack" and (i % 9) in (7, 8)
+        if is_led:
+            c = (0.12, 0.82, 0.38) if (i % 2) == 0 else (0.15, 0.45, 0.92)
         mat = _material_for_part(f"M_{asset_id}_{i}", c, emissive=is_led)
         if p.data.materials:
             p.data.materials[0] = mat
