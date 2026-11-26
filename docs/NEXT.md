@@ -485,6 +485,14 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 4. The model mascots and their three states; the glow.
 5. The land script and its entry in `studio/game.json`, so the harness can land Unity branches.
 
+## Merge train (dependency order)
+
+Agents land **one gate at a time**; **`rules` must be success on the exact PR head** before `commit-tree` to `main` (~3m between `main` moves; noreply, no `Co-authored-by`, no force-push).
+
+1. **Graphics gate** — PR **#83** (`cursor/graphics-main-gate-39c0`, batches 289–326 onto `main` @ schema 169). **In flight** until rules green; then merge and close superseded graphics PRs with comment.
+2. **Later rules stack** — `cursor/later-rules-stack2-main-39c0` after graphics; fold onto landed `main`, rules on exact head, merge.
+3. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
+
 ## Studio and CI
 
 - Create the studio on the PC and copy `studio/game.json` into it (SETUP-PC.md).

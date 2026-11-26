@@ -2406,6 +2406,8 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q501. Batch twenty-three news, chat and combos. DECIDED: three headlines, three chat lines (421/374); `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests`.
 
+### Q501a. Era N–P hardening tests after batch 23. DECIDED: intentional drift on `main` at `0bbbae03` (batch 23 / Q501 → 421/374); landed `6fbea2b2`; gate repins tip golden `9f9b1a4a…`, batch-18 reverts `90a01e4f…` / `dc1d5b5b…`, and batch-19–23 helper digests for schemas 156–169 (news/chat revert chain through Q501); graphics 289–326 have no `Rules/` delta vs merge base.
+
 ### Q502. Era relief on margin satisfy payment? *Planned (schema 170):* `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved`.
 
 ### Q503. Extra slack on scenario goals deadline in late era? *Planned (schema 171):* `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked`.
