@@ -655,7 +655,7 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
     hair = (0.36, 0.22, 0.14, 1.0)
     hoodie_navy = (0.08, 0.10, 0.32, 1.0)
     hoodie_red = (0.62, 0.14, 0.12, 1.0)
-    denim = (0.08, 0.24, 0.62, 1.0)
+    denim = (0.04, 0.20, 0.72, 1.0)
     sneaker = (0.92, 0.94, 0.96, 1.0)
     eye = (0.12, 0.10, 0.14, 1.0)
     for ob in mesh_obs:
@@ -668,15 +668,13 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
             assign_solid(ob, eye, 0.35)
         elif base == "Eyebrows":
             assign_solid(ob, (0.22, 0.14, 0.10, 1.0), 0.45)
-        elif base == "Neck":
-            assign_solid(ob, hoodie_red, 0.52)
-        elif base == "Hood":
-            assign_solid(ob, hoodie_navy, 0.55)
-        elif base.startswith("Hoodie") or base in ("Torso", "Neck"):
-            assign_solid(ob, hoodie_red, 0.54)
-        elif base.startswith("UpperArm_") or base.startswith("LowerArm_") or base.startswith("Arm_"):
-            assign_solid(ob, hoodie_navy, 0.54)
-        elif base.startswith("Jeans") or base in ("Hips", "Leg_-1", "Leg_1"):
+        elif base == "Hoodie":
+            assign_solid(ob, hoodie_navy, 0.52)
+        elif base == "Jeans":
+            assign_solid(ob, denim, 0.56)
+        elif base.startswith("Hoodie") or base == "Hood":
+            assign_solid(ob, hoodie_navy, 0.52)
+        elif base.startswith("Jeans"):
             assign_solid(ob, denim, 0.56)
         elif base.startswith("Shoe_"):
             assign_solid(ob, sneaker, 0.38)

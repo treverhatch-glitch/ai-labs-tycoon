@@ -157,6 +157,7 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
         ("Hoodie", "Torso"),
+        ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
         ("HoodieSleeve_-1", "Torso"),
         ("HoodieSleeve_1", "Torso"),
@@ -279,6 +280,7 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
         ("Hoodie", "Torso"),
+        ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
         ("HoodieSleeve_-1", "Torso"),
         ("HoodieSleeve_1", "Torso"),
@@ -371,6 +373,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             "BadgeShield",
         ):
             anchor = "Torso"
+        if tag in ("Jeans", "JeansHips"):
+            anchor = "Hips"
         if tag.startswith("JeansLeg_"):
             leg = tag.replace("JeansLeg_", "Leg_")
             if leg in names:

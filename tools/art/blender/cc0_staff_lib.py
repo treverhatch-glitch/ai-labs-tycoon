@@ -92,6 +92,7 @@ def _clear_scene() -> None:
 
 
 def _pose_idle_arms(arm: bpy.types.Object) -> None:
+    """Relaxed symmetric A-pose — arms down, not hip-hands."""
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode="POSE")
     for side, sign in (("l", 1.0), ("r", -1.0)):
@@ -99,10 +100,10 @@ def _pose_idle_arms(arm: bpy.types.Object) -> None:
         la = arm.pose.bones.get(f"lowerarm_{side}")
         if ua:
             ua.rotation_mode = "ZYX"
-            ua.rotation_euler = (0.0, sign * math.radians(8), sign * math.radians(-78))
+            ua.rotation_euler = (0.0, sign * math.radians(6), sign * math.radians(-82))
         if la:
             la.rotation_mode = "ZYX"
-            la.rotation_euler = (0.0, 0.0, sign * math.radians(-18))
+            la.rotation_euler = (0.0, 0.0, sign * math.radians(-14))
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
@@ -237,7 +238,12 @@ def _split_eyes(eyes: bpy.types.Object) -> list[bpy.types.Object]:
         me.update()
         bm.free()
         if len(ob.data.vertices) >= 4:
-            bc.assign_solid(ob, (0.12, 0.10, 0.14, 1.0), 0.35)
+            ob.scale = (1.38, 1.30, 1.22)
+            bpy.context.view_layer.objects.active = ob
+            ob.select_set(True)
+            bpy.ops.object.transform_apply(scale=True)
+            ob.select_set(False)
+            bc.assign_solid(ob, (0.06, 0.05, 0.08, 1.0), 0.28)
             out.append(ob)
         else:
             bpy.data.objects.remove(ob, do_unlink=True)
@@ -353,30 +359,27 @@ def _reseal_skin_chain_gaps() -> None:
         bpy.context.view_layer.update()
 
 
-def _apply_founder_hospital_proportions() -> None:
-    """TP Hospital: larger head, chunkier limbs, readable hands."""
-    _apply_scale_to_parts(
-        {
-            "Head": (1.20, 1.14, 1.18),
-            "Neck": (1.10, 1.08, 1.08),
-            "Hand_-1": (1.16, 1.14, 1.12),
-            "Hand_1": (1.16, 1.14, 1.12),
-            "UpperArm_-1": (1.10, 1.06, 1.10),
-            "UpperArm_1": (1.10, 1.06, 1.10),
-            "LowerArm_-1": (1.08, 1.06, 1.08),
-            "LowerArm_1": (1.08, 1.06, 1.08),
-            "Foot_-1": (1.12, 1.08, 1.14),
-            "Foot_1": (1.12, 1.08, 1.14),
-            "Torso": (1.06, 1.04, 1.05),
-            "Hips": (1.05, 1.04, 1.05),
-        }
-    )
+def _apply_founder_chibi_proportions() -> None:
+    """Ultimate Modular chibi: head 1.15× only — no limb distortion."""
+    _apply_scale_to_parts({"Head": (1.15, 1.15, 1.15)})
     _reseal_skin_chain_gaps()
+
+
+def _reset_head_neck_pitch() -> None:
+    for tag in ("Head", "Neck"):
+        ob = bpy.data.objects.get(tag)
+        if not ob:
+            continue
+        ob.rotation_euler = (0.0, 0.0, 0.0)
+        bpy.context.view_layer.objects.active = ob
+        ob.select_set(True)
+        bpy.ops.object.transform_apply(rotation=True)
+        ob.select_set(False)
 
 
 FOUNDER_HOODIE_NAVY = (0.08, 0.10, 0.32, 1.0)
 FOUNDER_HOODIE_RED = (0.62, 0.14, 0.12, 1.0)
-FOUNDER_JEANS = (0.08, 0.24, 0.62, 1.0)
+FOUNDER_JEANS = (0.04, 0.20, 0.72, 1.0)
 FOUNDER_HAIR = (0.36, 0.22, 0.14, 1.0)
 
 
@@ -513,6 +516,60 @@ def _add_shoes(span: float) -> list[bpy.types.Object]:
     return shoes
 
 
+def _add_founder_mouth(head: bpy.types.Object, span: float) -> None:
+    import staff_connectivity as sc
+
+    lo, hi = sc._world_bbox(head)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    mouth = bc.add_cube(
+        "Mouth",
+        (span * 0.052, span * 0.016, span * 0.011),
+        (center.x, center.y + ext.y * 0.08, center.z - ext.z * 0.10),
+    )
+    bc.assign_solid(mouth, (0.52, 0.30, 0.26, 1.0), 0.52)
+
+
+def _snap_modular_cloth_to_body() -> None:
+    """Quaternius cloth imports offset from skin after height scale — re-center on torso/hips."""
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    hips = bpy.data.objects.get("Hips")
+    for cloth_key, anchor_key in (("ClothTop", "Torso"), ("ClothBottom", "Hips"), ("Hoodie", "Torso"), ("Jeans", "Hips")):
+        cloth = bpy.data.objects.get(cloth_key)
+        anchor = bpy.data.objects.get(anchor_key)
+        if not cloth or not anchor:
+            continue
+        aa, ab = sc._world_bbox(anchor)
+        ba, bb = sc._world_bbox(cloth)
+        cloth.location += ((aa + ab) - (ba + bb)) * 0.5
+    bpy.context.view_layer.update()
+
+
+def _assign_founder_modular_cloth() -> list[bpy.types.Object]:
+    """Keep Quaternius ClothTop/Bottom as single hoodie + jeans meshes."""
+    built: list[bpy.types.Object] = []
+    top = bpy.data.objects.get("ClothTop")
+    bot = bpy.data.objects.get("ClothBottom")
+    if top:
+        _rename_ob(top, "Hoodie")
+        bc.assign_solid(top, FOUNDER_HOODIE_NAVY, 0.52)
+        bc.smooth_shade(top)
+        built.append(top)
+    if bot:
+        _rename_ob(bot, "Jeans")
+        bot.scale = (1.14, 1.08, 1.14)
+        bpy.context.view_layer.objects.active = bot
+        bot.select_set(True)
+        bpy.ops.object.transform_apply(scale=True)
+        bot.select_set(False)
+        bc.assign_solid(bot, FOUNDER_JEANS, 0.56)
+        bc.smooth_shade(bot)
+        built.append(bot)
+    return built
+
+
 def _style_founder(
     objects: dict[str, bpy.types.Object],
     skin: tuple[float, float, float, float],
@@ -521,25 +578,25 @@ def _style_founder(
     cz: float,
     min_y: float,
 ) -> None:
-    hair = objects.get("Hair_Long")
-    eyebrows = objects.get("Eyebrows")
-    torso = bpy.data.objects.get("Torso")
-    neck = bpy.data.objects.get("Neck")
-    ua_l = bpy.data.objects.get("UpperArm_-1")
-    ua_r = bpy.data.objects.get("UpperArm_1")
-    hips = bpy.data.objects.get("Hips")
-    leg_l = bpy.data.objects.get("Leg_-1")
-    leg_r = bpy.data.objects.get("Leg_1")
+    hair = objects.get("Hair_Long") or bpy.data.objects.get("Hair_Long")
+    eyebrows = objects.get("Eyebrows") or bpy.data.objects.get("Eyebrows")
+    head = bpy.data.objects.get("Head")
     if eyebrows:
         _rename_ob(eyebrows, "Eyebrows")
         bc.assign_solid(eyebrows, (0.14, 0.09, 0.07, 1.0), 0.45)
-    head = bpy.data.objects.get("Head")
-    la_l = bpy.data.objects.get("LowerArm_-1")
-    la_r = bpy.data.objects.get("LowerArm_1")
-    _build_founder_hoodie_jeans(span, torso, neck, head, ua_l, ua_r, la_l, la_r, hips, leg_l, leg_r)
+    for tag, sign in (("-1", -1), ("1", 1)):
+        eye = bpy.data.objects.get(f"Eye_{tag}")
+        if eye:
+            eye.location.x += sign * span * 0.026
+    _assign_founder_modular_cloth()
+    if head:
+        _add_founder_mouth(head, span)
+        bc.smooth_shade(head)
     if hair:
         _rename_ob(hair, "Hair")
-        hair.scale = (1.0, 1.0, 1.05)
+        hair.scale = (0.96, 0.70, 0.94)
+        if head:
+            hair.location.y -= span * 0.028
         bc.assign_solid(hair, FOUNDER_HAIR, 0.48)
     shoes = _add_shoes(span)
     for ob in shoes:
@@ -693,6 +750,14 @@ def _snap_outfits_to_torso() -> None:
     jeans_hips = bpy.data.objects.get("JeansHips")
     if hips and jeans_hips:
         nudge(jeans_hips, hips)
+    jeans = bpy.data.objects.get("Jeans")
+    if hips and jeans:
+        for _ in range(6):
+            nudge(jeans, hips)
+    hoodie = bpy.data.objects.get("Hoodie")
+    if torso and hoodie:
+        for _ in range(6):
+            nudge(hoodie, torso)
     bpy.context.view_layer.update()
 
 
@@ -708,9 +773,11 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
         _split_eyes(eyes)
     _rotate_scene_z_to_y()
     _scale_scene_to_height()
-    _drop_modular_cloth()
-    if role == "founder":
-        _apply_founder_hospital_proportions()
+    if role == "researcher":
+        _drop_modular_cloth()
+    else:
+        _apply_founder_chibi_proportions()
+        _reset_head_neck_pitch()
     parts = _scene_mesh_map()
     torso = parts.get("Torso") or parts.get("Hips")
     if not torso:
@@ -719,17 +786,23 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
     co = [torso.matrix_world @ Vector(c) for c in torso.bound_box]
     cx = sum(v.x for v in co) / len(co)
     cz = sum(v.z for v in co) / len(co)
+    _snap_modular_cloth_to_body()
     styler(parts, skin, span, cx, cz, _min)
+    _snap_modular_cloth_to_body()
     _snap_outfits_to_torso()
     _tighten_skin_to_torso()
     _snap_outfits_to_torso()
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue
+        base = ob.name.split(".")[0]
+        width = 0.002 if base == "Head" else 0.004
         try:
-            bc.bevel_object(ob, width=0.004, segments=1)
+            bc.bevel_object(ob, width=width, segments=1)
         except RuntimeError:
             pass
+        if base in ("Head", "Hoodie", "Jeans"):
+            bc.smooth_shade(ob)
 
 
 _SPINE_SKIP_PREFIXES = (

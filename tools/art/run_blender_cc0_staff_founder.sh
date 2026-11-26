@@ -2,8 +2,8 @@
 # Founder hero only — pause lane (researcher unchanged).
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
-export STAFF_PREVIEW_YAW_DEG=35
-export STAFF_PREVIEW_MARGIN=1.52
+export STAFF_PREVIEW_YAW_DEG=24
+export STAFF_PREVIEW_MARGIN=1.54
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -29,7 +29,10 @@ test -s "docs/art/previews/staff-founder-idle.png" || { echo "FAIL missing found
 python3 tools/art/check_cc0_staff_founder_regression.py
 python3 tools/art/check_cc0_staff_founder_preview_upright.py
 python3 tools/art/check_cc0_staff_founder_preview_silhouette.py
-python3 tools/art/check_cc0_staff_founder_eye_blobs.py
+python3 tools/art/check_cc0_staff_founder_face_read.py
+python3 tools/art/check_cc0_staff_founder_torso_hue.py
+python3 tools/art/check_cc0_staff_founder_arm_symmetry.py
+python3 tools/art/check_cc0_staff_founder_framing_width.py
 python3 tools/art/check_cc0_staff_founder_head_highlight.py
 python3 tools/art/check_cc0_staff_founder_floor_tile.py
 python3 tools/art/check_cc0_staff_founder_preview_orphans.py

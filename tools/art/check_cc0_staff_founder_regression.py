@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression: legacy bake + headstand PNG fixtures must fail upright gates."""
+"""Regression: legacy PNG fixtures must fail new face/torso/arm/framing gates."""
 from __future__ import annotations
 
 import subprocess
@@ -10,20 +10,45 @@ REPO = Path(__file__).resolve().parents[2]
 BLENDER = Path(__import__("os").environ.get("BLENDER_BIN", "blender"))
 BAKE_SCRIPT = REPO / "tools/art/blender/check_cc0_staff_founder_bake_regression_blender.py"
 
-FIXTURES = (
+FIXTURES_HEADSTAND = (
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e3b3c52d.png",
+    REPO / "tools/art/fixtures/staff-founder-idle-headstand-e164f581.png",
+)
+VISUAL_FAIL_FIXTURES = (
+    REPO / "tools/art/fixtures/staff-founder-idle-chibi-68baa4d7.png",
+    REPO / "tools/art/fixtures/staff-founder-idle-jumpsuit-01e11dda.png",
+    REPO / "tools/art/fixtures/staff-founder-idle-cyan-face-fb35ba42.png",
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e164f581.png",
 )
 ARM_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-tpose-c17bca1a.glb"
 ARM_SCRIPT = REPO / "tools/art/blender/check_cc0_staff_founder_arm_pose_blender.py"
-FACE_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-cyan-face-fb35ba42.png"
-JUMPSUIT_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-jumpsuit-01e11dda.png"
 
 sys.path.insert(0, str(REPO / "tools/art"))
 from check_cc0_staff_founder_preview_silhouette import analyze as png_analyze  # noqa: E402
-from check_cc0_staff_founder_eye_blobs import analyze_eye_blobs  # noqa: E402
-from check_cc0_staff_founder_head_highlight import analyze_head_highlight  # noqa: E402
+from check_cc0_staff_founder_face_read import analyze_face_read  # noqa: E402
+from check_cc0_staff_founder_torso_hue import analyze_torso_hue  # noqa: E402
+from check_cc0_staff_founder_arm_symmetry import analyze_arm_symmetry  # noqa: E402
+from check_cc0_staff_founder_framing_width import analyze_framing_width  # noqa: E402
 from check_cc0_staff_founder_face_band import analyze_face_cyan_mask  # noqa: E402
+
+
+def _reject_visual_fixture(png: Path) -> tuple[bool, str]:
+    if not png.is_file():
+        return False, f"missing fixture {png.name}"
+    checks = (
+        analyze_face_read,
+        analyze_torso_hue,
+        analyze_arm_symmetry,
+        analyze_framing_width,
+    )
+    for fn in checks:
+        ok, msg = fn(png)
+        if not ok:
+            return True, msg
+    ok_cyan, msg_cyan = analyze_face_cyan_mask(png)
+    if not ok_cyan:
+        return True, msg_cyan
+    return False, "all new gates passed unexpectedly"
 
 
 def main() -> int:
@@ -39,7 +64,7 @@ def main() -> int:
                 print(line)
     if proc.returncode != 0:
         return 1
-    for png in FIXTURES:
+    for png in FIXTURES_HEADSTAND:
         if not png.is_file():
             print(f"FAIL staff-founder-idle missing fixture {png.name}")
             return 1
@@ -73,27 +98,17 @@ def main() -> int:
         print(f"FAIL staff-founder-idle fixture_arm_unexpected {tail}")
         return 1
     print(f"OK staff-founder-idle fixture_rejected {ARM_FIXTURE.name}: {fail_line}")
-    if not FACE_FIXTURE.is_file():
-        print(f"FAIL staff-founder-idle missing fixture {FACE_FIXTURE.name}")
-        return 1
-    ok_cyan, msg_cyan = analyze_face_cyan_mask(FACE_FIXTURE)
-    if ok_cyan:
-        print(f"FAIL staff-founder-idle fixture_face_passed {FACE_FIXTURE.name}: {msg_cyan}")
-        return 1
-    if "cyan" not in msg_cyan:
-        print(f"FAIL staff-founder-idle fixture_face_unexpected {FACE_FIXTURE.name}: {msg_cyan}")
-        return 1
-    print(f"OK staff-founder-idle fixture_rejected {FACE_FIXTURE.name}: {msg_cyan}")
-    for label, path in (("01e11dda", JUMPSUIT_FIXTURE), ("fb35ba42", FACE_FIXTURE)):
-        if not path.is_file():
-            print(f"FAIL staff-founder-idle missing fixture {path.name}")
+    seen: set[str] = set()
+    for png in VISUAL_FAIL_FIXTURES:
+        key = png.name
+        if key in seen:
+            continue
+        seen.add(key)
+        rejected, msg = _reject_visual_fixture(png)
+        if not rejected:
+            print(f"FAIL staff-founder-idle fixture_passed {key}: {msg}")
             return 1
-        ok_eyes, msg_eyes = analyze_eye_blobs(path)
-        ok_hi, msg_hi = analyze_head_highlight(path)
-        if ok_eyes and ok_hi:
-            print(f"FAIL staff-founder-idle fixture_passed_{label} eyes={msg_eyes} hi={msg_hi}")
-            return 1
-        print(f"OK staff-founder-idle fixture_rejected {path.name}: {msg_eyes}; {msg_hi}")
+        print(f"OK staff-founder-idle fixture_rejected {key}: {msg}")
     return 0
 
 

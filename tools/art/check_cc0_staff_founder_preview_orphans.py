@@ -11,7 +11,7 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
 MIN_MAIN_FRAC = 0.92
-MIN_ORPHAN_PX = 24
+MIN_ORPHAN_PX = 80
 
 
 def _components(mask: Image.Image) -> list[int]:
