@@ -494,7 +494,7 @@ def render_preview_studio(
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     if path.stem == "garage-scene-urp-hero" and hdri_path and hdri_lighting_only:
-        light_mul = 1.25
+        light_mul = 2.05
     elif hdri_path and hdri_lighting_only:
         light_mul = 3.4
     else:

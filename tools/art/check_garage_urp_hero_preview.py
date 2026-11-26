@@ -23,6 +23,7 @@ LUM_MIN = 40
 LUM_MAX = 230
 LUM_OOB_FRAC_MAX = 0.02
 FLAT_DOMINANT_MAX = 0.50
+MIN_SUBJECT_COVERAGE = 0.10
 NOISE_LAPLACIAN_P90 = 95.0
 NOISE_SPECKLE_FRAC_MAX = 0.012
 
@@ -166,7 +167,7 @@ def _is_studio_backdrop(r: int, g: int, b: int) -> bool:
     if spread > 12:
         return False
     m = (r + g + b) // 3
-    return spread <= 6 and 165 <= m <= 180
+    return spread <= 10 and 170 <= m <= 198
 
 
 def _quality_metrics(hero: Path) -> dict[str, float]:
@@ -208,33 +209,38 @@ def _quality_metrics(hero: Path) -> dict[str, float]:
 
     lap_vals.sort()
     p90 = lap_vals[int(len(lap_vals) * 0.9)] if lap_vals else 0
-    dom_bucket: dict[tuple[int, int, int], int] = {}
-    sample_n = 0
-    for y in range(0, h, 8):
+    dom_subject: dict[tuple[int, int, int], int] = {}
+    dom_frame: dict[tuple[int, int, int], int] = {}
+    subject_samples = frame_samples = 0
+    for y in range(0, h, 6):
         row = rows[y]
-        for x in range(0, w, 8):
+        for x in range(0, w, 6):
             i = x * 3
             r, g, b = row[i], row[i + 1], row[i + 2]
+            frame_samples += 1
+            key_f = (r // 20, g // 20, b // 20)
+            dom_frame[key_f] = dom_frame.get(key_f, 0) + 1
             if _is_studio_backdrop(r, g, b):
                 continue
-            sample_n += 1
-            key = (r // 24, g // 24, b // 24)
-            dom_bucket[key] = dom_bucket.get(key, 0) + 1
-    if dom_bucket:
-        counts = sorted(dom_bucket.values(), reverse=True)
-        dominant = counts[0] / max(1, sample_n)
-        runner = (counts[1] / max(1, sample_n)) if len(counts) > 1 else 0.0
-        if runner > 0.12:
-            dominant = min(dominant, 0.49)
+            subject_samples += 1
+            key_s = (r // 32, g // 32, b // 32)
+            dom_subject[key_s] = dom_subject.get(key_s, 0) + 1
+
+    if dom_subject:
+        dominant = max(dom_subject.values()) / max(1, subject_samples)
     else:
-        dominant = 0.0
+        dominant = 1.0
+    frame_flat = max(dom_frame.values()) / max(1, frame_samples) if dom_frame else 1.0
+    subject_coverage = subject_samples / max(1, frame_samples)
 
     return {
         "lum_oob_frac": lum_oob / max(1, total),
         "flat_frac": flat_dom / max(1, total),
-        "noise_speckle_frac": noise_hits / max(1, total),
+        "noise_speckle_frac": noise_hits / max(1, w * h),
         "laplacian_p90": float(p90),
         "dominant_bucket_frac": dominant,
+        "frame_flat_frac": frame_flat,
+        "subject_coverage": subject_coverage,
     }
 
 
@@ -278,19 +284,20 @@ def main() -> int:
         )
     if q["lum_oob_frac"] > LUM_OOB_FRAC_MAX:
         errs.append(f"luminance_oob_frac {q['lum_oob_frac']:.4f} > {LUM_OOB_FRAC_MAX}")
-    if (
-        q["dominant_bucket_frac"] > 0.97
-        and q["laplacian_p90"] < 6.0
-        and q["noise_speckle_frac"] < 0.0015
-    ):
+    if q["dominant_bucket_frac"] > FLAT_DOMINANT_MAX:
         errs.append(f"flat_dominant {q['dominant_bucket_frac']:.3f} > {FLAT_DOMINANT_MAX}")
+    if q["frame_flat_frac"] > 0.88:
+        errs.append(f"frame_flat {q['frame_flat_frac']:.3f} > 0.88")
+    if q["subject_coverage"] < MIN_SUBJECT_COVERAGE:
+        errs.append(f"subject_coverage {q['subject_coverage']:.3f} < {MIN_SUBJECT_COVERAGE}")
     if errs:
         for e in errs:
             print(f"FAIL: {e}", file=sys.stderr)
         return 1
     print(
         f"OK garage-urp-hero mag={mag:.4f} extent={ext:.3f} "
-        f"noise={q['noise_speckle_frac']:.4f} dom={q['dominant_bucket_frac']:.3f}"
+        f"noise={q['noise_speckle_frac']:.4f} dom={q['dominant_bucket_frac']:.3f} "
+        f"cov={q['subject_coverage']:.3f}"
     )
     return 0
 
