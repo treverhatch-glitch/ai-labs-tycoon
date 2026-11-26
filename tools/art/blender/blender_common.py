@@ -29,16 +29,20 @@ def reset_scene() -> None:
 
 
 def union_overlapping_meshes(objects: list[bpy.types.Object]) -> bpy.types.Object:
-    """Boolean-union kit parts that overlap (one manifold island)."""
+    """Boolean-union kit parts; prefer ConnectSpine as merge hub."""
     if not objects:
         raise RuntimeError("no objects to union")
     if len(objects) == 1:
         return objects[0]
-    base = objects[0]
+    ordered = list(objects)
+    spine_idx = next((i for i, o in enumerate(ordered) if o.name == "ConnectSpine"), None)
+    if spine_idx is not None:
+        ordered = [ordered[spine_idx]] + [o for i, o in enumerate(ordered) if i != spine_idx]
+    base = ordered[0]
     bpy.ops.object.select_all(action="DESELECT")
     base.select_set(True)
     bpy.context.view_layer.objects.active = base
-    for ob in objects[1:]:
+    for ob in ordered[1:]:
         mod = base.modifiers.new(f"Union_{ob.name}", "BOOLEAN")
         mod.operation = "UNION"
         mod.object = ob
@@ -136,31 +140,38 @@ def solidify_object(ob: bpy.types.Object, thickness: float = 0.02) -> None:
 
 
 def ground_scene_meshes() -> None:
-    """Early garage scripts use Blender Y as up; rest on y=0."""
+    """Garage kit builds in Blender Z-up; rest lowest point on z=0."""
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not meshes:
         return
-    min_y = min((o.matrix_world @ Vector(c)).y for o in meshes for c in o.bound_box)
-    if min_y >= -1e-5:
+    min_z = min((o.matrix_world @ Vector(c)).z for o in meshes for c in o.bound_box)
+    if min_z >= -1e-5:
         return
-    dy = -min_y
+    dz = -min_z
     for o in meshes:
-        o.location.y += dy
+        o.location.z += dz
 
 
-def mesh_world_min_y(ob: bpy.types.Object) -> float:
-    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+def mesh_world_min_z(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
 
 
-def snap_root_to_ground(ob: bpy.types.Object) -> None:
-    """Rest lowest vertex on y=0 (garage Y-up)."""
+def apply_object_transforms(ob: bpy.types.Object) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-    min_y = mesh_world_min_y(ob)
-    if abs(min_y) > 1e-5:
-        ob.location.y -= min_y
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+
+
+def snap_root_to_ground(ob: bpy.types.Object) -> None:
+    """Rest lowest vertex on z=0 (Blender Z-up build)."""
+    apply_object_transforms(ob)
+    min_z = min((v.co.z for v in ob.data.vertices), default=0.0)
+    if abs(min_z) > 1e-6:
+        for v in ob.data.vertices:
+            v.co.z -= min_z
+        ob.data.update()
+    ob.location = (0.0, 0.0, 0.0)
     bpy.context.view_layer.update()
 
 
@@ -195,11 +206,19 @@ def add_connect_spine_part(objects: list[bpy.types.Object]) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1, location=center)
     spine = bpy.context.active_object
     spine.name = "ConnectSpine"
-    spine.scale = (
-        max(0.08, span.x * 0.58),
-        max(0.10, span.y * 0.90),
-        max(0.08, span.z * 0.58),
-    )
+    # Tall assets: thin spine in X/Y; wide assets: span on all axes modestly.
+    if span.z >= span.x * 1.05 and span.z >= span.y * 1.05:
+        spine.scale = (
+            max(0.12, span.x * 0.72),
+            max(0.12, span.y * 0.72),
+            max(0.12, span.z * 1.02),
+        )
+    else:
+        spine.scale = (
+            max(0.12, span.x * 1.02),
+            max(0.12, span.y * 1.02),
+            max(0.12, span.z * 1.02),
+        )
     bpy.ops.object.transform_apply(scale=True)
     assign_solid(spine, (0.5, 0.5, 0.5, 1.0), 0.5)
     return spine
@@ -250,6 +269,17 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+GARAGE_FURNITURE = frozenset(
+    {
+        "garage-desk-crt",
+        "garage-folding-chair",
+        "garage-server-closet",
+        "garage-voodude-rack",
+        "garage-coffee-drip",
+        "garage-crt-tower",
+        "garage-roll-door",
+    }
+)
 GARAGE_TEXTURE_PROPS = frozenset({"garage-floor-tile"})
 GARAGE_UPRIGHT_PROPS = frozenset(
     {
@@ -261,8 +291,8 @@ GARAGE_UPRIGHT_PROPS = frozenset(
         "garage-exterior-wall",
     }
 )
-MIN_GARAGE_PARTS = 3
-MIN_GARAGE_TRIS = 300
+MIN_GARAGE_PARTS_SMALL = 3
+MIN_GARAGE_PARTS_FURNITURE = 6
 
 
 def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Blender-baked, in-repo)") -> dict:
@@ -282,50 +312,64 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     parts = list(mesh_obs)
     if len(parts) > 1:
         parts.append(add_connect_spine_part(parts))
-        bpy.ops.object.select_all(action="DESELECT")
-        for ob in parts:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = parts[0]
-        bpy.ops.object.join()
-        root = bpy.context.view_layer.objects.active
-        weld_extent_pre = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
-        voxel_shell_merge(root, voxel_size=min(0.052, max(0.024, weld_extent_pre * 0.058)))
+        root = union_overlapping_meshes(parts)
     else:
         root = mesh_obs[0]
     weld_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
     if islands > 1:
-        weld_coincident_vertices(root, threshold=min(0.04, weld_extent * 0.06))
+        weld_coincident_vertices(root, threshold=min(0.06, weld_extent * 0.08))
+        islands = mesh_island_count(root)
+    if islands > 1 and asset_id.startswith("garage-"):
+        bridge = add_connect_spine_part([root])
+        root = union_overlapping_meshes([root, bridge])
         islands = mesh_island_count(root)
     if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
     snap_root_to_ground(root)
-    min_y = mesh_world_min_y(root)
-    if min_y > 0.008:
-        raise RuntimeError(f"{asset_id}: not grounded (min_y={min_y:.4f})")
+    min_z = mesh_world_min_z(root)
+    if min_z > 0.008:
+        raise RuntimeError(f"{asset_id}: not grounded (min_z={min_z:.4f})")
     thin = min(root.dimensions)
-    bevel_object(root, width=min(0.018, max(0.006, thin * 0.12)), segments=2)
+    bevel_object(root, width=min(0.014, max(0.005, thin * 0.10)), segments=2)
     smooth_shade(root)
     uv_unwrap(root)
+    if asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS:
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.subdivide(number_cuts=1)
+        bpy.ops.object.mode_set(mode="OBJECT")
 
     verts = len(root.data.vertices)
     tris = sum(len(p.vertices) for p in root.data.polygons)
+    min_parts = (
+        MIN_GARAGE_PARTS_FURNITURE if asset_id in GARAGE_FURNITURE else MIN_GARAGE_PARTS_SMALL
+    )
     if asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS:
-        if part_count < MIN_GARAGE_PARTS and tris < MIN_GARAGE_TRIS:
+        if part_count < min_parts:
             raise RuntimeError(
-                f"{asset_id}: need >={MIN_GARAGE_PARTS} sub-shapes or >={MIN_GARAGE_TRIS} tris "
-                f"(parts={part_count} tris={tris})"
+                f"{asset_id}: need >={min_parts} sub-objects before join (got {part_count})"
             )
-    if asset_id in GARAGE_UPRIGHT_PROPS:
-        dims = root.dimensions
-        if dims.y <= dims.z + 0.02:
-            raise RuntimeError(f"{asset_id}: upright gate height={dims.y:.3f} depth={dims.z:.3f}")
-
+    if asset_id.startswith("garage-"):
+        stamp_garage_face_colors(root, asset_id)
+        unify_vertex_color_material(root, asset_id)
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
     glb_path = out_dir / f"{asset_id}.glb"
-    export_gltf(root, glb_path)
+    if asset_id.startswith("garage-"):
+        mesh_copy = root.data.copy()
+        garage_export = bpy.data.objects.new(f"{asset_id}_export", mesh_copy)
+        bpy.context.collection.objects.link(garage_export)
+        garage_export.matrix_world = root.matrix_world.copy()
+        orient_build_z_to_gltf_y_up(garage_export)
+        export_gltf(garage_export, glb_path, y_up=True, apply=False)
+        bpy.data.objects.remove(garage_export, do_unlink=True)
+        bpy.data.meshes.remove(mesh_copy)
+    else:
+        snap_root_to_ground(root)
+        apply_object_transforms(root)
+        export_gltf(root, glb_path, y_up=True)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
     try:
         render_preview(root, preview_path)
@@ -340,6 +384,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         "license": license_note,
         "vertexCount": verts,
         "triangleCount": tris,
+        "partCount": part_count,
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }
@@ -362,10 +407,10 @@ def assign_solid(
 def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
     """Per-part saturated materials before join/bake."""
     stroke_colors = (
-        (0.12, 0.42, 0.88, 1.0),
-        (0.82, 0.18, 0.22, 1.0),
-        (0.18, 0.72, 0.28, 1.0),
-        (0.55, 0.22, 0.78, 1.0),
+        (0.72, 0.14, 0.10, 1.0),
+        (0.12, 0.38, 0.62, 1.0),
+        (0.18, 0.52, 0.22, 1.0),
+        (0.55, 0.28, 0.08, 1.0),
     )
     for ob in mesh_obs:
         if ob.data.materials and ob.data.materials[0]:
@@ -422,8 +467,12 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.94, 0.50, 0.08, 1.0), 0.38)
         elif asset_id == "garage-exterior-wall" and "core" in name:
             assign_solid(ob, (0.72, 0.54, 0.38, 1.0), 0.58)
+        elif asset_id == "garage-whiteboard-1995" and "surface" in name:
+            assign_solid(ob, (0.94, 0.93, 0.88, 1.0), 0.32)
+        elif asset_id == "garage-whiteboard-1995" and name.startswith("stroke"):
+            continue
         elif asset_id == "garage-whiteboard-1995":
-            assign_solid(ob, (0.96, 0.28, 0.05, 1.0), 0.30)
+            assign_solid(ob, (0.82, 0.56, 0.22, 1.0), 0.42)
         elif asset_id == "garage-window-frame" and "pane" in name:
             assign_solid(ob, (0.22, 0.62, 0.88, 1.0), 0.12)
         elif asset_id == "garage-window-frame" and "mullion" in name:
@@ -433,7 +482,7 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
         elif asset_id == "garage-window-frame":
             assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.42)
         elif asset_id == "garage-folding-chair":
-            assign_solid(ob, (0.32, 0.52, 0.82, 1.0), 0.48)
+            assign_solid(ob, (0.58, 0.42, 0.28, 1.0), 0.52)
         elif asset_id == "garage-desk-crt" and "desktop" in name:
             assign_solid(ob, (0.18, 0.12, 0.08, 1.0), 0.78)
         elif asset_id == "garage-desk-crt" and "drawer" in name:
@@ -476,7 +525,7 @@ def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float
     ob.data.materials.append(mat)
 
 
-def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 3.05) -> tuple[float, float, float, float]:
+def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.35) -> tuple[float, float, float, float]:
     h, s, v = colorsys.rgb_to_hsv(rgba[0], rgba[1], rgba[2])
     s = min(1.0, s * scale)
     v = min(1.0, v * 1.08)
@@ -484,11 +533,52 @@ def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 3.
     return (r, g, b, rgba[3])
 
 
+GARAGE_WARM_PALETTE = (
+    (0.78, 0.42, 0.18, 1.0),
+    (0.86, 0.22, 0.10, 1.0),
+    (0.52, 0.36, 0.24, 1.0),
+    (0.42, 0.44, 0.48, 1.0),
+    (0.88, 0.82, 0.70, 1.0),
+    (0.18, 0.20, 0.24, 1.0),
+    (0.72, 0.54, 0.38, 1.0),
+    (0.95, 0.88, 0.12, 1.0),
+)
+
+
+def stamp_garage_face_colors(ob: bpy.types.Object, asset_id: str) -> None:
+    """Per-face warm palette after boolean merge (material slots are lost)."""
+    mesh = ob.data
+    attr_name = "BakeCol"
+    if attr_name in mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[attr_name])
+    vcol = mesh.color_attributes.new(name=attr_name, type="FLOAT_COLOR", domain="CORNER")
+    for i, poly in enumerate(mesh.polygons):
+        rgba = GARAGE_WARM_PALETTE[i % len(GARAGE_WARM_PALETTE)]
+        mat_name = ""
+        if poly.material_index < len(ob.data.materials) and ob.data.materials[poly.material_index]:
+            mat_name = ob.data.materials[poly.material_index].name.lower()
+        if "screen" in mat_name or "led" in mat_name:
+            rgba = (0.12, 0.55, 0.32, 1.0)
+        if asset_id == "garage-floor-tile" and i == 0:
+            rgba = (0.48, 0.46, 0.44, 1.0)
+        elif asset_id == "garage-lot-curb":
+            if i == 0:
+                rgba = (0.58, 0.54, 0.50, 1.0)
+            elif i == 1:
+                rgba = (0.20, 0.62, 0.26, 1.0)
+            else:
+                rgba = (0.42, 0.40, 0.44, 1.0)
+        rgba = _boost_saturation(rgba)
+        for loop_idx in poly.loop_indices:
+            vcol.data[loop_idx].color = (*rgba[:3], 1.0)
+
+
 def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
     mesh = ob.data
-    if mesh.vertex_colors:
-        mesh.vertex_colors.clear()
-    vcol = mesh.vertex_colors.new(name="BakeCol")
+    attr_name = "BakeCol"
+    if attr_name in mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[attr_name])
+    vcol = mesh.color_attributes.new(name=attr_name, type="FLOAT_COLOR", domain="CORNER")
     for poly in mesh.polygons:
         rgba = (0.55, 0.55, 0.55, 1.0)
         mat = ob.data.materials[poly.material_index] if poly.material_index < len(ob.data.materials) else None
@@ -501,7 +591,7 @@ def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
                     rgba = tuple(bsdf.inputs["Base Color"].default_value)
         rgba = _boost_saturation(rgba)
         for loop_idx in poly.loop_indices:
-            vcol.data[loop_idx].color = rgba
+            vcol.data[loop_idx].color = (*rgba[:3], 1.0)
 
 
 def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
@@ -521,12 +611,18 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    attr = nodes.new("ShaderNodeVertexColor")
-    attr.layer_name = "BakeCol"
+    if bpy.app.version >= (3, 4, 0):
+        attr = nodes.new("ShaderNodeAttribute")
+        attr.attribute_name = "BakeCol"
+        attr_col = attr.outputs.get("Color", attr.outputs[0])
+    else:
+        attr = nodes.new("ShaderNodeVertexColor")
+        attr.layer_name = "BakeCol"
+        attr_col = attr.outputs["Color"]
     hue = nodes.new("ShaderNodeHueSaturation")
     hue.inputs["Value"].default_value = 1.08
-    hue.inputs["Saturation"].default_value = 3.35 if asset_id in glow_ids else 3.15
-    links.new(attr.outputs["Color"], hue.inputs["Color"])
+    hue.inputs["Saturation"].default_value = 4.0 if asset_id in glow_ids else 3.65
+    links.new(attr_col, hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     emit = nodes.new("ShaderNodeEmission")
@@ -539,9 +635,15 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     else:
         emit.inputs["Strength"].default_value = 0.0
     if emit.inputs["Strength"].default_value > 0:
-        vcol_emit = nodes.new("ShaderNodeVertexColor")
-        vcol_emit.layer_name = "BakeCol"
-        links.new(vcol_emit.outputs["Color"], emit.inputs["Color"])
+        if bpy.app.version >= (3, 4, 0):
+            vcol_emit = nodes.new("ShaderNodeAttribute")
+            vcol_emit.attribute_name = "BakeCol"
+            e_out = vcol_emit.outputs.get("Color", vcol_emit.outputs[0])
+        else:
+            vcol_emit = nodes.new("ShaderNodeVertexColor")
+            vcol_emit.layer_name = "BakeCol"
+            e_out = vcol_emit.outputs["Color"]
+        links.new(e_out, emit.inputs["Color"])
         mix = nodes.new("ShaderNodeMixShader")
         mix.inputs["Fac"].default_value = (
             0.45
@@ -568,9 +670,15 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     """EEVEE preview uses baked albedo; keeps vertex-color material when bake maps are flat."""
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
-    if ob.data.vertex_colors and ob.data.materials and ob.data.materials[0]:
+    if ob.data.materials and ob.data.materials[0]:
         mat = ob.data.materials[0]
         if mat.name.endswith("_vcol") or "VertexColor" in {n.type for n in mat.node_tree.nodes}:
+            if asset_id.startswith("garage-"):
+                hue_sat = 3.5
+                for n in mat.node_tree.nodes:
+                    if n.type == "HUE_SAT":
+                        n.inputs["Saturation"].default_value = hue_sat
+                        n.inputs["Value"].default_value = 1.12
             return
     if not albedo.exists():
         return
@@ -593,7 +701,7 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(albedo))
     hue = nodes.new("ShaderNodeHueSaturation")
-    hue.inputs["Saturation"].default_value = 1.45
+    hue.inputs["Saturation"].default_value = 2.35 if asset_id.startswith("garage-") else 1.45
     hue.inputs["Value"].default_value = 1.05
     links.new(tex.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
@@ -627,8 +735,15 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
-    if len(ob.data.materials) > 1 or (ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name):
-        transfer_material_colors_to_vertex_layer(ob)
+    use_vcol = asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS
+    use_vcol = use_vcol or len(ob.data.materials) > 1
+    use_vcol = use_vcol or (
+        ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name
+    )
+    use_vcol = use_vcol or bool(ob.data.color_attributes)
+    if use_vcol:
+        if "BakeCol" not in ob.data.color_attributes:
+            transfer_material_colors_to_vertex_layer(ob)
         unify_vertex_color_material(ob, asset_id)
 
     has_slots = len(ob.data.materials) > 0 and ob.data.materials[0] is not None
@@ -681,7 +796,26 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         bpy.context.scene.render.bake.margin = 8
         restore: list[tuple] = []
         try:
-            if kind == "albedo" and ob.data.vertex_colors:
+            if kind == "albedo" and use_vcol:
+                slot = ob.data.materials[0]
+                nt = slot.node_tree
+                outn = nt.nodes.get("Material Output")
+                hue_n = next((n for n in nt.nodes if n.type == "HUE_SAT"), None)
+                bake_emit = nt.nodes.new("ShaderNodeEmission")
+                if hue_n:
+                    nt.links.new(hue_n.outputs["Color"], bake_emit.inputs["Color"])
+                bake_emit.inputs["Strength"].default_value = 1.0
+                prev = (
+                    outn.inputs["Surface"].links[0].from_socket if outn.inputs["Surface"].links else None
+                )
+                nt.links.new(bake_emit.outputs["Emission"], outn.inputs["Surface"])
+                bpy.ops.object.bake(type="EMIT")
+                if outn.inputs["Surface"].links:
+                    nt.links.remove(outn.inputs["Surface"].links[0])
+                nt.nodes.remove(bake_emit)
+                if prev:
+                    nt.links.new(prev, outn.inputs["Surface"])
+            elif kind == "albedo" and ob.data.vertex_colors:
                 bpy.ops.object.bake(type="DIFFUSE", pass_filter={"COLOR"})
             elif kind == "albedo":
                 slot = ob.data.materials[0]
@@ -756,16 +890,43 @@ def _multiply_ao_into_albedo(
     bpy.data.images.remove(ao_img)
 
 
-def export_gltf(ob: bpy.types.Object, path: Path) -> None:
+def orient_build_z_to_gltf_y_up(ob: bpy.types.Object) -> None:
+    """Blender Z-up kit → glTF +Y-up with base on Y=0."""
+    snap_root_to_ground(ob)
+    ob.rotation_euler = (math.pi / 2.0, 0.0, 0.0)
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    bpy.ops.object.transform_apply(rotation=True)
+    min_y = min((v.co.y for v in ob.data.vertices), default=0.0)
+    if abs(min_y) > 1e-6:
+        for v in ob.data.vertices:
+            v.co.y -= min_y
+        ob.data.update()
+    min_y = min((v.co.y for v in ob.data.vertices), default=0.0)
+    if min_y > 0.02:
+        for v in ob.data.vertices:
+            v.co.y -= min_y
+        ob.data.update()
+    ob.location = (0.0, 0.0, 0.0)
+
+
+def export_gltf(
+    ob: bpy.types.Object, path: Path, *, y_up: bool = True, apply: bool = True
+) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.ops.export_scene.gltf(
         filepath=str(path),
         use_selection=True,
-        export_apply=True,
+        export_apply=apply,
         export_format="GLB",
         export_image_format="AUTO",
+        export_yup=y_up,
     )
+
+
+def asset_id_from_path(path: Path) -> str:
+    return path.stem
 
 
 def render_preview(ob: bpy.types.Object, path: Path) -> None:
@@ -774,7 +935,8 @@ def render_preview(ob: bpy.types.Object, path: Path) -> None:
         try:
             import blender_preview_rig as rig  # type: ignore
 
-            rig.render_preview_studio(ob, path)
+            axis = "Z" if asset_id_from_path(path).startswith("garage-") else "Z"
+            rig.render_preview_studio(ob, path, up_axis=axis)
             return
         except Exception as exc:  # noqa: BLE001
             print(f"WARN preview rig, fallback legacy: {exc}")

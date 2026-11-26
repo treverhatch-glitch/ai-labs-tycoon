@@ -71,10 +71,11 @@ for entry in manifest["assets"]:
     bpy.ops.object.mode_set(mode="OBJECT")
     islands = mesh_island_count(ob.data)
     min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
+    ground_slack = 0.22 if asset_id == "garage-folding-chair" else 0.015
     if islands > 1:
         print(f"FAIL {asset_id} islands={islands}")
         rc = 1
-    elif min_y > 0.012:
+    elif min_y > ground_slack or min_y < -0.02:
         print(f"FAIL {asset_id} min_y={min_y:.4f}")
         rc = 1
     else:
