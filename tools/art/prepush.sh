@@ -2,6 +2,24 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+
+# Force-push is banned (--force, --force-with-lease, +refspec). Fix mistakes with a forward commit only.
+REMOTE="${ART_PREPUSH_REMOTE:-origin}"
+BRANCH="${ART_PREPUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}"
+if [[ -n "$BRANCH" && "$BRANCH" != "HEAD" ]]; then
+  git fetch "$REMOTE" "$BRANCH" 2>/dev/null || git fetch "$REMOTE" 2>/dev/null || true
+  UPREF="$REMOTE/$BRANCH"
+  if git rev-parse --verify "$UPREF" >/dev/null 2>&1; then
+    if ! git merge-base --is-ancestor "$UPREF" HEAD; then
+      echo "FAIL: $UPREF is not an ancestor of HEAD" >&2
+      echo "Force-push is banned. Leave remote as-is; add a forward commit on top." >&2
+      exit 1
+    fi
+    echo "OK: fast-forward push allowed ($UPREF -> HEAD)"
+  else
+    echo "WARN: $UPREF not found after fetch; push may create branch (no force)"
+  fi
+fi
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
