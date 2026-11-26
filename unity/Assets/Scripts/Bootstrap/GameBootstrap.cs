@@ -57,6 +57,13 @@ namespace AiLabs.Unity.Bootstrap
             GauntletShowPanel.Create(canvas, _host);
             _roomBuild = hq.AddComponent<RoomBuildController>();
             _roomBuild.Bind(_host, buildPanel);
+
+            var garageArt = EarlyGameArtBootstrap.AttachGarage(hq.transform, _host, hud);
+            _host.StateChanged += () =>
+            {
+                if (garageArt != null && _host?.Simulation != null)
+                    garageArt.Bind(_host.Simulation);
+            };
         }
 
         void OnStateChanged()

@@ -1,0 +1,65 @@
+{
+  "generator": "tools/art/generate_early_hud_icons.py",
+  "assets": [
+    {
+      "id": "icon-cash-era0",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-cash-era0.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-date-era0",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-date-era0.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-era-bar",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-era-bar.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-build-panel",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-build-panel.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-hire-panel",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-hire-panel.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-train-panel",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-train-panel.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-gpu-hire",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-gpu-hire.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "icon-week-advance",
+      "path": "Assets/Art/EarlyGame/hud-icons/icon-week-advance.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "panel-build-bg",
+      "path": "Assets/Art/EarlyGame/hud-icons/panel-build-bg.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "panel-hire-bg",
+      "path": "Assets/Art/EarlyGame/hud-icons/panel-hire-bg.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "panel-train-bg",
+      "path": "Assets/Art/EarlyGame/hud-icons/panel-train-bg.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "hud-topbar-beige",
+      "path": "Assets/Art/EarlyGame/hud-icons/hud-topbar-beige.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    }
+  ]
+}
