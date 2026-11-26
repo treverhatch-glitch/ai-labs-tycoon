@@ -201,6 +201,33 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
     return "Y" if span.y >= span.z * 1.1 else "Z"
 
 
+def setup_garage_hero_lights(center: Vector, radius: float, energy_scale: float = 1.0) -> None:
+    """Warm interior key + cool fill (TPH-style) for furnished garage cut-away."""
+    span = max(radius, 1.0) * energy_scale
+    energy = max(180.0, span * 220.0)
+    key_loc = center + Vector((span * 0.8, span * 0.35, span * 1.45))
+    fill_loc = center + Vector((-span * 1.1, -span * 1.05, span * 0.95))
+    rim_loc = center + Vector((span * 0.2, span * 1.15, span * 0.55))
+    warm_key = (1.0, 0.86, 0.68)
+    cool_fill = (0.72, 0.82, 1.0)
+    rim = (0.95, 0.93, 0.88)
+    for name, loc, col, e_mul, size_mul in (
+        ("GarageKey", key_loc, warm_key, 1.0, 1.0),
+        ("GarageFill", fill_loc, cool_fill, 0.42, 1.35),
+        ("GarageRim", rim_loc, rim, 0.22, 0.65),
+    ):
+        bpy.ops.object.light_add(type="AREA", location=loc)
+        light = bpy.context.active_object
+        light.name = name
+        light.data.energy = energy * e_mul
+        light.data.size = max(0.65, radius * 0.95 * size_mul)
+        light.data.color = col
+        if hasattr(light.data, "shadow_soft_size"):
+            light.data.shadow_soft_size = max(0.18, radius * 0.14)
+        direction = center - loc
+        light.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+
+
 def setup_three_point_lights(center: Vector, radius: float, energy_scale: float = 1.0) -> None:
     key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
@@ -499,7 +526,10 @@ def render_preview_studio(
         light_mul = 3.4
     else:
         light_mul = 1.0
-    setup_three_point_lights(center, radius, energy_scale=light_mul)
+    if path.stem == "garage-scene-urp-hero":
+        setup_garage_hero_lights(center, radius, energy_scale=light_mul)
+    else:
+        setup_three_point_lights(center, radius, energy_scale=light_mul)
     cam = frame_camera(
         hero_meshes,
         lens_mm=lens_mm,
@@ -547,7 +577,7 @@ def render_preview_studio(
 
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "None"
-    scene.view_settings.exposure = -0.7 if path.stem == "garage-scene-urp-hero" else 0.0
+    scene.view_settings.exposure = -0.52 if path.stem == "garage-scene-urp-hero" else 0.0
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = resolution

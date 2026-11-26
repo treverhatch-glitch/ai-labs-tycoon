@@ -19,9 +19,10 @@ def _load_image(path: Path, colorspace: str) -> bpy.types.Image | None:
     return img
 
 
-def pbr_material(asset_id: str) -> bpy.types.Material:
-    if asset_id in _PBR_CACHE:
-        return _PBR_CACHE[asset_id]
+def pbr_material(asset_id: str, uv_scale: float = 1.0) -> bpy.types.Material:
+    key = f"{asset_id}@{uv_scale:.3f}"
+    if key in _PBR_CACHE:
+        return _PBR_CACHE[key]
     tex_dir = KIT / "textures" / asset_id
     mat = bpy.data.materials.new(name=f"pbr_{asset_id}")
     mat.use_nodes = True
@@ -31,32 +32,41 @@ def pbr_material(asset_id: str) -> bpy.types.Material:
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     bsdf.inputs["Roughness"].default_value = 0.68
+    tc = nodes.new("ShaderNodeTexCoord")
+    mapping = nodes.new("ShaderNodeMapping")
+    links.new(tc.outputs["UV"], mapping.inputs["Vector"])
+    if abs(uv_scale - 1.0) > 1e-3:
+        mapping.inputs["Scale"].default_value = (uv_scale, uv_scale, uv_scale)
+    uv = mapping.outputs["Vector"]
     alb = _load_image(tex_dir / f"{asset_id}_albedo.png", "sRGB")
     if alb:
         tex = nodes.new("ShaderNodeTexImage")
         tex.image = alb
+        links.new(uv, tex.inputs["Vector"])
         links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
     rough = _load_image(tex_dir / f"{asset_id}_roughness.png", "Non-Color")
     if rough:
         rtex = nodes.new("ShaderNodeTexImage")
         rtex.image = rough
+        links.new(uv, rtex.inputs["Vector"])
         links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
     norm = _load_image(tex_dir / f"{asset_id}_normal.png", "Non-Color")
     if norm:
         nt = nodes.new("ShaderNodeTexImage")
         nt.image = norm
+        links.new(uv, nt.inputs["Vector"])
         nmap = nodes.new("ShaderNodeNormalMap")
         links.new(nt.outputs["Color"], nmap.inputs["Color"])
         links.new(nmap.outputs["Normal"], bsdf.inputs["Normal"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    _PBR_CACHE[asset_id] = mat
+    _PBR_CACHE[key] = mat
     return mat
 
 
-def assign_pbr(ob: bpy.types.Object, asset_id: str) -> None:
+def assign_pbr(ob: bpy.types.Object, asset_id: str, uv_scale: float = 1.0) -> None:
     if ob.type != "MESH":
         return
-    mat = pbr_material(asset_id)
+    mat = pbr_material(asset_id, uv_scale=uv_scale)
     ob.data.materials.clear()
     ob.data.materials.append(mat)
     for poly in ob.data.polygons:
