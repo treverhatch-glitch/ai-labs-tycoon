@@ -24,6 +24,35 @@ ART_ROOT = REPO_ROOT / "unity/Assets/Art/EarlyGame"
 PREVIEW_ROOT = REPO_ROOT / "docs/art/previews"
 BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2]}"
 
+# tex-garage-wall-beige swatch: 512px tile, 128×64px blocks → 4×8 blocks per repeat.
+WALL_BEIGE_TILE_BLOCKS_X = 4
+WALL_BEIGE_TILE_BLOCKS_Y = 8
+WALL_WORLD_W_M = 4.0
+WALL_WORLD_H_M = 3.0
+WALL_BLOCK_U_M = 0.4
+WALL_BLOCK_V_M = 0.2
+
+
+def wall_swatch_mapping_scale(
+    *,
+    wall_w: float = WALL_WORLD_W_M,
+    wall_h: float = WALL_WORLD_H_M,
+    block_u: float = WALL_BLOCK_U_M,
+    block_v: float = WALL_BLOCK_V_M,
+) -> tuple[float, float, float]:
+    """Texture repeats so 4×3 m wall shows ~10×15 blocks (not 4×8 per repeat)."""
+    sx = (wall_w / block_u) / WALL_BEIGE_TILE_BLOCKS_X
+    sy = (wall_h / block_v) / WALL_BEIGE_TILE_BLOCKS_Y
+    return (sx, sy, 1.0)
+
+
+def wall_blocks_per_metre_h(
+    *,
+    mapping_scale_x: float,
+    wall_w: float = WALL_WORLD_W_M,
+) -> float:
+    return mapping_scale_x * WALL_BEIGE_TILE_BLOCKS_X / wall_w
+
 
 def file_sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -454,6 +483,32 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
     os.environ["PREVIEW_GLB_SHA256"] = glb_sha
     os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
     render_preview(ob, preview_path)
+    meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
+    if meta_path.is_file():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        if asset_id == "garage-exterior-wall":
+            sx, sy, _ = wall_swatch_mapping_scale()
+            meta["wall_uv_mapping_scale_x"] = sx
+            meta["wall_uv_mapping_scale_y"] = sy
+            meta["wall_swatch_blocks_per_tile_x"] = WALL_BEIGE_TILE_BLOCKS_X
+            meta["wall_world_w_m"] = WALL_WORLD_W_M
+            meta["wall_blocks_per_m_h"] = wall_blocks_per_metre_h(mapping_scale_x=sx)
+            meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+        if asset_id == "garage-land-for-sale-sign":
+            import blender_preview_rig as rig  # type: ignore
+
+            front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
+            saved = {k: os.environ.get(k) for k in ("PREVIEW_AZIMUTH_DEG", "PREVIEW_ELEVATION_DEG")}
+            os.environ["PREVIEW_AZIMUTH_DEG"] = "90"
+            os.environ["PREVIEW_ELEVATION_DEG"] = "0"
+            mins, maxs = rig.mesh_bounds_world([ob])
+            axis = rig.infer_up_axis(mins, maxs).upper()
+            rig.render_preview_studio(ob, front, 512, up_axis=axis)
+            for key, val in saved.items():
+                if val is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = val
 
 
 def assign_image_texture(
@@ -610,7 +665,7 @@ def apply_wall_post_union_textures(
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
         return tex
 
-    tex_wall = _tex(wall, (wall_w / block_u, wall_h / block_v, 1.0))
+    tex_wall = _tex(wall, wall_swatch_mapping_scale(wall_w=wall_w, wall_h=wall_h, block_u=block_u, block_v=block_v))
     tex_trim = _tex(trim, (wall_w * 1.25, 3.5, 1.0))
     mix = nodes.new("ShaderNodeMixRGB")
     links.new(or_trim.outputs[0], mix.inputs["Fac"])
@@ -653,7 +708,9 @@ def apply_packet34_authoring_textures(mesh_obs: list[bpy.types.Object], asset_id
                 assign_image_texture(
                     ob,
                     wall,
-                    uv_scale=(wall_w / block_u, wall_h / block_v, 1.0),
+                    uv_scale=wall_swatch_mapping_scale(
+                        wall_w=wall_w, wall_h=wall_h, block_u=block_u, block_v=block_v
+                    ),
                     coord="GENERATED",
                     roughness=0.62,
                 )
@@ -709,11 +766,13 @@ def _wall_vertical_axis(ob: bpy.types.Object) -> str:
 
 
 def apply_wall_preview_swatch_material(ob: bpy.types.Object) -> None:
-    """Matte cinderblock preview from committed tex-garage-wall-beige (world-scale UVs)."""
+    """Matte cinderblock preview: same swatch + world Generated mapping as bake (~2.5 blocks/m)."""
     wall = ART_ROOT / "textures" / "tex-garage-wall-beige.png"
     if not wall.is_file():
         apply_wall_post_union_textures(ob, vertical_axis=_wall_vertical_axis(ob))
         return
+    vertical_axis = _wall_vertical_axis(ob)
+    flat_ax = "X" if vertical_axis != "X" else "Y"
     mat = bpy.data.materials.new("WallPreviewSwatch")
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
@@ -721,18 +780,23 @@ def apply_wall_preview_swatch_material(ob: bpy.types.Object) -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    tco = nodes.new("ShaderNodeTexCoord")
+    coord = nodes.new("ShaderNodeTexCoord")
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    links.new(coord.outputs["Generated"], sep.inputs["Vector"])
+    planar = nodes.new("ShaderNodeCombineXYZ")
+    links.new(sep.outputs[flat_ax], planar.inputs["X"])
+    links.new(sep.outputs[vertical_axis], planar.inputs["Y"])
     mapping = nodes.new("ShaderNodeMapping")
-    mapping.inputs["Scale"].default_value = (10.0, 15.0, 1.0)
+    mapping.inputs["Scale"].default_value = wall_swatch_mapping_scale()
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(wall.resolve()), check_existing=True)
     tex.image.colorspace_settings.name = "sRGB"
     tex.extension = "REPEAT"
-    links.new(tco.outputs["UV"], mapping.inputs["Vector"])
+    links.new(planar.outputs["Vector"], mapping.inputs["Vector"])
     links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
     bright = nodes.new("ShaderNodeBrightContrast")
     bright.inputs["Bright"].default_value = 0.0
-    bright.inputs["Contrast"].default_value = 0.22
+    bright.inputs["Contrast"].default_value = 0.28
     links.new(tex.outputs["Color"], bright.inputs["Color"])
     links.new(bright.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = 0.62

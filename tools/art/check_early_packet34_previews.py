@@ -21,6 +21,9 @@ from packet34_preview_gates import (  # noqa: E402
     check_env_preview_backdrop,
     check_wall_cinderblock_visible,
     check_wall_mortar_horizontal,
+    check_wall_uv_blocks_per_metre,
+    check_sign_albedo_layout,
+    check_sign_front_red_inside_board,
     check_sign_for_sale_contrast,
     check_curb_preview_concrete,
     check_sign_albedo_file,
@@ -57,6 +60,9 @@ def check_env_preview(asset_id: str) -> int:
         print(f"FAIL {asset_id} {err}")
         rc = 1
     if asset_id == "garage-exterior-wall":
+        for err in check_wall_uv_blocks_per_metre(meta):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
         for err in check_wall_cinderblock_visible(rgb, mask, TEX_DIR):
             print(f"FAIL {asset_id} {err}")
             rc = 1
@@ -69,6 +75,14 @@ def check_env_preview(asset_id: str) -> int:
             rc = 1
         sign_tex = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
         for err in check_sign_albedo_file(sign_tex):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_albedo_layout(sign_tex):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        front_rgb = PREVIEW / "garage-land-for-sale-sign-front.png"
+        front_mask = PREVIEW / "garage-land-for-sale-sign-front.mask.png"
+        for err in check_sign_front_red_inside_board(front_rgb, front_mask):
             print(f"FAIL {asset_id} {err}")
             rc = 1
     if asset_id == "garage-lot-curb":

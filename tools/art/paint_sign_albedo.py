@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write cream sign albedo with red FOR SALE (~70% of board face)."""
+"""Cream sign albedo with red FOR SALE (≥5% inset on all sides)."""
 from __future__ import annotations
 
 import sys
@@ -11,45 +11,38 @@ def paint(path: Path, *, min_unique: int = 120, min_bytes: int = 12_000) -> None
 
     path.parent.mkdir(parents=True, exist_ok=True)
     w = h = 1024
-    im = Image.new("RGB", (w, h), (245, 238, 220))
+    cream = (248, 242, 228)
+    im = Image.new("RGB", (w, h), cream)
     draw = ImageDraw.Draw(im)
-    margin = w // 16
-    draw.rectangle((margin, margin, w - margin, h - margin), fill=(252, 245, 228))
-    font = None
-    for size in (168, 140, 120):
-        for ft in (
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
-        ):
-            try:
-                font = ImageFont.truetype(ft, size=size)
-                break
-            except OSError:
-                continue
-        if font:
-            break
-    if font is None:
-        raise SystemExit("no bold font for FOR SALE albedo")
+    margin = max(52, int(min(w, h) * 0.05))
+    inner_w = w - 2 * margin
+    inner_h = h - 2 * margin
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     text = "FOR SALE"
-    bbox = draw.textbbox((0, 0), text, font=font)
-    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    face_w = w - 2 * margin
-    if tw < int(face_w * 0.68):
-        for size in range(200, 119, -4):
+    font = None
+    tw = th = 0
+    for size in range(220, 48, -2):
+        try:
+            font = ImageFont.truetype(font_path, size=size)
+        except OSError:
             try:
                 font = ImageFont.truetype(
-                    "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                    "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
                     size=size,
                 )
             except OSError:
                 continue
-            bbox = draw.textbbox((0, 0), text, font=font)
-            tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-            if tw >= int(face_w * 0.68):
-                break
-    tx, ty = (w - tw) // 2, (h - th) // 2
-    red = (196, 34, 28)
-    draw.text((tx, ty), text, fill=red, font=font)
+        bbox = draw.textbbox((0, 0), text, font=font)
+        tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        if tw <= int(inner_w * 0.76) and th <= int(inner_h * 0.76):
+            break
+    if font is None:
+        raise SystemExit("no bold font for FOR SALE albedo")
+    if tw > inner_w or th > inner_h:
+        raise SystemExit(f"FOR SALE does not fit inset margin={margin} tw={tw} th={th}")
+    tx = (w - tw) // 2
+    ty = (h - th) // 2
+    draw.text((tx, ty), text, fill=(196, 34, 28), font=font)
     uniq = len({px for px in im.getdata()})
     if uniq < min_unique:
         raise SystemExit(f"sign albedo flat unique={uniq}")

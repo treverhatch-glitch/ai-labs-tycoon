@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """For-sale sign — two posts + one flat board facing preview camera."""
-import math
 import os
 import sys
 from pathlib import Path
@@ -20,6 +19,17 @@ def write_sign_albedo(tex_path: Path) -> None:
     subprocess.run(["python3", str(painter), str(tex_path)], check=True, cwd=str(REPO))
 
 
+def _cube_uv(ob: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    if bpy.ops.object.mode_set.poll():
+        bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.cube_project()
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
 def main():
     os.environ["PREVIEW_FRAMING_MARGIN"] = "1.20"
     os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
@@ -35,6 +45,7 @@ def main():
     bc.assign_solid(post_l, (0.52, 0.38, 0.26, 1.0), 0.58)
     bc.assign_solid(post_r, (0.52, 0.38, 0.26, 1.0), 0.58)
     board = bc.add_cube("Board", (1.2, 0.8, 0.08), (0, 1.42, 0))
+    _cube_uv(board)
     bc.assign_image_texture(board, albedo, uv_scale=1.0, roughness=0.42)
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     write_sign_albedo(albedo)

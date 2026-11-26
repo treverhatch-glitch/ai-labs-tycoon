@@ -8,6 +8,11 @@
   "up_axis": "Z",
   "mid_grey": true,
   "contact_shadow": true,
-  "glb_sha256": "0c0c8f2727dea037aab473bba9228aa10df089c0d4073125fabe89cbfc4357e8",
-  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.glb"
+  "glb_sha256": "e98fab444bf05d5ac25f01f0e4682c841c1006539f47c6ac39a09ed190735018",
+  "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.glb",
+  "wall_uv_mapping_scale_x": 2.5,
+  "wall_uv_mapping_scale_y": 1.875,
+  "wall_swatch_blocks_per_tile_x": 4,
+  "wall_world_w_m": 4.0,
+  "wall_blocks_per_m_h": 2.5
 }

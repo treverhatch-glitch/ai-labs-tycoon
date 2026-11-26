@@ -366,12 +366,14 @@ def render_preview_studio(
     setup_three_point_lights(center, radius, soft=mid_grey)
     margin = float(os.environ.get("PREVIEW_FRAMING_MARGIN", str(FRAMING_MARGIN)))
     azimuth_deg = float(os.environ.get("PREVIEW_AZIMUTH_DEG", str(DEFAULT_AZIMUTH_DEG)))
+    elevation_deg = float(os.environ.get("PREVIEW_ELEVATION_DEG", str(DEFAULT_ELEVATION_DEG)))
     cam = frame_camera(
         hero_meshes,
         lens_mm=lens_mm,
         up_axis=axis,
         margin=margin,
         azimuth_deg=azimuth_deg,
+        elevation_deg=elevation_deg,
     )
     half_fov = camera_half_fov_rad(cam.data)
     cam_dist = (radius / math.tan(half_fov)) * margin
@@ -383,7 +385,7 @@ def render_preview_studio(
         "framing_margin": margin,
         "lens_mm": lens_mm,
         "azimuth_deg": azimuth_deg,
-        "elevation_deg": DEFAULT_ELEVATION_DEG,
+        "elevation_deg": elevation_deg,
         "up_axis": axis,
         "mid_grey": mid_grey,
         "contact_shadow": _contact_shadow_only(),

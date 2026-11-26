@@ -388,6 +388,117 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
     return []
 
 
+def check_wall_uv_blocks_per_metre(frame_path: Path) -> list[str]:
+    """Wall preview must map ~10 blocks / 4 m → 2–3 blocks/m (swatch has 4 blocks/tile)."""
+    if not frame_path.is_file():
+        return ["wall_frame_missing"]
+    meta = json.loads(frame_path.read_text(encoding="utf-8"))
+    bpm = meta.get("wall_blocks_per_m_h")
+    if bpm is None:
+        sx = float(meta.get("wall_uv_mapping_scale_x", 10.0))
+        tiles = float(meta.get("wall_swatch_blocks_per_tile_x", 4))
+        wall_w = float(meta.get("wall_world_w_m", 4.0))
+        bpm = sx * tiles / wall_w
+    if bpm < 2.0 or bpm > 3.0:
+        return [f"wall_blocks_per_m_h={bpm:.2f} need 2.0-3.0"]
+    return []
+
+
+def check_sign_albedo_layout(tex_dir: Path) -> list[str]:
+    """No inner grey board frame; red FOR SALE fully inside 5% cream margin."""
+    path = tex_dir / "garage-land-for-sale-sign_albedo.png"
+    if not path.is_file():
+        return ["sign_albedo_missing"]
+    im = _load_rgba(path).convert("RGB")
+    w, h = im.size
+    margin = int(min(w, h) * 0.05)
+    px = list(im.getdata())
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 150 and r > g + 35 and r > b + 35
+
+    outer_cream = sum(1 for r, g, b in px if (r, g, b) == (245, 238, 220))
+    inner_panel = sum(1 for r, g, b in px if (r, g, b) == (252, 245, 228))
+    if outer_cream > 0.12 * w * h and inner_panel > 0.22 * w * h:
+        return [f"sign_inner_board_layers outer={outer_cream} inner={inner_panel}"]
+    inner_cream = 0
+    for y in range(margin, h - margin):
+        for x in range(margin, w - margin):
+            r, g, b = px[y * w + x]
+            if r > 235 and g > 228 and b > 210 and not _is_red(r, g, b):
+                inner_cream += 1
+    red_x, red_y = [], []
+    for y in range(h):
+        for x in range(w):
+            r, g, b = px[y * w + x]
+            if _is_red(r, g, b):
+                red_x.append(x)
+                red_y.append(y)
+    if len(red_x) < 400:
+        return [f"sign_red_glyphs_too_few px={len(red_x)}"]
+    rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
+    if rx0 < margin or ry0 < margin or rx1 > w - margin or ry1 > h - margin:
+        return [
+            f"sign_text_outside_board red_bbox=({rx0},{ry0})-({rx1},{ry1}) margin={margin}"
+        ]
+    if inner_cream < 800:
+        return [f"sign_board_field_small cream_px={inner_cream}"]
+    return []
+
+
+def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list[str]:
+    """Front-on hero: red glyph bbox inside cream board bbox from mask."""
+    if not front_rgb.is_file() or not front_mask.is_file():
+        return ["sign_front_preview_missing"]
+    rgb = _load_rgba(front_rgb)
+    mask = _load_rgba(front_mask)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 140 and r > g + 30 and r > b + 30
+
+    hero_x, hero_y = [], []
+    red_x, red_y = [], []
+    for y in range(h):
+        for x in range(w):
+            r, g, b, _a = rpx[y * w + x]
+            if mpx[y * w + x][3] >= 160:
+                hero_x.append(x)
+                hero_y.append(y)
+            if mpx[y * w + x][3] >= 160 and _is_red(r, g, b):
+                red_x.append(x)
+                red_y.append(y)
+    if not hero_x or not red_x:
+        return [f"sign_front_board_or_red_missing hero={len(hero_x)} red={len(red_x)}"]
+    hx0, hx1, hy0, hy1 = min(hero_x), max(hero_x), min(hero_y), max(hero_y)
+    face_h = hy1 - hy0
+    by0 = hy0 + int(face_h * 0.22)
+    by1 = hy1
+    bx0, bx1 = hx0, hx1
+    board_x, board_y = hero_x, [y for y in hero_y if y >= by0]
+    if not board_y:
+        return ["sign_front_board_face_empty"]
+    by0, by1 = min(board_y), max(board_y)
+    rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
+    pad_x = max(2, int((bx1 - bx0) * 0.02))
+    pad_y = max(2, int((by1 - by0) * 0.03))
+    if rx1 > bx1 or ry1 > by1 or rx0 < bx0 or ry0 < by0:
+        return [
+            f"sign_front_text_outside_board red=({rx0},{ry0})-({rx1},{ry1}) "
+            f"board=({bx0},{by0})-({bx1},{by1})"
+        ]
+    if rx0 < bx0 + pad_x or ry0 < by0 + pad_y:
+        return [
+            f"sign_front_text_margin red=({rx0},{ry0})-({rx1},{ry1}) "
+            f"board=({bx0},{by0})-({bx1},{by1}) pad=({pad_x},{pad_y})"
+        ]
+    return []
+
+
 def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     """Centre region must show stronger horizontal than vertical mortar edge energy."""
     try:
