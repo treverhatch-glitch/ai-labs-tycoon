@@ -91,15 +91,22 @@ def setup_studio_world() -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
     bg = nodes.new("ShaderNodeBackground")
+    # Mid-grey visible backdrop; HDRI may light objects but stays hidden in the render.
+    bg.inputs["Color"].default_value = STUDIO_GREY
+    bg.inputs["Strength"].default_value = 1.0
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
     if hdr_path.is_file():
         env = nodes.new("ShaderNodeTexEnvironment")
         env.image = bpy.data.images.load(str(hdr_path))
-        links.new(env.outputs["Color"], bg.inputs["Color"])
-        bg.inputs["Strength"].default_value = 0.9
-    else:
-        bg.inputs["Color"].default_value = STUDIO_GREY
-        bg.inputs["Strength"].default_value = 1.0
+        light = nodes.new("ShaderNodeBackground")
+        light.inputs["Strength"].default_value = 0.22
+        links.new(env.outputs["Color"], light.inputs["Color"])
+        mix = nodes.new("ShaderNodeMixShader")
+        mix.inputs["Fac"].default_value = 0.0
+        links.new(bg.outputs["Background"], mix.inputs[1])
+        links.new(light.outputs["Background"], mix.inputs[2])
+        links.new(mix.outputs["Shader"], out.inputs["Surface"])
+        return
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 

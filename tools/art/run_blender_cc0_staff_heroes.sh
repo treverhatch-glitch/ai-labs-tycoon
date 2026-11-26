@@ -26,4 +26,11 @@ echo "$out" | grep -q '^OK staff-researcher-idle ' || { echo "FAIL staff-researc
 for aid in staff-founder-idle staff-researcher-idle; do
   test -s "docs/art/previews/${aid}.png" || { echo "FAIL missing preview $aid"; exit 1; }
 done
+python3 tools/art/check_cc0_staff_preview_upright.py
+set +e
+conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)
+set -e
+echo "$conn_out" | grep -E '^(OK|FAIL) staff-(founder|researcher)-idle' || true
+echo "$conn_out" | grep -q '^OK staff-founder-idle' || { echo "FAIL connectivity founder"; exit 1; }
+echo "$conn_out" | grep -q '^OK staff-researcher-idle' || { echo "FAIL connectivity researcher"; exit 1; }
 echo "cc0 staff heroes OK"

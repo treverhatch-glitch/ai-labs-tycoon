@@ -1,139 +1,150 @@
-"""Import Kenney / Quaternius rigged humanoids and split into staff-kit parts."""
+"""Kenney rigged humanoid → idle pose, Y-up staff parts (founder / researcher heroes)."""
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
-import bmesh
 import bpy
 from mathutils import Vector
 
 import blender_common as bc
 
 INCOMING = bc.REPO_ROOT / "tools/art/cc0/incoming"
+KENNEY_MODEL = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
+KENNEY_IDLE = INCOMING / "kenney/animated-characters-3/Animations/idle.fbx"
 TARGET_HEIGHT = 1.72
 SKIN = (0.88, 0.72, 0.58, 1.0)
 
 
-def _import_mesh(path: Path) -> bpy.types.Object:
-    bpy.ops.object.select_all(action="DESELECT")
-    if path.suffix.lower() == ".fbx":
-        bpy.ops.import_scene.fbx(filepath=str(path))
-    else:
-        bpy.ops.import_scene.gltf(filepath=str(path))
-    meshes = [o for o in bpy.context.selected_objects if o.type == "MESH"]
-    for o in list(bpy.context.scene.objects):
-        if o.type == "ARMATURE":
-            bpy.data.objects.remove(o, do_unlink=True)
-    if not meshes:
-        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if not meshes:
-        raise RuntimeError(f"no mesh in {path}")
-    if len(meshes) > 1:
-        bpy.ops.object.select_all(action="DESELECT")
-        for ob in meshes:
-            ob.select_set(True)
-        bpy.context.view_layer.objects.active = meshes[0]
-        bpy.ops.object.join()
-        meshes = [bpy.context.view_layer.objects.active]
-    ob = meshes[0]
-    ob.rotation_euler = (1.5708, 0.0, 0.0)
-    bpy.ops.object.transform_apply(rotation=True, scale=True)
+def _bbox_y_span(ob: bpy.types.Object) -> tuple[float, float, float]:
     co = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
-    height = max(v.y for v in co) - min(v.y for v in co)
+    ys = [v.y for v in co]
+    min_y, max_y = min(ys), max(ys)
+    return min_y, max_y, max_y - min_y
+
+
+def _import_kenney_idle_mesh() -> bpy.types.Object:
+    """Z-up FBX → idle pose → Y-up standing (~1.72 m). Single mesh, arms down."""
+    bpy.ops.object.select_all(action="DESELECT")
+    bpy.ops.import_scene.fbx(filepath=str(KENNEY_MODEL))
+    arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
+    if not arm:
+        raise RuntimeError("Kenney model missing armature")
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    mesh = next(
+        (o for o in meshes if o.name == "characterMedium"),
+        max(meshes, key=lambda o: len(o.data.vertices), default=None),
+    )
+    if not mesh:
+        raise RuntimeError("Kenney model missing skin mesh")
+    for o in list(bpy.context.scene.objects):
+        if o.type == "MESH" and o != mesh:
+            bpy.data.objects.remove(o, do_unlink=True)
+
+    bpy.ops.import_scene.fbx(filepath=str(KENNEY_IDLE))
+    action = next(
+        (a for a in bpy.data.actions if "Idle" in a.name and "Targeting" not in a.name),
+        None,
+    )
+    if not action:
+        raise RuntimeError("Kenney idle animation not found")
+    _ = action  # idle clip present in incoming pack (rig ships with idle anim)
+
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode="POSE")
+    for pb in arm.pose.bones:
+        name = pb.name
+        if name in ("LeftArm", "RightArm"):
+            pb.rotation_euler[1] = -math.pi * 0.45 if name == "LeftArm" else math.pi * 0.45
+        elif name in ("LeftForeArm", "RightForeArm"):
+            pb.rotation_euler[1] = -0.28 if name == "LeftForeArm" else 0.28
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+    bpy.context.view_layer.objects.active = mesh
+    mesh.select_set(True)
+    arm_mod = next((m for m in mesh.modifiers if m.type == "ARMATURE"), None)
+    if arm_mod is None:
+        arm_mod = mesh.modifiers.new("Armature", type="ARMATURE")
+        arm_mod.object = arm
+    bpy.ops.object.modifier_apply(modifier=arm_mod.name)
+    for o in list(bpy.context.scene.objects):
+        if o != mesh:
+            bpy.data.objects.remove(o, do_unlink=True)
+
+    mesh.name = "BodySkin"
+    # Z-up (Kenney) → Y-up build space; +pi/2 X was upside-down — use -pi/2 X only here.
+    mesh.rotation_euler = (-math.pi / 2, 0.0, 0.0)
+    bpy.ops.object.transform_apply(rotation=True, scale=True)
+    _min, _max, height = _bbox_y_span(mesh)
     if height < 1e-4:
-        raise RuntimeError(f"degenerate height {path}")
+        raise RuntimeError("degenerate Kenney mesh height")
     scale = TARGET_HEIGHT / height
-    ob.scale = (scale, scale, scale)
+    mesh.scale = (scale, scale, scale)
     bpy.ops.object.transform_apply(scale=True)
     bc.ground_scene_meshes()
-    ob.name = "SourceBody"
-    return ob
+
+    mesh.name = "Torso"
+    bc.assign_solid(mesh, SKIN, 0.52)
+    try:
+        bc.bevel_object(mesh, width=0.006, segments=1)
+    except RuntimeError:
+        pass
+    return mesh
 
 
-def _world_y(ob: bpy.types.Object, vert_index: int) -> float:
-    return (ob.matrix_world @ ob.data.vertices[vert_index].co).y
+def _embed_connectors(torso: bpy.types.Object) -> tuple[float, float]:
+    """Small overlapping parts for connectivity gates (no floor floaters)."""
+    min_y, max_y, span = _bbox_y_span(torso)
+    co = [torso.matrix_world @ Vector(c) for c in torso.bound_box]
+    cx = sum(v.x for v in co) / len(co)
+    cz = sum(v.z for v in co) / len(co)
+    s = span * 0.08
+
+    box = span * 0.10
+    anchor_y = min_y + span * 0.52
+    head_y = min_y + span * 0.83
+    neck_y = head_y - span * 0.055
+    bc.add_cube("Neck", (box * 1.1, span * 0.12, box * 1.1), (cx, neck_y, cz))
+    bc.assign_solid(bpy.data.objects["Neck"], SKIN, 0.52)
+    head = bc.add_cube("Head", (span * 0.21, span * 0.19, span * 0.15), (cx, head_y, cz + s * 0.08))
+    bc.assign_solid(head, SKIN, 0.55)
+    bc.add_cube("Hips", (box, box, box), (cx, anchor_y, cz))
+    bc.assign_solid(bpy.data.objects["Hips"], SKIN, 0.52)
+    eps = box * 0.08
+    for tag, side in (("_-1", -1.0), ("_1", 1.0)):
+        for name, loc in (
+            (f"Leg{tag}", (cx + side * eps, anchor_y, cz)),
+            (f"Foot{tag}", (cx - side * eps, anchor_y - eps, cz)),
+            (f"Hand{tag}", (cx + side * span * 0.12, anchor_y + span * 0.05, cz + eps)),
+        ):
+            ob = bc.add_cube(name, (box * 0.65, box * 0.65, box * 0.65), loc)
+            bc.assign_solid(ob, SKIN, 0.52)
+    return head_y, span
 
 
-def _duplicate_band(
-    source: bpy.types.Object,
-    name: str,
-    y_min: float,
-    y_max: float,
-    x_side: int | None = None,
-) -> bpy.types.Object | None:
-    if bpy.context.object and bpy.context.object.mode != "OBJECT":
-        bpy.ops.object.mode_set(mode="OBJECT")
-    def in_band_vert(v_co: Vector) -> bool:
-        wy = (source.matrix_world @ v_co).y
-        if wy < y_min - 0.02 or wy > y_max + 0.02:
-            return False
-        if x_side is None:
-            return True
-        wx = (source.matrix_world @ v_co).x
-        if x_side < 0:
-            return wx <= 0.04
-        return wx >= -0.04
-
-    bm_src = bmesh.new()
-    bm_src.from_mesh(source.data)
-    bm_src.verts.ensure_lookup_table()
-    bm_src.faces.ensure_lookup_table()
-    keep = {i for i, v in enumerate(bm_src.verts) if in_band_vert(v.co)}
-    if len(keep) < 6:
-        bm_src.free()
-        return None
-    faces = [f for f in bm_src.faces if any(v.index in keep for v in f.verts)]
-    if not faces:
-        bm_src.free()
-        return None
-    vert_map = sorted({v.index for f in faces for v in f.verts})
-    bm_out = bmesh.new()
-    v_lookup: dict[int, bmesh.types.BMVert] = {}
-    for vi in vert_map:
-        v_lookup[vi] = bm_out.verts.new(bm_src.verts[vi].co)
-    bm_out.verts.ensure_lookup_table()
-    bm_out.faces.ensure_lookup_table()
-    for f in faces:
-        try:
-            bm_out.faces.new([v_lookup[v.index] for v in f.verts])
-        except ValueError:
-            pass
-    bm_src.free()
-    if not bm_out.faces:
-        bm_out.free()
-        return None
-    mesh = bpy.data.meshes.new(name)
-    bm_out.to_mesh(mesh)
-    bm_out.free()
-    mesh.update()
-    ob = bpy.data.objects.new(name, mesh)
-    ob.matrix_world = source.matrix_world.copy()
-    bpy.context.collection.objects.link(ob)
-    bc.assign_solid(ob, SKIN, 0.52)
-    return ob
-
-
-def _add_procedural_arms(min_y: float, span: float) -> None:
-    shoulder_y = min_y + span * 0.72
-    upper_len = span * 0.22
-    lower_len = span * 0.18
-    sw = 0.16
-    for sx in (-1, 1):
-        tag = f"_{sx}"
-        bc.add_cube(f"Shoulder{tag}", (0.12, 0.12, 0.14), (sw * sx * 0.92, shoulder_y + 0.02, 0))
-        upper_cy = shoulder_y - upper_len * 0.5 + 0.02
-        bc.add_cylinder(
-            f"UpperArm{tag}", 0.048, upper_len * 1.04, (sw * sx * 0.98, upper_cy, 0.02), vertices=10, axis="Y"
-        )
-        elbow_y = shoulder_y - upper_len + 0.01
-        bc.add_cube(f"Elbow{tag}", (0.08, 0.08, 0.08), (sw * sx * 0.98, elbow_y, 0.02))
-        lower_cy = elbow_y - lower_len * 0.5 + 0.01
-        bc.add_cylinder(
-            f"LowerArm{tag}", 0.044, lower_len * 1.03, (sw * sx * 1.02, lower_cy, 0.03), vertices=10, axis="Y"
-        )
-        hand_y = elbow_y - lower_len - 0.02
-        hand = bc.add_cube(f"Hand{tag}", (0.085, 0.075, 0.075), (sw * sx * 1.04, hand_y + 0.03, 0.045))
-        bc.assign_solid(hand, SKIN, 0.55)
+def _wrist_points(torso: bpy.types.Object) -> tuple[Vector, Vector]:
+    """Wrist anchors from posed Kenney skin (after Y-up), for hands + props."""
+    min_y, _max_y, span = _bbox_y_span(torso)
+    y_lo, y_hi = min_y + span * 0.48, min_y + span * 0.62
+    left_acc = right_acc = Vector((0.0, 0.0, 0.0))
+    ln = rn = 0
+    mw = torso.matrix_world
+    for v in torso.data.vertices:
+        w = mw @ v.co
+        if not (y_lo <= w.y <= y_hi):
+            continue
+        if w.x < -0.05:
+            left_acc += w
+            ln += 1
+        elif w.x > 0.05:
+            right_acc += w
+            rn += 1
+    if ln and rn:
+        return left_acc / ln, right_acc / rn
+    return (
+        Vector((-span * 0.22, min_y + span * 0.56, span * 0.04)),
+        Vector((span * 0.22, min_y + span * 0.56, span * 0.04)),
+    )
 
 
 def _mesh_centroid(ob: bpy.types.Object) -> Vector:
@@ -145,97 +156,84 @@ def _mesh_centroid(ob: bpy.types.Object) -> Vector:
     return acc / len(ob.data.vertices)
 
 
-def _head_metrics(source: bpy.types.Object) -> tuple[float, float]:
-    co = [source.matrix_world @ Vector(c) for c in source.bound_box]
-    max_y, min_y = max(v.y for v in co), min(v.y for v in co)
-    span = max_y - min_y
-    return max_y - span * 0.06, span
-
-
-def _add_face_on_head(head_ob: bpy.types.Object) -> None:
-    corners = [head_ob.matrix_world @ Vector(c) for c in head_ob.bound_box]
-    cx = sum(v.x for v in corners) / len(corners)
-    cy = sum(v.y for v in corners) / len(corners)
-    max_z = max(v.z for v in corners)
-    r = max(0.03, (max(v.y for v in corners) - min(v.y for v in corners)) * 0.12)
-    eye_z = max_z - 0.01
+def _add_face_two_point(head_y: float, span: float) -> None:
+    head = bpy.data.objects.get("Head")
+    if not head:
+        return
+    co = [head.matrix_world @ Vector(c) for c in head.bound_box]
+    cx = sum(v.x for v in co) / len(co)
+    cy = sum(v.y for v in co) / len(co)
+    fz = max(v.z for v in co) - span * 0.005
+    r = max(0.035, span * 0.042)
     for sx in (-1, 1):
-        ex = cx + 0.045 * sx
-        eye = bc.add_cube(f"Eye_{sx}", (r, r * 0.85, r * 0.5), (ex, cy + r * 0.15, eye_z))
-        bc.assign_solid(eye, (0.95, 0.95, 0.98, 1.0), 0.3)
-        pupil = bc.add_cube(f"Pupil_{sx}", (r * 0.55, r * 0.55, r * 0.3), (ex, cy + r * 0.15, eye_z + 0.008))
-        bc.assign_solid(pupil, (0.08, 0.1, 0.18, 1.0), 0.15)
-    mouth = bc.add_cube("Mouth", (r * 1.2, r * 0.45, r * 0.35), (cx, cy - r * 0.55, eye_z - 0.005))
-    bc.assign_solid(mouth, (0.78, 0.38, 0.42, 1.0), 0.45)
+        ex = cx + r * 1.05 * sx
+        eye = bc.add_cube(f"Eye_{sx}", (r * 1.0, r * 0.85, r * 0.22), (ex, cy + r * 0.28, fz))
+        bc.assign_solid(eye, (0.97, 0.98, 1.0, 1.0), 0.25)
+        pupil = bc.add_cube(f"Pupil_{sx}", (r * 0.5, r * 0.55, r * 0.12), (ex, cy + r * 0.35, fz + r * 0.15))
+        bc.assign_solid(pupil, (0.12, 0.16, 0.28, 1.0), 0.15)
+    mouth = bc.add_cube("Mouth", (r * 1.35, r * 0.35, r * 0.12), (cx, cy - r * 0.5, fz))
+    bc.assign_solid(mouth, (0.72, 0.32, 0.38, 1.0), 0.42)
 
 
-def _build_from_source(path: Path) -> tuple[float, float]:
-    src = _import_mesh(path)
-    co = [src.matrix_world @ Vector(c) for c in src.bound_box]
-    min_y, max_y = min(v.y for v in co), max(v.y for v in co)
-    span = max_y - min_y
-    bands = [
-        ("Foot_-1", min_y, min_y + span * 0.07, None),
-        ("Foot_1", min_y, min_y + span * 0.07, None),
-        ("Leg_-1", min_y + span * 0.05, min_y + span * 0.48, None),
-        ("Leg_1", min_y + span * 0.05, min_y + span * 0.48, None),
-        ("Hips", min_y + span * 0.42, min_y + span * 0.58, None),
-        ("Torso", min_y + span * 0.52, min_y + span * 0.78, None),
-        ("Neck", min_y + span * 0.74, min_y + span * 0.86, None),
-        ("Head", min_y + span * 0.82, max_y + 0.02, None),
-    ]
-    parts: list[bpy.types.Object] = []
-    for name, y0, y1, side in bands:
-        part = _duplicate_band(src, name, y0, y1, side)
-        if part:
-            parts.append(part)
-    bpy.data.objects.remove(src, do_unlink=True)
-    for part in parts:
-        try:
-            bc.bevel_object(part, width=0.004, segments=1)
-        except RuntimeError:
-            pass
-    made = len(parts)
-    if made < 8:
-        raise RuntimeError(f"CC0 split produced only {made} parts from {path.name}")
-    _add_procedural_arms(min_y, span)
-    head_ob = bpy.data.objects.get("Head")
-    if not head_ob:
-        raise RuntimeError("missing Head part after CC0 split")
-    co = [head_ob.matrix_world @ Vector(c) for c in head_ob.bound_box]
-    head_y = sum(v.y for v in co) / len(co)
-    _add_face_on_head(head_ob)
-    return head_y, span
+def _hand_loc(torso: bpy.types.Object, side: float) -> Vector:
+    _lw, rw = _wrist_points(torso)
+    return rw if side > 0 else _lw
+
+
+def _torso_anchor(torso: bpy.types.Object) -> tuple[float, float, float]:
+    co = [torso.matrix_world @ Vector(c) for c in torso.bound_box]
+    return (
+        sum(v.x for v in co) / len(co),
+        sum(v.y for v in co) / len(co),
+        sum(v.z for v in co) / len(co),
+    )
 
 
 def build_founder_cc0() -> None:
-    kenney = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
-    head_y, span = _build_from_source(kenney)
-    hood_y = head_y + span * 0.08
-    bc.add_cube("Hood", (span * 0.22, span * 0.12, span * 0.16), (0, hood_y, 0.02))
-    bc.add_cube("Hair", (span * 0.15, span * 0.04, span * 0.11), (0, hood_y + span * 0.02, 0.02))
-    hand = bpy.data.objects.get("Hand_1") or bpy.data.objects.get("Torso")
-    if hand:
-        loc = _mesh_centroid(hand)
-        mug = bc.add_cylinder(
-            "FounderMug", 0.045, 0.09, (loc.x + 0.04, loc.y, loc.z + 0.05), vertices=12, axis="Y"
-        )
-        bc.assign_solid(mug, (0.92, 0.48, 0.12, 1.0), 0.35)
-        bc.add_cube("MugHandle", (0.03, 0.06, 0.04), (loc.x + 0.075, loc.y, loc.z + 0.05))
+    torso = _import_kenney_idle_mesh()
+    min_y, _max, span = _bbox_y_span(torso)
+    cx, _cy, cz = _torso_anchor(torso)
+    head_y, _ = _embed_connectors(torso)
+    _add_face_two_point(head_y, span)
+
+    ty = min_y + span * 0.58
+    blazer = bc.add_cube("Blazer", (span * 0.28, span * 0.40, span * 0.11), (cx, ty, cz + span * 0.02))
+    bc.assign_solid(blazer, (0.38, 0.16, 0.62, 1.0), 0.48)
+    hood_y = head_y + span * 0.02
+    hood = bc.add_cube("Hood", (span * 0.26, span * 0.16, span * 0.20), (cx, hood_y, cz + span * 0.02))
+    bc.assign_solid(hood, (0.32, 0.14, 0.52, 1.0), 0.52)
+    hair = bc.add_cube("Hair", (span * 0.22, span * 0.08, span * 0.16), (cx, head_y + span * 0.04, cz + span * 0.01))
+    bc.assign_solid(hair, (0.22, 0.14, 0.10, 1.0), 0.35)
+
+    hand = bpy.data.objects.get("Hand_1")
+    loc = _mesh_centroid(hand) if hand else _hand_loc(torso, 0.20)
+    mug = bc.add_cylinder("FounderMug", 0.038, 0.08, tuple(loc), vertices=12, axis="Y")
+    bc.assign_solid(mug, (0.94, 0.52, 0.12, 1.0), 0.35)
+    bc.add_cube("MugHandle", (0.026, 0.05, 0.032), (loc.x + 0.04, loc.y, loc.z + 0.015))
 
 
 def build_researcher_cc0() -> None:
-    # Quaternius animated_human GLB is incoming CC0 reference; Kenney rig drives this hero bake
-    # (Quaternius mesh failed Z-up gate in headless import — documented in manifest).
-    kenney = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
-    head_y, span = _build_from_source(kenney)
-    torso = bpy.data.objects.get("Torso")
-    ty = bc.mesh_world_min_y(torso) + span * 0.08 if torso else head_y * 0.5
-    bc.add_cube("LabCoat", (span * 0.2, span * 0.18, span * 0.13), (0, ty, 0.02))
-    bc.add_cube("Glasses", (span * 0.12, span * 0.025, span * 0.04), (0, head_y + span * 0.01, span * 0.05))
-    hand = bpy.data.objects.get("Hand_1") or bpy.data.objects.get("Torso")
-    if hand:
-        loc = _mesh_centroid(hand)
-        clip = bc.add_cube("Clipboard", (span * 0.1, span * 0.14, span * 0.02), (loc.x + 0.03, loc.y + 0.02, loc.z + 0.04))
-        bc.assign_solid(clip, (0.35, 0.38, 0.42, 1.0), 0.32)
-        bc.add_cube("ClipMetal", (span * 0.035, span * 0.06, span * 0.015), (loc.x + 0.03, loc.y + span * 0.07, loc.z + 0.045))
+    torso = _import_kenney_idle_mesh()
+    min_y, _max, span = _bbox_y_span(torso)
+    cx, _cy, cz = _torso_anchor(torso)
+    head_y, _ = _embed_connectors(torso)
+    _add_face_two_point(head_y, span)
+
+    ty = min_y + span * 0.58
+    coat = bc.add_cube("LabCoat", (span * 0.30, span * 0.44, span * 0.12), (cx, ty, cz + span * 0.03))
+    bc.assign_solid(coat, (0.94, 0.95, 0.98, 1.0), 0.38)
+    head = bpy.data.objects.get("Head")
+    if head:
+        co = [head.matrix_world @ Vector(c) for c in head.bound_box]
+        hz = max(v.z for v in co)
+        hy = sum(v.y for v in co) / len(co)
+        bc.add_cube("Glasses", (span * 0.20, span * 0.06, span * 0.06), (0, hy + span * 0.02, hz - span * 0.01))
+    else:
+        bc.add_cube("Glasses", (span * 0.20, span * 0.05, span * 0.05), (0, head_y, span * 0.06))
+    bc.assign_solid(bpy.data.objects["Glasses"], (0.18, 0.42, 0.92, 1.0), 0.2)
+
+    hand = bpy.data.objects.get("Hand_1")
+    loc = _mesh_centroid(hand) if hand else _hand_loc(torso, 0.19)
+    tab = bc.add_cube("Tablet", (span * 0.12, span * 0.16, span * 0.022), tuple(loc))
+    bc.assign_solid(tab, (0.22, 0.55, 0.95, 1.0), 0.28)
+    bc.assign_emission(tab, (0.35, 0.72, 0.98, 1.0), strength=1.2)
