@@ -190,17 +190,15 @@ def add_sign_mesh_text(
     dx = float(ob.dimensions.x)
     dz = float(ob.dimensions.z)
     if dx > 1e-4 and dz > 1e-4:
-        s = min((board_w * 0.62) / dx, (board_h * 0.58) / dz)
+        s = min((board_w * 0.67) / dx, (board_h * 0.67) / dz)
         ob.scale = (s, s, s)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
     board_y = float(board.matrix_world.translation.y)
-    thin_y = float(board.dimensions.y)
-    y_face = board_y + face_dir * (thin_y * 0.5)
     ob.location.x = board.location.x
     ob.location.z = board.location.z
-    ob.location.y = y_face - face_dir * (extrude_m * 0.55 + 0.012)
+    ob.location.y = board_y
     bpy.ops.object.transform_apply(location=True)
     assign_sign_text_red(ob)
     return ob
@@ -394,6 +392,24 @@ def _bounds_world(objects: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
+def add_sign_solid_core(objects: list[bpy.types.Object]) -> bpy.types.Object:
+    """Hidden AABB core so boolean chains every glyph/post into one island (no voxel)."""
+    mins, maxs = _bounds_world(objects)
+    center = (mins + maxs) * 0.5
+    span = maxs - mins
+    bpy.ops.mesh.primitive_cube_add(size=1, location=center)
+    core = bpy.context.active_object
+    core.name = "SignSolidCore"
+    core.scale = (
+        max(0.04, span.x * 0.11),
+        max(0.9, span.y * 0.92),
+        max(0.06, span.z * 0.42),
+    )
+    bpy.ops.object.transform_apply(scale=True)
+    assign_solid(core, (0.55, 0.40, 0.28, 1.0), 0.55)
+    return core
+
+
 def add_sign_weld_plate(objects: list[bpy.types.Object]) -> bpy.types.Object:
     """Wide hidden plate so posts/board/glyphs boolean to one island."""
     mins, maxs = _bounds_world(objects)
@@ -403,9 +419,9 @@ def add_sign_weld_plate(objects: list[bpy.types.Object]) -> bpy.types.Object:
     plate = bpy.context.active_object
     plate.name = "SignWeldPlate"
     plate.scale = (
-        max(0.35, span.x * 0.96),
-        max(0.05, span.y * 0.22),
-        max(0.22, span.z * 0.55),
+        max(0.35, span.x * 0.98),
+        max(0.06, span.y * 0.16),
+        max(0.22, span.z * 0.98),
     )
     bpy.ops.object.transform_apply(scale=True)
     assign_solid(plate, (0.96, 0.94, 0.92, 1.0), 0.5)
@@ -479,16 +495,49 @@ def _mesh_face_islands(bm: "bmesh.types.BMesh") -> list[list]:
     return islands
 
 
+def snapshot_sign_text_face_indices(ob: bpy.types.Object) -> set[int]:
+    """Faces that carried SignTextRed before GLB material reset."""
+    text_faces: set[int] = set()
+    for i, poly in enumerate(ob.data.polygons):
+        idx = int(poly.material_index)
+        if idx <= 0 or idx >= len(ob.data.materials):
+            continue
+        mat = ob.data.materials[idx]
+        name = (mat.name if mat else "") or ""
+        if "SignTextRed" in name or name.startswith("SignText"):
+            text_faces.add(i)
+    return text_faces
+
+
+def restore_sign_text_face_materials(
+    ob: bpy.types.Object, text_faces: set[int], *, board_mat=None, red_mat=None
+) -> None:
+    """Re-apply SignBoard / SignTextRed slots after apply_packet34_gltf_materials reset."""
+    if red_mat is None:
+        red_mat = make_sign_text_red_material()
+        red_mat.name = "SignTextRed"
+    if board_mat is None:
+        board_mat = ob.data.materials[0] if ob.data.materials else bpy.data.materials.new("SignBoard")
+    ob.data.materials.clear()
+    ob.data.materials.append(board_mat)
+    ob.data.materials.append(red_mat)
+    if text_faces:
+        for i, poly in enumerate(ob.data.polygons):
+            poly.material_index = 1 if i in text_faces else 0
+        return
+    assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+
+
 def assign_sign_text_faces_red(
     ob: bpy.types.Object,
     *,
-    view_dir: tuple[float, float, float] = (0.0, -1.0, 0.0),
+    view_dir: tuple[float, float, float] = (0.0, 0.0, 1.0),
 ) -> None:
-    """Tag faces pointing at the front camera (+Y world, −Y normals) as SignTextRed."""
+    """Tag FOR SALE faces on the public board face (glTF +Z front after export rotate)."""
     import bmesh
 
     view = Vector(view_dir).normalized()
-    alt_view = Vector((0.0, 1.0, 0.0)) if view.y < 0 else Vector((0.0, -1.0, 0.0))
+    alt_view = -view
     red = make_sign_text_red_material()
     red.name = "SignTextRed"
     board = None
@@ -505,18 +554,43 @@ def assign_sign_text_faces_red(
     bm.from_mesh(ob.data)
     bm.faces.ensure_lookup_table()
     bm.normal_update()
+    xs = [v.co.x for v in bm.verts]
     ys = [v.co.y for v in bm.verts]
+    zs = [v.co.z for v in bm.verts]
+    x_lo, x_hi = min(xs), max(xs)
     y_lo, y_hi = min(ys), max(ys)
-    board_y_extent = max(0.12, float(ob.dimensions.y))
-    board_floor = y_lo + (y_hi - y_lo) * 0.55
+    z_lo, z_hi = min(zs), max(zs)
+    thin = min(x_hi - x_lo, y_hi - y_lo, z_hi - z_lo)
+    thick_axis = 0
+    if (y_hi - y_lo) == thin:
+        thick_axis = 1
+    elif (z_hi - z_lo) == thin:
+        thick_axis = 2
+    board_center = (
+        (x_lo + x_hi) * 0.5,
+        y_lo + (y_hi - y_lo) * 0.72,
+        (z_lo + z_hi) * 0.5,
+    )
+    half_w = (x_hi - x_lo) * 0.44
+    board_y0 = y_lo + (y_hi - y_lo) * 0.42
+    z_front = z_hi - max(0.05, thin * 4.0)
     for face in bm.faces:
         c = face.calc_center_median()
-        outward = face.normal.dot(view) > 0.38 or face.normal.dot(alt_view) > 0.38
-        on_board = c.y >= board_floor - board_y_extent * 0.15
-        if outward and on_board:
-            face.material_index = 1
+        if thick_axis == 2:
+            glyph = (
+                face.normal.z > 0.28
+                and c.z >= z_front
+                and board_y0 <= c.y <= y_hi + 0.02
+                and abs(c.x - board_center[0]) <= half_w
+            )
         else:
-            face.material_index = 0
+            glyph = (
+                face.normal.y < -0.35
+                and c.y <= y_lo + max(0.08, thin * 6.0)
+                and board_y0 <= c.y <= y_hi + 0.02
+                and abs(c.x - board_center[0]) <= half_w
+            )
+        face.material_index = 1 if glyph else 0
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()
@@ -634,13 +708,20 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         elif asset_id == "garage-land-for-sale-sign":
             root = link_or_join(parts)
             sign_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
-            weld_coincident_vertices(root, threshold=min(0.10, sign_extent * 0.04))
-            voxel_shell_merge(root, voxel_size=min(0.01, sign_extent * 0.004))
+            weld_coincident_vertices(root, threshold=min(0.08, sign_extent * 0.03))
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=min(0.007, sign_extent * 0.0035))
+                weld_coincident_vertices(root, threshold=0.01)
             for _ in range(3):
                 if mesh_island_count(root) <= 1:
                     break
                 spine = add_connect_spine_part([root])
                 root = union_overlapping_meshes([root, spine])
+                weld_coincident_vertices(root, threshold=0.02)
+            if mesh_island_count(root) > 1:
+                plate = add_sign_weld_plate([root])
+                root = union_overlapping_meshes([root, plate])
+                weld_coincident_vertices(root, threshold=0.015)
         else:
             root = union_overlapping_meshes(parts)
     else:
@@ -682,7 +763,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         apply_preview_material(root, tex_dir, asset_id)
     rotate_script_y_to_export_up(root)
     if asset_id == "garage-land-for-sale-sign":
-        assign_sign_text_faces_red(root, view_dir=(0.0, 1.0, 0.0))
+        assign_sign_text_faces_red(root, view_dir=(0.0, 0.0, 1.0))
     snap_root_to_ground_z(root)
     min_z = mesh_world_min_z(root)
     if min_z > 0.012:
@@ -743,7 +824,7 @@ def reexport_packet34_glb(asset_id: str, category: str = "garage-kit") -> None:
         parts = max(len(part_names), 3)
     apply_packet34_gltf_materials(ob, asset_id, tex_dir, parts, part_names or [asset_id])
     if asset_id == "garage-land-for-sale-sign":
-        assign_sign_text_faces_red(ob, view_dir=(0.0, 1.0, 0.0))
+        assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
     export_gltf(ob, glb, packet34=True)
 
 
@@ -1208,10 +1289,6 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
         return
     albedo = tex_dir / f"{asset_id}_albedo.png"
     if asset_id == "garage-land-for-sale-sign" and albedo.is_file():
-        if any(m and "SignTextRed" in m.name for m in ob.data.materials):
-            if not any(p.material_index == 1 for p in ob.data.polygons):
-                assign_sign_text_faces_red(ob, view_dir=(0.0, 1.0, 0.0))
-            return
         rough = tex_dir / f"{asset_id}_roughness.png"
         board_mat = _make_image_pbr_material(
             "SignBoard",
@@ -1224,7 +1301,8 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
         ob.data.materials.clear()
         ob.data.materials.append(board_mat)
         ob.data.materials.append(red)
-        assign_sign_text_faces_red(ob, view_dir=(0.0, 1.0, 0.0))
+        if not any(p.material_index == 1 for p in ob.data.polygons):
+            assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
         return
     rough = tex_dir / f"{asset_id}_roughness.png"
     if not albedo.is_file():

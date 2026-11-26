@@ -32,7 +32,7 @@ manifest = json.loads((repo / "unity/Assets/Art/EarlyGame/garage-manifest.json")
 BBOX_SPEC = {
     "garage-exterior-wall": (4.0, 3.0, 0.20),
     "garage-window-frame": (1.2, 1.0, 0.22),
-    "garage-land-for-sale-sign": (0.95, 1.95, 0.12),
+    "garage-land-for-sale-sign": (0.95, 1.25, 0.29),
     "garage-lot-curb": (1.0, 0.15, 0.30),
 }
 BBOX_TOL = 0.25

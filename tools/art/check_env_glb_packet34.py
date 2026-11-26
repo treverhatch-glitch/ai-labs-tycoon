@@ -188,6 +188,36 @@ def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
     elif asset_id in {"garage-exterior-wall", "garage-window-frame", "garage-land-for-sale-sign"}:
         if height > long_axis * 1.85 and asset_id != "garage-exterior-wall":
             errs.append(f"vertical_slab_glb h={height:.2f} long={long_axis:.2f}")
+    if asset_id == "garage-land-for-sale-sign":
+        errs.extend(check_sign_glb_board_and_text(gltf))
+    return errs
+
+
+def check_sign_glb_board_and_text(gltf: dict) -> list[str]:
+    """Committed sign GLB must span a ~0.9x0.6 board and include SignTextRed (fails 85c48f17 class)."""
+    errs: list[str] = []
+    mats = _material_names(gltf)
+    if not any("SignTextRed" in m for m in mats):
+        errs.append("sign_glb_missing_SignTextRed_material")
+    bounds = _mesh_position_bounds(gltf)
+    if not bounds:
+        return errs + ["sign_glb_no_position_bounds"]
+    mn, mx = bounds
+    width = mx[0] - mn[0]
+    height = mx[1] - mn[1]
+    depth = mx[2] - mn[2]
+    # glTF Y-up: horizontal span, vertical post height, thin depth.
+    ex = sorted((width, height, depth))
+    thin, mid, wide = ex[0], ex[1], ex[2]
+    if wide < 0.78:
+        errs.append(f"sign_glb_no_board_bbox wide={wide:.2f} need~0.9")
+    if mid < 0.48:
+        errs.append(f"sign_glb_no_board_bbox tall={mid:.2f} need~0.6+posts")
+    if thin > 0.48:
+        errs.append(f"sign_glb_depth_too_thick thin={thin:.2f} need~0.12-0.44")
+    prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
+    if prims < 1:
+        errs.append("sign_glb_no_primitives")
     return errs
 
 

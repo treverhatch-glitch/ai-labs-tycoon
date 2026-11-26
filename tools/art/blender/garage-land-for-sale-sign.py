@@ -10,11 +10,11 @@ import blender_common as bc  # noqa: E402
 REPO = Path(__file__).resolve().parents[3]
 
 BOARD_X = 0.90
-BOARD_Y = 0.06
+BOARD_Y = 0.02
 BOARD_Z = 0.60
 POST_W = 0.10
-POST_H = 1.65
-POST_Z = -0.12
+POST_H = 1.20
+POST_Z = -0.14
 POST_SPAN = 1.05
 
 
@@ -48,16 +48,17 @@ def main():
     bc.assign_solid(post_l, (0.52, 0.38, 0.26, 1.0), 0.58)
     bc.assign_solid(post_r, (0.52, 0.38, 0.26, 1.0), 0.58)
 
-    back_rail = bc.add_cube(
-        "SignBackRail",
-        (POST_SPAN * 0.92, 0.10, 0.10),
-        (0, board_y - 0.25, POST_Z + 0.04),
-    )
-    bc.assign_solid(back_rail, (0.50, 0.36, 0.24, 1.0), 0.58)
+    # Hidden welds so posts + board boolean/join stays one island (no voxel remesh).
+    for name, sx, x_off in (("SignWeldL", 0.14, -POST_SPAN * 0.5), ("SignWeldR", 0.14, POST_SPAN * 0.5)):
+        weld = bc.add_cube(
+            name,
+            (POST_W * 1.2, 0.22, 0.12),
+            (x_off, board_y - BOARD_Z * 0.42, POST_Z * 0.35),
+        )
+        bc.assign_solid(weld, (0.50, 0.36, 0.24, 1.0), 0.58)
 
     board = bc.add_cube("Board", (BOARD_X, BOARD_Y, BOARD_Z), (0, board_y, 0))
     bc.assign_solid(board, (0.98, 0.96, 0.94, 1.0), 0.40)
-
     bc.add_sign_mesh_text("SignText", "FOR SALE", board, face_dir=-1.0, extrude_m=0.003)
 
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
