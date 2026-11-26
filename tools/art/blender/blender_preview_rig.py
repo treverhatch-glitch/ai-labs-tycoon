@@ -82,6 +82,12 @@ def camera_half_fov_rad(cam_data: bpy.types.Camera) -> float:
     return min(fov_h, fov_v) * 0.5
 
 
+def _default_hdri_path() -> Path | None:
+    repo = Path(__file__).resolve().parents[3]
+    exr = repo / "third_party/cc0/polyhaven-studio_small_09_1k.exr"
+    return exr if exr.is_file() else None
+
+
 def setup_studio_world() -> None:
     world = bpy.data.worlds.new("EarlyPreviewWorld")
     bpy.context.scene.world = world
@@ -90,10 +96,27 @@ def setup_studio_world() -> None:
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
-    bg = nodes.new("ShaderNodeBackground")
-    bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 1.0
-    links.new(bg.outputs["Background"], out.inputs["Surface"])
+    hdri_path = _default_hdri_path()
+    use_hdri = os.environ.get("EARLY_ART_CC0_HDRI", "1").strip().lower() not in ("0", "false", "no")
+    if use_hdri and hdri_path:
+        env = nodes.new("ShaderNodeTexEnvironment")
+        env.image = bpy.data.images.load(str(hdri_path), check_existing=True)
+        if hasattr(env.image, "colorspace_settings"):
+            env.image.colorspace_settings.name = "Linear Rec.709"
+        bg = nodes.new("ShaderNodeBackground")
+        bg.inputs["Strength"].default_value = 0.65
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Rotation"].default_value[2] = math.radians(35.0)
+        texco = nodes.new("ShaderNodeTexCoord")
+        links.new(texco.outputs["Generated"], mapping.inputs["Vector"])
+        links.new(mapping.outputs["Vector"], env.inputs["Vector"])
+        links.new(env.outputs["Color"], bg.inputs["Color"])
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
+    else:
+        bg = nodes.new("ShaderNodeBackground")
+        bg.inputs["Color"].default_value = STUDIO_GREY
+        bg.inputs["Strength"].default_value = 1.0
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
@@ -339,11 +362,11 @@ def render_preview_studio(
     setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
-        axis = "Z"
-        framing_margin = 0.92
-        lens_mm = 46.0
-        azimuth_deg = 30.0
-        elevation_deg = 14.0
+        axis = "Y"
+        framing_margin = 0.94
+        lens_mm = 48.0
+        azimuth_deg = 42.0
+        elevation_deg = 10.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:

@@ -46,6 +46,7 @@ def add_cube(name: str, size: tuple[float, float, float], location: tuple[float,
     ob.name = name
     ob.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
     bpy.ops.object.transform_apply(scale=True)
+    ob.location = location
     return ob
 
 
@@ -206,6 +207,7 @@ def orient_staff_assembly_for_export(
     if abs(scale - 1.0) > 0.02:
         root.scale = (scale, scale, scale)
         bpy.ops.object.transform_apply(scale=True)
+    ob.location = location
     bpy.context.view_layer.update()
     min_z, _max, sz = _mesh_scene_span_z(mesh_obs)
     if abs(min_z) > 1e-5:
@@ -235,6 +237,7 @@ def orient_staff_for_gltf(ob: bpy.types.Object, asset_id: str) -> None:
     if abs(scale - 1.0) > 0.02:
         ob.scale = (scale, scale, scale)
         bpy.ops.object.transform_apply(scale=True)
+    ob.location = location
     snap_root_to_ground_z(ob)
     verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
     xs = [p.x for p in verts]
@@ -282,6 +285,7 @@ def add_prejoin_spine(mesh_obs: list[bpy.types.Object], *, staff: bool = False) 
     depth = max(0.14, (maxs.z - mins.z) * (0.72 if not staff else 0.88))
     spine.scale = (span_x, height * ht, depth)
     bpy.ops.object.transform_apply(scale=True)
+    ob.location = location
     mesh_obs.append(spine)
 
 
@@ -304,6 +308,7 @@ def add_connecting_spine(ob: bpy.types.Object, *, staff: bool = False) -> None:
     span_z = max(0.08, (maxs.z - mins.z) * widen)
     spine.scale = (span_x, height * ht + 0.02, span_z)
     bpy.ops.object.transform_apply(scale=True)
+    ob.location = location
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     spine.select_set(True)
@@ -467,12 +472,16 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     part_count = len(mesh_obs)
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
+    staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
     if category == "staff-kit" and part_count < 6:
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
     if category == "staff-kit":
         import staff_connectivity as staff_conn
 
-        ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
+        if staff_cc0:
+            ok_conn, msg_conn = staff_conn.check_prejoin_connectivity_cc0(mesh_obs, asset_id)
+        else:
+            ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
         if not ok_conn:
             raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
     staff_export_root: bpy.types.Object | None = None
@@ -480,7 +489,12 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         add_prejoin_spine(mesh_obs)
         root = link_or_join(mesh_obs)
     elif category == "staff-kit":
-        staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
+        if staff_cc0:
+            import staff_cc0 as scc0  # noqa: WPS433
+
+            staff_export_root = scc0.orient_staff_cc0_assembly(mesh_obs, asset_id)
+        else:
+            staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
         ok_exp, msg_exp = staff_conn.check_objects_connectivity(mesh_obs, asset_id)
         if not ok_exp:
             raise RuntimeError(f"FAIL {asset_id}: export connectivity {msg_exp}")
@@ -619,6 +633,9 @@ def assign_solid(
 
 def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
     """Per-part saturated materials before join/bake."""
+    staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
+    if staff_cc0 and asset_id.startswith("staff-"):
+        return
     stroke_colors = (
         (0.12, 0.42, 0.88, 1.0),
         (0.82, 0.18, 0.22, 1.0),

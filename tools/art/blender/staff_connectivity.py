@@ -183,9 +183,105 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
     return root
 
 
+def parent_staff_cc0_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object:
+    """Parent Kenney-style CC0 parts under StaffRoot (no synthetic head/neck)."""
+    names = _by_name(mesh_obs)
+    bpy.ops.object.empty_add(type="PLAIN_AXES", location=(0.0, 0.0, 0.0))
+    root = bpy.context.active_object
+    root.name = "StaffRoot"
+    torso = names.get("Torso")
+    if torso:
+        bpy.ops.object.select_all(action="DESELECT")
+        torso.select_set(True)
+        root.select_set(True)
+        bpy.context.view_layer.objects.active = root
+        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+
+    def link(child: str, parent: str) -> None:
+        if child not in names or parent not in names:
+            return
+        bpy.ops.object.select_all(action="DESELECT")
+        names[child].select_set(True)
+        names[parent].select_set(True)
+        bpy.context.view_layer.objects.active = names[parent]
+        bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+
+    for child, parent in (
+        ("Leg_-1", "Torso"),
+        ("Leg_1", "Torso"),
+        ("Arm_-1", "Torso"),
+        ("Arm_1", "Torso"),
+        ("HardHatEng", "Torso"),
+        ("ToolBelt", "Torso"),
+    ):
+        link(child, parent)
+    for ob in mesh_obs:
+        base = ob.name.split(".")[0]
+        if ob.parent and ob.parent.type == "MESH":
+            continue
+        if not PROP_RE.search(base) or any(base.endswith(s) for s in PROP_SUFFIX_SKIP):
+            continue
+        arms = [names[k] for k in ("Arm_1", "Arm_-1") if k in names]
+        torso_ob = names.get("Torso")
+        best_arm = (
+            min(arms, key=lambda h: bbox_gap(_world_bbox(ob), _world_bbox(h))) if arms else None
+        )
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        parent_ob = None
+        if best_arm and bbox_gap(_world_bbox(ob), _world_bbox(best_arm)) <= 0.14:
+            parent_ob = best_arm
+        elif torso_ob and bbox_gap(_world_bbox(ob), _world_bbox(torso_ob)) <= 0.14:
+            parent_ob = torso_ob
+        if parent_ob:
+            parent_ob.select_set(True)
+            bpy.context.view_layer.objects.active = parent_ob
+            bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+    return root
+
+
+def check_prejoin_connectivity_cc0(mesh_obs: list[bpy.types.Object], asset_id: str) -> tuple[bool, str]:
+    """Connectivity for CC0 kit meshes (torso-centric, face on torso)."""
+    names = _by_name(mesh_obs)
+    for key in ("Torso", "Leg_-1", "Leg_1"):
+        if key not in names:
+            return False, f"{asset_id} missing CC0 part {key}"
+    rules: list[tuple[str, str]] = [
+        ("Leg_-1", "Torso"),
+        ("Leg_1", "Torso"),
+        ("Arm_-1", "Torso"),
+        ("Arm_1", "Torso"),
+        ("HardHatEng", "Torso"),
+        ("ToolBelt", "Torso"),
+    ]
+    for child_key, parent_key in rules:
+        if child_key not in names or parent_key not in names:
+            continue
+        gap = bbox_gap(_world_bbox(names[parent_key]), _world_bbox(names[child_key]))
+        if gap > MAX_GAP_M:
+            return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
+    for child_key, parent_key in (
+        ("Laptop", "Torso"),
+        ("Wrench", "Torso"),
+    ):
+        if child_key not in names:
+            continue
+        anchor = parent_key if parent_key in names else "Torso"
+        gap = bbox_gap(_world_bbox(names[anchor]), _world_bbox(names[child_key]))
+        if gap > MAX_GAP_M:
+            return False, f"{child_key}->{anchor} gap={gap:.4f}m"
+    return True, "cc0_prejoin_ok"
+
+
 def check_objects_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) -> tuple[bool, str]:
     """Exported meshes: each part bbox must touch its logical anchor (≤2 cm)."""
-    ok, msg = check_prejoin_connectivity(mesh_obs, asset_id)
+    import os
+
+    staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
+    if staff_cc0:
+        ok, msg = check_prejoin_connectivity_cc0(mesh_obs, asset_id)
+    else:
+        ok, msg = check_prejoin_connectivity(mesh_obs, asset_id)
     if not ok:
         return False, msg
     return True, f"objects={len(mesh_obs)} {msg}"
