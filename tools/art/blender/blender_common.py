@@ -203,6 +203,14 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
 
 
 def render_preview(ob: bpy.types.Object, path: Path) -> None:
+    if os.environ.get("EARLY_ART_PREVIEW_RIG", "").strip() in ("1", "true", "yes"):
+        try:
+            import blender_preview_rig as rig  # type: ignore
+
+            rig.render_preview_studio(ob, path)
+            return
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN preview rig, fallback legacy: {exc}")
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
     if hasattr(bpy.context.scene, "eevee"):
         bpy.context.scene.eevee.taa_render_samples = 16
