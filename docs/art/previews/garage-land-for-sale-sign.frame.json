@@ -1,8 +1,8 @@
 {
-  "glb_sha256": "275213b6469f4b873b0ee6a8ba6fd60cb8ec886265e7533c4129cf619f909944",
+  "glb_sha256": "cb8ce997736850220fb0bb39595123f6d1114963a2520a4bb6a05c0c9c12f70d",
   "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.glb",
   "mid_grey": true,
-  "sign_post_span_m": 1.0,
-  "sign_board_width_m": 1.1,
-  "sign_assembly_connected": true
+  "sign_post_span_m": 0.0,
+  "sign_board_width_m": 0.0,
+  "sign_assembly_connected": false
 }

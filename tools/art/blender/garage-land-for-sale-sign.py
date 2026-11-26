@@ -10,7 +10,7 @@ import blender_common as bc  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[3]
 
-POST_W = 0.10
+POST_W = 0.12
 POST_H = 1.60
 POST_SPAN = 1.00
 BOARD_X = POST_SPAN + POST_W
@@ -254,11 +254,6 @@ def main():
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
     subprocess.run(
         ["git", "checkout", "origin/main", "--", "docs/art/previews/garage-land-for-sale-sign.png"],
-        check=True,
-        cwd=str(REPO),
-    )
-    subprocess.run(
-        ["python3", str(REPO / "tools/art/sign_front_gate_fixup.py"), "docs/art/previews/garage-land-for-sale-sign-front.png"],
         check=True,
         cwd=str(REPO),
     )

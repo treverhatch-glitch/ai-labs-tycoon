@@ -182,8 +182,8 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
         nodes.clear()
         out = nodes.new("ShaderNodeOutputMaterial")
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = (0.05, 0.008, 0.008, 1.0)
-        emit.inputs["Strength"].default_value = 2.55
+        emit.inputs["Color"].default_value = (0.04, 0.006, 0.006, 1.0)
+        emit.inputs["Strength"].default_value = 2.75
         links.new(emit.outputs["Emission"], out.inputs["Surface"])
         return mat
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
@@ -567,9 +567,9 @@ def _assign_sign_post_preview_slots(
             co += posts.matrix_world @ posts.data.vertices[vi].co
         co /= len(poly.vertices)
         rel = (co.z - z0) / span
-        if rel < 0.05:
+        if rel < 0.03:
             poly.material_index = 2
-        elif rel < 0.15:
+        elif rel < 0.07:
             poly.material_index = 1
         else:
             poly.material_index = 0
@@ -1446,7 +1446,7 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             bpy.ops.import_scene.gltf(filepath=str(glb))
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
             _rotate_sign_face_for_front_camera(meshes)
-            apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=False)
+            apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=True)
             bpy.context.view_layer.update()
             orient_sign_preview_for_camera(meshes, face_dir=1.0)
             os.environ["PREVIEW_AZIMUTH_DEG"] = azimuth
@@ -1459,13 +1459,13 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
             azimuth="0",
             elevation="15",
-            margin="0.60",
+            margin="0.59",
         )
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
             azimuth="35",
             elevation="15",
-            margin="0.64",
+            margin="0.570",
         )
         preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
@@ -2729,8 +2729,8 @@ def apply_sign_preview_materials(
     nt_p.nodes.clear()
     out_p = nt_p.nodes.new("ShaderNodeOutputMaterial")
     emit_p = nt_p.nodes.new("ShaderNodeEmission")
-    emit_p.inputs["Color"].default_value = (0.58, 0.38, 0.14, 1.0)
-    emit_p.inputs["Strength"].default_value = 1.08
+    emit_p.inputs["Color"].default_value = (0.82, 0.36, 0.06, 1.0)
+    emit_p.inputs["Strength"].default_value = 1.25
     nt_p.links.new(emit_p.outputs["Emission"], out_p.inputs["Surface"])
     tuft_mat = bpy.data.materials.new("SignTuftGreenPreview")
     tuft_mat.use_nodes = True

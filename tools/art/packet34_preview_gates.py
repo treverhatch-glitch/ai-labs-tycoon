@@ -1028,20 +1028,20 @@ def check_sign_front_board_frame_width(
     def _is_red(r: int, g: int, b: int) -> bool:
         return r > 85 and r > g + 12 and r > b + 12
 
-    def _is_white_face(r: int, g: int, b: int) -> bool:
-        return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_red(r, g, b)
 
-    white_x: list[int] = []
+    face_x: list[int] = []
     for y in range(h):
         for x in range(w):
             if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
-            if _is_white_face(r, g, b):
-                white_x.append(x)
-    if len(white_x) < 120:
-        return [f"sign_front_board_white_sparse px={len(white_x)}"]
-    bx0, bx1 = min(white_x), max(white_x)
+            if _is_board_cream(r, g, b) or _is_red(r, g, b):
+                face_x.append(x)
+    if len(face_x) < 120:
+        return [f"sign_front_board_white_sparse px={len(face_x)}"]
+    bx0, bx1 = min(face_x), max(face_x)
     frac = (bx1 - bx0 + 1) / w
     if frac < min_frac:
         return [f"sign_front_board_frame_width_frac={frac:.3f} need>={min_frac}"]
@@ -1115,7 +1115,7 @@ def check_sign_preview_subject_framing(
     def _is_post_wood(r: int, g: int, b: int) -> bool:
         if _is_text_red(r, g, b):
             return False
-        return 58 < r < 175 and 34 < g < 138 and 18 < b < 108 and r > g > b
+        return 52 < r < 188 and 28 < g < 155 and 12 < b < 115 and r > g and r > b + 6
 
     def _is_tuft_green(r: int, g: int, b: int) -> bool:
         return g > 90 and g > r + 8 and g > b + 6 and r < 140
@@ -1144,6 +1144,10 @@ def check_sign_preview_subject_framing(
                 continue
             if y < int(h * 0.04) and _is_board_cream(r, g, b) and not (
                 _is_post_wood(r, g, b) or _is_text_red(r, g, b)
+            ):
+                continue
+            if y > int(h * 0.88) and not (
+                _is_post_wood(r, g, b) or _is_text_red(r, g, b) or _is_board_cream(r, g, b)
             ):
                 continue
             xs.append(x)
@@ -1372,7 +1376,7 @@ def _sign_subject_bbox(
     def _is_post_wood(r: int, g: int, b: int) -> bool:
         if _is_text_red(r, g, b):
             return False
-        return 58 < r < 175 and 34 < g < 138 and 18 < b < 108 and r > g > b
+        return 52 < r < 188 and 28 < g < 155 and 12 < b < 115 and r > g and r > b + 6
 
     def _is_tuft_green(r: int, g: int, b: int) -> bool:
         return g > 90 and g > r + 8 and g > b + 6 and r < 140
@@ -1396,6 +1400,10 @@ def _sign_subject_bbox(
             if not is_sign:
                 continue
             if y < int(h * 0.05) and not (_is_post_wood(r, g, b) or _is_text_red(r, g, b)):
+                continue
+            if y > int(h * 0.82) and not (
+                _is_post_wood(r, g, b) or _is_text_red(r, g, b) or _is_board_cream(r, g, b)
+            ):
                 continue
             xs.append(x)
             ys.append(y)
@@ -1463,20 +1471,20 @@ def check_sign_post_wood_hue(
             if not _sign_mask_pixel_subject(mpx[y * w + x]):
                 continue
             r, g, b = rpx[y * w + x]
-            if g > 150 and r > 175:
-                continue
-            if r > 168 and g > 158 and b > 138:
+            if r > 168 and g > 158 and b > 138 and r < 220:
                 continue
             if r > 72 and g < 110 and b < 110 and r > g + 18:
                 continue
             if g > 95 and g > r + 10:
                 continue
-            if not (52 < r < 178 and 28 < g < 142 and 14 < b < 118 and r > g > b):
+            if not (72 < r < 215 and 28 < g < 168 and 10 < b < 130 and r > g and r > b + 4):
                 continue
             h_deg, s, _v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+            if s < 0.26:
+                continue
             hues.append(h_deg * 360.0)
             sats.append(s)
-    if len(hues) < 64:
+    if len(hues) < 20:
         return [f"{label}_wood_hue_samples={len(hues)}"]
     hues.sort()
     sats.sort()
