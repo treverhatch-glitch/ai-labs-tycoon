@@ -1,0 +1,12 @@
+{
+  "regressionHead": "9d736ff6",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-9d736ff6-regression.png",
+  "intendedGateFailures": [
+    "olive-brown body — rack_body_rb_delta and rack_body_mean_grey outside charcoal band",
+    "rack_brown_object_frac",
+    "hard floor quad + stray bottom ellipse — backdrop_band_bad_px",
+    "subject_bbox_frac ~45% fill (too small)",
+    "front detail flat — LED stripes only"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate."
+}

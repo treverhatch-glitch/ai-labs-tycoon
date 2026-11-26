@@ -97,18 +97,43 @@ def build() -> dict:
     parts.append(
         _bevel_box(
             "rack_frame",
-            (TARGET_W * 0.96, 0.022, TARGET_H * 0.94),
+            (TARGET_W * 0.96, 0.024, TARGET_H * 0.94),
             (0.0, y_front - 0.015, hh),
             0.004,
         )
     )
+    parts.append(
+        _bevel_box(
+            "rack_door_frame_top",
+            (TARGET_W * 0.80, 0.030, 0.028),
+            (0.0, y_front + 0.010, hh + TARGET_H * 0.36),
+            0.003,
+        )
+    )
+    for side in (-1, 1):
+        parts.append(
+            _bevel_box(
+                f"rack_door_jamb_{side}",
+                (0.026, 0.032, TARGET_H * 0.76),
+                (side * TARGET_W * 0.41, y_front + 0.012, hh * 0.98),
+                0.003,
+            )
+        )
 
     parts.append(
         _bevel_box(
             "rack_door_glass",
-            (TARGET_W * 0.76, 0.028, TARGET_H * 0.74),
+            (TARGET_W * 0.70, 0.028, TARGET_H * 0.70),
             (0.0, y_front - 0.006, hh),
             0.002,
+        )
+    )
+    parts.append(
+        _bevel_box(
+            "rack_handle",
+            (0.10, 0.028, 0.022),
+            (TARGET_W * 0.34, y_front + 0.042, hh * 0.62),
+            0.003,
         )
     )
 
@@ -140,35 +165,52 @@ def build() -> dict:
         bay_name = f"rack_bay_light_{i}" if i % 2 == 0 else f"rack_bay_{i}"
         parts.append(
             _bevel_box(
-                bay_name,
-                (TARGET_W * 0.74, 0.012, u_step * 0.55),
-                (0.0, y_front - 0.05, z),
+                f"rack_face_plate_{i}",
+                (TARGET_W * 0.66, 0.020, u_step * 0.42),
+                (0.0, y_front + 0.028, z + u_step * 0.08),
                 0.003,
             )
         )
         parts.append(
             _bevel_box(
+                bay_name,
+                (TARGET_W * 0.60, 0.010, u_step * 0.36),
+                (0.0, y_front - 0.04, z),
+                0.002,
+            )
+        )
+        parts.append(
+            _bevel_box(
                 f"rack_bay_slot_{i}",
-                (TARGET_W * 0.62, 0.006, u_step * 0.22),
-                (0.0, y_front - 0.058, z + u_step * 0.12),
+                (TARGET_W * 0.48, 0.006, u_step * 0.18),
+                (0.0, y_front - 0.048, z + u_step * 0.10),
                 0.0,
             )
         )
         led_kind = "rack_led_green" if i % 2 == 0 else "rack_led_blue"
-        lz = z + u_step * 0.20
+        alt_led = "rack_led_blue" if i % 2 == 0 else "rack_led_green"
+        lz = z + u_step * 0.22
         parts.append(
             _bevel_box(
-                f"{led_kind}_{i}",
-                (TARGET_W * 0.66, 0.038, 0.030),
-                (0.0, y_front + 0.038, lz),
+                f"{led_kind}_{i}a",
+                (0.016, 0.014, 0.016),
+                (-TARGET_W * 0.28, y_front + 0.040, lz),
+                0.0,
+            )
+        )
+        parts.append(
+            _bevel_box(
+                f"{alt_led}_{i}b",
+                (0.014, 0.012, 0.014),
+                (TARGET_W * 0.30, y_front + 0.040, lz),
                 0.0,
             )
         )
         parts.append(
             _bevel_box(
                 f"rack_bay_rule_{i}",
-                (TARGET_W * 0.74, 0.008, 0.004),
-                (0.0, y_front - 0.042, z + u_step * 0.48),
+                (TARGET_W * 0.72, 0.012, 0.005),
+                (0.0, y_front + 0.018, z + u_step * 0.50),
                 0.0,
             )
         )
@@ -194,12 +236,12 @@ def build() -> dict:
     )
 
     for i in range(9):
-        x0 = -TARGET_W * 0.42 + i * (TARGET_W * 0.10)
+        x0 = -TARGET_W * 0.40 + i * (TARGET_W * 0.10)
         parts.append(
             _bevel_box(
                 f"rack_top_slot_{i}",
-                (TARGET_W * 0.06, 0.055, 0.018),
-                (x0, 0.0, TARGET_H - 0.045),
+                (TARGET_W * 0.075, 0.048, 0.020),
+                (x0, y_front + 0.02, TARGET_H - 0.038),
                 0.001,
             )
         )
@@ -213,7 +255,7 @@ def build() -> dict:
             "targetSizeM": [TARGET_W, TARGET_D, TARGET_H],
             "kenneyGlbs": list(KENNEY_GLBS_USED),
             "rackUnits": NUM_UNITS,
-            "pipelineNote": "procedural-cabinet-v4-front-facing",
+            "pipelineNote": "procedural-cabinet-v5-charcoal-front",
         },
     )
 

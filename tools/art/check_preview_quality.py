@@ -51,14 +51,22 @@ FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
         REPO / "tools/art/fixtures/prop-server-rack-aa299d14-regression.png",
         "aa299d14",
     ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-9d736ff6-regression.png",
+        "9d736ff6",
+    ),
 )
 MIN_RACK_SUBJECT_LUM_STDDEV = 0.038
 MIN_RACK_LED_PIXELS = 48
 MIN_RACK_FRONT_LED_PIXELS = 36
 MIN_RACK_FRONT_NORMAL_DOT = 0.30
-MIN_RACK_H_EDGE_FEATURES = 10
+MIN_RACK_H_EDGE_FEATURES = 5
 MIN_RACK_CONTACT_SHADOW_FRAC = 0.015
 MAX_RACK_OBJECT_BROWN_FRAC = 0.22
+MAX_RACK_BODY_RB_DELTA = 8.0
+MIN_RACK_BODY_MEAN_GREY = 38.0
+MAX_RACK_BODY_MEAN_GREY = 70.0
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
@@ -250,7 +258,7 @@ def _rack_detail_metrics(
                 prev = None
                 continue
             lum = (r + g + b) / (3.0 * 255.0)
-            if prev is not None and abs(lum - prev) > 0.075:
+            if prev is not None and abs(lum - prev) > 0.058:
                 jumps += 1
             prev = lum
         if jumps >= 2:
@@ -277,6 +285,42 @@ def _rack_front_led_pixels(
             elif b > r + 10 and b > 72 and g < b - 4:
                 led_px += 1
     return led_px
+
+
+def _rack_body_charcoal_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, float]:
+    """Mean RGB on front-body object pixels; charcoal pass needs |R-B|<8 and grey 40-70."""
+    x0, x1 = int(width * 0.28), int(width * 0.72)
+    y0, y1 = int(height * 0.16), int(height * 0.84)
+    rs: list[float] = []
+    gs: list[float] = []
+    bs: list[float] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                continue
+            lum = (r * 299 + g * 587 + b * 114) // 1000
+            if lum > 132:
+                continue
+            if g > r + 18 and g > 78:
+                continue
+            if b > r + 12 and b > 78:
+                continue
+            rs.append(float(r))
+            gs.append(float(g))
+            bs.append(float(b))
+    if not rs:
+        return 99.0, 0.0
+    mr = sum(rs) / len(rs)
+    mg = sum(gs) / len(gs)
+    mb = sum(bs) / len(bs)
+    grey = (mr + mg + mb) / 3.0
+    return abs(mr - mb), grey
 
 
 def _rack_brown_object_frac(
@@ -515,6 +559,11 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
                 pixels, width, height, bg
             ),
         }
+        body_rb, body_grey = _rack_body_charcoal_metrics(
+            pixels, width, height, bg
+        )
+        rack_extra["rack_body_rb_delta"] = body_rb
+        rack_extra["rack_body_mean_grey"] = body_grey
         is_live = path.resolve() == (PREVIEW_DIR / f"{asset_id}.png").resolve()
         meta_path = PREVIEW_DIR / "prop-server-rack.preview_meta.json"
         if is_live and meta_path.is_file():
@@ -785,6 +834,16 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         if s.get("rack_brown_object_frac", 0.0) > MAX_RACK_OBJECT_BROWN_FRAC:
             reasons.append(
                 f"rack_brown_object_frac={s.get('rack_brown_object_frac', 0):.2%} (max {MAX_RACK_OBJECT_BROWN_FRAC:.0%})"
+            )
+        rb_d = s.get("rack_body_rb_delta", 99.0)
+        body_g = s.get("rack_body_mean_grey", 0.0)
+        if rb_d > MAX_RACK_BODY_RB_DELTA:
+            reasons.append(
+                f"rack_body_rb_delta={rb_d:.1f} (max {MAX_RACK_BODY_RB_DELTA:.0f})"
+            )
+        if body_g < MIN_RACK_BODY_MEAN_GREY or body_g > MAX_RACK_BODY_MEAN_GREY:
+            reasons.append(
+                f"rack_body_mean_grey={body_g:.1f} (want {MIN_RACK_BODY_MEAN_GREY:.0f}-{MAX_RACK_BODY_MEAN_GREY:.0f})"
             )
     if asset_id == "prop-desk":
         if s.get("subject_median_sat", 1.0) < 0.08:

@@ -633,8 +633,9 @@ def _composite_presentation_backdrop_150(
     *,
     band_frac: float = 0.03,
     object_tol: int = 32,
+    contact_shadow: bool = False,
 ) -> None:
-    """Median denoise, then force exact backdrop in margins and near-bg pixels."""
+    """Median denoise, exact RGB 150 margin flatten, optional soft contact shadow."""
     try:
         from PIL import Image, ImageFilter
     except ImportError as exc:
@@ -651,29 +652,63 @@ def _composite_presentation_backdrop_150(
             r, g, b = pixels[y * w + x]
             in_band = x < band or x >= w - band or y < band
             dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
-            if in_band and dist < object_tol:
-                flat.append(backdrop)
+            chroma = max(r, g, b) - min(r, g, b)
+            if in_band:
+                is_object = dist > object_tol and chroma >= 10
+                flat.append((r, g, b) if is_object else backdrop)
             else:
                 flat.append((r, g, b))
-    cx = w // 2
-    cy = int(h * 0.965)
-    rx = max(1, int(w * 0.20))
-    ry = max(1, int(h * 0.045))
-    shadowed: list[tuple[int, int, int]] = []
-    for y in range(h):
-        for x in range(w):
-            r, g, b = flat[y * w + x]
-            dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
-            dx = (x - cx) / rx
-            dy = (y - cy) / ry
-            if dx * dx + dy * dy < 1.0 and dist < 28 and y >= int(h * 0.925):
-                shade = 0.86
-                r = max(0, min(255, int(r * shade)))
-                g = max(0, min(255, int(g * shade)))
-                b = max(0, min(255, int(b * shade)))
-            shadowed.append((r, g, b))
+
+    if contact_shadow:
+        obj_xs: list[int] = []
+        obj_ys: list[int] = []
+        for y in range(h):
+            for x in range(w):
+                r, g, b = flat[y * w + x]
+                dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
+                if dist > object_tol:
+                    obj_xs.append(x)
+                    obj_ys.append(y)
+        if obj_xs and obj_ys:
+            x0, x1 = min(obj_xs), max(obj_xs)
+            y1 = max(obj_ys)
+            cx = (x0 + x1) // 2
+            foot_w = int((x1 - x0 + 1) * 1.28)
+            rx = max(8, foot_w // 2)
+            ry = max(5, int(h * 0.032))
+            cy = min(h - 2, y1 + max(2, int(h * 0.006)))
+            mask = Image.new("L", (w, h), 0)
+            mpix = mask.load()
+            for y in range(h):
+                for x in range(w):
+                    if y < y1:
+                        continue
+                    dx = (x - cx) / rx
+                    dy = (y - cy) / ry
+                    if dx * dx + dy * dy <= 1.0:
+                        mpix[x, y] = 255
+            mask = mask.filter(ImageFilter.GaussianBlur(radius=14))
+            shaded: list[tuple[int, int, int]] = []
+            mdata = list(mask.getdata())
+            for i, (r, g, b) in enumerate(flat):
+                m = mdata[i] / 255.0
+                dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
+                if m > 0.03 and dist < object_tol + 6:
+                    dark = 0.58
+                    t = m * dark
+                    shaded.append(
+                        (
+                            max(0, min(255, int(r * (1 - t) + backdrop[0] * t * 0.68))),
+                            max(0, min(255, int(g * (1 - t) + backdrop[1] * t * 0.68))),
+                            max(0, min(255, int(b * (1 - t) + backdrop[2] * t * 0.68))),
+                        )
+                    )
+                else:
+                    shaded.append((r, g, b))
+            flat = shaded
+
     out = Image.new("RGB", (w, h), backdrop)
-    out.putdata(shadowed)
+    out.putdata(flat)
     out.save(out_rgb_path, format="PNG")
 
 
@@ -730,7 +765,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.12 if asset_id == "prop-server-rack" else (0.16 if presentation_150 else 0.10),
+        lit_strength=0.09 if asset_id == "prop-server-rack" else (0.16 if presentation_150 else 0.10),
     )
     if presentation_150:
         bpy.context.scene.view_settings.view_transform = "Raw"
@@ -774,8 +809,11 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
                 bsdf.inputs["Alpha"].default_value = 0.25
                 mat.blend_method = "BLEND"
                 mat.show_transparent_back = False
+            elif "frame_trim" in low or "handle" in low or "jamb" in low:
+                bsdf.inputs["Base Color"].default_value = (0.72, 0.75, 0.78, 1.0)
             elif "body_dark" in low or "body" in low:
-                bsdf.inputs["Base Color"].default_value = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
+                bsdf.inputs["Base Color"].default_value = (84 / 255.0, 86 / 255.0, 90 / 255.0, 1.0)
+                bsdf.inputs["Metallic"].default_value = 0.42
             elif "bay" in low:
                 bsdf.inputs["Base Color"].default_value = (0.52, 0.55, 0.60, 1.0)
                 bsdf.inputs["Roughness"].default_value = 0.32
@@ -787,8 +825,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    if presentation_150:
-        ground_size = span * (1.18 if asset_id == "prop-server-rack" else 1.05)
+    if presentation_150 and asset_id != "prop-server-rack":
+        ground_size = span * 1.05
         bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
         ground = bpy.context.active_object
         gmat = bpy.data.materials.new("Ground")
@@ -801,18 +839,18 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
     rack_lit = asset_id == "prop-server-rack"
-    key.data.energy = 2.2 if rack_lit else (2.86 if presentation_150 else 1.8)
+    key.data.energy = 2.85 if rack_lit else (2.86 if presentation_150 else 1.8)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 42 if rack_lit else (84 if presentation_150 else 55)
+    fill.data.energy = 62 if rack_lit else (84 if presentation_150 else 55)
     fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
     if asset_id == "prop-server-rack":
-        target_fill = 0.58
-        pad = 1.28
+        target_fill = 0.70
+        pad = 1.02
     else:
         target_fill = 0.70 if presentation_150 else 0.50
         pad = 1.04 if presentation_150 else 1.0
@@ -859,8 +897,11 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_shadows = True
         if asset_id == "prop-desk" and hasattr(ee, "use_bloom"):
             ee.use_bloom = False
-        if asset_id == "prop-server-rack" and hasattr(ee, "use_bloom"):
-            ee.use_bloom = False
+        if asset_id == "prop-server-rack":
+            if hasattr(ee, "use_bloom"):
+                ee.use_bloom = False
+            if hasattr(ee, "use_shadows"):
+                ee.use_shadows = False
     preview_meta: dict[str, float] = {}
     if asset_id == "prop-server-rack":
         to_cam = (cam.location - center).normalized()
@@ -880,7 +921,12 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.filepath = str(rgba_tmp if use_backdrop_composite else preview)
     bpy.ops.render.render(write_still=True)
     if use_backdrop_composite:
-        _composite_presentation_backdrop_150(rgba_tmp, preview, (150, 150, 150))
+        _composite_presentation_backdrop_150(
+            rgba_tmp,
+            preview,
+            (150, 150, 150),
+            contact_shadow=asset_id == "prop-server-rack",
+        )
         rgba_tmp.unlink(missing_ok=True)
 
     sha = hashlib.sha256(glb_path.read_bytes()).hexdigest()
@@ -1054,9 +1100,34 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    if kind in ("body", "frame", "body_dark"):
-        bsdf.inputs["Metallic"].default_value = 0.88 if kind == "body_dark" else 0.85
-        bsdf.inputs["Roughness"].default_value = 0.42 if kind == "body_dark" else 0.38
+    charcoal = (84 / 255.0, 86 / 255.0, 90 / 255.0, 1.0)
+    if kind == "body_dark":
+        bsdf.inputs["Base Color"].default_value = charcoal
+        bsdf.inputs["Metallic"].default_value = 0.48
+        bsdf.inputs["Roughness"].default_value = 0.40
+        coord = nodes.new("ShaderNodeTexCoord")
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = (1.5, 1.5, 1.5)
+        links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        if METAL048_NORMAL.is_file():
+            nt = nodes.new("ShaderNodeTexImage")
+            nimg = bpy.data.images.load(str(METAL048_NORMAL), check_existing=True)
+            nimg.colorspace_settings.name = "Non-Color"
+            nt.image = nimg
+            nm = nodes.new("ShaderNodeNormalMap")
+            links.new(nt.outputs["Color"], nm.inputs["Color"])
+            links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+            links.new(mapping.outputs["Vector"], nt.inputs["Vector"])
+        if METAL048_ROUGH.is_file():
+            rt = nodes.new("ShaderNodeTexImage")
+            rimg = bpy.data.images.load(str(METAL048_ROUGH), check_existing=True)
+            rimg.colorspace_settings.name = "Non-Color"
+            rt.image = rimg
+            links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
+            links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    elif kind in ("body", "frame"):
+        bsdf.inputs["Metallic"].default_value = 0.85
+        bsdf.inputs["Roughness"].default_value = 0.38
         coord = nodes.new("ShaderNodeTexCoord")
         mapping = nodes.new("ShaderNodeMapping")
         mapping.inputs["Scale"].default_value = (1.5, 1.5, 1.5)
@@ -1067,19 +1138,8 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             cimg.colorspace_settings.name = "sRGB"
             ctex.image = cimg
             links.new(mapping.outputs["Vector"], ctex.inputs["Vector"])
-            charcoal = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
-            if kind == "body_dark":
-                mix = nodes.new("ShaderNodeMixRGB")
-                mix.blend_type = "MIX"
-                mix.inputs["Fac"].default_value = 0.94
-                mix.inputs["Color2"].default_value = charcoal
-                links.new(ctex.outputs["Color"], mix.inputs["Color1"])
-                links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
-            elif kind == "frame":
-                links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
-        elif kind == "body_dark":
-            bsdf.inputs["Base Color"].default_value = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
-        if METAL048_NORMAL.is_file() and kind in ("body", "frame", "body_dark"):
+            links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
+        if METAL048_NORMAL.is_file():
             nt = nodes.new("ShaderNodeTexImage")
             nimg = bpy.data.images.load(str(METAL048_NORMAL), check_existing=True)
             nimg.colorspace_settings.name = "Non-Color"
@@ -1088,7 +1148,7 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             links.new(nt.outputs["Color"], nm.inputs["Color"])
             links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
             links.new(mapping.outputs["Vector"], nt.inputs["Vector"])
-        if METAL048_ROUGH.is_file() and kind in ("body", "frame", "body_dark"):
+        if METAL048_ROUGH.is_file() and kind in ("body", "frame"):
             rt = nodes.new("ShaderNodeTexImage")
             rimg = bpy.data.images.load(str(METAL048_ROUGH), check_existing=True)
             rimg.colorspace_settings.name = "Non-Color"
@@ -1157,8 +1217,14 @@ def _restyle_rack_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
         mat_kind = "bay_light"
     elif "bay" in name:
         mat_kind = "bay"
+    elif "bay_rule" in name:
+        mat_kind = "frame_trim"
+    elif "handle" in name or "jamb" in name or "door_frame" in name:
+        mat_kind = "frame_trim"
     elif "frame" in name and "mesh" not in name:
         mat_kind = "frame_trim"
+    elif "face_plate" in name:
+        mat_kind = "bay_light"
     elif "body" in name or "corner" in name or "cable" in name or "vent" in name:
         mat_kind = "body_dark"
     elif "mesh" in name:
