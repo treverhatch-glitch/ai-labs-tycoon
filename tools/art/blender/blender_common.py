@@ -131,8 +131,29 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     }
 
 
+def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float], strength: float = 2.0) -> None:
+    mat = bpy.data.materials.new(ob.name + "_emit")
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    bsdf.inputs["Base Color"].default_value = rgba
+    bsdf.inputs["Emission Color"].default_value = rgba
+    bsdf.inputs["Emission Strength"].default_value = strength
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
+
+
+def smooth_shade(ob: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.shade_smooth()
+
+
 def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int = 1024) -> list[str]:
     """Bake albedo, normal, roughness image maps."""
+    from blender_material_palette import spec_for
+
+    spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
     mat = bpy.data.materials.new(name=f"{asset_id}_bake")
@@ -143,13 +164,15 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     noise = nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 8.0
+    noise.inputs["Scale"].default_value = float(spec["noise"])
     color_ramp = nodes.new("ShaderNodeValToRGB")
-    color_ramp.color_ramp.elements[0].color = (0.45, 0.38, 0.32, 1)
-    color_ramp.color_ramp.elements[1].color = (0.72, 0.66, 0.58, 1)
+    d = spec["dark"]
+    l = spec["light"]
+    color_ramp.color_ramp.elements[0].color = (d[0], d[1], d[2], 1)
+    color_ramp.color_ramp.elements[1].color = (l[0], l[1], l[2], 1)
     links.new(noise.outputs["Fac"], color_ramp.inputs["Fac"])
     links.new(color_ramp.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.55
+    bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -203,7 +226,8 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
 
 
 def render_preview(ob: bpy.types.Object, path: Path) -> None:
-    if os.environ.get("EARLY_ART_PREVIEW_RIG", "").strip() in ("1", "true", "yes"):
+    use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
+    if use_rig not in ("0", "false", "no"):
         try:
             import blender_preview_rig as rig  # type: ignore
 

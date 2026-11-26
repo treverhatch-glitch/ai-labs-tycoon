@@ -14,7 +14,8 @@ def main():
     for dx, dz in ((-0.46, -0.28), (0.46, -0.28), (-0.46, 0.28), (0.46, 0.28)):
         bc.add_cylinder(f"Leg_{dx}", 0.035, 0.72, (dx, 0.36, dz))
     bc.add_cube("CRT", (0.48, 0.42, 0.45), (0.14, 0.88, -0.02))
-    bc.add_cube("Screen", (0.4, 0.32, 0.04), (0.14, 0.9, 0.15))
+    screen = bc.add_cube("Screen", (0.4, 0.32, 0.04), (0.14, 0.9, 0.15))
+    bc.assign_emission(screen, (0.15, 0.72, 0.42, 1.0), strength=3.5)
     bc.add_cube("Keyboard", (0.44, 0.04, 0.2), (0, 0.76, 0.14))
     for row in range(2):
         for col in range(8):

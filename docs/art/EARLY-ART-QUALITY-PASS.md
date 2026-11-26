@@ -1,6 +1,8 @@
 # Early art quality pass (post–#86)
 
-**Status:** LOCAL prep only — do not push until [#86](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/86) merges; then branch from `main`, new PR, grouped pushes (30+ min, large batches).
+**Status:** Post–#86 PR — packet 1 (15 garage) materials + studio previews; staff/wisp/HUD in later packets.
+
+**Parent merge:** `main` @ `1f62b217` (rules run 140 green on `52a7dd8d`).
 
 **Brief (Hatch):** store doc `docs/early-art-quality-pass-43.md` on project agent `bc-65240cc3`.
 
