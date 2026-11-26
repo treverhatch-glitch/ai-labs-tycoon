@@ -75,6 +75,43 @@ def _paint_mesh_vertex_color(obj: bpy.types.Object, rgb: tuple[float, float, flo
         vcol.data[corner_i].color = col
 
 
+def _init_wood_mask(obj: bpy.types.Object, on: bool) -> None:
+    mesh = obj.data
+    if mesh.color_attributes.get("WoodMask") is None:
+        mesh.color_attributes.new(name="WoodMask", type="FLOAT_COLOR", domain="CORNER")
+    wm = mesh.color_attributes["WoodMask"]
+    val = (1.0, 0.0, 0.0, 1.0) if on else (0.0, 0.0, 0.0, 1.0)
+    for i in range(len(mesh.loops)):
+        wm.data[i].color = val
+
+
+def _sample_image_bilinear(
+    px: list[float], w: int, h: int, u: float, v: float
+) -> tuple[float, float, float]:
+    u = u % 1.0
+    v = v % 1.0
+    fx = max(0.0, min(w - 1.001, u * w))
+    fy = max(0.0, min(h - 1.001, (1.0 - v) * h))
+    x0, y0 = int(fx), int(fy)
+    x1 = min(w - 1, x0 + 1)
+    y1 = min(h - 1, y0 + 1)
+    tx, ty = fx - x0, fy - y0
+
+    def pix(ix: int, iy: int) -> tuple[float, float, float]:
+        o = (iy * w + ix) * 4
+        return px[o], px[o + 1], px[o + 2]
+
+    c00 = pix(x0, y0)
+    c10 = pix(x1, y0)
+    c01 = pix(x0, y1)
+    c11 = pix(x1, y1)
+    return (
+        c00[0] * (1 - tx) * (1 - ty) + c10[0] * tx * (1 - ty) + c01[0] * (1 - tx) * ty + c11[0] * tx * ty,
+        c00[1] * (1 - tx) * (1 - ty) + c10[1] * tx * (1 - ty) + c01[1] * (1 - tx) * ty + c11[1] * tx * ty,
+        c00[2] * (1 - tx) * (1 - ty) + c10[2] * tx * (1 - ty) + c01[2] * (1 - tx) * ty + c11[2] * tx * ty,
+    )
+
+
 def _lerp3(a: tuple[float, float, float], b: tuple[float, float, float], t: float) -> tuple[float, float, float]:
     t = max(0.0, min(1.0, t))
     return (a[0] * (1 - t) + b[0] * t, a[1] * (1 - t) + b[1] * t, a[2] * (1 - t) + b[2] * t)
@@ -106,41 +143,35 @@ def _paint_wood_grain(
 def _blend_cc0_wood(
     obj: bpy.types.Object,
     color_jpg: Path,
-    blend: float = 0.97,
-    uv_tiles: float = 3.2,
+    blend: float = 1.0,
+    uv_tiles: float = 1.0,
+    *,
+    world_meters_per_repeat: float = 0.5,
 ) -> None:
-    """Blend ambientCG wood albedo into BakeColor after UV (desk carcass only)."""
+    """Blend ambientCG wood into BakeColor only where WoodMask is set (desk carcass)."""
     if not color_jpg.is_file():
         return
     mesh = obj.data
     vcol = mesh.color_attributes.get("BakeColor")
-    uv = mesh.uv_layers.active
-    if vcol is None or uv is None:
+    wmask = mesh.color_attributes.get("WoodMask")
+    if vcol is None or wmask is None:
         return
     img = bpy.data.images.load(str(color_jpg), check_existing=True)
+    img.colorspace_settings.name = "sRGB"
     w, h = img.size
     px = list(img.pixels)
-    desk_mn, desk_mx = _bbox_world([obj])
-    lift = (1.08, 1.05, 1.02)
+    rep = max(0.25, 1.0 / world_meters_per_repeat)
     for poly in mesh.polygons:
         for li in poly.loop_indices:
-            bc = vcol.data[li].color
-            if max(bc[:3]) < 0.34:
+            if wmask.data[li].color[0] < 0.5:
                 continue
-            u, v = uv.data[li].uv
-            tu = (u * uv_tiles) % 1.0
-            tv = (v * uv_tiles) % 1.0
-            x = min(w - 1, max(0, int(tu * w)))
-            y = min(h - 1, max(0, int((1.0 - tv) * h)))
-            o = (y * w + x) * 4
-            tc = (px[o] * lift[0], px[o + 1] * lift[1], px[o + 2] * lift[2])
             vi = mesh.loops[li].vertex_index
             co = obj.matrix_world @ mesh.vertices[vi].co
-            edge_bevel = min(1.0, max(0.0, (co.z - desk_mn.z) / max(desk_mx.z - desk_mn.z, 1e-6)))
-            edge_bevel = 0.72 + edge_bevel * 0.28
-            mix = blend * edge_bevel
-            c = _lerp3((bc[0], bc[1], bc[2]), tc, mix)
-            c = (min(1.0, c[0] * 1.03), min(1.0, c[1] * 1.02), min(1.0, c[2] * 1.01))
+            tu = (co.x * rep + co.y * 0.2) % 1.0
+            tv = (co.z * rep) % 1.0
+            tc = _sample_image_bilinear(px, w, h, tu, tv)
+            bc = vcol.data[li].color
+            c = _lerp3((bc[0], bc[1], bc[2]), tc, blend)
             vcol.data[li].color = (c[0], c[1], c[2], 1.0)
 
 
@@ -236,7 +267,7 @@ def _apply_baked_albedo(
     img.colorspace_settings.name = "sRGB"
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.34 if emissive_strength <= 0.0 else 0.42
+    bsdf.inputs["Roughness"].default_value = 0.40 if emissive_strength <= 0.0 else 0.42
     if emissive_strength > 0.0:
         em_in = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em_in is not None:
@@ -268,8 +299,47 @@ def _assign_prop_desk_material_slots(obj: bpy.types.Object) -> tuple[bpy.types.M
         for li in poly.loop_indices:
             emit_votes += float(mask.data[li].color[0])
         emit_votes /= nloops
-        poly.material_index = 1 if emit_votes > 0.12 else 0
+        poly.material_index = 1 if emit_votes > 0.55 else 0
     return body, screen
+
+
+def _apply_baked_pbr_body(
+    mat: bpy.types.Material,
+    tex_path: Path,
+    normal_path: Path | None,
+    rough_path: Path | None,
+    *,
+    roughness: float = 0.40,
+) -> None:
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    tex = nodes.new("ShaderNodeTexImage")
+    img = bpy.data.images.load(str(tex_path), check_existing=True)
+    img.colorspace_settings.name = "sRGB"
+    tex.image = img
+    tex.interpolation = "Linear"
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = roughness
+    if normal_path and normal_path.is_file():
+        ntex = nodes.new("ShaderNodeTexImage")
+        nimg = bpy.data.images.load(str(normal_path), check_existing=True)
+        nimg.colorspace_settings.name = "Non-Color"
+        ntex.image = nimg
+        ntex.interpolation = "Linear"
+        nm = nodes.new("ShaderNodeNormalMap")
+        links.new(ntex.outputs["Color"], nm.inputs["Color"])
+        links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+    if rough_path and rough_path.is_file():
+        rtex = nodes.new("ShaderNodeTexImage")
+        rimg = bpy.data.images.load(str(rough_path), check_existing=True)
+        rimg.colorspace_settings.name = "Non-Color"
+        rtex.image = rimg
+        rtex.interpolation = "Linear"
+        links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
 
 
 def _smart_uv(obj: bpy.types.Object) -> None:
@@ -280,6 +350,34 @@ def _smart_uv(obj: bpy.types.Object) -> None:
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
     bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def _pack_uv_islands(obj: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.pack_islands(margin=0.015)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def _uv_cube_tiles(obj: bpy.types.Object, repeats: float) -> None:
+    """Box UV with ~1 repeat per 0.5 m (repeats = face span × 2 / meter)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    obj.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.uv.cube_project(cube_size=1.0)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    mesh = obj.data
+    uv = mesh.uv_layers.active
+    if uv is None:
+        return
+    for d in uv.data:
+        d.uv[0] *= repeats
+        d.uv[1] *= repeats
 
 
 def _barycentric(
@@ -306,7 +404,12 @@ def _barycentric(
     return w, u, v
 
 
-def _rasterize_vertex_colors(obj: bpy.types.Object, tex_path: Path) -> None:
+def _rasterize_vertex_colors(
+    obj: bpy.types.Object,
+    tex_path: Path,
+    *,
+    default_fill: tuple[float, float, float] | None = None,
+) -> None:
     """Fill 1024 albedo by triangle raster in UV space (point sampling leaves ~99% fill grey)."""
     mesh = obj.data
     attr = mesh.color_attributes.get("BakeColor")
@@ -317,7 +420,8 @@ def _rasterize_vertex_colors(obj: bpy.types.Object, tex_path: Path) -> None:
     if tex_name in bpy.data.images:
         bpy.data.images.remove(bpy.data.images[tex_name])
     img = bpy.data.images.new(tex_name, TEX_SIZE, TEX_SIZE, alpha=False)
-    fill = (0.86, 0.64, 0.42, 1.0)
+    neut = default_fill or (0.78, 0.56, 0.38)
+    fill = (neut[0], neut[1], neut[2], 1.0)
     px = list(fill) * (TEX_SIZE * TEX_SIZE)
 
     def put(x: int, y: int, rgb: tuple[float, float, float]) -> None:
@@ -367,7 +471,8 @@ def _bake_maps(obj: bpy.types.Object, mat: bpy.types.Material, out_dir: Path) ->
     tex_dir = out_dir / "textures"
     tex_dir.mkdir(parents=True, exist_ok=True)
     tex_path = tex_dir / f"{obj.name}_basecolor.png"
-    _rasterize_vertex_colors(obj, tex_path)
+    desk_fill = (0.12, 0.13, 0.15) if "prop-desk" in obj.name else None
+    _rasterize_vertex_colors(obj, tex_path, default_fill=desk_fill)
 
     _add_bake_target(mat)
     bpy.ops.object.select_all(action="DESELECT")
@@ -564,12 +669,12 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     _reset_scene()
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
-    grey150 = 150.0 / 255.0
+    grey150 = 149.35 / 255.0
     _setup_preview_hdri(
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.10 if asset_id == "prop-desk" else 0.10,
+        lit_strength=0.11 if asset_id == "prop-desk" else 0.10,
     )
     if asset_id == "prop-desk":
         bpy.context.scene.view_settings.view_transform = "Raw"
@@ -596,14 +701,13 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.86 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 3.75 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 66 if asset_id == "prop-desk" else 55
+    fill.data.energy = 78 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
-
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
     target_fill = 0.70 if asset_id == "prop-desk" else 0.50
@@ -732,7 +836,7 @@ def finish_baked_export(
     obj.data.materials.append(bake_mat)
     _smart_uv(obj)
     if asset_id == "prop-desk" and WOOD092_COLOR.is_file():
-        _blend_cc0_wood(obj, WOOD092_COLOR)
+        _blend_cc0_wood(obj, WOOD092_COLOR, world_meters_per_repeat=0.5)
     out_dir = OUT_ROOT / asset_id
     out_dir.mkdir(parents=True, exist_ok=True)
     tex_path = _bake_maps(obj, bake_mat, out_dir)
@@ -751,7 +855,8 @@ def finish_baked_export(
     if asset_id == "prop-desk":
         body_mat, screen_mat = _assign_prop_desk_material_slots(obj)
         _apply_baked_albedo(body_mat, tex_path, emissive_strength=0.0)
-        _apply_baked_albedo(screen_mat, tex_path, emissive_strength=0.94)
+        body_mat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.40
+        _apply_baked_albedo(screen_mat, tex_path, emissive_strength=1.5)
     else:
         urp_mat = _ensure_material(obj, asset_id)
         _apply_baked_albedo(urp_mat, tex_path)

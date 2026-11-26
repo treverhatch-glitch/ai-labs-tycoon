@@ -267,7 +267,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
     )
     flat_frac = near_bg / n
     corner_samples: list[tuple[int, int, int]] = []
-    margin = 8
+    margin = 3
     for cx, cy in (
         (margin, margin),
         (width - 1 - margin, margin),
@@ -285,7 +285,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         med_sat = (
             subj_sats_sorted[len(subj_sats_sorted) // 2] if subj_sats_sorted else 0.0
         )
-        y0, y1 = int(height * 0.40), int(height * 0.62)
+        y0, y1 = int(height * 0.42), int(height * 0.54)
         x0, x1 = int(width * 0.12), int(width * 0.88)
         desk_px = 0
         brown_px = 0
@@ -335,10 +335,18 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             outside_mean_sat = sum(subj_sat) / cn if subj_sat else 0.0
         desk_lums: list[float] = []
         desk_sats: list[float] = []
+        kx0, kx1 = int(width * 0.20), int(width * 0.54)
+        ky0, ky1 = int(height * 0.48), int(height * 0.54)
         for y in range(y0, y1):
             for x in range(x0, x1):
                 r, g, b = pixels[y * width + x]
                 if not _object_pixel(r, g, b, bg):
+                    continue
+                if sx0 <= x <= sx1 and sy0 <= y <= sy1:
+                    continue
+                if kx0 <= x <= kx1 and ky0 <= y <= ky1:
+                    continue
+                if not (r > g + 4 and g > b and r > 88):
                     continue
                 mx, mn = max(r, g, b), min(r, g, b)
                 desk_lums.append((r + g + b) / (3.0 * 255.0))
@@ -368,6 +376,21 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
                 if sum(cell_lums) / len(cell_lums) < 0.08:
                     dark_cells += 1
         dark_cell_frac = dark_cells / cell_total if cell_total else 0.0
+        bezel_orange_n = 0
+        bezel_n = 0
+        by0, by1 = int(height * 0.10), int(height * 0.36)
+        bx0, bx1 = int(width * 0.38), int(width * 0.66)
+        for y in range(by0, by1):
+            for x in range(bx0, bx1):
+                if sx0 <= x <= sx1 and sy0 <= y <= sy1:
+                    continue
+                r, g, b = pixels[y * width + x]
+                if not _object_pixel(r, g, b, bg):
+                    continue
+                bezel_n += 1
+                if r > g + 6 and g > b + 2 and r > 88:
+                    bezel_orange_n += 1
+        bezel_wood_frac = bezel_orange_n / bezel_n if bezel_n else 0.0
         desk_extra = {
             "subject_median_sat": med_sat,
             "desk_top_brown_frac": desk_brown_frac,
@@ -378,6 +401,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             "desk_mean_lum": desk_mean_lum,
             "desk_mean_sat": desk_mean_sat,
             "dark_subject_cell_frac": dark_cell_frac,
+            "bezel_wood_frac": bezel_wood_frac,
         }
     return {
         "stddev": std,
@@ -435,8 +459,12 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
             reasons.append(f"outside_screen_mean_sat={s.get('outside_screen_mean_sat', 0):.3f}")
         if s.get("blow_frac_outside_screen", 1.0) > 0.02:
             reasons.append(f"blow_frac_outside_screen={s.get('blow_frac_outside_screen', 0):.2%}")
-        if s.get("corner_rgb_max_delta", 99.0) > 2.0:
-            reasons.append(f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want ±2)")
+        if s.get("corner_rgb_max_delta", 99.0) > 0.0:
+            reasons.append(
+                f"corner_rgb_max_delta={s.get('corner_rgb_max_delta', 0):.1f} (want exactly 150)"
+            )
+        if s.get("bezel_wood_frac", 0.0) > 0.08:
+            reasons.append(f"bezel_wood_frac={s.get('bezel_wood_frac', 0):.2%}")
         dml = s.get("desk_mean_lum", 0.0)
         if dml < 0.30 or dml > 0.60:
             reasons.append(f"desk_mean_lum={dml:.2f} (want 0.30-0.60)")

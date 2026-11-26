@@ -1,7 +1,7 @@
 {
   "assetId": "prop-desk",
   "scope": "presentation",
-  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse); ambientCG Wood092",
+  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse); generated campus-kit prop-potted-plant.obj; ambientCG Wood092",
   "pipeline": "cc0-restyle-v1",
   "texture1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
   "textureAo1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_ao.png",
@@ -32,6 +32,7 @@
       0.64
     ]
   },
+  "cc0Plant": "unity/Assets/Art/Generated/campus-kit/prop-potted-plant.obj",
   "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
-  "restyle": "wood-grain-v8"
+  "restyle": "wood-grain-v10"
 }

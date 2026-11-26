@@ -12,11 +12,13 @@ from mathutils import Matrix, Vector  # noqa: E402
 import _common  # noqa: E402
 
 KENNEY = _common.CC0_ROOT / "kenney-furniture-kit" / "Models" / "GLTF format"
+CAMPUS_PLANT = _common.REPO / "unity" / "Assets" / "Art" / "Generated" / "campus-kit" / "prop-potted-plant.obj"
 TARGET_WIDTH = 1.14
 SURFACE_TOL = 0.012
+WOOD_UV_REPEAT = 1.35  # repeats within packed desk islands (~0.5 m)
 SOURCE_NOTE = (
     "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse); "
-    "ambientCG Wood092"
+    "generated campus-kit prop-potted-plant.obj; ambientCG Wood092"
 )
 
 KENNEY_OFFSETS = {
@@ -25,11 +27,13 @@ KENNEY_OFFSETS = {
     "computerMouse.glb": (0.62, 0.64),
 }
 
+PLASTIC_DARK = (0.10, 0.11, 0.12)
+PLASTIC_KEY = (0.34, 0.36, 0.40)
+KEY_CAP = (0.74, 0.76, 0.80)
 PALETTE = {
-    "legs_pedestal": (0.48, 0.47, 0.46),
-    "mouse": (0.40, 0.42, 0.46),
-    "plant_pot": (0.74, 0.42, 0.28),
-    "plant_leaf": (0.28, 0.74, 0.38),
+    "mouse": (0.22, 0.24, 0.28),
+    "plant_pot": (0.78, 0.48, 0.34),
+    "plant_leaf": (0.22, 0.70, 0.36),
 }
 
 
@@ -101,29 +105,23 @@ def _paint_monitor(p: bpy.types.Object) -> None:
     vcol = mesh.color_attributes["BakeColor"]
     _init_emit_mask(p)
     emask = mesh.color_attributes["EmitMask"]
-    mn, mx = _common._bbox_world([p])
-    h = max(mx.z - mn.z, 1e-6)
     cam_dir = Vector((0.22, -0.68, 0.48)).normalized()
     for poly in mesh.polygons:
         n_world = (p.matrix_world.to_3x3() @ poly.normal).normalized()
-        face_screen = n_world.dot(cam_dir) > 0.42
+        face_screen = n_world.dot(cam_dir) > 0.52
         for li in poly.loop_indices:
             vi = mesh.loops[li].vertex_index
             co = p.matrix_world @ mesh.vertices[vi].co
-            t = (co.z - mn.z) / h
-            if face_screen or t > 0.52:
-                ui_bg = (0.14, 0.18, 0.24)
-                chart = 0.4 + 0.6 * abs(math.sin(co.x * 18.0) * math.sin(co.z * 15.0))
-                line = 0.55 if abs(co.y * 12.0) % 1.0 < 0.1 or abs(co.x * 10.0) % 1.0 < 0.08 else 0.0
-                accent = min(1.0, chart * 0.55 + line)
-                col = _common._lerp3(ui_bg, (0.52, 0.90, 0.98), accent)
-                col = _common._lerp3(col, (0.72, 0.88, 0.94), min(0.28, accent))
+            if face_screen:
+                ui_bg = (0.05, 0.07, 0.10)
+                line_h = 0.7 if abs(co.y * 28.0) % 1.0 < 0.07 else 0.0
+                pane = 0.55 if abs(math.sin(co.x * 24.0) * math.sin(co.z * 20.0)) > 0.65 else 0.0
+                accent = min(1.0, line_h * 0.5 + pane * 0.4)
+                col = _common._lerp3(ui_bg, (0.18, 0.55, 0.72), accent)
+                col = _common._lerp3(col, (0.35, 0.65, 0.92), accent * 0.25)
                 emask.data[li].color = (1.0, 0.0, 0.0, 1.0)
-            elif t > 0.22:
-                col = (0.32, 0.34, 0.38)
-                emask.data[li].color = (0.0, 0.0, 0.0, 1.0)
             else:
-                col = (0.36, 0.38, 0.42)
+                col = PLASTIC_DARK
                 emask.data[li].color = (0.0, 0.0, 0.0, 1.0)
             vcol.data[li].color = (*col, 1.0)
 
@@ -140,42 +138,75 @@ def _paint_keyboard(p: bpy.types.Object) -> None:
         for li in poly.loop_indices:
             vi = mesh.loops[li].vertex_index
             co = p.matrix_world @ mesh.vertices[vi].co
-            gx = math.sin(co.x * 110.0) * math.sin(co.y * 95.0)
-            cap = 0.78 if co.z >= top_z and gx > -0.2 else 0.22
-            base = (0.52, 0.54, 0.58)
-            hi = (0.74, 0.76, 0.80)
-            rgb = _common._lerp3(base, hi, cap)
+            on_cap = co.z >= top_z and (math.sin(co.x * 95.0) * math.sin(co.y * 88.0) > -0.25)
+            rgb = KEY_CAP if on_cap else PLASTIC_KEY
             vcol.data[li].color = (*rgb, 1.0)
 
 
-def _add_potted_plant(
-    surface_z: float,
-    xy_bounds: tuple[float, float, float, float],
-) -> bpy.types.Object:
-    """Terracotta pot + leaf cluster (CC0-procedural accent)."""
+def _paint_plant_parts(obj: bpy.types.Object) -> None:
+    _common._init_wood_mask(obj, False)
+    _init_emit_mask(obj)
+    parts = _common._split_loose_parts(obj)
+    if len(parts) == 1:
+        parts = [obj]
+    for p in parts:
+        mn, mx = _common._bbox_world([p])
+        mid_z = (mn.z + mx.z) * 0.5
+        if mid_z < 0.32:
+            _common._paint_mesh_vertex_color(p, PALETTE["plant_pot"])
+        else:
+            _common._paint_mesh_vertex_color(p, PALETTE["plant_leaf"])
+    if len(parts) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for p in parts:
+            p.select_set(True)
+        bpy.context.view_layer.objects.active = parts[0]
+        bpy.ops.object.join()
+    return bpy.context.view_layer.objects.active
+
+
+def _import_plant(surface_z: float, xy_bounds: tuple[float, float, float, float]) -> bpy.types.Object:
+    if not CAMPUS_PLANT.is_file():
+        raise FileNotFoundError(CAMPUS_PLANT)
+    before = {o.name for o in bpy.data.objects}
+    bpy.ops.wm.obj_import(filepath=str(CAMPUS_PLANT))
+    added = [o for o in bpy.data.objects if o.name not in before and o.type == "MESH"]
+    if not added:
+        raise RuntimeError("no mesh from campus plant OBJ")
+    plant = added[0]
+    if len(added) > 1:
+        bpy.ops.object.select_all(action="DESELECT")
+        for o in added:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = added[0]
+        bpy.ops.object.join()
+        plant = bpy.context.view_layer.objects.active
+    target_h = 0.22
+    mn, mx = _common._bbox_world([plant])
+    scale = target_h / max(mx.z - mn.z, 1e-6)
+    _common._apply_scale_uniform([plant], scale)
     x0, x1, y0, y1 = xy_bounds
     tx = x0 + (x1 - x0) * 0.84
     ty = y0 + (y1 - y0) * 0.76
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.05, depth=0.055, location=(tx, ty, surface_z + 0.03))
-    pot = bpy.context.active_object
-    _common._paint_mesh_vertex_color(pot, PALETTE["plant_pot"])
-    _init_emit_mask(pot)
-    leaves: list[bpy.types.Object] = []
-    for ox, oy, r in ((0, 0, 0.05), (-0.02, 0.015, 0.04), (0.02, -0.01, 0.038)):
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=r, location=(tx + ox, ty + oy, surface_z + 0.09))
-        leaf = bpy.context.active_object
-        _common._paint_mesh_vertex_color(leaf, PALETTE["plant_leaf"])
-        _init_emit_mask(leaf)
-        leaves.append(leaf)
-    bpy.ops.object.select_all(action="DESELECT")
-    pot.select_set(True)
-    for leaf in leaves:
-        leaf.select_set(True)
-    bpy.context.view_layer.objects.active = pot
-    bpy.ops.object.join()
-    joined = bpy.context.active_object
-    joined.name = "desk_plant"
-    return joined
+    mn, mx = _common._bbox_world([plant])
+    cx, cy = (mn.x + mx.x) * 0.5, (mn.y + mx.y) * 0.5
+    plant.location += Vector((tx - cx, ty - cy, surface_z - mn.z))
+    plant.name = "desk_plant"
+    bpy.context.view_layer.update()
+    return _paint_plant_parts(plant)
+
+
+def _tilt_monitor(parts: list[bpy.types.Object]) -> None:
+    """~20° lean-back; screen faces 3/4 preview camera."""
+    for o in parts:
+        pivot = o.matrix_world.translation.copy()
+        o.matrix_world = (
+            Matrix.Translation(pivot)
+            @ Matrix.Rotation(math.radians(-20.0), 4, "X")
+            @ Matrix.Rotation(math.radians(8.0), 4, "Z")
+            @ Matrix.Translation(-pivot)
+            @ o.matrix_world
+        )
 
 
 def build_desk() -> bpy.types.Object:
@@ -190,9 +221,14 @@ def build_desk() -> bpy.types.Object:
     surface_z = _desktop_surface_z(top_parts)
     xy = _desktop_xy_bounds(top_parts)
 
-    all_obs: list[bpy.types.Object] = list(desk_parts)
+    oak_light = (1.0, 0.82, 0.56)
+    oak_dark = (0.82, 0.58, 0.38)
     for p in desk_parts:
+        _common._init_wood_mask(p, True)
         _init_emit_mask(p)
+        _common._paint_wood_grain(p, light=oak_light, dark=oak_dark, grain_scale=32.0)
+
+    all_obs: list[bpy.types.Object] = list(desk_parts)
 
     periph_files = (
         ("computerScreen.glb", scale * 1.02),
@@ -203,10 +239,12 @@ def build_desk() -> bpy.types.Object:
         parts = _import_part(fname)
         _common._apply_scale_uniform(parts, sc)
         u, v = KENNEY_OFFSETS[fname]
+        if "Screen" in fname:
+            _tilt_monitor(parts)
+            bpy.context.view_layer.update()
         _place_on_desktop(parts, surface_z, xy, u, v)
         if "Screen" in fname:
             for o in parts:
-                o.matrix_world = o.matrix_world @ Matrix.Rotation(math.radians(17.0), 4, "X")
                 o.location.z -= 0.002
         if "Keyboard" in fname:
             for o in parts:
@@ -216,19 +254,12 @@ def build_desk() -> bpy.types.Object:
                 o.location.z -= 0.006
         bpy.context.view_layer.update()
         _gate_peripheral_on_desktop(parts, surface_z, xy, fname)
+        for p in parts:
+            _common._init_wood_mask(p, False)
         all_obs.extend(parts)
 
-    plant = _add_potted_plant(surface_z, xy)
+    plant = _import_plant(surface_z, xy)
     all_obs.append(plant)
-
-    oak_light = (1.0, 0.78, 0.52)
-    oak_dark = (0.78, 0.54, 0.36)
-    for p in desk_parts:
-        zspan = _common._bbox_world([p])[1].z - _common._bbox_world([p])[0].z
-        if zspan < 0.12:
-            _common._paint_mesh_vertex_color(p, PALETTE["legs_pedestal"])
-        else:
-            _common._paint_wood_grain(p, light=oak_light, dark=oak_dark, grain_scale=32.0)
 
     for p in all_obs:
         if p in desk_parts or p is plant:
@@ -261,10 +292,16 @@ def main() -> None:
         obj,
         SOURCE_NOTE,
         extra_manifest={
-            "kenneyParts": ["desk.glb", "computerScreen.glb", "computerKeyboard.glb", "computerMouse.glb"],
+            "kenneyParts": [
+                "desk.glb",
+                "computerScreen.glb",
+                "computerKeyboard.glb",
+                "computerMouse.glb",
+            ],
             "kenneyOffsets": KENNEY_OFFSETS,
+            "cc0Plant": "unity/Assets/Art/Generated/campus-kit/prop-potted-plant.obj",
             "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
-            "restyle": "wood-grain-v8",
+            "restyle": "wood-grain-v10",
         },
     )
     print(__import__("json").dumps(manifest, indent=2))
