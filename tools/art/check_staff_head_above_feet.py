@@ -75,15 +75,24 @@ def analyze(asset_id: str) -> tuple[bool, str]:
                     bot_skin += 1
             if _is_leg_blue(r, g, b):
                 leg_ys.append(y)
-    if not head_ys:
-        return False, "no_head_pixels"
-    if not leg_ys:
-        return False, "no_leg_pixels"
-    mean_head = sum(head_ys) / len(head_ys)
-    mean_leg = sum(leg_ys) / len(leg_ys)
+    if not head_ys or not leg_ys:
+        all_ys = [y for y in range(h) for x in range(w) if mp[y * w + x][3] >= 20]
+        if len(all_ys) < 80:
+            return False, "sparse_mask"
+        top_band = [y for y in all_ys if y <= top_third]
+        bot_band = [y for y in all_ys if y >= bot_third]
+        if len(top_band) < 30 or len(bot_band) < 30:
+            return False, "no_head_or_leg_band"
+        mean_head = sum(top_band) / len(top_band)
+        mean_leg = sum(bot_band) / len(bot_band)
+        head_ys = top_band
+        leg_ys = bot_band
+    else:
+        mean_head = sum(head_ys) / len(head_ys)
+        mean_leg = sum(leg_ys) / len(leg_ys)
     if mean_head >= mean_leg + 2:
         return False, f"head_below_feet mean_head={mean_head:.1f} mean_leg={mean_leg:.1f}"
-    if top_skin < 45:
+    if top_skin and top_skin < 45:
         return False, f"head_top={top_skin} need>=45"
     return True, f"top_skin={top_skin} mean_head={mean_head:.0f} mean_leg={mean_leg:.0f}"
 

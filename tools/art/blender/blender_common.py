@@ -171,6 +171,52 @@ def reorient_staff_mesh_y_to_z(ob: bpy.types.Object) -> None:
     ob.location = (0.0, 0.0, 0.0)
 
 
+def _mesh_scene_span_z(mesh_obs: list[bpy.types.Object]) -> tuple[float, float, float]:
+    min_z, max_z = 1e9, -1e9
+    for ob in mesh_obs:
+        if ob.type != "MESH":
+            continue
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            min_z = min(min_z, w.z)
+            max_z = max(max_z, w.z)
+    return min_z, max_z, max_z - min_z
+
+
+def orient_staff_assembly_for_export(
+    mesh_obs: list[bpy.types.Object], asset_id: str
+) -> bpy.types.Object:
+    """Y-up parts → parented assembly, rotate root to Z-up ~1.72 m for multi-mesh glTF."""
+    import staff_connectivity as staff_conn
+
+    root = staff_conn.parent_staff_hierarchy(mesh_obs)
+    ground_scene_meshes()
+    bpy.context.view_layer.update()
+    root.rotation_euler = (math.pi / 2, 0.0, 0.0)
+    bpy.ops.object.select_all(action="DESELECT")
+    root.select_set(True)
+    bpy.context.view_layer.objects.active = root
+    bpy.ops.object.transform_apply(rotation=True)
+    bpy.context.view_layer.update()
+    _min, _max, sz = _mesh_scene_span_z(mesh_obs)
+    if sz < 0.35:
+        raise RuntimeError(f"FAIL {asset_id}: height too small pre-scale z={sz:.3f}")
+    target_h = 1.72
+    scale = target_h / sz
+    if abs(scale - 1.0) > 0.02:
+        root.scale = (scale, scale, scale)
+        bpy.ops.object.transform_apply(scale=True)
+    bpy.context.view_layer.update()
+    min_z, _max, sz = _mesh_scene_span_z(mesh_obs)
+    if abs(min_z) > 1e-5:
+        root.location.z -= min_z
+    bpy.context.view_layer.update()
+    _min, _max, sz = _mesh_scene_span_z(mesh_obs)
+    if sz < 1.55 or sz > 2.05:
+        raise RuntimeError(f"FAIL {asset_id}: height sz={sz:.3f} want 1.55-2.05")
+    return root
+
+
 def orient_staff_for_gltf(ob: bpy.types.Object, asset_id: str) -> None:
     """Rotate art Y-up mesh to Blender Z-up, scale to ~1.72 m, ground, then export."""
     ensure_staff_upright(ob)
@@ -429,17 +475,60 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
         if not ok_conn:
             raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
+    staff_export_root: bpy.types.Object | None = None
     if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
         root = link_or_join(mesh_obs)
     elif category == "staff-kit":
+        staff_export_root = orient_staff_assembly_for_export(mesh_obs, asset_id)
+        ok_exp, msg_exp = staff_conn.check_objects_connectivity(mesh_obs, asset_id)
+        if not ok_exp:
+            raise RuntimeError(f"FAIL {asset_id}: export connectivity {msg_exp}")
+        for ob in mesh_obs:
+            smooth_shade(ob)
+            bevel_object(ob, width=0.006, segments=1)
+        glb_path = out_dir / f"{asset_id}.glb"
+        export_gltf_selection([staff_export_root, *mesh_obs], glb_path)
+        preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+        for ob in mesh_obs:
+            apply_staff_preview_material(ob, asset_id)
+        try:
+            render_preview(mesh_obs, preview_path, asset_id=asset_id)
+        except Exception as exc:  # noqa: BLE001
+            print(f"WARN preview {asset_id}: {exc}")
+        verts = sum(len(o.data.vertices) for o in mesh_obs)
+        tris = sum(len(p.vertices) for o in mesh_obs for p in o.data.polygons)
+        min_z, _max_z, _sz = _mesh_scene_span_z(mesh_obs)
+        mesh_count = len(mesh_obs)
         root = link_or_join(mesh_obs)
-        bpy.context.view_layer.objects.active = root
-        root.select_set(True)
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.remove_doubles(threshold=0.024)
-        bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.context.scene.render.engine = "CYCLES"
+        uv_unwrap(root)
+        maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
+        grounded = min_z <= 0.03
+        if tris < 1500:
+            raise RuntimeError(f"FAIL {asset_id}: tris={tris} need>=1500")
+        entry = {
+            "id": asset_id,
+            "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
+            "textures": {
+                k: f"Assets/Art/EarlyGame/{category}/textures/{asset_id}/{asset_id}_{k}.png"
+                for k in maps
+            },
+            "preview": f"docs/art/previews/{asset_id}.png",
+            "license": license_note,
+            "vertexCount": verts,
+            "triangleCount": tris,
+            "meshIslands": mesh_count,
+            "partCount": part_count,
+            "grounded": grounded,
+            "blenderVersion": BLENDER_VERSION,
+            "generator": f"tools/art/blender/{asset_id}.py",
+        }
+        (out_dir / f"{asset_id}.asset.json").write_text(
+            json.dumps(entry, indent=2) + "\n", encoding="utf-8"
+        )
+        print(f"OK {asset_id} verts={verts} tris={tris} meshes={mesh_count}")
+        return entry
     else:
         root = link_or_join(mesh_obs)
     snap_root_to_ground(root)
@@ -958,6 +1047,26 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
     )
 
 
+def export_gltf_selection(objects: list[bpy.types.Object], path: Path) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    mesh_list = [o for o in objects if o.type in ("MESH", "EMPTY")]
+    if not mesh_list:
+        raise RuntimeError("export_gltf_selection: no objects")
+    for ob in mesh_list:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = mesh_list[0]
+    bpy.ops.export_scene.gltf(
+        filepath=str(path),
+        use_selection=True,
+        export_apply=True,
+        export_format="GLB",
+        export_image_format="AUTO",
+        export_texcoords=True,
+        export_normals=True,
+        export_materials="EXPORT",
+    )
+
+
 def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     """Saturated per-role colors for studio preview (Hatch readable silhouettes)."""
     from blender_material_palette import spec_for
@@ -1006,7 +1115,9 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     ob.data.materials.append(mat)
 
 
-def render_preview(ob: bpy.types.Object, path: Path, asset_id: str | None = None) -> None:
+def render_preview(
+    ob: bpy.types.Object | list[bpy.types.Object], path: Path, asset_id: str | None = None
+) -> None:
     use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
     if use_rig not in ("0", "false", "no"):
         try:

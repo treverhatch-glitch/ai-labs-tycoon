@@ -20,10 +20,11 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if len(meshes) != 1:
-        return False, f"mesh_objects={len(meshes)}"
-    ob = meshes[0]
-    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    if not meshes:
+        return False, "no_meshes"
+    verts: list[Vector] = []
+    for ob in meshes:
+        verts.extend(ob.matrix_world @ v.co for v in ob.data.vertices)
     xs = [p.x for p in verts]
     ys = [p.y for p in verts]
     zs = [p.z for p in verts]
@@ -40,7 +41,7 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
     head_z = sum(z for z in zs if z >= max_z - band) / max(1, sum(1 for z in zs if z >= max_z - band))
     if head_z <= foot_z + HEAD_FOOT_MIN_GAP:
         return False, f"head_below_feet head_z={head_z:.3f} foot_z={foot_z:.3f} gap={head_z-foot_z:.3f}"
-    return True, f"z_up sz={sz:.3f} head_z={head_z:.3f} foot_z={foot_z:.3f} min_z={min_z:.3f}"
+    return True, f"z_up sz={sz:.3f} head_z={head_z:.3f} foot_z={foot_z:.3f} min_z={min_z:.3f} meshes={len(meshes)}"
 
 
 def main() -> int:

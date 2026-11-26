@@ -355,7 +355,7 @@ def render_preview_studio(
         setup_three_point_lights(center, max(radius, 0.35))
         frame_camera_ortho(hero_meshes)
     elif preview_kind == "wisp":
-        azimuth_deg, elevation_deg, framing_margin = 90.0, 10.0, 1.05
+        azimuth_deg, elevation_deg, framing_margin = 0.0, 12.0, 1.05
         setup_three_point_lights(center, radius)
         cam = frame_camera(
             hero_meshes,
