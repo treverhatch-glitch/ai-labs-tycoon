@@ -213,6 +213,58 @@ def mesh_min_y(ob: bpy.types.Object) -> float:
     return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
 
 
+def audit_grounding(
+    objects: list[bpy.types.Object],
+    *,
+    up_axis: str = "Z",
+    floor: float = 0.0,
+    wall_mounted: set[str] | None = None,
+    exempt: set[str] | None = None,
+    ceiling_mounted: set[str] | None = None,
+    ceiling_z: float = 2.15,
+    wall_plane: str = "back",
+    wall_coord: float = 0.0,
+    tol_floor: float = 0.09,
+    tol_wall: float = 0.22,
+) -> list[str]:
+    """Fail gate when meshes float: floor props touch floor; wall props touch a wall plane."""
+    wall_mounted = wall_mounted or set()
+    exempt = exempt or set()
+    ceiling_mounted = ceiling_mounted or set()
+    errs: list[str] = []
+    bpy.context.view_layer.update()
+    low_fn = mesh_min_z if up_axis.upper() == "Z" else mesh_min_y
+
+    def _verts(ob: bpy.types.Object) -> list[Vector]:
+        return [ob.matrix_world @ v.co for v in ob.data.vertices]
+
+    for ob in objects:
+        if ob.type != "MESH" or ob.name == "PreviewShadowFloor":
+            continue
+        if any(k in ob.name for k in exempt):
+            continue
+        if any(k in ob.name for k in ceiling_mounted):
+            hi = max(p.z for p in _verts(ob)) if up_axis.upper() == "Z" else max(p.y for p in _verts(ob))
+            if hi < ceiling_z - 0.35:
+                errs.append(f"{ob.name}: not at ceiling z={hi:.3f}")
+            continue
+        if any(k in ob.name for k in wall_mounted):
+            pts = _verts(ob)
+            if wall_plane == "back":
+                nearest = min(p.x for p in pts)
+                if nearest > wall_coord + tol_wall:
+                    errs.append(f"{ob.name}: wall gap {nearest - wall_coord:.3f}")
+            elif wall_plane == "side":
+                nearest = min(p.y for p in pts)
+                if nearest > wall_coord + tol_wall:
+                    errs.append(f"{ob.name}: wall gap {nearest - wall_coord:.3f}")
+            continue
+        low = low_fn(ob)
+        if low > floor + tol_floor:
+            errs.append(f"{ob.name}: float low={low:.3f} floor={floor:.3f}")
+    return errs
+
+
 def snap_to_floor_y(ob: bpy.types.Object, floor_y: float = 0.0) -> None:
     bpy.context.view_layer.update()
     low = mesh_min_y(ob)
@@ -230,6 +282,7 @@ def import_kenney(
     scale: float | tuple[float, float, float] = 1.0,
     palette_key: str = "wall",
     up_axis: str = "Y",
+    floor_snap: bool = True,
 ) -> bpy.types.Object | None:
     glb = _extract_glb(pack, asset)
     before = {o.name for o in bpy.data.objects}
@@ -258,10 +311,11 @@ def import_kenney(
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     root.location = Vector(location)
     _bind_materials(root, pack, palette_key)
-    if up_axis.upper() == "Y":
-        snap_to_floor_y(root)
-    else:
-        snap_to_floor_z(root)
+    if floor_snap:
+        if up_axis.upper() == "Y":
+            snap_to_floor_y(root)
+        else:
+            snap_to_floor_z(root)
     for name in spare_names:
         if name == root.name:
             continue

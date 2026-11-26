@@ -485,7 +485,7 @@ def render_preview_studio(
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
     axis = (up_axis or infer_up_axis(mins, maxs)).upper()
-    add_contact_floor = path.stem != "garage-scene-urp-hero"
+    add_contact_floor = True
     if add_contact_floor:
         if axis == "Y":
             add_shadow_floor_y(mins, maxs)
@@ -533,7 +533,7 @@ def render_preview_studio(
                 "camera_dist": cam_dist,
                 "bbox_radius": radius,
                 "framing_margin": framing_margin,
-                "screen_extent": screen_extent,
+                "screen_extent_ndc": screen_extent,
                 "lens_mm": lens_mm,
                 "azimuth_deg": azimuth_deg,
                 "elevation_deg": elevation_deg,

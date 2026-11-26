@@ -1,10 +1,11 @@
 {
-  "camera_dist": 11.233054878680544,
-  "bbox_radius": 2.3341412734920612,
-  "framing_margin": 1.375,
-  "screen_extent": 0.7775625139474869,
+  "camera_dist": 15.004716777326058,
+  "bbox_radius": 4.763402151532081,
+  "framing_margin": 0.9,
+  "screen_extent_ndc": 0.9473733901977539,
   "lens_mm": 42.0,
   "azimuth_deg": 42.0,
   "elevation_deg": 30.0,
-  "up_axis": "Y"
+  "up_axis": "Z",
+  "grounding_violations": []
 }

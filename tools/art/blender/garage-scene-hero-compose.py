@@ -1,156 +1,211 @@
 #!/usr/bin/env python3
-"""Furnished cut-away garage hero — textured L-room shell + garage-kit props, Y-up."""
+"""Furnished cut-away garage hero — Kenney CC0 shell on grid, EarlyGame PBR, Z-up."""
 from __future__ import annotations
 
+import json
 import math
 import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
 
 REPO = Path(__file__).resolve().parents[3]
-KIT = REPO / "unity/Assets/Art/EarlyGame/garage-kit"
 PREVIEW = REPO / "docs/art/previews"
 HDRI = REPO / "tools/art/cc0/incoming/brown_photostudio_02_1k.exr"
 
-TILE = 0.45
-COLS = 9
-ROWS = 7
+TILE = 2.0
+COLS = 3
+ROWS = 2
 ROOM_W = COLS * TILE
 ROOM_D = ROWS * TILE
-WALL_H = 2.2
+WALL_X = 0.0
+WALL_Y = 0.0
+FLOOR_Z = 0.0
+
+WALL_MOUNT_KEYS = {"building_door"}
+CEILING_MOUNT_KEYS = {"lamp_ceiling"}
+DESK_MOUNT_KEYS = {"computerScreen", "computerKeyboard", "computerMouse", "_screen", "_keyboard", "_mouse"}
 
 
-def mesh_min_y(ob: bpy.types.Object) -> float:
-    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
-
-
-def snap_prop_to_floor(ob: bpy.types.Object, floor_y: float = 0.0) -> None:
-    bpy.context.view_layer.update()
-    low = mesh_min_y(ob)
-    if abs(low - floor_y) > 1e-4:
-        ob.location.y += floor_y - low
-    bpy.context.view_layer.update()
-
-
-def import_garage(
-    asset_id: str,
-    location: tuple[float, float, float],
-    rot_y_deg: float = 0.0,
-    scale: float | tuple[float, float, float] = 1.0,
-    instance: str | None = None,
-    floor_snap: bool = True,
-) -> bpy.types.Object | None:
-    import garage_kit_lib as gk  # type: ignore
-
-    glb = KIT / f"{asset_id}.glb"
-    if not glb.is_file():
-        print(f"WARN missing {glb}")
-        return None
-    keep_before = {o.name for o in bpy.data.objects}
-    bpy.ops.import_scene.gltf(filepath=str(glb))
-    imported = [o for o in bpy.context.selected_objects if o.type == "MESH"]
-    if not imported:
-        return None
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in imported:
-        o.select_set(True)
-    bpy.context.view_layer.objects.active = imported[0]
-    if len(imported) > 1:
-        bpy.ops.object.join()
-    root = bpy.context.view_layer.objects.active
-    root.name = instance or asset_id
-    if isinstance(scale, (int, float)):
-        root.scale = (scale, scale, scale)
-    else:
-        root.scale = Vector(scale)
-    bpy.ops.object.transform_apply(scale=True)
-    root.rotation_euler[1] = rot_y_deg * math.pi / 180.0
-    bpy.ops.object.transform_apply(rotation=True)
-    root.location = Vector(location)
-    gk.assign_pbr(root, asset_id)
-    if floor_snap:
-        snap_prop_to_floor(root)
-    else:
-        root.location = Vector(location)
-        bpy.context.view_layer.update()
-    for o in list(bpy.data.objects):
-        if o.name not in keep_before and o.name != root.name and o.type == "MESH":
-            bpy.data.objects.remove(o, do_unlink=True)
-    return root
-
-
-def _shell_box(
-    name: str,
-    location: tuple[float, float, float],
-    scale: tuple[float, float, float],
-    texture_id: str,
-) -> bpy.types.Object:
-    import garage_kit_lib as gk  # type: ignore
-
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location)
-    ob = bpy.context.active_object
-    ob.name = name
-    ob.scale = Vector(scale)
-    bpy.ops.object.transform_apply(scale=True)
-    gk.assign_pbr(ob, texture_id)
+def _import(kh, pack: str, asset: str, loc: tuple[float, float, float], **kw):
+    ob = kh.import_kenney(pack, asset, loc, up_axis="Z", **kw)
     return ob
 
 
-def build_corner_shell() -> list[bpy.types.Object]:
-    floor = _shell_box(
-        "room_floor",
-        (ROOM_W * 0.5, 0.02, ROOM_D * 0.5),
-        (ROOM_W * 0.5, 0.02, ROOM_D * 0.5),
-        "garage-floor-tile",
-    )
-    back = _shell_box(
-        "room_back_wall",
-        (ROOM_W * 0.5, WALL_H * 0.5, 0.1),
-        (ROOM_W * 0.5, WALL_H * 0.5, 0.1),
-        "garage-exterior-wall",
-    )
-    side = _shell_box(
-        "room_side_wall",
-        (0.1, WALL_H * 0.5, ROOM_D * 0.5),
-        (0.1, WALL_H * 0.5, ROOM_D * 0.5),
-        "garage-wall-panel",
-    )
-    return [floor, back, side]
+def _pbr_shell(gk, meshes: list[bpy.types.Object]) -> None:
+    for ob in meshes:
+        if "floor" in ob.name:
+            gk.assign_pbr(ob, "garage-floor-tile")
+        elif "corner" in ob.name:
+            gk.assign_pbr(ob, "garage-exterior-wall")
+        elif "doorway" in ob.name or "wall" in ob.name:
+            gk.assign_pbr(ob, "garage-wall-panel" if "doorway" in ob.name else "garage-exterior-wall")
 
 
-def build_furnished_props() -> list[bpy.types.Object]:
-    props: list[bpy.types.Object] = []
-    specs = [
-        ("garage-roll-door", (2.35, 0.0, 0.22), 0.0, "roll_door", True),
-        ("garage-whiteboard-1995", (3.05, 1.15, 0.22), 0.0, "whiteboard", False),
-        ("garage-window-frame", (0.22, 1.05, 1.6), 90.0, "side_window", False),
-        ("garage-cable-spool", (1.05, 0, 1.15), 12.0, "workbench_spool", True),
-        ("garage-server-closet", (0.95, 0, 2.25), -4.0, "shelves_closet", True),
-        ("garage-voodude-rack", (3.05, 0, 1.85), -82.0, "server_rack", True),
-        ("garage-desk-crt", (2.2, 0, 1.5), -20.0, "desk_pc", True),
-        ("garage-crt-tower", (2.7, 0, 1.05), 8.0, "pc_tower", True),
-        ("garage-folding-chair", (1.72, 0, 1.28), 22.0, "chair", True),
-        ("garage-coffee-drip", (2.48, 0, 1.58), 0.0, "coffee", True),
-    ]
-    for asset_id, loc, rot, inst, snap in specs:
-        ob = import_garage(asset_id, loc, rot_y_deg=rot, instance=inst, floor_snap=snap)
+def build_room(kh) -> list[bpy.types.Object]:
+    meshes: list[bpy.types.Object] = []
+    for ix in range(COLS):
+        for iy in range(ROWS):
+            ob = _import(
+                kh,
+                "building",
+                "floor",
+                (TILE * 0.5 + ix * TILE, TILE * 0.5 + iy * TILE, FLOOR_Z),
+                palette_key="floor",
+            )
+            if ob:
+                meshes.append(ob)
+    for iy in range(ROWS):
+        ob = _import(
+            kh,
+            "building",
+            "wall",
+            (WALL_X, TILE * 0.5 + iy * TILE, 0.0),
+            rot_z_deg=90.0,
+            palette_key="wall",
+        )
         if ob:
-            props.append(ob)
+            meshes.append(ob)
+    for ix in range(COLS):
+        ob = _import(
+            kh,
+            "building",
+            "wall",
+            (TILE * 0.5 + ix * TILE, WALL_Y, 0.0),
+            rot_z_deg=0.0,
+            palette_key="wall",
+        )
+        if ob:
+            meshes.append(ob)
+    corner = _import(kh, "building", "corner", (WALL_X, WALL_Y, 0.0), palette_key="wall")
+    if corner:
+        meshes.append(corner)
+    doorway = _import(
+        kh,
+        "building",
+        "doorway",
+        (TILE * 1.5, WALL_Y, 0.0),
+        palette_key="wall",
+    )
+    if doorway:
+        meshes.append(doorway)
+    door = _import(
+        kh,
+        "building",
+        "door",
+        (ROOM_W * 0.5 - TILE * 0.35, WALL_Y + 0.08, 0.0),
+        palette_key="metal",
+    )
+    if door:
+        meshes.append(door)
+    return meshes
+
+
+def build_furniture(kh) -> list[bpy.types.Object]:
+    props: list[bpy.types.Object] = []
+    bench = _import(
+        kh, "furniture", "workbench", (WALL_X + 0.65, ROOM_D - TILE * 0.55, FLOOR_Z), palette_key="desk"
+    )
+    if bench:
+        props.append(bench)
+    shelf = _import(
+        kh, "furniture", "server_rack", (WALL_X + 0.55, TILE * 0.45, FLOOR_Z), palette_key="metal"
+    )
+    if shelf:
+        props.append(shelf)
+    low_shelf = _import(
+        kh, "furniture", "shelf", (ROOM_W - TILE * 0.85, WALL_Y + 0.55, FLOOR_Z), palette_key="desk"
+    )
+    if low_shelf:
+        props.append(low_shelf)
+    box_a = _import(
+        kh, "furniture", "box_closed", (ROOM_W - TILE * 0.45, TILE * 0.35, FLOOR_Z), palette_key="cardboard"
+    )
+    box_b = _import(
+        kh, "furniture", "box_open", (ROOM_W - TILE * 0.35, TILE * 0.85, FLOOR_Z), palette_key="cardboard"
+    )
+    for b in (box_a, box_b):
+        if b:
+            props.append(b)
+    desk = _import(kh, "furniture", "desk", (TILE * 1.05, ROOM_D - TILE * 0.75, FLOOR_Z), palette_key="desk")
+    if desk:
+        props.append(desk)
+    chair = _import(
+        kh, "furniture", "chair", (TILE * 1.55, ROOM_D - TILE * 0.95, FLOOR_Z), rot_z_deg=-18.0, palette_key="plastic"
+    )
+    if chair:
+        props.append(chair)
+    screen = _import(
+        kh,
+        "furniture",
+        "screen",
+        (TILE * 1.05, ROOM_D - TILE * 0.75, FLOOR_Z + 0.72),
+        palette_key="screen",
+    )
+    if screen:
+        props.append(screen)
+    kb = _import(
+        kh,
+        "furniture",
+        "keyboard",
+        (TILE * 1.02, ROOM_D - TILE * 0.62, FLOOR_Z + 0.74),
+        palette_key="plastic",
+    )
+    if kb:
+        props.append(kb)
+    mouse = _import(
+        kh,
+        "furniture",
+        "mouse",
+        (TILE * 1.42, ROOM_D - TILE * 0.62, FLOOR_Z + 0.74),
+        palette_key="plastic",
+    )
+    if mouse:
+        props.append(mouse)
+    lamp = kh.import_kenney(
+        "furniture",
+        "lamp",
+        (ROOM_W * 0.5, ROOM_D * 0.52, 2.28),
+        scale=(3.2, 3.2, 0.35),
+        palette_key="trim",
+        up_axis="Z",
+        floor_snap=False,
+    )
+    if lamp:
+        lamp.name = "kenney_furniture_lamp_ceiling"
+        lamp.rotation_euler[0] = math.pi
+        bpy.context.view_layer.update()
+        props.append(lamp)
     return props
 
 
 def main() -> None:
     import garage_kit_lib as gk  # type: ignore
+    import kenney_hero_lib as kh  # type: ignore
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    shell = build_corner_shell()
-    props = build_furnished_props()
+    shell = build_room(kh)
+    props = build_furniture(kh)
     all_meshes = shell + props
-    errs = gk.audit_pbr(all_meshes)
-    if errs:
-        raise RuntimeError(f"PBR audit failed ({len(errs)}): {errs[:5]}")
+    kh.purge_import_orphans(all_meshes)
+    _pbr_shell(gk, shell)
+    mat_errs = kh.audit_materials(all_meshes)
+    pbr_errs = gk.audit_pbr([o for o in shell if o.name.startswith("kenney_building")])
+    gnd_errs = kh.audit_grounding(
+        all_meshes,
+        up_axis="Z",
+        floor=FLOOR_Z,
+        wall_mounted=WALL_MOUNT_KEYS,
+        ceiling_mounted=CEILING_MOUNT_KEYS,
+        exempt=DESK_MOUNT_KEYS,
+        wall_plane="side",
+        wall_coord=WALL_Y,
+        tol_wall=0.28,
+    )
+    if mat_errs or pbr_errs:
+        raise RuntimeError(f"material audit: {mat_errs[:3]} pbr: {pbr_errs[:3]}")
+    if gnd_errs:
+        raise RuntimeError(f"grounding failed ({len(gnd_errs)}): {gnd_errs[:6]}")
 
     import blender_preview_rig as rig  # type: ignore
 
@@ -160,11 +215,11 @@ def main() -> None:
         all_meshes,
         out,
         resolution=1024,
-        up_axis="Y",
+        up_axis="Z",
         lens_mm=42.0,
         azimuth_deg=42.0,
         elevation_deg=30.0,
-        framing_margin=1.375,
+        framing_margin=0.90,
         mask_meshes=all_meshes,
         hdri_path=HDRI if HDRI.is_file() else None,
         hdri_strength=0.58,
@@ -173,6 +228,22 @@ def main() -> None:
         render_engine="CYCLES",
         cycles_samples=128,
     )
+    meta_path = out.with_name(out.stem + ".frame.json")
+    meta = {}
+    if meta_path.is_file():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    meta["grounding_violations"] = kh.audit_grounding(
+        all_meshes,
+        up_axis="Z",
+        floor=FLOOR_Z,
+        wall_mounted=WALL_MOUNT_KEYS,
+        ceiling_mounted=CEILING_MOUNT_KEYS,
+        exempt=DESK_MOUNT_KEYS,
+        wall_plane="side",
+        wall_coord=WALL_Y,
+        tol_wall=0.28,
+    )
+    meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
     print("OK garage-scene-urp-hero", out, "meshes", len(all_meshes))
 
 

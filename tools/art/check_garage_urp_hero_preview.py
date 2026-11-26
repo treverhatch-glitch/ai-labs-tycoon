@@ -121,8 +121,27 @@ def _magenta_fraction(path: Path) -> float:
     return hit / max(1, total)
 
 
+def _subject_extent_from_mask(mask: Path) -> float:
+    """BBox of subject alpha on committed mask PNG (real screen fill, not NDC)."""
+    w, h, rows = _parse_png_rgb_rows(mask)
+    xs: list[int] = []
+    ys: list[int] = []
+    for y in range(h):
+        row = rows[y]
+        for x in range(w):
+            i = x * 3
+            if row[i] >= 200 and row[i + 1] >= 200 and row[i + 2] >= 200:
+                xs.append(x)
+                ys.append(y)
+    if len(xs) < 64:
+        return 0.0
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    return max((y1 - y0 + 1) / h, (x1 - x0 + 1) / w)
+
+
 def _subject_extent_from_hero(hero: Path) -> float:
-    """Framing gate on hero RGB: non-grey pixels (3/4 garage vs studio gradient)."""
+    """Framing fallback on hero RGB: non-studio pixels (ignore flat grey backdrop)."""
     w, h, rows = _parse_png_rgb_rows(hero)
     xs: list[int] = []
     ys: list[int] = []
@@ -137,8 +156,9 @@ def _subject_extent_from_hero(hero: Path) -> float:
                 continue
             i = x * 3
             r, g, b = row[i], row[i + 1], row[i + 2]
-            spread = max(r, g, b) - min(r, g, b)
-            if spread > 18 and max(r, g, b) > 55:
+            if _is_studio_backdrop(r, g, b):
+                continue
+            if max(r, g, b) > 55:
                 xs.append(x)
                 ys.append(y)
     if len(xs) < 500:
@@ -271,12 +291,16 @@ def main() -> int:
         errs.append(f"magenta_frac {mag:.4f} > {MAGENTA_FRAC_MAX}")
     if mean_r > 200 and mean_g < 80 and mean_b > 200:
         errs.append(f"frame_mean_rgb near magenta ({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})")
+    if mask.is_file():
+        ext = _subject_extent_from_mask(mask)
+    else:
+        ext = _subject_extent_from_hero(hero)
     frame_meta = Path(sys.argv[3]) if len(sys.argv) > 3 else FRAME
     if frame_meta.is_file():
         meta = json.loads(frame_meta.read_text(encoding="utf-8"))
-        ext = float(meta.get("screen_extent", 0.0))
-    else:
-        ext = _subject_extent_from_hero(hero)
+        floaters = meta.get("grounding_violations") or []
+        if floaters:
+            errs.append(f"floating_meshes ({len(floaters)}): {floaters[:4]}")
     if ext < MIN_EXTENT or ext > MAX_EXTENT:
         errs.append(f"mask_extent {ext:.3f} not in [{MIN_EXTENT},{MAX_EXTENT}]")
     q = _quality_metrics(hero)
