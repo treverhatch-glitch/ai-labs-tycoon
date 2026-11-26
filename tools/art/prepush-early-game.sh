@@ -3,7 +3,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
-ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-game-art-bootstrap}"
+ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-art-quality-pass-97cc}"
 export ART_PREPUSH_UPSTREAM
 if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_garage_kit.py
@@ -22,6 +22,7 @@ else
   python3 tools/art/generate_wisp_mascot.py
 fi
 ./tools/art/prepush.sh
+python3 tools/art/check_tracked_pyc.py
 python3 tools/art/check_garage_manifest.py
 python3 tools/art/check_garage_quality_previews.py
 python3 tools/art/check_garage_mesh_topology.py
