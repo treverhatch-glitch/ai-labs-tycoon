@@ -16,6 +16,7 @@ from mathutils import Vector
 
 # Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
 STUDIO_GREY = (0.48, 0.48, 0.50, 1.0)
+BACKDROP_GREY_150 = (150 / 255, 150 / 255, 150 / 255, 1.0)
 FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
@@ -103,15 +104,23 @@ def setup_studio_world() -> None:
         env.image = bpy.data.images.load(str(hdri_path), check_existing=True)
         if hasattr(env.image, "colorspace_settings"):
             env.image.colorspace_settings.name = "Linear Rec.709"
-        bg = nodes.new("ShaderNodeBackground")
-        bg.inputs["Strength"].default_value = 0.65
         mapping = nodes.new("ShaderNodeMapping")
         mapping.inputs["Rotation"].default_value[2] = math.radians(35.0)
         texco = nodes.new("ShaderNodeTexCoord")
         links.new(texco.outputs["Generated"], mapping.inputs["Vector"])
         links.new(mapping.outputs["Vector"], env.inputs["Vector"])
-        links.new(env.outputs["Color"], bg.inputs["Color"])
-        links.new(bg.outputs["Background"], out.inputs["Surface"])
+        bg_hdri = nodes.new("ShaderNodeBackground")
+        bg_hdri.inputs["Strength"].default_value = 1.0
+        links.new(env.outputs["Color"], bg_hdri.inputs["Color"])
+        bg_cam = nodes.new("ShaderNodeBackground")
+        bg_cam.inputs["Color"].default_value = BACKDROP_GREY_150
+        bg_cam.inputs["Strength"].default_value = 1.0
+        lp = nodes.new("ShaderNodeLightPath")
+        mix = nodes.new("ShaderNodeMixShader")
+        links.new(lp.outputs["Is Camera Ray"], mix.inputs["Fac"])
+        links.new(bg_hdri.outputs["Background"], mix.inputs[1])
+        links.new(bg_cam.outputs["Background"], mix.inputs[2])
+        links.new(mix.outputs["Shader"], out.inputs["Surface"])
     else:
         bg = nodes.new("ShaderNodeBackground")
         bg.inputs["Color"].default_value = STUDIO_GREY
@@ -361,12 +370,13 @@ def render_preview_studio(
 
     setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
+    staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
     if preview_kind == "staff":
-        axis = "Y"
-        framing_margin = 0.94
+        axis = "Z" if staff_cc0 or infer_up_axis(mins, maxs) == "Z" else "Y"
+        framing_margin = 0.70 if staff_cc0 else 0.94
         lens_mm = 48.0
         azimuth_deg = 42.0
-        elevation_deg = 10.0
+        elevation_deg = 12.0 if staff_cc0 else 10.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:

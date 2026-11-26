@@ -212,7 +212,6 @@ def parent_staff_cc0_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Ob
         ("Arm_-1", "Torso"),
         ("Arm_1", "Torso"),
         ("HardHatEng", "Torso"),
-        ("ToolBelt", "Torso"),
     ):
         link(child, parent)
     for ob in mesh_obs:
@@ -252,7 +251,6 @@ def check_prejoin_connectivity_cc0(mesh_obs: list[bpy.types.Object], asset_id: s
         ("Arm_-1", "Torso"),
         ("Arm_1", "Torso"),
         ("HardHatEng", "Torso"),
-        ("ToolBelt", "Torso"),
     ]
     for child_key, parent_key in rules:
         if child_key not in names or parent_key not in names:
@@ -260,10 +258,7 @@ def check_prejoin_connectivity_cc0(mesh_obs: list[bpy.types.Object], asset_id: s
         gap = bbox_gap(_world_bbox(names[parent_key]), _world_bbox(names[child_key]))
         if gap > MAX_GAP_M:
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
-    for child_key, parent_key in (
-        ("Laptop", "Torso"),
-        ("Wrench", "Torso"),
-    ):
+    for child_key, parent_key in (("Laptop", "Torso"),):
         if child_key not in names:
             continue
         anchor = parent_key if parent_key in names else "Torso"

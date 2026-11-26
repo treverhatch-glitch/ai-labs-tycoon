@@ -470,9 +470,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
     part_count = len(mesh_obs)
-    ground_scene_meshes()
-    tint_garage_parts(mesh_obs, asset_id)
     staff_cc0 = os.environ.get("EARLY_ART_STAFF_CC0", "0").strip().lower() not in ("0", "false", "no")
+    if not staff_cc0:
+        ground_scene_meshes()
+    tint_garage_parts(mesh_obs, asset_id)
     if category == "staff-kit" and part_count < 6:
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
     if category == "staff-kit":

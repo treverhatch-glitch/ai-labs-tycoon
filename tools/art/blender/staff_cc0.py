@@ -19,6 +19,16 @@ SKIN = (0.76, 0.58, 0.44, 1.0)
 HARDHAT = (0.95, 0.78, 0.12, 1.0)
 
 
+def _world_bbox(ob):
+    from mathutils import Vector
+
+    corners = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+    xs = [c.x for c in corners]
+    ys = [c.y for c in corners]
+    zs = [c.z for c in corners]
+    return Vector((min(xs), min(ys), min(zs))), Vector((max(xs), max(ys), max(zs)))
+
+
 def _import_character() -> list:
     import bpy
 
@@ -40,7 +50,20 @@ def _import_character() -> list:
         if base in RENAME:
             ob.name = RENAME[base]
         out.append(ob)
+    _apply_object_transforms(out)
     return out
+
+
+def _apply_object_transforms(mesh_obs: list) -> None:
+    import bpy
+
+    if not mesh_obs:
+        return
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in mesh_obs:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = mesh_obs[0]
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
 
 def _apply_torso_colormap(torso) -> None:
@@ -81,45 +104,74 @@ def _recolor_engineer(mesh_obs: list) -> None:
 
 
 def _add_engineer_props(mesh_obs: list) -> list:
-    """Laptop + screen glow in right hand; wrench in left."""
-    import bpy
+    """Standing pose: laptop at chest (front +Y)."""
     from mathutils import Vector
 
     names = {o.name.split(".")[0]: o for o in mesh_obs}
     torso = names.get("Torso")
+    arm_r = names.get("Arm_1")
     if not torso:
         raise RuntimeError("CC0 engineer: missing Torso")
 
-    def arm_center(ob) -> Vector:
-        corners = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
-        return sum(corners, Vector()) / 8
+    import bpy
 
-    # Kenney rig: Arm_1 is on −X, Arm_-1 on +X (front toward +Y).
-    r_loc = arm_center(arm_r) if arm_r else torso.matrix_world.translation + Vector((-0.30, 0, 0.35))
-    l_loc = arm_center(arm_l) if arm_l else torso.matrix_world.translation + Vector((0.30, 0, 0.35))
-
-    mid = torso.matrix_world.translation + Vector((0.0, 0.06, 0.08))
-    laptop = bc.add_cube("Laptop", (0.26, 0.18, 0.04), tuple(mid + Vector((-0.10, 0, 0))))
+    laptop = bc.add_cube("Laptop", (0.18, 0.10, 0.03), (0.0, 0.0, 0.0))
+    bpy.ops.object.select_all(action="DESELECT")
+    laptop.select_set(True)
+    torso.select_set(True)
+    bpy.context.view_layer.objects.active = torso
+    bpy.ops.object.parent_set(type="OBJECT", keep_transform=False)
+    laptop.location = (0.08, 0.22, 0.38)
+    bpy.context.view_layer.update()
     bc.assign_solid(laptop, (0.35, 0.38, 0.42, 1.0), 0.32)
-    lap_loc = mid + Vector((-0.10, 0, 0))
-    screen = bc.add_cube("LaptopScreenEmit", (0.18, 0.12, 0.008), tuple(lap_loc + Vector((0, 0.06, 0.012))))
+    lap_w = laptop.matrix_world.translation
+    screen = bc.add_cube(
+        "LaptopScreenEmit", (0.16, 0.10, 0.008), tuple(lap_w + Vector((0, 0.07, 0.01)))
+    )
     bc.assign_emission(screen, (0.18, 0.72, 0.38, 1.0), strength=2.5)
-    wrench = bc.add_cube("Wrench", (0.06, 0.20, 0.04), tuple(mid + Vector((0.10, 0, 0))))
-    bc.assign_solid(wrench, (0.72, 0.72, 0.75, 1.0), 0.28)
-    belt = bc.add_cube("ToolBelt", (0.34, 0.06, 0.22), tuple(torso.matrix_world.translation + Vector((0, -0.05, 0.02))))
-    bc.assign_solid(belt, (0.48, 0.32, 0.18, 1.0), 0.55)
-
-    new_parts = [laptop, screen, wrench, belt]
+    new_parts = [laptop, screen]
     for ob in new_parts:
         mesh_obs.append(ob)
     return new_parts
 
 
+def validate_cc0_upright(mesh_obs: list, asset_id: str) -> None:
+    """Tallest axis Z; head/hat centroid above torso (standing)."""
+    from mathutils import Vector
+
+    skip = {"Laptop", "LaptopScreenEmit"}
+    mins = Vector((1e9, 1e9, 1e9))
+    maxs = Vector((-1e9, -1e9, -1e9))
+    for ob in mesh_obs:
+        if ob.type != "MESH" or ob.name.split(".")[0] in skip:
+            continue
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            mins.x, mins.y, mins.z = min(mins.x, w.x), min(mins.y, w.y), min(mins.z, w.z)
+            maxs.x, maxs.y, maxs.z = max(maxs.x, w.x), max(maxs.y, w.y), max(maxs.z, w.z)
+    span = maxs - mins
+    if span.z < span.y * 0.98:
+        raise RuntimeError(
+            f"FAIL {asset_id}: cc0_upright lying span_z={span.z:.3f} span_y={span.y:.3f}"
+        )
+    if span.z < 0.35:
+        raise RuntimeError(f"FAIL {asset_id}: cc0_upright too_short span_z={span.z:.3f}")
+    by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
+    torso = by_name.get("Torso")
+    head = by_name.get("HardHatEng")
+    if torso and head:
+        torso_z = sum((torso.matrix_world @ Vector(c)).z for c in torso.bound_box) / 8
+        head_z = max((head.matrix_world @ Vector(c)).z for c in head.bound_box)
+        if head_z < torso_z + 0.04:
+            raise RuntimeError(f"FAIL {asset_id}: cc0_upright head_z={head_z:.3f} torso_z={torso_z:.3f}")
+
+
 def orient_staff_cc0_assembly(mesh_obs: list, asset_id: str):
-    """Scale imported Z-up Kenney rig to ~1.72 m, ground feet; keep Blender Z (glTF export → +Y)."""
+    """Uniform scale only: Z-up Kenney rig grounded at z=0 (~1.72 m tall)."""
     import bpy
     import staff_connectivity as staff_conn
 
+    validate_cc0_upright(mesh_obs, asset_id)
     root = staff_conn.parent_staff_cc0_hierarchy(mesh_obs)
     bpy.context.view_layer.update()
     min_z, max_z, sz = bc._mesh_scene_span_z(mesh_obs)  # noqa: SLF001
@@ -134,13 +186,34 @@ def orient_staff_cc0_assembly(mesh_obs: list, asset_id: str):
         bpy.context.view_layer.objects.active = root
         bpy.ops.object.transform_apply(scale=True)
     bpy.context.view_layer.update()
-    min_z, max_z, sz = bc._mesh_scene_span_z(mesh_obs)  # noqa: SLF001
-    if abs(min_z) > 1e-4:
+    def scene_min_z_verts() -> float:
+        from mathutils import Vector
+
+        zmin = 1e9
+        for ob in mesh_obs:
+            if ob.type != "MESH":
+                continue
+            for v in ob.data.vertices:
+                zmin = min(zmin, (ob.matrix_world @ v.co).z)
+        return zmin
+
+    for _ in range(3):
+        bpy.context.view_layer.update()
+        min_z = scene_min_z_verts()
+        if min_z <= 0.002:
+            break
         root.location.z -= min_z
     bpy.context.view_layer.update()
+    min_z, max_z, sz = bc._mesh_scene_span_z(mesh_obs)  # noqa: SLF001
     _min, _max, sz = bc._mesh_scene_span_z(mesh_obs)  # noqa: SLF001
     if sz < 1.55 or sz > 2.05:
         raise RuntimeError(f"FAIL {asset_id}: cc0 height sz={sz:.3f} want 1.55-2.05")
+    if abs(min_z) > 0.02:
+        raise RuntimeError(f"FAIL {asset_id}: feet min_z={min_z:.4f} want ~0")
+    # glTF +Y export/re-import lifts feet slightly in Blender Z; pre-compensate once.
+    root.location.z -= 0.069
+    bpy.context.view_layer.update()
+    validate_cc0_upright(mesh_obs, asset_id)
     return root
 
 
