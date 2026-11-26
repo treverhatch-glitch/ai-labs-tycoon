@@ -50,7 +50,8 @@ if ! git diff --cached --quiet 2>/dev/null; then
     exit 1
   fi
 fi
-UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/graphics-pipeline-5032}"
+CURRENT_BRANCH="$(git symbolic-ref -q --short HEAD 2>/dev/null || true)"
+UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/${CURRENT_BRANCH:-cursor/graphics-pipeline-5032}}"
 if git rev-parse --verify "$UPSTREAM" >/dev/null 2>&1; then
   if git log "$UPSTREAM"..HEAD --format=%B | grep -qiE 'Co-authored-by:'; then
     echo "FAIL: Co-authored-by in commits ahead of $UPSTREAM" >&2
