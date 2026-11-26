@@ -1,0 +1,1 @@
+namespace AiLabs.Unity.Hq { public static class CampusGoPacketTailRefreshThrough364PresentationSpec { public const int LastDocumentedPushBatch = 364; public static int PriorDocumentedPushBatch => CampusGoPacketTailRefreshThrough361.LastDocumentedPushBatch; public const string RefreshDoc = "GO-PACKET-TAIL-REFRESH-364.md"; } }

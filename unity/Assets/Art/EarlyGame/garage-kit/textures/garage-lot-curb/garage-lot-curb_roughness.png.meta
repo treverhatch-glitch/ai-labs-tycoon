@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 743522b8ef37ba6ad9aff586d30cbab7
+TextureImporter:
+  externalObjects: {}
+  serializedVersion: 13
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 1
+    aniso: 1
+  spriteMode: 0
+  alphaUsage: 1

@@ -1,0 +1,41 @@
+{
+  "assetId": "prop-desk",
+  "scope": "presentation",
+  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse, pottedPlant); ambientCG Wood092",
+  "pipeline": "kenney-slot-v11",
+  "texture1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_screen_ide.png",
+  "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Wood092_1K-JPG/Wood092_1K-JPG_Color.jpg",
+  "glb": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.glb",
+  "fbx": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.fbx",
+  "preview": "docs/art/previews/prop-desk.png",
+  "previewHdri": "docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr",
+  "textureNormal1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/Wood092_NormalGL.jpg",
+  "textureRoughness1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/Wood092_Roughness.jpg",
+  "kenneyParts": [
+    "desk.glb",
+    "computerScreen.glb",
+    "computerKeyboard.glb",
+    "computerMouse.glb",
+    "pottedPlant.glb"
+  ],
+  "kenneyOffsets": {
+    "computerScreen.glb": [
+      0.56,
+      0.46
+    ],
+    "computerKeyboard.glb": [
+      0.3,
+      0.7
+    ],
+    "computerMouse.glb": [
+      0.62,
+      0.64
+    ],
+    "pottedPlant.glb": [
+      0.12,
+      0.56
+    ]
+  },
+  "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
+  "restyle": "kenney-slot-v11"
+}

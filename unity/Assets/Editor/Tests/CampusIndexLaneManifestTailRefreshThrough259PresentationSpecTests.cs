@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusIndexLaneManifestTailRefreshThrough259PresentationSpecTests { [Test] public void B516() { Assert.AreEqual(259,CampusIndexLaneManifestTailRefreshThrough259PresentationSpec.RefreshThroughBatch); } } }
