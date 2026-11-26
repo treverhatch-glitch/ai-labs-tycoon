@@ -1,14 +1,21 @@
 #!/usr/bin/env python3
-"""For-sale sign — two posts + one white board (0.9×0.6 m face)."""
+"""For-sale sign — posts behind board, FOR SALE mesh text (no albedo paint)."""
 import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
-import bpy
 
 REPO = Path(__file__).resolve().parents[3]
+
+BOARD_X = 0.90
+BOARD_Y = 0.06
+BOARD_Z = 0.60
+POST_W = 0.10
+POST_H = 1.65
+POST_Z = -0.12
+POST_SPAN = 1.05
 
 
 def write_sign_albedo(tex_path: Path) -> None:
@@ -26,19 +33,44 @@ def main():
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
-    post_w, post_h = 0.10, 1.65
-    span = 0.90
-    post_l = bc.add_cube("PostL", (post_w, post_h, post_w), (-span * 0.5, post_h * 0.5, 0))
-    post_r = bc.add_cube("PostR", (post_w, post_h, post_w), (span * 0.5, post_h * 0.5, 0))
+
+    board_y = POST_H - BOARD_Z * 0.5
+    post_l = bc.add_cube(
+        "PostL",
+        (POST_W, POST_H, POST_W),
+        (-POST_SPAN * 0.5, POST_H * 0.5, POST_Z),
+    )
+    post_r = bc.add_cube(
+        "PostR",
+        (POST_W, POST_H, POST_W),
+        (POST_SPAN * 0.5, POST_H * 0.5, POST_Z),
+    )
     bc.assign_solid(post_l, (0.52, 0.38, 0.26, 1.0), 0.58)
     bc.assign_solid(post_r, (0.52, 0.38, 0.26, 1.0), 0.58)
-    board = bc.add_cube("Board", (0.90, 0.60, 0.06), (0, 1.35, 0))
-    bc.assign_billboard_face_texture(board, albedo, face_axis="Z", roughness=0.40)
+
+    back_rail = bc.add_cube(
+        "SignBackRail",
+        (POST_SPAN * 0.92, 0.10, 0.10),
+        (0, board_y - 0.25, POST_Z + 0.04),
+    )
+    bc.assign_solid(back_rail, (0.50, 0.36, 0.24, 1.0), 0.58)
+
+    board = bc.add_cube("Board", (BOARD_X, BOARD_Y, BOARD_Z), (0, board_y, 0))
+    bc.assign_solid(board, (0.98, 0.96, 0.94, 1.0), 0.40)
+
+    bc.add_sign_mesh_text("SignText", "FOR SALE", board, face_dir=-1.0, extrude_m=0.003)
+
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     write_sign_albedo(albedo)
-    bc.reexport_packet34_glb("garage-land-for-sale-sign", "garage-kit")
     bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris", entry["subShapeCount"], "parts")
+    print(
+        "OK",
+        entry["id"],
+        entry["triangleCount"],
+        "tris",
+        entry["subShapeCount"],
+        "parts",
+    )
     return entry
 
 

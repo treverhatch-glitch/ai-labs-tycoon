@@ -112,9 +112,9 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 45,
-      "triangleCount": 138,
-      "subShapeCount": 3,
+      "vertexCount": 40670,
+      "triangleCount": 162664,
+      "subShapeCount": 5,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py"
     },
