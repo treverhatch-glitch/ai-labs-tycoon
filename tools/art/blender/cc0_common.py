@@ -225,8 +225,42 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.84
     elif role == "floor_stain":
-        bsdf.inputs["Base Color"].default_value = tint
-        bsdf.inputs["Roughness"].default_value = 0.94
+        bsdf.inputs["Base Color"].default_value = (0.04, 0.038, 0.035, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.97
+    elif role in ("box", "box_open"):
+        bsdf.inputs["Base Color"].default_value = (0.88, 0.68, 0.42, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.78
+        wr = nodes.new("ShaderNodeTexNoise")
+        wr.inputs["Scale"].default_value = 18.0
+        wr.inputs["Detail"].default_value = 4.0
+        mix = nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = "OVERLAY"
+        mix.inputs["Fac"].default_value = 0.35
+        mix.inputs["Color1"].default_value = (0.88, 0.68, 0.42, 1.0)
+        mix.inputs["Color2"].default_value = (0.72, 0.54, 0.32, 1.0)
+        links.new(wr.outputs["Fac"], mix.inputs["Fac"])
+        links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    elif role == "chair":
+        bsdf.inputs["Base Color"].default_value = (0.28, 0.48, 0.82, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.55
+        wr = nodes.new("ShaderNodeTexNoise")
+        wr.inputs["Scale"].default_value = 24.0
+        mix = nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = "OVERLAY"
+        mix.inputs["Fac"].default_value = 0.22
+        mix.inputs["Color2"].default_value = (0.18, 0.32, 0.62, 1.0)
+        links.new(wr.outputs["Fac"], mix.inputs["Fac"])
+        links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+    elif role == "lamp_accent":
+        bsdf.inputs["Base Color"].default_value = (0.94, 0.82, 0.55, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.42
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = (1.0, 0.78, 0.35, 1.0)
+        emit.inputs["Strength"].default_value = 0.28
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
     else:
         bsdf.inputs["Base Color"].default_value = tint
         bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass", "wood") else 0.48
@@ -240,15 +274,15 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
             bsdf.inputs["Transmission Weight"].default_value = 0.35
         elif "Transmission" in bsdf.inputs:
             bsdf.inputs["Transmission"].default_value = 0.35
-    if role in ("screen", "lamp_accent"):
+    if role == "screen":
         emit = nodes.new("ShaderNodeEmission")
         emit.inputs["Color"].default_value = tint
-        emit.inputs["Strength"].default_value = 0.12 if role == "screen" else 0.18
+        emit.inputs["Strength"].default_value = 0.12
         add = nodes.new("ShaderNodeAddShader")
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
         links.new(add.outputs["Shader"], out.inputs["Surface"])
-    else:
+    elif role != "lamp_accent":
         links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)

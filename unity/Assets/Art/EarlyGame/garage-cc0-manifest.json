@@ -34,7 +34,7 @@
         "prop_server",
         "kit_roll_door"
       ],
-      "triangleCount": 4677,
+      "triangleCount": 4663,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-interior-room-kit.py",
       "parts": [

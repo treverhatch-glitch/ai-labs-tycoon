@@ -17,6 +17,7 @@ FIXTURE_FB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-fbb7b
 FIXTURE_708 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-7086ea82.png"
 FIXTURE_8B4 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-8b4f9dba.png"
 FIXTURE_3C2 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-3c2deb99.png"
+FIXTURE_B198 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-b1985d85.png"
 MIN_FLOOR_LUMA = 140.0
 MIN_STAIN_DELTA_LUMA = 25.0
 CARD_HUE_LO = 25.0
@@ -244,6 +245,36 @@ def edge_margin_band_errs(im, path_name: str) -> list[str]:
                     f"FAIL: {path_name} outer {EDGE_MARGIN_FRAC * 100:.0f}% margin "
                     f"pixel ({x},{y}) != {CORNER_RGB}"
                 ]
+    return errs
+
+
+def left_wall_column_backdrop_errs(im, path_name: str) -> list[str]:
+    """Fail #9: no long backdrop seams on the left wall (segment gaps / floor leak)."""
+    w, h = im.size
+    bg = _background_mask(im)
+    y0, y1 = int(h * 0.32), int(h * 0.58)
+    x0, x1 = int(w * 0.07), int(w * 0.30)
+    max_run = 0
+    for y in range(y0, y1):
+        run = 0
+        for x in range(x0, x1):
+            p = im.getpixel((x, y))
+            if bg[y][x] and (p == CORNER_RGB or is_studio_backdrop(p)):
+                run += 1
+                max_run = max(max_run, run)
+            else:
+                run = 0
+    if max_run > 20:
+        return [
+            f"FAIL: {path_name} left-wall backdrop seam {max_run}px along scan "
+            f"(y {y0}-{y1}, x {x0}-{x1})"
+        ]
+    return []
+
+
+def fail9_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail8_visual_gates(im, path_name)
+    errs.extend(left_wall_column_backdrop_errs(im, path_name))
     return errs
 
 
@@ -598,7 +629,7 @@ def check_image(path: Path) -> list[str]:
     errs.extend(fill_margin_errs(path))
     errs.extend(edge_margin_band_errs(im, path.name))
     errs.extend(full_backdrop_mask_errs(im, path.name))
-    errs.extend(fail8_visual_gates(im, path.name))
+    errs.extend(fail9_visual_gates(im, path.name))
     errs.extend(room_pixel_gate_errs(im, path.name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -661,6 +692,21 @@ def verify_regression_fixtures_fail() -> list[str]:
         if not bad:
             errs.append(f"FAIL: fixture {label} must fail fail-8 tightened gates")
 
+    def fixture_must_fail_fail9(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = (
+            fail9_visual_gates(im_f, fix.name)
+            + left_wall_column_backdrop_errs(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
+            + edge_margin_band_errs(im_f, fix.name)
+            + fill_margin_errs(fix)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-9 tightened gates")
+
     for label, fix in (
         ("7086ea82", FIXTURE_708),
         ("fbb7bf7c", FIXTURE_FB),
@@ -669,6 +715,7 @@ def verify_regression_fixtures_fail() -> list[str]:
     ):
         fixture_must_fail(label, fix)
     fixture_must_fail_fail8("3c2deb99", FIXTURE_3C2)
+    fixture_must_fail_fail9("b1985d85", FIXTURE_B198)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

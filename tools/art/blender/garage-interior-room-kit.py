@@ -60,7 +60,7 @@ KIT_ROLES: dict[str, str] = {
     "prop_workbench": "wood",
     "prop_lamp": "lamp_accent",
     "prop_box_a": "box",
-    "prop_box_b": "box_open",
+    "prop_box_b": "box",
     "prop_books": "wood",
     "kit_floor_stain": "floor_stain",
     "prop_plant": "plant",
@@ -155,21 +155,22 @@ def build_walls() -> tuple[list[bpy.types.Object], list[bpy.types.Object], bpy.t
         snap_min_z(jamb, 0.0)
         back.append(jamb)
 
-    lintel = kenney_piece(
-        "plating-wide.glb",
-        "wall_lintel",
-        (ROOM / 2, wall_thick / 2, WALL_H - 0.08),
-        scale=(ROLL_DOOR_TARGET_W * 0.49, 0.14, 0.14),
-        rot_z=-math.pi / 2,
+    left_run = kenney_piece(
+        "wall.glb",
+        "wall_left_run",
+        (wall_thick / 2, ROOM / 2, 0.0),
+        scale=(ws[0] * 1.35, ws[1] * GRID * 1.02, ws[2]),
     )
-    snap_min_z(lintel, WALL_H - 0.12)
-    back.append(lintel)
-
-    for iy in range(GRID):
-        cy = TILE * (iy + 0.5)
-        ob = kenney_piece("wall.glb", f"wall_left_{iy}", (wall_thick / 2, cy, 0.0), scale=ws)
-        snap_min_z(ob, 0.0)
-        left.append(ob)
+    snap_min_z(left_run, 0.0)
+    left.append(left_run)
+    base_fill = kenney_piece(
+        "wall.glb",
+        "wall_left_base_fill",
+        (wall_thick / 2, ROOM / 2, 0.0),
+        scale=(ws[0] * 1.55, ws[1] * GRID * 1.02, 0.07),
+    )
+    snap_min_z(base_fill, 0.0)
+    left.append(base_fill)
 
     corner = kenney_piece(
         "wall-corner.glb",
@@ -185,13 +186,20 @@ def build_roll_door() -> bpy.types.Object:
     """Merged slats flush in back-wall opening (~3 m), half-raised, header above."""
     wall_thick = 0.05
     wall_plane_y = wall_thick / 2 + 0.003
-    slats: list[bpy.types.Object] = []
     door_w = ROLL_DOOR_TARGET_W
     curtain_h = WALL_H * 0.62
     slat_count = 12
     slat_thick = curtain_h / slat_count
-    depth = 0.10
+    depth = 0.055
     rib_scale = (door_w * 0.49, depth, slat_thick / 0.24)
+    header = kenney_piece(
+        "plating-wide.glb",
+        "roll_header",
+        (ROOM / 2, wall_plane_y, WALL_H - 0.09),
+        scale=(door_w * 0.49, depth, 0.12),
+        rot_z=-math.pi / 2,
+    )
+    slats: list[bpy.types.Object] = [header]
     for i in range(slat_count):
         zc = slat_thick * 0.5 + i * slat_thick
         slats.append(
@@ -303,16 +311,20 @@ def assert_scene_layout(
     if mx.x > 3.55 or mn.x < 0.45:
         failures.append(f"kit_roll_door not in ~3 m back opening (x {mn.x:.2f}-{mx.x:.2f})")
 
-    left_sorted = sorted(
-        [o for o in wall_parts if "wall_left" in o.name],
-        key=lambda o: cc0.world_bbox(o)[0].y,
-    )
-    for i in range(len(left_sorted) - 1):
-        _, mx_a = cc0.world_bbox(left_sorted[i])
-        mn_b, _ = cc0.world_bbox(left_sorted[i + 1])
-        gap = mn_b.y - mx_a.y
-        if gap > GAP_TOL:
-            failures.append(f"left wall gap {gap:.3f} m between segments")
+    left_run = next((o for o in wall_parts if "wall_left_run" in o.name), None)
+    if left_run is None:
+        failures.append("missing wall_left_run")
+    else:
+        lmn, lmx = cc0.world_bbox(left_run)
+        if lmn.y > GAP_TOL or lmx.y < ROOM - GAP_TOL:
+            failures.append(f"left wall run span Y {lmn.y:.2f}-{lmx.y:.2f} != 0-{ROOM}")
+        if lmx.x - wall_thick > 0.05:
+            failures.append(f"left wall protrudes {(lmx.x - wall_thick):.3f} m into room")
+
+    if "prop_whiteboard" in kit_objects:
+        wmn, wmx = cc0.world_bbox(kit_objects["prop_whiteboard"])
+        if wmn.x > wall_thick + 0.08:
+            failures.append(f"prop_whiteboard not touching left wall (minX={wmn.x:.3f})")
 
     prop_keys = [k for k in kit_objects if k.startswith("prop_")]
     if len(prop_keys) < 8:
@@ -383,7 +395,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
         ("prop_books", "books.glb", (cx - 0.22, cy + 0.22), math.radians(15), FURN_SCALE * 0.8),
         ("prop_bookcase", "bookcaseClosed.glb", (0.72, 2.92), math.pi / 2, FURN_SCALE * 0.92),
         ("prop_box_a", "cardboardBoxClosed.glb", (1.05, 2.88), math.radians(18), FURN_SCALE * 0.82),
-        ("prop_box_b", "cardboardBoxOpen.glb", (1.35, 2.62), math.radians(-12), FURN_SCALE * 0.82),
+        ("prop_box_b", "cardboardBoxClosed.glb", (1.35, 2.62), math.radians(-12), FURN_SCALE * 0.82),
         ("prop_workbench", "sideTable.glb", (1.25, 1.22), math.radians(8), FURN_SCALE * 0.92),
         ("prop_plant", "plantSmall1.glb", (2.95, 1.18), math.radians(-25), FURN_SCALE * 1.0),
         ("prop_speaker", "speaker.glb", (1.05, 1.38), math.radians(12), FURN_SCALE * 0.88),
@@ -394,14 +406,19 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
         kit_objects[key] = furniture_prop(key, glb, xy, rot_z=rot, scale=sc if sc else FURN_SCALE)
         keys.append(key)
 
+    wall_thick = 0.05
     kit_objects["prop_whiteboard"] = garage_piece(
         "garage-whiteboard-1995",
         "prop_whiteboard",
-        (0.32, 1.55, 0.0),
+        (wall_thick + 0.06, 1.85, 0.0),
         rot_z=math.pi / 2,
-        scale=1.45,
+        scale=1.35,
     )
     snap_min_z(kit_objects["prop_whiteboard"], FLOOR_TOP)
+    wb = kit_objects["prop_whiteboard"]
+    bpy.context.view_layer.update()
+    mn, _ = cc0.world_bbox(wb)
+    wb.location.x += (wall_thick + 0.02) - mn.x
     keys.append("prop_whiteboard")
 
     kit_objects["prop_server"] = garage_piece(
@@ -418,8 +435,6 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     mins, _ = cc0.world_bbox(kit_objects["prop_bookcase"])
     kit_objects["prop_bookcase"].location.x += WALL_TOL - mins.x
     wb = kit_objects["prop_whiteboard"]
-    mn, mx = cc0.world_bbox(wb)
-    wb.location.x += WALL_TOL - mn.x
     bpy.context.view_layer.update()
     mn, mx = cc0.world_bbox(wb)
     if mx.y > ROOM - GAP_TOL:
@@ -429,7 +444,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
 
     stack_desk_props(kit_objects)
 
-    bpy.ops.mesh.primitive_plane_add(size=1.35, location=(2.28, 1.42, FLOOR_TOP + 0.004))
+    bpy.ops.mesh.primitive_plane_add(size=2.05, location=(2.28, 1.42, FLOOR_TOP + 0.004))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
     stain.rotation_euler = (0.0, 0.0, math.radians(14))
