@@ -494,7 +494,7 @@ def render_preview_studio(
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     if path.stem == "garage-scene-urp-hero" and hdri_path and hdri_lighting_only:
-        light_mul = 2.05
+        light_mul = 1.25
     elif hdri_path and hdri_lighting_only:
         light_mul = 3.4
     else:
@@ -547,7 +547,7 @@ def render_preview_studio(
 
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.look = "None"
-    scene.view_settings.exposure = -0.72 if path.stem == "garage-scene-urp-hero" else 0.0
+    scene.view_settings.exposure = -0.7 if path.stem == "garage-scene-urp-hero" else 0.0
     scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGB"
     scene.render.resolution_x = resolution

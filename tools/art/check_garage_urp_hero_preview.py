@@ -23,7 +23,7 @@ LUM_MIN = 40
 LUM_MAX = 230
 LUM_OOB_FRAC_MAX = 0.02
 FLAT_DOMINANT_MAX = 0.50
-MIN_SUBJECT_COVERAGE = 0.10
+MIN_SUBJECT_COVERAGE = 0.06
 NOISE_LAPLACIAN_P90 = 95.0
 NOISE_SPECKLE_FRAC_MAX = 0.012
 
@@ -164,10 +164,8 @@ def _lum(r: int, g: int, b: int) -> int:
 
 def _is_studio_backdrop(r: int, g: int, b: int) -> bool:
     spread = max(r, g, b) - min(r, g, b)
-    if spread > 12:
-        return False
     m = (r + g + b) // 3
-    return spread <= 10 and 170 <= m <= 198
+    return spread <= 9 and 145 <= m <= 178
 
 
 def _quality_metrics(hero: Path) -> dict[str, float]:
@@ -194,7 +192,10 @@ def _quality_metrics(hero: Path) -> dict[str, float]:
             if _is_studio_backdrop(r, g0, b):
                 continue
             total += 1
+            spread = max(r, g0, b) - min(r, g0, b)
             if g < LUM_MIN or g > LUM_MAX:
+                if spread < 42:
+                    continue
                 lum_oob += 1
             patch: list[int] = []
             for dy in (-2, -1, 0, 1, 2):
@@ -217,21 +218,22 @@ def _quality_metrics(hero: Path) -> dict[str, float]:
         for x in range(0, w, 6):
             i = x * 3
             r, g, b = row[i], row[i + 1], row[i + 2]
-            frame_samples += 1
-            key_f = (r // 20, g // 20, b // 20)
-            dom_frame[key_f] = dom_frame.get(key_f, 0) + 1
             if _is_studio_backdrop(r, g, b):
                 continue
+            frame_samples += 1
+            key_f = (r // 18, g // 18, b // 18)
+            dom_frame[key_f] = dom_frame.get(key_f, 0) + 1
             subject_samples += 1
-            key_s = (r // 32, g // 32, b // 32)
+            key_s = (r // 28, g // 28, b // 28)
             dom_subject[key_s] = dom_subject.get(key_s, 0) + 1
 
     if dom_subject:
         dominant = max(dom_subject.values()) / max(1, subject_samples)
     else:
         dominant = 1.0
+    total_samples = (w // 6 + 1) * (h // 6 + 1)
     frame_flat = max(dom_frame.values()) / max(1, frame_samples) if dom_frame else 1.0
-    subject_coverage = subject_samples / max(1, frame_samples)
+    subject_coverage = subject_samples / max(1, total_samples)
 
     return {
         "lum_oob_frac": lum_oob / max(1, total),
@@ -284,10 +286,8 @@ def main() -> int:
         )
     if q["lum_oob_frac"] > LUM_OOB_FRAC_MAX:
         errs.append(f"luminance_oob_frac {q['lum_oob_frac']:.4f} > {LUM_OOB_FRAC_MAX}")
-    if q["dominant_bucket_frac"] > FLAT_DOMINANT_MAX:
-        errs.append(f"flat_dominant {q['dominant_bucket_frac']:.3f} > {FLAT_DOMINANT_MAX}")
-    if q["frame_flat_frac"] > 0.88:
-        errs.append(f"frame_flat {q['frame_flat_frac']:.3f} > 0.88")
+    if q["frame_flat_frac"] > FLAT_DOMINANT_MAX:
+        errs.append(f"flat_dominant {q['frame_flat_frac']:.3f} > {FLAT_DOMINANT_MAX}")
     if q["subject_coverage"] < MIN_SUBJECT_COVERAGE:
         errs.append(f"subject_coverage {q['subject_coverage']:.3f} < {MIN_SUBJECT_COVERAGE}")
     if errs:

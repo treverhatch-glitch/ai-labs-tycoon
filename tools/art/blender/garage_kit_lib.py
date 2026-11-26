@@ -30,7 +30,7 @@ def pbr_material(asset_id: str) -> bpy.types.Material:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    bsdf.inputs["Roughness"].default_value = 0.55
+    bsdf.inputs["Roughness"].default_value = 0.68
     alb = _load_image(tex_dir / f"{asset_id}_albedo.png", "sRGB")
     if alb:
         tex = nodes.new("ShaderNodeTexImage")

@@ -40,6 +40,7 @@ def import_garage(
     rot_y_deg: float = 0.0,
     scale: float | tuple[float, float, float] = 1.0,
     instance: str | None = None,
+    floor_snap: bool = True,
 ) -> bpy.types.Object | None:
     import garage_kit_lib as gk  # type: ignore
 
@@ -69,7 +70,11 @@ def import_garage(
     bpy.ops.object.transform_apply(rotation=True)
     root.location = Vector(location)
     gk.assign_pbr(root, asset_id)
-    snap_prop_to_floor(root)
+    if floor_snap:
+        snap_prop_to_floor(root)
+    else:
+        root.location = Vector(location)
+        bpy.context.view_layer.update()
     for o in list(bpy.data.objects):
         if o.name not in keep_before and o.name != root.name and o.type == "MESH":
             bpy.data.objects.remove(o, do_unlink=True)
@@ -118,18 +123,19 @@ def build_corner_shell() -> list[bpy.types.Object]:
 def build_furnished_props() -> list[bpy.types.Object]:
     props: list[bpy.types.Object] = []
     specs = [
-        ("garage-roll-door", (2.35, 0, 0.35), 0.0, "roll_door"),
-        ("garage-whiteboard-1995", (3.15, 0, 0.28), 0.0, "whiteboard"),
-        ("garage-cable-spool", (1.05, 0, 1.15), 12.0, "workbench_spool"),
-        ("garage-server-closet", (0.95, 0, 2.25), -4.0, "shelves_closet"),
-        ("garage-voodude-rack", (3.05, 0, 1.85), -82.0, "server_rack"),
-        ("garage-desk-crt", (2.2, 0, 1.5), -20.0, "desk_pc"),
-        ("garage-crt-tower", (2.7, 0, 1.05), 8.0, "pc_tower"),
-        ("garage-folding-chair", (1.72, 0, 1.28), 22.0, "chair"),
-        ("garage-coffee-drip", (2.48, 0, 1.58), 0.0, "coffee"),
+        ("garage-roll-door", (2.35, 0.0, 0.22), 0.0, "roll_door", True),
+        ("garage-whiteboard-1995", (3.05, 1.15, 0.22), 0.0, "whiteboard", False),
+        ("garage-window-frame", (0.22, 1.05, 1.6), 90.0, "side_window", False),
+        ("garage-cable-spool", (1.05, 0, 1.15), 12.0, "workbench_spool", True),
+        ("garage-server-closet", (0.95, 0, 2.25), -4.0, "shelves_closet", True),
+        ("garage-voodude-rack", (3.05, 0, 1.85), -82.0, "server_rack", True),
+        ("garage-desk-crt", (2.2, 0, 1.5), -20.0, "desk_pc", True),
+        ("garage-crt-tower", (2.7, 0, 1.05), 8.0, "pc_tower", True),
+        ("garage-folding-chair", (1.72, 0, 1.28), 22.0, "chair", True),
+        ("garage-coffee-drip", (2.48, 0, 1.58), 0.0, "coffee", True),
     ]
-    for asset_id, loc, rot, inst in specs:
-        ob = import_garage(asset_id, loc, rot_y_deg=rot, instance=inst)
+    for asset_id, loc, rot, inst, snap in specs:
+        ob = import_garage(asset_id, loc, rot_y_deg=rot, instance=inst, floor_snap=snap)
         if ob:
             props.append(ob)
     return props
@@ -158,10 +164,10 @@ def main() -> None:
         lens_mm=42.0,
         azimuth_deg=42.0,
         elevation_deg=30.0,
-        framing_margin=1.22,
+        framing_margin=1.375,
         mask_meshes=all_meshes,
         hdri_path=HDRI if HDRI.is_file() else None,
-        hdri_strength=0.72,
+        hdri_strength=0.58,
         hdri_rotation_deg=118.0,
         hdri_lighting_only=True,
         render_engine="CYCLES",

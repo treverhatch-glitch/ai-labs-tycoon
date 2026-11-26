@@ -1,8 +1,8 @@
 {
-  "camera_dist": 9.15653959157575,
-  "bbox_radius": 2.1443886631324944,
-  "framing_margin": 1.22,
-  "screen_extent": 0.8592989481985569,
+  "camera_dist": 11.233054878680544,
+  "bbox_radius": 2.3341412734920612,
+  "framing_margin": 1.375,
+  "screen_extent": 0.7775625139474869,
   "lens_mm": 42.0,
   "azimuth_deg": 42.0,
   "elevation_deg": 30.0,
