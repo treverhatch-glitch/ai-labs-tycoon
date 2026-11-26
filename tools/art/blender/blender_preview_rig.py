@@ -98,7 +98,7 @@ def setup_studio_world(*, staff_flat: bool = False) -> None:
     hdr_path = Path(__file__).resolve().parents[2] / "cc0" / "incoming" / "polyhaven" / "studio_small_08_2k.hdr"
     if staff_flat or not hdr_path.is_file():
         bpy.context.scene.view_settings.view_transform = "Standard"
-        bpy.context.scene.view_settings.exposure = -0.962
+        bpy.context.scene.view_settings.exposure = -0.958
         bpy.context.scene.view_settings.gamma = 1.0
         links.new(bg.outputs["Background"], out.inputs["Surface"])
         return
@@ -159,10 +159,14 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
 
 
 def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
-    """Horizontal vector from hips/torso toward head (Kenney after glTF import)."""
+    """Face forward: hips/torso → head, projected off the standing axis (Z-up import)."""
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}
     hips = by_name.get("Hips") or by_name.get("Torso")
     head = by_name.get("Head")
+    up = Vector((0.0, 0.0, 1.0))
+    mins, maxs = mesh_bounds_world(mesh_obs)
+    if (maxs - mins).z < (maxs - mins).y:
+        up = Vector((0.0, 1.0, 0.0))
     if hips and head and head.data.vertices and hips.data.vertices:
         hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
             head.data.vertices
@@ -171,7 +175,7 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
             hips.data.vertices
         )
         fwd = hc - ic
-        fwd.z = 0.0
+        fwd = fwd - up * fwd.dot(up)
         if fwd.length > 1e-4:
             return fwd.normalized()
     return Vector((0.0, 1.0, 0.0))

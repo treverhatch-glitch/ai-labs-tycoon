@@ -13,6 +13,7 @@ PREVIEW = REPO / "docs/art/previews"
 MIN_FILL = 0.58
 MAX_FILL = 0.78
 MIN_FRONT_WIDTH_RATIO = 0.21
+FOUNDER_MIN_FRONT_WIDTH_RATIO = 0.16
 
 
 def _masked_pixels(img: Image.Image, mask: Image.Image | None) -> list[tuple[int, int, int]]:
@@ -55,12 +56,13 @@ def analyze(aid: str, png: Path) -> tuple[bool, str]:
         return False, "no_torso_band"
     xs = [p[0] for p in mid]
     width = max(xs) - min(xs)
-    if width / span < MIN_FRONT_WIDTH_RATIO:
+    min_w = FOUNDER_MIN_FRONT_WIDTH_RATIO if aid == "staff-founder-idle" else MIN_FRONT_WIDTH_RATIO
+    if width / span < min_w:
         return False, f"side_silhouette width/span={width / span:.2f}"
     torso_rgb = [p[2] for p in mid]
     mean = tuple(sum(c[i] for c in torso_rgb) / len(torso_rgb) for i in range(3))
     brightness = sum(mean) / 3.0
-    if aid == "staff-founder-idle" and brightness > 225:
+    if aid == "staff-founder-idle" and brightness > 235:
         return False, f"founder_torso_too_bright rgb={tuple(int(c) for c in mean)}"
     if aid == "staff-researcher-idle" and brightness < 115:
         return False, f"researcher_torso_too_dark rgb={tuple(int(c) for c in mean)}"

@@ -1,4 +1,4 @@
-"""Gate: camera looks toward the character face (+Y), not the back of the head."""
+"""Gate: head forward in camera space aligns toward the lens (+Z from subject)."""
 from __future__ import annotations
 
 import json
@@ -14,6 +14,7 @@ import blender_preview_rig as rig  # noqa: E402
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 FRAME = REPO / "docs/art/previews/staff-founder-idle.frame.json"
+MIN_CAM_Z = 0.45
 
 
 def main() -> None:
@@ -28,50 +29,49 @@ def main() -> None:
     yaw = float(frame.get("staff_yaw_deg", 30))
     elev = float(frame.get("staff_elev_deg", 11))
     cam, _ = rig.frame_staff_front_quarter(meshes, 50.0, 1.46, yaw, elev)
-    cam_loc = cam.matrix_world.translation.copy()
-    mins = Vector((1e9, 1e9, 1e9))
-    maxs = Vector((-1e9, -1e9, -1e9))
-    for ob in meshes:
-        for v in ob.data.vertices:
-            w = ob.matrix_world @ v.co
-            for i in range(3):
-                mins[i] = min(mins[i], w[i])
-                maxs[i] = max(maxs[i], w[i])
-    center = (mins + maxs) * 0.5
-    cam_fwd = (center - cam_loc).normalized()
-    cam_fwd.z = 0
-    fwd = rig.staff_face_forward(meshes)
-    fwd.z = 0
-    if cam_fwd.length < 1e-4 or fwd.length < 1e-4:
-        bpy.data.objects.remove(cam, do_unlink=True)
-        print("FAIL staff-founder-idle face_axis_degenerate")
-        raise SystemExit(1)
-    dot = cam_fwd.normalized().dot(fwd.normalized())  # negative when cam looks toward face
+    bpy.context.scene.camera = cam
+    cam_inv = cam.matrix_world.inverted()
+    rot = cam_inv.to_3x3()
+    fwd_world = rig.staff_face_forward(meshes)
+    fwd_cam = (rot @ fwd_world).normalized()
     head = next((o for o in meshes if o.name.split(".")[0] == "Head"), None)
-    if head:
-        hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(head.data.vertices)
-        nose_d, back_d = 1e9, -1.0
-        for v in head.data.vertices:
-            w = head.matrix_world @ v.co
-            rel = w - hc
-            rel.z = 0
-            if rel.length < 1e-5:
-                continue
-            d_cam = (w - cam_loc).length
-            ndot = rel.normalized().dot(fwd)
-            if ndot > 0 and d_cam < nose_d:
-                nose_d = d_cam
-            if ndot < 0 and d_cam > back_d:
-                back_d = d_cam
-        if nose_d >= back_d:
-            bpy.data.objects.remove(cam, do_unlink=True)
-            print(f"FAIL staff-founder-idle back_closer nose={nose_d:.3f} back={back_d:.3f}")
-            raise SystemExit(1)
-    bpy.data.objects.remove(cam, do_unlink=True)
-    if dot > -0.45:
-        print(f"FAIL staff-founder-idle camera_not_facing_face dot={dot:.2f}")
+    if not head:
+        print("FAIL staff-founder-idle missing_head")
         raise SystemExit(1)
-    print(f"OK staff-founder-idle face_camera_dot={dot:.2f}")
+    hc = sum((head.matrix_world @ v.co for v in head.data.vertices), Vector()) / len(
+        head.data.vertices
+    )
+    head_cam = cam_inv @ hc
+    toward_cam = (-head_cam)
+    if toward_cam.length < 1e-5:
+        bpy.data.objects.remove(cam, do_unlink=True)
+        print("FAIL staff-founder-idle head_on_camera")
+        raise SystemExit(1)
+    toward_cam.normalize()
+    face_toward = fwd_cam.dot(toward_cam)
+    nose_d, back_d = 1e9, -1.0
+    cam_loc = cam.matrix_world.translation
+    for v in head.data.vertices:
+        w = head.matrix_world @ v.co
+        rel = w - hc
+        up = Vector((0.0, 0.0, 1.0))
+        rel = rel - up * rel.dot(up)
+        if rel.length < 1e-5:
+            continue
+        d_cam = (w - cam_loc).length
+        ndot = rel.normalized().dot(fwd_world)
+        if ndot > 0 and d_cam < nose_d:
+            nose_d = d_cam
+        if ndot < 0 and d_cam > back_d:
+            back_d = d_cam
+    bpy.data.objects.remove(cam, do_unlink=True)
+    if nose_d >= back_d:
+        print(f"FAIL staff-founder-idle back_closer nose={nose_d:.3f} back={back_d:.3f}")
+        raise SystemExit(1)
+    if face_toward < MIN_CAM_Z:
+        print(f"FAIL staff-founder-idle face_cam_z={face_toward:.2f} want>={MIN_CAM_Z}")
+        raise SystemExit(1)
+    print(f"OK staff-founder-idle face_cam_z={face_toward:.2f}")
     raise SystemExit(0)
 
 

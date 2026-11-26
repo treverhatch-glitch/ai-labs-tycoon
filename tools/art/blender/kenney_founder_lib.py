@@ -1,22 +1,24 @@
-"""Kenney Animated Characters 3 (CC0) — stylized founder, idle facing camera."""
+"""Kenney Animated Characters 3 (CC0) — founder hero via rig idle rest pose bake."""
 from __future__ import annotations
 
 import math
 
 import bpy
 import bmesh
-from mathutils import Matrix, Vector
+from mathutils import Vector
 
 import blender_common as bc
 
 INCOMING = bc.REPO_ROOT / "tools/art/cc0/incoming"
 KENNEY_FBX = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
+KENNEY_IDLE_FBX = INCOMING / "kenney/animated-characters-3/Animations/idle.fbx"
+KENNEY_IDLE_REST_ACTION = "0.Targeting Pose"
+KENNEY_IDLE_REST_FRAME = 0
 TARGET_HEIGHT = 1.72
 FOUNDER_SKIN = (0.84, 0.68, 0.54, 1.0)
 FOUNDER_HOODIE = (0.10, 0.62, 0.55, 1.0)
 FOUNDER_JEANS = (0.12, 0.28, 0.58, 1.0)
 FOUNDER_SHOE = (0.20, 0.22, 0.26, 1.0)
-FACE_FORWARD = Vector((0.0, 1.0, 0.0))
 
 
 def _clear_scene() -> None:
@@ -24,14 +26,44 @@ def _clear_scene() -> None:
     bpy.ops.object.delete(use_global=False)
 
 
-def _import_kenney() -> bpy.types.Object:
+def _import_rigged() -> tuple[bpy.types.Object, bpy.types.Object]:
     if not KENNEY_FBX.is_file():
         raise RuntimeError(f"missing Kenney FBX {KENNEY_FBX}")
+    if not KENNEY_IDLE_FBX.is_file():
+        raise RuntimeError(f"missing Kenney idle {KENNEY_IDLE_FBX}")
     _clear_scene()
     bpy.ops.import_scene.fbx(filepath=str(KENNEY_FBX))
-    ob = bpy.data.objects.get("characterMedium")
-    if not ob or ob.type != "MESH":
-        raise RuntimeError("Kenney characterMedium mesh missing")
+    arm = bpy.data.objects.get("Root")
+    mesh = bpy.data.objects.get("characterMedium")
+    if not arm or arm.type != "ARMATURE" or not mesh or mesh.type != "MESH":
+        raise RuntimeError("Kenney rig import failed")
+    bpy.ops.import_scene.fbx(filepath=str(KENNEY_IDLE_FBX))
+    for extra in [o for o in bpy.context.scene.objects if o.type == "ARMATURE" and o != arm]:
+        bpy.data.objects.remove(extra, do_unlink=True)
+    return arm, mesh
+
+
+def _apply_idle_rest_pose(arm: bpy.types.Object) -> None:
+    action = next(
+        (a for a in bpy.data.actions if KENNEY_IDLE_REST_ACTION in a.name),
+        None,
+    )
+    if not action:
+        raise RuntimeError(f"missing Kenney idle rest action ({KENNEY_IDLE_REST_ACTION})")
+    arm.animation_data_create()
+    arm.animation_data.action = action
+    bpy.context.scene.frame_set(KENNEY_IDLE_REST_FRAME)
+    bpy.context.view_layer.update()
+
+
+def _bake_mesh(mesh: bpy.types.Object, arm: bpy.types.Object) -> bpy.types.Object:
+    deps = bpy.context.evaluated_depsgraph_get()
+    mesh_eval = mesh.evaluated_get(deps)
+    baked = bpy.data.meshes.new_from_object(mesh_eval)
+    bpy.data.objects.remove(mesh, do_unlink=True)
+    bpy.data.objects.remove(arm, do_unlink=True)
+    ob = bpy.data.objects.new("KenneyFounder", baked)
+    bpy.context.collection.objects.link(ob)
     return ob
 
 
@@ -41,37 +73,39 @@ def _apply_object_xform(ob: bpy.types.Object) -> None:
     bpy.ops.object.transform_apply(rotation=True, scale=True, location=True)
 
 
-def _orient_standing_face_y(src: bpy.types.Object) -> None:
-    """Z-up Kenney → Y-up height, face +Y (toward studio camera)."""
-    src.rotation_euler = (-math.pi / 2, 0.0, 0.0)
-    _apply_object_xform(src)
-    src.rotation_euler = (0.0, 0.0, -math.pi / 2)
-    _apply_object_xform(src)
-
-
-def _pose_idle_arms_down(src: bpy.types.Object) -> None:
-    lo, hi, span = _height_span(src)
-    shoulder_y = lo + span * 0.68
-    me = src.data
-    bm = bmesh.new()
-    bm.from_mesh(me)
-    bm.verts.ensure_lookup_table()
-    arm_angle = math.radians(76.0)
-    for v in bm.verts:
-        w = src.matrix_world @ v.co
-        if w.y < lo + span * 0.38 or w.y > lo + span * 0.82:
-            continue
-        if abs(w.x) < 0.06:
-            continue
-        side = 1.0 if w.x > 0 else -1.0
-        pivot = Vector((side * 0.20, shoulder_y, w.z * 0.35))
-        rel = w - pivot
-        mat = Matrix.Rotation(-side * arm_angle, 3, Vector((0.0, 1.0, 0.0)))
-        new_w = pivot + mat @ rel
-        v.co = src.matrix_world.inverted() @ new_w
-    bm.to_mesh(me)
-    me.update()
-    bm.free()
+def _stand_y_up(ob: bpy.types.Object) -> None:
+    """Kenney Z-up idle rest → Y-up height; yaw so hips→head forward aims at +Y."""
+    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
+    _apply_object_xform(ob)
+    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    max_y, min_y = max(v.y for v in verts), min(v.y for v in verts)
+    span = max(1e-4, max_y - min_y)
+    top = [v for v in verts if v.y > max_y - span * 0.2]
+    bot = [v for v in verts if v.y < min_y + span * 0.2]
+    if top and bot:
+        head = Vector(
+            (
+                sum(v.x for v in top) / len(top),
+                sum(v.y for v in top) / len(top),
+                sum(v.z for v in top) / len(top),
+            )
+        )
+        hip = Vector(
+            (
+                sum(v.x for v in bot) / len(bot),
+                sum(v.y for v in bot) / len(bot),
+                sum(v.z for v in bot) / len(bot),
+            )
+        )
+        fwd = head - hip
+        fwd.y = 0.0
+        if fwd.length > 1e-4:
+            yaw = math.atan2(fwd.x, fwd.y)
+            if abs(yaw) > 0.05:
+                ob.rotation_euler = (0.0, -yaw, 0.0)
+                _apply_object_xform(ob)
+    ob.rotation_euler = (0.0, -math.pi / 2, 0.0)
+    _apply_object_xform(ob)
 
 
 def _height_span(ob: bpy.types.Object) -> tuple[float, float, float]:
@@ -105,7 +139,6 @@ def _extract_part(
     bm.from_mesh(me)
     bm.verts.ensure_lookup_table()
     drop = []
-    inv = ob.matrix_world.inverted()
     for v in bm.verts:
         w = ob.matrix_world @ v.co
         if w.y < y_min - 1e-5 or w.y > y_max + 1e-5:
@@ -176,12 +209,13 @@ def _add_mug() -> None:
 
 
 def build_founder_kenney() -> None:
-    src = _import_kenney()
-    _orient_standing_face_y(src)
-    _pose_idle_arms_down(src)
-    _scale_character(src)
-    parts = _split_parts(src)
-    if len(parts) < 7:
+    arm, mesh = _import_rigged()
+    _apply_idle_rest_pose(arm)
+    baked = _bake_mesh(mesh, arm)
+    _stand_y_up(baked)
+    _scale_character(baked)
+    parts = _split_parts(baked)
+    if len(parts) < 8:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
     _add_mug()
     for ob in bpy.context.scene.objects:
