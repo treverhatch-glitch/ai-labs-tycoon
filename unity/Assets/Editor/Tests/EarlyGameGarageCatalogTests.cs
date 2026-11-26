@@ -48,5 +48,20 @@ namespace AiLabs.Unity.Editor.Tests
         {
             Assert.IsNotNull(EarlyGameTextureCatalog.NormalPathFor("tex-garage-carpet"));
         }
+
+        [Test]
+        public void Hud_paths_prefer_blender_png_with_svg_fallback()
+        {
+            string cash = EarlyGameHudCatalog.PathFor("icon-cash-era0");
+            Assert.IsTrue(cash.EndsWith(".png"));
+            Assert.IsTrue(EarlyGameHudCatalog.FallbackPathFor("icon-cash-era0").EndsWith(".svg"));
+        }
+
+        [Test]
+        public void Garage_and_staff_catalogs_use_glb()
+        {
+            Assert.IsTrue(EarlyGameGarageCatalog.PathFor("garage-floor-tile").EndsWith(".glb"));
+            Assert.IsTrue(EarlyGameStaffCatalog.PathFor("staff-engineer-work").EndsWith(".glb"));
+        }
     }
 }

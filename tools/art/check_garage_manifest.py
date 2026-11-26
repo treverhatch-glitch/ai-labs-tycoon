@@ -20,12 +20,18 @@ def ids_from_catalog(path: Path) -> list[str]:
     return re.findall(r'"([^"]+)"', block.group(1))
 
 
-def sync(manifest_path: Path, catalog_path: Path, label: str) -> int:
-    manifest_ids = sorted(a["id"] for a in json.loads(manifest_path.read_text())["assets"])
+def sync(manifest_path: Path, catalog_path: Path, label: str, kit_subdir: str) -> int:
+    manifest = json.loads(manifest_path.read_text())["assets"]
+    manifest_ids = sorted(a["id"] for a in manifest)
     catalog_ids = sorted(ids_from_catalog(catalog_path))
     if manifest_ids != catalog_ids:
         print(f"{label} manifest-only:", sorted(set(manifest_ids) - set(catalog_ids)))
         print(f"{label} catalog-only:", sorted(set(catalog_ids) - set(manifest_ids)))
+        return 1
+    art_root = REPO / "unity/Assets/Art/EarlyGame" / kit_subdir
+    missing = [a["id"] for a in manifest if not (art_root / f"{a['id']}.glb").exists()]
+    if missing:
+        print(f"{label} missing .glb:", missing)
         return 1
     print(f"OK: {len(catalog_ids)} {label} assets in sync")
     return 0
@@ -33,8 +39,8 @@ def sync(manifest_path: Path, catalog_path: Path, label: str) -> int:
 
 def main() -> int:
     rc = 0
-    rc |= sync(MANIFEST, CATALOG, "garage")
-    rc |= sync(STAFF_MANIFEST, STAFF_CATALOG, "staff")
+    rc |= sync(MANIFEST, CATALOG, "garage", "garage-kit")
+    rc |= sync(STAFF_MANIFEST, STAFF_CATALOG, "staff", "staff-kit")
     return rc
 
 
