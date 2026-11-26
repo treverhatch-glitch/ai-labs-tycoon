@@ -14,6 +14,8 @@ FIXTURES = (
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e3b3c52d.png",
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e164f581.png",
 )
+ARM_FIXTURE = REPO / "tools/art/fixtures/staff-founder-idle-tpose-c17bca1a.glb"
+ARM_SCRIPT = REPO / "tools/art/blender/check_cc0_staff_founder_arm_pose_blender.py"
 
 sys.path.insert(0, str(REPO / "tools/art"))
 from check_cc0_staff_founder_preview_silhouette import analyze as png_analyze  # noqa: E402
@@ -44,6 +46,28 @@ def main() -> int:
             print(f"FAIL staff-founder-idle fixture_unexpected {png.name}: {msg}")
             return 1
         print(f"OK staff-founder-idle fixture_rejected {png.name}: {msg}")
+    if not ARM_FIXTURE.is_file():
+        print(f"FAIL staff-founder-idle missing fixture {ARM_FIXTURE.name}")
+        return 1
+    arm = subprocess.run(
+        [str(BLENDER), "-b", "--python", str(ARM_SCRIPT), "--", str(REPO), str(ARM_FIXTURE)],
+        cwd=REPO,
+        text=True,
+        capture_output=True,
+    )
+    fail_line = ""
+    for line in (arm.stdout or "").splitlines():
+        if line.startswith("FAIL staff-founder-idle arm_"):
+            fail_line = line
+            break
+    if arm.returncode == 0:
+        print("FAIL staff-founder-idle fixture_arm_passed c17bca1a")
+        return 1
+    if not fail_line:
+        tail = (arm.stdout or "").strip().splitlines()[-1:] if arm.stdout else []
+        print(f"FAIL staff-founder-idle fixture_arm_unexpected {tail}")
+        return 1
+    print(f"OK staff-founder-idle fixture_rejected {ARM_FIXTURE.name}: {fail_line}")
     return 0
 
 

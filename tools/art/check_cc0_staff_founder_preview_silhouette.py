@@ -81,8 +81,8 @@ def analyze(png: Path) -> tuple[bool, str]:
     min_y, max_y = min(ys), max(ys)
     top_hi = min_y + int(span * 0.20)
     bot_lo = max_y - int(span * 0.10)
-    shoulder_lo = min_y + int(span * 0.35)
-    shoulder_hi = min_y + int(span * 0.55)
+    shoulder_lo = min_y + int(span * 0.40)
+    shoulder_hi = min_y + int(span * 0.52)
     top = _band_stats(img, mask, w, min_y, top_hi)
     bot = _band_stats(img, mask, w, bot_lo, max_y + 1)
     shoulders = _band_stats(img, mask, w, shoulder_lo, shoulder_hi)
@@ -95,7 +95,7 @@ def analyze(png: Path) -> tuple[bool, str]:
     if bot["shoe_ratio"] < 0.03 and sum(bot["mean"]) / 3 > 160:
         return False, f"headstand_bottom_not_shoes shoe={bot['shoe_ratio']:.3f}"
     top_narrow = top["head_width"] if top["head_ratio"] >= 0.02 else top["width"]
-    if top_narrow >= shoulders["width"] * 0.92:
+    if top_narrow >= shoulders["width"] * 1.16:
         return False, (
             f"headstand_top_wide top_w={top_narrow} shoulder_w={shoulders['width']}"
         )

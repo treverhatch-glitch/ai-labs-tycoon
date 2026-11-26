@@ -5,6 +5,7 @@ from mathutils import Vector
 
 MIN_HEAD_ABOVE_FEET_M = 1.2
 MAX_FOOT_ABOVE_FLOOR_M = 0.05
+MIN_ARM_DROP_FRAC = 0.35
 
 _HEAD_BONES = ("Head", "HeadCtrl")
 _FOOT_BONES = (
@@ -97,6 +98,31 @@ def _bone_world(arm, name: str) -> Vector | None:
     if not pb:
         return None
     return arm.matrix_world @ pb.head
+
+
+def verify_kenney_arm_drop(arm: bpy.types.Object) -> tuple[bool, str]:
+    hip = arm.pose.bones.get("Hips") or arm.pose.bones.get("Spine")
+    if not hip:
+        return False, "arm_pose_no_hip"
+    hip_z = (arm.matrix_world @ hip.head).z
+    drops: list[float] = []
+    for side in ("Left", "Right"):
+        sh = arm.pose.bones.get(f"{side}Shoulder")
+        hand = arm.pose.bones.get(f"{side}Hand")
+        if not sh or not hand:
+            continue
+        sh_z = (arm.matrix_world @ sh.head).z
+        hand_z = (arm.matrix_world @ hand.head).z
+        shoulder_h = sh_z - hip_z
+        if shoulder_h < 1e-4:
+            continue
+        drops.append((sh_z - hand_z) / shoulder_h)
+    if len(drops) < 2:
+        return False, "arm_pose_bones_missing"
+    worst = min(drops)
+    if worst < MIN_ARM_DROP_FRAC:
+        return False, f"arm_tpose_drop={worst:.2f} want>={MIN_ARM_DROP_FRAC}"
+    return True, f"arm_drop={worst:.2f}"
 
 
 def verify_standing_rig(arm: bpy.types.Object) -> tuple[bool, str]:

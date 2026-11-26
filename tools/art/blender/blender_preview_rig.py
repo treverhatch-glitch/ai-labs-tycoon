@@ -17,7 +17,7 @@ from mathutils import Vector
 # Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
 _GREY_150 = 150.0 / 255.0
 STUDIO_GREY = (_GREY_150, _GREY_150, _GREY_150, 1.0)
-FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
+FLOOR_GREY = STUDIO_GREY
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -134,6 +134,8 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
         bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
+    if hasattr(floor, "is_shadow_catcher"):
+        floor.is_shadow_catcher = True
     return floor
 
 
@@ -150,6 +152,8 @@ def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
         bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
+    if hasattr(floor, "is_shadow_catcher"):
+        floor.is_shadow_catcher = True
     return floor
 
 
@@ -425,9 +429,9 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Z"
-        framing_margin = 1.46
+        framing_margin = float(os.environ.get("STAFF_PREVIEW_MARGIN", "1.52"))
         lens_mm = 50.0
-        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+        azimuth_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42"))
         elevation_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
     elif preview_kind in ("wisp",):
         axis = "Y"
@@ -473,8 +477,8 @@ def render_preview_studio(
         if preview_kind == "staff":
             key = bpy.data.objects.get("Key")
             if key and key.type == "LIGHT":
-                key.data.energy *= 0.62
-            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
+                key.data.energy *= 0.52
+            staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
                 hero_meshes,
@@ -507,7 +511,7 @@ def render_preview_studio(
                 "elevation_deg": elevation_deg,
                 "up_axis": axis,
                 "preview_kind": preview_kind,
-                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30")),
+                "staff_yaw_deg": float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "42")),
                 "staff_elev_deg": float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11")),
             },
             indent=2,

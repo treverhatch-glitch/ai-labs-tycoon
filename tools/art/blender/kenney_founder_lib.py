@@ -5,12 +5,13 @@ import math
 
 import bpy
 import bmesh
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 
 import blender_common as bc
 from kenney_founder_standing_gate import (
     rig_head_foot_world_z,
     verify_evaluated_mesh,
+    verify_kenney_arm_drop,
     verify_standing_rig,
 )
 
@@ -18,12 +19,14 @@ INCOMING = bc.REPO_ROOT / "tools/art/cc0/incoming"
 KENNEY_FBX = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
 KENNEY_IDLE_FBX = INCOMING / "kenney/animated-characters-3/Animations/idle.fbx"
 KENNEY_IDLE_REST_ACTION = "Idle"
-KENNEY_IDLE_REST_FRAME = 8
+KENNEY_IDLE_REST_FRAME = 1
 TARGET_HEIGHT = 1.72
 FOUNDER_SKIN = (0.84, 0.68, 0.54, 1.0)
-FOUNDER_HOODIE = (0.10, 0.62, 0.55, 1.0)
-FOUNDER_JEANS = (0.12, 0.28, 0.58, 1.0)
+FOUNDER_HAIR = (0.22, 0.18, 0.32, 1.0)
+FOUNDER_HOODIE = (0.10, 0.22, 0.42, 1.0)
+FOUNDER_JEANS = (0.12, 0.24, 0.52, 1.0)
 FOUNDER_SHOE = (0.20, 0.22, 0.26, 1.0)
+FOUNDER_EYE = (0.12, 0.10, 0.14, 1.0)
 FBX_KW = {
     "use_manual_orientation": True,
     "axis_forward": "-Z",
@@ -89,6 +92,30 @@ def _ground_rig(arm: bpy.types.Object, mesh: bpy.types.Object) -> None:
         return
     arm.location.z += dz
     mesh.location.z += dz
+    bpy.context.view_layer.update()
+
+
+def _pose_kenney_idle_arms(arm: bpy.types.Object) -> None:
+    """Arms ~10–15° from torso (not T); baked mesh must pass arm_drop gate."""
+    if arm.animation_data and arm.animation_data.action:
+        arm.animation_data.action = None
+    bpy.context.view_layer.objects.active = arm
+    arm.select_set(True)
+    bpy.ops.object.mode_set(mode="POSE")
+    for side in ("Left", "Right"):
+        ua = arm.pose.bones.get(f"{side}Arm")
+        fa = arm.pose.bones.get(f"{side}ForeArm")
+        if not ua or not fa:
+            continue
+        ua.rotation_mode = "QUATERNION"
+        fa.rotation_mode = "QUATERNION"
+        if side == "Left":
+            ua.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-72.0))
+            fa.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-12.0))
+        else:
+            ua.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(82.0))
+            fa.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(15.0))
+    bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.update()
 
 
@@ -234,8 +261,11 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         ("Leg_1", 0.10, 0.48, 1, FOUNDER_JEANS, 0.56),
         ("Hips", 0.39, 0.55, None, FOUNDER_JEANS, 0.54),
         ("Torso", 0.48, 0.78, None, FOUNDER_HOODIE, 0.62),
+        ("Arm_-1", 0.52, 0.74, -1, FOUNDER_HOODIE, 0.58),
+        ("Arm_1", 0.52, 0.74, 1, FOUNDER_HOODIE, 0.58),
         ("Neck", 0.70, 0.83, None, FOUNDER_HOODIE, 0.60),
-        ("Head", 0.73, 1.00, None, FOUNDER_SKIN, 0.52),
+        ("Head", 0.73, 0.88, None, FOUNDER_SKIN, 0.52),
+        ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
     for name, f0, f1, side, color, rough in specs:
@@ -251,25 +281,30 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
     return parts
 
 
-def _add_mug() -> None:
-    torso = bpy.data.objects.get("Torso")
-    if not torso:
+def _add_face_features() -> None:
+    head = bpy.data.objects.get("Head")
+    if not head or not head.data.vertices:
         return
-    ys = [(torso.matrix_world @ v.co).y for v in torso.data.vertices]
-    zs = [(torso.matrix_world @ v.co).z for v in torso.data.vertices]
-    xs = [(torso.matrix_world @ v.co).x for v in torso.data.vertices]
-    z = sum(zs) / len(zs)
-    y = max(ys) * 0.92
-    x = max(xs) * 0.92
-    mug = bc.add_cube("FounderMug", (0.09, 0.09, 0.08), (x, y, z))
-    bc.assign_solid(mug, (0.94, 0.52, 0.12, 1.0), 0.38)
+    verts = [head.matrix_world @ v.co for v in head.data.vertices]
+    hc = sum(verts, Vector()) / len(verts)
+    nose_y = min(v.y for v in verts)
+    z_eye = hc.z + (max(v.z for v in verts) - hc.z) * 0.35
+    y_face = nose_y + (hc.y - nose_y) * 0.35
+    for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
+        eye = bc.add_cube(name, (0.028, 0.022, 0.022), (hc.x + 0.055 * x_sign, y_face, z_eye))
+        bc.assign_solid(eye, FOUNDER_EYE, 0.35)
+    mouth = bc.add_cube("Mouth", (0.05, 0.015, 0.012), (hc.x, y_face - 0.03, z_eye - 0.055))
+    bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
 
 def build_founder_kenney() -> None:
     arm, mesh = _import_rigged()
-    _apply_idle_rest_pose(arm)
+    _pose_kenney_idle_arms(arm)
     _ground_rig(arm, mesh)
     ok, msg = verify_standing_rig(arm)
+    if not ok:
+        raise RuntimeError(f"FAIL staff-founder-idle: {msg}")
+    ok, msg = verify_kenney_arm_drop(arm)
     if not ok:
         raise RuntimeError(f"FAIL staff-founder-idle: {msg}")
     refs = rig_head_foot_world_z(arm)
@@ -281,9 +316,9 @@ def build_founder_kenney() -> None:
     _face_forward_z(baked)
     _scale_character(baked)
     parts = _split_parts(baked)
-    if len(parts) < 8:
+    if len(parts) < 10:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
-    _add_mug()
+    _add_face_features()
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue

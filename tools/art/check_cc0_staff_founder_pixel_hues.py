@@ -43,11 +43,11 @@ def main() -> int:
         return 1
     t_mean = tuple(sum(c[i] for c in torso) / len(torso) for i in range(3))
     l_mean = tuple(sum(c[i] for c in legs) / len(legs) for i in range(3))
-    # Teal: G and B dominate over R
-    if not (t_mean[1] > t_mean[0] + 8 and t_mean[2] > t_mean[0] + 8):
-        print(f"FAIL staff-founder-idle torso_not_teal rgb={tuple(round(c) for c in t_mean)}")
+    # Navy hoodie: B highest, low R (not cyan/teal wash)
+    if not (t_mean[2] > t_mean[1] > t_mean[0] + 5 and t_mean[2] - t_mean[0] > 18):
+        print(f"FAIL staff-founder-idle torso_not_hoodie rgb={tuple(round(c) for c in t_mean)}")
         return 1
-    # Denim: B highest, G mid
+    # Denim jeans: B > G > R
     if not (l_mean[2] > l_mean[1] > l_mean[0]):
         print(f"FAIL staff-founder-idle legs_not_denim rgb={tuple(round(c) for c in l_mean)}")
         return 1

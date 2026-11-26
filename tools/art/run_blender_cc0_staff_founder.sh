@@ -25,8 +25,10 @@ echo "$out" | grep -q '^OK staff-founder-idle ' || { echo "FAIL staff-founder-id
 test -s "docs/art/previews/staff-founder-idle.png" || { echo "FAIL missing founder preview"; exit 1; }
 
 python3 tools/art/check_cc0_staff_founder_regression.py
-python3 tools/art/check_cc0_staff_preview_upright.py
+python3 tools/art/check_cc0_staff_founder_preview_upright.py
 python3 tools/art/check_cc0_staff_founder_preview_silhouette.py
+python3 tools/art/check_cc0_staff_founder_head_luma.py
+python3 tools/art/check_cc0_staff_founder_preview_orphans.py
 python3 tools/art/check_cc0_staff_founder_standing.py
 python3 tools/art/check_cc0_staff_founder_screen_up.py
 python3 tools/art/check_cc0_staff_material_diversity.py
@@ -35,6 +37,7 @@ python3 tools/art/check_cc0_staff_floor_loose.py
 python3 tools/art/check_cc0_staff_preview_front.py
 python3 tools/art/check_cc0_staff_preview_corner_grey.py
 python3 tools/art/check_cc0_staff_founder_pose.py
+python3 tools/art/check_cc0_staff_founder_arm_pose.py
 python3 tools/art/check_cc0_staff_face_visible.py
 python3 tools/art/check_cc0_staff_founder_pixel_hues.py
 python3 tools/art/check_cc0_staff_founder_assembly.py
