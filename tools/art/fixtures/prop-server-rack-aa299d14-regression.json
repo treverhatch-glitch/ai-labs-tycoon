@@ -1,0 +1,11 @@
+{
+  "regressionHead": "aa299d14",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-aa299d14-regression.png",
+  "intendedGateFailures": [
+    "orientation — front/door/LEDs away from 3/4 camera",
+    "backdrop not exact RGB 150 (edge band + corner drift)",
+    "rack_front_led_pixel_count low on door face",
+    "rack_front_normal_dot"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate."
+}

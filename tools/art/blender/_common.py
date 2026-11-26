@@ -626,6 +626,57 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
+def _composite_presentation_backdrop_150(
+    src_rgb_path: Path,
+    out_rgb_path: Path,
+    backdrop: tuple[int, int, int] = (150, 150, 150),
+    *,
+    band_frac: float = 0.03,
+    object_tol: int = 32,
+) -> None:
+    """Median denoise, then force exact backdrop in margins and near-bg pixels."""
+    try:
+        from PIL import Image, ImageFilter
+    except ImportError as exc:
+        raise RuntimeError("Pillow required for presentation backdrop composite") from exc
+
+    im = Image.open(src_rgb_path).convert("RGB")
+    im = im.filter(ImageFilter.MedianFilter(size=3))
+    w, h = im.size
+    pixels = list(im.getdata())
+    band = max(1, int(min(w, h) * band_frac))
+    flat: list[tuple[int, int, int]] = []
+    for y in range(h):
+        for x in range(w):
+            r, g, b = pixels[y * w + x]
+            in_band = x < band or x >= w - band or y < band
+            dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
+            if in_band and dist < object_tol:
+                flat.append(backdrop)
+            else:
+                flat.append((r, g, b))
+    cx = w // 2
+    cy = int(h * 0.965)
+    rx = max(1, int(w * 0.20))
+    ry = max(1, int(h * 0.045))
+    shadowed: list[tuple[int, int, int]] = []
+    for y in range(h):
+        for x in range(w):
+            r, g, b = flat[y * w + x]
+            dist = abs(r - backdrop[0]) + abs(g - backdrop[1]) + abs(b - backdrop[2])
+            dx = (x - cx) / rx
+            dy = (y - cy) / ry
+            if dx * dx + dy * dy < 1.0 and dist < 28 and y >= int(h * 0.925):
+                shade = 0.86
+                r = max(0, min(255, int(r * shade)))
+                g = max(0, min(255, int(g * shade)))
+                b = max(0, min(255, int(b * shade)))
+            shadowed.append((r, g, b))
+    out = Image.new("RGB", (w, h), backdrop)
+    out.putdata(shadowed)
+    out.save(out_rgb_path, format="PNG")
+
+
 def _setup_preview_hdri(
     world: bpy.types.World,
     hdr_path: Path,
@@ -723,9 +774,11 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
                 bsdf.inputs["Alpha"].default_value = 0.25
                 mat.blend_method = "BLEND"
                 mat.show_transparent_back = False
+            elif "body_dark" in low or "body" in low:
+                bsdf.inputs["Base Color"].default_value = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
             elif "bay" in low:
-                bsdf.inputs["Base Color"].default_value = (0.82, 0.86, 0.92, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.25
+                bsdf.inputs["Base Color"].default_value = (0.52, 0.55, 0.60, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.32
             elif "slot" in low:
                 bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
                 bsdf.inputs["Roughness"].default_value = 0.65
@@ -734,8 +787,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    if asset_id != "prop-server-rack":
-        ground_size = span * (1.05 if presentation_150 else 4.0)
+    if presentation_150:
+        ground_size = span * (1.18 if asset_id == "prop-server-rack" else 1.05)
         bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
         ground = bpy.context.active_object
         gmat = bpy.data.materials.new("Ground")
@@ -748,7 +801,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
     rack_lit = asset_id == "prop-server-rack"
-    key.data.energy = 1.45 if rack_lit else (2.86 if presentation_150 else 1.8)
+    key.data.energy = 2.2 if rack_lit else (2.86 if presentation_150 else 1.8)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
@@ -757,8 +810,12 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
-    target_fill = 0.70 if presentation_150 else 0.50
-    pad = 1.04 if presentation_150 else 1.0
+    if asset_id == "prop-server-rack":
+        target_fill = 0.58
+        pad = 1.28
+    else:
+        target_fill = 0.70 if presentation_150 else 0.50
+        pad = 1.04 if presentation_150 else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.12) / target_fill) * pad
 
     cam_data = bpy.data.cameras.new("PreviewCam")
@@ -804,33 +861,42 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_bloom = False
         if asset_id == "prop-server-rack" and hasattr(ee, "use_bloom"):
             ee.use_bloom = False
+    preview_meta: dict[str, float] = {}
+    if asset_id == "prop-server-rack":
+        to_cam = (cam.location - center).normalized()
+        front_n = Vector((0.0, -1.0, 0.0))
+        preview_meta["rack_front_normal_dot"] = float(max(0.0, front_n.dot(to_cam)))
+
+    use_backdrop_composite = presentation_150
+    rgba_tmp = PREVIEW_DIR / f"{asset_id}.__render_raw.png"
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
     bpy.context.scene.render.resolution_y = 1024
-    bpy.context.scene.render.filepath = str(preview)
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
     if not presentation_150 and hasattr(bpy.context.scene, "view_settings"):
         bpy.context.scene.view_settings.exposure = 0.22
         bpy.context.scene.view_settings.view_transform = "Standard"
+    bpy.context.scene.render.filepath = str(rgba_tmp if use_backdrop_composite else preview)
     bpy.ops.render.render(write_still=True)
+    if use_backdrop_composite:
+        _composite_presentation_backdrop_150(rgba_tmp, preview, (150, 150, 150))
+        rgba_tmp.unlink(missing_ok=True)
 
     sha = hashlib.sha256(glb_path.read_bytes()).hexdigest()
     frame = PREVIEW_DIR / f"{asset_id}.frame.json"
-    frame.write_text(
-        json.dumps(
-            {
-                "assetId": asset_id,
-                "preview": str(preview.relative_to(REPO)),
-                "glb": str(glb_path.relative_to(REPO)),
-                "glb_sha256": sha,
-                "resolution": 1024,
-            },
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
+    payload: dict = {
+        "assetId": asset_id,
+        "preview": str(preview.relative_to(REPO)),
+        "glb": str(glb_path.relative_to(REPO)),
+        "glb_sha256": sha,
+        "resolution": 1024,
+    }
+    if preview_meta:
+        meta_path = PREVIEW_DIR / f"{asset_id}.preview_meta.json"
+        meta_path.write_text(json.dumps(preview_meta, indent=2) + "\n", encoding="utf-8")
+        payload["previewMeta"] = preview_meta
+    frame.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     return preview
 
 
@@ -1001,16 +1067,19 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             cimg.colorspace_settings.name = "sRGB"
             ctex.image = cimg
             links.new(mapping.outputs["Vector"], ctex.inputs["Vector"])
+            charcoal = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
             if kind == "body_dark":
-                mul = nodes.new("ShaderNodeMixRGB")
-                mul.blend_type = "MULTIPLY"
-                mul.inputs["Fac"].default_value = 1.0
-                mul.inputs["Color2"].default_value = (0.14, 0.18, 0.28, 1.0)
-                links.new(ctex.outputs["Color"], mul.inputs["Color1"])
-                links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
-            else:
+                mix = nodes.new("ShaderNodeMixRGB")
+                mix.blend_type = "MIX"
+                mix.inputs["Fac"].default_value = 0.94
+                mix.inputs["Color2"].default_value = charcoal
+                links.new(ctex.outputs["Color"], mix.inputs["Color1"])
+                links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
+            elif kind == "frame":
                 links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
-        if METAL048_NORMAL.is_file():
+        elif kind == "body_dark":
+            bsdf.inputs["Base Color"].default_value = (45 / 255.0, 48 / 255.0, 55 / 255.0, 1.0)
+        if METAL048_NORMAL.is_file() and kind in ("body", "frame", "body_dark"):
             nt = nodes.new("ShaderNodeTexImage")
             nimg = bpy.data.images.load(str(METAL048_NORMAL), check_existing=True)
             nimg.colorspace_settings.name = "Non-Color"
@@ -1019,13 +1088,17 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
             links.new(nt.outputs["Color"], nm.inputs["Color"])
             links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
             links.new(mapping.outputs["Vector"], nt.inputs["Vector"])
-        if METAL048_ROUGH.is_file():
+        if METAL048_ROUGH.is_file() and kind in ("body", "frame", "body_dark"):
             rt = nodes.new("ShaderNodeTexImage")
             rimg = bpy.data.images.load(str(METAL048_ROUGH), check_existing=True)
             rimg.colorspace_settings.name = "Non-Color"
             rt.image = rimg
             links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
             links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    elif kind == "frame_trim":
+        bsdf.inputs["Base Color"].default_value = (0.70, 0.73, 0.78, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.34
+        bsdf.inputs["Metallic"].default_value = 0.78
     elif kind == "glass":
         bsdf.inputs["Base Color"].default_value = (0.18, 0.22, 0.28, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.18
@@ -1084,7 +1157,9 @@ def _restyle_rack_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
         mat_kind = "bay_light"
     elif "bay" in name:
         mat_kind = "bay"
-    elif "body" in name or "frame" in name or "corner" in name or "cable" in name or "vent" in name:
+    elif "frame" in name and "mesh" not in name:
+        mat_kind = "frame_trim"
+    elif "body" in name or "corner" in name or "cable" in name or "vent" in name:
         mat_kind = "body_dark"
     elif "mesh" in name:
         mat_kind = "slot"

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -63,6 +64,14 @@ def _bevel_box(
 
 def _scale_uniform(parts: list[bpy.types.Object], factor: float) -> None:
     _common._apply_scale_uniform(parts, factor)
+
+
+def _yaw_180_to_camera(parts: list[bpy.types.Object]) -> None:
+    """Front faces world -Y so the 3/4 preview camera sees door, bays, and LEDs."""
+    for p in parts:
+        p.location.x = -p.location.x
+        p.location.y = -p.location.y
+        p.rotation_euler.z = p.rotation_euler.z + math.pi
 
 
 def _gate_assembly(parts: list[bpy.types.Object]) -> None:
@@ -146,21 +155,12 @@ def build() -> dict:
             )
         )
         led_kind = "rack_led_green" if i % 2 == 0 else "rack_led_blue"
-        alt_kind = "rack_led_blue" if i % 2 == 0 else "rack_led_green"
         lz = z + u_step * 0.20
         parts.append(
             _bevel_box(
                 f"{led_kind}_{i}",
-                (TARGET_W * 0.64, 0.04, 0.034),
-                (0.0, y_front + 0.036, lz),
-                0.0,
-            )
-        )
-        parts.append(
-            _bevel_box(
-                f"{alt_kind}_{i}b",
-                (0.07, 0.04, 0.062),
-                (TARGET_W * 0.38, y_front + 0.034, lz),
+                (TARGET_W * 0.66, 0.038, 0.030),
+                (0.0, y_front + 0.038, lz),
                 0.0,
             )
         )
@@ -193,6 +193,18 @@ def build() -> dict:
         )
     )
 
+    for i in range(9):
+        x0 = -TARGET_W * 0.42 + i * (TARGET_W * 0.10)
+        parts.append(
+            _bevel_box(
+                f"rack_top_slot_{i}",
+                (TARGET_W * 0.06, 0.055, 0.018),
+                (x0, 0.0, TARGET_H - 0.045),
+                0.001,
+            )
+        )
+
+    _yaw_180_to_camera(parts)
     _gate_assembly(parts)
     return _common.finish_prop_server_rack_slot_export(
         parts,
@@ -201,7 +213,7 @@ def build() -> dict:
             "targetSizeM": [TARGET_W, TARGET_D, TARGET_H],
             "kenneyGlbs": list(KENNEY_GLBS_USED),
             "rackUnits": NUM_UNITS,
-            "pipelineNote": "procedural-cabinet-v3",
+            "pipelineNote": "procedural-cabinet-v4-front-facing",
         },
     )
 
