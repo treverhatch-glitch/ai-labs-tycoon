@@ -167,7 +167,7 @@ def _load_sign_bold_font() -> bpy.types.VectorFont | None:
     return None
 
 
-SIGN_TEXT_RED_RGBA = (200 / 255.0, 16 / 255.0, 46 / 255.0, 1.0)  # #C8102E
+SIGN_TEXT_RED_RGBA = (120 / 255.0, 12 / 255.0, 18 / 255.0, 1.0)  # dark red on cream board
 
 
 def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
@@ -181,8 +181,8 @@ def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
         nodes.clear()
         out = nodes.new("ShaderNodeOutputMaterial")
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = SIGN_TEXT_RED_RGBA
-        emit.inputs["Strength"].default_value = 1.0
+        emit.inputs["Color"].default_value = (0.72, 0.09, 0.13, 1.0)
+        emit.inputs["Strength"].default_value = 2.35
         links.new(emit.outputs["Emission"], out.inputs["Surface"])
         return mat
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
@@ -299,7 +299,8 @@ def add_sign_mesh_text(
     ob.data.extrude = extrude_m
     ob.data.resolution_u = 6
     ob.data.size = text_size
-    ob.data.space_character = 0.92
+    ob.data.space_character = 0.90
+    ob.data.space_line = 1.08
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
     thin_i = min(range(3), key=lambda i: board.dimensions[i])
@@ -319,8 +320,8 @@ def add_sign_mesh_text(
     bpy.context.view_layer.update()
     dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
     if dx > 1e-4 and dy > 1e-4:
-        sx = abs((board_w * 0.46) / dx)
-        sy = abs((board_h * 0.38) / dy)
+        sx = abs((board_w * 0.50) / dx)
+        sy = abs((board_h * 0.40) / dy)
         ob.scale = (sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
@@ -439,6 +440,61 @@ def weld_coincident_vertices(ob: bpy.types.Object, threshold: float = 0.06) -> i
                 except (ValueError, IndexError):
                     pass
     return 0
+
+
+def _object_world_aabb(ob: bpy.types.Object) -> tuple[float, float, float, float, float, float]:
+    corners = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+    xs = [v.x for v in corners]
+    ys = [v.y for v in corners]
+    zs = [v.z for v in corners]
+    return min(xs), max(xs), min(ys), max(ys), min(zs), max(zs)
+
+
+def _aabbs_touch(
+    a: tuple[float, float, float, float, float, float],
+    b: tuple[float, float, float, float, float, float],
+    eps: float,
+) -> bool:
+    ax0, ax1, ay0, ay1, az0, az1 = a
+    bx0, bx1, by0, by1, bz0, bz1 = b
+    if ax1 < bx0 - eps or bx1 < ax0 - eps:
+        return False
+    if ay1 < by0 - eps or by1 < ay0 - eps:
+        return False
+    if az1 < bz0 - eps or bz1 < az0 - eps:
+        return False
+    return True
+
+
+def assert_sign_mesh_assembly_connected(
+    objects: list[bpy.types.Object],
+    *,
+    eps: float = 0.06,
+) -> None:
+    """Every mesh part bbox must touch another; graph must be connected."""
+    mesh_obs = [o for o in objects if o.type == "MESH"]
+    if len(mesh_obs) < 2:
+        raise RuntimeError("sign assembly needs >=2 mesh parts")
+    bbs = [_object_world_aabb(o) for o in mesh_obs]
+    n = len(bbs)
+    adj: list[list[bool]] = [[False] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(i + 1, n):
+            if _aabbs_touch(bbs[i], bbs[j], eps):
+                adj[i][j] = adj[j][i] = True
+    for i, ob in enumerate(mesh_obs):
+        if not any(adj[i]):
+            raise RuntimeError(f"sign assembly floating part {ob.name}")
+    seen = {0}
+    stack = [0]
+    while stack:
+        u = stack.pop()
+        for v in range(n):
+            if adj[u][v] and v not in seen:
+                seen.add(v)
+                stack.append(v)
+    if len(seen) != n:
+        raise RuntimeError("sign assembly disconnected graph")
 
 
 def bevel_object(ob: bpy.types.Object, width: float = 0.015, segments: int = 2) -> None:
@@ -1341,10 +1397,22 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
         os.environ["SIGN_PREVIEW_NO_VISIBLE_FLOOR"] = "1"
         os.environ.pop("EARLY_PREVIEW_VISIBLE_GROUND", None)
 
+        def _rotate_sign_face_for_front_camera(meshes: list[bpy.types.Object]) -> None:
+            if os.environ.get("SIGN_PREVIEW_UP_AXIS") != "Z":
+                return
+            bpy.ops.object.select_all(action="DESELECT")
+            for o in meshes:
+                o.select_set(True)
+            bpy.context.view_layer.objects.active = meshes[0]
+            bpy.ops.transform.rotate(value=-math.pi / 2, orient_axis="Z", orient_type="GLOBAL")
+            bpy.ops.object.select_all(action="DESELECT")
+            bpy.context.view_layer.update()
+
         def _render_sign_pass(out_path: Path, *, azimuth: str, elevation: str, margin: str) -> None:
             reset_scene()
             bpy.ops.import_scene.gltf(filepath=str(glb))
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+            _rotate_sign_face_for_front_camera(meshes)
             apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=False)
             orient_sign_preview_for_camera(meshes, face_dir=1.0)
             os.environ["PREVIEW_AZIMUTH_DEG"] = azimuth
@@ -1355,30 +1423,42 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
 
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
-            azimuth="36",
-            elevation="17",
-            margin="0.78",
+            azimuth="0",
+            elevation="16",
+            margin="0.14",
         )
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
-            azimuth="42",
-            elevation="21",
-            margin="0.74",
+            azimuth="35",
+            elevation="18",
+            margin="0.14",
         )
         preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
-        frame_stub.write_text(
-            json.dumps(
+        span = float(os.environ.get("SIGN_POST_SPAN_M", "0") or 0)
+        board_w = float(os.environ.get("SIGN_BOARD_WIDTH_M", "0") or 0)
+        assembly_meta = {
+            "glb_sha256": glb_sha,
+            "glb_path": str(glb.relative_to(REPO_ROOT)),
+            "mid_grey": True,
+            "sign_post_span_m": span,
+            "sign_board_width_m": board_w,
+            "sign_assembly_connected": bool(span > 0 and board_w >= span),
+        }
+        frame_stub.write_text(json.dumps(assembly_meta, indent=2) + "\n", encoding="utf-8")
+        for stem in ("garage-land-for-sale-sign-front", "garage-land-for-sale-sign-hero"):
+            meta_path = PREVIEW_ROOT / f"{stem}.frame.json"
+            if not meta_path.is_file():
+                continue
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            meta.update(
                 {
-                    "glb_sha256": glb_sha,
-                    "glb_path": str(glb.relative_to(REPO_ROOT)),
-                    "mid_grey": True,
-                },
-                indent=2,
+                    "sign_post_span_m": span,
+                    "sign_board_width_m": board_w,
+                    "sign_assembly_connected": assembly_meta["sign_assembly_connected"],
+                }
             )
-            + "\n",
-            encoding="utf-8",
-        )
+            meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
         ob = sign_obs[0]
     else:
         if len(mesh_obs) > 1:

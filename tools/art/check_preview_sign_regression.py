@@ -11,8 +11,12 @@ sys.path.insert(0, str(REPO / "tools" / "art"))
 from packet34_preview_gates import (  # noqa: E402
     SIGN_PREVIEW_ALLOWED_PNG,
     check_backdrop_mid_grey,
+    check_sign_assembly_metadata,
     check_sign_for_sale_contrast,
+    check_sign_front_board_frame_width,
+    check_sign_front_ocr_words,
     check_sign_preview_board_text,
+    check_sign_preview_yaw,
     check_sign_text_template_orientation,
 )
 
@@ -20,6 +24,7 @@ FIXTURES = (
     ("2b7b6e40", REPO / "tools/art/fixtures/preview_regression/sign-2b7b6e40"),
     ("a2c3e44c", REPO / "tools/art/fixtures/preview_regression/sign-a2c3e44c"),
     ("419f4309", REPO / "tools/art/fixtures/preview_regression/sign-419f4309"),
+    ("e7d53735", REPO / "tools/art/fixtures/preview_regression/sign-e7d53735"),
 )
 
 
@@ -45,6 +50,15 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_hero"))
     else:
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_front"))
+        errs.extend(check_sign_front_ocr_words(rgb))
+        errs.extend(check_sign_front_board_frame_width(rgb, mask))
+        frame = root / f"{stem}.frame.json"
+        errs.extend(check_sign_preview_yaw(frame, expected_deg=0.0, label="sign_front"))
+        errs.extend(check_sign_assembly_metadata(frame, label="sign_front"))
+    if "hero" in stem:
+        frame = root / f"{stem}.frame.json"
+        errs.extend(check_sign_preview_yaw(frame, expected_deg=35.0, label="sign_hero"))
+        errs.extend(check_sign_assembly_metadata(frame, label="sign_hero"))
     return _must_fail(sha, f"{stem}", errs)
 
 
@@ -69,10 +83,11 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
-        if sha == "419f4309":
+        if sha in ("419f4309", "e7d53735"):
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
-            rc |= _check_scope_manifest(sha, root)
+            if sha == "419f4309":
+                rc |= _check_scope_manifest(sha, root)
             continue
         rc |= _check_sign_pair(sha, root, "for-sale-sign", "sign_hero")
         rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")

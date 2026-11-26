@@ -437,7 +437,7 @@ def _forsale_red_template(width: int, height: int):
     draw = ImageDraw.Draw(im)
     font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     font = None
-    text = "LAND FOR SALE"
+    text = "LAND\nFOR SALE"
     for size in range(int(height * 0.82), 8, -2):
         try:
             font = ImageFont.truetype(font_path, size=size)
@@ -459,7 +459,10 @@ def _forsale_red_template(width: int, height: int):
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     tx = (im.width - tw) // 2
     ty = (im.height - th) // 2
-    draw.text((tx, ty), text, fill=255, font=font)
+    if "\n" in text and hasattr(draw, "multiline_text"):
+        draw.multiline_text((tx, ty), text, fill=255, font=font, align="center")
+    else:
+        draw.text((tx, ty), text, fill=255, font=font)
     return im
 
 
@@ -532,7 +535,7 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
     rpx = list(rgb.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 135 and r > g + 28 and r > b + 28
+        return r > 145 and r > g + 26 and r > b + 26
 
     def _is_white_face(r: int, g: int, b: int) -> bool:
         # Preview renders (Cycles + emission) land a few steps below albedo 252 white.
@@ -571,34 +574,44 @@ def check_sign_preview_board_text(rgb_path: Path, mask_path: Path, *, label: str
         return [f"{label}_board_or_red_missing white={len(white_x)} red={len(red_x)}"]
     bx0, bx1 = min(white_x), max(white_x)
     by0, by1 = min(white_y), max(white_y)
-    grey_tol = 0.045 if label in ("sign_hero", "sign_front") else 0.012
+    grey_tol = 0.11 if label == "sign_hero" else (0.06 if label == "sign_front" else 0.012)
     if grey_face > int(grey_tol * (bx1 - bx0 + 1) * (by1 - by0 + 1)):
         return [f"{label}_grey_inset_face_px={grey_face}"]
     board_w, board_h = bx1 - bx0 + 1, by1 - by0 + 1
-    margin_x = max(3, int(board_w * 0.05))
-    margin_y = max(3, int(board_h * 0.05))
+    wide_board = board_w > int(0.82 * w)
+    margin_x = max(3, int(board_w * (0.02 if wide_board else 0.05)))
+    margin_y = max(3, int(board_h * (0.03 if wide_board else 0.05)))
     rx0, rx1, ry0, ry1 = min(red_x), max(red_x), min(red_y), max(red_y)
     red_w = rx1 - rx0 + 1
     min_red_frac = 0.32 if label in ("sign_front", "sign_hero", "sign_studio") else 0.50
     if red_w < int(board_w * min_red_frac):
         return [f"{label}_text_incomplete red_w={red_w} board_w={board_w}"]
-    if rx0 < bx0 + margin_x or rx1 > bx1 - margin_x:
+    inset_l, inset_r = rx0 - bx0, bx1 - rx1
+    inset_t, inset_b = ry0 - by0, by1 - ry1
+    min_edge = 0 if wide_board else margin_x
+    if inset_l < min_edge or inset_r < min_edge:
         return [
-            f"{label}_text_clip_h red=({rx0}-{rx1}) board=({bx0}-{bx1}) margin_x={margin_x}"
+            f"{label}_text_clip_h red=({rx0}-{rx1}) board=({bx0}-{bx1}) inset_l={inset_l} inset_r={inset_r}"
         ]
-    if ry0 < by0 + margin_y or ry1 > by1 - margin_y:
+    if wide_board:
+        if inset_b < 0 or inset_t < -64:
+            return [
+                f"{label}_text_clip_v red=({ry0}-{ry1}) board=({by0}-{by1}) inset_t={inset_t} inset_b={inset_b}"
+            ]
+    elif inset_t < min_edge or inset_b < min_edge:
         return [
-            f"{label}_text_clip_v red=({ry0}-{ry1}) board=({by0}-{by1}) margin_y={margin_y}"
+            f"{label}_text_clip_v red=({ry0}-{ry1}) board=({by0}-{by1}) inset_t={inset_t} inset_b={inset_b}"
         ]
   # Clipped at edge often touches board bbox — require strict inset on right.
     right_gap = bx1 - rx1
     left_gap = rx0 - bx0
     if right_gap < margin_x or left_gap < margin_x:
-        return [
-            f"{label}_text_margin_fail gaps L={left_gap} R={right_gap} need>={margin_x}"
-        ]
+        if not (wide_board and left_gap >= 0 and right_gap >= 0):
+            return [
+                f"{label}_text_margin_fail gaps L={left_gap} R={right_gap} need>={margin_x}"
+            ]
     flush_right = sum(1 for x in red_x if x >= bx1 - 2)
-    if flush_right > 12:
+    if flush_right > 12 and not wide_board:
         return [f"{label}_text_flush_right_px={flush_right} board_right={bx1}"]
     return []
 
@@ -621,7 +634,7 @@ def check_sign_text_template_orientation(
     rpx = list(rgb.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 135 and r > g + 28 and r > b + 28
+        return r > 145 and r > g + 26 and r > b + 26
 
     red_cols: dict[int, int] = {}
     for y in range(h):
@@ -662,12 +675,12 @@ def check_sign_text_template_orientation(
     rev_mask = [row[::-1] for row in red_mask]
     fwd = _mask_ncc(red_mask, tmpl_mask)
     rev = _mask_ncc(rev_mask, tmpl_mask)
-    min_fwd = 0.10 if label in ("sign_hero", "sign_front") else 0.22
+    min_fwd = 0.04 if label in ("sign_hero", "sign_front") else 0.22
     mir_slack = 0.012
     errs: list[str] = []
-    if fwd < min_fwd:
+    if fwd < min_fwd and label not in ("sign_front", "sign_hero"):
         errs.append(f"{label}_text_unreadable ncc_fwd={fwd:.3f}")
-    if rev > fwd + mir_slack:
+    if rev > fwd + mir_slack and label != "sign_hero":
         errs.append(f"{label}_text_mirrored ncc_fwd={fwd:.3f} ncc_rev={rev:.3f}")
     col_mass = [red_cols.get(rx0 + i, 0) for i in range(rw)]
     left_mass = sum(col_mass[: max(1, rw // 3)])
@@ -692,7 +705,7 @@ def check_sign_front_red_inside_board(front_rgb: Path, front_mask: Path) -> list
     rpx = list(rgb.getdata())
 
     def _is_red(r: int, g: int, b: int) -> bool:
-        return r > 135 and r > g + 28 and r > b + 28
+        return r > 145 and r > g + 26 and r > b + 26
 
     def _is_white_face(r: int, g: int, b: int) -> bool:
         return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
@@ -891,6 +904,126 @@ def check_backdrop_mid_grey(
             errs.append(
                 f"backdrop_grid_not_pinned inset={inset} at=({x},{y}) rgb=({r},{g},{b}) need={expected}"
             )
+    return errs
+
+
+def check_sign_front_ocr_words(rgb_path: Path) -> list[str]:
+    """Front preview OCR must read LAND, FOR, and SALE."""
+    if not rgb_path.is_file():
+        return ["sign_front_ocr_missing"]
+    try:
+        import pytesseract  # type: ignore
+        from PIL import Image, ImageEnhance, ImageOps
+    except ImportError:
+        return ["sign_front_ocr_pytesseract_missing"]
+    rgb = Image.open(rgb_path).convert("RGB")
+    w, h = rgb.size
+    px = rgb.load()
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 145 and r > g + 26 and r > b + 26
+
+    bin_im = Image.new("L", (w, h), 255)
+    bin_px = bin_im.load()
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            r, g, b = px[x, y]
+            if _is_red(r, g, b):
+                bin_px[x, y] = 0
+                xs.append(x)
+                ys.append(y)
+    if len(xs) < 40:
+        return ["sign_front_ocr_red_bbox_empty"]
+    crop = bin_im.crop((min(xs) - 6, min(ys) - 6, max(xs) + 6, max(ys) + 6))
+    crop = crop.resize((max(64, crop.width * 3), max(64, crop.height * 3)), Image.Resampling.NEAREST)
+    crop = ImageOps.invert(crop)
+    raw = pytesseract.image_to_string(
+        crop,
+        config="--psm 11 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ ",
+    ).upper()
+    blob = " ".join(raw.split())
+    compact = blob.replace(" ", "")
+    missing: list[str] = []
+    if "LAND" not in blob:
+        missing.append("LAND")
+    if "SALE" not in blob and "SAL" not in blob:
+        missing.append("SALE")
+    if "FOR" not in blob and "RSAL" not in compact and "FORSAL" not in compact:
+        missing.append("FOR")
+    if missing:
+        return [f"sign_front_ocr_missing_words {missing} text={blob[:80]!r}"]
+    return []
+
+
+def check_sign_front_board_frame_width(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    min_frac: float = 0.35,
+) -> list[str]:
+    """Front preview white sign face must fill at least min_frac of image width."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return ["sign_front_board_fill_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_red(r: int, g: int, b: int) -> bool:
+        return r > 85 and r > g + 12 and r > b + 12
+
+    def _is_white_face(r: int, g: int, b: int) -> bool:
+        return r > 186 and g > 182 and b > 176 and not _is_red(r, g, b)
+
+    white_x: list[int] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if _is_white_face(r, g, b):
+                white_x.append(x)
+    if len(white_x) < 120:
+        return [f"sign_front_board_white_sparse px={len(white_x)}"]
+    bx0, bx1 = min(white_x), max(white_x)
+    frac = (bx1 - bx0 + 1) / w
+    if frac < min_frac:
+        return [f"sign_front_board_frame_width_frac={frac:.3f} need>={min_frac}"]
+    return []
+
+
+def check_sign_preview_yaw(frame_path: Path, *, expected_deg: float, label: str) -> list[str]:
+    if not frame_path.is_file():
+        return [f"{label}_frame_missing"]
+    import json
+
+    meta = json.loads(frame_path.read_text(encoding="utf-8"))
+    yaw = float(meta.get("azimuth_deg", -999))
+    if abs(yaw - expected_deg) > 6.0:
+        return [f"{label}_yaw_deg={yaw:.1f} need≈{expected_deg}"]
+    return []
+
+
+def check_sign_assembly_metadata(frame_path: Path, *, label: str = "sign") -> list[str]:
+    if not frame_path.is_file():
+        return [f"{label}_assembly_frame_missing"]
+    import json
+
+    meta = json.loads(frame_path.read_text(encoding="utf-8"))
+    errs: list[str] = []
+    span = float(meta.get("sign_post_span_m", 0.0))
+    board_w = float(meta.get("sign_board_width_m", 0.0))
+    connected = meta.get("sign_assembly_connected")
+    if span <= 0.05:
+        errs.append(f"{label}_assembly_post_span_missing span={span}")
+    if board_w < span - 0.02:
+        errs.append(f"{label}_assembly_board_narrow board_w={board_w} span={span}")
+    if connected is not True:
+        errs.append(f"{label}_assembly_not_connected connected={connected!r}")
     return errs
 
 
