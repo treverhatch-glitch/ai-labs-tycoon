@@ -20,6 +20,10 @@ WOOD092 = CC0_ROOT / "ambientcg" / "Wood092_1K-JPG"
 WOOD092_COLOR = WOOD092 / "Wood092_1K-JPG_Color.jpg"
 WOOD092_NORMAL = WOOD092 / "Wood092_1K-JPG_NormalGL.jpg"
 WOOD092_ROUGH = WOOD092 / "Wood092_1K-JPG_Roughness.jpg"
+METAL048 = CC0_ROOT / "ambientcg" / "Metal048A_1K-JPG"
+METAL048_COLOR = METAL048 / "Metal048A_1K-JPG_Color.jpg"
+METAL048_NORMAL = METAL048 / "Metal048A_1K-JPG_NormalGL.jpg"
+METAL048_ROUGH = METAL048 / "Metal048A_1K-JPG_Roughness.jpg"
 PREVIEW_HDRI = CC0_ROOT / "polyhaven" / "hdr" / "studio_small_09_1k.hdr"
 OUT_ROOT = REPO / "unity" / "Assets" / "Art" / "BlenderBaked"
 PREVIEW_DIR = REPO / "docs" / "art" / "previews"
@@ -920,6 +924,147 @@ def _assign_plant_materials(obj: bpy.types.Object, tex_dir: Path) -> None:
             zs.append((obj.matrix_world @ mesh.vertices[vi].co).z)
         z = sum(zs) / len(zs) if zs else split_z
         poly.material_index = 0 if z < split_z else 1
+
+
+def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
+    key = f"rack_{kind}"
+    if key in _MAT_CACHE:
+        return _MAT_CACHE[key]
+    mat = bpy.data.materials.new(f"M_prop_rack_{kind}")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    if kind in ("body", "frame"):
+        bsdf.inputs["Metallic"].default_value = 0.85
+        bsdf.inputs["Roughness"].default_value = 0.38
+        coord = nodes.new("ShaderNodeTexCoord")
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = (1.5, 1.5, 1.5)
+        links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        if METAL048_COLOR.is_file():
+            ctex = nodes.new("ShaderNodeTexImage")
+            cimg = bpy.data.images.load(str(METAL048_COLOR), check_existing=True)
+            cimg.colorspace_settings.name = "sRGB"
+            ctex.image = cimg
+            links.new(mapping.outputs["Vector"], ctex.inputs["Vector"])
+            links.new(ctex.outputs["Color"], bsdf.inputs["Base Color"])
+        if METAL048_NORMAL.is_file():
+            nt = nodes.new("ShaderNodeTexImage")
+            nimg = bpy.data.images.load(str(METAL048_NORMAL), check_existing=True)
+            nimg.colorspace_settings.name = "Non-Color"
+            nt.image = nimg
+            nm = nodes.new("ShaderNodeNormalMap")
+            links.new(nt.outputs["Color"], nm.inputs["Color"])
+            links.new(nm.outputs["Normal"], bsdf.inputs["Normal"])
+            links.new(mapping.outputs["Vector"], nt.inputs["Vector"])
+        if METAL048_ROUGH.is_file():
+            rt = nodes.new("ShaderNodeTexImage")
+            rimg = bpy.data.images.load(str(METAL048_ROUGH), check_existing=True)
+            rimg.colorspace_settings.name = "Non-Color"
+            rt.image = rimg
+            links.new(mapping.outputs["Vector"], rt.inputs["Vector"])
+            links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    elif kind == "panel":
+        bsdf.inputs["Base Color"].default_value = (0.12, 0.13, 0.16, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.55
+        bsdf.inputs["Metallic"].default_value = 0.2
+    elif kind == "led_green":
+        bsdf.inputs["Base Color"].default_value = (0.12, 0.82, 0.38, 1.0)
+        em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+        if em is not None:
+            em.default_value = (0.12, 0.82, 0.38, 1.0)
+        strength = bsdf.inputs.get("Emission Strength")
+        if strength is not None:
+            strength.default_value = 3.5
+    elif kind == "led_blue":
+        bsdf.inputs["Base Color"].default_value = (0.18, 0.45, 0.92, 1.0)
+        em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+        if em is not None:
+            em.default_value = (0.18, 0.45, 0.92, 1.0)
+        strength = bsdf.inputs.get("Emission Strength")
+        if strength is not None:
+            strength.default_value = 3.5
+    else:
+        bsdf.inputs["Base Color"].default_value = (0.32, 0.34, 0.38, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.42
+    _MAT_CACHE[key] = mat
+    return mat
+
+
+def _restyle_rack_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
+    name = obj.name.lower()
+    is_led = "indicator" in name or "button" in name
+    is_panel = "screen" in name or "panel" in name
+    for i, slot in enumerate(obj.data.materials):
+        if slot is None:
+            continue
+        slot_name = (slot.name or "").lower()
+        if is_led and i % 2 == 0:
+            obj.data.materials[i] = _prop_rack_shared_material("led_green", tex_dir)
+        elif is_led:
+            obj.data.materials[i] = _prop_rack_shared_material("led_blue", tex_dir)
+        elif is_panel:
+            obj.data.materials[i] = _prop_rack_shared_material("panel", tex_dir)
+        elif "metal" in slot_name or "structure" in name:
+            obj.data.materials[i] = _prop_rack_shared_material("body", tex_dir)
+        else:
+            obj.data.materials[i] = _prop_rack_shared_material("frame", tex_dir)
+
+
+def finish_prop_server_rack_slot_export(
+    parts: list[bpy.types.Object],
+    source_cc0: str,
+    extra_manifest: dict | None = None,
+) -> dict:
+    """Join multi-mesh Kenney factory rack hero with per-slot PBR; preview from committed GLB."""
+    asset_id = "prop-server-rack"
+    out_dir = OUT_ROOT / asset_id
+    tex_dir = out_dir / "textures"
+    tex_dir.mkdir(parents=True, exist_ok=True)
+    _MAT_CACHE.clear()
+    bpy.ops.object.select_all(action="DESELECT")
+    for p in parts:
+        _restyle_rack_slot_by_name(p, tex_dir)
+        p.select_set(True)
+    bpy.context.view_layer.objects.active = parts[0]
+    if len(parts) > 1:
+        bpy.ops.object.join()
+    obj = bpy.context.view_layer.objects.active
+    obj.name = "mesh_prop-server-rack"
+    obj.location = Vector((0.0, 0.0, -_bbox_world([obj])[0].z))
+    if METAL048_COLOR.is_file():
+        shutil.copy(METAL048_COLOR, tex_dir / "Metal048A_Color.jpg")
+    if METAL048_NORMAL.is_file():
+        shutil.copy(METAL048_NORMAL, tex_dir / "Metal048A_NormalGL.jpg")
+    if METAL048_ROUGH.is_file():
+        shutil.copy(METAL048_ROUGH, tex_dir / "Metal048A_Roughness.jpg")
+    glb = _export_gltf(obj, out_dir)
+    fbx = _export_fbx(obj, out_dir)
+    preview_rel = f"docs/art/previews/{asset_id}.png"
+    _render_preview_from_glb(glb, asset_id)
+    manifest = {
+        "assetId": asset_id,
+        "scope": SCOPE,
+        "sourceCc0": source_cc0,
+        "pipeline": "kenney-factory-v1",
+        "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Metal048A_1K-JPG/Metal048A_1K-JPG_Color.jpg",
+        "glb": str(glb.relative_to(REPO)),
+        "fbx": str(fbx.relative_to(REPO)),
+        "preview": preview_rel,
+        "previewHdri": str(PREVIEW_HDRI.relative_to(REPO)),
+    }
+    if METAL048_NORMAL.is_file():
+        manifest["textureNormal1024"] = str((tex_dir / "Metal048A_NormalGL.jpg").relative_to(REPO))
+    if METAL048_ROUGH.is_file():
+        manifest["textureRoughness1024"] = str((tex_dir / "Metal048A_Roughness.jpg").relative_to(REPO))
+    if extra_manifest:
+        manifest.update(extra_manifest)
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest
 
 
 def finish_prop_desk_slot_export(

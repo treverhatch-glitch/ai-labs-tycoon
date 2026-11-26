@@ -55,3 +55,7 @@ __pycache__/
 *.py[cod]
 tools/art/**/__pycache__/
 tools/art/**/*.pyc
+
+# CC0 kit extracts (fetch via tools/art/cc0/download_kenney_factory.sh)
+/docs/art/cc0/kenney-factory-kit/
+/docs/art/cc0/.archives/

@@ -1,0 +1,19 @@
+{
+  "assetId": "prop-server-rack",
+  "scope": "presentation",
+  "sourceCc0": "docs/art/cc0/kenney-factory-kit (structure-tall, structure-high, machine-fortified, machine-window, screen-panel-small, indicator-special-lines); ambientCG Metal048A",
+  "pipeline": "kenney-factory-v1",
+  "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Metal048A_1K-JPG/Metal048A_1K-JPG_Color.jpg",
+  "glb": "unity/Assets/Art/BlenderBaked/prop-server-rack/mesh_prop-server-rack.glb",
+  "fbx": "unity/Assets/Art/BlenderBaked/prop-server-rack/mesh_prop-server-rack.fbx",
+  "preview": "docs/art/previews/prop-server-rack.png",
+  "previewHdri": "docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr",
+  "textureNormal1024": "unity/Assets/Art/BlenderBaked/prop-server-rack/textures/Metal048A_NormalGL.jpg",
+  "textureRoughness1024": "unity/Assets/Art/BlenderBaked/prop-server-rack/textures/Metal048A_Roughness.jpg",
+  "targetSizeM": [
+    0.6,
+    0.85,
+    2.0
+  ],
+  "pipelineNote": "ALT-484 local prep kenney-factory-v1"
+}
