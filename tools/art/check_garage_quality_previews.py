@@ -1,66 +1,102 @@
 #!/usr/bin/env python3
-"""Reject garage previews with washed-out color (Hatch: full-frame mean saturation)."""
+"""Garage preview gates: alpha-mask silhouette, object-only sat, frame meta."""
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 PREVIEW = REPO / "docs/art/previews"
 MANIFEST = REPO / "unity/Assets/Art/EarlyGame/garage-manifest.json"
-MIN_SAT = 0.15
-MIN_LUMA_VAR = 0.004
+
+sys.path.insert(0, str(REPO / "tools/art"))
+from preview_quality_lib import (  # noqa: E402
+    MAX_SILHOUETTE_HEIGHT,
+    MIN_LUMA_VAR,
+    MIN_SAT,
+    MIN_SILHOUETTE_HEIGHT,
+    analyze_alpha_mask,
+    analyze_preview,
+    mask_gate_errors,
+)
 
 
-def mean_saturation_full(path: Path) -> tuple[float, float]:
-    from PIL import Image
+def check_asset(asset_id: str) -> int:
+    path = PREVIEW / f"{asset_id}.png"
+    mask = PREVIEW / f"{asset_id}.mask.png"
+    meta = PREVIEW / f"{asset_id}.frame.json"
+    if not path.exists():
+        print(f"FAIL missing preview {asset_id}")
+        return 1
+    if not mask.exists():
+        print(f"FAIL missing mask {asset_id}.mask.png")
+        return 1
+    if not meta.exists():
+        print(f"FAIL missing frame meta {asset_id}.frame.json")
+        return 1
 
-    im = Image.open(path).convert("RGB")
-    pixels = list(im.getdata())
-    sats: list[float] = []
-    lum: list[float] = []
-    for r, g, b in pixels:
-        rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
-        mx = max(rf, gf, bf)
-        mn = min(rf, gf, bf)
-        lum.append(0.2126 * rf + 0.7152 * gf + 0.0722 * bf)
-        if mx <= 1e-6:
-            continue
-        sats.append((mx - mn) / mx)
-    if not sats:
-        return 0.0, 0.0
-    mean_sat = sum(sats) / len(sats)
-    lbar = sum(lum) / len(lum)
-    var = sum((x - lbar) ** 2 for x in lum) / len(lum)
-    return mean_sat, var
+    rc = 0
+    for err in mask_gate_errors(mask):
+        print(f"FAIL {asset_id} {err}")
+        rc = 1
+
+    sat, lvar, height_cov, _floor_sat, obj_px = analyze_preview(path, mask)
+    alpha = analyze_alpha_mask(mask)
+    if rc == 0 and (height_cov < MIN_SILHOUETTE_HEIGHT or height_cov > MAX_SILHOUETTE_HEIGHT):
+        print(
+            f"FAIL {asset_id} alpha_extent={height_cov:.3f} "
+            f"(need {MIN_SILHOUETTE_HEIGHT}-{MAX_SILHOUETTE_HEIGHT})"
+        )
+        rc = 1
+    if sat < MIN_SAT:
+        print(f"FAIL {asset_id} object_sat={sat:.3f} < {MIN_SAT} (mask pixels={obj_px})")
+        rc = 1
+    if lvar < MIN_LUMA_VAR:
+        print(f"FAIL {asset_id} flat object luma_var={lvar:.4f}")
+        rc = 1
+    if rc == 0:
+        print(
+            f"OK {asset_id} obj_sat={sat:.3f} alpha_extent={height_cov:.3f} "
+            f"area={float(alpha['area_coverage']):.3f} lvar={lvar:.4f}"
+        )
+    return rc
 
 
 def main() -> int:
-    import json
-
     try:
         from PIL import Image  # noqa: F401
     except ImportError:
-        print("FAIL: Pillow required for saturation gate")
+        print("FAIL: Pillow required")
         return 1
 
     ids = [a["id"] for a in json.loads(MANIFEST.read_text())["assets"]]
     rc = 0
     for asset_id in ids:
-        path = PREVIEW / f"{asset_id}.png"
-        if not path.exists():
-            print("FAIL missing preview", asset_id)
+        rc |= check_asset(asset_id)
+
+    scene_id = "garage-scene-kit"
+    scene = PREVIEW / f"{scene_id}.png"
+    scene_mask = PREVIEW / f"{scene_id}.mask.png"
+    scene_meta = PREVIEW / f"{scene_id}.frame.json"
+    if scene.exists() and scene_meta.exists() and scene_mask.exists():
+        for err in mask_gate_errors(scene_mask):
+            print(f"FAIL {scene_id} {err}")
             rc = 1
-            continue
-        sat, lvar = mean_saturation_full(path)
+        sat, _lvar, extent, _fs, px = analyze_preview(scene, scene_mask)
+        alpha = analyze_alpha_mask(scene_mask)
+        area = float(alpha["area_coverage"])
         if sat < MIN_SAT:
-            print(f"FAIL {asset_id} mean_sat={sat:.3f} < {MIN_SAT}")
-            rc = 1
-        elif lvar < MIN_LUMA_VAR:
-            print(f"FAIL {asset_id} flat frame luma_var={lvar:.4f}")
+            print(f"FAIL {scene_id} object_sat={sat:.3f} (mask pixels={px})")
             rc = 1
         else:
-            print(f"OK {asset_id} sat={sat:.3f} lvar={lvar:.4f}")
+            print(
+                f"OK {scene_id} obj_sat={sat:.3f} alpha_extent={extent:.3f} "
+                f"area={area:.3f}"
+            )
+    else:
+        print(f"FAIL missing {scene_id} preview, mask, or frame meta")
+        rc = 1
     return rc
 
 

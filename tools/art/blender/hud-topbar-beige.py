@@ -14,7 +14,7 @@ ASSET_ID = "hud-topbar-beige"
 def main() -> None:
     import os
 
-    os.environ["HUD_ORTHO_FILL"] = "0.40"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.30"
     bc.reset_scene()
     slate = hi._hex((28, 32, 42))
     trim = hi._hex((212, 96, 32))

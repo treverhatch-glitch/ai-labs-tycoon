@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Packet 3–4: alpha framing, object-mask sat, near-duplicate guard."""
+"""Packet 3–4: Hatch alpha-mask gates (shared with #88 340fa3cd)."""
 from __future__ import annotations
 
 import sys
@@ -39,41 +39,11 @@ def main() -> int:
         return 1
 
     sys.path.insert(0, str(REPO / "tools" / "art"))
-    from early_art_preview_gates import (  # noqa: WPS433
-        check_near_duplicates,
-        gate_preview_env,
-        gate_preview_hud,
-    )
+    from check_early_quality_previews import check_id  # noqa: E402
 
     rc = 0
-    for asset_id in ENV_IDS:
-        path = PREVIEW / f"{asset_id}.png"
-        if not path.exists():
-            print(f"FAIL missing preview {asset_id}")
-            rc = 1
-            continue
-        ok, detail = gate_preview_env(path)
-        print(f"{'OK' if ok else 'FAIL'} {asset_id} {detail}")
-        rc |= 0 if ok else 1
-
-    for asset_id in (*HUD_IDS, *TEX_IDS):
-        path = PREVIEW / f"{asset_id}.png"
-        if not path.exists():
-            print(f"FAIL missing preview {asset_id}")
-            rc = 1
-            continue
-        ok, detail = gate_preview_hud(path)
-        print(f"{'OK' if ok else 'FAIL'} {asset_id} {detail}")
-        rc |= 0 if ok else 1
-
-    dup_rc, dup_msgs = check_near_duplicates(PREVIEW, ENV_IDS, hud=False)
-    rc |= dup_rc
-    for line in dup_msgs:
-        print(line)
-    dup_rc, dup_msgs = check_near_duplicates(PREVIEW, HUD_IDS, hud=True)
-    rc |= dup_rc
-    for line in dup_msgs:
-        print(line)
+    for asset_id in (*ENV_IDS, *HUD_IDS, *TEX_IDS):
+        rc |= check_id(PREVIEW, asset_id)
     return rc
 
 
