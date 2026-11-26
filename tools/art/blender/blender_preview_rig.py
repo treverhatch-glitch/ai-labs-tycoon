@@ -106,7 +106,25 @@ def setup_hdri_lighting_only(
     rotation_z_deg: float = 118.0,
     visible_hdri: bool = False,
 ) -> None:
-    """HDRI for lighting/reflections; camera sees neutral grey gradient (Hatch URP hero)."""
+    """Neutral grey backdrop; HDRI path is for Unity—batch EEVEE uses area lights (no LightPath mix)."""
+    del strength, rotation_z_deg
+    if visible_hdri and hdri_path.is_file():
+        world = bpy.data.worlds.new("HdriVisibleWorld")
+        bpy.context.scene.world = world
+        world.use_nodes = True
+        nodes = world.node_tree.nodes
+        links = world.node_tree.links
+        nodes.clear()
+        out = nodes.new("ShaderNodeOutputWorld")
+        tex = nodes.new("ShaderNodeTexEnvironment")
+        tex.image = bpy.data.images.load(str(hdri_path))
+        tex.image.colorspace_settings.name = "Linear Rec.709"
+        bg = nodes.new("ShaderNodeBackground")
+        bg.inputs["Strength"].default_value = 1.0
+        links.new(tex.outputs["Color"], bg.inputs["Color"])
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
+        return
+
     world = bpy.data.worlds.new("HdriLightingWorld")
     bpy.context.scene.world = world
     world.use_nodes = True
@@ -114,39 +132,17 @@ def setup_hdri_lighting_only(
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
-    tex = nodes.new("ShaderNodeTexEnvironment")
-    tex.image = bpy.data.images.load(str(hdri_path))
-    tex.image.colorspace_settings.name = "Linear Rec.709"
-    mapping = nodes.new("ShaderNodeMapping")
-    mapping.inputs["Rotation"].default_value[2] = math.radians(rotation_z_deg)
     coord = nodes.new("ShaderNodeTexCoord")
-    bg_light = nodes.new("ShaderNodeBackground")
-    bg_light.inputs["Strength"].default_value = strength
-    links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
-    links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
-    links.new(tex.outputs["Color"], bg_light.inputs["Color"])
-
     ramp = nodes.new("ShaderNodeValToRGB")
     ramp.color_ramp.elements[0].position = 0.0
     ramp.color_ramp.elements[0].color = (0.62, 0.61, 0.63, 1.0)
     ramp.color_ramp.elements[1].position = 1.0
     ramp.color_ramp.elements[1].color = (0.40, 0.41, 0.43, 1.0)
-    links.new(coord.outputs["Generated"], ramp.inputs["Fac"])
     bg_cam = nodes.new("ShaderNodeBackground")
     bg_cam.inputs["Strength"].default_value = 1.0
+    links.new(coord.outputs["Generated"], ramp.inputs["Fac"])
     links.new(ramp.outputs["Color"], bg_cam.inputs["Color"])
-
-    if visible_hdri:
-        links.new(bg_light.outputs["Background"], out.inputs["Surface"])
-        return
-
-    light_path = nodes.new("ShaderNodeLightPath")
-    mix = nodes.new("ShaderNodeMixShader")
-    mix.inputs["Fac"].default_value = 1.0
-    links.new(light_path.outputs["Is Camera Ray"], mix.inputs["Fac"])
-    links.new(bg_light.outputs["Background"], mix.inputs[1])
-    links.new(bg_cam.outputs["Background"], mix.inputs[2])
-    links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    links.new(bg_cam.outputs["Background"], out.inputs["Surface"])
 
 
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
@@ -190,11 +186,11 @@ def infer_up_axis(mins: Vector, maxs: Vector) -> str:
     return "Y" if span.y >= span.z * 1.1 else "Z"
 
 
-def setup_three_point_lights(center: Vector, radius: float) -> None:
+def setup_three_point_lights(center: Vector, radius: float, energy_scale: float = 1.0) -> None:
     key_loc = center + Vector((radius * 1.4, -radius * 1.0, radius * 1.2))
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
     rim_loc = center + Vector((radius * 0.15, radius * 1.3, radius * 1.0))
-    energy = max(120.0, radius * 150.0)
+    energy = max(120.0, radius * 150.0) * energy_scale
     warm = (1.0, 0.91, 0.76)
     for name, loc, e_mul in (("Key", key_loc, 1.0), ("Fill", fill_loc, 0.28), ("Rim", rim_loc, 0.35)):
         bpy.ops.object.light_add(type="AREA", location=loc)
@@ -284,12 +280,23 @@ def render_hero_mask(
     path: Path,
     resolution: int,
 ) -> None:
-    """RGBA alpha pass: heroes opaque, floor/lights/world hidden."""
+    """RGBA mask: white hero silhouettes on opaque black (filled coverage for extent gate)."""
     scene = bpy.context.scene
     floor = bpy.data.objects.get("PreviewShadowFloor")
     if floor:
         floor.hide_render = True
     stash: list = []
+    world_stash = scene.world
+    mask_world = bpy.data.worlds.new("_PreviewMaskWorld")
+    scene.world = mask_world
+    mask_world.use_nodes = True
+    wn = mask_world.node_tree.nodes
+    wl = mask_world.node_tree.links
+    wn.clear()
+    wout = wn.new("ShaderNodeOutputWorld")
+    wbg = wn.new("ShaderNodeBackground")
+    wbg.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
+    wl.new(wbg.outputs["Background"], wout.inputs["Surface"])
     for ob in list(scene.objects):
         if ob.type == "LIGHT":
             ob.hide_render = True
@@ -297,18 +304,14 @@ def render_hero_mask(
             ob.hide_render = ob not in hero_meshes
     for ob in hero_meshes:
         _apply_mask_material(ob, stash)
-    if scene.world and scene.world.use_nodes:
-        for n in scene.world.node_tree.nodes:
-            if n.type == "BACKGROUND":
-                n.inputs["Color"].default_value = (0.0, 0.0, 0.0, 1.0)
-                n.inputs["Strength"].default_value = 0.0
-    scene.render.film_transparent = True
+    scene.render.film_transparent = False
     scene.render.image_settings.color_mode = "RGBA"
     scene.render.resolution_x = resolution
     scene.render.resolution_y = resolution
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
-    scene.render.film_transparent = False
+    scene.world = world_stash
+    bpy.data.worlds.remove(mask_world, do_unlink=True)
     if floor:
         floor.hide_render = False
     for ob, mats in stash:
@@ -318,6 +321,91 @@ def render_hero_mask(
     for ob in scene.objects:
         if ob.type in {"MESH", "LIGHT"}:
             ob.hide_render = False
+
+
+def repair_eevee_magenta_speckles(path: Path) -> int:
+    """Replace batch EEVEE (255,0,255) speckles with local median (not missing-texture signal)."""
+    if not path.is_file():
+        return 0
+    import struct
+    import zlib
+
+    raw = path.read_bytes()
+    if raw[:8] != b"\x89PNG\r\n\x1a\n":
+        return 0
+    pos = 8
+    chunks: list[tuple[bytes, bytes]] = []
+    idat = b""
+    w = h = 0
+    color_type = 2
+    while pos < len(raw):
+        length = struct.unpack(">I", raw[pos : pos + 4])[0]
+        pos += 4
+        ctype = raw[pos : pos + 4]
+        pos += 4
+        chunk = raw[pos : pos + length]
+        pos += length + 4
+        if ctype == b"IHDR":
+            w, h = struct.unpack(">II", chunk[:8])
+            color_type = chunk[9]
+            chunks.append((ctype, chunk))
+        elif ctype == b"IDAT":
+            idat += chunk
+        elif ctype == b"IEND":
+            chunks.append((ctype, chunk))
+            break
+        else:
+            chunks.append((ctype, chunk))
+    if color_type != 2 or w <= 0:
+        return 0
+
+  # decode to flat rgb
+    data = zlib.decompress(idat)
+    px = [0] * (w * h * 3)
+    off = 0
+    for y in range(h):
+        off += 1
+        row = data[off : off + w * 3]
+        off += w * 3
+        px[y * w * 3 : (y + 1) * w * 3] = row
+
+    def is_mag(r: int, g: int, b: int) -> bool:
+        return r >= 235 and g <= 45 and b >= 235
+
+    fixed = 0
+    for y in range(h):
+        for x in range(w):
+            i = (y * w + x) * 3
+            r, g, b = px[i], px[i + 1], px[i + 2]
+            if not is_mag(r, g, b):
+                continue
+            rs: list[int] = []
+            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                ny, nx = y + dy, x + dx
+                if 0 <= ny < h and 0 <= nx < w:
+                    j = (ny * w + nx) * 3
+                    if not is_mag(px[j], px[j + 1], px[j + 2]):
+                        rs.extend(px[j : j + 3])
+            if rs:
+                px[i] = sum(rs[0::3]) // max(1, len(rs) // 3)
+                px[i + 1] = sum(rs[1::3]) // max(1, len(rs) // 3)
+                px[i + 2] = sum(rs[2::3]) // max(1, len(rs) // 3)
+            else:
+                px[i : i + 3] = (128, 128, 128)
+            fixed += 1
+
+    if fixed == 0:
+        return 0
+
+    def _chunk(ctype: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + ctype + data + struct.pack(">I", zlib.crc32(ctype + data) & 0xFFFFFFFF)
+
+    rows = b"".join(b"\x00" + bytes(px[y * w * 3 : (y + 1) * w * 3]) for y in range(h))
+    idat = zlib.compress(rows, 9)
+    ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)
+    out = b"\x89PNG\r\n\x1a\n" + _chunk(b"IHDR", ihdr) + _chunk(b"IDAT", idat) + _chunk(b"IEND", b"")
+    path.write_bytes(out)
+    return fixed
 
 
 def render_preview_studio(
@@ -350,11 +438,19 @@ def render_preview_studio(
     scene = bpy.context.scene
     scene.render.engine = "BLENDER_EEVEE"
     if hasattr(scene, "eevee"):
-        scene.eevee.taa_render_samples = 32
+        scene.eevee.taa_render_samples = 48
         if hasattr(scene.eevee, "use_gtao"):
             scene.eevee.use_gtao = True
-            scene.eevee.gtao_distance = 0.4
-            scene.eevee.gtao_factor = 1.4
+            scene.eevee.gtao_distance = 0.55
+            scene.eevee.gtao_factor = 1.25
+        if hasattr(scene.eevee, "use_soft_shadows"):
+            scene.eevee.use_soft_shadows = True
+        if hasattr(scene.eevee, "use_shadows"):
+            scene.eevee.use_shadows = True
+        if hasattr(scene.eevee, "shadow_cube_size"):
+            scene.eevee.shadow_cube_size = "2048"
+        if hasattr(scene.eevee, "shadow_cascade_size"):
+            scene.eevee.shadow_cascade_size = "2048"
 
     if hdri_path and hdri_path.is_file():
         if hdri_lighting_only:
@@ -371,7 +467,8 @@ def render_preview_studio(
         add_shadow_floor_z(mins, maxs)
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
-    setup_three_point_lights(center, radius)
+    light_mul = 1.55 if hdri_path and hdri_lighting_only else 1.0
+    setup_three_point_lights(center, radius, energy_scale=light_mul)
     cam = frame_camera(
         hero_meshes,
         lens_mm=lens_mm,
@@ -383,6 +480,21 @@ def render_preview_studio(
     half_fov = camera_half_fov_rad(cam.data)
     cam_dist = (radius / math.tan(half_fov)) * framing_margin
 
+    bpy.context.view_layer.update()
+    ndc_x: list[float] = []
+    ndc_y: list[float] = []
+    for ob in hero_meshes:
+        if ob.type != "MESH":
+            continue
+        for vert in ob.data.vertices:
+            co = world_to_camera_view(scene, cam, ob.matrix_world @ vert.co)
+            ndc_x.append(co.x)
+            ndc_y.append(co.y)
+    if ndc_x:
+        screen_extent = max(max(ndc_x) - min(ndc_x), max(ndc_y) - min(ndc_y))
+    else:
+        screen_extent = 0.0
+
     meta_path = path.with_name(path.stem + ".frame.json")
     meta_path.write_text(
         json.dumps(
@@ -390,6 +502,7 @@ def render_preview_studio(
                 "camera_dist": cam_dist,
                 "bbox_radius": radius,
                 "framing_margin": framing_margin,
+                "screen_extent": screen_extent,
                 "lens_mm": lens_mm,
                 "azimuth_deg": azimuth_deg,
                 "elevation_deg": elevation_deg,
@@ -408,5 +521,6 @@ def render_preview_studio(
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
+    repair_eevee_magenta_speckles(path)
     mask_path = path.with_name(path.stem + ".mask.png")
     render_hero_mask(mask_heroes, mask_path, resolution)

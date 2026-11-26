@@ -21,4 +21,5 @@ if ! command -v "$BLENDER" >/dev/null 2>&1 && [[ ! -x "$BLENDER" ]]; then
 fi
 "$BLENDER" -b --factory-startup -noaudio --python "$ROOT/tools/art/blender/garage-scene-hero-compose.py"
 test -f docs/art/previews/garage-scene-urp-hero.png
+python3 tools/art/check_garage_urp_hero_preview.py
 echo "OK garage URP hero render"
