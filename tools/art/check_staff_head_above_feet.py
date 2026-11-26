@@ -73,7 +73,7 @@ def analyze(asset_id: str) -> tuple[bool, str]:
                     top_skin += 1
                 if y >= bot_third:
                     bot_skin += 1
-            if _is_leg_blue(r, g, b):
+            if _is_leg_blue(r, g, b) and y >= bot_third:
                 leg_ys.append(y)
     if not head_ys or not leg_ys:
         all_ys = [y for y in range(h) for x in range(w) if mp[y * w + x][3] >= 20]
@@ -87,10 +87,17 @@ def analyze(asset_id: str) -> tuple[bool, str]:
         mean_leg = sum(bot_band) / len(bot_band)
         head_ys = top_band
         leg_ys = bot_band
-    else:
-        mean_head = sum(head_ys) / len(head_ys)
-        mean_leg = sum(leg_ys) / len(leg_ys)
-    if mean_head >= mean_leg + 2:
+    all_ys_mask = [y for y in range(h) for x in range(w) if mp[y * w + x][3] >= 20]
+    top_band_m = [y for y in all_ys_mask if y <= top_third]
+    bot_band_m = [y for y in all_ys_mask if y >= bot_third]
+    if top_band_m and bot_band_m:
+        mean_top_m = sum(top_band_m) / len(top_band_m)
+        mean_bot_m = sum(bot_band_m) / len(bot_band_m)
+        if mean_top_m >= mean_bot_m - 1:
+            return False, f"upright_mask top={mean_top_m:.1f} bot={mean_bot_m:.1f}"
+    mean_head = sum(head_ys) / len(head_ys)
+    mean_leg = sum(leg_ys) / len(leg_ys)
+    if head_ys and leg_ys and mean_head >= mean_leg + 2:
         return False, f"head_below_feet mean_head={mean_head:.1f} mean_leg={mean_leg:.1f}"
     if top_skin and top_skin < 45:
         return False, f"head_top={top_skin} need>=45"

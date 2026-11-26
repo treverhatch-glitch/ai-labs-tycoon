@@ -490,8 +490,6 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         glb_path = out_dir / f"{asset_id}.glb"
         export_gltf_selection([staff_export_root, *mesh_obs], glb_path)
         preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-        for ob in mesh_obs:
-            apply_staff_preview_material(ob, asset_id)
         try:
             render_preview(mesh_obs, preview_path, asset_id=asset_id)
         except Exception as exc:  # noqa: BLE001
@@ -697,7 +695,20 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
         elif asset_id.startswith("staff-") and "head" in name:
             assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
         elif asset_id.startswith("staff-") and ("leg" in name or "arm" in name):
-            assign_solid(ob, (0.18, 0.22, 0.38, 1.0), 0.58)
+            trousers = {
+                "staff-founder-idle": (0.28, 0.18, 0.42, 1.0),
+                "staff-gpu-tech-idle": (0.12, 0.18, 0.28, 1.0),
+                "staff-safety-idle": (0.18, 0.22, 0.26, 1.0),
+                "staff-sales-idle": (0.14, 0.18, 0.42, 1.0),
+                "staff-researcher-idle": (0.22, 0.28, 0.48, 1.0),
+                "staff-engineer-work": (0.22, 0.28, 0.32, 1.0),
+                "staff-recruiter-idle": (0.18, 0.12, 0.32, 1.0),
+                "staff-pose-typing": (0.18, 0.28, 0.48, 1.0),
+            }
+            if "leg" in name:
+                assign_solid(ob, trousers.get(asset_id, (0.18, 0.22, 0.38, 1.0)), 0.58)
+            else:
+                assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
         elif asset_id.startswith("staff-") and ("hips" in name or "pants" in name):
             assign_solid(ob, (0.22, 0.26, 0.42, 1.0), 0.62)
         elif asset_id.startswith("staff-") and ("vest" in name or "hivis" in name.lower()):
@@ -714,7 +725,9 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.48, 0.32, 0.18, 1.0), 0.55)
         elif asset_id.startswith("staff-") and "glasses" in name.lower():
             assign_solid(ob, (0.18, 0.18, 0.20, 1.0), 0.22)
-        elif asset_id.startswith("staff-") and ("foot" in name.lower() or "hand" in name.lower()):
+        elif asset_id.startswith("staff-") and "foot" in name.lower():
+            assign_solid(ob, (0.18, 0.20, 0.24, 1.0), 0.42)
+        elif asset_id.startswith("staff-") and "hand" in name.lower():
             assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
         elif asset_id.startswith("staff-") and ("hat" in name or "hardhat" in name or "cap" in name):
             assign_solid(ob, (0.95, 0.72, 0.12, 1.0), 0.42)
