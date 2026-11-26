@@ -679,7 +679,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
         world,
         PREVIEW_HDRI,
         backdrop=grey150,
-        lit_strength=0.16 if presentation_150 else 0.10,
+        lit_strength=0.12 if asset_id == "prop-server-rack" else (0.16 if presentation_150 else 0.10),
     )
     if presentation_150:
         bpy.context.scene.view_settings.view_transform = "Raw"
@@ -689,29 +689,71 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
+    if asset_id == "prop-server-rack":
+        for mat in bpy.data.materials:
+            low = mat.name.lower()
+            if "led" in low:
+                mat.use_backface_culling = False
+            bsdf = mat.node_tree.nodes.get("Principled BSDF") if mat.use_nodes else None
+            if not bsdf:
+                continue
+            if "led_green" in low:
+                col = (0.04, 0.98, 0.28, 1.0)
+                bsdf.inputs["Base Color"].default_value = col
+                bsdf.inputs["Roughness"].default_value = 0.35
+                bsdf.inputs["Metallic"].default_value = 0.0
+                ec = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+                if ec is not None:
+                    ec.default_value = (0.0, 0.0, 0.0, 1.0)
+                es = bsdf.inputs.get("Emission Strength")
+                if es is not None:
+                    es.default_value = 0.0
+            elif "led_blue" in low:
+                col = (0.08, 0.42, 0.98, 1.0)
+                bsdf.inputs["Base Color"].default_value = col
+                bsdf.inputs["Roughness"].default_value = 0.35
+                bsdf.inputs["Metallic"].default_value = 0.0
+                ec = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
+                if ec is not None:
+                    ec.default_value = (0.0, 0.0, 0.0, 1.0)
+                es = bsdf.inputs.get("Emission Strength")
+                if es is not None:
+                    es.default_value = 0.0
+            elif "glass" in low:
+                bsdf.inputs["Alpha"].default_value = 0.25
+                mat.blend_method = "BLEND"
+                mat.show_transparent_back = False
+            elif "bay" in low:
+                bsdf.inputs["Base Color"].default_value = (0.82, 0.86, 0.92, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.25
+            elif "slot" in low:
+                bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
+                bsdf.inputs["Roughness"].default_value = 0.65
 
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    ground_size = span * (1.05 if presentation_150 else 4.0)
-    bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
-    ground = bpy.context.active_object
-    gmat = bpy.data.materials.new("Ground")
-    gmat.use_nodes = True
-    floor_g = grey150
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g, 1)
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
-    ground.data.materials.append(gmat)
+    if asset_id != "prop-server-rack":
+        ground_size = span * (1.05 if presentation_150 else 4.0)
+        bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
+        ground = bpy.context.active_object
+        gmat = bpy.data.materials.new("Ground")
+        gmat.use_nodes = True
+        floor_g = grey150
+        gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g, 1)
+        gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
+        ground.data.materials.append(gmat)
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.86 if presentation_150 else 1.8
+    rack_lit = asset_id == "prop-server-rack"
+    key.data.energy = 1.45 if rack_lit else (2.86 if presentation_150 else 1.8)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 84 if presentation_150 else 55
+    fill.data.energy = 42 if rack_lit else (84 if presentation_150 else 55)
     fill.data.size = span * (0.9 if presentation_150 else 1.4)
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
@@ -758,7 +800,9 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_soft_shadows = True
         if hasattr(ee, "use_shadows"):
             ee.use_shadows = True
-        if presentation_150 and hasattr(ee, "use_bloom"):
+        if asset_id == "prop-desk" and hasattr(ee, "use_bloom"):
+            ee.use_bloom = False
+        if asset_id == "prop-server-rack" and hasattr(ee, "use_bloom"):
             ee.use_bloom = False
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
@@ -935,6 +979,8 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
     if key in _MAT_CACHE:
         return _MAT_CACHE[key]
     mat = bpy.data.materials.new(f"M_prop_rack_{kind}")
+    if kind in ("led_green", "led_blue"):
+        mat.use_backface_culling = False
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
     links = mat.node_tree.links
@@ -959,7 +1005,7 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
                 mul = nodes.new("ShaderNodeMixRGB")
                 mul.blend_type = "MULTIPLY"
                 mul.inputs["Fac"].default_value = 1.0
-                mul.inputs["Color2"].default_value = (0.20, 0.22, 0.26, 1.0)
+                mul.inputs["Color2"].default_value = (0.14, 0.18, 0.28, 1.0)
                 links.new(ctex.outputs["Color"], mul.inputs["Color1"])
                 links.new(mul.outputs["Color"], bsdf.inputs["Base Color"])
             else:
@@ -984,26 +1030,37 @@ def _prop_rack_shared_material(kind: str, tex_dir: Path) -> bpy.types.Material:
         bsdf.inputs["Base Color"].default_value = (0.18, 0.22, 0.28, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.18
         bsdf.inputs["Metallic"].default_value = 0.35
+    elif kind == "bay":
+        bsdf.inputs["Base Color"].default_value = (0.42, 0.46, 0.52, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.32
+        bsdf.inputs["Metallic"].default_value = 0.62
+    elif kind == "bay_light":
+        bsdf.inputs["Base Color"].default_value = (0.62, 0.66, 0.72, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.28
+        bsdf.inputs["Metallic"].default_value = 0.58
+    elif kind == "slot":
+        bsdf.inputs["Base Color"].default_value = (0.02, 0.022, 0.028, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.55
     elif kind == "panel":
         bsdf.inputs["Base Color"].default_value = (0.12, 0.13, 0.16, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.55
         bsdf.inputs["Metallic"].default_value = 0.2
     elif kind == "led_green":
-        bsdf.inputs["Base Color"].default_value = (0.12, 0.82, 0.38, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.05, 1.0, 0.42, 1.0)
         em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em is not None:
-            em.default_value = (0.12, 0.82, 0.38, 1.0)
+            em.default_value = (0.05, 1.0, 0.42, 1.0)
         strength = bsdf.inputs.get("Emission Strength")
         if strength is not None:
-            strength.default_value = 3.5
+            strength.default_value = 32.0
     elif kind == "led_blue":
-        bsdf.inputs["Base Color"].default_value = (0.18, 0.45, 0.92, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.12, 0.52, 1.0, 1.0)
         em = bsdf.inputs.get("Emission Color") or bsdf.inputs.get("Emission")
         if em is not None:
-            em.default_value = (0.18, 0.45, 0.92, 1.0)
+            em.default_value = (0.12, 0.52, 1.0, 1.0)
         strength = bsdf.inputs.get("Emission Strength")
         if strength is not None:
-            strength.default_value = 3.5
+            strength.default_value = 32.0
     else:
         bsdf.inputs["Base Color"].default_value = (0.32, 0.34, 0.38, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.42
@@ -1021,7 +1078,17 @@ def _restyle_rack_slot_by_name(obj: bpy.types.Object, tex_dir: Path) -> None:
         mat_kind = "glass"
     elif "door" in name:
         mat_kind = "body_dark"
-    elif "bay" in name or "body" in name or "feet" in name:
+    elif "bay_slot" in name or "slot" in name:
+        mat_kind = "slot"
+    elif "bay_light" in name:
+        mat_kind = "bay_light"
+    elif "bay" in name:
+        mat_kind = "bay"
+    elif "body" in name or "frame" in name or "corner" in name or "cable" in name or "vent" in name:
+        mat_kind = "body_dark"
+    elif "mesh" in name:
+        mat_kind = "slot"
+    elif "body" in name or "feet" in name:
         mat_kind = "body_dark"
     else:
         mat_kind = "body_dark"

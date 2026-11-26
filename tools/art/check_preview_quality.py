@@ -41,7 +41,15 @@ FIXTURES_MUST_FAIL: tuple[tuple[str, Path, str], ...] = (
         REPO / "tools/art/fixtures/prop-server-rack-dfc65859-regression.png",
         "dfc65859",
     ),
+    (
+        "prop-server-rack",
+        REPO / "tools/art/fixtures/prop-server-rack-0125cd4d-regression.png",
+        "0125cd4d",
+    ),
 )
+MIN_RACK_SUBJECT_LUM_STDDEV = 0.038
+MIN_RACK_LED_PIXELS = 48
+MIN_RACK_H_EDGE_FEATURES = 10
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
@@ -184,6 +192,63 @@ def _hue_deg(r: int, g: int, b: int) -> float:
     return h * 360.0 if s > 0.06 else -1.0
 
 
+def _rack_detail_metrics(
+    pixels: list[tuple[int, int, int]],
+    width: int,
+    height: int,
+    bg: tuple[int, int, int],
+) -> tuple[float, int, int]:
+    """Reject flat brown-box previews: luminance spread, LED pixels, bay edges."""
+    all_lums: list[float] = []
+    led_px = 0
+    xs: list[int] = []
+    ys: list[int] = []
+    x_lo = int(width * 0.26)
+    x_hi = int(width * 0.80)
+    y_lo = int(height * 0.14)
+    y_hi = int(height * 0.90)
+    for y in range(height):
+        for x in range(width):
+            r, g, b = pixels[y * width + x]
+            if _object_pixel(r, g, b, bg):
+                if r > g + 15 and g >= b - 8 and r > 105:
+                    continue
+                all_lums.append((r + g + b) / (3.0 * 255.0))
+            if not (x_lo <= x <= x_hi and y_lo <= y <= y_hi):
+                continue
+            if not _object_pixel(r, g, b, bg):
+                continue
+            xs.append(x)
+            ys.append(y)
+            if g > r + 14 and g > 72 and b < g - 5:
+                led_px += 1
+            elif b > r + 10 and b > 72 and g < b - 4:
+                led_px += 1
+    if len(all_lums) < 80 or len(xs) < 40:
+        return 0.0, led_px, 0
+    mean = sum(all_lums) / len(all_lums)
+    std = math.sqrt(sum((v - mean) ** 2 for v in all_lums) / len(all_lums))
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    edge_rows = 0
+    step = max(1, (y1 - y0) // 18)
+    for y in range(y0, y1, step):
+        prev: float | None = None
+        jumps = 0
+        for x in range(x0, x1):
+            r, g, b = pixels[y * width + x]
+            if not _object_pixel(r, g, b, bg):
+                prev = None
+                continue
+            lum = (r + g + b) / (3.0 * 255.0)
+            if prev is not None and abs(lum - prev) > 0.075:
+                jumps += 1
+            prev = lum
+        if jumps >= 2:
+            edge_rows += 1
+    return std, led_px, edge_rows
+
+
 def _backdrop_metrics(
     pixels: list[tuple[int, int, int]],
     width: int,
@@ -219,6 +284,21 @@ def _backdrop_metrics(
     return bad, grid_max
 
 
+def _frame_pixel(
+    r: int,
+    g: int,
+    b: int,
+    bg: tuple[int, int, int],
+    *,
+    asset_id: str | None,
+) -> bool:
+    if asset_id == "prop-desk":
+        return _is_subject(r, g, b, bg)
+    if asset_id == "prop-server-rack":
+        return _object_pixel(r, g, b, bg)
+    return _object_pixel(r, g, b, bg)
+
+
 def _framing_metrics(
     width: int,
     height: int,
@@ -250,11 +330,7 @@ def _framing_metrics(
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[y * width + x]
-            if (
-                _is_subject(r, g, b, bg)
-                if asset_id in ("prop-desk", "prop-server-rack")
-                else _object_pixel(r, g, b, bg)
-            ):
+            if _frame_pixel(r, g, b, bg, asset_id=asset_id):
                 subj_ys.append(y)
                 break
     sil_frac = (max(subj_ys) - min(subj_ys) + 1) / height if subj_ys else 0.0
@@ -263,8 +339,7 @@ def _framing_metrics(
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[y * width + x]
-            subj = _is_subject(r, g, b, bg)
-            if subj:
+            if _frame_pixel(r, g, b, bg, asset_id=asset_id):
                 xs.append(x)
                 ys2.append(y)
     if xs:
@@ -345,6 +420,14 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
             corner_rgb_max_delta = max(corner_rgb_max_delta, abs(ch - BACKDROP_RGB))
     backdrop_band_bad, grid_nine_delta = _backdrop_metrics(pixels, width, height, bg)
     desk_extra: dict[str, float] = {}
+    rack_extra: dict[str, float] = {}
+    if asset_id == "prop-server-rack":
+        r_std, led_n, edge_n = _rack_detail_metrics(pixels, width, height, bg)
+        rack_extra = {
+            "rack_subject_lum_stddev": r_std,
+            "rack_led_pixel_count": float(led_n),
+            "rack_h_edge_features": float(edge_n),
+        }
     if asset_id == "prop-desk":
         subj_sats_sorted = sorted(subj_sat)
         med_sat = (
@@ -528,6 +611,7 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "backdrop_band_bad_px": float(backdrop_band_bad),
         "backdrop_grid_nine_delta": grid_nine_delta,
         **desk_extra,
+        **rack_extra,
     }
 
 
@@ -574,6 +658,19 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
                 reasons.append(
                     f"backdrop_grid_nine_delta={s.get('backdrop_grid_nine_delta', 0):.1f} (max {BACKDROP_CHANNEL_TOL})"
                 )
+    if asset_id == "prop-server-rack":
+        if s.get("rack_subject_lum_stddev", 0.0) < MIN_RACK_SUBJECT_LUM_STDDEV:
+            reasons.append(
+                f"rack_subject_lum_stddev={s.get('rack_subject_lum_stddev', 0):.3f} (min {MIN_RACK_SUBJECT_LUM_STDDEV})"
+            )
+        if s.get("rack_led_pixel_count", 0.0) < MIN_RACK_LED_PIXELS:
+            reasons.append(
+                f"rack_led_pixel_count={int(s.get('rack_led_pixel_count', 0))} (min {MIN_RACK_LED_PIXELS})"
+            )
+        if s.get("rack_h_edge_features", 0.0) < MIN_RACK_H_EDGE_FEATURES:
+            reasons.append(
+                f"rack_h_edge_features={int(s.get('rack_h_edge_features', 0))} (min {MIN_RACK_H_EDGE_FEATURES})"
+            )
     if asset_id == "prop-desk":
         if s.get("subject_median_sat", 1.0) < 0.08:
             reasons.append(f"subject_median_sat={s.get('subject_median_sat', 0):.3f}")

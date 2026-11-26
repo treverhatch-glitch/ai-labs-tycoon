@@ -1,7 +1,7 @@
 {
   "assetId": "prop-server-rack",
   "scope": "presentation",
-  "sourceCc0": "procedural: dark bevelled cabinet (Metal048A tint); Kenney GLB accents: screen-panel-flat.glb (glass door strip only); ambientCG Metal048A_1K-JPG",
+  "sourceCc0": "procedural: charcoal cabinet + mesh door + 8 rack units + side vents + LEDs; Kenney screen-panel-flat.glb (door glass); ambientCG Metal048A_1K-JPG",
   "pipeline": "kenney-factory-v1",
   "urpAlbedoPath": "Assets/Art/cc0/ambientcg/Metal048A_1K-JPG/Metal048A_1K-JPG_Color.jpg",
   "glb": "unity/Assets/Art/BlenderBaked/prop-server-rack/mesh_prop-server-rack.glb",
@@ -18,5 +18,6 @@
   "kenneyGlbs": [
     "screen-panel-flat.glb"
   ],
-  "pipelineNote": "procedural-cabinet-v2"
+  "rackUnits": 8,
+  "pipelineNote": "procedural-cabinet-v3"
 }

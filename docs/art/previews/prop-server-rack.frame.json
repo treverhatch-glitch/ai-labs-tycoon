@@ -1,22 +1,25 @@
 {
   "assetId": "prop-server-rack",
   "preview": "docs/art/previews/prop-server-rack.png",
-  "glb_sha256": "932a7028fde1f9a352e2abcdffb3c469913f9c0f97cbe8d1a1f94cb5283199d7",
+  "glb_sha256": "20efef4d6e2795e5f617c5d3a093b780e8bbaa6025745b62c5c67a7c6f285215",
   "resolution": 1024,
   "quality": {
-    "stddev": 45.68619987148507,
-    "coverage": 1.0,
-    "mean_lum": 89.02513966480447,
-    "mean_sat": 0.25307262569832406,
+    "stddev": 52.77528114041984,
+    "coverage": 0.9127025604248047,
+    "mean_lum": 95.38898916967509,
+    "mean_sat": 0.2721880087775182,
     "border_touch": 0.0,
-    "silhouette_frac": 0.732421875,
-    "subject_bbox_frac": 0.732421875,
-    "min_margin_frac": 0.1337890625,
-    "flat_pixel_frac": 0.6814069747924805,
-    "ground_lum": 136.5310594512195,
+    "silhouette_frac": 0.734375,
+    "subject_bbox_frac": 0.734375,
+    "min_margin_frac": 0.1318359375,
+    "flat_pixel_frac": 0.7588024139404297,
+    "ground_lum": 149.77885226117886,
     "corner_lum_mean": 150.0,
     "corner_rgb_max_delta": 0.0,
-    "backdrop_band_bad_px": 68.0,
-    "backdrop_grid_nine_delta": 1.0
+    "backdrop_band_bad_px": 0.0,
+    "backdrop_grid_nine_delta": 1.0,
+    "rack_subject_lum_stddev": 0.0394295690098455,
+    "rack_led_pixel_count": 375.0,
+    "rack_h_edge_features": 16.0
   }
 }
