@@ -1,0 +1,8 @@
+{
+  "assetId": "compute-pc-tower",
+  "preview": "docs/art/previews/compute-pc-tower.png",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-pc-tower/compute-pc-tower.glb",
+  "glb_sha256": "6600f1afccdffd90a00a2018b985f6dc849e0079c835844a8950c27460b51048",
+  "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
+  "resolution": 1024
+}

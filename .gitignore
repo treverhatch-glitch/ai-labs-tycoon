@@ -48,3 +48,12 @@ id_ed25519*
 # OS
 .DS_Store
 Thumbs.db
+
+# Art tooling
+tools/art/**/__pycache__/
+tools/art/**/*.pyc
+tools/art/cc0/incoming/archives/
+tools/art/cc0/incoming/kenney-*/
+tools/art/cc0/incoming/quaternius-*/
+tools/art/cc0/incoming/polyhaven/
+tools/art/cc0/incoming/ambientcg/

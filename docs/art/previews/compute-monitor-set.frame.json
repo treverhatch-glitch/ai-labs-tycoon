@@ -1,0 +1,8 @@
+{
+  "assetId": "compute-monitor-set",
+  "preview": "docs/art/previews/compute-monitor-set.png",
+  "glb": "unity/Assets/Art/Cc0/compute-kit/compute-monitor-set/compute-monitor-set.glb",
+  "glb_sha256": "a416bd843e253b12ab1fec8498f385017545ad921d4075cc24d193d1cdc88511",
+  "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
+  "resolution": 1024
+}

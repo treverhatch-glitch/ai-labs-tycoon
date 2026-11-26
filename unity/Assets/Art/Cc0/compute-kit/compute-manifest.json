@@ -1,0 +1,58 @@
+{
+  "lane": "compute-hardware-cc0",
+  "fidelity": "cc0-restyle-bake",
+  "assets": [
+    {
+      "id": "compute-monitor-set",
+      "path": "Assets/Art/Cc0/compute-kit/compute-monitor-set/compute-monitor-set.glb",
+      "textures": {
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-monitor-set/textures/compute-monitor-set_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-monitor-set/textures/compute-monitor-set_ao.png"
+      },
+      "preview": "docs/art/previews/compute-monitor-set.png",
+      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
+      "sources": [
+        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerScreen.obj",
+        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerKeyboard.obj",
+        "tools/art/cc0/incoming/kenney-furniture-kit/Models/computerMouse.obj"
+      ],
+      "generator": "tools/art/cc0/blender/compute_monitor_set.py"
+    },
+    {
+      "id": "compute-pc-tower",
+      "path": "Assets/Art/Cc0/compute-kit/compute-pc-tower/compute-pc-tower.glb",
+      "textures": {
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-pc-tower/textures/compute-pc-tower_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-pc-tower/textures/compute-pc-tower_ao.png"
+      },
+      "preview": "docs/art/previews/compute-pc-tower.png",
+      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
+      "sources": [
+        "tools/art/cc0/incoming/quaternius-scifi-megakit/Modular SciFi MegaKit[Standard]/OBJ/Props/Prop_Computer.obj"
+      ],
+      "generator": "tools/art/cc0/blender/compute_pc_tower.py"
+    },
+    {
+      "id": "compute-server-rack",
+      "path": "Assets/Art/Cc0/compute-kit/compute-server-rack/compute-server-rack.glb",
+      "textures": {
+        "albedo": "Assets/Art/Cc0/compute-kit/compute-server-rack/textures/compute-server-rack_albedo.png",
+        "ao": "Assets/Art/Cc0/compute-kit/compute-server-rack/textures/compute-server-rack_ao.png"
+      },
+      "preview": "docs/art/previews/compute-server-rack.png",
+      "license": "CC0-1.0 (derivative; see docs/art/LICENSES.md)",
+      "sources": [
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/structure-tall.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/structure-wall.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/structure-wall.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/machine.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/machine-window.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/machine-window.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/screen-panel-wide.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/screen-panel-small.glb",
+        "tools/art/cc0/incoming/kenney-factory-kit/Models/GLB format/screen-panel-small.glb"
+      ],
+      "generator": "tools/art/cc0/blender/compute_server_rack.py"
+    }
+  ]
+}
