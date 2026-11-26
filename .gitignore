@@ -52,3 +52,6 @@ Thumbs.db
 # Python bytecode (never commit)
 __pycache__/
 *.pyc
+*.py[cod]
+tools/art/**/__pycache__/
+tools/art/**/*.pyc

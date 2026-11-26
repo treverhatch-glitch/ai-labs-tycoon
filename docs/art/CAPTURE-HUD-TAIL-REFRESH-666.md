@@ -1,0 +1,3 @@
+# Capture HUD tail refresh (batch 666)
+
+Batch **666** · [CAPTURE-HUD-TAIL-INDEX.md](CAPTURE-HUD-TAIL-INDEX.md); links [A11Y-CHROME-INDEX-REFRESH-654.md](A11Y-CHROME-INDEX-REFRESH-654.md).
