@@ -534,8 +534,8 @@ def _add_contact_shadow_floor(axis, mins, maxs, mid_grey, scene) -> None:
         )
     else:
         bpy.ops.mesh.primitive_plane_add(
-            size=span * 1.05,
-            location=(center.x, center.y, mins.z - 0.004),
+            size=span * 1.35,
+            location=(center.x, center.y, mins.z - 0.006),
         )
     floor = bpy.context.active_object
     floor.name = "PreviewShadowFloor"
@@ -543,7 +543,11 @@ def _add_contact_shadow_floor(axis, mins, maxs, mid_grey, scene) -> None:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = MID_GREY_RGBA if mid_grey else (0.12, 0.12, 0.13, 1.0)
+        contact = _contact_shadow_only()
+        if contact or not mid_grey:
+            bsdf.inputs["Base Color"].default_value = (0.04, 0.04, 0.045, 1.0)
+        else:
+            bsdf.inputs["Base Color"].default_value = MID_GREY_RGBA
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     floor.hide_render = False

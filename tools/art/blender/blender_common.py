@@ -543,6 +543,38 @@ def mesh_world_min_on_axis(ob: bpy.types.Object, axis: str = "y") -> float:
     return min((ob.matrix_world @ v.co)[idx] for v in ob.data.vertices)
 
 
+def mesh_world_max_on_axis(ob: bpy.types.Object, axis: str = "y") -> float:
+    idx = {"x": 0, "y": 1, "z": 2}[axis.lower()]
+    return max((ob.matrix_world @ v.co)[idx] for v in ob.data.vertices)
+
+
+def _assign_sign_post_preview_slots(
+    posts: bpy.types.Object,
+    wood_mat: bpy.types.Material,
+    tuft_mat: bpy.types.Material,
+    shadow_mat: bpy.types.Material,
+) -> None:
+    posts.data.materials.clear()
+    posts.data.materials.append(wood_mat)
+    posts.data.materials.append(tuft_mat)
+    posts.data.materials.append(shadow_mat)
+    z0 = mesh_world_min_on_axis(posts, "z")
+    z1 = mesh_world_max_on_axis(posts, "z")
+    span = max(1e-6, z1 - z0)
+    for poly in posts.data.polygons:
+        co = Vector((0.0, 0.0, 0.0))
+        for vi in poly.vertices:
+            co += posts.matrix_world @ posts.data.vertices[vi].co
+        co /= len(poly.vertices)
+        rel = (co.z - z0) / span
+        if rel < 0.05:
+            poly.material_index = 2
+        elif rel < 0.15:
+            poly.material_index = 1
+        else:
+            poly.material_index = 0
+
+
 def rotate_script_y_to_export_up(ob: bpy.types.Object) -> None:
     """Authoring uses Blender +Y as vertical; glTF/Unity need +Y after Blender Z-up export."""
     bpy.ops.object.select_all(action="DESELECT")
@@ -1415,9 +1447,6 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
             _rotate_sign_face_for_front_camera(meshes)
             apply_sign_preview_materials(meshes, tex_dir, studio_emit_board=False)
-            for ob in meshes:
-                if ob.type == "MESH":
-                    ob.location.z -= 0.14
             bpy.context.view_layer.update()
             orient_sign_preview_for_camera(meshes, face_dir=1.0)
             os.environ["PREVIEW_AZIMUTH_DEG"] = azimuth
@@ -1430,13 +1459,13 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             PREVIEW_ROOT / "garage-land-for-sale-sign-front.png",
             azimuth="0",
             elevation="15",
-            margin="0.68",
+            margin="0.60",
         )
         _render_sign_pass(
             PREVIEW_ROOT / "garage-land-for-sale-sign-hero.png",
             azimuth="35",
             elevation="15",
-            margin="0.68",
+            margin="0.64",
         )
         preview_path = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
         frame_stub = PREVIEW_ROOT / "garage-land-for-sale-sign.frame.json"
@@ -2698,8 +2727,26 @@ def apply_sign_preview_materials(
     post_mat.use_nodes = True
     bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.46, 0.33, 0.22, 1.0)
+        bsdf.inputs["Base Color"].default_value = (0.52, 0.36, 0.16, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.58
+    tuft_mat = bpy.data.materials.new("SignTuftGreenPreview")
+    tuft_mat.use_nodes = True
+    nt_t = tuft_mat.node_tree
+    nt_t.nodes.clear()
+    out_t = nt_t.nodes.new("ShaderNodeOutputMaterial")
+    emit_t = nt_t.nodes.new("ShaderNodeEmission")
+    emit_t.inputs["Color"].default_value = (0.28, 0.52, 0.18, 1.0)
+    emit_t.inputs["Strength"].default_value = 1.05
+    nt_t.links.new(emit_t.outputs["Emission"], out_t.inputs["Surface"])
+    shadow_mat = bpy.data.materials.new("SignContactShadowPreview")
+    shadow_mat.use_nodes = True
+    nt_s = shadow_mat.node_tree
+    nt_s.nodes.clear()
+    out_s = nt_s.nodes.new("ShaderNodeOutputMaterial")
+    emit_s = nt_s.nodes.new("ShaderNodeEmission")
+    emit_s.inputs["Color"].default_value = (0.08, 0.08, 0.09, 1.0)
+    emit_s.inputs["Strength"].default_value = 1.0
+    nt_s.links.new(emit_s.outputs["Emission"], out_s.inputs["Surface"])
     for ob in mesh_obs:
         if ob.name == "letters":
             ob.data.materials.clear()
@@ -2722,8 +2769,7 @@ def apply_sign_preview_materials(
                 links.new(emit.outputs["Emission"], out.inputs["Surface"])
                 ob.data.materials.append(flat)
         elif ob.name == "posts":
-            ob.data.materials.clear()
-            ob.data.materials.append(post_mat)
+            _assign_sign_post_preview_slots(ob, post_mat, tuft_mat, shadow_mat)
 
 
 def render_preview(ob: bpy.types.Object | list[bpy.types.Object], path: Path) -> None:

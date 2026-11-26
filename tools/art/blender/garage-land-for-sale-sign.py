@@ -139,7 +139,29 @@ def _tuft() -> bc.bpy.types.Object:
     return ob
 
 
-def _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft) -> None:
+def _span_rail(board_z: float) -> bc.bpy.types.Object:
+    z = board_z - BOARD_Z * 0.42
+    ob = bc.add_cube(
+        "span_rail",
+        (POST_SPAN + POST_W * 0.06, POST_W * 0.36, POST_W * 0.26),
+        (0.0, 0.0, z),
+    )
+    bc.assign_solid(ob, (0.44, 0.31, 0.21, 1.0), 0.62)
+    bc.bevel_object(ob, width=BEVEL_W * 0.55, segments=2)
+    return ob
+
+
+def _contact_blot() -> bc.bpy.types.Object:
+    ob = bc.add_cube(
+        "contact_blot",
+        (POST_SPAN + POST_W + 0.10, POST_W + 0.42, 0.012),
+        (0.0, -POST_W * 0.06, 0.006),
+    )
+    bc.assign_solid(ob, (0.06, 0.06, 0.065, 1.0), 0.98)
+    return ob
+
+
+def _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft, span_rail) -> None:
     half = POST_SPAN * 0.5
     post_l.location = (-half, 0.0, POST_H * 0.5)
     post_r.location = (half, 0.0, POST_H * 0.5)
@@ -147,7 +169,8 @@ def _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft) -> None:
     board.location = (0.0, 0.0, board_z)
     bracket_l.location = (-half, 0.0, board_z - BOARD_Z * 0.36)
     bracket_r.location = (half, 0.0, board_z - BOARD_Z * 0.36)
-    tuft.location = (0.0, 0.0, 0.06)
+    tuft.location = (0.0, 0.0, 0.05)
+    span_rail.location = (0.0, 0.0, board_z - BOARD_Z * 0.42)
     z_pairs = (board_z + BOARD_Z * 0.08, board_z - BOARD_Z * 0.12)
     for i, bolt in enumerate(bolts):
         side = -half if i < 2 else half
@@ -166,14 +189,18 @@ def main():
     bracket_r = _bracket("bracket_r")
     bolts = [_bolt(0.0, f"bolt_{i}") for i in range(4)]
     tuft = _tuft()
+    contact_blot = _contact_blot()
     foot_l = _footing(-POST_SPAN * 0.5, "foot_l")
     foot_r = _footing(POST_SPAN * 0.5, "foot_r")
-    _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft)
+    board_z = POST_H * 0.72
+    span_rail = _span_rail(board_z)
+    _layout(post_l, post_r, board, bracket_l, bracket_r, bolts, tuft, span_rail)
     bpy = bc.bpy
     bpy.ops.object.select_all(action="DESELECT")
     post_l.select_set(True)
     post_r.select_set(True)
     tuft.select_set(True)
+    contact_blot.select_set(True)
     foot_l.select_set(True)
     foot_r.select_set(True)
     bpy.context.view_layer.objects.active = post_l
@@ -190,7 +217,7 @@ def main():
         text_size=0.10,
     )
     letters = bc.bpy.context.scene.objects["letters"]
-    parts = [ground, board, letters, bracket_l, bracket_r, *bolts]
+    parts = [ground, board, letters, bracket_l, bracket_r, span_rail, *bolts]
     if BOARD_X < POST_SPAN - 1e-6:
         raise RuntimeError(f"board width {BOARD_X} < post span {POST_SPAN}")
     bc.assert_sign_mesh_assembly_connected(parts)
@@ -200,7 +227,20 @@ def main():
         "garage-kit",
         "CC0-1.0 (procedural board + Blender bake; ambientCG Wood051 ref)",
         parts,
-        ["PostL", "PostR", "board", "letters", "bracket_l", "bracket_r", "bolt_0", "bolt_1", "bolt_2", "bolt_3"],
+        [
+            "PostL",
+            "PostR",
+            "board",
+            "letters",
+            "bracket_l",
+            "bracket_r",
+            "span_rail",
+            "contact_blot",
+            "bolt_0",
+            "bolt_1",
+            "bolt_2",
+            "bolt_3",
+        ],
         cc0_source=CC0_SOURCE,
     )
     write_sign_albedo(albedo)

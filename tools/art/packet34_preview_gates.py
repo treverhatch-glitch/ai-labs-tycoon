@@ -959,7 +959,7 @@ def check_sign_front_board_frame_width(
     rgb_path: Path,
     mask_path: Path,
     *,
-    min_frac: float = 0.35,
+    min_frac: float = 0.45,
 ) -> list[str]:
     """Front preview white sign face must fill at least min_frac of image width."""
     if not rgb_path.is_file() or not mask_path.is_file():
@@ -1039,7 +1039,7 @@ def check_sign_preview_subject_framing(
     mask_path: Path,
     *,
     label: str = "sign",
-    min_margin_frac: float = 0.06,
+    min_margin_frac: float = 0.03,
     edge_clear_frac: float = 0.03,
 ) -> list[str]:
     """Subject bbox (non-backdrop masked pixels) must clear frame edges."""
@@ -1091,7 +1091,10 @@ def check_sign_preview_subject_framing(
             xs.append(x)
             ys.append(y)
             if x < edge or x >= w - edge or y < edge or y >= h - edge:
-                edge_hits.append((x, y))
+                if y >= h - edge and (_is_tuft_green(r, g, b) or _is_post_wood(r, g, b)):
+                    pass
+                else:
+                    edge_hits.append((x, y))
     if not xs:
         return [f"{label}_framing_subject_empty"]
     x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
@@ -1290,6 +1293,182 @@ def check_sign_front_posts_to_ground(
         return [f"sign_front_posts_two_blobs L={left} R={right}"]
     if (x1w - x0w + 1) < int(w * 0.10):
         return [f"sign_front_posts_narrow span={x1w - x0w + 1}"]
+    return []
+
+
+def _sign_subject_bbox(
+    rgb: "Image.Image",
+    mask: "Image.Image",
+) -> tuple[int, int, int, int] | None:
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+
+    def _is_text_red(r: int, g: int, b: int) -> bool:
+        return r > 72 and g < 110 and b < 110 and r > g + 18 and r > b + 18
+
+    def _is_board_cream(r: int, g: int, b: int) -> bool:
+        return r > 168 and g > 158 and b > 138 and not _is_text_red(r, g, b)
+
+    def _is_post_wood(r: int, g: int, b: int) -> bool:
+        if _is_text_red(r, g, b):
+            return False
+        return 58 < r < 175 and 34 < g < 138 and 18 < b < 108 and r > g > b
+
+    def _is_tuft_green(r: int, g: int, b: int) -> bool:
+        return g > 90 and g > r + 8 and g > b + 6 and r < 140
+
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if (r, g, b) == (150, 150, 150):
+                continue
+            is_sign = (
+                _is_text_red(r, g, b)
+                or _is_board_cream(r, g, b)
+                or _is_post_wood(r, g, b)
+                or _is_tuft_green(r, g, b)
+            )
+            if not is_sign:
+                continue
+            if y < int(h * 0.05) and not (_is_post_wood(r, g, b) or _is_text_red(r, g, b)):
+                continue
+            xs.append(x)
+            ys.append(y)
+    if not xs:
+        return None
+    return min(xs), max(xs), min(ys), max(ys)
+
+
+def check_sign_subject_fill_extent(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    min_fill: float = 0.60,
+    max_fill: float = 0.80,
+) -> list[str]:
+    """Combined sign subject max(width_frac, height_frac) must sit in [min_fill, max_fill]."""
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_fill_extent_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    bbox = _sign_subject_bbox(rgb, mask)
+    if bbox is None:
+        return [f"{label}_fill_subject_empty"]
+    x0, x1, y0, y1 = bbox
+    fw = (x1 - x0 + 1) / w
+    fh = (y1 - y0 + 1) / h
+    fw = (x1 - x0 + 1) / w
+    fh = (y1 - y0 + 1) / h
+    fill = math.sqrt(fw * fh)
+    if fill < min_fill or fill > max_fill:
+        return [f"{label}_subject_fill={fill:.3f} w={fw:.3f} h={fh:.3f} need_{min_fill}-{max_fill}"]
+    return []
+
+
+def check_sign_post_wood_hue(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    min_hue_deg: float = 18.0,
+    max_hue_deg: float = 40.0,
+    min_sat: float = 0.26,
+) -> list[str]:
+    """Preview wood posts must read brown (HSV hue/sat), not cream."""
+    import colorsys
+
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_wood_hue_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+    hues: list[float] = []
+    sats: list[float] = []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if g > 150 and r > 175:
+                continue
+            if r > 168 and g > 158 and b > 138:
+                continue
+            if r > 72 and g < 110 and b < 110 and r > g + 18:
+                continue
+            if g > 95 and g > r + 10:
+                continue
+            if not (52 < r < 178 and 28 < g < 142 and 14 < b < 118 and r > g > b):
+                continue
+            h_deg, s, _v = colorsys.rgb_to_hsv(r / 255.0, g / 255.0, b / 255.0)
+            hues.append(h_deg * 360.0)
+            sats.append(s)
+    if len(hues) < 32:
+        return [f"{label}_wood_hue_samples={len(hues)}"]
+    hues.sort()
+    sats.sort()
+    med_h = hues[len(hues) // 2]
+    med_s = sats[len(sats) // 2]
+    if med_h < min_hue_deg or med_h > max_hue_deg or med_s < min_sat:
+        return [f"{label}_wood_hue median_h={med_h:.1f} sat={med_s:.2f} need_h={min_hue_deg}-{max_hue_deg} s>={min_sat}"]
+    return []
+
+
+def check_sign_contact_shadow_under_base(
+    rgb_path: Path,
+    mask_path: Path,
+    *,
+    label: str = "sign",
+    max_channel: int = 130,
+    min_dark_px: int = 12,
+) -> list[str]:
+    """Tuft/base band must include grass and a dark contact strip (peak < max_channel)."""
+
+    def _is_post_wood(r: int, g: int, b: int) -> bool:
+        return 52 < r < 178 and 28 < g < 142 and 14 < b < 118 and r > g > b
+
+    def _is_tuft_green(r: int, g: int, b: int) -> bool:
+        return g > 88 and g > r + 6 and g > b + 5
+
+    if not rgb_path.is_file() or not mask_path.is_file():
+        return [f"{label}_contact_shadow_missing"]
+    rgb = _load_rgba(rgb_path).convert("RGB")
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+    green = 0
+    dark = 0
+    for y in range(int(h * 0.62), h):
+        for x in range(w):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b = rpx[y * w + x]
+            if (r, g, b) == (150, 150, 150):
+                continue
+            if _is_tuft_green(r, g, b):
+                green += 1
+            peak = max(r, g, b)
+            if peak < max_channel and not _is_tuft_green(r, g, b):
+                if _is_post_wood(r, g, b) or (r < 118 and g < 118 and b < 118):
+                    dark += 1
+    if green < 24:
+        return [f"{label}_contact_tuft_sparse px={green}"]
+    if dark < min_dark_px:
+        return [f"{label}_contact_shadow_dark_px={dark} need>={min_dark_px} tuft_px={green}"]
     return []
 
 

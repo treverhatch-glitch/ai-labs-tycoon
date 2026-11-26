@@ -22,6 +22,9 @@ from packet34_preview_gates import (  # noqa: E402
     check_sign_text_inside_board_mask,
     check_sign_text_template_orientation,
     check_sign_front_posts_to_ground,
+    check_sign_contact_shadow_under_base,
+    check_sign_post_wood_hue,
+    check_sign_subject_fill_extent,
 )
 
 FIXTURES = (
@@ -30,6 +33,7 @@ FIXTURES = (
     ("419f4309", REPO / "tools/art/fixtures/preview_regression/sign-419f4309"),
     ("e7d53735", REPO / "tools/art/fixtures/preview_regression/sign-e7d53735"),
     ("dd158f9e", REPO / "tools/art/fixtures/preview_regression/sign-dd158f9e"),
+    ("55d06577", REPO / "tools/art/fixtures/preview_regression/sign-55d06577"),
 )
 
 
@@ -53,6 +57,9 @@ def _check_sign_pair(sha: str, root: Path, stem: str, label: str) -> int:
     errs.extend(check_sign_preview_subject_framing(rgb, mask, label=label))
     errs.extend(check_sign_text_inside_board_mask(rgb, mask, label=label))
     errs.extend(check_sign_text_board_wcag_contrast(rgb, mask, label=label))
+    errs.extend(check_sign_post_wood_hue(rgb, mask, label=label))
+    errs.extend(check_sign_contact_shadow_under_base(rgb, mask, label=label))
+    errs.extend(check_sign_subject_fill_extent(rgb, mask, label=label))
     if "hero" in stem or stem == "for-sale-sign":
         errs.extend(check_sign_for_sale_contrast(rgb, mask))
         errs.extend(check_sign_preview_board_text(rgb, mask, label="sign_hero"))
@@ -92,7 +99,7 @@ def main() -> int:
         if not root.is_dir():
             print(f"FAIL regression missing fixture dir {root}")
             return 1
-        if sha in ("419f4309", "e7d53735", "dd158f9e"):
+        if sha in ("419f4309", "e7d53735", "dd158f9e", "55d06577"):
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-front", "sign_front")
             rc |= _check_sign_pair(sha, root, "garage-land-for-sale-sign-hero", "sign_hero")
             if sha == "419f4309":

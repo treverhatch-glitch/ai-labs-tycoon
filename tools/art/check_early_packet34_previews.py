@@ -19,7 +19,10 @@ from packet34_preview_gates import (  # noqa: E402
     check_sign_front_board_frame_width,
     check_sign_front_ocr_words,
     check_sign_front_posts_to_ground,
+    check_sign_contact_shadow_under_base,
+    check_sign_post_wood_hue,
     check_sign_preview_subject_framing,
+    check_sign_subject_fill_extent,
     check_sign_preview_yaw,
     check_sign_text_board_wcag_contrast,
     check_sign_text_inside_board_mask,
@@ -132,6 +135,15 @@ def check_env_preview(asset_id: str) -> int:
         for err in check_sign_front_posts_to_ground(front_rgb, front_mask):
             print(f"FAIL {asset_id} {err}")
             rc = 1
+        for err in check_sign_post_wood_hue(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_contact_shadow_under_base(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        for err in check_sign_subject_fill_extent(front_rgb, front_mask, label="sign_front"):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
     if asset_id == "garage-lot-curb":
         for err in check_curb_preview_concrete(rgb, mask):
             print(f"FAIL {asset_id} {err}")
@@ -186,6 +198,15 @@ def main() -> int:
             print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         for err in check_sign_text_board_wcag_contrast(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_post_wood_hue(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_contact_shadow_under_base(hero_rgb, hero_mask, label="sign_hero"):
+            print(f"FAIL garage-land-for-sale-sign-hero {err}")
+            hero_rc = 1
+        for err in check_sign_subject_fill_extent(hero_rgb, hero_mask, label="sign_hero"):
             print(f"FAIL garage-land-for-sale-sign-hero {err}")
             hero_rc = 1
         if hero_rc == 0:
