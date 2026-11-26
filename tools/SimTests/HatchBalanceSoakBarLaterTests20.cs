@@ -7,7 +7,7 @@ using Xunit;
 
 namespace AiLabs.SimTests;
 
-/// <summary>Q14906–14975: batch 321 balance soak data bar (schema 29).</summary>
+/// <summary>Q14906–14975: batch 321 balance soak data bar (CurrentSchema).</summary>
 public class HatchBalanceSoakBarLaterTests20
 {
     [Fact] public void Q14906_soak20_4826() { GameConfig c = TestData.Config(); var presets = BalanceSoak.DefaultPresets(c); Assert.True(presets.Length >= 3); }
