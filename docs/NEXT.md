@@ -489,9 +489,11 @@ Needs the owner's PC ([SETUP-PC.md](SETUP-PC.md)).
 
 Agents land **one gate at a time**; **`rules` must be success on the exact PR head** before `commit-tree` to `main` (~3m between `main` moves; noreply, no `Co-authored-by`, no force-push).
 
-1. **Graphics gate** — PR **#83** (`cursor/graphics-main-gate-39c0`, batches 289–326 onto `main` @ schema 169). **In flight** until rules green; then merge and close superseded graphics PRs with comment.
-2. **Later rules stack** — `cursor/later-rules-stack2-main-39c0` after graphics; fold onto landed `main`, rules on exact head, merge.
-3. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
+1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
+2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
+3. **Graphics pipeline follow-on** — fold `cursor/graphics-pipeline-5032` onto `main` in a **new gate PR** (unity/docs-art/tools-art overlay; coordinator GO). See agent store `graphics-gate-pr-plan-post-84.md`.
+4. **Stack2 packet 2** — batches **358–365** on `later-rules-stack2` after refold on **`03bd9e73`** (rivals lane).
+5. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 
 ## Studio and CI
 
