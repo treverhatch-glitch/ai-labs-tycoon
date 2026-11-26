@@ -1,7 +1,35 @@
 #!/usr/bin/env bash
+# Before any push: run this script (or push-ff-only.sh). Force-push is banned outright.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+
+prepusher_require_ff_ancestor() {
+  local remote_ref="${1:-}"
+  if [[ -z "$remote_ref" ]]; then
+    if remote_ref="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)"; then
+      :
+    else
+      remote_ref="${ART_PREPUSH_UPSTREAM:-}"
+    fi
+  fi
+  if [[ -z "$remote_ref" ]]; then
+    echo "OK: skip ff-ancestor check (no upstream / ART_PREPUSH_UPSTREAM)"
+    return 0
+  fi
+  if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
+    echo "OK: skip ff-ancestor check (missing ref $remote_ref)"
+    return 0
+  fi
+  if ! git merge-base --is-ancestor "$remote_ref" HEAD; then
+    echo "FAIL: $remote_ref is not an ancestor of HEAD — push would need force" >&2
+    echo "Never: git push --force, --force-with-lease, or +refspec. Leave remote as-is; fix with forward commits only." >&2
+    exit 1
+  fi
+  echo "OK: fast-forward push allowed ($remote_ref..HEAD)"
+}
+
+prepusher_require_ff_ancestor "${ART_PREPUSH_FF_REF:-}"
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
