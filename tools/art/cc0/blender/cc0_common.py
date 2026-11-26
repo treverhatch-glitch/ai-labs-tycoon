@@ -19,6 +19,8 @@ PREVIEW_DIR = REPO / "docs/art/previews"
 HDR_PATH = INCOMING / "polyhaven/studio_small_09_1k.hdr"
 TEX_SIZE = 1024
 COMPUTE_BASE = (0.55, 0.40, 0.95)
+GREY150 = 150.0 / 255.0
+PREVIEW_FILL = 0.70
 
 
 def reset_scene() -> None:
@@ -276,8 +278,8 @@ def _setup_hdri_grey_world() -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
     bg = nodes.new("ShaderNodeBackground")
-    bg.inputs["Color"].default_value = (0.44, 0.44, 0.46, 1.0)
-    bg.inputs["Strength"].default_value = 0.35
+    bg.inputs["Color"].default_value = (GREY150, GREY150, GREY150, 1.0)
+    bg.inputs["Strength"].default_value = 1.0
     if HDR_PATH.is_file():
         env = nodes.new("ShaderNodeTexEnvironment")
         env.image = bpy.data.images.load(str(HDR_PATH), check_existing=True)
@@ -309,22 +311,33 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
+    floor_z = mins.z
 
-    bpy.ops.mesh.primitive_plane_add(size=span * 4, location=(center.x, center.y, mins.z - 0.002))
+    bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.48, 0.48, 0.5, 1)
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.88
+    bsdf_g = gmat.node_tree.nodes["Principled BSDF"]
+    bsdf_g.inputs["Base Color"].default_value = (GREY150 * 0.92, GREY150 * 0.92, GREY150 * 0.94, 1)
+    bsdf_g.inputs["Roughness"].default_value = 0.9
     ground.data.materials.append(gmat)
+    ground.cycles.is_shadow_catcher = True
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.4
+    key.data.energy = 2.2
+    key.data.angle = math.radians(4)
+
+    bpy.ops.object.light_add(type="AREA", location=(center.x, center.y, floor_z - span * 0.05))
+    fill = bpy.context.active_object
+    fill.data.energy = 60
+    fill.data.size = span * 3
+    fill.rotation_euler = (math.radians(90), 0, 0)
 
     obj_h = max(maxs.z - mins.z, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
-    ortho = max(obj_h / 0.5, (obj_w * 1.18) / 0.5)
+    fill_target = PREVIEW_FILL
+    ortho = max(obj_h / fill_target, (obj_w * 1.12) / fill_target)
 
     cam_data = bpy.data.cameras.new("PreviewCam")
     cam = bpy.data.objects.new("PreviewCam", cam_data)
@@ -346,6 +359,13 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.camera = cam
 
     bpy.context.scene.render.engine = "BLENDER_EEVEE"
+    if hasattr(bpy.context.scene, "eevee"):
+        ee = bpy.context.scene.eevee
+        if hasattr(ee, "use_shadows"):
+            ee.use_shadows = True
+        if hasattr(ee, "shadow_cube_size"):
+            ee.shadow_cube_size = "4096"
+    bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
     bpy.context.scene.render.resolution_y = 1024
     bpy.context.scene.render.filepath = str(preview)
@@ -363,6 +383,8 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
                 "glb_sha256": sha,
                 "hdri": str(HDR_PATH.relative_to(REPO)) if HDR_PATH.is_file() else None,
                 "resolution": 1024,
+                "silhouetteFill": PREVIEW_FILL,
+                "backdropGrey": 150,
             },
             indent=2,
         )
