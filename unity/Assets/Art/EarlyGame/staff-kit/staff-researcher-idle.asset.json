@@ -1,10 +1,18 @@
 {
   "id": "staff-researcher-idle",
-  "partCount": 20,
-  "meshIslands": 1,
+  "path": "Assets/Art/EarlyGame/staff-kit/staff-researcher-idle.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_albedo.png",
+    "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_normal.png",
+    "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-researcher-idle/staff-researcher-idle_roughness.png"
+  },
+  "preview": "docs/art/previews/staff-researcher-idle.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 552,
+  "triangleCount": 2136,
+  "meshIslands": 21,
+  "partCount": 21,
   "grounded": true,
-  "vertexCount": 15712,
-  "triangleCount": 62802,
-  "generator": "tools/art/blender/staff-researcher-idle.py",
-  "blenderVersion": "4.0.2"
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/staff-researcher-idle.py"
 }

@@ -1,10 +1,18 @@
 {
   "id": "staff-founder-idle",
-  "partCount": 20,
-  "meshIslands": 1,
+  "path": "Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_albedo.png",
+    "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_normal.png",
+    "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-founder-idle/staff-founder-idle_roughness.png"
+  },
+  "preview": "docs/art/previews/staff-founder-idle.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 576,
+  "triangleCount": 2208,
+  "meshIslands": 21,
+  "partCount": 21,
   "grounded": true,
-  "vertexCount": 15953,
-  "triangleCount": 63712,
-  "generator": "tools/art/blender/staff-founder-idle.py",
-  "blenderVersion": "4.0.2"
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/staff-founder-idle.py"
 }

@@ -20,7 +20,7 @@ FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
-DEFAULT_ELEVATION_DEG = 30.0
+DEFAULT_ELEVATION_DEG = 32.0
 DEFAULT_LENS_MM = 50.0
 
 
@@ -317,6 +317,10 @@ def render_preview_studio(
     mins, maxs = mesh_bounds_world(hero_meshes)
     if preview_kind == "staff":
         axis = "Y"
+        azimuth_deg = 88.0
+        elevation_deg = 14.0
+        framing_margin = 1.15
+        lens_mm = 50.0
     elif preview_kind in ("wisp",):
         axis = "Y"
     else:
@@ -328,7 +332,7 @@ def render_preview_studio(
         setup_three_point_lights(center, max(radius, 0.35))
         frame_camera_ortho(hero_meshes)
     elif preview_kind == "wisp":
-        azimuth_deg, elevation_deg, framing_margin = 0.0, 10.0, 1.20
+        azimuth_deg, elevation_deg, framing_margin = 90.0, 8.0, 1.18
         setup_three_point_lights(center, radius)
         cam = frame_camera(
             hero_meshes,
@@ -343,10 +347,11 @@ def render_preview_studio(
         if hasattr(scene.eevee, "use_bloom"):
             scene.eevee.use_bloom = True
     else:
-        if axis == "Y":
-            add_shadow_floor_y(mins, maxs)
-        else:
-            add_shadow_floor_z(mins, maxs)
+        if preview_kind != "staff":
+            if axis == "Y":
+                add_shadow_floor_y(mins, maxs)
+            else:
+                add_shadow_floor_z(mins, maxs)
         setup_three_point_lights(center, radius)
         cam = frame_camera(
             hero_meshes,

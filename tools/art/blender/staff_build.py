@@ -30,7 +30,7 @@ def build_human_base(shoulder_w: float = 0.40) -> None:
     bc.add_cube("Hips", (0.38, 0.16, 0.24), (0, hip_y, 0))
     bc.add_cube("Torso", (shoulder_w, 0.36, 0.26), (0, torso_y, 0))
     bc.add_cube("Neck", (0.12, 0.08, 0.12), (0, neck_y, 0))
-    bc.add_cube("Head", (0.32, 0.34, 0.30), (0, head_y, 0))
+    bc.add_cube("Head", (0.36, 0.42, 0.34), (0, head_y, 0))
     for sx in (-1, 1):
         eye = bc.add_cube(f"Eye_{sx}", (0.05, 0.04, 0.02), (0.085 * sx, head_y + 0.05, 0.15))
         bc.assign_solid(eye, (0.12, 0.14, 0.22, 1.0), 0.22)
@@ -90,8 +90,8 @@ def build_researcher_idle() -> None:
 def build_engineer_work() -> None:
     build_human_base(0.44)
     bc.add_cube("HardHatEng", (0.38, 0.11, 0.38), (0, _y(1.69), 0))
-    bc.add_cube("LaptopBase", (0.40, 0.07, 0.30), (0.08, _y(0.98), 0.14))
-    bc.add_cube("LaptopScreen", (0.34, 0.24, 0.05), (0.08, _y(1.08), 0.26))
+    bc.add_cube("LaptopBase", (0.40, 0.07, 0.30), (0.14, _y(0.98), 0.10))
+    bc.add_cube("LaptopScreen", (0.34, 0.24, 0.05), (0.14, _y(1.08), 0.22))
     screen = bc.add_cube("LaptopScreenEmit", (0.28, 0.20, 0.014), (0.08, _y(1.08), 0.28))
     bc.assign_emission(screen, (0.18, 0.72, 0.38, 1.0), strength=3.0)
 
@@ -118,16 +118,20 @@ def build_pose_typing() -> None:
         bc.add_cylinder(f"Leg_{sx}", 0.10, leg_h, (0.16 * sx, leg_h * 0.5, 0.22), vertices=10, axis="Y")
     bc.add_cube("Hips", (0.38, 0.14, 0.24), (0, hip_y, 0.18))
     bc.add_cube("Torso", (shoulder_w, 0.34, 0.24), (0, torso_y, 0.12))
-    bc.add_cube("Head", (0.32, 0.34, 0.30), (0, head_y, 0.10))
+    bc.add_cube("Head", (0.36, 0.42, 0.34), (0, head_y, 0.10))
     for sx in (-1, 1):
         bc.add_cylinder(
-            f"Arm_{sx}", 0.072, 0.22, (shoulder_w * 0.34 * sx, torso_y - 0.04, 0.20), vertices=8, axis="Y"
+            f"Arm_{sx}", 0.072, 0.22, (shoulder_w * 0.34 * sx, torso_y - 0.04, 0.20), vertices=12, axis="Y"
         )
         hand = bc.add_cube(f"Hand_{sx}", (0.10, 0.08, 0.09), (shoulder_w * 0.50 * sx, _y(0.78), 0.26))
         bc.assign_solid(hand, (0.88, 0.72, 0.58, 1.0), 0.55)
     bc.add_cube("DeskEdge", (0.78, 0.08, 0.48), (0, _y(0.62), 0.28))
     bc.add_cube("Keyboard", (0.40, 0.04, 0.20), (0, _y(0.80), 0.32))
     bc.add_cube("KeyFace", (0.36, 0.012, 0.15), (0, _y(0.825), 0.36))
+    mouse = bc.add_cube("Mouse", (0.10, 0.05, 0.14), (0.22, _y(0.78), 0.34))
+    bc.assign_solid(mouse, (0.12, 0.12, 0.14, 1.0), 0.32)
+    chair = bc.add_cube("ChairBack", (0.36, 0.42, 0.08), (0, _y(0.92), -0.08))
+    bc.assign_solid(chair, (0.22, 0.24, 0.28, 1.0), 0.48)
     bc.add_cube("Monitor", (0.42, 0.28, 0.05), (0, _y(1.04), 0.30))
     screen = bc.add_cube("MonitorScreen", (0.34, 0.22, 0.022), (0, _y(1.04), 0.31))
     bc.assign_emission(screen, (0.22, 0.62, 0.95, 1.0), strength=2.8)

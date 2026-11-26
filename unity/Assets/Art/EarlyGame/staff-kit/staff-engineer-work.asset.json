@@ -1,10 +1,18 @@
 {
   "id": "staff-engineer-work",
+  "path": "Assets/Art/EarlyGame/staff-kit/staff-engineer-work.glb",
+  "textures": {
+    "albedo": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_albedo.png",
+    "normal": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_normal.png",
+    "roughness": "Assets/Art/EarlyGame/staff-kit/textures/staff-engineer-work/staff-engineer-work_roughness.png"
+  },
+  "preview": "docs/art/previews/staff-engineer-work.png",
+  "license": "CC0-1.0 (Blender-baked, in-repo)",
+  "vertexCount": 552,
+  "triangleCount": 2136,
+  "meshIslands": 21,
   "partCount": 21,
-  "meshIslands": 1,
   "grounded": true,
-  "vertexCount": 17176,
-  "triangleCount": 68608,
-  "generator": "tools/art/blender/staff-engineer-work.py",
-  "blenderVersion": "4.0.2"
+  "blenderVersion": "4.0.2",
+  "generator": "tools/art/blender/staff-engineer-work.py"
 }

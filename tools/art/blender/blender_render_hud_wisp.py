@@ -50,16 +50,19 @@ def _wisp_body(mood_id: str) -> bpy.types.Object:
 def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
     mood = mood_id.replace("wisp-", "")
     base_y = 0.72
-    eye_y, eye_sep = 0.08, 0.12
-    face_z = 0.40
+    eye_y, eye_sep = 0.10, 0.14
+    face_z = 0.44
     if mood == "worried":
-        eye_y, eye_sep = 0.06, 0.13
+        eye_y, eye_sep = 0.08, 0.15
     elif mood == "angry":
-        eye_y, eye_sep = 0.05, 0.11
-    dark = (0.08, 0.06, 0.10, 1.0)
+        eye_y, eye_sep = 0.07, 0.12
+    dark = (0.06, 0.05, 0.08, 1.0)
+    white = (0.98, 0.98, 0.96, 1.0)
     for sx in (-1, 1):
-        pupil = bc.add_cube(f"Eye_{sx}", (0.07, 0.08, 0.025), (eye_sep * sx, base_y + eye_y, face_z + 0.02))
-        bc.assign_solid(pupil, dark, 0.15)
+        sclera = bc.add_cube(f"EyeWhite_{sx}", (0.12, 0.13, 0.035), (eye_sep * sx, base_y + eye_y, face_z))
+        bc.assign_solid(sclera, white, 0.18)
+        pupil = bc.add_cube(f"Eye_{sx}", (0.06, 0.07, 0.02), (eye_sep * sx, base_y + eye_y, face_z + 0.02))
+        bc.assign_emission(pupil, dark, strength=0.35)
     if mood == "happy":
         cheek = bc.add_cube("CheekSparkle", (0.05, 0.04, 0.02), (0.18, base_y - 0.02, face_z))
         bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
@@ -75,13 +78,16 @@ def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
     elif mood == "worried":
         mouth = bc.add_cube("Omouth", (0.10, 0.10, 0.02), (0, base_y - 0.08, face_z))
         bc.assign_solid(mouth, (0.95, 0.55, 0.12, 1.0), 0.35)
+    elif mood == "glowing":
+        mouth = bc.add_cube("GlowSmile", (0.16, 0.05, 0.02), (0, base_y - 0.05, face_z))
+        bc.assign_emission(mouth, (0.85, 0.75, 1.0, 1.0), strength=2.2)
     else:
-        mouth = bc.add_cube("NeutralMouth", (0.12, 0.03, 0.02), (0, base_y - 0.06, face_z))
-        bc.assign_solid(mouth, core, 0.35)
+        mouth = bc.add_cube("NeutralMouth", (0.14, 0.04, 0.02), (0, base_y - 0.06, face_z))
+        bc.assign_emission(mouth, core, strength=0.8)
 
 
 def _body_color(core: tuple[float, float, float, float]) -> tuple[float, float, float, float]:
-    return bc._boost_saturation(core, 2.1)
+    return bc._boost_saturation(core, 2.5)
 
 
 def render_wisp(mood_id: str, core: tuple[float, float, float, float]) -> None:

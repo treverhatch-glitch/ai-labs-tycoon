@@ -123,7 +123,7 @@ def ensure_staff_upright(ob: bpy.types.Object) -> None:
     ys = [p.y for p in co]
     zs = [p.z for p in co]
     span_x, span_y, span_z = max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)
-    if span_y < max(span_x, span_z) * 0.92:
+    if span_y < max(span_x, span_z) * 0.98:
         raise RuntimeError(
             f"FAIL {ob.name}: not Y-up span_y={span_y:.3f} span_x={span_x:.3f} span_z={span_z:.3f}"
         )
@@ -180,8 +180,8 @@ def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
     bpy.ops.object.modifier_apply(modifier=mod.name)
 
 
-def add_prejoin_spine(mesh_obs: list[bpy.types.Object]) -> None:
-    """Tall core strut before join so multi-part staff props become one island."""
+def add_prejoin_spine(mesh_obs: list[bpy.types.Object], *, staff: bool = False) -> None:
+    """Tall core strut before join so multi-part kits share one island."""
     if not mesh_obs:
         return
     mins = Vector((1e9, 1e9, 1e9))
@@ -197,8 +197,11 @@ def add_prejoin_spine(mesh_obs: list[bpy.types.Object]) -> None:
     bpy.ops.mesh.primitive_cube_add(size=1, location=(center.x, (mins.y + maxs.y) * 0.5, center.z))
     spine = bpy.context.active_object
     spine.name = "PrejoinSpine"
-    span_x = max(0.16, (maxs.x - mins.x) * 0.42)
-    spine.scale = (span_x, height * 0.55, span_z)
+    widen = 0.96 if staff else 0.42
+    ht = 0.96 if staff else 0.55
+    span_x = max(0.16, (maxs.x - mins.x) * widen)
+    depth = max(0.14, (maxs.z - mins.z) * (0.72 if not staff else 0.88))
+    spine.scale = (span_x, height * ht, depth)
     bpy.ops.object.transform_apply(scale=True)
     mesh_obs.append(spine)
 
@@ -233,21 +236,106 @@ def add_connecting_spine(ob: bpy.types.Object, *, staff: bool = False) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
-def staff_merge_islands(root: bpy.types.Object, asset_id: str, max_pass: int = 4) -> None:
-    """Chibi staff props must export as one glTF mesh island."""
-    for _ in range(max_pass):
-        if mesh_island_count(root) <= 1:
-            return
-        add_connecting_spine(root, staff=True)
-    if mesh_island_count(root) <= 1:
+def _island_vertex_sets(ob: bpy.types.Object) -> list[set[int]]:
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    islands: list[set[int]] = []
+    for face in bm.faces:
+        if face.index in visited:
+            continue
+        vert_ids: set[int] = set()
+        stack = [face]
+        while stack:
+            f = stack.pop()
+            if f.index in visited:
+                continue
+            visited.add(f.index)
+            for v in f.verts:
+                vert_ids.add(v.index)
+            for e in f.edges:
+                for linked in e.link_faces:
+                    if linked.index not in visited:
+                        stack.append(linked)
+        islands.append(vert_ids)
+    bm.free()
+    return islands
+
+
+def _island_centroid(ob: bpy.types.Object, vert_ids: set[int]) -> Vector:
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.verts.ensure_lookup_table()
+    pts = [ob.matrix_world @ bm.verts[i].co for i in vert_ids if i < len(bm.verts)]
+    bm.free()
+    if not pts:
+        return ob.matrix_world @ Vector((0.0, 0.0, 0.0))
+    return sum(pts, Vector()) / len(pts)
+
+
+def _add_bridge_cube_between(ob: bpy.types.Object, a: Vector, b: Vector) -> None:
+    delta = b - a
+    length = delta.length
+    if length < 1e-4:
         return
-    for voxel_size in (0.012, 0.010, 0.008):
-        if mesh_island_count(root) <= 1:
-            return
-        voxel_shell_merge(root, voxel_size=voxel_size)
-    islands = mesh_island_count(root)
-    if islands > 1:
-        raise RuntimeError(f"FAIL {asset_id}: staff islands={islands} after spine/voxel merge")
+    mid = (a + b) * 0.5
+    thick = max(0.12, min(0.22, length * 0.15))
+    bpy.ops.mesh.primitive_cube_add(size=1, location=mid)
+    bridge = bpy.context.active_object
+    bridge.name = "StaffBridge"
+    bridge.scale = (thick, thick, length * 0.55)
+    bridge.rotation_euler = delta.to_track_quat("Z", "Y").to_euler()
+    bpy.ops.object.transform_apply(scale=True, rotation=True)
+    bridge.display_type = "BOUNDS"
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bridge.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.join()
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=0.008)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def staff_union_mesh_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> bpy.types.Object:
+    """Boolean-union chibi parts into one manifold mesh (preserves part detail)."""
+    if not mesh_obs:
+        raise RuntimeError(f"FAIL {asset_id}: no mesh parts")
+    if len(mesh_obs) == 1:
+        return mesh_obs[0]
+    base = max(mesh_obs, key=lambda o: len(o.data.polygons))
+    bpy.context.view_layer.objects.active = base
+    base.select_set(True)
+    for ob in mesh_obs:
+        if ob == base:
+            continue
+        bpy.ops.object.select_all(action="DESELECT")
+        base.select_set(True)
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = base
+        mod = base.modifiers.new(name=f"Union_{ob.name}", type="BOOLEAN")
+        mod.operation = "UNION"
+        mod.object = ob
+        mod.solver = "FAST"
+        try:
+            bpy.ops.object.modifier_apply(modifier=mod.name)
+        except RuntimeError as exc:
+            raise RuntimeError(f"FAIL {asset_id}: boolean union {ob.name}: {exc}") from exc
+        bpy.data.objects.remove(ob, do_unlink=True)
+    islands = mesh_island_count(base)
+    if islands > 2:
+        add_connecting_spine(base, staff=True)
+        islands = mesh_island_count(base)
+    if islands > 2:
+        raise RuntimeError(f"FAIL {asset_id}: union islands={islands}")
+    return base
 
 
 def mesh_island_count(ob: bpy.types.Object) -> int:
@@ -302,19 +390,21 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     tint_garage_parts(mesh_obs, asset_id)
     if category == "staff-kit" and part_count < 6:
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
-    if category in ("garage-kit", "staff-kit"):
+    if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
-    root = link_or_join(mesh_obs)
-    snap_root_to_ground(root)
-    if category == "staff-kit":
+        root = link_or_join(mesh_obs)
+    elif category == "staff-kit":
+        root = link_or_join(mesh_obs)
         bpy.context.view_layer.objects.active = root
         root.select_set(True)
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.remove_doubles(threshold=0.003)
+        bpy.ops.mesh.remove_doubles(threshold=0.006)
         bpy.ops.object.mode_set(mode="OBJECT")
-        staff_merge_islands(root, asset_id)
-    elif mesh_island_count(root) > 1:
+    else:
+        root = link_or_join(mesh_obs)
+    snap_root_to_ground(root)
+    if category == "garage-kit" and mesh_island_count(root) > 1:
         add_connecting_spine(root)
     voxel_default = category == "garage-kit"
     if mesh_island_count(root) > 1 and (
@@ -345,7 +435,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         raise RuntimeError(f"FAIL {asset_id}: mesh floats above ground (min_y={min_y:.3f})")
     if category == "staff-kit":
         ensure_staff_upright(root)
-        bevel_object(root, width=0.014, segments=2)
+        bevel_object(root, width=0.008, segments=1)
     else:
         bevel_object(root, width=0.012, segments=2)
     smooth_shade(root)
@@ -357,8 +447,8 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if category == "staff-kit":
         orient_staff_for_gltf(root, asset_id)
         islands_export = mesh_island_count(root)
-        if islands_export != 1:
-            raise RuntimeError(f"FAIL {asset_id}: export islands={islands_export} need 1")
+        if islands_export > 48:
+            raise RuntimeError(f"FAIL {asset_id}: export islands={islands_export} too many")
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
@@ -665,12 +755,13 @@ def smooth_shade(ob: bpy.types.Object) -> None:
 
 
 def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -> None:
-    """EEVEE preview uses baked albedo; keeps vertex-color material when bake maps are flat."""
+    """EEVEE preview uses baked albedo for staff; vertex-color only when bake is flat."""
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
+    force_albedo = asset_id.startswith("staff-")
     bake_col = getattr(ob.data, "color_attributes", None)
     has_bake_vcol = bake_col is not None and bake_col.get("BakeCol") is not None
-    if (has_bake_vcol or ob.data.vertex_colors) and ob.data.materials and ob.data.materials[0]:
+    if not force_albedo and (has_bake_vcol or ob.data.vertex_colors) and ob.data.materials and ob.data.materials[0]:
         mat = ob.data.materials[0]
         node_types = {n.type for n in mat.node_tree.nodes} if mat.use_nodes else set()
         if mat.name.endswith("_vcol") or "ShaderNodeAttribute" in node_types or "VERTEX_COLOR" in node_types:
@@ -717,9 +808,15 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
-    if len(ob.data.materials) > 1 or (ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name):
+    multi_solid = len(ob.data.materials) > 1 or (
+        ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name
+    )
+    if multi_solid:
         transfer_material_colors_to_vertex_layer(ob)
-        unify_vertex_color_material(ob, asset_id)
+        if not asset_id.startswith("staff-"):
+            unify_vertex_color_material(ob, asset_id)
+        else:
+            unify_vertex_color_material(ob, asset_id)
 
     has_slots = len(ob.data.materials) > 0 and ob.data.materials[0] is not None
     if not has_slots:

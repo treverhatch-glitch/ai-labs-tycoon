@@ -4,7 +4,7 @@
   "framing_margin": 1.15,
   "lens_mm": 50.0,
   "azimuth_deg": 45.0,
-  "elevation_deg": 30.0,
+  "elevation_deg": 32.0,
   "up_axis": "Y",
   "preview_kind": "hud"
 }

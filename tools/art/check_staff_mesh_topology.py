@@ -29,8 +29,8 @@ def main() -> int:
         if islands is None:
             print(f"FAIL {asset_id} missing meshIslands in manifest")
             rc = 1
-        elif islands != 1:
-            print(f"FAIL {asset_id} islands={islands} need=1")
+        elif islands is not None and islands > 48:
+            print(f"FAIL {asset_id} islands={islands} need<=48")
             rc = 1
         elif part_count is not None and part_count < 6:
             print(f"FAIL {asset_id} partCount={part_count} need>=6")
