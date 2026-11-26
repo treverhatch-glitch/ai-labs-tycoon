@@ -44,6 +44,20 @@ PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
     "prop_tool_table": (0.20, 0.55),
 }
 
+KENNEY_RESTYLE: dict[str, list[str]] = {
+    "prop_desk": ["wood", "metal", "wood"],
+    "prop_chair": ["wood", "metal", "wood"],
+    "prop_laptop": ["metal", "screen"],
+    "prop_keyboard": ["metal", "wood"],
+    "prop_lamp": ["metal", "lamp_accent", "wood"],
+    "prop_books": ["wood", "prop", "wood"],
+    "prop_bookcase": ["shelf", "wood", "metal"],
+    "prop_workbench": ["wood", "metal"],
+    "prop_plant": ["plant", "wood"],
+    "prop_speaker": ["metal", "prop"],
+    "prop_tool_table": ["wood", "metal"],
+}
+
 KIT_ROLES: dict[str, str] = {
     "kit_floor": "floor",
     "kit_wall_back": "wall",
@@ -238,15 +252,8 @@ def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float
     )
     snap_min_z(ob, FLOOR_TOP)
     if "cardboard" in glb.lower():
-        cc0.mesh_remove_doubles(ob, 0.02)
-        cc0.snap_cardboard_lid(ob, max_gap=0.01)
-        bpy.context.view_layer.update()
-        gap = cc0.cardboard_lid_gap_m(ob)
-        if gap > 0.01:
-            ob.scale.z *= 0.96
-            bpy.ops.object.transform_apply(scale=True)
-            cc0.snap_cardboard_lid(ob, max_gap=0.01)
-            snap_min_z(ob, FLOOR_TOP)
+        cc0.weld_cardboard_closed(ob, max_gap=0.01)
+        snap_min_z(ob, FLOOR_TOP)
     return ob
 
 
@@ -403,10 +410,10 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     cx, cy = 2.05, 1.95
     specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
         ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
-        ("prop_chair", "chairDesk.glb", (cx - 0.55, cy - 0.45), math.radians(30), FURN_SCALE),
-        ("prop_laptop", "laptop.glb", (cx + 0.05, cy + 0.12), math.radians(200), FURN_SCALE * 0.85),
-        ("prop_keyboard", "computerKeyboard.glb", (cx - 0.08, cy + 0.05), math.radians(195), FURN_SCALE * 0.9),
-        ("prop_lamp", "lampRoundTable.glb", (cx + 0.35, cy - 0.18), math.radians(-10), FURN_SCALE),
+        ("prop_chair", "chairDesk.glb", (cx - 0.78, cy - 0.70), math.radians(38), FURN_SCALE * 0.86),
+        ("prop_laptop", "laptop.glb", (cx + 0.08, cy + 0.10), math.radians(200), FURN_SCALE * 0.82),
+        ("prop_keyboard", "computerKeyboard.glb", (cx - 0.10, cy + 0.04), math.radians(195), FURN_SCALE * 0.88),
+        ("prop_lamp", "lampRoundTable.glb", (cx + 0.42, cy + 0.06), math.radians(-18), FURN_SCALE * 0.92),
         ("prop_books", "books.glb", (cx - 0.22, cy + 0.22), math.radians(15), FURN_SCALE * 0.8),
         ("prop_bookcase", "bookcaseClosed.glb", (0.72, 2.92), math.pi / 2, FURN_SCALE * 0.92),
         ("prop_box_a", "cardboardBoxClosed.glb", (1.05, 2.88), math.radians(18), FURN_SCALE * 0.82),
@@ -459,7 +466,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
 
     stack_desk_props(kit_objects)
 
-    bpy.ops.mesh.primitive_plane_add(size=2.75, location=(2.05, 1.35, FLOOR_TOP + 0.006))
+    bpy.ops.mesh.primitive_plane_add(size=2.35, location=(2.05, 1.32, FLOOR_TOP + 0.006))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
     stain.rotation_euler = (0.0, 0.0, math.radians(14))
@@ -467,7 +474,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     return keys
 
 
-STACKED_ON_DESK = frozenset({"prop_laptop", "prop_keyboard", "prop_books"})
+STACKED_ON_DESK = frozenset({"prop_laptop", "prop_keyboard", "prop_books", "prop_lamp"})
 
 
 def snap_prop_on_support(child: bpy.types.Object, parent: bpy.types.Object, *, z_offset: float = 0.002) -> None:
@@ -560,8 +567,10 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         if key.startswith("_") or key == "kit_wall_left":
             continue
         role = KIT_ROLES.get(key, "prop")
-        if key in ("prop_box_a", "prop_box_b", "prop_crate", "prop_chair", "prop_lamp"):
-            cc0.apply_palette_hierarchy(ob, role)
+        if key in ("prop_box_a", "prop_box_b", "prop_crate"):
+            cc0.apply_palette_material(ob, "box")
+        elif key in KENNEY_RESTYLE:
+            cc0.apply_kenney_restyle(ob, KENNEY_RESTYLE[key])
         else:
             cc0.apply_palette_material(ob, role)
 

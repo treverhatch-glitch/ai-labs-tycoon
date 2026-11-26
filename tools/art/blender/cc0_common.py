@@ -252,6 +252,40 @@ def snap_cardboard_lid(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
     bpy.context.view_layer.update()
 
 
+def weld_cardboard_closed(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
+    """Merge lid shell onto closed Kenney cardboard box (render + gate contact)."""
+    mesh_remove_doubles(ob, 0.08)
+    for _ in range(8):
+        snap_cardboard_lid(ob, max_gap=max_gap)
+        if cardboard_lid_gap_m(ob) <= max_gap:
+            return
+    import bmesh
+
+    gap = cardboard_lid_gap_m(ob)
+    if gap <= max_gap:
+        return
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    mw = ob.matrix_world
+    inv = mw.inverted()
+    zvals = sorted((mw @ v.co).z for v in bm.verts)
+    if not zvals:
+        bm.free()
+        return
+    split = zvals[int(len(zvals) * 0.68)]
+    shift = gap - 0.0005
+    for v in bm.verts:
+        if (mw @ v.co).z >= split - 0.015:
+            w = mw @ v.co
+            w.z -= shift
+            v.co = inv @ w
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    bpy.context.view_layer.update()
+    snap_cardboard_lid(ob, max_gap=max_gap)
+
+
 def mesh_remove_doubles(ob: bpy.types.Object, threshold: float = 0.015) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
@@ -267,6 +301,67 @@ def apply_palette_hierarchy(ob: bpy.types.Object, role: str) -> None:
         apply_palette_material(ob, role)
     for child in ob.children:
         apply_palette_hierarchy(child, role)
+
+
+def _simple_tint_material(name: str, role: str) -> bpy.types.Material:
+    """Kenney-friendly tint: preserve mesh reads, no object-zone procedural paint."""
+    tint = PALETTE.get(role, PALETTE["prop"])
+    mat = bpy.data.materials.new(name=name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf.inputs["Base Color"].default_value = tint
+    rough = 0.55 if role in ("wood", "chair") else 0.48
+    if role in ("metal", "screen"):
+        rough = 0.42
+        bsdf.inputs["Metallic"].default_value = 0.35
+    elif role == "lamp_accent":
+        rough = 0.38
+    bsdf.inputs["Roughness"].default_value = rough
+    if role == "lamp_accent":
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = (1.0, 0.85, 0.45, 1.0)
+        emit.inputs["Strength"].default_value = 0.22
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
+    elif role == "screen":
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = (0.75, 0.82, 0.95, 1.0)
+        emit.inputs["Strength"].default_value = 0.15
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
+    else:
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    return mat
+
+
+def apply_kenney_restyle(ob: bpy.types.Object, roles: list[str]) -> None:
+    """Assign per-slot tints so Kenney furniture keeps silhouette (seat, legs, shade)."""
+    if ob.type != "MESH":
+        for child in ob.children:
+            apply_kenney_restyle(child, roles)
+        return
+    slot_count = max(1, len(ob.data.materials))
+    if slot_count == 1 and len(ob.data.polygons):
+        ob.data.materials.clear()
+        ob.data.materials.append(_simple_tint_material(f"m_{ob.name}_0", roles[0]))
+        return
+    while len(ob.data.materials) < len(roles):
+        ob.data.materials.append(None)
+    for i, role in enumerate(roles):
+        mat = _simple_tint_material(f"m_{ob.name}_{i}_{role}", role)
+        if i < len(ob.data.materials):
+            ob.data.materials[i] = mat
+    for i in range(len(roles), len(ob.data.materials)):
+        role = roles[-1]
+        ob.data.materials[i] = _simple_tint_material(f"m_{ob.name}_{i}_{role}", role)
 
 
 def merge_mesh_objects(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
@@ -352,6 +447,9 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         links.new(stain_mix.outputs["Color"], bsdf.inputs["Base Color"])
         bsdf.inputs["Roughness"].default_value = 0.84
     elif role == "floor_stain":
+        mat.blend_method = "BLEND"
+        if hasattr(mat, "shadow_method"):
+            mat.shadow_method = "HASHED"
         coord = nodes.new("ShaderNodeTexCoord")
         mapping = nodes.new("ShaderNodeMapping")
         mapping.inputs["Scale"].default_value = (0.95, 0.95, 0.95)
@@ -394,7 +492,7 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         edge.operation = "MULTIPLY"
         links.new(ramp.outputs["Result"], edge.inputs[0])
         links.new(noise.outputs["Fac"], edge.inputs[1])
-        base_dark = (0.36, 0.34, 0.32, 1.0)
+        base_dark = (0.28, 0.26, 0.24, 1.0)
         oil = nodes.new("ShaderNodeMixRGB")
         oil.blend_type = "MIX"
         oil.inputs["Color1"].default_value = base_dark
@@ -416,6 +514,22 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         bsdf.inputs["Roughness"].default_value = 0.96
         if "Specular IOR Level" in bsdf.inputs:
             bsdf.inputs["Specular IOR Level"].default_value = 0.12
+        alpha_rad = nodes.new("ShaderNodeMapRange")
+        alpha_rad.inputs["From Min"].default_value = 0.08
+        alpha_rad.inputs["From Max"].default_value = 0.52
+        alpha_rad.inputs["To Min"].default_value = 0.88
+        alpha_rad.inputs["To Max"].default_value = 0.02
+        links.new(radial.outputs["Value"], alpha_rad.inputs["Value"])
+        alpha_noise = nodes.new("ShaderNodeMath")
+        alpha_noise.operation = "MULTIPLY"
+        links.new(alpha_rad.outputs["Result"], alpha_noise.inputs[0])
+        links.new(noise.outputs["Fac"], alpha_noise.inputs[1])
+        alpha_floor = nodes.new("ShaderNodeMath")
+        alpha_floor.operation = "MAXIMUM"
+        alpha_floor.inputs[1].default_value = 0.52
+        links.new(alpha_noise.outputs["Value"], alpha_floor.inputs[0])
+        links.new(alpha_floor.outputs["Value"], bsdf.inputs["Alpha"])
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     elif role == "roll_door":
         bsdf.inputs["Base Color"].default_value = (0.78, 0.80, 0.84, 1.0)
         bsdf.inputs["Roughness"].default_value = 0.38

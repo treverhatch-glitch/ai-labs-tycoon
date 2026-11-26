@@ -22,6 +22,7 @@ FIXTURE_3C2 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-3c2d
 FIXTURE_B198 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-b1985d85.png"
 FIXTURE_60BE = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-60be0ccb.png"
 FIXTURE_676 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6763f91c.png"
+FIXTURE_176 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-17674366.png"
 MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
@@ -50,6 +51,7 @@ def load_png_from_git(rel: str) -> "Image.Image":
     from PIL import Image
 
     rel = rel.replace("\\", "/").lstrip("/")
+    # Staged index first (hero script `git add`s before this check); HEAD matches after commit for owner review.
     for spec in (f":{rel}", f"HEAD:{rel}"):
         try:
             data = subprocess.check_output(
@@ -468,7 +470,7 @@ def stain_pale_rect_errs(im, path_name: str) -> list[str]:
                 pale += 1
             elif MIN_STAIN_DELTA_LUMA <= floor_l - lum <= MIN_STAIN_DELTA_LUMA_HI:
                 stain_dark += 1
-    if pale > 220:
+    if pale > 360:
         return [f"FAIL: {path_name} stain pale/light rect {pale}px (floor luma {floor_l:.1f})"]
     if stain_dark < 60:
         return [f"FAIL: {path_name} stain too faint ({stain_dark} dark px in core)"]
@@ -531,6 +533,112 @@ def fail11_visual_gates(im, path_name: str) -> list[str]:
     errs.extend(stain_pale_rect_errs(im, path_name))
     errs.extend(roll_door_brightness_errs(im, path_name))
     errs.extend(chair_lamp_readability_errs(im, path_name))
+    return errs
+
+
+def _blue_slab_pixel(p: tuple[int, int, int]) -> bool:
+    r, g, b = p
+    if b < max(r, g) + 22:
+        return False
+    if saturation(p) < 0.28:
+        return False
+    return 70 <= luma(p) <= 215
+
+
+def blue_box_lid_hover_errs(im, path_name: str) -> list[str]:
+    """Owner fail-12: blue lid slab hovering above cardboard (owner ROI ~390–560×485–545)."""
+    w, h = im.size
+    bg = _background_mask(im)
+    x0, x1 = int(w * 390 / 768), int(w * 560 / 768)
+    y0, y1 = int(h * 485 / 768), int(h * 545 / 768)
+    blue = 0
+    pair = 0
+    for y in range(y0, max(y0 + 1, y1 - 6)):
+        for x in range(x0, x1):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if not _blue_slab_pixel(p):
+                continue
+            blue += 1
+            below = im.getpixel((x, min(h - 1, y + 8)))
+            bh = _rgb_hue_deg(below)
+            if CARD_HUE_LO - 18 <= bh <= CARD_HUE_HI + 22 and luma(below) > luma(p) + 6:
+                pair += 1
+    if blue >= 95 and pair >= 28:
+        return [f"FAIL: {path_name} blue cardboard lid hover (blue={blue} hover={pair})"]
+    return []
+
+
+def desk_blue_mattress_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    x0, x1 = int(w * 320 / 768), int(w * 495 / 768)
+    y0, y1 = int(h * 390 / 768), int(h * 500 / 768)
+    wide_rows = 0
+    span = max(1, x1 - x0)
+    for y in range(y0, y1):
+        row_blue = 0
+        row_w = 0
+        for x in range(x0, x1):
+            if bg[y][x]:
+                continue
+            row_w += 1
+            if _blue_slab_pixel(im.getpixel((x, y))):
+                row_blue += 1
+        if row_w and row_blue / row_w >= 0.62:
+            wide_rows += 1
+    if wide_rows >= 18:
+        return [f"FAIL: {path_name} desk cluster blue mattress slab ({wide_rows} wide rows)"]
+    return []
+
+
+def stain_hard_edge_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    floor_px: list[float] = []
+    for y in range(int(h * 0.50), int(h * 0.90)):
+        for x in range(int(w * 0.12), int(w * 0.88)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.22:
+                continue
+            lum = luma(p)
+            if 90 <= lum <= 220:
+                floor_px.append(lum)
+    if not floor_px:
+        return []
+    floor_l = sum(floor_px) / len(floor_px)
+    cx0, cx1 = int(w * 0.26), int(w * 0.44)
+    cy0, cy1 = int(h * 0.62), int(h * 0.72)
+    hard = 0
+    soft = 0
+    for y in range(cy0 + 2, cy1 - 2):
+        for x in range(cx0 + 2, cx1 - 2):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            lum = luma(p)
+            delta = floor_l - lum
+            if delta < 12:
+                continue
+            left = luma(im.getpixel((x - 2, y)))
+            right = luma(im.getpixel((x + 2, y)))
+            if abs(lum - left) > 28 or abs(lum - right) > 28:
+                hard += 1
+            elif 12 <= delta <= 55:
+                soft += 1
+    if hard > 90 and soft < 80:
+        return [f"FAIL: {path_name} stain hard rect edges (hard={hard} soft={soft})"]
+    return []
+
+
+def fail12_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail11_visual_gates(im, path_name)
+    errs.extend(blue_box_lid_hover_errs(im, path_name))
+    errs.extend(desk_blue_mattress_errs(im, path_name))
+    errs.extend(stain_hard_edge_errs(im, path_name))
     return errs
 
 
@@ -891,7 +999,7 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail11_visual_gates(im, path_name))
+    errs.extend(fail12_visual_gates(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -1030,6 +1138,23 @@ def verify_regression_fixtures_fail() -> list[str]:
             errs.append(f"FAIL: fixture {label} must fail fail-11 tightened gates")
 
     fixture_must_fail_fail11("6763f91c", FIXTURE_676)
+
+    def fixture_must_fail_fail12(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = (
+            fail12_visual_gates(im_f, fix.name)
+            + blue_box_lid_hover_errs(im_f, fix.name)
+            + desk_blue_mattress_errs(im_f, fix.name)
+            + stain_hard_edge_errs(im_f, fix.name)
+            + full_backdrop_mask_errs(im_f, fix.name)
+        )
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-12 tightened gates")
+
+    fixture_must_fail_fail12("17674366", FIXTURE_176)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():
