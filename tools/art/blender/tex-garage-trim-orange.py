@@ -10,7 +10,7 @@ ASSET_ID = "tex-garage-trim-orange"
 
 
 def main() -> None:
-    bt.bake_tileable(ASSET_ID, (188, 68, 18), (252, 128, 32), pattern="bands", noise_scale=18.0)
+    bt.bake_tileable(ASSET_ID, (188, 68, 18), (252, 128, 32), pattern="metal", noise_scale=18.0)
 
 
 if __name__ == "__main__":

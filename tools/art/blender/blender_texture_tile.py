@@ -95,14 +95,19 @@ def _synthetic_swatch(
     px = im.load()
     for y in range(512):
         for x in range(512):
-            if pattern == "bands":
-                t = int((x / 48) % 2)
-                c = accent_rgb if t else base_rgb
-            elif pattern == "brick":
-                row = y // 28
-                shift = 16 if row % 2 else 0
-                t = int(((x + shift) / 64) % 2)
-                c = accent_rgb if t else base_rgb
+            if pattern == "corrugated":
+                rib = 0.5 + 0.5 * math.sin(x * 0.28)
+                row = 1 if (y // 22) % 2 else 0
+                base = accent_rgb if rib > 0.75 else base_rgb
+                mortar = 12 if y % 22 < 2 else 0
+                c = tuple(max(0, min(255, base[i] - mortar)) for i in range(3))
+            elif pattern == "metal":
+                scratch = (math.sin(x * 0.06 + y * 0.02) + random.random() * 0.2) * 18
+                band = accent_rgb if (y // 36) % 2 == 0 else base_rgb
+                c = tuple(max(0, min(255, int(band[i] + scratch))) for i in range(3))
+            elif pattern == "fibre":
+                n = random.random() * 0.4 + math.sin(x * 0.15) * 0.08 + math.sin(y * 0.19) * 0.08
+                c = tuple(int(base_rgb[i] * (1 - n) + accent_rgb[i] * n) for i in range(3))
             else:
                 n = (math.sin(x * 0.09) + math.sin(y * 0.11)) * 0.5 + random.random() * 0.35
                 c = tuple(int(base_rgb[i] * (1 - n) + accent_rgb[i] * n) for i in range(3))

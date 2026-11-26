@@ -140,7 +140,7 @@ def ground_scene_meshes() -> None:
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not meshes:
         return
-    min_y = min((o.matrix_world @ Vector(c)).y for o in meshes for c in o.bound_box)
+    min_y = min(mesh_world_min_y(o) for o in meshes)
     if min_y >= -1e-5:
         return
     dy = -min_y
@@ -150,6 +150,30 @@ def ground_scene_meshes() -> None:
 
 def mesh_world_min_y(ob: bpy.types.Object) -> float:
     return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+
+
+def mesh_world_min_z(ob: bpy.types.Object) -> float:
+    return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+
+
+def rotate_script_y_to_export_up(ob: bpy.types.Object) -> None:
+    """Authoring uses Blender +Y as vertical; glTF/Unity need +Y after Blender Z-up export."""
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    ob.rotation_euler = (math.pi / 2, 0, 0)
+    bpy.ops.object.transform_apply(rotation=True)
+
+
+def snap_root_to_ground_z(ob: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    min_z = mesh_world_min_z(ob)
+    if abs(min_z) > 1e-5:
+        ob.location.z -= min_z
+    bpy.context.view_layer.update()
 
 
 def snap_root_to_ground(ob: bpy.types.Object) -> None:
@@ -196,9 +220,9 @@ def add_connect_spine_part(objects: list[bpy.types.Object]) -> bpy.types.Object:
     spine = bpy.context.active_object
     spine.name = "ConnectSpine"
     spine.scale = (
-        max(0.06, span.x * 0.45),
-        max(0.08, span.y * 0.92),
-        max(0.06, span.z * 0.45),
+        max(0.06, span.x * 0.58),
+        max(0.08, span.y * 0.96),
+        max(0.06, span.z * 0.58),
     )
     bpy.ops.object.transform_apply(scale=True)
     assign_solid(spine, (0.5, 0.5, 0.5, 1.0), 0.5)
@@ -274,6 +298,9 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
     if islands > 1:
+        voxel_shell_merge(root, voxel_size=min(0.04, weld_extent * 0.018))
+        islands = mesh_island_count(root)
+    if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
     snap_root_to_ground(root)
     min_y = mesh_world_min_y(root)
@@ -287,6 +314,21 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
+    rotate_script_y_to_export_up(root)
+    snap_root_to_ground_z(root)
+    min_z = mesh_world_min_z(root)
+    if min_z > 0.012:
+        raise RuntimeError(f"{asset_id}: not grounded after Y-up export rotate (min_z={min_z:.4f})")
+    upright_env = {
+        "garage-exterior-wall",
+        "garage-land-for-sale-sign",
+        "garage-window-frame",
+    }
+    if asset_id in upright_env:
+        h = float(root.dimensions.z)
+        foot = max(float(root.dimensions.x), float(root.dimensions.y))
+        if h <= foot * 1.05:
+            raise RuntimeError(f"{asset_id}: not upright for glTF (z={h:.3f} foot={foot:.3f})")
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
