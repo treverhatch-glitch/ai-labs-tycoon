@@ -21,18 +21,18 @@ WALL_H = 2.7
 WALL_Z_SCALE = WALL_H / 2.4
 TILE_SCALE = 0.5
 FURN_SCALE = 1.95
+FURN_CLEARANCE_M = 0.15
 
 KENNEY_GLB_SOURCES: dict[str, str] = {
     "prop_desk": "desk.glb",
     "prop_chair": "chairDesk.glb",
-    "prop_laptop": "laptop.glb",
+    "prop_screen": "computerScreen.glb",
     "prop_keyboard": "computerKeyboard.glb",
     "prop_lamp": "lampRoundTable.glb",
-    "prop_books": "books.glb",
+    "prop_rug": "rugRectangle.glb",
     "prop_bookcase": "bookcaseClosed.glb",
     "prop_box_a": "cardboardBoxClosed.glb",
     "prop_box_b": "cardboardBoxClosed.glb",
-    "prop_crate": "cardboardBoxClosed.glb",
     "prop_workbench": "sideTable.glb",
     "prop_plant": "plantSmall1.glb",
     "prop_speaker": "speaker.glb",
@@ -46,8 +46,9 @@ WALL_TOL = 0.03
 PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
     "prop_desk": (0.20, 0.48),
     "prop_chair": (0.22, 0.55),
-    "prop_laptop": (0.08, 0.32),
+    "prop_screen": (0.12, 0.45),
     "prop_keyboard": (0.04, 0.22),
+    "prop_rug": (0.01, 0.18),
     "prop_whiteboard": (0.35, 0.75),
     "prop_server": (0.40, 0.95),
     "prop_bookcase": (0.55, 0.98),
@@ -57,15 +58,15 @@ PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
     "prop_box_b": (0.10, 0.45),
     "prop_plant": (0.18, 0.62),
     "prop_speaker": (0.22, 0.55),
-    "prop_crate": (0.10, 0.45),
     "prop_tool_table": (0.20, 0.55),
 }
 
 KENNEY_RESTYLE: dict[str, list[str]] = {
     "prop_desk": ["wood", "metal", "wood"],
     "prop_chair": ["wood", "metal", "wood"],
-    "prop_laptop": ["metal", "screen"],
+    "prop_screen": ["metal", "screen", "metal"],
     "prop_keyboard": ["metal", "wood"],
+    "prop_rug": ["wood", "prop"],
     "prop_lamp": ["metal", "lamp_accent", "wood"],
     "prop_books": ["wood", "prop", "wood"],
     "prop_bookcase": ["shelf", "wood", "metal"],
@@ -83,8 +84,9 @@ KIT_ROLES: dict[str, str] = {
     "kit_roll_door": "roll_door",
     "prop_desk": "wood",
     "prop_chair": "chair",
-    "prop_laptop": "screen",
+    "prop_screen": "screen",
     "prop_keyboard": "metal",
+    "prop_rug": "wood",
     "prop_whiteboard": "board",
     "prop_server": "metal",
     "prop_bookcase": "shelf",
@@ -92,13 +94,28 @@ KIT_ROLES: dict[str, str] = {
     "prop_lamp": "lamp_accent",
     "prop_box_a": "box",
     "prop_box_b": "box",
-    "prop_books": "wood",
-    "kit_floor_stain": "floor_stain",
     "prop_plant": "plant",
     "prop_speaker": "metal",
-    "prop_crate": "box",
     "prop_tool_table": "wood",
 }
+
+FURNITURE_SEPARATION_KEYS = frozenset(
+    {
+        "prop_desk",
+        "prop_chair",
+        "prop_screen",
+        "prop_keyboard",
+        "prop_lamp",
+        "prop_rug",
+        "prop_box_a",
+        "prop_box_b",
+        "prop_bookcase",
+        "prop_workbench",
+        "prop_plant",
+        "prop_speaker",
+        "prop_tool_table",
+    }
+)
 
 
 def _wall_scale() -> tuple[float, float, float]:
@@ -283,7 +300,7 @@ def prop_height_m(ob: bpy.types.Object, key: str) -> float:
     if key == "prop_whiteboard":
         return max(yx, zx)
     if key == "prop_rug":
-        return zx
+        return max(zx, 0.025, (mx.y - mn.y) * 0.08)
     if key in ("prop_bookcase", "prop_server", "prop_lamp", "prop_workbench"):
         return max(zx, xx, yx)
     if zx >= 0.14:
@@ -363,10 +380,22 @@ def assert_scene_layout(
     desk = kit_objects.get("prop_desk")
     desk_top = cc0.world_bbox(desk)[1].z if desk else FLOOR_TOP
 
-    for key in ("prop_box_a", "prop_box_b", "prop_crate"):
+    for key in ("prop_box_a", "prop_box_b"):
         ob = kit_objects.get(key)
         if ob and cc0.cardboard_lid_gap_m(ob) > GROUND_TOL:
             failures.append(f"{key} lid gap {cc0.cardboard_lid_gap_m(ob):.4f} m > {GROUND_TOL}")
+
+    ovl, ovl_notes = furniture_bbox_report(kit_objects)
+    if ovl > 0:
+        failures.append(f"furniture bbox overlap count {ovl} ({', '.join(ovl_notes[:4])})")
+    chair = kit_objects.get("prop_chair")
+    desk = kit_objects.get("prop_desk")
+    if chair and desk:
+        cmn, cmx = cc0.world_bbox(chair)
+        dmn, dmx = cc0.world_bbox(desk)
+        gap = _aabb_clearance_m(cmn, cmx, dmn, dmx)
+        if gap < FURN_CLEARANCE_M:
+            failures.append(f"prop_chair desk clearance {gap:.3f} m < {FURN_CLEARANCE_M}")
 
     for key in prop_keys:
         ob = kit_objects[key]
@@ -411,6 +440,100 @@ def build_kenney_room() -> tuple[dict[str, bpy.types.Object], list[bpy.types.Obj
     )
 
 
+def _aabb_overlap(
+    mn1: tuple[float, float, float],
+    mx1: tuple[float, float, float],
+    mn2: tuple[float, float, float],
+    mx2: tuple[float, float, float],
+) -> bool:
+    return (
+        mn1[0] < mx2[0]
+        and mx1[0] > mn2[0]
+        and mn1[1] < mx2[1]
+        and mx1[1] > mn2[1]
+        and mn1[2] < mx2[2]
+        and mx1[2] > mn2[2]
+    )
+
+
+def _aabb_clearance_m(
+    mn1: tuple[float, float, float],
+    mx1: tuple[float, float, float],
+    mn2: tuple[float, float, float],
+    mx2: tuple[float, float, float],
+) -> float:
+    dx = max(mn2[0] - mx1[0], mn1[0] - mx2[0], 0.0)
+    dy = max(mn2[1] - mx1[1], mn1[1] - mx2[1], 0.0)
+    dz = max(mn2[2] - mx1[2], mn1[2] - mx2[2], 0.0)
+    return math.sqrt(dx * dx + dy * dy + dz * dz)
+
+
+def fit_screen_to_desk(screen: bpy.types.Object, desk: bpy.types.Object, *, width_ratio: float = 0.40) -> None:
+    dmn, dmx = cc0.world_bbox(desk)
+    desk_w = max(dmx.x - dmn.x, dmx.y - dmn.y)
+    smn, smx = cc0.world_bbox(screen)
+    sw = max(smx.x - smn.x, smx.y - smn.y, 0.01)
+    scale_up = (desk_w * width_ratio) / sw
+    screen.scale = tuple(c * scale_up for c in screen.scale)
+    bpy.context.view_layer.update()
+
+
+def enforce_chair_facing_desk(kit_objects: dict[str, bpy.types.Object]) -> None:
+    chair = kit_objects.get("prop_chair")
+    desk = kit_objects.get("prop_desk")
+    if not chair or not desk:
+        return
+    dmn, dmx = cc0.world_bbox(desk)
+    dc = ((dmn.x + dmx.x) * 0.5, (dmn.y + dmx.y) * 0.5)
+    cmn, cmx = cc0.world_bbox(chair)
+    cc = ((cmn.x + cmx.x) * 0.5, (cmn.y + cmx.y) * 0.5)
+    ang = math.atan2(dc[1] - cc[1], dc[0] - cc[0])
+    chair.rotation_euler = (0.0, 0.0, ang)
+    bpy.context.view_layer.update()
+    for _ in range(24):
+        cmn, cmx = cc0.world_bbox(chair)
+        dmn, dmx = cc0.world_bbox(desk)
+        if not _aabb_overlap(cmn, cmx, dmn, dmx):
+            gap = _aabb_clearance_m(cmn, cmx, dmn, dmx)
+            if gap >= FURN_CLEARANCE_M:
+                return
+        chair.location.x += 0.06
+        chair.location.y += 0.06
+        bpy.context.view_layer.update()
+    snap_min_z(chair, FLOOR_TOP)
+
+
+def _overlap_pair_allowed(ka: str, kb: str) -> bool:
+    pair = {ka, kb}
+    if pair == {"prop_desk", "prop_rug"}:
+        return True
+    if ka in STACKED_ON_DESK and kb == "prop_desk":
+        return True
+    if kb in STACKED_ON_DESK and ka == "prop_desk":
+        return True
+    if ka in STACKED_ON_DESK and kb in STACKED_ON_DESK:
+        return True
+    return False
+
+
+def furniture_bbox_report(kit_objects: dict[str, bpy.types.Object]) -> tuple[int, list[str]]:
+    keys = sorted(k for k in kit_objects if k in FURNITURE_SEPARATION_KEYS)
+    overlaps = 0
+    notes: list[str] = []
+    for i, ka in enumerate(keys):
+        oba = kit_objects[ka]
+        amn, amx = cc0.world_bbox(oba)
+        for kb in keys[i + 1 :]:
+            if _overlap_pair_allowed(ka, kb):
+                continue
+            obb = kit_objects[kb]
+            bmn, bmx = cc0.world_bbox(obb)
+            if _aabb_overlap(amn, amx, bmn, bmx):
+                overlaps += 1
+                notes.append(f"{ka}<->{kb}")
+    return overlaps, notes
+
+
 def weld_room_meshes(kit: dict[str, bpy.types.Object]) -> None:
     kit["kit_floor"] = cc0.join_welded(kit.pop("_floor_tiles"), "kit_floor", "floor")
     shells = kit.pop("_wall_back")
@@ -426,20 +549,19 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     keys: list[str] = []
     cx, cy = 2.05, 1.95
     specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
+        ("prop_rug", "rugRectangle.glb", (cx, cy), math.radians(200), FURN_SCALE * 0.48),
         ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
-        ("prop_chair", "chairDesk.glb", (cx + 0.52, cy + 0.55), math.radians(215), FURN_SCALE * 0.92),
-        ("prop_laptop", "laptop.glb", (cx + 0.08, cy + 0.10), math.radians(200), FURN_SCALE * 0.82),
-        ("prop_keyboard", "computerKeyboard.glb", (cx - 0.10, cy + 0.04), math.radians(195), FURN_SCALE * 0.88),
-        ("prop_lamp", "lampRoundTable.glb", (cx + 0.42, cy + 0.06), math.radians(-18), FURN_SCALE * 0.92),
-        ("prop_books", "books.glb", (cx - 0.22, cy + 0.22), math.radians(15), FURN_SCALE * 0.8),
+        ("prop_chair", "chairDesk.glb", (cx + 0.72, cy + 0.78), math.radians(200), FURN_SCALE * 0.88),
+        ("prop_screen", "computerScreen.glb", (cx + 0.06, cy + 0.08), math.radians(200), FURN_SCALE * 0.72),
+        ("prop_keyboard", "computerKeyboard.glb", (cx - 0.12, cy + 0.02), math.radians(195), FURN_SCALE * 0.82),
+        ("prop_lamp", "lampRoundTable.glb", (cx + 0.38, cy - 0.06), math.radians(-18), FURN_SCALE * 0.90),
         ("prop_bookcase", "bookcaseClosed.glb", (0.72, 2.92), math.pi / 2, FURN_SCALE * 0.92),
-        ("prop_box_a", "cardboardBoxClosed.glb", (1.05, 2.88), math.radians(18), FURN_SCALE * 0.82),
-        ("prop_box_b", "cardboardBoxClosed.glb", (1.35, 2.62), math.radians(-12), FURN_SCALE * 0.82),
-        ("prop_workbench", "sideTable.glb", (1.25, 1.22), math.radians(8), FURN_SCALE * 0.92),
+        ("prop_box_a", "cardboardBoxClosed.glb", (0.92, 2.92), math.radians(18), FURN_SCALE * 0.82),
+        ("prop_box_b", "cardboardBoxClosed.glb", (1.42, 2.55), math.radians(-12), FURN_SCALE * 0.82),
+        ("prop_workbench", "sideTable.glb", (0.82, 0.92), math.radians(8), FURN_SCALE * 0.86),
         ("prop_plant", "plantSmall1.glb", (2.95, 1.18), math.radians(-25), FURN_SCALE * 1.0),
-        ("prop_speaker", "speaker.glb", (1.05, 1.38), math.radians(12), FURN_SCALE * 0.88),
-        ("prop_crate", "cardboardBoxClosed.glb", (2.55, 2.78), math.radians(-8), FURN_SCALE * 0.78),
-        ("prop_tool_table", "sideTable.glb", (1.68, 1.62), math.radians(95), FURN_SCALE * 0.85),
+        ("prop_speaker", "speaker.glb", (1.92, 0.88), math.radians(12), FURN_SCALE * 0.84),
+        ("prop_tool_table", "sideTable.glb", (0.72, 1.58), math.radians(95), FURN_SCALE * 0.80),
     ]
     for key, glb, xy, rot, sc in specs:
         kit_objects[key] = furniture_prop(key, glb, xy, rot_z=rot, scale=sc if sc else FURN_SCALE)
@@ -481,20 +603,14 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     if mn.y < GAP_TOL:
         wb.location.y += GAP_TOL - mn.y
 
+    desk = kit_objects["prop_desk"]
+    fit_screen_to_desk(kit_objects["prop_screen"], desk, width_ratio=0.40)
     stack_desk_props(kit_objects)
-
-    bpy.ops.mesh.primitive_plane_add(size=2.65, location=(2.06, 1.36, FLOOR_TOP + 0.004))
-    stain = bpy.context.active_object
-    stain.name = "kit_floor_stain"
-    stain.rotation_euler = (0.0, 0.0, math.radians(14))
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.subdivide(number_cuts=12)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    kit_objects["kit_floor_stain"] = stain
+    enforce_chair_facing_desk(kit_objects)
     return keys
 
 
-STACKED_ON_DESK = frozenset({"prop_laptop", "prop_keyboard", "prop_books", "prop_lamp"})
+STACKED_ON_DESK = frozenset({"prop_screen", "prop_keyboard", "prop_lamp"})
 
 
 def snap_prop_on_support(child: bpy.types.Object, parent: bpy.types.Object, *, z_offset: float = 0.002) -> None:
@@ -561,14 +677,18 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
             }
         )
     cardboard_gaps: dict[str, float] = {}
-    for key in ("prop_box_a", "prop_box_b", "prop_crate"):
+    for key in ("prop_box_a", "prop_box_b"):
         ob = kit_objects.get(key)
         if ob:
             cardboard_gaps[key] = round(cc0.cardboard_lid_gap_m(ob), 5)
+    ovl_count, ovl_pairs = furniture_bbox_report(kit_objects)
     payload = {
         "assetId": ASSET_ID,
         "kenneyFurnitureGlb": dict(KENNEY_GLB_SOURCES),
         "cardboardLidGapM": cardboard_gaps,
+        "furnitureBboxOverlapCount": ovl_count,
+        "furnitureBboxOverlapPairs": ovl_pairs,
+        "furnitureClearanceMinM": FURN_CLEARANCE_M,
         "floorTopZ": FLOOR_TOP,
         "wallHeightM": WALL_H,
         "floorBounds": {"minX": 0.0, "maxX": ROOM, "minY": 0.0, "maxY": ROOM},
@@ -594,10 +714,7 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         if key.startswith("_") or key == "kit_wall_left":
             continue
         role = KIT_ROLES.get(key, "prop")
-        if key == "kit_floor_stain":
-            ob.data.materials.clear()
-            ob.data.materials.append(cc0.build_stain_decal_material("kit_floor_stain"))
-        elif key in ("prop_box_a", "prop_box_b", "prop_crate"):
+        if key in ("prop_box_a", "prop_box_b"):
             cc0.apply_palette_material(ob, "box")
         elif key in KENNEY_RESTYLE:
             cc0.apply_kenney_restyle(ob, KENNEY_RESTYLE[key])
@@ -662,7 +779,7 @@ def main() -> dict:
         room=ROOM,
         wall_h=WALL_H,
     )
-    ortho_front_hide = frozenset({"kit_wall_back"})
+    ortho_front_hide = frozenset({"kit_wall_back", "kit_wall_corner"})
     cc0.render_ortho_wall_check(
         export_list,
         cc0.PREVIEW_ROOT / f"{ASSET_ID}-ortho-front.png",

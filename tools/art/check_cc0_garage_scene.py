@@ -39,10 +39,15 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         if g > tol:
             errs.append(f"FAIL: {prefix}{key} cardboard lid mesh gap {g * 100:.2f} cm > 1 cm")
     kenney = data.get("kenneyFurnitureGlb") or {}
-    for req in ("prop_desk", "prop_chair", "prop_lamp", "prop_box_a"):
+    for req in ("prop_desk", "prop_chair", "prop_lamp", "prop_screen", "prop_box_a"):
         glb = kenney.get(req)
         if not glb or not str(glb).endswith(".glb"):
             errs.append(f"FAIL: {prefix}missing kenneyFurnitureGlb[{req!r}]")
+    overlap = int(data.get("furnitureBboxOverlapCount", -1))
+    if overlap < 0:
+        errs.append(f"FAIL: {prefix}missing furnitureBboxOverlapCount")
+    elif overlap != 0:
+        errs.append(f"FAIL: {prefix}furniture bbox overlaps {overlap}")
     door_max_y = float(data.get("rollDoorMaxYM", 99.0))
     wall_plane = float(data.get("rollDoorWallPlaneYM", 0.05))
     if door_max_y > wall_plane + 0.05:

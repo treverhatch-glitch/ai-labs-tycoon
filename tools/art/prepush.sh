@@ -42,6 +42,10 @@ if [[ "$HEAD_EMAIL" != *@users.noreply.github.com ]]; then
   echo "FAIL: HEAD author email must be GitHub noreply (got: $HEAD_EMAIL)" >&2
   exit 1
 fi
+if [[ "$HEAD_EMAIL" == *trevorhatch-glitch@* ]]; then
+  echo "FAIL: HEAD author email typo (trevorhatch); use 342607508+treverhatch-glitch@users.noreply.github.com" >&2
+  exit 1
+fi
 echo "OK: HEAD message (git log -1 --format=%B):"
 echo "$HEAD_BODY" | sed '/^$/d' | head -5
 if ! git diff --cached --quiet 2>/dev/null; then
@@ -63,6 +67,10 @@ if git rev-parse --verify "$UPSTREAM" >/dev/null 2>&1; then
     echo "FAIL: unpushed commit author email not noreply: $email" >&2
     exit 1
   fi
+    if [[ "$email" == *trevorhatch-glitch@* ]]; then
+      echo "FAIL: unpushed author email typo (trevorhatch); use treverhatch noreply" >&2
+      exit 1
+    fi
   done < <(git log "$UPSTREAM"..HEAD --format='%ae')
 fi
 echo "OK: no Co-authored-by in commit messages"

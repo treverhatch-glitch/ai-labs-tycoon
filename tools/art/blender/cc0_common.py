@@ -993,7 +993,7 @@ def render_ortho_wall_check(
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
     setup_preview_world_grey_hdri(hdri_strength=0.55)
     bpy.context.scene.render.engine = "CYCLES"
-    bpy.context.scene.cycles.samples = 48
+    bpy.context.scene.cycles.samples = 72
     bpy.context.scene.cycles.use_denoising = False
     bpy.context.scene.render.film_transparent = False
     hidden: list[tuple[bpy.types.Object, bool]] = []
@@ -1015,6 +1015,7 @@ def render_ortho_wall_check(
         maxs.y = max(maxs.y, mx.y)
         maxs.z = max(maxs.z, mx.z)
     center = (mins + maxs) * 0.5
+    lights = add_preview_warm_lights_z(Vector((center.x, center.y, maxs.z * 0.55)))
     span_x = max(maxs.x - mins.x, 0.05)
     span_y = max(maxs.y - mins.y, 0.05)
     span_z = max(maxs.z - mins.z, 0.05)
@@ -1028,9 +1029,9 @@ def render_ortho_wall_check(
         cam.location = Vector((center.x, center.y, maxs.z + max(span_x, span_y) * 1.6))
         cam.rotation_euler = (0.0, 0.0, 0.0)
     elif view == "front_left":
-        cam.data.ortho_scale = max(span_y, span_z) * (1.05 if interior_slice else 1.08)
+        cam.data.ortho_scale = max(span_y, span_z) * (0.58 if interior_slice else 1.08)
         if interior_slice:
-            cam.location = Vector((mins.x - 0.08, center.y, center.z))
+            cam.location = Vector((0.42, center.y + 0.12, center.z + 0.05))
         else:
             cam.location = Vector((mins.x - max(span_x, 1.0) * 1.2, center.y, center.z))
         direction = Vector((1.0, 0.0, 0.0))
@@ -1050,6 +1051,8 @@ def render_ortho_wall_check(
         encoding="utf-8",
     )
     bpy.data.objects.remove(cam, do_unlink=True)
+    for ob in lights:
+        bpy.data.objects.remove(ob, do_unlink=True)
     for ob, prev in hidden:
         ob.hide_render = prev
     _quantize_backdrop_rgb150(path)

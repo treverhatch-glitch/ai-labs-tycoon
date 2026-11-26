@@ -24,6 +24,8 @@ FIXTURE_60BE = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-60b
 FIXTURE_676 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6763f91c.png"
 FIXTURE_176 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-17674366.png"
 FIXTURE_9FE_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-9fe54dc7-ortho-front.png"
+FIXTURE_BC7_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-bc7eed36-ortho-front.png"
+FIXTURE_BC7_HERO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-bc7eed36.png"
 MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
@@ -52,8 +54,7 @@ def load_png_from_git(rel: str) -> "Image.Image":
     from PIL import Image
 
     rel = rel.replace("\\", "/").lstrip("/")
-    # Staged index first (hero script `git add`s before this check); HEAD matches after commit for owner review.
-    for spec in (f":{rel}", f"HEAD:{rel}"):
+    for spec in (f"HEAD:{rel}", f":{rel}"):
         try:
             data = subprocess.check_output(
                 ["git", "show", spec],
@@ -690,6 +691,117 @@ def fail13_visual_gates(im, path_name: str) -> list[str]:
     return errs
 
 
+def ortho_front_material_diversity_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    bins: set[tuple[int, int, int]] = set()
+    fg = 0
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x]:
+                continue
+            fg += 1
+            p = im.getpixel((x, y))
+            if p == CORNER_RGB:
+                continue
+            bins.add((p[0] // 32, p[1] // 32, p[2] // 32))
+    if fg < 400:
+        return [f"FAIL: {path_name} ortho-front too few foreground pixels ({fg})"]
+    if len(bins) < 4:
+        return [f"FAIL: {path_name} ortho-front <4 material colours ({len(bins)} bins)"]
+    return []
+
+
+def fail14_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail9_visual_gates(im, path_name)
+    errs.extend(box_dark_face_errs(im, path_name))
+    errs.extend(roll_door_brightness_errs(im, path_name))
+    errs.extend(chair_lamp_readability_errs(im, path_name))
+    return errs
+
+
+def ortho_front_bc7_brown_slab_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    brown = fg = 0
+    for y in range(int(h * 0.22), int(h * 0.78)):
+        for x in range(int(w * 0.28), int(w * 0.72)):
+            p = im.getpixel((x, y))
+            if p == CORNER_RGB:
+                continue
+            fg += 1
+            r, g, b = p
+            if r > g + 8 and saturation(p) < 0.38 and 90 <= luma(p) <= 175:
+                brown += 1
+    if fg < 400:
+        return [f"FAIL: {path_name} ortho-front brown gate too few samples"]
+    if brown / fg > 0.42:
+        return [f"FAIL: {path_name} ortho-front bc7 brown wall slab ({brown}/{fg})"]
+    return []
+
+
+def ortho_front_legacy_black_frac_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    black = sum(1 for p in im.getdata() if p == (0, 0, 0))
+    frac = black / (w * h)
+    if frac > 0.32:
+        return [f"FAIL: {path_name} ortho-front legacy black fraction {frac:.2%}"]
+    return []
+
+
+def ortho_front_center_black_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    cx, cy = w // 2, h // 2
+    p = im.getpixel((cx, cy))
+    if p == (0, 0, 0):
+        return [f"FAIL: {path_name} ortho-front center pure black {p}"]
+    return []
+
+
+def ortho_front_wall_slab_errs(im, path_name: str) -> list[str]:
+    """Fail when ortho-front is mostly exterior wall brown (bc7eed36 regression)."""
+    w, h = im.size
+    bg = _background_mask(im)
+    woodish = 0
+    fg = 0
+    for y in range(int(h * 0.18), int(h * 0.88)):
+        for x in range(int(w * 0.12), int(w * 0.88)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) > 0.32:
+                fg += 1
+                continue
+            fg += 1
+            lum = luma(p)
+            if p[0] > p[2] + 12 and 75 <= lum <= 185:
+                woodish += 1
+    if fg < 200:
+        return [f"FAIL: {path_name} ortho-front too few interior samples"]
+    if woodish / fg > 0.68:
+        return [f"FAIL: {path_name} ortho-front wall-slab dominant ({woodish}/{fg})"]
+    return []
+
+
+def hero_bc7_stain_patch_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    stain_px: list[float] = []
+    for y in range(int(h * 0.62), int(h * 0.72)):
+        for x in range(int(w * 0.26), int(w * 0.44)):
+            if bg[y][x]:
+                continue
+            p = im.getpixel((x, y))
+            if saturation(p) < 0.18:
+                stain_px.append(luma(p))
+    if len(stain_px) < 80:
+        return []
+    mean_l = sum(stain_px) / len(stain_px)
+    dark = sum(1 for v in stain_px if v < 96)
+    if dark > 150 and mean_l < 165:
+        return [f"FAIL: {path_name} bc7-style dark floor stain patch (dark={dark} mean={mean_l:.1f})"]
+    return []
+
+
 def fail8_visual_gates(im, path_name: str) -> list[str]:
     """Fail #8: bright concrete floor, stain contrast, cardboard hue, no black props."""
     errs = fail7_visual_gates(im, path_name)
@@ -1047,7 +1159,8 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail13_visual_gates(im, path_name))
+    errs.extend(fail14_visual_gates(im, path_name))
+    errs.extend(hero_bc7_stain_patch_errs(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -1071,6 +1184,8 @@ def check_ortho_images() -> list[str]:
         errs.extend(full_backdrop_mask_errs(im, Path(rel).name))
         if rel.endswith("ortho-front.png"):
             errs.extend(ortho_front_object_black_errs(im, Path(rel).name))
+            errs.extend(ortho_front_material_diversity_errs(im, Path(rel).name))
+            errs.extend(ortho_front_bc7_brown_slab_errs(im, Path(rel).name))
     return errs
 
 
@@ -1217,6 +1332,27 @@ def verify_regression_fixtures_fail() -> list[str]:
             errs.append(f"FAIL: fixture {label} must fail fail-13 ortho-front black gate")
 
     fixture_must_fail_fail13_ortho("9fe54dc7", FIXTURE_9FE_ORTHO)
+
+    def fixture_must_fail_fail14(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = hero_bc7_stain_patch_errs(im_f, fix.name)
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-14 tightened gates")
+
+    def fixture_must_fail_fail14_ortho(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = ortho_front_bc7_brown_slab_errs(im_f, fix.name)
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-14 ortho-front gates")
+
+    fixture_must_fail_fail14("bc7eed36", FIXTURE_BC7_HERO)
+    fixture_must_fail_fail14_ortho("bc7eed36", FIXTURE_BC7_ORTHO)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():
