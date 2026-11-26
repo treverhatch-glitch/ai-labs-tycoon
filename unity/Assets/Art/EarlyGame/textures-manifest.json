@@ -1,0 +1,53 @@
+{
+  "generator": "tools/art/generate_early_textures.py",
+  "assets": [
+    {
+      "id": "tex-garage-carpet",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-carpet.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 32
+    },
+    {
+      "id": "tex-garage-concrete",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-concrete.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 32
+    },
+    {
+      "id": "tex-garage-trim-orange",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-trim-orange.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 16
+    },
+    {
+      "id": "tex-garage-wall-beige",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-wall-beige.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 32
+    },
+    {
+      "id": "tex-garage-door-metal",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-door-metal.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 24
+    },
+    {
+      "id": "tex-garage-server-paint",
+      "path": "Assets/Art/EarlyGame/textures/tex-garage-server-paint.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 24
+    },
+    {
+      "id": "tex-hud-paper-warm",
+      "path": "Assets/Art/EarlyGame/textures/tex-hud-paper-warm.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 16
+    },
+    {
+      "id": "tex-crt-phosphor",
+      "path": "Assets/Art/EarlyGame/textures/tex-crt-phosphor.png",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "sizePx": 16
+    }
+  ]
+}

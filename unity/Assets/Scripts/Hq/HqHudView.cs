@@ -13,6 +13,9 @@ namespace AiLabs.Unity.Hq
         Text _dateLabel;
         Text _eraLabel;
         Button _weekButton;
+        Image _topBarImage;
+
+        public Image TopBarImage => _topBarImage;
 
         public void Bind(SimulationHost host)
         {
@@ -56,6 +59,7 @@ namespace AiLabs.Unity.Hq
             panelRect.anchoredPosition = Vector2.zero;
 
             var hud = panel.AddComponent<HqHudView>();
+            hud._topBarImage = panelImage;
             hud._cashLabel = CreateLabel(panel.transform, "CashLabel", new Vector2(16f, -12f), TextAnchor.UpperLeft);
             hud._dateLabel = CreateLabel(panel.transform, "DateLabel", new Vector2(16f, -40f), TextAnchor.UpperLeft);
             hud._eraLabel = CreateLabel(panel.transform, "EraLabel", new Vector2(-16f, -26f), TextAnchor.UpperRight);

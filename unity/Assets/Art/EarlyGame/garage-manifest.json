@@ -1,0 +1,146 @@
+{
+  "generator": "tools/art/generate_garage_kit.py",
+  "lot": "garage",
+  "gridTiles": {
+    "width": 14,
+    "height": 10
+  },
+  "tileSizeMeters": 0.45,
+  "assets": [
+    {
+      "id": "garage-floor-tile",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-floor-tile.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-wall-panel",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-wall-panel.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-exterior-wall",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-exterior-wall.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-roll-door",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-roll-door.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 80,
+      "faceCount": 60,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-server-closet",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-server-closet.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-land-for-sale-sign",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-land-for-sale-sign.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-lot-curb",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-lot-curb.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-window-frame",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-window-frame.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-desk-crt",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-desk-crt.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 64,
+      "faceCount": 48,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-crt-tower",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-crt-tower.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-voodude-rack",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-voodude-rack.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 80,
+      "faceCount": 60,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-whiteboard-1995",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-whiteboard-1995.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 48,
+      "faceCount": 36,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-coffee-drip",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-coffee-drip.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 24,
+      "faceCount": 18,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-folding-chair",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-folding-chair.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 32,
+      "faceCount": 24,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    },
+    {
+      "id": "garage-cable-spool",
+      "path": "Assets/Art/EarlyGame/garage-kit/garage-cable-spool.obj",
+      "license": "CC0-1.0 (procedural, in-repo)",
+      "vertexCount": 16,
+      "faceCount": 12,
+      "era": "dial-up-days",
+      "scaleMeters": 1.0
+    }
+  ]
+}

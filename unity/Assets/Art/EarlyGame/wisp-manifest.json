@@ -1,0 +1,30 @@
+{
+  "generator": "tools/art/generate_wisp_mascot.py",
+  "assets": [
+    {
+      "id": "wisp-happy",
+      "path": "Assets/Art/EarlyGame/wisp-moods/wisp-happy.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "wisp-neutral",
+      "path": "Assets/Art/EarlyGame/wisp-moods/wisp-neutral.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "wisp-worried",
+      "path": "Assets/Art/EarlyGame/wisp-moods/wisp-worried.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "wisp-angry",
+      "path": "Assets/Art/EarlyGame/wisp-moods/wisp-angry.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    },
+    {
+      "id": "wisp-glowing",
+      "path": "Assets/Art/EarlyGame/wisp-moods/wisp-glowing.svg",
+      "license": "CC0-1.0 (procedural, in-repo)"
+    }
+  ]
+}
