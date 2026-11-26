@@ -423,6 +423,12 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     tint_garage_parts(mesh_obs, asset_id)
     if category == "staff-kit" and part_count < 6:
         raise RuntimeError(f"FAIL {asset_id}: need >=6 parts before join (have {part_count})")
+    if category == "staff-kit":
+        import staff_connectivity as staff_conn
+
+        ok_conn, msg_conn = staff_conn.check_prejoin_connectivity(mesh_obs, asset_id)
+        if not ok_conn:
+            raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
     if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
         root = link_or_join(mesh_obs)
@@ -432,7 +438,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         root.select_set(True)
         bpy.ops.object.mode_set(mode="EDIT")
         bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.remove_doubles(threshold=0.006)
+        bpy.ops.mesh.remove_doubles(threshold=0.024)
         bpy.ops.object.mode_set(mode="OBJECT")
     else:
         root = link_or_join(mesh_obs)

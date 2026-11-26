@@ -65,8 +65,10 @@ def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
             bc.assign_solid(pupil, dark, 0.1)
             lid = bc.add_cube(f"EyeLid_{sx}", (eye_w + 0.02, 0.05, 0.04), (eye_sep * sx, base_y + 0.10, face_z - 0.01))
             bc.assign_emission(lid, (0.92, 0.88, 1.0, 1.0), strength=2.2)
-        mouth = bc.add_cube("GlowSmile", (0.22, 0.09, 0.03), (0, base_y - 0.10, face_z))
-        bc.assign_emission(mouth, (0.88, 0.78, 1.0, 1.0), strength=2.8)
+        mouth_outer = bc.add_cube("GlowSmile", (0.24, 0.10, 0.04), (0, base_y - 0.10, face_z + 0.01))
+        bc.assign_emission(mouth_outer, (0.88, 0.78, 1.0, 1.0), strength=2.8)
+        inner = bc.add_cube("GlowSmileInner", (0.18, 0.06, 0.025), (0, base_y - 0.10, face_z + 0.02))
+        bc.assign_solid(inner, (0.45, 0.28, 0.72, 1.0), 0.25)
         return
 
     eye_y = 0.08 if mood != "worried" else 0.11
@@ -84,21 +86,21 @@ def _wisp_face(mood_id: str, core: tuple[float, float, float, float]) -> None:
                 (eye_sep * sx + sx * 0.02, base_y + 0.20, face_z + 0.01),
             )
             bc.assign_solid(brow, dark, 0.2)
-        mouth = bc.add_cube("Frown", (0.16, 0.04, 0.025), (0, base_y - 0.02, face_z))
+        mouth = bc.add_cube("Frown", (0.20, 0.08, 0.035), (0, base_y - 0.06, face_z + 0.01))
         bc.assign_solid(mouth, (0.82, 0.10, 0.08, 1.0), 0.32)
     elif mood == "worried":
         for sx in (-1, 1):
-            brow = bc.add_cube(f"BrowRaise_{sx}", (0.12, 0.03, 0.025), (eye_sep * sx, base_y + 0.22, face_z))
+            brow = bc.add_cube(f"BrowRaise_{sx}", (0.14, 0.04, 0.03), (eye_sep * sx, base_y + 0.22, face_z))
             bc.assign_solid(brow, dark, 0.2)
-        mouth = bc.add_cube("Omouth", (0.12, 0.12, 0.025), (0, base_y - 0.12, face_z))
+        mouth = bc.add_cube("WorriedMouth", (0.20, 0.10, 0.035), (0, base_y - 0.12, face_z + 0.01))
         bc.assign_solid(mouth, (0.95, 0.55, 0.12, 1.0), 0.35)
     elif mood == "happy":
-        mouth = bc.add_cube("Smile", (0.20, 0.07, 0.025), (0, base_y - 0.12, face_z))
+        mouth = bc.add_cube("Smile", (0.24, 0.09, 0.035), (0, base_y - 0.12, face_z + 0.01))
         bc.assign_solid(mouth, (0.92, 0.22, 0.45, 1.0), 0.3)
         cheek = bc.add_cube("CheekSparkle", (0.06, 0.05, 0.02), (0.20, base_y - 0.04, face_z))
         bc.assign_emission(cheek, (0.95, 0.88, 0.2, 1.0), strength=1.5)
     else:
-        mouth = bc.add_cube("NeutralMouth", (0.16, 0.035, 0.025), (0, base_y - 0.10, face_z))
+        mouth = bc.add_cube("NeutralMouth", (0.20, 0.05, 0.035), (0, base_y - 0.10, face_z + 0.01))
         bc.assign_solid(mouth, (0.35, 0.32, 0.36, 1.0), 0.35)
 
 
