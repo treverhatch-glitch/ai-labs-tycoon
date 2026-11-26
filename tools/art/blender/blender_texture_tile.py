@@ -12,6 +12,64 @@ REPO = Path(__file__).resolve().parents[3]
 TEX_OUT = REPO / "unity/Assets/Art/EarlyGame/textures"
 STREAM = REPO / "unity/Assets/StreamingAssets/EarlyGame/textures"
 SIZE = 1024
+SWATCH_GREY = (0.48, 0.48, 0.50, 1.0)
+
+
+def render_tile_swatch(plane: bpy.types.Object, tex_dir: Path, asset_id: str, preview: Path) -> None:
+    """Flat orthographic 2×2 swatch — no studio corner or backdrop."""
+    albedo = tex_dir / f"{asset_id}_albedo.png"
+    if not albedo.exists():
+        albedo = tex_dir / f"{asset_id}.png"
+    mat = bpy.data.materials.new(f"{asset_id}_swatch")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    emit = nodes.new("ShaderNodeEmission")
+    emit.inputs["Strength"].default_value = 1.0
+    if albedo.exists():
+        tex = nodes.new("ShaderNodeTexImage")
+        tex.image = bpy.data.images.load(str(albedo))
+        tex.interpolation = "Closest"
+        links.new(tex.outputs["Color"], emit.inputs["Color"])
+    else:
+        emit.inputs["Color"].default_value = SWATCH_GREY
+    links.new(emit.outputs["Emission"], out.inputs["Surface"])
+    plane.data.materials.clear()
+    plane.data.materials.append(mat)
+
+    world = bpy.data.worlds.new("SwatchWorld")
+    bpy.context.scene.world = world
+    world.use_nodes = True
+    wnodes = world.node_tree.nodes
+    wnodes.clear()
+    wout = wnodes.new("ShaderNodeOutputWorld")
+    wbg = wnodes.new("ShaderNodeBackground")
+    wbg.inputs["Color"].default_value = SWATCH_GREY
+    wbg.inputs["Strength"].default_value = 1.0
+    world.node_tree.links.new(wbg.outputs["Background"], wout.inputs["Surface"])
+
+    for ob in bpy.context.scene.objects:
+        if ob.type == "LIGHT":
+            ob.hide_render = True
+
+    bpy.ops.object.camera_add(location=(0.0, 0.0, 2.6))
+    cam = bpy.context.active_object
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = 2.15
+    cam.rotation_euler = (0.0, 0.0, 0.0)
+    bpy.context.scene.camera = cam
+
+    scene = bpy.context.scene
+    scene.render.engine = "BLENDER_EEVEE"
+    scene.render.film_transparent = False
+    scene.render.image_settings.color_mode = "RGB"
+    scene.render.resolution_x = 512
+    scene.render.resolution_y = 512
+    preview.parent.mkdir(parents=True, exist_ok=True)
+    scene.render.filepath = str(preview)
+    bpy.ops.render.render(write_still=True)
 
 
 def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tuple[int, int, int], noise_scale: float = 9.0) -> None:
@@ -59,7 +117,7 @@ def bake_tileable(asset_id: str, base_rgb: tuple[int, int, int], accent_rgb: tup
 
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
     try:
-        bc.render_preview(plane, preview)
+        render_tile_swatch(plane, TEX_OUT, asset_id, preview)
     except Exception as exc:  # noqa: BLE001
         print(f"WARN preview {asset_id}: {exc}")
     print("OK texture", asset_id, f"blender {bc.BLENDER_VERSION}")

@@ -61,6 +61,19 @@ def union_overlapping_meshes(objects: list[bpy.types.Object]) -> bpy.types.Objec
     return base
 
 
+def join_bridge_mesh(root: bpy.types.Object, bridge: bpy.types.Object) -> bpy.types.Object:
+    """Join bridge spine without boolean (preserves material slots)."""
+    bpy.ops.object.select_all(action="DESELECT")
+    root.select_set(True)
+    bridge.select_set(True)
+    bpy.context.view_layer.objects.active = root
+    bpy.ops.object.join()
+    merged = bpy.context.view_layer.objects.active
+    weld_extent = max(merged.dimensions) if max(merged.dimensions) > 0 else 1.0
+    weld_coincident_vertices(merged, threshold=min(0.04, weld_extent * 0.035))
+    return merged
+
+
 def link_or_join(objects: list[bpy.types.Object]) -> bpy.types.Object:
     if not objects:
         raise RuntimeError("no objects to join")
@@ -153,6 +166,8 @@ def ground_scene_meshes() -> None:
 
 
 def mesh_world_min_z(ob: bpy.types.Object) -> float:
+    if not ob.data.vertices:
+        return 0.0
     return min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
 
 
@@ -209,15 +224,15 @@ def add_connect_spine_part(objects: list[bpy.types.Object]) -> bpy.types.Object:
     # Tall assets: thin spine in X/Y; wide assets: span on all axes modestly.
     if span.z >= span.x * 1.05 and span.z >= span.y * 1.05:
         spine.scale = (
-            max(0.12, span.x * 0.72),
-            max(0.12, span.y * 0.72),
-            max(0.12, span.z * 1.02),
+            max(0.15, span.x * 0.85),
+            max(0.15, span.y * 0.85),
+            max(0.15, span.z * 1.25),
         )
     else:
         spine.scale = (
-            max(0.12, span.x * 1.02),
-            max(0.12, span.y * 1.02),
-            max(0.12, span.z * 1.02),
+            max(0.15, span.x * 1.25),
+            max(0.15, span.y * 1.25),
+            max(0.15, span.z * 1.25),
         )
     bpy.ops.object.transform_apply(scale=True)
     assign_solid(spine, (0.5, 0.5, 0.5, 1.0), 0.5)
@@ -248,6 +263,66 @@ def mesh_island_count(ob: bpy.types.Object) -> int:
                         stack.append(linked)
     bm.free()
     return islands
+
+
+def island_centroids(ob: bpy.types.Object) -> list[Vector]:
+    import bmesh
+
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    centers: list[Vector] = []
+    for face in bm.faces:
+        if face.index in visited:
+            continue
+        stack = [face]
+        acc = Vector((0.0, 0.0, 0.0))
+        count = 0
+        while stack:
+            f = stack.pop()
+            if f.index in visited:
+                continue
+            visited.add(f.index)
+            for v in f.verts:
+                acc += v.co
+                count += 1
+            for e in f.edges:
+                for linked in e.link_faces:
+                    if linked.index not in visited:
+                        stack.append(linked)
+        if count > 0:
+            centers.append(ob.matrix_world @ (acc / count))
+    bm.free()
+    return centers
+
+
+def bridge_mesh_islands(ob: bpy.types.Object, iterations: int = 10) -> bpy.types.Object:
+    from garage_canonical_materials import assign_slot  # type: ignore
+
+    active = ob
+    for _ in range(iterations):
+        if mesh_island_count(active) <= 1:
+            return active
+        centers = island_centroids(active)
+        if len(centers) < 2:
+            return active
+        a, b = centers[0], centers[1]
+        mid = (a + b) * 0.5
+        dist = max((a - b).length, 0.06)
+        inv = active.matrix_world.inverted()
+        local_mid = inv @ mid
+        local_dir = (inv @ b - inv @ a).normalized()
+        bpy.ops.mesh.primitive_cube_add(size=1, location=local_mid)
+        link = bpy.context.active_object
+        link.name = "IslandBridge"
+        thick = max(0.045, min(0.09, dist * 0.08))
+        link.scale = (thick, thick, dist * 0.55)
+        link.rotation_euler = local_dir.to_track_quat("Z", "Y").to_euler()
+        bpy.ops.object.transform_apply(scale=True, rotation=True)
+        assign_slot(link, "dark_metal")
+        active = join_bridge_mesh(active, link)
+    return active
 
 
 def uv_unwrap(ob: bpy.types.Object) -> None:
@@ -311,7 +386,10 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     tint_garage_parts(mesh_obs, asset_id)
     parts = list(mesh_obs)
     if len(parts) > 1:
+        from garage_canonical_materials import assign_slot  # type: ignore
+
         parts.append(add_connect_spine_part(parts))
+        assign_slot(parts[-1], "dark_metal")
         root = union_overlapping_meshes(parts)
     else:
         root = mesh_obs[0]
@@ -321,25 +399,23 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if islands > 1:
         weld_coincident_vertices(root, threshold=min(0.06, weld_extent * 0.08))
         islands = mesh_island_count(root)
-    if islands > 1 and asset_id.startswith("garage-"):
+    if islands > 1:
         bridge = add_connect_spine_part([root])
+        if asset_id.startswith("garage-"):
+            from garage_canonical_materials import assign_slot  # type: ignore
+
+            assign_slot(bridge, "dark_metal")
         root = union_overlapping_meshes([root, bridge])
         islands = mesh_island_count(root)
     if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
+    bevel_object(root, width=0.012, segments=2)
     snap_root_to_ground(root)
     min_z = mesh_world_min_z(root)
     if min_z > 0.008:
         raise RuntimeError(f"{asset_id}: not grounded (min_z={min_z:.4f})")
-    thin = min(root.dimensions)
-    bevel_object(root, width=min(0.014, max(0.005, thin * 0.10)), segments=2)
     smooth_shade(root)
     uv_unwrap(root)
-    if asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS:
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.mesh.subdivide(number_cuts=1)
-        bpy.ops.object.mode_set(mode="OBJECT")
 
     verts = len(root.data.vertices)
     tris = sum(len(p.vertices) for p in root.data.polygons)
@@ -352,14 +428,21 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 f"{asset_id}: need >={min_parts} sub-objects before join (got {part_count})"
             )
     if asset_id.startswith("garage-"):
-        stamp_garage_face_colors(root, asset_id)
-        unify_vertex_color_material(root, asset_id)
+        ensure_garage_export_materials(root, asset_id)
+    mat_snapshot = snapshot_poly_materials(root) if asset_id.startswith("garage-") else None
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
-    apply_preview_material(root, tex_dir, asset_id)
+    if mat_snapshot is not None:
+        restore_poly_materials(root, mat_snapshot)
     glb_path = out_dir / f"{asset_id}.glb"
     if asset_id.startswith("garage-"):
         mesh_copy = root.data.copy()
         garage_export = bpy.data.objects.new(f"{asset_id}_export", mesh_copy)
+        garage_export.data.materials.clear()
+        for mat in root.data.materials:
+            if mat is not None:
+                garage_export.data.materials.append(mat)
+        for poly, rpoly in zip(garage_export.data.polygons, root.data.polygons, strict=False):
+            poly.material_index = rpoly.material_index
         bpy.context.collection.objects.link(garage_export)
         garage_export.matrix_world = root.matrix_world.copy()
         orient_build_z_to_gltf_y_up(garage_export)
@@ -370,6 +453,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         snap_root_to_ground(root)
         apply_object_transforms(root)
         export_gltf(root, glb_path, y_up=True)
+    apply_preview_material(root, tex_dir, asset_id)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
     try:
         render_preview(root, preview_path)
@@ -405,13 +489,10 @@ def assign_solid(
 
 
 def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
-    """Per-part saturated materials before join/bake."""
-    stroke_colors = (
-        (0.72, 0.14, 0.10, 1.0),
-        (0.12, 0.38, 0.62, 1.0),
-        (0.18, 0.52, 0.22, 1.0),
-        (0.55, 0.28, 0.08, 1.0),
-    )
+    """Per-part canonical materials (≤4 slots per prop) before join/bake."""
+    from garage_canonical_materials import assign_slot  # type: ignore
+
+    stroke_slots = ("marker_red", "marker_blue", "marker_green", "plastic_orange")
     for ob in mesh_obs:
         if ob.data.materials and ob.data.materials[0]:
             nt = ob.data.materials[0].node_tree
@@ -421,97 +502,90 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
                     continue
         name = ob.name.lower()
         if name.startswith("stroke"):
-            idx = 0
-            try:
-                idx = int("".join(c for c in name if c.isdigit()) or "0")
-            except ValueError:
-                idx = 0
-            assign_solid(ob, stroke_colors[idx % len(stroke_colors)], 0.38)
+            idx = int("".join(c for c in name if c.isdigit()) or "0")
+            assign_slot(ob, stroke_slots[idx % len(stroke_slots)])
         elif "screen" in name or "led" in name:
             continue
         elif "leg" in name or "rail" in name or "brace" in name:
-            assign_solid(ob, (0.40, 0.44, 0.50, 1.0), 0.32)
+            assign_slot(ob, "steel")
         elif "frame" in name or "tray" in name or "trim" in name or "baseboard" in name or name == "sill":
-            assign_solid(ob, (0.85, 0.48, 0.14, 1.0), 0.45)
+            assign_slot(ob, "plastic_orange")
         elif asset_id == "garage-floor-tile":
-            assign_solid(ob, (0.86, 0.50, 0.16, 1.0), 0.62)
+            assign_slot(ob, "concrete" if "slab" in name else "plastic_orange")
         elif asset_id == "garage-cable-spool" and "hub" in name:
-            assign_solid(ob, (0.52, 0.36, 0.22, 1.0), 0.55)
-        elif asset_id == "garage-cable-spool" and "coil" in name:
-            assign_solid(ob, (0.72, 0.48, 0.18, 1.0), 0.42)
+            assign_slot(ob, "wood")
+        elif asset_id == "garage-cable-spool" and ("coil" in name or "flange" in name.lower()):
+            assign_slot(ob, "coil_copper")
+        elif asset_id == "garage-cable-spool" and "cable" in name:
+            assign_slot(ob, "cable_black")
         elif asset_id == "garage-lot-curb" and "curb" in name:
-            assign_solid(ob, (0.58, 0.54, 0.50, 1.0), 0.75)
+            assign_slot(ob, "curb_grey")
         elif asset_id == "garage-lot-curb" and "grass" in name:
-            assign_solid(ob, (0.14, 0.72, 0.24, 1.0), 0.65)
+            assign_slot(ob, "grass")
+        elif asset_id == "garage-lot-curb":
+            assign_slot(ob, "concrete")
         elif asset_id == "garage-wall-panel" and "stripe" in name:
-            assign_solid(ob, (0.88, 0.45, 0.12, 1.0), 0.40)
+            assign_slot(ob, "plastic_orange")
         elif asset_id == "garage-server-closet" and "handle" in name:
-            assign_solid(ob, (0.90, 0.55, 0.12, 1.0), 0.32)
+            assign_slot(ob, "plastic_orange")
         elif "slat" in name:
-            assign_solid(ob, (0.50, 0.54, 0.58, 1.0), 0.28)
-        elif "rib" in name:
-            assign_solid(ob, (0.35, 0.38, 0.42, 1.0), 0.38)
-        elif asset_id == "garage-coffee-drip" and any(
-            k in name for k in ("body", "warmer", "pot", "spout", "carafe", "housing", "warmercore")
-        ):
-            assign_solid(ob, (0.86, 0.24, 0.10, 1.0), 0.32)
+            assign_slot(ob, "corrugated")
         elif asset_id == "garage-coffee-drip" and "base" in name:
-            assign_solid(ob, (0.22, 0.22, 0.24, 1.0), 0.55)
+            assign_slot(ob, "plastic_dark")
         elif asset_id == "garage-coffee-drip" and "cord" in name:
-            assign_solid(ob, (0.05, 0.05, 0.05, 1.0), 0.75)
+            assign_slot(ob, "cable_black")
+        elif asset_id == "garage-coffee-drip":
+            assign_slot(ob, "plastic_orange")
+        elif asset_id == "garage-land-for-sale-sign" and "post" in name:
+            assign_slot(ob, "steel")
         elif asset_id == "garage-land-for-sale-sign":
-            assign_solid(ob, (1.0, 0.90, 0.02, 1.0), 0.34)
-        elif asset_id == "garage-roll-door" and "curtain" in name:
-            assign_solid(ob, (0.52, 0.54, 0.58, 1.0), 0.32)
+            assign_slot(ob, "sign_yellow")
+        elif asset_id == "garage-roll-door" and ("curtain" in name or "slat" in name):
+            assign_slot(ob, "corrugated")
         elif asset_id == "garage-roll-door":
-            assign_solid(ob, (0.94, 0.50, 0.08, 1.0), 0.38)
+            assign_slot(ob, "plastic_orange")
         elif asset_id == "garage-exterior-wall" and "core" in name:
-            assign_solid(ob, (0.72, 0.54, 0.38, 1.0), 0.58)
+            assign_slot(ob, "plastic_beige")
         elif asset_id == "garage-whiteboard-1995" and "surface" in name:
-            assign_solid(ob, (0.94, 0.93, 0.88, 1.0), 0.32)
+            assign_slot(ob, "whiteboard")
         elif asset_id == "garage-whiteboard-1995" and name.startswith("stroke"):
             continue
         elif asset_id == "garage-whiteboard-1995":
-            assign_solid(ob, (0.82, 0.56, 0.22, 1.0), 0.42)
+            assign_slot(ob, "frame_wood")
         elif asset_id == "garage-window-frame" and "pane" in name:
-            assign_solid(ob, (0.22, 0.62, 0.88, 1.0), 0.12)
-        elif asset_id == "garage-window-frame" and "mullion" in name:
-            assign_solid(ob, (0.92, 0.52, 0.10, 1.0), 0.35)
-        elif asset_id == "garage-window-frame" and "header" in name:
-            assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.40)
+            assign_slot(ob, "glass_dark")
         elif asset_id == "garage-window-frame":
-            assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.42)
+            assign_slot(ob, "plastic_orange")
+        elif asset_id == "garage-folding-chair" and "seat" in name:
+            assign_slot(ob, "wood")
         elif asset_id == "garage-folding-chair":
-            assign_solid(ob, (0.58, 0.42, 0.28, 1.0), 0.52)
+            assign_slot(ob, "steel")
         elif asset_id == "garage-desk-crt" and "desktop" in name:
-            assign_solid(ob, (0.18, 0.12, 0.08, 1.0), 0.78)
+            assign_slot(ob, "desk_wood")
         elif asset_id == "garage-desk-crt" and "drawer" in name:
-            assign_solid(ob, (0.48, 0.36, 0.24, 1.0), 0.55)
+            assign_slot(ob, "wood")
         elif asset_id == "garage-desk-crt" and ("keyboard" in name or name.startswith("key")):
-            assign_solid(ob, (0.78, 0.78, 0.80, 1.0), 0.35)
-        elif asset_id == "garage-desk-crt" and ("crt" in name or "screen" in name or "crtblock" in name):
-            assign_solid(ob, (0.88, 0.82, 0.72, 1.0), 0.35)
-        elif asset_id == "garage-crt-tower" and (
-            "sidelabel" in name or "frontpanel" in name or "toptrim" in name
-        ):
-            assign_solid(ob, (0.95, 0.48, 0.08, 1.0), 0.35)
-        elif asset_id == "garage-crt-tower" and "screen" not in name and "led" not in name:
-            assign_solid(ob, (0.78, 0.74, 0.66, 1.0), 0.40)
+            assign_slot(ob, "keyboard_grey")
+        elif asset_id == "garage-desk-crt" and ("crt" in name or "bezel" in name):
+            assign_slot(ob, "crt_bezel")
+        elif asset_id == "garage-desk-crt" and "leg" in name:
+            assign_slot(ob, "steel")
+        elif asset_id == "garage-crt-tower" and "screen" in name:
+            continue
+        elif asset_id == "garage-crt-tower" and "led" in name:
+            continue
+        elif asset_id == "garage-crt-tower":
+            assign_slot(ob, "crt_bezel")
+        elif asset_id == "garage-voodude-rack" and "led" in name:
+            continue
         elif asset_id == "garage-voodude-rack":
-            if "led" in name or "light" in name:
-                assign_solid(ob, (0.95, 0.25, 0.15, 1.0), 0.25)
-            else:
-                assign_solid(ob, (0.10, 0.10, 0.12, 1.0), 0.38)
+            assign_slot(ob, "dark_metal")
         elif asset_id == "garage-server-closet":
-            assign_solid(ob, (0.18, 0.20, 0.24, 1.0), 0.35)
+            assign_slot(ob, "dark_metal")
         elif "surface" in name:
-            assign_solid(ob, (0.94, 0.95, 0.92, 1.0), 0.28)
+            assign_slot(ob, "whiteboard")
         elif asset_id.startswith("garage-"):
-            from blender_material_palette import spec_for
-
-            spec = spec_for(asset_id)
-            l = spec["light"]
-            assign_solid(ob, (l[0], l[1], l[2], 1.0), float(spec["roughness"]))
+            assign_slot(ob, "plastic_beige")
 
 
 def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float], strength: float = 2.0) -> None:
@@ -525,7 +599,7 @@ def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float
     ob.data.materials.append(mat)
 
 
-def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.35) -> tuple[float, float, float, float]:
+def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 1.32) -> tuple[float, float, float, float]:
     h, s, v = colorsys.rgb_to_hsv(rgba[0], rgba[1], rgba[2])
     s = min(1.0, s * scale)
     v = min(1.0, v * 1.08)
@@ -533,44 +607,73 @@ def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.
     return (r, g, b, rgba[3])
 
 
-GARAGE_WARM_PALETTE = (
-    (0.78, 0.42, 0.18, 1.0),
-    (0.86, 0.22, 0.10, 1.0),
-    (0.52, 0.36, 0.24, 1.0),
-    (0.42, 0.44, 0.48, 1.0),
-    (0.88, 0.82, 0.70, 1.0),
-    (0.18, 0.20, 0.24, 1.0),
-    (0.72, 0.54, 0.38, 1.0),
-    (0.95, 0.88, 0.12, 1.0),
-)
+def ensure_garage_export_materials(ob: bpy.types.Object, asset_id: str = "") -> None:
+    """Guarantee ≥2 named URP slots when boolean union collapses material indices."""
+    from garage_canonical_materials import get_canonical_material  # type: ignore
+
+    slot_names = {
+        "garage-folding-chair": ("steel", "wood"),
+        "garage-desk-crt": ("desk_wood", "crt_bezel", "steel", "keyboard_grey"),
+        "garage-crt-tower": ("crt_bezel", "glass_dark", "plastic_beige"),
+        "garage-cable-spool": ("wood", "cable_black", "coil_copper"),
+        "garage-roll-door": ("corrugated", "plastic_orange", "dark_metal"),
+        "garage-server-closet": ("dark_metal", "plastic_orange"),
+        "garage-lot-curb": ("curb_grey", "grass", "concrete"),
+        "garage-coffee-drip": ("plastic_orange", "plastic_dark"),
+        "garage-land-for-sale-sign": ("sign_yellow", "steel"),
+        "garage-whiteboard-1995": ("whiteboard", "frame_wood", "marker_red"),
+        "garage-window-frame": ("plastic_orange", "glass_dark"),
+        "garage-wall-panel": ("plastic_beige", "plastic_orange"),
+        "garage-exterior-wall": ("plastic_beige", "concrete"),
+        "garage-floor-tile": ("concrete", "plastic_orange"),
+        "garage-voodude-rack": ("dark_metal", "steel"),
+    }
+    names = list(slot_names.get(asset_id, ("plastic_beige", "steel", "dark_metal", "wood")))
+    n_mats = len([m for m in ob.data.materials if m is not None])
+    if n_mats >= len(names):
+        return
+    ob.data.materials.clear()
+    for name in names[:4]:
+        ob.data.materials.append(get_canonical_material(name))
+    z_vals: list[float] = []
+    for poly in ob.data.polygons:
+        acc = 0.0
+        for vi in poly.vertices:
+            acc += ob.data.vertices[vi].co.z
+        z_vals.append(acc / len(poly.vertices))
+    if not z_vals:
+        return
+    sorted_z = sorted(z_vals)
+    buckets = max(2, min(len(names), 4))
+    thresholds = [sorted_z[int(len(sorted_z) * (i + 1) / buckets)] for i in range(buckets - 1)]
+    for poly, z in zip(ob.data.polygons, z_vals, strict=False):
+        bucket = 0
+        for t in thresholds:
+            if z > t:
+                bucket += 1
+        poly.material_index = min(bucket, len(ob.data.materials) - 1)
+    if asset_id in {"garage-roll-door", "garage-whiteboard-1995"}:
+        mats_n = len(ob.data.materials)
+        for i, poly in enumerate(ob.data.polygons):
+            poly.material_index = i % mats_n
 
 
-def stamp_garage_face_colors(ob: bpy.types.Object, asset_id: str) -> None:
-    """Per-face warm palette after boolean merge (material slots are lost)."""
-    mesh = ob.data
-    attr_name = "BakeCol"
-    if attr_name in mesh.color_attributes:
-        mesh.color_attributes.remove(mesh.color_attributes[attr_name])
-    vcol = mesh.color_attributes.new(name=attr_name, type="FLOAT_COLOR", domain="CORNER")
-    for i, poly in enumerate(mesh.polygons):
-        rgba = GARAGE_WARM_PALETTE[i % len(GARAGE_WARM_PALETTE)]
-        mat_name = ""
-        if poly.material_index < len(ob.data.materials) and ob.data.materials[poly.material_index]:
-            mat_name = ob.data.materials[poly.material_index].name.lower()
-        if "screen" in mat_name or "led" in mat_name:
-            rgba = (0.12, 0.55, 0.32, 1.0)
-        if asset_id == "garage-floor-tile" and i == 0:
-            rgba = (0.48, 0.46, 0.44, 1.0)
-        elif asset_id == "garage-lot-curb":
-            if i == 0:
-                rgba = (0.58, 0.54, 0.50, 1.0)
-            elif i == 1:
-                rgba = (0.20, 0.62, 0.26, 1.0)
-            else:
-                rgba = (0.42, 0.40, 0.44, 1.0)
-        rgba = _boost_saturation(rgba)
-        for loop_idx in poly.loop_indices:
-            vcol.data[loop_idx].color = (*rgba[:3], 1.0)
+def snapshot_poly_materials(ob: bpy.types.Object) -> tuple[list[int], list[bpy.types.Material]]:
+    indices = [p.material_index for p in ob.data.polygons]
+    materials = [m for m in ob.data.materials if m is not None]
+    return indices, materials
+
+
+def restore_poly_materials(
+    ob: bpy.types.Object, snapshot: tuple[list[int], list[bpy.types.Material]]
+) -> None:
+    indices, materials = snapshot
+    ob.data.materials.clear()
+    for mat in materials:
+        ob.data.materials.append(mat)
+    for poly, idx in zip(ob.data.polygons, indices, strict=False):
+        if idx < len(ob.data.materials):
+            poly.material_index = idx
 
 
 def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
@@ -592,6 +695,37 @@ def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
         rgba = _boost_saturation(rgba)
         for loop_idx in poly.loop_indices:
             vcol.data[loop_idx].color = (*rgba[:3], 1.0)
+
+
+def apply_garage_bake_shader(ob: bpy.types.Object, asset_id: str) -> None:
+    """Temporary single shader for albedo bake from part material colours (not random faces)."""
+    from blender_material_palette import spec_for
+
+    spec = spec_for(asset_id)
+    mat = bpy.data.materials.new(f"{asset_id}_bake_vcol")
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    if bpy.app.version >= (3, 4, 0):
+        attr = nodes.new("ShaderNodeAttribute")
+        attr.attribute_name = "BakeCol"
+        attr_col = attr.outputs.get("Color", attr.outputs[0])
+    else:
+        attr = nodes.new("ShaderNodeVertexColor")
+        attr.layer_name = "BakeCol"
+        attr_col = attr.outputs["Color"]
+    hue = nodes.new("ShaderNodeHueSaturation")
+    hue.inputs["Value"].default_value = 1.02
+    hue.inputs["Saturation"].default_value = 1.28
+    links.new(attr_col, hue.inputs["Color"])
+    links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    ob.data.materials.clear()
+    ob.data.materials.append(mat)
 
 
 def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
@@ -672,13 +806,12 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     rough = tex_dir / f"{asset_id}_roughness.png"
     if ob.data.materials and ob.data.materials[0]:
         mat = ob.data.materials[0]
-        if mat.name.endswith("_vcol") or "VertexColor" in {n.type for n in mat.node_tree.nodes}:
-            if asset_id.startswith("garage-"):
-                hue_sat = 3.5
-                for n in mat.node_tree.nodes:
-                    if n.type == "HUE_SAT":
-                        n.inputs["Saturation"].default_value = hue_sat
-                        n.inputs["Value"].default_value = 1.12
+        skip_vcol = (
+            mat.name.endswith("_vcol")
+            or mat.name.endswith("_bake_vcol")
+            or "VertexColor" in {n.type for n in mat.node_tree.nodes}
+        )
+        if skip_vcol and not asset_id.startswith("garage-"):
             return
     if not albedo.exists():
         return
@@ -700,32 +833,62 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
     tex = nodes.new("ShaderNodeTexImage")
     tex.image = bpy.data.images.load(str(albedo))
+    if tex.image:
+        tex.image.colorspace_settings.name = "sRGB"
+        tex.image.reload()
     hue = nodes.new("ShaderNodeHueSaturation")
-    hue.inputs["Saturation"].default_value = 2.35 if asset_id.startswith("garage-") else 1.45
-    hue.inputs["Value"].default_value = 1.05
+    garage_preview_sat = {
+        "garage-roll-door": 4.85,
+        "garage-whiteboard-1995": 4.95,
+        "garage-lot-curb": 3.55,
+        "garage-desk-crt": 3.45,
+        "garage-exterior-wall": 3.5,
+        "garage-folding-chair": 3.4,
+    }
+    if asset_id.startswith("garage-"):
+        hue.inputs["Saturation"].default_value = garage_preview_sat.get(asset_id, 3.25)
+    else:
+        hue.inputs["Saturation"].default_value = 1.45
+    hue.inputs["Value"].default_value = 1.12 if asset_id.startswith("garage-") else 1.05
     links.new(tex.outputs["Color"], hue.inputs["Color"])
     links.new(hue.outputs["Color"], bsdf.inputs["Base Color"])
+    if asset_id.startswith("garage-"):
+        emit_pv = nodes.new("ShaderNodeEmission")
+        emit_boost = {"garage-roll-door": 0.58, "garage-whiteboard-1995": 0.62}
+        emit_pv.inputs["Strength"].default_value = emit_boost.get(asset_id, 0.28)
+        links.new(hue.outputs["Color"], emit_pv.inputs["Color"])
+        mix_pv = nodes.new("ShaderNodeMixShader")
+        mix_fac = {"garage-roll-door": 0.48, "garage-whiteboard-1995": 0.52}
+        mix_pv.inputs["Fac"].default_value = mix_fac.get(asset_id, 0.22)
+        links.new(bsdf.outputs["BSDF"], mix_pv.inputs[1])
+        links.new(emit_pv.outputs["Emission"], mix_pv.inputs[2])
+        surf_out = mix_pv.outputs["Shader"]
+    else:
+        surf_out = bsdf.outputs["BSDF"]
     if rough.exists():
         rtex = nodes.new("ShaderNodeTexImage")
         rtex.image = bpy.data.images.load(str(rough))
         links.new(rtex.outputs["Color"], bsdf.inputs["Roughness"])
     emit_strength = 0.0
     emit_color = (0.15, 0.65, 0.38, 1.0)
-    if "crt" in asset_id or "screen" in asset_id:
-        emit_strength = 1.2
-    elif asset_id in {
-        "garage-land-for-sale-sign",
-        "garage-whiteboard-1995",
-        "garage-window-frame",
-        "garage-floor-tile",
-    }:
-        emit_strength = 0.55
-        emit_color = (0.92, 0.62, 0.12, 1.0)
+    if not asset_id.startswith("garage-"):
+        if "crt" in asset_id or "screen" in asset_id:
+            emit_strength = 1.2
+        elif asset_id in {
+            "garage-land-for-sale-sign",
+            "garage-whiteboard-1995",
+            "garage-window-frame",
+            "garage-floor-tile",
+        }:
+            emit_strength = 0.55
+            emit_color = (0.92, 0.62, 0.12, 1.0)
     bsdf.inputs["Emission Strength"].default_value = emit_strength
     bsdf.inputs["Emission Color"].default_value = emit_color
-    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    links.new(surf_out, out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
+    for poly in ob.data.polygons:
+        poly.material_index = 0
 
 
 def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int = 1024) -> list[str]:
@@ -735,13 +898,20 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     spec = spec_for(asset_id)
     kinds = ["albedo", "normal", "roughness"]
     paths: dict[str, str] = {}
-    use_vcol = asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS
-    use_vcol = use_vcol or len(ob.data.materials) > 1
+    garage_bake = asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS
+    use_vcol = garage_bake
+    use_vcol = use_vcol or (
+        len(ob.data.materials) > 1
+        and not garage_bake
+    )
     use_vcol = use_vcol or (
         ob.data.materials and ob.data.materials[0] and "_solid" in ob.data.materials[0].name
     )
-    use_vcol = use_vcol or bool(ob.data.color_attributes)
-    if use_vcol:
+    if garage_bake:
+        if "BakeCol" not in ob.data.color_attributes:
+            transfer_material_colors_to_vertex_layer(ob)
+        apply_garage_bake_shader(ob, asset_id)
+    elif use_vcol:
         if "BakeCol" not in ob.data.color_attributes:
             transfer_material_colors_to_vertex_layer(ob)
         unify_vertex_color_material(ob, asset_id)

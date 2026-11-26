@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -65,7 +66,12 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_roughness.png"
       },
       "preview": "docs/art/previews/garage-floor-tile.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 168,
+      "triangleCount": 656,
+      "partCount": 4,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-floor-tile.py"
     },
     {
       "id": "garage-folding-chair",

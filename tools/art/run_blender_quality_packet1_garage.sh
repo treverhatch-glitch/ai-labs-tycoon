@@ -11,9 +11,14 @@ for script in "${SCRIPTS[@]}"; do
   "$BLENDER" -b --python-exit-code 1 --python "$script" || { echo "FAIL $script" >&2; exit 1; }
 done
 python3 tools/art/blender/merge_blender_manifests.py
+for tex in tools/art/blender/tex-garage-trim-orange.py tools/art/blender/tex-garage-wall-beige.py; do
+  echo "=== $tex ==="
+  "$BLENDER" -b --python-exit-code 1 --python "$tex" || { echo "FAIL $tex" >&2; exit 1; }
+done
 echo "=== garage-scene-preview ==="
 "$BLENDER" -b --python-exit-code 1 --python tools/art/blender/garage-scene-preview.py
 python3 tools/art/check_garage_quality_previews.py
 python3 tools/art/check_garage_mesh_topology.py
 python3 tools/art/check_garage_asset_complexity.py
+python3 tools/art/check_garage_baked_albedo.py
 echo "quality packet1 garage OK"

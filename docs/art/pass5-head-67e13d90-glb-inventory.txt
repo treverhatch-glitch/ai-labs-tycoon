@@ -1,0 +1,45 @@
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+INV garage-cable-spool objects=['garage-cable-spool_export'] materials=1 bbox_min=[-0.2244, 0.0, -0.1756] bbox_max=[0.2244, 0.3423, 0.3956]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-coffee-drip objects=['garage-coffee-drip_export'] materials=1 bbox_min=[-0.0897, 0.0, -0.0511] bbox_max=[0.1535, 0.344, 0.5211]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-crt-tower objects=['garage-crt-tower_export'] materials=1 bbox_min=[-0.1337, 0.0, 0.1202] bbox_max=[0.1862, 0.5648, 0.8848]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-desk-crt objects=['garage-desk-crt_export'] materials=1 bbox_min=[-0.5049, 0.0, 0.2322] bbox_max=[0.5049, 0.4994, 1.0278]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+INV garage-exterior-wall objects=['garage-exterior-wall_export'] materials=1 bbox_min=[-0.1441, 0.0, 0.0326] bbox_max=[0.2287, 1.7742, 2.3224]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-floor-tile objects=['garage-floor-tile_export'] materials=1 bbox_min=[-0.3111, 0.0, -0.215] bbox_max=[0.3111, 0.7855, 0.295]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-folding-chair objects=['garage-folding-chair_export'] materials=1 bbox_min=[-0.185, 0.21, 0.2629] bbox_max=[0.1849, 0.8607, 0.8583]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-land-for-sale-sign objects=['garage-land-for-sale-sign_export'] materials=1 bbox_min=[-0.2596, 0.0, 0.7874] bbox_max=[0.2595, 1.2457, 1.8201]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-lot-curb objects=['garage-lot-curb_export'] materials=1 bbox_min=[-0.2393, 0.0, -0.0092] bbox_max=[0.2393, 0.3337, 0.2092]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-roll-door objects=['garage-roll-door_export'] materials=1 bbox_min=[-1.0965, 0.0, 0.2754] bbox_max=[1.0965, 1.6988, 2.2696]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-server-closet objects=['garage-server-closet_export'] materials=1 bbox_min=[-0.2375, 0.0, 0.6719] bbox_max=[0.3073, 1.9444, 1.435]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+INV garage-voodude-rack objects=['garage-voodude-rack_export'] materials=1 bbox_min=[-0.1912, 0.0, 0.4089] bbox_max=[0.1912, 1.6564, 1.5411]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+INV garage-wall-panel objects=['garage-wall-panel_export'] materials=1 bbox_min=[-0.1482, 0.0, 0.5234] bbox_max=[0.1833, 1.6988, 2.2116]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.01s
+INV garage-whiteboard-1995 objects=['garage-whiteboard-1995_export'] materials=1 bbox_min=[-0.6655, 0.0, 0.6852] bbox_max=[0.6655, 0.7928, 1.6848]
+Data are loaded, start creating Blender stuff
+glTF import finished in 0.00s
+INV garage-window-frame objects=['garage-window-frame_export'] materials=1 bbox_min=[-0.3797, 0.0, 0.6596] bbox_max=[0.3797, 0.9626, 1.9654]
