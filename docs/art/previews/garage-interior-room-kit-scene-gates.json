@@ -12,64 +12,64 @@
       "zDeg": 0
     },
     "kit_wall_left": {
-      "yDeg": 90,
+      "yDeg": 0,
       "zDeg": 0
     }
   },
   "propInstances": [
     {
       "objectName": "prop_desk_crt",
-      "x": 2.9259,
-      "z": 3.1235,
-      "rotationYDeg": 0.0,
+      "x": 2.75,
+      "z": 2.95,
+      "rotationYDeg": -8.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_folding_chair",
-      "x": 2.5309,
-      "z": 2.7284,
-      "rotationYDeg": 0.0,
-      "rotationZDeg": 15.0,
+      "x": 2.35,
+      "z": 2.55,
+      "rotationYDeg": 12.0,
+      "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_crt_tower",
-      "x": 3.2222,
-      "z": 1.4444,
+      "x": 3.05,
+      "z": 1.45,
       "rotationYDeg": 0.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_server_closet",
-      "x": 1.1481,
-      "z": 3.2222,
+      "x": 1.15,
+      "z": 3.05,
       "rotationYDeg": 90.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_whiteboard",
-      "x": 2.0864,
-      "z": 0.3284,
+      "x": 2.1,
+      "z": 0.35,
       "rotationYDeg": 0.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_cable_spool",
-      "x": 1.0494,
-      "z": 1.7407,
+      "x": 1.05,
+      "z": 1.75,
       "rotationYDeg": 0.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     },
     {
       "objectName": "prop_coffee_drip",
-      "x": 3.4198,
-      "z": 1.0494,
-      "rotationYDeg": -12.0,
+      "x": 3.25,
+      "z": 1.05,
+      "rotationYDeg": -18.0,
       "rotationZDeg": 0.0,
       "insideFloorBounds": true
     }

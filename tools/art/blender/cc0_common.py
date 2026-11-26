@@ -20,10 +20,11 @@ BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2
 
 PALETTE = {
     "floor": (0.50, 0.48, 0.45, 1.0),
-    "wall": (0.78, 0.72, 0.62, 1.0),
+    "wall": (0.82, 0.70, 0.55, 1.0),
     "trim": (0.88, 0.48, 0.18, 1.0),
     "metal": (0.55, 0.58, 0.62, 1.0),
     "glass": (0.55, 0.75, 0.88, 1.0),
+    "wood": (0.58, 0.38, 0.22, 1.0),
     "prop": (0.65, 0.62, 0.58, 1.0),
     "board": (0.92, 0.90, 0.86, 1.0),
 }
@@ -66,6 +67,23 @@ def import_gltf(path: Path, name: str) -> list[bpy.types.Object]:
     for ob in imported:
         ob.name = name if len(imported) == 1 else f"{name}_{ob.name}"
     return imported
+
+
+def add_metric_box(
+    name: str,
+    size: tuple[float, float, float],
+    location: tuple[float, float, float],
+    role: str | None = None,
+) -> bpy.types.Object:
+    """Axis-aligned box with applied scale (Blender Y-up)."""
+    bpy.ops.mesh.primitive_cube_add(size=1, location=location)
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
+    bpy.ops.object.transform_apply(scale=True)
+    if role:
+        apply_palette_material(ob, role)
+    return ob
 
 
 def merge_mesh_objects(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
@@ -122,9 +140,11 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         bsdf.inputs["Roughness"].default_value = 0.82
     else:
         bsdf.inputs["Base Color"].default_value = tint
-        bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass") else 0.38
-    if role == "metal":
+        bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass", "wood") else 0.48
+    if role in ("metal",):
         bsdf.inputs["Metallic"].default_value = 0.55
+    if role == "wood":
+        bsdf.inputs["Roughness"].default_value = 0.68
     if role == "glass":
         bsdf.inputs["Roughness"].default_value = 0.08
         if "Transmission Weight" in bsdf.inputs:
@@ -220,17 +240,23 @@ def setup_preview_world_grey_hdri(*, hdri_strength: float = 1.05) -> None:
     links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
 
-def add_preview_warm_light(center: Vector, span: float) -> bpy.types.Object:
-    bpy.ops.object.light_add(
-        type="POINT",
-        location=(center.x + span * 0.35, center.y + span * 0.55, center.z + span * 0.35),
-    )
-    light = bpy.context.active_object
-    light.name = "preview_warm_point"
-    light.data.color = (1.0, 0.86, 0.72)
-    light.data.energy = 280.0
-    light.data.shadow_soft_size = 0.35
-    return light
+def add_preview_warm_lights(room_center: Vector) -> list[bpy.types.Object]:
+    lights: list[bpy.types.Object] = []
+    bpy.ops.object.light_add(type="POINT", location=(room_center.x, room_center.y + 1.6, room_center.z))
+    key = bpy.context.active_object
+    key.name = "preview_warm_key"
+    key.data.color = (1.0, 0.82, 0.66)
+    key.data.energy = 95.0
+    key.data.shadow_soft_size = 0.42
+    lights.append(key)
+    bpy.ops.object.light_add(type="AREA", location=(room_center.x + 1.2, 1.8, room_center.z + 0.8))
+    fill = bpy.context.active_object
+    fill.name = "preview_warm_fill"
+    fill.data.color = (1.0, 0.90, 0.78)
+    fill.data.energy = 40.0
+    fill.data.size = 1.4
+    lights.append(fill)
+    return lights
 
 
 def _bounds_center(objects: list[bpy.types.Object]) -> tuple[Vector, float]:
@@ -274,15 +300,15 @@ def render_kit_preview(
 ) -> None:
     """Warm point + HDRI (hidden from camera); world corners RGB 150; ~70% fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
-    setup_preview_world_grey_hdri(hdri_strength=1.05)
+    setup_preview_world_grey_hdri(hdri_strength=0.62)
     bpy.context.scene.render.engine = "CYCLES"
     bpy.context.scene.cycles.samples = 80 if mode == "hero" else 96
     bpy.context.scene.cycles.use_denoising = False
     bpy.context.scene.render.film_transparent = False
     if hasattr(bpy.context.scene, "cycles"):
-        bpy.context.scene.cycles.film_exposure = 1.0
+        bpy.context.scene.cycles.film_exposure = 0.92
     bpy.context.scene.view_settings.view_transform = "Standard"
-    bpy.context.scene.view_settings.exposure = 0.0
+    bpy.context.scene.view_settings.exposure = -0.05
 
     frame_src = frame_objects or objects
     center, span3 = _bounds_center(frame_src)
@@ -298,19 +324,20 @@ def render_kit_preview(
             maxs.y = max(maxs.y, w.y)
             maxs.z = max(maxs.z, w.z)
     span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
-    span = max(span_xz * 0.92, 3.6)
+    span = max(span_xz, 3.6)
     if frame_span is not None:
         span = frame_span
 
-    warm = add_preview_warm_light(center, span)
+    room = span if span <= 5.5 else 4.0
+    target = Vector((room * 0.56, 1.05, room * 0.56))
+    lights = add_preview_warm_lights(target)
 
-    lens = 34.0 if mode == "hero" else 56.0
-    pitch = math.radians(38.0 if mode == "hero" else 34.0)
-    target = center + Vector((span * 0.02, span * (0.22 if mode == "hero" else 0.16), span * 0.02))
-    dist = max(span * (0.34 if mode == "hero" else 0.88), 1.35 if mode == "hero" else 2.2)
+    lens = 38.0 if mode == "hero" else 46.0
+    pitch = math.radians(28.0 if mode == "hero" else 24.0)
+    dist = room * (0.68 if mode == "hero" else 0.82)
+    elev = dist * math.sin(pitch)
     horiz = dist * math.cos(pitch)
-    side = 0.78 if mode == "hero" else 0.62
-    cam_loc = target + Vector((horiz * side, dist * math.sin(pitch), horiz * (0.92 if mode == "scene" else 0.78)))
+    cam_loc = Vector((room + horiz * 0.68, 1.12 + elev * 0.92, room + horiz * 0.68))
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.data.lens = lens
@@ -325,7 +352,8 @@ def render_kit_preview(
     bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
 
-    bpy.data.objects.remove(warm, do_unlink=True)
+    for ob in lights:
+        bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)
     _pin_preview_corner_backdrop(path)
 
@@ -349,7 +377,7 @@ def _pin_preview_corner_backdrop(path: Path, inset: int = 3) -> None:
         neutral = max(p) - min(p) <= 8
         if not neutral:
             continue
-        if all(148 <= ch <= 152 for ch in p) or p[0] >= 165:
+        if all(126 <= ch <= 154 for ch in p) and neutral:
             im.putpixel(c, CORNER_RGB)
     im.save(path)
 

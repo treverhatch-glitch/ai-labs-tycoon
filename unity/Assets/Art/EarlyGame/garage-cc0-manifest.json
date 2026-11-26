@@ -25,6 +25,16 @@
           "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_wall_left/garage-interior-room-kit_kit_wall_left_ao.png",
           "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_wall_left/garage-interior-room-kit_kit_wall_left_normal.png"
         },
+        "kit_trim_back": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_back/garage-interior-room-kit_kit_trim_back_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_back/garage-interior-room-kit_kit_trim_back_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_back/garage-interior-room-kit_kit_trim_back_normal.png"
+        },
+        "kit_trim_left": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_left/garage-interior-room-kit_kit_trim_left_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_left/garage-interior-room-kit_kit_trim_left_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_trim_left/garage-interior-room-kit_kit_trim_left_normal.png"
+        },
         "kit_roll_door": {
           "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_roll_door/garage-interior-room-kit_kit_roll_door_albedo.png",
           "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_roll_door/garage-interior-room-kit_kit_roll_door_ao.png",
@@ -71,9 +81,10 @@
           "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_coffee_drip/garage-interior-room-kit_prop_coffee_drip_normal.png"
         }
       },
-      "license": "CC0-1.0 (garage-kit derivatives)",
+      "license": "CC0-1.0 (garage-kit + CC0 textures)",
       "sources": [
-        "garage-kit"
+        "garage-kit",
+        "ambientcg-Concrete015"
       ],
       "furnishings": [
         "prop_desk_crt",
@@ -86,13 +97,15 @@
         "kit_roll_door",
         "kit_window"
       ],
-      "triangleCount": 37168,
+      "triangleCount": 7066,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-interior-room-kit.py",
       "parts": [
         "kit_floor",
         "kit_wall_back",
         "kit_wall_left",
+        "kit_trim_back",
+        "kit_trim_left",
         "kit_roll_door",
         "kit_window",
         "prop_desk_crt",
