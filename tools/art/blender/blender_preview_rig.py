@@ -363,7 +363,14 @@ def render_preview_studio(
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     setup_three_point_lights(center, radius, soft=mid_grey)
     margin = float(os.environ.get("PREVIEW_FRAMING_MARGIN", str(FRAMING_MARGIN)))
-    cam = frame_camera(hero_meshes, lens_mm=lens_mm, up_axis=axis, margin=margin)
+    azimuth_deg = float(os.environ.get("PREVIEW_AZIMUTH_DEG", str(DEFAULT_AZIMUTH_DEG)))
+    cam = frame_camera(
+        hero_meshes,
+        lens_mm=lens_mm,
+        up_axis=axis,
+        margin=margin,
+        azimuth_deg=azimuth_deg,
+    )
     half_fov = camera_half_fov_rad(cam.data)
     cam_dist = (radius / math.tan(half_fov)) * margin
 
@@ -375,7 +382,7 @@ def render_preview_studio(
                 "bbox_radius": radius,
                 "framing_margin": margin,
                 "lens_mm": lens_mm,
-                "azimuth_deg": DEFAULT_AZIMUTH_DEG,
+                "azimuth_deg": azimuth_deg,
                 "elevation_deg": DEFAULT_ELEVATION_DEG,
                 "up_axis": axis,
                 "mid_grey": mid_grey,

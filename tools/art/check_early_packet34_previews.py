@@ -9,11 +9,12 @@ REPO = Path(__file__).resolve().parents[2]
 PREVIEW = REPO / "docs/art/previews"
 sys.path.insert(0, str(REPO / "tools/art"))
 
+from check_env_glb_packet34 import check_all_env_glbs  # noqa: E402
 from packet34_preview_gates import (  # noqa: E402
     ALL_HUD_SPRITE_IDS,
     ICON_IDS,
     check_backdrop_mid_grey,
-    check_vertical_backdrop_plane,
+    check_env_preview_backdrop,
     check_icon_ortho,
     check_icon_sat_coverage,
     check_icon_sheet,
@@ -43,10 +44,9 @@ def check_env_preview(asset_id: str) -> int:
     for err in check_backdrop_mid_grey(rgb):
         print(f"FAIL {asset_id} {err}")
         rc = 1
-    if asset_id == "garage-lot-curb":
-        for err in check_vertical_backdrop_plane(rgb, mask):
-            print(f"FAIL {asset_id} {err}")
-            rc = 1
+    for err in check_env_preview_backdrop(asset_id, rgb, mask):
+        print(f"FAIL {asset_id} {err}")
+        rc = 1
     for err in mask_gate_errors(mask):
         print(f"FAIL {asset_id} {err}")
         rc = 1
@@ -62,7 +62,7 @@ def main() -> int:
         print("FAIL: Pillow required")
         return 1
 
-    rc = 0
+    rc = check_all_env_glbs()
     for asset_id in ENV_IDS:
         rc |= check_env_preview(asset_id)
     for asset_id in ALL_HUD_SPRITE_IDS:

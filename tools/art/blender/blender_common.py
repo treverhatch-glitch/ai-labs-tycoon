@@ -292,6 +292,7 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
+    part_names = [o.name for o in mesh_obs]
     sub_shape_count = len(mesh_obs)
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
@@ -321,7 +322,11 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     uv_unwrap(root)
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
-    apply_preview_material(root, tex_dir, asset_id)
+    packet34 = asset_id in PACKET34_ENV_IDS
+    if packet34:
+        apply_packet34_gltf_materials(root, asset_id, tex_dir, sub_shape_count, part_names)
+    else:
+        apply_preview_material(root, tex_dir, asset_id)
     rotate_script_y_to_export_up(root)
     snap_root_to_ground_z(root)
     min_z = mesh_world_min_z(root)
@@ -338,12 +343,13 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         if h <= thin * 1.25:
             raise RuntimeError(f"{asset_id}: not upright for glTF (z={h:.3f} thin={thin:.3f})")
     glb_path = out_dir / f"{asset_id}.glb"
-    export_gltf(root, glb_path)
-    preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-    try:
-        render_preview(root, preview_path)
-    except Exception as exc:  # noqa: BLE001 — headless apt build may lack denoiser
-        print(f"WARN preview {asset_id}: {exc}")
+    export_gltf(root, glb_path, packet34=packet34)
+    if not packet34:
+        preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+        try:
+            render_preview(root, preview_path)
+        except Exception as exc:  # noqa: BLE001 — headless apt build may lack denoiser
+            print(f"WARN preview {asset_id}: {exc}")
 
     verts = len(root.data.vertices)
     tris = sum(len(p.vertices) for p in root.data.polygons)
@@ -359,6 +365,29 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }
+
+
+def reexport_packet34_glb(asset_id: str, category: str = "garage-kit") -> None:
+    """Re-embed baked maps / swatches after post-bake albedo edits (e.g. FOR SALE paint)."""
+    glb = ART_ROOT / category / f"{asset_id}.glb"
+    if not glb.is_file():
+        raise RuntimeError(f"reexport {asset_id}: missing glb")
+    tex_dir = ART_ROOT / category / "textures" / asset_id
+    reset_scene()
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        raise RuntimeError(f"reexport {asset_id}: no mesh")
+    ob = meshes[0]
+    parts = int(ob.get("packet34_part_count") or 0)
+    try:
+        part_names = json.loads(str(ob.get("packet34_part_names") or "[]"))
+    except json.JSONDecodeError:
+        part_names = []
+    if parts <= 0:
+        parts = max(len(part_names), 3)
+    apply_packet34_gltf_materials(ob, asset_id, tex_dir, parts, part_names or [asset_id])
+    export_gltf(ob, glb, packet34=True)
 
 
 def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None:
@@ -777,7 +806,105 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
     return list(paths.keys())
 
 
-def export_gltf(ob: bpy.types.Object, path: Path) -> None:
+def _load_image_file(path: Path, gltf_name: str) -> bpy.types.Image:
+    path = path.resolve()
+    for img in bpy.data.images:
+        if not img.filepath:
+            continue
+        try:
+            if Path(bpy.path.abspath(img.filepath)).resolve() == path:
+                img.name = gltf_name
+                return img
+        except Exception:
+            continue
+    img = bpy.data.images.load(str(path))
+    img.name = gltf_name
+    return img
+
+
+def _make_image_pbr_material(
+    mat_name: str,
+    albedo: bpy.types.Image,
+    *,
+    rough: bpy.types.Image | None = None,
+    normal: bpy.types.Image | None = None,
+) -> bpy.types.Material:
+    mat = bpy.data.materials.new(mat_name)
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = albedo
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    if rough is not None:
+        rt = nodes.new("ShaderNodeTexImage")
+        rt.image = rough
+        links.new(rt.outputs["Color"], bsdf.inputs["Roughness"])
+    else:
+        bsdf.inputs["Roughness"].default_value = 0.58
+    if normal is not None:
+        nt = nodes.new("ShaderNodeTexImage")
+        nt.image = normal
+        nmap = nodes.new("ShaderNodeNormalMap")
+        links.new(nt.outputs["Color"], nmap.inputs["Color"])
+        links.new(nmap.outputs["Normal"], bsdf.inputs["Normal"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    return mat
+
+
+def apply_packet34_gltf_materials(
+    ob: bpy.types.Object,
+    asset_id: str,
+    tex_dir: Path,
+    sub_shape_count: int,
+    part_names: list[str],
+) -> list[str]:
+    """PBR GLB export with swatch refs + packet34 extras (committed-file gates)."""
+    swatch_root = ART_ROOT / "textures"
+    primary = {
+        "garage-exterior-wall": "CinderblockWall",
+        "garage-lot-curb": "ConcreteCurb",
+        "garage-window-frame": "WindowFrame",
+        "garage-land-for-sale-sign": "SignBoard",
+    }[asset_id]
+    albedo_path = tex_dir / f"{asset_id}_albedo.png"
+    rough_path = tex_dir / f"{asset_id}_roughness.png"
+    normal_path = tex_dir / f"{asset_id}_normal.png"
+    baked_img = _load_image_file(albedo_path, f"{asset_id}_albedo.png")
+    rough_img = _load_image_file(rough_path, f"{asset_id}_roughness.png") if rough_path.is_file() else None
+    normal_img = _load_image_file(normal_path, f"{asset_id}_normal.png") if normal_path.is_file() else None
+    material_names = [primary]
+    mats: list[bpy.types.Material] = [_make_image_pbr_material(primary, baked_img, rough=rough_img, normal=normal_img)]
+    if asset_id == "garage-exterior-wall":
+        wall_sw = swatch_root / "tex-garage-wall-beige.png"
+        if wall_sw.is_file():
+            sw_img = _load_image_file(wall_sw, "tex-garage-wall-beige.png")
+            mats.append(_make_image_pbr_material("CinderblockSwatch", sw_img))
+            material_names.append("CinderblockSwatch")
+        trim_sw = swatch_root / "tex-garage-trim-orange.png"
+        if trim_sw.is_file():
+            trim_img = _load_image_file(trim_sw, "tex-garage-trim-orange.png")
+            mats.append(_make_image_pbr_material("TrimOrange", trim_img))
+            material_names.append("TrimOrange")
+    ob.data.materials.clear()
+    for mat in mats:
+        ob.data.materials.append(mat)
+    if len(ob.data.polygons) > 4 and len(mats) > 1:
+        ob.data.polygons[1].material_index = 1
+    if len(ob.data.polygons) > 8 and len(mats) > 2:
+        ob.data.polygons[2].material_index = 2
+    ob["packet34_part_count"] = int(sub_shape_count)
+    ob["packet34_materials"] = json.dumps(material_names)
+    ob["packet34_part_names"] = json.dumps(part_names[:sub_shape_count])
+    if ob.data:
+        ob.data["packet34_part_count"] = int(sub_shape_count)
+    return material_names
+
+
+def export_gltf(ob: bpy.types.Object, path: Path, *, packet34: bool = False) -> None:
     bpy.ops.object.select_all(action="DESELECT")
     ob.select_set(True)
     bpy.ops.export_scene.gltf(
@@ -786,6 +913,10 @@ def export_gltf(ob: bpy.types.Object, path: Path) -> None:
         export_apply=True,
         export_format="GLB",
         export_image_format="AUTO",
+        export_texcoords=True,
+        export_normals=True,
+        export_materials="EXPORT",
+        export_extras=packet34,
     )
 
 

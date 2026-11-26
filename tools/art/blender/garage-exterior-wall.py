@@ -12,7 +12,8 @@ W, H, D = 4.0, 3.0, 0.20
 def main():
     import os
 
-    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.10"
+    os.environ["PREVIEW_FRAMING_MARGIN"] = "1.02"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "52"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
     os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
     bc.add_cube("Core", (W, H, D), (0, H * 0.5, 0))

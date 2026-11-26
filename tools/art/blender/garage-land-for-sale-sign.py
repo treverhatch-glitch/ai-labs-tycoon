@@ -65,7 +65,7 @@ def main():
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     if albedo.is_file():
         _paint_for_sale_albedo(albedo)
-        bc.rerender_garage_preview("garage-land-for-sale-sign", "garage-kit")
+        bc.reexport_packet34_glb("garage-land-for-sale-sign", "garage-kit")
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry
 

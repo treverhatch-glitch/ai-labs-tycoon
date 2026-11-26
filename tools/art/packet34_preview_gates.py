@@ -126,8 +126,29 @@ def check_near_duplicates(preview_dir: Path, asset_ids: tuple[str, ...], *, min_
     return errs
 
 
-def check_vertical_backdrop_plane(rgb_path: Path, mask_path: Path) -> list[str]:
-    """Fail when curb preview has a second tall neutral slab in-frame (old grass wall)."""
+def check_env_preview_backdrop(asset_id: str, rgb_path: Path, mask_path: Path) -> list[str]:
+    """Fail vertical backdrop slabs / multi-island masks (all packet34 env previews)."""
+    from preview_quality_lib import analyze_alpha_mask
+
+    errs = check_vertical_backdrop_plane(rgb_path, mask_path, asset_id=asset_id)
+    if asset_id != "garage-lot-curb":
+        errs = [e for e in errs if not e.startswith("curb_too_tall")]
+    if asset_id == "garage-exterior-wall":
+        alpha = analyze_alpha_mask(mask_path)
+        wc, hc = float(alpha["width_coverage"]), float(alpha["height_coverage"])
+        if wc < hc * 0.86:
+            errs.append(f"wall_vertical_slab_silhouette w={wc:.2f} h={hc:.2f}")
+    if asset_id == "garage-window-frame":
+        alpha = analyze_alpha_mask(mask_path)
+        if float(alpha["height_coverage"]) > 0.62 and float(alpha["width_coverage"]) < 0.38:
+            errs.append("window_tall_backdrop_slab")
+    return errs
+
+
+def check_vertical_backdrop_plane(
+    rgb_path: Path, mask_path: Path, *, asset_id: str = "garage-lot-curb"
+) -> list[str]:
+    """Fail when preview has a second tall neutral slab in-frame (old grass wall)."""
     from PIL import Image
 
     mask_im = _load_rgba(mask_path)
@@ -164,9 +185,10 @@ def check_vertical_backdrop_plane(rgb_path: Path, mask_path: Path) -> list[str]:
     islands.sort(reverse=True)
     hero_h = islands[0][1]
     for area, height_cov, _ in islands[1:]:
-        if height_cov > 0.42 and area > 800:
+        min_area = 0.035 * w * h if asset_id == "garage-land-for-sale-sign" else 0.05 * w * h
+        if height_cov > 0.32 and area > min_area:
             return [f"extra_vertical_mask_island h={height_cov:.2f}"]
-    if hero_h > 0.40:
+    if asset_id == "garage-lot-curb" and hero_h > 0.40:
         return [f"curb_too_tall h={hero_h:.2f} need<0.40"]
     im = _load_rgba(rgb_path)
     if mask_im.size != im.size:
@@ -192,6 +214,7 @@ def check_vertical_backdrop_plane(rgb_path: Path, mask_path: Path) -> list[str]:
                     break
     if tall_warm_cols >= 8:
         return [f"vertical_backdrop_slab_cols={tall_warm_cols}"]
+
     return []
 
 

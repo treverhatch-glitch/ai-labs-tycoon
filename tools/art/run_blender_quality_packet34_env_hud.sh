@@ -22,6 +22,7 @@ for script in "${ENV_SCRIPTS[@]}" "${TEX_SCRIPTS[@]}"; do
   echo "=== $script ==="
   "$BLENDER" -b --python-exit-code 1 --python "$script"
 done
+"$BLENDER" -b --python-exit-code 1 --python tools/art/blender/render_packet34_env_previews.py
 python3 tools/art/rasterize_early_hud_previews.py
 python3 tools/art/blender/merge_blender_manifests.py
 python3 tools/art/check_env_mesh_topology.py || exit 1
