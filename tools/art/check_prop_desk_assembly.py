@@ -112,13 +112,21 @@ def main() -> int:
     def _dist_x(cl: list[tuple[float, float, float]], target: float) -> float:
         return abs(_centroid_x(cl) - target)
 
-    keyboard_cl = min(peripheral_clusters, key=lambda c: _dist_x(c, exp_kx))
-    monitor_cl = min(peripheral_clusters, key=lambda c: _dist_x(c, exp_mx))
+    def _pick_near(peripheral: list, target_x: float) -> list[tuple[float, float, float]]:
+        ranked = sorted(peripheral, key=lambda c: _dist_x(c, target_x))
+        for c in ranked[:6]:
+            mn, _ = _bbox(c)
+            if abs(mn[1] - surface_y) <= TOL:
+                return c
+        return ranked[0]
+
+    keyboard_cl = _pick_near(peripheral_clusters, exp_kx)
+    monitor_cl = _pick_near(peripheral_clusters, exp_mx)
     if keyboard_cl is monitor_cl:
         monitor_cl = max(peripheral_clusters, key=len)
-        keyboard_cl = min(
-            (c for c in peripheral_clusters if c is not monitor_cl),
-            key=lambda c: _dist_x(c, exp_kx),
+        keyboard_cl = _pick_near(
+            [c for c in peripheral_clusters if c is not monitor_cl],
+            exp_kx,
         )
 
     for label, cl in (("keyboard", keyboard_cl), ("monitor", monitor_cl)):

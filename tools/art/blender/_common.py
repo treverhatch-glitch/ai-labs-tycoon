@@ -103,7 +103,12 @@ def _paint_wood_grain(
             vcol.data[li].color = (rgb[0], rgb[1], rgb[2], 1.0)
 
 
-def _blend_cc0_wood(obj: bpy.types.Object, color_jpg: Path, blend: float = 0.82) -> None:
+def _blend_cc0_wood(
+    obj: bpy.types.Object,
+    color_jpg: Path,
+    blend: float = 0.94,
+    uv_tiles: float = 3.2,
+) -> None:
     """Blend ambientCG wood albedo into BakeColor after UV (desk carcass only)."""
     if not color_jpg.is_file():
         return
@@ -116,26 +121,26 @@ def _blend_cc0_wood(obj: bpy.types.Object, color_jpg: Path, blend: float = 0.82)
     w, h = img.size
     px = list(img.pixels)
     desk_mn, desk_mx = _bbox_world([obj])
+    lift = (1.06, 1.04, 1.02)
     for poly in mesh.polygons:
         for li in poly.loop_indices:
-            vi = mesh.loops[li].vertex_index
-            co = obj.matrix_world @ mesh.vertices[vi].co
-            if co.z < desk_mn.z + 0.05:
-                continue
-            if co.z > desk_mx.z * 0.55:
-                continue
             bc = vcol.data[li].color
-            if max(bc[:3]) < 0.28:
+            if max(bc[:3]) < 0.34:
                 continue
             u, v = uv.data[li].uv
-            x = min(w - 1, max(0, int(u * w)))
-            y = min(h - 1, max(0, int((1.0 - v) * h)))
+            tu = (u * uv_tiles) % 1.0
+            tv = (v * uv_tiles) % 1.0
+            x = min(w - 1, max(0, int(tu * w)))
+            y = min(h - 1, max(0, int((1.0 - tv) * h)))
             o = (y * w + x) * 4
-            tc = (px[o], px[o + 1], px[o + 2])
-            edge = 1.0 - min(1.0, abs(co.x - (desk_mn.x + desk_mx.x) * 0.5) / max(desk_mx.x - desk_mn.x, 0.01) * 1.35)
-            edge = 0.65 + edge * 0.35
-            mix = blend * edge
+            tc = (px[o] * lift[0], px[o + 1] * lift[1], px[o + 2] * lift[2])
+            vi = mesh.loops[li].vertex_index
+            co = obj.matrix_world @ mesh.vertices[vi].co
+            edge_bevel = min(1.0, max(0.0, (co.z - desk_mn.z) / max(desk_mx.z - desk_mn.z, 1e-6)))
+            edge_bevel = 0.72 + edge_bevel * 0.28
+            mix = blend * edge_bevel
             c = _lerp3((bc[0], bc[1], bc[2]), tc, mix)
+            c = (min(1.0, c[0] * 1.08), min(1.0, c[1] * 1.06), min(1.0, c[2] * 1.02))
             vcol.data[li].color = (c[0], c[1], c[2], 1.0)
 
 
@@ -230,6 +235,43 @@ def _apply_baked_albedo(mat: bpy.types.Material, tex_path: Path) -> None:
         for link in bsdf.inputs["Base Color"].links:
             links.remove(link)
     links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+
+
+def _prop_desk_preview_emissive(mesh_obs: list[bpy.types.Object], tex_path: Path) -> None:
+    """EEVEE preview: screen texels glow like emissive UI (strength ~3)."""
+    if not tex_path.is_file():
+        return
+    img = bpy.data.images.load(str(tex_path), check_existing=True)
+    img.colorspace_settings.name = "sRGB"
+    for obj in mesh_obs:
+        for slot in obj.data.materials:
+            if slot is None:
+                continue
+            mat = slot
+            mat.use_nodes = True
+            nodes = mat.node_tree.nodes
+            links = mat.node_tree.links
+            nodes.clear()
+            out = nodes.new("ShaderNodeOutputMaterial")
+            tex = nodes.new("ShaderNodeTexImage")
+            tex.image = img
+            sep = nodes.new("ShaderNodeSeparateColor")
+            links.new(tex.outputs["Color"], sep.inputs["Color"])
+            bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+            links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+            bsdf.inputs["Roughness"].default_value = 0.42
+            emit = nodes.new("ShaderNodeEmission")
+            links.new(tex.outputs["Color"], emit.inputs["Color"])
+            emit.inputs["Strength"].default_value = 4.2
+            gate = nodes.new("ShaderNodeMath")
+            gate.operation = "GREATER_THAN"
+            gate.inputs[1].default_value = 0.30
+            links.new(sep.outputs["Blue"], gate.inputs[0])
+            mix = nodes.new("ShaderNodeMixShader")
+            links.new(gate.outputs["Value"], mix.inputs["Fac"])
+            links.new(bsdf.outputs["BSDF"], mix.inputs[1])
+            links.new(emit.outputs["Emission"], mix.inputs[2])
+            links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
 
 def _smart_uv(obj: bpy.types.Object) -> None:
@@ -466,16 +508,22 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     _reset_scene()
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
+    desk_backdrop = 88.0 / 255.0  # Standard view transform → ~150 sRGB in PNG corners
     _setup_preview_hdri(
         world,
         PREVIEW_HDRI,
-        backdrop=150.0 / 255.0,
-        lit_strength=0.08 if asset_id == "prop-desk" else 0.10,
+        backdrop=desk_backdrop if asset_id == "prop-desk" else 150.0 / 255.0,
+        lit_strength=0.06 if asset_id == "prop-desk" else 0.10,
     )
+    if asset_id == "prop-desk":
+        bpy.context.scene.view_settings.view_transform = "Standard"
+        bpy.context.scene.view_settings.exposure = 0.0
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"no mesh in {glb_path}")
+    if asset_id == "prop-desk":
+        _prop_desk_preview_emissive(mesh_obs, glb_path.parent / "textures" / f"mesh_{asset_id}_basecolor.png")
 
     mins, maxs = _world_bbox(mesh_obs)
     center = (mins + maxs) / 2
@@ -486,19 +534,19 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    floor_g = 150.0 / 255.0
+    floor_g = desk_backdrop if asset_id == "prop-desk" else 150.0 / 255.0
     gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g, 1)
     gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 0.85 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 1.05 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 18 if asset_id == "prop-desk" else 55
+    fill.data.energy = 24 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
 
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
@@ -545,14 +593,21 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             ee.use_soft_shadows = True
         if hasattr(ee, "use_shadows"):
             ee.use_shadows = True
+        if asset_id == "prop-desk":
+            if hasattr(ee, "use_bloom"):
+                ee.use_bloom = True
+            if hasattr(ee, "bloom_threshold"):
+                ee.bloom_threshold = 0.72
+            if hasattr(ee, "bloom_intensity"):
+                ee.bloom_intensity = 0.18
     bpy.context.scene.render.film_transparent = False
     bpy.context.scene.render.resolution_x = 1024
     bpy.context.scene.render.resolution_y = 1024
     bpy.context.scene.render.filepath = str(preview)
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
-    if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.12 if asset_id == "prop-desk" else 0.22
+    if asset_id != "prop-desk" and hasattr(bpy.context.scene, "view_settings"):
+        bpy.context.scene.view_settings.exposure = 0.22
         bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
 

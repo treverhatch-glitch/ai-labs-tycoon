@@ -247,6 +247,18 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         if abs(r - bg[0]) + abs(g - bg[1]) + abs(b - bg[2]) < 18
     )
     flat_frac = near_bg / n
+    corner_lums: list[int] = []
+    margin = 12
+    for cx, cy in (
+        (margin, margin),
+        (width - 1 - margin, margin),
+        (margin, height - 1 - margin),
+        (width - 1 - margin, height - 1 - margin),
+    ):
+        r, g, b = pixels[cy * width + cx]
+        corner_lums.append((r * 299 + g * 587 + b * 114) // 1000)
+    corner_mean = sum(corner_lums) / len(corner_lums) if corner_lums else 255.0
+    corner_spread = max(abs(x - corner_mean) for x in corner_lums) if corner_lums else 0.0
     return {
         "stddev": std,
         "coverage": coverage,
@@ -258,6 +270,8 @@ def stats(path: Path, asset_id: str | None = None) -> dict[str, float]:
         "min_margin_frac": float(frame["min_margin_frac"]),
         "flat_pixel_frac": flat_frac,
         "ground_lum": gmean,
+        "corner_lum_mean": corner_mean,
+        "corner_lum_spread": corner_spread,
     }
 
 
@@ -291,6 +305,11 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         ground_max = 178 if asset_id == "prop-desk" else MAX_GROUND_LUM
         if s.get("ground_lum", 255) > ground_max:
             reasons.append(f"ground_lum={s['ground_lum']:.1f}")
+        corner_target = 150.0
+        corner_tol = 12.0
+        clm = s.get("corner_lum_mean", 255.0)
+        if abs(clm - corner_target) > corner_tol:
+            reasons.append(f"corner_lum_mean={clm:.1f} (want {corner_target:.0f}±{corner_tol:.0f})")
     return reasons
 
 

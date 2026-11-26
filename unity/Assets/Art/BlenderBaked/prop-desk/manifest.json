@@ -20,18 +20,18 @@
   ],
   "kenneyOffsets": {
     "computerScreen.glb": [
-      0.5,
-      0.52
+      0.54,
+      0.44
     ],
     "computerKeyboard.glb": [
-      0.38,
-      0.56
+      0.36,
+      0.72
     ],
     "computerMouse.glb": [
       0.64,
-      0.55
+      0.62
     ]
   },
   "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
-  "restyle": "wood-grain-v3"
+  "restyle": "wood-grain-v4"
 }
