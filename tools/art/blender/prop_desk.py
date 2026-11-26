@@ -1,6 +1,7 @@
 """Headless bake: prop-desk hero from Kenney Furniture Kit (CC0) + restyle."""
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -12,15 +13,17 @@ import _common  # noqa: E402
 
 KENNEY = _common.CC0_ROOT / "kenney-furniture-kit" / "Models" / "GLTF format"
 TARGET_WIDTH = 1.14
+SURFACE_TOL = 0.01  # 1 cm Hatch bar
 SOURCE_NOTE = "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse)"
 
-DESK_COLORS = {
-    "desk": (0.58, 0.5, 0.42),
-    "frame": (0.22, 0.24, 0.28),
-    "screen": (0.12, 0.14, 0.18),
-    "display": (0.15, 0.42, 0.78),
-    "keyboard": (0.18, 0.2, 0.24),
-    "mouse": (0.32, 0.34, 0.38),
+# cc0-restyle-v1 role palette
+PALETTE = {
+    "wood_top": (0.62, 0.52, 0.4),
+    "legs_pedestal": (0.26, 0.24, 0.22),
+    "monitor_bezel": (0.14, 0.15, 0.17),
+    "monitor_glass": (0.12, 0.38, 0.72),
+    "keyboard": (0.2, 0.22, 0.26),
+    "mouse": (0.34, 0.36, 0.4),
 }
 
 
@@ -31,43 +34,96 @@ def _import_part(filename: str) -> list[bpy.types.Object]:
     return _common._import_gltf_mesh(path)
 
 
+def _snap_min_y(objs: list[bpy.types.Object], surface_y: float, tol: float = SURFACE_TOL) -> None:
+    for o in objs:
+        bpy.context.view_layer.update()
+        mins, _ = _common._bbox_world([o])
+        o.location.y += surface_y - mins.y
+    bpy.context.view_layer.update()
+    failures: list[str] = []
+    for o in objs:
+        mins, _ = _common._bbox_world([o])
+        gap = abs(mins.y - surface_y)
+        if gap > tol:
+            failures.append(f"{o.name} min_y gap {gap:.4f}m (tol {tol})")
+    if failures:
+        raise RuntimeError("FAIL prop-desk assembly gate: " + "; ".join(failures))
+
+
+def _desktop_surface_y(desk_parts: list[bpy.types.Object]) -> float:
+    tops = [p for p in desk_parts if "drawer" not in p.name.lower()]
+    if not tops:
+        tops = desk_parts
+    _mins, maxs = _common._bbox_world(tops)
+    return float(maxs.y)
+
+
+def _face_chair_and_camera(objs: list[bpy.types.Object]) -> None:
+    """Chair side = +Z; 3/4 preview camera sits at +X / +Y quarter."""
+    yaw = math.radians(205)
+    for o in objs:
+        o.rotation_euler.z += yaw
+
+
 def build_desk() -> bpy.types.Object:
     _common._reset_scene()
     desk_parts = _import_part("desk.glb")
     _mins, maxs = _common._bbox_world(desk_parts)
     width = max(maxs.x - _mins.x, 0.01)
-    _common._apply_scale_uniform(desk_parts, TARGET_WIDTH / width)
-    _mins, maxs = _common._bbox_world(desk_parts)
-    top_y = maxs.y
-    desk_scale = TARGET_WIDTH / width
+    scale = TARGET_WIDTH / width
+    _common._apply_scale_uniform(desk_parts, scale)
+    surface_y = _desktop_surface_y(desk_parts)
 
-    periph = [
-        ("computerScreen.glb", Vector((0.14, top_y, -0.06)), DESK_COLORS["screen"], 1.02),
-        ("computerKeyboard.glb", Vector((-0.16, top_y, 0.1)), DESK_COLORS["keyboard"], 1.0),
-        ("computerMouse.glb", Vector((0.26, top_y, 0.12)), DESK_COLORS["mouse"], 1.05),
-    ]
-    all_obs = list(desk_parts)
-    for fname, loc, color, sm in periph:
-        parts = _import_part(fname)
-        _common._apply_scale_uniform(parts, desk_scale * sm)
-        for p in parts:
-            p.location = loc
-        all_obs.extend(parts)
+    peripherals: list[bpy.types.Object] = []
+    def _center(objs: list[bpy.types.Object]) -> Vector:
+        mn, mx = _common._bbox_world(objs)
+        return (mn + mx) / 2
 
-    _common._bevel_meshes(all_obs, width=0.005, segments=2)
+    screen = _import_part("computerScreen.glb")
+    _common._apply_scale_uniform(screen, scale * 1.02)
+    _snap_min_y(screen, surface_y)
+    sc = _center(screen)
+    for o in screen:
+        o.location += Vector((0.08, 0.0, 0.14)) - Vector((sc.x, 0.0, sc.z))
+    _face_chair_and_camera(screen)
+    _snap_min_y(screen, surface_y)
+
+    keyboard = _import_part("computerKeyboard.glb")
+    _common._apply_scale_uniform(keyboard, scale)
+    _snap_min_y(keyboard, surface_y)
+    kc = _center(keyboard)
+    for o in keyboard:
+        o.location += Vector((-0.2, 0.0, 0.08)) - Vector((kc.x, 0.0, kc.z))
+    _snap_min_y(keyboard, surface_y)
+
+    mouse = _import_part("computerMouse.glb")
+    _common._apply_scale_uniform(mouse, scale * 1.05)
+    _snap_min_y(mouse, surface_y)
+    mx, _, mz = _center(mouse)
+    for o in mouse:
+        o.location += Vector((0.26 - mx, 0.0, 0.12 - mz))
+    _snap_min_y(mouse, surface_y)
+
+    peripherals.extend(screen)
+    peripherals.extend(keyboard)
+    peripherals.extend(mouse)
+    _snap_min_y(peripherals, surface_y)
+
+    all_obs = list(desk_parts) + peripherals
+    _common._bevel_meshes(all_obs, width=0.006, segments=2)
     for p in desk_parts:
-        _common._paint_mesh_vertex_color(p, DESK_COLORS["desk"])
-    for p in all_obs:
-        if p in desk_parts:
-            continue
+        if "drawer" in p.name.lower():
+            _common._paint_mesh_vertex_color(p, PALETTE["legs_pedestal"])
+        else:
+            _common._paint_mesh_vertex_color(p, PALETTE["wood_top"])
+    for p in peripherals:
         name = p.name.lower()
         if "screen" in name:
-            _common._paint_mesh_vertex_color(p, DESK_COLORS["display"])
+            _common._paint_mesh_vertex_color(p, PALETTE["monitor_glass"])
+        elif "keyboard" in name:
+            _common._paint_mesh_vertex_color(p, PALETTE["keyboard"])
         else:
-            _common._paint_mesh_vertex_color(
-                p,
-                DESK_COLORS["keyboard"] if "keyboard" in name else DESK_COLORS["mouse"],
-            )
+            _common._paint_mesh_vertex_color(p, PALETTE["mouse"])
 
     bpy.ops.object.select_all(action="DESELECT")
     for o in all_obs:

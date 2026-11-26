@@ -316,7 +316,7 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     maxs = Vector((-1e9, -1e9, -1e9))
     for ob in objs:
         for corner in ob.bound_box:
-            w = ob.matrix_world @ Vector(corner)
+            w = ob.matrix_world @ Vector((corner[0], corner[1], corner[2]))
             mins.x = min(mins.x, w.x)
             mins.y = min(mins.y, w.y)
             mins.z = min(mins.z, w.z)
@@ -326,24 +326,34 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
-def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path) -> None:
-    if not hdr_path.is_file():
-        return
+def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path, backdrop: float = 150.0 / 255.0) -> None:
+    """~150 sRGB grey for camera; HDRI at low strength for lighting only."""
     world.use_nodes = True
     nodes = world.node_tree.nodes
     links = world.node_tree.links
     nodes.clear()
-    env = nodes.new("ShaderNodeTexEnvironment")
-    bg = nodes.new("ShaderNodeBackground")
     out = nodes.new("ShaderNodeOutputWorld")
-    if str(hdr_path) not in bpy.data.images:
-        env.image = bpy.data.images.load(str(hdr_path), check_existing=True)
+    bg_grey = nodes.new("ShaderNodeBackground")
+    bg_grey.inputs["Color"].default_value = (backdrop, backdrop, backdrop + 0.01, 1.0)
+    bg_grey.inputs["Strength"].default_value = 1.0
+    if hdr_path.is_file():
+        env = nodes.new("ShaderNodeTexEnvironment")
+        if str(hdr_path) not in bpy.data.images:
+            env.image = bpy.data.images.load(str(hdr_path), check_existing=True)
+        else:
+            env.image = bpy.data.images[str(hdr_path)]
+        env.image.colorspace_settings.name = "Linear Rec.709"
+        bg_lit = nodes.new("ShaderNodeBackground")
+        bg_lit.inputs["Strength"].default_value = 0.35
+        links.new(env.outputs["Color"], bg_lit.inputs["Color"])
+        path = nodes.new("ShaderNodeLightPath")
+        mix = nodes.new("ShaderNodeMixShader")
+        links.new(path.outputs["Is Camera Ray"], mix.inputs["Fac"])
+        links.new(bg_grey.outputs["Background"], mix.inputs[1])
+        links.new(bg_lit.outputs["Background"], mix.inputs[2])
+        links.new(mix.outputs["Shader"], out.inputs["Surface"])
     else:
-        env.image = bpy.data.images[str(hdr_path)]
-    env.image.colorspace_settings.name = "Linear Rec.709"
-    bg.inputs["Strength"].default_value = 0.82
-    links.new(env.outputs["Color"], bg.inputs["Color"])
-    links.new(bg.outputs["Background"], out.inputs["Surface"])
+        links.new(bg_grey.outputs["Background"], out.inputs["Surface"])
 
 
 def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
@@ -370,24 +380,32 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (0.42, 0.42, 0.44, 1)
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.88
+    floor_g = 0.46
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g + 0.02, 1)
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
+
+    bpy.ops.mesh.primitive_plane_add(size=span * 6, location=(center.x, center.y + span * 1.5, center.z + span * 0.2), rotation=(math.radians(90), 0, 0))
+    backdrop = bpy.context.active_object
+    bmat = bpy.data.materials.new("Backdrop")
+    bmat.use_nodes = True
+    bmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (150 / 255, 150 / 255, 152 / 255, 1)
+    backdrop.data.materials.append(bmat)
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 3.2
-    key.rotation_euler = (math.radians(55), 0, math.radians(35))
+    key.data.energy = 2.4 if asset_id == "prop-desk" else 1.8
+    key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
-    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.5, span * 2)))
+    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 180
-    fill.data.size = span
+    fill.data.energy = 55
+    fill.data.size = span * 1.4
 
     obj_h = max(maxs.y - mins.y, 0.01)
     obj_w = max(maxs.x - mins.x, maxs.z - mins.z, 0.01)
-    target_fill = 0.50
-    pad = 1.0
+    target_fill = 0.335 if asset_id == "prop-desk" else 0.50
+    pad = 0.88 if asset_id == "prop-desk" else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.18) / target_fill) * pad
 
     cam_data = bpy.data.cameras.new("PreviewCam")
@@ -429,8 +447,8 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
     if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.35
-        bpy.context.scene.view_settings.view_transform = "Filmic"
+        bpy.context.scene.view_settings.exposure = 0.2 if asset_id == "prop-desk" else 0.22
+        bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
 
     sha = hashlib.sha256(glb_path.read_bytes()).hexdigest()
