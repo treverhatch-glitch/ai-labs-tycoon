@@ -35,6 +35,14 @@ Known limits of the slice, so nobody is surprised:
 - **Rivals explain themselves, the player does not.** Plan-run labs keep a bounded decision log (Q48); the host can keep
   the player's side.
 
+## Rivals stack2 lane
+
+| Lane | Tips |
+| --- | --- |
+| `cursor/later-rules-stack2-main-39c0` → `main` **`b673e025`** (#85 landed) | packet **358–365** landing PR in flight; **`stack2-75cd`** **`b9d0cf36`** — **no push** |
+
+**LOCAL rivals queue (366+):** `HostExplainSystemsLaterTests` + systems hatch (**Q16096–Q16165**); NEXT **#9–#11** bible/systems-design tails.
+
 ## Who works where
 
 Agents work in parallel. Stay in your area and the merges stay boring.
@@ -491,8 +499,8 @@ Agents land **one gate at a time**; **`rules` must be success on the exact PR he
 
 1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
 2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
-3. **~~**Graphics pipeline follow-on**~~ — PR **#85** merged (`main` **`ff445170`**, presentation through batch 524).
-4. **Stack2 packet 2** — batches **358–365** on `later-rules-stack2` after refold on **`03bd9e73`** (rivals lane).
+3. ~~**Graphics pipeline follow-on**~~ — PR **#85** merged (`main` **`b673e025`**, rules **133** @ `08cf6d47`).
+4. **Stack2 packet 2** — batches **358–365** landing PR from `later-rules-stack2-main-39c0` on **`b673e025`** (rivals lane).)
 5. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 
 ## Studio and CI
