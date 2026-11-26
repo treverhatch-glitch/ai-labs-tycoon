@@ -8,7 +8,7 @@ from pathlib import Path
 MIN_SAT = 0.15
 MIN_SILHOUETTE_HEIGHT = 0.35
 MAX_SILHOUETTE_HEIGHT = 0.75
-MIN_LUMA_VAR = 0.001
+MIN_LUMA_VAR = 0.0005
 EDGE_EPSILON = 0.008  # normalized; alpha bbox must not touch frame edge
 ALPHA_THRESHOLD = 200  # ignore EEVEE fringe; object-alpha only
 

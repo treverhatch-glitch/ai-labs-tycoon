@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Curb + grass strip — overlapping weld."""
+"""garage-lot-curb — multi-part garage kit."""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
-    bc.add_cube("Curb", (0.46, 0.16, 0.24), (0, 0.08, 0))
-    bc.add_cube("Grass", (0.46, 0.10, 0.28), (0, 0.14, 0.06))
+    BUILDERS["garage-lot-curb"]()
     entry = bc.finish_asset("garage-lot-curb", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", "parts")
     return entry
 
 

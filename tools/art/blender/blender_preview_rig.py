@@ -13,11 +13,9 @@ import bpy
 from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
-# Neutral studio (does not inflate saturation gate)
-WORLD_TOP = (0.62, 0.61, 0.60, 1.0)
-WORLD_HORIZON = (0.48, 0.47, 0.46, 1.0)
-WORLD_BOTTOM = (0.28, 0.27, 0.26, 1.0)
-FLOOR_COLOR = (0.80, 0.48, 0.14, 1.0)
+# Mid-grey seamless studio — no beige gradient wall (per Hatch pkt1 pass 4)
+STUDIO_GREY = (0.48, 0.48, 0.50, 1.0)
+FLOOR_GREY = (0.38, 0.38, 0.40, 1.0)
 
 FRAMING_MARGIN = 1.15  # Hatch: radius/tan(fov/2)*1.15
 DEFAULT_AZIMUTH_DEG = 45.0
@@ -92,18 +90,7 @@ def setup_studio_world() -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
     bg = nodes.new("ShaderNodeBackground")
-    coord = nodes.new("ShaderNodeTexCoord")
-    sep = nodes.new("ShaderNodeSeparateXYZ")
-    ramp = nodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].position = 0.0
-    ramp.color_ramp.elements[0].color = WORLD_BOTTOM
-    ramp.color_ramp.elements[1].position = 0.45
-    ramp.color_ramp.elements[1].color = WORLD_HORIZON
-    elem = ramp.color_ramp.elements.new(0.85)
-    elem.color = WORLD_TOP
-    links.new(coord.outputs["Generated"], sep.inputs["Vector"])
-    links.new(sep.outputs["Z"], ramp.inputs["Fac"])
-    links.new(ramp.outputs["Color"], bg.inputs["Color"])
+    bg.inputs["Color"].default_value = STUDIO_GREY
     bg.inputs["Strength"].default_value = 1.0
     links.new(bg.outputs["Background"], out.inputs["Surface"])
 
@@ -122,7 +109,7 @@ def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
+        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
@@ -138,7 +125,7 @@ def add_shadow_floor_z(mins: Vector, maxs: Vector) -> bpy.types.Object:
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = FLOOR_COLOR
+        bsdf.inputs["Base Color"].default_value = FLOOR_GREY
         bsdf.inputs["Roughness"].default_value = 0.92
     floor.data.materials.append(mat)
     return floor
@@ -281,9 +268,18 @@ def render_preview_studio(
     resolution: int = 512,
     up_axis: str | None = None,
     lens_mm: float = DEFAULT_LENS_MM,
+    azimuth_deg: float = DEFAULT_AZIMUTH_DEG,
+    elevation_deg: float = DEFAULT_ELEVATION_DEG,
+    framing_margin: float = FRAMING_MARGIN,
+    mask_meshes: bpy.types.Object | list[bpy.types.Object] | None = None,
 ) -> None:
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
+    if mask_meshes is not None:
+        mask_focus = mask_meshes if isinstance(mask_meshes, list) else [mask_meshes]
+        mask_heroes = [o for o in mask_focus if o.type == "MESH"]
+    else:
+        mask_heroes = hero_meshes
     if not hero_meshes:
         hero_meshes = [
             o for o in bpy.context.scene.objects if o.type == "MESH" and o.name != "PreviewShadowFloor"
@@ -308,9 +304,16 @@ def render_preview_studio(
     center = (mins + maxs) * 0.5
     radius = bounding_sphere_radius(mins, maxs, hero_meshes)
     setup_three_point_lights(center, radius)
-    cam = frame_camera(hero_meshes, lens_mm=lens_mm, up_axis=axis)
+    cam = frame_camera(
+        hero_meshes,
+        lens_mm=lens_mm,
+        margin=framing_margin,
+        azimuth_deg=azimuth_deg,
+        elevation_deg=elevation_deg,
+        up_axis=axis,
+    )
     half_fov = camera_half_fov_rad(cam.data)
-    cam_dist = (radius / math.tan(half_fov)) * FRAMING_MARGIN
+    cam_dist = (radius / math.tan(half_fov)) * framing_margin
 
     meta_path = path.with_name(path.stem + ".frame.json")
     meta_path.write_text(
@@ -318,10 +321,10 @@ def render_preview_studio(
             {
                 "camera_dist": cam_dist,
                 "bbox_radius": radius,
-                "framing_margin": FRAMING_MARGIN,
+                "framing_margin": framing_margin,
                 "lens_mm": lens_mm,
-                "azimuth_deg": DEFAULT_AZIMUTH_DEG,
-                "elevation_deg": DEFAULT_ELEVATION_DEG,
+                "azimuth_deg": azimuth_deg,
+                "elevation_deg": elevation_deg,
                 "up_axis": axis,
             },
             indent=2,
@@ -338,4 +341,4 @@ def render_preview_studio(
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
     mask_path = path.with_name(path.stem + ".mask.png")
-    render_hero_mask(hero_meshes, mask_path, resolution)
+    render_hero_mask(mask_heroes, mask_path, resolution)

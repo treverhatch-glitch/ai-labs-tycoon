@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Roll door — frame block + inset curtain."""
+"""garage-roll-door — multi-part garage kit."""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
-    bc.add_cube("Frame", (2.04, 2.20, 0.14), (0, 1.10, 0))
-    bc.add_cube("Curtain", (1.56, 1.56, 0.06), (0, 1.02, 0))
+    BUILDERS["garage-roll-door"]()
     entry = bc.finish_asset("garage-roll-door", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", "parts")
     return entry
 
 

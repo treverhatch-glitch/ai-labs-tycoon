@@ -1,6 +1,6 @@
 # Early art quality pass (post–#86)
 
-**Status:** PR #88 packet 1 **pass 3** — shared alpha-mask preview rig; packets 2–4 held.
+**Status:** PR #88 packet 1 **pass 4** — multi-part garage geometry + scene; shared alpha-mask rig unchanged; packets 2–4 held.
 
 ### Packet 1 pass 2 (mesh join rules)
 

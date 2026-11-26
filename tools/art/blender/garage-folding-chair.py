@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""Folding chair — single mesh block (blue garage seat)."""
+"""garage-folding-chair — multi-part garage kit."""
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
+from garage_kit_builders import BUILDERS  # noqa: E402
 
 
 def main():
-    bc.add_cube("Chair", (0.50, 0.94, 0.44), (0, 0.47, 0))
+    BUILDERS["garage-folding-chair"]()
     entry = bc.finish_asset("garage-folding-chair", "garage-kit")
-    print("OK", entry["id"], entry["triangleCount"], "tris")
+    print("OK", entry["id"], entry["triangleCount"], "tris", "parts")
     return entry
 
 

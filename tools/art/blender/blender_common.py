@@ -196,9 +196,9 @@ def add_connect_spine_part(objects: list[bpy.types.Object]) -> bpy.types.Object:
     spine = bpy.context.active_object
     spine.name = "ConnectSpine"
     spine.scale = (
-        max(0.06, span.x * 0.45),
-        max(0.08, span.y * 0.92),
-        max(0.06, span.z * 0.45),
+        max(0.08, span.x * 0.58),
+        max(0.10, span.y * 0.90),
+        max(0.08, span.z * 0.58),
     )
     bpy.ops.object.transform_apply(scale=True)
     assign_solid(spine, (0.5, 0.5, 0.5, 1.0), 0.5)
@@ -250,6 +250,21 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+GARAGE_TEXTURE_PROPS = frozenset({"garage-floor-tile"})
+GARAGE_UPRIGHT_PROPS = frozenset(
+    {
+        "garage-roll-door",
+        "garage-whiteboard-1995",
+        "garage-land-for-sale-sign",
+        "garage-window-frame",
+        "garage-wall-panel",
+        "garage-exterior-wall",
+    }
+)
+MIN_GARAGE_PARTS = 3
+MIN_GARAGE_TRIS = 300
+
+
 def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Blender-baked, in-repo)") -> dict:
     """UV, bake, export glTF, preview; return manifest entry."""
     out_dir = ART_ROOT / category
@@ -261,17 +276,28 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
+    part_count = len(mesh_obs)
     ground_scene_meshes()
     tint_garage_parts(mesh_obs, asset_id)
     parts = list(mesh_obs)
     if len(parts) > 1:
         parts.append(add_connect_spine_part(parts))
-        root = union_overlapping_meshes(parts)
+        bpy.ops.object.select_all(action="DESELECT")
+        for ob in parts:
+            ob.select_set(True)
+        bpy.context.view_layer.objects.active = parts[0]
+        bpy.ops.object.join()
+        root = bpy.context.view_layer.objects.active
+        weld_extent_pre = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
+        voxel_shell_merge(root, voxel_size=min(0.052, max(0.024, weld_extent_pre * 0.058)))
     else:
         root = mesh_obs[0]
     weld_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
+    if islands > 1:
+        weld_coincident_vertices(root, threshold=min(0.04, weld_extent * 0.06))
+        islands = mesh_island_count(root)
     if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
     snap_root_to_ground(root)
@@ -279,10 +305,22 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if min_y > 0.008:
         raise RuntimeError(f"{asset_id}: not grounded (min_y={min_y:.4f})")
     thin = min(root.dimensions)
-    if thin >= 0.14:
-        bevel_object(root, width=min(0.010, thin * 0.08), segments=2)
+    bevel_object(root, width=min(0.018, max(0.006, thin * 0.12)), segments=2)
     smooth_shade(root)
     uv_unwrap(root)
+
+    verts = len(root.data.vertices)
+    tris = sum(len(p.vertices) for p in root.data.polygons)
+    if asset_id.startswith("garage-") and asset_id not in GARAGE_TEXTURE_PROPS:
+        if part_count < MIN_GARAGE_PARTS and tris < MIN_GARAGE_TRIS:
+            raise RuntimeError(
+                f"{asset_id}: need >={MIN_GARAGE_PARTS} sub-shapes or >={MIN_GARAGE_TRIS} tris "
+                f"(parts={part_count} tris={tris})"
+            )
+    if asset_id in GARAGE_UPRIGHT_PROPS:
+        dims = root.dimensions
+        if dims.y <= dims.z + 0.02:
+            raise RuntimeError(f"{asset_id}: upright gate height={dims.y:.3f} depth={dims.z:.3f}")
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
@@ -294,8 +332,6 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     except Exception as exc:  # noqa: BLE001 — headless apt build may lack denoiser
         print(f"WARN preview {asset_id}: {exc}")
 
-    verts = len(root.data.vertices)
-    tris = sum(len(p.vertices) for p in root.data.polygons)
     return {
         "id": asset_id,
         "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
@@ -677,7 +713,47 @@ def bake_pbr_set(ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int =
         img.save()
         paths[kind] = img.filepath_raw
 
+    if "albedo" in paths:
+        _multiply_ao_into_albedo(ob, tex_dir, asset_id, size, paths["albedo"])
+
     return list(paths.keys())
+
+
+def _multiply_ao_into_albedo(
+    ob: bpy.types.Object, tex_dir: Path, asset_id: str, size: int, albedo_path: str
+) -> None:
+    """Bake ambient occlusion into albedo for contact detail."""
+    ao_img = bpy.data.images.new(f"{asset_id}_ao_tmp", width=size, height=size)
+    bake_node = None
+    bake_mat = ob.data.materials[0] if ob.data.materials else None
+    if bake_mat and bake_mat.use_nodes:
+        bake_node = bake_mat.node_tree.nodes.new("ShaderNodeTexImage")
+        bake_node.image = ao_img
+        bake_mat.node_tree.nodes.active = bake_node
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    try:
+        bpy.ops.object.bake(type="AO")
+    except Exception as exc:
+        print(f"WARN ao bake {asset_id}: {exc}")
+        bpy.data.images.remove(ao_img)
+        return
+    albedo = bpy.data.images.load(albedo_path)
+    w, h = albedo.size
+    al_px = list(albedo.pixels)
+    ao_px = list(ao_img.pixels)
+    for i in range(0, len(al_px), 4):
+        j = i
+        ao = 0.35 + 0.65 * ao_px[j]
+        al_px[i] *= ao
+        al_px[i + 1] *= ao
+        al_px[i + 2] *= ao
+    albedo.pixels = al_px
+    albedo.save()
+    if bake_mat and bake_mat.use_nodes and bake_node:
+        bake_mat.node_tree.nodes.remove(bake_node)
+    bpy.data.images.remove(ao_img)
 
 
 def export_gltf(ob: bpy.types.Object, path: Path) -> None:
