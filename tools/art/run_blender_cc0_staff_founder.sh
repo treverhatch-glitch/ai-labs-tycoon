@@ -24,7 +24,10 @@ echo "$out" | grep -q '^OK staff-founder-idle ' || { echo "FAIL staff-founder-id
 
 test -s "docs/art/previews/staff-founder-idle.png" || { echo "FAIL missing founder preview"; exit 1; }
 
+python3 tools/art/check_cc0_staff_founder_regression.py
 python3 tools/art/check_cc0_staff_preview_upright.py
+python3 tools/art/check_cc0_staff_founder_standing.py
+python3 tools/art/check_cc0_staff_founder_screen_up.py
 python3 tools/art/check_cc0_staff_material_diversity.py
 python3 tools/art/check_cc0_staff_silhouette.py
 python3 tools/art/check_cc0_staff_floor_loose.py

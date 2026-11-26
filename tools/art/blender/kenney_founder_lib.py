@@ -8,6 +8,7 @@ import bmesh
 from mathutils import Vector
 
 import blender_common as bc
+from kenney_founder_standing_gate import verify_standing_rig
 
 INCOMING = bc.REPO_ROOT / "tools/art/cc0/incoming"
 KENNEY_FBX = INCOMING / "kenney/animated-characters-3/Model/characterMedium.fbx"
@@ -19,11 +20,30 @@ FOUNDER_SKIN = (0.84, 0.68, 0.54, 1.0)
 FOUNDER_HOODIE = (0.10, 0.62, 0.55, 1.0)
 FOUNDER_JEANS = (0.12, 0.28, 0.58, 1.0)
 FOUNDER_SHOE = (0.20, 0.22, 0.26, 1.0)
+FBX_KW = {
+    "use_manual_orientation": True,
+    "axis_forward": "-Z",
+    "axis_up": "Y",
+    "use_anim": True,
+}
 
 
 def _clear_scene() -> None:
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
+
+
+def _import_fbx(path) -> None:
+    bpy.ops.import_scene.fbx(filepath=str(path), **FBX_KW)
+
+
+def _apply_transforms(*objs: bpy.types.Object) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in objs:
+        o.select_set(True)
+    if objs:
+        bpy.context.view_layer.objects.active = objs[0]
+        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
 
 def _import_rigged() -> tuple[bpy.types.Object, bpy.types.Object]:
@@ -32,15 +52,40 @@ def _import_rigged() -> tuple[bpy.types.Object, bpy.types.Object]:
     if not KENNEY_IDLE_FBX.is_file():
         raise RuntimeError(f"missing Kenney idle {KENNEY_IDLE_FBX}")
     _clear_scene()
-    bpy.ops.import_scene.fbx(filepath=str(KENNEY_FBX))
+    _import_fbx(KENNEY_FBX)
     arm = bpy.data.objects.get("Root")
     mesh = bpy.data.objects.get("characterMedium")
     if not arm or arm.type != "ARMATURE" or not mesh or mesh.type != "MESH":
         raise RuntimeError("Kenney rig import failed")
-    bpy.ops.import_scene.fbx(filepath=str(KENNEY_IDLE_FBX))
+    _apply_transforms(arm, mesh)
+    _import_fbx(KENNEY_IDLE_FBX)
     for extra in [o for o in bpy.context.scene.objects if o.type == "ARMATURE" and o != arm]:
         bpy.data.objects.remove(extra, do_unlink=True)
     return arm, mesh
+
+
+def _ground_rig(arm: bpy.types.Object, mesh: bpy.types.Object) -> None:
+    zs: list[float] = []
+    for name in (
+        "LeftFoot",
+        "RightFoot",
+        "LeftToes",
+        "RightToes",
+        "LeftHeelRoll",
+        "RightHeelRoll",
+    ):
+        pb = arm.pose.bones.get(name)
+        if pb:
+            zs.append((arm.matrix_world @ pb.head).z)
+            zs.append((arm.matrix_world @ pb.tail).z)
+    if not zs:
+        return
+    dz = -min(zs)
+    if abs(dz) < 1e-6:
+        return
+    arm.location.z += dz
+    mesh.location.z += dz
+    bpy.context.view_layer.update()
 
 
 def _apply_idle_rest_pose(arm: bpy.types.Object) -> None:
@@ -73,39 +118,56 @@ def _apply_object_xform(ob: bpy.types.Object) -> None:
     bpy.ops.object.transform_apply(rotation=True, scale=True, location=True)
 
 
-def _stand_y_up(ob: bpy.types.Object) -> None:
-    """Kenney Z-up idle rest → Y-up height; yaw so hips→head forward aims at +Y."""
-    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
-    _apply_object_xform(ob)
+def _ensure_mesh_upright(ob: bpy.types.Object) -> None:
+    """Z-up Kenney bake → Y-up art space with head at max Y."""
+    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    max_z, min_z = max(v.z for v in verts), min(v.z for v in verts)
+    max_y, min_y = max(v.y for v in verts), min(v.y for v in verts)
+    if max_z - min_z >= max_y - min_y:
+        if max_z < min_z + 1e-4:
+            ob.rotation_euler = (math.pi, 0.0, 0.0)
+            _apply_object_xform(ob)
+        else:
+            ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
+            _apply_object_xform(ob)
+    verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    if max(v.y for v in verts) < min(v.y for v in verts) + 1e-4:
+        ob.rotation_euler = (math.pi, 0.0, 0.0)
+        _apply_object_xform(ob)
+
+
+def _face_positive_y(ob: bpy.types.Object) -> None:
     verts = [ob.matrix_world @ v.co for v in ob.data.vertices]
     max_y, min_y = max(v.y for v in verts), min(v.y for v in verts)
     span = max(1e-4, max_y - min_y)
     top = [v for v in verts if v.y > max_y - span * 0.2]
     bot = [v for v in verts if v.y < min_y + span * 0.2]
-    if top and bot:
-        head = Vector(
-            (
-                sum(v.x for v in top) / len(top),
-                sum(v.y for v in top) / len(top),
-                sum(v.z for v in top) / len(top),
-            )
+    if not top or not bot:
+        return
+    head = Vector(
+        (
+            sum(v.x for v in top) / len(top),
+            sum(v.y for v in top) / len(top),
+            sum(v.z for v in top) / len(top),
         )
-        hip = Vector(
-            (
-                sum(v.x for v in bot) / len(bot),
-                sum(v.y for v in bot) / len(bot),
-                sum(v.z for v in bot) / len(bot),
-            )
+    )
+    hip = Vector(
+        (
+            sum(v.x for v in bot) / len(bot),
+            sum(v.y for v in bot) / len(bot),
+            sum(v.z for v in bot) / len(bot),
         )
-        fwd = head - hip
-        fwd.y = 0.0
-        if fwd.length > 1e-4:
-            yaw = math.atan2(fwd.x, fwd.y)
-            if abs(yaw) > 0.05:
-                ob.rotation_euler = (0.0, -yaw, 0.0)
-                _apply_object_xform(ob)
-    ob.rotation_euler = (0.0, -math.pi / 2, 0.0)
+    )
+    fwd = head - hip
+    fwd.y = 0.0
+    if fwd.length < 1e-4:
+        return
+    yaw = math.atan2(fwd.x, fwd.y)
+    ob.rotation_euler = (0.0, -yaw, 0.0)
     _apply_object_xform(ob)
+    if abs(fwd.normalized().y) < 0.5:
+        ob.rotation_euler = (0.0, -math.pi / 2, 0.0)
+        _apply_object_xform(ob)
 
 
 def _height_span(ob: bpy.types.Object) -> tuple[float, float, float]:
@@ -211,8 +273,13 @@ def _add_mug() -> None:
 def build_founder_kenney() -> None:
     arm, mesh = _import_rigged()
     _apply_idle_rest_pose(arm)
+    _ground_rig(arm, mesh)
+    ok, msg = verify_standing_rig(arm)
+    if not ok:
+        raise RuntimeError(f"FAIL staff-founder-idle: {msg}")
     baked = _bake_mesh(mesh, arm)
-    _stand_y_up(baked)
+    _ensure_mesh_upright(baked)
+    _face_positive_y(baked)
     _scale_character(baked)
     parts = _split_parts(baked)
     if len(parts) < 8:

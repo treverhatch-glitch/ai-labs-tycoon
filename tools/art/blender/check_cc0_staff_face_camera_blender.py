@@ -14,7 +14,7 @@ import blender_preview_rig as rig  # noqa: E402
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 FRAME = REPO / "docs/art/previews/staff-founder-idle.frame.json"
-MIN_CAM_Z = 0.45
+MIN_FACE_DOT = 0.5
 
 
 def main() -> None:
@@ -68,10 +68,10 @@ def main() -> None:
     if nose_d >= back_d:
         print(f"FAIL staff-founder-idle back_closer nose={nose_d:.3f} back={back_d:.3f}")
         raise SystemExit(1)
-    if face_toward < MIN_CAM_Z:
-        print(f"FAIL staff-founder-idle face_cam_z={face_toward:.2f} want>={MIN_CAM_Z}")
+    if face_toward < MIN_FACE_DOT:
+        print(f"FAIL staff-founder-idle face_cam_dot={face_toward:.2f} want>={MIN_FACE_DOT}")
         raise SystemExit(1)
-    print(f"OK staff-founder-idle face_cam_z={face_toward:.2f}")
+    print(f"OK staff-founder-idle face_cam_dot={face_toward:.2f}")
     raise SystemExit(0)
 
 

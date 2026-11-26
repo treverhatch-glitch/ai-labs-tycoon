@@ -34,22 +34,23 @@ def analyze(png: Path) -> tuple[bool, str]:
         return False, "empty"
     min_y, max_y = min(ys), max(ys)
     span = max(1, max_y - min_y)
-    top_cut = max_y - span * 0.15
-    bot_cut = min_y + span * 0.15
-    head_pts = [y for y in ys if y >= top_cut]
-    foot_pts = [y for y in ys if y <= bot_cut]
+  # Image y grows downward: head occupies the top band (small y).
+    head_cut = min_y + span * 0.15
+    foot_cut = max_y - span * 0.15
+    head_pts = [y for y in ys if y <= head_cut]
+    foot_pts = [y for y in ys if y >= foot_cut]
     if not head_pts:
         return False, "no_pixels_in_top_15pct"
     if not foot_pts:
         return False, "no_pixels_in_bottom_15pct"
     head_cy = sum(head_pts) / len(head_pts)
     foot_cy = sum(foot_pts) / len(foot_pts)
-    if head_cy < top_cut:
-        return False, f"head_cy={head_cy:.1f} not in top band {top_cut:.1f}"
-    if foot_cy > bot_cut:
-        return False, f"foot_cy={foot_cy:.1f} not in bottom band {bot_cut:.1f}"
-    if head_cy <= foot_cy:
-        return False, "inverted_head_below_feet"
+    if head_cy > head_cut:
+        return False, f"head_cy={head_cy:.1f} not in top band {head_cut:.1f}"
+    if foot_cy < foot_cut:
+        return False, f"foot_cy={foot_cy:.1f} not in bottom band {foot_cut:.1f}"
+    if head_cy >= foot_cy:
+        return False, f"inverted_head_below_feet head_cy={head_cy:.1f} foot_cy={foot_cy:.1f}"
     fill = span / h
     lo, hi = (0.65, 0.75) if png.stem == "staff-founder-idle" else (0.58, 0.78)
     if fill < lo or fill > hi:
