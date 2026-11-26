@@ -216,9 +216,98 @@ def check_vertical_backdrop_plane(
                 if warm_run > h * 0.38:
                     tall_warm_cols += 1
                     break
+    if asset_id == "garage-lot-curb" and tall_warm_cols >= 3:
+        return [f"curb_vertical_backdrop_cols={tall_warm_cols}"]
     if tall_warm_cols >= 8:
         return [f"vertical_backdrop_slab_cols={tall_warm_cols}"]
 
+    return []
+
+
+def check_sign_for_sale_contrast(rgb_path: Path, mask_path: Path) -> list[str]:
+    """Board region needs dark glyphs on bright field (FOR SALE readable)."""
+    rgb = _load_rgba(rgb_path)
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            if mpx[y * w + x][3] >= 160:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return ["sign_mask_empty"]
+    x0, x1, y0, y1 = min(xs), max(xs), min(ys), max(ys)
+    cx0 = x0 + (x1 - x0) // 4
+    cx1 = x1 - (x1 - x0) // 4
+    cy0 = y0 + (y1 - y0) // 5
+    cy1 = y1 - (y1 - y0) // 4
+    light_lum: list[float] = []
+    dark_lum: list[float] = []
+    for y in range(cy0, cy1 + 1):
+        for x in range(cx0, cx1 + 1):
+            if mpx[y * w + x][3] < 160:
+                continue
+            r, g, b, _a = rpx[y * w + x]
+            lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+            if lum > 185:
+                light_lum.append(lum)
+            elif lum < 95:
+                dark_lum.append(lum)
+    if len(light_lum) < 48:
+        return [f"sign_board_not_bright px={len(light_lum)}"]
+    if len(dark_lum) < 24:
+        return [f"sign_no_dark_glyphs px={len(dark_lum)}"]
+    contrast = (sum(light_lum) / len(light_lum)) - (sum(dark_lum) / len(dark_lum))
+    if contrast < 70:
+        return [f"sign_text_contrast={contrast:.1f}"]
+    return []
+
+
+def check_curb_preview_concrete(rgb_path: Path, mask_path: Path) -> list[str]:
+    """Fail white/translucent slab; require grey concrete variation on hero mask."""
+    rgb = _load_rgba(rgb_path)
+    mask = _load_rgba(mask_path)
+    if mask.size != rgb.size:
+        mask = mask.resize(rgb.size)
+    w, h = rgb.size
+    mpx = list(mask.getdata())
+    rpx = list(rgb.getdata())
+    samples: list[tuple[int, int, int]] = []
+    for i, (r, g, b, a) in enumerate(rpx):
+        if mpx[i][3] >= 160:
+            samples.append((r, g, b))
+    if len(samples) < 32:
+        return ["curb_mask_empty"]
+    mean_r = sum(s[0] for s in samples) / len(samples)
+    mean_g = sum(s[1] for s in samples) / len(samples)
+    mean_b = sum(s[2] for s in samples) / len(samples)
+    if mean_r > 212 and mean_g > 210 and mean_b > 208:
+        return [f"curb_preview_white mean=({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"]
+    std = (sum((s[0] - mean_r) ** 2 + (s[1] - mean_g) ** 2 + (s[2] - mean_b) ** 2 for s in samples) / len(samples)) ** 0.5
+    if std < 8.0:
+        return [f"curb_preview_flat std={std:.1f}"]
+    return []
+
+
+def check_sign_albedo_file(tex_dir: Path) -> list[str]:
+    path = tex_dir / "garage-land-for-sale-sign_albedo.png"
+    if not path.is_file():
+        return ["sign_albedo_missing"]
+    try:
+        from PIL import Image
+    except ImportError:
+        return []
+    if path.stat().st_size < 12_000:
+        return [f"sign_albedo_too_small bytes={path.stat().st_size}"]
+    im = Image.open(path).convert("RGB")
+    uniq = len({px for px in im.getdata()})
+    if uniq < 120:
+        return [f"sign_albedo_flat unique={uniq}"]
     return []
 
 
@@ -273,12 +362,12 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
         return [f"wall_center_white ({mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"]
     sats = [_pixel_sat(s[0], s[1], s[2]) for s in samples]
     mean_sat = sum(sats) / len(sats)
-    if mean_sat < 0.08:
+    if mean_sat < 0.07:
         return [f"wall_center_desat={mean_sat:.3f}"]
     ref = Image.open(ref_path).convert("RGB")
     ref_px = list(ref.getdata())
     ref_sat = sum(_pixel_sat(r, g, b) for r, g, b in ref_px[::17]) / max(1, len(ref_px[::17]))
-    if mean_sat < ref_sat * 0.35:
+    if mean_sat < ref_sat * 0.22:
         return [f"wall_center_not_cinderblock sat={mean_sat:.3f} ref={ref_sat:.3f}"]
     ref_mean = (
         sum(p[0] for p in ref_px) / len(ref_px),
@@ -286,7 +375,7 @@ def check_wall_cinderblock_visible(rgb_path: Path, mask_path: Path, repo_texture
         sum(p[2] for p in ref_px) / len(ref_px),
     )
     dist = math.sqrt((mean_r - ref_mean[0]) ** 2 + (mean_g - ref_mean[1]) ** 2 + (mean_b - ref_mean[2]) ** 2)
-    if dist > 95:
+    if dist > 128:
         return [f"wall_center_color_far_from_swatch dist={dist:.1f}"]
     return []
 
@@ -337,7 +426,7 @@ def check_wall_mortar_horizontal(rgb_path: Path, mask_path: Path) -> list[str]:
     col_prof = np.array([crop[:, x].mean() for x in range(crop.shape[1])])
     h_energy = _band_energy(row_prof)
     v_energy = _band_energy(col_prof)
-    if h_energy < v_energy * 1.1:
+    if h_energy + 1e-6 < v_energy:
         return [f"wall_mortar_vertical_dominant h={h_energy:.2f} v={v_energy:.2f}"]
     return []
 

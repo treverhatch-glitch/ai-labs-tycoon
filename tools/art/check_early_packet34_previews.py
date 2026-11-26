@@ -21,6 +21,9 @@ from packet34_preview_gates import (  # noqa: E402
     check_env_preview_backdrop,
     check_wall_cinderblock_visible,
     check_wall_mortar_horizontal,
+    check_sign_for_sale_contrast,
+    check_curb_preview_concrete,
+    check_sign_albedo_file,
     check_icon_ortho,
     check_icon_sat_coverage,
     check_icon_sheet,
@@ -58,6 +61,18 @@ def check_env_preview(asset_id: str) -> int:
             print(f"FAIL {asset_id} {err}")
             rc = 1
         for err in check_wall_mortar_horizontal(rgb, mask):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+    if asset_id == "garage-land-for-sale-sign":
+        for err in check_sign_for_sale_contrast(rgb, mask):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+        sign_tex = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
+        for err in check_sign_albedo_file(sign_tex):
+            print(f"FAIL {asset_id} {err}")
+            rc = 1
+    if asset_id == "garage-lot-curb":
+        for err in check_curb_preview_concrete(rgb, mask):
             print(f"FAIL {asset_id} {err}")
             rc = 1
     for err in mask_gate_errors(mask):
