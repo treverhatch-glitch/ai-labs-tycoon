@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "license": "CC0-1.0",
+  "files": [
+    {
+      "path": "tools/art/cc0/incoming/kenney/animated-characters-3.zip",
+      "bytes": 15611,
+      "sha256": "1d233e3dd2ae9ab1a06e883032ec27e3d334c44a0a80c7d160ba7e40b905328b"
+    },
+    {
+      "path": "tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMedium.fbx",
+      "bytes": 167212,
+      "sha256": "18835fef534eede635b081ee7fe647d01a885550a591d2e6bf071010906167d8"
+    },
+    {
+      "path": "tools/art/cc0/incoming/quaternius/animated_human.glb",
+      "bytes": 227744,
+      "sha256": "7468282618c911df53eb0813387a3794af24a2ca301218133c813167054f6018"
+    },
+    {
+      "path": "tools/art/cc0/incoming/quaternius/character.glb",
+      "bytes": 2003540,
+      "sha256": "b3d03413bbec5218e45348179433628f0ed420f2a725f60365a9a4b1ef3c4d09"
+    },
+    {
+      "path": "tools/art/cc0/incoming/polyhaven/studio_small_08_2k.hdr",
+      "bytes": 5930381,
+      "sha256": "6e677b7421f4a14f0844dece04243c4ab3f4bf1a05bf4bb79e29368b3ecc7746"
+    }
+  ]
+}
