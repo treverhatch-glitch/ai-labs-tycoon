@@ -274,8 +274,6 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
 
     maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
     apply_preview_material(root, tex_dir, asset_id)
-    if asset_id.startswith("staff-"):
-        apply_staff_preview_material(root, asset_id)
     islands_export = mesh_island_count(root)
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
@@ -387,6 +385,10 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.40)
         elif asset_id == "garage-window-frame":
             assign_solid(ob, (0.95, 0.52, 0.08, 1.0), 0.42)
+        elif asset_id.startswith("staff-") and "eye" in name:
+            assign_solid(ob, (0.12, 0.14, 0.22, 1.0), 0.22)
+        elif asset_id.startswith("staff-") and "mouth" in name:
+            assign_solid(ob, (0.78, 0.38, 0.42, 1.0), 0.45)
         elif asset_id.startswith("staff-") and "head" in name:
             assign_solid(ob, (0.88, 0.72, 0.58, 1.0), 0.55)
         elif asset_id.startswith("staff-") and ("leg" in name or "arm" in name):
@@ -425,22 +427,26 @@ def tint_garage_parts(mesh_obs: list[bpy.types.Object], asset_id: str) -> None:
             assign_solid(ob, (0.12, 0.12, 0.14, 1.0), 0.25)
         elif asset_id.startswith("staff-") and "mug" in name:
             assign_solid(ob, (0.88, 0.48, 0.12, 1.0), 0.35)
+        elif asset_id.startswith("staff-") and ("rolebadge" in name or "rolesash" in name):
+            continue
         elif asset_id.startswith("staff-") and "torso" in name:
             role_shirt = {
-                "staff-researcher-idle": (0.38, 0.52, 0.82, 1.0),
-                "staff-engineer-work": (0.42, 0.58, 0.38, 1.0),
-                "staff-safety-idle": (0.55, 0.58, 0.62, 1.0),
-                "staff-sales-idle": (0.52, 0.38, 0.72, 1.0),
-                "staff-recruiter-idle": (0.62, 0.42, 0.32, 1.0),
-                "staff-gpu-tech-idle": (0.18, 0.48, 0.28, 1.0),
-                "staff-founder-idle": (0.62, 0.45, 0.30, 1.0),
-                "staff-pose-typing": (0.48, 0.52, 0.58, 1.0),
+                "staff-researcher-idle": (0.28, 0.52, 0.95, 1.0),
+                "staff-engineer-work": (0.35, 0.78, 0.32, 1.0),
+                "staff-safety-idle": (0.42, 0.55, 0.62, 1.0),
+                "staff-sales-idle": (0.45, 0.22, 0.78, 1.0),
+                "staff-recruiter-idle": (0.88, 0.32, 0.28, 1.0),
+                "staff-gpu-tech-idle": (0.12, 0.72, 0.38, 1.0),
+                "staff-founder-idle": (0.82, 0.42, 0.22, 1.0),
+                "staff-pose-typing": (0.38, 0.62, 0.82, 1.0),
             }
             assign_solid(ob, role_shirt.get(asset_id, (0.45, 0.48, 0.52, 1.0)), 0.48)
         elif asset_id.startswith("staff-") and ("hair" in name or "ponytail" in name):
             assign_solid(ob, (0.32, 0.22, 0.16, 1.0), 0.55)
-        elif asset_id.startswith("staff-") and "screwdriver" in name:
+        elif asset_id.startswith("staff-") and ("screwdriver" in name or "wrench" in name):
             assign_solid(ob, (0.72, 0.72, 0.75, 1.0), 0.28)
+        elif asset_id.startswith("staff-") and "headset" in name.lower():
+            assign_solid(ob, (0.22, 0.24, 0.28, 1.0), 0.32)
         elif asset_id.startswith("staff-") and "badge" in name:
             assign_solid(ob, (0.82, 0.82, 0.86, 1.0), 0.32)
         elif asset_id.startswith("staff-"):
@@ -493,7 +499,7 @@ def assign_emission(ob: bpy.types.Object, rgba: tuple[float, float, float, float
     ob.data.materials.append(mat)
 
 
-def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.1) -> tuple[float, float, float, float]:
+def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 3.05) -> tuple[float, float, float, float]:
     h, s, v = colorsys.rgb_to_hsv(rgba[0], rgba[1], rgba[2])
     s = min(1.0, s * scale)
     v = min(1.0, v * 1.08)
@@ -503,9 +509,9 @@ def _boost_saturation(rgba: tuple[float, float, float, float], scale: float = 2.
 
 def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
     mesh = ob.data
-    if mesh.vertex_colors:
-        mesh.vertex_colors.clear()
-    vcol = mesh.vertex_colors.new(name="BakeCol")
+    while mesh.color_attributes:
+        mesh.color_attributes.remove(mesh.color_attributes[0])
+    vcol = mesh.color_attributes.new(name="BakeCol", type="BYTE_COLOR", domain="CORNER")
     for poly in mesh.polygons:
         rgba = (0.55, 0.55, 0.55, 1.0)
         mat = ob.data.materials[poly.material_index] if poly.material_index < len(ob.data.materials) else None
@@ -518,7 +524,7 @@ def transfer_material_colors_to_vertex_layer(ob: bpy.types.Object) -> None:
                     rgba = tuple(bsdf.inputs["Base Color"].default_value)
         rgba = _boost_saturation(rgba)
         for loop_idx in poly.loop_indices:
-            vcol.data[loop_idx].color = rgba
+            vcol.data[loop_idx].color = (rgba[0], rgba[1], rgba[2], 1.0)
 
 
 def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
@@ -532,15 +538,22 @@ def unify_vertex_color_material(ob: bpy.types.Object, asset_id: str) -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    attr = nodes.new("ShaderNodeVertexColor")
-    attr.layer_name = "BakeCol"
-    links.new(attr.outputs["Color"], bsdf.inputs["Base Color"])
+    attr = nodes.new("ShaderNodeAttribute")
+    attr.attribute_name = "BakeCol"
+    color_out = attr.outputs["Color"]
+    if asset_id.startswith("staff-"):
+        hsv = nodes.new("ShaderNodeHueSaturation")
+        hsv.inputs["Saturation"].default_value = 1.95
+        hsv.inputs["Value"].default_value = 1.12
+        links.new(color_out, hsv.inputs["Color"])
+        color_out = hsv.outputs["Color"]
+    links.new(color_out, bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     emit = nodes.new("ShaderNodeEmission")
     emit.inputs["Strength"].default_value = 1.4 if "crt" in asset_id or "rack" in asset_id else 0.0
     if emit.inputs["Strength"].default_value > 0:
-        vcol_emit = nodes.new("ShaderNodeVertexColor")
-        vcol_emit.layer_name = "BakeCol"
+        vcol_emit = nodes.new("ShaderNodeAttribute")
+        vcol_emit.attribute_name = "BakeCol"
         links.new(vcol_emit.outputs["Color"], emit.inputs["Color"])
         mix = nodes.new("ShaderNodeMixShader")
         mix.inputs["Fac"].default_value = 0.45 if "crt" in asset_id else 0.30
@@ -564,9 +577,12 @@ def apply_preview_material(ob: bpy.types.Object, tex_dir: Path, asset_id: str) -
     """EEVEE preview uses baked albedo; keeps vertex-color material when bake maps are flat."""
     albedo = tex_dir / f"{asset_id}_albedo.png"
     rough = tex_dir / f"{asset_id}_roughness.png"
-    if ob.data.vertex_colors and ob.data.materials and ob.data.materials[0]:
+    bake_col = getattr(ob.data, "color_attributes", None)
+    has_bake_vcol = bake_col is not None and bake_col.get("BakeCol") is not None
+    if (has_bake_vcol or ob.data.vertex_colors) and ob.data.materials and ob.data.materials[0]:
         mat = ob.data.materials[0]
-        if mat.name.endswith("_vcol") or "VertexColor" in {n.type for n in mat.node_tree.nodes}:
+        node_types = {n.type for n in mat.node_tree.nodes} if mat.use_nodes else set()
+        if mat.name.endswith("_vcol") or "ShaderNodeAttribute" in node_types or "VERTEX_COLOR" in node_types:
             return
     if not albedo.exists():
         return
@@ -720,7 +736,7 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     from blender_material_palette import spec_for
 
     role_accents = {
-        "staff-founder-idle": (0.32, 0.22, 0.95, 1.0),
+        "staff-founder-idle": (0.42, 0.18, 0.98, 1.0),
         "staff-gpu-tech-idle": (0.12, 0.78, 0.42, 1.0),
         "staff-safety-idle": (0.35, 0.92, 0.22, 1.0),
         "staff-sales-idle": (0.14, 0.22, 0.68, 1.0),
@@ -740,8 +756,8 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
         "staff-pose-typing": (0.05, 0.22, 0.28, 1.0),
     }
     spec = spec_for(asset_id)
-    light = _boost_saturation(role_accents.get(asset_id, (*spec["light"], 1.0)), 1.55)
-    dark = _boost_saturation(role_darks.get(asset_id, (*spec["dark"], 1.0)), 1.35)
+    light = _boost_saturation(role_accents.get(asset_id, (*spec["light"], 1.0)), 2.0)
+    dark = _boost_saturation(role_darks.get(asset_id, (*spec["dark"], 1.0)), 1.75)
     mat = bpy.data.materials.new(f"{asset_id}_staff_preview")
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
@@ -755,7 +771,7 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
     ramp.color_ramp.elements[1].color = light
     sep = nodes.new("ShaderNodeSeparateXYZ")
     links.new(texco.outputs["Generated"], sep.inputs["Vector"])
-    links.new(sep.outputs["Z"], ramp.inputs["Fac"])
+    links.new(sep.outputs["Y"], ramp.inputs["Fac"])
     links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
     bsdf.inputs["Roughness"].default_value = float(spec["roughness"])
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
@@ -764,12 +780,18 @@ def apply_staff_preview_material(ob: bpy.types.Object, asset_id: str) -> None:
 
 
 def render_preview(ob: bpy.types.Object, path: Path, asset_id: str | None = None) -> None:
-    del asset_id  # shared rig; optional preview material applied by caller
     use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
     if use_rig not in ("0", "false", "no"):
         try:
             import blender_preview_rig as rig  # type: ignore
 
+            prev_kind = "staff"
+            if asset_id:
+                if asset_id.startswith("wisp-"):
+                    prev_kind = "wisp"
+                elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
+                    prev_kind = "hud"
+            os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
             rig.render_preview_studio(ob, path)
             return
         except Exception as exc:  # noqa: BLE001

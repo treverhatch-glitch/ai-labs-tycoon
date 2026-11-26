@@ -12,10 +12,16 @@ for script in "${SCRIPTS[@]}"; do
   echo "$out"
   echo "$out" | grep -q '^OK staff-' || { echo "FAIL missing OK line: $script" >&2; exit 1; }
 done
-echo "=== wisp / hud ==="
+echo "=== wisp ==="
 "$BLENDER" -b --python tools/art/blender/blender_render_hud_wisp.py
+echo "=== hud packet2 ==="
+for hscript in tools/art/blender/hud-topbar-beige.py tools/art/blender/tex-hud-paper-warm.py; do
+  echo "=== $hscript ==="
+  "$BLENDER" -b --python "$hscript"
+done
 python3 tools/art/blender/merge_blender_manifests.py
 python3 tools/art/generate_wisp_mascot.py
 python3 tools/art/check_staff_mesh_topology.py
-python3 tools/art/check_staff_quality_previews.py
+bash tools/art/check_packet2_previews.sh
+python3 tools/art/render_early_composites.py
 echo "quality packet2 staff OK"

@@ -1,145 +1,190 @@
-"""Shared early-art preview metrics (garage + staff lanes).
-
-- Object-mask saturation: pixels with sat >= 0.04 or outside neutral backdrop band.
-- Distinctness: 32×32 mean |ΔRGB| on center crop (MIN_RGB_DISTANCE).
-"""
+#!/usr/bin/env python3
+"""Hatch preview metrics: alpha-mask silhouette + object-only saturation."""
 from __future__ import annotations
 
+import json
+import math
 from pathlib import Path
 
+MIN_SAT = 0.15
+MIN_SILHOUETTE_HEIGHT = 0.35
+MAX_SILHOUETTE_HEIGHT = 0.75
+MIN_LUMA_VAR = 0.001
+EDGE_EPSILON = 0.008  # normalized; alpha bbox must not touch frame edge
+ALPHA_THRESHOLD = 200  # ignore EEVEE fringe; object-alpha only
 MIN_RGB_DISTANCE = 14.0
-NEUTRAL_LUMA_BAND = (0.26, 0.54)
-NEUTRAL_SAT_CEIL = 0.12
 
 
-def _pixel_sat_lum(r: int, g: int, b: int) -> tuple[float, float]:
-    rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
-    mx = max(rf, gf, bf)
-    mn = min(rf, gf, bf)
-    lum = 0.2126 * rf + 0.7152 * gf + 0.0722 * bf
-    if mx <= 1e-6:
-        return 0.0, lum
-    return (mx - mn) / mx, lum
-
-
-def crop_center(im):
-    w, h = im.size
-    margin_x, margin_y = int(w * 0.12), int(h * 0.08)
-    return im.crop((margin_x, margin_y, w - margin_x, h - margin_y))
-
-
-def is_object_pixel(sat: float, lum: float) -> bool:
-    if sat >= 0.04:
-        return True
-    if lum < NEUTRAL_LUMA_BAND[0] or lum > NEUTRAL_LUMA_BAND[1]:
-        return True
-    if sat > NEUTRAL_SAT_CEIL and lum < 0.72:
-        return True
-    return False
-
-
-def wisp_mood_accent_sat(path: Path) -> float:
-    """Peak saturation on vivid object pixels (face / emissive), not pastel body."""
+def masked_mean_rgb(path: Path) -> tuple[float, float, float]:
     from PIL import Image
 
-    im = crop_center(Image.open(path).convert("RGB"))
-    vivid: list[float] = []
-    for r, g, b in im.getdata():
-        sat, lum = _pixel_sat_lum(r, g, b)
-        if not is_object_pixel(sat, lum):
+    rgb_im = Image.open(path).convert("RGBA")
+    mask_path = path.with_name(path.stem + ".mask.png")
+    if not mask_path.is_file():
+        return (0.0, 0.0, 0.0)
+    mask_im = Image.open(mask_path).convert("RGBA")
+    if mask_im.size != rgb_im.size:
+        mask_im = mask_im.resize(rgb_im.size, Image.Resampling.BILINEAR)
+    w, h = rgb_im.size
+    rgb_pixels = list(rgb_im.getdata())
+    mask_pixels = list(mask_im.getdata())
+    is_obj = _object_mask_from_images(rgb_pixels, mask_pixels, w, h)
+    rs = gs = bs = 0.0
+    n = 0
+    for i, on in enumerate(is_obj):
+        if not on:
             continue
-        if sat >= 0.08:
-            vivid.append(sat)
-    if not vivid:
-        return 0.0
-    return max(vivid)
+        r, g, b, _a = rgb_pixels[i]
+        rs += r
+        gs += g
+        bs += b
+        n += 1
+    if n == 0:
+        return (0.0, 0.0, 0.0)
+    return (rs / n, gs / n, bs / n)
 
 
-def mean_saturation_object_mask(path: Path) -> tuple[float, float, float]:
-    """Return (object_mean_sat, full luma_var, accent_sat on object pixels)."""
-    from PIL import Image
-
-    im = crop_center(Image.open(path).convert("RGB"))
-    px = list(im.getdata())
-    sats: list[float] = []
-    lum_all: list[float] = []
-    for r, g, b in px:
-        sat, lum = _pixel_sat_lum(r, g, b)
-        lum_all.append(lum)
-        if not is_object_pixel(sat, lum):
-            continue
-        sats.append(sat)
-    if not sats:
-        return 0.0, 0.0, 0.0
-    sats_sorted = sorted(sats)
-    accent_idx = max(0, int(len(sats_sorted) * 0.82) - 1)
-    accent = sats_sorted[accent_idx]
-    mean_sat = sum(sats) / len(sats)
-    lbar = sum(lum_all) / len(lum_all)
-    var = sum((x - lbar) ** 2 for x in lum_all) / len(lum_all)
-    return mean_sat, var, accent
+def mean_rgb_distance(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
+    return math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2)
 
 
-def mean_saturation_full(path: Path) -> tuple[float, float]:
-    """Garage lane: full-frame mean saturation (all pixels)."""
+def downscale_rgb_crop(path: Path, size: int = 16) -> list[tuple[int, int, int]]:
     from PIL import Image
 
     im = Image.open(path).convert("RGB")
-    px = list(im.getdata())
-    sats: list[float] = []
-    lum: list[float] = []
-    for r, g, b in px:
-        sat, lum_v = _pixel_sat_lum(r, g, b)
-        lum.append(lum_v)
-        if sat < 0.02:
-            continue
-        sats.append(sat)
-    if not sats:
-        return 0.0, 0.0
-    mean_sat = sum(sats) / len(sats)
-    lbar = sum(lum) / len(lum)
-    var = sum((x - lbar) ** 2 for x in lum) / len(lum)
-    return mean_sat, var
-
-
-def downscale_rgb_crop(path: Path, size: int = 32) -> list[tuple[int, int, int]]:
-    from PIL import Image
-
-    im = crop_center(Image.open(path).convert("RGB"))
-    return list(im.resize((size, size)).getdata())
-
-
-def downscale_rgb_face_band(path: Path, size: int = 32) -> list[tuple[int, int, int]]:
-    """Upper band crop for wisp mood markers / faces (distinctness)."""
-    from PIL import Image
-
-    im = crop_center(Image.open(path).convert("RGB"))
-    w, h = im.size
-    im = im.crop((0, 0, w, max(8, int(h * 0.58))))
-    return list(im.resize((size, size)).getdata())
-
-
-def rgb_distance_full(a: list[tuple[int, int, int]], b: list[tuple[int, int, int]]) -> float:
-    if len(a) != len(b):
-        return 0.0
-    total = 0.0
-    for (r1, g1, b1), (r2, g2, b2) in zip(a, b):
-        total += abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
-    return total / (len(a) * 3.0)
+    mask_path = path.with_name(path.stem + ".mask.png")
+    if mask_path.exists():
+        mask = Image.open(mask_path).convert("L").resize(im.size, Image.Resampling.BILINEAR)
+        bbox = mask.getbbox()
+        if bbox:
+            im = im.crop(bbox)
+    im = im.resize((size, size), Image.Resampling.BILINEAR)
+    return [(r, g, b) for r, g, b in im.getdata()]
 
 
 def rgb_distance(a: list[tuple[int, int, int]], b: list[tuple[int, int, int]]) -> float:
     if len(a) != len(b):
         return 0.0
-    total = 0.0
-    used = 0
-    for (r1, g1, b1), (r2, g2, b2) in zip(a, b):
-        s1, _ = _pixel_sat_lum(r1, g1, b1)
-        s2, _ = _pixel_sat_lum(r2, g2, b2)
-        if s1 < 0.045 and s2 < 0.045:
-            continue
-        used += 1
-        total += abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2)
-    if used == 0:
+    acc = 0.0
+    for (r0, g0, b0), (r1, g1, b1) in zip(a, b, strict=True):
+        acc += math.sqrt((r0 - r1) ** 2 + (g0 - g1) ** 2 + (b0 - b1) ** 2)
+    return acc / len(a)
+
+
+def _pixel_sat(r: int, g: int, b: int) -> float:
+    rf, gf, bf = r / 255.0, g / 255.0, b / 255.0
+    mx = max(rf, gf, bf)
+    mn = min(rf, gf, bf)
+    if mx <= 1e-6:
         return 0.0
-    return total / (used * 3.0)
+    return (mx - mn) / mx
+
+
+def _object_mask_from_images(
+    _rgb_pixels: list[tuple[int, int, int, int]] | None,
+    mask_pixels: list[tuple[int, int, int, int]],
+    _w: int,
+    _h: int,
+) -> list[bool]:
+    """True where alpha-pass pixel belongs to the hero (no luminance / full-frame fallback)."""
+    return [mc[3] >= ALPHA_THRESHOLD for mc in mask_pixels]
+
+
+def analyze_alpha_mask(mask_path: Path) -> dict[str, float | bool | list[float]]:
+    from PIL import Image
+
+    im = Image.open(mask_path).convert("RGBA")
+    w, h = im.size
+    pixels = list(im.getdata())
+    mask = _object_mask_from_images(None, pixels, w, h)
+    xs: list[int] = []
+    ys: list[int] = []
+    for y in range(h):
+        for x in range(w):
+            if mask[y * w + x]:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return {
+            "height_coverage": 0.0,
+            "width_coverage": 0.0,
+            "area_coverage": 0.0,
+            "touches_edge": True,
+            "bbox_norm": [0.0, 0.0, 0.0, 0.0],
+            "object_pixels": 0,
+        }
+    x0, x1 = min(xs), max(xs)
+    y0, y1 = min(ys), max(ys)
+    height_cov = (y1 - y0 + 1) / h
+    width_cov = (x1 - x0 + 1) / w
+    area_cov = len(xs) / (w * h)
+    extent_cov = max(height_cov, width_cov)
+    u0, v0 = x0 / w, y0 / h
+    u1, v1 = (x1 + 1) / w, (y1 + 1) / h
+    touches = (
+        u0 <= EDGE_EPSILON
+        or v0 <= EDGE_EPSILON
+        or u1 >= 1.0 - EDGE_EPSILON
+        or v1 >= 1.0 - EDGE_EPSILON
+    )
+    return {
+        "height_coverage": height_cov,
+        "width_coverage": width_cov,
+        "extent_coverage": extent_cov,
+        "area_coverage": area_cov,
+        "touches_edge": touches,
+        "bbox_norm": [u0, v0, u1, v1],
+        "object_pixels": len(xs),
+    }
+
+
+def analyze_preview(rgb_path: Path, mask_path: Path | None) -> tuple[float, float, float, float, int]:
+    from PIL import Image
+
+    im = Image.open(rgb_path).convert("RGBA")
+    w, h = im.size
+    rgb_pixels = list(im.getdata())
+    if mask_path is None or not mask_path.exists():
+        mask_path = rgb_path.with_name(rgb_path.stem + ".mask.png")
+    if not mask_path.exists():
+        return 0.0, 0.0, 0.0, 0.0, 0
+
+    mask_im = Image.open(mask_path).convert("RGBA")
+    if mask_im.size != (w, h):
+        mask_im = mask_im.resize((w, h), Image.Resampling.BILINEAR)
+    mask_pixels = list(mask_im.getdata())
+    is_obj = _object_mask_from_images(rgb_pixels, mask_pixels, w, h)
+
+    obj_sats: list[float] = []
+    obj_lum: list[float] = []
+    for i, on in enumerate(is_obj):
+        if not on:
+            continue
+        r, g, b, _a = rgb_pixels[i]
+        obj_sats.append(_pixel_sat(r, g, b))
+        obj_lum.append(0.2126 * r / 255 + 0.7152 * g / 255 + 0.0722 * b / 255)
+
+    alpha = analyze_alpha_mask(mask_path)
+    height_cov = float(alpha["extent_coverage"])
+    mean_sat = sum(obj_sats) / len(obj_sats) if obj_sats else 0.0
+    if obj_lum:
+        lbar = sum(obj_lum) / len(obj_lum)
+        lvar = sum((x - lbar) ** 2 for x in obj_lum) / len(obj_lum)
+    else:
+        lvar = 0.0
+    return mean_sat, lvar, height_cov, 0.0, int(alpha.get("object_pixels", 0))
+
+
+def mask_gate_errors(mask_path: Path) -> list[str]:
+    if not mask_path.exists():
+        return [f"missing mask {mask_path.name}"]
+    alpha = analyze_alpha_mask(mask_path)
+    errs: list[str] = []
+    if alpha["touches_edge"]:
+        errs.append("alpha_bbox_touches_edge")
+    ext = float(alpha["extent_coverage"])
+    if ext < MIN_SILHOUETTE_HEIGHT or ext > MAX_SILHOUETTE_HEIGHT:
+        errs.append(f"alpha_extent={ext:.3f} need {MIN_SILHOUETTE_HEIGHT}-{MAX_SILHOUETTE_HEIGHT}")
+    if int(alpha.get("object_pixels", 0)) < 64:
+        errs.append("alpha_mask_too_empty")
+    return errs

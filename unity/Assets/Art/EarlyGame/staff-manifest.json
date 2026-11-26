@@ -1,5 +1,6 @@
 {
   "fidelity": "blender-baked",
+  "blenderVersion": "4.0.2",
   "assets": [
     {
       "id": "staff-engineer-work",
@@ -11,12 +12,12 @@
       },
       "preview": "docs/art/previews/staff-engineer-work.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 794,
+      "triangleCount": 3156,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 532,
-      "triangleCount": 2078,
-      "generator": "tools/art/blender/staff-engineer-work.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-engineer-work.py"
     },
     {
       "id": "staff-founder-idle",
@@ -28,12 +29,12 @@
       },
       "preview": "docs/art/previews/staff-founder-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1505,
+      "triangleCount": 5896,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 510,
-      "triangleCount": 1982,
-      "generator": "tools/art/blender/staff-founder-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-founder-idle.py"
     },
     {
       "id": "staff-gpu-tech-idle",
@@ -45,12 +46,12 @@
       },
       "preview": "docs/art/previews/staff-gpu-tech-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1679,
+      "triangleCount": 6574,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 527,
-      "triangleCount": 2062,
-      "generator": "tools/art/blender/staff-gpu-tech-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-gpu-tech-idle.py"
     },
     {
       "id": "staff-pose-typing",
@@ -62,12 +63,12 @@
       },
       "preview": "docs/art/previews/staff-pose-typing.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1809,
+      "triangleCount": 7082,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 517,
-      "triangleCount": 2020,
-      "generator": "tools/art/blender/staff-pose-typing.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-pose-typing.py"
     },
     {
       "id": "staff-recruiter-idle",
@@ -79,12 +80,12 @@
       },
       "preview": "docs/art/previews/staff-recruiter-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 689,
+      "triangleCount": 2736,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 510,
-      "triangleCount": 1992,
-      "generator": "tools/art/blender/staff-recruiter-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-recruiter-idle.py"
     },
     {
       "id": "staff-researcher-idle",
@@ -96,12 +97,12 @@
       },
       "preview": "docs/art/previews/staff-researcher-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1507,
+      "triangleCount": 5874,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 518,
-      "triangleCount": 2026,
-      "generator": "tools/art/blender/staff-researcher-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-researcher-idle.py"
     },
     {
       "id": "staff-safety-idle",
@@ -113,12 +114,12 @@
       },
       "preview": "docs/art/previews/staff-safety-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1504,
+      "triangleCount": 5870,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 532,
-      "triangleCount": 2080,
-      "generator": "tools/art/blender/staff-safety-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-safety-idle.py"
     },
     {
       "id": "staff-sales-idle",
@@ -130,12 +131,12 @@
       },
       "preview": "docs/art/previews/staff-sales-idle.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
+      "vertexCount": 1690,
+      "triangleCount": 6610,
       "meshIslands": 1,
       "grounded": true,
-      "vertexCount": 467,
-      "triangleCount": 1842,
-      "generator": "tools/art/blender/staff-sales-idle.py",
-      "blenderVersion": "4.0.2"
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/staff-sales-idle.py"
     }
   ]
 }

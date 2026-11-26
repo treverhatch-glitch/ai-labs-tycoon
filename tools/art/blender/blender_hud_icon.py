@@ -35,7 +35,7 @@ def finish_hud_icon(asset_id: str, root: bpy.types.Object) -> None:
     preview = REPO / "docs/art/previews" / f"{asset_id}.png"
     preview.parent.mkdir(parents=True, exist_ok=True)
     try:
-        bc.render_preview(root, preview)
+        bc.render_preview(root, preview, asset_id=asset_id)
     except Exception as exc:  # noqa: BLE001
         print(f"WARN preview {asset_id}: {exc}")
     HUD_OUT.mkdir(parents=True, exist_ok=True)
