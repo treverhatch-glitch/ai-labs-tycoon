@@ -57,6 +57,16 @@ if [[ -f kenney_building-kit.zip ]]; then
   unzip -qo kenney_building-kit.zip -d kenney_building-kit
 fi
 
+echo "=== Kenney Furniture Kit (CC0 mirror subset) ==="
+mkdir -p "kenney_furniture-kit/Models/GLB format"
+FURN_MIRROR="https://raw.githubusercontent.com/RetroDECK/RetroQUEST/main/assets/kenney_furniture-kit/Models/GLTF%20format"
+for f in desk.glb chairDesk.glb computerScreen.glb computerKeyboard.glb \
+  bookcaseClosed.glb lampRoundTable.glb cardboardBoxClosed.glb cardboardBoxOpen.glb plantSmall1.glb; do
+  if [[ ! -f "kenney_furniture-kit/Models/GLB format/$f" ]]; then
+    curl -fsSL -o "kenney_furniture-kit/Models/GLB format/$f" "$FURN_MIRROR/$f"
+  fi
+done
+
 echo "=== Quaternius Ultimate Platformer Pack (itch) ==="
 mkdir -p quaternius-ultimate-platformer-pack
 if itch_zip "quaternius/ultimate-platformer-pack" quaternius-ultimate-platformer-pack.zip; then

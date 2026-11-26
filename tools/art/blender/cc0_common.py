@@ -20,13 +20,20 @@ BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2
 
 PALETTE = {
     "floor": (0.50, 0.48, 0.45, 1.0),
-    "wall": (0.82, 0.70, 0.55, 1.0),
+    "wall": (0.92, 0.58, 0.28, 1.0),
     "trim": (0.88, 0.48, 0.18, 1.0),
-    "metal": (0.55, 0.58, 0.62, 1.0),
+    "metal": (0.48, 0.62, 0.88, 1.0),
     "glass": (0.55, 0.75, 0.88, 1.0),
-    "wood": (0.58, 0.38, 0.22, 1.0),
-    "prop": (0.65, 0.62, 0.58, 1.0),
+    "wood": (0.72, 0.44, 0.20, 1.0),
+    "prop": (0.78, 0.58, 0.38, 1.0),
     "board": (0.92, 0.90, 0.86, 1.0),
+    "screen": (0.22, 0.48, 0.88, 1.0),
+    "lamp_accent": (0.95, 0.58, 0.12, 1.0),
+    "box": (0.68, 0.52, 0.30, 1.0),
+    "box_open": (0.52, 0.40, 0.28, 1.0),
+    "chair": (0.32, 0.52, 0.78, 1.0),
+    "shelf": (0.78, 0.62, 0.38, 1.0),
+    "plant": (0.22, 0.72, 0.32, 1.0),
 }
 
 GARAGE_KIT = ART_ROOT / "garage-kit"
@@ -58,6 +65,10 @@ def reset_scene() -> None:
 
 def kenney_glb(name: str) -> Path:
     return INCOMING / "kenney_building-kit/Models/GLB format" / name
+
+
+def kenney_furniture_glb(name: str) -> Path:
+    return INCOMING / "kenney_furniture-kit/Models/GLB format" / name
 
 
 def import_gltf(path: Path, name: str) -> list[bpy.types.Object]:
@@ -176,12 +187,17 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
         tex = nodes.new("ShaderNodeTexImage")
         tex.image = load_image(concrete)
         mapping = nodes.new("ShaderNodeMapping")
-        mapping.inputs["Scale"].default_value = (2.5, 2.5, 2.5)
+        mapping.inputs["Scale"].default_value = (2.8, 2.8, 2.8)
         coord = nodes.new("ShaderNodeTexCoord")
         links.new(coord.outputs["Object"], mapping.inputs["Vector"])
         links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
-        links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
-        bsdf.inputs["Roughness"].default_value = 0.82
+        warm = nodes.new("ShaderNodeMixRGB")
+        warm.blend_type = "OVERLAY"
+        warm.inputs["Fac"].default_value = 0.85
+        warm.inputs["Color2"].default_value = (0.78, 0.42, 0.22, 1.0)
+        links.new(tex.outputs["Color"], warm.inputs["Color1"])
+        links.new(warm.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.84
     else:
         bsdf.inputs["Base Color"].default_value = tint
         bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass", "wood") else 0.48
@@ -195,7 +211,16 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
             bsdf.inputs["Transmission Weight"].default_value = 0.35
         elif "Transmission" in bsdf.inputs:
             bsdf.inputs["Transmission"].default_value = 0.35
-    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    if role in ("screen", "lamp_accent"):
+        emit = nodes.new("ShaderNodeEmission")
+        emit.inputs["Color"].default_value = tint
+        emit.inputs["Strength"].default_value = 0.65 if role == "screen" else 0.35
+        add = nodes.new("ShaderNodeAddShader")
+        links.new(bsdf.outputs["BSDF"], add.inputs[0])
+        links.new(emit.outputs["Emission"], add.inputs[1])
+        links.new(add.outputs["Shader"], out.inputs["Surface"])
+    else:
+        links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
 
@@ -344,7 +369,7 @@ def render_kit_preview(
 ) -> None:
     """Warm point + HDRI (hidden from camera); world corners RGB 150; ~70% fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
-    setup_preview_world_grey_hdri(hdri_strength=0.62)
+    setup_preview_world_grey_hdri(hdri_strength=0.72)
     bpy.context.scene.render.engine = "CYCLES"
     bpy.context.scene.cycles.samples = 80 if mode == "hero" else 96
     bpy.context.scene.cycles.use_denoising = False
@@ -352,7 +377,7 @@ def render_kit_preview(
     if hasattr(bpy.context.scene, "cycles"):
         bpy.context.scene.cycles.film_exposure = 0.92
     bpy.context.scene.view_settings.view_transform = "Standard"
-    bpy.context.scene.view_settings.exposure = -0.05
+    bpy.context.scene.view_settings.exposure = 0.02 if mode == "hero" else -0.05
 
     frame_src = frame_objects or objects
     center, span3 = _bounds_center(frame_src)
@@ -379,7 +404,8 @@ def render_kit_preview(
 
     lens = 40.0
     pitch = math.radians(35.0)
-    dist = max(_camera_distance_for_fill(room + 0.4, lens, fill, margin) * 0.62, room * 0.48)
+    dist_scale = 1.05 if mode == "hero" else 0.62
+    dist = max(_camera_distance_for_fill(room + 0.4, lens, fill, margin) * dist_scale, room * 0.62)
     horiz = dist * math.cos(pitch)
     elev = dist * math.sin(pitch)
     cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))

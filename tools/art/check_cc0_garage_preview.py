@@ -12,8 +12,13 @@ HERO = REPO / "docs/art/previews/garage-interior-room-kit.png"
 FIXTURE_620 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-620a0e37.png"
 FIXTURE_C78 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c78b9371.png"
 FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-4e22d8dd.png"
+FIXTURE_C0 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c0d66236.png"
 FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 CORNER_RGB = (150, 150, 150)
+MIN_WALL_REGION_COVER = 0.25
+MIN_FLOOR_REGION_COVER = 0.20
+MIN_FLOOR_LUMA_DELTA = 0.12 * 255
+BACKDROP_LUMA = 0.299 * CORNER_RGB[0] + 0.587 * CORNER_RGB[1] + 0.114 * CORNER_RGB[2]
 CORNER_INSET = 3
 BLOWN_LUMA = 255 * 0.95
 
@@ -183,6 +188,57 @@ def fill_margin_errs(path: Path, fill: float = 0.70) -> list[str]:
     return []
 
 
+def _region_non_bg_fraction(im, x0: int, x1: int, y0: int, y1: int) -> float:
+    w, h = im.size
+    x0, x1 = max(0, x0), min(w, x1)
+    y0, y1 = max(0, y0), min(h, y1)
+    if x1 <= x0 or y1 <= y0:
+        return 0.0
+    fg = 0
+    total = 0
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            total += 1
+            if not is_studio_backdrop(im.getpixel((x, y))):
+                fg += 1
+    return fg / total if total else 0.0
+
+
+def room_pixel_gate_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    errs: list[str] = []
+    left_wall = _region_non_bg_fraction(im, 0, int(w * 0.42), int(h * 0.18), int(h * 0.78))
+    back_wall = _region_non_bg_fraction(im, int(w * 0.22), int(w * 0.88), int(h * 0.12), int(h * 0.52))
+    wall_cover = (left_wall + back_wall) / 2.0
+    if wall_cover < MIN_WALL_REGION_COVER:
+        errs.append(
+            f"FAIL: {path_name} wall regions non-bg {wall_cover * 100:.1f}% "
+            f"(left {left_wall * 100:.1f}%, back {back_wall * 100:.1f}%) < {MIN_WALL_REGION_COVER * 100:.0f}%"
+        )
+    floor_cover = _region_non_bg_fraction(im, int(w * 0.14), int(w * 0.86), int(h * 0.52), int(h * 0.92))
+    if floor_cover < MIN_FLOOR_REGION_COVER:
+        errs.append(
+            f"FAIL: {path_name} floor region non-bg {floor_cover * 100:.1f}% < {MIN_FLOOR_REGION_COVER * 100:.0f}%"
+        )
+    floor_devs: list[float] = []
+    for y in range(int(h * 0.58), int(h * 0.90)):
+        for x in range(int(w * 0.22), int(w * 0.78)):
+            p = im.getpixel((x, y))
+            if is_studio_backdrop(p):
+                continue
+            L = luma(p)
+            floor_devs.append(abs(L - BACKDROP_LUMA))
+    if floor_devs:
+        mean_sep = sum(floor_devs) / len(floor_devs)
+        if mean_sep < MIN_FLOOR_LUMA_DELTA:
+            errs.append(
+                f"FAIL: {path_name} floor mean |luma−backdrop| {mean_sep:.1f} < {MIN_FLOOR_LUMA_DELTA:.0f}"
+            )
+    else:
+        errs.append(f"FAIL: {path_name} no floor foreground pixels for luma gate")
+    return errs
+
+
 def quality_gates(im, path_name: str) -> list[str]:
     errs: list[str] = []
     errs.extend(blown_out_errs(im, path_name))
@@ -201,6 +257,7 @@ def check_image(path: Path) -> list[str]:
     errs = corner_rgb_150_errs(im)
     errs.extend(quality_gates(im, path.name))
     errs.extend(fill_margin_errs(path))
+    errs.extend(room_pixel_gate_errs(im, path.name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
         errs.append(f"FAIL: {path.name} appears fully black")
@@ -232,6 +289,13 @@ def verify_regression_fixtures_fail() -> list[str]:
         q = quality_gates(im, path.name)
         if not q:
             errs.append(f"FAIL: fixture {label} must fail quality gates")
+    if FIXTURE_C0.is_file():
+        im_c0 = Image.open(FIXTURE_C0).convert("RGB")
+        room_bad = room_pixel_gate_errs(im_c0, FIXTURE_C0.name)
+        if not room_bad:
+            errs.append("FAIL: fixture c0d66236 must fail room pixel gates")
+    else:
+        errs.append(f"FAIL: missing regression fixture {FIXTURE_C0}")
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

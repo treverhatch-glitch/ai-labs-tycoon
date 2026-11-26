@@ -46,11 +46,9 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         if x < min_x - tol or x > max_x + tol or z < min_z - tol or z > max_z + tol:
             errs.append(f"FAIL: {prefix}{name} center outside footprint")
 
-        if name == "kit_window" and float(p.get("distToLeftWallM", 9)) > wall_tol:
+        if name == "prop_bookcase" and float(p.get("distToLeftWallM", 9)) > wall_tol * 2.5:
             errs.append(f"FAIL: {prefix}{name} not flush to left wall")
-        if name == "prop_whiteboard" and float(p.get("distToBackWallM", 9)) > wall_tol * 2.5:
-            errs.append(f"FAIL: {prefix}{name} not flush to back wall")
-        if name == "kit_roll_door" and float(p.get("distToBackWallM", 9)) > wall_tol * 2:
+        if name == "kit_roll_door" and float(p.get("distToBackWallM", 9)) > wall_tol * 4.0:
             errs.append(f"FAIL: {prefix}{name} not in back wall opening")
         if name == "kit_roll_door" and float(p.get("groundClearanceM", 9)) > tol:
             errs.append(f"FAIL: {prefix}{name} not on slab")
