@@ -38,7 +38,39 @@ def _build_material(
     ramp.color_ramp.elements[1].color = (*(c / 255 for c in accent_rgb), 1)
     links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
 
-    if pattern == "bands":
+    if pattern == "corrugated":
+        wave = nodes.new("ShaderNodeTexWave")
+        wave.wave_type = "BANDS"
+        wave.inputs["Scale"].default_value = 24.0
+        brick = nodes.new("ShaderNodeTexBrick")
+        brick.inputs["Scale"].default_value = 8.0
+        brick.inputs["Mortar Size"].default_value = 0.04
+        brick.inputs["Mortar Smooth"].default_value = 0.05
+        mix1 = nodes.new("ShaderNodeMixRGB")
+        mix1.blend_type = "MULTIPLY"
+        mix1.inputs["Fac"].default_value = 0.72
+        links.new(wave.outputs["Color"], mix1.inputs[1])
+        links.new(brick.outputs["Color"], mix1.inputs[2])
+        vor = nodes.new("ShaderNodeTexVoronoi")
+        vor.inputs["Scale"].default_value = 12.0
+        mix2 = nodes.new("ShaderNodeMixRGB")
+        mix2.blend_type = "OVERLAY"
+        mix2.inputs["Fac"].default_value = 0.25
+        links.new(vor.outputs["Distance"], mix2.inputs["Fac"])
+        links.new(mix1.outputs["Color"], mix2.inputs[1])
+        links.new(ramp.outputs["Color"], mix2.inputs[2])
+        color_src = mix2.outputs["Color"]
+    elif pattern == "metal":
+        noise2 = nodes.new("ShaderNodeTexNoise")
+        noise2.inputs["Scale"].default_value = noise_scale
+        mix = nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = "OVERLAY"
+        mix.inputs["Fac"].default_value = 0.55
+        links.new(noise.outputs["Fac"], mix.inputs["Fac"])
+        links.new(ramp.outputs["Color"], mix.inputs[1])
+        links.new(noise2.outputs["Color"], mix.inputs[2])
+        color_src = mix.outputs["Color"]
+    elif pattern == "bands":
         wave = nodes.new("ShaderNodeTexWave")
         wave.wave_type = "BANDS"
         wave.inputs["Scale"].default_value = 8.0
@@ -96,15 +128,22 @@ def _synthetic_swatch(
     for y in range(512):
         for x in range(512):
             if pattern == "corrugated":
-                rib = 0.5 + 0.5 * math.sin(x * 0.28)
-                row = 1 if (y // 22) % 2 else 0
-                base = accent_rgb if rib > 0.75 else base_rgb
-                mortar = 12 if y % 22 < 2 else 0
-                c = tuple(max(0, min(255, base[i] - mortar)) for i in range(3))
+                block_h, block_w = 32, 64
+                row = y // block_h
+                shift = (block_w // 2) if row % 2 else 0
+                lx, ly = (x + shift) % block_w, y % block_h
+                mortar = lx < 3 or ly < 3 or lx >= block_w - 3
+                grime = int((math.sin(x * 0.11) + math.sin(y * 0.07)) * 14 + random.random() * 10)
+                base = tuple(max(0, min(255, (accent_rgb if mortar else base_rgb)[i] - grime)) for i in range(3))
+                rib = int(12 * (0.5 + 0.5 * math.sin(x * 2 * math.pi / 16)))
+                c = tuple(max(0, min(255, base[i] + rib)) for i in range(3))
             elif pattern == "metal":
-                scratch = (math.sin(x * 0.06 + y * 0.02) + random.random() * 0.2) * 18
-                band = accent_rgb if (y // 36) % 2 == 0 else base_rgb
-                c = tuple(max(0, min(255, int(band[i] + scratch))) for i in range(3))
+                u = x * 2 * math.pi / 512.0
+                v = y * 2 * math.pi / 512.0
+                scratch = math.sin(u * 13.0) * math.cos(v * 11.0)
+                wear = 0.5 + 0.5 * math.sin(u * 5.0 + v * 4.0)
+                mix = wear * 0.65 + scratch * 0.35
+                c = tuple(int(base_rgb[i] * (1 - mix) + accent_rgb[i] * mix) for i in range(3))
             elif pattern == "fibre":
                 n = random.random() * 0.4 + math.sin(x * 0.15) * 0.08 + math.sin(y * 0.19) * 0.08
                 c = tuple(int(base_rgb[i] * (1 - n) + accent_rgb[i] * n) for i in range(3))

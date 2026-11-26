@@ -145,6 +145,27 @@ def check_backdrop_mid_grey(rgb_path: Path, *, sample_margin: float = 0.04) -> l
     return []
 
 
+def check_tile2x2_seam(preview_dir: Path, asset_id: str, *, edge_tol: float = 22.0) -> list[str]:
+    """Left/right and top/bottom seams of the swatch should match when tiled."""
+    from PIL import ImageChops, ImageStat
+
+    rgb = preview_dir / f"{asset_id}.png"
+    if not rgb.is_file():
+        return []
+    im = _load_rgba(rgb).convert("RGB")
+    w, h = im.size
+    left = im.crop((0, 0, 2, h))
+    right = im.crop((w - 2, 0, w, h))
+    top = im.crop((0, 0, w, 2))
+    bottom = im.crop((0, h - 2, w, h))
+    errs: list[str] = []
+    for label, a, b in (("lr", left, right), ("tb", top, bottom)):
+        diff = ImageStat.Stat(ImageChops.difference(a, b)).mean
+        if max(diff) > edge_tol:
+            errs.append(f"tile_seam_{label} mean_delta={max(diff):.1f} > {edge_tol}")
+    return errs
+
+
 def check_texture_swatch(preview_dir: Path, asset_id: str) -> list[str]:
     rgb = preview_dir / f"{asset_id}.png"
     tile = preview_dir / f"{asset_id}.tile2x2.png"

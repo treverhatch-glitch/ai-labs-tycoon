@@ -18,6 +18,7 @@ from packet34_preview_gates import (  # noqa: E402
     check_icon_sheet,
     check_near_duplicates,
     check_texture_swatch,
+    check_tile2x2_seam,
 )
 from preview_quality_lib import mask_gate_errors  # noqa: E402
 
@@ -75,8 +76,12 @@ def main() -> int:
         print(f"FAIL {err}")
         rc |= 1
     for asset_id in TEX_IDS:
-        for err in check_texture_swatch(PREVIEW, asset_id):
-            print(f"FAIL {asset_id} {err}")
+        tex_errs = check_texture_swatch(PREVIEW, asset_id)
+        if asset_id == "tex-garage-trim-orange":
+            tex_errs.extend(check_tile2x2_seam(PREVIEW, asset_id))
+        if tex_errs:
+            for err in tex_errs:
+                print(f"FAIL {asset_id} {err}")
             rc |= 1
         else:
             print(f"OK {asset_id} texture_swatch")

@@ -73,7 +73,8 @@ def add_cube(name: str, size: tuple[float, float, float], location: tuple[float,
     bpy.ops.mesh.primitive_cube_add(size=1, location=location)
     ob = bpy.context.active_object
     ob.name = name
-    ob.scale = (size[0] / 2, size[1] / 2, size[2] / 2)
+    # primitive_cube_add(size=1) → 1m cube; scale directly to target meters.
+    ob.scale = (size[0], size[1], size[2])
     bpy.ops.object.transform_apply(scale=True)
     return ob
 
@@ -298,8 +299,18 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     weld_coincident_vertices(root, threshold=min(0.002, weld_extent * 0.002))
     islands = mesh_island_count(root)
     if islands > 1:
-        voxel_shell_merge(root, voxel_size=min(0.04, weld_extent * 0.018))
-        islands = mesh_island_count(root)
+        if asset_id == "garage-land-for-sale-sign":
+            voxel_shell_merge(root, voxel_size=min(0.038, weld_extent * 0.02))
+            islands = mesh_island_count(root)
+        else:
+            voxel = min(0.055, weld_extent * 0.014)
+            if asset_id == "garage-exterior-wall":
+                voxel = min(0.11, weld_extent * 0.026)
+            voxel_shell_merge(root, voxel_size=voxel)
+            islands = mesh_island_count(root)
+            if islands > 1 and asset_id == "garage-exterior-wall":
+                voxel_shell_merge(root, voxel_size=voxel * 1.15)
+                islands = mesh_island_count(root)
     if islands > 1:
         raise RuntimeError(f"{asset_id}: {islands} disconnected mesh islands (need 1)")
     snap_root_to_ground(root)
@@ -326,9 +337,9 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     }
     if asset_id in upright_env:
         h = float(root.dimensions.z)
-        foot = max(float(root.dimensions.x), float(root.dimensions.y))
-        if h <= foot * 1.05:
-            raise RuntimeError(f"{asset_id}: not upright for glTF (z={h:.3f} foot={foot:.3f})")
+        thin = min(float(root.dimensions.x), float(root.dimensions.y))
+        if h <= thin * 1.25:
+            raise RuntimeError(f"{asset_id}: not upright for glTF (z={h:.3f} thin={thin:.3f})")
     glb_path = out_dir / f"{asset_id}.glb"
     export_gltf(root, glb_path)
     preview_path = PREVIEW_ROOT / f"{asset_id}.png"
@@ -351,6 +362,21 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         "blenderVersion": BLENDER_VERSION,
         "generator": f"tools/art/blender/{asset_id}.py",
     }
+
+
+def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None:
+    """Re-import exported GLB and re-render studio preview (after post-bake albedo edit)."""
+    reset_scene()
+    glb = ART_ROOT / category / f"{asset_id}.glb"
+    bpy.ops.import_scene.gltf(filepath=str(glb))
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        raise RuntimeError(f"rerender {asset_id}: no mesh")
+    ob = meshes[0]
+    tex_dir = ART_ROOT / category / "textures" / asset_id
+    apply_preview_material(ob, tex_dir, asset_id)
+    preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    render_preview(ob, preview_path)
 
 
 def assign_solid(

@@ -28,6 +28,14 @@ from mathutils import Vector
 repo = Path(sys.argv[-1])
 only = json.loads(sys.argv[-2])
 manifest = json.loads((repo / "unity/Assets/Art/EarlyGame/garage-manifest.json").read_text())
+# glTF re-import bbox: width X, height Z (up), depth Y (thickness).
+BBOX_SPEC = {
+    "garage-exterior-wall": (4.0, 3.0, 0.20),
+    "garage-window-frame": (1.2, 1.0, 0.22),
+    "garage-land-for-sale-sign": (1.35, 1.95, 0.22),
+    "garage-lot-curb": (4.0, 0.22, 0.38),
+}
+BBOX_TOL = 0.25
 rc = 0
 
 
@@ -86,15 +94,29 @@ for entry in manifest["assets"]:
     ys = [c.y for c in corners]
     zs = [c.z for c in corners]
     min_z = min(zs)
-    height = max(zs) - min(zs)
-    depth = max(max(xs) - min(xs), max(ys) - min(ys), 1e-6)
+    width_x = max(xs) - min(xs)
+    thick_y = max(ys) - min(ys)
+    height_z = max(zs) - min(zs)
     tris = int(entry.get("triangleCount", 0))
     shapes = int(entry.get("subShapeCount", 1))
     parts_ok = tris >= 300 or shapes >= 3
     if asset_id == "garage-lot-curb":
-        upright_ok = height <= depth * 0.65 or height > depth * 1.02
+        upright_ok = height_z <= max(width_x, thick_y) * 0.55
     else:
-        upright_ok = height > depth * 1.08
+        upright_ok = height_z > thick_y * 1.12
+    bbox_ok = True
+    if asset_id in BBOX_SPEC:
+        sw, sh, sd = BBOX_SPEC[asset_id]
+        def _within(actual, target):
+            lo, hi = target * (1.0 - BBOX_TOL), target * (1.0 + BBOX_TOL)
+            return lo <= actual <= hi
+        bbox_ok = _within(width_x, sw) and _within(height_z, sh) and _within(thick_y, sd)
+        if not bbox_ok:
+            print(
+                f"FAIL {asset_id} bbox "
+                f"x={width_x:.3f} z={height_z:.3f} y={thick_y:.3f} "
+                f"need {sw},{sh},{sd} +/-{int(BBOX_TOL*100)}%"
+            )
     if islands > 1:
         print(f"FAIL {asset_id} islands={islands}")
         rc = 1
@@ -102,13 +124,18 @@ for entry in manifest["assets"]:
         print(f"FAIL {asset_id} min_z={min_z:.4f}")
         rc = 1
     elif not upright_ok:
-        print(f"FAIL {asset_id} not_upright height={height:.3f} depth={depth:.3f}")
+        print(f"FAIL {asset_id} not_upright h={height_z:.3f} thick={thick_y:.3f}")
+        rc = 1
+    elif not bbox_ok:
         rc = 1
     elif not parts_ok:
         print(f"FAIL {asset_id} tris={tris} shapes={shapes} (need 300+ tris or 3+ shapes)")
         rc = 1
     else:
-        print(f"OK {asset_id} islands=1 min_z={min_z:.4f} upright tris={tris}")
+        print(
+            f"OK {asset_id} islands=1 min_z={min_z:.4f} "
+            f"bbox={width_x:.2f}x{height_z:.2f}x{thick_y:.2f} tris={tris}"
+        )
 sys.exit(rc)
 """
 
