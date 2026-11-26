@@ -44,17 +44,24 @@ python3 tools/art/check_bloc_tints.py
 python3 tools/art/check_era_skin_tokens.py
 HEAD_BODY=$(git log -1 --format=%B)
 HEAD_EMAIL=$(git log -1 --format='%ae')
+HEAD_NAME=$(git log -1 --format='%an')
+REQUIRED_EMAIL="${ART_REQUIRED_AUTHOR_EMAIL:-342607508+treverhatch-glitch@users.noreply.github.com}"
 if echo "$HEAD_BODY" | grep -qiE 'Co-authored-by:'; then
   echo "FAIL: Co-authored-by in HEAD commit message" >&2
-  echo "Fix: amend locally only while unpushed; no rewrite of pushed commits." >&2
+  echo "Fix: new forward commit via tools/art/commit-tree-noreply.sh only; no rewrite of pushed SHAs." >&2
   exit 1
 fi
-if [[ "$HEAD_EMAIL" != *@users.noreply.github.com ]]; then
-  echo "FAIL: HEAD author email must be GitHub noreply (got: $HEAD_EMAIL)" >&2
+if [[ "$HEAD_EMAIL" == *cursoragent* ]] || [[ "$HEAD_NAME" == *Cursor*Agent* ]]; then
+  echo "FAIL: Cursor Agent author is forbidden on HEAD (got: $HEAD_NAME <$HEAD_EMAIL>)" >&2
+  echo "Use: tools/art/commit-tree-noreply.sh after staging; forward commit only." >&2
   exit 1
 fi
-echo "OK: HEAD message (git log -1 --format=%B):"
-echo "$HEAD_BODY" | sed '/^$/d' | head -5
+if [[ "$HEAD_EMAIL" != "$REQUIRED_EMAIL" ]]; then
+  echo "FAIL: HEAD author email must be $REQUIRED_EMAIL (got: $HEAD_EMAIL)" >&2
+  exit 1
+fi
+echo "OK: HEAD message (raw git log -1 --format=%B):"
+echo "$HEAD_BODY"
 if ! git diff --cached --quiet 2>/dev/null; then
   if [[ -f .git/COMMIT_EDITMSG ]] && grep -qiE 'Co-authored-by:' .git/COMMIT_EDITMSG; then
     echo "FAIL: Co-authored-by in staged COMMIT_EDITMSG" >&2

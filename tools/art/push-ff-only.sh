@@ -38,3 +38,5 @@ fi
 
 git push -u "$REMOTE" "$BRANCH"
 echo "OK: pushed $REMOTE/$BRANCH (fast-forward only)"
+echo "--- push report: git log -1 --format=%B ---"
+git log -1 --format=%B
