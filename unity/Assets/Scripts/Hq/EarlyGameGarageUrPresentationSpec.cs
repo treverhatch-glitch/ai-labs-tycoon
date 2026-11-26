@@ -4,7 +4,7 @@ namespace AiLabs.Unity.Hq
     public static class EarlyGameGarageUrPresentationSpec
     {
         public const string VolumeProfileAssetPath = "Assets/Art/EarlyGame/URP/GarageHeroVolumeProfile.asset";
-        public const string HdriEnvironmentPath = "Assets/Art/EarlyGame/Environment/brown_photostudio_02_1k.exr";
+        public const string HdriCanonicalPath = "tools/art/cc0/incoming/brown_photostudio_02_1k.exr";
         public const string HdriSourceUrl = "https://polyhaven.com/a/brown_photostudio_02";
         public const string HeroPreviewFileName = "garage-scene-urp-hero.png";
 
@@ -20,7 +20,7 @@ namespace AiLabs.Unity.Hq
         public const float TycoonFieldOfViewDegrees = 46f;
         public const float TycoonDistanceScale = 1.48f;
 
-        public const float HdriStrength = 0.48f;
+        public const float HdriStrength = 1.0f;
         public const float HdriRotationDegrees = 118f;
     }
 }

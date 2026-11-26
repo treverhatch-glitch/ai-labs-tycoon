@@ -12,7 +12,7 @@ namespace AiLabs.Unity.Editor.Tests
             Assert.AreEqual(42f, EarlyGameGarageUrPresentationSpec.TycoonAzimuthDegrees);
             Assert.AreEqual(30f, EarlyGameGarageUrPresentationSpec.TycoonElevationDegrees);
             Assert.Greater(EarlyGameGarageUrPresentationSpec.BloomIntensity, 0.1f);
-            Assert.IsTrue(EarlyGameGarageUrPresentationSpec.HdriEnvironmentPath.Contains("brown_photostudio"));
+            Assert.IsTrue(EarlyGameGarageUrPresentationSpec.HdriCanonicalPath.Contains("brown_photostudio"));
         }
 
         [Test]

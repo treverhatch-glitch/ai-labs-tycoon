@@ -1,6 +1,5 @@
 {
   "incomingRoot": "tools/art/cc0/incoming",
-  "unityEnvironmentRoot": "unity/Assets/Art/EarlyGame/Environment",
   "assets": [
     {
       "id": "hdri-brown-photostudio-02-1k",
@@ -9,9 +8,33 @@
       "source": "Poly Haven",
       "sourceUrl": "https://polyhaven.com/a/brown_photostudio_02",
       "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/exr/1k/brown_photostudio_02_1k.exr",
-      "incomingPath": "tools/art/cc0/incoming/brown_photostudio_02_1k.exr",
-      "unityPath": "unity/Assets/Art/EarlyGame/Environment/brown_photostudio_02_1k.exr",
+      "canonicalPath": "tools/art/cc0/incoming/brown_photostudio_02_1k.exr",
+      "unityReference": "EarlyGameGarageUrPresentationSpec.HdriCanonicalPath",
       "sha256": "9f09167a4d104c84045750451b0aee0c513372d3adee23c3b3fa2a2f40888196"
+    },
+    {
+      "id": "kenney-furniture-kit",
+      "kind": "model-pack",
+      "license": "CC0-1.0",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/furniture-kit",
+      "canonicalPath": "tools/art/cc0/incoming/kenney/kenney_furniture-kit.zip"
+    },
+    {
+      "id": "kenney-building-kit",
+      "kind": "model-pack",
+      "license": "CC0-1.0",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/building-kit",
+      "canonicalPath": "tools/art/cc0/incoming/kenney/kenney_building-kit.zip"
+    },
+    {
+      "id": "kenney-city-kit-suburban",
+      "kind": "model-pack",
+      "license": "CC0-1.0",
+      "source": "Kenney",
+      "sourceUrl": "https://kenney.nl/assets/city-kit-suburban",
+      "canonicalPath": "tools/art/cc0/incoming/kenney/kenney_city-kit-suburban_20.zip"
     }
   ]
 }

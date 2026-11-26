@@ -1,107 +1,107 @@
 #!/usr/bin/env python3
-"""Hero garage interior: EarlyGame GLBs, Poly Haven HDRI, 3/4 tycoon camera (URP lane parity)."""
+"""Cut-away garage hero — Kenney CC0 shell + furniture, Z-up floor, HDRI lights only."""
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
 import bpy
-from mathutils import Vector
 
 REPO = Path(__file__).resolve().parents[3]
-KIT = REPO / "unity/Assets/Art/EarlyGame/garage-kit"
 PREVIEW = REPO / "docs/art/previews"
 HDRI = REPO / "tools/art/cc0/incoming/brown_photostudio_02_1k.exr"
-
-# Match EarlyGameGarageDecorator lot 14×10 @ 0.45 tile (w×h metres).
-LOT_W = 14 * 0.45
-LOT_H = 10 * 0.45
-FLOOR_Y = 0.0
+TILE = 1.0
+ROOM_W = 4.2
+ROOM_D = 3.6
 
 
-def mesh_min_y(ob: bpy.types.Object) -> float:
-    return min((ob.matrix_world @ v.co).y for v in ob.data.vertices)
+def build_cutaway_garage() -> list[bpy.types.Object]:
+    import kenney_hero_lib as kh  # type: ignore
 
+    props: list[bpy.types.Object] = []
+    for ix in range(4):
+        for iz in range(3):
+            loc = (ix * TILE - 1.5, iz * TILE - 1.2, 0.0)
+            ob = kh.import_kenney("building", "floor", loc, scale=1.0, palette_key="floor")
+            if ob:
+                props.append(ob)
 
-def snap_prop_to_floor(ob: bpy.types.Object, floor_y: float = FLOOR_Y) -> None:
-    bpy.context.view_layer.update()
-    low = mesh_min_y(ob)
-    if abs(low - floor_y) > 1e-4:
-        ob.location.y += floor_y - low
-    bpy.context.view_layer.update()
+    for i in range(5):
+        ob = kh.import_kenney(
+            "building",
+            "wall",
+            (i * TILE - 2.0, ROOM_D * 0.5, 0.0),
+            rot_z_deg=0.0,
+            palette_key="wall",
+        )
+        if ob:
+            props.append(ob)
 
+    for i in range(4):
+        ob = kh.import_kenney(
+            "building",
+            "wall_side",
+            (-ROOM_W * 0.5, i * TILE - 1.0, 0.0),
+            rot_z_deg=90.0,
+            palette_key="wall",
+        )
+        if ob:
+            props.append(ob)
 
-def import_prop(asset_id: str, loc: tuple[float, float, float], rot_y_deg: float = 0.0) -> bpy.types.Object | None:
-    glb = KIT / f"{asset_id}.glb"
-    if not glb.exists():
-        print(f"WARN missing {glb}")
-        return None
-    bpy.ops.import_scene.gltf(filepath=str(glb))
-    imported = [o for o in bpy.context.selected_objects if o.type == "MESH"]
-    if not imported:
-        return None
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in imported:
-        o.select_set(True)
-    bpy.context.view_layer.objects.active = imported[0]
-    if len(imported) > 1:
-        bpy.ops.object.join()
-    root = bpy.context.view_layer.objects.active
-    root.name = f"prop_{asset_id}"
-    root.location = Vector(loc)
-    root.rotation_euler[1] = rot_y_deg * 3.14159265 / 180.0
-    bpy.ops.object.transform_apply(rotation=True)
-    snap_prop_to_floor(root)
-    return root
+    door_wall = kh.import_kenney(
+        "building",
+        "doorway",
+        (ROOM_W * 0.5, 0.25, 0.0),
+        rot_z_deg=-90.0,
+        palette_key="wall",
+    )
+    door = kh.import_kenney(
+        "building",
+        "door",
+        (ROOM_W * 0.5, 0.35, 0.0),
+        rot_z_deg=-90.0,
+        palette_key="metal",
+    )
+    if door_wall:
+        props.extend([door_wall, door] if door else [door_wall])
 
+    desk = kh.import_kenney("furniture", "desk", (-0.35, -0.25, 0.0), rot_z_deg=8.0, palette_key="desk")
+    chair = kh.import_kenney("furniture", "chair", (-0.1, -0.55, 0.0), rot_z_deg=-15.0, palette_key="plastic")
+    screen = kh.import_kenney("furniture", "screen", (-0.32, -0.05, 0.0), rot_z_deg=8.0, palette_key="metal")
+    kb = kh.import_kenney("furniture", "keyboard", (-0.28, -0.18, 0.0), rot_z_deg=8.0, palette_key="plastic")
+    mouse = kh.import_kenney("furniture", "mouse", (-0.05, -0.2, 0.0), rot_z_deg=8.0, palette_key="trim")
+    shelf = kh.import_kenney("furniture", "shelf", (1.05, -0.45, 0.0), rot_z_deg=-6.0, palette_key="desk")
+    for ob in (desk, chair, screen, kb, mouse, shelf):
+        if ob:
+            props.append(ob)
 
-def garage_layout() -> list[tuple[str, tuple[float, float, float], float]]:
-    w, h = LOT_W, LOT_H
-    return [
-        ("garage-floor-tile", (w * 0.5, FLOOR_Y, h * 0.5), 0.0),
-        ("garage-wall-panel", (w * 0.5, FLOOR_Y, 0.35), 0.0),
-        ("garage-exterior-wall", (w * 0.5, FLOOR_Y, h - 0.25), 180.0),
-        ("garage-roll-door", (w * 0.5, FLOOR_Y, -0.12), 0.0),
-        ("garage-server-closet", (w - 0.75, FLOOR_Y, h - 0.55), -8.0),
-        ("garage-land-for-sale-sign", (-0.35, FLOOR_Y, h * 0.5), 75.0),
-        ("garage-desk-crt", (1.35, FLOOR_Y, 1.15), 12.0),
-        ("garage-voodude-rack", (w - 1.1, FLOOR_Y, 1.45), -15.0),
-        ("garage-whiteboard-1995", (3.1, FLOOR_Y, 0.32), 0.0),
-        ("garage-coffee-drip", (0.75, FLOOR_Y, 0.65), 22.0),
-        ("garage-folding-chair", (2.0, FLOOR_Y, 1.85), -20.0),
-        ("garage-crt-tower", (w - 1.8, FLOOR_Y, 0.9), 8.0),
-        ("garage-window-frame", (0.4, FLOOR_Y, h - 0.4), 90.0),
-        ("garage-cable-spool", (4.2, FLOOR_Y, 2.8), 0.0),
-        ("garage-lot-curb", (-0.2, FLOOR_Y, -0.35), 0.0),
-    ]
+    return props
 
 
 def main() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    props: list[bpy.types.Object] = []
-    for asset_id, loc, rot in garage_layout():
-        ob = import_prop(asset_id, loc, rot)
-        if ob:
-            props.append(ob)
+    props = build_cutaway_garage()
+    shell = [p for p in props if p.name.startswith("kenney_building")]
+    interior = [p for p in props if not p.name.startswith("kenney_building") or "floor" in p.name]
 
     import blender_preview_rig as rig  # type: ignore
 
     out = PREVIEW / "garage-scene-urp-hero.png"
     PREVIEW.mkdir(parents=True, exist_ok=True)
-    mask_props = [p for p in props if p.name != "prop_garage-floor-tile"]
     rig.render_preview_studio(
         props,
         out,
         resolution=1024,
-        up_axis="Y",
+        up_axis="Z",
         lens_mm=42.0,
         azimuth_deg=42.0,
         elevation_deg=30.0,
-        framing_margin=1.12,
-        mask_meshes=mask_props,
+        framing_margin=1.02,
+        mask_meshes=interior,
         hdri_path=HDRI if HDRI.is_file() else None,
-        hdri_strength=0.48,
+        hdri_strength=1.0,
         hdri_rotation_deg=118.0,
+        hdri_lighting_only=True,
     )
     print("OK garage-scene-urp-hero", out, "props", len(props))
 

@@ -96,8 +96,18 @@ def setup_studio_world() -> None:
 
 
 def setup_hdri_world(hdri_path: Path, strength: float = 0.55, rotation_z_deg: float = 118.0) -> None:
-    """Poly Haven (CC0) environment for hero garage composes."""
-    world = bpy.data.worlds.new("HdriPreviewWorld")
+    """Poly Haven (CC0) environment visible in camera (legacy). Prefer lighting_only."""
+    setup_hdri_lighting_only(hdri_path, strength=strength, rotation_z_deg=rotation_z_deg, visible_hdri=True)
+
+
+def setup_hdri_lighting_only(
+    hdri_path: Path,
+    strength: float = 1.0,
+    rotation_z_deg: float = 118.0,
+    visible_hdri: bool = False,
+) -> None:
+    """HDRI for lighting/reflections; camera sees neutral grey gradient (Hatch URP hero)."""
+    world = bpy.data.worlds.new("HdriLightingWorld")
     bpy.context.scene.world = world
     world.use_nodes = True
     nodes = world.node_tree.nodes
@@ -110,12 +120,33 @@ def setup_hdri_world(hdri_path: Path, strength: float = 0.55, rotation_z_deg: fl
     mapping = nodes.new("ShaderNodeMapping")
     mapping.inputs["Rotation"].default_value[2] = math.radians(rotation_z_deg)
     coord = nodes.new("ShaderNodeTexCoord")
-    bg = nodes.new("ShaderNodeBackground")
-    bg.inputs["Strength"].default_value = strength
+    bg_light = nodes.new("ShaderNodeBackground")
+    bg_light.inputs["Strength"].default_value = strength
     links.new(coord.outputs["Generated"], mapping.inputs["Vector"])
     links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
-    links.new(tex.outputs["Color"], bg.inputs["Color"])
-    links.new(bg.outputs["Background"], out.inputs["Surface"])
+    links.new(tex.outputs["Color"], bg_light.inputs["Color"])
+
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.0
+    ramp.color_ramp.elements[0].color = (0.62, 0.61, 0.63, 1.0)
+    ramp.color_ramp.elements[1].position = 1.0
+    ramp.color_ramp.elements[1].color = (0.40, 0.41, 0.43, 1.0)
+    links.new(coord.outputs["Generated"], ramp.inputs["Fac"])
+    bg_cam = nodes.new("ShaderNodeBackground")
+    bg_cam.inputs["Strength"].default_value = 1.0
+    links.new(ramp.outputs["Color"], bg_cam.inputs["Color"])
+
+    if visible_hdri:
+        links.new(bg_light.outputs["Background"], out.inputs["Surface"])
+        return
+
+    light_path = nodes.new("ShaderNodeLightPath")
+    mix = nodes.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = 1.0
+    links.new(light_path.outputs["Is Camera Ray"], mix.inputs["Fac"])
+    links.new(bg_light.outputs["Background"], mix.inputs[1])
+    links.new(bg_cam.outputs["Background"], mix.inputs[2])
+    links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
 
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:
@@ -164,12 +195,16 @@ def setup_three_point_lights(center: Vector, radius: float) -> None:
     fill_loc = center + Vector((-radius * 1.1, -radius * 0.5, radius * 0.85))
     rim_loc = center + Vector((radius * 0.15, radius * 1.3, radius * 1.0))
     energy = max(120.0, radius * 150.0)
-    for name, loc, e_mul in (("Key", key_loc, 0.85), ("Fill", fill_loc, 0.30), ("Rim", rim_loc, 0.40)):
+    warm = (1.0, 0.91, 0.76)
+    for name, loc, e_mul in (("Key", key_loc, 1.0), ("Fill", fill_loc, 0.28), ("Rim", rim_loc, 0.35)):
         bpy.ops.object.light_add(type="AREA", location=loc)
         light = bpy.context.active_object
         light.name = name
         light.data.energy = energy * e_mul
-        light.data.size = max(0.45, radius * 0.7)
+        light.data.size = max(0.55, radius * 0.85)
+        light.data.color = warm
+        if hasattr(light.data, "shadow_soft_size"):
+            light.data.shadow_soft_size = max(0.25, radius * 0.18)
         direction = center - loc
         light.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
 
@@ -298,6 +333,7 @@ def render_preview_studio(
     hdri_path: Path | None = None,
     hdri_strength: float = 0.55,
     hdri_rotation_deg: float = 118.0,
+    hdri_lighting_only: bool = True,
 ) -> None:
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
@@ -321,7 +357,10 @@ def render_preview_studio(
             scene.eevee.gtao_factor = 1.4
 
     if hdri_path and hdri_path.is_file():
-        setup_hdri_world(hdri_path, strength=hdri_strength, rotation_z_deg=hdri_rotation_deg)
+        if hdri_lighting_only:
+            setup_hdri_lighting_only(hdri_path, strength=hdri_strength, rotation_z_deg=hdri_rotation_deg)
+        else:
+            setup_hdri_world(hdri_path, strength=hdri_strength, rotation_z_deg=hdri_rotation_deg)
     else:
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
