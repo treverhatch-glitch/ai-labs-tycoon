@@ -28,7 +28,10 @@ BORDER_MIN_PIXELS = 18
 MIN_SIL_FRAC = 0.35
 MAX_SIL_FRAC = 0.75
 MIN_SUBJECT_BBOX_FRAC = 0.60
+MAX_SUBJECT_BBOX_FRAC = 0.90
+MIN_FRAME_MARGIN_FRAC = 0.05
 MAX_FLAT_PIXEL_FRAC = 0.50
+MAX_GROUND_LUM = 165
 
 
 def _read_png_rgb(path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
@@ -187,12 +190,19 @@ def _framing_metrics(width: int, height: int, pixels: list[tuple[int, int, int]]
         bw = (max(xs) - min(xs) + 1) / width
         bh = (max(ys2) - min(ys2) + 1) / height
         subject_bbox = max(bw, bh)
+        margin_l = min(xs) / width
+        margin_r = (width - 1 - max(xs)) / width
+        margin_t = min(ys2) / height
+        margin_b = (height - 1 - max(ys2)) / height
+        min_margin = min(margin_l, margin_r, margin_t, margin_b)
     else:
         subject_bbox = 0.0
+        min_margin = 0.0
     return {
         "border_touch": border_touch,
         "silhouette_frac": sil_frac,
         "subject_bbox_frac": subject_bbox,
+        "min_margin_frac": min_margin,
     }
 
 
@@ -220,6 +230,13 @@ def stats(path: Path) -> dict[str, float]:
             subj_sat.append(sats[i])
     cn = len(subj_lum) or 1
     frame = _framing_metrics(width, height, pixels)
+    ground_lum: list[int] = []
+    y0 = int(height * 0.88)
+    for y in range(y0, height):
+        for x in range(int(width * 0.25), int(width * 0.75)):
+            r, g, b = pixels[y * width + x]
+            ground_lum.append((r * 299 + g * 587 + b * 114) // 1000)
+    gmean = sum(ground_lum) / len(ground_lum) if ground_lum else 255.0
     from collections import Counter
 
     near_bg = sum(
@@ -236,7 +253,9 @@ def stats(path: Path) -> dict[str, float]:
         "border_touch": float(frame["border_touch"]),
         "silhouette_frac": float(frame["silhouette_frac"]),
         "subject_bbox_frac": float(frame["subject_bbox_frac"]),
+        "min_margin_frac": float(frame["min_margin_frac"]),
         "flat_pixel_frac": flat_frac,
+        "ground_lum": gmean,
     }
 
 
@@ -258,10 +277,15 @@ def gate_fail(asset_id: str, s: dict[str, float]) -> list[str]:
         reasons.append(f"framing silhouette_frac={sil:.2%}")
     if asset_id == "prop-desk":
         sb = s.get("subject_bbox_frac", 0.0)
-        if sb < MIN_SUBJECT_BBOX_FRAC:
+        if sb < MIN_SUBJECT_BBOX_FRAC or sb > MAX_SUBJECT_BBOX_FRAC:
             reasons.append(f"subject_bbox_frac={sb:.2%}")
+        mg = s.get("min_margin_frac", 0.0)
+        if mg < MIN_FRAME_MARGIN_FRAC:
+            reasons.append(f"min_margin_frac={mg:.2%}")
         if s.get("flat_pixel_frac", 1.0) > MAX_FLAT_PIXEL_FRAC:
             reasons.append(f"flat_pixel_frac={s['flat_pixel_frac']:.2%}")
+        if s.get("ground_lum", 255) > MAX_GROUND_LUM:
+            reasons.append(f"ground_lum={s['ground_lum']:.1f}")
     return reasons
 
 

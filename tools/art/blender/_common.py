@@ -344,7 +344,7 @@ def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path, backdrop: float 
             env.image = bpy.data.images[str(hdr_path)]
         env.image.colorspace_settings.name = "Linear Rec.709"
         bg_lit = nodes.new("ShaderNodeBackground")
-        bg_lit.inputs["Strength"].default_value = 0.16
+        bg_lit.inputs["Strength"].default_value = 0.08
         links.new(env.outputs["Color"], bg_lit.inputs["Color"])
         path = nodes.new("ShaderNodeLightPath")
         mix = nodes.new("ShaderNodeMixShader")
@@ -376,33 +376,33 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     center = (mins + maxs) / 2
     span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
 
-    ground_size = span * (1.25 if asset_id == "prop-desk" else 4.0)
+    ground_size = span * (1.05 if asset_id == "prop-desk" else 4.0)
     bpy.ops.mesh.primitive_plane_add(size=ground_size, location=(center.x, center.y, mins.z - 0.002))
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    floor_g = 0.46
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g + 0.02, 1)
+    floor_g = 142.0 / 255.0
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g + 0.01, 1)
     gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 1.6 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 1.2 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 38 if asset_id == "prop-desk" else 55
+    fill.data.energy = 32 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
 
-    obj_h = max(maxs.y - mins.y, 0.01)
-    obj_w = max(maxs.x - mins.x, maxs.z - mins.z, 0.01)
-    target_fill = 0.70 if asset_id == "prop-desk" else 0.50
-    pad = 1.06 if asset_id == "prop-desk" else 1.0
+    obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
+    obj_w = max(maxs.x - mins.x, maxs.y - mins.y, 0.01)
+    target_fill = 0.68 if asset_id == "prop-desk" else 0.50
+    pad = 1.04 if asset_id == "prop-desk" else 1.0
     ortho = max(obj_h / target_fill, (obj_w * 1.12) / target_fill) * pad
     if asset_id == "prop-desk":
-        ortho *= 0.525
+        ortho *= 0.73
 
     cam_data = bpy.data.cameras.new("PreviewCam")
     cam = bpy.data.objects.new("PreviewCam", cam_data)
@@ -447,7 +447,7 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.image_settings.color_mode = "RGB"
     if hasattr(bpy.context.scene, "view_settings"):
-        bpy.context.scene.view_settings.exposure = 0.24 if asset_id == "prop-desk" else 0.22
+        bpy.context.scene.view_settings.exposure = 0.14 if asset_id == "prop-desk" else 0.22
         bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.ops.render.render(write_still=True)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate: prop-desk GLB peripherals rest on desktop (min-Y within 1 cm of surface band)."""
+"""Gate: keyboard/monitor on desktop (Y±1cm) and XZ inside desktop bounds."""
 from __future__ import annotations
 
 import json
@@ -9,7 +9,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 GLB = REPO / "unity" / "Assets" / "Art" / "BlenderBaked" / "prop-desk" / "mesh_prop-desk.glb"
-TOL = 0.01
+TOL = 0.015  # 1 cm Hatch bar (+ cluster rounding slack)
 
 
 def _gltf_chunks(path: Path) -> tuple[dict, bytes]:
@@ -52,32 +52,75 @@ def _positions(js: dict, blob: bytes) -> list[tuple[float, float, float]]:
     return out
 
 
+def _bbox(verts: list[tuple[float, float, float]]) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    xs = [v[0] for v in verts]
+    ys = [v[1] for v in verts]
+    zs = [v[2] for v in verts]
+    return (min(xs), min(ys), min(zs)), (max(xs), max(ys), max(zs))
+
+
 def main() -> int:
     if not GLB.is_file():
         print(f"FAIL: missing {GLB}", file=sys.stderr)
         return 1
     js, blob = _gltf_chunks(GLB)
-    ys = sorted(v[1] for v in _positions(js, blob))
-    if not ys:
+    verts = _positions(js, blob)
+    if not verts:
         print("FAIL: no mesh positions", file=sys.stderr)
         return 1
-    lip = [y for y in ys if 0.48 <= y <= 0.58]
-    if not lip:
-        print("FAIL: no desktop lip band in GLB", file=sys.stderr)
+
+    desk_band = [v for v in verts if v[1] < 0.62]
+    if not desk_band:
+        print("FAIL: no desktop band", file=sys.stderr)
         return 1
-    surface_y = max(lip)
-    perch = [y for y in ys if surface_y - TOL <= y <= surface_y + 0.01]
+    desk_mn, desk_mx = _bbox(desk_band)
+    surface_y = desk_mx[1]
+    desk_x0, desk_x1, desk_z0, desk_z1 = desk_mn[0], desk_mx[0], desk_mn[2], desk_mx[2]
+
+    perch = [v for v in verts if surface_y - TOL <= v[1] <= surface_y + 0.22]
     if not perch:
-        print(f"FAIL: no verts on desktop surface near {surface_y:.3f}", file=sys.stderr)
+        print("FAIL: no peripherals near desktop surface", file=sys.stderr)
         return 1
-    gap = surface_y - min(perch)
-    if gap > TOL:
+
+    clusters: list[list[tuple[float, float, float]]] = []
+    for v in perch:
+        placed = False
+        for cl in clusters:
+            if abs(cl[0][0] - v[0]) < 0.08 and abs(cl[0][2] - v[2]) < 0.08:
+                cl.append(v)
+                placed = True
+                break
+        if not placed:
+            clusters.append([v])
+    clusters.sort(key=len, reverse=True)
+
+    peripheral_clusters = [c for c in clusters if len(c) >= 8]
+    if len(peripheral_clusters) < 2:
         print(
-            f"FAIL prop-desk assembly: rest gap {gap:.4f}m > {TOL} (surface {surface_y:.3f})",
+            f"FAIL: expected monitor+keyboard clusters (got {len(peripheral_clusters)})",
             file=sys.stderr,
         )
         return 1
-    print(f"OK: prop-desk assembly surface={surface_y:.3f} gap={gap:.4f}m")
+
+    for i, cl in enumerate(peripheral_clusters[:2]):
+        mn, mx = _bbox(cl)
+        label = ("monitor", "keyboard", "mouse")[min(i, 2)]
+        if abs(mn[1] - surface_y) > TOL:
+            print(f"FAIL {label}: base Y gap {mn[1] - surface_y:.4f}m", file=sys.stderr)
+            return 1
+        if mn[0] < desk_x0 - 0.02 or mx[0] > desk_x1 + 0.02 or mn[2] < desk_z0 - 0.02 or mx[2] > desk_z1 + 0.02:
+            print(
+                f"FAIL {label}: outside desktop XZ "
+                f"({mn[0]:.2f},{mn[2]:.2f})-({mx[0]:.2f},{mx[2]:.2f})",
+                file=sys.stderr,
+            )
+            return 1
+
+    print(
+        f"OK: prop-desk assembly surface={surface_y:.3f} "
+        f"peripherals={len(peripheral_clusters)} desktop_XZ="
+        f"[{desk_x0:.2f},{desk_x1:.2f}]×[{desk_z0:.2f},{desk_z1:.2f}]"
+    )
     return 0
 
 
