@@ -1,159 +1,101 @@
 {
   "assetId": "garage-interior-room-kit",
-  "floorTopY": 0.05,
+  "floorTopZ": 0.05,
   "floorBounds": {
     "minX": 0.0,
     "maxX": 4.0,
-    "minZ": 0.0,
-    "maxZ": 4.0
+    "minY": 0.0,
+    "maxY": 4.0
   },
   "wallCornerGapM": 0.0,
-  "wallRotationsDeg": {
-    "kit_wall_back": {
-      "yDeg": 90,
-      "zDeg": 0
-    },
-    "kit_wall_left": {
-      "yDeg": 0,
-      "zDeg": 0
-    }
-  },
   "propInstances": [
     {
       "objectName": "prop_desk",
-      "x": 2.8786,
-      "z": 2.6461,
-      "minY": 0.05,
+      "x": 3.0286,
+      "y": 2.4419,
+      "minZ": 0.05,
       "groundClearanceM": 0.0,
-      "distToBackWallM": 2.55,
-      "distToLeftWallM": 2.695,
+      "distToBackWallM": 2.3438,
+      "distToLeftWallM": 2.845,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 180.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": 205.0
     },
     {
       "objectName": "prop_chair",
-      "x": 2.2337,
-      "z": 2.5019,
-      "minY": 0.05,
+      "x": 2.1337,
+      "y": 1.9286,
+      "minZ": 0.05,
       "groundClearanceM": 0.0,
-      "distToBackWallM": 2.35,
-      "distToLeftWallM": 2.15,
+      "distToBackWallM": 1.85,
+      "distToLeftWallM": 2.05,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 200.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": 25.0
     },
     {
       "objectName": "prop_computer",
-      "x": 2.6482,
-      "z": 2.6936,
-      "minY": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 2.62,
-      "distToLeftWallM": 2.55,
-      "grounded": true,
-      "insideFloorBounds": true,
-      "rotationYDeg": 180.0,
-      "rotationZDeg": 0.0
-    },
-    {
-      "objectName": "prop_keyboard",
-      "x": 2.5206,
-      "z": 2.4269,
-      "minY": 0.05,
+      "x": 2.8182,
+      "y": 2.446,
+      "minZ": 0.05,
       "groundClearanceM": 0.0,
       "distToBackWallM": 2.42,
-      "distToLeftWallM": 2.45,
+      "distToLeftWallM": 2.72,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 175.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": 205.0
     },
     {
       "objectName": "prop_bookcase",
-      "x": 0.12,
-      "z": 2.3125,
-      "minY": 0.05,
+      "x": 0.13,
+      "y": 3.1125,
+      "minZ": 0.05,
       "groundClearanceM": 0.0,
-      "distToBackWallM": 2.1,
-      "distToLeftWallM": 0.02,
+      "distToBackWallM": 3.05,
+      "distToLeftWallM": 0.03,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 90.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": 90.0
     },
     {
       "objectName": "prop_lamp",
-      "x": 1.18,
-      "z": 1.1286,
-      "minY": 0.05,
-      "groundClearanceM": -0.0,
-      "distToBackWallM": 1.05,
-      "distToLeftWallM": 1.142,
+      "x": 1.08,
+      "y": 0.98,
+      "minZ": 0.05,
+      "groundClearanceM": 0.0,
+      "distToBackWallM": 0.9361,
+      "distToLeftWallM": 1.042,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 0.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": -18.0
     },
     {
-      "objectName": "prop_box_closed",
-      "x": 1.4031,
-      "z": 3.2203,
-      "minY": 0.05,
+      "objectName": "prop_box",
+      "x": 3.2031,
+      "y": 1.3031,
+      "minZ": 0.05,
       "groundClearanceM": 0.0,
-      "distToBackWallM": 3.15,
-      "distToLeftWallM": 1.35,
+      "distToBackWallM": 1.25,
+      "distToLeftWallM": 3.15,
       "grounded": true,
       "insideFloorBounds": true,
-      "rotationYDeg": 22.0,
-      "rotationZDeg": 0.0
-    },
-    {
-      "objectName": "prop_box_open",
-      "x": 1.8031,
-      "z": 2.9202,
-      "minY": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 2.85,
-      "distToLeftWallM": 1.7102,
-      "grounded": true,
-      "insideFloorBounds": true,
-      "rotationYDeg": -15.0,
-      "rotationZDeg": 0.0
-    },
-    {
-      "objectName": "prop_plant",
-      "x": 3.25,
-      "z": 3.32,
-      "minY": 0.05,
-      "groundClearanceM": 0.0,
-      "distToBackWallM": 3.25,
-      "distToLeftWallM": 3.2027,
-      "grounded": true,
-      "insideFloorBounds": true,
-      "rotationYDeg": 35.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": 40.0
     },
     {
       "objectName": "kit_roll_door",
-      "x": 1.8555,
-      "z": 0.585,
-      "minY": 0.05,
-      "groundClearanceM": -0.0,
-      "distToBackWallM": 0.06,
-      "distToLeftWallM": 1.6425,
-      "grounded": true,
+      "x": 1.9418,
+      "y": 0.2695,
+      "minZ": 0.05,
+      "groundClearanceM": 0.0,
+      "distToBackWallM": 0.03,
+      "distToLeftWallM": 1.8201,
+      "grounded": false,
       "insideFloorBounds": true,
-      "rotationYDeg": 90.0,
-      "rotationZDeg": 0.0
+      "rotationZDeg": -90.0
     }
   ],
   "minPropCount": 6,
   "floorTileCount": 16,
-  "wallSegmentCountBack": 4,
-  "wallSegmentCountLeft": 4,
   "groundToleranceM": 0.01,
-  "wallMountToleranceM": 0.02
+  "wallMountToleranceM": 0.03
 }

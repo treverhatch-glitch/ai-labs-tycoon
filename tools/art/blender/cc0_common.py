@@ -214,7 +214,7 @@ def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
     if role in ("screen", "lamp_accent"):
         emit = nodes.new("ShaderNodeEmission")
         emit.inputs["Color"].default_value = tint
-        emit.inputs["Strength"].default_value = 0.65 if role == "screen" else 0.35
+        emit.inputs["Strength"].default_value = 0.12 if role == "screen" else 0.18
         add = nodes.new("ShaderNodeAddShader")
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
@@ -309,6 +309,25 @@ def setup_preview_world_grey_hdri(*, hdri_strength: float = 1.05) -> None:
     links.new(mix.outputs["Shader"], out.inputs["Surface"])
 
 
+def add_preview_warm_lights_z(room_center: Vector) -> list[bpy.types.Object]:
+    lights: list[bpy.types.Object] = []
+    bpy.ops.object.light_add(type="POINT", location=(room_center.x, room_center.y, room_center.z + 2.0))
+    key = bpy.context.active_object
+    key.name = "preview_warm_key"
+    key.data.color = (1.0, 0.82, 0.66)
+    key.data.energy = 120.0
+    key.data.shadow_soft_size = 0.38
+    lights.append(key)
+    bpy.ops.object.light_add(type="AREA", location=(room_center.x + 1.0, room_center.y - 0.6, room_center.z + 1.8))
+    fill = bpy.context.active_object
+    fill.name = "preview_warm_fill"
+    fill.data.color = (1.0, 0.90, 0.78)
+    fill.data.energy = 55.0
+    fill.data.size = 1.6
+    lights.append(fill)
+    return lights
+
+
 def add_preview_warm_lights(room_center: Vector) -> list[bpy.types.Object]:
     lights: list[bpy.types.Object] = []
     bpy.ops.object.light_add(type="POINT", location=(room_center.x, room_center.y + 1.6, room_center.z))
@@ -366,6 +385,7 @@ def render_kit_preview(
     margin: float = 0.05,
     frame_span: float | None = None,
     frame_objects: list[bpy.types.Object] | None = None,
+    up_axis: str = "Y",
 ) -> None:
     """Warm point + HDRI (hidden from camera); world corners RGB 150; ~70% fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
@@ -392,35 +412,45 @@ def render_kit_preview(
             maxs.x = max(maxs.x, w.x)
             maxs.y = max(maxs.y, w.y)
             maxs.z = max(maxs.z, w.z)
-    span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
-    span = max(span_xz, 3.6)
+    if up_axis == "Z":
+        span_xy = max(maxs.x - mins.x, maxs.y - mins.y, 0.1)
+        span = max(span_xy, 3.6)
+    else:
+        span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
+        span = max(span_xz, 3.6)
     if frame_span is not None:
         span = frame_span
 
     room = span if span <= 5.5 else 4.0
     floor_h = 0.05
-    target = Vector((room * 0.48, floor_h + 1.05, room * 0.48))
-    lights = add_preview_warm_lights(target)
-
     lens = 40.0
     pitch = math.radians(35.0)
-    dist_scale = 1.05 if mode == "hero" else 0.62
-    dist = max(_camera_distance_for_fill(room + 0.4, lens, fill, margin) * dist_scale, room * 0.62)
+    dist_scale = 0.76 if mode == "hero" and up_axis == "Z" else (0.88 if mode == "hero" else 0.62)
+    dist = max(_camera_distance_for_fill(room + 0.35, lens, fill, margin) * dist_scale, room * 0.55)
     horiz = dist * math.cos(pitch)
     elev = dist * math.sin(pitch)
-    cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))
 
-    bpy.ops.mesh.primitive_plane_add(size=room * 1.05, location=(room / 2, -0.002, room / 2))
-    shadow = bpy.context.active_object
-    shadow.name = "preview_shadow_catcher"
-    smat = bpy.data.materials.new("shadow_grey")
-    smat.use_nodes = True
-    sg = smat.node_tree.nodes.get("Principled BSDF")
-    sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-    sg.inputs["Roughness"].default_value = 0.96
-    shadow.data.materials.append(smat)
-    shadow.is_shadow_catcher = True
-    bpy.context.scene.cycles.use_shadow_catcher = True
+    shadow: bpy.types.Object | None = None
+    if up_axis == "Z":
+        target = Vector((room * 0.46, room * 0.46, floor_h + 1.02))
+        lights = add_preview_warm_lights_z(target)
+        cam_loc = Vector((room + horiz * 0.62, room + horiz * 0.62, target.z + elev * 0.5))
+        bpy.context.scene.cycles.use_shadow_catcher = False
+    else:
+        target = Vector((room * 0.48, floor_h + 1.05, room * 0.48))
+        lights = add_preview_warm_lights(target)
+        cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))
+        bpy.ops.mesh.primitive_plane_add(size=room * 1.05, location=(room / 2, -0.002, room / 2))
+        shadow = bpy.context.active_object
+        shadow.name = "preview_shadow_catcher"
+        smat = bpy.data.materials.new("shadow_grey")
+        smat.use_nodes = True
+        sg = smat.node_tree.nodes.get("Principled BSDF")
+        sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
+        sg.inputs["Roughness"].default_value = 0.96
+        shadow.data.materials.append(smat)
+        shadow.is_shadow_catcher = True
+        bpy.context.scene.cycles.use_shadow_catcher = True
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.data.lens = lens
@@ -435,8 +465,8 @@ def render_kit_preview(
     bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
 
-    if bpy.data.objects.get("preview_shadow_catcher"):
-        bpy.data.objects.remove(bpy.data.objects["preview_shadow_catcher"], do_unlink=True)
+    if shadow and bpy.data.objects.get(shadow.name):
+        bpy.data.objects.remove(shadow, do_unlink=True)
     for ob in lights:
         bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)

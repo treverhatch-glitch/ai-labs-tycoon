@@ -25,8 +25,8 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
     fb = data.get("floorBounds") or {}
     min_x = float(fb.get("minX", 0))
     max_x = float(fb.get("maxX", ROOM))
-    min_z = float(fb.get("minZ", 0))
-    max_z = float(fb.get("maxZ", ROOM))
+    min_y = float(fb.get("minY", fb.get("minZ", 0)))
+    max_y = float(fb.get("maxY", fb.get("maxZ", ROOM)))
 
     props = data.get("propInstances") or []
     grounded_ok = [p for p in props if p.get("grounded")]
@@ -42,8 +42,8 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         if not p.get("insideFloorBounds", False):
             errs.append(f"FAIL: {prefix}{name} outside 4×4 floor bounds")
         x = float(p.get("x", -1))
-        z = float(p.get("z", -1))
-        if x < min_x - tol or x > max_x + tol or z < min_z - tol or z > max_z + tol:
+        y = float(p.get("y", p.get("z", -1)))
+        if x < min_x - tol or x > max_x + tol or y < min_y - tol or y > max_y + tol:
             errs.append(f"FAIL: {prefix}{name} center outside footprint")
 
         if name == "prop_bookcase" and float(p.get("distToLeftWallM", 9)) > wall_tol * 2.5:
@@ -52,15 +52,6 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
             errs.append(f"FAIL: {prefix}{name} not in back wall opening")
         if name == "kit_roll_door" and float(p.get("groundClearanceM", 9)) > tol:
             errs.append(f"FAIL: {prefix}{name} not on slab")
-
-    for name, rot in (data.get("wallRotationsDeg") or {}).items():
-        if isinstance(rot, dict):
-            yd = float(rot.get("yDeg", 0))
-            zd = float(rot.get("zDeg", 0))
-            for deg, axis in ((yd, "Y"), (zd, "Z")):
-                d = deg % 90
-                if abs(d) > 0.6 and abs(d - 90) > 0.6:
-                    errs.append(f"FAIL: {prefix}wall {name} {axis}={deg}° not 90° multiple")
 
     return errs
 

@@ -13,12 +13,12 @@ FIXTURE_620 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-620a
 FIXTURE_C78 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c78b9371.png"
 FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-4e22d8dd.png"
 FIXTURE_C0 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c0d66236.png"
+FIXTURE_FB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-fbb7bf7c.png"
 FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 CORNER_RGB = (150, 150, 150)
-MIN_WALL_REGION_COVER = 0.25
-MIN_FLOOR_REGION_COVER = 0.20
-MIN_FLOOR_LUMA_DELTA = 0.12 * 255
-BACKDROP_LUMA = 0.299 * CORNER_RGB[0] + 0.587 * CORNER_RGB[1] + 0.114 * CORNER_RGB[2]
+MIN_FLOOR_CC_FRAC = 0.20
+MIN_WALL_CC_FRAC = 0.25
+MIN_PROP_BLOBS = 6
 CORNER_INSET = 3
 BLOWN_LUMA = 255 * 0.95
 
@@ -188,54 +188,157 @@ def fill_margin_errs(path: Path, fill: float = 0.70) -> list[str]:
     return []
 
 
-def _region_non_bg_fraction(im, x0: int, x1: int, y0: int, y1: int) -> float:
-    w, h = im.size
-    x0, x1 = max(0, x0), min(w, x1)
-    y0, y1 = max(0, y0), min(h, y1)
-    if x1 <= x0 or y1 <= y0:
-        return 0.0
-    fg = 0
-    total = 0
-    for y in range(y0, y1):
-        for x in range(x0, x1):
-            total += 1
-            if not is_studio_backdrop(im.getpixel((x, y))):
-                fg += 1
-    return fg / total if total else 0.0
+def _label_cc(mask: list[list[bool]]) -> tuple[list[list[int]], dict[int, int]]:
+    from collections import deque
+
+    h, w = len(mask), len(mask[0])
+    labels = [[0] * w for _ in range(h)]
+    sizes: dict[int, int] = {}
+    lbl = 0
+    for y0 in range(h):
+        for x0 in range(w):
+            if not mask[y0][x0] or labels[y0][x0]:
+                continue
+            lbl += 1
+            q: deque[tuple[int, int]] = deque([(x0, y0)])
+            labels[y0][x0] = lbl
+            n = 0
+            while q:
+                x, y = q.popleft()
+                n += 1
+                for nx, ny in ((x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)):
+                    if 0 <= nx < w and 0 <= ny < h and mask[ny][nx] and not labels[ny][nx]:
+                        labels[ny][nx] = lbl
+                        q.append((nx, ny))
+            sizes[lbl] = n
+    return labels, sizes
+
+
+def _convex_hull(points: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    pts = sorted(set(points))
+    if len(pts) <= 2:
+        return pts
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower: list[tuple[int, int]] = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    upper: list[tuple[int, int]] = []
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+
+def _point_in_poly(px: int, py: int, poly: list[tuple[int, int]]) -> bool:
+    inside = False
+    n = len(poly)
+    if n < 3:
+        return False
+    j = n - 1
+    for i in range(n):
+        xi, yi = poly[i]
+        xj, yj = poly[j]
+        if ((yi > py) != (yj > py)) and (
+            px < (xj - xi) * (py - yi) / (yj - yi + 1e-9) + xi
+        ):
+            inside = not inside
+        j = i
+    return inside
+
+
+def _is_wall_pixel(p: tuple[int, int, int]) -> bool:
+    if is_studio_backdrop(p):
+        return False
+    return saturation(p) >= 0.22 and p[0] >= p[2] + 6 and luma(p) >= 88
 
 
 def room_pixel_gate_errs(im, path_name: str) -> list[str]:
     w, h = im.size
+    frame = w * h
     errs: list[str] = []
-    left_wall = _region_non_bg_fraction(im, 0, int(w * 0.42), int(h * 0.18), int(h * 0.78))
-    back_wall = _region_non_bg_fraction(im, int(w * 0.22), int(w * 0.88), int(h * 0.12), int(h * 0.52))
-    wall_cover = (left_wall + back_wall) / 2.0
-    if wall_cover < MIN_WALL_REGION_COVER:
+    bg = _background_mask(im)
+
+    floor_mask = [[False] * w for _ in range(h)]
+    for y in range(int(h * 0.42), h):
+        for x in range(w):
+            if not bg[y][x]:
+                floor_mask[y][x] = True
+
+    _, floor_sizes = _label_cc(floor_mask)
+    if not floor_sizes:
+        errs.append(f"FAIL: {path_name} no floor pixels for CC gate")
+        return errs
+    floor_lbl = max(floor_sizes, key=lambda k: floor_sizes[k])
+    floor_frac = floor_sizes[floor_lbl] / frame
+    if floor_frac < MIN_FLOOR_CC_FRAC:
         errs.append(
-            f"FAIL: {path_name} wall regions non-bg {wall_cover * 100:.1f}% "
-            f"(left {left_wall * 100:.1f}%, back {back_wall * 100:.1f}%) < {MIN_WALL_REGION_COVER * 100:.0f}%"
+            f"FAIL: {path_name} floor connected component {floor_frac * 100:.1f}% < {MIN_FLOOR_CC_FRAC * 100:.0f}%"
         )
-    floor_cover = _region_non_bg_fraction(im, int(w * 0.14), int(w * 0.86), int(h * 0.52), int(h * 0.92))
-    if floor_cover < MIN_FLOOR_REGION_COVER:
-        errs.append(
-            f"FAIL: {path_name} floor region non-bg {floor_cover * 100:.1f}% < {MIN_FLOOR_REGION_COVER * 100:.0f}%"
-        )
-    floor_devs: list[float] = []
-    for y in range(int(h * 0.58), int(h * 0.90)):
-        for x in range(int(w * 0.22), int(w * 0.78)):
+
+    labels, _ = _label_cc(floor_mask)
+    floor_pts = [
+        (x, y)
+        for y in range(int(h * 0.62), h)
+        for x in range(w)
+        if labels[y][x] == floor_lbl
+    ]
+    if len(floor_pts) < 200:
+        floor_pts = [(x, y) for y in range(h) for x in range(w) if labels[y][x] == floor_lbl]
+    step = max(1, len(floor_pts) // 5000)
+    hull = _convex_hull(floor_pts[::step])
+    if len(hull) >= 3:
+        inside_backdrop = 0
+        inside_floor = 0
+        for y in range(h):
+            for x in range(w):
+                if not _point_in_poly(x, y, hull):
+                    continue
+                inside_floor += 1
+                if bg[y][x]:
+                    inside_backdrop += 1
+        if inside_floor and inside_backdrop / inside_floor > 0.04:
+            errs.append(
+                f"FAIL: {path_name} backdrop inside floor hull {inside_backdrop / inside_floor * 100:.1f}% > 3%"
+            )
+
+    wall_fg = 0
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x]:
+                continue
+            in_left = x < int(w * 0.48)
+            in_back = y < int(h * 0.54)
+            if not (in_left or in_back):
+                continue
+            wall_fg += 1
+    wall_frac = wall_fg / frame
+    if wall_frac < MIN_WALL_CC_FRAC:
+        errs.append(f"FAIL: {path_name} wall foreground {wall_frac * 100:.1f}% < {MIN_WALL_CC_FRAC * 100:.0f}%")
+
+    prop_cells: set[tuple[int, int]] = set()
+    cell = max(36, w // 14)
+    y0, y1 = int(h * 0.36), int(h * 0.92)
+    x0, x1 = int(w * 0.12), int(w * 0.88)
+    for y in range(y0, y1):
+        for x in range(x0, x1):
             p = im.getpixel((x, y))
             if is_studio_backdrop(p):
                 continue
-            L = luma(p)
-            floor_devs.append(abs(L - BACKDROP_LUMA))
-    if floor_devs:
-        mean_sep = sum(floor_devs) / len(floor_devs)
-        if mean_sep < MIN_FLOOR_LUMA_DELTA:
-            errs.append(
-                f"FAIL: {path_name} floor mean |luma−backdrop| {mean_sep:.1f} < {MIN_FLOOR_LUMA_DELTA:.0f}"
-            )
-    else:
-        errs.append(f"FAIL: {path_name} no floor foreground pixels for luma gate")
+            if y > int(h * 0.44) and not _is_wall_pixel(p) and saturation(p) < 0.18:
+                continue
+            if saturation(p) < 0.14:
+                continue
+            if luma(p) < 58:
+                continue
+            prop_cells.add((x // cell, y // cell))
+    if len(prop_cells) < MIN_PROP_BLOBS:
+        errs.append(f"FAIL: {path_name} prop floor regions {len(prop_cells)} < {MIN_PROP_BLOBS}")
     return errs
 
 
@@ -289,13 +392,13 @@ def verify_regression_fixtures_fail() -> list[str]:
         q = quality_gates(im, path.name)
         if not q:
             errs.append(f"FAIL: fixture {label} must fail quality gates")
-    if FIXTURE_C0.is_file():
-        im_c0 = Image.open(FIXTURE_C0).convert("RGB")
-        room_bad = room_pixel_gate_errs(im_c0, FIXTURE_C0.name)
-        if not room_bad:
-            errs.append("FAIL: fixture c0d66236 must fail room pixel gates")
-    else:
-        errs.append(f"FAIL: missing regression fixture {FIXTURE_C0}")
+    for label, fix in (("c0d66236", FIXTURE_C0), ("fbb7bf7c", FIXTURE_FB)):
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            continue
+        im_f = Image.open(fix).convert("RGB")
+        if not room_pixel_gate_errs(im_f, fix.name):
+            errs.append(f"FAIL: fixture {label} must fail room pixel gates")
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():
