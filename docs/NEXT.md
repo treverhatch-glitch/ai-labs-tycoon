@@ -39,9 +39,11 @@ Known limits of the slice, so nobody is surprised:
 
 | Lane | Tips |
 | --- | --- |
-| `cursor/later-rules-stack2-main-39c0` → `main` **`b673e025`** (#85 landed) | packet **358–365** landing PR in flight; **`stack2-75cd`** **`b9d0cf36`** — **no push** |
+| `cursor/later-rules-stack2-main-39c0` → `main` **`b673e025`** | **[PR #87](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/87)** **`6cbd4312`** (358–365); LOCAL **366–371** (2 commits ahead of `6cbd4312`); **`stack2-75cd`** **`b9d0cf36`** — **no push** |
 
-**LOCAL rivals queue (366+):** `HostExplainSystemsLaterTests` + systems hatch (**Q16096–Q16165**); NEXT **#9–#11** bible/systems-design tails.
+**LOCAL rivals queue:** **366–375** (packets 3–5; **3 commits** ahead of `6cbd4312`). **#9–#11** sector/safety/naming; **#12–#14** chat/glow, room age, rival+chips; **#15–#18** control stale, research leads, model repair, rival log+balance (rules items 26–28 + rival log tail). Spot **366–371:** **426/426**; spot **372–375:** **284/284** GREEN. **NO PUSH** until **#87** merges → refold `main` → full prepass → coordinator **GO** → grouped squash (packets 3–5).
+
+**Next LOCAL refill (queue):** rules **#19+** — training objectives (30), successor design (31), rushed launch (32), news ticker (33); bible tails as hatch **37+** after packet 5 lands.
 
 ## Who works where
 
@@ -500,8 +502,10 @@ Agents land **one gate at a time**; **`rules` must be success on the exact PR he
 1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
 2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
 3. ~~**Graphics pipeline follow-on**~~ — PR **#85** merged (`main` **`b673e025`**, rules **133** @ `08cf6d47`).
-4. **Stack2 packet 2** — batches **358–365** landing PR from `later-rules-stack2-main-39c0` on **`b673e025`** (rivals lane).)
-5. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
+4. **Stack2 packet 2** — **[PR #87](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/87)** batches **358–365** @ **`6cbd4312`** (merge train).
+5. **Stack2 packets 3+4** — batches **366–371** LOCAL (grouped push after #87 + prepass on post-merge `main`).
+6. **Stack2 packet 5** — batches **372–375** LOCAL (**#15–#18**; build-only until #87 merge + GO).
+7. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 
 ## Studio and CI
 
