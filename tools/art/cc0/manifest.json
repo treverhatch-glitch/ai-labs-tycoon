@@ -1,0 +1,17 @@
+{
+  "incomingRoot": "tools/art/cc0/incoming",
+  "unityEnvironmentRoot": "unity/Assets/Art/EarlyGame/Environment",
+  "assets": [
+    {
+      "id": "hdri-brown-photostudio-02-1k",
+      "kind": "hdri",
+      "license": "CC0-1.0",
+      "source": "Poly Haven",
+      "sourceUrl": "https://polyhaven.com/a/brown_photostudio_02",
+      "downloadUrl": "https://dl.polyhaven.org/file/ph-assets/HDRIs/exr/1k/brown_photostudio_02_1k.exr",
+      "incomingPath": "tools/art/cc0/incoming/brown_photostudio_02_1k.exr",
+      "unityPath": "unity/Assets/Art/EarlyGame/Environment/brown_photostudio_02_1k.exr",
+      "sha256": "9f09167a4d104c84045750451b0aee0c513372d3adee23c3b3fa2a2f40888196"
+    }
+  ]
+}

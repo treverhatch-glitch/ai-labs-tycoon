@@ -33,6 +33,9 @@ namespace AiLabs.Unity.Bootstrap
         void Awake()
         {
             EnsureCameraAndLight();
+            EarlyGameGarageUrVolumeBootstrap.EnsureGlobalVolume();
+            EarlyGameGarageUrSkyBootstrap.ApplyAmbientFromHdri();
+            EarlyGameGarageLighting.Apply();
             _host = new SimulationHost();
             string json = RulesConfigLoader.LoadJsonText();
             GameConfig config = GameConfig.FromJson(json);
@@ -81,9 +84,12 @@ namespace AiLabs.Unity.Bootstrap
                 var camGo = new GameObject("Main Camera");
                 var cam = camGo.AddComponent<Camera>();
                 camGo.tag = "MainCamera";
-                cam.clearFlags = CameraClearFlags.SolidColor;
+                cam.clearFlags = CameraClearFlags.Skybox;
                 cam.backgroundColor = new Color(0.55f, 0.65f, 0.72f);
             }
+
+            if (Camera.main != null)
+                EarlyGameGarageTycoonCameraRig.ApplyGameplayCamera(Camera.main, 14, 10);
 
             if (Object.FindFirstObjectByType<Light>() == null)
             {

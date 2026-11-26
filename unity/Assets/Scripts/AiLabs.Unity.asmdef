@@ -2,7 +2,9 @@
   "name": "AiLabs.Unity",
   "rootNamespace": "AiLabs.Unity",
   "references": [
-    "AiLabs.Rules"
+    "AiLabs.Rules",
+    "Unity.RenderPipelines.Core.Runtime",
+    "Unity.RenderPipelines.Universal.Runtime"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
