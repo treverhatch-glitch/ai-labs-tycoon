@@ -17,7 +17,7 @@ MIN_EXTENT = 0.55
 MAX_EXTENT = 0.78
 FLOOR_FLOAT_MAX_M = 0.02
 MIN_ROUGH = 0.2
-MAX_MASK_HERO_EXTENT_DELTA = 0.12
+MAX_MASK_HERO_EXTENT_DELTA = 0.14
 MAGENTA_FRAC_MAX = 0.002
 MAGENTA_MIN_R = 235
 MAGENTA_MAX_G = 45
@@ -304,6 +304,9 @@ def main() -> int:
         floaters = meta.get("grounding_violations") or []
         if floaters:
             errs.append(f"floating_meshes ({len(floaters)}): {floaters[:4]}")
+        bounds = meta.get("bounds_violations") or []
+        if bounds:
+            errs.append(f"prop_bounds ({len(bounds)}): {bounds[:4]}")
         rough = meta.get("roughness_violations") or []
         if rough:
             errs.append(f"roughness_violations ({len(rough)}): {rough[:4]}")

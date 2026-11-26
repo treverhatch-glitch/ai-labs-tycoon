@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cut-away garage hero — joined L walls + ambientCG PBR + Kenney whole models."""
+"""Cut-away garage — floor-edge L walls, ambientCG PBR, Kenney whole models."""
 from __future__ import annotations
 
 import json
@@ -19,11 +19,31 @@ WALL_H = 2.45
 WALL_T = 0.12
 FLOOR_Z = 0.0
 FLOOR_TOL = 0.02
+FLOOR_TOP = 0.09
+MARGIN_XY = 0.06
 
-CEILING_KEYS = {"ceiling_light", "light_cable"}
-DESK_TOP_KEYS = {"monitor", "keyboard", "mouse", "computerScreen", "computerKeyboard", "computerMouse"}
-WALL_KEYS = {"roll_door", "strip_light", "building_door"}
-SHELL_NAMES = ("shell_floor", "shell_walls_L", "shell_skirting", "strip_light")
+CEILING_KEYS = {"light_cable"}
+DESK_TOP_KEYS = {"monitor", "keyboard", "mouse", "desk_lamp"}
+WALL_KEYS = {"roll_door", "strip_light"}
+SHELL_NAMES = (
+    "shell_floor",
+    "shell_wall_back",
+    "shell_wall_side",
+    "shell_skirting",
+    "shell_skirting_side",
+    "strip_light",
+)
+
+BRICK_UV = 4.2
+CONCRETE_UV = 2.2
+
+
+def _snap_bottom_z(ob: bpy.types.Object, floor: float = 0.0) -> None:
+    bpy.context.view_layer.update()
+    low = min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
+    if abs(low - floor) > 1e-5:
+        ob.location.z += floor - low
+    bpy.context.view_layer.update()
 
 
 def _cube(loc: tuple[float, float, float], scale: tuple[float, float, float]) -> bpy.types.Object:
@@ -35,7 +55,7 @@ def _cube(loc: tuple[float, float, float], scale: tuple[float, float, float]) ->
 
 
 def _strip_light() -> bpy.types.Object:
-    ob = _cube((ROOM_W * 0.62, 0.16, WALL_H - 0.18), (ROOM_W * 0.28, 0.05, 0.04))
+    ob = _cube((ROOM_W * 0.55, WALL_T + 0.04, WALL_H - 0.16), (ROOM_W * 0.26, 0.045, 0.035))
     ob.name = "strip_light"
     mat = bpy.data.materials.new("strip_light_emit")
     mat.use_nodes = True
@@ -45,12 +65,11 @@ def _strip_light() -> bpy.types.Object:
     out = nodes.new("ShaderNodeOutputMaterial")
     emit = nodes.new("ShaderNodeEmission")
     emit.inputs["Color"].default_value = (0.92, 0.9, 0.82, 1.0)
-    emit.inputs["Strength"].default_value = 1.1
+    emit.inputs["Strength"].default_value = 1.0
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    bsdf.inputs["Base Color"].default_value = (0.78, 0.76, 0.7, 1.0)
     bsdf.inputs["Roughness"].default_value = 0.55
     mix = nodes.new("ShaderNodeMixShader")
-    mix.inputs["Fac"].default_value = 0.55
+    mix.inputs["Fac"].default_value = 0.5
     links.new(emit.outputs["Emission"], mix.inputs[1])
     links.new(bsdf.outputs["BSDF"], mix.inputs[2])
     links.new(mix.outputs["Shader"], out.inputs["Surface"])
@@ -59,83 +78,91 @@ def _strip_light() -> bpy.types.Object:
     return ob
 
 
-def build_shell(acg) -> list[bpy.types.Object]:
-    floor = _cube((ROOM_W * 0.5, ROOM_D * 0.5, 0.045), (ROOM_W * 0.5, ROOM_D * 0.5, 0.045))
+def build_shell(acg) -> None:
+    floor = _cube((ROOM_W * 0.5, ROOM_D * 0.5, FLOOR_TOP * 0.5), (ROOM_W * 0.5, ROOM_D * 0.5, FLOOR_TOP * 0.5))
     floor.name = "shell_floor"
-    acg.assign(floor, "concrete", uv_scale=2.2)
+    acg.assign(floor, "concrete", uv_scale=CONCRETE_UV)
 
-    back = _cube((ROOM_W * 0.5, WALL_T * 0.5, WALL_H * 0.5), (ROOM_W * 0.5, WALL_T * 0.5, WALL_H * 0.5))
-    side = _cube((WALL_T * 0.5, ROOM_D * 0.5, WALL_H * 0.5), (WALL_T * 0.5, ROOM_D * 0.5, WALL_H * 0.5))
-    bpy.ops.object.select_all(action="DESELECT")
-    back.select_set(True)
-    side.select_set(True)
-    bpy.context.view_layer.objects.active = back
-    bpy.ops.object.join()
-    walls = bpy.context.active_object
-    walls.name = "shell_walls_L"
-    cutter = _cube((ROOM_W * 0.58, 0.22, 1.15), (0.52, 0.18, 1.02))
+    back = _cube(
+        (ROOM_W * 0.5, WALL_T * 0.5, WALL_H * 0.5),
+        (ROOM_W * 0.5, WALL_T * 0.5, WALL_H * 0.5),
+    )
+    back.name = "shell_wall_back"
+    side = _cube(
+        (WALL_T * 0.5, ROOM_D * 0.5, WALL_H * 0.5),
+        (WALL_T * 0.5, ROOM_D * 0.5, WALL_H * 0.5),
+    )
+    side.name = "shell_wall_side"
+    for ob in (floor, back, side):
+        _snap_bottom_z(ob, FLOOR_Z)
+
+    cutter = _cube((1.55, WALL_T + 0.12, 1.12), (0.48, 0.22, 0.95))
     cutter.name = "_door_cutter"
-    mod = walls.modifiers.new("DoorCut", "BOOLEAN")
+    mod = back.modifiers.new("DoorCut", "BOOLEAN")
     mod.operation = "DIFFERENCE"
     mod.object = cutter
-    bpy.context.view_layer.objects.active = walls
+    bpy.context.view_layer.objects.active = back
     bpy.ops.object.modifier_apply(modifier=mod.name)
     bpy.data.objects.remove(cutter, do_unlink=True)
-    acg.assign(walls, "brick", uv_scale=1.35)
 
-    skirt = _cube((ROOM_W * 0.5, 0.11, 0.08), (ROOM_W * 0.5, 0.04, 0.08))
-    skirt.name = "shell_skirting"
-    acg.assign(skirt, "brick", uv_scale=2.6)
+    acg.assign(back, "brick", uv_scale=BRICK_UV)
+    acg.assign(side, "brick", uv_scale=BRICK_UV)
 
-    strip = _strip_light()
-    for ob in (floor, walls, skirt, strip):
-        low = min((ob.matrix_world @ v.co).z for v in ob.data.vertices)
-        if low > 1e-4:
-            ob.location.z -= low
+    skirt_back = _cube((ROOM_W * 0.5, WALL_T + 0.02, 0.06), (ROOM_W * 0.48, 0.03, 0.06))
+    skirt_back.name = "shell_skirting"
+    skirt_side = _cube((WALL_T + 0.02, ROOM_D * 0.5, 0.06), (0.03, ROOM_D * 0.48, 0.06))
+    skirt_side.name = "shell_skirting_side"
+    _snap_bottom_z(skirt_back, FLOOR_TOP)
+    _snap_bottom_z(skirt_side, FLOOR_TOP)
+    acg.assign(skirt_back, "brick", uv_scale=BRICK_UV * 1.4)
+    acg.assign(skirt_side, "brick", uv_scale=BRICK_UV * 1.4)
+
+    _strip_light()
+
+
+def audit_prop_bounds(
+    objects: list[bpy.types.Object],
+    *,
+    x0: float,
+    y0: float,
+    x1: float,
+    y1: float,
+    margin: float = MARGIN_XY,
+    skip_prefix: tuple[str, ...] = ("shell_",),
+    skip_keys: tuple[str, ...] = CEILING_KEYS,
+    wall_keys: tuple[str, ...] = (),
+) -> list[str]:
+    errs: list[str] = []
     bpy.context.view_layer.update()
-    names = ("shell_floor", "shell_walls_L", "shell_skirting", "strip_light")
-    return [bpy.data.objects[n] for n in names if n in bpy.data.objects]
-
-
-def build_ceiling_light(kh) -> list[bpy.types.Object]:
-    objs: list[bpy.types.Object] = []
-    cable = _cube((ROOM_W * 0.55, ROOM_D * 0.48, 2.22), (0.02, 0.02, 0.55))
-    cable.name = "light_cable"
-    cable_mat = bpy.data.materials.new("light_cable_mat")
-    cable_mat.use_nodes = True
-    bsdf = cable_mat.node_tree.nodes.new("ShaderNodeBsdfPrincipled")
-    bsdf.inputs["Base Color"].default_value = (0.2, 0.2, 0.22, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.62
-    out = cable_mat.node_tree.nodes.new("ShaderNodeOutputMaterial")
-    cable_mat.node_tree.links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
-    cable.data.materials.append(cable_mat)
-    objs.append(cable)
-    lamp = kh.import_kenney(
-        "furniture",
-        "lamp",
-        (ROOM_W * 0.55, ROOM_D * 0.48, 2.38),
-        scale=(1.2, 1.2, 0.55),
-        palette_key="trim",
-        up_axis="Z",
-        floor_snap=False,
-    )
-    if lamp:
-        lamp.name = "ceiling_light"
-        objs.append(lamp)
-    return objs
+    for ob in objects:
+        if ob.type != "MESH":
+            continue
+        if ob.name.startswith(skip_prefix):
+            continue
+        if any(k in ob.name for k in skip_keys):
+            continue
+        if any(k in ob.name for k in wall_keys):
+            continue
+        for v in ob.data.vertices:
+            p = ob.matrix_world @ v.co
+            if p.x < x0 - margin or p.x > x1 + margin or p.y < y0 - margin or p.y > y1 + margin:
+                errs.append(f"{ob.name}: xy out of floor ({p.x:.2f},{p.y:.2f})")
+                break
+    return errs
 
 
 def build_furniture(kh) -> list[bpy.types.Object]:
     props: list[bpy.types.Object] = []
+    door_x, door_y = 1.55, WALL_T + 0.14
     specs = [
-        ("building", "door", (ROOM_W * 0.58, 0.16, FLOOR_Z), 0.0, 1.12, "metal", "roll_door"),
-        ("furniture", "workbench", (0.95, ROOM_D - 0.85, FLOOR_Z), 0.0, 1.32, "desk", "workbench"),
-        ("furniture", "server_rack", (0.78, 1.05, FLOOR_Z), 90.0, 1.22, "metal", "server_rack"),
-        ("furniture", "shelf", (ROOM_W - 0.82, 0.95, FLOOR_Z), -90.0, 1.18, "desk", "shelf_low"),
-        ("furniture", "box_closed", (ROOM_W - 0.55, 0.55, FLOOR_Z), 14.0, 1.2, "cardboard", "box_a"),
-        ("furniture", "box_open", (ROOM_W - 0.35, 0.85, FLOOR_Z), -8.0, 1.15, "cardboard", "box_b"),
-        ("furniture", "desk", (1.85, ROOM_D - 0.95, FLOOR_Z), -8.0, 1.08, "desk", "desk"),
-        ("furniture", "chair", (2.35, ROOM_D - 1.15, FLOOR_Z), 22.0, 1.05, "plastic", "chair"),
+        ("building", "door", (door_x, door_y, FLOOR_TOP), 0.0, 1.02, "metal", "roll_door"),
+        ("furniture", "workbench", (1.08, ROOM_D - 0.78, FLOOR_TOP), 6.0, 1.22, "desk", "workbench"),
+        ("furniture", "server_rack", (0.82, 0.95, FLOOR_TOP), 90.0, 1.18, "metal", "server_rack"),
+        ("furniture", "shelf", (ROOM_W - 0.78, 0.92, FLOOR_TOP), -88.0, 1.12, "desk", "shelf_low"),
+        ("furniture", "box_closed", (ROOM_W - 0.58, 0.52, FLOOR_TOP), 10.0, 1.1, "cardboard", "box_a"),
+        ("furniture", "box_open", (ROOM_W - 0.38, 0.78, FLOOR_TOP), -6.0, 1.08, "cardboard", "box_b"),
+        ("furniture", "desk", (2.05, ROOM_D - 1.02, FLOOR_TOP), -10.0, 1.05, "desk", "desk"),
+        ("furniture", "chair", (2.62, ROOM_D - 1.28, FLOOR_TOP), 18.0, 1.02, "plastic", "chair"),
     ]
     for pack, asset, loc, rot, sc, pal, inst in specs:
         ob = kh.import_kenney(
@@ -149,27 +176,46 @@ def build_furniture(kh) -> list[bpy.types.Object]:
         )
         if ob:
             ob.name = f"kenney_{inst}"
+            _snap_bottom_z(ob, FLOOR_TOP)
             props.append(ob)
-    desk_x, desk_y = 1.85, ROOM_D - 0.95
-    desk_z = 0.74
-    for asset, off, name in (
-        ("screen", (0.0, 0.0, desk_z), "monitor"),
-        ("keyboard", (-0.06, 0.18, desk_z - 0.02), "keyboard"),
-        ("mouse", (0.38, 0.2, desk_z - 0.02), "mouse"),
-    ):
-        ob = kh.import_kenney(
+
+    desk = bpy.data.objects.get("kenney_desk")
+    if desk:
+        top_z = max((desk.matrix_world @ v.co).z for v in desk.data.vertices)
+        desk_xy = (desk.matrix_world.translation.x, desk.matrix_world.translation.y)
+        for asset, dx, dy, name, pal in (
+            ("screen", 0.0, 0.02, "monitor", "screen"),
+            ("keyboard", -0.05, 0.14, "keyboard", "plastic"),
+            ("mouse", 0.34, 0.16, "mouse", "plastic"),
+        ):
+            ob = kh.import_kenney(
+                "furniture",
+                asset,
+                (desk_xy[0] + dx, desk_xy[1] + dy, top_z + 0.5),
+                rot_z_deg=-10.0,
+                scale=1.0,
+                palette_key=pal,
+                up_axis="Z",
+                floor_snap=False,
+            )
+            if ob:
+                ob.name = f"kenney_{name}"
+                _snap_bottom_z(ob, top_z + 0.01)
+                props.append(ob)
+
+        lamp = kh.import_kenney(
             "furniture",
-            asset,
-            (desk_x + off[0], desk_y + off[1], off[2]),
-            rot_z_deg=-8.0,
-            scale=1.05,
-            palette_key="screen" if asset == "screen" else "plastic",
+            "lamp",
+            (desk_xy[0] + 0.38, desk_xy[1] - 0.1, top_z + 0.5),
+            scale=0.85,
+            palette_key="trim",
             up_axis="Z",
             floor_snap=False,
         )
-        if ob:
-            ob.name = f"kenney_{name}"
-            props.append(ob)
+        if lamp:
+            lamp.name = "kenney_desk_lamp"
+            _snap_bottom_z(lamp, top_z + 0.01)
+            props.append(lamp)
     return props
 
 
@@ -179,12 +225,7 @@ def main() -> None:
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
     build_shell(acg)
-    for n in ("shell_floor", "shell_walls_L", "shell_skirting"):
-        ob = bpy.data.objects.get(n)
-        if ob:
-            kh.snap_to_floor_z(ob, FLOOR_Z)
     props = build_furniture(kh)
-    props += build_ceiling_light(kh)
 
     all_meshes = [bpy.data.objects[n] for n in SHELL_NAMES if n in bpy.data.objects] + props
 
@@ -193,15 +234,22 @@ def main() -> None:
     gnd_errs = kh.audit_grounding(
         all_meshes,
         up_axis="Z",
-        floor=FLOOR_Z,
+        floor=FLOOR_TOP,
         wall_mounted=WALL_KEYS,
         ceiling_mounted=CEILING_KEYS,
         exempt=DESK_TOP_KEYS,
         wall_plane="side",
-        wall_coord=0.16,
+        wall_coord=WALL_T,
         tol_floor=FLOOR_TOL,
-        tol_wall=0.32,
-        ceiling_z=2.05,
+        tol_wall=0.28,
+    )
+    xy_errs = audit_prop_bounds(
+        props,
+        x0=0.0,
+        y0=0.0,
+        x1=ROOM_W,
+        y1=ROOM_D,
+        wall_keys=tuple(WALL_KEYS),
     )
     if map_errs:
         raise RuntimeError(f"shell PBR: {map_errs}")
@@ -209,6 +257,8 @@ def main() -> None:
         raise RuntimeError(f"roughness: {rough_errs[:6]}")
     if gnd_errs:
         raise RuntimeError(f"grounding (>2cm): {gnd_errs[:8]}")
+    if xy_errs:
+        raise RuntimeError(f"prop bounds: {xy_errs[:8]}")
 
     import blender_preview_rig as rig  # type: ignore
 
@@ -219,10 +269,10 @@ def main() -> None:
         out,
         resolution=1024,
         up_axis="Z",
-        lens_mm=38.0,
+        lens_mm=36.0,
         azimuth_deg=42.0,
         elevation_deg=32.0,
-        framing_margin=0.66,
+        framing_margin=0.58,
         mask_meshes=all_meshes,
         hdri_path=HDRI if HDRI.is_file() else None,
         hdri_strength=0.4,
@@ -238,17 +288,18 @@ def main() -> None:
     meta["grounding_violations"] = kh.audit_grounding(
         all_meshes,
         up_axis="Z",
-        floor=FLOOR_Z,
+        floor=FLOOR_TOP,
         wall_mounted=WALL_KEYS,
         ceiling_mounted=CEILING_KEYS,
         exempt=DESK_TOP_KEYS,
         wall_plane="side",
-        wall_coord=0.16,
+        wall_coord=WALL_T,
         tol_floor=FLOOR_TOL,
-        tol_wall=0.32,
-        ceiling_z=2.05,
+        tol_wall=0.28,
     )
+    meta["bounds_violations"] = xy_errs
     meta["roughness_violations"] = rough_errs
+    meta["floor_top_z"] = FLOOR_TOP
     meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
     print("OK garage-scene-urp-hero", out, "meshes", len(all_meshes))
 
