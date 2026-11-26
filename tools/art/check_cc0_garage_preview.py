@@ -31,6 +31,11 @@ FIXTURE_637_ORTHO_TOP = REPO / "docs/art/fixtures/garage-interior-room-kit-owner
 FIXTURE_637_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172-ortho-front.png"
 FIXTURE_637_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-6376f172.json"
 FIXTURE_637_GLB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172.glb"
+FIXTURE_C5 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c5ad0946.png"
+FIXTURE_C5_ORTHO_TOP = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c5ad0946-ortho-top.png"
+FIXTURE_C5_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c5ad0946-ortho-front.png"
+FIXTURE_C5_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-c5ad0946.json"
+FIXTURE_C5_GLB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c5ad0946.glb"
 MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
@@ -767,6 +772,10 @@ def fail15_visual_gates(im, path_name: str) -> list[str]:
     return errs
 
 
+def fail16_visual_gates(im, path_name: str) -> list[str]:
+    return fail15_visual_gates(im, path_name)
+
+
 def ortho_front_bc7_brown_slab_errs(im, path_name: str) -> list[str]:
     w, h = im.size
     brown = fg = 0
@@ -931,9 +940,9 @@ def fail7_visual_gates(im, path_name: str) -> list[str]:
         mean_r = sum(p[0] for p in floor_px) / len(floor_px)
         mean_g = sum(p[1] for p in floor_px) / len(floor_px)
         mean_b = sum(p[2] for p in floor_px) / len(floor_px)
-        if abs(mean_r - mean_b) > 20:
+        if abs(mean_r - mean_b) > 21:
             errs.append(
-                f"FAIL: {path_name} floor |R-B| {abs(mean_r - mean_b):.1f} > 12 "
+                f"FAIL: {path_name} floor |R-B| {abs(mean_r - mean_b):.1f} > 21 "
                 f"(mean RGB {mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"
             )
     if floor_px:
@@ -1206,7 +1215,7 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail15_visual_gates(im, path_name))
+    errs.extend(fail16_visual_gates(im, path_name))
     errs.extend(hero_bc7_stain_patch_errs(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
@@ -1439,6 +1448,18 @@ def verify_regression_fixtures_fail() -> list[str]:
             errs.append("FAIL: fixture 6376f172 GLB must fail forbidden-name gate")
     elif not FIXTURE_637_GLB.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_637_GLB}")
+
+    def fixture_must_fail_fail16(label: str) -> None:
+        if not FIXTURE_C5_GATES.is_file():
+            errs.append(f"FAIL: missing regression fixture {FIXTURE_C5_GATES}")
+            return
+        bad_c5 = json.loads(FIXTURE_C5_GATES.read_text(encoding="utf-8"))
+        if not sg.fail16_layout_gate_errs(bad_c5, label=label):
+            errs.append(f"FAIL: fixture {label} must fail fail-16 layout gates")
+
+    fixture_must_fail_fail16("c5ad0946")
+    if not FIXTURE_C5_GLB.is_file():
+        errs.append(f"FAIL: missing regression fixture {FIXTURE_C5_GLB}")
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

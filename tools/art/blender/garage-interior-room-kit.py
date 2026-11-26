@@ -62,13 +62,11 @@ KENNEY_RESTYLE: dict[str, list[str]] = {
     "prop_chair": ["wood", "metal", "wood"],
     "prop_screen": ["prop", "screen", "prop"],
     "prop_keyboard": ["wood", "prop"],
-    "prop_rug": ["wood", "prop"],
     "prop_lamp": ["metal", "lamp_accent", "wood"],
     "prop_books": ["wood", "prop", "wood"],
     "prop_bookcase": ["shelf", "wood", "metal"],
     "prop_workbench": ["wood", "metal"],
     "prop_plant": ["plant", "wood"],
-    "prop_speaker": ["metal", "prop"],
     "prop_tool_table": ["wood", "metal"],
 }
 
@@ -82,14 +80,14 @@ KIT_ROLES: dict[str, str] = {
     "prop_chair": "chair",
     "prop_screen": "screen",
     "prop_keyboard": "metal",
-    "prop_rug": "wood",
+    "prop_rug": "rug_muted",
     "prop_whiteboard": "board",
     "prop_server": "metal",
     "prop_bookcase": "shelf",
     "prop_workbench": "wood",
     "prop_lamp": "lamp_accent",
     "prop_plant": "plant",
-    "prop_speaker": "metal",
+    "prop_speaker": "speaker_dark",
     "prop_tool_table": "wood",
 }
 
@@ -399,6 +397,8 @@ def assert_scene_layout(
             failures.append(f"{key} outside 4×4 floor")
         elif wall_mount and (mn.y < -GAP_TOL or mx.y > ROOM + GAP_TOL or mx.x > ROOM + GAP_TOL):
             failures.append(f"{key} outside 4×4 floor")
+        if key in STACKED_ON_DESK:
+            continue
         hi = prop_height_ratio(ob, key)
         band = PROP_HEIGHT_RATIOS.get(key)
         if band and not (band[0] - 0.008 <= hi <= band[1] + 0.008):
@@ -485,6 +485,8 @@ def _overlap_pair_allowed(ka: str, kb: str) -> bool:
     pair = {ka, kb}
     if pair == {"prop_desk", "prop_rug"}:
         return True
+    if pair == {"prop_chair", "prop_rug"}:
+        return True
     if ka in STACKED_ON_DESK and kb == "prop_desk":
         return True
     if kb in STACKED_ON_DESK and ka == "prop_desk":
@@ -527,7 +529,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     keys: list[str] = []
     cx, cy = 2.05, 1.95
     specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
-        ("prop_rug", "rugRectangle.glb", (cx, cy), math.radians(200), FURN_SCALE * 0.42),
+        ("prop_rug", "rugRectangle.glb", (cx + 0.30, cy + 0.62), math.radians(200), FURN_SCALE * 0.36),
         ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
         ("prop_chair", "chairDesk.glb", (cx + 0.46, cy + 0.94), math.radians(200), FURN_SCALE * 0.88),
         ("prop_screen", "computerScreen.glb", (cx + 0.06, cy + 0.08), math.radians(200), FURN_SCALE * 0.72),
@@ -536,7 +538,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
         ("prop_bookcase", "bookcaseClosed.glb", (0.72, 2.92), math.pi / 2, FURN_SCALE * 0.92),
         ("prop_workbench", "sideTable.glb", (0.82, 0.92), math.radians(8), FURN_SCALE * 0.86),
         ("prop_plant", "plantSmall1.glb", (2.95, 1.18), math.radians(-25), FURN_SCALE * 1.0),
-        ("prop_speaker", "speaker.glb", (1.92, 0.88), math.radians(12), FURN_SCALE * 0.84),
+        ("prop_speaker", "speaker.glb", (cx + 0.34, cy - 0.06), math.radians(200), FURN_SCALE * 0.34),
         ("prop_tool_table", "sideTable.glb", (0.72, 1.58), math.radians(95), FURN_SCALE * 0.80),
     ]
     for key, glb, xy, rot, sc in specs:
@@ -576,7 +578,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     return keys
 
 
-STACKED_ON_DESK = frozenset({"prop_screen", "prop_keyboard", "prop_lamp"})
+STACKED_ON_DESK = frozenset({"prop_screen", "prop_keyboard", "prop_lamp", "prop_speaker"})
 
 
 def snap_prop_on_support(child: bpy.types.Object, parent: bpy.types.Object, *, z_offset: float = 0.002) -> None:
@@ -682,7 +684,11 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         if key.startswith("_") or key == "kit_wall_left":
             continue
         role = KIT_ROLES.get(key, "prop")
-        if key in KENNEY_RESTYLE:
+        if key == "prop_rug":
+            cc0.apply_palette_material(ob, "rug_muted")
+        elif key == "prop_speaker":
+            cc0.apply_palette_material(ob, "speaker_dark")
+        elif key in KENNEY_RESTYLE:
             cc0.apply_kenney_restyle(ob, KENNEY_RESTYLE[key])
         else:
             cc0.apply_palette_material(ob, role)

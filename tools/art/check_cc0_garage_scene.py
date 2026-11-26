@@ -14,6 +14,28 @@ THIN_PROP_MAX_M = 0.12
 FORBIDDEN_NAME_SUBSTRINGS = ("chest", "crate", "lid", "bin", "cardboard")
 
 
+def fail16_layout_gate_errs(data: dict, *, label: str = "") -> list[str]:
+    """Owner fail-16: rug under desk/chair cluster; small dark speaker on desk."""
+    prefix = f"{label} " if label else ""
+    errs: list[str] = []
+    props = {str(p.get("objectName")): p for p in (data.get("propInstances") or [])}
+    rug = props.get("prop_rug")
+    if rug:
+        y = float(rug.get("y", rug.get("z", 0)))
+        if y < 2.52:
+            errs.append(
+                f"FAIL: {prefix}prop_rug center Y {y:.3f} m < 2.52 (misplaced white slab)"
+            )
+    spk = props.get("prop_speaker")
+    if spk:
+        if str(spk.get("support", "")).lower() != "desk":
+            errs.append(f"FAIL: {prefix}prop_speaker support {spk.get('support')!r} != desk")
+        hm = float(spk.get("heightM", 0))
+        if hm > 0.62:
+            errs.append(f"FAIL: {prefix}prop_speaker height {hm:.2f} m > 0.62 (floor slab)")
+    return errs
+
+
 def forbidden_export_name_errs(names: list[str], *, label: str = "") -> list[str]:
     prefix = f"{label} " if label else ""
     errs: list[str] = []
@@ -119,6 +141,7 @@ def main() -> int:
         return 1
     data = json.loads(GATES.read_text(encoding="utf-8"))
     errs = placement_gate_errs(data)
+    errs.extend(fail16_layout_gate_errs(data))
     if FIXTURE_4E.is_file():
         bad = json.loads(FIXTURE_4E.read_text(encoding="utf-8"))
         if not placement_gate_errs(bad, label="fixture-4e22d8dd"):

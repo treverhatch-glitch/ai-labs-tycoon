@@ -70,11 +70,11 @@
   "propInstances": [
     {
       "objectName": "prop_rug",
-      "x": 2.6929,
-      "y": 2.3267,
+      "x": 2.9011,
+      "y": 2.8929,
       "minZ": 0.05,
-      "heightM": 0.0603,
-      "heightToWallRatio": 0.0223,
+      "heightM": 0.0517,
+      "heightToWallRatio": 0.0191,
       "grounded": true,
       "insideFloorBounds": true,
       "support": "floor",
@@ -187,16 +187,16 @@
     },
     {
       "objectName": "prop_speaker",
-      "x": 2.0412,
-      "y": 1.0012,
-      "minZ": 0.05,
-      "heightM": 1.0424,
-      "heightToWallRatio": 0.3861,
+      "x": 2.4391,
+      "y": 1.9391,
+      "minZ": 0.8016,
+      "heightM": 0.4219,
+      "heightToWallRatio": 0.1563,
       "grounded": true,
       "insideFloorBounds": true,
-      "support": "floor",
-      "floorContactGapM": 0.0,
-      "supportContactGapM": 0.0
+      "support": "desk",
+      "supportContactGapM": 0.002,
+      "floorContactGapM": 0.0
     },
     {
       "objectName": "prop_tool_table",

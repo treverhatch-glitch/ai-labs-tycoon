@@ -35,6 +35,8 @@ PALETTE = {
     "shelf": (0.78, 0.62, 0.38, 1.0),
     "plant": (0.22, 0.72, 0.32, 1.0),
     "floor_stain": (0.06, 0.055, 0.05, 1.0),
+    "rug_muted": (0.42, 0.28, 0.30, 1.0),
+    "speaker_dark": (0.14, 0.15, 0.17, 1.0),
 }
 
 GARAGE_KIT = ART_ROOT / "garage-kit"
