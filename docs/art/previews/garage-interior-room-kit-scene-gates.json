@@ -1,5 +1,26 @@
 {
   "assetId": "garage-interior-room-kit",
+  "kenneyFurnitureGlb": {
+    "prop_desk": "desk.glb",
+    "prop_chair": "chairDesk.glb",
+    "prop_laptop": "laptop.glb",
+    "prop_keyboard": "computerKeyboard.glb",
+    "prop_lamp": "lampRoundTable.glb",
+    "prop_books": "books.glb",
+    "prop_bookcase": "bookcaseClosed.glb",
+    "prop_box_a": "cardboardBoxClosed.glb",
+    "prop_box_b": "cardboardBoxClosed.glb",
+    "prop_crate": "cardboardBoxClosed.glb",
+    "prop_workbench": "sideTable.glb",
+    "prop_plant": "plantSmall1.glb",
+    "prop_speaker": "speaker.glb",
+    "prop_tool_table": "sideTable.glb"
+  },
+  "cardboardLidGapM": {
+    "prop_box_a": 0.0,
+    "prop_box_b": 0.0,
+    "prop_crate": 0.0
+  },
   "floorTopZ": 0.05,
   "wallHeightM": 2.7,
   "floorBounds": {
@@ -33,11 +54,11 @@
     },
     {
       "objectName": "prop_chair",
-      "x": 1.5509,
-      "y": 1.5135,
+      "x": 2.8705,
+      "y": 2.7819,
       "minZ": 0.05,
-      "heightM": 1.0189,
-      "heightToWallRatio": 0.3774,
+      "heightM": 1.09,
+      "heightToWallRatio": 0.4037,
       "grounded": true,
       "insideFloorBounds": true,
       "support": "floor",

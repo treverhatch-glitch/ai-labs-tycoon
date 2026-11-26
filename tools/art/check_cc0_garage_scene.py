@@ -33,6 +33,16 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         errs.append(f"FAIL: {prefix}roll door minZ {door_min_z:.3f} m > 0.02")
     if data.get("rollDoorSingleMesh") is not True:
         errs.append(f"FAIL: {prefix}roll door must be single merged mesh")
+    lid_gaps = data.get("cardboardLidGapM") or {}
+    for key, gap in lid_gaps.items():
+        g = float(gap)
+        if g > tol:
+            errs.append(f"FAIL: {prefix}{key} cardboard lid mesh gap {g * 100:.2f} cm > 1 cm")
+    kenney = data.get("kenneyFurnitureGlb") or {}
+    for req in ("prop_desk", "prop_chair", "prop_lamp", "prop_box_a"):
+        glb = kenney.get(req)
+        if not glb or not str(glb).endswith(".glb"):
+            errs.append(f"FAIL: {prefix}missing kenneyFurnitureGlb[{req!r}]")
     door_max_y = float(data.get("rollDoorMaxYM", 99.0))
     wall_plane = float(data.get("rollDoorWallPlaneYM", 0.05))
     if door_max_y > wall_plane + 0.05:

@@ -21,6 +21,23 @@ WALL_H = 2.7
 WALL_Z_SCALE = WALL_H / 2.4
 TILE_SCALE = 0.5
 FURN_SCALE = 1.95
+
+KENNEY_GLB_SOURCES: dict[str, str] = {
+    "prop_desk": "desk.glb",
+    "prop_chair": "chairDesk.glb",
+    "prop_laptop": "laptop.glb",
+    "prop_keyboard": "computerKeyboard.glb",
+    "prop_lamp": "lampRoundTable.glb",
+    "prop_books": "books.glb",
+    "prop_bookcase": "bookcaseClosed.glb",
+    "prop_box_a": "cardboardBoxClosed.glb",
+    "prop_box_b": "cardboardBoxClosed.glb",
+    "prop_crate": "cardboardBoxClosed.glb",
+    "prop_workbench": "sideTable.glb",
+    "prop_plant": "plantSmall1.glb",
+    "prop_speaker": "speaker.glb",
+    "prop_tool_table": "sideTable.glb",
+}
 ROLL_DOOR_TARGET_W = 3.0
 GAP_TOL = 0.01
 GROUND_TOL = 0.01
@@ -252,7 +269,7 @@ def furniture_prop(name: str, glb: str, xy: tuple[float, float], *, rot_z: float
     )
     snap_min_z(ob, FLOOR_TOP)
     if "cardboard" in glb.lower():
-        cc0.weld_cardboard_closed(ob, max_gap=0.01)
+        cc0.monolith_cardboard_box(ob, max_gap=0.01)
         snap_min_z(ob, FLOOR_TOP)
     return ob
 
@@ -410,7 +427,7 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     cx, cy = 2.05, 1.95
     specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
         ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
-        ("prop_chair", "chairDesk.glb", (cx - 0.78, cy - 0.70), math.radians(38), FURN_SCALE * 0.86),
+        ("prop_chair", "chairDesk.glb", (cx + 0.52, cy + 0.55), math.radians(215), FURN_SCALE * 0.92),
         ("prop_laptop", "laptop.glb", (cx + 0.08, cy + 0.10), math.radians(200), FURN_SCALE * 0.82),
         ("prop_keyboard", "computerKeyboard.glb", (cx - 0.10, cy + 0.04), math.radians(195), FURN_SCALE * 0.88),
         ("prop_lamp", "lampRoundTable.glb", (cx + 0.42, cy + 0.06), math.radians(-18), FURN_SCALE * 0.92),
@@ -466,10 +483,13 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
 
     stack_desk_props(kit_objects)
 
-    bpy.ops.mesh.primitive_plane_add(size=2.35, location=(2.05, 1.32, FLOOR_TOP + 0.006))
+    bpy.ops.mesh.primitive_plane_add(size=2.65, location=(2.06, 1.36, FLOOR_TOP + 0.004))
     stain = bpy.context.active_object
     stain.name = "kit_floor_stain"
     stain.rotation_euler = (0.0, 0.0, math.radians(14))
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.subdivide(number_cuts=12)
+    bpy.ops.object.mode_set(mode="OBJECT")
     kit_objects["kit_floor_stain"] = stain
     return keys
 
@@ -540,8 +560,15 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
                 **contact,
             }
         )
+    cardboard_gaps: dict[str, float] = {}
+    for key in ("prop_box_a", "prop_box_b", "prop_crate"):
+        ob = kit_objects.get(key)
+        if ob:
+            cardboard_gaps[key] = round(cc0.cardboard_lid_gap_m(ob), 5)
     payload = {
         "assetId": ASSET_ID,
+        "kenneyFurnitureGlb": dict(KENNEY_GLB_SOURCES),
+        "cardboardLidGapM": cardboard_gaps,
         "floorTopZ": FLOOR_TOP,
         "wallHeightM": WALL_H,
         "floorBounds": {"minX": 0.0, "maxX": ROOM, "minY": 0.0, "maxY": ROOM},
@@ -567,7 +594,10 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         if key.startswith("_") or key == "kit_wall_left":
             continue
         role = KIT_ROLES.get(key, "prop")
-        if key in ("prop_box_a", "prop_box_b", "prop_crate"):
+        if key == "kit_floor_stain":
+            ob.data.materials.clear()
+            ob.data.materials.append(cc0.build_stain_decal_material("kit_floor_stain"))
+        elif key in ("prop_box_a", "prop_box_b", "prop_crate"):
             cc0.apply_palette_material(ob, "box")
         elif key in KENNEY_RESTYLE:
             cc0.apply_kenney_restyle(ob, KENNEY_RESTYLE[key])
@@ -632,12 +662,15 @@ def main() -> dict:
         room=ROOM,
         wall_h=WALL_H,
     )
+    ortho_front_hide = frozenset({"kit_wall_back"})
     cc0.render_ortho_wall_check(
-        ortho_qa,
+        export_list,
         cc0.PREVIEW_ROOT / f"{ASSET_ID}-ortho-front.png",
         view="front_left",
         room=ROOM,
         wall_h=WALL_H,
+        hide_render_names=ortho_front_hide,
+        interior_slice=True,
     )
     for ob in ortho_qa:
         bpy.data.objects.remove(ob, do_unlink=True)

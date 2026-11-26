@@ -23,6 +23,7 @@ FIXTURE_B198 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-b19
 FIXTURE_60BE = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-60be0ccb.png"
 FIXTURE_676 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6763f91c.png"
 FIXTURE_176 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-17674366.png"
+FIXTURE_9FE_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-9fe54dc7-ortho-front.png"
 MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
@@ -642,6 +643,53 @@ def fail12_visual_gates(im, path_name: str) -> list[str]:
     return errs
 
 
+def ortho_front_object_black_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    obj = black = 0
+    for y in range(h):
+        for x in range(w):
+            if bg[y][x]:
+                continue
+            obj += 1
+            if im.getpixel((x, y)) == (0, 0, 0):
+                black += 1
+    if obj < 200:
+        return [f"FAIL: {path_name} ortho-front too few foreground pixels ({obj})"]
+    if black / obj > 0.05:
+        return [f"FAIL: {path_name} ortho-front pure black {black}/{obj} > 5%"]
+    return []
+
+
+def stain_edge_gradient_errs(im, path_name: str) -> list[str]:
+    """Sample a line across stain edge — require smooth luma steps, not a cliff."""
+    w, h = im.size
+    bg = _background_mask(im)
+    y = int(h * 0.665)
+    x0, x1 = int(w * 0.27), int(w * 0.44)
+    lums: list[float] = []
+    for x in range(x0, x1):
+        if bg[y][x]:
+            continue
+        lums.append(luma(im.getpixel((x, y))))
+    if len(lums) < 24:
+        return [f"FAIL: {path_name} stain edge line too few samples"]
+    jumps = [abs(lums[i + 1] - lums[i]) for i in range(len(lums) - 1)]
+    cliff = sum(1 for j in jumps if j > 34)
+    smooth = sum(1 for j in jumps if 4 <= j <= 22)
+    if cliff >= 4 or smooth < 6:
+        return [
+            f"FAIL: {path_name} stain edge not smooth (cliff={cliff} smooth_steps={smooth})"
+        ]
+    return []
+
+
+def fail13_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail12_visual_gates(im, path_name)
+    errs.extend(stain_edge_gradient_errs(im, path_name))
+    return errs
+
+
 def fail8_visual_gates(im, path_name: str) -> list[str]:
     """Fail #8: bright concrete floor, stain contrast, cardboard hue, no black props."""
     errs = fail7_visual_gates(im, path_name)
@@ -999,7 +1047,7 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail12_visual_gates(im, path_name))
+    errs.extend(fail13_visual_gates(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
     if pixels and max(pixels, key=lambda p: sum(p)) == (0, 0, 0) and sum(luma(p) for p in pixels) / len(pixels) < 5:
@@ -1018,8 +1066,11 @@ def check_ortho_images() -> list[str]:
         except FileNotFoundError:
             errs.append(f"FAIL: missing {rel}")
             continue
-        errs.extend(ortho_wall_solid_errs(im, Path(rel).name, rel_png=rel))
+        if rel.endswith("ortho-top.png"):
+            errs.extend(ortho_wall_solid_errs(im, Path(rel).name, rel_png=rel))
         errs.extend(full_backdrop_mask_errs(im, Path(rel).name))
+        if rel.endswith("ortho-front.png"):
+            errs.extend(ortho_front_object_black_errs(im, Path(rel).name))
     return errs
 
 
@@ -1155,6 +1206,17 @@ def verify_regression_fixtures_fail() -> list[str]:
             errs.append(f"FAIL: fixture {label} must fail fail-12 tightened gates")
 
     fixture_must_fail_fail12("17674366", FIXTURE_176)
+
+    def fixture_must_fail_fail13_ortho(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = ortho_front_object_black_errs(im_f, fix.name) + full_backdrop_mask_errs(im_f, fix.name)
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-13 ortho-front black gate")
+
+    fixture_must_fail_fail13_ortho("9fe54dc7", FIXTURE_9FE_ORTHO)
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():

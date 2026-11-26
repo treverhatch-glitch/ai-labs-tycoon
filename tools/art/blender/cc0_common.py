@@ -252,6 +252,42 @@ def snap_cardboard_lid(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
     bpy.context.view_layer.update()
 
 
+def monolith_cardboard_box(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
+    """Force closed cardboard to a single contact shell (mesh bounds for gates)."""
+    weld_cardboard_closed(ob, max_gap=max_gap)
+    for _ in range(4):
+        if cardboard_lid_gap_m(ob) <= max_gap:
+            break
+        weld_cardboard_closed(ob, max_gap=max_gap)
+    import bmesh
+
+    gap = cardboard_lid_gap_m(ob)
+    if gap <= max_gap:
+        return
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    mw = ob.matrix_world
+    inv = mw.inverted()
+    zvals = sorted((mw @ v.co).z for v in bm.verts)
+    if len(zvals) < 4:
+        bm.free()
+        return
+    body_top = zvals[int(len(zvals) * 0.55)]
+    shift = gap + 0.002
+    for v in bm.verts:
+        wz = (mw @ v.co).z
+        if wz > body_top:
+            w = mw @ v.co
+            w.z -= shift
+            v.co = inv @ w
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    bpy.context.view_layer.update()
+    mesh_remove_doubles(ob, 0.12)
+    snap_cardboard_lid(ob, max_gap=max_gap)
+
+
 def weld_cardboard_closed(ob: bpy.types.Object, max_gap: float = 0.01) -> None:
     """Merge lid shell onto closed Kenney cardboard box (render + gate contact)."""
     mesh_remove_doubles(ob, 0.08)
@@ -331,8 +367,8 @@ def _simple_tint_material(name: str, role: str) -> bpy.types.Material:
         links.new(add.outputs["Shader"], out.inputs["Surface"])
     elif role == "screen":
         emit = nodes.new("ShaderNodeEmission")
-        emit.inputs["Color"].default_value = (0.75, 0.82, 0.95, 1.0)
-        emit.inputs["Strength"].default_value = 0.15
+        emit.inputs["Color"].default_value = (0.55, 0.62, 0.78, 1.0)
+        emit.inputs["Strength"].default_value = 0.06
         add = nodes.new("ShaderNodeAddShader")
         links.new(bsdf.outputs["BSDF"], add.inputs[0])
         links.new(emit.outputs["Emission"], add.inputs[1])
@@ -933,6 +969,15 @@ def render_kit_preview(
     _quantize_backdrop_rgb150(path)
 
 
+def _set_render_double_sided(objects: list[bpy.types.Object]) -> None:
+    for ob in objects:
+        if ob.type != "MESH" or not ob.data:
+            continue
+        for slot in ob.data.materials:
+            if slot:
+                slot.use_backface_culling = False
+
+
 def render_ortho_wall_check(
     objects: list[bpy.types.Object],
     path: Path,
@@ -941,17 +986,27 @@ def render_ortho_wall_check(
     room: float = 4.0,
     wall_h: float = 2.7,
     resolution: int = 512,
+    hide_render_names: frozenset[str] | None = None,
+    interior_slice: bool = False,
 ) -> None:
-    """Flat grey world; orthographic wall QA (top or front-left)."""
+    """Flat grey world; orthographic wall QA (top or front-left room slice)."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
     setup_preview_world_grey_hdri(hdri_strength=0.55)
     bpy.context.scene.render.engine = "CYCLES"
     bpy.context.scene.cycles.samples = 48
     bpy.context.scene.cycles.use_denoising = False
     bpy.context.scene.render.film_transparent = False
+    hidden: list[tuple[bpy.types.Object, bool]] = []
+    hide_set = hide_render_names or frozenset()
+    for ob in objects:
+        if ob.name in hide_set:
+            hidden.append((ob, ob.hide_render))
+            ob.hide_render = True
+    render_obs = [o for o in objects if not o.hide_render]
+    _set_render_double_sided(render_obs)
     mins = Vector((1e9, 1e9, 1e9))
     maxs = Vector((-1e9, -1e9, -1e9))
-    for ob in objects:
+    for ob in render_obs:
         mn, mx = world_bbox(ob)
         mins.x = min(mins.x, mn.x)
         mins.y = min(mins.y, mn.y)
@@ -966,13 +1021,18 @@ def render_ortho_wall_check(
     bpy.ops.object.camera_add()
     cam = bpy.context.active_object
     cam.data.type = "ORTHO"
+    cam.data.clip_start = 0.01
+    cam.data.clip_end = room * 4.0
     if view == "top":
         cam.data.ortho_scale = max(span_x, span_y) * 1.12
         cam.location = Vector((center.x, center.y, maxs.z + max(span_x, span_y) * 1.6))
         cam.rotation_euler = (0.0, 0.0, 0.0)
     elif view == "front_left":
-        cam.data.ortho_scale = max(span_y, span_z) * 1.08
-        cam.location = Vector((mins.x - max(span_x, 1.0) * 1.2, center.y, center.z))
+        cam.data.ortho_scale = max(span_y, span_z) * (1.05 if interior_slice else 1.08)
+        if interior_slice:
+            cam.location = Vector((mins.x - 0.08, center.y, center.z))
+        else:
+            cam.location = Vector((mins.x - max(span_x, 1.0) * 1.2, center.y, center.z))
         direction = Vector((1.0, 0.0, 0.0))
         cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
     else:
@@ -983,14 +1043,51 @@ def render_ortho_wall_check(
     bpy.context.scene.render.image_settings.file_format = "PNG"
     bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
-    hull = _ortho_project_hull(objects, cam, resolution, resolution)
+    hull = _ortho_project_hull(render_obs, cam, resolution, resolution)
     gate_path = Path(f"{path}.gate.json")
     gate_path.write_text(
         json.dumps({"w": resolution, "h": resolution, "hull": hull}, indent=2) + "\n",
         encoding="utf-8",
     )
     bpy.data.objects.remove(cam, do_unlink=True)
+    for ob, prev in hidden:
+        ob.hide_render = prev
     _quantize_backdrop_rgb150(path)
+
+
+def build_stain_decal_material(name: str = "stain_decal") -> bpy.types.Material:
+    """Radial alpha stain (soft edge, no hard quad corners in render)."""
+    size = 256
+    buf: list[float] = []
+    for j in range(size):
+        for i in range(size):
+            u = (i / (size - 1) - 0.5) * 2.0
+            v = (j / (size - 1) - 0.5) * 2.0
+            r = math.sqrt(u * u + 0.82 * v * v)
+            alpha = max(0.0, min(1.0, (0.86 - r) / 0.36))
+            alpha *= max(0.0, min(1.0, (0.58 - abs(u)) / 0.32)) * max(0.0, min(1.0, (0.58 - abs(v)) / 0.32))
+            a = min(1.0, alpha**0.92 + 0.48)
+            buf.extend((0.07, 0.065, 0.06, a))
+    img = bpy.data.images.new(f"{name}_tex", size, size, alpha=True)
+    img.colorspace_settings.name = "sRGB"
+    img.pixels = buf
+    mat = bpy.data.materials.new(name)
+    mat.blend_method = "BLEND"
+    if hasattr(mat, "shadow_method"):
+        mat.shadow_method = "HASHED"
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    nodes.clear()
+    out = nodes.new("ShaderNodeOutputMaterial")
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf.inputs["Roughness"].default_value = 0.95
+    tex = nodes.new("ShaderNodeTexImage")
+    tex.image = img
+    links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(tex.outputs["Alpha"], bsdf.inputs["Alpha"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    return mat
 
 
 def _ortho_project_hull(

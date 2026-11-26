@@ -2,6 +2,23 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+for arg in "${@:-}"; do
+  case "$arg" in
+    --force | --force-with-lease | +*)
+      echo "FAIL: force-push banned (--force / --force-with-lease / +refspec)" >&2
+      exit 1
+      ;;
+  esac
+done
+PUSH_BRANCH="${ART_PREPUSH_PUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}"
+if [[ -n "$PUSH_BRANCH" ]]; then
+  if git rev-parse --verify "origin/${PUSH_BRANCH}" >/dev/null 2>&1; then
+    if ! git merge-base --is-ancestor "origin/${PUSH_BRANCH}" HEAD; then
+      echo "FAIL: origin/${PUSH_BRANCH} is not an ancestor of HEAD (forward commits only)" >&2
+      exit 1
+    fi
+  fi
+fi
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
