@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import json
 import math
+import shutil
 import sys
 from pathlib import Path
 
@@ -15,6 +16,10 @@ from mathutils import Vector
 REPO = Path(__file__).resolve().parents[3]
 OBJ_IN = REPO / "unity" / "Assets" / "Art" / "Generated" / "campus-kit"
 CC0_ROOT = REPO / "docs" / "art" / "cc0"
+WOOD092 = CC0_ROOT / "ambientcg" / "Wood092_1K-JPG"
+WOOD092_COLOR = WOOD092 / "Wood092_1K-JPG_Color.jpg"
+WOOD092_NORMAL = WOOD092 / "Wood092_1K-JPG_NormalGL.jpg"
+WOOD092_ROUGH = WOOD092 / "Wood092_1K-JPG_Roughness.jpg"
 PREVIEW_HDRI = CC0_ROOT / "polyhaven" / "hdr" / "studio_small_09_1k.hdr"
 OUT_ROOT = REPO / "unity" / "Assets" / "Art" / "BlenderBaked"
 PREVIEW_DIR = REPO / "docs" / "art" / "previews"
@@ -96,6 +101,42 @@ def _paint_wood_grain(
             t = 0.48 + streak * 0.34 + ring * 0.16 + bump
             rgb = _lerp3(light, dark, t)
             vcol.data[li].color = (rgb[0], rgb[1], rgb[2], 1.0)
+
+
+def _blend_cc0_wood(obj: bpy.types.Object, color_jpg: Path, blend: float = 0.82) -> None:
+    """Blend ambientCG wood albedo into BakeColor after UV (desk carcass only)."""
+    if not color_jpg.is_file():
+        return
+    mesh = obj.data
+    vcol = mesh.color_attributes.get("BakeColor")
+    uv = mesh.uv_layers.active
+    if vcol is None or uv is None:
+        return
+    img = bpy.data.images.load(str(color_jpg), check_existing=True)
+    w, h = img.size
+    px = list(img.pixels)
+    desk_mn, desk_mx = _bbox_world([obj])
+    for poly in mesh.polygons:
+        for li in poly.loop_indices:
+            vi = mesh.loops[li].vertex_index
+            co = obj.matrix_world @ mesh.vertices[vi].co
+            if co.z < desk_mn.z + 0.05:
+                continue
+            if co.z > desk_mx.z * 0.55:
+                continue
+            bc = vcol.data[li].color
+            if max(bc[:3]) < 0.28:
+                continue
+            u, v = uv.data[li].uv
+            x = min(w - 1, max(0, int(u * w)))
+            y = min(h - 1, max(0, int((1.0 - v) * h)))
+            o = (y * w + x) * 4
+            tc = (px[o], px[o + 1], px[o + 2])
+            edge = 1.0 - min(1.0, abs(co.x - (desk_mn.x + desk_mx.x) * 0.5) / max(desk_mx.x - desk_mn.x, 0.01) * 1.35)
+            edge = 0.65 + edge * 0.35
+            mix = blend * edge
+            c = _lerp3((bc[0], bc[1], bc[2]), tc, mix)
+            vcol.data[li].color = (c[0], c[1], c[2], 1.0)
 
 
 def _paint_plastic_keys(
@@ -378,15 +419,22 @@ def _world_bbox(objs: list[bpy.types.Object]) -> tuple[Vector, Vector]:
     return mins, maxs
 
 
-def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path, backdrop: float = 150.0 / 255.0) -> None:
-    """~150 sRGB grey for camera; HDRI at low strength for lighting only."""
+def _setup_preview_hdri(
+    world: bpy.types.World,
+    hdr_path: Path,
+    backdrop: float = 150.0 / 255.0,
+    *,
+    lit_strength: float = 0.10,
+) -> None:
+    """Backdrop exactly mid-grey for camera; HDRI lights the mesh only."""
     world.use_nodes = True
     nodes = world.node_tree.nodes
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
     bg_grey = nodes.new("ShaderNodeBackground")
-    bg_grey.inputs["Color"].default_value = (backdrop, backdrop, backdrop + 0.01, 1.0)
+    g = backdrop
+    bg_grey.inputs["Color"].default_value = (g, g, g, 1.0)
     bg_grey.inputs["Strength"].default_value = 1.0
     if hdr_path.is_file():
         env = nodes.new("ShaderNodeTexEnvironment")
@@ -396,7 +444,7 @@ def _setup_preview_hdri(world: bpy.types.World, hdr_path: Path, backdrop: float 
             env.image = bpy.data.images[str(hdr_path)]
         env.image.colorspace_settings.name = "Linear Rec.709"
         bg_lit = nodes.new("ShaderNodeBackground")
-        bg_lit.inputs["Strength"].default_value = 0.08
+        bg_lit.inputs["Strength"].default_value = lit_strength
         links.new(env.outputs["Color"], bg_lit.inputs["Color"])
         path = nodes.new("ShaderNodeLightPath")
         mix = nodes.new("ShaderNodeMixShader")
@@ -418,7 +466,12 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     _reset_scene()
     world = bpy.context.scene.world or bpy.data.worlds.new("World")
     bpy.context.scene.world = world
-    _setup_preview_hdri(world, PREVIEW_HDRI)
+    _setup_preview_hdri(
+        world,
+        PREVIEW_HDRI,
+        backdrop=150.0 / 255.0,
+        lit_strength=0.08 if asset_id == "prop-desk" else 0.10,
+    )
     bpy.ops.import_scene.gltf(filepath=str(glb_path))
     mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     if not mesh_obs:
@@ -433,19 +486,19 @@ def _render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
-    floor_g = 132.0 / 255.0
-    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g + 0.01, 1)
+    floor_g = 150.0 / 255.0
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (floor_g, floor_g, floor_g, 1)
     gmat.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
 
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 1.2 if asset_id == "prop-desk" else 1.8
+    key.data.energy = 0.85 if asset_id == "prop-desk" else 1.8
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
     fill = bpy.context.active_object
-    fill.data.energy = 28 if asset_id == "prop-desk" else 55
+    fill.data.energy = 18 if asset_id == "prop-desk" else 55
     fill.data.size = span * (0.9 if asset_id == "prop-desk" else 1.4)
 
     obj_h = max(maxs.z - mins.z, maxs.y - mins.y, 0.01)
@@ -575,9 +628,23 @@ def finish_baked_export(
     obj.data.materials.clear()
     obj.data.materials.append(bake_mat)
     _smart_uv(obj)
+    if asset_id == "prop-desk" and WOOD092_COLOR.is_file():
+        _blend_cc0_wood(obj, WOOD092_COLOR)
     out_dir = OUT_ROOT / asset_id
     out_dir.mkdir(parents=True, exist_ok=True)
     tex_path = _bake_maps(obj, bake_mat, out_dir)
+    tex_dir = tex_path.parent
+    normal_rel: str | None = None
+    rough_rel: str | None = None
+    if asset_id == "prop-desk":
+        if WOOD092_NORMAL.is_file():
+            dest = tex_dir / f"{obj.name}_normal.png"
+            shutil.copy(WOOD092_NORMAL, dest)
+            normal_rel = str(dest.relative_to(REPO))
+        if WOOD092_ROUGH.is_file():
+            dest = tex_dir / f"{obj.name}_roughness.png"
+            shutil.copy(WOOD092_ROUGH, dest)
+            rough_rel = str(dest.relative_to(REPO))
     urp_mat = _ensure_material(obj, asset_id)
     _apply_baked_albedo(urp_mat, tex_path)
     obj.data.materials.clear()
@@ -599,6 +666,10 @@ def finish_baked_export(
         "preview": preview_rel,
         "previewHdri": str(PREVIEW_HDRI.relative_to(REPO)),
     }
+    if normal_rel:
+        manifest["textureNormal1024"] = normal_rel
+    if rough_rel:
+        manifest["textureRoughness1024"] = rough_rel
     if extra_manifest:
         manifest.update(extra_manifest)
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

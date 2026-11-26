@@ -102,9 +102,27 @@ def main() -> int:
         )
         return 1
 
-    for i, cl in enumerate(peripheral_clusters[:2]):
+    def _centroid_x(cl: list[tuple[float, float, float]]) -> float:
+        return sum(v[0] for v in cl) / len(cl)
+
+    # Kenney placement (prop_desk.py KENNEY_OFFSETS): keyboard ~u=0.38, monitor ~u=0.50.
+    exp_kx = desk_x0 + (desk_x1 - desk_x0) * 0.38
+    exp_mx = desk_x0 + (desk_x1 - desk_x0) * 0.50
+
+    def _dist_x(cl: list[tuple[float, float, float]], target: float) -> float:
+        return abs(_centroid_x(cl) - target)
+
+    keyboard_cl = min(peripheral_clusters, key=lambda c: _dist_x(c, exp_kx))
+    monitor_cl = min(peripheral_clusters, key=lambda c: _dist_x(c, exp_mx))
+    if keyboard_cl is monitor_cl:
+        monitor_cl = max(peripheral_clusters, key=len)
+        keyboard_cl = min(
+            (c for c in peripheral_clusters if c is not monitor_cl),
+            key=lambda c: _dist_x(c, exp_kx),
+        )
+
+    for label, cl in (("keyboard", keyboard_cl), ("monitor", monitor_cl)):
         mn, mx = _bbox(cl)
-        label = ("monitor", "keyboard", "mouse")[min(i, 2)]
         if abs(mn[1] - surface_y) > TOL:
             print(f"FAIL {label}: base Y gap {mn[1] - surface_y:.4f}m", file=sys.stderr)
             return 1

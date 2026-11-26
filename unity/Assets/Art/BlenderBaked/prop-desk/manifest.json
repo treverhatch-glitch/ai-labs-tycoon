@@ -1,7 +1,7 @@
 {
   "assetId": "prop-desk",
   "scope": "presentation",
-  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse)",
+  "sourceCc0": "docs/art/cc0/kenney-furniture-kit (desk, computerScreen, computerKeyboard, computerMouse); ambientCG Wood092",
   "pipeline": "cc0-restyle-v1",
   "texture1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
   "textureAo1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_ao.png",
@@ -10,6 +10,8 @@
   "fbx": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.fbx",
   "preview": "docs/art/previews/prop-desk.png",
   "previewHdri": "docs/art/cc0/polyhaven/hdr/studio_small_09_1k.hdr",
+  "textureNormal1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_normal.png",
+  "textureRoughness1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_roughness.png",
   "kenneyParts": [
     "desk.glb",
     "computerScreen.glb",
@@ -30,5 +32,6 @@
       0.55
     ]
   },
-  "restyle": "wood-grain-v2"
+  "cc0Wood": "docs/art/cc0/ambientcg/Wood092_1K-JPG",
+  "restyle": "wood-grain-v3"
 }
