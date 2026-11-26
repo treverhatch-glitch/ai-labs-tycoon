@@ -5,6 +5,10 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 ART_PREPUSH_UPSTREAM="${ART_PREPUSH_UPSTREAM:-origin/cursor/early-art-quality-pass-97cc}"
 export ART_PREPUSH_UPSTREAM
+# shellcheck source=tools/art/check_push_fastforward.sh
+source "$ROOT/tools/art/check_push_fastforward.sh"
+git fetch origin 2>/dev/null || true
+check_push_fastforward "$ART_PREPUSH_UPSTREAM"
 if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_garage_kit.py
   python3 tools/art/generate_early_staff.py

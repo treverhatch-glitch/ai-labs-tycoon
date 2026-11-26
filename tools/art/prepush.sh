@@ -2,6 +2,16 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
+# shellcheck source=tools/art/check_push_fastforward.sh
+source "$ROOT/tools/art/check_push_fastforward.sh"
+UPSTREAM_FF="${ART_PREPUSH_UPSTREAM:-}"
+if [[ -z "$UPSTREAM_FF" ]] && git rev-parse --verify '@{u}' >/dev/null 2>&1; then
+  UPSTREAM_FF=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')
+fi
+if [[ -n "$UPSTREAM_FF" ]]; then
+  git fetch origin 2>/dev/null || true
+  check_push_fastforward "$UPSTREAM_FF"
+fi
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
