@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scene assembly gates: 90° walls, ≥6 props inside 4×4 m floor."""
+"""Placement gates: grounded props, wall corner gap, 4×4 footprint."""
 from __future__ import annotations
 
 import json
@@ -9,17 +9,62 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 GATES = REPO / "docs/art/previews/garage-interior-room-kit-scene-gates.json"
+FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 ROOM = 4.0
 
 
-def _is_multiple_of_90(deg: float) -> bool:
-    d = deg % 360.0
-    if d > 180:
-        d -= 360
-    for target in (0.0, 90.0, -90.0, 180.0, -180.0, 270.0, -270.0):
-        if abs(d - target) < 0.6:
-            return True
-    return False
+def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
+    prefix = f"{label} " if label else ""
+    errs: list[str] = []
+    tol = float(data.get("groundToleranceM", 0.01))
+    wall_tol = float(data.get("wallMountToleranceM", 0.02))
+    corner_gap = float(data.get("wallCornerGapM", 99.0))
+    if corner_gap >= 0.01:
+        errs.append(f"FAIL: {prefix}wall corner gap {corner_gap * 100:.1f} cm >= 1 cm")
+
+    fb = data.get("floorBounds") or {}
+    min_x = float(fb.get("minX", 0))
+    max_x = float(fb.get("maxX", ROOM))
+    min_z = float(fb.get("minZ", 0))
+    max_z = float(fb.get("maxZ", ROOM))
+
+    props = data.get("propInstances") or []
+    grounded_ok = [p for p in props if p.get("grounded")]
+    floor_props = [p for p in props if p.get("objectName", "").startswith("prop_")]
+    if len(grounded_ok) < int(data.get("minPropCount", 6)):
+        errs.append(f"FAIL: {prefix}grounded instances {len(grounded_ok)} < 6")
+
+    for p in props:
+        name = p.get("objectName", "?")
+        gc = float(p.get("groundClearanceM", 99))
+        if name.startswith("prop_") and abs(gc) > tol:
+            errs.append(f"FAIL: {prefix}{name} ground clearance {gc * 100:.1f} cm > 1 cm")
+        if not p.get("insideFloorBounds", False):
+            errs.append(f"FAIL: {prefix}{name} outside 4×4 floor bounds")
+        x = float(p.get("x", -1))
+        z = float(p.get("z", -1))
+        if x < min_x - tol or x > max_x + tol or z < min_z - tol or z > max_z + tol:
+            errs.append(f"FAIL: {prefix}{name} center outside footprint")
+
+        if name == "kit_window" and float(p.get("distToLeftWallM", 9)) > wall_tol:
+            errs.append(f"FAIL: {prefix}{name} not flush to left wall")
+        if name == "prop_whiteboard" and float(p.get("distToBackWallM", 9)) > wall_tol * 2.5:
+            errs.append(f"FAIL: {prefix}{name} not flush to back wall")
+        if name == "kit_roll_door" and float(p.get("distToBackWallM", 9)) > wall_tol * 2:
+            errs.append(f"FAIL: {prefix}{name} not in back wall opening")
+        if name == "kit_roll_door" and float(p.get("groundClearanceM", 9)) > tol:
+            errs.append(f"FAIL: {prefix}{name} not on slab")
+
+    for name, rot in (data.get("wallRotationsDeg") or {}).items():
+        if isinstance(rot, dict):
+            yd = float(rot.get("yDeg", 0))
+            zd = float(rot.get("zDeg", 0))
+            for deg, axis in ((yd, "Y"), (zd, "Z")):
+                d = deg % 90
+                if abs(d) > 0.6 and abs(d - 90) > 0.6:
+                    errs.append(f"FAIL: {prefix}wall {name} {axis}={deg}° not 90° multiple")
+
+    return errs
 
 
 def main() -> int:
@@ -27,40 +72,16 @@ def main() -> int:
         print("FAIL: missing scene gate metadata", GATES)
         return 1
     data = json.loads(GATES.read_text(encoding="utf-8"))
-    errs: list[str] = []
-
-    fb = data.get("floorBounds") or {}
-    min_x = float(fb.get("minX", 0))
-    max_x = float(fb.get("maxX", ROOM))
-    min_z = float(fb.get("minZ", fb.get("minY", 0)))
-    max_z = float(fb.get("maxZ", fb.get("maxY", ROOM)))
-
-    for name, rot in (data.get("wallRotationsDeg") or {}).items():
-        if isinstance(rot, dict):
-            for axis, label in (("yDeg", "Y"), ("zDeg", "Z")):
-                deg = float(rot.get(axis, 0))
-                if not _is_multiple_of_90(deg):
-                    errs.append(f"FAIL: wall {name} rotation {label}={deg}° not multiple of 90°")
-        else:
-            if not _is_multiple_of_90(float(rot)):
-                errs.append(f"FAIL: wall {name} rotation {rot}° not multiple of 90°")
-
-    props = data.get("propInstances") or []
-    inside = [p for p in props if p.get("insideFloorBounds")]
-    if len(inside) < int(data.get("minPropCount", 6)):
-        errs.append(f"FAIL: props inside floor {len(inside)} < 6")
-    for p in props:
-        x = float(p.get("x", -1))
-        z = float(p.get("z", p.get("y", -1)))
-        if x < min_x or x > max_x or z < min_z or z > max_z:
-            if p.get("insideFloorBounds"):
-                errs.append(f"FAIL: prop {p.get('objectName')} marked inside but outside bounds")
-
+    errs = placement_gate_errs(data)
+    if FIXTURE_4E.is_file():
+        bad = json.loads(FIXTURE_4E.read_text(encoding="utf-8"))
+        if not placement_gate_errs(bad, label="fixture-4e22d8dd"):
+            errs.append("FAIL: fixture 4e22d8dd placement gates must fail")
     if errs:
         for e in errs:
             print(e)
         return 1
-    print(f"OK: CC0 garage scene gates ({len(inside)} props in floor)")
+    print("OK: CC0 garage placement gates")
     return 0
 
 

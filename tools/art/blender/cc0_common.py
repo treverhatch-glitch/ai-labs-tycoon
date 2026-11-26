@@ -86,6 +86,50 @@ def add_metric_box(
     return ob
 
 
+def world_bbox(ob: bpy.types.Object) -> tuple[Vector, Vector]:
+    mins = Vector((1e9, 1e9, 1e9))
+    maxs = Vector((-1e9, -1e9, -1e9))
+    for corner in ob.bound_box:
+        w = ob.matrix_world @ Vector(corner)
+        mins.x = min(mins.x, w.x)
+        mins.y = min(mins.y, w.y)
+        mins.z = min(mins.z, w.z)
+        maxs.x = max(maxs.x, w.x)
+        maxs.y = max(maxs.y, w.y)
+        maxs.z = max(maxs.z, w.z)
+    return mins, maxs
+
+
+def snap_to_floor(ob: bpy.types.Object, floor_top: float = 0.0) -> float:
+    bpy.context.view_layer.update()
+    mins, _ = world_bbox(ob)
+    delta = floor_top - mins.y
+    ob.location.y += delta
+    return delta
+
+
+def weld_mesh(ob: bpy.types.Object, threshold: float = 0.0008) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=threshold)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def join_welded(
+    objects: list[bpy.types.Object],
+    name: str,
+    role: str | None = None,
+) -> bpy.types.Object:
+    ob = merge_mesh_objects(objects, name)
+    weld_mesh(ob)
+    if role:
+        apply_palette_material(ob, role)
+    return ob
+
+
 def merge_mesh_objects(objects: list[bpy.types.Object], name: str) -> bpy.types.Object:
     if not objects:
         raise RuntimeError(f"no meshes for {name}")
@@ -329,15 +373,28 @@ def render_kit_preview(
         span = frame_span
 
     room = span if span <= 5.5 else 4.0
-    target = Vector((room * 0.56, 1.05, room * 0.56))
+    floor_h = 0.05
+    target = Vector((room * 0.48, floor_h + 1.05, room * 0.48))
     lights = add_preview_warm_lights(target)
 
-    lens = 38.0 if mode == "hero" else 46.0
-    pitch = math.radians(28.0 if mode == "hero" else 24.0)
-    dist = room * (0.68 if mode == "hero" else 0.82)
-    elev = dist * math.sin(pitch)
+    lens = 40.0
+    pitch = math.radians(35.0)
+    dist = max(_camera_distance_for_fill(room + 0.4, lens, fill, margin) * 0.62, room * 0.48)
     horiz = dist * math.cos(pitch)
-    cam_loc = Vector((room + horiz * 0.68, 1.12 + elev * 0.92, room + horiz * 0.68))
+    elev = dist * math.sin(pitch)
+    cam_loc = Vector((room + horiz * 0.58, target.y + elev * 0.55, room + horiz * 0.58))
+
+    bpy.ops.mesh.primitive_plane_add(size=room * 1.05, location=(room / 2, -0.002, room / 2))
+    shadow = bpy.context.active_object
+    shadow.name = "preview_shadow_catcher"
+    smat = bpy.data.materials.new("shadow_grey")
+    smat.use_nodes = True
+    sg = smat.node_tree.nodes.get("Principled BSDF")
+    sg.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
+    sg.inputs["Roughness"].default_value = 0.96
+    shadow.data.materials.append(smat)
+    shadow.is_shadow_catcher = True
+    bpy.context.scene.cycles.use_shadow_catcher = True
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.data.lens = lens
@@ -352,6 +409,8 @@ def render_kit_preview(
     bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
 
+    if bpy.data.objects.get("preview_shadow_catcher"):
+        bpy.data.objects.remove(bpy.data.objects["preview_shadow_catcher"], do_unlink=True)
     for ob in lights:
         bpy.data.objects.remove(ob, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)

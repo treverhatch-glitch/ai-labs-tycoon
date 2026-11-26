@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hero: 4×4 m cut-away garage (solid meshes + garage-kit props)."""
+"""Hero: welded 4×4 m cut-away garage + grounded garage-kit props."""
 from __future__ import annotations
 
 import json
@@ -16,15 +16,18 @@ from mathutils import Vector  # noqa: E402
 ASSET_ID = "garage-interior-room-kit"
 CATEGORY = "cc0-garage-kit"
 ROOM = 4.0
-WALL_H = 2.2
+FLOOR_T = 0.05
+WALL_H = 2.7
 WALL_T = 0.1
+FLOOR_TOP = FLOOR_T
+GROUND_EPS = 0.01
+WALL_MOUNT_EPS = 0.02
+
 
 KIT_ROLES: dict[str, str] = {
     "kit_floor": "floor",
     "kit_wall_back": "wall",
     "kit_wall_left": "wall",
-    "kit_trim_back": "trim",
-    "kit_trim_left": "trim",
     "kit_roll_door": "metal",
     "kit_window": "glass",
     "prop_desk_crt": "wood",
@@ -35,6 +38,8 @@ KIT_ROLES: dict[str, str] = {
     "prop_cable_spool": "wood",
     "prop_coffee_drip": "prop",
 }
+
+WALL_MOUNTED = {"kit_window"}
 
 
 def garage(name: str) -> Path:
@@ -51,6 +56,7 @@ def place_prop(
     *,
     rot_y_deg: float = 0,
     rot_z_deg: float = 0,
+    scale: float = 1.0,
 ) -> bpy.types.Object:
     meshes = cc0.import_gltf(garage(asset_id), obj_name)
     ob = cc0.merge_mesh_objects(meshes, obj_name)
@@ -59,49 +65,71 @@ def place_prop(
         ob.rotation_euler[1] = math.radians(rot_y_deg)
     if rot_z_deg:
         ob.rotation_euler[2] = math.radians(rot_z_deg)
+    if scale != 1.0:
+        ob.scale = (scale, scale, scale)
     return ob
 
 
-def build_solid_shell() -> dict[str, bpy.types.Object]:
-    """Continuous floor + two fixed walls; open toward +X,+Z (camera side)."""
+def build_welded_room() -> dict[str, bpy.types.Object]:
+    """Single concrete slab; back/left walls welded on slab (open +X,+Z)."""
     floor = cc0.add_metric_box(
         "kit_floor",
-        (ROOM, 0.045, ROOM),
-        (ROOM / 2, 0.0225, ROOM / 2),
+        (ROOM, FLOOR_T, ROOM),
+        (ROOM / 2, FLOOR_T / 2, ROOM / 2),
         "floor",
     )
-    wall_back = cc0.add_metric_box(
-        "kit_wall_back",
-        (ROOM, WALL_H, WALL_T),
-        (ROOM / 2, WALL_H / 2, WALL_T / 2),
-        "wall",
+    y0 = FLOOR_TOP
+    wall_h = WALL_H
+    back_core = cc0.add_metric_box(
+        "wall_back_core",
+        (ROOM, wall_h, WALL_T),
+        (ROOM / 2, y0 + wall_h / 2, WALL_T / 2),
+        None,
     )
-    wall_left = cc0.add_metric_box(
-        "kit_wall_left",
-        (WALL_T, WALL_H, ROOM),
-        (WALL_T / 2, WALL_H / 2, ROOM / 2),
-        "wall",
+    back_trim = cc0.add_metric_box(
+        "wall_back_trim",
+        (ROOM, 0.14, 0.08),
+        (ROOM / 2, y0 + 0.07, 0.09),
+        None,
     )
-    trim_back = cc0.add_metric_box(
-        "kit_trim_back",
-        (ROOM, 0.14, 0.12),
-        (ROOM / 2, 0.07, 0.10),
-        "trim",
+    left_core = cc0.add_metric_box(
+        "wall_left_core",
+        (WALL_T, wall_h, ROOM),
+        (WALL_T / 2, y0 + wall_h / 2, ROOM / 2),
+        None,
     )
-    trim_left = cc0.add_metric_box(
-        "kit_trim_left",
-        (0.12, 0.14, ROOM),
-        (0.10, 0.07, ROOM / 2),
-        "trim",
+    left_trim = cc0.add_metric_box(
+        "wall_left_trim",
+        (0.08, 0.14, ROOM),
+        (0.09, y0 + 0.07, ROOM / 2),
+        None,
     )
-    roll = place_prop("garage-roll-door", "kit_roll_door", (ROOM / 2, 0.0, 0.16))
-    window = place_prop("garage-window-frame", "kit_window", (0.14, 1.05, ROOM * 0.55), rot_y_deg=90)
+    corner_back = cc0.add_metric_box(
+        "corner_back",
+        (WALL_T, wall_h, WALL_T),
+        (WALL_T / 2, y0 + wall_h / 2, WALL_T / 2),
+        None,
+    )
+    corner_left = cc0.add_metric_box(
+        "corner_left",
+        (WALL_T, wall_h, WALL_T),
+        (WALL_T / 2, y0 + wall_h / 2, WALL_T / 2),
+        None,
+    )
+    kit_wall_back = cc0.join_welded([back_core, back_trim, corner_back], "kit_wall_back", "wall")
+    kit_wall_left = cc0.join_welded([left_core, left_trim, corner_left], "kit_wall_left", "wall")
+
+    roll = place_prop("garage-roll-door", "kit_roll_door", (ROOM / 2, y0 + 1.1, WALL_T + 0.02))
+    window = place_prop(
+        "garage-window-frame",
+        "kit_window",
+        (WALL_T + 0.06, y0 + 1.12, ROOM * 0.52),
+        rot_y_deg=90,
+    )
     return {
         "kit_floor": floor,
-        "kit_wall_back": wall_back,
-        "kit_wall_left": wall_left,
-        "kit_trim_back": trim_back,
-        "kit_trim_left": trim_left,
+        "kit_wall_back": kit_wall_back,
+        "kit_wall_left": kit_wall_left,
         "kit_roll_door": roll,
         "kit_window": window,
     }
@@ -109,14 +137,104 @@ def build_solid_shell() -> dict[str, bpy.types.Object]:
 
 def prop_positions() -> list[tuple[str, str, tuple[float, float, float], float, float]]:
     return [
-        ("prop_desk_crt", "garage-desk-crt", (2.75, 0.0, 2.95), 0.0, -8.0),
-        ("prop_folding_chair", "garage-folding-chair", (2.35, 0.0, 2.55), 0.0, 12.0),
-        ("prop_crt_tower", "garage-crt-tower", (3.05, 0.0, 1.45), 0.0, 0.0),
-        ("prop_server_closet", "garage-server-closet", (1.15, 0.0, 3.05), 0.0, 90.0),
-        ("prop_whiteboard", "garage-whiteboard-1995", (2.1, 0.0, 0.35), 0.0, 0.0),
-        ("prop_cable_spool", "garage-cable-spool", (1.05, 0.0, 1.75), 0.0, 0.0),
-        ("prop_coffee_drip", "garage-coffee-drip", (3.25, 0.0, 1.05), 0.0, -18.0),
+        ("prop_desk_crt", "garage-desk-crt", (2.65, 0.0, 2.85), 0.0, -12.0),
+        ("prop_folding_chair", "garage-folding-chair", (2.25, 0.0, 2.45), 0.0, 18.0),
+        ("prop_crt_tower", "garage-crt-tower", (3.05, 0.0, 1.65), 0.0, 0.0),
+        ("prop_server_closet", "garage-server-closet", (3.25, 0.0, 3.05), 0.0, 90.0),
+        ("prop_whiteboard", "garage-whiteboard-1995", (2.0, 0.0, 0.42), 0.0, 0.0),
+        ("prop_cable_spool", "garage-cable-spool", (1.2, 0.0, 1.85), 0.0, 0.0),
+        ("prop_coffee_drip", "garage-coffee-drip", (1.05, 0.0, 1.05), 0.0, 0.0),
     ]
+
+
+def flush_to_wall(ob: bpy.types.Object, *, axis: str, pos: float) -> None:
+    bpy.context.view_layer.update()
+    mins, _ = cc0.world_bbox(ob)
+    if axis == "z":
+        ob.location.z += pos - mins.z
+    elif axis == "x":
+        ob.location.x += pos - mins.x
+
+
+def mount_wall_items(kit_objects: dict[str, bpy.types.Object]) -> None:
+    wb = kit_objects["prop_whiteboard"]
+    cc0.snap_to_floor(wb, FLOOR_TOP)
+    flush_to_wall(wb, axis="z", pos=0.03)
+
+    door = kit_objects["kit_roll_door"]
+    flush_to_wall(door, axis="z", pos=0.03)
+    mins, _ = cc0.world_bbox(door)
+    door.location.y += FLOOR_TOP - mins.y
+
+    flush_to_wall(kit_objects["kit_window"], axis="x", pos=WALL_T + 0.02)
+
+
+def finalize_props(kit_objects: dict[str, bpy.types.Object], prop_keys: list[str]) -> None:
+    for key in prop_keys:
+        if key in WALL_MOUNTED:
+            continue
+        cc0.snap_to_floor(kit_objects[key], FLOOR_TOP)
+
+
+def object_placement_meta(ob: bpy.types.Object, key: str) -> dict:
+    mins, maxs = cc0.world_bbox(ob)
+    cx = (mins.x + maxs.x) * 0.5
+    cz = (mins.z + maxs.z) * 0.5
+    ground_clear = mins.y - FLOOR_TOP
+    dist_back = mins.z
+    dist_left = mins.x
+    inside = (
+        mins.x >= -WALL_T
+        and maxs.x <= ROOM + GROUND_EPS
+        and mins.z >= -GROUND_EPS
+        and maxs.z <= ROOM + GROUND_EPS
+    )
+    if key == "kit_window":
+        grounded = dist_left <= WALL_MOUNT_EPS and mins.x <= ROOM + GROUND_EPS
+    elif key == "kit_roll_door":
+        grounded = abs(ground_clear) <= GROUND_EPS and dist_back <= 0.06
+    else:
+        grounded = abs(ground_clear) <= GROUND_EPS
+    return {
+        "objectName": key,
+        "x": round(cx, 4),
+        "z": round(cz, 4),
+        "minY": round(mins.y, 4),
+        "groundClearanceM": round(ground_clear, 4),
+        "distToBackWallM": round(dist_back, 4),
+        "distToLeftWallM": round(dist_left, 4),
+        "grounded": grounded,
+        "insideFloorBounds": inside,
+        "rotationYDeg": round(math.degrees(ob.rotation_euler.y), 2),
+        "rotationZDeg": round(math.degrees(ob.rotation_euler.z), 2),
+    }
+
+
+def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Path) -> None:
+    prop_keys = [k for k in kit_objects if k.startswith("prop_")]
+    prop_meta = [object_placement_meta(kit_objects[k], k) for k in prop_keys]
+    for kit_key in ("kit_roll_door", "kit_window"):
+        prop_meta.append(object_placement_meta(kit_objects[kit_key], kit_key))
+    wall_rots = {
+        name: {
+            "yDeg": round(math.degrees(kit_objects[name].rotation_euler.y)),
+            "zDeg": round(math.degrees(kit_objects[name].rotation_euler.z)),
+        }
+        for name in ("kit_wall_back", "kit_wall_left")
+    }
+    payload = {
+        "assetId": ASSET_ID,
+        "floorTopY": FLOOR_TOP,
+        "floorBounds": {"minX": 0.0, "maxX": ROOM, "minZ": 0.0, "maxZ": ROOM},
+        "wallCornerGapM": 0.0,
+        "wallRotationsDeg": wall_rots,
+        "propInstances": prop_meta,
+        "minPropCount": 6,
+        "groundToleranceM": GROUND_EPS,
+        "wallMountToleranceM": WALL_MOUNT_EPS,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
@@ -124,63 +242,22 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         cc0.apply_palette_material(ob, KIT_ROLES.get(key, "prop"))
 
 
-def write_scene_gate_metadata(
-    kit_objects: dict[str, bpy.types.Object],
-    prop_meta: list[dict],
-    path: Path,
-) -> None:
-    walls = {k: kit_objects[k] for k in ("kit_wall_back", "kit_wall_left")}
-    wall_rots = {}
-    for name, ob in walls.items():
-        wall_rots[name] = {
-            "yDeg": round(math.degrees(ob.rotation_euler.y)),
-            "zDeg": round(math.degrees(ob.rotation_euler.z)),
-        }
-    payload = {
-        "assetId": ASSET_ID,
-        "floorBounds": {"minX": 0.0, "maxX": ROOM, "minZ": 0.0, "maxZ": ROOM},
-        "wallRotationsDeg": wall_rots,
-        "propInstances": prop_meta,
-        "minPropCount": 6,
-    }
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-
-
-def collect_prop_meta(kit_objects: dict[str, bpy.types.Object], prop_keys: list[str]) -> list[dict]:
-    out: list[dict] = []
-    for key in prop_keys:
-        ob = kit_objects[key]
-        cx, cz = ob.location.x, ob.location.z
-        inside = 0.0 <= cx <= ROOM and 0.0 <= cz <= ROOM
-        out.append(
-            {
-                "objectName": key,
-                "x": round(cx, 4),
-                "z": round(cz, 4),
-                "rotationYDeg": round(math.degrees(ob.rotation_euler.y), 2),
-                "rotationZDeg": round(math.degrees(ob.rotation_euler.z), 2),
-                "insideFloorBounds": inside,
-            }
-        )
-    return out
-
-
 def main() -> dict:
     cc0.reset_scene()
 
-    kit_objects = build_solid_shell()
+    kit_objects = build_welded_room()
     prop_specs = prop_positions()
+    prop_keys = [k for k, *_ in prop_specs]
     for key, asset_id, loc, rot_z, rot_y in prop_specs:
-        kit_objects[key] = place_prop(asset_id, key, loc, rot_z_deg=rot_z, rot_y_deg=rot_y)
+        kit_objects[key] = place_prop(asset_id, key, (loc[0], FLOOR_TOP, loc[2]), rot_z_deg=rot_z, rot_y_deg=rot_y)
 
+    finalize_props(kit_objects, prop_keys)
+    mount_wall_items(kit_objects)
     apply_kit_materials(kit_objects)
 
     export_list = list(kit_objects.values())
-    prop_keys = [k for k, *_ in prop_specs]
-    prop_meta = collect_prop_meta(kit_objects, prop_keys)
     gate_path = cc0.PREVIEW_ROOT / f"{ASSET_ID}-scene-gates.json"
-    write_scene_gate_metadata(kit_objects, prop_meta, gate_path)
+    write_scene_gate_metadata(kit_objects, gate_path)
 
     import os
 
@@ -196,24 +273,13 @@ def main() -> dict:
         glb_path = out_dir / f"{ASSET_ID}.glb"
         cc0.export_gltf_collection(export_list, glb_path)
 
-    frame_kit = [kit_objects[k] for k in kit_objects if k.startswith("kit_")]
     preview_path = cc0.PREVIEW_ROOT / f"{ASSET_ID}.png"
-    scene_preview = cc0.PREVIEW_ROOT / f"{ASSET_ID}-scene.png"
+    frame_kit = [kit_objects[k] for k in kit_objects if k.startswith("kit_")]
     cc0.render_kit_preview(
         export_list,
         preview_path,
         resolution=768,
         mode="hero",
-        fill=0.70,
-        margin=0.05,
-        frame_objects=frame_kit,
-        frame_span=ROOM,
-    )
-    cc0.render_kit_preview(
-        export_list,
-        scene_preview,
-        resolution=1024,
-        mode="scene",
         fill=0.70,
         margin=0.05,
         frame_objects=frame_kit,
@@ -231,7 +297,6 @@ def main() -> dict:
         "hero": True,
         "path": f"Assets/Art/EarlyGame/{CATEGORY}/{ASSET_ID}.glb",
         "preview": f"docs/art/previews/{ASSET_ID}.png",
-        "scenePreview": f"docs/art/previews/{ASSET_ID}-scene.png",
         "sceneGates": f"docs/art/previews/{ASSET_ID}-scene-gates.json",
         "textures": {
             part: {

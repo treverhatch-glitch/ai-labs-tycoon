@@ -2,15 +2,17 @@
 """Preview gates: corners, exposure, saturation, grey bleed, prop materials."""
 from __future__ import annotations
 
+import json
 import sys
 from collections import Counter
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 HERO = REPO / "docs/art/previews/garage-interior-room-kit.png"
-SCENE = REPO / "docs/art/previews/garage-interior-room-kit-scene.png"
 FIXTURE_620 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-620a0e37.png"
 FIXTURE_C78 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-c78b9371.png"
+FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-4e22d8dd.png"
+FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 CORNER_RGB = (150, 150, 150)
 CORNER_INSET = 3
 BLOWN_LUMA = 255 * 0.95
@@ -205,27 +207,23 @@ def check_image(path: Path) -> list[str]:
     return errs
 
 
-def previews_differ() -> list[str]:
-    try:
-        from PIL import Image
-    except ImportError:
-        return []
-    if not HERO.is_file() or not SCENE.is_file():
-        return ["FAIL: missing hero or scene preview"]
-    a = Image.open(HERO).convert("RGB").resize((64, 64))
-    b = Image.open(SCENE).convert("RGB").resize((64, 64))
-    diff = sum(abs(luma(pa) - luma(pb)) for pa, pb in zip(a.getdata(), b.getdata())) / (64 * 64)
-    if diff < 4.0:
-        return [f"FAIL: hero and scene previews too similar (mean luma diff {diff:.1f})"]
-    return []
-
-
 def verify_regression_fixtures_fail() -> list[str]:
     try:
         from PIL import Image
     except ImportError:
         return ["FAIL: Pillow required for fixture regression"]
     errs: list[str] = []
+    scene_gate_mod = Path(__file__).resolve().parent / "check_cc0_garage_scene.py"
+    if scene_gate_mod.is_file():
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("check_cc0_garage_scene", scene_gate_mod)
+        assert spec and spec.loader
+        sg = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sg)
+        placement_gate_errs = sg.placement_gate_errs
+    else:
+        placement_gate_errs = None
     for label, path in (("620a0e37", FIXTURE_620), ("c78b9371", FIXTURE_C78)):
         if not path.is_file():
             errs.append(f"FAIL: missing regression fixture {path}")
@@ -234,18 +232,27 @@ def verify_regression_fixtures_fail() -> list[str]:
         q = quality_gates(im, path.name)
         if not q:
             errs.append(f"FAIL: fixture {label} must fail quality gates")
+    if not FIXTURE_4E.is_file():
+        errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
+    elif not FIXTURE_4E_GATES.is_file():
+        errs.append(f"FAIL: missing placement fixture {FIXTURE_4E_GATES}")
+    else:
+        if placement_gate_errs is None:
+            errs.append("FAIL: cannot load placement_gate_errs for fixture 4e22d8dd")
+        else:
+            bad = json.loads(FIXTURE_4E_GATES.read_text(encoding="utf-8"))
+            if not placement_gate_errs(bad, label="4e22d8dd"):
+                errs.append("FAIL: fixture 4e22d8dd must fail placement gate (a)")
     return errs
 
 
 def main() -> int:
     all_errs: list[str] = []
     all_errs.extend(verify_regression_fixtures_fail())
-    for path in (HERO, SCENE):
-        if not path.is_file():
-            all_errs.append(f"FAIL: missing {path}")
-            continue
-        all_errs.extend(check_image(path))
-    all_errs.extend(previews_differ())
+    if not HERO.is_file():
+        all_errs.append(f"FAIL: missing {HERO}")
+    else:
+        all_errs.extend(check_image(HERO))
     if all_errs:
         for e in all_errs:
             print(e)
