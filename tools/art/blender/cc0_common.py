@@ -84,8 +84,8 @@ def load_image(path: Path) -> bpy.types.Image | None:
     return bpy.data.images.load(str(path), check_existing=True)
 
 
-def apply_kenney_material(ob: bpy.types.Object, role: str) -> None:
-    """Kenney colormap + role tint so GLB exports with bound albedo (no magenta)."""
+def apply_palette_material(ob: bpy.types.Object, role: str) -> None:
+    """Solid role tints (+ optional concrete floor) so exports are readable, not palette noise."""
     tint = PALETTE.get(role, PALETTE["prop"])
     mat = bpy.data.materials.new(name=f"m_{ob.name}_{role}")
     mat.use_nodes = True
@@ -94,18 +94,28 @@ def apply_kenney_material(ob: bpy.types.Object, role: str) -> None:
     nodes.clear()
     out = nodes.new("ShaderNodeOutputMaterial")
     bsdf = nodes.new("ShaderNodeBsdfPrincipled")
-    tex = nodes.new("ShaderNodeTexImage")
-    tex.image = load_image(COLORMAP)
-    mix = nodes.new("ShaderNodeMixRGB")
-    mix.blend_type = "MULTIPLY"
-    mix.inputs["Fac"].default_value = 0.65
-    mix.inputs["Color2"].default_value = tint
-    links.new(tex.outputs["Color"], mix.inputs["Color1"])
-    links.new(mix.outputs["Color"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = 0.58 if role != "glass" else 0.12
+    concrete = INCOMING / "ambientcg-Concrete015/Concrete015_2K-JPG_Color.jpg"
+    if role == "floor" and concrete.is_file():
+        tex = nodes.new("ShaderNodeTexImage")
+        tex.image = load_image(concrete)
+        mapping = nodes.new("ShaderNodeMapping")
+        mapping.inputs["Scale"].default_value = (2.5, 2.5, 2.5)
+        coord = nodes.new("ShaderNodeTexCoord")
+        links.new(coord.outputs["Object"], mapping.inputs["Vector"])
+        links.new(mapping.outputs["Vector"], tex.inputs["Vector"])
+        links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+        bsdf.inputs["Roughness"].default_value = 0.82
+    else:
+        bsdf.inputs["Base Color"].default_value = tint
+        bsdf.inputs["Roughness"].default_value = 0.62 if role not in ("metal", "glass") else 0.38
+    if role == "metal":
+        bsdf.inputs["Metallic"].default_value = 0.55
     if role == "glass":
+        bsdf.inputs["Roughness"].default_value = 0.08
         if "Transmission Weight" in bsdf.inputs:
-            bsdf.inputs["Transmission Weight"].default_value = 0.25
+            bsdf.inputs["Transmission Weight"].default_value = 0.35
+        elif "Transmission" in bsdf.inputs:
+            bsdf.inputs["Transmission"].default_value = 0.35
     links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -154,7 +164,7 @@ def export_gltf_collection(objects: list[bpy.types.Object], path: Path) -> None:
     )
 
 
-def setup_hdri_world(strength: float = 1.35) -> None:
+def setup_hdri_world(strength: float = 0.95) -> None:
     world = bpy.data.worlds.new("cc0_preview_world")
     bpy.context.scene.world = world
     world.use_nodes = True
@@ -196,35 +206,69 @@ def _bounds_center(objects: list[bpy.types.Object]) -> tuple[Vector, float]:
     return center, span
 
 
-def render_kit_preview(objects: list[bpy.types.Object], path: Path, resolution: int = 768) -> None:
-    """HDRI-only light, grey ~150 backdrop, cut-away corner framing ~70% fill."""
+def _camera_distance_for_fill(span: float, lens_mm: float, fill: float, margin: float) -> float:
+    """Perspective distance so subject span fills ~fill of frame with ~margin border."""
+    sensor = 36.0
+    fov = 2.0 * math.atan(sensor / (2.0 * lens_mm))
+    effective_fill = max(0.45, min(0.85, fill * (1.0 - 2.0 * margin)))
+    half = max(span * 0.48, 0.75)
+    return half / (math.tan(fov * 0.5) * effective_fill)
+
+
+def render_kit_preview(
+    objects: list[bpy.types.Object],
+    path: Path,
+    *,
+    resolution: int = 768,
+    mode: str = "scene",
+    fill: float = 0.70,
+    margin: float = 0.05,
+    frame_span: float | None = None,
+) -> None:
+    """HDRI-only light, grey ~150 backdrop, cut-away corner, ~70% subject fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
-    setup_hdri_world(strength=1.35)
+    setup_hdri_world(strength=0.95)
     bpy.context.scene.render.engine = "CYCLES"
-    bpy.context.scene.cycles.samples = min(96, 128)
+    bpy.context.scene.cycles.samples = 80 if mode == "hero" else 96
     bpy.context.scene.cycles.use_denoising = False
     if hasattr(bpy.context.scene, "cycles"):
-        bpy.context.scene.cycles.film_exposure = 1.05
-    if hasattr(bpy.context.scene.view_settings, "exposure"):
-        bpy.context.scene.view_settings.exposure = 0.0
+        bpy.context.scene.cycles.film_exposure = 1.08
+    bpy.context.scene.view_settings.view_transform = "Standard"
+    bpy.context.scene.view_settings.exposure = 0.0
 
-    center, span = _bounds_center(objects)
+    center, span3 = _bounds_center(objects)
+    mins = Vector((1e9, 1e9, 1e9))
+    maxs = Vector((-1e9, -1e9, -1e9))
+    for ob in objects:
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            mins.x = min(mins.x, w.x)
+            mins.y = min(mins.y, w.y)
+            mins.z = min(mins.z, w.z)
+            maxs.x = max(maxs.x, w.x)
+            maxs.y = max(maxs.y, w.y)
+            maxs.z = max(maxs.z, w.z)
+    span_xy = max(maxs.x - mins.x, maxs.y - mins.y, 0.1)
+    span_z = max(maxs.z - mins.z, 0.1)
+    span = max(span_xy * 0.78, 3.2)
+    if frame_span is not None:
+        span = frame_span
 
-    # Mid-grey ground + backdrop (not emissive; HDRI provides light)
-    bpy.ops.mesh.primitive_plane_add(size=span * 2.8, location=(center.x, center.y, 0.0))
+    bpy.ops.mesh.primitive_plane_add(size=max(span * 5.0, 8.0), location=(center.x + span * 0.15, center.y + span * 0.15, -0.02))
     ground = bpy.context.active_object
     ground.name = "preview_ground"
     gmat = bpy.data.materials.new("ground_grey150")
     gmat.use_nodes = True
     gbsdf = gmat.node_tree.nodes.get("Principled BSDF")
     gbsdf.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-    gbsdf.inputs["Roughness"].default_value = 0.88
+    gbsdf.inputs["Roughness"].default_value = 0.92
     ground.data.materials.append(gmat)
 
+    # Cyclorama behind closed walls (-X / -Y), not blocking the open corner camera
     bpy.ops.mesh.primitive_plane_add(
-        size=span * 3.2,
-        location=(center.x + span, center.y + span, center.z),
-        rotation=(math.radians(90), 0, math.radians(45)),
+        size=max(span * 4.5, 7.0),
+        location=(center.x - span * 0.55, center.y - span * 0.55, center.z + span * 0.45),
+        rotation=(math.radians(90), 0, 0),
     )
     backdrop = bpy.context.active_object
     backdrop.name = "preview_backdrop"
@@ -232,17 +276,25 @@ def render_kit_preview(objects: list[bpy.types.Object], path: Path, resolution: 
     bmat.use_nodes = True
     bbsdf = bmat.node_tree.nodes.get("Principled BSDF")
     bbsdf.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-    bbsdf.inputs["Roughness"].default_value = 0.95
+    bbsdf.inputs["Roughness"].default_value = 0.98
     backdrop.data.materials.append(bmat)
 
-    # Camera outside open corner (+X, +Y, +Z) — not inside closed mesh
-    dist = span * 2.15
-    cam_loc = Vector((center.x + dist * 0.72, center.y + dist * 0.72, center.z + dist * 0.42))
-    target = Vector((center.x, center.y, center.z + span * 0.25))
+    lens = 34.0 if mode == "hero" else 44.0
+    dist = max(span * (1.48 if mode == "hero" else 1.58), 5.6)
+    target = center + Vector(
+        (
+            span * (0.05 if mode == "scene" else 0.03),
+            span * (0.04 if mode == "scene" else 0.03),
+            span * (0.22 if mode == "hero" else 0.18),
+        )
+    )
+    # Camera outside open corner (+X, +Y) — 3/4 view
+    cam_loc = target + Vector((dist * 0.92, dist * 0.92, dist * (0.62 if mode == "scene" else 0.52)))
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
+    cam.data.lens = lens
+    cam.data.clip_end = dist * 6.0
     direction = target - cam.location
-    cam.data.lens = 40
     cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
     bpy.context.scene.camera = cam
 
@@ -253,7 +305,8 @@ def render_kit_preview(objects: list[bpy.types.Object], path: Path, resolution: 
     bpy.ops.render.render(write_still=True)
 
     bpy.data.objects.remove(ground, do_unlink=True)
-    bpy.data.objects.remove(backdrop, do_unlink=True)
+    if bpy.data.objects.get("preview_backdrop"):
+        bpy.data.objects.remove(bpy.data.objects["preview_backdrop"], do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)
 
 

@@ -74,7 +74,7 @@
         "prop_cables",
         "prop_whiteboard"
       ],
-      "triangleCount": 5613,
+      "triangleCount": 1812,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-interior-room-kit.py",
       "parts": [
