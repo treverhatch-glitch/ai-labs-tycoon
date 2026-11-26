@@ -1,0 +1,78 @@
+{
+  "assetId": "garage-interior-room-kit",
+  "floorBounds": {
+    "minX": 0.0,
+    "maxX": 4.0,
+    "minZ": 0.0,
+    "maxZ": 4.0
+  },
+  "wallRotationsDeg": {
+    "kit_wall_back": {
+      "yDeg": 0,
+      "zDeg": 0
+    },
+    "kit_wall_left": {
+      "yDeg": 90,
+      "zDeg": 0
+    }
+  },
+  "propInstances": [
+    {
+      "objectName": "prop_desk_crt",
+      "x": 2.9259,
+      "z": 3.1235,
+      "rotationYDeg": 0.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_folding_chair",
+      "x": 2.5309,
+      "z": 2.7284,
+      "rotationYDeg": 0.0,
+      "rotationZDeg": 15.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_crt_tower",
+      "x": 3.2222,
+      "z": 1.4444,
+      "rotationYDeg": 0.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_server_closet",
+      "x": 1.1481,
+      "z": 3.2222,
+      "rotationYDeg": 90.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_whiteboard",
+      "x": 2.0864,
+      "z": 0.3284,
+      "rotationYDeg": 0.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_cable_spool",
+      "x": 1.0494,
+      "z": 1.7407,
+      "rotationYDeg": 0.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    },
+    {
+      "objectName": "prop_coffee_drip",
+      "x": 3.4198,
+      "z": 1.0494,
+      "rotationYDeg": -12.0,
+      "rotationZDeg": 0.0,
+      "insideFloorBounds": true
+    }
+  ],
+  "minPropCount": 6
+}

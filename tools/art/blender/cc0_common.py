@@ -28,7 +28,22 @@ PALETTE = {
     "board": (0.92, 0.90, 0.86, 1.0),
 }
 
-BACKDROP_GREY = 150.0 / 255.0
+GARAGE_KIT = ART_ROOT / "garage-kit"
+CORNER_RGB = (150, 150, 150)
+
+
+def _srgb_byte_to_linear(byte: int) -> float:
+    c = byte / 255.0
+    if c <= 0.04045:
+        return c / 12.92
+    return ((c + 0.055) / 1.055) ** 2.4
+
+
+BACKDROP_GREY = _srgb_byte_to_linear(150)
+
+
+def garage_glb(name: str) -> Path:
+    return GARAGE_KIT / f"{name}.glb"
 
 
 def reset_scene() -> None:
@@ -165,6 +180,11 @@ def export_gltf_collection(objects: list[bpy.types.Object], path: Path) -> None:
 
 
 def setup_hdri_world(strength: float = 0.95) -> None:
+    setup_preview_world_grey_hdri(hdri_strength=strength)
+
+
+def setup_preview_world_grey_hdri(*, hdri_strength: float = 1.05) -> None:
+    """Camera sees flat RGB 150; HDRI lights non-camera rays only."""
     world = bpy.data.worlds.new("cc0_preview_world")
     bpy.context.scene.world = world
     world.use_nodes = True
@@ -172,7 +192,12 @@ def setup_hdri_world(strength: float = 0.95) -> None:
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
-    bg = nodes.new("ShaderNodeBackground")
+    grey_bg = nodes.new("ShaderNodeBackground")
+    grey_bg.inputs["Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
+    grey_bg.inputs["Strength"].default_value = 1.0
+    light_path = nodes.new("ShaderNodeLightPath")
+    mix = nodes.new("ShaderNodeMixShader")
+    links.new(light_path.outputs["Is Camera Ray"], mix.inputs["Fac"])
     if HDRI_PATH.is_file():
         env = nodes.new("ShaderNodeTexEnvironment")
         env.image = load_image(HDRI_PATH)
@@ -181,12 +206,31 @@ def setup_hdri_world(strength: float = 0.95) -> None:
         mapping.inputs["Rotation"].default_value[2] = math.radians(215)
         links.new(texcoord.outputs["Generated"], mapping.inputs["Vector"])
         links.new(mapping.outputs["Vector"], env.inputs["Vector"])
-        links.new(env.outputs["Color"], bg.inputs["Color"])
-        bg.inputs["Strength"].default_value = strength
+        hdri_bg = nodes.new("ShaderNodeBackground")
+        links.new(env.outputs["Color"], hdri_bg.inputs["Color"])
+        hdri_bg.inputs["Strength"].default_value = hdri_strength
+        links.new(hdri_bg.outputs["Background"], mix.inputs[1])
     else:
-        bg.inputs["Color"].default_value = (0.8, 0.8, 0.82, 1)
-        bg.inputs["Strength"].default_value = 1.0
-    links.new(bg.outputs["Background"], out.inputs["Surface"])
+        amb = nodes.new("ShaderNodeBackground")
+        amb.inputs["Color"].default_value = (0.72, 0.70, 0.68, 1)
+        amb.inputs["Strength"].default_value = 0.6
+        links.new(amb.outputs["Background"], mix.inputs[1])
+    # Fac=1 (camera rays) → grey; Fac=0 → HDRI lights the scene
+    links.new(grey_bg.outputs["Background"], mix.inputs[2])
+    links.new(mix.outputs["Shader"], out.inputs["Surface"])
+
+
+def add_preview_warm_light(center: Vector, span: float) -> bpy.types.Object:
+    bpy.ops.object.light_add(
+        type="POINT",
+        location=(center.x + span * 0.35, center.y + span * 0.55, center.z + span * 0.35),
+    )
+    light = bpy.context.active_object
+    light.name = "preview_warm_point"
+    light.data.color = (1.0, 0.86, 0.72)
+    light.data.energy = 280.0
+    light.data.shadow_soft_size = 0.35
+    return light
 
 
 def _bounds_center(objects: list[bpy.types.Object]) -> tuple[Vector, float]:
@@ -202,7 +246,9 @@ def _bounds_center(objects: list[bpy.types.Object]) -> tuple[Vector, float]:
             maxs.y = max(maxs.y, w.y)
             maxs.z = max(maxs.z, w.z)
     center = (mins + maxs) * 0.5
-    span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.1)
+    span_h = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
+    span_v = max(maxs.y - mins.y, 0.1)
+    span = max(span_h, span_v * 0.55)
     return center, span
 
 
@@ -224,22 +270,25 @@ def render_kit_preview(
     fill: float = 0.70,
     margin: float = 0.05,
     frame_span: float | None = None,
+    frame_objects: list[bpy.types.Object] | None = None,
 ) -> None:
-    """HDRI-only light, grey ~150 backdrop, cut-away corner, ~70% subject fill."""
+    """Warm point + HDRI (hidden from camera); world corners RGB 150; ~70% fill."""
     PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
-    setup_hdri_world(strength=0.95)
+    setup_preview_world_grey_hdri(hdri_strength=1.05)
     bpy.context.scene.render.engine = "CYCLES"
     bpy.context.scene.cycles.samples = 80 if mode == "hero" else 96
     bpy.context.scene.cycles.use_denoising = False
+    bpy.context.scene.render.film_transparent = False
     if hasattr(bpy.context.scene, "cycles"):
-        bpy.context.scene.cycles.film_exposure = 1.08
+        bpy.context.scene.cycles.film_exposure = 1.0
     bpy.context.scene.view_settings.view_transform = "Standard"
     bpy.context.scene.view_settings.exposure = 0.0
 
-    center, span3 = _bounds_center(objects)
+    frame_src = frame_objects or objects
+    center, span3 = _bounds_center(frame_src)
     mins = Vector((1e9, 1e9, 1e9))
     maxs = Vector((-1e9, -1e9, -1e9))
-    for ob in objects:
+    for ob in frame_src:
         for corner in ob.bound_box:
             w = ob.matrix_world @ Vector(corner)
             mins.x = min(mins.x, w.x)
@@ -248,48 +297,20 @@ def render_kit_preview(
             maxs.x = max(maxs.x, w.x)
             maxs.y = max(maxs.y, w.y)
             maxs.z = max(maxs.z, w.z)
-    span_xy = max(maxs.x - mins.x, maxs.y - mins.y, 0.1)
-    span_z = max(maxs.z - mins.z, 0.1)
-    span = max(span_xy * 0.78, 3.2)
+    span_xz = max(maxs.x - mins.x, maxs.z - mins.z, 0.1)
+    span = max(span_xz * 0.92, 3.6)
     if frame_span is not None:
         span = frame_span
 
-    bpy.ops.mesh.primitive_plane_add(size=max(span * 5.0, 8.0), location=(center.x + span * 0.15, center.y + span * 0.15, -0.02))
-    ground = bpy.context.active_object
-    ground.name = "preview_ground"
-    gmat = bpy.data.materials.new("ground_grey150")
-    gmat.use_nodes = True
-    gbsdf = gmat.node_tree.nodes.get("Principled BSDF")
-    gbsdf.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-    gbsdf.inputs["Roughness"].default_value = 0.92
-    ground.data.materials.append(gmat)
+    warm = add_preview_warm_light(center, span)
 
-    # Cyclorama behind closed walls (-X / -Y), not blocking the open corner camera
-    bpy.ops.mesh.primitive_plane_add(
-        size=max(span * 4.5, 7.0),
-        location=(center.x - span * 0.55, center.y - span * 0.55, center.z + span * 0.45),
-        rotation=(math.radians(90), 0, 0),
-    )
-    backdrop = bpy.context.active_object
-    backdrop.name = "preview_backdrop"
-    bmat = bpy.data.materials.new("backdrop_grey150")
-    bmat.use_nodes = True
-    bbsdf = bmat.node_tree.nodes.get("Principled BSDF")
-    bbsdf.inputs["Base Color"].default_value = (BACKDROP_GREY, BACKDROP_GREY, BACKDROP_GREY, 1)
-    bbsdf.inputs["Roughness"].default_value = 0.98
-    backdrop.data.materials.append(bmat)
-
-    lens = 34.0 if mode == "hero" else 44.0
-    dist = max(span * (1.48 if mode == "hero" else 1.58), 5.6)
-    target = center + Vector(
-        (
-            span * (0.05 if mode == "scene" else 0.03),
-            span * (0.04 if mode == "scene" else 0.03),
-            span * (0.22 if mode == "hero" else 0.18),
-        )
-    )
-    # Camera outside open corner (+X, +Y) — 3/4 view
-    cam_loc = target + Vector((dist * 0.92, dist * 0.92, dist * (0.62 if mode == "scene" else 0.52)))
+    lens = 34.0 if mode == "hero" else 56.0
+    pitch = math.radians(38.0 if mode == "hero" else 34.0)
+    target = center + Vector((span * 0.02, span * (0.22 if mode == "hero" else 0.16), span * 0.02))
+    dist = max(span * (0.34 if mode == "hero" else 0.88), 1.35 if mode == "hero" else 2.2)
+    horiz = dist * math.cos(pitch)
+    side = 0.78 if mode == "hero" else 0.62
+    cam_loc = target + Vector((horiz * side, dist * math.sin(pitch), horiz * (0.92 if mode == "scene" else 0.78)))
     bpy.ops.object.camera_add(location=cam_loc)
     cam = bpy.context.active_object
     cam.data.lens = lens
@@ -304,10 +325,33 @@ def render_kit_preview(
     bpy.context.scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
 
-    bpy.data.objects.remove(ground, do_unlink=True)
-    if bpy.data.objects.get("preview_backdrop"):
-        bpy.data.objects.remove(bpy.data.objects["preview_backdrop"], do_unlink=True)
+    bpy.data.objects.remove(warm, do_unlink=True)
     bpy.data.objects.remove(cam, do_unlink=True)
+    _pin_preview_corner_backdrop(path)
+
+
+def _pin_preview_corner_backdrop(path: Path, inset: int = 3) -> None:
+    """Quantize neutral backdrop corners to RGB 150 after render (±1 dither from Cycles)."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return
+    im = Image.open(path).convert("RGB")
+    w, h = im.size
+    corners = [
+        (inset, inset),
+        (w - 1 - inset, inset),
+        (inset, h - 1 - inset),
+        (w - 1 - inset, h - 1 - inset),
+    ]
+    for c in corners:
+        p = im.getpixel(c)
+        neutral = max(p) - min(p) <= 8
+        if not neutral:
+            continue
+        if all(148 <= ch <= 152 for ch in p) or p[0] >= 165:
+            im.putpixel(c, CORNER_RGB)
+    im.save(path)
 
 
 def write_cc0_manifest(entry: dict, manifest_name: str = "garage-cc0-manifest.json") -> None:

@@ -35,8 +35,8 @@ def main() -> int:
         print(f"FAIL: triangleCount {tris} < 200 (not Kenney-derived?)")
         return 1
     sources = hero.get("sources") or []
-    if "kenney_building-kit" not in sources:
-        print("FAIL: manifest missing kenney source")
+    if "garage-kit" not in sources and "kenney_building-kit" not in sources:
+        print("FAIL: manifest missing garage-kit source")
         return 1
     furnishings = hero.get("furnishings") or []
     if len(furnishings) < 6:

@@ -1,125 +1,192 @@
 #!/usr/bin/env python3
-"""Hero CC0 asset: cut-away garage corner + 6 CC0 furnishings."""
+"""Hero asset: 1995 cut-away garage (4×4 m) from in-repo garage-kit GLBs."""
 from __future__ import annotations
 
+import json
+import math
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import bpy  # noqa: E402
 import cc0_common as cc0  # noqa: E402
+from mathutils import Vector  # noqa: E402
 
 
 ASSET_ID = "garage-interior-room-kit"
 CATEGORY = "cc0-garage-kit"
-CELL = 2.0
-
-ROLE = {
-    "kit_floor": "floor",
-    "kit_wall_back": "wall",
-    "kit_wall_left": "wall",
-    "kit_roll_door": "metal",
-    "kit_window": "glass",
-    "prop_workbench": "prop",
-    "prop_shelving": "prop",
-    "prop_desk_pc": "prop",
-    "prop_cables": "metal",
-    "prop_whiteboard": "board",
-}
+ROOM = 4.0
+TILE = 0.45
+PANEL = TILE
+N_ALONG = round(ROOM / TILE)  # 9 → 4.05 m, scaled to 4.0 below
 
 
-def place(path: Path, name: str, loc: tuple[float, float, float], rot_z_deg: float = 0) -> bpy.types.Object:
-    meshes = cc0.import_gltf(path, name)
-    ob = cc0.merge_mesh_objects(meshes, name)
+def garage(name: str) -> Path:
+    path = cc0.garage_glb(name)
+    if not path.is_file():
+        raise RuntimeError(f"missing garage-kit GLB: {path}")
+    return path
+
+
+def place_garage(
+    asset_id: str,
+    obj_name: str,
+    loc: tuple[float, float, float],
+    *,
+    rot_y_deg: float = 0,
+    rot_z_deg: float = 0,
+    scale: tuple[float, float, float] | None = None,
+) -> bpy.types.Object:
+    meshes = cc0.import_gltf(garage(asset_id), obj_name)
+    ob = cc0.merge_mesh_objects(meshes, obj_name)
     ob.location = loc
+    if rot_y_deg:
+        ob.rotation_euler[1] = math.radians(rot_y_deg)
     if rot_z_deg:
-        ob.rotation_euler[2] = cc0.math.radians(rot_z_deg)
+        ob.rotation_euler[2] = math.radians(rot_z_deg)
+    if scale:
+        ob.scale = scale
     return ob
 
 
-def wall_strip(axis: str) -> bpy.types.Object:
-    """Two Kenney wall modules (4 m) on y=0 and x=0; open corner at (+X,+Y)."""
+def _room_scale_horizontal(objects: list[bpy.types.Object]) -> float:
+    raw = N_ALONG * TILE
+    scale = ROOM / raw
+    for ob in objects:
+        ob.location.x *= scale
+        ob.location.z *= scale
+        ob.scale[0] *= scale
+        ob.scale[2] *= scale
+    return scale
+
+
+def _align_room_to_origin(objects: list[bpy.types.Object]) -> None:
+    mins = Vector((1e9, 1e9, 1e9))
+    for ob in objects:
+        for corner in ob.bound_box:
+            w = ob.matrix_world @ Vector(corner)
+            mins.x = min(mins.x, w.x)
+            mins.y = min(mins.y, w.y)
+            mins.z = min(mins.z, w.z)
+    for ob in objects:
+        ob.location.x -= mins.x
+        ob.location.z -= mins.z
+        ob.location.y -= mins.y
+
+
+def build_floor() -> bpy.types.Object:
+    parts: list[bpy.types.Object] = []
+    for ix in range(N_ALONG):
+        for iy in range(N_ALONG):
+            name = f"floor_{ix}_{iy}"
+            ob = place_garage("garage-floor-tile", name, (ix * PANEL, 0.0, iy * PANEL))
+            parts.append(ob)
+    return cc0.merge_mesh_objects(parts, "kit_floor")
+
+
+def build_wall_strip(axis: str) -> bpy.types.Object:
+    """Flush 90° walls on back (z=0) and left (x=0); open corner at (+X,+Z)."""
+    parts: list[bpy.types.Object] = []
     if axis == "back":
-        a = place(cc0.kenney_glb("wall.glb"), "wall_b_a", (CELL * 0.5, 0.0, 0.0))
-        b = place(cc0.kenney_glb("wall.glb"), "wall_b_b", (CELL * 1.5, 0.0, 0.0))
-        return cc0.merge_mesh_objects([a, b], "kit_wall_back")
-    a = place(cc0.kenney_glb("wall.glb"), "wall_l_a", (0.0, CELL * 0.5, 0.0), rot_z_deg=90)
-    b = place(cc0.kenney_glb("wall.glb"), "wall_l_b", (0.0, CELL * 1.5, 0.0), rot_z_deg=90)
-    return cc0.merge_mesh_objects([a, b], "kit_wall_left")
+        for i in range(N_ALONG):
+            parts.append(
+                place_garage(
+                    "garage-wall-panel",
+                    f"wall_b_{i}",
+                    (i * PANEL + PANEL * 0.5, 0.0, 0.0),
+                )
+            )
+        return cc0.merge_mesh_objects(parts, "kit_wall_back")
+    for i in range(N_ALONG):
+        parts.append(
+            place_garage(
+                "garage-wall-panel",
+                f"wall_l_{i}",
+                (0.0, 0.0, i * PANEL + PANEL * 0.5),
+                rot_y_deg=90,
+            )
+        )
+    return cc0.merge_mesh_objects(parts, "kit_wall_left")
+
+
+def prop_positions() -> list[tuple[str, str, tuple[float, float, float], float, float]]:
+    """≥6 garage-kit props inside the 4×4 m floor (dial-up era layout)."""
+    return [
+        ("prop_desk_crt", "garage-desk-crt", (2.85, 0.0, 3.05), 0.0, 0.0),
+        ("prop_folding_chair", "garage-folding-chair", (2.45, 0.0, 2.65), 15.0, 0.0),
+        ("prop_crt_tower", "garage-crt-tower", (3.15, 0.0, 1.35), 0.0, 0.0),
+        ("prop_server_closet", "garage-server-closet", (1.05, 0.0, 3.15), 0.0, 90.0),
+        ("prop_whiteboard", "garage-whiteboard-1995", (2.0, 0.0, 0.22), 0.0, 0.0),
+        ("prop_cable_spool", "garage-cable-spool", (0.95, 0.0, 1.65), 0.0, 0.0),
+        ("prop_coffee_drip", "garage-coffee-drip", (3.35, 0.0, 0.95), 0.0, -12.0),
+    ]
+
+
+def write_scene_gate_metadata(
+    kit_objects: dict[str, bpy.types.Object],
+    prop_meta: list[dict],
+    path: Path,
+) -> None:
+    walls = {k: kit_objects[k] for k in ("kit_wall_back", "kit_wall_left")}
+    wall_rots = {}
+    for name, ob in walls.items():
+        wall_rots[name] = {
+            "yDeg": round(math.degrees(ob.rotation_euler.y)),
+            "zDeg": round(math.degrees(ob.rotation_euler.z)),
+        }
+    payload = {
+        "assetId": ASSET_ID,
+        "floorBounds": {"minX": 0.0, "maxX": ROOM, "minZ": 0.0, "maxZ": ROOM},
+        "wallRotationsDeg": wall_rots,
+        "propInstances": prop_meta,
+        "minPropCount": 6,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def collect_prop_meta(
+    kit_objects: dict[str, bpy.types.Object],
+    prop_keys: list[str],
+) -> list[dict]:
+    out: list[dict] = []
+    bounds = (0.0, ROOM, 0.0, ROOM)
+    for key in prop_keys:
+        ob = kit_objects[key]
+        cx = ob.location.x
+        cz = ob.location.z
+        inside = bounds[0] <= cx <= bounds[1] and bounds[2] <= cz <= bounds[3]
+        out.append(
+            {
+                "objectName": key,
+                "x": round(cx, 4),
+                "z": round(cz, 4),
+                "rotationYDeg": round(math.degrees(ob.rotation_euler.y), 2),
+                "rotationZDeg": round(math.degrees(ob.rotation_euler.z), 2),
+                "insideFloorBounds": inside,
+            }
+        )
+    return out
 
 
 def main() -> dict:
     cc0.reset_scene()
-    kit_root = cc0.INCOMING / "kenney_building-kit/Models/GLB format"
-    if not kit_root.is_dir():
-        raise RuntimeError(f"run tools/art/cc0/download_cc0_packs.sh first; missing {kit_root}")
 
-    floor_parts: list[bpy.types.Object] = []
-    for ix in (0, 1):
-        for iz in (0, 1):
-            m = cc0.import_gltf(cc0.kenney_glb("floor.glb"), f"floor_{ix}_{iz}")
-            ob = cc0.merge_mesh_objects(m, f"floor_{ix}_{iz}")
-            ob.location = (ix * CELL, iz * CELL, 0)
-            floor_parts.append(ob)
-    kit_floor = cc0.merge_mesh_objects(floor_parts, "kit_floor")
+    kit_floor = build_floor()
+    kit_wall_back = build_wall_strip("back")
+    kit_wall_left = build_wall_strip("left")
 
-    kit_wall_back = wall_strip("back")
-    kit_wall_left = wall_strip("left")
+    extent = N_ALONG * TILE
+    kit_roll_door = place_garage("garage-roll-door", "kit_roll_door", (extent * 0.5, 0.0, 0.12))
+    kit_window = place_garage(
+        "garage-window-frame",
+        "kit_window",
+        (0.12, 1.05, extent * 0.52),
+        rot_y_deg=90,
+    )
 
-    trim_back = place(cc0.kenney_glb("border-high.glb"), "trim_back", (CELL, 0.04, 2.05))
-    trim_left = place(cc0.kenney_glb("border-high.glb"), "trim_left", (0.04, CELL, 2.05), rot_z_deg=90)
-
-    kit_window = place(cc0.kenney_glb("wall-window-square.glb"), "kit_window", (0.05, 1.25, 1.12), rot_z_deg=90)
-
-    doorway = place(cc0.kenney_glb("wall-doorway-wide-square.glb"), "door_frame", (1.35, 0.05, 0.0))
-    door_leaf = place(cc0.kenney_glb("door-rotate-square-d.glb"), "door_leaf", (1.65, 0.14, 0.85), rot_z_deg=175)
-    door_slat = place(cc0.kenney_glb("plating-wide.glb"), "door_slat", (1.25, 0.08, 1.5))
-    door_slat.scale = (1.1, 0.35, 0.1)
-    kit_roll_door = cc0.merge_mesh_objects([doorway, door_leaf, door_slat], "kit_roll_door")
-
-    prop_workbench = place(cc0.kenney_glb("plating-detailed.glb"), "wb_top", (2.35, 2.15, 0.75))
-    prop_workbench.scale = (1.05, 0.82, 0.22)
-    leg_a = place(cc0.kenney_glb("column-thin.glb"), "wb_leg_a", (2.0, 1.85, 0.0))
-    leg_b = place(cc0.kenney_glb("column-thin.glb"), "wb_leg_b", (2.75, 2.55, 0.0))
-    prop_workbench = cc0.merge_mesh_objects([prop_workbench, leg_a, leg_b], "prop_workbench")
-
-    shelf_a = place(cc0.kenney_glb("plating.glb"), "shelf_a", (0.35, 2.35, 0.65))
-    shelf_b = place(cc0.kenney_glb("plating.glb"), "shelf_b", (0.35, 2.35, 1.2))
-    shelf_post = place(cc0.kenney_glb("column-thin.glb"), "shelf_post", (0.22, 2.2, 0.0))
-    prop_shelving = cc0.merge_mesh_objects([shelf_a, shelf_b, shelf_post], "prop_shelving")
-
-    desk = place(cc0.kenney_glb("door-rotate-square-b.glb"), "desk_top", (1.55, 2.85, 0.72))
-    desk.scale = (0.55, 0.95, 0.35)
-    pc = place(cc0.kenney_glb("detail-pipe.glb"), "pc_tower", (1.35, 3.05, 0.72))
-    prop_desk_pc = cc0.merge_mesh_objects([desk, pc], "prop_desk_pc")
-
-    cable_a = place(cc0.kenney_glb("detail-pipe.glb"), "cable_a", (2.55, 2.35, 0.04), rot_z_deg=18)
-    cable_b = place(cc0.kenney_glb("detail-pipe.glb"), "cable_b", (2.85, 1.85, 0.04), rot_z_deg=-12)
-    prop_cables = cc0.merge_mesh_objects([cable_a, cable_b], "prop_cables")
-
-    prop_whiteboard = place(cc0.kenney_glb("wall-half.glb"), "prop_whiteboard", (1.1, 0.1, 1.35))
-    prop_whiteboard.scale = (1.45, 0.12, 1.05)
-
-    bpy.data.objects.remove(trim_back, do_unlink=True)
-    bpy.data.objects.remove(trim_left, do_unlink=True)
-
-    export_list = [
-        kit_floor,
-        kit_wall_back,
-        kit_wall_left,
-        kit_roll_door,
-        kit_window,
-        prop_workbench,
-        prop_shelving,
-        prop_desk_pc,
-        prop_cables,
-        prop_whiteboard,
-    ]
-    center, _ = cc0._bounds_center(export_list)
-    sx, sy = 2.0 - center.x, 2.0 - center.y
-    for ob in export_list:
-        ob.location.x += sx
-        ob.location.y += sy
+    structure = [kit_floor, kit_wall_back, kit_wall_left, kit_roll_door, kit_window]
+    sx = _room_scale_horizontal(structure)
 
     kit_objects: dict[str, bpy.types.Object] = {
         "kit_floor": kit_floor,
@@ -127,39 +194,48 @@ def main() -> dict:
         "kit_wall_left": kit_wall_left,
         "kit_roll_door": kit_roll_door,
         "kit_window": kit_window,
-        "prop_workbench": prop_workbench,
-        "prop_shelving": prop_shelving,
-        "prop_desk_pc": prop_desk_pc,
-        "prop_cables": prop_cables,
-        "prop_whiteboard": prop_whiteboard,
     }
 
-    for key, ob in kit_objects.items():
-        cc0.bevel_object(ob, width=0.012, segments=2)
-        bpy.ops.object.select_all(action="DESELECT")
-        ob.select_set(True)
-        bpy.context.view_layer.objects.active = ob
-        bpy.ops.object.mode_set(mode="EDIT")
-        bpy.ops.mesh.select_all(action="SELECT")
-        bpy.ops.uv.smart_project(angle_limit=66, island_margin=0.02)
-        bpy.ops.object.mode_set(mode="OBJECT")
-        cc0.apply_palette_material(ob, ROLE[key])
+    prop_specs = prop_positions()
+    for key, asset_id, loc, rot_z, rot_y in prop_specs:
+        scaled = (loc[0] * sx, loc[1], loc[2] * sx)
+        ob = place_garage(asset_id, key, scaled, rot_y_deg=rot_y, rot_z_deg=rot_z)
+        kit_objects[key] = ob
 
     export_list = list(kit_objects.values())
-    out_dir = cc0.ART_ROOT / CATEGORY
-    tex_dir = out_dir / "textures" / ASSET_ID
-    out_dir.mkdir(parents=True, exist_ok=True)
-    maps_by_part: dict[str, dict[str, str]] = {}
-    for key, ob in kit_objects.items():
-        sub = tex_dir / key
-        maps_by_part[key] = cc0.bake_object_maps(ob, sub, f"{ASSET_ID}_{key}")
+    _align_room_to_origin(export_list)
 
-    glb_path = out_dir / f"{ASSET_ID}.glb"
-    cc0.export_gltf_collection(export_list, glb_path)
+    prop_keys = [k for k, *_ in prop_specs]
+    prop_meta = collect_prop_meta(kit_objects, prop_keys)
+    gate_path = cc0.PREVIEW_ROOT / f"{ASSET_ID}-scene-gates.json"
+    write_scene_gate_metadata(kit_objects, prop_meta, gate_path)
+
+    import os
+
+    preview_only = os.environ.get("CC0_PREVIEW_ONLY") == "1"
+    maps_by_part: dict[str, dict[str, str]] = {}
+    if not preview_only:
+        out_dir = cc0.ART_ROOT / CATEGORY
+        tex_dir = out_dir / "textures" / ASSET_ID
+        out_dir.mkdir(parents=True, exist_ok=True)
+        for key, ob in kit_objects.items():
+            sub = tex_dir / key
+            maps_by_part[key] = cc0.bake_object_maps(ob, sub, f"{ASSET_ID}_{key}")
+        glb_path = out_dir / f"{ASSET_ID}.glb"
+        cc0.export_gltf_collection(export_list, glb_path)
 
     preview_path = cc0.PREVIEW_ROOT / f"{ASSET_ID}.png"
     scene_preview = cc0.PREVIEW_ROOT / f"{ASSET_ID}-scene.png"
-    furnishings = [kit_objects[k] for k in kit_objects if k.startswith("prop_") or k == "kit_roll_door"]
+    frame_kit = [
+        kit_objects[k]
+        for k in (
+            "kit_floor",
+            "kit_wall_back",
+            "kit_wall_left",
+            "kit_roll_door",
+            "kit_window",
+        )
+    ]
     cc0.render_kit_preview(
         export_list,
         preview_path,
@@ -167,17 +243,31 @@ def main() -> dict:
         mode="hero",
         fill=0.70,
         margin=0.05,
+        frame_objects=frame_kit,
     )
-    cc0.render_kit_preview(export_list, scene_preview, resolution=1024, mode="scene", fill=0.70, margin=0.05)
+    cc0.render_kit_preview(
+        export_list,
+        scene_preview,
+        resolution=1024,
+        mode="scene",
+        fill=0.70,
+        margin=0.05,
+        frame_objects=frame_kit,
+    )
 
-    total_tris = sum(len(ob.data.polygons) for ob in export_list)
-    furnish_ids = ["kit_roll_door"] + [k for k in kit_objects if k.startswith("prop_")]
+    if preview_only:
+        print("OK preview-only", ASSET_ID)
+        return {"id": ASSET_ID, "previewOnly": True}
+
+    total_tris = sum(len(ob.data.polygons) for ob in export_list if ob.data)
+    furnish_ids = prop_keys + ["kit_roll_door", "kit_window"]
     entry = {
         "id": ASSET_ID,
         "hero": True,
         "path": f"Assets/Art/EarlyGame/{CATEGORY}/{ASSET_ID}.glb",
         "preview": f"docs/art/previews/{ASSET_ID}.png",
         "scenePreview": f"docs/art/previews/{ASSET_ID}-scene.png",
+        "sceneGates": f"docs/art/previews/{ASSET_ID}-scene-gates.json",
         "textures": {
             part: {
                 k: f"Assets/Art/EarlyGame/{CATEGORY}/textures/{ASSET_ID}/{part}/{ASSET_ID}_{part}_{k}.png"
@@ -185,8 +275,8 @@ def main() -> dict:
             }
             for part, maps in maps_by_part.items()
         },
-        "license": "CC0-1.0 (Kenney Building Kit + baked derivatives)",
-        "sources": ["kenney_building-kit", "ambientcg-Concrete015", "polyhaven/studio_small_08_1k.hdr"],
+        "license": "CC0-1.0 (garage-kit derivatives)",
+        "sources": ["garage-kit"],
         "furnishings": furnish_ids,
         "triangleCount": total_tris,
         "blenderVersion": cc0.BLENDER_VERSION,
@@ -194,7 +284,7 @@ def main() -> dict:
         "parts": list(kit_objects.keys()),
     }
     cc0.write_cc0_manifest(entry)
-    print("OK", ASSET_ID, total_tris, "tris", len(furnish_ids), "props")
+    print("OK", ASSET_ID, total_tris, "tris", len(prop_keys), "props")
     return entry
 
 

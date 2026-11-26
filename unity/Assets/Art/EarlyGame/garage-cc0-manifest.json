@@ -8,6 +8,7 @@
       "path": "Assets/Art/EarlyGame/cc0-garage-kit/garage-interior-room-kit.glb",
       "preview": "docs/art/previews/garage-interior-room-kit.png",
       "scenePreview": "docs/art/previews/garage-interior-room-kit-scene.png",
+      "sceneGates": "docs/art/previews/garage-interior-room-kit-scene-gates.json",
       "textures": {
         "kit_floor": {
           "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_floor/garage-interior-room-kit_kit_floor_albedo.png",
@@ -34,47 +35,58 @@
           "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_window/garage-interior-room-kit_kit_window_ao.png",
           "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/kit_window/garage-interior-room-kit_kit_window_normal.png"
         },
-        "prop_workbench": {
-          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_workbench/garage-interior-room-kit_prop_workbench_albedo.png",
-          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_workbench/garage-interior-room-kit_prop_workbench_ao.png",
-          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_workbench/garage-interior-room-kit_prop_workbench_normal.png"
+        "prop_desk_crt": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_crt/garage-interior-room-kit_prop_desk_crt_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_crt/garage-interior-room-kit_prop_desk_crt_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_crt/garage-interior-room-kit_prop_desk_crt_normal.png"
         },
-        "prop_shelving": {
-          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_shelving/garage-interior-room-kit_prop_shelving_albedo.png",
-          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_shelving/garage-interior-room-kit_prop_shelving_ao.png",
-          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_shelving/garage-interior-room-kit_prop_shelving_normal.png"
+        "prop_folding_chair": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_folding_chair/garage-interior-room-kit_prop_folding_chair_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_folding_chair/garage-interior-room-kit_prop_folding_chair_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_folding_chair/garage-interior-room-kit_prop_folding_chair_normal.png"
         },
-        "prop_desk_pc": {
-          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_pc/garage-interior-room-kit_prop_desk_pc_albedo.png",
-          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_pc/garage-interior-room-kit_prop_desk_pc_ao.png",
-          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_desk_pc/garage-interior-room-kit_prop_desk_pc_normal.png"
+        "prop_crt_tower": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_crt_tower/garage-interior-room-kit_prop_crt_tower_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_crt_tower/garage-interior-room-kit_prop_crt_tower_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_crt_tower/garage-interior-room-kit_prop_crt_tower_normal.png"
         },
-        "prop_cables": {
-          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cables/garage-interior-room-kit_prop_cables_albedo.png",
-          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cables/garage-interior-room-kit_prop_cables_ao.png",
-          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cables/garage-interior-room-kit_prop_cables_normal.png"
+        "prop_server_closet": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_server_closet/garage-interior-room-kit_prop_server_closet_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_server_closet/garage-interior-room-kit_prop_server_closet_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_server_closet/garage-interior-room-kit_prop_server_closet_normal.png"
         },
         "prop_whiteboard": {
           "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_whiteboard/garage-interior-room-kit_prop_whiteboard_albedo.png",
           "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_whiteboard/garage-interior-room-kit_prop_whiteboard_ao.png",
           "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_whiteboard/garage-interior-room-kit_prop_whiteboard_normal.png"
+        },
+        "prop_cable_spool": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cable_spool/garage-interior-room-kit_prop_cable_spool_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cable_spool/garage-interior-room-kit_prop_cable_spool_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_cable_spool/garage-interior-room-kit_prop_cable_spool_normal.png"
+        },
+        "prop_coffee_drip": {
+          "albedo": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_coffee_drip/garage-interior-room-kit_prop_coffee_drip_albedo.png",
+          "ao": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_coffee_drip/garage-interior-room-kit_prop_coffee_drip_ao.png",
+          "normal": "Assets/Art/EarlyGame/cc0-garage-kit/textures/garage-interior-room-kit/prop_coffee_drip/garage-interior-room-kit_prop_coffee_drip_normal.png"
         }
       },
-      "license": "CC0-1.0 (Kenney Building Kit + baked derivatives)",
+      "license": "CC0-1.0 (garage-kit derivatives)",
       "sources": [
-        "kenney_building-kit",
-        "ambientcg-Concrete015",
-        "polyhaven/studio_small_08_1k.hdr"
+        "garage-kit"
       ],
       "furnishings": [
+        "prop_desk_crt",
+        "prop_folding_chair",
+        "prop_crt_tower",
+        "prop_server_closet",
+        "prop_whiteboard",
+        "prop_cable_spool",
+        "prop_coffee_drip",
         "kit_roll_door",
-        "prop_workbench",
-        "prop_shelving",
-        "prop_desk_pc",
-        "prop_cables",
-        "prop_whiteboard"
+        "kit_window"
       ],
-      "triangleCount": 1812,
+      "triangleCount": 37168,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-interior-room-kit.py",
       "parts": [
@@ -83,11 +95,13 @@
         "kit_wall_left",
         "kit_roll_door",
         "kit_window",
-        "prop_workbench",
-        "prop_shelving",
-        "prop_desk_pc",
-        "prop_cables",
-        "prop_whiteboard"
+        "prop_desk_crt",
+        "prop_folding_chair",
+        "prop_crt_tower",
+        "prop_server_closet",
+        "prop_whiteboard",
+        "prop_cable_spool",
+        "prop_coffee_drip"
       ]
     }
   ]
