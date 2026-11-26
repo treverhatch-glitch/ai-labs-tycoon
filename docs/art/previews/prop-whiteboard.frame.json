@@ -1,6 +1,12 @@
 {
   "assetId": "prop-whiteboard",
   "preview": "docs/art/previews/prop-whiteboard.png",
-  "glb_sha256": "e954b89120e1ef517b58c6999617353331223914f0d070c567b330d02de17ff7",
-  "resolution": 1024
+  "glb_sha256": "08b57ac1c3d6e75842fe79ef840426cfad1adde80893019853944d62bc9837a8",
+  "resolution": 1024,
+  "quality": {
+    "stddev": 95.0554452701768,
+    "coverage": 0.3313150405883789,
+    "mean_lum": 60.164440815956276,
+    "mean_sat": 0.25922931533852217
+  }
 }

@@ -1,6 +1,12 @@
 {
   "assetId": "prop-desk",
   "preview": "docs/art/previews/prop-desk.png",
-  "glb_sha256": "c64ce0b4b38849b0ce5174b19effc44996eb16fd4e52d7738b32e157fbb97d27",
-  "resolution": 1024
+  "glb_sha256": "7e46dfc9696307eb2026c3cb160bfd5ce94299b14dbe503582d814d2d39c80f1",
+  "resolution": 1024,
+  "quality": {
+    "stddev": 89.3013350662955,
+    "coverage": 0.30556297302246094,
+    "mean_lum": 56.17395652617614,
+    "mean_sat": 0.24288528841478424
+  }
 }

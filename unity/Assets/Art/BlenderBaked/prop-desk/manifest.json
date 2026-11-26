@@ -3,6 +3,7 @@
   "scope": "presentation",
   "sourceObj": "unity/Assets/Art/Generated/campus-kit/prop-desk.obj",
   "texture1024": "unity/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
+  "urpAlbedoPath": "Assets/Assets/Art/BlenderBaked/prop-desk/textures/mesh_prop-desk_basecolor.png",
   "glb": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.glb",
   "fbx": "unity/Assets/Art/BlenderBaked/prop-desk/mesh_prop-desk.fbx",
   "preview": "docs/art/previews/prop-desk.png"

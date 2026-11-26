@@ -6,8 +6,8 @@
       "id": "prop-desk",
       "path": "Assets/Art/Generated/campus-kit/prop-desk.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42,
+      "vertexCount": 88,
+      "faceCount": 66,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
     },
@@ -24,8 +24,8 @@
       "id": "prop-server-rack",
       "path": "Assets/Art/Generated/campus-kit/prop-server-rack.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 56,
-      "faceCount": 42,
+      "vertexCount": 216,
+      "faceCount": 162,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
     },
@@ -42,8 +42,8 @@
       "id": "prop-whiteboard",
       "path": "Assets/Art/Generated/campus-kit/prop-whiteboard.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 40,
-      "faceCount": 30,
+      "vertexCount": 88,
+      "faceCount": 66,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
     },
@@ -87,8 +87,8 @@
       "id": "ui-rival-badge",
       "path": "Assets/Art/Generated/campus-kit/ui-rival-badge.obj",
       "license": "CC0-1.0 (procedural, in-repo)",
-      "vertexCount": 8,
-      "faceCount": 6,
+      "vertexCount": 72,
+      "faceCount": 54,
       "pivot": "base-centre unless noted",
       "scaleMeters": 1.0
     },
