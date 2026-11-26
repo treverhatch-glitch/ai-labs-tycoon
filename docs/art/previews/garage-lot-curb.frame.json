@@ -1,6 +1,6 @@
 {
-  "camera_dist": 2.6996167243103524,
-  "bbox_radius": 0.5225064627697457,
+  "camera_dist": 2.6931917126350595,
+  "bbox_radius": 0.5212629121229148,
   "framing_margin": 1.24,
   "lens_mm": 50.0,
   "azimuth_deg": 48.0,
@@ -8,6 +8,6 @@
   "up_axis": "Y",
   "mid_grey": true,
   "contact_shadow": false,
-  "glb_sha256": "4fc346f1cbd8c3853aeed2dc86eaf5b77b1f61506a5026851b8fcaf4b040fa52",
+  "glb_sha256": "687d3194f80da12a5b5872ed79e53ca9cf8aafabf3912877e64e8b5f2bbe8a69",
   "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-lot-curb.glb"
 }

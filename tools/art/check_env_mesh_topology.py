@@ -77,18 +77,30 @@ for entry in manifest["assets"]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if len(meshes) != 1:
-        print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need 1)")
+    need_meshes = 3 if asset_id == "garage-land-for-sale-sign" else 1
+    if len(meshes) != need_meshes:
+        print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need {need_meshes})")
         rc = 1
         continue
-    ob = meshes[0]
-    bpy.context.view_layer.objects.active = ob
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.remove_doubles(threshold=0.0005)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    islands = mesh_island_count(ob.data)
-    corners = [ob.matrix_world @ Vector(c) for c in ob.bound_box]
+    ob = meshes[0] if len(meshes) == 1 else None
+    island_fail = False
+    for mobj in meshes:
+        bpy.context.view_layer.objects.active = mobj
+        bpy.ops.object.mode_set(mode="EDIT")
+        bpy.ops.mesh.select_all(action="SELECT")
+        bpy.ops.mesh.remove_doubles(threshold=0.0005)
+        bpy.ops.object.mode_set(mode="OBJECT")
+        isl = mesh_island_count(mobj.data)
+        max_islands = 48 if mobj.name == "letters" else 1
+        if isl > max_islands:
+            print(f"FAIL {asset_id} {mobj.name} islands={isl}")
+            island_fail = True
+    if island_fail:
+        rc = 1
+        continue
+    corners = []
+    for mobj in meshes:
+        corners.extend(mobj.matrix_world @ Vector(c) for c in mobj.bound_box)
   # Re-imported glTF is Z-up in Blender (glTF +Y maps to Blender +Z).
     xs = [c.x for c in corners]
     ys = [c.y for c in corners]
@@ -115,10 +127,7 @@ for entry in manifest["assets"]:
                 f"x={width_x:.3f} z={height_z:.3f} y={thick_y:.3f} "
                 f"need {sw},{sh},{sd} +/-{int(BBOX_TOL*100)}%"
             )
-    if islands > 1:
-        print(f"FAIL {asset_id} islands={islands}")
-        rc = 1
-    elif min_z > 0.012:
+    if min_z > 0.012:
         print(f"FAIL {asset_id} min_z={min_z:.4f}")
         rc = 1
     elif not upright_ok:
@@ -128,7 +137,7 @@ for entry in manifest["assets"]:
         rc = 1
     else:
         print(
-            f"OK {asset_id} islands=1 min_z={min_z:.4f} "
+            f"OK {asset_id} meshes={len(meshes)} min_z={min_z:.4f} "
             f"bbox={width_x:.2f}x{height_z:.2f}x{thick_y:.2f} tris={tris}"
         )
 sys.exit(rc)

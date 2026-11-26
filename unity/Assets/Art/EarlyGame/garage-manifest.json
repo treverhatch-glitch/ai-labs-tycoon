@@ -112,9 +112,9 @@
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 2766,
-      "triangleCount": 12741,
-      "subShapeCount": 6,
+      "vertexCount": 528,
+      "triangleCount": 747,
+      "subShapeCount": 3,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-land-for-sale-sign.py"
     },
@@ -128,8 +128,8 @@
       },
       "preview": "docs/art/previews/garage-lot-curb.png",
       "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 56,
-      "triangleCount": 216,
+      "vertexCount": 14982,
+      "triangleCount": 59924,
       "subShapeCount": 1,
       "blenderVersion": "4.0.2",
       "generator": "tools/art/blender/garage-lot-curb.py"

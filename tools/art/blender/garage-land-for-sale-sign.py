@@ -14,8 +14,8 @@ BOARD_Y = 0.02
 BOARD_Z = 0.60
 POST_W = 0.10
 POST_H = 1.20
-POST_Z = -0.14
-POST_SPAN = 1.05
+POST_Z = -0.22
+POST_SPAN = 1.18
 
 
 def write_sign_albedo(tex_path: Path) -> None:
@@ -27,9 +27,10 @@ def write_sign_albedo(tex_path: Path) -> None:
 
 def main():
     os.environ["PREVIEW_FRAMING_MARGIN"] = "1.20"
-    os.environ["PREVIEW_AZIMUTH_DEG"] = "40"
+    os.environ["PREVIEW_AZIMUTH_DEG"] = "32"
+    os.environ["PREVIEW_ELEVATION_DEG"] = "6"
     os.environ["EARLY_PREVIEW_MID_GREY"] = "1"
-    os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "1"
+    os.environ["EARLY_PREVIEW_CONTACT_SHADOW"] = "0"
     tex_dir = REPO / "unity/Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign"
     albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
     write_sign_albedo(albedo)
@@ -57,9 +58,9 @@ def main():
         )
         bc.assign_solid(weld, (0.50, 0.36, 0.24, 1.0), 0.58)
 
-    board = bc.add_cube("Board", (BOARD_X, BOARD_Y, BOARD_Z), (0, board_y, 0))
+    board = bc.add_cube("board", (BOARD_X, BOARD_Y, BOARD_Z), (0, board_y, 0))
     bc.assign_solid(board, (0.98, 0.96, 0.94, 1.0), 0.40)
-    bc.add_sign_mesh_text("SignText", "FOR SALE", board, face_dir=-1.0, extrude_m=0.003)
+    bc.add_sign_mesh_text("letters", "FOR SALE", board, face_dir=1.0, extrude_m=0.006)
 
     entry = bc.finish_asset("garage-land-for-sale-sign", "garage-kit")
     write_sign_albedo(albedo)

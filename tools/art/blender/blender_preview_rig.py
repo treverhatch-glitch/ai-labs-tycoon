@@ -226,6 +226,59 @@ def _place_camera(
     return cam
 
 
+def render_sign_lettered_face(
+    objects: list[bpy.types.Object],
+    path: Path,
+    resolution: int = 512,
+    *,
+    margin: float | None = None,
+) -> None:
+    """Head-on preview of the thin board face that carries FOR SALE mesh letters."""
+    hero_meshes = [o for o in objects if o.type == "MESH"]
+    scene = bpy.context.scene
+    scene.render.engine = "BLENDER_EEVEE"
+    if hasattr(scene, "eevee"):
+        scene.eevee.taa_render_samples = 32
+    mid_grey = _mid_grey_preview()
+    if mid_grey:
+        setup_mid_grey_world()
+    else:
+        setup_studio_world()
+    board = next((o for o in hero_meshes if o.name == "board"), hero_meshes[0])
+    letters = next((o for o in hero_meshes if o.name == "letters"), None)
+    thin_axis = min(
+        (("X", float(board.dimensions.x)), ("Y", float(board.dimensions.y)), ("Z", float(board.dimensions.z))),
+        key=lambda t: t[1],
+    )[0]
+    mins, maxs = mesh_bounds_world(hero_meshes)
+    center = (mins + maxs) * 0.5
+    if letters is not None:
+        lc = board.matrix_world.inverted() @ letters.matrix_world.translation
+        center = board.matrix_world @ Vector((lc.x, lc.y, lc.z))
+    radius = bounding_sphere_radius(mins, maxs, hero_meshes)
+    margin = margin if margin is not None else float(os.environ.get("PREVIEW_FRAMING_MARGIN", str(FRAMING_MARGIN)))
+    half_fov = math.radians(25.0)
+    cam_dist = (radius / math.tan(half_fov)) * margin
+    axis_vec = {"X": Vector((1, 0, 0)), "Y": Vector((0, 1, 0)), "Z": Vector((0, 0, 1))}[thin_axis]
+    if letters is not None and float(letters.matrix_world.translation.dot(axis_vec)) < float(
+        board.matrix_world.translation.dot(axis_vec)
+    ):
+        axis_vec = -axis_vec
+    setup_three_point_lights(center, radius, soft=mid_grey)
+    bpy.ops.object.camera_add(location=center + axis_vec * cam_dist)
+    cam = bpy.context.active_object
+    cam.name = "PreviewCameraFront"
+    cam.data.lens = DEFAULT_LENS_MM
+    direction = center - cam.location
+    cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+    scene.render.resolution_x = resolution
+    scene.render.resolution_y = resolution
+    scene.render.filepath = str(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    bpy.ops.render.render(write_still=True)
+
+
 def frame_camera(
     objects: list[bpy.types.Object],
     lens_mm: float = DEFAULT_LENS_MM,
@@ -330,7 +383,11 @@ def render_preview_studio(
     else:
         setup_studio_world()
     mins, maxs = mesh_bounds_world(hero_meshes)
-    axis = (up_axis or infer_up_axis(mins, maxs)).upper()
+    sign_up = os.environ.get("SIGN_PREVIEW_UP_AXIS", "").strip().upper()
+    if sign_up in ("X", "Y", "Z"):
+        axis = sign_up
+    else:
+        axis = (up_axis or infer_up_axis(mins, maxs)).upper()
     if _contact_shadow_only():
         center = (mins + maxs) * 0.5
         span = max(maxs.x - mins.x, maxs.z - mins.z, 0.35)

@@ -113,10 +113,20 @@ def check_env_glb(asset_id: str) -> list[str]:
 
     mesh_count = len(gltf.get("meshes", []))
     mesh_nodes = sum(1 for n in gltf.get("nodes", []) if n.get("mesh") is not None)
-    if mesh_nodes != 1:
-        errs.append(f"glb_mesh_nodes={mesh_nodes} need 1")
-    if mesh_count != 1:
-        errs.append(f"glb_meshes={mesh_count} need 1")
+    if asset_id == "garage-land-for-sale-sign":
+        if mesh_nodes != 3:
+            errs.append(f"glb_mesh_nodes={mesh_nodes} need 3")
+        if mesh_count != 3:
+            errs.append(f"glb_meshes={mesh_count} need 3")
+        node_names = [str(n.get("name") or "") for n in gltf.get("nodes", []) if n.get("mesh") is not None]
+        for want in ("posts", "board", "letters"):
+            if want not in node_names:
+                errs.append(f"sign_glb_missing_node_{want}")
+    else:
+        if mesh_nodes != 1:
+            errs.append(f"glb_mesh_nodes={mesh_nodes} need 1")
+        if mesh_count != 1:
+            errs.append(f"glb_meshes={mesh_count} need 1")
     if asset_id == "garage-lot-curb":
         total_prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
         if total_prims != 1:
@@ -127,21 +137,85 @@ def check_env_glb(asset_id: str) -> list[str]:
     return errs
 
 
+def _node_trs_matrix(node: dict) -> list[list[float]] | None:
+    if node.get("matrix"):
+        m = node["matrix"]
+        return [m[0:4], m[4:8], m[8:12], m[12:16]]
+    t = node.get("translation") or [0.0, 0.0, 0.0]
+    s = node.get("scale") or [1.0, 1.0, 1.0]
+    r = node.get("rotation") or [0.0, 0.0, 0.0, 1.0]
+    x, y, z, w = (float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+    xx, yy, zz = x * x, y * y, z * z
+    xy, xz, yz = x * y, x * z, y * z
+    wx, wy, wz = w * x, w * y, w * z
+    rot = [
+        [1 - 2 * (yy + zz), 2 * (xy - wz), 2 * (xz + wy), 0.0],
+        [2 * (xy + wz), 1 - 2 * (xx + zz), 2 * (yz - wx), 0.0],
+        [2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (xx + yy), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ]
+    for i in range(3):
+        for j in range(3):
+            rot[i][j] *= s[j]
+    rot[0][3] = t[0]
+    rot[1][3] = t[1]
+    rot[2][3] = t[2]
+    return rot
+
+
+def _transform_point(m: list[list[float]], p: list[float]) -> list[float]:
+    x, y, z = p[0], p[1], p[2]
+    return [
+        m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3],
+        m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3],
+        m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3],
+    ]
+
+
 def _mesh_position_bounds(gltf: dict) -> tuple[list[float], list[float]] | None:
     accs = gltf.get("accessors", [])
     meshes = gltf.get("meshes", [])
+    nodes = gltf.get("nodes", [])
     if not accs or not meshes:
         return None
-    prim = meshes[0].get("primitives", [{}])[0]
-    pos_idx = prim.get("attributes", {}).get("POSITION")
-    if pos_idx is None:
+    mn_acc = [1e9, 1e9, 1e9]
+    mx_acc = [-1e9, -1e9, -1e9]
+    found = False
+    for node in nodes:
+        mi = node.get("mesh")
+        if mi is None:
+            continue
+        m4 = _node_trs_matrix(node)
+        if not m4:
+            continue
+        mesh = meshes[mi]
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None:
+                continue
+            acc = accs[pos_idx]
+            lmn, lmx = acc.get("min"), acc.get("max")
+            if not lmn or not lmx:
+                continue
+            corners = [
+                [lmn[0], lmn[1], lmn[2]],
+                [lmn[0], lmn[1], lmx[2]],
+                [lmn[0], lmx[1], lmn[2]],
+                [lmn[0], lmx[1], lmx[2]],
+                [lmx[0], lmn[1], lmn[2]],
+                [lmx[0], lmn[1], lmx[2]],
+                [lmx[0], lmx[1], lmn[2]],
+                [lmx[0], lmx[1], lmx[2]],
+            ]
+            found = True
+            for c in corners:
+                w = _transform_point(m4, c)
+                for i in range(3):
+                    mn_acc[i] = min(mn_acc[i], w[i])
+                    mx_acc[i] = max(mx_acc[i], w[i])
+    if not found:
         return None
-    acc = accs[pos_idx]
-    mn = acc.get("min")
-    mx = acc.get("max")
-    if not mn or not mx or len(mn) < 3 or len(mx) < 3:
-        return None
-    return mn, mx
+    return mn_acc, mx_acc
 
 
 def _each_primitive_extents(gltf: dict) -> list[tuple[float, float, float]]:
@@ -203,18 +277,50 @@ def check_sign_glb_board_and_text(gltf: dict) -> list[str]:
     if not bounds:
         return errs + ["sign_glb_no_position_bounds"]
     mn, mx = bounds
-    width = mx[0] - mn[0]
-    height = mx[1] - mn[1]
-    depth = mx[2] - mn[2]
-    # glTF Y-up: horizontal span, vertical post height, thin depth.
-    ex = sorted((width, height, depth))
-    thin, mid, wide = ex[0], ex[1], ex[2]
-    if wide < 0.78:
-        errs.append(f"sign_glb_no_board_bbox wide={wide:.2f} need~0.9")
-    if mid < 0.48:
-        errs.append(f"sign_glb_no_board_bbox tall={mid:.2f} need~0.6+posts")
-    if thin > 0.48:
-        errs.append(f"sign_glb_depth_too_thick thin={thin:.2f} need~0.12-0.44")
+    span_x = mx[0] - mn[0]
+    span_y = mx[1] - mn[1]
+    span_z = mx[2] - mn[2]
+    if span_y < 0.95:
+        errs.append(f"sign_glb_height_y={span_y:.2f} need~1.2")
+    if max(span_x, span_z) < 0.78:
+        errs.append(f"sign_glb_board_span={max(span_x, span_z):.2f} need~0.9")
+    thin = min(span_x, span_y, span_z)
+    board_thin = None
+    for node in gltf.get("nodes", []):
+        if str(node.get("name") or "") != "board":
+            continue
+        mi = node.get("mesh")
+        if mi is None:
+            continue
+        m4 = _node_trs_matrix(node)
+        mesh = gltf["meshes"][mi]
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None or not m4:
+                continue
+            acc = gltf["accessors"][pos_idx]
+            lmn, lmx = acc.get("min"), acc.get("max")
+            if not lmn or not lmx:
+                continue
+            corners = [
+                [lmn[0], lmn[1], lmn[2]],
+                [lmx[0], lmn[1], lmn[2]],
+                [lmn[0], lmx[1], lmn[2]],
+                [lmx[0], lmx[1], lmn[2]],
+                [lmn[0], lmn[1], lmx[2]],
+                [lmx[0], lmn[1], lmx[2]],
+                [lmn[0], lmx[1], lmx[2]],
+                [lmx[0], lmx[1], lmx[2]],
+            ]
+            ws = [_transform_point(m4, c) for c in corners]
+            spans = [
+                max(p[i] for p in ws) - min(p[i] for p in ws) for i in range(3)
+            ]
+            board_thin = min(spans)
+    if board_thin is not None and board_thin > 0.14:
+        errs.append(f"sign_glb_board_thin={board_thin:.3f} need~0.02-0.12")
+    elif board_thin is None and thin > 0.14:
+        errs.append(f"sign_glb_thin_axis={thin:.3f} need~0.02-0.12 board depth")
     prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
     if prims < 1:
         errs.append("sign_glb_no_primitives")

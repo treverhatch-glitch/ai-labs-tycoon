@@ -1,13 +1,13 @@
 {
-  "camera_dist": 3.861225929509397,
+  "camera_dist": 3.964651624049827,
   "bbox_radius": 0.8274055563234421,
-  "framing_margin": 1.12,
+  "framing_margin": 1.15,
   "lens_mm": 50.0,
   "azimuth_deg": 45.0,
   "elevation_deg": 30.0,
   "up_axis": "Z",
-  "mid_grey": true,
-  "contact_shadow": true,
-  "glb_sha256": "f937ac35d8f449eb00232376374e23772839195452b0520bf493645df0b885b7",
+  "mid_grey": false,
+  "contact_shadow": false,
+  "glb_sha256": "19e257234d501687a4e6bef6a7c0437ba00b3ebb73577b3f1d50a7ca14eb1536",
   "glb_path": "unity/Assets/Art/EarlyGame/garage-kit/garage-window-frame.glb"
 }

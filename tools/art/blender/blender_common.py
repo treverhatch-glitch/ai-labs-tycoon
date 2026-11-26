@@ -8,6 +8,7 @@ import hashlib
 import json
 import math
 import os
+import subprocess
 from pathlib import Path
 
 import bpy
@@ -144,13 +145,27 @@ def _load_sign_bold_font() -> bpy.types.VectorFont | None:
     return None
 
 
-def make_sign_text_red_material() -> bpy.types.Material:
+def make_sign_text_red_material(*, preview: bool = False) -> bpy.types.Material:
     mat = bpy.data.materials.new("SignTextRed")
     mat.use_nodes = True
+    mat.use_backface_culling = False
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = (0.82, 0.12, 0.08, 1.0)
-        bsdf.inputs["Roughness"].default_value = 0.55
+        bsdf.inputs["Base Color"].default_value = (0.86, 0.14, 0.09, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.48
+        if preview:
+            em_key = "Emission Color" if "Emission Color" in bsdf.inputs else "Emission"
+            str_key = (
+                "Emission Strength"
+                if "Emission Strength" in bsdf.inputs
+                else "Emission Energy"
+                if "Emission Energy" in bsdf.inputs
+                else None
+            )
+            if em_key in bsdf.inputs:
+                bsdf.inputs[em_key].default_value = (0.78, 0.12, 0.08, 1.0)
+            if str_key and str_key in bsdf.inputs:
+                bsdf.inputs[str_key].default_value = 4.5
     return mat
 
 
@@ -178,29 +193,35 @@ def add_sign_mesh_text(
         ob.data.font = font
     ob.data.extrude = extrude_m
     ob.data.resolution_u = 4
-    ob.data.size = 0.16
+    ob.data.size = 0.22
     ob.data.space_character = 1.03
     ob.data.align_x = "CENTER"
     ob.data.align_y = "CENTER"
-    ob.rotation_euler = (math.pi / 2, 0, 0)
+    ob.rotation_euler = (math.pi / 2, 0.0, 0.0)
     board_w = float(board.dimensions.x)
     board_h = float(board.dimensions.z)
     bpy.ops.object.convert(target="MESH")
     bpy.context.view_layer.update()
-    dx = float(ob.dimensions.x)
-    dz = float(ob.dimensions.z)
-    if dx > 1e-4 and dz > 1e-4:
-        s = min((board_w * 0.67) / dx, (board_h * 0.67) / dz)
-        ob.scale = (s, s, s)
+    dx, dy = float(ob.dimensions.x), float(ob.dimensions.y)
+    if dx > 1e-4 and dy > 1e-4:
+        sx = (board_w * 0.62) / dx
+        sy = (board_h * 0.56) / dy
+        ob.scale = (-sx, sy, 1.0)
         bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.transform_apply(rotation=True)
     bpy.context.view_layer.update()
     board_y = float(board.matrix_world.translation.y)
+    thin_h = float(board.dimensions.y) * 0.5
     ob.location.x = board.location.x
     ob.location.z = board.location.z
-    ob.location.y = board_y
+    ob.location.y = board_y + face_dir * (thin_h + extrude_m * 0.55)
     bpy.ops.object.transform_apply(location=True)
     assign_sign_text_red(ob)
+    for _ in range(6):
+        if mesh_island_count(ob) <= 1:
+            break
+        stitch_sign_mesh_islands(ob, max_bridge=0.06)
+        weld_coincident_vertices(ob, threshold=0.004)
     return ob
 
 
@@ -369,6 +390,16 @@ def snap_root_to_ground(ob: bpy.types.Object) -> None:
     bpy.context.view_layer.update()
 
 
+def weld_mesh_merge_distance(ob: bpy.types.Object, threshold: float = 0.08) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    ob.select_set(True)
+    bpy.context.view_layer.objects.active = ob
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=threshold)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
 def voxel_shell_merge(ob: bpy.types.Object, voxel_size: float = 0.03) -> None:
     bpy.context.view_layer.objects.active = ob
     ob.select_set(True)
@@ -493,6 +524,120 @@ def _mesh_face_islands(bm: "bmesh.types.BMesh") -> list[list]:
                         stack.append(linked)
         islands.append(island)
     return islands
+
+
+def build_sign_text_glyphs_mask(
+    text_ob: bpy.types.Object,
+    board_ob: bpy.types.Object,
+    *,
+    res: int = 384,
+    dilate: int = 3,
+) -> dict:
+    """Rasterize text verts on the board XZ plane (authoring) for post-voxel red tagging."""
+    bw = float(board_ob.dimensions.x)
+    bh = float(board_ob.dimensions.z)
+    cx = float(board_ob.location.x)
+    cz = float(board_ob.location.z)
+    cells: set[tuple[int, int]] = set()
+    mw = text_ob.matrix_world
+    corners = [board_ob.matrix_world @ Vector(c) for c in board_ob.bound_box]
+    bx0 = min(v.x for v in corners)
+    bz0 = min(v.z for v in corners)
+
+    def _stamp(world_co: Vector) -> None:
+        u = (world_co.x - bx0) / bw
+        vv = (world_co.z - bz0) / bh
+        if not (0.0 <= u <= 1.0 and 0.0 <= vv <= 1.0):
+            return
+        ix = int(max(0, min(res - 1, u * (res - 1))))
+        iy = int(max(0, min(res - 1, vv * (res - 1))))
+        cells.add((ix, iy))
+
+    for v in text_ob.data.vertices:
+        _stamp(mw @ v.co)
+    if dilate > 0 and cells:
+        grown: set[tuple[int, int]] = set(cells)
+        for ix, iy in list(cells):
+            for dx in range(-dilate, dilate + 1):
+                for dy in range(-dilate, dilate + 1):
+                    nx, ny = ix + dx, iy + dy
+                    if 0 <= nx < res and 0 <= ny < res:
+                        grown.add((nx, ny))
+        cells = grown
+    return {"res": res, "cells": cells}
+
+
+def assign_sign_text_faces_red_from_mask(ob: bpy.types.Object, spec: dict) -> None:
+    """Tag export-rotated faces whose board-plane projection hits the text raster."""
+    import bmesh
+
+    red = make_sign_text_red_material()
+    red.name = "SignTextRed"
+    board = None
+    for slot in ob.data.materials:
+        if slot and "SignTextRed" not in slot.name:
+            board = slot
+            break
+    if board is None:
+        board = bpy.data.materials.new("SignBoard")
+    ob.data.materials.clear()
+    ob.data.materials.append(board)
+    ob.data.materials.append(red)
+    cells: set[tuple[int, int]] = set(spec.get("cells") or ())
+    if not cells:
+        assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+        return
+    res = int(spec.get("res") or 384)
+    bm = bmesh.new()
+    bm.from_mesh(ob.data)
+    bm.faces.ensure_lookup_table()
+    bm.normal_update()
+    xs = [v.co.x for v in bm.verts]
+    ys = [v.co.y for v in bm.verts]
+    x_lo, x_hi = min(xs), max(xs)
+    y_lo, y_hi = min(ys), max(ys)
+    x_pad = (x_hi - x_lo) * 0.11
+    board_x0, board_x1 = x_lo + x_pad, x_hi - x_pad
+    board_y0 = y_lo + (y_hi - y_lo) * 0.52
+    board_y1 = y_hi - max(0.01, (y_hi - y_lo) * 0.02)
+    span_x = max(1e-4, board_x1 - board_x0)
+    span_y = max(1e-4, board_y1 - board_y0)
+    cell_list = list(cells)
+    tagged = 0
+    z_lo = min(v.co.z for v in bm.verts)
+    z_hi = max(v.co.z for v in bm.verts)
+    z_thin = z_hi - z_lo
+    z_front = z_hi - max(0.03, z_thin * 0.42)
+    max_uv_dist = 0.048
+    for face in bm.faces:
+        c = face.calc_center_median()
+        if not (board_y0 <= c.y <= board_y1 and board_x0 <= c.x <= board_x1):
+            face.material_index = 0
+            continue
+        if c.z < z_front and face.normal.z < 0.12:
+            face.material_index = 0
+            continue
+        u = (c.x - board_x0) / span_x
+        v = (c.y - board_y0) / span_y
+        if not (0.0 <= u <= 1.0 and 0.0 <= v <= 1.0):
+            face.material_index = 0
+            continue
+        best = 1.0
+        for cx_i, cy_i in cell_list:
+            du = u - (cx_i / (res - 1))
+            dv = v - (cy_i / (res - 1))
+            best = min(best, math.hypot(du, dv))
+            if best <= max_uv_dist:
+                break
+        hit = best <= max_uv_dist
+        face.material_index = 1 if hit else 0
+        if hit:
+            tagged += 1
+    bm.to_mesh(ob.data)
+    ob.data.update()
+    bm.free()
+    if tagged < 80:
+        assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
 
 
 def snapshot_sign_text_face_indices(ob: bpy.types.Object) -> set[int]:
@@ -679,6 +824,142 @@ def uv_unwrap(ob: bpy.types.Object) -> None:
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
+def _assemble_sign_named_parts(mesh_obs: list[bpy.types.Object]) -> tuple[bpy.types.Object, bpy.types.Object, bpy.types.Object]:
+    board = next(o for o in mesh_obs if o.name == "board")
+    letters = next(o for o in mesh_obs if o.name == "letters")
+    post_bits = [o for o in mesh_obs if o not in (board, letters)]
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in post_bits:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = post_bits[0]
+    if len(post_bits) > 1:
+        bpy.ops.object.join()
+    posts = bpy.context.view_layer.objects.active
+    posts.name = "posts"
+    assign_solid(posts, (0.52, 0.38, 0.26, 1.0), 0.58)
+    board.name = "board"
+    letters.name = "letters"
+    assign_sign_text_red(letters)
+    weld_coincident_vertices(board, threshold=0.002)
+    return posts, board, letters
+
+
+def apply_sign_part_gltf_materials(
+    posts: bpy.types.Object,
+    board: bpy.types.Object,
+    letters: bpy.types.Object,
+    tex_dir: Path,
+    part_names: list[str],
+) -> None:
+    albedo_path = tex_dir / "garage-land-for-sale-sign_albedo.png"
+    rough_path = tex_dir / "garage-land-for-sale-sign_roughness.png"
+    normal_path = tex_dir / "garage-land-for-sale-sign_normal.png"
+    baked_img = _load_image_file(albedo_path, "garage-land-for-sale-sign_albedo.png")
+    rough_img = _load_image_file(rough_path, "garage-land-for-sale-sign_roughness.png") if rough_path.is_file() else None
+    normal_img = _load_image_file(normal_path, "garage-land-for-sale-sign_normal.png") if normal_path.is_file() else None
+    board_mat = _make_image_pbr_material("SignBoard", baked_img, rough=rough_img, normal=normal_img)
+    red_mat = make_sign_text_red_material()
+    red_mat.name = "SignTextRed"
+    post_mat = bpy.data.materials.new("SignPostWood")
+    post_mat.use_nodes = True
+    bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = (0.52, 0.38, 0.26, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.58
+    for ob, mats in (
+        (posts, [post_mat]),
+        (board, [board_mat]),
+        (letters, [red_mat]),
+    ):
+        ob.data.materials.clear()
+        for m in mats:
+            ob.data.materials.append(m)
+        for poly in ob.data.polygons:
+            poly.material_index = 0
+    names = json.dumps(["posts", "board", "letters"])
+    mats_json = json.dumps(["SignBoard", "SignPostWood", "SignTextRed"])
+    for ob in (posts, board, letters):
+        ob["packet34_part_count"] = 3
+        ob["packet34_materials"] = mats_json
+        ob["packet34_part_names"] = names
+        if ob.data:
+            ob.data["packet34_part_count"] = 3
+
+
+def export_gltf_selection(objects: list[bpy.types.Object], path: Path, *, packet34: bool = False) -> None:
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in objects:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = objects[0]
+    bpy.ops.export_scene.gltf(
+        filepath=str(path),
+        use_selection=True,
+        export_apply=True,
+        export_format="GLB",
+        export_image_format="AUTO",
+        export_texcoords=True,
+        export_normals=True,
+        export_materials="EXPORT",
+        export_extras=packet34,
+    )
+
+
+def finish_sign_named_asset(
+    category: str,
+    license_note: str,
+    mesh_obs: list[bpy.types.Object],
+    part_names: list[str],
+) -> dict:
+    """Y-up sign GLB: named nodes posts / board / letters (no voxel merge)."""
+    asset_id = "garage-land-for-sale-sign"
+    out_dir = ART_ROOT / category
+    tex_dir = out_dir / "textures" / asset_id
+    out_dir.mkdir(parents=True, exist_ok=True)
+    tex_dir.mkdir(parents=True, exist_ok=True)
+    PREVIEW_ROOT.mkdir(parents=True, exist_ok=True)
+
+    posts, board, letters = _assemble_sign_named_parts(list(mesh_obs))
+    smooth_shade(board)
+    uv_unwrap(board)
+    maps = bake_pbr_set(board, tex_dir, asset_id, size=1024)
+    _write_sign_white_albedo(tex_dir, asset_id)
+    apply_sign_part_gltf_materials(posts, board, letters, tex_dir, part_names)
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in (posts, board, letters):
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = posts
+    bpy.ops.transform.rotate(value=math.pi / 2, orient_axis="X")
+    bpy.ops.object.transform_apply(rotation=True)
+    min_z = min(mesh_world_min_z(o) for o in (posts, board, letters))
+    if abs(min_z) > 1e-5:
+        for ob in (posts, board, letters):
+            ob.location.z -= min_z
+    bpy.context.view_layer.update()
+    glb_path = out_dir / f"{asset_id}.glb"
+    export_gltf_selection([posts, board, letters], glb_path, packet34=True)
+    preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+    try:
+        render_preview([posts, board, letters], preview_path)
+    except Exception as exc:  # noqa: BLE001
+        print(f"WARN preview {asset_id}: {exc}")
+    tris = sum(len(o.data.polygons) for o in (posts, board, letters))
+    verts = sum(len(o.data.vertices) for o in (posts, board, letters))
+    return {
+        "id": asset_id,
+        "path": f"Assets/Art/EarlyGame/{category}/{asset_id}.glb",
+        "textures": {
+            k: f"Assets/Art/EarlyGame/{category}/textures/{asset_id}/{asset_id}_{k}.png" for k in maps
+        },
+        "preview": f"docs/art/previews/{asset_id}.png",
+        "license": license_note,
+        "vertexCount": verts,
+        "triangleCount": tris,
+        "subShapeCount": 3,
+        "blenderVersion": BLENDER_VERSION,
+        "generator": f"tools/art/blender/{asset_id}.py",
+    }
+
+
 def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Blender-baked, in-repo)") -> dict:
     """UV, bake, export glTF, preview; return manifest entry."""
     out_dir = ART_ROOT / category
@@ -691,6 +972,8 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     if not mesh_obs:
         raise RuntimeError(f"{asset_id}: no mesh")
     part_names = [o.name for o in mesh_obs]
+    if asset_id == "garage-land-for-sale-sign":
+        return finish_sign_named_asset(category, license_note, mesh_obs, part_names)
     sub_shape_count = len(mesh_obs)
     ground_scene_meshes()
     if asset_id == "garage-exterior-wall":
@@ -706,11 +989,27 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         if asset_id == "garage-lot-curb":
             root = link_or_join(parts)
         elif asset_id == "garage-land-for-sale-sign":
+            text_obs = [o for o in parts if "SignText" in o.name]
+            board_obs = [o for o in parts if o.name == "Board"]
+            sign_text_mask = (
+                build_sign_text_glyphs_mask(text_obs[0], board_obs[0])
+                if text_obs and board_obs
+                else None
+            )
             root = link_or_join(parts)
             sign_extent = max(root.dimensions) if max(root.dimensions) > 0 else 1.0
             weld_coincident_vertices(root, threshold=min(0.08, sign_extent * 0.03))
+            for _ in range(4):
+                if mesh_island_count(root) <= 1:
+                    break
+                stitch_sign_mesh_islands(root, max_bridge=0.14)
+                weld_coincident_vertices(root, threshold=0.02)
             if mesh_island_count(root) > 1:
-                voxel_shell_merge(root, voxel_size=min(0.007, sign_extent * 0.0035))
+                plate = add_sign_weld_plate([root])
+                root = union_overlapping_meshes([root, plate])
+                weld_coincident_vertices(root, threshold=0.02)
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=min(0.009, sign_extent * 0.0038))
                 weld_coincident_vertices(root, threshold=0.01)
             for _ in range(3):
                 if mesh_island_count(root) <= 1:
@@ -722,6 +1021,13 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
                 plate = add_sign_weld_plate([root])
                 root = union_overlapping_meshes([root, plate])
                 weld_coincident_vertices(root, threshold=0.015)
+            if mesh_island_count(root) > 1:
+                voxel_shell_merge(root, voxel_size=min(0.011, sign_extent * 0.0045))
+                weld_coincident_vertices(root, threshold=0.012)
+            if sign_text_mask is not None:
+                root["packet34_sign_text_mask"] = json.dumps(
+                    {**sign_text_mask, "cells": list(sign_text_mask["cells"])}
+                )
         else:
             root = union_overlapping_meshes(parts)
     else:
@@ -763,7 +1069,16 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         apply_preview_material(root, tex_dir, asset_id)
     rotate_script_y_to_export_up(root)
     if asset_id == "garage-land-for-sale-sign":
-        assign_sign_text_faces_red(root, view_dir=(0.0, 0.0, 1.0))
+        mask_raw = root.get("packet34_sign_text_mask")
+        if mask_raw:
+            try:
+                spec = json.loads(str(mask_raw))
+                spec["cells"] = {tuple(int(x) for x in pair) for pair in spec.get("cells", [])}
+                assign_sign_text_faces_red_from_mask(root, spec)
+            except (json.JSONDecodeError, TypeError, ValueError):
+                assign_sign_text_faces_red(root, view_dir=(0.0, 0.0, 1.0))
+        else:
+            assign_sign_text_faces_red(root, view_dir=(0.0, 0.0, 1.0))
     snap_root_to_ground_z(root)
     min_z = mesh_world_min_z(root)
     if min_z > 0.012:
@@ -824,7 +1139,16 @@ def reexport_packet34_glb(asset_id: str, category: str = "garage-kit") -> None:
         parts = max(len(part_names), 3)
     apply_packet34_gltf_materials(ob, asset_id, tex_dir, parts, part_names or [asset_id])
     if asset_id == "garage-land-for-sale-sign":
-        assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+        mask_raw = ob.get("packet34_sign_text_mask")
+        if mask_raw:
+            try:
+                spec = json.loads(str(mask_raw))
+                spec["cells"] = {tuple(int(x) for x in pair) for pair in spec.get("cells", [])}
+                assign_sign_text_faces_red_from_mask(ob, spec)
+            except (json.JSONDecodeError, TypeError, ValueError):
+                assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+        else:
+            assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
     export_gltf(ob, glb, packet34=True)
 
 
@@ -840,23 +1164,42 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
     if not meshes:
         raise RuntimeError(f"rerender {asset_id}: no mesh after glTF import")
     mesh_obs = [o for o in meshes if o.name != "PreviewShadowFloor"]
-    if len(mesh_obs) > 1:
-        bpy.ops.object.select_all(action="DESELECT")
-        for o in mesh_obs:
-            o.select_set(True)
-        bpy.context.view_layer.objects.active = mesh_obs[0]
-        bpy.ops.object.join()
-        mesh_obs = [bpy.context.active_object]
-    ob = mesh_obs[0]
     tex_dir = ART_ROOT / category / "textures" / asset_id
-    if asset_id in PACKET34_ENV_IDS:
-        apply_packet34_preview_material(ob, asset_id, tex_dir)
+    if asset_id == "garage-land-for-sale-sign" and len(mesh_obs) >= 2:
+        apply_sign_preview_materials(mesh_obs, tex_dir)
+        preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+        os.environ["PREVIEW_GLB_SHA256"] = glb_sha
+        os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
+        os.environ.setdefault("SIGN_PREVIEW_UP_AXIS", "Y")
+        render_preview(mesh_obs, preview_path)
+        import blender_preview_rig as rig  # type: ignore
+
+        front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
+        saved_margin = os.environ.get("PREVIEW_FRAMING_MARGIN")
+        os.environ["PREVIEW_FRAMING_MARGIN"] = "1.08"
+        rig.render_sign_lettered_face(mesh_obs, front, 512)
+        if saved_margin is None:
+            os.environ.pop("PREVIEW_FRAMING_MARGIN", None)
+        else:
+            os.environ["PREVIEW_FRAMING_MARGIN"] = saved_margin
+        ob = mesh_obs[0]
     else:
-        apply_preview_material(ob, tex_dir, asset_id)
-    preview_path = PREVIEW_ROOT / f"{asset_id}.png"
-    os.environ["PREVIEW_GLB_SHA256"] = glb_sha
-    os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
-    render_preview(ob, preview_path)
+        if len(mesh_obs) > 1:
+            bpy.ops.object.select_all(action="DESELECT")
+            for o in mesh_obs:
+                o.select_set(True)
+            bpy.context.view_layer.objects.active = mesh_obs[0]
+            bpy.ops.object.join()
+            mesh_obs = [bpy.context.active_object]
+        ob = mesh_obs[0]
+        if asset_id in PACKET34_ENV_IDS:
+            apply_packet34_preview_material(ob, asset_id, tex_dir)
+        else:
+            apply_preview_material(ob, tex_dir, asset_id)
+        preview_path = PREVIEW_ROOT / f"{asset_id}.png"
+        os.environ["PREVIEW_GLB_SHA256"] = glb_sha
+        os.environ["PREVIEW_GLB_PATH"] = str(glb.relative_to(REPO_ROOT))
+        render_preview(ob, preview_path)
     meta_path = preview_path.with_name(preview_path.stem + ".frame.json")
     if meta_path.is_file():
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
@@ -868,24 +1211,6 @@ def rerender_garage_preview(asset_id: str, category: str = "garage-kit") -> None
             meta["wall_world_w_m"] = WALL_WORLD_W_M
             meta["wall_blocks_per_m_h"] = wall_blocks_per_metre_h(mapping_scale_x=sx)
             meta_path.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-        if asset_id == "garage-land-for-sale-sign":
-            import blender_preview_rig as rig  # type: ignore
-
-            front = PREVIEW_ROOT / "garage-land-for-sale-sign-front.png"
-            saved = {k: os.environ.get(k) for k in ("PREVIEW_AZIMUTH_DEG", "PREVIEW_ELEVATION_DEG")}
-            os.environ["PREVIEW_AZIMUTH_DEG"] = "90"
-            os.environ["PREVIEW_ELEVATION_DEG"] = "0"
-            apply_packet34_preview_material(ob, asset_id, tex_dir)
-            mins, maxs = rig.mesh_bounds_world([ob])
-            axis = rig.infer_up_axis(mins, maxs).upper()
-            rig.render_preview_studio(ob, front, 512, up_axis=axis)
-            for key, val in saved.items():
-                if val is None:
-                    os.environ.pop(key, None)
-                else:
-                    os.environ[key] = val
-
-
 def _billboard_face_axis(ob: bpy.types.Object) -> str:
     dx, dy, dz = (float(ob.dimensions.x), float(ob.dimensions.y), float(ob.dimensions.z))
     dims = (("X", dx), ("Y", dy), ("Z", dz))
@@ -1297,12 +1622,24 @@ def apply_packet34_preview_material(ob: bpy.types.Object, asset_id: str, tex_dir
             if rough.is_file()
             else None,
         )
-        red = make_sign_text_red_material()
+        red = make_sign_text_red_material(preview=True)
+        saved_idx = [int(p.material_index) for p in ob.data.polygons]
         ob.data.materials.clear()
         ob.data.materials.append(board_mat)
         ob.data.materials.append(red)
+        for i, poly in enumerate(ob.data.polygons):
+            poly.material_index = min(saved_idx[i], 1)
         if not any(p.material_index == 1 for p in ob.data.polygons):
-            assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+            mask_raw = ob.get("packet34_sign_text_mask")
+            if mask_raw:
+                try:
+                    spec = json.loads(str(mask_raw))
+                    spec["cells"] = {tuple(int(x) for x in pair) for pair in spec.get("cells", [])}
+                    assign_sign_text_faces_red_from_mask(ob, spec)
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
+            else:
+                assign_sign_text_faces_red(ob, view_dir=(0.0, 0.0, 1.0))
         return
     rough = tex_dir / f"{asset_id}_roughness.png"
     if not albedo.is_file():
@@ -1850,7 +2187,10 @@ def apply_packet34_gltf_materials(
     ob.data.materials.clear()
     for mat in mats:
         ob.data.materials.append(mat)
-    if asset_id != "garage-land-for-sale-sign":
+    if asset_id == "garage-window-frame":
+        for poly in ob.data.polygons:
+            poly.material_index = 0
+    elif asset_id != "garage-land-for-sale-sign":
         if len(ob.data.polygons) > 4 and len(mats) > 1:
             ob.data.polygons[1].material_index = 1
         if len(ob.data.polygons) > 8 and len(mats) > 2:
@@ -1879,7 +2219,46 @@ def export_gltf(ob: bpy.types.Object, path: Path, *, packet34: bool = False) -> 
     )
 
 
-def render_preview(ob: bpy.types.Object, path: Path) -> None:
+def apply_sign_preview_materials(mesh_obs: list[bpy.types.Object], tex_dir: Path) -> None:
+    albedo = tex_dir / "garage-land-for-sale-sign_albedo.png"
+    rough = tex_dir / "garage-land-for-sale-sign_roughness.png"
+    board_mat = None
+    if albedo.is_file():
+        board_mat = _make_image_pbr_material(
+            "SignBoard",
+            bpy.data.images.load(str(albedo.resolve()), check_existing=True),
+            rough=bpy.data.images.load(str(rough.resolve()), check_existing=True)
+            if rough.is_file()
+            else None,
+        )
+    red = bpy.data.materials.new("SignTextRedPreview")
+    red.use_nodes = True
+    red_nt = red.node_tree
+    red_nt.nodes.clear()
+    emit = red_nt.nodes.new("ShaderNodeEmission")
+    emit.inputs["Color"].default_value = (0.86, 0.12, 0.08, 1.0)
+    emit.inputs["Strength"].default_value = 8.0
+    rout = red_nt.nodes.new("ShaderNodeOutputMaterial")
+    red_nt.links.new(emit.outputs["Emission"], rout.inputs["Surface"])
+    post_mat = bpy.data.materials.new("SignPostWoodPreview")
+    post_mat.use_nodes = True
+    bsdf = post_mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = (0.52, 0.38, 0.26, 1.0)
+        bsdf.inputs["Roughness"].default_value = 0.58
+    for ob in mesh_obs:
+        if ob.name == "letters":
+            ob.data.materials.clear()
+            ob.data.materials.append(red)
+        elif ob.name == "board" and board_mat:
+            ob.data.materials.clear()
+            ob.data.materials.append(board_mat)
+        elif ob.name == "posts":
+            ob.data.materials.clear()
+            ob.data.materials.append(post_mat)
+
+
+def render_preview(ob: bpy.types.Object | list[bpy.types.Object], path: Path) -> None:
     use_rig = os.environ.get("EARLY_ART_PREVIEW_RIG", "1").strip().lower()
     if use_rig not in ("0", "false", "no"):
         try:
