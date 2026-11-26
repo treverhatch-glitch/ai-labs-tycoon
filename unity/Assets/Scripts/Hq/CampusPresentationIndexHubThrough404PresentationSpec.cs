@@ -1,1 +1,0 @@
-namespace AiLabs.Unity.Hq { public static class CampusPresentationIndexHubThrough404PresentationSpec { public const int FirstHubBatch = CampusPresentationIndexHubPresentationSpec.FirstHubBatch; public const int LastHubBatch = 404; public const string HubDoc = "PRESENTATION-INDEX-HUB-THROUGH-404.md"; } }

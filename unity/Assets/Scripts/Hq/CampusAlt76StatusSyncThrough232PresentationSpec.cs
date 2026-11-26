@@ -1,1 +1,0 @@
-namespace AiLabs.Unity.Hq { public static class CampusAlt76StatusSyncThrough232PresentationSpec { public const int LastSyncedBatch = 232; public static int PriorSyncedBatch => CampusAlt76StatusSyncThrough229.LastSyncedBatch; public const string RefreshDoc = "ALT-76-STATUS-SYNC-232.md"; } }

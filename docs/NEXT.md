@@ -491,7 +491,7 @@ Agents land **one gate at a time**; **`rules` must be success on the exact PR he
 
 1. ~~**Graphics gate**~~ — PR **#83** merged (`main` **`c3f461ec`**, batches 289–326).
 2. ~~**Later rules stack**~~ — PR **#84** merged (`main` **`03bd9e73`**, batches 338–357).
-3. **Graphics pipeline follow-on** — fold `cursor/graphics-pipeline-5032` onto `main` in a **new gate PR** (unity/docs-art/tools-art overlay; coordinator GO). See agent store `graphics-gate-pr-plan-post-84.md`.
+3. **~~**Graphics pipeline follow-on**~~ — PR **#85** merged (`main` **`ff445170`**, presentation through batch 524).
 4. **Stack2 packet 2** — batches **358–365** on `later-rules-stack2` after refold on **`03bd9e73`** (rivals lane).
 5. **Unity** — PR **#2** HOLD until Hatch reports self-hosted runner label.
 

@@ -1,1 +1,0 @@
-using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusAlt76StatusSyncThrough262PresentationSpecTests { [Test] public void B518() { Assert.AreEqual(262,CampusAlt76StatusSyncThrough262PresentationSpec.LastSyncedBatch); } } }

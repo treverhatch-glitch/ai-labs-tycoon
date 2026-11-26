@@ -1,3 +1,0 @@
-# ERA-CAMPAIGN-GRACE-HUD-CHROME
-
-Batch **365**.

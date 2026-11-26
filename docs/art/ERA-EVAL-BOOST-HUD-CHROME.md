@@ -1,3 +1,0 @@
-# ERA-EVAL-BOOST-HUD-CHROME
-
-Batch **367**.

@@ -1,1 +1,0 @@
-namespace AiLabs.Unity.Hq { public static class CampusSeasonalA11yChromeTailRefreshThrough354PresentationSpec { public const int TailRefreshThroughPresentationBatch = 354; public static int PriorBatch => CampusSeasonalA11yChromeTailRefreshThrough351.TailRefreshThroughPresentationBatch; public const string RefreshDoc = "SEASONAL-A11Y-CHROME-TAIL-REFRESH-354.md"; } }

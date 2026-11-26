@@ -1,3 +1,0 @@
-# ALT 76 ROLLUP REFRESH 347
-
-Batch **348**.

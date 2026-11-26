@@ -1,1 +1,0 @@
-using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusGoPacketTailRefreshThrough334PresentationSpecTests { [Test] public void B478() { Assert.AreEqual(334,CampusGoPacketTailRefreshThrough334PresentationSpec.LastDocumentedPushBatch); } } }

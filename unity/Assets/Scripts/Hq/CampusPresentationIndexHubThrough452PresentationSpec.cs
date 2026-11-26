@@ -1,1 +1,0 @@
-namespace AiLabs.Unity.Hq { public static class CampusPresentationIndexHubThrough452PresentationSpec { public const int FirstHubBatch = CampusPresentationIndexHubPresentationSpec.FirstHubBatch; public const int LastHubBatch = 452; public const string HubDoc = "PRESENTATION-INDEX-HUB-THROUGH-452.md"; } }

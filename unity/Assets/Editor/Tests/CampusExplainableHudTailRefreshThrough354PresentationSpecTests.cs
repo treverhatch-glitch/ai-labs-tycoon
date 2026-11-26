@@ -1,1 +1,0 @@
-using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusExplainableHudTailRefreshThrough354PresentationSpecTests { [Test] public void B491() { Assert.AreEqual(354,CampusExplainableHudTailRefreshThrough354PresentationSpec.TailRefreshThroughPresentationBatch); } } }

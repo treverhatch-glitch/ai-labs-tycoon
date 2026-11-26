@@ -1,1 +1,0 @@
-using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusRivalWorldTailIndexRefreshThrough342PresentationSpecTests { [Test] public void B460() { Assert.AreEqual(342,CampusRivalWorldTailIndexRefreshThrough342PresentationSpec.TailRefreshThroughBatch); } } }

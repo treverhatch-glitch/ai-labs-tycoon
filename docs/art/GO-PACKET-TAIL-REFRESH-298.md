@@ -1,3 +1,0 @@
-# GO PACKET TAIL REFRESH 298
-
-Batch **350**.

@@ -1,1 +1,0 @@
-namespace AiLabs.Unity.Hq { public static class CampusAlt76RollupRefreshB259PresentationSpec { public const int LastDocumentedBatch = 259; public static int PriorRefreshLastBatch => CampusAlt76RollupRefreshB256.LastDocumentedBatch; public const string RefreshDoc = "ALT-76-ROLLUP-REFRESH-259.md"; } }
