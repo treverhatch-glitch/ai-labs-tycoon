@@ -2408,18 +2408,26 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q501a. Era N–P hardening tests after batch 23. DECIDED: intentional drift on `main` at `0bbbae03` (batch 23 / Q501 → 421/374); landed `6fbea2b2`; gate repins tip golden `9f9b1a4a…`, batch-18 reverts `90a01e4f…` / `dc1d5b5b…`, and batch-19–23 helper digests for schemas 156–169 (news/chat revert chain through Q501); graphics 289–326 have no `Rules/` delta vs merge base.
 
-### Q502. Era relief on margin satisfy payment? *Planned (schema 170):* `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved`.
+### Q502. Era relief on margin satisfy payment? DECIDED (schema 170): `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved` on cash margin satisfy.
 
-### Q503. Extra slack on scenario goals deadline in late era? *Planned (schema 171):* `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked`.
+### Q503. Extra slack on scenario goals deadline in late era? DECIDED (schema 171): `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked` on mid-check mark.
 
-### Q504. Extra weeks to answer takeoff crisis in late era? *Planned (schema 172):* `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced`.
+### Q504. Extra weeks to answer takeoff crisis in late era? DECIDED (schema 172): `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced` when takeoff is posed.
 
-### Q505. Batch twenty-four news, chat and combos. *Planned:* three headlines, three chat lines (424/377); `BatchTwentyFour*`.
+### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
 
 ### Q14416–Q15535. Batches 338–357 + host 338/346/350/354? DECIDED: landed **`main`** **`03bd9e73`** via **[PR #84](https://github.com/treverhatch-glitch/ai-labs-tycoon/pull/84)**.
 
 ### Q15536–Q16095. Batches 358–365 + host 358/362? DECIDED: packet **2** (refold on **`origin/main`** post-#84).
 
-### Q16096–Q16165. Batch 366+ bible refill? *Planned:* `HostExplainSystemsLaterTests` (**LOCAL**, Q16166+).
+### Q16096–Q16375. Batches 366–368 (NEXT #9–#11)? DECIDED: LOCAL hatch **27–29** + `HostExplainNext366LaterTests` (**HOLD push** until PR #87 lands).
+
+### Q16376–Q16585. Batches 369–371 (NEXT #12–#14 chat/glow, room age, chips+rivals)? DECIDED: LOCAL hatch **30–32** + `HostExplainNext370LaterTests`.
+
+### Q16586–Q16865. Batches 372–375 (NEXT #15–#18 control/leads/repair + rival log+balance)? DECIDED: LOCAL hatch **33–36** + `HostExplainNext375LaterTests` (**HOLD push** until #87 + refold + GO).
+
+### Q16866–Q17005. Batches 376–379 (NEXT #19–#22 objectives/successor/rush/ticker)? DECIDED: hatch **37–40** + `HostExplainNext379LaterTests`.
+
+### Q17006+. Next rivals slice after packet 6? *Planned:* coordinator GO after rules green on packet 6 + era batch 24 PR head.
 
 ### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.
