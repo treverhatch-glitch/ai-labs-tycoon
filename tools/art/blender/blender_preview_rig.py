@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 
 import bpy
@@ -81,6 +82,14 @@ def camera_half_fov_rad(cam_data: bpy.types.Camera) -> float:
     return min(fov_h, fov_v) * 0.5
 
 
+def _hdri_path() -> Path | None:
+    use = os.environ.get("EARLY_ART_HDRI", "1").strip().lower()
+    if use in ("0", "false", "no"):
+        return None
+    here = Path(__file__).resolve().parents[1] / "cc0" / "hdri" / "studio_small_09_1k.hdr"
+    return here if here.is_file() else None
+
+
 def setup_studio_world() -> None:
     world = bpy.data.worlds.new("EarlyPreviewWorld")
     bpy.context.scene.world = world
@@ -89,10 +98,20 @@ def setup_studio_world() -> None:
     links = world.node_tree.links
     nodes.clear()
     out = nodes.new("ShaderNodeOutputWorld")
-    bg = nodes.new("ShaderNodeBackground")
-    bg.inputs["Color"].default_value = STUDIO_GREY
-    bg.inputs["Strength"].default_value = 1.0
-    links.new(bg.outputs["Background"], out.inputs["Surface"])
+    hdr = _hdri_path()
+    if hdr:
+        tex = nodes.new("ShaderNodeTexEnvironment")
+        tex.image = bpy.data.images.load(str(hdr))
+        tex.image.colorspace_settings.name = "Non-Color"
+        bg = nodes.new("ShaderNodeBackground")
+        bg.inputs["Strength"].default_value = 0.55
+        links.new(tex.outputs["Color"], bg.inputs["Color"])
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
+    else:
+        bg = nodes.new("ShaderNodeBackground")
+        bg.inputs["Color"].default_value = STUDIO_GREY
+        bg.inputs["Strength"].default_value = 1.0
+        links.new(bg.outputs["Background"], out.inputs["Surface"])
 
 
 def add_shadow_floor_y(mins: Vector, maxs: Vector) -> bpy.types.Object:

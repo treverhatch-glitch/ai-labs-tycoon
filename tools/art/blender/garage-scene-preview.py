@@ -32,28 +32,29 @@ def snap_prop_to_floor(ob: bpy.types.Object, floor_y: float = FLOOR_Y) -> None:
     bpy.context.view_layer.update()
 
 
-def import_prop(asset_id: str, loc: tuple[float, float, float], rot_y_deg: float) -> bpy.types.Object | None:
+def import_prop(asset_id: str, loc: tuple[float, float, float], rot_y_deg: float) -> list[bpy.types.Object]:
     glb = KIT / f"{asset_id}.glb"
     if not glb.exists():
         print(f"WARN missing {glb}")
-        return None
+        return []
     bpy.ops.import_scene.gltf(filepath=str(glb))
     imported = [o for o in bpy.context.selected_objects if o.type == "MESH"]
     if not imported:
-        return None
-    bpy.ops.object.select_all(action="DESELECT")
-    for o in imported:
-        o.select_set(True)
-    bpy.context.view_layer.objects.active = imported[0]
-    if len(imported) > 1:
-        bpy.ops.object.join()
-    root = bpy.context.view_layer.objects.active
-    root.name = f"prop_{asset_id}"
-    root.location = Vector(loc)
-    root.rotation_euler[1] = rot_y_deg * 3.14159265 / 180.0
-    bpy.ops.object.transform_apply(rotation=True)
-    snap_prop_to_floor(root)
-    return root
+        return []
+    rot_rad = rot_y_deg * 3.14159265 / 180.0
+    import blender_common as common  # type: ignore
+
+    for ob in imported:
+        ob.location = Vector(loc)
+        ob.rotation_euler[1] = rot_rad
+        bpy.ops.object.select_all(action="DESELECT")
+        ob.select_set(True)
+        bpy.context.view_layer.objects.active = ob
+        bpy.ops.object.transform_apply(rotation=True)
+        snap_prop_to_floor(ob)
+        common._boost_garage_part_preview_material(ob)
+        common._boost_garage_part_preview_material(ob)
+    return imported
 
 
 def layout_from_manifest() -> list[tuple[str, tuple[float, float, float], float]]:
@@ -75,9 +76,7 @@ def main() -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     props: list[bpy.types.Object] = []
     for asset_id, loc, rot_y in layout_from_manifest():
-        ob = import_prop(asset_id, loc, rot_y)
-        if ob:
-            props.append(ob)
+        props.extend(import_prop(asset_id, loc, rot_y))
 
     import blender_preview_rig as rig  # type: ignore
 

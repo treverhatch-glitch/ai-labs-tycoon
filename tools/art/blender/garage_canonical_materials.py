@@ -31,11 +31,22 @@ _SLOT_SPECS: dict[str, tuple[tuple[float, float, float, float], float]] = {
 _CACHE: dict[str, bpy.types.Material] = {}
 
 
+def clear_cache() -> None:
+    _CACHE.clear()
+
+
 def get_canonical_material(slot: str) -> bpy.types.Material:
     key = slot
     cached = _CACHE.get(key)
-    if cached is not None and cached.name in bpy.data.materials:
-        return cached
+    if cached is not None:
+        try:
+            name = cached.name
+        except ReferenceError:
+            _CACHE.pop(key, None)
+            cached = None
+        if cached is not None and name in bpy.data.materials:
+            return bpy.data.materials[name]
+        _CACHE.pop(key, None)
     rgba, rough = _SLOT_SPECS[key]
     name = f"Garage_{slot}"
     mat = bpy.data.materials.get(name)

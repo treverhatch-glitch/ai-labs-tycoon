@@ -1,0 +1,21 @@
+{
+  "fidelity": "cc0-import-restyle",
+  "sourceLicense": "CC0-1.0",
+  "assets": [
+    {"id": "garage-desk-crt", "polyhavenId": "metal_office_desk", "targetMaxDim": 1.25},
+    {"id": "garage-folding-chair", "polyhavenId": "SchoolChair_01", "targetMaxDim": 0.95},
+    {"id": "garage-coffee-drip", "polyhavenId": "CoffeeCart_01", "targetMaxDim": 0.85},
+    {"id": "garage-crt-tower", "polyhavenId": "vintage_video_camera", "targetMaxDim": 1.1},
+    {"id": "garage-cable-spool", "polyhavenId": "garden_hose_wall_mounted_01", "targetMaxDim": 0.55, "scaleMul": 0.85},
+    {"id": "garage-roll-door", "polyhavenId": "rollershutter_door", "targetMaxDim": 2.2},
+    {"id": "garage-server-closet", "polyhavenId": "worn_metal_rack", "targetMaxDim": 1.9},
+    {"id": "garage-lot-curb", "polyhavenId": "concrete_road_barrier", "targetMaxDim": 1.0},
+    {"id": "garage-land-for-sale-sign", "polyhavenId": "WetFloorSign_01", "targetMaxDim": 0.9},
+    {"id": "garage-whiteboard-1995", "polyhavenId": "standing_chalkboard_01", "targetMaxDim": 1.35},
+    {"id": "garage-window-frame", "polyhavenId": "rollershutter_window_01", "targetMaxDim": 1.35},
+    {"id": "garage-wall-panel", "polyhavenId": "industrial_wall_lamp", "targetMaxDim": 1.1},
+    {"id": "garage-exterior-wall", "polyhavenId": "garden_hose_wall_mounted_01", "targetMaxDim": 1.4},
+    {"id": "garage-floor-tile", "polyhavenId": "WoodenTable_01", "targetMaxDim": 1.05},
+    {"id": "garage-voodude-rack", "polyhavenId": "worn_metal_rack", "targetMaxDim": 1.15, "scaleMul": 0.82}
+  ]
+}

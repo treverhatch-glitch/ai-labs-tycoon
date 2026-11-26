@@ -12,7 +12,11 @@ if [[ "${SKIP_BLENDER:-}" == "1" ]]; then
   python3 tools/art/generate_wisp_mascot.py
   python3 tools/art/generate_early_textures.py
 else
-  ./tools/art/run_blender_early_game.sh
+  if [[ "${GARAGE_CC0_HERO:-1}" == "1" ]]; then
+    ./tools/art/run_cc0_garage_hero.sh
+  else
+    ./tools/art/run_blender_early_game.sh
+  fi
   python3 tools/art/blender/sync_migration_inventory.py
   python3 tools/art/generate_early_hud_icons.py
   python3 tools/art/generate_wisp_mascot.py

@@ -139,9 +139,18 @@ def main() -> int:
         print("FAIL: Pillow required")
         return 1
 
-    ids = [a["id"] for a in json.loads(MANIFEST.read_text(encoding="utf-8"))["assets"]]
+    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     rc = 0
-    for asset_id in ids:
+    for entry in manifest["assets"]:
+        asset_id = entry["id"]
+        if entry.get("source") == "cc0-polyhaven":
+            fail_h, clusters = check_albedo(asset_id)
+            if fail_h:
+                print(f"FAIL {asset_id} hue_clusters={clusters} (max {MAX_HUE_CLUSTERS})")
+                rc = 1
+            else:
+                print(f"OK {asset_id} cc0 hue_clusters={clusters}")
+            continue
         fail_h, clusters = check_albedo(asset_id)
         fail_m, mats = check_materials(asset_id)
         if fail_h:

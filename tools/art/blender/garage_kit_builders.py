@@ -1,4 +1,8 @@
-"""Procedural multi-part garage kit shapes (Blender Z-up build)."""
+"""Procedural multi-part garage kit shapes (Blender Z-up build).
+
+DEPRECATED: primitive-box iteration frozen (Nov 2025). Use CC0 import pipeline
+`tools/art/run_cc0_garage_hero.sh` and `docs/art/LICENSES.md`.
+"""
 from __future__ import annotations
 
 import blender_common as bc
@@ -47,8 +51,10 @@ def build_crt_tower() -> None:
 def build_desk_crt() -> None:
     cb("Desktop", 1.22, 0.06, 0.62, 0, 0, 0.74)
     cb("Drawer", 0.42, 0.22, 0.48, -0.32, 0, 0.36)
-    for x in (-0.48, 0.48):
-        cb(f"Leg{x}", 0.06, 0.74, 0.06, x, 0.20, 0.37)
+    cb("DrawerHandle", 0.14, 0.04, 0.06, -0.38, 0.22, 0.36)
+    for i, x in enumerate((-0.48, -0.16, 0.16, 0.48)):
+        cb(f"Leg{i}", 0.06, 0.74, 0.06, x, 0.20, 0.37)
+    cb("MonitorStand", 0.12, 0.22, 0.10, 0.18, 0.18, 0.62)
     cb("CRTBezel", 0.48, 0.46, 0.40, 0.18, 0.10, 0.92)
     screen = cb("Screen", 0.38, 0.30, 0.06, 0.18, 0.26, 0.88)
     bc.assign_emission(screen, (0.08, 0.42, 0.28, 1.0), 2.6)
@@ -56,16 +62,20 @@ def build_desk_crt() -> None:
 
 
 def build_exterior_wall() -> None:
-    cb("Core", 0.52, 2.35, 0.12, 0, 0, 1.18)
-    cb("Trim", 0.56, 0.14, 0.08, 0, 0.02, 2.28)
-    cb("Baseboard", 0.54, 0.12, 0.10, 0, 0.02, 0.08)
-    cb("Stripe", 0.10, 1.60, 0.14, 0.20, 0, 1.18)
+    """Wall section lying on ground for 3/4 preview (not vertical slab)."""
+    cb("Core", 2.10, 0.10, 1.20, 0, 0, 0.05)
+    cb("TrimTop", 2.14, 0.06, 0.08, 0, 0.02, 1.24)
+    cb("Baseboard", 2.08, 0.08, 0.10, 0, 0.02, 0.02)
+    cb("Stripe", 0.12, 0.90, 0.06, 0.25, 0.04, 0.62)
+    cb("WindowCut", 0.55, 0.45, 0.04, -0.35, 0.04, 0.62)
+    cb("Sill", 0.60, 0.06, 0.08, -0.35, 0.05, 0.38)
 
 
 def build_floor_tile() -> None:
     cb("Slab", 1.0, 0.08, 1.0, 0, 0, 0.04)
-    for i, (x, z) in enumerate([(-0.25, -0.25), (0.25, 0.25), (-0.25, 0.25)]):
+    for i, (x, z) in enumerate([(-0.25, -0.25), (0.25, 0.25), (-0.25, 0.25), (0.25, -0.25)]):
         cb(f"TileAccent{i}", 0.22, 0.02, 0.22, x, z, 0.05)
+    cb("TrimEdge", 1.02, 0.02, 0.06, 0, 0.48, 0.05)
 
 
 def build_folding_chair() -> None:
@@ -107,6 +117,8 @@ def build_roll_door() -> None:
     cb("FrameR", 0.10, 2.25, 0.12, 1.05, 0, 1.12)
     cb("Header", 2.10, 0.14, 0.12, 0, 0, 2.22)
     cb("Curtain", 1.85, 1.78, 0.06, 0, 0.02, 1.02)
+    cb("Stripe", 0.14, 1.60, 0.06, 0.95, 0.05, 0.85)
+    cb("StripeB", 0.10, 0.50, 0.05, -0.95, 0.05, 0.55)
     cb("Drum", 0.24, 0.16, 0.14, 0, 0.04, 2.06)
     for i in range(8):
         cb(f"slat{i}", 1.72, 0.04, 0.02, 0, 0.035, 0.30 + i * 0.20)
@@ -134,10 +146,13 @@ def build_voodude_rack() -> None:
 
 
 def build_wall_panel() -> None:
-    cb("Wall", 0.50, 2.25, 0.10, 0, 0, 1.12)
-    cb("Stripe", 0.12, 1.75, 0.04, 0.15, 0.03, 1.15)
-    cb("Trim", 0.52, 0.10, 0.06, 0, 0.02, 2.18)
-    cb("Outlet", 0.10, 0.12, 0.04, -0.12, 0.04, 0.55)
+    """Flat wall section on ground (garage-wall-panel)."""
+    cb("Wall", 1.85, 0.10, 1.15, 0, 0, 0.05)
+    cb("Stripe", 0.12, 0.95, 0.04, 0.28, 0.04, 0.58)
+    cb("Trim", 1.88, 0.06, 0.08, 0, 0.02, 1.18)
+    cb("Outlet", 0.10, 0.12, 0.04, -0.22, 0.04, 0.42)
+    cb("Stud", 0.06, 0.90, 0.06, -0.55, 0, 0.52)
+    cb("Bracket", 0.08, 0.16, 0.10, 0.55, -0.02, 0.52)
 
 
 def build_whiteboard() -> None:
@@ -148,8 +163,22 @@ def build_whiteboard() -> None:
     cb("Tray", 1.10, 0.06, 0.10, 0, 0.02, 0.72)
     cb("MountTabL", 0.06, 0.08, 0.10, -0.52, -0.02, 1.65)
     cb("MountTabR", 0.06, 0.08, 0.10, 0.52, -0.02, 1.65)
-    for i, (x, z) in enumerate([(0.1, 1.35), (-0.25, 1.15), (0.3, 1.05), (-0.1, 0.95)]):
-        cb(f"stroke{i}", 0.14, 0.05, 0.03, x, 0.01, z)
+    cb("Chart", 0.82, 0.55, 0.04, 0.02, 0.045, 1.16)
+    cb("PadRed", 0.28, 0.20, 0.045, 0.44, 0.04, 0.86)
+    cb("PadBlue", 0.26, 0.18, 0.045, -0.48, 0.04, 1.24)
+    for i, (x, z) in enumerate(
+        [
+            (0.1, 1.35),
+            (-0.25, 1.15),
+            (0.3, 1.05),
+            (-0.1, 0.95),
+            (0.4, 1.25),
+            (-0.38, 1.05),
+            (0.18, 0.88),
+            (-0.32, 0.92),
+        ]
+    ):
+        cb(f"stroke{i}", 0.22, 0.10, 0.035, x, 0.025, z)
 
 
 def build_window_frame() -> None:

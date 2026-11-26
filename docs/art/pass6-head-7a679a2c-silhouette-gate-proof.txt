@@ -1,0 +1,10 @@
+# Proof: silhouette gate FAIL on pass-6 head (7a679a2c) procedural GLBs
+
+Replaced by CC0 hero pivot — procedural single-mesh blobs.
+
+```
+FAIL garage-desk-crt mesh_parts=1 (need >=5)
+FAIL garage-folding-chair mesh_parts=1 (need >=5)
+… (all 15 props mesh_parts=1 at 7a679a2c) …
+OK proof: silhouette gate failed as expected on prior head GLBs
+```

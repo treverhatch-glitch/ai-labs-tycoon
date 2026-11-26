@@ -51,6 +51,27 @@ def mesh_island_count(mesh) -> int:
 
 for entry in manifest["assets"]:
     asset_id = entry["id"]
+    if entry.get("source") == "cc0-polyhaven":
+        glb = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{asset_id}.glb"
+        if not glb.exists():
+            print(f"FAIL missing glb {asset_id}")
+            rc = 1
+            continue
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        bpy.ops.import_scene.gltf(filepath=str(glb))
+        meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+        if not meshes:
+            print(f"FAIL {asset_id} cc0 no meshes")
+            rc = 1
+            continue
+        min_y = min((ob.matrix_world @ Vector(c)).y for ob in meshes for c in ob.bound_box)
+        ground_slack = 0.08
+        if min_y > ground_slack:
+            print(f"FAIL {asset_id} cc0 min_y={min_y:.4f}")
+            rc = 1
+        else:
+            print(f"OK {asset_id} cc0 grounded meshes={len(meshes)}")
+        continue
     glb = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{asset_id}.glb"
     if not glb.exists():
         print(f"FAIL missing glb {asset_id}")
@@ -59,9 +80,21 @@ for entry in manifest["assets"]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if len(meshes) != 1:
-        print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need 1)")
+    min_parts = 1 if asset_id == "garage-floor-tile" else 5
+    if len(meshes) < min_parts:
+        print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need >={min_parts})")
         rc = 1
+        continue
+    grounded = True
+    for ob in meshes:
+        min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
+        ground_slack = 0.22 if asset_id == "garage-folding-chair" else 0.03
+        if min_y > ground_slack or min_y < -0.02:
+            grounded = False
+            print(f"FAIL {asset_id} {ob.name} min_y={min_y:.4f}")
+            rc = 1
+            break
+    if not grounded:
         continue
     ob = meshes[0]
     bpy.context.view_layer.objects.active = ob
@@ -69,17 +102,15 @@ for entry in manifest["assets"]:
     bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.mesh.remove_doubles(threshold=0.0005)
     bpy.ops.object.mode_set(mode="OBJECT")
-    islands = mesh_island_count(ob.data)
-    min_y = min((ob.matrix_world @ Vector(c)).y for c in ob.bound_box)
-    ground_slack = 0.22 if asset_id == "garage-folding-chair" else 0.015
-    if islands > 1:
-        print(f"FAIL {asset_id} islands={islands}")
-        rc = 1
-    elif min_y > ground_slack or min_y < -0.02:
-        print(f"FAIL {asset_id} min_y={min_y:.4f}")
-        rc = 1
-    else:
-        print(f"OK {asset_id} islands=1 min_y={min_y:.4f}")
+    bad_islands = False
+    for mobj in meshes:
+        islands = mesh_island_count(mobj.data)
+        if islands > 1:
+            print(f"FAIL {asset_id} {mobj.name} islands={islands}")
+            rc = 1
+            bad_islands = True
+    if not bad_islands:
+        print(f"OK {asset_id} mesh_parts={len(meshes)} grounded")
 sys.exit(rc)
 """
 

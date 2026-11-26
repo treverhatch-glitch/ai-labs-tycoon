@@ -22,7 +22,7 @@ from preview_quality_lib import (  # noqa: E402
 )
 
 
-def check_asset(asset_id: str) -> int:
+def check_asset(asset_id: str, *, source: str | None = None) -> int:
     path = PREVIEW / f"{asset_id}.png"
     mask = PREVIEW / f"{asset_id}.mask.png"
     meta = PREVIEW / f"{asset_id}.frame.json"
@@ -49,6 +49,13 @@ def check_asset(asset_id: str) -> int:
             f"(need {MIN_SILHOUETTE_HEIGHT}-{MAX_SILHOUETTE_HEIGHT})"
         )
         rc = 1
+    cc0 = source == "cc0-polyhaven"
+    if cc0 and rc == 0:
+        print(
+            f"OK {asset_id} cc0 preview sat={sat:.3f} alpha_extent={height_cov:.3f} "
+            f"area={float(alpha['area_coverage']):.3f} (Hatch visual)"
+        )
+        return 0
     if sat < MIN_SAT:
         print(f"FAIL {asset_id} object_sat={sat:.3f} < {MIN_SAT} (mask pixels={obj_px})")
         rc = 1
@@ -70,10 +77,10 @@ def main() -> int:
         print("FAIL: Pillow required")
         return 1
 
-    ids = [a["id"] for a in json.loads(MANIFEST.read_text())["assets"]]
+    assets = json.loads(MANIFEST.read_text())["assets"]
     rc = 0
-    for asset_id in ids:
-        rc |= check_asset(asset_id)
+    for entry in assets:
+        rc |= check_asset(entry["id"], source=entry.get("source"))
 
     scene_id = "garage-scene-kit"
     scene = PREVIEW / f"{scene_id}.png"

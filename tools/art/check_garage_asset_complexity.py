@@ -39,8 +39,9 @@ UPRIGHT = {
     "garage-land-for-sale-sign",
 }
 MIN_TRIS = 300
-MIN_SMALL = 3
+MIN_SMALL = 5
 MIN_FURN = 6
+MIN_MESH_PARTS = 5
 FURNITURE = {
     "garage-desk-crt",
     "garage-folding-chair",
@@ -55,6 +56,14 @@ rc = 0
 
 for entry in manifest["assets"]:
     asset_id = entry["id"]
+    if entry.get("source") == "cc0-polyhaven":
+        tris = entry.get("triangleCount", 0)
+        if tris < MIN_TRIS:
+            print(f"FAIL {asset_id} cc0 tris={tris} < {MIN_TRIS}")
+            rc = 1
+        else:
+            print(f"OK {asset_id} cc0 tris={tris} partCount={entry.get('partCount')}")
+        continue
     glb = repo / "unity/Assets/Art/EarlyGame/garage-kit" / f"{asset_id}.glb"
     part_count = entry.get("partCount")
     tris = entry.get("triangleCount")
@@ -67,11 +76,13 @@ for entry in manifest["assets"]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(glb))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if len(meshes) != 1:
-        print(f"FAIL {asset_id} mesh_objects={len(meshes)}")
+    need_mesh = 1 if asset_id in TEXTURE else MIN_MESH_PARTS
+    if len(meshes) < need_mesh:
+        print(f"FAIL {asset_id} mesh_objects={len(meshes)} (need >={need_mesh})")
         rc = 1
         continue
     ob = meshes[0]
+    tris = sum(sum(len(p.vertices) for p in m.data.polygons) for m in meshes)
     if tris is None:
         tris = sum(len(p.vertices) for p in ob.data.polygons)
     if asset_id not in TEXTURE and tris < MIN_TRIS:

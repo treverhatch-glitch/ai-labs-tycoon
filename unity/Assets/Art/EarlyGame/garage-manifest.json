@@ -1,6 +1,5 @@
 {
-  "fidelity": "blender-baked",
-  "blenderVersion": "4.0.2",
+  "fidelity": "cc0-import-restyle",
   "assets": [
     {
       "id": "garage-cable-spool",
@@ -11,7 +10,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-cable-spool/garage-cable-spool_roughness.png"
       },
       "preview": "docs/art/previews/garage-cable-spool.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: garden_hose_wall_mounted_01, restyled in-repo)",
+      "vertexCount": 7237,
+      "triangleCount": 35052,
+      "partCount": 2,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-cable-spool.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "garden_hose_wall_mounted_01"
     },
     {
       "id": "garage-coffee-drip",
@@ -22,7 +28,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-coffee-drip/garage-coffee-drip_roughness.png"
       },
       "preview": "docs/art/previews/garage-coffee-drip.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: CoffeeCart_01, restyled in-repo)",
+      "vertexCount": 28659,
+      "triangleCount": 107644,
+      "partCount": 3,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-coffee-drip.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "CoffeeCart_01"
     },
     {
       "id": "garage-crt-tower",
@@ -33,7 +46,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-crt-tower/garage-crt-tower_roughness.png"
       },
       "preview": "docs/art/previews/garage-crt-tower.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: vintage_video_camera, restyled in-repo)",
+      "vertexCount": 19202,
+      "triangleCount": 57682,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-crt-tower.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "vintage_video_camera"
     },
     {
       "id": "garage-desk-crt",
@@ -44,7 +64,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-desk-crt/garage-desk-crt_roughness.png"
       },
       "preview": "docs/art/previews/garage-desk-crt.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: metal_office_desk, restyled in-repo)",
+      "vertexCount": 6384,
+      "triangleCount": 21926,
+      "partCount": 4,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-desk-crt.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "metal_office_desk"
     },
     {
       "id": "garage-exterior-wall",
@@ -55,7 +82,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-exterior-wall/garage-exterior-wall_roughness.png"
       },
       "preview": "docs/art/previews/garage-exterior-wall.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: garden_hose_wall_mounted_01, restyled in-repo)",
+      "vertexCount": 7237,
+      "triangleCount": 35052,
+      "partCount": 2,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-exterior-wall.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "garden_hose_wall_mounted_01"
     },
     {
       "id": "garage-floor-tile",
@@ -66,12 +100,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-floor-tile/garage-floor-tile_roughness.png"
       },
       "preview": "docs/art/previews/garage-floor-tile.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)",
-      "vertexCount": 168,
-      "triangleCount": 656,
-      "partCount": 4,
+      "license": "CC0-1.0 (Poly Haven: WoodenTable_01, restyled in-repo)",
+      "vertexCount": 1136,
+      "triangleCount": 2856,
+      "partCount": 1,
       "blenderVersion": "4.0.2",
-      "generator": "tools/art/blender/garage-floor-tile.py"
+      "generator": "tools/art/blender/garage-floor-tile.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "WoodenTable_01"
     },
     {
       "id": "garage-folding-chair",
@@ -82,7 +118,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-folding-chair/garage-folding-chair_roughness.png"
       },
       "preview": "docs/art/previews/garage-folding-chair.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: SchoolChair_01, restyled in-repo)",
+      "vertexCount": 4059,
+      "triangleCount": 17802,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-folding-chair.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "SchoolChair_01"
     },
     {
       "id": "garage-land-for-sale-sign",
@@ -93,7 +136,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-land-for-sale-sign/garage-land-for-sale-sign_roughness.png"
       },
       "preview": "docs/art/previews/garage-land-for-sale-sign.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: WetFloorSign_01, restyled in-repo)",
+      "vertexCount": 366,
+      "triangleCount": 1132,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-land-for-sale-sign.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "WetFloorSign_01"
     },
     {
       "id": "garage-lot-curb",
@@ -104,7 +154,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-lot-curb/garage-lot-curb_roughness.png"
       },
       "preview": "docs/art/previews/garage-lot-curb.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: concrete_road_barrier, restyled in-repo)",
+      "vertexCount": 31781,
+      "triangleCount": 183573,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-lot-curb.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "concrete_road_barrier"
     },
     {
       "id": "garage-roll-door",
@@ -115,7 +172,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-roll-door/garage-roll-door_roughness.png"
       },
       "preview": "docs/art/previews/garage-roll-door.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: rollershutter_door, restyled in-repo)",
+      "vertexCount": 1340,
+      "triangleCount": 3312,
+      "partCount": 2,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-roll-door.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "rollershutter_door"
     },
     {
       "id": "garage-server-closet",
@@ -126,7 +190,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-server-closet/garage-server-closet_roughness.png"
       },
       "preview": "docs/art/previews/garage-server-closet.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: worn_metal_rack, restyled in-repo)",
+      "vertexCount": 7224,
+      "triangleCount": 19116,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-server-closet.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "worn_metal_rack"
     },
     {
       "id": "garage-voodude-rack",
@@ -137,7 +208,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-voodude-rack/garage-voodude-rack_roughness.png"
       },
       "preview": "docs/art/previews/garage-voodude-rack.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: worn_metal_rack, restyled in-repo)",
+      "vertexCount": 7224,
+      "triangleCount": 19116,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-voodude-rack.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "worn_metal_rack"
     },
     {
       "id": "garage-wall-panel",
@@ -148,7 +226,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-wall-panel/garage-wall-panel_roughness.png"
       },
       "preview": "docs/art/previews/garage-wall-panel.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: industrial_wall_lamp, restyled in-repo)",
+      "vertexCount": 3588,
+      "triangleCount": 13338,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-wall-panel.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "industrial_wall_lamp"
     },
     {
       "id": "garage-whiteboard-1995",
@@ -159,7 +244,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-whiteboard-1995/garage-whiteboard-1995_roughness.png"
       },
       "preview": "docs/art/previews/garage-whiteboard-1995.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: standing_chalkboard_01, restyled in-repo)",
+      "vertexCount": 3836,
+      "triangleCount": 11724,
+      "partCount": 1,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-whiteboard-1995.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "standing_chalkboard_01"
     },
     {
       "id": "garage-window-frame",
@@ -170,7 +262,14 @@
         "roughness": "Assets/Art/EarlyGame/garage-kit/textures/garage-window-frame/garage-window-frame_roughness.png"
       },
       "preview": "docs/art/previews/garage-window-frame.png",
-      "license": "CC0-1.0 (Blender-baked, in-repo)"
+      "license": "CC0-1.0 (Poly Haven: rollershutter_window_01, restyled in-repo)",
+      "vertexCount": 1696,
+      "triangleCount": 3926,
+      "partCount": 2,
+      "blenderVersion": "4.0.2",
+      "generator": "tools/art/blender/garage-window-frame.py",
+      "source": "cc0-polyhaven",
+      "sourceId": "rollershutter_window_01"
     }
   ]
 }
