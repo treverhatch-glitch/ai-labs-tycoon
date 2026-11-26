@@ -31,8 +31,6 @@ KENNEY_GLB_SOURCES: dict[str, str] = {
     "prop_lamp": "lampRoundTable.glb",
     "prop_rug": "rugRectangle.glb",
     "prop_bookcase": "bookcaseClosed.glb",
-    "prop_box_a": "cardboardBoxClosed.glb",
-    "prop_box_b": "cardboardBoxClosed.glb",
     "prop_workbench": "sideTable.glb",
     "prop_plant": "plantSmall1.glb",
     "prop_speaker": "speaker.glb",
@@ -54,8 +52,6 @@ PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
     "prop_bookcase": (0.55, 0.98),
     "prop_workbench": (0.28, 0.55),
     "prop_lamp": (0.20, 0.85),
-    "prop_box_a": (0.10, 0.45),
-    "prop_box_b": (0.10, 0.45),
     "prop_plant": (0.18, 0.62),
     "prop_speaker": (0.22, 0.55),
     "prop_tool_table": (0.20, 0.55),
@@ -64,8 +60,8 @@ PROP_HEIGHT_RATIOS: dict[str, tuple[float, float]] = {
 KENNEY_RESTYLE: dict[str, list[str]] = {
     "prop_desk": ["wood", "metal", "wood"],
     "prop_chair": ["wood", "metal", "wood"],
-    "prop_screen": ["metal", "screen", "metal"],
-    "prop_keyboard": ["metal", "wood"],
+    "prop_screen": ["prop", "screen", "prop"],
+    "prop_keyboard": ["wood", "prop"],
     "prop_rug": ["wood", "prop"],
     "prop_lamp": ["metal", "lamp_accent", "wood"],
     "prop_books": ["wood", "prop", "wood"],
@@ -92,8 +88,6 @@ KIT_ROLES: dict[str, str] = {
     "prop_bookcase": "shelf",
     "prop_workbench": "wood",
     "prop_lamp": "lamp_accent",
-    "prop_box_a": "box",
-    "prop_box_b": "box",
     "prop_plant": "plant",
     "prop_speaker": "metal",
     "prop_tool_table": "wood",
@@ -107,8 +101,6 @@ FURNITURE_SEPARATION_KEYS = frozenset(
         "prop_keyboard",
         "prop_lamp",
         "prop_rug",
-        "prop_box_a",
-        "prop_box_b",
         "prop_bookcase",
         "prop_workbench",
         "prop_plant",
@@ -380,11 +372,6 @@ def assert_scene_layout(
     desk = kit_objects.get("prop_desk")
     desk_top = cc0.world_bbox(desk)[1].z if desk else FLOOR_TOP
 
-    for key in ("prop_box_a", "prop_box_b"):
-        ob = kit_objects.get(key)
-        if ob and cc0.cardboard_lid_gap_m(ob) > GROUND_TOL:
-            failures.append(f"{key} lid gap {cc0.cardboard_lid_gap_m(ob):.4f} m > {GROUND_TOL}")
-
     ovl, ovl_notes = furniture_bbox_report(kit_objects)
     if ovl > 0:
         failures.append(f"furniture bbox overlap count {ovl} ({', '.join(ovl_notes[:4])})")
@@ -490,16 +477,7 @@ def enforce_chair_facing_desk(kit_objects: dict[str, bpy.types.Object]) -> None:
     ang = math.atan2(dc[1] - cc[1], dc[0] - cc[0])
     chair.rotation_euler = (0.0, 0.0, ang)
     bpy.context.view_layer.update()
-    for _ in range(24):
-        cmn, cmx = cc0.world_bbox(chair)
-        dmn, dmx = cc0.world_bbox(desk)
-        if not _aabb_overlap(cmn, cmx, dmn, dmx):
-            gap = _aabb_clearance_m(cmn, cmx, dmn, dmx)
-            if gap >= FURN_CLEARANCE_M:
-                return
-        chair.location.x += 0.06
-        chair.location.y += 0.06
-        bpy.context.view_layer.update()
+    bpy.context.view_layer.update()
     snap_min_z(chair, FLOOR_TOP)
 
 
@@ -549,15 +527,13 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     keys: list[str] = []
     cx, cy = 2.05, 1.95
     specs: list[tuple[str, str, tuple[float, float], float, float | None]] = [
-        ("prop_rug", "rugRectangle.glb", (cx, cy), math.radians(200), FURN_SCALE * 0.48),
+        ("prop_rug", "rugRectangle.glb", (cx, cy), math.radians(200), FURN_SCALE * 0.42),
         ("prop_desk", "desk.glb", (cx, cy), math.radians(200), FURN_SCALE),
-        ("prop_chair", "chairDesk.glb", (cx + 0.72, cy + 0.78), math.radians(200), FURN_SCALE * 0.88),
+        ("prop_chair", "chairDesk.glb", (cx + 0.46, cy + 0.94), math.radians(200), FURN_SCALE * 0.88),
         ("prop_screen", "computerScreen.glb", (cx + 0.06, cy + 0.08), math.radians(200), FURN_SCALE * 0.72),
         ("prop_keyboard", "computerKeyboard.glb", (cx - 0.12, cy + 0.02), math.radians(195), FURN_SCALE * 0.82),
         ("prop_lamp", "lampRoundTable.glb", (cx + 0.38, cy - 0.06), math.radians(-18), FURN_SCALE * 0.90),
         ("prop_bookcase", "bookcaseClosed.glb", (0.72, 2.92), math.pi / 2, FURN_SCALE * 0.92),
-        ("prop_box_a", "cardboardBoxClosed.glb", (0.92, 2.92), math.radians(18), FURN_SCALE * 0.82),
-        ("prop_box_b", "cardboardBoxClosed.glb", (1.42, 2.55), math.radians(-12), FURN_SCALE * 0.82),
         ("prop_workbench", "sideTable.glb", (0.82, 0.92), math.radians(8), FURN_SCALE * 0.86),
         ("prop_plant", "plantSmall1.glb", (2.95, 1.18), math.radians(-25), FURN_SCALE * 1.0),
         ("prop_speaker", "speaker.glb", (1.92, 0.88), math.radians(12), FURN_SCALE * 0.84),
@@ -581,16 +557,6 @@ def place_founder_cluster(kit_objects: dict[str, bpy.types.Object]) -> list[str]
     mn, _ = cc0.world_bbox(wb)
     wb.location.x += (wall_thick + 0.02) - mn.x
     keys.append("prop_whiteboard")
-
-    kit_objects["prop_server"] = garage_piece(
-        "garage-server-closet",
-        "prop_server",
-        (2.78, 2.25, 0.0),
-        rot_z=math.radians(-90),
-        scale=1.12,
-    )
-    snap_min_z(kit_objects["prop_server"], FLOOR_TOP)
-    keys.append("prop_server")
 
     bpy.context.view_layer.update()
     mins, _ = cc0.world_bbox(kit_objects["prop_bookcase"])
@@ -676,16 +642,18 @@ def write_scene_gate_metadata(kit_objects: dict[str, bpy.types.Object], path: Pa
                 **contact,
             }
         )
-    cardboard_gaps: dict[str, float] = {}
-    for key in ("prop_box_a", "prop_box_b"):
-        ob = kit_objects.get(key)
-        if ob:
-            cardboard_gaps[key] = round(cc0.cardboard_lid_gap_m(ob), 5)
     ovl_count, ovl_pairs = furniture_bbox_report(kit_objects)
+    export_names: list[str] = []
+    for ob in kit_objects.values():
+        if ob is None:
+            continue
+        export_names.append(ob.name)
+        if ob.data and hasattr(ob.data, "name"):
+            export_names.append(ob.data.name)
     payload = {
         "assetId": ASSET_ID,
         "kenneyFurnitureGlb": dict(KENNEY_GLB_SOURCES),
-        "cardboardLidGapM": cardboard_gaps,
+        "exportObjectNames": sorted(set(export_names)),
         "furnitureBboxOverlapCount": ovl_count,
         "furnitureBboxOverlapPairs": ovl_pairs,
         "furnitureClearanceMinM": FURN_CLEARANCE_M,
@@ -714,9 +682,7 @@ def apply_kit_materials(kit_objects: dict[str, bpy.types.Object]) -> None:
         if key.startswith("_") or key == "kit_wall_left":
             continue
         role = KIT_ROLES.get(key, "prop")
-        if key in ("prop_box_a", "prop_box_b"):
-            cc0.apply_palette_material(ob, "box")
-        elif key in KENNEY_RESTYLE:
+        if key in KENNEY_RESTYLE:
             cc0.apply_kenney_restyle(ob, KENNEY_RESTYLE[key])
         else:
             cc0.apply_palette_material(ob, role)

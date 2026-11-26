@@ -11,6 +11,19 @@ GATES = REPO / "docs/art/previews/garage-interior-room-kit-scene-gates.json"
 FIXTURE_4E = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 ROOM = 4.0
 THIN_PROP_MAX_M = 0.12
+FORBIDDEN_NAME_SUBSTRINGS = ("chest", "crate", "lid", "bin", "cardboard")
+
+
+def forbidden_export_name_errs(names: list[str], *, label: str = "") -> list[str]:
+    prefix = f"{label} " if label else ""
+    errs: list[str] = []
+    for name in names:
+        low = str(name).lower()
+        for sub in FORBIDDEN_NAME_SUBSTRINGS:
+            if sub in low:
+                errs.append(f"FAIL: {prefix}forbidden export name {name!r} (matches {sub!r})")
+                break
+    return errs
 
 
 def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
@@ -39,7 +52,7 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
         if g > tol:
             errs.append(f"FAIL: {prefix}{key} cardboard lid mesh gap {g * 100:.2f} cm > 1 cm")
     kenney = data.get("kenneyFurnitureGlb") or {}
-    for req in ("prop_desk", "prop_chair", "prop_lamp", "prop_screen", "prop_box_a"):
+    for req in ("prop_desk", "prop_chair", "prop_lamp", "prop_screen", "prop_keyboard"):
         glb = kenney.get(req)
         if not glb or not str(glb).endswith(".glb"):
             errs.append(f"FAIL: {prefix}missing kenneyFurnitureGlb[{req!r}]")
@@ -52,6 +65,11 @@ def placement_gate_errs(data: dict, *, label: str = "") -> list[str]:
     wall_plane = float(data.get("rollDoorWallPlaneYM", 0.05))
     if door_max_y > wall_plane + 0.05:
         errs.append(f"FAIL: {prefix}roll door maxY {door_max_y:.3f} > wall plane + 5 cm")
+
+    export_names = data.get("exportObjectNames") or []
+    if not export_names:
+        errs.append(f"FAIL: {prefix}missing exportObjectNames")
+    errs.extend(forbidden_export_name_errs(export_names, label=label.strip()))
 
     props = data.get("propInstances") or []
     if len(props) < int(data.get("minPropCount", 8)):

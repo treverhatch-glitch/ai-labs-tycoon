@@ -19,7 +19,7 @@ COLORMAP = INCOMING / "kenney_building-kit/Models/GLB format/Textures/colormap.p
 BLENDER_VERSION = f"{bpy.app.version[0]}.{bpy.app.version[1]}.{bpy.app.version[2]}"
 
 PALETTE = {
-    "floor": (0.50, 0.48, 0.45, 1.0),
+    "floor": (0.47, 0.48, 0.47, 1.0),
     "wall": (0.92, 0.58, 0.28, 1.0),
     "trim": (0.88, 0.48, 0.18, 1.0),
     "metal": (0.48, 0.62, 0.88, 1.0),

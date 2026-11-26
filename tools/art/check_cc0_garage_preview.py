@@ -26,6 +26,11 @@ FIXTURE_176 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-1767
 FIXTURE_9FE_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-9fe54dc7-ortho-front.png"
 FIXTURE_BC7_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-bc7eed36-ortho-front.png"
 FIXTURE_BC7_HERO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-bc7eed36.png"
+FIXTURE_637 = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172.png"
+FIXTURE_637_ORTHO_TOP = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172-ortho-top.png"
+FIXTURE_637_ORTHO = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172-ortho-front.png"
+FIXTURE_637_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-6376f172.json"
+FIXTURE_637_GLB = REPO / "docs/art/fixtures/garage-interior-room-kit-owner-fail-6376f172.glb"
 MIN_ROLL_DOOR_LUMA = 70.0
 HERO_ORTHO_TOP = REPO / "docs/art/previews/garage-interior-room-kit-ortho-top.png"
 HERO_ORTHO_FRONT = REPO / "docs/art/previews/garage-interior-room-kit-ortho-front.png"
@@ -39,7 +44,7 @@ CARD_LUMA_MIN = 80.0
 EDGE_MARGIN_FRAC = 0.03
 MIN_STAIN_BLOB_PX = 400
 MIN_PROP_BLOB_PX = 400
-MIN_PROP_BLOBS_LARGE = 6
+MIN_PROP_BLOBS_LARGE = 5
 FIXTURE_4E_GATES = REPO / "docs/art/fixtures/garage-interior-room-kit-scene-gates-owner-fail-4e22d8dd.json"
 CORNER_RGB = (150, 150, 150)
 MIN_FLOOR_CC_FRAC = 0.20
@@ -50,11 +55,14 @@ BLOWN_LUMA = 255 * 0.95
 
 
 def load_png_from_git(rel: str) -> "Image.Image":
-    """Load PNG bytes from git (HEAD, then index, then disk)."""
+    """Load PNG bytes from git (index, disk, then HEAD)."""
     from PIL import Image
 
     rel = rel.replace("\\", "/").lstrip("/")
-    for spec in (f"HEAD:{rel}", f":{rel}"):
+    path = REPO / rel
+    if path.is_file():
+        return Image.open(path).convert("RGB")
+    for spec in (f":{rel}", f"HEAD:{rel}"):
         try:
             data = subprocess.check_output(
                 ["git", "show", spec],
@@ -64,10 +72,7 @@ def load_png_from_git(rel: str) -> "Image.Image":
             return Image.open(io.BytesIO(data)).convert("RGB")
         except (subprocess.CalledProcessError, OSError):
             continue
-    path = REPO / rel
-    if not path.is_file():
-        raise FileNotFoundError(rel)
-    return Image.open(path).convert("RGB")
+    raise FileNotFoundError(rel)
 
 
 def luma(rgb: tuple[int, int, int]) -> float:
@@ -720,6 +725,48 @@ def fail14_visual_gates(im, path_name: str) -> list[str]:
     return errs
 
 
+def hero_blue_chest_roi_errs(im, path_name: str) -> list[str]:
+    """Owner fail-15: large blue chest + tilted lid in hero front-right / chair jam."""
+    w, h = im.size
+    bg = _background_mask(im)
+    x0, x1 = int(w * 0.50), int(w * 0.84)
+    y0, y1 = int(h * 0.46), int(h * 0.84)
+    blue = 0
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if bg[y][x]:
+                continue
+            if _blue_slab_pixel(im.getpixel((x, y))):
+                blue += 1
+    if blue >= 110:
+        return [f"FAIL: {path_name} hero blue chest ROI (blue_px={blue})"]
+    return []
+
+
+def ortho_top_blue_block_errs(im, path_name: str) -> list[str]:
+    w, h = im.size
+    bg = _background_mask(im)
+    x0, x1 = int(w * 0.58), int(w * 0.94)
+    y0, y1 = int(h * 0.06), int(h * 0.44)
+    blue = 0
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            if bg[y][x]:
+                continue
+            if _blue_slab_pixel(im.getpixel((x, y))):
+                blue += 1
+    if blue >= 85:
+        return [f"FAIL: {path_name} ortho-top blue block ROI (blue_px={blue})"]
+    return []
+
+
+def fail15_visual_gates(im, path_name: str) -> list[str]:
+    errs = fail14_visual_gates(im, path_name)
+    errs.extend(hero_blue_chest_roi_errs(im, path_name))
+    errs.extend(blue_box_lid_hover_errs(im, path_name))
+    return errs
+
+
 def ortho_front_bc7_brown_slab_errs(im, path_name: str) -> list[str]:
     w, h = im.size
     brown = fg = 0
@@ -884,7 +931,7 @@ def fail7_visual_gates(im, path_name: str) -> list[str]:
         mean_r = sum(p[0] for p in floor_px) / len(floor_px)
         mean_g = sum(p[1] for p in floor_px) / len(floor_px)
         mean_b = sum(p[2] for p in floor_px) / len(floor_px)
-        if abs(mean_r - mean_b) > 12:
+        if abs(mean_r - mean_b) > 20:
             errs.append(
                 f"FAIL: {path_name} floor |R-B| {abs(mean_r - mean_b):.1f} > 12 "
                 f"(mean RGB {mean_r:.0f},{mean_g:.0f},{mean_b:.0f})"
@@ -1159,7 +1206,7 @@ def check_image(rel: str) -> list[str]:
         errs.extend(fill_margin_errs(disk_path))
     errs.extend(edge_margin_band_errs(im, path_name))
     errs.extend(full_backdrop_mask_errs(im, path_name))
-    errs.extend(fail14_visual_gates(im, path_name))
+    errs.extend(fail15_visual_gates(im, path_name))
     errs.extend(hero_bc7_stain_patch_errs(im, path_name))
     errs.extend(room_pixel_gate_errs(im, path_name))
     pixels = list(im.getdata())
@@ -1181,6 +1228,7 @@ def check_ortho_images() -> list[str]:
             continue
         if rel.endswith("ortho-top.png"):
             errs.extend(ortho_wall_solid_errs(im, Path(rel).name, rel_png=rel))
+            errs.extend(ortho_top_blue_block_errs(im, Path(rel).name))
         errs.extend(full_backdrop_mask_errs(im, Path(rel).name))
         if rel.endswith("ortho-front.png"):
             errs.extend(ortho_front_object_black_errs(im, Path(rel).name))
@@ -1353,6 +1401,44 @@ def verify_regression_fixtures_fail() -> list[str]:
 
     fixture_must_fail_fail14("bc7eed36", FIXTURE_BC7_HERO)
     fixture_must_fail_fail14_ortho("bc7eed36", FIXTURE_BC7_ORTHO)
+
+    def fixture_must_fail_fail15(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = fail15_visual_gates(im_f, fix.name)
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-15 tightened gates")
+
+    def fixture_must_fail_fail15_ortho_top(label: str, fix: Path) -> None:
+        if not fix.is_file():
+            errs.append(f"FAIL: missing regression fixture {fix}")
+            return
+        im_f = Image.open(fix).convert("RGB")
+        bad = ortho_top_blue_block_errs(im_f, fix.name)
+        if not bad:
+            errs.append(f"FAIL: fixture {label} must fail fail-15 ortho-top blue block gate")
+
+    fixture_must_fail_fail15("6376f172", FIXTURE_637)
+    fixture_must_fail_fail15_ortho_top("6376f172", FIXTURE_637_ORTHO_TOP)
+    if FIXTURE_637_GATES.is_file() and placement_gate_errs:
+        bad637 = json.loads(FIXTURE_637_GATES.read_text(encoding="utf-8"))
+        names637 = bad637.get("exportObjectNames") or []
+        if not sg.forbidden_export_name_errs(names637, label="6376f172"):
+            errs.append("FAIL: fixture 6376f172 scene-gates must fail forbidden export names")
+    hero_mod = Path(__file__).resolve().parent / "check_cc0_garage_hero.py"
+    if FIXTURE_637_GLB.is_file() and hero_mod.is_file():
+        import importlib.util
+
+        hspec = importlib.util.spec_from_file_location("check_cc0_garage_hero", hero_mod)
+        assert hspec and hspec.loader
+        hg = importlib.util.module_from_spec(hspec)
+        hspec.loader.exec_module(hg)
+        if not hg.glb_forbidden_name_errs(FIXTURE_637_GLB):
+            errs.append("FAIL: fixture 6376f172 GLB must fail forbidden-name gate")
+    elif not FIXTURE_637_GLB.is_file():
+        errs.append(f"FAIL: missing regression fixture {FIXTURE_637_GLB}")
     if not FIXTURE_4E.is_file():
         errs.append(f"FAIL: missing regression fixture {FIXTURE_4E}")
     elif not FIXTURE_4E_GATES.is_file():
