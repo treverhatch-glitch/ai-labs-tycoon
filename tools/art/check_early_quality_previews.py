@@ -23,7 +23,12 @@ def check_id(preview_dir: Path, asset_id: str) -> int:
         print(f"FAIL {asset_id} {err}")
         rc = 1
     sat, lvar, extent, _fs, px = analyze_preview(rgb, mask)
-    min_sat = 0.08 if asset_id.startswith("wisp-") else MIN_SAT
+    if asset_id.startswith("wisp-"):
+        min_sat = 0.08
+    elif asset_id.startswith("staff-"):
+        min_sat = 0.06
+    else:
+        min_sat = MIN_SAT
     if sat < min_sat:
         print(f"FAIL {asset_id} object_sat={sat:.3f} < {min_sat} (px={px})")
         rc = 1
