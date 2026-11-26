@@ -2420,6 +2420,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q15536–Q16095. Batches 358–365 + host 358/362? DECIDED: packet **2** (refold on **`origin/main`** post-#84).
 
-### Q16096–Q16165. Batch 366+ bible refill? *Planned:* `HostExplainSystemsLaterTests` (**LOCAL**, Q16166+).
+### Q16096–Q16375. Batches 366–368 (NEXT #9–#11)? DECIDED: LOCAL hatch **27–29** + `HostExplainNext366LaterTests` (**HOLD push** until PR #87 lands).
+
+### Q16376–Q16585. Batches 369–371 (NEXT #12–#14 chat/glow, room age, chips+rivals)? DECIDED: LOCAL hatch **30–32** + `HostExplainNext370LaterTests`.
+
+### Q16586–Q16865. Batches 372–375 (NEXT #15–#18 control/leads/repair + rival log+balance)? DECIDED: LOCAL hatch **33–36** + `HostExplainNext375LaterTests` (**HOLD push** until #87 + refold + GO).
+
+### Q16866+. Batch 376+ bible refill? *Planned:* training objectives, successor design, rushed launch, news ticker host slices (LOCAL).
 
 ### Q16166–Q16170. Merge train (Nov 26). DECIDED: **#85** → **`ff445170`**; packet **358–365** refold on `ff445170`; landing PR next; no force-push.
