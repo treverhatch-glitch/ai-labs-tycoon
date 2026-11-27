@@ -1,8 +1,9 @@
 name: rules
 
 # Plain C# SimTests + two-year SimCli. Era PRs skip Category=LongRunning; workflow_dispatch full suite.
-# Large merge refs (era/graphics gates) may exceed 60m wall clock; job cap 90m. PR subset uses blame-hang (15m) for stuck tests; golden-revert shells can be quiet during nested builds.
-# Runs on pull requests and by hand only. No push trigger; a new push cancels the in-flight run on the same PR.
+# PR subset: parallel SimTests; GoldenRevertTestRunner serializes git checkouts. Blame-hang 15m (golden-revert shells can be quiet >5m).
+# restore-golden-tip after SimTests so SimCli never builds on a mid-revert tree if blame-hang aborts the host.
+# No push trigger; a new push cancels the in-flight run on the same PR.
 on:
   pull_request:
   workflow_dispatch:
@@ -17,7 +18,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: ${{ github.event_name == 'pull_request' && 120 || 90 }}
     env:
       DOTNET_NOLOGO: true
       DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -27,10 +28,22 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Rules tests (PR subset)
+        id: rules-pr-subset
         if: github.event_name == 'pull_request'
+        timeout-minutes: 110
         run: dotnet test tools/SimTests -c Release --filter "Category!=LongRunning" --blame-hang-timeout 15m --logger "console;verbosity=minimal"
+      - name: Restore golden tip after SimTests
+        if: always() && github.event_name == 'pull_request'
+        run: bash tools/restore-golden-tip.sh
       - name: Rules tests (full)
+        id: rules-full
         if: github.event_name != 'pull_request'
+        timeout-minutes: 85
         run: dotnet test tools/SimTests -c Release --blame-hang-timeout 5m --logger "console;verbosity=minimal"
+      - name: Restore golden tip after SimTests
+        if: always() && github.event_name != 'pull_request'
+        run: bash tools/restore-golden-tip.sh
       - name: A two-year game still plays headless
+        if: steps.rules-pr-subset.outcome == 'success' || steps.rules-full.outcome == 'success'
+        timeout-minutes: 20
         run: dotnet run --project tools/SimCli -c Release -- run --years 2

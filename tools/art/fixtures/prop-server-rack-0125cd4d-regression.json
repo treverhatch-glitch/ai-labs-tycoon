@@ -1,0 +1,9 @@
+{
+  "regressionHead": "0125cd4d8",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-0125cd4d-regression.png",
+  "intendedGateFailures": [
+    "flat brown box — rack_detail gate (low lum stddev / LED count / bay edges)",
+    "backdrop_band_bad_px elevated vs v3"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate."
+}
