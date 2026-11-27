@@ -16,21 +16,7 @@ import kenney_researcher_lib as kr  # noqa: E402
 def main() -> None:
     os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
     kr.build_researcher_kenney()
-    _face_only = frozenset(
-        {
-            "KenneyResearcherStock",
-            "ResearcherLabCoat",
-            "FounderEye_L",
-            "FounderEye_R",
-            "ResearcherGlasses",
-            "ResearcherHairCap",
-        }
-    )
-    meshes = [
-        m
-        for m in kr.collect_researcher_scene_meshes()
-        if m.name.split(".")[0] in _face_only
-    ]
+    meshes = kr.collect_researcher_scene_meshes()
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "0"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "8"

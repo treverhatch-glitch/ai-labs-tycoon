@@ -507,9 +507,9 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         y_face = y_face_fn(wc)
         neck_w = sum(_vg_weight(body, v.index, frozenset({"Neck"})) for v in f.verts) / len(f.verts)
         open_chest = _coat_open_v(lat, thw, h, lm, y_face)
-        if neck_w > 0.20 and y_face > 0.02 and lat < thw * 0.14 and h > lm.h_neck - 0.08:
+        if neck_w > 0.18 and y_face > -0.05 and lat < thw * 0.42:
             open_chest = True
-        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.10:
+        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.50:
             open_chest = True
         lapel_only = (
             y_face > 0.06
@@ -708,10 +708,10 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bvh = _body_bvh_evaluated(body)
     cast_in = -fwd
     parts: list[bpy.types.Object] = []
-    outer = max(eye_diameter * 1.42, head_w * 0.102)
-    major_r = outer * 0.5
-    minor_r = max(head_w * 0.0075, lm.span * 0.0042, 0.0032)
-    bar = minor_r * 1.05
+    outer_diam = max(eye_diameter * 1.42, head_w * 0.101)
+    major_r = outer_diam * 0.5
+    minor_r = max(head_w * 0.0092, lm.span * 0.0046, 0.0038)
+    bar = minor_r * 1.08
     inv = body.matrix_world.inverted()
     max_lat = head_w * 0.525
 
@@ -728,19 +728,16 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
         torus.rotation_euler = rot
         torus.data.materials.append(mat)
         parts.append(torus)
-        outer_pt = center_w + right * (lateral_sign * major_r)
-        if outer_pt.dot(right) * lateral_sign > max_lat:
-            outer_pt = center_w + right * (lateral_sign * (max_lat - head_w * 0.04))
-        ear_pt = (
-            center_w
-            - fwd * (head_w * 0.40)
-            + right * (lateral_sign * head_w * 0.50)
-            + Vector((0.0, 0.0, 0.0))
-        )
+        outer_pt = center_w + right * (lateral_sign * major_r * 0.96)
+        if abs(lateral_from_front(outer_pt, hc, fwd)) > max_lat:
+            outer_pt = center_w + right * (lateral_sign * (max_lat - minor_r))
+        ear_pt = center_w - fwd * (head_w * 0.44) + right * (lateral_sign * head_w * 0.50)
+        if abs(lateral_from_front(ear_pt, hc, fwd)) > max_lat:
+            ear_pt = hc - fwd * (head_w * 0.44) + right * (lateral_sign * max_lat)
         mid_t = inv @ ((outer_pt + ear_pt) * 0.5)
         length = (ear_pt - outer_pt).length
         arm_dir = (ear_pt - outer_pt).normalized()
-        bpy.ops.mesh.primitive_cylinder_add(radius=bar, depth=length, location=mid_t)
+        bpy.ops.mesh.primitive_cylinder_add(radius=bar, depth=max(length, minor_r * 4), location=mid_t)
         temple = bpy.context.active_object
         temple.name = f"{name}.temple"
         temple.rotation_euler = arm_dir.to_track_quat("Z", "Y").to_euler()
@@ -765,7 +762,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=inv @ mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses.bridge"
-    bridge.scale = (full_sep * 0.18, bar * 1.35, bar * 1.15)
+    bridge.scale = (full_sep * 0.16, bar * 1.45, bar * 1.2)
     bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)

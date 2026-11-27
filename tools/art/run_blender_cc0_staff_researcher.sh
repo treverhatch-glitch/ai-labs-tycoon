@@ -40,7 +40,6 @@ diag_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_researcher_fac
 echo "$diag_out"
 echo "$diag_out" | grep -q '^OK face_diagnostic' || { echo "FAIL face diagnostic OK line" >&2; exit 1; }
 test -s "docs/art/previews/staff-researcher-face-diagnostic-0deg.png" || { echo "FAIL missing face diagnostic png"; exit 1; }
-python3 tools/art/researcher_hero_render_selfcheck.py docs/art/previews/staff-researcher-face-diagnostic-0deg.png
 python3 tools/art/check_cc0_staff_researcher_diagnostic_eyes.py
 
 echo "=== tools/art/blender/render_kenney_researcher_axis_sheet.py ==="
@@ -63,6 +62,9 @@ echo "$out" | grep -q '^OK staff-researcher-idle ' || { echo "FAIL staff-researc
 
 python3 tools/art/check_cc0_staff_researcher_eye_glb_world.py
 test -s "docs/art/previews/staff-researcher-idle.png" || { echo "FAIL missing researcher preview"; exit 1; }
+
+python3 tools/art/researcher_hero_render_selfcheck.py
+python3 tools/art/researcher_hero_render_selfcheck.py --report-only
 
 python3 tools/art/check_cc0_staff_preview_upright.py
 python3 tools/art/check_cc0_staff_silhouette.py
