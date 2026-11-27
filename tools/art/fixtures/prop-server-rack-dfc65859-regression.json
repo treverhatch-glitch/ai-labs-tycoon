@@ -1,0 +1,11 @@
+{
+  "regressionHead": "dfc658594876d69b9da3f596857f1b2740811fb3",
+  "fixture_png": "tools/art/fixtures/prop-server-rack-dfc65859-regression.png",
+  "intendedGateFailures": [
+    "backdrop_band_bad_px (grey216 HDRI leak / visible floor plane)",
+    "backdrop_grid_nine_delta",
+    "corner_rgb_max_delta",
+    "subject_bbox_frac too small (~50% not ~70%)"
+  ],
+  "note": "Must FAIL check_preview_quality; do not regenerate this PNG."
+}

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 81cefbdd46954a9d53a1cd7399a8d4f0
+ModelImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  materials:
+    materialImportMode: 2
+  animations:
+    legacyGenerateAnimations: 4
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60

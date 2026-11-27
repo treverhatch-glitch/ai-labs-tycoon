@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusEraSchema191HudChromePresentationSpecTests { [Test] public void B569() { Assert.AreEqual(191,CampusEraSchema191HudChromePresentationSpec.EraSchemaSlot); } } }
