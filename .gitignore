@@ -49,7 +49,7 @@ id_ed25519*
 .DS_Store
 Thumbs.db
 
-# Python
+# Python bytecode (never commit)
 __pycache__/
 *.pyc
 *.py[cod]
