@@ -131,7 +131,10 @@ namespace AiLabs.Rules.Systems
         public static void OnTakeoff(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = TakeoffCrisisEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Takeoff, expire);
+            TakeoffCrisisEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         public static void OnRungSix(GameConfig c, GameState state, LabState lab)
@@ -155,7 +158,7 @@ namespace AiLabs.Rules.Systems
             PoseTriggered(c, state, lab, OfficeTrigger.Release);
         }
 
-        static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger)
+        static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger, int expireWeeks = -1)
         {
             List<OfficeEventConfig> all = WithTrigger(c, trigger);
             if (all.Count == 0) return;
@@ -169,7 +172,8 @@ namespace AiLabs.Rules.Systems
             OfficeEventConfig chosen = fresh[(int)(Mix(state, lab, 3) % fresh.Count)];
             if (IsPending(lab)) Lapse(c, state, lab);
             lab.OfficeEventId = chosen.IdValue;
-            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            int weeks = expireWeeks >= 0 ? expireWeeks : c.Office.ExpireWeeks;
+            lab.OfficeEventExpires = state.Tick + weeks;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
         }

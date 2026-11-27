@@ -2406,10 +2406,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q501. Batch twenty-three news, chat and combos. DECIDED: three headlines, three chat lines (421/374); `BatchTwentyThreeNewsChatTests`, `BatchTwentyThreeTogetherTests`.
 
-### Q502. Era relief on margin satisfy payment? *Planned (schema 170):* `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved`.
+### Q502. Era relief on margin satisfy payment? DECIDED (schema 170): `marginSatisfyEraRelief`; `MarginSatisfyEraRelieved` on `SatisfyMarginCall` when cash due is cut.
 
-### Q503. Extra slack on scenario goals deadline in late era? *Planned (schema 171):* `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked`.
+### Q503. Extra slack on scenario goals deadline in late era? DECIDED (schema 171): `scenarioGoalsEraSlack`; `ScenarioGoalsEraSlacked` when the goal check mark is extended.
 
-### Q504. Extra weeks to answer takeoff crisis in late era? *Planned (schema 172):* `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced`.
+### Q504. Extra weeks to answer takeoff crisis in late era? DECIDED (schema 172): `takeoffCrisisEraGrace`; `TakeoffCrisisEraGraced` when a takeoff office event is posed.
 
-### Q505. Batch twenty-four news, chat and combos. *Planned:* three headlines, three chat lines (424/377); `BatchTwentyFour*`.
+### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
+
+### Q506. Equipment tier simulation (ALT-527)? OPEN: art uses era-suffixed assets first; `ComputeConfig` / upgrade path waits for a rivals or compute lane after more era schema batches land (see `docs/compute-equipment-era-tiers-2026-11-27.md` in Context).

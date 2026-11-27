@@ -708,6 +708,12 @@ namespace AiLabs.Rules.Sim
                     return who + " answered a rung-six crisis with a shorter cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
                 case EventKind.DataSourceAcquireEraDiscounted:
                     return who + " acquired data source \"" + e.Ref + "\" with $" + e.Amount + " era discount.";
+                case EventKind.MarginSatisfyEraRelieved:
+                    return who + " satisfied a margin call with $" + e.Amount + " era relief on the payment.";
+                case EventKind.ScenarioGoalsEraSlacked:
+                    return who + " got " + e.SubjectId + " extra weeks before scenario goal \"" + e.Ref + "\" is checked.";
+                case EventKind.TakeoffCrisisEraGraced:
+                    return who + " got " + e.SubjectId + " extra weeks to answer a takeoff crisis.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

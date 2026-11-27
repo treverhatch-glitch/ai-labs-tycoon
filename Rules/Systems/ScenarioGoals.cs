@@ -33,7 +33,11 @@ namespace AiLabs.Rules.Systems
                 long span = lab.CampaignDeadlineTick - lab.PlanStartTick;
                 if (span > 0)
                 {
-                    long mark = lab.PlanStartTick + span * sc.GoalDeadlinePermille / MathI.Permille;
+                    long baseMark = lab.PlanStartTick + span * sc.GoalDeadlinePermille / MathI.Permille;
+                    int slack = ScenarioGoalsEraSlack.SlackWeeks(c, state);
+                    long mark = baseMark + slack;
+                    if (slack > 0 && state.Tick + 1 == baseMark)
+                        ScenarioGoalsEraSlack.OnSlackWeek(c, state, lab, slack, goal.IdValue);
                     if (state.Tick + 1 < mark) return;
                 }
             }

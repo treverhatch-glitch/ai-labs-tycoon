@@ -12465,6 +12465,24 @@
         "text": "{lab} acquired {ref} with an era licensing discount"
       },
       {
+        "id": "margin-satisfy-era-relief",
+        "kind": "MarginSatisfyEraRelieved",
+        "pick": -1,
+        "text": "{lab} satisfied a margin call with an era payment relief"
+      },
+      {
+        "id": "scenario-goals-era-slack",
+        "kind": "ScenarioGoalsEraSlacked",
+        "pick": -1,
+        "text": "{lab} bought extra time on scenario goal {ref}"
+      },
+      {
+        "id": "takeoff-crisis-era-grace",
+        "kind": "TakeoffCrisisEraGraced",
+        "pick": -1,
+        "text": "{lab} got extra weeks to answer a takeoff crisis"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16864,6 +16882,39 @@
         "toYear": 0
       },
       {
+        "id": "margin-satisfy-relief-chat",
+        "kind": "MarginSatisfyEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Treasury paid less than the margin call asked for.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-goals-slack-chat",
+        "kind": "ScenarioGoalsEraSlacked",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The campaign goal deadline slid a few weeks.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "takeoff-grace-chat",
+        "kind": "TakeoffCrisisEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Everyone pretended the takeoff memo could wait.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19672,5 +19723,20 @@
     "enabled": 1,
     "minEra": 2,
     "discountPermille": 200
+  },
+  "marginSatisfyEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "scenarioGoalsEraSlack": {
+    "enabled": 1,
+    "minEra": 2,
+    "slackWeeks": 8
+  },
+  "takeoffCrisisEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 2
   }
 }
