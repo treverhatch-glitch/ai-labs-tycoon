@@ -340,13 +340,16 @@ def pick_walk_contact_frames(
     up = _pick_up({contact_l, contact_r, down})
     frames = [contact_l, down, contact_r, up]
     if len(set(frames)) < 4:
-        for fr, *_ in rows:
-            if fr not in frames:
-                frames = [contact_l, down, contact_r, fr]
-                break
-    if max(frames) - min(frames) < 6:
         quarter = max(1, (end - start) // 4)
-        frames = [contact_l, lo + quarter, contact_r, min(end, hi + quarter)]
+        frames = [
+            contact_l,
+            lo + quarter,
+            contact_r,
+            min(end, hi + quarter),
+        ]
+    if max(frames) - min(frames) < 4:
+        quarter = max(1, (end - start) // 4)
+        frames = [start + quarter, start + 2 * quarter, start + 3 * quarter, end]
     return frames
 
 
@@ -504,11 +507,43 @@ def _bind_coat_researcher_armature(
                 raw[name] = max(raw.get(name, 0.0), g.weight * w_dist * 0.35)
         return raw
 
+    from researcher_shirt_derived_meshes import (
+        SKIRT_ALLOWED_VG,
+        SKIRT_NAME,
+        SLEEVE_ALLOWED_VG,
+        SLEEVES_NAME,
+    )
+
+    base = coat.name.split(".")[0]
+    is_skirt = base == SKIRT_NAME
+    is_sleeves = base == SLEEVES_NAME
     for v in coat.data.vertices:
         co = coat.matrix_world @ v.co
         raw = _nearest_weights(co)
-        sleeve = _sleeve_vert(co, raw)
+        sleeve = _sleeve_vert(co, raw) if not is_skirt else False
         picked: dict[str, float] = {}
+        if is_sleeves:
+            for name, w in raw.items():
+                if name in SLEEVE_ALLOWED_VG:
+                    picked[name] = picked.get(name, 0.0) + w
+            if sum(picked.values()) < 0.08:
+                side = "Left" if lateral_from_front(co, hc, fwd) < 0 else "Right"
+                picked[f"{side}Arm"] = 0.55
+                picked[f"{side}ForeArm"] = 0.45
+            total = sum(picked.values()) or 1.0
+            for name, w in picked.items():
+                coat.vertex_groups[name].add([v.index], w / total, "REPLACE")
+            continue
+        if is_skirt:
+            for name, w in raw.items():
+                if name in SKIRT_ALLOWED_VG:
+                    picked[name] = picked.get(name, 0.0) + w
+            if not picked:
+                picked["Hips"] = 1.0
+            total = sum(picked.values())
+            for name, w in picked.items():
+                coat.vertex_groups[name].add([v.index], w / total, "REPLACE")
+            continue
         for name, w in raw.items():
             if name in COAT_WEIGHT_DENY:
                 continue

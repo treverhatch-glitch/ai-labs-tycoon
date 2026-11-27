@@ -45,6 +45,55 @@ def _face_world_centroid(body: bpy.types.Object, face: bmesh.types.BMFace) -> Ve
     return wc / len(face.verts)
 
 
+def _repair_weights_from_nearest_body(
+    ob: bpy.types.Object, body: bpy.types.Object, *, allow: frozenset[str]
+) -> None:
+    import mathutils.kdtree as kdtree
+
+    kd = kdtree.KDTree(len(body.data.vertices))
+    for i, v in enumerate(body.data.vertices):
+        kd.insert(body.matrix_world @ v.co, i)
+    kd.balance()
+    for vi, v in enumerate(ob.data.vertices):
+        total = sum(g.weight for g in v.groups)
+        if total >= 0.92:
+            continue
+        co = ob.matrix_world @ v.co
+        _idx, bidx, _dist = kd.find(co)
+        raw: dict[str, float] = {}
+        for g in body.data.vertices[bidx].groups:
+            if g.group >= len(body.vertex_groups):
+                continue
+            name = body.vertex_groups[g.group].name
+            if name in allow:
+                raw[name] = raw.get(name, 0.0) + g.weight
+        if not raw:
+            raw["Chest"] = 1.0
+        tot = sum(raw.values())
+        for g in list(v.groups):
+            ob.vertex_groups[g.group].remove([vi])
+        for name, w in raw.items():
+            if name not in ob.vertex_groups:
+                ob.vertex_groups.new(name=name)
+            ob.vertex_groups[name].add([vi], w / tot, "REPLACE")
+
+
+def _normalize_vertex_groups(ob: bpy.types.Object) -> None:
+    for vi in range(len(ob.data.vertices)):
+        v = ob.data.vertices[vi]
+        gs = [g for g in v.groups if g.weight > 1e-5]
+        if not gs:
+            continue
+        total = sum(g.weight for g in gs)
+        if total < 1e-6:
+            continue
+        scale = 1.0 / total
+        if abs(scale - 1.0) < 1e-4:
+            continue
+        for g in gs:
+            ob.vertex_groups[g.group].add([vi], g.weight * scale, "REPLACE")
+
+
 def _purge_vertex_groups(
     ob: bpy.types.Object, *, allow: frozenset[str], deny: frozenset[str] | None = None
 ) -> None:
@@ -97,11 +146,11 @@ def pick_shirt_skirt_faces(
             continue
         wc = _face_world_centroid(body, f)
         h = (wc.z - lo) / span
-        if h < lm.h_waist - 0.08 or h > lm.h_waist + 0.40:
+        if h < lm.h_waist - 0.20 or h > lm.h_waist + 0.52:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat > thw * 1.25:
+        if lat > thw * 1.42:
             continue
         pick.add(f.index)
     return pick
@@ -125,11 +174,11 @@ def pick_shirt_sleeve_faces(
             continue
         wc = _face_world_centroid(body, f)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.18 or h > lm.h_waist + 0.06:
+        if h < lm.h_neck - 0.22 or h > lm.h_waist + 0.14:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat <= thw * 0.36:
+        if lat <= thw * 0.30:
             continue
         pick.add(f.index)
     changed = True
@@ -144,10 +193,31 @@ def pick_shirt_sleeve_faces(
                 continue
             wc = _face_world_centroid(body, f)
             h = (wc.z - lo) / span
-            if lm.h_neck - 0.18 <= h <= lm.h_waist + 0.06:
+            if lm.h_neck - 0.22 <= h <= lm.h_waist + 0.14:
                 pick.add(f.index)
                 changed = True
     return pick
+
+
+def _attach_coat_part_to_body_or_arm(
+    ob: bpy.types.Object,
+    body: bpy.types.Object,
+    arm: bpy.types.Object | None,
+) -> None:
+    if arm is not None:
+        if ob.parent:
+            world = ob.matrix_world.copy()
+            ob.parent = None
+            ob.matrix_world = world
+        for mod in list(ob.modifiers):
+            if mod.type == "ARMATURE":
+                ob.modifiers.remove(mod)
+        mod = ob.modifiers.new("CoatWalkArmature", "ARMATURE")
+        mod.object = arm
+        bpy.context.view_layer.update()
+        return
+    ob.parent = body
+    ob.matrix_parent_inverse = body.matrix_world.inverted()
 
 
 def spawn_shirt_derived_coat_parts(
@@ -195,8 +265,9 @@ def spawn_shirt_derived_coat_parts(
     for ob in (skirt, sleeves):
         ob.data.materials.clear()
         ob.data.materials.append(coat_mat)
-        _purge_vertex_groups(ob, allow=SKIRT_ALLOWED_VG if ob.name.startswith(SKIRT_NAME) else SLEEVE_ALLOWED_VG, deny=VG_DENY_HEAD)
-        ob.parent = body
-        ob.matrix_parent_inverse = body.matrix_world.inverted()
+        allow = SKIRT_ALLOWED_VG if ob.name.startswith(SKIRT_NAME) else SLEEVE_ALLOWED_VG
+        _purge_vertex_groups(ob, allow=allow, deny=VG_DENY_HEAD)
+        _repair_weights_from_nearest_body(ob, body, allow=allow)
+        _normalize_vertex_groups(ob)
         parts.append(ob)
     return parts

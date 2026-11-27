@@ -36,6 +36,14 @@ def _pose_walk(arm, frame, scene_data):
     bpy.context.view_layer.update()
 
 
+def _pose_idle(scene_data) -> None:
+    bpy.context.scene.frame_set(bpy.context.scene.frame_start)
+    apply_idle_arm_blend(
+        scene_data.arm, scene_data.idle_arm_quats, scene_data.bind_arm_quats
+    )
+    bpy.context.view_layer.update()
+
+
 def _effective_cam_yaw(asset_id: str, cam_yaw_deg: float) -> float:
     """True Z orbit; founder straight-on hides eye meshes — tiny yaw for panel 0."""
     if asset_id == "staff-founder-idle" and cam_yaw_deg == 0.0:
@@ -60,8 +68,11 @@ def _render_tile(
         founder_eye_preview_tweak(meshes)
     else:
         researcher_lab_coat_preview_tweak(meshes)
-    if walk_pose and scene_data:
-        _pose_walk(scene_data.arm, scene_data.walk_frames[1], scene_data)
+    if scene_data and scene_data.arm:
+        if walk_pose:
+            _pose_walk(scene_data.arm, scene_data.walk_frames[0], scene_data)
+        else:
+            _pose_idle(scene_data)
     bpy.context.view_layer.update()
     bc.render_preview(meshes, out, asset_id=asset_id, mask_meshes=meshes)
 
@@ -88,6 +99,12 @@ def main() -> int:
     else:
         researcher_lab_coat_preview_tweak(scene_data.render_meshes)
 
+    scene = bpy.context.scene
+    scene.frame_set(scene.frame_start)
+    apply_idle_arm_blend(
+        scene_data.arm, scene_data.idle_arm_quats, scene_data.bind_arm_quats
+    )
+    bpy.context.view_layer.update()
     meshes = scene_data.render_meshes
     stem = (
         "staff-founder-turnaround"
@@ -105,7 +122,7 @@ def main() -> int:
             float(cam_yaw),
             tile,
             walk_pose=False,
-            scene_data=None,
+            scene_data=scene_data,
         )
         tiles.append(Image.open(tile).convert("RGB"))
         mask_src = tile.with_name(tile.stem + ".mask.png")

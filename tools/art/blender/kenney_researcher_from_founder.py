@@ -218,26 +218,24 @@ def apply_researcher_founder_base_materials(
 
 def spawn_researcher_coat_skirt(body: bpy.types.Object, arm: bpy.types.Object | None = None) -> bpy.types.Object:
     """Shirt-slot duplicate from hip→mid-thigh (no ad-hoc cylinder)."""
+    from researcher_shirt_derived_meshes import _attach_coat_part_to_body_or_arm
+
     coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
     parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
-    skirt = next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
-    if arm is not None:
-        from kenney_hero_walk_strip import _bind_coat_researcher_armature
-
-        _bind_coat_researcher_armature(skirt, body, arm)
-    return skirt
+    for ob in parts:
+        _attach_coat_part_to_body_or_arm(ob, body, arm)
+    return next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
 
 
 def spawn_researcher_shirt_derived_parts(
     body: bpy.types.Object, arm: bpy.types.Object | None = None
 ) -> list[bpy.types.Object]:
+    from researcher_shirt_derived_meshes import _attach_coat_part_to_body_or_arm
+
     coat_mat = _ensure_material("ResearcherCoatSkirtMat", RESEARCHER_LAB_COAT_RGBA, 0.36)
     parts = spawn_shirt_derived_coat_parts(body, shirt_slot=SLOT_SHIRT, coat_mat=coat_mat)
-    skirt = next(p for p in parts if p.name.split(".")[0] == SKIRT_NAME)
-    if arm is not None:
-        from kenney_hero_walk_strip import _bind_coat_researcher_armature
-
-        _bind_coat_researcher_armature(skirt, body, arm)
+    for ob in parts:
+        _attach_coat_part_to_body_or_arm(ob, body, arm)
     return parts
 
 
