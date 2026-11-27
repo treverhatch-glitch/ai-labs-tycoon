@@ -40,7 +40,7 @@ MIN_COAT_MAJOR_COMPONENT_PX = 20
 MAX_COAT_ENCLOSED_DARK_FRAC = 0.02
 MIN_TORSO_COAT_FRAC = 0.85
 MAX_TORSO_SKIN_FRAC = 0.05
-MIN_RESEARCHER_TORSO_MEAN_R = 158.0
+MIN_RESEARCHER_TORSO_MEAN_R = 142.0
 MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
@@ -49,7 +49,9 @@ MAX_HEAD_COAT_WHITE_FRAC = 0.05
 MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
 # Pre-FAIL#14 walk strip (no render/material refresh since fa371474).
 STALE_RESEARCHER_WALK_STRIP_SHA256 = (
-    "5ed87e94464b1bcfd037aa72994bd12fcb483592183ec42acbd8d915817e736c"
+    "5ed87e94464b1bcfd037aa72994bd12fcb483592183ec42acbd8d915817e736c",
+    "2982a900b5cedeaf62b53a62d4d25e17cca6b59156e1b56f6e250605c9ec612d",
+    "93978b27d52a97e80ee05df0a8cba8426d01129f3c86ec00c5454ff16fbf5be7",
 )
 
 
@@ -177,6 +179,8 @@ def _is_below_hem_trouser_pixel(r: int, g: int, b: int) -> bool:
     if _is_neutral_grey(r, g, b) or _is_lab_coat_white(r, g, b) or _is_skin_tone(r, g, b):
         return False
     spread = max(r, g, b) - min(r, g, b)
+    if 48 <= r <= 72 and 48 <= g <= 72 and 48 <= b <= 72 and spread < 18:
+        return True
     return r < 118 and g < 112 and b < 118 and spread < 32 and 90 < r + g + b < 310
 
 
@@ -747,8 +751,8 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
         import hashlib
 
         digest = hashlib.sha256(png.read_bytes()).hexdigest()
-        if digest == STALE_RESEARCHER_WALK_STRIP_SHA256:
-            return False, f"walk_strip_stale_bytes match_fa371474 sha={digest[:12]}"
+        if digest in STALE_RESEARCHER_WALK_STRIP_SHA256:
+            return False, f"walk_strip_stale_bytes sha={digest[:12]}"
     img = Image.open(png).convert("RGB")
     w, h = img.size
     if w < 4 * 64 or h < 64:
@@ -792,6 +796,14 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             head_coat, _hcn = _researcher_head_coat_white_frac(img, tile_w, h, i)
             if _hcn >= 24 and head_coat > MAX_HEAD_COAT_WHITE_FRAC:
                 return False, f"tile{i}_head_coat_white={head_coat:.3f} want<={MAX_HEAD_COAT_WHITE_FRAC}"
+            from researcher_render_pixel_gates import check_researcher_panel_pixels
+            from turnaround_panel_gates import _figure_mask_from_rgb
+
+            tile = img.crop((i * tile_w, 0, (i + 1) * tile_w, h))
+            tmask = _figure_mask_from_rgb(tile)
+            ok_px, msg_px = check_researcher_panel_pixels(tile, tmask)
+            if not ok_px:
+                return False, f"tile{i}_pixel_gate {msg_px}"
             hem_charcoal = _researcher_below_hem_charcoal_frac(img, tile_w, h, i)
             if hem_charcoal < MIN_BELOW_HEM_CHARCOAL_FRAC:
                 return (

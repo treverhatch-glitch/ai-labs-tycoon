@@ -738,6 +738,10 @@ def apply_walk_materials_to_hero(
         elif asset_id == "staff-researcher-idle":
             if base == "KenneyResearcherStock":
                 apply_researcher_materials(ob)
+            elif base in ("ResearcherHairCap",):
+                from kenney_researcher_stock_recolor import _tune_researcher_material_albedos
+
+                _tune_researcher_material_albedos(ob)
 
 
 def build_researcher_walk_scene() -> WalkHeroScene:
@@ -808,25 +812,8 @@ def configure_preview_env(asset_id: str) -> None:
 
 
 def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
-    for ob in meshes:
-        if ob.type != "MESH":
-            continue
-        for slot in ob.material_slots:
-            mat = slot.material
-            if not mat or mat.name.split(".")[0] != "ResearcherLabCoat":
-                continue
-            if not mat.use_nodes:
-                continue
-            bsdf = mat.node_tree.nodes.get("Principled BSDF")
-            if bsdf:
-                bsdf.inputs["Base Color"].default_value = (1.0, 0.995, 0.98, 1.0)
-                bsdf.inputs["Roughness"].default_value = 0.26
-                em = bsdf.inputs.get("Emission") or bsdf.inputs.get("Emission Color")
-                if em is not None:
-                    em.default_value = (0.96, 0.95, 0.92, 1.0)
-                stren = bsdf.inputs.get("Emission Strength")
-                if stren is not None:
-                    stren.default_value = 0.28
+    """No render-time overlay: lab coat colour comes from mesh material slots only."""
+    del meshes
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:

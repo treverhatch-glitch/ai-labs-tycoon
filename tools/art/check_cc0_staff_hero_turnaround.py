@@ -88,6 +88,12 @@ def _check(path: Path, name: str, asset_id: str) -> tuple[bool, str]:
             return False, f"panel{i}_grey_mannequin={grey:.3f} want<={MAX_PANEL_GREY_MANNEQUIN_FRAC}"
         if luma < MIN_PANEL_LUMINANCE:
             return False, f"panel{i}_dim_luma={luma:.1f} want>={MIN_PANEL_LUMINANCE}"
+        if asset_id == "staff-researcher-idle":
+            from researcher_render_pixel_gates import check_researcher_panel_pixels
+
+            ok_px, msg_px = check_researcher_panel_pixels(panel, mask)
+            if not ok_px:
+                return False, f"panel{i}_pixel_gate {msg_px}"
         if i < 4:
             eye_counts.append(_eye_count(panel, mask, i, asset_id))
             means.append(head_mean_rgb(panel, mask))

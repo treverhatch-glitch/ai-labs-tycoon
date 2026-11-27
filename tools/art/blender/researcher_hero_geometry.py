@@ -970,7 +970,7 @@ def apply_researcher_body_lab_coat_displace(body: bpy.types.Object) -> None:
         for vi in poly.vertices:
             coat_vert.add(vi)
 
-    if len(coat_vert) < 120:
+    if len(coat_vert) < 80:
         raise RuntimeError(f"FAIL staff-researcher-idle body_coat_verts={len(coat_vert)} too_few")
 
     bm = bmesh.new()

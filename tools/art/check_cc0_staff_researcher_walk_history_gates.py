@@ -9,7 +9,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 CHECK = REPO / "tools/art/check_cc0_staff_hero_walk_strip.py"
-HISTORIC = ("8885108d", "4ba51dd5", "4a2b3261", "c06d0a57", "fa371474", "99d91135")
+HISTORIC = ("8885108d", "4ba51dd5", "4a2b3261", "c06d0a57", "fa371474", "99d91135", "d38b9957")
 
 
 def main() -> int:

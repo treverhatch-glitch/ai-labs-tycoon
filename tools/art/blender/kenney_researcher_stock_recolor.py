@@ -30,7 +30,7 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
-RESEARCHER_TROUSERS = (0.12, 0.12, 0.15, 1.0)
+RESEARCHER_TROUSERS = (58 / 255, 58 / 255, 58 / 255, 1.0)
 RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
@@ -342,7 +342,7 @@ def apply_researcher_materials(
         _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
-        _ensure_material("ResearcherTee", RESEARCHER_SKIN, 0.54, specular=0.05),
+        _ensure_material("ResearcherTee", RESEARCHER_COLLAR, 0.42, specular=0.05),
         _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.54, specular=0.05),
         _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.52, specular=0.06),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
@@ -405,6 +405,12 @@ def apply_researcher_materials(
     _strip_coat_from_head_neck_hair(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _clamp_coat_hem_leg_trousers(bm, slots, ob, lm, ws, hc, fwd)
     _force_leg_trousers_below_hem(bm, slots, ob, lm)
+    _ban_torso_skin_shirt_band(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _force_head_vgroup_slots(bm, slots, ob, lm)
+    _purge_coat_slots_above_neck(bm, slots, ob, lm)
+    _force_upper_head_slots_by_height(bm, slots, ob, lm)
+    _ensure_minimum_coat_torso(bm, slots, ob, lm)
+    _convert_torso_skin_shirt_to_coat(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     lo, span = lm.zmin, lm.span
     for face in bm.faces:
         fi = face.index
@@ -423,7 +429,39 @@ def apply_researcher_materials(
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()
+    _tune_researcher_material_albedos(ob)
     bc.smooth_shade(ob)
+
+
+def _tune_researcher_material_albedos(ob: bpy.types.Object) -> None:
+    """Slot albedos (not per-render overlay) tuned for staff preview exposure."""
+    targets = {
+        "ResearcherLabCoat": (1.0, 0.995, 0.99, 1.0),
+        "ResearcherTrousers": (112 / 255, 112 / 255, 112 / 255, 1.0),
+        "ResearcherHair": RESEARCHER_HAIR,
+        "ResearcherSkin": RESEARCHER_SKIN,
+        "ResearcherHand": RESEARCHER_SKIN,
+        "ResearcherTee": RESEARCHER_COLLAR,
+    }
+    for slot in ob.material_slots:
+        mat = slot.material
+        if not mat:
+            continue
+        base = mat.name.split(".")[0]
+        rgba = targets.get(base)
+        if not rgba or not mat.use_nodes:
+            continue
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if bsdf:
+            bsdf.inputs["Base Color"].default_value = rgba
+            if base == "ResearcherLabCoat":
+                bsdf.inputs["Roughness"].default_value = 0.32
+                em = bsdf.inputs.get("Emission") or bsdf.inputs.get("Emission Color")
+                if em is not None:
+                    em.default_value = (0.95, 0.94, 0.92, 1.0)
+                stren = bsdf.inputs.get("Emission Strength")
+                if stren is not None:
+                    stren.default_value = 0.26
 
 
 _VG_LEGS = frozenset(
@@ -591,22 +629,184 @@ _VG_BODY_COAT = frozenset(
         "RightArm",
         "LeftForeArm",
         "RightForeArm",
-        "LeftUpLeg",
-        "RightUpLeg",
     }
 )
 _VG_TORSO_COAT = frozenset(
     {
-        "Hips",
         "Spine",
         "Chest",
         "UpperChest",
         "LeftShoulder",
         "RightShoulder",
-        "LeftUpLeg",
-        "RightUpLeg",
     }
 )
+
+
+def _ban_torso_skin_shirt_band(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Torso column shoulder→mid-thigh: lab coat white only (narrow neck V may stay)."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] not in (SLOT_SHIRT, SLOT_SKIN, SLOT_COLLAR, SLOT_LAPEL):
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck + 0.06 or h > lm.h_waist + 0.46:
+            continue
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if (
+            slots[fi] == SLOT_COLLAR
+            and y_face > 0.12
+            and lat < thw * 0.12
+            and lm.h_neck + 0.04 <= h <= lm.h_neck + 0.16
+        ):
+            continue
+        if lat <= thw * 0.92:
+            slots[fi] = SLOT_LAB_COAT
+
+
+def _convert_torso_skin_shirt_to_coat(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] not in (SLOT_SKIN, SLOT_SHIRT, SLOT_COLLAR, SLOT_LAPEL):
+            continue
+        if _vg_mean_on_face(ob, face, frozenset({"Head", "Neck"})) > 0.15:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lm.h_neck + 0.08 <= h <= lm.h_waist + 0.48 and lat <= thw * 0.88:
+            if (
+                slots[fi] == SLOT_COLLAR
+                and y_face > 0.10
+                and lat < thw * 0.10
+                and lm.h_neck + 0.04 <= h <= lm.h_neck + 0.17
+            ):
+                continue
+            slots[fi] = SLOT_LAB_COAT
+
+
+def _ensure_minimum_coat_torso(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    torso_vg = frozenset({"Spine", "Chest", "UpperChest", "Hips"})
+    for face in bm.faces:
+        fi = face.index
+        if _vg_mean_on_face(ob, face, torso_vg) < 0.18:
+            continue
+        if _vg_mean_on_face(ob, face, frozenset({"Head"})) > 0.1:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if lm.h_neck + 0.04 <= h <= lm.h_waist + 0.50:
+            slots[fi] = SLOT_LAB_COAT
+
+
+def _force_upper_head_slots_by_height(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    decals = {SLOT_EYE, SLOT_BROW, SLOT_MOUTH}
+    bad = {SLOT_LAB_COAT, SLOT_SHIRT, SLOT_COLLAR, SLOT_LAPEL, SLOT_HAND}
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] in decals:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck + 0.03:
+            continue
+        if slots[fi] in bad or slots[fi] == SLOT_LAB_COAT:
+            slots[fi] = SLOT_HAIR if h > lm.h_neck + 0.12 else SLOT_SKIN
+
+
+def _purge_coat_slots_above_neck(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] != SLOT_LAB_COAT:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h <= lm.h_neck - 0.04:
+            continue
+        slots[fi] = SLOT_HAIR if h > lm.h_neck + 0.10 else SLOT_SKIN
+
+
+def _force_head_vgroup_slots(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    """Head vgroup: skin + hair slots only (no coat / shirt tan)."""
+    lo, span = lm.zmin, lm.span
+    head_vg = frozenset({"Head"})
+    for face in bm.faces:
+        fi = face.index
+        if _vg_mean_on_face(ob, face, head_vg) < 0.035:
+            continue
+        if slots[fi] in {SLOT_EYE, SLOT_BROW, SLOT_MOUTH}:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h > lm.h_neck + 0.14:
+            slots[fi] = SLOT_HAIR
+        else:
+            slots[fi] = SLOT_SKIN
 
 
 def _vg_mean_on_face(ob: bpy.types.Object, face: bmesh.types.BMFace, names: frozenset[str]) -> float:
@@ -727,20 +927,8 @@ def _enforce_trousers_below_coat_hem(
     hc: Vector,
     fwd: Vector,
 ) -> None:
-    lo, span = lm.zmin, lm.span
-    hem = lm.h_waist + 0.50
-    for face in bm.faces:
-        if slots[face.index] != SLOT_JEANS:
-            continue
-        wc = Vector()
-        for v in face.verts:
-            wc += ob.matrix_world @ v.co
-        wc /= len(face.verts)
-        h = (wc.z - lo) / span
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if h < hem and lat < thw * 1.12:
-            slots[face.index] = SLOT_LAB_COAT
+    """Deprecated no-op: converting jeans→coat caused white legs / torn hem."""
+    del bm, slots, ob, lm, ws, hc, fwd
 
 
 def _strip_coat_from_head_neck_hair(
