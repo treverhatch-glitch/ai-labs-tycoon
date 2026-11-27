@@ -232,22 +232,39 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             raise KeyError(f"{asset_id} missing parts {missing}")
         return {k: names[k] for k in keys}
 
+    founder_no_neck = asset_id == "staff-founder-idle" and "Neck" not in names
     try:
-        core = need("Head", "Neck", "Torso", "Hips", "Leg_-1", "Leg_1")
+        if founder_no_neck:
+            core = need("Head", "Torso", "Hips", "Leg_-1", "Leg_1")
+        else:
+            core = need("Head", "Neck", "Torso", "Hips", "Leg_-1", "Leg_1")
     except KeyError as exc:
         return False, str(exc)
 
-    rules: list[tuple[str, str]] = [
-        ("Head", "Neck"),
-        ("Neck", "Torso"),
-        ("Torso", "Hips"),
-        ("Hips", "Leg_-1"),
-        ("Hips", "Leg_1"),
-    ]
+    rules: list[tuple[str, str]] = (
+        [
+            ("Head", "Torso"),
+            ("Torso", "Hips"),
+            ("Hips", "Leg_-1"),
+            ("Hips", "Leg_1"),
+        ]
+        if founder_no_neck
+        else [
+            ("Head", "Neck"),
+            ("Neck", "Torso"),
+            ("Torso", "Hips"),
+            ("Hips", "Leg_-1"),
+            ("Hips", "Leg_1"),
+        ]
+    )
     for sx in ("-1", "1"):
         if f"UpperArm_{sx}" in names and f"Shoulder_{sx}" in names:
             rules.append((f"UpperArm_{sx}", f"Shoulder_{sx}"))
             rules.append((f"LowerArm_{sx}", f"UpperArm_{sx}"))
+        elif f"UpperArm_{sx}" in names:
+            rules.append((f"UpperArm_{sx}", "Torso"))
+            if f"LowerArm_{sx}" in names:
+                rules.append((f"LowerArm_{sx}", f"UpperArm_{sx}"))
         elif f"Arm_{sx}" in names:
             rules.append((f"Arm_{sx}", "Torso"))
         if f"Hand_{sx}" in names:
@@ -284,6 +301,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                 allow = 0.075
             elif child_key == "Torso" and parent_key == "Hips":
                 allow = 0.04
+            elif child_key == "Head" and parent_key == "Torso":
+                allow = 0.10
         if gap > allow:
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
 

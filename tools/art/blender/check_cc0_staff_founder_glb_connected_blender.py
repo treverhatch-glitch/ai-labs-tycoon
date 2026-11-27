@@ -1,4 +1,4 @@
-"""Founder GLB: every body part centroid near torso; no loose floor fragments."""
+"""Founder GLB (Z-up): parts near torso; no stray floor fragments."""
 from __future__ import annotations
 
 import math
@@ -10,9 +10,10 @@ from mathutils import Vector
 
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
-FLOOR_Y_MAX = 0.18
-TORSO_MAX_XZ = 0.62
-ARM_MAX_XZ = 1.14
+FLOOR_Z_MAX = 0.20
+TORSO_MAX_XY = 0.62
+ARM_MAX_XY = 1.14
+ARM_MIN_Z = 0.42
 FLOOR_KEEP = frozenset(
     {
         "Sole_-1",
@@ -65,29 +66,28 @@ def main() -> None:
         if base.startswith(("Eye_", "Mouth", "Eyebrows", "Hair")):
             continue
         if (
-            hi.y < FLOOR_Y_MAX
+            hi.z < FLOOR_Z_MAX
             and base not in FLOOR_KEEP
             and base not in ("Hips", "Torso", "Neck")
-            and c.y < 0.14
+            and c.z < 0.14
             and len(ob.data.vertices) < 90
         ):
-            print(f"FAIL staff-founder-idle floor_fragment={base} y={hi.y:.3f}")
+            print(f"FAIL staff-founder-idle floor_fragment={base} z={hi.z:.3f}")
             raise SystemExit(1)
         if base in FLOOR_KEEP or base.startswith("Leg_"):
             continue
-        dxz = math.hypot(c.x - tc.x, c.z - tc.z)
-        allow = ARM_MAX_XZ if base.startswith(("Hand_", "LowerArm_", "UpperArm_")) else TORSO_MAX_XZ
-        if dxz > allow and base not in ("Hair",):
-            print(f"FAIL staff-founder-idle disconnected={base} dxz={dxz:.3f}")
+        dxy = math.hypot(c.x - tc.x, c.y - tc.y)
+        allow = ARM_MAX_XY if base.startswith(("Hand_", "LowerArm_", "UpperArm_")) else TORSO_MAX_XY
+        if dxy > allow and base not in ("Hair",):
+            print(f"FAIL staff-founder-idle disconnected={base} dxy={dxy:.3f}")
             raise SystemExit(1)
     for ob in meshes:
         base = ob.name.split(".")[0]
         if not base.startswith(("Hand_", "LowerArm_", "UpperArm_")):
             continue
-        c = _centroid(ob)
         lo, hi = _bbox(ob)
-        if lo.y < 0.12 and hi.y < 0.35:
-            print(f"FAIL staff-founder-idle arm_floor_debris={base} y={hi.y:.3f}")
+        if hi.z < ARM_MIN_Z:
+            print(f"FAIL staff-founder-idle arm_floor_debris={base} z_hi={hi.z:.3f}")
             raise SystemExit(1)
     print(f"OK staff-founder-idle glb_connected parts={len(meshes)}")
     raise SystemExit(0)

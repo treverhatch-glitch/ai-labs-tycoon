@@ -192,12 +192,13 @@ def orient_staff_assembly_for_export(
     root = staff_conn.parent_staff_hierarchy(mesh_obs)
     ground_scene_meshes()
     bpy.context.view_layer.update()
-    root.rotation_euler = (math.pi / 2, 0.0, 0.0)
-    bpy.ops.object.select_all(action="DESELECT")
-    root.select_set(True)
-    bpy.context.view_layer.objects.active = root
-    bpy.ops.object.transform_apply(rotation=True)
-    bpy.context.view_layer.update()
+    if asset_id != "staff-founder-idle":
+        root.rotation_euler = (math.pi / 2, 0.0, 0.0)
+        bpy.ops.object.select_all(action="DESELECT")
+        root.select_set(True)
+        bpy.context.view_layer.objects.active = root
+        bpy.ops.object.transform_apply(rotation=True)
+        bpy.context.view_layer.update()
     _min, _max, sz = _mesh_scene_span_z(mesh_obs)
     if sz < 0.35:
         raise RuntimeError(f"FAIL {asset_id}: height too small pre-scale z={sz:.3f}")
@@ -693,7 +694,9 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
             assign_solid(ob, (0.32, 0.35, 0.40, 1.0), 0.72)
         elif base.startswith("LowerArm_") or base.startswith("Hand_"):
             assign_solid(ob, skin, 0.82)
-        elif base.startswith("Arm_") or base.startswith("UpperArm_") or base.startswith("Shoulder_"):
+        elif base.startswith("UpperArm_"):
+            assign_solid(ob, hoodie_red, 0.54)
+        elif base.startswith("Arm_") or base.startswith("Shoulder_"):
             assign_solid(ob, hoodie_navy, 0.54)
         elif base.startswith("Shoe_"):
             assign_solid(ob, sneaker, 0.38)

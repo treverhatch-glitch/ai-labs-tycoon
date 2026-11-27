@@ -218,6 +218,7 @@ def _extract_part(
     z_min: float,
     z_max: float,
     x_side: int | None = None,
+    x_center: float | None = None,
 ) -> bpy.types.Object | None:
     me = src.data.copy()
     ob = bpy.data.objects.new(name, me)
@@ -232,10 +233,12 @@ def _extract_part(
             drop.append(v)
             continue
         if x_side is not None:
-            if x_side < 0 and w.x > 0.008:
+            if x_side < 0 and w.x > 0.02:
                 drop.append(v)
-            elif x_side > 0 and w.x < -0.008:
+            elif x_side > 0 and w.x < -0.02:
                 drop.append(v)
+        if x_center is not None and abs(w.x - x_center) > 0.14:
+            drop.append(v)
     if drop:
         bmesh.ops.delete(bm, geom=drop, context="VERTS")
     if not bm.verts:
@@ -311,22 +314,21 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         return lo + span * f0, lo + span * f1
 
     specs: list[tuple[str, float, float, int | None, tuple[float, float, float, float], float]] = [
-        ("Sole_-1", 0.00, 0.06, -1, FOUNDER_SHOE_SOLE, 0.72),
-        ("Sole_1", 0.00, 0.06, 1, FOUNDER_SHOE_SOLE, 0.72),
+        ("Sole_-1", 0.00, 0.05, -1, FOUNDER_SHOE_SOLE, 0.72),
+        ("Sole_1", 0.00, 0.05, 1, FOUNDER_SHOE_SOLE, 0.72),
         ("Foot_-1", 0.04, 0.13, -1, FOUNDER_SHOE, 0.38),
         ("Foot_1", 0.04, 0.13, 1, FOUNDER_SHOE, 0.38),
         ("Leg_-1", 0.00, 0.48, -1, FOUNDER_JEANS, 0.56),
         ("Leg_1", 0.00, 0.48, 1, FOUNDER_JEANS, 0.56),
-        ("Hips", 0.38, 0.50, None, FOUNDER_JEANS, 0.54),
-        ("Torso", 0.48, 0.72, None, FOUNDER_HOODIE_RED, 0.58),
-        ("UpperArm_-1", 0.48, 0.58, -1, FOUNDER_HOODIE, 0.56),
-        ("UpperArm_1", 0.48, 0.58, 1, FOUNDER_HOODIE, 0.56),
-        ("LowerArm_-1", 0.56, 0.68, -1, FOUNDER_SKIN, 0.50),
-        ("LowerArm_1", 0.56, 0.68, 1, FOUNDER_SKIN, 0.50),
-        ("Hand_-1", 0.64, 0.74, -1, FOUNDER_SKIN, 0.48),
-        ("Hand_1", 0.64, 0.74, 1, FOUNDER_SKIN, 0.48),
-        ("Neck", 0.58, 0.70, None, FOUNDER_HOODIE_RED, 0.52),
-        ("Head", 0.60, 0.91, None, FOUNDER_SKIN, 0.50),
+        ("Hips", 0.34, 0.52, None, FOUNDER_JEANS, 0.54),
+        ("Torso", 0.44, 0.78, None, FOUNDER_HOODIE_RED, 0.58),
+        ("UpperArm_-1", 0.42, 0.58, -1, FOUNDER_HOODIE_RED, 0.56),
+        ("UpperArm_1", 0.42, 0.58, 1, FOUNDER_HOODIE_RED, 0.56),
+        ("LowerArm_-1", 0.50, 0.68, -1, FOUNDER_SKIN, 0.50),
+        ("LowerArm_1", 0.50, 0.68, 1, FOUNDER_SKIN, 0.50),
+        ("Hand_-1", 0.58, 0.72, -1, FOUNDER_SKIN, 0.48),
+        ("Hand_1", 0.58, 0.72, 1, FOUNDER_SKIN, 0.48),
+        ("Head", 0.58, 0.91, None, FOUNDER_SKIN, 0.50),
         ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
@@ -348,7 +350,39 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
     return parts
 
 
-def _weld_soles_to_feet() -> None:
+def _purge_floor_stray_meshes() -> None:
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    tcx = 0.0
+    if torso:
+        lo, hi = sc._world_bbox(torso)
+        tcx = (lo.x + hi.x) * 0.5
+    keep = frozenset(
+        {
+            "Sole_-1",
+            "Sole_1",
+            "Foot_-1",
+            "Foot_1",
+            "Leg_-1",
+            "Leg_1",
+        }
+    )
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base in keep:
+            continue
+        lo, hi = sc._world_bbox(ob)
+        if hi.y > 0.35:
+            continue
+        c = (lo + hi) * 0.5
+        if c.y < 0.22 and abs(c.x - tcx) > 0.14:
+            bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def _snap_soles_to_feet() -> None:
     import staff_connectivity as sc
 
     for sx in ("-1", "1"):
@@ -358,33 +392,72 @@ def _weld_soles_to_feet() -> None:
             continue
         f_lo, f_hi = sc._world_bbox(foot)
         s_lo, s_hi = sc._world_bbox(sole)
-        gap = f_lo.y - s_hi.y
-        if abs(gap) > 1e-4:
-            sole.location.y += gap
-            bpy.context.view_layer.update()
+        sole.location.x += (f_lo.x + f_hi.x) * 0.5 - (s_lo.x + s_hi.x) * 0.5
+        sole.location.y += (f_lo.y + f_hi.y) * 0.5 - (s_lo.y + s_hi.y) * 0.5
+        sole.location.z += f_lo.z - s_hi.z - 0.002
+        bpy.context.view_layer.update()
+
+
+def _flip_character_yaw() -> None:
+    """Face +Y in preview (Kenney bake forward is −Y until mirrored)."""
+    import staff_connectivity as sc
+
+    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not meshes:
+        return
+    lo = Vector((1e9, 1e9, 1e9))
+    hi = Vector((-1e9, -1e9, -1e9))
+    for ob in meshes:
+        a, b = sc._world_bbox(ob)
+        lo.x = min(lo.x, a.x)
+        lo.y = min(lo.y, a.y)
+        lo.z = min(lo.z, a.z)
+        hi.x = max(hi.x, b.x)
+        hi.y = max(hi.y, b.y)
+        hi.z = max(hi.z, b.z)
+    pivot = bpy.data.objects.new("FounderYawPivot", None)
+    pivot.location = (lo + hi) * 0.5
+    bpy.context.collection.objects.link(pivot)
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in meshes:
+        ob.select_set(True)
+    pivot.select_set(True)
+    bpy.context.view_layer.objects.active = pivot
+    bpy.ops.object.parent_set(type="OBJECT", keep_transform=True)
+    pivot.rotation_euler = (0.0, 0.0, math.pi)
+    bpy.context.view_layer.update()
+    bpy.ops.object.select_all(action="DESELECT")
+    for ob in meshes:
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = meshes[0]
+    bpy.ops.object.parent_clear(type="CLEAR_KEEP_TRANSFORM")
+    bpy.data.objects.remove(pivot, do_unlink=True)
+    bc.ground_scene_meshes()
+
+
 
 
 def _add_face_features() -> None:
     head = bpy.data.objects.get("Head")
     if not head or not head.data.vertices:
         return
-    fwd = Vector((0.0, -1.0, 0.0))
     verts = [head.matrix_world @ v.co for v in head.data.vertices]
     hc = sum(verts, Vector()) / len(verts)
     ys = [v.y for v in verts]
     zs = [v.z for v in verts]
     ext_y = max(ys) - min(ys)
     ext_z = max(zs) - min(zs)
-    face_c = hc + fwd * (ext_y * 0.38)
+    face_y = min(ys) + ext_y * 0.05
     eye_z = hc.z + ext_z * 0.08
+    eye_sep = 0.12
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
-        pos = face_c + Vector((0.072 * x_sign, 0.0, 0.0))
-        eye = bc.add_cube(name, (0.052, 0.032, 0.028), (pos.x, pos.y, eye_z))
+        pos = Vector((hc.x + eye_sep * 0.5 * x_sign, face_y, eye_z))
+        eye = bc.add_cube(name, (0.052, 0.034, 0.028), (pos.x, pos.y, eye_z))
         bc.assign_solid(eye, FOUNDER_EYE, 0.35)
-    brow_c = face_c + fwd * 0.04 + Vector((0.0, 0.0, ext_z * 0.1))
+    brow_c = Vector((hc.x, face_y + ext_y * 0.04, hc.z + ext_z * 0.18))
     brows = bc.add_cube("Eyebrows", (0.12, 0.024, 0.022), (brow_c.x, brow_c.y, brow_c.z))
     bc.assign_solid(brows, (0.12, 0.08, 0.06, 1.0), 0.45)
-    mouth_c = face_c - fwd * 0.05 - Vector((0.0, 0.0, ext_z * 0.12))
+    mouth_c = Vector((hc.x, face_y - ext_y * 0.06, hc.z - ext_z * 0.10))
     mouth = bc.add_cube("Mouth", (0.062, 0.022, 0.016), (mouth_c.x, mouth_c.y, mouth_c.z))
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
@@ -411,26 +484,10 @@ def build_founder_kenney() -> None:
     parts = _split_parts(baked)
     if len(parts) < 11:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
-    for ob in list(bpy.context.scene.objects):
-        if ob.type != "MESH":
-            continue
-        ob.rotation_euler = (-math.pi / 2, 0.0, 0.0)
-        ob.select_set(True)
-    bpy.context.view_layer.objects.active = next(
-        o for o in bpy.context.scene.objects if o.type == "MESH"
-    )
-    bpy.ops.object.transform_apply(rotation=True)
     bc.ground_scene_meshes()
-    for ob in list(bpy.context.scene.objects):
-        if ob.type == "MESH":
-            ob.rotation_euler = (0.0, math.pi, 0.0)
-            ob.select_set(True)
-    bpy.context.view_layer.objects.active = next(
-        o for o in bpy.context.scene.objects if o.type == "MESH"
-    )
-    bpy.ops.object.transform_apply(rotation=True)
-    bc.ground_scene_meshes()
-    _weld_soles_to_feet()
+    _flip_character_yaw()
+    _snap_soles_to_feet()
+    _purge_floor_stray_meshes()
     bc.ground_scene_meshes()
     _add_face_features()
     for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):

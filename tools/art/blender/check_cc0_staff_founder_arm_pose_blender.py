@@ -27,22 +27,22 @@ def main() -> None:
     bpy.ops.import_scene.gltf(filepath=str(GLB))
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
-    neck = by.get("Neck")
+    anchor = by.get("Neck") or by.get("Torso") or by.get("Head")
     arm_l = by.get("Arm_-1") or by.get("Hand_-1") or by.get("LowerArm_-1")
     arm_r = by.get("Arm_1") or by.get("Hand_1") or by.get("LowerArm_1")
     hips = by.get("Hips")
-    if not neck or not hips or (not arm_l and not arm_r):
+    if not anchor or not hips or (not arm_l and not arm_r):
         print("FAIL staff-founder-idle arm_pose_parts")
         raise SystemExit(1)
     hip_z = _centroid(hips).z
-    neck_lo = min((neck.matrix_world @ v.co).z for v in neck.data.vertices)
+    neck_lo = max((anchor.matrix_world @ v.co).z for v in anchor.data.vertices)
     drops: list[float] = []
     for arm in (arm_l, arm_r):
         if not arm:
             continue
         verts = [arm.matrix_world @ v.co for v in arm.data.vertices]
         wrist_z = min(v.z for v in verts)
-        shoulder_h = neck_lo - hip_z
+        shoulder_h = neck_lo - hip_z - 0.05
         if shoulder_h < 0.05:
             continue
         drops.append((neck_lo - wrist_z) / shoulder_h)

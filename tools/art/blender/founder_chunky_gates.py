@@ -25,13 +25,10 @@ CLOTHING_SHELLS = frozenset(
         "Leg_-1",
         "Leg_1",
         "Hips",
-        "Neck",
         "UpperArm_-1",
         "UpperArm_1",
         "Foot_-1",
         "Foot_1",
-        "Sole_-1",
-        "Sole_1",
     }
 )
 SKIN_OK = frozenset(
