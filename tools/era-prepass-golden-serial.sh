@@ -16,7 +16,7 @@ cd "$REPO/tools/SimTests"
   "$DOTNET" build -v q -nologo
   set +e
   OUT=$("$DOTNET" test --no-build -v q \
-    --filter "FullyQualifiedName~GoldenRevert|FullyQualifiedName~The_golden_run" \
+    --filter "FullyQualifiedName~GoldenRevertBatchTwentyFive|FullyQualifiedName~GoldenRevertBatchTwentySix|FullyQualifiedName~GoldenRevertBatchTwentySeven|FullyQualifiedName~GoldenRevertBatchTwentyEight|FullyQualifiedName~The_golden_run" \
     -- xUnit.MaxParallelThreads=1 2>&1)
   EC=$?
   set -e

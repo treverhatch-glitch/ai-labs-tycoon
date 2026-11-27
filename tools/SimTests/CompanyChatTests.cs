@@ -61,7 +61,7 @@ public class CompanyChatTests
     public void The_table_has_its_lines_and_validates()
     {
         GameConfig c = TestData.Config();
-        Assert.Equal(387, c.Chat.Lines.Count);
+        Assert.Equal(390, c.Chat.Lines.Count);
         Assert.Equal(12, c.Chat.DefaultLines);
         Assert.Empty(ConfigValidator.Problems(c));
     }

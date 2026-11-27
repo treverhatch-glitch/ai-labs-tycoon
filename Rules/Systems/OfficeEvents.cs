@@ -149,9 +149,12 @@ namespace AiLabs.Rules.Systems
             OfficeEventConfig chosen = all[(int)(Mix(state, lab, 7) % all.Count)];
             if (IsPending(lab)) Lapse(c, state, lab);
             lab.OfficeEventId = chosen.IdValue;
-            lab.OfficeEventExpires = state.Tick + c.Office.ExpireWeeks;
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = RungSixEraGrace.AnswerWeeks(c, state);
+            lab.OfficeEventExpires = state.Tick + expire;
             lab.OfficeSeen.Add(chosen.IdValue);
             Events.Add(state, EventKind.OfficeEventPosed, lab.Id, -1, 0, chosen.IdValue);
+            RungSixEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         /// <summary>A model went on sale for the first time: the release notes need an answer, unless something else is already waiting. Rivals have none.</summary>

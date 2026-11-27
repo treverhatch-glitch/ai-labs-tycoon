@@ -211,6 +211,9 @@ namespace AiLabs.Rules.Config
         public EscapeCrisisEraGraceConfig EscapeCrisisEraGrace = new EscapeCrisisEraGraceConfig();
         public LawShapingEraAmplifyConfig LawShapingEraAmplify = new LawShapingEraAmplifyConfig();
         public DataSourceRenewEraDiscountConfig DataSourceRenewEraDiscount = new DataSourceRenewEraDiscountConfig();
+        public RungSixEraGraceConfig RungSixEraGrace = new RungSixEraGraceConfig();
+        public EvalHarnessEraReliefConfig EvalHarnessEraRelief = new EvalHarnessEraReliefConfig();
+        public PublicMetricsEraDiscountConfig PublicMetricsEraDiscount = new PublicMetricsEraDiscountConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -420,6 +423,9 @@ namespace AiLabs.Rules.Config
             s.Obj("escapeCrisisEraGrace", ref EscapeCrisisEraGrace);
             s.Obj("lawShapingEraAmplify", ref LawShapingEraAmplify);
             s.Obj("dataSourceRenewEraDiscount", ref DataSourceRenewEraDiscount);
+            s.Obj("rungSixEraGrace", ref RungSixEraGrace);
+            s.Obj("evalHarnessEraRelief", ref EvalHarnessEraRelief);
+            s.Obj("publicMetricsEraDiscount", ref PublicMetricsEraDiscount);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

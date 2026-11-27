@@ -21,7 +21,9 @@ namespace AiLabs.Rules.Systems
 
         public static void Register(GameConfig c, GameState state, LabState lab, ModelState model, int suite)
         {
-            if (c.EvalHarness.Cost > 0) Finance.Spend(lab, LedgerLine.Training, c.EvalHarness.Cost);
+            long listCost = c.EvalHarness.Cost;
+            long paid = EvalHarnessEraRelief.RegisterCost(c, state, listCost);
+            if (paid > 0) Finance.Spend(lab, LedgerLine.Training, paid);
             lab.ResearchPoints -= c.EvalHarness.Points;
             model.EvalSuite = suite;
             model.EvalLeft = c.EvalHarness.Cadence;
@@ -30,6 +32,7 @@ namespace AiLabs.Rules.Systems
             GameEvent e = Events.Add(state, EventKind.EvalRegistered, lab.Id, model.Id, c.EvalHarness.Cadence, model.Name);
             e.Pick = suite;
             EvalHarnessEraBoost.OnRegister(c, state, lab, model);
+            EvalHarnessEraRelief.OnRegister(c, state, lab, model, listCost, paid);
         }
 
         public static void Publish(GameConfig c, GameState state, LabState lab, ModelState model)

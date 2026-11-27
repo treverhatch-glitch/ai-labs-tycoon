@@ -2439,3 +2439,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q517. Discount on data-source renew in late era? DECIDED (schema 182): `dataSourceRenewEraDiscount`; `DataSourceRenewEraDiscounted` on `DataSources.Renew`.
 
 ### Q518. Batch twenty-seven news, chat and combos. DECIDED: three headlines, three chat lines (434/387); `BatchTwentySevenNewsChatTests`, `BatchTwentySevenTogetherTests`.
+
+### Q519. Extra weeks to answer rung-six crises in late era? DECIDED (schema 183): `rungSixEraGrace`; `RungSixEraGraced` on `OfficeEvents.OnRungSix`.
+
+### Q520. Register-cost relief on eval harness in late era? DECIDED (schema 184): `evalHarnessEraRelief`; `EvalHarnessEraRelieved` on `EvalHarness.Register`.
+
+### Q521. Discount on public metrics publish in late era? DECIDED (schema 185): `publicMetricsEraDiscount`; `PublicMetricsEraDiscounted` on `PublicMetrics.Publish`.
+
+### Q522. Batch twenty-eight news, chat and combos. DECIDED: three headlines, three chat lines (437/390); `BatchTwentyEightNewsChatTests`, `BatchTwentyEightTogetherTests`.

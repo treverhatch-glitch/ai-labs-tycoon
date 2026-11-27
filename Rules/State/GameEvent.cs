@@ -662,7 +662,10 @@ namespace AiLabs.Rules.State
         DataSourceAcquireEraWeeksBonused,
         EscapeCrisisEraGraced,
         LawShapingEraAmplified,
-        DataSourceRenewEraDiscounted
+        DataSourceRenewEraDiscounted,
+        RungSixEraGraced,
+        EvalHarnessEraRelieved,
+        PublicMetricsEraDiscounted
     }
 
     /// <summary>

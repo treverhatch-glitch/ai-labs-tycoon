@@ -216,6 +216,9 @@ namespace AiLabs.Rules.Config
             EscapeCrisisEraGraceProblems(p, c);
             LawShapingEraAmplifyProblems(p, c);
             DataSourceRenewEraDiscountProblems(p, c);
+            RungSixEraGraceProblems(p, c);
+            EvalHarnessEraReliefProblems(p, c);
+            PublicMetricsEraDiscountProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2400,6 +2403,35 @@ namespace AiLabs.Rules.Config
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceRenewEraDiscount.minEra must be a valid era index");
             if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
                 p.Add("dataSourceRenewEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void RungSixEraGraceProblems(List<string> p, GameConfig c)
+        {
+            RungSixEraGraceConfig k = c.RungSixEraGrace;
+            if (k == null) { p.Add("rungSixEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("rungSixEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("rungSixEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("rungSixEraGrace.graceWeeks must not be negative");
+        }
+
+        static void EvalHarnessEraReliefProblems(List<string> p, GameConfig c)
+        {
+            EvalHarnessEraReliefConfig k = c.EvalHarnessEraRelief;
+            if (k == null) { p.Add("evalHarnessEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("evalHarnessEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("evalHarnessEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille)
+                p.Add("evalHarnessEraRelief.reliefPermille must be from 0 to " + MathI.Permille);
+        }
+
+        static void PublicMetricsEraDiscountProblems(List<string> p, GameConfig c)
+        {
+            PublicMetricsEraDiscountConfig k = c.PublicMetricsEraDiscount;
+            if (k == null) { p.Add("publicMetricsEraDiscount is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("publicMetricsEraDiscount.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("publicMetricsEraDiscount.minEra must be a valid era index");
+            if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille)
+                p.Add("publicMetricsEraDiscount.discountPermille must be from 0 to " + MathI.Permille);
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

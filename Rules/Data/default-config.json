@@ -12543,6 +12543,24 @@
         "text": "{lab} renewed data on era terms"
       },
       {
+        "id": "rung-six-era-grace",
+        "kind": "RungSixEraGraced",
+        "pick": -1,
+        "text": "{lab} got more time on a rung-six crisis"
+      },
+      {
+        "id": "eval-harness-era-relief",
+        "kind": "EvalHarnessEraRelieved",
+        "pick": -1,
+        "text": "{lab} registered eval on era relief"
+      },
+      {
+        "id": "public-metrics-era-discount",
+        "kind": "PublicMetricsEraDiscounted",
+        "pick": -1,
+        "text": "{lab} published metrics on era terms"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -17085,6 +17103,39 @@
         "toYear": 0
       },
       {
+        "id": "rung-six-grace-chat",
+        "kind": "RungSixEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Rung six can wait a bit longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "eval-relief-chat",
+        "kind": "EvalHarnessEraRelieved",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Eval registration is cheaper this era.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "metrics-discount-chat",
+        "kind": "PublicMetricsEraDiscounted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Publishing uptime costs less now.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19987,6 +20038,21 @@
     "amplifyPermille": 150
   },
   "dataSourceRenewEraDiscount": {
+    "enabled": 1,
+    "minEra": 2,
+    "discountPermille": 200
+  },
+  "rungSixEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 4
+  },
+  "evalHarnessEraRelief": {
+    "enabled": 1,
+    "minEra": 2,
+    "reliefPermille": 150
+  },
+  "publicMetricsEraDiscount": {
     "enabled": 1,
     "minEra": 2,
     "discountPermille": 200

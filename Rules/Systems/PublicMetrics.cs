@@ -13,12 +13,15 @@ namespace AiLabs.Rules.Systems
 
         public static void Publish(GameConfig c, GameState state, LabState lab, ModelState model)
         {
-            if (c.PublicMetrics.PublishCost > 0) Finance.Spend(lab, LedgerLine.Training, c.PublicMetrics.PublishCost);
+            long listCost = c.PublicMetrics.PublishCost;
+            long paid = PublicMetricsEraDiscount.PublishCost(c, state, listCost);
+            if (paid > 0) Finance.Spend(lab, LedgerLine.Training, paid);
             model.PubOn = 1;
             model.PubMiss = 0;
             model.PubScore = lab.LastWeek.ServedPermille;
             Events.Add(state, EventKind.MetricsPublished, lab.Id, model.Id, model.PubScore, model.Name);
             PublicMetricsEraLoad.OnPublish(c, state, lab, model);
+            PublicMetricsEraDiscount.OnPublish(c, state, lab, model, listCost, paid);
         }
 
         public static void Stop(GameConfig c, GameState state, LabState lab, ModelState model)
