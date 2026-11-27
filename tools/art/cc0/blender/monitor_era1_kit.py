@@ -172,11 +172,11 @@ def build_monitor_era1() -> list[bpy.types.Object]:
     screen = _bulged_screen(y_scr, z_body)
     screen.name = "screen"
 
-    y_face = y_front - BEZEL_T - 0.0015
-    bz = 0.235
-    bx_pwr = FACE_W / 2 - 0.03
-    power_button = _overlap_box("power_button", (0.014, 0.006, 0.008), (bx_pwr, y_face, bz))
-    power_led = _overlap_box("power_led", (0.006, 0.006, 0.006), (bx_pwr - 0.018, y_face, bz))
+    # glTF Y-up: vertical ≈ Blender Z; depth (front) ≈ -Blender Y.
+    y_depth = -0.2375
+    bz = 0.065
+    power_led = _overlap_box("power_led", (0.006, 0.005, 0.006), (0.13, y_depth, bz))
+    power_button = _overlap_box("power_button", (0.014, 0.005, 0.008), (0.16, y_depth, bz))
 
     sc.assert_monitor_parts(shell_parts + [screen, power_button, power_led], root_name="body_tapered")
 
@@ -189,12 +189,27 @@ def build_monitor_era1() -> list[bpy.types.Object]:
 
     shell = mb._union_parts(shell_parts)
     cc.apply_transforms(shell)
+    _clamp_rear_overhang(shell)
     tower._fix_tower_normals(shell)
     shell.name = "body_tapered"
     _final_weld(shell)
 
     tower._fix_tower_normals(screen)
     return [shell, screen, power_button, power_led]
+
+
+def _clamp_rear_overhang(ob: bpy.types.Object) -> None:
+    """GLB rear band z<0.215: keep within bezel outline (|x|≤0.185, y≤0.395)."""
+    mesh = ob.data
+    for v in mesh.vertices:
+        z_g = -v.co.y
+        y_g = v.co.z
+        if z_g < 0.215:
+            if abs(v.co.x) > 0.185:
+                v.co.x = 0.185 if v.co.x > 0 else -0.185
+            if y_g > 0.395:
+                v.co.z = 0.395
+    mesh.update()
 
 
 def _rear_housing(z_center: float, y_front: float) -> bpy.types.Object:

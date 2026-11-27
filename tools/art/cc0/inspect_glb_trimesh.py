@@ -15,6 +15,17 @@ RACK_GLB = REPO / "unity/Assets/Art/Cc0/compute-kit/compute-server-rack-era1/com
 
 REQUIRED_MONITOR_NODES = frozenset({"body_tapered", "screen", "power_led", "power_button"})
 
+KEY_MONITOR = ("power_led", "power_button", "body_tapered", "screen")
+KEY_RACK = (
+    "unit_4u_face",
+    "unit_4u_drive_bay_0_0",
+    "unit_2u_a_face",
+    "unit_2u_a_vent_0",
+    "unit_1u_face",
+    "unit_1u_port_led_0",
+    "unit_4u_side_rail_l",
+)
+
 
 def _glb_json(glb_path: Path) -> dict:
     raw = glb_path.read_bytes()
@@ -48,7 +59,19 @@ def _mesh_table_names(doc: dict) -> list[str]:
     return [str(m.get("name", "")) for m in doc.get("meshes") or []]
 
 
-def gate_rack(names: set[str]) -> list[str]:
+def _bounds_line(name: str, mesh) -> str:
+    b = mesh.bounds
+    c = mesh.centroid
+    return (
+        f"  bounds {name}: "
+        f"x[{b[0][0]:.4f},{b[1][0]:.4f}] "
+        f"y[{b[0][1]:.4f},{b[1][1]:.4f}] "
+        f"z[{b[0][2]:.4f},{b[1][2]:.4f}] "
+        f"centroid=({c[0]:.4f},{c[1]:.4f},{c[2]:.4f})"
+    )
+
+
+def gate_rack_names(names: set[str]) -> list[str]:
     errs: list[str] = []
     if "rack_frame" not in names:
         errs.append("missing rack_frame")
@@ -66,18 +89,55 @@ def gate_rack(names: set[str]) -> list[str]:
     return errs
 
 
-def gate_monitor(names: set[str], mats: list[dict]) -> list[str]:
+def gate_rack_depth(geom: dict) -> list[str]:
+    errs: list[str] = []
+    for unit in ("unit_4u", "unit_2u_a", "unit_2u_b", "unit_1u"):
+        face = f"{unit}_face"
+        if face not in geom:
+            continue
+        fz_max = float(geom[face].bounds[1][2])
+        for name, mesh in geom.items():
+            if not name.startswith(f"{unit}_"):
+                continue
+            if name in (unit, face) or "side_rail" in name:
+                continue
+            z_max = float(mesh.bounds[1][2])
+            if z_max <= fz_max + 0.0005:
+                errs.append(f"{name} z_max {z_max:.4f} not proud of {face} z_max {fz_max:.4f}")
+    return errs
+
+
+def gate_monitor(names: set[str], mats: list[dict], geom: dict) -> list[str]:
     errs: list[str] = []
     missing = REQUIRED_MONITOR_NODES - names
     if missing:
         errs.append(f"missing nodes: {sorted(missing)}")
-    led = next((m for m in mats if m.get("name") == "M_compute-monitor-era1_led"), None)
-    if not led or not _emissive_factor(led):
+    led_mat = next((m for m in mats if m.get("name") == "M_compute-monitor-era1_led"), None)
+    if not led_mat or not _emissive_factor(led_mat):
         errs.append("M_compute-monitor-era1_led missing or non-emissive")
+    if "power_led" in geom:
+        c = geom["power_led"].centroid
+        if not (0.10 < c[0] < 0.16 and 0.04 < c[1] < 0.09):
+            errs.append(f"power_led centroid ({c[0]:.4f},{c[1]:.4f}) outside lower bezel band")
+        z0, z1 = geom["power_led"].bounds[:, 2]
+        if z1 < 0.239 or z0 > 0.236:
+            errs.append(f"power_led z range [{z0:.4f},{z1:.4f}] not on bezel face ~[0.235,0.240]")
+    if "power_button" in geom:
+        c = geom["power_button"].centroid
+        if not (0.13 < c[0] < 0.19 and 0.04 < c[1] < 0.09):
+            errs.append(f"power_button centroid ({c[0]:.4f},{c[1]:.4f}) outside lower bezel band")
+    if "body_tapered" in geom:
+        verts = geom["body_tapered"].vertices
+        rear = verts[verts[:, 2] < 0.215]
+        if len(rear):
+            if abs(rear[:, 0]).max() > 0.185 + 1e-3:
+                errs.append(f"rear shell |x| max {abs(rear[:, 0]).max():.4f} > 0.185 for z<0.215")
+            if rear[:, 1].max() > 0.395 + 1e-3:
+                errs.append(f"rear shell y max {rear[:, 1].max():.4f} > 0.395 for z<0.215")
     return errs
 
 
-def inspect_glb(glb_path: Path) -> tuple[set[str], list[dict]]:
+def inspect_glb(glb_path: Path, *, sample_keys: tuple[str, ...]) -> tuple[set[str], list[dict], dict]:
     import trimesh
 
     print(f"\n=== {glb_path.relative_to(REPO)} ===")
@@ -97,13 +157,19 @@ def inspect_glb(glb_path: Path) -> tuple[set[str], list[dict]]:
     mesh_names = _mesh_table_names(doc)
     print(f"  glTF mesh table names: {', '.join(mesh_names)}")
     print(f"  glTF mesh nodes: {', '.join(node_names)}")
+
+    print("  sample bounds (glTF Y-up):")
+    for k in sample_keys:
+        if k in geom:
+            print(_bounds_line(k, geom[k]))
+
     all_names = set(node_names) | set(mesh_names) | set(geom.keys())
-    return all_names, mats
+    return all_names, mats, geom
 
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gate", action="store_true", help="exit 1 if required mesh names missing")
+    parser.add_argument("--gate", action="store_true", help="exit 1 if required checks fail")
     parser.add_argument("glb", nargs="*", type=Path)
     args = parser.parse_args(argv[1:])
     paths = args.glb or [MONITOR_GLB, RACK_GLB]
@@ -112,11 +178,13 @@ def main(argv: list[str]) -> int:
         if not p.is_file():
             print(f"MISSING: {p}", file=sys.stderr)
             return 1
-        names, mats = inspect_glb(p)
+        keys = KEY_MONITOR if "monitor" in p.name else KEY_RACK
+        names, mats, geom = inspect_glb(p, sample_keys=keys)
         if args.gate and "monitor" in p.name:
-            gate_errs.extend(gate_monitor(names, mats))
+            gate_errs.extend(gate_monitor(names, mats, geom))
         if args.gate and "rack" in p.name:
-            gate_errs.extend(gate_rack(names))
+            gate_errs.extend(gate_rack_names(names))
+            gate_errs.extend(gate_rack_depth(geom))
             led = next((m for m in mats if m.get("name") == "M_compute-server-rack-era1_led"), None)
             if not led or not _emissive_factor(led):
                 gate_errs.append("M_compute-server-rack-era1_led missing or non-emissive")
@@ -126,7 +194,7 @@ def main(argv: list[str]) -> int:
             print(f"  - {e}", file=sys.stderr)
         return 1
     if args.gate:
-        print("\nGATE PASS: required export mesh names present")
+        print("\nGATE PASS: names, depth, and monitor rear checks OK")
     return 0
 
 

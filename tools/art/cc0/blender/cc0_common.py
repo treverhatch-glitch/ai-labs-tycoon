@@ -306,6 +306,9 @@ def apply_era1_rack_export_materials(asset_id: str, objects: list[bpy.types.Obje
     led = frame_mats[4]
     face = frame_mats[3]
     unit = frame_mats[2]
+    import rack_era1_frame_kit as rk
+
+    bay_mat = _era1_solid_mat(asset_id, "bay", rk.COL_BAY, 0.55)
     for ob in objects:
         ob.data.materials.clear()
         if ob.name == "rack_frame":
@@ -314,7 +317,9 @@ def apply_era1_rack_export_materials(asset_id: str, objects: list[bpy.types.Obje
             tower.restore_face_material_index(ob)
         elif "led" in ob.name or "port_led" in ob.name:
             ob.data.materials.append(led)
-        elif "face" in ob.name or "drive_bay" in ob.name or "vent" in ob.name or "slot" in ob.name:
+        elif "drive_bay" in ob.name:
+            ob.data.materials.append(bay_mat)
+        elif "face" in ob.name or "vent" in ob.name or "slot" in ob.name:
             ob.data.materials.append(face)
         elif "side_rail" in ob.name:
             ob.data.materials.append(frame_mats[1])
