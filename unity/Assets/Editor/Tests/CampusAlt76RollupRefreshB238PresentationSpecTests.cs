@@ -1,0 +1,1 @@
+using AiLabs.Unity.Hq; using NUnit.Framework; namespace AiLabs.Unity.Editor.Tests { public sealed class CampusAlt76RollupRefreshB238PresentationSpecTests { [Test] public void B429() { Assert.AreEqual(238,CampusAlt76RollupRefreshB238PresentationSpec.LastDocumentedBatch); } } }

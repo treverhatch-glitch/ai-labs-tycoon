@@ -203,6 +203,9 @@ namespace AiLabs.Rules.Config
             HearingSharePriceEraBoostProblems(p, c);
             RungSixEraCooldownProblems(p, c);
             DataSourceAcquireEraDiscountProblems(p, c);
+            MarginSatisfyEraReliefProblems(p, c);
+            ScenarioGoalsEraSlackProblems(p, c);
+            TakeoffCrisisEraGraceProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2261,6 +2264,33 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraDiscount.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraDiscount.minEra must be a valid era index");
             if (k.DiscountPermille < 0 || k.DiscountPermille > MathI.Permille) p.Add("dataSourceAcquireEraDiscount.discountPermille must be from 0 to 1000");
+        }
+
+        static void MarginSatisfyEraReliefProblems(List<string> p, GameConfig c)
+        {
+            MarginSatisfyEraReliefConfig k = c.MarginSatisfyEraRelief;
+            if (k == null) { p.Add("marginSatisfyEraRelief is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("marginSatisfyEraRelief.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("marginSatisfyEraRelief.minEra must be a valid era index");
+            if (k.ReliefPermille < 0 || k.ReliefPermille > MathI.Permille) p.Add("marginSatisfyEraRelief.reliefPermille must be from 0 to 1000");
+        }
+
+        static void ScenarioGoalsEraSlackProblems(List<string> p, GameConfig c)
+        {
+            ScenarioGoalsEraSlackConfig k = c.ScenarioGoalsEraSlack;
+            if (k == null) { p.Add("scenarioGoalsEraSlack is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoalsEraSlack.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("scenarioGoalsEraSlack.minEra must be a valid era index");
+            if (k.SlackWeeks < 0) p.Add("scenarioGoalsEraSlack.slackWeeks must not be negative");
+        }
+
+        static void TakeoffCrisisEraGraceProblems(List<string> p, GameConfig c)
+        {
+            TakeoffCrisisEraGraceConfig k = c.TakeoffCrisisEraGrace;
+            if (k == null) { p.Add("takeoffCrisisEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffCrisisEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("takeoffCrisisEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("takeoffCrisisEraGrace.graceWeeks must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

@@ -1,0 +1,92 @@
+{
+  "assetId": "garage-interior-room-kit",
+  "floorTopY": 0.05,
+  "floorBounds": { "minX": 0.0, "maxX": 4.0, "minZ": 0.0, "maxZ": 4.0 },
+  "wallCornerGapM": 0.18,
+  "wallRotationsDeg": {
+    "kit_wall_back": { "yDeg": 0, "zDeg": 0 },
+    "kit_wall_left": { "yDeg": 90, "zDeg": 0 }
+  },
+  "minPropCount": 6,
+  "groundToleranceM": 0.01,
+  "wallMountToleranceM": 0.02,
+  "propInstances": [
+    {
+      "objectName": "prop_desk_crt",
+      "grounded": false,
+      "groundClearanceM": 0.22,
+      "insideFloorBounds": false,
+      "distToBackWallM": 1.5,
+      "distToLeftWallM": 2.0,
+      "x": 2.5,
+      "z": 3.2
+    },
+    {
+      "objectName": "prop_folding_chair",
+      "grounded": false,
+      "groundClearanceM": 0.35,
+      "insideFloorBounds": true,
+      "x": 2.0,
+      "z": 2.5
+    },
+    {
+      "objectName": "prop_crt_tower",
+      "grounded": false,
+      "groundClearanceM": 0.18,
+      "insideFloorBounds": true,
+      "x": 3.0,
+      "z": 1.5
+    },
+    {
+      "objectName": "prop_server_closet",
+      "grounded": true,
+      "groundClearanceM": 0.0,
+      "insideFloorBounds": true,
+      "x": 1.0,
+      "z": 3.0
+    },
+    {
+      "objectName": "prop_whiteboard",
+      "grounded": false,
+      "groundClearanceM": 0.12,
+      "insideFloorBounds": true,
+      "distToBackWallM": 0.55,
+      "x": 2.0,
+      "z": 0.5
+    },
+    {
+      "objectName": "prop_cable_spool",
+      "grounded": false,
+      "groundClearanceM": 0.08,
+      "insideFloorBounds": true,
+      "x": 1.0,
+      "z": 1.8
+    },
+    {
+      "objectName": "prop_coffee_drip",
+      "grounded": false,
+      "groundClearanceM": 0.4,
+      "insideFloorBounds": false,
+      "x": 4.8,
+      "z": 0.9
+    },
+    {
+      "objectName": "kit_roll_door",
+      "grounded": false,
+      "groundClearanceM": 0.15,
+      "distToBackWallM": 1.2,
+      "insideFloorBounds": true,
+      "x": 2.0,
+      "z": 0.5
+    },
+    {
+      "objectName": "kit_window",
+      "grounded": true,
+      "groundClearanceM": 0.0,
+      "distToLeftWallM": 0.8,
+      "insideFloorBounds": false,
+      "x": 3.8,
+      "z": 2.0
+    }
+  ]
+}

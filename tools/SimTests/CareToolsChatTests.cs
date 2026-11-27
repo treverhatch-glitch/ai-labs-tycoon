@@ -35,7 +35,7 @@ public class CareToolsChatTests
         GameConfig c = TestData.Config();
         foreach (string kind in new[] { "CrunchEnded", "InsuranceClaimPaid", "InsuranceDropped", "OffsiteHeld", "RedTeamRan", "GapFound", "PayChanged" })
             Assert.Contains(c.Chat.Lines, l => l.Kind == kind);
-        Assert.Equal(374, c.Chat.Lines.Count);
+        Assert.Equal(377, c.Chat.Lines.Count);
         Assert.Empty(ConfigValidator.Problems(c));
     }
 
