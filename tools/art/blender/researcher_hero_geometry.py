@@ -14,7 +14,7 @@ from kenney_researcher_stock_recolor import (
     _head_width_at,
 )
 
-LAB_COAT_RGB = (198 / 255, 198 / 255, 193 / 255, 1.0)
+LAB_COAT_RGB = (237 / 255, 237 / 255, 230 / 255, 1.0)
 GLASSES_RGB = (32 / 255, 32 / 255, 32 / 255, 1.0)
 
 
@@ -82,7 +82,7 @@ def _coat_open_v(
     if h < v_lo or h > v_hi:
         return False
     t = (h - v_lo) / max(1e-4, v_hi - v_lo)
-    return lat < thw * (0.24 - t * 0.10)
+    return lat < thw * (0.36 - t * 0.16)
 
 
 def _sleeve_source_face(
@@ -436,87 +436,6 @@ def _trim_coat_hands_crotch(
     bm.free()
 
 
-def _trim_coat_eye_rays(
-    coat: bpy.types.Object,
-    lm,
-    hc: Vector,
-    fwd: Vector,
-    ws: list[Vector],
-    y_face_fn,
-) -> None:
-    """Drop upper-front coat so idle eye_project rays reach FounderEye meshes."""
-    lo, span = lm.zmin, lm.span
-    bm = bmesh.new()
-    bm.from_mesh(coat.data)
-    bm.faces.ensure_lookup_table()
-    doomed: list[bmesh.types.BMFace] = []
-    for face in bm.faces:
-        wc = coat.matrix_world @ face.calc_center_median()
-        h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.18:
-            continue
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        y_face = y_face_fn(wc)
-        if y_face < -0.08 and lat > thw * 0.55:
-            continue
-        if y_face > -0.12 and lat < thw * 0.72:
-            doomed.append(face)
-    if doomed:
-        bmesh.ops.delete(bm, geom=doomed, context="FACES")
-    bm.to_mesh(coat.data)
-    coat.data.update()
-    bm.free()
-
-
-def _trim_coat_cheek_flash(
-    coat: bpy.types.Object,
-    body: bpy.types.Object,
-    lm,
-    hc: Vector,
-    fwd: Vector,
-    ws: list[Vector],
-    y_face_fn,
-) -> None:
-    """Remove outer lapel tips that read as white on idle 3/4 cheek band."""
-    lo, span = lm.zmin, lm.span
-    bm = bmesh.new()
-    bm.from_mesh(coat.data)
-    bm.faces.ensure_lookup_table()
-    doomed: list[bmesh.types.BMFace] = []
-    for face in bm.faces:
-        wc = coat.matrix_world @ face.calc_center_median()
-        h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.26 or h > lm.h_neck - 0.08:
-            continue
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        y_face = y_face_fn(wc)
-        if y_face < 0.08 or lat < thw * 0.42:
-            continue
-        if lat > thw * 0.62 or (y_face > 0.14 and lat > thw * 0.34):
-            doomed.append(face)
-    if doomed:
-        bmesh.ops.delete(bm, geom=doomed, context="FACES")
-    bm.to_mesh(coat.data)
-    coat.data.update()
-    bm.free()
-
-
-def _prune_coat_above_shoulders(coat: bpy.types.Object, lm) -> None:
-    lo, span = lm.zmin, lm.span
-    z_max = lo + span * (lm.h_neck - 0.08)
-    bm = bmesh.new()
-    bm.from_mesh(coat.data)
-    bm.verts.ensure_lookup_table()
-    doomed = [v for v in bm.verts if (coat.matrix_world @ v.co).z > z_max]
-    if doomed:
-        bmesh.ops.delete(bm, geom=doomed, context="VERTS")
-    bm.to_mesh(coat.data)
-    coat.data.update()
-    bm.free()
-
-
 def _prune_coat_wrist_shards(
     coat: bpy.types.Object,
     lm,
@@ -587,8 +506,10 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         y_face = y_face_fn(wc)
         neck_w = sum(_vg_weight(body, v.index, frozenset({"Neck"})) for v in f.verts) / len(f.verts)
-        open_chest = _coat_open_v(lat, thw, h, lm, y_face) and lat < thw * 0.07
-        if neck_w > 0.22 and y_face > 0.04 and lat < thw * 0.18 and h > lm.h_neck - 0.06:
+        open_chest = _coat_open_v(lat, thw, h, lm, y_face)
+        if neck_w > 0.20 and y_face > 0.02 and lat < thw * 0.14 and h > lm.h_neck - 0.08:
+            open_chest = True
+        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.10:
             open_chest = True
         lapel_only = (
             y_face > 0.06
@@ -597,7 +518,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         )
         on_torso = lat <= thw * 1.30 and y_face > -0.40 and not open_chest
         if on_torso and y_face > 0.05 and h >= lm.h_neck - 0.10 and not lapel_only:
-            on_torso = lat > thw * 0.16
+            on_torso = lat > thw * 0.48
         arm_pick_w = sum(
             _vg_weight(
                 body,
@@ -711,7 +632,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     thick = max(body.dimensions.length * 0.018, 0.013)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
-    solid.offset = 1.0
+    solid.offset = 0.85
     bpy.context.view_layer.objects.active = coat
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
@@ -726,8 +647,6 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
     _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
     _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
-    _trim_coat_eye_rays(coat, lm, hc, fwd, ws, y_face_fn)
-    _trim_coat_cheek_flash(coat, body, lm, hc, fwd, ws, y_face_fn)
     if len(coat.data.polygons) < 8:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
@@ -786,25 +705,23 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     proud = max(lm.span * 0.016, head_w * 0.052, 0.014)
     mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.04, specular=0.02)
     rot = fwd.to_track_quat("Y", "Z").to_euler()
-    up = Vector((0.0, 0.0, 1.0))
     bvh = _body_bvh_evaluated(body)
     cast_in = -fwd
     parts: list[bpy.types.Object] = []
-    outer = eye_diameter * 1.44
+    outer = max(eye_diameter * 1.42, head_w * 0.102)
     major_r = outer * 0.5
-    minor_r = max(full_sep * 0.042, head_w * 0.0048)
-    bar = minor_r * 1.08
+    minor_r = max(head_w * 0.0075, lm.span * 0.0042, 0.0032)
+    bar = minor_r * 1.05
     inv = body.matrix_world.inverted()
-    ear_lat = head_w * 0.525
+    max_lat = head_w * 0.525
 
     def _torus_rim(center_w: Vector, lateral_sign: float, name: str) -> None:
-        loc = inv @ center_w
         bpy.ops.mesh.primitive_torus_add(
             major_radius=major_r,
             minor_radius=minor_r,
             abso_major_rad=major_r + minor_r,
             abso_minor_rad=minor_r,
-            location=loc,
+            location=inv @ center_w,
         )
         torus = bpy.context.active_object
         torus.name = f"{name}.ring"
@@ -812,14 +729,20 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
         torus.data.materials.append(mat)
         parts.append(torus)
         outer_pt = center_w + right * (lateral_sign * major_r)
-        ear_pt = center_w + right * (lateral_sign * ear_lat)
+        if outer_pt.dot(right) * lateral_sign > max_lat:
+            outer_pt = center_w + right * (lateral_sign * (max_lat - head_w * 0.04))
+        ear_pt = (
+            center_w
+            - fwd * (head_w * 0.40)
+            + right * (lateral_sign * head_w * 0.50)
+            + Vector((0.0, 0.0, 0.0))
+        )
         mid_t = inv @ ((outer_pt + ear_pt) * 0.5)
         length = (ear_pt - outer_pt).length
         arm_dir = (ear_pt - outer_pt).normalized()
         bpy.ops.mesh.primitive_cylinder_add(radius=bar, depth=length, location=mid_t)
         temple = bpy.context.active_object
         temple.name = f"{name}.temple"
-        z_up = Vector((0.0, 0.0, 1.0))
         temple.rotation_euler = arm_dir.to_track_quat("Z", "Y").to_euler()
         temple.data.materials.append(mat)
         parts.append(temple)
@@ -842,7 +765,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=inv @ mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses.bridge"
-    bridge.scale = (full_sep * 0.22, bar * 1.6, bar * 1.35)
+    bridge.scale = (full_sep * 0.18, bar * 1.35, bar * 1.15)
     bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)

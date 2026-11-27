@@ -14,7 +14,7 @@ PREVIEWS = (
     REPO / "docs/art/previews/staff-researcher-idle.png",
     REPO / "docs/art/previews/staff-researcher-vs-stock-check.png",
 )
-MAX_CLIP_FRAC = 0.13  # full v16 lab-coat shell raises clipped coat specular on idle rig
+MAX_CLIP_FRAC = 0.05
 MAX_CLIP_FRAC_HARD = 0.0001  # idle must show visible shading, not flat clip
 MASK_THRESH = 48
 

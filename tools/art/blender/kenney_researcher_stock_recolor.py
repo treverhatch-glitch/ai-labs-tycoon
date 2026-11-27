@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import json
 import math
-import os
 from pathlib import Path
 
 import bpy
@@ -32,10 +31,10 @@ RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
 RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
-RESEARCHER_LAB_COAT = (198 / 255, 198 / 255, 193 / 255, 1.0)
+RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
-RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
+RESEARCHER_LAPEL = (198 / 255, 198 / 255, 193 / 255, 1.0)
 RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
 RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
 RESEARCHER_GLASSES = (34 / 255, 34 / 255, 34 / 255, 1.0)
@@ -55,7 +54,6 @@ SLOT_EYE = 8
 SLOT_BROW = 9
 SLOT_MOUTH = 10
 SLOT_LAPEL = 11
-SLOT_COAT = 12
 
 _VG_SHIRT_ARMS = frozenset(
     {
@@ -344,7 +342,6 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
         _ensure_material("ResearcherDecalBrow", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherDecalMouth", RESEARCHER_SKIN, 0.5),
         _ensure_material("ResearcherLapel", RESEARCHER_LAPEL, 0.52),
-        _ensure_material("ResearcherLabCoatBody", RESEARCHER_LAB_COAT, 0.68),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -381,11 +378,10 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _stamp_researcher_chest_v_shirt(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_tie(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_torso_lab_coat_white(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_forearm_shirt_under_coat(bm, slots, ob, lm)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
-    _hide_forearm_faces_under_sleeves(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -478,64 +474,11 @@ def _stamp_researcher_shirt_torso_arms(
         center_v = (
             lat <= thw * 1.10
             and y_face > 0.03
-            and lat < thw * 0.20
-            and lm.h_neck - 0.12 <= h <= lm.h_waist - 0.10
+            and lat < thw * 0.26
+            and lm.h_neck - 0.10 <= h <= lm.h_waist - 0.08
         )
         if center_v or on_arm:
             slots[face.index] = SLOT_SHIRT
-
-
-def _hide_forearm_faces_under_sleeves(
-    bm: bmesh.types.BMesh,
-    slots: list[int],
-    ob: bpy.types.Object,
-    lm: FounderLandmarks,
-    ws: list[Vector],
-    hc: Vector,
-    fwd: Vector,
-) -> None:
-    """Shirt-colour lateral forearms so skin never shows through procedural sleeves."""
-    lo, span = lm.zmin, lm.span
-    arm_bones = frozenset(
-        {
-            "LeftArm",
-            "RightArm",
-            "LeftForeArm",
-            "RightForeArm",
-            "LeftShoulder",
-            "RightShoulder",
-        }
-    )
-    for face in bm.faces:
-        wc = Vector()
-        arm = 0.0
-        hand = 0.0
-        for v in face.verts:
-            wc += ob.matrix_world @ v.co
-            hand += _vg_weight_from_bone_names(ob, v.index, _VG_HANDS)
-            arm += _vg_weight_from_bone_names(ob, v.index, arm_bones)
-        wc /= max(1, len(face.verts))
-        arm /= max(1, len(face.verts))
-        hand /= max(1, len(face.verts))
-        h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.26 or h > lm.h_waist - 0.02:
-            continue
-        if hand > 0.20:
-            continue
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat <= thw * 0.52 or arm < 0.08:
-            continue
-        slots[face.index] = SLOT_SHIRT
-
-
-def _vg_weight_from_bone_names(ob: bpy.types.Object, vi: int, names: frozenset[str]) -> float:
-    total = 0.0
-    vg_names = {g.index: g.name for g in ob.vertex_groups}
-    for g in ob.data.vertices[vi].groups:
-        if vg_names.get(g.group, "") in names:
-            total += g.weight
-    return total
 
 
 def _stamp_tee_short_sleeve(
@@ -699,40 +642,6 @@ def _stamp_coat_knee_front(
             slots[face.index] = SLOT_SHIRT
 
 
-def _stamp_torso_lab_coat_white(
-    bm: bmesh.types.BMesh,
-    slots: list[int],
-    ob: bpy.types.Object,
-    lm: FounderLandmarks,
-    ws: list[Vector],
-    hc: Vector,
-    fwd: Vector,
-    y_face_fn,
-) -> None:
-    """White coat read on baked torso; narrow center V stays shirt."""
-    lo, span = lm.zmin, lm.span
-    coat_lo = lm.h_waist - 0.20
-    coat_hi = lm.h_neck + 0.04
-    for face in bm.faces:
-        if slots[face.index] in (SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_HAIR):
-            continue
-        wc = Vector()
-        for v in face.verts:
-            wc += ob.matrix_world @ v.co
-        wc /= len(face.verts)
-        y_face = y_face_fn(wc)
-        h = (wc.z - lo) / span
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if h < coat_lo or h > coat_hi:
-            continue
-        if y_face > 0.05 and lat < thw * 0.085 and h >= lm.h_neck - 0.16:
-            continue
-        if slots[face.index] in (SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_HAIR, SLOT_HAND):
-            continue
-        slots[face.index] = SLOT_COAT
-
-
 def _stamp_lab_coat_lapels(
     bm: bmesh.types.BMesh,
     slots: list[int],
@@ -760,7 +669,7 @@ def _stamp_lab_coat_lapels(
             continue
         lapel = thw * 0.20 <= lat <= thw * 0.38
         if lapel:
-            slots[face.index] = SLOT_COAT
+            slots[face.index] = SLOT_LAPEL
 
 
 def _grow_researcher_hair_cap(
@@ -843,7 +752,7 @@ def _stamp_lab_coat_open_front(
             continue
         if slots[face.index] in (SLOT_HAND, SLOT_HAIR, SLOT_SKIN):
             continue
-        slots[face.index] = SLOT_SHIRT
+        slots[face.index] = SLOT_LAPEL
 
 
 def _apply_researcher_hand_skin_only(
