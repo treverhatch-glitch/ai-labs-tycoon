@@ -101,8 +101,6 @@ def is_eye_pixel(r: int, g: int, b: int, *, asset_id: str = "") -> bool:
             return False
         if abs(r - g) > 16 or abs(g - b) > 20:
             return False
-        if b > r + 18 and 100 < (r + g + b) < 260:
-            return False
         return not (b > r + 24 and b > 100)
     return max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 165
 

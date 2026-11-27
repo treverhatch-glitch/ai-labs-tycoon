@@ -5,7 +5,7 @@ import math
 
 import bpy
 import bmesh
-from mathutils import Matrix, Vector
+from mathutils import Vector
 
 import blender_common as bc
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
@@ -242,8 +242,8 @@ def _append_coat_hem_quads(
     _, right = _fwd_basis(fwd)
     lo, span = lm.zmin, lm.span
     hw = _head_width_at(ws, lo, span, lm.h_eye)
-    z0 = lo + span * (lm.h_waist + 0.01)
-    z1 = lo + span * (lm.h_waist + 0.44)
+    z0 = lo + span * (lm.h_waist - 0.16)
+    z1 = lo + span * (lm.h_waist - 0.02)
     proud = hw * 0.11
     flare = hw * 0.15
     inv = body.matrix_world.inverted()
@@ -262,6 +262,151 @@ def _append_coat_hem_quads(
         bm.faces.new(tuple(vs))
 
 
+def _fwd_right_flat(fwd: Vector) -> tuple[Vector, Vector]:
+    f_xy = Vector((fwd.x, fwd.y, 0.0))
+    if f_xy.length < 1e-6:
+        f_xy = Vector((0.0, -1.0, 0.0))
+    else:
+        f_xy.normalize()
+    right = Vector((-f_xy.y, f_xy.x, 0.0))
+    return f_xy, right
+
+
+def _append_bmesh(target: bmesh.types.BMesh, src: bmesh.types.BMesh) -> None:
+    vmap: dict[bmesh.types.BMVert, bmesh.types.BMVert] = {}
+    for v in src.verts:
+        vmap[v] = target.verts.new(v.co.copy())
+    for f in src.faces:
+        try:
+            target.faces.new([vmap[v] for v in f.verts])
+        except ValueError:
+            pass
+
+
+def _vg_weighted_centroid(
+    ob: bpy.types.Object,
+    names: frozenset[str],
+    *,
+    lo: float,
+    span: float,
+    h_lo: float,
+    h_hi: float,
+    min_w: float = 0.12,
+) -> Vector | None:
+    acc = Vector()
+    n = 0.0
+    for v in ob.data.vertices:
+        w = _vg_weight(ob, v.index, names)
+        if w < min_w:
+            continue
+        wc = ob.matrix_world @ v.co
+        h = (wc.z - lo) / span
+        if h < h_lo or h > h_hi:
+            continue
+        acc += wc * w
+        n += w
+    if n < 1e-6:
+        return None
+    return acc / n
+
+
+def _sleeve_axis_world(
+    body: bpy.types.Object,
+    side: str,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> tuple[Vector, Vector, float, float]:
+    lo, span = lm.zmin, lm.span
+    bones = frozenset({f"{side}Shoulder", f"{side}Arm"})
+    fore = frozenset({f"{side}ForeArm", f"{side}Hand"})
+    sh = _vg_weighted_centroid(
+        body,
+        bones,
+        lo=lo,
+        span=span,
+        h_lo=lm.h_neck - 0.28,
+        h_hi=lm.h_neck - 0.12,
+        min_w=0.10,
+    )
+    wr = _vg_weighted_centroid(
+        body,
+        fore,
+        lo=lo,
+        span=span,
+        h_lo=lm.h_waist - 0.16,
+        h_hi=lm.h_waist - 0.04,
+        min_w=0.08,
+    )
+    if sh is None or wr is None:
+        _, right = _fwd_right_flat(fwd)
+        lat_sign = 1.0 if side == "Right" else -1.0
+        h_sh = lm.h_neck - 0.24
+        h_wr = lm.h_waist - 0.11
+        thw = torso_half_width(ws, lo, span, h_sh, lm.cx, lm.cy)
+        z_sh = lo + span * h_sh
+        z_wr = lo + span * h_wr
+        sh = hc + right * (lat_sign * thw * 0.78) + Vector((0.0, 0.0, z_sh - hc.z))
+        wr = hc + right * (lat_sign * thw * 0.72) + Vector((0.0, 0.0, z_wr - hc.z))
+    arm = wr - sh
+    need_len = span * 0.36
+    if arm.length > 1e-6 and arm.length < need_len:
+        wr = sh + arm.normalized() * need_len
+    h_mid = (sh.z + wr.z) * 0.5
+    h_norm = (h_mid - lo) / span
+    thw = torso_half_width(ws, lo, span, h_norm, lm.cx, lm.cy)
+    r_top = max(span * 0.032, thw * 0.19)
+    r_bot = max(span * 0.028, r_top * 0.74)
+    return sh, wr, r_top, r_bot
+
+
+def _build_tapered_sleeve_bmesh(
+    body: bpy.types.Object,
+    p_top: Vector,
+    p_bot: Vector,
+    r_top: float,
+    r_bot: float,
+    *,
+    segments: int = 10,
+    rings: int = 14,
+    cuff_scale: float = 1.10,
+) -> bmesh.types.BMesh:
+    inv = body.matrix_world.inverted()
+    axis = p_bot - p_top
+    length = axis.length
+    bm = bmesh.new()
+    if length < 1e-6:
+        return bm
+    axis_n = axis / length
+    aux = Vector((0.0, 0.0, 1.0))
+    if abs(axis_n.dot(aux)) > 0.92:
+        aux = Vector((0.0, 1.0, 0.0))
+    right = axis_n.cross(aux).normalized()
+    up = right.cross(axis_n).normalized()
+    vgrid: list[list[bmesh.types.BMVert]] = []
+    for ri in range(rings):
+        t = ri / max(1, rings - 1)
+        rad = r_top * (1.0 - t) + r_bot * t
+        if t > 0.92:
+            rad = min(rad * cuff_scale, r_bot * 1.12)
+        center = p_top + axis * t
+        ring: list[bmesh.types.BMVert] = []
+        for si in range(segments):
+            ang = 2.0 * math.pi * si / segments
+            offset = right * math.cos(ang) * rad + up * math.sin(ang) * rad
+            ring.append(bm.verts.new(inv @ (center + offset)))
+        vgrid.append(ring)
+    for ri in range(rings - 1):
+        for si in range(segments):
+            s2 = (si + 1) % segments
+            try:
+                bm.faces.new((vgrid[ri][si], vgrid[ri][s2], vgrid[ri + 1][s2], vgrid[ri + 1][si]))
+            except ValueError:
+                pass
+    return bm
+
+
 def _is_coat_source_face(
     face: bmesh.types.BMFace,
     ob: bpy.types.Object,
@@ -273,7 +418,7 @@ def _is_coat_source_face(
     y_face_fn,
 ) -> bool:
     if _arm_coat_face(face, ob, lm=lm, hc=hc, fwd=fwd, ws=ws):
-        return True
+        return False
     chest_w = sum(
         _vg_weight(ob, v.index, frozenset({"Chest", "UpperChest", "Spine"}))
         for v in face.verts
@@ -484,243 +629,170 @@ def _prune_coat_wrist_shards(
     bm.free()
 
 
-def _fwd_right_flat(fwd: Vector) -> tuple[Vector, Vector]:
-    f_xy = Vector((fwd.x, fwd.y, 0.0))
-    if f_xy.length < 1e-6:
-        f_xy = Vector((0.0, -1.0, 0.0))
-    else:
-        f_xy.normalize()
-    right = Vector((-f_xy.y, f_xy.x, 0.0))
-    return f_xy, right
-
-
-def _append_bmesh(target: bmesh.types.BMesh, src: bmesh.types.BMesh) -> None:
-    vmap: dict[bmesh.types.BMVert, bmesh.types.BMVert] = {}
-    for v in src.verts:
-        vmap[v] = target.verts.new(v.co.copy())
-    for f in src.faces:
-        try:
-            target.faces.new([vmap[v] for v in f.verts])
-        except ValueError:
-            pass
-
-
-def _vg_weighted_centroid(
-    ob: bpy.types.Object,
-    names: frozenset[str],
-    *,
-    lo: float,
-    span: float,
-    h_lo: float,
-    h_hi: float,
-    min_w: float = 0.14,
-) -> Vector | None:
-    acc = Vector()
-    n = 0
-    for v in ob.data.vertices:
-        w = _vg_weight(ob, v.index, names)
-        if w < min_w:
-            continue
-        wc = ob.matrix_world @ v.co
-        h = (wc.z - lo) / span
-        if h < h_lo or h > h_hi:
-            continue
-        acc += wc * w
-        n += w
-    if n < 1e-6:
-        return None
-    return acc / n
-
-
-def _sleeve_axis_world(
-    body: bpy.types.Object,
-    side: str,
-    lm,
-    hc: Vector,
-    fwd: Vector,
-    ws: list[Vector],
-) -> tuple[Vector, Vector, float, float]:
-    lo, span = lm.zmin, lm.span
-    lat_sign = 1.0 if side == "Right" else -1.0
-    _, right = _fwd_right_flat(fwd)
-    h_sh = lm.h_neck - 0.22
-    h_wr = lm.h_waist - 0.14
-    thw_sh = torso_half_width(ws, lo, span, h_sh, lm.cx, lm.cy)
-    thw_wr = torso_half_width(ws, lo, span, h_wr, lm.cx, lm.cy)
-    z_sh = lo + span * h_sh
-    z_wr = lo + span * h_wr
-    sh = hc + right * (lat_sign * thw_sh * 0.80) + Vector((0.0, 0.0, z_sh - hc.z))
-    wr = hc + right * (lat_sign * thw_wr * 0.74) + Vector((0.0, 0.0, z_wr - hc.z))
-    xy_sh = _vg_weighted_centroid(
-        body,
-        frozenset({f"{side}Shoulder", f"{side}Arm"}),
-        lo=lo,
-        span=span,
-        h_lo=h_sh - 0.04,
-        h_hi=h_sh + 0.04,
-    )
-    xy_wr = _vg_weighted_centroid(
-        body,
-        frozenset({f"{side}ForeArm"}),
-        lo=lo,
-        span=span,
-        h_lo=h_wr - 0.05,
-        h_hi=h_wr + 0.02,
-        min_w=0.08,
-    )
-    if xy_sh is not None:
-        sh.x, sh.y = xy_sh.x, xy_sh.y
-    if xy_wr is not None:
-        wr.x, wr.y = xy_wr.x, xy_wr.y
-    if wr.z >= sh.z - span * 0.02:
-        wr.z = z_wr
-        sh.z = z_sh
-    r_top = max(span * 0.030, thw_sh * 0.17)
-    r_bot = max(span * 0.026, r_top * 0.76)
-    return sh, wr, r_top, r_bot
-
-
-def _build_tapered_sleeve_bmesh(
-    body: bpy.types.Object,
-    p_top: Vector,
-    p_bot: Vector,
-    r_top: float,
-    r_bot: float,
-    *,
-    segments: int = 10,
-    rings: int = 12,
-    cuff_scale: float = 1.12,
-) -> bmesh.types.BMesh:
-    inv = body.matrix_world.inverted()
-    axis = p_bot - p_top
-    length = axis.length
-    bm = bmesh.new()
-    if length < 1e-6:
-        return bm
-    axis_n = axis / length
-    aux = Vector((0.0, 0.0, 1.0))
-    if abs(axis_n.dot(aux)) > 0.9:
-        aux = Vector((0.0, 1.0, 0.0))
-    right = axis_n.cross(aux).normalized()
-    up = right.cross(axis_n).normalized()
-    vgrid: list[list[bmesh.types.BMVert]] = []
-    for ri in range(rings):
-        t = ri / max(1, rings - 1)
-        rad = r_top * (1.0 - t) + r_bot * t
-        if t > 0.93:
-            rad = r_bot * cuff_scale
-        center = p_top + axis * t
-        ring: list[bmesh.types.BMVert] = []
-        for si in range(segments):
-            ang = 2.0 * math.pi * si / segments
-            offset = right * math.cos(ang) * rad + up * math.sin(ang) * rad
-            ring.append(bm.verts.new(inv @ (center + offset)))
-        vgrid.append(ring)
-    for ri in range(rings - 1):
-        for si in range(segments):
-            s2 = (si + 1) % segments
-            try:
-                bm.faces.new((vgrid[ri][si], vgrid[ri][s2], vgrid[ri + 1][s2], vgrid[ri + 1][si]))
-            except ValueError:
-                pass
-    return bm
-
-
-def _coat_front_open(dir_xy: Vector, fwd_xy: Vector) -> bool:
-    return dir_xy.dot(-fwd_xy) > math.cos(math.radians(38.0))
-
-
-def _coat_width_at(ws, lo, span, h_norm, lm, flare: float) -> float:
-    return torso_half_width(ws, lo, span, h_norm, lm.cx, lm.cy) * 1.08 * flare + span * 0.010
-
-
-def _build_open_coat_panels_bmesh(
-    body: bpy.types.Object,
-    lm,
-    hc: Vector,
-    fwd: Vector,
-    ws: list[Vector],
-) -> bmesh.types.BMesh:
-    lo, span = lm.zmin, lm.span
-    z_top = lo + span * (lm.h_neck - 0.06)
-    z_back_top = lo + span * (lm.h_neck + 0.02)
-    z_hem = lo + span * (lm.h_waist + 0.42)
-    fwd_xy, right_xy = _fwd_right_flat(fwd)
-    inv = body.matrix_world.inverted()
-    bm = bmesh.new()
-    open_front = 0.44
-    coat_proud = span * 0.028
-
-    def _corner(z: float, lat_scale: float, proud: float, flare: float) -> bmesh.types.BMVert:
-        h = (z - lo) / span
-        half_w = _coat_width_at(ws, lo, span, h, lm, flare)
-        center = Vector((hc.x, hc.y, z))
-        return bm.verts.new(inv @ (center + right_xy * (lat_scale * half_w) - fwd_xy * proud))
-
-    flare_top, flare_hem = 1.04, 1.20
-    back_p = coat_proud * 2.72
-    blt = _corner(z_back_top, -1.0, back_p, flare_top)
-    brt = _corner(z_back_top, 1.0, back_p, flare_top)
-    blb = _corner(z_hem, -1.0, back_p, flare_hem)
-    brb = _corner(z_hem, 1.0, back_p, flare_hem)
-    try:
-        bm.faces.new((blt, brt, brb, blb))
-    except ValueError:
-        pass
-
-    for sign in (-1.0, 1.0):
-        outer_t = _corner(z_top, sign * 1.04, coat_proud, flare_top)
-        inner_t = _corner(z_top, sign * open_front, coat_proud, flare_top)
-        inner_b = _corner(z_hem, sign * open_front, coat_proud, flare_hem)
-        outer_b = _corner(z_hem, sign * 1.08, coat_proud * 1.35, flare_hem)
-        try:
-            if sign < 0:
-                bm.faces.new((outer_t, inner_t, inner_b, outer_b))
-            else:
-                bm.faces.new((inner_t, outer_t, outer_b, inner_b))
-        except ValueError:
-            pass
-
-    for sign in (-1.0, 1.0):
-        h_pad = lm.h_waist + 0.38
-        hw = _coat_width_at(ws, lo, span, h_pad, lm, 1.14)
-        pad_c = hc + right_xy * (sign * hw * 1.08) - fwd_xy * (span * 0.058)
-        pad_c.z = lo + span * h_pad
-        pad_m = Matrix.Translation(inv @ pad_c) @ Matrix.Diagonal(
-            (span * 0.19, span * 0.10, span * 0.26, 1.0)
-        )
-        bmesh.ops.create_cube(bm, size=1.0, matrix=pad_m)
-
-    return bm
-
-
 def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":
             bpy.data.objects.remove(ob, do_unlink=True)
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
-    hc, _y_face_fn = face_shell_coord(body, fwd)
+    hc, y_face_fn = face_shell_coord(body, fwd)
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
-    bm = _build_open_coat_panels_bmesh(body, lm, hc, fwd, ws)
+    bm_src = bmesh.new()
+    bm_src.from_mesh(body.data)
+    bm_src.faces.ensure_lookup_table()
+    lo, span = lm.zmin, lm.span
+    coat_hem = lm.h_waist - 0.14
+    coat_top = lm.h_neck - 0.14
+    pick: list[bmesh.types.BMFace] = []
+    for f in bm_src.faces:
+        wc = _world_centroid(f, body)
+        h = (wc.z - lo) / span
+        if h > coat_top or h < coat_hem:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        y_face = y_face_fn(wc)
+        neck_w = sum(_vg_weight(body, v.index, frozenset({"Neck"})) for v in f.verts) / len(f.verts)
+        open_chest = _coat_open_v(lat, thw, h, lm, y_face)
+        if neck_w > 0.18 and y_face > -0.05 and lat < thw * 0.42:
+            open_chest = True
+        if y_face > 0.05 and h >= lm.h_neck - 0.10 and lat < thw * 0.50:
+            open_chest = True
+        lapel_only = (
+            y_face > 0.06
+            and thw * 0.22 <= lat <= thw * 0.46
+            and lm.h_neck - 0.10 <= h <= lm.h_waist - 0.04
+        )
+        on_torso = lat <= thw * 1.30 and y_face > -0.40 and not open_chest
+        if on_torso and y_face > 0.05 and h >= lm.h_neck - 0.10 and not lapel_only:
+            on_torso = lat > thw * 0.48
+        arm_pick_w = sum(
+            _vg_weight(
+                body,
+                v.index,
+                frozenset(
+                    {
+                        "LeftShoulder",
+                        "RightShoulder",
+                        "LeftArm",
+                        "RightArm",
+                        "LeftForeArm",
+                        "RightForeArm",
+                    }
+                ),
+            )
+            for v in f.verts
+        ) / len(f.verts)
+        hand_pick = sum(_vg_weight(body, v.index, _VG_HANDS) for v in f.verts) / len(
+            f.verts
+        )
+        on_arm = False
+        leg_w = sum(
+            _vg_weight(body, v.index, frozenset({"LeftUpLeg", "RightUpLeg"}))
+            for v in f.verts
+        ) / len(f.verts)
+        if leg_w > 0.32 and h < lm.h_waist - 0.02:
+            continue
+        torso_w = sum(
+            _vg_weight(
+                body,
+                v.index,
+                frozenset({"Chest", "UpperChest", "Spine", "Hips"}),
+            )
+            for v in f.verts
+        ) / len(f.verts)
+        on_hem_tail = (
+            not open_chest
+            and torso_w > 0.30
+            and leg_w < 0.26
+            and coat_hem <= h <= lm.h_waist - 0.03
+            and lat < thw * 1.02
+            and y_face > -0.08
+            and not (y_face > -0.05 and lat < thw * 0.40)
+        )
+        if open_chest:
+            continue
+        if h > lm.h_neck - 0.08:
+            head_w = sum(
+                _vg_weight(body, v.index, frozenset({"Head", "Neck"})) for v in f.verts
+            ) / len(f.verts)
+            if head_w > 0.12:
+                continue
+        if on_torso or on_hem_tail or _is_coat_source_face(
+            f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
+        ):
+            pick.append(f)
+    pick_set = {pf.index for pf in pick}
+    if len(pick) < 24:
+        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
+
+    bm = bmesh.new()
+    vmap: dict[int, bmesh.types.BMVert] = {}
+    for sf in pick:
+        new_vs = []
+        for sv in sf.verts:
+            if sv.index not in vmap:
+                vmap[sv.index] = bm.verts.new(sv.co.copy())
+            new_vs.append(vmap[sv.index])
+        try:
+            bm.faces.new(new_vs)
+        except ValueError:
+            pass
+
+    _append_coat_hem_quads(bm, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
     for side in ("Left", "Right"):
         p0, p1, rt, rb = _sleeve_axis_world(body, side, lm, hc, fwd, ws)
-        slv = _build_tapered_sleeve_bmesh(body, p0, p1, rt, rb, segments=10, rings=12)
+        slv = _build_tapered_sleeve_bmesh(body, p0, p1, rt, rb)
         _append_bmesh(bm, slv)
         slv.free()
-    if len(bm.faces) < 24:
-        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(bm.faces)} too_few")
+
     mesh = bpy.data.meshes.new("ResearcherLabCoatMesh")
     bm.to_mesh(mesh)
     bm.free()
+    bm_src.free()
+
     coat = bpy.data.objects.new("ResearcherLabCoat", mesh)
     bpy.context.collection.objects.link(coat)
     mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.68)
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    bc.smooth_shade(coat)
+    thick = max(body.dimensions.length * 0.018, 0.013)
+    solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
+    solid.thickness = thick
+    solid.offset = 0.85
+    bpy.context.view_layer.objects.active = coat
+    coat.select_set(True)
+    bpy.ops.object.modifier_apply(modifier=solid.name)
+    bpy.ops.object.shade_smooth()
+    bpy.ops.object.select_all(action="DESELECT")
+    coat.select_set(True)
+    bpy.context.view_layer.objects.active = coat
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.remove_doubles(threshold=0.0008)
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
+    _prune_coat_above_shoulders(coat, lm)
+    if len(coat.data.polygons) < 8:
+        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
+
+
+def _prune_coat_above_shoulders(coat: bpy.types.Object, lm) -> None:
+    lo, span = lm.zmin, lm.span
+    z_max = lo + span * (lm.h_neck - 0.05)
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.verts.ensure_lookup_table()
+    doomed = [v for v in bm.verts if (coat.matrix_world @ v.co).z > z_max]
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="VERTS")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
 
 
 def spawn_researcher_hair_cap(body: bpy.types.Object) -> bpy.types.Object:
@@ -780,43 +852,49 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bvh = _body_bvh_evaluated(body)
     cast_in = -fwd
     parts: list[bpy.types.Object] = []
-    outer = eye_diameter * 1.30
-    bar = max(full_sep * 0.088, head_w * 0.0086)
+    outer = eye_diameter * 1.44
+    bar = max(full_sep * 0.096, head_w * 0.0094)
     half = outer * 0.5
 
-    def _rect_frame(center_w: Vector, lateral_sign: float) -> bpy.types.Object:
-        local_parts: list[bpy.types.Object] = []
-        side_len = outer * 0.92
-        temple = center_w + right * (lateral_sign * (half - bar * 0.44))
+    def _open_square_rim(center_w: Vector, lateral_sign: float, name: str) -> None:
+        side_len = outer * 0.95
+        temple = center_w + right * (lateral_sign * (half + head_w * 0.22))
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=temple)
         side = bpy.context.active_object
-        side.scale = (bar * 1.10, bar * 1.14, side_len)
+        side.name = f"{name}.side"
+        side.scale = (head_w * 0.14, bar * 1.08, side_len * 0.55)
         side.rotation_euler = rot
         bpy.ops.object.transform_apply(scale=True, rotation=True)
         side.data.materials.append(mat)
-        local_parts.append(side)
-        brow = center_w + up * (half - bar * 0.46)
+        parts.append(side)
+        ear = center_w + right * (lateral_sign * (half + head_w * 0.36)) + up * (head_w * 0.02)
+        mid_t = (temple + ear) * 0.5
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid_t)
+        arm = bpy.context.active_object
+        arm.name = f"{name}.temple"
+        arm.scale = (head_w * 0.30, bar * 0.95, bar * 1.02)
+        arm.rotation_euler = rot
+        bpy.ops.object.transform_apply(scale=True, rotation=True)
+        arm.data.materials.append(mat)
+        parts.append(arm)
+        brow = center_w + up * (half - bar * 0.50)
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=brow)
         top = bpy.context.active_object
-        top.scale = (outer * 0.88, bar * 1.06, bar * 1.02)
+        top.name = f"{name}.top"
+        top.scale = (outer * 0.94, bar * 1.10, bar * 1.06)
         top.rotation_euler = rot
         bpy.ops.object.transform_apply(scale=True, rotation=True)
         top.data.materials.append(mat)
-        local_parts.append(top)
-        cheek = center_w - up * (half - bar * 0.46)
+        parts.append(top)
+        cheek = center_w - up * (half - bar * 0.50)
         bpy.ops.mesh.primitive_cube_add(size=1.0, location=cheek)
         bottom = bpy.context.active_object
-        bottom.scale = (outer * 0.88, bar * 1.06, bar * 1.02)
+        bottom.name = f"{name}.bottom"
+        bottom.scale = (outer * 0.94, bar * 1.10, bar * 1.06)
         bottom.rotation_euler = rot
         bpy.ops.object.transform_apply(scale=True, rotation=True)
         bottom.data.materials.append(mat)
-        local_parts.append(bottom)
-        bpy.ops.object.select_all(action="DESELECT")
-        for p in local_parts:
-            p.select_set(True)
-        bpy.context.view_layer.objects.active = local_parts[0]
-        bpy.ops.object.join()
-        return bpy.context.active_object
+        parts.append(bottom)
 
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
@@ -830,26 +908,18 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
         else:
             center = seed + fwd * proud
         anchors.append(center)
-    parts.append(_rect_frame(anchors[0], -1.0))
-    parts.append(_rect_frame(anchors[1], 1.0))
-    mid = (anchors[0] + anchors[1]) * 0.5
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid + up * (half - bar * 0.40))
+    _open_square_rim(anchors[0], -1.0, "ResearcherGlasses.L")
+    _open_square_rim(anchors[1], 1.0, "ResearcherGlasses.R")
+    mid = (anchors[0] + anchors[1]) * 0.5 - up * (head_w * 0.06)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
     bridge = bpy.context.active_object
-    bridge.scale = (half_sep * 0.14, bar * 0.96, bar * 0.78)
+    bridge.name = "ResearcherGlasses.bridge"
+    bridge.scale = (full_sep * 0.20, bar * 1.08, bar * 1.18)
     bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)
     parts.append(bridge)
-    temple_l = anchors[0] + right * (-half - bar * 0.95)
-    temple_r = anchors[1] + right * (half + bar * 0.95)
-    for loc in (temple_l, temple_r):
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc)
-        arm = bpy.context.active_object
-        arm.scale = (bar * 2.6, bar * 1.04, bar * 0.88)
-        arm.rotation_euler = rot
-        bpy.ops.object.transform_apply(scale=True, rotation=True)
-        arm.data.materials.append(mat)
-        parts.append(arm)
+
     bpy.ops.object.select_all(action="DESELECT")
     for p in parts:
         p.select_set(True)

@@ -23,7 +23,6 @@ def main() -> None:
             "FounderEye_R",
             "ResearcherGlasses",
             "ResearcherHairCap",
-            "ResearcherLabCoat",
         }
     )
     meshes = [

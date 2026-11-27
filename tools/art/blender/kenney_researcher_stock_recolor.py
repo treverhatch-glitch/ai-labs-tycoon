@@ -1244,4 +1244,7 @@ def load_stock_and_recolor() -> bpy.types.Object:
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_glasses(ob)
     spawn_researcher_hair_cap(ob)
+    from researcher_hero_selfcheck import assert_researcher_hero_geometry  # noqa: WPS433
+
+    assert_researcher_hero_geometry(ob)
     return ob
