@@ -13,6 +13,12 @@ if [[ ! -f tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMe
   ./tools/art/cc0/fetch_incoming.sh
 fi
 
+echo "=== tools/art/blender/render_kenney_founder_stock_check.py ==="
+stock_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_stock_check.py 2>&1) || { echo "$stock_out"; echo "FAIL stock check" >&2; exit 1; }
+echo "$stock_out"
+echo "$stock_out" | grep -q '^OK stock_check' || { echo "FAIL stock check OK line" >&2; exit 1; }
+test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || { echo "FAIL missing stock check png"; exit 1; }
+
 script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="
 out=$("$BLENDER" -b --python "$script" 2>&1) || { echo "$out"; echo "FAIL $script" >&2; exit 1; }

@@ -550,7 +550,7 @@ def _ensure_kenney_head_volume() -> None:
         t_lo, t_hi = sc._world_bbox(torso)
         scx = (t_lo.x + t_hi.x) * 0.5
     head_h = TARGET_HEIGHT * 0.24
-    cz = n_hi.z + head_h * 0.45
+    cz = n_hi.z + head_h * 0.30
     cy = (n_lo.y + n_hi.y) * 0.5 if neck else (h_lo.y + h_hi.y) * 0.5
     bpy.data.objects.remove(head, do_unlink=True)
     ob = bc.add_cube("Head", (0.32, 0.28, head_h * 0.92), (scx, cy, cz))
@@ -720,6 +720,54 @@ def _align_spine_xy() -> None:
             bpy.context.view_layer.update()
 
 
+def _seat_head_on_neck() -> None:
+    """Overlap head bottom with neck top — no floating gap."""
+    import staff_connectivity as sc
+
+    head = bpy.data.objects.get("Head")
+    neck = bpy.data.objects.get("Neck")
+    if not head:
+        return
+    h_lo, h_hi = sc._world_bbox(head)
+    if neck:
+        n_lo, n_hi = sc._world_bbox(neck)
+        dz = n_hi.z - h_lo.z - 0.038
+    else:
+        torso = bpy.data.objects.get("Torso")
+        if not torso:
+            return
+        t_lo, t_hi = sc._world_bbox(torso)
+        dz = t_hi.z - 0.04 - h_lo.z
+    if abs(dz) < 1e-4:
+        return
+    for tag in ("Head", "Hair", "Eye_-1", "Eye_1", "Mouth"):
+        ob = bpy.data.objects.get(tag)
+        if ob:
+            ob.location.z += dz
+    bpy.context.view_layer.update()
+
+
+def _weld_shoulder_sockets() -> None:
+    """Slide red upper arms into torso shoulder band (close socket holes)."""
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    t_lo, t_hi = sc._world_bbox(torso)
+    tcx = (t_lo.x + t_hi.x) * 0.5
+    span_x = t_hi.x - t_lo.x
+    for sx, sign in (("-1", -1.0), ("1", 1.0)):
+        ua = bpy.data.objects.get(f"UpperArm_{sx}")
+        if not ua:
+            continue
+        a_lo, a_hi = sc._world_bbox(ua)
+        acx = (a_lo.x + a_hi.x) * 0.5
+        target_x = tcx + sign * (span_x * 0.36 + 0.04)
+        ua.location.x += (target_x - acx) * 0.82
+        bpy.context.view_layer.update()
+
+
 def _add_face_features() -> None:
     for tag in ("Eye_-1", "Eye_1", "Mouth", "Eyebrows"):
         old = bpy.data.objects.get(tag)
@@ -772,17 +820,19 @@ def build_founder_kenney() -> None:
     if len(parts) < 11:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
     _ground_z_meshes()
-    _flip_character_yaw()
     _snap_soles_to_feet()
     _purge_floor_stray_meshes()
     _ground_z_meshes()
     _trim_torso_chest_flap()
     _ensure_kenney_head_volume()
+    _seat_head_on_neck()
     _center_head_on_torso()
     _ensure_side_arms()
+    _weld_shoulder_sockets()
     _beef_hands()
     _add_hair_cap()
     _add_face_features()
+    _seat_head_on_neck()
     _center_head_on_torso()
     for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):
         ob = bpy.data.objects.get(tag)
