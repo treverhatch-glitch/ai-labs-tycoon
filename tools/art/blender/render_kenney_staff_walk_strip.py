@@ -17,6 +17,7 @@ from kenney_hero_walk_strip import (  # noqa: E402
     build_researcher_walk_scene,
     configure_preview_env,
     founder_eye_preview_tweak,
+    researcher_lab_coat_preview_tweak,
     apply_idle_arm_blend,
 )
 from kenney_walk_cycle_gate import (  # noqa: E402
@@ -63,6 +64,8 @@ def main() -> int:
     )
     if asset_id == "staff-founder-idle":
         founder_eye_preview_tweak(scene_data.render_meshes)
+    else:
+        researcher_lab_coat_preview_tweak(scene_data.render_meshes)
     _pose_walk_frame(
         scene,
         scene_data.arm,

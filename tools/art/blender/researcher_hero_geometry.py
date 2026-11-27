@@ -1,6 +1,8 @@
 """Researcher hero — lab coat, hair cap, glasses as separate CC0 Blender geometry."""
 from __future__ import annotations
 
+import math
+
 import bpy
 import bmesh
 from mathutils import Vector
@@ -676,99 +678,213 @@ def _prune_coat_micro_islands(coat: bpy.types.Object, *, min_faces: int = 10) ->
     bm.free()
 
 
+def _coat_body_basis(fwd: Vector) -> tuple[Vector, Vector, Vector]:
+    from founder_face_decals import _fwd_basis
+
+    up = Vector((0.0, 0.0, 1.0))
+    _, right = _fwd_basis(fwd)
+    return fwd.normalized(), right.normalized(), up
+
+
+def _stitch_coat_sleeve_shoulder(
+    bm: bmesh.types.BMesh,
+    body: bpy.types.Object,
+    *,
+    side: str,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> None:
+    """Bridge torso shell ↔ sleeve tube so coat reads as one piece in preview."""
+    lo, span = lm.zmin, lm.span
+    sh_h = lm.h_neck - 0.11
+    thw = torso_half_width(ws, lo, span, sh_h, lm.cx, lm.cy)
+    sign = -1.0 if side == "Left" else 1.0
+    _, right, _ = _coat_body_basis(fwd)
+    sh_z = lo + span * sh_h
+    torso_anchor = hc + Vector((0.0, 0.0, sh_z - hc.z))
+    sleeve_anchor = hc + right * (sign * thw * 1.08) + Vector((0.0, 0.0, sh_z - hc.z))
+    torso = sorted(
+        bm.verts,
+        key=lambda v: (body.matrix_world @ v.co - torso_anchor).length,
+    )[:6]
+    sleeve = sorted(
+        bm.verts,
+        key=lambda v: (body.matrix_world @ v.co - sleeve_anchor).length,
+    )[:6]
+    torso = [v for v in torso if abs((body.matrix_world @ v.co).z - sh_z) < span * 0.04]
+    sleeve = [v for v in sleeve if abs((body.matrix_world @ v.co).z - sh_z) < span * 0.05]
+    if len(torso) < 2 or len(sleeve) < 2:
+        return
+    a0, a1 = torso[-2], torso[-1]
+    b0, b1 = sleeve[0], sleeve[1]
+    try:
+        bm.faces.new((a0, a1, b1, b0))
+    except ValueError:
+        pass
+
+
+def _prune_bmesh_islands(bm: bmesh.types.BMesh, *, min_faces: int) -> None:
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    islands: list[list[bmesh.types.BMFace]] = []
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        stack = [seed]
+        island: list[bmesh.types.BMFace] = []
+        visited.add(seed.index)
+        while stack:
+            face = stack.pop()
+            island.append(face)
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        visited.add(nb.index)
+                        stack.append(nb)
+        islands.append(island)
+    doomed = [f for isl in islands if len(isl) < min_faces for f in isl]
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+
+
+def _build_procedural_coat_body(
+    bm: bmesh.types.BMesh,
+    body: bpy.types.Object,
+    *,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> None:
+    """Closed tapered shell shoulder → mid-thigh (no kit-face extraction)."""
+    fwd_u, right, _up = _coat_body_basis(fwd)
+    lo, span = lm.zmin, lm.span
+    inv = body.matrix_world.inverted()
+    hem_h = lm.h_waist - 0.20
+    top_h = lm.h_neck + 0.02
+    n_ring = 15
+    n_seg = 36
+    grid: list[list[bmesh.types.BMVert]] = []
+    thw_top = torso_half_width(ws, lo, span, top_h, lm.cx, lm.cy)
+    for ri in range(n_ring):
+        t = ri / max(1, n_ring - 1)
+        h_norm = hem_h + (top_h - hem_h) * t
+        z = lo + span * h_norm
+        thw = torso_half_width(ws, lo, span, h_norm, lm.cx, lm.cy)
+        r_hem = thw * 1.24
+        r_sh = thw_top * 1.14
+        r = r_hem + (r_sh - r_hem) * t
+        if h_norm >= lm.h_neck - 0.16:
+            r = max(r, thw_top * 1.12)
+        if t < 0.22:
+            r *= 1.0 + 0.08 * (0.22 - t) / 0.22
+        row: list[bmesh.types.BMVert] = []
+        chest = Vector((hc.x, hc.y, z))
+        for si in range(n_seg):
+            ang = 2.0 * math.pi * si / n_seg
+            seam_pinch = 0.94 if abs(math.cos(ang - math.pi * 0.5)) > 0.92 else 1.0
+            rad = r * seam_pinch
+            off = right * (math.cos(ang) * rad) + fwd_u * (math.sin(ang) * rad * 0.94)
+            wco = chest + off
+            radial = Vector((wco.x - chest.x, wco.y - chest.y, 0.0))
+            if radial.length > 1e-5:
+                wco += radial.normalized() * (span * 0.028)
+            row.append(bm.verts.new(inv @ wco))
+        grid.append(row)
+    for ri in range(n_ring - 1):
+        for si in range(n_seg):
+            si1 = (si + 1) % n_seg
+            try:
+                bm.faces.new((grid[ri][si], grid[ri][si1], grid[ri + 1][si1], grid[ri + 1][si]))
+            except ValueError:
+                pass
+
+
+def _build_procedural_sleeve_tube(
+    bm: bmesh.types.BMesh,
+    body: bpy.types.Object,
+    *,
+    side: str,
+    lm,
+    hc: Vector,
+    fwd: Vector,
+    ws: list[Vector],
+) -> None:
+    """Separate sleeve tube on upper_arm + forearm chain."""
+    fwd_u, right, up = _coat_body_basis(fwd)
+    lo, span = lm.zmin, lm.span
+    inv = body.matrix_world.inverted()
+    sign = -1.0 if side == "Left" else 1.0
+    sh_h = lm.h_neck - 0.10
+    wr_h = lm.h_waist - 0.18
+    thw_sh = torso_half_width(ws, lo, span, sh_h, lm.cx, lm.cy)
+    sh_z = lo + span * sh_h
+    wr_z = lo + span * wr_h
+    sh = hc + right * (sign * thw_sh * 0.98) + Vector((0.0, 0.0, sh_z - hc.z))
+    wr = hc + right * (sign * (thw_sh * 1.06)) + fwd_u * (span * 0.04) + Vector((0.0, 0.0, wr_z - hc.z))
+    axis = (wr - sh).normalized()
+    perp = axis.cross(up)
+    if perp.length < 1e-4:
+        perp = right
+    perp.normalize()
+    perp2 = axis.cross(perp).normalized()
+    radius = max(span * 0.052, thw_sh * 0.17)
+    n_len = 9
+    n_seg = 14
+    sleeve: list[list[bmesh.types.BMVert]] = []
+    for li in range(n_len):
+        t = li / max(1, n_len - 1)
+        center = sh + (wr - sh) * t
+        row: list[bmesh.types.BMVert] = []
+        for si in range(n_seg):
+            ang = 2.0 * math.pi * si / n_seg
+            off = perp * (math.cos(ang) * radius) + perp2 * (math.sin(ang) * radius)
+            row.append(bm.verts.new(inv @ (center + off)))
+        sleeve.append(row)
+    for li in range(n_len - 1):
+        for si in range(n_seg):
+            si1 = (si + 1) % n_seg
+            try:
+                bm.faces.new((sleeve[li][si], sleeve[li][si1], sleeve[li + 1][si1], sleeve[li + 1][si]))
+            except ValueError:
+                pass
+
+
 def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":
             bpy.data.objects.remove(ob, do_unlink=True)
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
-    hc, y_face_fn = face_shell_coord(body, fwd)
+    hc, _y_face_fn = face_shell_coord(body, fwd)
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
-    bm_src = bmesh.new()
-    bm_src.from_mesh(body.data)
-    bm_src.faces.ensure_lookup_table()
-    lo, span = lm.zmin, lm.span
-    coat_hem = lm.h_waist - 0.20
-    coat_top = lm.h_neck + 0.05
-    pick_set = _duplicate_coat_shell_faces(
-        body,
-        bm_src,
-        lm=lm,
-        lo=lo,
-        span=span,
-        coat_hem=coat_hem,
-        coat_top=coat_top,
-        hc=hc,
-        fwd=fwd,
-        ws=ws,
-        y_face_fn=y_face_fn,
-    )
-    for f in bm_src.faces:
-        if f.index in pick_set:
-            continue
-        wc = _world_centroid(f, body)
-        h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.14 or h > lm.h_neck + 0.08:
-            continue
-        lat = lateral_from_front(wc, hc, fwd)
-        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat < thw * 0.34 or lat > thw * 1.02:
-            continue
-        arm = _face_mean_vg(body, f, _VG_COAT_UPPER_ARM | _VG_COAT_FOREARM)
-        chest = _face_mean_vg(body, f, frozenset({"Chest", "UpperChest", "LeftShoulder", "RightShoulder"}))
-        if arm >= 0.08 and chest >= 0.12:
-            pick_set.add(f.index)
-    pick = [f for f in bm_src.faces if f.index in pick_set]
-    if len(pick) < 48:
-        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
 
     bm = bmesh.new()
-    vmap: dict[int, bmesh.types.BMVert] = {}
-    for sf in pick:
-        new_vs = []
-        for sv in sf.verts:
-            if sv.index not in vmap:
-                vmap[sv.index] = bm.verts.new(sv.co.copy())
-            new_vs.append(vmap[sv.index])
-        try:
-            bm.faces.new(new_vs)
-        except ValueError:
-            pass
+    _build_procedural_coat_body(bm, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
+    _build_procedural_sleeve_tube(bm, body, side="Left", lm=lm, hc=hc, fwd=fwd, ws=ws)
+    _build_procedural_sleeve_tube(bm, body, side="Right", lm=lm, hc=hc, fwd=fwd, ws=ws)
+    _stitch_coat_sleeve_shoulder(bm, body, side="Left", lm=lm, hc=hc, fwd=fwd, ws=ws)
+    _stitch_coat_sleeve_shoulder(bm, body, side="Right", lm=lm, hc=hc, fwd=fwd, ws=ws)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.00035)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    _prune_bmesh_islands(bm, min_faces=28)
 
     mesh = bpy.data.meshes.new("ResearcherLabCoatMesh")
     bm.to_mesh(mesh)
     bm.free()
-    bm_src.free()
+    mesh.update()
 
     coat = bpy.data.objects.new("ResearcherLabCoat", mesh)
     bpy.context.collection.objects.link(coat)
-    mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.74)
+    mat = _ensure_material("ResearcherLabCoatGeo", LAB_COAT_RGB, 0.42, specular=0.08)
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    thick = max(body.dimensions.length * 0.028, 0.016)
-    solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
-    solid.thickness = thick
-    solid.offset = 1.0
-    solid.use_rim = True
-    bpy.context.view_layer.objects.active = coat
-    coat.select_set(True)
-    bpy.ops.object.modifier_apply(modifier=solid.name)
-    bpy.ops.object.shade_smooth()
-    bpy.ops.object.select_all(action="DESELECT")
-    coat.select_set(True)
-    bpy.context.view_layer.objects.active = coat
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.remove_doubles(threshold=0.0008)
-    bpy.ops.mesh.normals_make_consistent(inside=False)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    _bisect_coat_below_hem(coat, lm, coat_hem)
-    _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _prune_coat_micro_islands(coat)
-    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
-    if len(coat.data.polygons) < 8:
-        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
+    bc.smooth_shade(coat)
+    if len(coat.data.polygons) < 80:
+        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(coat.data.polygons)} too_few")
     return coat
 
 

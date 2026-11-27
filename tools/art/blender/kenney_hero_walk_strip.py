@@ -17,7 +17,9 @@ LOCOMOTION_WALK_GROUND_MAX_M = 0.11
 COAT_SPINE_BONES = frozenset(
     {"Hips", "Spine", "Chest", "UpperChest", "Neck", "Head"},
 )
-COAT_TORSO_BONES = frozenset({"Hips", "Spine", "Chest", "UpperChest"})
+COAT_TORSO_BONES = frozenset(
+    {"Hips", "Spine", "Chest", "UpperChest", "LeftUpLeg", "RightUpLeg"}
+)
 COAT_ARM_BONES = frozenset(
     {
         "LeftShoulder",
@@ -32,8 +34,6 @@ COAT_WEIGHT_DENY = frozenset(
     {
         "Head",
         "Neck",
-        "LeftUpLeg",
-        "RightUpLeg",
         "LeftLeg",
         "RightLeg",
         "LeftFoot",
@@ -443,12 +443,6 @@ def _bind_coat_researcher_armature(
     """Lab coat: torso on spine; sleeves on upper_arm + forearm (no leg/hand weights)."""
     from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
     from kenney_geometry_landmarks import compute_landmarks, torso_half_width
-    from researcher_hero_geometry import (
-        _prune_coat_micro_islands,
-        _prune_coat_wrist_shards,
-        _trim_coat_orphan_shards,
-    )
-
     if coat.type != "MESH" or not body.data.vertices:
         return
     if coat.parent:
@@ -462,7 +456,7 @@ def _bind_coat_researcher_armature(
     mod.object = arm
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
-    hc, y_face_fn = face_shell_coord(body, fwd)
+    hc, _y_face_fn = face_shell_coord(body, fwd)
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
     lo, span = lm.zmin, lm.span
     import mathutils.kdtree as kdtree
@@ -534,9 +528,6 @@ def _bind_coat_researcher_armature(
     bpy.ops.mesh.remove_doubles(threshold=0.00055)
     bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.object.mode_set(mode="OBJECT")
-    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
-    _prune_coat_micro_islands(coat)
     bpy.context.view_layer.update()
 
 
@@ -802,6 +793,24 @@ def configure_preview_env(asset_id: str) -> None:
         os.environ.setdefault("STAFF_PREVIEW_FOUNDER_LIGHT", "0.30")
     if asset_id == "staff-researcher-idle":
         os.environ.setdefault("RESEARCHER_STOCK_RECOLOR", "1")
+
+
+def researcher_lab_coat_preview_tweak(meshes: list[bpy.types.Object]) -> None:
+    for ob in meshes:
+        if ob.type != "MESH" or ob.name.split(".")[0] != "ResearcherLabCoat":
+            continue
+        mat = ob.active_material
+        if not mat or not mat.use_nodes:
+            continue
+        bsdf = mat.node_tree.nodes.get("Principled BSDF")
+        if bsdf:
+            bsdf.inputs["Base Color"].default_value = (
+                0.97,
+                0.955,
+                0.93,
+                1.0,
+            )
+            bsdf.inputs["Roughness"].default_value = 0.38
 
 
 def founder_eye_preview_tweak(meshes: list[bpy.types.Object]) -> None:

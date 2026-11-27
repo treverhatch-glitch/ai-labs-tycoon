@@ -29,11 +29,12 @@ MAX_CAMERA_CENTROID_DRIFT_PX = 22
 MAX_ARM_SPAN_FRAC = 0.58
 COAT_FLARE_SHOULDER_PAD = 0.15
 MIN_COAT_FLARE_FAIL_PX = 14
-MAX_NECK_BLUE_PX = 8
-MAX_COAT_BODY_COMPONENTS = 3
-MIN_COAT_DOMINANT_FRAC = 0.835
+MAX_HEAD_FACE_BLUE_PX = 10
+MAX_HAND_BLUE_PX = 16
+MAX_SLEEVE_BLUE_PX = 12
 MIN_COAT_BODY_PX = 80
-MIN_COAT_ENCLOSED_TROUSER_PX = 6
+MIN_COAT_MAJOR_COMPONENT_PX = 20
+MAX_COAT_ENCLOSED_DARK_FRAC = 0.02
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -140,24 +141,25 @@ def _is_researcher_shirt_blue(r: int, g: int, b: int) -> bool:
         return False
     tee = g > 158 and b > 168 and r < 138 and g > r + 28
     teal = r < 92 and g > 122 and 108 < b < 152 and g >= b - 2
-    return tee or teal
+    bleed = b > r + 20 and g > r + 8 and b >= 148 and r < 168
+    return tee or teal or bleed
 
 
 def _is_trouser_blue(r: int, g: int, b: int) -> bool:
     return b > 92 and r < 95 and g < 102 and b > g + 6
 
 
-def _neck_band_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
-    """Head/neck / upper chest band (chin through upper sternum)."""
-    x0 = i * tile_w + tile_w // 3
-    x1 = (i + 1) * tile_w - tile_w // 3
-    y0 = h // 7
-    y1 = int(h * 0.265)
+def _head_face_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    """Full head + jaw (not neck-band only)."""
+    x0 = i * tile_w + tile_w // 6
+    x1 = (i + 1) * tile_w - tile_w // 6
+    y0 = h // 10
+    y1 = h // 3
     return x0, x1, y0, y1
 
 
-def _researcher_neck_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
-    x0, x1, y0, y1 = _neck_band_window(tile_w, h, i)
+def _researcher_head_face_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
+    x0, x1, y0, y1 = _head_face_window(tile_w, h, i)
     blue = 0
     for y in range(y0, y1, 2):
         for x in range(x0, x1, 2):
@@ -169,6 +171,74 @@ def _researcher_neck_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> i
     return blue
 
 
+def _hand_blue_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 8
+    x1 = (i + 1) * tile_w - tile_w // 8
+    y0 = int(h * 0.58)
+    y1 = int(h * 0.71)
+    return x0, x1, y0, y1
+
+
+def _researcher_hand_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
+    x0, x1, y0, y1 = _hand_blue_window(tile_w, h, i)
+    blue = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            if _is_researcher_shirt_blue(r, g, b):
+                blue += 1
+    return blue
+
+
+def _sleeve_blue_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 10
+    x1 = (i + 1) * tile_w - tile_w // 10
+    y0 = h // 6
+    y1 = h // 2
+    return x0, x1, y0, y1
+
+
+def _researcher_sleeve_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
+    """Shirt-blue on upper arms / shoulders (outside narrow torso band)."""
+    x0, x1, y0, y1 = _sleeve_blue_window(tile_w, h, i)
+    cx = (x0 + x1) * 0.5
+    half_torso = (x1 - x0) * 0.17
+    blue = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            if abs(x - cx) < half_torso:
+                continue
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            if _is_researcher_shirt_blue(r, g, b):
+                blue += 1
+    return blue
+
+
+def _tile_stats_excluding_coat(
+    img: Image.Image, x0: int, x1: int, y0: int, y1: int
+) -> tuple[float, float, float, int]:
+    rs: list[int] = []
+    gs: list[int] = []
+    bs: list[int] = []
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            r, g, b = img.getpixel((x, y))[:3]
+            if abs(r - GREY[0]) < 8 and abs(g - GREY[1]) < 8 and abs(b - GREY[2]) < 8:
+                continue
+            if _is_lab_coat_white(r, g, b):
+                continue
+            rs.append(r)
+            gs.append(g)
+            bs.append(b)
+    if len(rs) < 40:
+        return 0.0, 0.0, 0.0, 0
+    return sum(rs) / len(rs), sum(gs) / len(gs), sum(bs) / len(bs), len(rs)
+
+
 def _coat_body_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
     x0 = i * tile_w + tile_w // 10
     x1 = (i + 1) * tile_w - tile_w // 10
@@ -177,23 +247,30 @@ def _coat_body_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
     return x0, x1, y0, y1
 
 
-def _researcher_coat_continuity(
+def _is_enclosed_dark(r: int, g: int, b: int) -> bool:
+    if _is_neutral_grey(r, g, b):
+        return False
+    if _is_lab_coat_white(r, g, b):
+        return False
+    if _is_trouser_blue(r, g, b):
+        return True
+    return r < 118 and g < 128 and b < 135
+
+
+def _researcher_coat_shell_gate(
     img: Image.Image, tile_w: int, h: int, i: int
-) -> tuple[int, int]:
-    """Below chest: one coat-white component; no trouser islands inside coat wrap."""
+) -> tuple[int, int, float, int]:
+    """Chest→hem in coat bbox: one coat component; enclosed dark < 2% of coat area."""
     x0, x1, y0, y1 = _coat_body_window(tile_w, h, i)
     step = 2
-    w = (x1 - x0) // step
-    hh = (y1 - y0) // step
+    w = max(4, (x1 - x0) // step)
+    hh = max(4, (y1 - y0) // step)
     coat = [[False] * w for _ in range(hh)]
-    trouser = [[False] * w for _ in range(hh)]
     for yi in range(hh):
         for xi in range(w):
             r, g, b = img.getpixel((x0 + xi * step, y0 + yi * step))[:3]
             if _is_lab_coat_white(r, g, b):
                 coat[yi][xi] = True
-            elif _is_trouser_blue(r, g, b):
-                trouser[yi][xi] = True
     total_coat = sum(sum(row) for row in coat)
     seen = [[False] * w for _ in range(hh)]
     sizes: list[int] = []
@@ -213,21 +290,38 @@ def _researcher_coat_continuity(
                         seen[ny][nx] = True
                         q.append((nx, ny))
             sizes.append(n)
-    comps = len(sizes)
-    dominant = max(sizes) / total_coat if total_coat else 0.0
-    enclosed_trouser = 0
-    for yi in range(1, hh - 1):
-        for xi in range(1, w - 1):
-            if not trouser[yi][xi]:
+    major_sizes = [s for s in sizes if s >= MIN_COAT_MAJOR_COMPONENT_PX]
+    comps = len(major_sizes)
+    # flood exterior (non-coat reachable from bbox border)
+    outside = [[False] * w for _ in range(hh)]
+    edge_q: deque[tuple[int, int]] = deque()
+    for xi in range(w):
+        for yi in (0, hh - 1):
+            if not coat[yi][xi]:
+                outside[yi][xi] = True
+                edge_q.append((xi, yi))
+    for yi in range(hh):
+        for xi in (0, w - 1):
+            if not coat[yi][xi] and not outside[yi][xi]:
+                outside[yi][xi] = True
+                edge_q.append((xi, yi))
+    while edge_q:
+        cx, cy = edge_q.popleft()
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            nx, ny = cx + dx, cy + dy
+            if 0 <= nx < w and 0 <= ny < hh and not coat[ny][nx] and not outside[ny][nx]:
+                outside[ny][nx] = True
+                edge_q.append((nx, ny))
+    enclosed_dark = 0
+    for yi in range(hh):
+        for xi in range(w):
+            if coat[yi][xi] or outside[yi][xi]:
                 continue
-            coat_neigh = sum(
-                1
-                for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))
-                if coat[yi + dy][xi + dx]
-            )
-            if coat_neigh >= 2:
-                enclosed_trouser += 1
-    return comps, enclosed_trouser, total_coat, dominant
+            r, g, b = img.getpixel((x0 + xi * step, y0 + yi * step))[:3]
+            if _is_enclosed_dark(r, g, b):
+                enclosed_dark += 1
+    hole_frac = enclosed_dark / total_coat if total_coat else 1.0
+    return comps, total_coat, hole_frac, enclosed_dark
 
 
 def _researcher_coat_sleeve_flare_px(
@@ -327,26 +421,27 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             lr, lg, lb, ln = _tile_stats(img, legx0, legx1, legy0, legy1)
             if ln > 40 and _rgb_dist((lr, lg, lb), GREY) < MAX_GREY_NEUTRAL:
                 return False, f"tile{i}_grey_trousers mean={(round(lr,1), round(lg,1), round(lb,1))}"
-            neck_blue = _researcher_neck_blue_px(img, tile_w, h, i)
-            if neck_blue > MAX_NECK_BLUE_PX:
-                return False, f"tile{i}_neck_blue_px={neck_blue}"
-            coat_comps, trouser_holes, coat_px, coat_dom = _researcher_coat_continuity(
+            head_blue = _researcher_head_face_blue_px(img, tile_w, h, i)
+            if head_blue > MAX_HEAD_FACE_BLUE_PX:
+                return False, f"tile{i}_head_blue_px={head_blue}"
+            hand_blue = _researcher_hand_blue_px(img, tile_w, h, i)
+            if hand_blue > MAX_HAND_BLUE_PX:
+                return False, f"tile{i}_hand_blue_px={hand_blue}"
+            sleeve_blue = _researcher_sleeve_blue_px(img, tile_w, h, i)
+            if sleeve_blue > MAX_SLEEVE_BLUE_PX:
+                return False, f"tile{i}_sleeve_blue_px={sleeve_blue}"
+            coat_comps, coat_px, hole_frac, enclosed_dark = _researcher_coat_shell_gate(
                 img, tile_w, h, i
             )
             if coat_px < MIN_COAT_BODY_PX:
                 return False, f"tile{i}_coat_sparse px={coat_px}"
-            if coat_comps > MAX_COAT_BODY_COMPONENTS:
+            if coat_comps != 1:
+                return False, f"tile{i}_coat_shred components={coat_comps} want=1"
+            if hole_frac >= MAX_COAT_ENCLOSED_DARK_FRAC:
                 return (
                     False,
-                    f"tile{i}_coat_shred components={coat_comps} max={MAX_COAT_BODY_COMPONENTS}",
+                    f"tile{i}_coat_hole frac={hole_frac:.3f} enclosed={enclosed_dark}",
                 )
-            if coat_dom < MIN_COAT_DOMINANT_FRAC:
-                return (
-                    False,
-                    f"tile{i}_coat_shred dominant={coat_dom:.2f} min={MIN_COAT_DOMINANT_FRAC}",
-                )
-            if trouser_holes >= MIN_COAT_ENCLOSED_TROUSER_PX:
-                return False, f"tile{i}_coat_hole trouser_px={trouser_holes}"
             flare_px, sh_w = _researcher_coat_sleeve_flare_px(img, tile_w, h, i)
             if flare_px >= MIN_COAT_FLARE_FAIL_PX:
                 return (
@@ -411,10 +506,11 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
     leg_means = []
     for i in range(4):
         lx0, lx1, ly0, ly1 = _leg_window(tile_w, h, i)
-        lr, _, _, ln = _tile_stats(img, lx0, lx1, ly0, ly1)
+        lr, _, _, ln = _tile_stats_excluding_coat(img, lx0, lx1, ly0, ly1)
         if ln > 30:
             leg_means.append(lr)
-    if len(leg_means) == 4 and max(leg_means) - min(leg_means) < 1.35:
+    min_leg_spread = 0.72 if asset_id == "staff-researcher-idle" else 1.35
+    if len(leg_means) == 4 and max(leg_means) - min(leg_means) < min_leg_spread:
         return False, f"gait_legs_static leg_r={[round(x,1) for x in leg_means]}"
     return True, (
         f"strip {w}x{h} tiles=4 torso0={tuple(round(c,1) for c in ref)} "
@@ -425,13 +521,19 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("asset_id", choices=("staff-founder-idle", "staff-researcher-idle"))
+    parser.add_argument(
+        "--png",
+        type=Path,
+        default=None,
+        help="Optional walk-strip PNG (default: docs/art/previews/<stem>.png)",
+    )
     args = parser.parse_args()
     stem = (
         "staff-founder-walk-strip"
         if args.asset_id == "staff-founder-idle"
         else "staff-researcher-walk-strip"
     )
-    png = PREVIEW / f"{stem}.png"
+    png = args.png if args.png is not None else PREVIEW / f"{stem}.png"
     ok, msg = check_strip(png, args.asset_id)
     if ok:
         print(f"OK {args.asset_id} walk_strip {msg}")

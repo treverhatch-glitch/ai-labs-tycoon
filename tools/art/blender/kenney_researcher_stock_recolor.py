@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from pathlib import Path
 
 import bpy
@@ -392,6 +393,8 @@ def apply_researcher_materials(
     _fix_researcher_collar_cuff_bleed(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_chin_neck_bleed(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _fix_researcher_hands_skin_no_blue(bm, slots, ob, lm)
+    _audit_researcher_slots_no_blue(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _force_researcher_arm_skin_slots(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -559,7 +562,7 @@ def _stamp_forearm_shirt_under_coat(
     ob: bpy.types.Object,
     lm: FounderLandmarks,
 ) -> None:
-    """Forearms stay shirt-coloured if coat mesh has elbow gaps (no bare skin)."""
+    """Procedural coat sleeves: forearms/hands are skin, not shirt blue."""
     if not ob.vertex_groups:
         return
     lo, span = lm.zmin, lm.span
@@ -583,9 +586,9 @@ def _stamp_forearm_shirt_under_coat(
                     hand += g.weight
         arm /= max(1, len(face.verts))
         hand /= max(1, len(face.verts))
-        if hand > 0.16 or arm < 0.10:
+        if arm < 0.10:
             continue
-        slots[face.index] = SLOT_SHIRT
+        slots[face.index] = SLOT_HAND if hand > 0.12 else SLOT_SKIN
 
 
 def _stamp_researcher_tie(
@@ -897,6 +900,103 @@ def _apply_arm_vertex_groups(
             slots[face.index] = SLOT_SHIRT
 
 
+def _force_researcher_arm_skin_slots(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    """Arm chain under procedural coat: skin/hand only (never tee shirt)."""
+    if not ob.vertex_groups:
+        return
+    lo, span = lm.zmin, lm.span
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    arm_bones = frozenset(ARM_VG_BONES)
+
+    def arm_hand(vi: int) -> tuple[float, float]:
+        arm = hand = 0.0
+        for g in ob.data.vertices[vi].groups:
+            name = vg_names.get(g.group, "")
+            if name in arm_bones:
+                arm += g.weight
+            if name in _VG_HANDS:
+                hand += g.weight
+        return arm, hand
+
+    for face in bm.faces:
+        idx = face.index
+        if slots[idx] not in (SLOT_SHIRT, SLOT_JEANS):
+            continue
+        wc = Vector()
+        arm = hand = 0.0
+        for v in face.verts:
+            a, hwt = arm_hand(v.index)
+            arm += a
+            hand += hwt
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        arm /= len(face.verts)
+        hand /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if arm < 0.12 or lat <= thw + span * 0.008:
+            continue
+        if h < lm.h_neck - 0.26 or h > lm.h_waist - 0.02:
+            continue
+        slots[idx] = SLOT_HAND if hand >= 0.10 else SLOT_SKIN
+
+
+def _audit_researcher_slots_no_blue(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """No teal shirt slot on face, jaw, or hands (visible under procedural coat)."""
+    lo, span = lm.zmin, lm.span
+    vg_names = {g.index: g.name for g in ob.vertex_groups} if ob.vertex_groups else {}
+
+    def hand_w(vi: int) -> float:
+        return sum(
+            g.weight
+            for g in ob.data.vertices[vi].groups
+            if vg_names.get(g.group, "") in _VG_HANDS
+        )
+
+    keep_face = {SLOT_EYE, SLOT_BROW, SLOT_MOUTH, SLOT_HAIR, SLOT_COLLAR}
+    for face in bm.faces:
+        idx = face.index
+        if slots[idx] != SLOT_SHIRT:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        y_face = y_face_fn(wc)
+        hw = hand_w(sum(v.index for v in face.verts) // len(face.verts))
+        if h >= lm.h_neck - 0.20 and y_face > 0.02:
+            if slots[idx] not in keep_face:
+                slots[idx] = SLOT_SKIN
+            continue
+        if lm.h_neck - 0.12 <= h <= lm.h_neck + 0.07 and lat > thw * 0.30:
+            if slots[idx] in (SLOT_SHIRT, SLOT_JEANS):
+                slots[idx] = SLOT_SKIN
+            continue
+        if h < lm.h_waist + 0.02 and (hw >= 0.08 or lat > thw * 0.72):
+            slots[idx] = SLOT_HAND if hw >= 0.08 else SLOT_SKIN
+
+
 def _fix_researcher_hands_skin_no_blue(
     bm: bmesh.types.BMesh,
     slots: list[int],
@@ -958,11 +1058,11 @@ def _fix_researcher_chin_neck_bleed(
         y_face = y_face_fn(wc)
         if y_face < 0.12:
             continue
-        if slots[idx] not in (SLOT_JEANS, SLOT_SHIRT):
-            continue
-        if y_face > 0.22 and lm.h_neck - 0.01 <= h <= lm.h_neck + 0.032 and lat < thw * 0.36:
-            slots[idx] = SLOT_COLLAR
-        else:
+        if y_face > 0.10 and lm.h_neck - 0.03 <= h <= lm.h_neck + 0.045:
+            if lat < thw * 0.48:
+                slots[idx] = SLOT_COLLAR if (y_face > 0.18 and lat < thw * 0.34) else SLOT_SKIN
+                continue
+        if slots[idx] in (SLOT_JEANS, SLOT_SHIRT):
             slots[idx] = SLOT_SKIN
 
 
@@ -1293,7 +1393,8 @@ def load_stock_and_recolor() -> bpy.types.Object:
         spawn_researcher_lab_coat,
     )
 
-    spawn_researcher_lab_coat(ob)
+    if os.environ.get("RESEARCHER_SKIP_LAB_COAT", "").strip() != "1":
+        spawn_researcher_lab_coat(ob)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
     return ob
