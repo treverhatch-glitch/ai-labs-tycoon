@@ -405,6 +405,7 @@ def apply_researcher_materials(
     _strip_coat_from_head_neck_hair(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _clamp_coat_hem_leg_trousers(bm, slots, ob, lm, ws, hc, fwd)
     _force_leg_trousers_below_hem(bm, slots, ob, lm)
+    _widen_outer_leg_jeans(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _ban_torso_skin_shirt_band(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _force_head_vgroup_slots(bm, slots, ob, lm, y_face_fn)
     _purge_coat_slots_above_neck(bm, slots, ob, lm, y_face_fn)
@@ -1059,6 +1060,41 @@ def _strip_coat_from_head_neck_hair(
             continue
         if neck_w > 0.42 and h > lm.h_neck + 0.01:
             slots[fi] = SLOT_SKIN
+
+
+def _widen_outer_leg_jeans(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Front/side outer thigh: jeans not skin bleed (FAIL #34)."""
+    lo, span = lm.zmin, lm.span
+    leg_vg = frozenset({"LeftUpLeg", "RightUpLeg", "LeftLeg", "RightLeg"})
+    for face in bm.faces:
+        fi = face.index
+        if slots[fi] in (SLOT_LAB_COAT, SLOT_HAIR, SLOT_EYE, SLOT_HAND):
+            continue
+        if _vg_mean_on_face(ob, face, leg_vg) < 0.14:
+            continue
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h < lm.h_shoe - 0.02 or h > lm.h_waist + 0.04:
+            continue
+        y_face = y_face_fn(wc)
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if y_face < -0.12:
+            continue
+        if lat > thw * 0.20 and slots[fi] in (SLOT_SKIN, SLOT_SHIRT):
+            slots[fi] = SLOT_JEANS
 
 
 def _force_leg_trousers_below_hem(

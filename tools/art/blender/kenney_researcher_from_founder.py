@@ -364,7 +364,8 @@ def load_researcher_from_founder_stock() -> bpy.types.Object:
     lm = compute_landmarks(ob)
     _demote_body_collar_shirt_faces(ob, lm)
     _strip_body_arm_shirt_to_skin(ob, lm)
-    spawn_researcher_shirt_derived_parts(ob, arm=None)
+    arm = next((o for o in bpy.context.scene.objects if o.type == "ARMATURE"), None)
+    spawn_researcher_shirt_derived_parts(ob, arm=arm)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
     from researcher_scene_mesh_audit import (

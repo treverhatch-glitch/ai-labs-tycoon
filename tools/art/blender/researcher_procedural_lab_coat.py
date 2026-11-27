@@ -25,6 +25,24 @@ LEGACY_COAT_BASES = frozenset(
     {SKIRT_NAME, SLEEVES_NAME, "ResearcherLabCoat", "ResearcherCoat"}
 )
 
+# FAIL #34 option (a): shoulder caps only — no forearm tubes (bare forearms OK).
+RESEARCHER_SHORT_SLEEVES = True
+
+
+def researcher_coat_short_sleeves(sleeves: bpy.types.Object) -> bool:
+    if sleeves.get("researcher_short_sleeves"):
+        return True
+    # Heuristic when custom prop missing (older GLB / reimport).
+    for nm in ("LeftForeArm", "RightForeArm"):
+        vg = sleeves.vertex_groups.get(nm)
+        if vg is None:
+            continue
+        for v in sleeves.data.vertices:
+            for g in v.groups:
+                if g.group == vg.index and g.weight > 0.45:
+                    return False
+    return RESEARCHER_SHORT_SLEEVES
+
 
 def remove_legacy_coat_objects() -> int:
     removed = 0
@@ -246,9 +264,18 @@ def _assign_sleeve_weights_lateral(sleeves: bpy.types.Object, lm) -> None:
         sleeves.vertex_groups[bone].add([vi], 1.0, "REPLACE")
 
 
-def _assign_sleeve_weights_from_bones(sleeves: bpy.types.Object, arm: bpy.types.Object) -> None:
+def _assign_sleeve_weights_from_bones(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object,
+    *,
+    short_sleeves: bool = False,
+) -> None:
     """VG 1.0 on upper/lower arm bones only (not Spine / not Hand competition)."""
-    bones = ("LeftArm", "RightArm", "LeftForeArm", "RightForeArm")
+    bones = (
+        ("LeftArm", "RightArm")
+        if short_sleeves
+        else ("LeftArm", "RightArm", "LeftForeArm", "RightForeArm")
+    )
     for b in bones:
         _ensure_vg(sleeves, b)
     for vi in range(len(sleeves.data.vertices)):
@@ -554,6 +581,8 @@ def spawn_procedural_lab_coat(
                     body, lm, hc, fwd, side, upper=True
                 )
                 _bmesh_tube(bm_slv, p0, p1, radius0=r0, radius1=r1, segments=12, rings=7)
+                if RESEARCHER_SHORT_SLEEVES:
+                    continue
                 overlap = (p1 - p0).length * 0.08
                 _fe, ft, _fr0, fr1 = _arm_fallback_segment(
                     body, lm, hc, fwd, side, upper=False
@@ -566,16 +595,32 @@ def spawn_procedural_lab_coat(
                     inv_a = arm.matrix_world.inverted()
                     p0, p1 = inv_a @ p0, inv_a @ p1
                 elbow = p0.lerp(p1, 0.48)
+                end = elbow if RESEARCHER_SHORT_SLEEVES else p1
+                r1 = rad * 0.82 if RESEARCHER_SHORT_SLEEVES else rad * 0.98
+                rings = 8 if RESEARCHER_SHORT_SLEEVES else 7
                 _bmesh_tube(
-                    bm_slv, p0, elbow, radius0=rad, radius1=rad * 0.98, segments=12, rings=7
+                    bm_slv, p0, end, radius0=rad, radius1=r1, segments=12, rings=rings
                 )
-                _bmesh_tube(
-                    bm_slv, elbow, p1, radius0=rad * 0.96, radius1=rad * 0.86, segments=12, rings=8
-                )
+                if not RESEARCHER_SHORT_SLEEVES:
+                    _bmesh_tube(
+                        bm_slv, elbow, p1, radius0=rad * 0.96, radius1=rad * 0.86,
+                        segments=12, rings=8,
+                    )
             continue
         u0, u1 = seg_u
         f0, f1 = seg_f
         rad_u = max(span * 0.042, (u1 - u0).length * 0.098)
+        if RESEARCHER_SHORT_SLEEVES and use_arm_local:
+            _bmesh_tube(
+                bm_slv,
+                u0,
+                u1,
+                radius0=rad_u,
+                radius1=rad_u * 0.82,
+                segments=12,
+                rings=8,
+            )
+            continue
         rad_f = max(span * 0.034, (f1 - f0).length * 0.088)
         _bmesh_tube(bm_slv, u0, u1, radius0=rad_u, radius1=rad_u * 0.96, segments=12, rings=7)
         overlap = (u1 - u0).length * 0.06
@@ -603,14 +648,17 @@ def spawn_procedural_lab_coat(
         _bmesh_to_local(bm_slv, mw)
     sleeves = _mesh_from_bmesh(bm_slv, SLEEVES_NAME)
     sleeves.data.materials.append(coat_mat)
+    if RESEARCHER_SHORT_SLEEVES:
+        sleeves["researcher_short_sleeves"] = True
     if use_arm_local:
         sleeves.matrix_world = arm.matrix_world.copy()
     else:
         sleeves.matrix_world = mw.copy()
 
+    short_sl = RESEARCHER_SHORT_SLEEVES
     if arm is not None:
         _assign_torso_weights(torso, lm)
-        _assign_sleeve_weights_from_bones(sleeves, arm)
+        _assign_sleeve_weights_from_bones(sleeves, arm, short_sleeves=short_sl)
     else:
         _assign_torso_weights(torso, lm)
         _assign_sleeve_weights_lateral(sleeves, lm)
@@ -635,10 +683,13 @@ def spawn_procedural_lab_coat(
     torso.data.update()
     _merge_armpit_overlap(torso, sleeves, arm, body, lm, span)
     if arm is not None:
-        _assign_hand_weights_on_cuff_ring(sleeves, arm, span)
-        _nudge_cuff_verts_toward_wrist(sleeves, arm, max_pull_m=0.038)
-        _assign_sleeve_weights_from_bones(sleeves, arm)
-        _assign_hand_weights_on_cuff_ring(sleeves, arm, span)
+        if not short_sl:
+            _assign_hand_weights_on_cuff_ring(sleeves, arm, span)
+            _nudge_cuff_verts_toward_wrist(sleeves, arm, max_pull_m=0.038)
+            _assign_sleeve_weights_from_bones(sleeves, arm, short_sleeves=False)
+            _assign_hand_weights_on_cuff_ring(sleeves, arm, span)
+        else:
+            _assign_sleeve_weights_from_bones(sleeves, arm, short_sleeves=True)
         from researcher_scene_mesh_audit import log_sleeve_bone_alignment_audit
 
         from researcher_scene_mesh_audit import format_sleeve_rest_pose_audit_block

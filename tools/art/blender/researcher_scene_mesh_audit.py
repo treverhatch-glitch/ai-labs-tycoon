@@ -569,6 +569,10 @@ def verify_sleeve_cuff_wrist_gap(
     *,
     use_evaluated: bool = False,
 ) -> tuple[bool, str, float]:
+    from researcher_procedural_lab_coat import researcher_coat_short_sleeves
+
+    if researcher_coat_short_sleeves(sleeves):
+        return True, "short_sleeve_no_wrist_cuff", 0.0
     worst = 0.0
     if arm is not None and all(_wrist_head_world(arm, s) is not None for s in ("Left", "Right")):
         from researcher_shirt_derived_meshes import SLEEVE_ALLOWED_VG
@@ -887,7 +891,10 @@ def log_sleeve_posed_bone_alignment_audit(
     max_center_m: float = SLEEVE_TUBE_BONE_CENTER_MAX_M,
 ) -> tuple[bool, list[str]]:
     """FAIL #33: posed-frame sleeve mean vs pose bone head/tail (evaluated mesh)."""
-    from researcher_procedural_lab_coat import pose_bone_world_segment
+    from researcher_procedural_lab_coat import (
+        pose_bone_world_segment,
+        researcher_coat_short_sleeves,
+    )
 
     path = log_path or SLEEVE_BONE_ALIGN_AUDIT_LOG
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -900,7 +907,11 @@ def log_sleeve_posed_bone_alignment_audit(
     ev_mw = sleeves_ev.matrix_world
     lines = [f"# posed frame={frame} panel={panel}"]
     all_ok = True
-    bones = ("LeftArm", "LeftForeArm", "RightArm", "RightForeArm")
+    bones = (
+        ("LeftArm", "RightArm")
+        if researcher_coat_short_sleeves(sleeves)
+        else ("LeftArm", "LeftForeArm", "RightArm", "RightForeArm")
+    )
     alias = {
         "LeftForeArm": ("LeftForeArm", "LeftHand"),
         "RightForeArm": ("RightForeArm", "RightHand"),
