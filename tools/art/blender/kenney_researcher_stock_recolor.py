@@ -30,7 +30,7 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
-RESEARCHER_TEE = (0.72, 0.72, 0.70, 1.0)
+RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
@@ -377,9 +377,9 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _apply_hand_skin_vertex_groups(bm, slots, ob)
     _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_researcher_skin_under_coat(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_researcher_shirt_torso_arms(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
-    _stamp_researcher_torso_tee_only(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -442,7 +442,7 @@ def _stamp_researcher_skin_under_coat(
             slots[face.index] = SLOT_HAND
 
 
-def _stamp_researcher_torso_tee_only(
+def _stamp_researcher_shirt_torso_arms(
     bm: bmesh.types.BMesh,
     slots: list[int],
     ob: bpy.types.Object,
@@ -450,23 +450,27 @@ def _stamp_researcher_torso_tee_only(
     ws: list[Vector],
     hc: Vector,
     fwd: Vector,
+    y_face_fn,
 ) -> None:
-    """Grey tee on torso/cuff only; shoulders and upper arms stay skin under coat."""
+    """Light-blue shirt on chest/torso and upper arms (visible in open coat V)."""
     lo, span = lm.zmin, lm.span
+    sleeve_hi = lm.h_waist + 0.06
     for face in bm.faces:
-        if slots[face.index] != SLOT_SHIRT:
+        if slots[face.index] in (SLOT_JEANS, SLOT_SHOE, SLOT_SOLE, SLOT_HAIR):
             continue
         wc = Vector()
         for v in face.verts:
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.08 or h > lm.h_waist + 0.22:
+            continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
-        if lat > thw + span * 0.018:
-            slots[face.index] = SLOT_HAND
-        elif lat > thw * 0.92 and h > lm.h_waist + 0.04:
-            slots[face.index] = SLOT_HAND
+        on_torso = lat <= thw * 1.10 and y_face_fn(wc) > -0.18
+        on_arm = lat > thw * 0.78 and lm.h_neck - 0.06 <= h <= lm.h_waist + 0.18
+        if on_torso or on_arm:
+            slots[face.index] = SLOT_SHIRT
 
 
 def _stamp_tee_short_sleeve(
@@ -480,7 +484,7 @@ def _stamp_tee_short_sleeve(
 ) -> None:
     """Tee ends at upper arm; forearm and hands stay skin."""
     lo, span = lm.zmin, lm.span
-    sleeve_hi = lm.h_waist - 0.10
+    sleeve_hi = lm.h_waist + 0.14
     for face in bm.faces:
         wc = Vector()
         for v in face.verts:
@@ -491,9 +495,7 @@ def _stamp_tee_short_sleeve(
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
         if lat <= thw + span * 0.014:
             continue
-        if h > sleeve_hi:
-            slots[face.index] = SLOT_HAND
-        elif slots[face.index] == SLOT_SHIRT and h > sleeve_hi - 0.02:
+        if h > sleeve_hi and slots[face.index] == SLOT_SHIRT:
             slots[face.index] = SLOT_HAND
 
 
@@ -1018,10 +1020,14 @@ def spawn_researcher_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object
     hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
     _, right = _fwd_basis(fwd)
-    eye_z = lm.zmin + lm.span * lm.h_eye
-    proud = head_w * 0.034
-    sep = head_w * 0.168
-    radius = head_w * 0.041
+    from researcher_hero_geometry import _researcher_eye_h, _researcher_head_top
+
+    head_top = _researcher_head_top(ws, lm)
+    eye_h = _researcher_eye_h(ws, lm, head_top)
+    eye_z = lm.zmin + lm.span * eye_h
+    proud = head_w * 0.028
+    sep = head_w * 0.158
+    radius = head_w * 0.036
     cast_in = -fwd
     eye_mat = _make_solid_mat("ResearcherEyeMesh", (0.02, 0.02, 0.025, 1.0), 0.98)
     bvh = _body_bvh_evaluated(body)
@@ -1046,6 +1052,7 @@ def spawn_researcher_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object
             face_fwd = outward
         else:
             center = seed + face_fwd * proud
+        center.z = eye_z
         ob = _eye_world_matrix(center, face_fwd, radius, proud)
         ob.name = name
         ob.data.materials.clear()
@@ -1067,7 +1074,7 @@ def load_stock_and_recolor() -> bpy.types.Object:
     )
 
     spawn_researcher_lab_coat(ob)
-    spawn_researcher_hair_cap(ob)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_glasses(ob)
+    spawn_researcher_hair_cap(ob)
     return ob

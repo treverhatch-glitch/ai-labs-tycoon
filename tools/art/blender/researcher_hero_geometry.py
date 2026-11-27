@@ -17,6 +17,27 @@ from kenney_researcher_stock_recolor import (
 LAB_COAT_RGB = (237 / 255, 237 / 255, 230 / 255, 1.0)
 GLASSES_RGB = (34 / 255, 34 / 255, 34 / 255, 1.0)
 
+
+def _researcher_head_top(ws: list[Vector], lm) -> float:
+    head_pts = [p for p in ws if (p.z - lm.zmin) / lm.span > lm.h_neck + 0.02]
+    if not head_pts:
+        return 0.96
+    zs = sorted((p.z - lm.zmin) / lm.span for p in head_pts)
+    return zs[max(0, int(len(zs) * 0.88) - 1)]
+
+
+def _researcher_chin_h(ws: list[Vector], lm) -> float:
+    head_pts = [p for p in ws if (p.z - lm.zmin) / lm.span > lm.h_neck + 0.02]
+    if not head_pts:
+        return lm.h_neck + 0.08
+    return min((p.z - lm.zmin) / lm.span for p in head_pts)
+
+
+def _researcher_eye_h(ws: list[Vector], lm, head_top: float) -> float:
+    """Mid-face (~58% of skull height above chin)."""
+    chin_h = _researcher_chin_h(ws, lm)
+    return chin_h + 0.45 * (head_top - chin_h)
+
 _VG_COAT_BODY = frozenset(
     {"Hips", "Spine", "Chest", "UpperChest", "LeftShoulder", "RightShoulder"}
 )
@@ -308,12 +329,33 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bm_src = bmesh.new()
     bm_src.from_mesh(body.data)
     bm_src.faces.ensure_lookup_table()
-    pick = [
-        f
-        for f in bm_src.faces
-        if _is_coat_source_face(f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn)
-    ]
-    if len(pick) < 20:
+    lo, span = lm.zmin, lm.span
+    coat_lo = lm.h_waist - 0.12
+    coat_hi = lm.h_waist + 0.50
+    pick: list[bmesh.types.BMFace] = []
+    for f in bm_src.faces:
+        wc = _world_centroid(f, body)
+        h = (wc.z - lo) / span
+        if h > lm.h_neck + 0.04 or h < coat_lo or h > coat_hi:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        y_face = y_face_fn(wc)
+        open_chest = y_face > 0.07 and lat < thw * 0.26 and lm.h_neck <= h <= lm.h_waist + 0.08
+        on_torso = lat <= thw * 1.22 and y_face > -0.38 and not open_chest
+        on_arm = (
+            lat > thw * 0.72
+            and lm.h_neck - 0.06 <= h <= lm.h_waist + 0.12
+            and y_face > -0.35
+        )
+        on_hip_hem = lm.h_waist - 0.04 <= h <= coat_hi and lat <= thw * 1.18 and y_face > -0.20
+        if open_chest:
+            continue
+        if on_torso or on_arm or on_hip_hem or _is_coat_source_face(
+            f, body, lm=lm, hc=hc, fwd=fwd, ws=ws, y_face_fn=y_face_fn
+        ):
+            pick.append(f)
+    if len(pick) < 24:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
 
     bm = bmesh.new()
@@ -324,8 +366,10 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
             if sv.index not in vmap:
                 vmap[sv.index] = bm.verts.new(sv.co.copy())
             new_vs.append(vmap[sv.index])
-        bm.faces.new(new_vs)
-    _append_coat_hem_quads(bm, body, lm=lm, hc=hc, fwd=fwd, ws=ws)
+        try:
+            bm.faces.new(new_vs)
+        except ValueError:
+            pass
 
     mesh = bpy.data.meshes.new("ResearcherLabCoatMesh")
     bm.to_mesh(mesh)
@@ -338,7 +382,7 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    thick = max(body.dimensions.length * 0.011, 0.0045)
+    thick = max(body.dimensions.length * 0.022, 0.016)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
     solid.offset = 1.0
@@ -346,8 +390,15 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
     bpy.ops.object.shade_smooth()
-    _trim_coat_above_chin(coat, body, lm, hc, fwd, ws, y_face_fn)
-    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    bpy.ops.object.select_all(action="DESELECT")
+    coat.select_set(True)
+    bpy.context.view_layer.objects.active = coat
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.remove_doubles(threshold=0.0008)
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    if len(coat.data.polygons) < 8:
+        raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
 
 
@@ -359,18 +410,20 @@ def spawn_researcher_hair_cap(body: bpy.types.Object) -> bpy.types.Object:
     lm = compute_landmarks(body)
     fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
+    head_top = _researcher_head_top(ws, lm)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
-    crown_z = lm.zmin + lm.span * (lm.h_neck + 0.20)
-    local = body.matrix_world.inverted() @ Vector((hc.x, hc.y, crown_z))
+    crown_z = lm.zmin + lm.span * (head_top - 0.04)
+    back = hc - fwd * (head_w * 0.36)
+    local = body.matrix_world.inverted() @ Vector((back.x, back.y, crown_z))
     bpy.ops.mesh.primitive_uv_sphere_add(
         segments=14,
         ring_count=10,
-        radius=head_w * 0.52,
+        radius=head_w * 0.40,
         location=local,
     )
     cap = bpy.context.active_object
     cap.name = "ResearcherHairCap"
-    cap.scale = (1.12, 1.02, 0.72)
+    cap.scale = (0.92, 0.72, 0.48)
     bpy.ops.object.transform_apply(scale=True)
     cap.parent = body
     cap.matrix_parent_inverse = body.matrix_world.inverted()
@@ -381,7 +434,7 @@ def spawn_researcher_hair_cap(body: bpy.types.Object) -> bpy.types.Object:
 
 
 def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
-    from founder_face_decals import _fwd_basis
+    from founder_face_decals import _fwd_basis, _parent_keep_world
 
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0].startswith("ResearcherGlasses"):
@@ -391,59 +444,46 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
-    fwd_xy, right = _fwd_basis(fwd)
-    eye_z = lm.zmin + lm.span * lm.h_eye
+    _, right = _fwd_basis(fwd)
+    head_top = _researcher_head_top(ws, lm)
+    eye_h = _researcher_eye_h(ws, lm, head_top)
+    eye_z = lm.zmin + lm.span * eye_h
     sep = head_w * 0.178
-    depth = head_w * 0.014
-    lens_r = head_w * 0.072
-    mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.18, specular=0.12)
+    depth = head_w * 0.028
+    lens_r = head_w * 0.078
+    mat = _ensure_material("ResearcherGlassesFrame", GLASSES_RGB, 0.08, specular=0.05)
+    proud = head_w * 0.19
+    rot = fwd.to_track_quat("Y", "Z").to_euler()
     parts: list[bpy.types.Object] = []
 
-    def _ring(center: Vector, name: str) -> bpy.types.Object:
-        bpy.ops.mesh.primitive_torus_add(
-            major_radius=lens_r,
-            minor_radius=depth,
-            major_segments=16,
-            minor_segments=8,
-            location=center,
-        )
+    def _rim(center: Vector, name: str) -> bpy.types.Object:
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=center)
         ob = bpy.context.active_object
         ob.name = name
-        rot = fwd_xy.to_track_quat("Y", "Z").to_euler()
+        ob.scale = (lens_r * 2.1, depth, lens_r * 1.08)
         ob.rotation_euler = rot
+        bpy.ops.object.transform_apply(scale=True, rotation=True)
         ob.data.materials.append(mat)
         bc.smooth_shade(ob)
         parts.append(ob)
         return ob
 
-    proud = head_w * 0.22
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
         lat = right * (sep * sign)
         origin = hc + lat + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * proud
         anchors.append(origin)
-    _ring(anchors[0], "ResearcherGlasses.L")
-    _ring(anchors[1], "ResearcherGlasses.R")
+    _rim(anchors[0], "ResearcherGlasses.L")
+    _rim(anchors[1], "ResearcherGlasses.R")
     mid = (anchors[0] + anchors[1]) * 0.5
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=mid)
     bridge = bpy.context.active_object
     bridge.name = "ResearcherGlasses.bridge"
-    bridge.scale = (sep * 0.26, depth * 1.8, depth * 2.8)
-    bridge.rotation_euler = fwd_xy.to_track_quat("Y", "Z").to_euler()
+    bridge.scale = (sep * 0.32, depth * 1.15, depth * 2.4)
+    bridge.rotation_euler = rot
     bpy.ops.object.transform_apply(scale=True, rotation=True)
     bridge.data.materials.append(mat)
     parts.append(bridge)
-    for i, anchor in enumerate(anchors):
-        side = -1.0 if i == 0 else 1.0
-        temple_end = anchor + right * (head_w * 0.15 * side) + fwd_xy * (head_w * -0.03)
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(anchor + temple_end) * 0.5)
-        temple = bpy.context.active_object
-        temple.name = f"ResearcherGlasses.temple{i}"
-        temple.scale = (head_w * 0.075, depth * 1.2, depth * 1.4)
-        temple.rotation_euler = fwd_xy.to_track_quat("Y", "Z").to_euler()
-        bpy.ops.object.transform_apply(scale=True, rotation=True)
-        temple.data.materials.append(mat)
-        parts.append(temple)
 
     bpy.ops.object.select_all(action="DESELECT")
     for p in parts:
@@ -452,6 +492,9 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.object.join()
     glasses = bpy.context.active_object
     glasses.name = "ResearcherGlasses"
-    glasses.parent = body
-    glasses.matrix_parent_inverse = body.matrix_world.inverted()
+    bc.smooth_shade(glasses)
+    bpy.context.view_layer.objects.active = glasses
+    glasses.select_set(True)
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="MEDIAN")
+    _parent_keep_world(glasses, body)
     return glasses
