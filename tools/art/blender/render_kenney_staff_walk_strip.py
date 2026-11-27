@@ -97,6 +97,17 @@ def main() -> int:
             founder_eye_preview_tweak(scene_data.render_meshes)
         bpy.context.view_layer.update()
         bpy.context.evaluated_depsgraph_get().update()
+        if use_pose_bake:
+            from researcher_scene_mesh_audit import audit_researcher_render_meshes
+
+            ok_r, msg_r = audit_researcher_render_meshes(
+                scene_data.body, scene_data.render_meshes
+            )
+            if not ok_r:
+                print(
+                    f"FAIL staff-researcher-idle render_islands frame={int(fr)} {msg_r}"
+                )
+                return 1
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")

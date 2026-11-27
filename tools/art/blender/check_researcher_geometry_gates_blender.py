@@ -15,6 +15,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import kenney_researcher_lib as kr  # noqa: E402
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward  # noqa: E402
 from kenney_geometry_landmarks import compute_landmarks  # noqa: E402
+from researcher_scene_mesh_audit import (  # noqa: E402
+    RENDER_ISLAND_BODY_BBOX_GAP_M,
+    audit_researcher_render_meshes,
+    verify_sleeve_cuff_wrist_gap,
+)
 from researcher_shirt_derived_meshes import (  # noqa: E402
     MAX_COAT_BODY_GAP_M,
     SKIRT_NAME,
@@ -175,6 +180,16 @@ def main() -> int:
     if cov_l < 8 or cov_r < 8:
         print(f"FAIL staff-researcher-idle sleeve_coverage L={cov_l} R={cov_r}")
         return 1
+    ok_cuff, cuff_msg, cuff_gap = verify_sleeve_cuff_wrist_gap(sleeves, body, arm, lm)
+    if not ok_cuff:
+        print(f"FAIL staff-researcher-idle {cuff_msg}")
+        return 1
+    ok_isl, isl_msg = audit_researcher_render_meshes(
+        body, meshes, prune=False
+    )
+    if not ok_isl:
+        print(f"FAIL staff-researcher-idle {isl_msg} max={RENDER_ISLAND_BODY_BBOX_GAP_M}")
+        return 1
     hw = _bbox_width(hair)
     bw = _head_bbox_width(body, lm)
     ratio = hw / bw
@@ -212,6 +227,7 @@ def main() -> int:
         f"OK staff-researcher-idle geometry skirt_z=({zmin:.3f},{zmax:.3f}) "
         f"mid_thigh={z_mid_thigh:.3f} skirt_above_neck={above_neck} "
         f"coat_gap={shell_gap:.4f} coat_islands=1 sleeve_verts L={cov_l} R={cov_r} "
+        f"{cuff_msg} {isl_msg} "
         f"hair_ratio={ratio:.3f} hair_v={hair_v:.3f} skin_v={skin_v:.3f}"
     )
     return 0

@@ -1044,6 +1044,10 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         if snap_me.users == 0:
             bpy.data.meshes.remove(snap_me)
     sync_coat_parts_to_body(mesh, coat_parts, arm)
+    from researcher_scene_mesh_audit import audit_researcher_render_meshes
+
+    render_set = [mesh, *coat_parts, *eyes, hair]
+    audit_researcher_render_meshes(mesh, render_set)
     extras = [*coat_parts, *eyes, hair]
     keep |= {o.name.split(".")[0] for o in extras}
     labels = ("contact_L", "down", "contact_R", "up")

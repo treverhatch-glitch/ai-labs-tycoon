@@ -316,4 +316,8 @@ def load_researcher_from_founder_stock() -> bpy.types.Object:
     spawn_researcher_shirt_derived_parts(ob, arm=None)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_hair_cap(ob)
+    from researcher_scene_mesh_audit import audit_researcher_render_meshes
+
+    meshes = collect_researcher_founder_meshes()
+    audit_researcher_render_meshes(ob, meshes)
     return ob

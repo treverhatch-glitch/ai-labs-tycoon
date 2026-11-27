@@ -71,6 +71,13 @@ def _render_tile(
         founder_eye_preview_tweak(meshes)
     else:
         researcher_lab_coat_preview_tweak(meshes)
+    if asset_id == "staff-researcher-idle" and scene_data and scene_data.body:
+        from researcher_scene_mesh_audit import audit_researcher_render_meshes
+
+        ok_r, msg_r = audit_researcher_render_meshes(scene_data.body, meshes)
+        if not ok_r:
+            print(f"FAIL staff-researcher-idle render_islands {msg_r}")
+            raise RuntimeError(msg_r)
     if scene_data and scene_data.arm:
         if walk_pose:
             fr = int(walk_frame if walk_frame is not None else scene_data.walk_frames[1])

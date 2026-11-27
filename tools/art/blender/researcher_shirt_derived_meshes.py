@@ -299,17 +299,19 @@ def _sanitize_coat_part(
     z_knee: float,
     project_shell: bool = False,
     cull_below_knee: bool = True,
+    island_touch_m: float = COAT_ISLAND_BODY_TOUCH_M,
+    max_body_gap_m: float = MAX_COAT_BODY_GAP_M,
 ) -> None:
     if project_shell:
         _project_verts_onto_body_shell(ob, body)
     _transfer_coat_weights_nearest_face_interp(ob, body)
     _purge_vertex_groups(ob, allow=allow, deny=VG_DENY_HEAD)
     _normalize_vertex_groups(ob)
-    _prune_coat_loose_islands(ob, body)
+    _prune_coat_loose_islands(ob, body, touch_m=island_touch_m)
     _cull_spike_edges(ob, max_edge_m=MAX_COAT_EDGE_M)
     if cull_below_knee:
         _cull_verts_below_z(ob, z_knee - 0.008)
-    _cull_verts_far_from_body(ob, body, max_gap_m=MAX_COAT_BODY_GAP_M)
+    _cull_verts_far_from_body(ob, body, max_gap_m=max_body_gap_m)
     if len(ob.data.vertices) < 12:
         raise RuntimeError(f"FAIL staff-researcher-idle coat_cull_empty name={ob.name}")
     islands = _count_mesh_islands(ob)
@@ -320,6 +322,75 @@ def _sanitize_coat_part(
         raise RuntimeError(
             f"FAIL staff-researcher-idle coat_islands={islands} name={ob.name} want=1"
         )
+
+
+def _snap_sleeve_cuffs_to_body_wrist(
+    sleeves: bpy.types.Object, body: bpy.types.Object, lm
+) -> None:
+    """Cuff band: snap onto body shell near wrist height for forearm skinning."""
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.22
+    wrist_z = lo + span * wrist_h
+    z_lo = wrist_z - span * 0.05
+    z_hi = wrist_z + span * 0.04
+    tree = _body_bvh_world(body)
+    inv = sleeves.matrix_world.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(sleeves.data)
+    bm.verts.ensure_lookup_table()
+    touched = 0
+    for v in bm.verts:
+        wc = sleeves.matrix_world @ v.co
+        if wc.z < z_lo or wc.z > z_hi:
+            continue
+        if abs(wc.x - lm.cx) < span * 0.08:
+            continue
+        probe = Vector((wc.x, wc.y, wrist_z))
+        loc, _n, _idx, _dist = tree.find_nearest(probe)
+        if loc is None:
+            loc = probe
+        v.co = inv @ loc
+        touched += 1
+    if touched:
+        bm.to_mesh(sleeves.data)
+        sleeves.data.update()
+    bm.free()
+
+
+def _boost_sleeve_forearm_weights(
+    sleeves: bpy.types.Object, lm, *, body_cx: float | None = None
+) -> None:
+    """Cuff verts: skin mostly to forearm bones for walk swing."""
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_shoe + 0.22
+    cx = body_cx if body_cx is not None else lm.cx
+    for vi in range(len(sleeves.data.vertices)):
+        wc = sleeves.matrix_world @ sleeves.data.vertices[vi].co
+        h = (wc.z - lo) / span
+        if h < wrist_h - 0.12:
+            continue
+        side = None
+        if wc.x < cx - span * 0.02:
+            side = "Left"
+        elif wc.x > cx + span * 0.02:
+            side = "Right"
+        if side is None:
+            continue
+        fa = f"{side}ForeArm"
+        ua = f"{side}Arm"
+        sh = f"{side}Shoulder"
+        if fa not in sleeves.vertex_groups:
+            sleeves.vertex_groups.new(name=fa)
+        if ua not in sleeves.vertex_groups:
+            sleeves.vertex_groups.new(name=ua)
+        for g in list(sleeves.data.vertices[vi].groups):
+            sleeves.vertex_groups[g.group].remove([vi])
+        band = max(0.0, min(1.0, (h - (wrist_h - 0.12)) / 0.14))
+        fw = 0.55 + 0.40 * band
+        aw = 1.0 - fw
+        sleeves.vertex_groups[fa].add([vi], fw, "REPLACE")
+        if sh in sleeves.vertex_groups:
+            sleeves.vertex_groups[ua].add([vi], aw, "REPLACE")
 
 
 def _repair_weights_from_nearest_body(
@@ -585,8 +656,8 @@ def pick_shirt_sleeve_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
-    wrist_lo = lm.h_shoe + 0.01
-    sleeve_hi = lm.h_neck + 0.10
+    wrist_lo = lm.h_shoe + 0.17
+    sleeve_hi = lm.h_neck + 0.12
     pick: set[int] = set()
     for f in bm_src.faces:
         mat_ok = f.material_index in (shirt_slot, hand_slot, 2)
@@ -764,6 +835,14 @@ def spawn_shirt_derived_coat_parts(
         z_knee=z_knee,
         project_shell=False,
         cull_below_knee=False,
+        island_touch_m=0.12,
+        max_body_gap_m=0.14,
     )
+    shell_body = weight_body
+    _snap_sleeve_cuffs_to_body_wrist(sleeves, shell_body, lm)
+    _boost_sleeve_forearm_weights(sleeves, lm, body_cx=lm.cx)
+    _cull_spike_edges(sleeves, max_edge_m=MAX_COAT_EDGE_M)
+    if shell_body == body:
+        _cull_verts_far_from_body(sleeves, shell_body, max_gap_m=MAX_COAT_BODY_GAP_M)
     parts.extend([skirt, sleeves])
     return parts
