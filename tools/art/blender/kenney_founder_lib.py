@@ -203,7 +203,7 @@ def _height_span_z(ob: bpy.types.Object) -> tuple[float, float, float]:
 def _scale_character(src: bpy.types.Object) -> float:
     lo, hi, span = _height_span_z(src)
     scale = TARGET_HEIGHT / span
-    src.scale = (scale * 0.96, scale * 0.96, scale * 0.94)
+    src.scale = (scale, scale, scale)
     _apply_object_xform(src)
     zs = [(src.matrix_world @ v.co).z for v in src.data.vertices]
     min_z = min(zs)
@@ -324,19 +324,19 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         ("Sole_1", 0.00, 0.05, 1, FOUNDER_SHOE_SOLE, 0.72),
         ("Foot_-1", 0.04, 0.13, -1, FOUNDER_SHOE, 0.38),
         ("Foot_1", 0.04, 0.13, 1, FOUNDER_SHOE, 0.38),
-        ("Leg_-1", 0.00, 0.445, -1, FOUNDER_JEANS, 0.56),
-        ("Leg_1", 0.00, 0.445, 1, FOUNDER_JEANS, 0.56),
-        ("Hips", 0.35, 0.52, None, FOUNDER_JEANS, 0.54),
-        ("Torso", 0.40, 0.60, None, FOUNDER_HOODIE_RED, 0.58),
+        ("Leg_-1", 0.00, 0.48, -1, FOUNDER_JEANS, 0.56),
+        ("Leg_1", 0.00, 0.48, 1, FOUNDER_JEANS, 0.56),
+        ("Hips", 0.36, 0.54, None, FOUNDER_JEANS, 0.54),
+        ("Torso", 0.42, 0.62, None, FOUNDER_HOODIE_RED, 0.58),
         ("UpperArm_-1", 0.42, 0.58, -1, FOUNDER_HOODIE_RED, 0.56),
         ("UpperArm_1", 0.42, 0.58, 1, FOUNDER_HOODIE_RED, 0.56),
         ("LowerArm_-1", 0.50, 0.68, -1, FOUNDER_SKIN, 0.50),
         ("LowerArm_1", 0.50, 0.68, 1, FOUNDER_SKIN, 0.50),
         ("Hand_-1", 0.58, 0.72, -1, FOUNDER_SKIN, 0.48),
         ("Hand_1", 0.58, 0.72, 1, FOUNDER_SKIN, 0.48),
-        ("Neck", 0.54, 0.63, None, FOUNDER_SKIN, 0.52),
-        ("Head", 0.60, 0.78, None, FOUNDER_SKIN, 0.50),
-        ("Hair", 0.76, 0.86, None, FOUNDER_HAIR, 0.48),
+        ("Neck", 0.56, 0.64, None, FOUNDER_SKIN, 0.52),
+        ("Head", 0.58, 0.77, None, FOUNDER_SKIN, 0.50),
+        ("Hair", 0.74, 0.84, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
     cx = sum((src.matrix_world @ v.co).x for v in src.data.vertices) / len(src.data.vertices)
@@ -349,19 +349,10 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
                 bpy.data.objects.remove(ob, do_unlink=True)
             continue
         bc.assign_solid(ob, color, rough)
-        if name.startswith("Leg_") or name == "Hips":
-            ob.scale.x *= 1.12
-            bpy.context.view_layer.objects.active = ob
-            ob.select_set(True)
-            bpy.ops.object.transform_apply(scale=True)
-        elif name == "Torso":
-            ob.scale.x *= 1.14
-            bpy.context.view_layer.objects.active = ob
-            ob.select_set(True)
-            bpy.ops.object.transform_apply(scale=True)
+        if name == "Torso":
             _drop_tiny_islands(ob, min_verts=28)
         elif name == "Head":
-            ob.scale = (1.02, 1.04, 0.86)
+            ob.scale = (1.0, 1.0, 0.96)
             bpy.context.view_layer.objects.active = ob
             ob.select_set(True)
             bpy.ops.object.transform_apply(scale=True)
@@ -521,7 +512,7 @@ def _baked_arm_chunky(sx: str) -> bool:
     tcy = (tlo.y + thi.y) * 0.5
     hc = sum((hand.matrix_world @ v.co for v in hand.data.vertices), Vector()) / len(hand.data.vertices)
     spread = math.hypot(hc.x - tcx, hc.y - tcy)
-    if spread < 0.24:
+    if spread < 0.22:
         return False
     shoulder_z = thi.z - (thi.z - tlo.z) * 0.05
     if hc.z > shoulder_z - 0.22:
@@ -537,30 +528,61 @@ def _nudge_arm_outward(sign: float, amount: float = 0.05) -> None:
             ob.location.x += sign * amount
 
 
-def _ensure_compact_head() -> None:
-    """Thin Kenney head shell → short cube (~1/4 body height), TPH width."""
+def _ensure_kenney_head_volume() -> None:
+    """Replace paper-thin baked head shell with short cube on neck (Kenney ~¼ height)."""
     head = bpy.data.objects.get("Head")
+    neck = bpy.data.objects.get("Neck")
     if not head:
         return
     import staff_connectivity as sc
 
-    neck = bpy.data.objects.get("Neck")
     h_lo, h_hi = sc._world_bbox(head)
+    depth_y = h_hi.y - h_lo.y
+    if depth_y >= 0.16 and len(head.data.vertices) >= 40:
+        return
     if neck:
         n_lo, n_hi = sc._world_bbox(neck)
     else:
         n_lo, n_hi = h_lo, h_lo
-    cx = (h_lo.x + h_hi.x) * 0.5
-    head_h = TARGET_HEIGHT * 0.18
-    cz = n_hi.z + head_h * 0.5 - 0.012
-    face_y = (h_lo.y + h_hi.y) * 0.5
+    torso = bpy.data.objects.get("Torso") or bpy.data.objects.get("Hips")
+    scx = (h_lo.x + h_hi.x) * 0.5
+    if torso:
+        t_lo, t_hi = sc._world_bbox(torso)
+        scx = (t_lo.x + t_hi.x) * 0.5
+    head_h = TARGET_HEIGHT * 0.24
+    cz = n_hi.z + head_h * 0.45
+    cy = (n_lo.y + n_hi.y) * 0.5 if neck else (h_lo.y + h_hi.y) * 0.5
     bpy.data.objects.remove(head, do_unlink=True)
-    ob = bc.add_cube(
-        "Head",
-        (0.34, 0.30, head_h * 2.0),
-        (cx, face_y, cz),
-    )
-    bc.assign_solid(ob, (0.76, 0.60, 0.46, 1.0), 0.62)
+    ob = bc.add_cube("Head", (0.32, 0.28, head_h * 0.92), (scx, cy, cz))
+    bc.assign_solid(ob, FOUNDER_SKIN, 0.76)
+
+
+def _center_head_on_torso() -> None:
+    """Keep Kenney head mesh; slide head/neck/hair onto torso +Z spine."""
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    hips = bpy.data.objects.get("Hips")
+    head = bpy.data.objects.get("Head")
+    if not head:
+        return
+    spine = torso or hips
+    if not spine:
+        return
+    s_lo, s_hi = sc._world_bbox(spine)
+    scx = (s_lo.x + s_hi.x) * 0.5
+    h_lo, h_hi = sc._world_bbox(head)
+    hcx = (h_lo.x + h_hi.x) * 0.5
+    dx = scx - hcx
+    neck = bpy.data.objects.get("Neck")
+    if neck:
+        n_lo, n_hi = sc._world_bbox(neck)
+        dx = scx - (n_lo.x + n_hi.x) * 0.5
+    for tag in ("Head", "Neck", "Hair", "Eye_-1", "Eye_1", "Mouth"):
+        ob = bpy.data.objects.get(tag)
+        if ob:
+            ob.location.x += dx
+    bpy.context.view_layer.update()
 
 
 def _ensure_side_arms() -> None:
@@ -577,8 +599,9 @@ def _ensure_side_arms() -> None:
     shoulder_z = thi.z - (thi.z - tlo.z) * 0.02
     face_y = thi.y - span_y * 0.10
     if _baked_arm_chunky("-1") and _baked_arm_chunky("1"):
-        _nudge_arm_outward(-1.0, 0.035)
-        _nudge_arm_outward(1.0, 0.035)
+        _nudge_arm_outward(-1.0, 0.08)
+        _nudge_arm_outward(1.0, 0.08)
+        _glue_arms_to_torso_y()
         return
     for sx, sign in (("-1", -1.0), ("1", 1.0)):
         if _baked_arm_chunky(sx):
@@ -588,7 +611,7 @@ def _ensure_side_arms() -> None:
             old = bpy.data.objects.get(tag)
             if old:
                 bpy.data.objects.remove(old, do_unlink=True)
-        cx = tcx + sign * (span_x * 0.40 + 0.06)
+        cx = tcx + sign * (span_x * 0.46 + 0.10)
         specs = (
             (f"UpperArm_{sx}", FOUNDER_HOODIE_RED, (0.30, 0.24, 0.28), shoulder_z - 0.05),
             (f"LowerArm_{sx}", FOUNDER_SKIN, (0.22, 0.20, 0.30), shoulder_z - 0.18),
@@ -601,6 +624,27 @@ def _ensure_side_arms() -> None:
         if hand:
             hand.location.y = face_y
             bpy.context.view_layer.update()
+    _glue_arms_to_torso_y()
+
+
+def _glue_arms_to_torso_y() -> None:
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    t_lo, t_hi = sc._world_bbox(torso)
+    tcy = (t_lo.y + t_hi.y) * 0.5
+    for sx in ("-1", "1"):
+        for tag in (f"UpperArm_{sx}", f"LowerArm_{sx}", f"Hand_{sx}"):
+            ob = bpy.data.objects.get(tag)
+            if not ob:
+                continue
+            c = sum((ob.matrix_world @ v.co for v in ob.data.vertices), Vector()) / len(
+                ob.data.vertices
+            )
+            ob.location.y += (tcy - c.y) * 0.12
+    bpy.context.view_layer.update()
 
 
 def _add_hair_cap() -> None:
@@ -633,6 +677,8 @@ def _add_hair_cap() -> None:
     cap.location.z += h_hi.z - ha_hi.z - 0.028
     cap.location.x += cx - (ha_lo.x + ha_hi.x) * 0.5
     cap.location.y += cy - (ha_lo.y + ha_hi.y) * 0.5
+    cap.location.z -= 0.015
+    cap.location.y += (h_hi.y - h_lo.y) * 0.05
     bpy.context.view_layer.update()
     _drop_tiny_islands(cap, min_verts=12)
 
@@ -688,7 +734,7 @@ def _add_face_features() -> None:
     cx = (h_lo.x + h_hi.x) * 0.5
     span_z = h_hi.z - h_lo.z
     depth = max(0.08, h_hi.y - h_lo.y)
-    face_y = h_hi.y + depth * 0.04
+    face_y = h_hi.y + depth * 0.05
     eye_z = h_lo.z + span_z * 0.58
     eye_sep = 0.10
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
@@ -731,12 +777,13 @@ def build_founder_kenney() -> None:
     _purge_floor_stray_meshes()
     _ground_z_meshes()
     _trim_torso_chest_flap()
-    _ensure_compact_head()
+    _ensure_kenney_head_volume()
+    _center_head_on_torso()
     _ensure_side_arms()
     _beef_hands()
-    _align_spine_xy()
     _add_hair_cap()
     _add_face_features()
+    _center_head_on_torso()
     for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):
         ob = bpy.data.objects.get(tag)
         if ob:

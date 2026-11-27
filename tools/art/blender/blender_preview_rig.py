@@ -490,7 +490,7 @@ def render_preview_studio(
                 key.data.energy *= 0.040
             founder = os.environ.get("STAFF_PREVIEW_ASSET") == "staff-founder-idle"
             if founder:
-                for soft_name, erg in (("Key", 11.0), ("Fill", 4.0), ("Rim", 1.5)):
+                for soft_name, erg in (("Key", 7.5), ("Fill", 3.2), ("Rim", 1.2)):
                     lite = bpy.data.objects.get(soft_name)
                     if lite and lite.type == "LIGHT":
                         lite.data.energy = erg
