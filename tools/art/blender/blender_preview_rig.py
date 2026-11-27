@@ -182,7 +182,7 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
             er = sum((eye_r.matrix_world @ v.co for v in eye_r.data.vertices), Vector())
             er /= max(1, len(eye_r.data.vertices))
             mid = (el + er) * 0.5
-            fwd = hc - mid
+            fwd = mid - hc
             fwd.z = 0.0
             if fwd.length > 1e-4:
                 if up.z < 0.9 and fwd.dot(Vector((0.0, 1.0, 0.0))) < 0:

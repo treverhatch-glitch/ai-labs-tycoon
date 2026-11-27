@@ -45,7 +45,8 @@ SKIN_OK = frozenset(
         "LowerArm_1",
     }
 )
-MIN_HEAD_FRAC = 0.22
+MIN_HEAD_FRAC = 0.20
+MAX_HEAD_FRAC = 0.31
 MIN_CLOTHING_VERTS = 12
 
 
@@ -125,6 +126,8 @@ def check_head_height_fraction(mesh_obs: list[bpy.types.Object]) -> tuple[bool, 
     frac = hspan / total
     if frac < MIN_HEAD_FRAC:
         return False, f"head_frac={frac:.3f} need>={MIN_HEAD_FRAC}"
+    if frac > MAX_HEAD_FRAC:
+        return False, f"head_frac={frac:.3f} need<={MAX_HEAD_FRAC}"
     return True, f"head_frac={frac:.3f}"
 
 

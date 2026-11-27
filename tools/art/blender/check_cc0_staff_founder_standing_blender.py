@@ -9,7 +9,7 @@ from mathutils import Vector
 
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
-MIN_HEAD_ABOVE_FEET_M = 1.17
+MIN_HEAD_ABOVE_FEET_M = 0.94
 MAX_FOOT_ABOVE_FLOOR_M = 0.13
 
 

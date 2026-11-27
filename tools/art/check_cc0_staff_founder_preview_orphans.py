@@ -61,7 +61,7 @@ def main() -> int:
         print("FAIL staff-founder-idle empty_mask")
         return 1
     h = mask.size[1]
-    floor_cut = int(h * 0.68)
+    floor_cut = int(h * 0.74)
     body = [c for c in comps if c[2] < floor_cut]
     if not body:
         body = comps

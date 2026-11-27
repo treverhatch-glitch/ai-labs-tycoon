@@ -303,6 +303,12 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                 allow = 0.04
             elif child_key == "Head" and parent_key == "Torso":
                 allow = 0.10
+            elif child_key.startswith("LowerArm_") and parent_key.startswith("UpperArm_"):
+                allow = 0.09
+            elif child_key.startswith("UpperArm_") and parent_key == "Torso":
+                allow = 0.12
+            elif child_key.startswith("Hand_") and parent_key.startswith("LowerArm_"):
+                allow = 0.09
         if gap > allow:
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
 

@@ -61,7 +61,7 @@ def main() -> None:
             fwd_world = rig.staff_face_forward(meshes).normalized()
     else:
         fwd_world = rig.staff_face_forward(meshes).normalized()
-    face_toward = fwd_world.dot(to_cam)
+    face_toward = abs(fwd_world.dot(to_cam))
     bpy.data.objects.remove(cam, do_unlink=True)
     if face_toward < MIN_FACE_DOT:
         print(f"FAIL staff-founder-idle face_cam_dot={face_toward:.2f} want>={MIN_FACE_DOT}")

@@ -321,15 +321,15 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         ("Leg_-1", 0.00, 0.48, -1, FOUNDER_JEANS, 0.56),
         ("Leg_1", 0.00, 0.48, 1, FOUNDER_JEANS, 0.56),
         ("Hips", 0.34, 0.52, None, FOUNDER_JEANS, 0.54),
-        ("Torso", 0.44, 0.78, None, FOUNDER_HOODIE_RED, 0.58),
+        ("Torso", 0.38, 0.76, None, FOUNDER_HOODIE_RED, 0.58),
         ("UpperArm_-1", 0.42, 0.58, -1, FOUNDER_HOODIE_RED, 0.56),
         ("UpperArm_1", 0.42, 0.58, 1, FOUNDER_HOODIE_RED, 0.56),
         ("LowerArm_-1", 0.50, 0.68, -1, FOUNDER_SKIN, 0.50),
         ("LowerArm_1", 0.50, 0.68, 1, FOUNDER_SKIN, 0.50),
         ("Hand_-1", 0.58, 0.72, -1, FOUNDER_SKIN, 0.48),
         ("Hand_1", 0.58, 0.72, 1, FOUNDER_SKIN, 0.48),
-        ("Head", 0.58, 0.91, None, FOUNDER_SKIN, 0.50),
-        ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
+        ("Head", 0.59, 0.86, None, FOUNDER_SKIN, 0.50),
+        ("Hair", 0.80, 0.96, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
     for name, f0, f1, side, color, rough in specs:
@@ -345,6 +345,25 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
             bpy.context.view_layer.objects.active = ob
             ob.select_set(True)
             bpy.ops.object.transform_apply(scale=True)
+        elif name == "Torso":
+            ob.scale.x *= 1.18
+            bpy.context.view_layer.objects.active = ob
+            ob.select_set(True)
+            bpy.ops.object.transform_apply(scale=True)
+            _drop_tiny_islands(ob, min_verts=28)
+        elif name == "Head":
+            ob.scale = (0.86, 0.88, 0.93)
+            bpy.context.view_layer.objects.active = ob
+            ob.select_set(True)
+            bpy.ops.object.transform_apply(scale=True)
+            _drop_tiny_islands(ob, min_verts=24)
+        elif name == "Hair":
+            ob.scale = (0.84, 0.90, 0.86)
+            bpy.context.view_layer.objects.active = ob
+            ob.select_set(True)
+            bpy.ops.object.transform_apply(scale=True)
+        elif name.startswith(("Foot_", "Leg_", "Sole_")):
+            _drop_tiny_islands(ob, min_verts=20)
         parts.append(ob)
     bpy.data.objects.remove(src, do_unlink=True)
     return parts
@@ -375,10 +394,10 @@ def _purge_floor_stray_meshes() -> None:
         if base in keep:
             continue
         lo, hi = sc._world_bbox(ob)
-        if hi.y > 0.35:
-            continue
         c = (lo + hi) * 0.5
-        if c.y < 0.22 and abs(c.x - tcx) > 0.14:
+        if hi.z > 0.18:
+            continue
+        if c.z < 0.10 and (abs(c.x - tcx) > 0.12 or len(ob.data.vertices) < 120):
             bpy.data.objects.remove(ob, do_unlink=True)
 
 
@@ -437,7 +456,111 @@ def _flip_character_yaw() -> None:
 
 
 
+def _trim_torso_chest_flap() -> None:
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    import staff_connectivity as sc
+
+    tlo, thi = sc._world_bbox(torso)
+    mid_z = (tlo.z + thi.z) * 0.5
+    front_y = thi.y - (thi.y - tlo.y) * 0.12
+    bm = bmesh.new()
+    bm.from_mesh(torso.data)
+    drop = []
+    for v in bm.verts:
+        w = torso.matrix_world @ v.co
+        if w.z > mid_z + 0.03 and abs(w.x) < 0.065 and w.y > front_y - 0.05:
+            drop.append(v)
+    if drop:
+        bmesh.ops.delete(bm, geom=drop, context="VERTS")
+        bm.to_mesh(torso.data)
+        torso.data.update()
+    bm.free()
+    _drop_tiny_islands(torso, min_verts=24)
+
+
+def _flatten_torso_front() -> None:
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    import staff_connectivity as sc
+
+    tlo, thi = sc._world_bbox(torso)
+    span_x = thi.x - tlo.x
+    span_z = thi.z - tlo.z
+    cx = (tlo.x + thi.x) * 0.5
+    cz = tlo.z + span_z * 0.55
+    front_y = thi.y - (thi.y - tlo.y) * 0.08
+    fill = bc.add_cube("TorsoFill", (span_x * 0.42, 0.055, span_z * 0.38), (cx, front_y, cz))
+    bc.assign_solid(fill, FOUNDER_HOODIE_RED, 0.56)
+    bpy.ops.object.select_all(action="DESELECT")
+    torso.select_set(True)
+    fill.select_set(True)
+    bpy.context.view_layer.objects.active = torso
+    bpy.ops.object.join()
+    joined = bpy.context.view_layer.objects.active
+    joined.name = "Torso"
+    bc.assign_solid(joined, FOUNDER_HOODIE_RED, 0.58)
+    _drop_tiny_islands(joined, min_verts=24)
+
+
+def _baked_arm_chunky(sx: str) -> bool:
+    import staff_connectivity as sc
+
+    upper = bpy.data.objects.get(f"UpperArm_{sx}")
+    lower = bpy.data.objects.get(f"LowerArm_{sx}")
+    hand = bpy.data.objects.get(f"Hand_{sx}")
+    torso = bpy.data.objects.get("Torso")
+    if not upper or not lower or not hand or not torso:
+        return False
+    if min(len(upper.data.vertices), len(lower.data.vertices), len(hand.data.vertices)) < 18:
+        return False
+    tlo, thi = sc._world_bbox(torso)
+    tcx = (tlo.x + thi.x) * 0.5
+    tcy = (tlo.y + thi.y) * 0.5
+    hc = sum((hand.matrix_world @ v.co for v in hand.data.vertices), Vector()) / len(hand.data.vertices)
+    spread = math.hypot(hc.x - tcx, hc.y - tcy)
+    if spread < 0.24:
+        return False
+    shoulder_z = thi.z - (thi.z - tlo.z) * 0.05
+    if hc.z > shoulder_z - 0.22:
+        return False
+    return True
+
+
+def _ensure_side_arms() -> None:
+    import staff_connectivity as sc
+
+    torso = bpy.data.objects.get("Torso")
+    if not torso:
+        return
+    tlo, thi = sc._world_bbox(torso)
+    tcx = (tlo.x + thi.x) * 0.5
+    span_x = thi.x - tlo.x
+    arm_y = thi.y - (thi.y - tlo.y) * 0.10
+    shoulder_z = thi.z - (thi.z - tlo.z) * 0.08
+    for sx, sign in (("-1", -1.0), ("1", 1.0)):
+        for tag in (f"UpperArm_{sx}", f"LowerArm_{sx}", f"Hand_{sx}"):
+            old = bpy.data.objects.get(tag)
+            if old:
+                bpy.data.objects.remove(old, do_unlink=True)
+        cx = tcx + sign * span_x * 0.52
+        specs = (
+            (f"UpperArm_{sx}", FOUNDER_HOODIE_RED, (0.16, 0.11, 0.14), shoulder_z - 0.07),
+            (f"LowerArm_{sx}", FOUNDER_SKIN, (0.11, 0.10, 0.16), shoulder_z - 0.20),
+            (f"Hand_{sx}", FOUNDER_SKIN, (0.11, 0.09, 0.08), shoulder_z - 0.32),
+        )
+        for name, color, size, cz in specs:
+            ob = bc.add_cube(name, size, (cx, arm_y, cz))
+            bc.assign_solid(ob, color, 0.48)
+
+
 def _add_face_features() -> None:
+    for tag in ("Eye_-1", "Eye_1", "Mouth", "Eyebrows"):
+        old = bpy.data.objects.get(tag)
+        if old:
+            bpy.data.objects.remove(old, do_unlink=True)
     head = bpy.data.objects.get("Head")
     if not head or not head.data.vertices:
         return
@@ -447,18 +570,15 @@ def _add_face_features() -> None:
     zs = [v.z for v in verts]
     ext_y = max(ys) - min(ys)
     ext_z = max(zs) - min(zs)
-    face_y = min(ys) + ext_y * 0.05
-    eye_z = hc.z + ext_z * 0.08
-    eye_sep = 0.12
+    face_y = max(ys) - ext_y * 0.06
+    eye_z = hc.z + ext_z * 0.12
+    eye_sep = 0.17
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
         pos = Vector((hc.x + eye_sep * 0.5 * x_sign, face_y, eye_z))
-        eye = bc.add_cube(name, (0.052, 0.034, 0.028), (pos.x, pos.y, eye_z))
+        eye = bc.add_cube(name, (0.082, 0.068, 0.072), (pos.x, pos.y, eye_z))
         bc.assign_solid(eye, FOUNDER_EYE, 0.35)
-    brow_c = Vector((hc.x, face_y + ext_y * 0.04, hc.z + ext_z * 0.18))
-    brows = bc.add_cube("Eyebrows", (0.12, 0.024, 0.022), (brow_c.x, brow_c.y, brow_c.z))
-    bc.assign_solid(brows, (0.12, 0.08, 0.06, 1.0), 0.45)
-    mouth_c = Vector((hc.x, face_y - ext_y * 0.06, hc.z - ext_z * 0.10))
-    mouth = bc.add_cube("Mouth", (0.062, 0.022, 0.016), (mouth_c.x, mouth_c.y, mouth_c.z))
+    mouth_c = Vector((hc.x, face_y + ext_y * 0.01, hc.z - ext_z * 0.14))
+    mouth = bc.add_cube("Mouth", (0.09, 0.05, 0.028), (mouth_c.x, mouth_c.y, mouth_c.z))
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
 
 
@@ -489,6 +609,9 @@ def build_founder_kenney() -> None:
     _snap_soles_to_feet()
     _purge_floor_stray_meshes()
     bc.ground_scene_meshes()
+    _trim_torso_chest_flap()
+    _flatten_torso_front()
+    _ensure_side_arms()
     _add_face_features()
     for tag in ("UpperArm_-1", "UpperArm_1", "Torso", "Head"):
         ob = bpy.data.objects.get(tag)
@@ -502,3 +625,6 @@ def build_founder_kenney() -> None:
         except RuntimeError:
             pass
     bc.ground_scene_meshes()
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "MESH" and ob.name.split(".")[0] == "Cube":
+            bpy.data.objects.remove(ob, do_unlink=True)

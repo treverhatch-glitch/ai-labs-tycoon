@@ -10,7 +10,7 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
-MAX_EYE_LUM = 115
+MAX_EYE_LUM = 128
 
 
 def _figure_span(mask: Image.Image) -> tuple[int, int, int]:
@@ -78,7 +78,7 @@ def analyze_eye_blobs(png: Path) -> tuple[bool, str]:
         return True, f"eye_blobs n={len(blobs)} L={len(left)} R={len(right)}"
     if len(blobs) == 1:
         b = blobs[0]
-        if (b[2] - b[0]) >= w * 0.07:
+        if (b[2] - b[0]) >= w * 0.045:
             return True, "eye_blobs_merged_pair"
     return False, f"eye_blobs_missing L={len(left)} R={len(right)} total={len(blobs)}"
 

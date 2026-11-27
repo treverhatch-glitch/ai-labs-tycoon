@@ -12,6 +12,14 @@ SCRIPT = REPO / "tools/art/blender/check_cc0_staff_founder_arm_pose_blender.py"
 
 
 def main() -> int:
+    preview_py = REPO / "tools/art/check_cc0_staff_founder_arm_preview.py"
+    prev = subprocess.run([sys.executable, str(preview_py)], cwd=REPO, text=True, capture_output=True)
+    if prev.stdout:
+        for line in prev.stdout.splitlines():
+            if line.startswith("OK ") or line.startswith("FAIL "):
+                print(line)
+    if prev.returncode != 0:
+        return prev.returncode
     proc = subprocess.run(
         [str(BLENDER), "-b", "--python", str(SCRIPT), "--", str(REPO)],
         cwd=REPO,

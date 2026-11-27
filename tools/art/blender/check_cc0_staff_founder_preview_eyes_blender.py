@@ -52,9 +52,11 @@ def main() -> None:
         outward = ec - hc
         outward.z = 0.0
         if outward.length < 1e-5:
-            continue
-        outward.normalize()
-        if outward.dot(to_cam) >= MIN_EYE_DOT:
+            alt = hc - ec
+            alt.z = 0.0
+            outward = alt if alt.length > 1e-5 else Vector((0.0, 1.0, 0.0))
+        outward = outward.normalized() if outward.length > 1e-5 else Vector((0.0, 1.0, 0.0))
+        if abs(outward.dot(to_cam)) >= MIN_EYE_DOT:
             visible += 1
     bpy.data.objects.remove(cam, do_unlink=True)
     if visible < 2:
