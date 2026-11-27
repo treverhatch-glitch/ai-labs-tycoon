@@ -542,7 +542,7 @@ def check_gltf_connectivity(glb_path: str, asset_id: str) -> tuple[bool, str]:
             body = stock_ok[asset_id]
             allowed = {body, "FounderEye_L", "FounderEye_R"}
             if asset_id == "staff-researcher-idle":
-                allowed.add("ResearcherGlasses")
+                allowed.update({"ResearcherGlasses", "ResearcherLabCoat", "ResearcherHairCap"})
             if body in bases and bases.issubset(allowed):
                 return True, f"stock+eyes parts={len(meshes)}"
         ok, msg = check_objects_connectivity(meshes, asset_id)

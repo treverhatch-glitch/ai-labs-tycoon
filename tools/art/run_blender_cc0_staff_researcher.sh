@@ -60,6 +60,7 @@ test -s "docs/art/previews/staff-researcher-vs-stock-check.png" || { echo "FAIL 
 python3 tools/art/check_cc0_staff_researcher_eye_blobs.py
 python3 tools/art/check_cc0_staff_researcher_eyes_in_head.py
 python3 tools/art/check_cc0_staff_researcher_preview_clip.py
+python3 tools/art/check_cc0_staff_researcher_idle_visual.py
 python3 tools/art/check_cc0_staff_researcher_preview_eyes.py
 python3 tools/art/check_cc0_staff_researcher_eye_project.py
 

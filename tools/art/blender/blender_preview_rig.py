@@ -463,12 +463,12 @@ def render_preview_studio(
             add_shadow_floor_z(mins, maxs)
         light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
         asset_id = os.environ.get("STAFF_PREVIEW_ASSET", "")
-        energy_scale = 0.19 if asset_id == "staff-researcher-idle" else 1.0
+        energy_scale = 0.17 if asset_id == "staff-researcher-idle" else 1.0
         setup_three_point_lights(center, light_r, energy_scale=energy_scale)
         if preview_kind == "staff":
             if asset_id == "staff-researcher-idle":
                 scene.view_settings.view_transform = "Standard"
-                scene.view_settings.exposure = -0.982
+                scene.view_settings.exposure = -0.976
                 scene.view_settings.gamma = 1.0
                 if scene.world and scene.world.node_tree:
                     for n in scene.world.node_tree.nodes:

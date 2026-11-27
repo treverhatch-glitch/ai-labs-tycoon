@@ -30,11 +30,12 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
+RESEARCHER_TEE = (0.72, 0.72, 0.70, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
 RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
-RESEARCHER_SKIN = (0.54, 0.43, 0.35, 1.0)
+RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
 RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
 RESEARCHER_GLASSES = (0.07, 0.07, 0.08, 1.0)
 
@@ -234,11 +235,10 @@ def _region_for_point(
             return SLOT_SKIN
         head_pts = [p for p in all_ws if (p.z - lo) / span > lm.h_neck]
         head_top = max((p.z - lo) / span for p in head_pts) if head_pts else 0.97
-        h_hairline = lm.h_neck + 0.72 * (head_top - lm.h_neck)
-        if h >= h_hairline:
-            if y_face < 0.12 or h >= h_hairline + 0.008:
-                return SLOT_HAIR
-        elif y_face < 0.02 or (h > lm.h_neck + 0.06 and y_face < 0.10):
+        h_hairline = lm.h_neck + 0.88 * (head_top - lm.h_neck)
+        if h >= h_hairline and y_face <= 0.06:
+            return SLOT_HAIR
+        if h > lm.h_neck + 0.12 and y_face < -0.12:
             return SLOT_HAIR
         return SLOT_SKIN
 
@@ -310,7 +310,12 @@ def collect_researcher_stock_meshes() -> list[bpy.types.Object]:
         key=lambda o: o.name,
     )
     props = sorted(
-        (o for o in meshes if o.name.split(".")[0].startswith("ResearcherGlasses")),
+        (
+            o
+            for o in meshes
+            if o.name.split(".")[0]
+            in ("ResearcherGlasses", "ResearcherLabCoat", "ResearcherHairCap")
+        ),
         key=lambda o: o.name,
     )
     return [body, *eyes, *props]
@@ -328,12 +333,11 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
         _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
-        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.72),
+        _ensure_material("ResearcherTee", RESEARCHER_TEE, 0.55),
         _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.54, specular=0.05),
         _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.52, specular=0.06),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
         _ensure_material("ResearcherUndershirt", RESEARCHER_SHIRT, 0.48),
-        _ensure_material("ResearcherLapel", RESEARCHER_LAPEL, 0.62),
     ]
     ob.data.materials.clear()
     for m in mats:
@@ -367,11 +371,8 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_hand_skin_vertex_groups(bm, slots, ob)
-    _stamp_lab_coat_open_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_coat_knee_front(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _stamp_lab_coat_lapels(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
-    _grow_researcher_hair_cap(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -404,6 +405,34 @@ ARM_VG_BONES = (
     "RightHandThumb1",
     "RightHandThumb2",
 )
+
+
+def _stamp_tee_short_sleeve(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+) -> None:
+    """Tee ends at upper arm; forearm and hands stay skin."""
+    lo, span = lm.zmin, lm.span
+    sleeve_hi = lm.h_waist + 0.09
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat <= thw + span * 0.014:
+            continue
+        if h > sleeve_hi:
+            slots[face.index] = SLOT_HAND
+        elif slots[face.index] == SLOT_SHIRT and h > sleeve_hi - 0.02:
+            slots[face.index] = SLOT_HAND
 
 
 def _stamp_teal_undershirt_vneck(
@@ -969,6 +998,14 @@ def load_stock_and_recolor() -> bpy.types.Object:
     ob = bake_researcher_stock_body()
     ob.name = STOCK_OBJECT_NAME
     apply_researcher_materials(ob)
+    from researcher_hero_geometry import (  # noqa: WPS433
+        spawn_researcher_glasses,
+        spawn_researcher_hair_cap,
+        spawn_researcher_lab_coat,
+    )
+
+    spawn_researcher_lab_coat(ob)
+    spawn_researcher_hair_cap(ob)
     spawn_researcher_eye_meshes(ob)
     spawn_researcher_glasses(ob)
     return ob
