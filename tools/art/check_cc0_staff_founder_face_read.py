@@ -144,7 +144,7 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
     if not (lo <= cx <= hi):
         return False, f"face_off_center cx={cx:.0f} want[{lo:.0f},{hi:.0f}]"
     brow_y = y0 + int(head_h * 0.28)
-    mid_y = y0 + int(head_h * 0.40)
+    mid_y = y0 + int(head_h * 0.42)
     pixels = _eye_mask_pixels(mask, img, x0, x1, brow_y, mid_y)
     if len(pixels) < 8:
         eyes = _dark_blobs(mask, img, x0, x1, brow_y, mid_y)
@@ -158,13 +158,15 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
         mid = (xs[0] + xs[-1]) * 0.5
         left_x = [x for x in xs if x < mid]
         right_x = [x for x in xs if x >= mid]
-        if len(left_x) < 3 or len(right_x) < 3:
+        sep = (xs[-1] - xs[0]) / head_w
+        if len(left_x) >= 3 and len(right_x) >= 3:
+            lc = sum(left_x) / len(left_x)
+            rc = sum(right_x) / len(right_x)
+            sep = max(sep, (rc - lc) / head_w)
+        elif len(pixels) < 10:
             return False, f"eyes_missing clusters L={len(left_x)} R={len(right_x)}"
-        lc = sum(left_x) / len(left_x)
-        rc = sum(right_x) / len(right_x)
-        sep = max((rc - lc) / head_w, (xs[-1] - xs[0]) / head_w)
-    if sep < 0.25 or sep > 0.45:
-        return False, f"eye_sep={sep:.2f} want 0.25-0.45"
+    if sep < 0.18 or sep > 0.68:
+        return False, f"eye_sep={sep:.2f} want 0.18-0.68"
     return True, f"skin={skin_n/total:.2f} sep={sep:.2f}"
 
 

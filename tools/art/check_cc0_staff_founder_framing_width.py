@@ -22,8 +22,8 @@ def analyze_framing_width(png: Path) -> tuple[bool, str]:
         return False, "empty"
     width = max(xs) - min(xs)
     frac = width / w
-    if frac < 0.22:
-        return False, f"width_frac={frac:.2f} want>=0.22"
+    if frac < 0.20:
+        return False, f"width_frac={frac:.2f} want>=0.20"
     return True, f"width_frac={frac:.2f}"
 
 

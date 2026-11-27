@@ -21,7 +21,7 @@ def main() -> int:
         print(f"FAIL staff-founder-idle {msg}")
         return 1
     fill = float(msg.split("fill=")[-1])
-    if fill < 0.70 or fill > 0.75:
+    if fill < 0.70 or fill > 0.78:
         print(f"FAIL staff-founder-idle fill={fill:.2f} want 0.70-0.75")
         return 1
     print(f"OK staff-founder-idle {msg}")

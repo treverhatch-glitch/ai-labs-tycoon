@@ -488,7 +488,7 @@ def render_preview_studio(
         if preview_kind == "staff":
             key = bpy.data.objects.get("Key")
             if key and key.type == "LIGHT":
-                key.data.energy *= 0.048
+                key.data.energy *= 0.040
             for soft_name, mul in (("Fill", 0.35), ("Rim", 0.12)):
                 lite = bpy.data.objects.get(soft_name)
                 if lite and lite.type == "LIGHT":

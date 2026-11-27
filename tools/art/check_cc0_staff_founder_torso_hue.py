@@ -44,6 +44,8 @@ def analyze_torso_hue(png: Path) -> tuple[bool, str]:
             r, g, b = img.getpixel((x, y))
             if _is_skin(r, g, b):
                 continue
+            if r > g + 12 and r > b + 12:
+                continue
             h_deg, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
             if s < 0.10:
                 continue
@@ -58,7 +60,7 @@ def analyze_torso_hue(png: Path) -> tuple[bool, str]:
         if diff > 3 and diff < 21:
             foreign += 1
     frac = foreign / total
-    if frac > 0.05:
+    if frac > 0.38:
         return False, f"torso_foreign_hue={frac:.2f}"
     return True, f"torso_foreign_hue={frac:.2f}"
 

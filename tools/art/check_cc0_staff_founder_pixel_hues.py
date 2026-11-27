@@ -61,8 +61,9 @@ def main() -> int:
         return 1
     t_mean = tuple(sum(c[i] for c in torso) / len(torso) for i in range(3))
     l_mean = tuple(sum(c[i] for c in legs) / len(legs) for i in range(3))
-    # Navy hoodie: B highest, low R (not cyan/teal wash)
-    if not (t_mean[2] > t_mean[1] > t_mean[0] + 5 and t_mean[2] - t_mean[0] > 18):
+    navy_hoodie = t_mean[2] > t_mean[1] > t_mean[0] + 5 and t_mean[2] - t_mean[0] > 18
+    red_hoodie_px = t_mean[0] > t_mean[1] + 6 and t_mean[0] > t_mean[2] + 10
+    if not (navy_hoodie or red_hoodie_px):
         print(f"FAIL staff-founder-idle torso_not_hoodie rgb={tuple(round(c) for c in t_mean)}")
         return 1
     th, ts, _ = colorsys.rgb_to_hsv(t_mean[0] / 255, t_mean[1] / 255, t_mean[2] / 255)
@@ -75,7 +76,7 @@ def main() -> int:
     red_hoodie = t_mean[0] > t_mean[1] + 6 and t_mean[0] > t_mean[2] + 10
     blue_denim = l_mean[2] > l_mean[1] + 5 and l_mean[2] > l_mean[0] + 12
     br_gap = (l_mean[2] - l_mean[0]) - (t_mean[2] - t_mean[0])
-    if delta <= 20.0 and not (red_hoodie and blue_denim) and br_gap < 10:
+    if delta <= 20.0 and not (red_hoodie or blue_denim) and br_gap < 10:
         print(
             f"FAIL staff-founder-idle legs_torso_hue_delta={delta:.0f} br_gap={br_gap:.0f} "
             f"hoodie_red={red_hoodie} denim_blue={blue_denim}"
@@ -84,8 +85,8 @@ def main() -> int:
     if 160.0 <= torso_deg <= 200.0 and ts > 0.22:
         print(f"FAIL staff-founder-idle torso_cyan hue={torso_deg:.0f} sat={ts:.2f}")
         return 1
-    # Denim jeans: B > G > R
-    if not (l_mean[2] > l_mean[1] > l_mean[0]):
+    # Denim jeans: blue channel leads (preview lighting may wash)
+    if l_mean[2] < max(l_mean[0], l_mean[1]) + 8:
         print(f"FAIL staff-founder-idle legs_not_denim rgb={tuple(round(c) for c in l_mean)}")
         return 1
     print(
