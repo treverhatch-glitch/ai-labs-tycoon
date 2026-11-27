@@ -1,0 +1,11 @@
+# staff-researcher sleeve tube vs bone axis
+# spawn span=3.765 rest=1
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.5790,-0.0130,2.3536) axis_dist=0.0165 mid_dist=0.0181 max=0.01 ok=False
+bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(1.0739,-0.0168,2.3337) axis_dist=0.0382 mid_dist=0.0383 max=0.01 ok=False
+bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(-0.5785,-0.0130,2.3536) axis_dist=0.0165 mid_dist=0.0181 max=0.01 ok=False
+bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(-1.0734,-0.0168,2.3337) axis_dist=0.0382 mid_dist=0.0383 max=0.01 ok=False
+# spawn span=3.765 rest=1
+bone=LeftArm head=(0.3358,-0.0167,2.3589) tail=(0.8045,-0.0042,2.3172) sleeve_bbox_center=(0.5790,-0.0130,2.3536) axis_dist=0.0165 mid_dist=0.0181 max=0.01 ok=False
+bone=LeftForeArm head=(0.8045,-0.0042,2.3172) tail=(1.3289,-0.0396,2.2756) sleeve_bbox_center=(1.0739,-0.0168,2.3337) axis_dist=0.0382 mid_dist=0.0383 max=0.01 ok=False
+bone=RightArm head=(-0.3353,-0.0167,2.3589) tail=(-0.8040,-0.0042,2.3172) sleeve_bbox_center=(-0.5785,-0.0130,2.3536) axis_dist=0.0165 mid_dist=0.0181 max=0.01 ok=False
+bone=RightForeArm head=(-0.8040,-0.0042,2.3172) tail=(-1.3284,-0.0396,2.2756) sleeve_bbox_center=(-1.0734,-0.0168,2.3337) axis_dist=0.0382 mid_dist=0.0383 max=0.01 ok=False

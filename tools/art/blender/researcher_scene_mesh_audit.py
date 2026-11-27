@@ -19,6 +19,10 @@ RENDER_ISLAND_AUDIT_LOG = (
 RENDER_SCENE_HYGIENE_LOG = (
     bc.PREVIEW_ROOT / "staff-researcher-render-scene-hygiene.log"
 )
+SLEEVE_BONE_ALIGN_AUDIT_LOG = (
+    bc.PREVIEW_ROOT / "staff-researcher-sleeve-bone-align-audit.log"
+)
+SLEEVE_TUBE_BONE_CENTER_MAX_M = 0.01
 RESEARCHER_RENDER_MESH_ALLOW = frozenset(
     {
         "KenneyResearcherStock",
@@ -665,11 +669,120 @@ def audit_researcher_render_meshes(
     return True, msg
 
 
+def _world_bbox_center(ob: bpy.types.Object, vert_indices: list[int]) -> Vector | None:
+    if not vert_indices:
+        return None
+    mn = Vector((1e9, 1e9, 1e9))
+    mx = Vector((-1e9, -1e9, -1e9))
+    mw = ob.matrix_world
+    for vi in vert_indices:
+        w = mw @ ob.data.vertices[vi].co
+        mn = Vector((min(mn.x, w.x), min(mn.y, w.y), min(mn.z, w.z)))
+        mx = Vector((max(mx.x, w.x), max(mx.y, w.y), max(mx.z, w.z)))
+    return (mn + mx) * 0.5
+
+
+def _segment_axis_distance(point: Vector, a: Vector, b: Vector) -> float:
+    ab = b - a
+    if ab.length_squared < 1e-12:
+        return (point - a).length
+    t = max(0.0, min(1.0, (point - a).dot(ab) / ab.length_squared))
+    closest = a + ab * t
+    return (point - closest).length
+
+
+def log_sleeve_bone_alignment_audit(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object | None,
+    *,
+    header: str = "",
+    log_path: Path | None = None,
+    max_center_m: float = SLEEVE_TUBE_BONE_CENTER_MAX_M,
+    use_rest_bones: bool = True,
+) -> tuple[bool, list[str]]:
+    """FAIL #31: sleeve island bbox center vs bone head/tail axis (≤0.01 m)."""
+    from researcher_procedural_lab_coat import pose_bone_world_segment
+
+    path = log_path or SLEEVE_BONE_ALIGN_AUDIT_LOG
+    path.parent.mkdir(parents=True, exist_ok=True)
+    bpy.context.view_layer.update()
+    lines: list[str] = []
+    all_ok = True
+    if header:
+        lines.append(f"# {header}")
+    if arm is None:
+        lines.append("armature=none skip_bone_align")
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write("\n".join(lines) + "\n")
+        return True, lines
+    bones = (
+        "LeftArm",
+        "LeftForeArm",
+        "RightArm",
+        "RightForeArm",
+    )
+    alias = {
+        "LeftForeArm": ("LeftForeArm", "LeftHand"),
+        "RightForeArm": ("RightForeArm", "RightHand"),
+    }
+    for bone in bones:
+        seg = pose_bone_world_segment(arm, bone, rest_pose=use_rest_bones)
+        if seg is None:
+            lines.append(f"bone={bone} missing")
+            all_ok = False
+            continue
+        head, tail = seg
+        vert_ids: list[int] = []
+        group_names = alias.get(bone, (bone,))
+        ab = tail - head
+        ab_len = ab.length
+        for vi in range(len(sleeves.data.vertices)):
+            arm_w = 0.0
+            for nm in group_names:
+                vg = sleeves.vertex_groups.get(nm)
+                if vg is None:
+                    continue
+                for g in sleeves.data.vertices[vi].groups:
+                    if g.group == vg.index:
+                        arm_w += g.weight
+            if arm_w < 0.42:
+                continue
+            wc = sleeves.matrix_world @ sleeves.data.vertices[vi].co
+            if ab_len > 1e-6:
+                t = (wc - head).dot(ab) / (ab_len * ab_len)
+                if t < 0.06 or t > 0.98:
+                    continue
+            vert_ids.append(vi)
+        if len(vert_ids) < 4:
+            lines.append(f"bone={bone} sample_verts={len(vert_ids)} want>=4")
+            all_ok = False
+            continue
+        center = _world_bbox_center(sleeves, vert_ids)
+        assert center is not None
+        mid = (head + tail) * 0.5
+        axis_d = _segment_axis_distance(center, head, tail)
+        mid_d = (center - mid).length
+        ok = axis_d <= max_center_m + 1e-4
+        all_ok &= ok
+        lines.append(
+            f"bone={bone} head=({head.x:.4f},{head.y:.4f},{head.z:.4f}) "
+            f"tail=({tail.x:.4f},{tail.y:.4f},{tail.z:.4f}) "
+            f"sleeve_bbox_center=({center.x:.4f},{center.y:.4f},{center.z:.4f}) "
+            f"axis_dist={axis_d:.4f} mid_dist={mid_d:.4f} max={max_center_m} ok={ok}"
+        )
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    return all_ok, lines
+
+
 def reset_render_island_audit_log() -> Path:
     path = RENDER_ISLAND_AUDIT_LOG
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("# staff-researcher-idle evaluated mesh island audit\n", encoding="utf-8")
     RENDER_SCENE_HYGIENE_LOG.write_text(
         "# staff-researcher-idle render scene hygiene\n", encoding="utf-8"
+    )
+    SLEEVE_BONE_ALIGN_AUDIT_LOG.write_text(
+        "# staff-researcher sleeve tube vs bone axis\n", encoding="utf-8"
     )
     return path

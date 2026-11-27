@@ -38,9 +38,14 @@ def remove_legacy_coat_objects() -> int:
     return removed
 
 
-def _bone_world_segment(
-    arm: bpy.types.Object | None, bone_name: str
+def pose_bone_world_segment(
+    arm: bpy.types.Object | None,
+    bone_name: str,
+    *,
+    rest_pose: bool = True,
 ) -> tuple[Vector, Vector] | None:
+    """Rest bind head→tail world segment (armature deform from rest)."""
+    del rest_pose
     if arm is None:
         return None
     bone = arm.data.bones.get(bone_name)
@@ -48,6 +53,9 @@ def _bone_world_segment(
         return None
     mw = arm.matrix_world
     return mw @ bone.head_local, mw @ bone.tail_local
+
+
+_bone_world_segment = pose_bone_world_segment
 
 
 def _ortho_basis(axis: Vector) -> tuple[Vector, Vector]:
@@ -228,6 +236,93 @@ def _assign_sleeve_weights_from_bones(sleeves: bpy.types.Object, arm: bpy.types.
         sleeves.vertex_groups[best].add([vi], 1.0, "REPLACE")
 
 
+def _vg_weight(ob: bpy.types.Object, vi: int, group: str) -> float:
+    vg = ob.vertex_groups.get(group)
+    if vg is None:
+        return 0.0
+    for g in ob.data.vertices[vi].groups:
+        if g.group == vg.index:
+            return g.weight
+    return 0.0
+
+
+def _body_arm_axis_from_weights(
+    body: bpy.types.Object, side: str
+) -> tuple[Vector, Vector, float] | None:
+    ua, fa, hand = f"{side}Arm", f"{side}ForeArm", f"{side}Hand"
+    upper: list[Vector] = []
+    fore: list[Vector] = []
+    wrist: list[Vector] = []
+    mw = body.matrix_world
+    for vi in range(len(body.data.vertices)):
+        wc = mw @ body.data.vertices[vi].co
+        if _vg_weight(body, vi, ua) >= 0.2:
+            upper.append(wc)
+        if _vg_weight(body, vi, fa) >= 0.2:
+            fore.append(wc)
+        if _vg_weight(body, vi, hand) >= 0.15:
+            wrist.append(wc)
+    if len(upper) < 6:
+        return None
+    p0 = sum(upper, Vector()) / len(upper)
+    if wrist:
+        p1 = min(wrist, key=lambda w: w.z)
+    elif fore:
+        p1 = min(fore, key=lambda w: w.z)
+    else:
+        return None
+    radii: list[float] = []
+    axis = p1 - p0
+    if axis.length_squared < 1e-10:
+        return None
+    axis_n = axis.normalized()
+    for wc in upper + fore + wrist:
+        along = (wc - p0).dot(axis_n)
+        proj = p0 + axis_n * along
+        radii.append((wc - proj).length)
+    rad = max(0.032, sorted(radii)[int(len(radii) * 0.82)] * 1.1) if radii else 0.04
+    return p0, p1, rad
+
+
+def _merge_armpit_overlap(
+    torso: bpy.types.Object,
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object | None,
+    body: bpy.types.Object,
+    lm,
+    span: float,
+) -> None:
+    z_band = span * 0.11
+    for side in ("Left", "Right"):
+        seg = pose_bone_world_segment(arm, f"{side}Arm") if arm else None
+        if seg is None:
+            axis = _body_arm_axis_from_weights(body, side)
+            if axis is None:
+                continue
+            shoulder = axis[0]
+        else:
+            shoulder = seg[0]
+        inv = torso.matrix_world.inverted()
+        for vi in range(len(torso.data.vertices)):
+            w = torso.matrix_world @ torso.data.vertices[vi].co
+            if abs(w.z - shoulder.z) > z_band:
+                continue
+            if side == "Left" and w.x > lm.cx + span * 0.03:
+                continue
+            if side == "Right" and w.x < lm.cx - span * 0.03:
+                continue
+            delta = shoulder - w
+            delta.z *= 0.35
+            dist = delta.length
+            if dist < 1e-6 or dist > span * 0.2:
+                continue
+            target = span * 0.016
+            if dist > target:
+                w = w + delta * ((dist - target) / dist)
+                torso.data.vertices[vi].co = inv @ w
+        torso.data.update()
+
+
 def _arm_fallback_segment(
     body: bpy.types.Object, lm, hc: Vector, fwd: Vector, side: str, *, upper: bool
 ) -> tuple[Vector, Vector, float, float]:
@@ -380,12 +475,27 @@ def spawn_procedural_lab_coat(
         seg_u = _bone_world_segment(arm, ua)
         seg_f = _bone_world_segment(arm, fa)
         if seg_u is None or seg_f is None:
-            p0, p1, r0, r1 = _arm_fallback_segment(body, lm, hc, fwd, side, upper=True)
-            _bmesh_tube(bm_slv, p0, p1, radius0=r0, radius1=r1, segments=12, rings=7)
-            overlap = (p1 - p0).length * 0.08
-            fe, ft, fr0, fr1 = _arm_fallback_segment(body, lm, hc, fwd, side, upper=False)
-            elbow = p1 - (p1 - p0).normalized() * overlap
-            _bmesh_tube(bm_slv, elbow, ft, radius0=r1, radius1=fr1, segments=12, rings=8)
+            axis = _body_arm_axis_from_weights(body, side)
+            if axis is None:
+                p0, p1, r0, r1 = _arm_fallback_segment(
+                    body, lm, hc, fwd, side, upper=True
+                )
+                _bmesh_tube(bm_slv, p0, p1, radius0=r0, radius1=r1, segments=12, rings=7)
+                overlap = (p1 - p0).length * 0.08
+                _fe, ft, _fr0, fr1 = _arm_fallback_segment(
+                    body, lm, hc, fwd, side, upper=False
+                )
+                elbow = p1 - (p1 - p0).normalized() * overlap
+                _bmesh_tube(bm_slv, elbow, ft, radius0=r1, radius1=fr1, segments=12, rings=8)
+            else:
+                p0, p1, rad = axis
+                elbow = p0.lerp(p1, 0.48)
+                _bmesh_tube(
+                    bm_slv, p0, elbow, radius0=rad, radius1=rad * 0.98, segments=12, rings=7
+                )
+                _bmesh_tube(
+                    bm_slv, elbow, p1, radius0=rad * 0.96, radius1=rad * 0.86, segments=12, rings=8
+                )
             continue
         u0, u1 = seg_u
         f0, f1 = seg_f
@@ -439,9 +549,15 @@ def spawn_procedural_lab_coat(
             w.z = z_floor
             torso.data.vertices[vi].co = inv_t @ w
     torso.data.update()
+    _merge_armpit_overlap(torso, sleeves, arm, body, lm, span)
     if arm is not None:
         _nudge_cuff_verts_toward_wrist(sleeves, arm, max_pull_m=0.038)
         _assign_sleeve_weights_from_bones(sleeves, arm)
+        from researcher_scene_mesh_audit import log_sleeve_bone_alignment_audit
+
+        log_sleeve_bone_alignment_audit(
+            sleeves, arm, header=f"spawn span={span:.3f} rest=1"
+        )
     _attach_coat_part_to_body_or_arm(torso, body, arm)
     _attach_coat_part_to_body_or_arm(sleeves, body, arm)
     return [torso, sleeves]
