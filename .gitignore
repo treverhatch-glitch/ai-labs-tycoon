@@ -56,6 +56,11 @@ __pycache__/
 tools/art/**/__pycache__/
 tools/art/**/*.pyc
 
-# CC0 kit extracts (fetch via tools/art/cc0/download_kenney_factory.sh)
+# CC0 downloads / extracts (fetch via tools/art/cc0/*.sh)
+tools/art/cc0/incoming/archives/
+tools/art/cc0/incoming/kenney-*/
+tools/art/cc0/incoming/quaternius-*/
+tools/art/cc0/incoming/polyhaven/
+tools/art/cc0/incoming/ambientcg/
 /docs/art/cc0/kenney-factory-kit/
 /docs/art/cc0/.archives/

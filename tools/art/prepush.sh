@@ -10,16 +10,7 @@ for arg in "${@:-}"; do
       ;;
   esac
 done
-PUSH_BRANCH="${ART_PREPUSH_PUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}"
-if [[ -n "$PUSH_BRANCH" ]]; then
-  if git rev-parse --verify "origin/${PUSH_BRANCH}" >/dev/null 2>&1; then
-    if ! git merge-base --is-ancestor "origin/${PUSH_BRANCH}" HEAD; then
-      echo "FAIL: origin/${PUSH_BRANCH} is not an ancestor of HEAD (forward commits only)" >&2
-      exit 1
-    fi
-    echo "OK: merge-base (origin/${PUSH_BRANCH} ancestor of HEAD)"
-  fi
-fi
+./tools/art/assert_fast_forward_push.sh
 python3 tools/art/generate_campus_kit.py
 python3 tools/art/generate_ui_icons.py
 python3 tools/art/generate_rival_silhouette_svgs.py
