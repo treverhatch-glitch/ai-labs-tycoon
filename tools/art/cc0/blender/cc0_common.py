@@ -404,7 +404,9 @@ def _purge_staging_meshes(keep: set[bpy.types.Object]) -> None:
             bpy.data.objects.remove(ob, do_unlink=True)
 
 
-def export_gltf_y_up_multi(objects: list[bpy.types.Object], path: Path) -> None:
+def export_gltf_y_up_multi(
+    objects: list[bpy.types.Object], path: Path, *, lean_topology: bool = False
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     _purge_staging_meshes(set(objects))
     leaves: list[bpy.types.Object] = []
@@ -428,7 +430,8 @@ def export_gltf_y_up_multi(objects: list[bpy.types.Object], path: Path) -> None:
         export_format="GLB",
         use_selection=True,
         export_apply=False,
-        export_texcoords=True,
+        export_texcoords=not lean_topology,
+        export_normals=not lean_topology,
         export_materials="EXPORT",
         export_image_format="AUTO",
         export_yup=True,
@@ -812,7 +815,11 @@ def finish_cc0_asset(
     glb = out_dir / f"{asset_id}.glb"
     if export_objects:
         _purge_staging_meshes(set(export_objs))
-        export_gltf_y_up_multi(export_objs, glb)
+        export_gltf_y_up_multi(
+            export_objs,
+            glb,
+            lean_topology=(asset_id == "compute-monitor-era1"),
+        )
     else:
         export_gltf_y_up(root, glb)
     if era1 and asset_id in ("compute-monitor-era1", "compute-server-rack-era1"):

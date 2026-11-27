@@ -59,6 +59,22 @@ def _mesh_table_names(doc: dict) -> list[str]:
     return [str(m.get("name", "")) for m in doc.get("meshes") or []]
 
 
+def _topology_mesh(mesh):
+    """Merged-vertex topology for watertight / boundary checks."""
+    m = mesh.copy()
+    m.merge_vertices()
+    m.update_faces(m.nondegenerate_faces())
+    m.remove_unreferenced_vertices()
+    return m
+
+
+def _boundary_edge_indices(mesh) -> list[int]:
+    from trimesh import grouping
+
+    m = _topology_mesh(mesh)
+    return list(grouping.group_rows(m.edges_sorted, require_count=1))
+
+
 def _bounds_line(name: str, mesh) -> str:
     b = mesh.bounds
     c = mesh.centroid
@@ -126,6 +142,29 @@ def gate_monitor(names: set[str], mats: list[dict], geom: dict) -> list[str]:
         c = geom["power_button"].centroid
         if not (0.13 < c[0] < 0.19 and 0.04 < c[1] < 0.09):
             errs.append(f"power_button centroid ({c[0]:.4f},{c[1]:.4f}) outside lower bezel band")
+    if "screen" in geom:
+        scr = _topology_mesh(geom["screen"])
+        bcount = len(_boundary_edge_indices(scr))
+        if not scr.is_watertight or bcount != 0:
+            errs.append(f"screen watertight={scr.is_watertight} boundary_edges={bcount}")
+        sb = scr.bounds
+        if abs(sb[1][0] - 0.15) > 0.002 or abs(sb[0][0] + 0.15) > 0.002:
+            errs.append(f"screen x bounds {sb[0][0]:.4f}..{sb[1][0]:.4f} not ~±0.15")
+        if abs(sb[0][1] - 0.105) > 0.002 or abs(sb[1][1] - 0.335) > 0.002:
+            errs.append(f"screen y bounds {sb[0][1]:.4f}..{sb[1][1]:.4f} not 0.105–0.335")
+        if sb[0][2] < 0.212 or sb[1][2] > 0.219:
+            errs.append(f"screen z bounds {sb[0][2]:.4f}..{sb[1][2]:.4f} not ~0.213–0.218")
+    if "body_tapered" in geom:
+        body = _topology_mesh(geom["body_tapered"])
+        verts = body.vertices
+        front_boundary = 0
+        for ei in _boundary_edge_indices(body):
+            e = body.edges_sorted[ei]
+            zmid = float((verts[e[0], 2] + verts[e[1], 2]) / 2)
+            if zmid > 0.225:
+                front_boundary += 1
+        if front_boundary != 0:
+            errs.append(f"body_tapered {front_boundary} boundary edges on bezel front (z_mid>0.225)")
     if "body_tapered" in geom and "screen" in geom:
         body, screen = geom["body_tapered"], geom["screen"]
         sb = screen.bounds

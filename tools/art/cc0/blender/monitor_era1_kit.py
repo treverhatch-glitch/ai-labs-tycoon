@@ -106,23 +106,18 @@ def _bezel_frame(z_center: float, y_front: float) -> bpy.types.Object:
     return outer
 
 
-def _bulged_screen(y_center: float, z_center: float) -> bpy.types.Object:
-    _spec("screen", (SCREEN_W, SCREEN_BULGE * 2, SCREEN_H), (0, y_center, z_center))
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y_center, z_center))
+def _crt_screen_panel(z_center: float) -> bpy.types.Object:
+    """Single watertight screen slab — glTF x±0.15, y 0.105–0.335, z 0.213–0.218."""
+    y_front = -0.218
+    y_back = -0.213
+    y_mid = (y_front + y_back) / 2.0
+    depth = abs(y_back - y_front)
+    _spec("screen", (SCREEN_W, depth, SCREEN_H), (0, y_mid, z_center))
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, y_mid, z_center))
     ob = bpy.context.active_object
     ob.name = "screen"
-    ob.dimensions = (SCREEN_W, SCREEN_BULGE * 0.4, SCREEN_H)
+    ob.dimensions = (SCREEN_W, depth, SCREEN_H)
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    bpy.ops.object.mode_set(mode="EDIT")
-    bpy.ops.mesh.subdivide(number_cuts=6)
-    bpy.ops.object.mode_set(mode="OBJECT")
-    hw, hh = SCREEN_W * 0.5, SCREEN_H * 0.5
-    for v in ob.data.vertices:
-        nx = v.co.x / hw if hw else 0
-        nz = v.co.z / hh if hh else 0
-        t = max(0.0, 1.0 - math.sqrt(nx * nx + nz * nz))
-        v.co.y -= SCREEN_BULGE * (t**1.5)
-    ob.data.update()
     return ob
 
 
@@ -168,8 +163,7 @@ def build_monitor_era1() -> list[bpy.types.Object]:
     shell_parts.append(_overlap_cylinder("base_foot", 0.11, 0.024, (0, 0, 0.012)))
     shell_parts.append(_overlap_box("neck", (0.082, 0.082, 0.090), (0, 0, 0.067)))
 
-    y_scr = y_front - RECESS - SCREEN_BULGE * 0.55
-    screen = _bulged_screen(y_scr, z_body)
+    screen = _crt_screen_panel(z_body)
     screen.name = "screen"
 
     # glTF Y-up: vertical ≈ Blender Z; depth (front) ≈ -Blender Y.
@@ -182,41 +176,59 @@ def build_monitor_era1() -> list[bpy.types.Object]:
 
     slot_mats = [bpy.data.materials.new(f"_mon_slot_{i}") for i in range(4)]
     for ob in shell_parts + [screen, power_button, power_led]:
-        bw = 0.010 if ob.name == "screen" else 0.003
-        tower._bevel(ob, bw, segments=2 if ob.name == "screen" else 1)
-        tower._paint_part_faces(ob, _part_color(ob.name))
+        if ob.name not in ("screen", "bezel_frame"):
+            tower._bevel(ob, 0.003, segments=1)
+        if ob.name != "screen":
+            tower._paint_part_faces(ob, _part_color(ob.name))
     tower._apply_global_material_slots(shell_parts + [screen, power_button, power_led], slot_mats, _part_mat_index)
 
     shell = mb._union_parts(shell_parts)
     cc.apply_transforms(shell)
-    _remove_screen_opening_occluder(shell, z_body)
+    _recess_screen_opening_verts(shell, z_body)
     _clamp_rear_overhang(shell)
     tower._fix_tower_normals(shell)
     shell.name = "body_tapered"
-    _final_weld(shell)
+    _seal_bezel_mesh(shell)
 
+    _weld_screen_export(screen)
     tower._fix_tower_normals(screen)
     return [shell, screen, power_button, power_led]
 
 
-def _remove_screen_opening_occluder(ob: bpy.types.Object, z_center: float) -> None:
-    """Drop faces wholly inside the screen opening with glTF depth z > 0.205 (z-fight with screen)."""
+def _recess_screen_opening_verts(ob: bpy.types.Object, z_center: float) -> None:
+    """Push interior shell verts behind glTF z=0.205 (no face delete — keeps manifold)."""
     x_half = SCREEN_W / 2 - 0.003
     z0 = z_center - SCREEN_H / 2
     z1 = z_center + SCREEN_H / 2
-    bm = bmesh.new()
-    bm.from_mesh(ob.data)
-    doomed: list[bmesh.types.BMFace] = []
-    for face in bm.faces:
-        if any(-v.co.y <= 0.205 for v in face.verts):
+    y_cut = -0.205
+    for v in ob.data.vertices:
+        if -v.co.y <= 0.205:
             continue
-        if all(abs(v.co.x) <= x_half and z0 <= v.co.z <= z1 for v in face.verts):
-            doomed.append(face)
-    if doomed:
-        bmesh.ops.delete(bm, geom=doomed, context="FACES")
-    bm.to_mesh(ob.data)
-    bm.free()
+        if abs(v.co.x) <= x_half and z0 <= v.co.z <= z1:
+            if v.co.y < y_cut:
+                v.co.y = y_cut
     ob.data.update()
+
+
+def _weld_screen_export(ob: bpy.types.Object) -> None:
+    """8-vert watertight slab: weld then single UV/normal corner per position for glTF."""
+    bpy.context.view_layer.objects.active = ob
+    ob.select_set(True)
+    mod = ob.modifiers.new("_weld", "WELD")
+    mod.merge_threshold = _WELD_DIST
+    bpy.ops.object.modifier_apply(modifier=mod.name)
+    bpy.ops.object.shade_smooth()
+    if ob.data.uv_layers:
+        uv_layer = ob.data.uv_layers.active.data
+        for loop in uv_layer:
+            loop.uv = (0.5, 0.5)
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=_WELD_DIST)
+    bpy.ops.mesh.normals_make_consistent(inside=False)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    ob.data.use_auto_smooth = True
+    ob.data.auto_smooth_angle = math.radians(180)
 
 
 def _clamp_rear_overhang(ob: bpy.types.Object) -> None:
@@ -312,10 +324,37 @@ def _parent_apply(parts: list[bpy.types.Object], root_name: str) -> None:
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
 
+_BEZEL_PINHOLES_GLTF = [(-0.057, 0.354), (-0.066, 0.07), (0.09, 0.067)]
+_WELD_DIST = 0.0005
+
+
+def _seal_bezel_mesh(root: bpy.types.Object) -> None:
+    """Merge-by-distance and close T-junctions on the front bezel band (glTF z > 0.225)."""
+    bm = bmesh.new()
+    bm.from_mesh(root.data)
+    front = [v for v in bm.verts if -v.co.y > 0.225]
+    if front:
+        bmesh.ops.remove_doubles(bm, verts=front, dist=0.003)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=_WELD_DIST)
+    for x_g, y_g in _BEZEL_PINHOLES_GLTF:
+        near = [
+            v
+            for v in bm.verts
+            if -v.co.y > 0.225 and (v.co.x - x_g) ** 2 + (v.co.z - y_g) ** 2 < (0.014 * 0.014)
+        ]
+        if len(near) > 1:
+            bmesh.ops.remove_doubles(bm, verts=near, dist=0.006)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=_WELD_DIST)
+    bm.normal_update()
+    bm.to_mesh(root.data)
+    bm.free()
+    root.data.update()
+
+
 def _final_weld(root: bpy.types.Object) -> None:
     bpy.context.view_layer.objects.active = root
     root.select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.remove_doubles(threshold=OVERLAP)
+    bpy.ops.mesh.remove_doubles(threshold=_WELD_DIST)
     bpy.ops.object.mode_set(mode="OBJECT")
