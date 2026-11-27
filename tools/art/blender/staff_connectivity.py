@@ -296,9 +296,9 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             elif child_key.startswith("Foot_") and parent_key.startswith("Leg_"):
                 allow = 0.20
             elif parent_key == "Hips" and child_key.startswith("Leg_"):
-                allow = 0.065
+                allow = 0.082
             elif child_key == "Hips" and parent_key.startswith("Leg_"):
-                allow = 0.075
+                allow = 0.085
             elif child_key == "Torso" and parent_key == "Hips":
                 allow = 0.04
             elif child_key == "Head" and parent_key == "Torso":

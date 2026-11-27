@@ -674,7 +674,9 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
         base = ob.name.split(".")[0]
         if base in ("Hair",):
             assign_solid(ob, hair, 0.48)
-        elif base in ("Head",) or base.startswith("Hand_"):
+        elif base == "Head":
+            assign_solid(ob, skin, 0.74)
+        elif base.startswith("Hand_"):
             assign_solid(ob, skin, 0.82)
         elif base.lower().startswith("eye"):
             assign_solid(ob, eye, 0.35)

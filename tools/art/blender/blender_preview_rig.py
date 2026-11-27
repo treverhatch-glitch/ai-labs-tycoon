@@ -435,7 +435,10 @@ def render_preview_studio(
         if hasattr(scene.eevee, "use_gtao"):
             scene.eevee.use_gtao = True
             scene.eevee.gtao_distance = 0.55
-            scene.eevee.gtao_factor = 1.85 if preview_kind == "staff" else 1.4
+            if os.environ.get("STAFF_PREVIEW_ASSET") == "staff-founder-idle":
+                scene.eevee.gtao_factor = 1.05
+            else:
+                scene.eevee.gtao_factor = 1.85 if preview_kind == "staff" else 1.4
 
     setup_studio_world(staff_flat=(preview_kind == "staff"))
     mins, maxs = mesh_bounds_world(hero_meshes)
@@ -483,12 +486,20 @@ def render_preview_studio(
         setup_three_point_lights(center, light_r)
         if preview_kind == "staff":
             key = bpy.data.objects.get("Key")
-            if key and key.type == "LIGHT":
+            if key and key.type == "LIGHT" and os.environ.get("STAFF_PREVIEW_ASSET") != "staff-founder-idle":
                 key.data.energy *= 0.040
-            for soft_name, mul in (("Fill", 0.35), ("Rim", 0.12)):
-                lite = bpy.data.objects.get(soft_name)
-                if lite and lite.type == "LIGHT":
-                    lite.data.energy *= mul
+            founder = os.environ.get("STAFF_PREVIEW_ASSET") == "staff-founder-idle"
+            if founder:
+                for soft_name, erg in (("Key", 11.0), ("Fill", 4.0), ("Rim", 1.5)):
+                    lite = bpy.data.objects.get(soft_name)
+                    if lite and lite.type == "LIGHT":
+                        lite.data.energy = erg
+            else:
+                rim_mul = 0.12
+                for soft_name, mul in (("Fill", 0.35), ("Rim", rim_mul)):
+                    lite = bpy.data.objects.get(soft_name)
+                    if lite and lite.type == "LIGHT":
+                        lite.data.energy *= mul
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "35"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
