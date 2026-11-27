@@ -261,16 +261,13 @@ def urp_material_era1_tower(ob: bpy.types.Object, asset_id: str, albedo_path: Pa
 
 def urp_material_era1_monitor(ob: bpy.types.Object, asset_id: str, albedo_path: Path) -> None:
     import monitor_era1_kit as kit
+    import pc_tower_kit as tower
 
     ob.data.materials.clear()
     ob.data.materials.append(_era1_solid_mat(asset_id, "body", kit.COL_CASE, 0.40))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "bezel", kit.COL_BEZEL, 0.44))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "screen", kit.COL_SCREEN, 0.72, emission=1.8))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "screen", kit.COL_SCREEN, 0.78, emission=1.6))
     ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", kit.COL_LED_PWR, 0.25, emission=5.5))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "led_hdd", kit.COL_LED_HDD, 0.25, emission=5.5))
     ob.data.materials.append(_era1_solid_mat(asset_id, "power", kit.COL_POWER, 0.46))
-    import pc_tower_kit as tower
-
     tower.restore_face_material_index(ob)
 
 
@@ -281,7 +278,11 @@ def urp_material_era1_rack(ob: bpy.types.Object, asset_id: str, albedo_path: Pat
     ob.data.materials.clear()
     ob.data.materials.append(_era1_solid_mat(asset_id, "frame", kit.COL_FRAME, 0.48))
     ob.data.materials.append(_era1_solid_mat(asset_id, "rail", kit.COL_RAIL, 0.42))
-    ob.data.materials.append(_era1_solid_mat(asset_id, "led", kit.COL_LED, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "unit", kit.COL_UNIT, 0.40))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "unit_face", kit.COL_FACE, 0.44))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_pwr", kit.COL_LED_G, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "led_hdd", kit.COL_LED_A, 0.25, emission=5.5))
+    ob.data.materials.append(_era1_solid_mat(asset_id, "cable", kit.COL_CABLE, 0.65))
     tower.restore_face_material_index(ob)
 
 
@@ -409,11 +410,12 @@ def _setup_preview_garage_style_world(*, lit_strength: float = 0.16) -> None:
 
 
 def _era1_preview_lights(center: Vector, span: float, mins: Vector) -> None:
-    """Garage #96 rig + camera-left fill + soft contact shadow."""
+    """Garage #96 rig @ 9ea57244 + optional camera-left fill at 12% of key."""
     bpy.ops.object.light_add(type="SUN", location=center + Vector((span * 2, -span * 2, span * 3)))
     key = bpy.context.active_object
-    key.data.energy = 2.86
-    key.data.angle = math.radians(9)
+    key_energy = 2.86
+    key.data.energy = key_energy
+    key.data.angle = math.radians(4)
     key.rotation_euler = (math.radians(52), 0, math.radians(35))
 
     bpy.ops.object.light_add(type="AREA", location=center + Vector((-span, span * 1.2, span * 1.5)))
@@ -422,14 +424,14 @@ def _era1_preview_lights(center: Vector, span: float, mins: Vector) -> None:
     fill.data.size = span * 0.9
     fill.rotation_euler = (math.radians(60), 0, math.radians(25))
 
-    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span * 1.6, -span * 0.6, center.z + span * 0.45)))
+    bpy.ops.object.light_add(type="AREA", location=center + Vector((-span * 1.5, -span * 0.55, center.z + span * 0.4)))
     side = bpy.context.active_object
-    side.data.energy = 42.0
-    side.data.size = span * 1.1
-    side.rotation_euler = (math.radians(75), 0, math.radians(-15))
+    side.data.energy = key_energy * 0.12
+    side.data.size = span * 0.85
+    side.rotation_euler = (math.radians(72), 0, math.radians(-12))
 
     g = GREY150_PREVIEW
-    bpy.ops.mesh.primitive_plane_add(size=max(span * 2.8, 3.0), location=(center.x, center.y, mins.z - 0.002))
+    bpy.ops.mesh.primitive_plane_add(size=span * 1.05, location=(center.x, center.y, mins.z - 0.002))
     ground = bpy.context.active_object
     gmat = bpy.data.materials.new("Ground")
     gmat.use_nodes = True
@@ -561,7 +563,7 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
             if hasattr(ee, "use_bloom"):
                 ee.use_bloom = True
             if hasattr(ee, "bloom_intensity"):
-                ee.bloom_intensity = 0.025
+                ee.bloom_intensity = 0.05
             if hasattr(ee, "use_gtao"):
                 ee.use_gtao = True
     bpy.context.scene.render.film_transparent = False

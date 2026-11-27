@@ -2,7 +2,7 @@
   "assetId": "compute-monitor-era1",
   "preview": "docs/art/previews/compute-monitor-era1.png",
   "glb": "unity/Assets/Art/Cc0/compute-kit/compute-monitor-era1/compute-monitor-era1.glb",
-  "glb_sha256": "3882780f66fa31ae0b275a04961701a2c415012f668f21679cb6f3fe12188a01",
+  "glb_sha256": "7a3e26a963fe2e8788c5a3e67f3da0f3cf92fbea69625aa2dd92cdf1be241c2d",
   "hdri": "tools/art/cc0/incoming/polyhaven/studio_small_09_1k.hdr",
   "resolution": 1024,
   "silhouetteFill": 0.7,
