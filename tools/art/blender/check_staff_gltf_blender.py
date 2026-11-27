@@ -95,6 +95,9 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
         stock_body = by.get("KenneyFounderStock") or by.get("KenneyResearcherStock")
         if aid in HERO_IDS and stock_body:
             eyes = [n for n in by if n.startswith("FounderEye_")]
+            glasses = [n for n in by if n.startswith("ResearcherGlasses")]
+            if len(meshes) == 4 and len(eyes) == 2 and glasses:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=4 eyes=2 glasses=1"
             if len(meshes) == 3 and len(eyes) == 2:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=3 eyes=2"
             if len(meshes) == 1:

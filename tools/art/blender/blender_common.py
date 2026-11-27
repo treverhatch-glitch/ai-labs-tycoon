@@ -1462,6 +1462,7 @@ def render_preview(
                     prev_kind = "wisp"
                 elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
                     prev_kind = "hud"
+                os.environ["STAFF_PREVIEW_ASSET"] = asset_id
             os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
             rig.render_preview_studio(ob, path, mask_meshes=mask_meshes)
             return

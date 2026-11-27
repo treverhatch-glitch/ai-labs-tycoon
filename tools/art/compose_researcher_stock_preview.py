@@ -37,6 +37,18 @@ def main() -> int:
     draw.text((12, 10), "stock", fill=(240, 240, 240))
     draw.text((a.width + gap + 12, 10), "researcher", fill=(240, 240, 240))
     out.save(OUT)
+    hero_mask = HERO.with_name(HERO.stem + ".mask.png")
+    if hero_mask.is_file():
+        hm = Image.open(hero_mask).convert("L")
+        stock_mask = Image.open(STOCK.with_name(STOCK.stem + ".mask.png")).convert("L")
+        if stock_mask.size != a.size:
+            stock_mask = stock_mask.resize(a.size, Image.Resampling.LANCZOS)
+        if hm.size != b.size:
+            hm = hm.resize(b.size, Image.Resampling.LANCZOS)
+        combined = Image.new("L", out.size, 0)
+        combined.paste(stock_mask, (0, (h - stock_mask.height) // 2))
+        combined.paste(hm, (a.width + gap, (h - hm.height) // 2))
+        combined.save(OUT.with_name(OUT.stem + ".mask.png"))
     print(f"OK compose_researcher_stock wrote {OUT.relative_to(REPO)}")
     return 0
 

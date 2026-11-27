@@ -112,11 +112,11 @@ def _pose_kenney_idle_arms(arm: bpy.types.Object) -> None:
         ua.rotation_mode = "QUATERNION"
         fa.rotation_mode = "QUATERNION"
         if side == "Left":
-            ua.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-78.0))
-            fa.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-16.0))
+            ua.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-72.0))
+            fa.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-12.0))
         else:
-            ua.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(86.0))
-            fa.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(18.0))
+            ua.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(82.0))
+            fa.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(15.0))
     bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.update()
 

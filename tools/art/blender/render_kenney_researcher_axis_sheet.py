@@ -14,10 +14,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
 from kenney_face_axis import toe_forward  # noqa: E402
 from kenney_researcher_stock_recolor import (  # noqa: E402
-    STOCK_BLEND,
+    STOCK_META,
     STOCK_OBJECT_NAME,
     apply_researcher_materials,
+    bake_researcher_stock_body,
     collect_researcher_stock_meshes,
+    spawn_researcher_eye_meshes,
     spawn_researcher_glasses,
 )
 
@@ -111,23 +113,17 @@ def _panel_mean_jeans_hue(im: Image.Image, mask: Image.Image) -> float:
 
 
 def _load_recolored_scene() -> list[bpy.types.Object]:
-    bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
-    ob = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
-    if not ob:
-        print("FAIL axis_sheet no_mesh")
-        raise SystemExit(1)
+    ob = bake_researcher_stock_body()
     ob.name = STOCK_OBJECT_NAME
     apply_researcher_materials(ob)
-    from founder_face_decals import spawn_founder_eye_meshes
-
-    spawn_founder_eye_meshes(ob)
+    spawn_researcher_eye_meshes(ob)
     spawn_researcher_glasses(ob)
     return collect_researcher_stock_meshes()
 
 
 def main() -> None:
-    if not STOCK_BLEND.is_file():
-        print("FAIL axis_sheet missing stock blend")
+    if not STOCK_META.is_file():
+        print("FAIL axis_sheet missing stock meta")
         raise SystemExit(1)
     scene_meshes = _load_recolored_scene()
     fwd = toe_forward(scene_meshes)
@@ -165,7 +161,7 @@ def main() -> None:
             base = _mirror_iou(mask)
             blob_n = _eye_blobs(mask, rgb, allow_projection=(yaw == 0))
             eyes[yaw] = blob_n if yaw in (0, 180) else min(blob_n, 1)
-            ious[yaw] = base + (0.12 if blobs >= 2 else 0.0)
+            ious[yaw] = base + (0.12 if blob_n >= 2 and yaw in (0, 180) else 0.0)
 
     ref_hue = jeans_hue.get(0, -1.0)
     if ref_hue >= 0:

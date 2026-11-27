@@ -10,27 +10,26 @@ import bpy
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
-from founder_face_decals import spawn_founder_eye_meshes  # noqa: E402
 from kenney_researcher_stock_recolor import (  # noqa: E402
-    STOCK_BLEND,
+    STOCK_META,
     STOCK_OBJECT_NAME,
     apply_researcher_materials,
+    bake_researcher_stock_body,
     collect_researcher_stock_meshes,
+    spawn_researcher_eye_meshes,
+    spawn_researcher_glasses,
 )
 
 
 def main() -> None:
-    if not STOCK_BLEND.is_file():
-        print("FAIL face_diagnostic missing stock blend")
+    if not STOCK_META.is_file():
+        print("FAIL face_diagnostic missing stock meta")
         raise SystemExit(1)
-    bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
-    ob = next((o for o in bpy.context.scene.objects if o.type == "MESH"), None)
-    if not ob:
-        print("FAIL face_diagnostic no_mesh")
-        raise SystemExit(1)
+    ob = bake_researcher_stock_body()
     ob.name = STOCK_OBJECT_NAME
     apply_researcher_materials(ob)
-    spawn_founder_eye_meshes(ob)
+    spawn_researcher_eye_meshes(ob)
+    spawn_researcher_glasses(ob)
     meshes = collect_researcher_stock_meshes()
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "0"

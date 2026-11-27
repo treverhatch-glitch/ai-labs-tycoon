@@ -2,14 +2,20 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 import bpy
 import bmesh
-from mathutils import Vector
+from mathutils import Quaternion, Vector
 
 import blender_common as bc
 import kenney_founder_lib as kf
+from kenney_founder_standing_gate import (
+    rig_head_foot_world_z,
+    verify_kenney_arm_drop,
+    verify_standing_rig,
+)
 from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
 from kenney_geometry_landmarks import FounderLandmarks, compute_landmarks, torso_half_width
 
@@ -24,12 +30,12 @@ STOCK_OBJECT_NAME = "KenneyResearcherStock"
 RESEARCHER_SOLE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_SHOE = (0.28, 0.30, 0.34, 1.0)
 RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
-RESEARCHER_LAB_COAT = (0.70, 0.76, 0.74, 1.0)
-RESEARCHER_SHIRT = (0.22, 0.52, 0.48, 1.0)
+RESEARCHER_LAB_COAT = (0.40, 0.46, 0.44, 1.0)
+RESEARCHER_SHIRT = (0.14, 0.62, 0.52, 1.0)
 RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
-RESEARCHER_SKIN = (0.82, 0.66, 0.52, 1.0)
+RESEARCHER_SKIN = (0.62, 0.50, 0.40, 1.0)
 RESEARCHER_HAIR = (0.22, 0.18, 0.16, 1.0)
-RESEARCHER_GLASSES = (0.12, 0.12, 0.14, 1.0)
+RESEARCHER_GLASSES = (0.28, 0.30, 0.34, 1.0)
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
 FOUNDER_MOUTH = (0.18, 0.12, 0.12, 1.0)
@@ -159,6 +165,10 @@ def _ensure_material(name: str, rgba: tuple[float, float, float, float], rough: 
     if bsdf:
         bsdf.inputs["Base Color"].default_value = rgba
         bsdf.inputs["Roughness"].default_value = rough
+        if "Specular IOR Level" in bsdf.inputs:
+            bsdf.inputs["Specular IOR Level"].default_value = 0.12
+        elif "Specular" in bsdf.inputs:
+            bsdf.inputs["Specular"].default_value = 0.12
     return mat
 
 
@@ -215,9 +225,9 @@ def _region_for_point(
         if lm.h_eye - 0.02 <= h <= lm.h_eye + 0.06 and y_face > -0.08:
             return SLOT_SKIN
         shirt_open = (
-            lm.h_neck + 0.01 <= h <= lm.h_waist - 0.02
-            and y_face > 0.12
-            and lat < torso_hw * 0.55
+            lm.h_neck - 0.02 <= h <= lm.h_waist - 0.12
+            and y_face > 0.02
+            and lat < torso_hw * 0.78
         )
         if shirt_open:
             return SLOT_COLLAR
@@ -317,7 +327,7 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
         _ensure_material("ResearcherSole", RESEARCHER_SOLE, 0.72),
         _ensure_material("ResearcherShoe", RESEARCHER_SHOE, 0.42),
         _ensure_material("ResearcherTrousers", RESEARCHER_TROUSERS, 0.58),
-        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.52),
+        _ensure_material("ResearcherLabCoat", RESEARCHER_LAB_COAT, 0.72),
         _ensure_material("ResearcherSkin", RESEARCHER_SKIN, 0.50),
         _ensure_material("ResearcherHand", RESEARCHER_SKIN, 0.48),
         _ensure_material("ResearcherHair", RESEARCHER_HAIR, 0.48),
@@ -355,6 +365,7 @@ def apply_researcher_materials(ob: bpy.types.Object) -> None:
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     _apply_hand_skin_vertex_groups(bm, slots, ob)
+    _stamp_teal_undershirt_vneck(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -387,6 +398,34 @@ ARM_VG_BONES = (
     "RightHandThumb1",
     "RightHandThumb2",
 )
+
+
+def _stamp_teal_undershirt_vneck(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Front V-neck teal band (readable in 3/4 idle)."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        y_face = y_face_fn(wc)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if not (lm.h_neck - 0.06 <= h <= lm.h_waist - 0.10):
+            continue
+        if y_face < 0.08 or lat > thw * 0.55:
+            continue
+        slots[face.index] = SLOT_COLLAR
 
 
 def _apply_hand_skin_vertex_groups(
@@ -613,7 +652,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     eye_z = lm.zmin + lm.span * lm.h_eye
     sep = head_w * 0.21
     bar_y = head_w * 0.008
-    lens_r = head_w * 0.055
+    lens_r = head_w * 0.075
     mat = _ensure_material("ResearcherGlassesFrame", RESEARCHER_GLASSES, 0.35)
 
     def _lens(center: Vector) -> bpy.types.Object:
@@ -628,7 +667,7 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     anchors: list[Vector] = []
     for sign in (-1.0, 1.0):
         lateral = right * (sep * sign)
-        origin = hc + lateral + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * head_w * 0.12
+        origin = hc + lateral + Vector((0.0, 0.0, eye_z - hc.z)) + fwd * head_w * 0.16
         anchors.append(origin)
     left = _lens(anchors[0])
     right_lens = _lens(anchors[1])
@@ -656,31 +695,133 @@ def spawn_researcher_glasses(body: bpy.types.Object) -> bpy.types.Object:
     return bridge
 
 
-def load_stock_and_recolor() -> bpy.types.Object:
-    if not STOCK_BLEND.is_file() or not STOCK_META.is_file():
-        raise RuntimeError(f"FAIL staff-researcher-idle missing stock blend {STOCK_BLEND}")
+def _pose_researcher_idle_arms(arm: bpy.types.Object) -> None:
+    """Arms along torso; hands mid-thigh (not groin). Researcher-only — does not touch shared blend."""
+    if arm.animation_data and arm.animation_data.action:
+        arm.animation_data.action = None
+    bpy.context.view_layer.objects.active = arm
+    arm.select_set(True)
+    bpy.ops.object.mode_set(mode="POSE")
+    for side in ("Left", "Right"):
+        ua = arm.pose.bones.get(f"{side}Arm")
+        fa = arm.pose.bones.get(f"{side}ForeArm")
+        if not ua or not fa:
+            continue
+        ua.rotation_mode = "QUATERNION"
+        fa.rotation_mode = "QUATERNION"
+        if side == "Left":
+            ua.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-58.0))
+            fa.rotation_quaternion = Quaternion((0.0, 0.0, 1.0), math.radians(-12.0))
+        else:
+            ua.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(58.0))
+            fa.rotation_quaternion = Quaternion((-1.0, 0.0, 0.0), math.radians(12.0))
+    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.context.view_layer.update()
+
+
+def bake_researcher_stock_body() -> bpy.types.Object:
+    """Kenney rig bake for researcher pose; does not write founder stock blend."""
+    if not STOCK_META.is_file():
+        raise RuntimeError(f"FAIL staff-researcher-idle missing stock meta {STOCK_META}")
     meta = json.loads(STOCK_META.read_text(encoding="utf-8"))
     want_verts = int(meta["vertexCount"])
     want_tris = int(meta["triangleCount"])
     kf._clear_scene()
-    bpy.ops.wm.open_mainfile(filepath=str(STOCK_BLEND))
-    meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
-    if len(meshes) != 1:
-        raise RuntimeError(f"FAIL staff-researcher-idle stock_import parts={len(meshes)} want=1")
-    ob = meshes[0]
-    ob.name = STOCK_OBJECT_NAME
-    if len(ob.data.vertices) != want_verts:
+    arm, mesh = kf._import_rigged()
+    _pose_researcher_idle_arms(arm)
+    kf._ground_rig(arm, mesh)
+    ok, msg = verify_standing_rig(arm)
+    if not ok:
+        raise RuntimeError(f"FAIL staff-researcher-idle: {msg}")
+    ok, msg = verify_kenney_arm_drop(arm)
+    if not ok:
+        raise RuntimeError(f"FAIL staff-researcher-idle: {msg}")
+    refs = rig_head_foot_world_z(arm)
+    if not refs:
+        raise RuntimeError("FAIL staff-researcher-idle rig_head_foot_missing")
+    head_ref, foot_ref = refs
+    baked = kf._bake_mesh(mesh, arm, head_ref, foot_ref)
+    kf._ensure_upright_z(baked, head_ref, foot_ref)
+    kf._face_forward_z(baked)
+    kf._scale_character(baked)
+    from kenney_founder_stock_recolor import bisect_stock_landmarks
+
+    bisect_stock_landmarks(baked)
+    if len(baked.data.vertices) != want_verts:
         raise RuntimeError(
-            f"FAIL staff-researcher-idle stock_verts={len(ob.data.vertices)} want={want_verts}"
+            f"FAIL staff-researcher-idle stock_verts={len(baked.data.vertices)} want={want_verts}"
         )
-    tri_count = sum(len(p.vertices) for p in ob.data.polygons)
+    tri_count = sum(len(p.vertices) for p in baked.data.polygons)
     if tri_count != want_tris:
         raise RuntimeError(
             f"FAIL staff-researcher-idle stock_tris={tri_count} want={want_tris}"
         )
-    apply_researcher_materials(ob)
-    from founder_face_decals import spawn_founder_eye_meshes
+    return baked
 
-    spawn_founder_eye_meshes(ob)
+
+def spawn_researcher_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
+    """Larger, darker eye discs than founder default (researcher-only)."""
+    from founder_face_decals import (
+        EYE_OBJECT_NAMES,
+        _body_bvh_evaluated,
+        _eye_world_matrix,
+        _fwd_basis,
+        _head_width_at,
+        _make_solid_mat,
+        _parent_keep_world,
+        _purge_face_objects,
+        _ray_hit_face,
+    )
+
+    _purge_face_objects()
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lm = compute_landmarks(body)
+    fwd = toe_forward([body]).normalized()
+    hc, _ = face_shell_coord(body, fwd)
+    head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
+    _, right = _fwd_basis(fwd)
+    eye_z = lm.zmin + lm.span * lm.h_eye
+    proud = head_w * 0.052
+    sep = head_w * 0.20
+    radius = head_w * 0.050
+    cast_in = -fwd
+    eye_mat = _make_solid_mat("ResearcherEyeMesh", (0.04, 0.04, 0.05, 1.0), 0.95)
+    bvh = _body_bvh_evaluated(body)
+    created: list[bpy.types.Object] = []
+    eye_anchor = hc + Vector((0.0, 0.0, eye_z - hc.z))
+    shoot_dist = max(head_w * 0.55, 0.14)
+    for name, sign in zip(EYE_OBJECT_NAMES, (-1.0, 1.0), strict=True):
+        lateral = right * (sep * sign)
+        origin = eye_anchor + lateral + fwd * shoot_dist
+        hit = _ray_hit_face(bvh, origin, cast_in)
+        seed = eye_anchor + lateral + fwd * (head_w * 0.055)
+        face_fwd = fwd
+        if hit is not None:
+            loc, norm = hit
+            seed = loc
+            outward = norm if norm.dot(fwd) >= 0 else -norm
+            face_fwd = outward
+        nearest, norm_n, _idx, _dist = bvh.find_nearest(seed)
+        if nearest is not None:
+            outward = norm_n if norm_n.dot(fwd) >= 0 else -norm_n
+            center = nearest + outward * proud
+            face_fwd = outward
+        else:
+            center = seed + face_fwd * proud
+        ob = _eye_world_matrix(center, face_fwd, radius, proud)
+        ob.name = name
+        ob.data.materials.clear()
+        ob.data.materials.append(eye_mat)
+        bc.smooth_shade(ob)
+        _parent_keep_world(ob, body)
+        created.append(ob)
+    return created
+
+
+def load_stock_and_recolor() -> bpy.types.Object:
+    ob = bake_researcher_stock_body()
+    ob.name = STOCK_OBJECT_NAME
+    apply_researcher_materials(ob)
+    spawn_researcher_eye_meshes(ob)
     spawn_researcher_glasses(ob)
     return ob

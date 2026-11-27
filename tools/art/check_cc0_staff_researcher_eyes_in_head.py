@@ -19,6 +19,7 @@ NEGATIVE_SHAS = (
     ("726005c46bf317a7318c62310875b337c43952bc", "v24"),
     ("af82592cc5a437e6f93ce8b65d7d5d24dddaa7f1", "v25"),
 )
+V2_FAIL_SHA = "1b8578f0"
 GLB_NEG_REL = "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 
 sys.path.insert(0, str(REPO / "tools" / "art"))
@@ -74,6 +75,27 @@ def _glb_eye_gate_passes(sha: str) -> bool | None:
         Path(glb.name).unlink(missing_ok=True)
 
 
+def _v2_strict_must_fail() -> bool:
+    rel = "docs/art/previews/staff-researcher-idle.png"
+    mask_rel = "docs/art/previews/staff-researcher-idle.mask.png"
+    img = _git_png(V2_FAIL_SHA, rel)
+    mask = _git_png(V2_FAIL_SHA, mask_rel)
+    if img is None or mask is None:
+        print(f"FAIL staff-researcher-idle eyes_in_head v2_selftest missing_png sha={V2_FAIL_SHA}")
+        return False
+    ok, msg, blobs, _ = check_eyes_in_head_mask(
+        img, mask.convert("L"), allow_projection_fallback=False
+    )
+    if ok or len(blobs) >= 2:
+        print(
+            f"FAIL staff-researcher-idle eyes_in_head v2_selftest "
+            f"{V2_FAIL_SHA} must fail strict_two_blobs (ok={ok} blobs={len(blobs)} {msg})"
+        )
+        return False
+    print(f"OK staff-researcher-idle eyes_in_head v2_selftest {V2_FAIL_SHA} strict_fail")
+    return True
+
+
 def _negative_self_tests() -> bool:
     rel = "docs/art/previews/staff-researcher-idle.png"
     mask_rel = "docs/art/previews/staff-researcher-idle.mask.png"
@@ -90,7 +112,7 @@ def _negative_self_tests() -> bool:
         if img is None or mask is None:
             print(f"FAIL staff-researcher-idle eyes_in_head negative missing_png {tag}")
             return False
-        ok, _msg, _, _ = check_eyes_in_head_mask(img, mask.convert("L"))
+        ok, _msg, _, _ = check_eyes_in_head_mask(img, mask.convert("L"), allow_projection_fallback=False)
         if ok:
             print(
                 f"FAIL staff-researcher-idle eyes_in_head negative {tag} "
@@ -124,7 +146,15 @@ def main() -> int:
         return 1
     idle_img = Image.open(IDLE_PNG).convert("RGB")
     idle_mask = Image.open(IDLE_MASK).convert("L")
-    ok, msg, blobs, head_rect = check_eyes_in_head_mask(idle_img, idle_mask)
+    if not _v2_strict_must_fail():
+        rc = 1
+    ok, msg, blobs, head_rect = check_eyes_in_head_mask(
+        idle_img, idle_mask, allow_projection_fallback=False
+    )
+    if ok and len(blobs) < 2:
+        print(f"FAIL staff-researcher-idle eyes_in_head idle strict_need_two_png_blobs blobs={len(blobs)}")
+        rc = 1
+        ok = False
     write_eye_debug(idle_img, idle_mask, blobs, head_rect, DEBUG_PNG)
     if ok:
         print(f"OK staff-researcher-idle eyes_in_head idle {msg}")
@@ -136,10 +166,11 @@ def main() -> int:
     if VS_PNG.is_file():
         vs = Image.open(VS_PNG).convert("RGB")
         gap = 8
-        x0 = idle_img.width + gap
+        gap = 8
+        crop_w = (vs.width - gap) // 2
+        x0 = crop_w + gap
         if vs.width > x0:
-            crop_w = (vs.width - gap) // 2
-            researcher_crop = vs.crop((0, 0, crop_w, vs.height))
+            researcher_crop = vs.crop((x0, 0, vs.width, vs.height))
             if researcher_crop.size != idle_img.size:
                 researcher_crop = researcher_crop.resize(idle_img.size, Image.Resampling.LANCZOS)
             ok2, msg2, _, _ = check_eyes_in_head_mask(researcher_crop, idle_mask)

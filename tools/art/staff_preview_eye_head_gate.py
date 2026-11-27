@@ -11,7 +11,7 @@ from PIL import Image
 REPO = Path(__file__).resolve().parents[2]
 
 MAX_EYE_LUM = 96
-MAX_EYE_LUM_RESEARCHER = 148
+MAX_EYE_LUM_RESEARCHER = 132
 MIN_BLOB_PX = 6
 MASK_THRESH = 48
 
@@ -43,9 +43,9 @@ def face_eye_band(min_y: int, span: int) -> tuple[int, int]:
 
 def is_eye_pixel(r: int, g: int, b: int, *, asset_id: str = "") -> bool:
     if asset_id == "staff-researcher-idle":
-        if max(r, g, b) > 152 or (r + g + b) >= 455:
+        if max(r, g, b) > 118 or (r + g + b) >= 320:
             return False
-        return not (b > r + 28 and b > 110)
+        return not (b > r + 24 and b > 95)
     return max(r, g, b) <= MAX_EYE_LUM and (r + g + b) < 165
 
 
@@ -113,13 +113,15 @@ def check_eyes_in_head_mask(
     *,
     x_off: int = 0,
     asset_id: str = "staff-researcher-idle",
-    allow_projection_fallback: bool = True,
+    allow_projection_fallback: bool | None = None,
 ) -> tuple[bool, str, list[set[tuple[int, int]]], tuple[int, int, int, int]]:
     min_y, _max_y, span = figure_span(mask)
     if span < 30:
         return False, "empty_mask", [], (0, 0, 0, 0)
     hx0, hy0, hx1, hy1 = head_bbox(mask, min_y, span)
     fy0, fy1 = face_eye_band(min_y, span)
+    if allow_projection_fallback is None:
+        allow_projection_fallback = asset_id != "staff-researcher-idle"
     blobs = dark_blobs_in_roi(img, mask, hx0, hx1, fy0, fy1, asset_id=asset_id)
     if len(blobs) < 2:
         if (

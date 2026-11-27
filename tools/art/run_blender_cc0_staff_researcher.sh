@@ -14,12 +14,11 @@ if [[ ! -f tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMe
   ./tools/art/cc0/fetch_incoming.sh
 fi
 
-echo "=== tools/art/blender/render_kenney_founder_stock_check.py ==="
-stock_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_stock_check.py 2>&1) || { echo "$stock_out"; echo "FAIL stock check" >&2; exit 1; }
-echo "$stock_out"
-echo "$stock_out" | grep -q '^OK stock_check' || { echo "FAIL stock check OK line" >&2; exit 1; }
-test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || { echo "FAIL missing stock check png"; exit 1; }
 python3 tools/art/check_cc0_staff_founder_stock_kit_glb.py
+test -s "docs/art/previews/staff-founder-kenney-stock-check.png" || {
+  echo "FAIL missing stock check png (founder #98 frozen — do not rebake on researcher lane)" >&2
+  exit 1
+}
 
 echo "=== tools/art/blender/render_kenney_researcher_face_diagnostic.py ==="
 diag_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_researcher_face_diagnostic.py 2>&1) || { echo "$diag_out"; echo "FAIL face diagnostic" >&2; exit 1; }
@@ -55,14 +54,14 @@ python3 tools/art/check_cc0_staff_material_diversity.py
 python3 tools/art/check_cc0_staff_floor_loose.py
 python3 tools/art/check_cc0_staff_preview_front.py
 python3 tools/art/check_cc0_staff_preview_corner_grey.py
+python3 tools/art/compose_researcher_stock_preview.py
+test -s "docs/art/previews/staff-researcher-vs-stock-check.png" || { echo "FAIL missing vs-stock png"; exit 1; }
+
 python3 tools/art/check_cc0_staff_researcher_eye_blobs.py
 python3 tools/art/check_cc0_staff_researcher_eyes_in_head.py
 python3 tools/art/check_cc0_staff_researcher_preview_clip.py
 python3 tools/art/check_cc0_staff_researcher_preview_eyes.py
 python3 tools/art/check_cc0_staff_researcher_eye_project.py
-
-python3 tools/art/compose_researcher_stock_preview.py
-test -s "docs/art/previews/staff-researcher-vs-stock-check.png" || { echo "FAIL missing vs-stock png"; exit 1; }
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

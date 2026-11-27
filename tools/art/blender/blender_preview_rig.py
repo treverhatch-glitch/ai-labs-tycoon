@@ -463,12 +463,19 @@ def render_preview_studio(
             add_shadow_floor_z(mins, maxs)
         light_r = radius * (0.55 if preview_kind == "staff" else 1.0)
         asset_id = os.environ.get("STAFF_PREVIEW_ASSET", "")
-        energy_scale = 0.62 if asset_id == "staff-researcher-idle" else 1.0
+        energy_scale = 0.22 if asset_id == "staff-researcher-idle" else 1.0
         setup_three_point_lights(center, light_r, energy_scale=energy_scale)
         if preview_kind == "staff":
             if asset_id == "staff-researcher-idle":
-                scene.view_settings.view_transform = "AgX"
-                scene.view_settings.exposure = -0.42
+                scene.view_settings.view_transform = "Standard"
+                scene.view_settings.exposure = -1.12
+                scene.view_settings.gamma = 1.0
+                if scene.world and scene.world.node_tree:
+                    for n in scene.world.node_tree.nodes:
+                        if n.type == "BACKGROUND":
+                            n.inputs["Strength"].default_value = 0.35
+                if hasattr(scene.eevee, "use_gtao"):
+                    scene.eevee.gtao_factor = 1.0
             staff_yaw_deg = float(os.environ.get("STAFF_PREVIEW_YAW_DEG", "30"))
             staff_elev_deg = float(os.environ.get("STAFF_PREVIEW_ELEV_DEG", "11"))
             cam, cam_dist = frame_staff_front_quarter(
