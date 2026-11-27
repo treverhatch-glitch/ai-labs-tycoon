@@ -1,0 +1,7 @@
+#!/bin/sh
+# Lane hook: strip Co-authored-by trailers (hooks are opt-in via core.hooksPath).
+MSG_FILE=$1
+case "$(uname -s)" in
+  Darwin) sed -i '' -e '/^[Cc]o-authored-by:/d' "$MSG_FILE" ;;
+  *) sed -i -e '/^[Cc]o-authored-by:/d' "$MSG_FILE" ;;
+esac

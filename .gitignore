@@ -8,6 +8,8 @@ TestResults/
 .vs/
 .idea/
 .vscode/
+__pycache__/
+*.py[cod]
 
 # Secrets, licences and keys never go in this repo (it is public). Unity credentials live in GitHub Actions secrets.
 .env

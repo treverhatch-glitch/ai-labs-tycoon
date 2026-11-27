@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+"""Packet 3–4 env GLB gates on committed files (no Blender bpy authoring checks)."""
+from __future__ import annotations
+
+import json
+import struct
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[2]
+GLB_DIR = REPO / "unity/Assets/Art/EarlyGame/garage-kit"
+
+ENV_IDS = (
+    "garage-exterior-wall",
+    "garage-land-for-sale-sign",
+    "garage-lot-curb",
+    "garage-window-frame",
+)
+
+PARTS_MIN = {
+    "garage-exterior-wall": 12,
+    "garage-lot-curb": 1,
+    "garage-land-for-sale-sign": 3,
+    "garage-window-frame": 9,
+}
+
+REQUIRED_IMAGE = {
+    "garage-exterior-wall": ("tex-garage-wall-beige",),
+    "garage-land-for-sale-sign": (),
+    "garage-lot-curb": (),
+    "garage-window-frame": (),
+}
+
+PRIMARY_MATERIAL = {
+    "garage-exterior-wall": "CinderblockWall",
+    "garage-lot-curb": "ConcreteCurb",
+    "garage-window-frame": "WindowFrame",
+    "garage-land-for-sale-sign": "SignBoard",
+}
+
+
+def glb_json(path: Path) -> dict:
+    data = path.read_bytes()
+    if data[:4] != b"glTF":
+        raise ValueError(f"{path.name}: not GLB")
+    _version, _length = struct.unpack_from("<II", data, 4)
+    chunk_len, chunk_type = struct.unpack_from("<I4s", data, 12)
+    if chunk_type != b"JSON":
+        raise ValueError(f"{path.name}: missing JSON chunk")
+    return json.loads(data[20 : 20 + chunk_len])
+
+
+def _extras_part_count(gltf: dict) -> int | None:
+    for node in gltf.get("nodes", []):
+        extras = node.get("extras") or {}
+        if "packet34_part_count" in extras:
+            return int(extras["packet34_part_count"])
+    for mesh in gltf.get("meshes", []):
+        extras = mesh.get("extras") or {}
+        if "packet34_part_count" in extras:
+            return int(extras["packet34_part_count"])
+    return None
+
+
+def _material_names(gltf: dict) -> list[str]:
+    return [str(m.get("name") or "") for m in gltf.get("materials", [])]
+
+
+def _image_names(gltf: dict) -> list[str]:
+    names: list[str] = []
+    for img in gltf.get("images", []):
+        name = str(img.get("name") or img.get("uri") or "")
+        names.append(name)
+    return names
+
+
+def check_env_glb(asset_id: str) -> list[str]:
+    glb = GLB_DIR / f"{asset_id}.glb"
+    errs: list[str] = []
+    if not glb.is_file():
+        return [f"missing_glb"]
+    try:
+        gltf = glb_json(glb)
+    except ValueError as exc:
+        return [str(exc)]
+
+    mats = _material_names(gltf)
+    imgs = _image_names(gltf)
+    parts = _extras_part_count(gltf)
+    min_parts = PARTS_MIN.get(asset_id, 3)
+
+    if parts is None:
+        errs.append("missing_glb_extras_packet34_part_count")
+    elif parts < min_parts:
+        errs.append(f"glb_part_count={parts} need>={min_parts}")
+
+    if not imgs:
+        errs.append("glb_no_embedded_images (vcol-only export)")
+    if any("_vcol" in m for m in mats):
+        errs.append(f"glb_vertex_color_material {mats!r}")
+
+    want_mat = PRIMARY_MATERIAL.get(asset_id)
+
+    def _mat_present(want: str) -> bool:
+        return any(m == want or m.startswith(f"{want}.") for m in mats)
+
+    if want_mat and not _mat_present(want_mat):
+        errs.append(f"missing_material {want_mat}")
+
+    for sub in REQUIRED_IMAGE.get(asset_id, ()):
+        if not any(sub in n for n in imgs):
+            errs.append(f"missing_image_ref {sub}")
+
+    mesh_count = len(gltf.get("meshes", []))
+    mesh_nodes = sum(1 for n in gltf.get("nodes", []) if n.get("mesh") is not None)
+    if asset_id == "garage-land-for-sale-sign":
+        if mesh_nodes != 3:
+            errs.append(f"glb_mesh_nodes={mesh_nodes} need 3")
+        if mesh_count != 3:
+            errs.append(f"glb_meshes={mesh_count} need 3")
+        node_names = [str(n.get("name") or "") for n in gltf.get("nodes", []) if n.get("mesh") is not None]
+        for want in ("posts", "board", "letters"):
+            if want not in node_names:
+                errs.append(f"sign_glb_missing_node_{want}")
+    else:
+        if mesh_nodes != 1:
+            errs.append(f"glb_mesh_nodes={mesh_nodes} need 1")
+        if mesh_count != 1:
+            errs.append(f"glb_meshes={mesh_count} need 1")
+    if asset_id == "garage-lot-curb":
+        total_prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
+        if total_prims != 1:
+            errs.append(f"curb_glb_primitives={total_prims} need 1")
+
+    errs.extend(check_glb_proportions(asset_id, gltf))
+
+    return errs
+
+
+def _node_trs_matrix(node: dict) -> list[list[float]] | None:
+    if node.get("matrix"):
+        m = node["matrix"]
+        return [m[0:4], m[4:8], m[8:12], m[12:16]]
+    t = node.get("translation") or [0.0, 0.0, 0.0]
+    s = node.get("scale") or [1.0, 1.0, 1.0]
+    r = node.get("rotation") or [0.0, 0.0, 0.0, 1.0]
+    x, y, z, w = (float(r[0]), float(r[1]), float(r[2]), float(r[3]))
+    xx, yy, zz = x * x, y * y, z * z
+    xy, xz, yz = x * y, x * z, y * z
+    wx, wy, wz = w * x, w * y, w * z
+    rot = [
+        [1 - 2 * (yy + zz), 2 * (xy - wz), 2 * (xz + wy), 0.0],
+        [2 * (xy + wz), 1 - 2 * (xx + zz), 2 * (yz - wx), 0.0],
+        [2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (xx + yy), 0.0],
+        [0.0, 0.0, 0.0, 1.0],
+    ]
+    for i in range(3):
+        for j in range(3):
+            rot[i][j] *= s[j]
+    rot[0][3] = t[0]
+    rot[1][3] = t[1]
+    rot[2][3] = t[2]
+    return rot
+
+
+def _transform_point(m: list[list[float]], p: list[float]) -> list[float]:
+    x, y, z = p[0], p[1], p[2]
+    return [
+        m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3],
+        m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3],
+        m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3],
+    ]
+
+
+def _mesh_position_bounds(gltf: dict) -> tuple[list[float], list[float]] | None:
+    accs = gltf.get("accessors", [])
+    meshes = gltf.get("meshes", [])
+    nodes = gltf.get("nodes", [])
+    if not accs or not meshes:
+        return None
+    mn_acc = [1e9, 1e9, 1e9]
+    mx_acc = [-1e9, -1e9, -1e9]
+    found = False
+    for node in nodes:
+        mi = node.get("mesh")
+        if mi is None:
+            continue
+        m4 = _node_trs_matrix(node)
+        if not m4:
+            continue
+        mesh = meshes[mi]
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None:
+                continue
+            acc = accs[pos_idx]
+            lmn, lmx = acc.get("min"), acc.get("max")
+            if not lmn or not lmx:
+                continue
+            corners = [
+                [lmn[0], lmn[1], lmn[2]],
+                [lmn[0], lmn[1], lmx[2]],
+                [lmn[0], lmx[1], lmn[2]],
+                [lmn[0], lmx[1], lmx[2]],
+                [lmx[0], lmn[1], lmn[2]],
+                [lmx[0], lmn[1], lmx[2]],
+                [lmx[0], lmx[1], lmn[2]],
+                [lmx[0], lmx[1], lmx[2]],
+            ]
+            found = True
+            for c in corners:
+                w = _transform_point(m4, c)
+                for i in range(3):
+                    mn_acc[i] = min(mn_acc[i], w[i])
+                    mx_acc[i] = max(mx_acc[i], w[i])
+    if not found:
+        return None
+    return mn_acc, mx_acc
+
+
+def _each_primitive_extents(gltf: dict) -> list[tuple[float, float, float]]:
+    accs = gltf.get("accessors", [])
+    out: list[tuple[float, float, float]] = []
+    for mesh in gltf.get("meshes", []):
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None:
+                continue
+            acc = accs[pos_idx]
+            mn, mx = acc.get("min"), acc.get("max")
+            if not mn or not mx:
+                continue
+            ex = sorted(mx[i] - mn[i] for i in range(3))
+            out.append((ex[0], ex[1], ex[2]))
+    return out
+
+
+def check_glb_proportions(asset_id: str, gltf: dict) -> list[str]:
+    """Reject tall backdrop slabs embedded in env GLBs (curb especially)."""
+    bounds = _mesh_position_bounds(gltf)
+    if not bounds:
+        return []
+    mn, mx = bounds
+    ex = sorted(mx[i] - mn[i] for i in range(3))
+    height, mid, long_axis = ex[0], ex[1], ex[2]
+    errs: list[str] = []
+    if asset_id == "garage-lot-curb":
+        if long_axis < 0.75 or long_axis > 1.35:
+            errs.append(f"curb_length={long_axis:.2f} need~1.0m")
+        if height > 0.22:
+            errs.append(f"curb_too_tall h={height:.2f} need~0.15")
+        if height > mid * 0.85:
+            errs.append(f"curb_backdrop_slab h={height:.2f} mid={mid:.2f}")
+        curb_h = 0.15
+        for i, (lo, md, hi) in enumerate(_each_primitive_extents(gltf)):
+            if lo > curb_h * 2.0 + 0.01:
+                errs.append(f"curb_mesh_{i}_height_gt_2x_curb={lo:.3f}")
+            if hi > 0.55 and lo > 0.18:
+                errs.append(f"curb_primitive_{i}_tall_slab {lo:.2f}x{md:.2f}x{hi:.2f}")
+            if md > lo * 2.8 and hi > md * 2.5:
+                errs.append(f"curb_primitive_{i}_backdrop_aspect")
+    elif asset_id in {"garage-exterior-wall", "garage-window-frame", "garage-land-for-sale-sign"}:
+        if height > long_axis * 1.85 and asset_id != "garage-exterior-wall":
+            errs.append(f"vertical_slab_glb h={height:.2f} long={long_axis:.2f}")
+    if asset_id == "garage-land-for-sale-sign":
+        errs.extend(check_sign_glb_board_and_text(gltf))
+    return errs
+
+
+def check_sign_glb_board_and_text(gltf: dict) -> list[str]:
+    """Committed sign GLB must span a ~0.9x0.6 board and include SignTextRed (fails 85c48f17 class)."""
+    errs: list[str] = []
+    mats = _material_names(gltf)
+    if not any("SignTextRed" in m for m in mats):
+        errs.append("sign_glb_missing_SignTextRed_material")
+    bounds = _mesh_position_bounds(gltf)
+    if not bounds:
+        return errs + ["sign_glb_no_position_bounds"]
+    mn, mx = bounds
+    span_x = mx[0] - mn[0]
+    span_y = mx[1] - mn[1]
+    span_z = mx[2] - mn[2]
+    if span_y < 0.95:
+        errs.append(f"sign_glb_height_y={span_y:.2f} need~1.2")
+    if max(span_x, span_z) < 0.78:
+        errs.append(f"sign_glb_board_span={max(span_x, span_z):.2f} need~0.9")
+    thin = min(span_x, span_y, span_z)
+    board_thin = None
+    for node in gltf.get("nodes", []):
+        if str(node.get("name") or "") != "board":
+            continue
+        mi = node.get("mesh")
+        if mi is None:
+            continue
+        m4 = _node_trs_matrix(node)
+        mesh = gltf["meshes"][mi]
+        for prim in mesh.get("primitives", []):
+            pos_idx = (prim.get("attributes") or {}).get("POSITION")
+            if pos_idx is None or not m4:
+                continue
+            acc = gltf["accessors"][pos_idx]
+            lmn, lmx = acc.get("min"), acc.get("max")
+            if not lmn or not lmx:
+                continue
+            corners = [
+                [lmn[0], lmn[1], lmn[2]],
+                [lmx[0], lmn[1], lmn[2]],
+                [lmn[0], lmx[1], lmn[2]],
+                [lmx[0], lmx[1], lmn[2]],
+                [lmn[0], lmn[1], lmx[2]],
+                [lmx[0], lmn[1], lmx[2]],
+                [lmn[0], lmx[1], lmx[2]],
+                [lmx[0], lmx[1], lmx[2]],
+            ]
+            ws = [_transform_point(m4, c) for c in corners]
+            spans = [
+                max(p[i] for p in ws) - min(p[i] for p in ws) for i in range(3)
+            ]
+            board_thin = min(spans)
+    if board_thin is not None and board_thin > 0.14:
+        errs.append(f"sign_glb_board_thin={board_thin:.3f} need~0.02-0.12")
+    elif board_thin is None and thin > 0.14:
+        errs.append(f"sign_glb_thin_axis={thin:.3f} need~0.02-0.12 board depth")
+    prims = sum(len(m.get("primitives", [])) for m in gltf.get("meshes", []))
+    if prims < 1:
+        errs.append("sign_glb_no_primitives")
+    return errs
+
+
+def glb_manifest_summary(asset_id: str) -> dict | None:
+    """Part count + material names from committed GLB (for PR body)."""
+    glb = GLB_DIR / f"{asset_id}.glb"
+    if not glb.is_file():
+        return None
+    try:
+        gltf = glb_json(glb)
+    except ValueError:
+        return None
+    parts = _extras_part_count(gltf)
+    mats = [m for m in _material_names(gltf) if m and "_vcol" not in m]
+    imgs = _image_names(gltf)
+    return {"parts": parts, "materials": mats, "images": imgs}
+
+
+def check_all_env_glbs() -> int:
+    rc = 0
+    for asset_id in ENV_IDS:
+        errs = check_env_glb(asset_id)
+        if errs:
+            for err in errs:
+                print(f"FAIL {asset_id} glb {err}")
+            rc = 1
+        else:
+            info = glb_manifest_summary(asset_id)
+            print(f"OK {asset_id} glb parts={info and info.get('parts')} mats={info and info.get('materials')}")
+    return rc
+
+
+def main() -> int:
+    return check_all_env_glbs()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

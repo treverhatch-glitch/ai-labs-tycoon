@@ -13,7 +13,16 @@ CATALOG_G = REPO / "unity/Assets/Scripts/Hq/EarlyGameGarageCatalog.cs"
 CATALOG_S = REPO / "unity/Assets/Scripts/Hq/EarlyGameStaffCatalog.cs"
 
 
+def _prior_entries(kit_dir: Path) -> dict[str, dict]:
+    name = "garage-manifest.json" if kit_dir.name == "garage-kit" else "staff-manifest.json"
+    path = REPO / "unity/Assets/Art/EarlyGame" / name
+    if not path.exists():
+        return {}
+    return {a["id"]: a for a in json.loads(path.read_text()).get("assets", [])}
+
+
 def collect(kit_dir: Path) -> list[dict]:
+    prior = _prior_entries(kit_dir)
     entries = []
     for glb in sorted(kit_dir.glob("*.glb")):
         aid = glb.stem
@@ -24,15 +33,26 @@ def collect(kit_dir: Path) -> list[dict]:
                 p = tex_base / f"{aid}_{kind}.png"
                 if p.exists():
                     textures[kind] = f"Assets/Art/EarlyGame/{kit_dir.name}/textures/{aid}/{aid}_{kind}.png"
-        entries.append(
-            {
-                "id": aid,
-                "path": f"Assets/Art/EarlyGame/{kit_dir.name}/{aid}.glb",
-                "textures": textures,
-                "preview": f"docs/art/previews/{aid}.png",
-                "license": "CC0-1.0 (Blender-baked, in-repo)",
-            }
-        )
+        entry = {
+            "id": aid,
+            "path": f"Assets/Art/EarlyGame/{kit_dir.name}/{aid}.glb",
+            "textures": textures,
+            "preview": f"docs/art/previews/{aid}.png",
+            "license": "CC0-1.0 (Blender-baked, in-repo)",
+        }
+        old = prior.get(aid, {})
+        for key in (
+            "vertexCount",
+            "triangleCount",
+            "subShapeCount",
+            "meshIslands",
+            "grounded",
+            "blenderVersion",
+            "generator",
+        ):
+            if key in old:
+                entry[key] = old[key]
+        entries.append(entry)
     return entries
 
 

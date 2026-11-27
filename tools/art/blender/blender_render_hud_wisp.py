@@ -63,16 +63,7 @@ def render_wisp(mood_id: str, core: tuple[float, float, float, float]) -> None:
 
 
 def main():
-    icons = {
-        "icon-cash-era0": (0.66, 0.35, 0.16, 1),
-        "icon-date-era0": (0.78, 0.72, 0.63, 1),
-        "icon-era-bar": (0.66, 0.35, 0.16, 1),
-        "icon-build-panel": (0.95, 0.75, 0.35, 1),
-        "icon-hire-panel": (0.4, 0.75, 0.45, 1),
-        "icon-train-panel": (0.55, 0.4, 0.95, 1),
-    }
-    for name, col in icons.items():
-        render_icon(name, col)
+    # HUD icons are bpy glyph scripts (packet 3); wisp moods stay here until packet 2 lands.
     moods = {
         "wisp-happy": (0.55, 0.4, 0.95, 1),
         "wisp-neutral": (0.35, 0.55, 0.95, 1),

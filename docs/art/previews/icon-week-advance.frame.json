@@ -1,0 +1,10 @@
+{
+  "orthographic": true,
+  "transparent_bg": true,
+  "pixel_size": [
+    512,
+    512
+  ],
+  "lane": "hud-sprite-2d",
+  "asset_id": "icon-week-advance"
+}

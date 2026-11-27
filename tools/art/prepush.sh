@@ -10,14 +10,20 @@ for arg in "${@:-}"; do
       ;;
   esac
 done
-PUSH_BRANCH="${ART_PREPUSH_PUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}"
-if [[ -n "$PUSH_BRANCH" ]]; then
-  if git rev-parse --verify "origin/${PUSH_BRANCH}" >/dev/null 2>&1; then
-    if ! git merge-base --is-ancestor "origin/${PUSH_BRANCH}" HEAD; then
-      echo "FAIL: origin/${PUSH_BRANCH} is not an ancestor of HEAD (forward commits only)" >&2
+REMOTE="${ART_PREPUSH_REMOTE:-origin}"
+PUSH_BRANCH="${ART_PREPUSH_PUSH_BRANCH:-${ART_PREPUSH_BRANCH:-$(git symbolic-ref -q --short HEAD 2>/dev/null || true)}}"
+if [[ -n "$PUSH_BRANCH" && "$PUSH_BRANCH" != "HEAD" ]]; then
+  git fetch "$REMOTE" "$PUSH_BRANCH" 2>/dev/null || git fetch "$REMOTE" 2>/dev/null || true
+  UPREF="$REMOTE/$PUSH_BRANCH"
+  if git rev-parse --verify "$UPREF" >/dev/null 2>&1; then
+    if ! git merge-base --is-ancestor "$UPREF" HEAD; then
+      echo "FAIL: $UPREF is not an ancestor of HEAD (forward commits only)" >&2
+      echo "Force-push is banned. Leave remote as-is; add a forward commit on top." >&2
       exit 1
     fi
-    echo "OK: merge-base (origin/${PUSH_BRANCH} ancestor of HEAD)"
+    echo "OK: fast-forward push allowed ($UPREF -> HEAD)"
+  else
+    echo "WARN: $UPREF not found after fetch; push may create branch (no force)"
   fi
 fi
 python3 tools/art/generate_campus_kit.py

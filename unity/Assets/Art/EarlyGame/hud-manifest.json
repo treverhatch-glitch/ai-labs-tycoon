@@ -1,5 +1,6 @@
 {
   "generator": "tools/art/generate_early_hud_icons.py",
+  "fidelity": "packet34-ortho-glyphs",
   "assets": [
     {
       "id": "icon-cash-era0",
