@@ -757,22 +757,121 @@ def log_sleeve_bone_alignment_audit(
             lines.append(f"bone={bone} sample_verts={len(vert_ids)} want>=4")
             all_ok = False
             continue
-        center = _world_bbox_center(sleeves, vert_ids)
-        assert center is not None
+        ctr = _world_bbox_center(sleeves, vert_ids)
+        assert ctr is not None
+        mw = sleeves.matrix_world
+        mn = Vector((1e9, 1e9, 1e9))
+        mx = Vector((-1e9, -1e9, -1e9))
+        for vi in vert_ids:
+            w = mw @ sleeves.data.vertices[vi].co
+            mn = Vector((min(mn.x, w.x), min(mn.y, w.y), min(mn.z, w.z)))
+            mx = Vector((max(mx.x, w.x), max(mx.y, w.y), max(mx.z, w.z)))
+        size = mx - mn
+        mean = Vector((0.0, 0.0, 0.0))
+        n = 0
+        for vi in vert_ids:
+            mean += mw @ sleeves.data.vertices[vi].co
+            n += 1
+        mean /= max(1, n)
         mid = (head + tail) * 0.5
-        axis_d = _segment_axis_distance(center, head, tail)
-        mid_d = (center - mid).length
+        axis_d = _segment_axis_distance(mean, head, tail)
+        mid_d = (mean - mid).length
         ok = axis_d <= max_center_m + 1e-4
         all_ok &= ok
         lines.append(
             f"bone={bone} head=({head.x:.4f},{head.y:.4f},{head.z:.4f}) "
             f"tail=({tail.x:.4f},{tail.y:.4f},{tail.z:.4f}) "
-            f"sleeve_bbox_center=({center.x:.4f},{center.y:.4f},{center.z:.4f}) "
+            f"sleeve_bbox_center=({ctr.x:.4f},{ctr.y:.4f},{ctr.z:.4f}) "
+            f"sleeve_bbox_size=({size.x:.4f},{size.y:.4f},{size.z:.4f}) "
+            f"vert_mean=({mean.x:.4f},{mean.y:.4f},{mean.z:.4f}) "
             f"axis_dist={axis_d:.4f} mid_dist={mid_d:.4f} max={max_center_m} ok={ok}"
         )
     with path.open("a", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
     return all_ok, lines
+
+
+def _world_bbox_stats(ob: bpy.types.Object, *, evaluated: bool = True) -> tuple[Vector, Vector, int]:
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    mesh_ob = ob.evaluated_get(deps) if evaluated else ob
+    mw = mesh_ob.matrix_world
+    mn = Vector((1e9, 1e9, 1e9))
+    mx = Vector((-1e9, -1e9, -1e9))
+    for v in mesh_ob.data.vertices:
+        w = mw @ v.co
+        mn = Vector((min(mn.x, w.x), min(mn.y, w.y), min(mn.z, w.z)))
+        mx = Vector((max(mx.x, w.x), max(mx.y, w.y), max(mx.z, w.z)))
+    return (mn + mx) * 0.5, mx - mn, len(mesh_ob.data.vertices)
+
+
+def format_sleeve_rest_pose_audit_block(
+    sleeves: bpy.types.Object,
+    arm: bpy.types.Object | None,
+    *,
+    title: str = "sleeve-bone audit rest pose (post armature eval)",
+) -> str:
+    bpy.context.view_layer.update()
+    lines = [f"## {title}", ""]
+    ctr, size, nv = _world_bbox_stats(sleeves, evaluated=True)
+    lines.append(f"object=ResearcherCoatSleeves verts={nv}")
+    lines.append(
+        f"world_bbox_center=({ctr.x:.4f},{ctr.y:.4f},{ctr.z:.4f}) "
+        f"world_bbox_size=({size.x:.4f},{size.y:.4f},{size.z:.4f})"
+    )
+    lines.append(
+        f"parent={sleeves.parent.name if sleeves.parent else 'None'} "
+        f"parent_type={sleeves.parent_type} parent_bone={getattr(sleeves, 'parent_bone', '')}"
+    )
+    lines.append("")
+    if arm is not None:
+        deps = bpy.context.evaluated_depsgraph_get()
+        deps.update()
+        arm_e = arm.evaluated_get(deps)
+        for bn in sorted(arm.data.bones.keys()):
+            if not any(
+                k in bn
+                for k in (
+                    "Arm",
+                    "ForeArm",
+                    "Hand",
+                    "Shoulder",
+                )
+            ):
+                continue
+            b = arm.data.bones[bn]
+            ph = arm_e.matrix_world @ b.head_local
+            pt = arm_e.matrix_world @ b.tail_local
+            lines.append(
+                f"bone={bn} head=({ph.x:.4f},{ph.y:.4f},{ph.z:.4f}) "
+                f"tail=({pt.x:.4f},{pt.y:.4f},{pt.z:.4f})"
+            )
+        lines.append("")
+        mw = sleeves.matrix_world
+        for side in ("Left", "Right"):
+            mn = Vector((1e9, 1e9, 1e9))
+            mx = Vector((-1e9, -1e9, -1e9))
+            cnt = 0
+            for v in sleeves.data.vertices:
+                w = mw @ v.co
+                if side == "Left" and w.x > 0.05:
+                    continue
+                if side == "Right" and w.x < -0.05:
+                    continue
+                cnt += 1
+                mn = Vector((min(mn.x, w.x), min(mn.y, w.y), min(mn.z, w.z)))
+                mx = Vector((max(mx.x, w.x), max(mx.y, w.y), max(mx.z, w.z)))
+            if cnt < 1:
+                lines.append(f"island_{side} verts=0")
+                continue
+            c = (mn + mx) * 0.5
+            s = mx - mn
+            lines.append(
+                f"island_{side} verts={cnt} "
+                f"center=({c.x:.4f},{c.y:.4f},{c.z:.4f}) "
+                f"size=({s.x:.4f},{s.y:.4f},{s.z:.4f})"
+            )
+    return "\n".join(lines)
 
 
 def reset_render_island_audit_log() -> Path:
