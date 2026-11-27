@@ -38,27 +38,18 @@ def _pose_walk(arm, frame, scene_data):
     bpy.context.view_layer.update()
 
 
-def _capture_turnaround_bases(
-    arm: bpy.types.Object, meshes: list[bpy.types.Object]
-) -> dict[str, Matrix]:
-    obs = [arm, *[m for m in meshes if m.type == "MESH"]]
-    return {ob.name: ob.matrix_world.copy() for ob in obs}
+def _capture_arm_base(arm: bpy.types.Object) -> Matrix:
+    return arm.matrix_world.copy()
 
 
-def _rotate_character_root(
-    arm: bpy.types.Object,
-    meshes: list[bpy.types.Object],
-    bases: dict[str, Matrix],
-    char_yaw_deg: float,
-) -> None:
-    """World-Z spin about armature root (fixed camera sees true yaw panels)."""
-    pivot = bases[arm.name].translation.copy()
+def _set_arm_yaw(arm: bpy.types.Object, arm_base: Matrix, char_yaw_deg: float) -> None:
+    """Spin armature root in world-Z; skinned children follow via parenting."""
+    pivot = arm_base.translation.copy()
     rot = Matrix.Rotation(math.radians(char_yaw_deg), 4, "Z")
-    for ob in [arm, *[m for m in meshes if m.type == "MESH"]]:
-        base = bases[ob.name].copy()
-        base.translation -= pivot
-        ob.matrix_world = rot @ base
-        ob.matrix_world.translation += pivot
+    m = arm_base.copy()
+    m.translation -= pivot
+    arm.matrix_world = rot @ m
+    arm.matrix_world.translation += pivot
     bpy.context.view_layer.update()
 
 
@@ -67,7 +58,7 @@ def _render_tile(
     meshes: list,
     asset_id: str,
     char_yaw_deg: float,
-    bases: dict[str, Matrix],
+    arm_base: Matrix,
     out: Path,
     *,
     walk_pose: bool,
@@ -75,7 +66,14 @@ def _render_tile(
 ) -> None:
     os.environ["STAFF_PREVIEW_YAW_DEG"] = os.environ.get("STAFF_TURNAROUND_CAM_YAW", "30")
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "10"
-    _rotate_character_root(arm, meshes, bases, char_yaw_deg)
+    arm.matrix_world = arm_base.copy()
+    bpy.context.view_layer.update()
+    _set_arm_yaw(arm, arm_base, char_yaw_deg)
+    apply_walk_materials_to_hero(meshes, asset_id)
+    if asset_id == "staff-founder-idle":
+        founder_eye_preview_tweak(meshes)
+    else:
+        researcher_lab_coat_preview_tweak(meshes)
     if walk_pose and scene_data:
         _pose_walk(scene_data.arm, scene_data.walk_frames[1], scene_data)
     bc.render_preview(meshes, out, asset_id=asset_id, mask_meshes=meshes)
@@ -104,7 +102,7 @@ def main() -> int:
 
     arm = scene_data.arm
     meshes = scene_data.render_meshes
-    bases = _capture_turnaround_bases(arm, meshes)
+    arm_base = _capture_arm_base(arm)
     os.environ.setdefault("STAFF_TURNAROUND_CAM_YAW", "30")
 
     stem = (
@@ -126,7 +124,7 @@ def main() -> int:
             meshes,
             asset_id,
             float(char_yaw),
-            bases,
+            arm_base,
             tile,
             walk_pose=False,
             scene_data=None,
@@ -140,13 +138,16 @@ def main() -> int:
         meshes,
         asset_id,
         90.0,
-        bases,
+        arm_base,
         walk_tile,
         walk_pose=True,
         scene_data=scene_data,
     )
     tiles.append(Image.open(walk_tile).convert("RGB"))
-    _rotate_character_root(arm, meshes, bases, 0.0)
+    walk_mask = walk_tile.with_name(walk_tile.stem + ".mask.png")
+    if walk_mask.is_file():
+        panel_mask_paths.append(walk_mask)
+    arm.matrix_world = arm_base.copy()
 
     w, h = tiles[0].size
     sheet_w = w * len(tiles) + GAP * (len(tiles) - 1)

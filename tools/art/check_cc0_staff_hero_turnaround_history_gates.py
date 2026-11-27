@@ -9,14 +9,16 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 HISTORIC = (
-    ("c06d0a57", "staff-founder-turnaround"),
-    ("c06d0a57", "staff-researcher-turnaround"),
+    ("c06d0a57", "staff-founder-turnaround", "staff-founder-idle"),
+    ("c06d0a57", "staff-researcher-turnaround", "staff-researcher-idle"),
+    ("fa371474", "staff-founder-turnaround", "staff-founder-idle"),
+    ("fa371474", "staff-researcher-turnaround", "staff-researcher-idle"),
 )
 
 
 def main() -> int:
     failures = 0
-    for sha, stem in HISTORIC:
+    for sha, stem, asset in HISTORIC:
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
             tmp_path = Path(tmp.name)
         proc = subprocess.run(
@@ -32,7 +34,6 @@ def main() -> int:
         sys.path.insert(0, str(REPO / "tools" / "art"))
         from check_cc0_staff_hero_turnaround import _check
 
-        asset = "staff-founder-idle" if "founder" in stem else "staff-researcher-idle"
         ok, msg = _check(tmp_path, stem, asset)
         tmp_path.unlink(missing_ok=True)
         if ok:

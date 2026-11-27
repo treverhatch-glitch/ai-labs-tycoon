@@ -45,6 +45,7 @@ MIN_ARM_COAT_FRAC = 0.80
 MAX_FIGURE_BLUE_HUE_PX = 12
 MAX_WHITE_SHARD_FRAC = 0.02
 MIN_HEAD_SKIN_FRAC = 0.60
+MAX_HEAD_COAT_WHITE_FRAC = 0.05
 MIN_BELOW_HEM_CHARCOAL_FRAC = 0.70
 
 
@@ -406,6 +407,22 @@ def _researcher_below_hem_charcoal_frac(img: Image.Image, tile_w: int, h: int, i
     return charcoal / fig
 
 
+def _researcher_head_coat_white_frac(img: Image.Image, tile_w: int, h: int, i: int) -> tuple[float, int]:
+    x0, x1, y0, y1 = _head_face_window(tile_w, h, i)
+    coat = fig = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            fig += 1
+            if _is_lab_coat_white(r, g, b):
+                coat += 1
+    if fig < 24:
+        return 1.0, fig
+    return coat / fig, fig
+
+
 def _researcher_head_face_blue_px(img: Image.Image, tile_w: int, h: int, i: int) -> int:
     x0, x1, y0, y1 = _head_face_window(tile_w, h, i)
     blue = 0
@@ -762,6 +779,9 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             head_skin, head_n = _researcher_head_skin_frac(img, tile_w, h, i)
             if head_n >= 24 and head_skin < MIN_HEAD_SKIN_FRAC:
                 return False, f"tile{i}_head_skin_frac={head_skin:.3f} want>={MIN_HEAD_SKIN_FRAC}"
+            head_coat, _hcn = _researcher_head_coat_white_frac(img, tile_w, h, i)
+            if _hcn >= 24 and head_coat > MAX_HEAD_COAT_WHITE_FRAC:
+                return False, f"tile{i}_head_coat_white={head_coat:.3f} want<={MAX_HEAD_COAT_WHITE_FRAC}"
             hem_charcoal = _researcher_below_hem_charcoal_frac(img, tile_w, h, i)
             if hem_charcoal < MIN_BELOW_HEM_CHARCOAL_FRAC:
                 return (
