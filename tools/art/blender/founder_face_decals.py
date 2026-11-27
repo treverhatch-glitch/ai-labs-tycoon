@@ -56,21 +56,43 @@ def _make_solid_mat(name: str, rgba: tuple[float, float, float, float], rough: f
     return mat
 
 
-def _spawn_disc(
+def _ray_hit_body(
+    body: bpy.types.Object, origin: Vector, direction: Vector
+) -> tuple[Vector, Vector] | None:
+    direction = direction.normalized()
+    deps = bpy.context.evaluated_depsgraph_get()
+    for dist_mult in (1.0, 0.85, 1.1, 0.7):
+        start = origin
+        end = origin + direction * (body.dimensions.length * dist_mult + 0.5)
+        cast = (end - start).normalized()
+        hit, loc, norm, _fi, obj, _mat = bpy.context.scene.ray_cast(deps, start, cast)
+        if hit and obj == body:
+            return loc, norm
+    return None
+
+
+def _parent_eye_disc(
     name: str,
     center_w: Vector,
-    radius_xy: float,
-    thickness: float,
+    face_fwd: Vector,
+    radius: float,
+    proud: float,
     mat: bpy.types.Material,
     parent: bpy.types.Object,
 ) -> bpy.types.Object:
     bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, location=(0.0, 0.0, 0.0))
     ob = bpy.context.active_object
     ob.name = name
-    ob.scale = (radius_xy, thickness, radius_xy)
+    thick = radius * 0.55
+    ob.scale = (radius, thick, radius)
     bpy.ops.object.transform_apply(scale=True)
-    ob.location = parent.matrix_world.inverted() @ center_w
     ob.parent = parent
+    f_local = (parent.matrix_world.inverted().to_3x3() @ face_fwd).normalized()
+    ob.rotation_mode = "QUATERNION"
+    ob.rotation_quaternion = f_local.to_track_quat("Y", "Z")
+    center_local = parent.matrix_world.inverted() @ center_w
+    proud_local = ob.rotation_quaternion @ Vector((0.0, proud, 0.0))
+    ob.location = center_local + proud_local
     ob.matrix_parent_inverse = parent.matrix_world.inverted()
     ob.data.materials.clear()
     ob.data.materials.append(mat)
@@ -79,26 +101,36 @@ def _spawn_disc(
 
 
 def spawn_founder_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
-    """Two near-black #1a1a1a discs, ~8% head width, proud on face shell."""
+    """Two #1a1a1a discs on face shell via raycast (same forward as 0° diagnostic)."""
     _purge_face_objects()
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
     lm = compute_landmarks(body)
-    fwd = toe_forward([body])
+    fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
     f_xy, right = _fwd_basis(fwd)
     eye_z = lm.zmin + lm.span * lm.h_eye
-    proud = head_w * 0.025
-    shell = head_w * 0.10
+    proud = head_w * 0.015
     sep = head_w * 0.20
     radius = head_w * 0.04
-    thick = head_w * 0.024
+    cast_in = -f_xy
     eye_mat = _make_solid_mat("FounderEyeMesh", FOUNDER_EYE_RGBA, 0.88)
     created: list[bpy.types.Object] = []
+    eye_anchor = hc + Vector((0.0, 0.0, eye_z - hc.z))
+    shoot_dist = max(head_w * 0.55, 0.12)
     for name, sign in zip(EYE_OBJECT_NAMES, (-1.0, 1.0), strict=True):
-        center = hc + f_xy * (shell + proud) + right * (sep * sign)
-        center.z = eye_z
-        created.append(_spawn_disc(name, center, radius, thick, eye_mat, body))
+        lateral = right * (sep * sign)
+        origin = eye_anchor + lateral + f_xy * shoot_dist
+        hit = _ray_hit_body(body, origin, cast_in)
+        if hit is None:
+            center = eye_anchor + lateral + f_xy * (head_w * 0.11 + proud)
+        else:
+            loc, _norm = hit
+            center = loc - f_xy * proud
+            center.z = eye_z
+        created.append(
+            _parent_eye_disc(name, center, f_xy, radius, proud, eye_mat, body)
+        )
     return created
 
 

@@ -191,6 +191,14 @@ def _region_for_point(
             return SLOT_HAND if h < lm.h_shoe + 0.12 else SLOT_SHIRT
         return SLOT_JEANS
 
+    chin_lo = lm.h_neck - 0.07
+    chin_hi = lm.h_neck + 0.025
+    if chin_lo <= h <= chin_hi:
+        collar = y_face > 0.08 and lat < torso_hw * 0.55 and h >= lm.h_neck - 0.015
+        if collar:
+            return SLOT_SHIRT
+        return SLOT_SKIN
+
     if h > lm.h_neck:
         head_pts = [p for p in all_ws if (p.z - lo) / span > lm.h_neck]
         head_top = max((p.z - lo) / span for p in head_pts) if head_pts else 0.97
@@ -317,7 +325,7 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
                 head_w=head_w,
             )
         )
-    _apply_arm_vertex_groups(bm, slots, ob, lm, force_override=True)
+    _apply_arm_vertex_groups(bm, slots, ob, lm, ws, hc, fwd, force_override=True)
     _grow_arm_from_shoulders(bm, slots, ob, lm, ws, hc, fwd)
     _grow_arm_regions(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
@@ -359,6 +367,9 @@ def _apply_arm_vertex_groups(
     slots: list[int],
     ob: bpy.types.Object,
     lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
     *,
     force_override: bool = False,
 ) -> None:
@@ -392,18 +403,26 @@ def _apply_arm_vertex_groups(
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_shoe + 0.02 or h > lm.h_neck + 0.05:
+        if h < lm.h_shoe + 0.02 or h > lm.h_neck + 0.06:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat <= thw + span * 0.01:
+            if slots[face.index] == SLOT_HAND:
+                slots[face.index] = SLOT_SHIRT
             continue
         armish = hand + shirt
-        if armish < 0.08 and not force_override:
+        if armish < 0.12 and not force_override:
             continue
         if leg > armish and armish < 0.25:
             continue
+        if hand < 0.18 and shirt < 0.15:
+            continue
         if h < hand_top:
-            slots[face.index] = SLOT_HAND if hand >= shirt * 0.38 else SLOT_SHIRT
+            slots[face.index] = SLOT_HAND if hand >= shirt * 0.45 else SLOT_SHIRT
         elif shirt >= hand * 0.3 or shirt > 0.12:
             slots[face.index] = SLOT_SHIRT
-        elif hand > 0.1:
+        elif hand > 0.15:
             slots[face.index] = SLOT_HAND
 
 

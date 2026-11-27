@@ -71,6 +71,7 @@ python3 tools/art/check_cc0_staff_founder_pose.py
 python3 tools/art/check_cc0_staff_founder_arm_pose.py
 python3 tools/art/check_cc0_staff_face_visible.py
 python3 tools/art/check_cc0_staff_founder_eye_blobs.py
+python3 tools/art/check_cc0_staff_founder_eyes_in_head.py
 python3 tools/art/check_cc0_staff_founder_preview_eyes.py
 python3 tools/art/check_cc0_staff_founder_eye_project.py
 python3 tools/art/check_cc0_staff_founder_preview_centered.py
