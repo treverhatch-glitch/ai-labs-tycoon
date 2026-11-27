@@ -13,6 +13,9 @@ PREVIEW = REPO / "docs/art/previews"
 GREY = (150, 150, 150)
 TORSO_RGB_TOL = 32.0
 MIN_TILE_SPREAD = 0.45
+MIN_HAND_BELOW_SHOULDER_PX = 28
+MAX_SHOULDER_HAND_Y_RATIO = 1.08
+LEG_FOREIGN_RGB_TOL = 36.0
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -35,6 +38,54 @@ def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[f
         sum(bs) / len(bs),
         len(rs),
     )
+
+
+def _leg_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
+    x0 = i * tile_w + tile_w // 6
+    x1 = (i + 1) * tile_w - tile_w // 6
+    y0 = (3 * h) // 5
+    y1 = h - h // 10
+    return x0, x1, y0, y1
+
+
+def _arm_windows(tile_w: int, h: int, i: int) -> tuple[tuple[int, int, int, int], tuple[int, int, int, int]]:
+    x0 = i * tile_w + tile_w // 8
+    x1 = (i + 1) * tile_w - tile_w // 8
+    shoulder = (x0, x1, h // 5, h // 3)
+    hand = (x0, x1, h // 2, int(h * 0.72))
+    return shoulder, hand
+
+
+def _mean_non_grey_y(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> float | None:
+    ys: list[int] = []
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if abs(r - GREY[0]) < 10 and abs(g - GREY[1]) < 10 and abs(b - GREY[2]) < 10:
+                continue
+            ys.append(y)
+    if len(ys) < 40:
+        return None
+    return sum(ys) / len(ys)
+
+
+def _leg_foreign_pixels(img: Image.Image, x0: int, x1: int, y0: int, y1: int, asset_id: str) -> int:
+    """Skin/tee bleed inside leg silhouette (mesh tear heuristic)."""
+    foreign = 0
+    total = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))
+            if abs(r - GREY[0]) < 10 and abs(g - GREY[1]) < 10 and abs(b - GREY[2]) < 10:
+                continue
+            total += 1
+            if asset_id == "staff-founder-idle":
+                if r > 145 and g > 105 and b > 85 and r > b + 8:
+                    foreign += 1
+            else:
+                if r > 152 and g > 118 and b < 105 and r > g + 18:
+                    foreign += 1
+    return foreign if total > 60 else 0
 
 
 def _torso_window(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
@@ -66,6 +117,17 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
     tile_means: list[float] = []
     torso_rgb: list[tuple[float, float, float]] = []
     for i in range(4):
+        sh_win, hand_win = _arm_windows(tile_w, h, i)
+        sh_y = _mean_non_grey_y(img, *sh_win)
+        hand_y = _mean_non_grey_y(img, *hand_win)
+        if sh_y is None or hand_y is None:
+            return False, f"tile{i}_arm_band_empty"
+        if hand_y - sh_y < MIN_HAND_BELOW_SHOULDER_PX:
+            return False, f"tile{i}_arm_tpose hand_y={hand_y:.1f} sh_y={sh_y:.1f}"
+        lx0, lx1, ly0, ly1 = _leg_window(tile_w, h, i)
+        foreign = _leg_foreign_pixels(img, lx0, lx1, ly0, ly1, asset_id)
+        if foreign > 24:
+            return False, f"tile{i}_leg_mesh_tear foreign_px={foreign}"
         x0, x1, y0, y1 = _torso_window(tile_w, h, i)
         mean_r, mean_g, mean_b, n = _tile_stats(img, x0, x1, y0, y1)
         if n < 80:

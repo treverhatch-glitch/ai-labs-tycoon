@@ -12,9 +12,15 @@ import kenney_founder_lib as kf
 
 RUN_FBX = kf.INCOMING / "kenney/animated-characters-3/Animations/run.fbx"
 KENNEY_RUN_LICENSE = "tools/art/cc0/manifest.json (Kenney Animated Characters 3)"
-ARM_BLEND_BONES = ("LeftArm", "RightArm", "LeftForeArm", "RightForeArm")
-# Legacy field retained for WalkHeroScene; apply_walk_arm_drop uses euler add on Run pose.
-IDLE_ARM_BLEND = 0.0
+WALK_ARM_BONES = (
+    "LeftShoulder",
+    "LeftArm",
+    "LeftForeArm",
+    "RightShoulder",
+    "RightArm",
+    "RightForeArm",
+)
+ARM_BLEND_BONES = WALK_ARM_BONES
 
 
 @dataclass
@@ -26,6 +32,7 @@ class WalkHeroScene:
     walk_frames: list[int]
     labels: tuple[str, str, str, str]
     idle_arm_quats: dict[str, Quaternion]
+    bind_arm_quats: dict[str, Quaternion]
 
 
 def _purge_dup_armature() -> None:
@@ -57,19 +64,42 @@ def _stance_foot_min_z(arm: bpy.types.Object, side: str) -> float:
     return min(zs) if zs else 1e9
 
 
+def reground_walk_contact(
+    arm: bpy.types.Object,
+    mesh: bpy.types.Object,
+    scene: bpy.types.Scene,
+    frame: int,
+    bind_arm_quats: dict[str, Quaternion],
+    idle_arm_quats: dict[str, Quaternion],
+) -> float:
+    scene.frame_set(frame)
+    apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
+    mn = min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right"))
+    if mn > 1e8:
+        return 0.0
+    dz = -mn
+    if abs(dz) < 1e-6:
+        return 0.0
+    arm.location.z += dz
+    mesh.location.z += dz
+    bpy.context.view_layer.update()
+    return dz
+
+
 def ground_walk_cycle(
     arm: bpy.types.Object,
     mesh: bpy.types.Object,
     scene: bpy.types.Scene,
     start: int,
     end: int,
+    bind_arm_quats: dict[str, Quaternion],
     idle_arm_quats: dict[str, Quaternion],
 ) -> float:
     """Shift hero so lowest foot (idle arms blended) over the clip rests on z=0."""
     mn = 1e9
     for fr in range(start, end + 1):
         scene.frame_set(fr)
-        apply_idle_arm_blend(arm, idle_arm_quats)
+        apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
         for side in ("Left", "Right"):
             mn = min(mn, _stance_foot_min_z(arm, side))
     if mn > 1e8:
@@ -88,13 +118,14 @@ def _sample_feet(
     scene: bpy.types.Scene,
     start: int,
     end: int,
+    bind_arm_quats: dict[str, Quaternion] | None,
     idle_arm_quats: dict[str, Quaternion] | None,
 ) -> list[tuple[int, float, float]]:
     rows: list[tuple[int, float, float]] = []
     for fr in range(start, end + 1):
         scene.frame_set(fr)
-        if idle_arm_quats:
-            apply_idle_arm_blend(arm, idle_arm_quats)
+        if idle_arm_quats and bind_arm_quats:
+            apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
         else:
             bpy.context.view_layer.update()
         lz = _stance_foot_min_z(arm, "Left")
@@ -109,6 +140,8 @@ def _pick_passing(
   *,
   stance_max_m: float,
 ) -> int:
+    if not rows:
+        return 0
     best_fr = rows[0][0]
     best_score = -1.0
     for fr, lz, rz in rows:
@@ -127,17 +160,52 @@ def _pick_passing(
     return best_fr
 
 
+def _ankle_spread_x(arm: bpy.types.Object) -> float:
+    lf = _bone_world_simple(arm, "LeftFoot")
+    rf = _bone_world_simple(arm, "RightFoot")
+    if not lf or not rf:
+        return 0.0
+    return abs(lf.x - rf.x)
+
+
+def _bone_world_simple(arm: bpy.types.Object, name: str):
+    pb = arm.pose.bones.get(name)
+    if not pb:
+        return None
+    return arm.matrix_world @ pb.head
+
+
 def pick_walk_contact_frames(
     arm: bpy.types.Object,
     scene: bpy.types.Scene,
     start: int,
     end: int,
+    bind_arm_quats: dict[str, Quaternion] | None = None,
     idle_arm_quats: dict[str, Quaternion] | None = None,
 ) -> list[int]:
     """Contact L → passing → contact R → passing (locomotion subset of Kenney Run)."""
-    rows = _sample_feet(arm, scene, start, end, idle_arm_quats)
-    contact_l = min(rows, key=lambda t: t[1])[0]
-    contact_r = min(rows, key=lambda t: t[2])[0]
+    rows = _sample_feet(arm, scene, start, end, bind_arm_quats, idle_arm_quats)
+
+    def _pick_contact(side: str, exclude: set[int]) -> int:
+        col = 1 if side == "Left" else 2
+        best_z = min(t[col] for t in rows)
+        cands = [t for t in rows if t[col] <= best_z + 0.025 and t[0] not in exclude]
+        if not cands:
+            cands = sorted(rows, key=lambda t: t[col])[:4]
+        best_fr = cands[0][0]
+        best_spread = -1.0
+        for fr, *_ in cands:
+            scene.frame_set(fr)
+            if bind_arm_quats and idle_arm_quats:
+                apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
+            sp = _ankle_spread_x(arm)
+            if sp > best_spread:
+                best_spread = sp
+                best_fr = fr
+        return best_fr
+
+    contact_l = _pick_contact("Left", set())
+    contact_r = _pick_contact("Right", {contact_l})
     if contact_l == contact_r:
         quarter = max(1, (end - start) // 4)
         return [start, start + quarter, start + 2 * quarter, start + 3 * quarter]
@@ -162,9 +230,18 @@ def pick_walk_contact_frames(
     for i, fr in enumerate(frames):
         if fr == frames[0] and i > 0:
             frames[i] = _pick_passing(rows, exclude=set(frames[:i]), stance_max_m=0.22)
+    frames = [fr for fr in frames if fr > start or fr == contact_l]
+    if frames and frames[1] == start:
+        passing_1 = _pick_passing(rows, exclude={contact_l, contact_r}, stance_max_m=0.18)
+        if passing_1 not in (contact_l, contact_r):
+            frames[1] = passing_1
     if len(set(frames)) < 4:
         quarter = max(1, (end - start) // 4)
         frames = [start + quarter * i for i in range(4)]
+    if frames and _ankle_spread_x(arm) < 0.08:
+        scene.frame_set(frames[0])
+        if bind_arm_quats and idle_arm_quats:
+            apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
     if max(frames) - min(frames) < 6:
         left_sorted = sorted(rows, key=lambda t: t[1])
         right_sorted = sorted(rows, key=lambda t: t[2])
@@ -185,47 +262,132 @@ def pick_walk_contact_frames(
     return frames
 
 
-def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
+def _capture_arm_bind(arm: bpy.types.Object) -> dict[str, Quaternion]:
     out: dict[str, Quaternion] = {}
-    for name in ARM_BLEND_BONES:
+    for name in WALK_ARM_BONES:
         pb = arm.pose.bones.get(name)
         if pb:
             out[name] = pb.rotation_quaternion.copy()
     return out
 
 
-def apply_walk_arm_drop(arm: bpy.types.Object, *_args, **_kwargs) -> None:
-    """Additive Kenney Run arm euler fix — keeps run swing, drops elbows off T-pose."""
-    bpy.context.view_layer.objects.active = arm
-    for side in ("Left", "Right"):
-        ua = arm.pose.bones.get(f"{side}Arm")
-        fa = arm.pose.bones.get(f"{side}ForeArm")
-        if not ua or not fa:
+def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
+    out: dict[str, Quaternion] = {}
+    for name in WALK_ARM_BONES:
+        pb = arm.pose.bones.get(name)
+        if pb:
+            out[name] = pb.rotation_quaternion.copy()
+    return out
+
+
+def apply_walk_arm_retarget(
+    arm: bpy.types.Object,
+    bind: dict[str, Quaternion],
+    idle: dict[str, Quaternion],
+) -> None:
+    """Run swing delta on Kenney bind pose, applied over idle arm hang (depsgraph pose)."""
+    for name in WALK_ARM_BONES:
+        pb = arm.pose.bones.get(name)
+        if not pb or name not in bind or name not in idle:
             continue
-        ua.rotation_mode = "XYZ"
-        fa.rotation_mode = "XYZ"
-        if side == "Left":
-            e = ua.rotation_euler.copy()
-            e[2] += math.radians(75.0)
-            ua.rotation_euler = e
-            e = fa.rotation_euler.copy()
-            e[2] += math.radians(12.0)
-            fa.rotation_euler = e
-        else:
-            e = ua.rotation_euler.copy()
-            e[0] += math.radians(60.0)
-            ua.rotation_euler = e
-            e = fa.rotation_euler.copy()
-            e[0] += math.radians(12.0)
-            fa.rotation_euler = e
-        ua.rotation_mode = "QUATERNION"
-        fa.rotation_mode = "QUATERNION"
+        pb.rotation_mode = "QUATERNION"
+        q_run = pb.rotation_quaternion.copy()
+        swing = q_run @ bind[name].inverted()
+        q_pose = (swing @ idle[name]).normalized()
+        pb.rotation_quaternion = q_pose.slerp(idle[name], 0.25)
     bpy.context.view_layer.update()
 
 
-def apply_idle_arm_blend(arm: bpy.types.Object, idle: dict[str, Quaternion] | None = None, blend: float = 0.0) -> None:
-    _ = idle, blend
-    apply_walk_arm_drop(arm)
+def apply_idle_arm_blend(
+    arm: bpy.types.Object,
+    idle: dict[str, Quaternion] | None = None,
+    bind: dict[str, Quaternion] | None = None,
+    blend: float = 0.0,
+) -> None:
+    _ = blend
+    if idle and bind:
+        apply_walk_arm_retarget(arm, bind, idle)
+
+
+def _skin_mesh_to_armature(
+    child: bpy.types.Object,
+    body: bpy.types.Object,
+    arm: bpy.types.Object,
+) -> None:
+    """Parented coat/hair: copy nearest-body vertex weights so the mesh deforms with the walk rig."""
+    if child.type != "MESH" or not body.data.vertices:
+        return
+    if child.parent:
+        world = child.matrix_world.copy()
+        child.parent = None
+        child.matrix_world = world
+    for mod in list(child.modifiers):
+        if mod.type == "ARMATURE":
+            child.modifiers.remove(mod)
+    mod = child.modifiers.new("WalkArmature", "ARMATURE")
+    mod.object = arm
+    import mathutils.kdtree as kdtree
+
+    kd = kdtree.KDTree(len(body.data.vertices))
+    for i, v in enumerate(body.data.vertices):
+        kd.insert(body.matrix_world @ v.co, i)
+    kd.balance()
+    vg_map: dict[str, bpy.types.VertexGroup] = {}
+    for vg in body.vertex_groups:
+        cg = child.vertex_groups.get(vg.name) or child.vertex_groups.new(name=vg.name)
+        vg_map[vg.name] = cg
+    for v in child.data.vertices:
+        co = child.matrix_world @ v.co
+        _co, idx, _dist = kd.find(co)
+        bw: dict[str, float] = {}
+        for g in body.data.vertices[idx].groups:
+            if g.weight < 1e-5:
+                continue
+            if 0 <= g.group < len(body.vertex_groups):
+                bw[body.vertex_groups[g.group].name] = g.weight
+        for name, w in bw.items():
+            vg_map[name].add([v.index], w, "REPLACE")
+    bpy.context.view_layer.update()
+
+
+def bake_evaluated_render_meshes(
+    sources: list[bpy.types.Object],
+) -> tuple[list[bpy.types.Object], list[bpy.types.Object]]:
+    """Meshes from depsgraph-evaluated geometry (matches rendered pose)."""
+    deps = bpy.context.evaluated_depsgraph_get()
+    deps.update()
+    baked: list[bpy.types.Object] = []
+    cleanup: list[bpy.types.Object] = []
+    for ob in sources:
+        if ob.type != "MESH":
+            baked.append(ob)
+            continue
+        eval_ob = ob.evaluated_get(deps)
+        me = bpy.data.meshes.new_from_object(eval_ob, depsgraph=deps)
+        dup = bpy.data.objects.new(f"{ob.name.split('.')[0]}_WalkBake", me)
+        dup.matrix_world = eval_ob.matrix_world.copy()
+        dup.data.materials.clear()
+        for slot in ob.material_slots:
+            dup.data.materials.append(slot.material)
+        bpy.context.collection.objects.link(dup)
+        ob.hide_render = True
+        baked.append(dup)
+        cleanup.append(dup)
+    return baked, cleanup
+
+
+def dispose_baked_render_meshes(
+    sources: list[bpy.types.Object],
+    cleanup: list[bpy.types.Object],
+) -> None:
+    for ob in sources:
+        if ob.type == "MESH":
+            ob.hide_render = False
+    for dup in cleanup:
+        me = dup.data
+        bpy.data.objects.remove(dup, do_unlink=True)
+        if me.users == 0:
+            bpy.data.meshes.remove(me)
 
 
 def _purge_fbx_import_extras(keep: set[str]) -> None:
@@ -260,6 +422,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
 
     kf._clear_scene()
     arm, mesh = kf._import_rigged()
+    bind_arms = _capture_arm_bind(arm)
     kf._ground_rig(arm, mesh)
     kf._pose_kenney_idle_arms(arm)
     idle_arms = _capture_arm_idle(arm)
@@ -278,8 +441,9 @@ def build_founder_walk_scene() -> WalkHeroScene:
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end
-    ground_walk_cycle(arm, mesh, scene, start, end, idle_arms)
-    walk_frames = pick_walk_contact_frames(arm, scene, start, end, idle_arms)
+    ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
+    walk_frames = pick_walk_contact_frames(arm, scene, start, end, bind_arms, idle_arms)
+    ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     labels = ("contact_L", "passing", "contact_R", "passing")
     return WalkHeroScene(
         arm=arm,
@@ -289,6 +453,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
         walk_frames=walk_frames,
         labels=labels,
         idle_arm_quats=idle_arms,
+        bind_arm_quats=bind_arms,
     )
 
 
@@ -302,8 +467,9 @@ def build_researcher_walk_scene() -> WalkHeroScene:
 
     kf._clear_scene()
     arm, mesh = kf._import_rigged()
-    _pose_researcher_idle_arms(arm)
+    bind_arms = _capture_arm_bind(arm)
     kf._ground_rig(arm, mesh)
+    kf._pose_kenney_idle_arms(arm)
     idle_arms = _capture_arm_idle(arm)
     bpy.context.view_layer.update()
     apply_researcher_materials(mesh)
@@ -311,6 +477,8 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     eyes = spawn_researcher_eye_meshes(mesh)
     coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
+    _skin_mesh_to_armature(coat, mesh, arm)
+    _skin_mesh_to_armature(hair, mesh, arm)
     extras = [coat, hair]
     keep = {
         arm.name.split(".")[0],
@@ -323,8 +491,9 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end
-    ground_walk_cycle(arm, mesh, scene, start, end, idle_arms)
-    walk_frames = pick_walk_contact_frames(arm, scene, start, end, idle_arms)
+    ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
+    walk_frames = pick_walk_contact_frames(arm, scene, start, end, bind_arms, idle_arms)
+    ground_walk_cycle(arm, mesh, scene, start, end, bind_arms, idle_arms)
     labels = ("contact_L", "passing", "contact_R", "passing")
     return WalkHeroScene(
         arm=arm,
@@ -334,6 +503,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         walk_frames=walk_frames,
         labels=labels,
         idle_arm_quats=idle_arms,
+        bind_arm_quats=bind_arms,
     )
 
 

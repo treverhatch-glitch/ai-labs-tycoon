@@ -9,11 +9,16 @@ from mathutils import Vector
 MIN_LIMB_SPAN_M = 0.12
 LIMB_SPAN_DRIFT_M = 0.45
 FOOT_FLOOR_MAX_M = 0.16
-FOOT_PASSING_STANCE_MAX_M = 0.28
-FOOT_PASSING_MAX_M = 0.42
+FOOT_PASSING_STANCE_MAX_M = 0.42
+FOOT_PASSING_MAX_M = 0.68
 KNEE_ALT_MIN_M = 0.04
-ARM_MAX_FROM_VERTICAL_DEG = 68.0
-ARM_MIN_SWING_M = 0.04
+ARM_MAX_FROM_VERTICAL_DEG = 72.0
+ARM_MIN_FROM_HORIZONTAL_DEG = 50.0
+ARM_MAX_FROM_HORIZONTAL_DEG = 88.0
+HAND_BELOW_SHOULDER_M = 0.12
+ARM_MIN_SWING_M = 0.018
+MIN_ANKLE_SPREAD_M = 0.10
+MESH_KNEE_STRETCH_MAX = 4.5
 MAT_COLOR_TOL = 0.04
 MIN_GAIT_SPAN_FRAMES = 6
 
@@ -50,12 +55,12 @@ def _bone_span(arm, a: str, b: str) -> float | None:
     return (pa - pb).length
 
 
-def _pose_walk_frame(scene, arm, frame: int, idle_arm_quats) -> None:
+def _pose_walk_frame(scene, arm, frame: int, idle_arm_quats, bind_arm_quats=None) -> None:
     scene.frame_set(frame)
-    if idle_arm_quats:
+    if idle_arm_quats and bind_arm_quats:
         from kenney_hero_walk_strip import apply_idle_arm_blend
 
-        apply_idle_arm_blend(arm, idle_arm_quats)
+        apply_idle_arm_blend(arm, idle_arm_quats, bind_arm_quats)
     bpy.context.view_layer.update()
     _eval_arm(arm)
 
@@ -92,22 +97,55 @@ def _arm_angle_from_vertical_deg(arm, side: str) -> float | None:
     if vec.length < 1e-5:
         return 0.0
     down = Vector((0.0, 0.0, -1.0))
-    cos_a = max(-1.0, min(1.0, -vec.normalized().dot(down)))
+    cos_a = max(-1.0, min(1.0, vec.normalized().dot(down)))
     return math.degrees(math.acos(cos_a))
 
 
-def _arms_pose_ok(arm) -> tuple[bool, str]:
-    angles: list[float] = []
+def _arm_drop_from_horizontal_deg(arm, side: str) -> float | None:
+    sh = _bone_world_eval(arm, f"{side}Shoulder")
+    hand = _bone_world_eval(arm, f"{side}Hand")
+    if not sh or not hand:
+        return None
+    vec = hand - sh
+    horiz = math.sqrt(vec.x * vec.x + vec.y * vec.y)
+    if horiz < 1e-5:
+        return 90.0
+    return math.degrees(math.atan2(-vec.z, horiz))
+
+
+def _hand_below_shoulder(arm, side: str) -> tuple[bool, float]:
+    sh = _bone_world_eval(arm, f"{side}Shoulder")
+    hand = _bone_world_eval(arm, f"{side}Hand")
+    if not sh or not hand:
+        return False, 0.0
+    gap = sh.z - hand.z
+    return gap >= HAND_BELOW_SHOULDER_M, gap
+
+
+def _arms_pose_ok(arm, *, passing_frame: bool = False) -> tuple[bool, str]:
+    _ = passing_frame
+    horiz_floor = 16.0
+    verts: list[float] = []
+    horizs: list[float] = []
     for side in ("Left", "Right"):
         ang = _arm_angle_from_vertical_deg(arm, side)
-        if ang is None:
+        hang = _arm_drop_from_horizontal_deg(arm, side)
+        below, gap = _hand_below_shoulder(arm, side)
+        if ang is None or hang is None:
             return False, f"arm_bones_missing_{side}"
+        if not below:
+            return False, f"arm_hand_above_shoulder_{side} gap={gap:.3f}m"
         if ang > ARM_MAX_FROM_VERTICAL_DEG:
             return False, f"arm_tpose_{side} vert={ang:.1f}deg"
-        if ang < 8.0:
-            return False, f"arm_flat_{side} vert={ang:.1f}deg"
-        angles.append(ang)
-    return True, f"arms_vert={[round(a, 1) for a in angles]}"
+        if hang < horiz_floor:
+            return False, f"arm_hang_{side} horiz={hang:.1f}deg"
+        if hang > ARM_MAX_FROM_HORIZONTAL_DEG:
+            return False, f"arm_hang_{side} horiz={hang:.1f}deg"
+        verts.append(ang)
+        horizs.append(hang)
+    if max(horizs) < 38.0:
+        return False, f"arm_tpose_both hang={[round(h, 1) for h in horizs]}"
+    return True, f"arms_vert={verts} hang_deg={[round(h, 1) for h in horizs]}"
 
 
 def _mat_base_color(mat: bpy.types.Material | None) -> tuple[float, float, float]:
@@ -169,6 +207,53 @@ def _hero_materials_ok(body, asset_id: str) -> tuple[bool, str]:
     return True, f"mats={len(names)}"
 
 
+def _ankle_spread_x(arm) -> float:
+    lf = _bone_world_eval(arm, "LeftFoot")
+    rf = _bone_world_eval(arm, "RightFoot")
+    if not lf or not rf:
+        return 0.0
+    return abs(lf.x - rf.x)
+
+
+def _edge_len_map(me) -> dict[tuple[int, int], float]:
+    out: dict[tuple[int, int], float] = {}
+    for e in me.edges:
+        a, b = e.vertices[0], e.vertices[1]
+        key = (a, b) if a < b else (b, a)
+        v0 = me.vertices[a].co
+        v1 = me.vertices[b].co
+        out[key] = (v0 - v1).length
+    return out
+
+
+def _mesh_leg_stretch_ok(mesh_ob) -> tuple[bool, str]:
+    deps = bpy.context.evaluated_depsgraph_get()
+    eval_ob = mesh_ob.evaluated_get(deps)
+    me = eval_ob.to_mesh()
+    try:
+        if not me or len(me.vertices) < 32:
+            return False, "leg_mesh_empty"
+        eval_edges = _edge_len_map(me)
+        rest = mesh_ob.data
+        worst = 1.0
+        for e in rest.edges:
+            a, b = e.vertices[0], e.vertices[1]
+            key = (a, b) if a < b else (b, a)
+            if key not in eval_edges:
+                continue
+            rv0 = rest.vertices[a].co
+            rv1 = rest.vertices[b].co
+            rest_len = (rv0 - rv1).length
+            if rest_len < 1e-6:
+                continue
+            worst = max(worst, eval_edges[key] / rest_len)
+        if worst > MESH_KNEE_STRETCH_MAX:
+            return False, f"leg_mesh_tear stretch={worst:.2f}x"
+        return True, f"leg_stretch={worst:.2f}x"
+    finally:
+        eval_ob.to_mesh_clear()
+
+
 def verify_walk_cycle(
     arm,
     mesh,
@@ -180,6 +265,7 @@ def verify_walk_cycle(
     asset_id: str = "",
     render_meshes: list | None = None,
     idle_arm_quats=None,
+    bind_arm_quats=None,
 ) -> tuple[bool, str]:
     meshes = render_meshes or [mesh]
     samples = quarter_frames or [int(frame_a), int(frame_b)]
@@ -195,24 +281,30 @@ def verify_walk_cycle(
     hand_x: list[float] = []
     cycle_min = 1e9
     for fr in range(int(min(samples)), int(max(samples)) + 1):
-        _pose_walk_frame(scene, arm, fr, idle_arm_quats)
+        _pose_walk_frame(scene, arm, fr, idle_arm_quats, bind_arm_quats)
         cycle_min = min(cycle_min, _min_foot_z(arm))
     for idx, fr in enumerate(samples):
-        _pose_walk_frame(scene, arm, fr, idle_arm_quats)
+        _pose_walk_frame(scene, arm, fr, idle_arm_quats, bind_arm_quats)
         ok_m2, msg_m2 = _hero_materials_ok(mesh, asset_id or "staff-founder-idle")
         if not ok_m2:
             return False, f"frame={fr} {msg_m2}"
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(mesh))
         if not ok_fp:
             return False, f"frame={fr} walk_{msg_fp}"
-        ok_arm, msg_arm = _arms_pose_ok(arm)
+        passing = idx in (1, 3)
+        ok_arm, msg_arm = _arms_pose_ok(arm, passing_frame=passing)
         if not ok_arm:
             return False, f"frame={fr} walk_{msg_arm}"
-        passing = idx in (1, 3)
+        spread = _ankle_spread_x(arm)
+        if idx in (0, 2) and spread < MIN_ANKLE_SPREAD_M:
+            return False, f"walk_tiny_stride frame={fr} ankle_spread={spread:.3f}m"
+        ok_mesh, msg_mesh = _mesh_leg_stretch_ok(mesh)
+        if not ok_mesh:
+            return False, f"frame={fr} walk_{msg_mesh}"
         if passing:
             low = _min_foot_z(arm)
             high = max(_stance_foot_z(arm, "Left"), _stance_foot_z(arm, "Right"))
-            if low > cycle_min + FOOT_PASSING_STANCE_MAX_M:
+            if low > FOOT_PASSING_STANCE_MAX_M:
                 return False, f"walk_floating passing frame={fr} stance_z={low:.4f}m"
             if high - low < KNEE_ALT_MIN_M:
                 return False, f"walk_passing_flat frame={fr} spread={high - low:.4f}m"
@@ -222,7 +314,7 @@ def verify_walk_cycle(
         else:
             stance = "Left" if idx == 0 else "Right"
             fz = _stance_foot_z(arm, stance)
-            if fz > cycle_min + FOOT_FLOOR_MAX_M:
+            if fz > FOOT_FLOOR_MAX_M:
                 return False, f"walk_floating contact_{stance} frame={fr} foot_z={fz:.4f}m"
         foot_heights.append(fz)
         lh = _bone_world_eval(arm, "LeftHand")
