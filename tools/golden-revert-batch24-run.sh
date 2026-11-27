@@ -7,15 +7,15 @@ LOCK="${TMPDIR:-/tmp}/b24-golden-revert.lock"
 exec 9>"$LOCK"
 flock -x -w 600 9
 exec 9>&-
-# Skip restore-golden-tip until batch 24 lands on HEAD (restore would drop uncommitted era hooks).
+bash "$REPO/tools/restore-golden-tip.sh" >/dev/null
 DOTNET="${DOTNET:-/home/ubuntu/.dotnet/dotnet}"
 export PATH="${PATH:-/home/ubuntu/.dotnet:/usr/bin}"
 (cd "$REPO/tools/SimTests" && "$DOTNET" build -v q -nologo) || true
 
 declare -A GOLDEN
-GOLDEN[170]=d74a178ac699273c2bb60a35cfb4425b5afaefdfabf1c7719027c7c6a81061cb
-GOLDEN[171]=d74a178ac699273c2bb60a35cfb4425b5afaefdfabf1c7719027c7c6a81061cb
-GOLDEN[172]=d74a178ac699273c2bb60a35cfb4425b5afaefdfabf1c7719027c7c6a81061cb
+GOLDEN[170]=457f635558246834f42861db924ea9c625bbcd7ce8397754d46cacb9e037b492
+GOLDEN[171]=4a24bdf5cd20e4a9fd4fc47cfae59e27af00e4c4b1600b8dc83b003d2c15ed6b
+GOLDEN[172]=1b2e757dfb13bb29aa6e3c761d84944510c438bd799eba3e049625f264ee110f
 
 PREV=$((N - 1))
 BK="/tmp/b24-rev-bak-$N"
