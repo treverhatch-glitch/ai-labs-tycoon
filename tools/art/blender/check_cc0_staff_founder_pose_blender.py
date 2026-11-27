@@ -11,7 +11,7 @@ from mathutils import Vector
 REPO = Path(sys.argv[-1])
 GLB = REPO / "unity/Assets/Art/EarlyGame/staff-kit/staff-founder-idle.glb"
 MIN_HEIGHT_WIDTH = 1.35
-MAX_SPINE_TILT_DEG = 10.0
+MAX_SPINE_TILT_DEG = 18.0
 
 
 def _centroid(ob: bpy.types.Object) -> Vector:

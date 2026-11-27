@@ -15,7 +15,7 @@ FIXTURES_HEADSTAND = (
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e164f581.png",
 )
 VISUAL_FAIL_FIXTURES = (
-    REPO / "tools/art/fixtures/staff-founder-idle-chibi-68baa4d7.png",
+    REPO / "tools/art/fixtures/staff-founder-idle-procedural-fb1d6fee.png",
     REPO / "tools/art/fixtures/staff-founder-idle-jumpsuit-01e11dda.png",
     REPO / "tools/art/fixtures/staff-founder-idle-cyan-face-fb35ba42.png",
     REPO / "tools/art/fixtures/staff-founder-idle-headstand-e164f581.png",

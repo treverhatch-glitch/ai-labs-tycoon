@@ -198,7 +198,7 @@ def _height_span_z(ob: bpy.types.Object) -> tuple[float, float, float]:
 def _scale_character(src: bpy.types.Object) -> float:
     lo, hi, span = _height_span_z(src)
     scale = TARGET_HEIGHT / span
-    src.scale = (scale * 0.74, scale * 0.72, scale)
+    src.scale = (scale * 0.92, scale * 0.90, scale)
     _apply_object_xform(src)
     zs = [(src.matrix_world @ v.co).z for v in src.data.vertices]
     min_z = min(zs)
@@ -241,6 +241,29 @@ def _extract_part(
         bm.free()
         bpy.data.objects.remove(ob, do_unlink=True)
         return None
+    island_faces: list[list[bmesh.types.BMFace]] = []
+    visited: set[int] = set()
+    for face in bm.faces:
+        if face.index in visited:
+            continue
+        stack = [face]
+        group: list[bmesh.types.BMFace] = []
+        while stack:
+            f = stack.pop()
+            if f.index in visited:
+                continue
+            visited.add(f.index)
+            group.append(f)
+            for e in f.edges:
+                for linked in e.link_faces:
+                    if linked.index not in visited:
+                        stack.append(linked)
+        island_faces.append(group)
+    if len(island_faces) > 1:
+        best = max(island_faces, key=len)
+        drop_faces = [f for grp in island_faces if grp is not best for f in grp]
+        if drop_faces:
+            bmesh.ops.delete(bm, geom=drop_faces, context="FACES")
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
     bm.to_mesh(me)
     me.update()
@@ -256,16 +279,14 @@ def _split_parts(src: bpy.types.Object) -> list[bpy.types.Object]:
         return lo + span * f0, lo + span * f1
 
     specs: list[tuple[str, float, float, int | None, tuple[float, float, float, float], float]] = [
-        ("Foot_-1", 0.00, 0.18, -1, FOUNDER_SHOE, 0.42),
-        ("Foot_1", 0.00, 0.18, 1, FOUNDER_SHOE, 0.42),
-        ("Leg_-1", 0.10, 0.48, -1, FOUNDER_JEANS, 0.56),
-        ("Leg_1", 0.10, 0.48, 1, FOUNDER_JEANS, 0.56),
-        ("Hips", 0.39, 0.55, None, FOUNDER_JEANS, 0.54),
-        ("Torso", 0.48, 0.78, None, FOUNDER_HOODIE, 0.62),
-        ("Arm_-1", 0.52, 0.74, -1, FOUNDER_HOODIE, 0.58),
-        ("Arm_1", 0.52, 0.74, 1, FOUNDER_HOODIE, 0.58),
-        ("Neck", 0.70, 0.83, None, FOUNDER_HOODIE_RED, 0.52),
-        ("Head", 0.73, 0.88, None, FOUNDER_SKIN, 0.52),
+        ("Leg_-1", 0.00, 0.50, -1, FOUNDER_JEANS, 0.56),
+        ("Leg_1", 0.00, 0.50, 1, FOUNDER_JEANS, 0.56),
+        ("Hips", 0.36, 0.56, None, FOUNDER_JEANS, 0.54),
+        ("Torso", 0.44, 0.68, None, FOUNDER_HOODIE_RED, 0.58),
+        ("Arm_-1", 0.48, 0.72, -1, FOUNDER_HOODIE, 0.56),
+        ("Arm_1", 0.48, 0.72, 1, FOUNDER_HOODIE, 0.56),
+        ("Neck", 0.58, 0.70, None, FOUNDER_HOODIE_RED, 0.52),
+        ("Head", 0.62, 0.90, None, FOUNDER_SKIN, 0.50),
         ("Hair", 0.84, 1.00, None, FOUNDER_HAIR, 0.48),
     ]
     parts: list[bpy.types.Object] = []
@@ -292,7 +313,7 @@ def _add_face_features() -> None:
     z_eye = hc.z + (max(v.z for v in verts) - hc.z) * 0.32
     y_face = nose_y + (hc.y - nose_y) * 0.72
     for name, x_sign in (("Eye_-1", -1.0), ("Eye_1", 1.0)):
-        eye = bc.add_cube(name, (0.042, 0.026, 0.024), (hc.x + 0.058 * x_sign, y_face, z_eye))
+        eye = bc.add_cube(name, (0.048, 0.028, 0.026), (hc.x + 0.048 * x_sign, y_face, z_eye))
         bc.assign_solid(eye, FOUNDER_EYE, 0.35)
     mouth = bc.add_cube("Mouth", (0.058, 0.02, 0.014), (hc.x, y_face - 0.034, z_eye - 0.052))
     bc.assign_solid(mouth, (0.55, 0.28, 0.30, 1.0), 0.42)
@@ -317,9 +338,28 @@ def build_founder_kenney() -> None:
     _face_forward_z(baked)
     _scale_character(baked)
     parts = _split_parts(baked)
-    if len(parts) < 10:
+    if len(parts) < 9:
         raise RuntimeError(f"Kenney split failed parts={len(parts)}")
     _add_face_features()
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH":
+            continue
+        ob.rotation_euler = (-math.pi / 2, 0.0, 0.0)
+        ob.select_set(True)
+    bpy.context.view_layer.objects.active = next(
+        o for o in bpy.context.scene.objects if o.type == "MESH"
+    )
+    bpy.ops.object.transform_apply(rotation=True)
+    bc.ground_scene_meshes()
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "MESH":
+            ob.rotation_euler = (0.0, math.pi, 0.0)
+            ob.select_set(True)
+    bpy.context.view_layer.objects.active = next(
+        o for o in bpy.context.scene.objects if o.type == "MESH"
+    )
+    bpy.ops.object.transform_apply(rotation=True)
+    bc.ground_scene_meshes()
     for ob in bpy.context.scene.objects:
         if ob.type != "MESH":
             continue

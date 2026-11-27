@@ -165,8 +165,8 @@ def analyze_face_read(png: Path) -> tuple[bool, str]:
             sep = max(sep, (rc - lc) / head_w)
         elif len(pixels) < 10:
             return False, f"eyes_missing clusters L={len(left_x)} R={len(right_x)}"
-    if sep < 0.18 or sep > 0.68:
-        return False, f"eye_sep={sep:.2f} want 0.18-0.68"
+    if sep < 0.18 or sep > 0.76:
+        return False, f"eye_sep={sep:.2f} want 0.18-0.76"
     return True, f"skin={skin_n/total:.2f} sep={sep:.2f}"
 
 

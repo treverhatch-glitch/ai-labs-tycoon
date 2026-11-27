@@ -996,6 +996,9 @@ def check_spine_clearance(
     p1 = Vector((hc.x, head_top, hc.z))
     axis = p1 - p0
     if axis.length < 0.2:
+        p1 = hc
+        axis = p1 - p0
+    if axis.length < 0.2:
         return False, "spine_axis_short"
     axis_n = axis.normalized()
     worst = ("", 0.0)

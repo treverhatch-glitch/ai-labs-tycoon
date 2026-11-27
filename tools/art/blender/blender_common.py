@@ -484,10 +484,16 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         if not ok_conn:
             raise RuntimeError(f"FAIL {asset_id}: connectivity {msg_conn}")
         if asset_id == "staff-founder-idle":
+            import founder_chunky_gates as fcg
+
             ok_head, msg_head = staff_c0.check_founder_head_geometry(mesh_obs)
             if not ok_head:
                 raise RuntimeError(f"FAIL {asset_id}: {msg_head}")
             print(f"OK {asset_id} {msg_head}")
+            ok_ck, msg_ck = fcg.check_founder_chunky_bake(mesh_obs)
+            if not ok_ck:
+                raise RuntimeError(f"FAIL {asset_id}: chunky_bake {msg_ck}")
+            print(f"OK {asset_id} chunky_bake {msg_ck}")
     staff_export_root: bpy.types.Object | None = None
     if category == "garage-kit":
         add_prejoin_spine(mesh_obs)
@@ -683,7 +689,7 @@ def tint_staff_founder_parts(mesh_obs: list[bpy.types.Object]) -> None:
             assign_solid(ob, denim, 0.56)
         elif base in ("Torso", "Neck"):
             assign_solid(ob, hoodie_red, 0.54)
-        elif base.startswith("UpperArm_") or base.startswith("LowerArm_") or base.startswith("Shoulder_"):
+        elif base.startswith("Arm_") or base.startswith("UpperArm_") or base.startswith("LowerArm_") or base.startswith("Shoulder_"):
             assign_solid(ob, hoodie_navy, 0.54)
         elif base.startswith("Shoe_"):
             assign_solid(ob, sneaker, 0.38)

@@ -3,12 +3,12 @@
 set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
-export STAFF_PREVIEW_MARGIN=1.40
+export STAFF_PREVIEW_MARGIN=1.52
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
 
-if [[ ! -f tools/art/cc0/incoming/quaternius/character.glb ]]; then
+if [[ ! -f tools/art/cc0/incoming/kenney/animated-characters-3/Model/characterMedium.fbx ]]; then
   ./tools/art/cc0/fetch_incoming.sh
 fi
 
@@ -49,6 +49,7 @@ python3 tools/art/check_cc0_staff_face_visible.py
 python3 tools/art/check_cc0_staff_founder_pixel_hues.py
 python3 tools/art/check_cc0_staff_founder_assembly.py
 python3 tools/art/check_cc0_staff_founder_head_mesh.py
+python3 tools/art/check_cc0_staff_founder_chunky_bake.py
 
 set +e
 conn_out=$(python3 tools/art/check_staff_connectivity.py 2>&1)

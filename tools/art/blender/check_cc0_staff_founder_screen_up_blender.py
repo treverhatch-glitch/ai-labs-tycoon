@@ -34,7 +34,7 @@ def main() -> None:
     meshes = [o for o in bpy.context.scene.objects if o.type == "MESH"]
     by = {o.name.split(".")[0]: o for o in meshes}
     head = by.get("Head")
-    feet = [by[n] for n in ("Foot_-1", "Foot_1") if n in by]
+    feet = [by[n] for n in ("Foot_-1", "Foot_1", "Leg_-1", "Leg_1") if n in by]
     if not head or len(feet) < 2:
         print("FAIL staff-founder-idle screen_up_parts")
         raise SystemExit(1)
