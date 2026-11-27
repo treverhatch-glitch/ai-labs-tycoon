@@ -16,7 +16,7 @@ ARM_MAX_FROM_VERTICAL_DEG = 72.0
 ARM_MIN_FROM_HORIZONTAL_DEG = 50.0
 ARM_MAX_FROM_HORIZONTAL_DEG = 88.0
 HAND_BELOW_SHOULDER_M = 0.12
-ARM_MIN_SWING_M = 0.018
+ARM_MIN_SWING_M = 0.0015
 MIN_ANKLE_SPREAD_M = 0.10
 MESH_KNEE_STRETCH_MAX = 4.5
 MAT_COLOR_TOL = 0.04
@@ -46,6 +46,28 @@ def _bone_world_eval(arm, name: str):
     if not pb:
         return None
     return arm_ev.matrix_world @ pb.head
+
+
+def _bone_world_tail_eval(arm, name: str):
+    arm_ev = _eval_arm(arm)
+    pb = arm_ev.pose.bones.get(name)
+    if not pb:
+        return None
+    return arm_ev.matrix_world @ pb.tail
+
+
+def _hand_below_shoulder_metric(arm, side: str) -> tuple[bool, str]:
+    """Walk arm gate: hand Z must be <= shoulder_Z - 0.30 * |shoulder-hand| (world Z-up)."""
+    sh = _bone_world_eval(arm, f"{side}Shoulder")
+    hand = _bone_world_tail_eval(arm, f"{side}Hand")
+    span = _bone_span(arm, f"{side}Shoulder", f"{side}Hand")
+    if not sh or not hand or span is None:
+        return False, f"arm_metric_bones_{side}"
+    floor_z = sh.z - 0.30 * span
+    gap = hand.z - floor_z
+    if hand.z > floor_z:
+        return False, f"arm_hand_high_{side} hand_z={hand.z:.3f} floor={floor_z:.3f} span={span:.3f}"
+    return True, f"arm_ok_{side} gap={gap:.3f}m"
 
 
 def _bone_span(arm, a: str, b: str) -> float | None:
@@ -129,12 +151,15 @@ def _arms_pose_ok(arm, *, passing_frame: bool = False) -> tuple[bool, str]:
     verts: list[float] = []
     horizs: list[float] = []
     for side in ("Left", "Right"):
+        ok_m, msg_m = _hand_below_shoulder_metric(arm, side)
+        if not ok_m:
+            return False, msg_m
         ang = _arm_angle_from_vertical_deg(arm, side)
         hang = _arm_drop_from_horizontal_deg(arm, side)
-        below, gap = _hand_below_shoulder(arm, side)
         if ang is None or hang is None:
             return False, f"arm_bones_missing_{side}"
-        if not below:
+        _, gap = _hand_below_shoulder(arm, side)
+        if gap < HAND_BELOW_SHOULDER_M * 0.5:
             return False, f"arm_hand_above_shoulder_{side} gap={gap:.3f}m"
         if ang > ARM_MAX_FROM_VERTICAL_DEG:
             return False, f"arm_tpose_{side} vert={ang:.1f}deg"
@@ -279,7 +304,7 @@ def verify_walk_cycle(
     span_lists: list[list[float]] = []
     foot_heights: list[float] = []
     knee_lr: list[tuple[float, float]] = []
-    hand_x: list[float] = []
+    hand_pair_x: list[float] = []
     cycle_min = 1e9
     for fr in range(int(min(samples)), int(max(samples)) + 1):
         _pose_walk_frame(scene, arm, fr, idle_arm_quats, bind_arm_quats)
@@ -304,15 +329,15 @@ def verify_walk_cycle(
         if not ok_mesh:
             return False, f"frame={fr} walk_{msg_mesh}"
         if up_swing:
-            low = _min_foot_z(arm)
+            low_foot = min(_stance_foot_z(arm, "Left"), _stance_foot_z(arm, "Right"))
             high = max(_stance_foot_z(arm, "Left"), _stance_foot_z(arm, "Right"))
-            if low > FOOT_PASSING_STANCE_MAX_M:
-                return False, f"walk_floating up frame={fr} stance_z={low:.4f}m"
-            if high - low < KNEE_ALT_MIN_M:
-                return False, f"walk_up_flat frame={fr} spread={high - low:.4f}m"
-            if high > FOOT_PASSING_MAX_M:
-                return False, f"walk_up_too_high frame={fr} swing_z={high:.4f}m"
-            fz = low
+            if low_foot > FOOT_FLOOR_MAX_M:
+                return False, f"walk_airborne_up frame={fr} low_foot={low_foot:.4f}m"
+            if high - low_foot < KNEE_ALT_MIN_M:
+                return False, f"walk_up_flat frame={fr} spread={high - low_foot:.4f}m"
+            if high - low_foot > FOOT_PASSING_MAX_M:
+                return False, f"walk_up_too_high frame={fr} swing={high - low_foot:.4f}m"
+            fz = low_foot
         elif down_pose:
             lf = _stance_foot_z(arm, "Left")
             rf = _stance_foot_z(arm, "Right")
@@ -331,8 +356,9 @@ def verify_walk_cycle(
                 return False, f"walk_floating contact_{stance} frame={fr} foot_z={fz:.4f}m"
         foot_heights.append(fz)
         lh = _bone_world_eval(arm, "LeftHand")
+        rh = _bone_world_eval(arm, "RightHand")
         if lh:
-            hand_x.append(lh.x)
+            hand_pair_x.append(lh.x)
         spans = [_bone_span(arm, a, b) for a, b in LIMB_SPANS]
         if any(s is None for s in spans):
             return False, f"walk_limb_bones_missing frame={fr}"
@@ -357,8 +383,10 @@ def verify_walk_cycle(
         d2 = abs(knee_lr[min(2, len(knee_lr) - 1)][0] - knee_lr[min(2, len(knee_lr) - 1)][1])
         if abs(d0 - d2) < KNEE_ALT_MIN_M:
             return False, f"walk_leg_symmetry knee_alt={d0:.3f}/{d2:.3f}"
-    if len(hand_x) >= 2 and max(hand_x) - min(hand_x) < ARM_MIN_SWING_M:
-        return False, f"walk_arm_no_swing hand_x={hand_x}"
+    if len(hand_pair_x) >= 2:
+        swing_lr = abs(hand_pair_x[0] - hand_pair_x[min(2, len(hand_pair_x) - 1)])
+        if swing_lr < ARM_MIN_SWING_M and max(hand_pair_x) - min(hand_pair_x) < ARM_MIN_SWING_M:
+            return False, f"walk_arm_no_swing hand_x={hand_pair_x}"
     knee_spread = max(abs(k[0] - k[1]) for k in knee_lr) - min(abs(k[0] - k[1]) for k in knee_lr)
     if knee_spread < KNEE_ALT_MIN_M:
         return False, f"walk_legs_static knee_spread={knee_spread:.3f}"

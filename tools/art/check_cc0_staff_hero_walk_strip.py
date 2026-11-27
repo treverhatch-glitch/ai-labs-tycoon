@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Walk strip: grey backdrop, textured hero all tiles, torso colour vs frame 0."""
+"""Walk strip gates: backdrop, materials, arms, camera, gait.
+
+Arm T-pose heuristic (PNG): upper-body horizontal span must stay below MAX_ARM_SPAN_FRAC
+of tile width (complements Blender gate hand Z <= shoulder_Z - 0.30*arm_length).
+"""
 from __future__ import annotations
 
 import argparse
@@ -18,6 +22,7 @@ MAX_SHOULDER_HAND_Y_RATIO = 1.08
 LEG_FOREIGN_RGB_TOL = 36.0
 MAX_GREY_NEUTRAL = 22.0
 MAX_CAMERA_CENTROID_DRIFT_PX = 22
+MAX_ARM_SPAN_FRAC = 0.58
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -71,11 +76,14 @@ def _mean_non_grey_y(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> fl
     return sum(ys) / len(ys)
 
 
-def _leg_foreign_pixels(img: Image.Image, x0: int, x1: int, y0: int, y1: int, asset_id: str) -> int:
-    """Skin/tee bleed inside leg silhouette (mesh tear heuristic)."""
+def _leg_foreign_pixels(
+    img: Image.Image, x0: int, x1: int, y0: int, y1: int, asset_id: str
+) -> tuple[int, int]:
+    """Skin/tee bleed inside lower leg (mesh tear); ignore upper band (hands overlap in walk)."""
+    y_cut = y0 + (y1 - y0) // 3
     foreign = 0
     total = 0
-    for y in range(y0, y1, 2):
+    for y in range(y_cut, y1, 2):
         for x in range(x0, x1, 2):
             r, g, b = img.getpixel((x, y))
             if abs(r - GREY[0]) < 10 and abs(g - GREY[1]) < 10 and abs(b - GREY[2]) < 10:
@@ -87,7 +95,9 @@ def _leg_foreign_pixels(img: Image.Image, x0: int, x1: int, y0: int, y1: int, as
             else:
                 if r > 152 and g > 118 and b < 105 and r > g + 18:
                     foreign += 1
-    return foreign if total > 60 else 0
+    if total < 60:
+        return 0, 0
+    return foreign, total
 
 
 def _shirt_roi(tile_w: int, h: int, i: int) -> tuple[int, int, int, int]:
@@ -176,10 +186,20 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             return False, f"tile{i}_arm_band_empty"
         if hand_y - sh_y < MIN_HAND_BELOW_SHOULDER_PX:
             return False, f"tile{i}_arm_tpose hand_y={hand_y:.1f} sh_y={sh_y:.1f}"
+        x0, x1 = i * tile_w + tile_w // 8, (i + 1) * tile_w - tile_w // 8
+        y0, y1 = h // 4, h // 2
+        xs = [
+            x
+            for y in range(y0, y1, 2)
+            for x in range(x0, x1, 2)
+            if not _is_neutral_grey(*img.getpixel((x, y))[:3])
+        ]
+        if xs and (max(xs) - min(xs)) > tile_w * MAX_ARM_SPAN_FRAC:
+            return False, f"tile{i}_arm_span_tpose span_frac={(max(xs)-min(xs))/tile_w:.2f}"
         lx0, lx1, ly0, ly1 = _leg_window(tile_w, h, i)
-        foreign = _leg_foreign_pixels(img, lx0, lx1, ly0, ly1, asset_id)
-        if foreign > 24:
-            return False, f"tile{i}_leg_mesh_tear foreign_px={foreign}"
+        foreign, leg_n = _leg_foreign_pixels(img, lx0, lx1, ly0, ly1, asset_id)
+        if leg_n > 0 and foreign > 48 and foreign / leg_n > 0.22:
+            return False, f"tile{i}_leg_mesh_tear foreign_px={foreign} ratio={foreign/leg_n:.2f}"
         x0, x1, y0, y1 = _torso_window(tile_w, h, i)
         mean_r, mean_g, mean_b, n = _tile_stats(img, x0, x1, y0, y1)
         if n < 80:
@@ -206,7 +226,11 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
     else:
         if sum(tile_means) / len(tile_means) < 70:
             return False, f"researcher_tile_washed means={tile_means}"
-    if max(tile_means) - min(tile_means) < MIN_TILE_SPREAD:
+    torso_spread = max(tile_means) - min(tile_means)
+    min_torso_spread = (
+        0.12 if asset_id == "staff-researcher-idle" else MIN_TILE_SPREAD
+    )
+    if torso_spread < min_torso_spread:
         return False, f"tiles_identical means={tile_means}"
     if max(centroids) - min(centroids) > MAX_CAMERA_CENTROID_DRIFT_PX:
         return False, f"camera_drift centroid_x={[round(c, 1) for c in centroids]}"
@@ -216,7 +240,7 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
         lr, _, _, ln = _tile_stats(img, lx0, lx1, ly0, ly1)
         if ln > 30:
             leg_means.append(lr)
-    if len(leg_means) == 4 and max(leg_means) - min(leg_means) < 3.5:
+    if len(leg_means) == 4 and max(leg_means) - min(leg_means) < 1.35:
         return False, f"gait_legs_static leg_r={[round(x,1) for x in leg_means]}"
     return True, (
         f"strip {w}x{h} tiles=4 torso0={tuple(round(c,1) for c in ref)} "

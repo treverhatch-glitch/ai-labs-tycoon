@@ -11,7 +11,12 @@ from mathutils import Quaternion
 import kenney_founder_lib as kf
 
 RUN_FBX = kf.INCOMING / "kenney/animated-characters-3/Animations/run.fbx"
+WALK_FBX = kf.INCOMING / "kenney/animated-characters-3/Animations/walk.fbx"
 KENNEY_RUN_LICENSE = "tools/art/cc0/manifest.json (Kenney Animated Characters 3)"
+LOCOMOTION_WALK_GROUND_MAX_M = 0.11
+COAT_SPINE_BONES = frozenset(
+    {"Hips", "Spine", "Chest", "UpperChest", "Neck", "Head"},
+)
 WALK_ARM_BONES = (
     "LeftShoulder",
     "LeftArm",
@@ -41,11 +46,26 @@ def _purge_dup_armature() -> None:
         bpy.data.objects.remove(dup, do_unlink=True)
 
 
-def _pick_run_action() -> bpy.types.Action:
+def _pick_locomotion_action() -> bpy.types.Action:
+    for act in bpy.data.actions:
+        if act.name.endswith("Walk") or "|Walk" in act.name:
+            return act
     for act in bpy.data.actions:
         if act.name.endswith("Run") or "|Run" in act.name:
             return act
-    raise RuntimeError("walk_strip missing Kenney Run action")
+    raise RuntimeError("walk_strip missing Kenney Walk/Run action")
+
+
+def mute_locomotion_arm_fcurves(arm: bpy.types.Object) -> None:
+    """Legs/spine from locomotion clip; arms driven by walk retarget (not Run T-pose)."""
+    act = arm.animation_data.action if arm.animation_data else None
+    if not act:
+        return
+    for fc in act.fcurves:
+        for bone in WALK_ARM_BONES:
+            if f'pose.bones["{bone}"' in fc.data_path:
+                fc.mute = True
+                break
 
 
 def _foot_z(arm: bpy.types.Object, bone: str) -> float:
@@ -259,12 +279,29 @@ def pick_walk_contact_frames(
             if fr in exclude:
                 continue
             _pose_fr(fr)
+            low_foot = min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right"))
+            if low_foot > LOCOMOTION_WALK_GROUND_MAX_M:
+                continue
             spread, knee, swing = _frame_gait_score(arm)
-            score = swing * 1.5 + spread * 0.55 + knee * 0.2
+            score = swing * 1.2 + spread * 0.55 + knee * 0.35
             if score > best_score:
                 best_score = score
                 best_fr = fr
         if best_score < 0:
+            grounded = []
+            for fr, _, _ in rows:
+                if fr in exclude:
+                    continue
+                _pose_fr(fr)
+                low = min(_stance_foot_min_z(arm, "Left"), _stance_foot_min_z(arm, "Right"))
+                if low <= LOCOMOTION_WALK_GROUND_MAX_M:
+                    grounded.append(fr)
+            if grounded:
+                return _pick_passing(
+                    [r for r in rows if r[0] in grounded],
+                    exclude=exclude,
+                    stance_max_m=LOCOMOTION_WALK_GROUND_MAX_M,
+                )
             return _pick_passing(rows, exclude=exclude, stance_max_m=0.35)
         return best_fr
 
@@ -300,21 +337,41 @@ def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
     return out
 
 
+def _counter_swing_quat(arm: bpy.types.Object, side: str) -> Quaternion:
+    lf = _bone_world_simple(arm, "LeftFoot")
+    rf = _bone_world_simple(arm, "RightFoot")
+    if not lf or not rf:
+        return Quaternion((1.0, 0.0, 0.0, 0.0))
+    lead = (lf.x - rf.x) if side == "Left" else (rf.x - lf.x)
+    amp = max(-1.0, min(1.0, lead / 0.25)) * math.radians(16.0)
+    axis = (1.0, 0.0, 0.0)
+    return Quaternion(axis, amp if side == "Left" else -amp)
+
+
 def apply_walk_arm_retarget(
     arm: bpy.types.Object,
     bind: dict[str, Quaternion],
     idle: dict[str, Quaternion],
 ) -> None:
-    """Run swing delta on Kenney bind pose, applied over idle arm hang (depsgraph pose)."""
-    for name in WALK_ARM_BONES:
-        pb = arm.pose.bones.get(name)
-        if not pb or name not in bind or name not in idle:
+    """Idle hang + gentle counter-swing; locomotion clip must not drive arm channels (muted)."""
+    _ = bind
+    for side in ("Left", "Right"):
+        ua = arm.pose.bones.get(f"{side}Arm")
+        fa = arm.pose.bones.get(f"{side}ForeArm")
+        sh = arm.pose.bones.get(f"{side}Shoulder")
+        if not ua or not fa:
             continue
-        pb.rotation_mode = "QUATERNION"
-        q_run = pb.rotation_quaternion.copy()
-        swing = q_run @ bind[name].inverted()
-        q_pose = (swing @ idle[name]).normalized()
-        pb.rotation_quaternion = q_pose.slerp(idle[name], 0.25)
+        for pb in (sh, ua, fa):
+            if not pb:
+                continue
+            name = pb.name
+            if name not in idle:
+                continue
+            pb.rotation_mode = "QUATERNION"
+            pb.rotation_quaternion = idle[name].copy()
+        swing = _counter_swing_quat(arm, side)
+        ua.rotation_quaternion = (swing @ ua.rotation_quaternion).normalized()
+        fa.rotation_quaternion = (swing @ fa.rotation_quaternion).normalized()
     bpy.context.view_layer.update()
 
 
@@ -347,8 +404,13 @@ def _weight_mesh_to_head(hair: bpy.types.Object, arm: bpy.types.Object) -> None:
     bpy.context.view_layer.update()
 
 
-def _bind_coat_mesh_deform(coat: bpy.types.Object, body: bpy.types.Object) -> None:
-    if coat.type != "MESH" or body.type != "MESH":
+def _bind_coat_spine_armature(
+    coat: bpy.types.Object,
+    body: bpy.types.Object,
+    arm: bpy.types.Object,
+) -> None:
+    """Lab coat follows torso only — no arm/leg weights (avoids cape wings)."""
+    if coat.type != "MESH" or not body.data.vertices:
         return
     if coat.parent:
         world = coat.matrix_world.copy()
@@ -357,14 +419,37 @@ def _bind_coat_mesh_deform(coat: bpy.types.Object, body: bpy.types.Object) -> No
     for mod in list(coat.modifiers):
         if mod.type in {"ARMATURE", "MESH_DEFORM"}:
             coat.modifiers.remove(mod)
-    md = coat.modifiers.new("CoatMeshDeform", "MESH_DEFORM")
-    md.object = body
-    bpy.context.view_layer.objects.active = coat
-    coat.select_set(True)
-    try:
-        bpy.ops.object.meshdeform_bind(modifier=md.name)
-    except RuntimeError as exc:
-        raise RuntimeError(f"walk_coat_meshdeform_bind {exc}") from exc
+    mod = coat.modifiers.new("CoatSpineArmature", "ARMATURE")
+    mod.object = arm
+    coat.vertex_groups.clear()
+    for bone in COAT_SPINE_BONES:
+        coat.vertex_groups.new(name=bone)
+    import mathutils.kdtree as kdtree
+
+    kd = kdtree.KDTree(len(body.data.vertices))
+    for i, v in enumerate(body.data.vertices):
+        kd.insert(body.matrix_world @ v.co, i)
+    kd.balance()
+    for v in coat.data.vertices:
+        co = coat.matrix_world @ v.co
+        _co, idx, _dist = kd.find(co)
+        weights: dict[str, float] = {}
+        for g in body.data.vertices[idx].groups:
+            if g.weight < 1e-5 or g.group >= len(body.vertex_groups):
+                continue
+            name = body.vertex_groups[g.group].name
+            if name not in COAT_SPINE_BONES:
+                continue
+            weights[name] = max(weights.get(name, 0.0), g.weight)
+        if not weights:
+            weights["Chest"] = 1.0
+        total = sum(weights.values())
+        for name, w in weights.items():
+            coat.vertex_groups[name].add([v.index], w / total, "REPLACE")
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.remove_doubles(threshold=0.001)
+    bpy.ops.object.mode_set(mode="OBJECT")
     bpy.context.view_layer.update()
 
 
@@ -490,17 +575,19 @@ def _purge_fbx_import_extras(keep: set[str]) -> None:
         bpy.data.objects.remove(ob, do_unlink=True)
 
 
-def _assign_run_action(
+def _assign_locomotion_action(
     arm: bpy.types.Object, *, keep_objects: set[str]
 ) -> tuple[bpy.types.Action, int, int]:
-    if not RUN_FBX.is_file():
-        raise RuntimeError(f"missing Kenney run {RUN_FBX}")
-    kf._import_fbx(str(RUN_FBX))
+    clip = WALK_FBX if WALK_FBX.is_file() else RUN_FBX
+    if not clip.is_file():
+        raise RuntimeError(f"missing Kenney walk/run {clip}")
+    kf._import_fbx(str(clip))
     keep_objects.add(arm.name.split(".")[0])
     _purge_fbx_import_extras(keep_objects)
-    act = _pick_run_action()
+    act = _pick_locomotion_action()
     arm.animation_data_create()
     arm.animation_data.action = act
+    mute_locomotion_arm_fcurves(arm)
     start, end = int(act.frame_range[0]), int(act.frame_range[1])
     return act, start, end
 
@@ -527,7 +614,7 @@ def build_founder_walk_scene() -> WalkHeroScene:
         "Root",
     }
     keep |= {o.name.split(".")[0] for o in eyes}
-    act, start, end = _assign_run_action(arm, keep_objects=keep)
+    act, start, end = _assign_locomotion_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end
@@ -586,7 +673,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     eyes = spawn_researcher_eye_meshes(mesh)
     coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
-    _bind_coat_mesh_deform(coat, mesh)
+    _bind_coat_spine_armature(coat, mesh, arm)
     _weight_mesh_to_head(hair, arm)
     extras = [coat, hair]
     keep = {
@@ -596,7 +683,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         "Root",
     }
     keep |= {o.name.split(".")[0] for o in [*eyes, *extras]}
-    act, start, end = _assign_run_action(arm, keep_objects=keep)
+    act, start, end = _assign_locomotion_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end

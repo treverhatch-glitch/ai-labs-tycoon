@@ -83,6 +83,13 @@ def main() -> int:
             scene_data.bind_arm_quats,
         )
         apply_walk_materials_to_hero(scene_data.render_meshes, asset_id)
+        _pose_walk_frame(
+            scene,
+            scene_data.arm,
+            fr,
+            scene_data.idle_arm_quats,
+            scene_data.bind_arm_quats,
+        )
         ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
         if not ok_fp:
             print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")
