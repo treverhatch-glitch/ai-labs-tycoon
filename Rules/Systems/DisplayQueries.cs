@@ -243,8 +243,29 @@ namespace AiLabs.Rules.Systems
             b.Notes = ExitDebt.NoteBalance(lab);
             b.Rbf = ExitDebt.RbfBalance(lab);
             b.CovenantCalls = ExitDebt.CovenantCalls(c, lab);
-            b.Total = gross - b.StaffShare - b.Loans - b.Notes - b.Rbf - b.CovenantCalls;
+            long debt = b.Loans + b.Notes + b.Rbf + b.CovenantCalls;
+            debt = ExitDebtEraHaircut.AdjustDebt(c, state, debt);
+            b.Total = gross - b.StaffShare - debt;
             return b;
+        }
+
+        public struct ComputeEquipmentVisuals
+        {
+            public string PcTower;
+            public string Monitor;
+            public string ServerRack;
+        }
+
+        public static ComputeEquipmentVisuals ComputeEquipmentVisualsFor(GameConfig c, LabState lab)
+        {
+            var v = new ComputeEquipmentVisuals();
+            ComputeEquipmentTierConfig t = ComputeEquipment.Current(c, lab);
+            int era = t == null || t.VisualEra <= 0 ? 1 : t.VisualEra;
+            string suffix = "era" + era;
+            v.PcTower = "compute-pc-tower-" + suffix;
+            v.Monitor = "compute-monitor-" + suffix;
+            v.ServerRack = "compute-server-rack-" + suffix;
+            return v;
         }
 
         public static SectorPricingBreakdown.Parts SectorPriceParts(GameConfig c, LabState lab, string sectorId)

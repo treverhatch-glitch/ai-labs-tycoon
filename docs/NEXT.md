@@ -453,6 +453,20 @@ and says why in the commit message.
 
 248. **Batch twenty-four news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests` (Q505); target 424/377.
 
+### Equipment era tiers (LOCAL prep on `x-af2f`, HOLD push)
+
+249. **Compute equipment by era (ALT-527).** ~~Done (local)~~: `computeEquipment` data, `UpgradeComputeEquipment`, `DisplayQueries.ComputeEquipmentVisualsFor`, schema **173**, `ComputeEquipmentEraTierTests` (Q506).
+
+### Era batch 25 (LOCAL prep on `x-af2f`, HOLD push)
+
+250. **Exit debt era haircut.** ~~Done (local)~~: `ExitDebtEraHaircut`, schema **174** (Q507).
+
+251. **Takeoff answer era cooldown.** ~~Done (local)~~: `TakeoffAnswerEraCooldown`, schema **175** (Q508).
+
+252. **Scenario goal era trust.** ~~Done (local)~~: `ScenarioGoalEraTrust`, schema **176** (Q509).
+
+253. **Batch twenty-five news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests` (Q510); target 428/381.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

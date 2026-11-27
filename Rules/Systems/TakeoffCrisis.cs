@@ -31,7 +31,11 @@ namespace AiLabs.Rules.Systems
 
         public static void OnAnswered(GameConfig c, GameState state, LabState lab)
         {
-            lab.TakeoffCooldownUntil = state.Tick + c.TakeoffCrisis.CooldownWeeks;
+            int baseWeeks = c.TakeoffCrisis.CooldownWeeks;
+            int weeks = TakeoffAnswerEraCooldown.EffectiveCooldownWeeks(c, state);
+            int cut = baseWeeks - weeks;
+            lab.TakeoffCooldownUntil = state.Tick + weeks;
+            TakeoffAnswerEraCooldown.OnAnswered(c, state, lab, weeks, cut);
         }
     }
 }

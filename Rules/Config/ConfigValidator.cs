@@ -206,6 +206,10 @@ namespace AiLabs.Rules.Config
             MarginSatisfyEraReliefProblems(p, c);
             ScenarioGoalsEraSlackProblems(p, c);
             TakeoffCrisisEraGraceProblems(p, c);
+            ComputeEquipmentProblems(p, c);
+            ExitDebtEraHaircutProblems(p, c);
+            TakeoffAnswerEraCooldownProblems(p, c);
+            ScenarioGoalEraTrustProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2291,6 +2295,50 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffCrisisEraGrace.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("takeoffCrisisEraGrace.minEra must be a valid era index");
             if (k.GraceWeeks < 0) p.Add("takeoffCrisisEraGrace.graceWeeks must not be negative");
+        }
+
+        static void ComputeEquipmentProblems(List<string> p, GameConfig c)
+        {
+            ComputeEquipmentConfig k = c.ComputeEquipment;
+            if (k == null) { p.Add("computeEquipment is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("computeEquipment.enabled must be 0 or 1");
+            UniqueIds(p, "computeEquipment.tiers", k.Tiers);
+            for (int i = 0; i < k.Tiers.Count; i++)
+            {
+                ComputeEquipmentTierConfig t = k.Tiers[i];
+                if (t.MinEra < 0 || t.MinEra >= c.Eras.Count) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" minEra out of range");
+                if (t.UpgradeCost < 0) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" upgradeCost must not be negative");
+                if (i > 0 && t.UpgradeCost < 1) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" needs a positive upgradeCost");
+                if (t.VisualEra < 1) p.Add("computeEquipment.tiers \"" + t.IdValue + "\" visualEra must be at least 1");
+            }
+            if (k.Enabled > 0 && k.Tiers.Count < 1) p.Add("computeEquipment needs at least one tier");
+        }
+
+        static void ExitDebtEraHaircutProblems(List<string> p, GameConfig c)
+        {
+            ExitDebtEraHaircutConfig k = c.ExitDebtEraHaircut;
+            if (k == null) { p.Add("exitDebtEraHaircut is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("exitDebtEraHaircut.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("exitDebtEraHaircut.minEra must be a valid era index");
+            if (k.HaircutPermille < 0 || k.HaircutPermille > MathI.Permille) p.Add("exitDebtEraHaircut.haircutPermille must be from 0 to 1000");
+        }
+
+        static void TakeoffAnswerEraCooldownProblems(List<string> p, GameConfig c)
+        {
+            TakeoffAnswerEraCooldownConfig k = c.TakeoffAnswerEraCooldown;
+            if (k == null) { p.Add("takeoffAnswerEraCooldown is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("takeoffAnswerEraCooldown.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("takeoffAnswerEraCooldown.minEra must be a valid era index");
+            if (k.CooldownCutWeeks < 0) p.Add("takeoffAnswerEraCooldown.cooldownCutWeeks must not be negative");
+        }
+
+        static void ScenarioGoalEraTrustProblems(List<string> p, GameConfig c)
+        {
+            ScenarioGoalEraTrustConfig k = c.ScenarioGoalEraTrust;
+            if (k == null) { p.Add("scenarioGoalEraTrust is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoalEraTrust.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("scenarioGoalEraTrust.minEra must be a valid era index");
+            if (k.TrustPoints < 0) p.Add("scenarioGoalEraTrust.trustPoints must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

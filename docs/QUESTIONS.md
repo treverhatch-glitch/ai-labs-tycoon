@@ -2414,4 +2414,12 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 
 ### Q505. Batch twenty-four news, chat and combos. DECIDED: three headlines, three chat lines (424/377); `BatchTwentyFourNewsChatTests`, `BatchTwentyFourTogetherTests`.
 
-### Q506. Equipment tier simulation (ALT-527)? OPEN: art uses era-suffixed assets first; `ComputeConfig` / upgrade path waits for a rivals or compute lane after more era schema batches land (see `docs/compute-equipment-era-tiers-2026-11-27.md` in Context).
+### Q506. Equipment tier simulation (ALT-527)? DECIDED (schema 173): `computeEquipment` tiers unlock by era and cash; `UpgradeComputeEquipment` upgrades stats and `visualEra` art ids (era 1 art only for now). Player only; rivals deferred.
+
+### Q507. Era haircut on exit debt counted against sell price? DECIDED (schema 174): `exitDebtEraHaircut`; `ExitDebtEraHaircutted` on `SellLab`.
+
+### Q508. Shorter takeoff cooldown after an answer in late era? DECIDED (schema 175): `takeoffAnswerEraCooldown`; `TakeoffAnswerEraCooldownShortened`.
+
+### Q509. Extra trust everywhere when a scenario goal is met in late era? DECIDED (schema 176): `scenarioGoalEraTrust`; `ScenarioGoalEraTrusted`.
+
+### Q510. Batch twenty-five news, chat and combos. DECIDED: four headlines, four chat lines (428/381); equipment plus three era tails; `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests`.

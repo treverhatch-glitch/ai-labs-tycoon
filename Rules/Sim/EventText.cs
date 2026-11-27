@@ -714,6 +714,14 @@ namespace AiLabs.Rules.Sim
                     return who + " got " + e.SubjectId + " extra weeks before scenario goal \"" + e.Ref + "\" is checked.";
                 case EventKind.TakeoffCrisisEraGraced:
                     return who + " got " + e.SubjectId + " extra weeks to answer a takeoff crisis.";
+                case EventKind.ComputeEquipmentUpgraded:
+                    return who + " upgraded lab equipment to \"" + e.Ref + "\" for $" + e.Amount + " (tier " + e.SubjectId + ").";
+                case EventKind.ExitDebtEraHaircutted:
+                    return who + " shaved $" + e.Amount + " off debts counted against an exit offer.";
+                case EventKind.TakeoffAnswerEraCooldownShortened:
+                    return who + " answered a takeoff crisis with a shorter cooldown (" + e.SubjectId + " weeks cut, " + e.Amount + " left).";
+                case EventKind.ScenarioGoalEraTrusted:
+                    return who + " met scenario goal \"" + e.Ref + "\" and won +" + e.SubjectId + " trust in every sector.";
                 case EventKind.StaffPromoted:
                     return who + " promoted a " + c.Role(e.Ref).Name.ToLowerInvariant() + " to senior for $" + e.Amount + ".";
                 case EventKind.TargetSet:

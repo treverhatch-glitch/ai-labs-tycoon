@@ -652,7 +652,11 @@ namespace AiLabs.Rules.State
         DataSourceAcquireEraDiscounted,
         MarginSatisfyEraRelieved,
         ScenarioGoalsEraSlacked,
-        TakeoffCrisisEraGraced
+        TakeoffCrisisEraGraced,
+        ComputeEquipmentUpgraded,
+        ExitDebtEraHaircutted,
+        TakeoffAnswerEraCooldownShortened,
+        ScenarioGoalEraTrusted
     }
 
     /// <summary>

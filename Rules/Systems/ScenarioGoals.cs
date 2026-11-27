@@ -45,6 +45,7 @@ namespace AiLabs.Rules.Systems
             {
                 lab.ScenarioGoalResult = 1;
                 Events.Add(state, EventKind.ScenarioGoalMet, lab.Id, (int)goal.Metric, goal.Target, goal.IdValue);
+                ScenarioGoalEraTrust.OnMet(c, state, lab, goal.IdValue);
                 if (!string.IsNullOrEmpty(goal.WinEndingId)) EndingSystem.RecordScenario(c, state, lab, goal.WinEndingId);
                 return;
             }

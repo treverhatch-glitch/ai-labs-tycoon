@@ -201,6 +201,10 @@ namespace AiLabs.Rules.Config
         public MarginSatisfyEraReliefConfig MarginSatisfyEraRelief = new MarginSatisfyEraReliefConfig();
         public ScenarioGoalsEraSlackConfig ScenarioGoalsEraSlack = new ScenarioGoalsEraSlackConfig();
         public TakeoffCrisisEraGraceConfig TakeoffCrisisEraGrace = new TakeoffCrisisEraGraceConfig();
+        public ComputeEquipmentConfig ComputeEquipment = new ComputeEquipmentConfig();
+        public ExitDebtEraHaircutConfig ExitDebtEraHaircut = new ExitDebtEraHaircutConfig();
+        public TakeoffAnswerEraCooldownConfig TakeoffAnswerEraCooldown = new TakeoffAnswerEraCooldownConfig();
+        public ScenarioGoalEraTrustConfig ScenarioGoalEraTrust = new ScenarioGoalEraTrustConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -400,6 +404,10 @@ namespace AiLabs.Rules.Config
             s.Obj("marginSatisfyEraRelief", ref MarginSatisfyEraRelief);
             s.Obj("scenarioGoalsEraSlack", ref ScenarioGoalsEraSlack);
             s.Obj("takeoffCrisisEraGrace", ref TakeoffCrisisEraGrace);
+            s.Obj("computeEquipment", ref ComputeEquipment);
+            s.Obj("exitDebtEraHaircut", ref ExitDebtEraHaircut);
+            s.Obj("takeoffAnswerEraCooldown", ref TakeoffAnswerEraCooldown);
+            s.Obj("scenarioGoalEraTrust", ref ScenarioGoalEraTrust);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);

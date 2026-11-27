@@ -12483,6 +12483,30 @@
         "text": "{lab} got extra weeks to answer a takeoff crisis"
       },
       {
+        "id": "compute-equipment-upgrade",
+        "kind": "ComputeEquipmentUpgraded",
+        "pick": -1,
+        "text": "{lab} upgraded the lab's compute kit"
+      },
+      {
+        "id": "exit-debt-era-haircut",
+        "kind": "ExitDebtEraHaircutted",
+        "pick": -1,
+        "text": "{lab} shaved debts off an exit offer"
+      },
+      {
+        "id": "takeoff-answer-era-cooldown",
+        "kind": "TakeoffAnswerEraCooldownShortened",
+        "pick": -1,
+        "text": "{lab} answered a takeoff crisis with a shorter cooldown"
+      },
+      {
+        "id": "scenario-goal-era-trust",
+        "kind": "ScenarioGoalEraTrusted",
+        "pick": -1,
+        "text": "{lab} met a campaign goal and won trust everywhere"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16915,6 +16939,50 @@
         "toYear": 0
       },
       {
+        "id": "compute-equipment-chat",
+        "kind": "ComputeEquipmentUpgraded",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The old beige towers finally got replaced.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "exit-debt-haircut-chat",
+        "kind": "ExitDebtEraHaircutted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Buyers ignored part of what the bank was owed.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "takeoff-cooldown-chat",
+        "kind": "TakeoffAnswerEraCooldownShortened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The takeoff memo came back sooner than usual.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "scenario-trust-chat",
+        "kind": "ScenarioGoalEraTrusted",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Meeting the goal made everyone easier to work with.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19738,5 +19806,57 @@
     "enabled": 1,
     "minEra": 2,
     "graceWeeks": 2
+  },
+  "computeEquipment": {
+    "enabled": 1,
+    "tiers": [
+      {
+        "id": "garage-starter",
+        "minEra": 0,
+        "upgradeCost": 0,
+        "researchPermille": 0,
+        "trainingPermille": 0,
+        "visualEra": 1
+      },
+      {
+        "id": "dial-up-desk",
+        "minEra": 0,
+        "upgradeCost": 12000,
+        "researchPermille": 40,
+        "trainingPermille": 30,
+        "visualEra": 1
+      },
+      {
+        "id": "fiber-backbone",
+        "minEra": 2,
+        "upgradeCost": 45000,
+        "researchPermille": 80,
+        "trainingPermille": 60,
+        "visualEra": 1
+      },
+      {
+        "id": "colo-ready",
+        "minEra": 4,
+        "upgradeCost": 120000,
+        "researchPermille": 120,
+        "trainingPermille": 90,
+        "visualEra": 1
+      }
+    ]
+  },
+  "exitDebtEraHaircut": {
+    "enabled": 1,
+    "minEra": 2,
+    "haircutPermille": 150
+  },
+  "takeoffAnswerEraCooldown": {
+    "enabled": 1,
+    "minEra": 2,
+    "cooldownCutWeeks": 12
+  },
+  "scenarioGoalEraTrust": {
+    "enabled": 1,
+    "minEra": 2,
+    "trustPoints": 25
   }
 }
