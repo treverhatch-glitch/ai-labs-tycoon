@@ -33,7 +33,7 @@ RESEARCHER_TROUSERS = (0.06, 0.09, 0.14, 1.0)
 RESEARCHER_TEE = (0.48, 0.68, 0.92, 1.0)
 RESEARCHER_LAB_COAT = (0.50, 0.52, 0.50, 1.0)
 RESEARCHER_SHIRT = (0.08, 0.68, 0.54, 1.0)
-RESEARCHER_COLLAR = (0.18, 0.42, 0.58, 1.0)
+RESEARCHER_COLLAR = (228 / 255, 226 / 255, 220 / 255, 1.0)
 RESEARCHER_LAPEL = (0.36, 0.38, 0.37, 1.0)
 RESEARCHER_SKIN = (0.51, 0.41, 0.34, 1.0)
 RESEARCHER_HAIR = (0.26, 0.20, 0.17, 1.0)
@@ -391,6 +391,7 @@ def apply_researcher_materials(
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_collar_cuff_bleed(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_chin_neck_bleed(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
+    _fix_researcher_hands_skin_no_blue(bm, slots, ob, lm)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -474,7 +475,7 @@ def _stamp_researcher_shirt_torso_arms(
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         h = (wc.z - lo) / span
-        if h < lm.h_neck - 0.10 or h > lm.h_waist + 0.26:
+        if h < lm.h_neck + 0.02 or h > lm.h_waist + 0.26:
             continue
         lat = lateral_from_front(wc, hc, fwd)
         thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
@@ -534,7 +535,7 @@ def _stamp_researcher_chest_v_shirt(
 ) -> None:
     """Light-blue shirt in open lab-coat front V (collar through chest)."""
     lo, span = lm.zmin, lm.span
-    v_lo = lm.h_neck - 0.18
+    v_lo = lm.h_neck + 0.01
     v_hi = lm.h_waist - 0.02
     for face in bm.faces:
         wc = Vector()
@@ -896,6 +897,39 @@ def _apply_arm_vertex_groups(
             slots[face.index] = SLOT_SHIRT
 
 
+def _fix_researcher_hands_skin_no_blue(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+) -> None:
+    if not ob.vertex_groups:
+        return
+    vg_names = {g.index: g.name for g in ob.vertex_groups}
+    lo, span = lm.zmin, lm.span
+    wrist_h = lm.h_waist - 0.14
+
+    def hand_w(vi: int) -> float:
+        return sum(
+            g.weight
+            for g in ob.data.vertices[vi].groups
+            if vg_names.get(g.group, "") in _VG_HANDS
+        )
+
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        if h > wrist_h + 0.05:
+            continue
+        if sum(hand_w(v.index) for v in face.verts) / len(face.verts) < 0.14:
+            continue
+        if slots[face.index] in (SLOT_JEANS, SLOT_SHIRT):
+            slots[face.index] = SLOT_HAND
+
+
 def _fix_researcher_chin_neck_bleed(
     bm: bmesh.types.BMesh,
     slots: list[int],
@@ -922,7 +956,7 @@ def _fix_researcher_chin_neck_bleed(
         if lat > thw * 0.62:
             continue
         y_face = y_face_fn(wc)
-        if y_face < 0.20:
+        if y_face < 0.12:
             continue
         if slots[idx] not in (SLOT_JEANS, SLOT_SHIRT):
             continue

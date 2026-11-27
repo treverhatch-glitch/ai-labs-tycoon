@@ -444,6 +444,7 @@ def _bind_coat_researcher_armature(
     from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
     from kenney_geometry_landmarks import compute_landmarks, torso_half_width
     from researcher_hero_geometry import (
+        _prune_coat_micro_islands,
         _prune_coat_wrist_shards,
         _trim_coat_orphan_shards,
     )
@@ -535,6 +536,7 @@ def _bind_coat_researcher_armature(
     bpy.ops.object.mode_set(mode="OBJECT")
     _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
     _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
+    _prune_coat_micro_islands(coat)
     bpy.context.view_layer.update()
 
 

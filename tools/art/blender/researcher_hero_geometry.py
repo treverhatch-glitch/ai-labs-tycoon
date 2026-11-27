@@ -635,6 +635,47 @@ def _prune_coat_wrist_shards(
     bm.free()
 
 
+def _prune_coat_micro_islands(coat: bpy.types.Object, *, min_faces: int = 10) -> None:
+    """Drop floating solidify shards; keep main coat shell (+ sleeves)."""
+    bm = bmesh.new()
+    bm.from_mesh(coat.data)
+    bm.faces.ensure_lookup_table()
+    visited: set[int] = set()
+    islands: list[list[bmesh.types.BMFace]] = []
+    for seed in bm.faces:
+        if seed.index in visited:
+            continue
+        stack = [seed]
+        island: list[bmesh.types.BMFace] = []
+        visited.add(seed.index)
+        while stack:
+            face = stack.pop()
+            island.append(face)
+            for e in face.edges:
+                for nb in e.link_faces:
+                    if nb.index not in visited:
+                        visited.add(nb.index)
+                        stack.append(nb)
+        islands.append(island)
+    if len(islands) <= 1:
+        bm.free()
+        return
+    islands.sort(key=len, reverse=True)
+    main_n = len(islands[0])
+    doomed: list[bmesh.types.BMFace] = []
+    for isl in islands[1:]:
+        if len(isl) < min_faces or len(isl) < max(12, int(main_n * 0.06)):
+            doomed.extend(isl)
+    if doomed:
+        bmesh.ops.delete(bm, geom=doomed, context="FACES")
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bm.to_mesh(coat.data)
+    coat.data.update()
+    bm.free()
+
+
 def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     for ob in list(bpy.context.scene.objects):
         if ob.type == "MESH" and ob.name.split(".")[0] == "ResearcherLabCoat":
@@ -662,6 +703,21 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
         ws=ws,
         y_face_fn=y_face_fn,
     )
+    for f in bm_src.faces:
+        if f.index in pick_set:
+            continue
+        wc = _world_centroid(f, body)
+        h = (wc.z - lo) / span
+        if h < lm.h_neck - 0.14 or h > lm.h_neck + 0.08:
+            continue
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        if lat < thw * 0.34 or lat > thw * 1.02:
+            continue
+        arm = _face_mean_vg(body, f, _VG_COAT_UPPER_ARM | _VG_COAT_FOREARM)
+        chest = _face_mean_vg(body, f, frozenset({"Chest", "UpperChest", "LeftShoulder", "RightShoulder"}))
+        if arm >= 0.08 and chest >= 0.12:
+            pick_set.add(f.index)
     pick = [f for f in bm_src.faces if f.index in pick_set]
     if len(pick) < 48:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces={len(pick)} too_few")
@@ -690,10 +746,11 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     coat.data.materials.append(mat)
     coat.parent = body
     coat.matrix_parent_inverse = body.matrix_world.inverted()
-    thick = max(body.dimensions.length * 0.035, 0.022)
+    thick = max(body.dimensions.length * 0.028, 0.016)
     solid = coat.modifiers.new("CoatSolidify", "SOLIDIFY")
     solid.thickness = thick
     solid.offset = 1.0
+    solid.use_rim = True
     bpy.context.view_layer.objects.active = coat
     coat.select_set(True)
     bpy.ops.object.modifier_apply(modifier=solid.name)
@@ -707,6 +764,9 @@ def spawn_researcher_lab_coat(body: bpy.types.Object) -> bpy.types.Object:
     bpy.ops.object.mode_set(mode="OBJECT")
     _bisect_coat_below_hem(coat, lm, coat_hem)
     _trim_coat_hands_crotch(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _prune_coat_micro_islands(coat)
+    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
     if len(coat.data.polygons) < 8:
         raise RuntimeError(f"FAIL staff-researcher-idle lab_coat_faces_post={len(coat.data.polygons)}")
     return coat
