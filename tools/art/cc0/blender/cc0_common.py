@@ -369,7 +369,8 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     cam.data.ortho_scale = ortho
     dist = span * 4.0
     elev = math.radians(30)
-    az = math.radians(45)
+    # Tower front = −Y; camera at (−X,−Y) shows front + right (+X) panel.
+    az = math.radians(-135) if is_tower else math.radians(45)
     cam.location = center + Vector(
         (
             dist * math.cos(elev) * math.cos(az),
@@ -417,11 +418,71 @@ def render_preview_from_glb(glb_path: Path, asset_id: str) -> Path:
     return preview
 
 
+def render_preview_front_from_glb(glb_path: Path, out_name: str) -> Path:
+    """Straight-on front ortho (−Y front); grey-150 ~70% fill."""
+    preview = PREVIEW_DIR / f"{out_name}.png"
+    reset_scene()
+    _setup_hdri_grey_world(0.26)
+    bpy.ops.import_scene.gltf(filepath=str(glb_path))
+    mesh_obs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
+    if not mesh_obs:
+        raise RuntimeError(f"no mesh in {glb_path}")
+    mins, maxs = _world_bbox(mesh_obs)
+    center = (mins + maxs) / 2
+    span = max(maxs.x - mins.x, maxs.y - mins.y, maxs.z - mins.z, 0.01)
+    floor_z = mins.z
+
+    bpy.ops.mesh.primitive_plane_add(size=max(span * 24, 40), location=(center.x, center.y, floor_z - 0.001))
+    ground = bpy.context.active_object
+    gmat = bpy.data.materials.new("Ground")
+    gmat.use_nodes = True
+    gmat.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value = (
+        GREY150 * 0.92,
+        GREY150 * 0.92,
+        GREY150 * 0.94,
+        1,
+    )
+    ground.data.materials.append(gmat)
+    ground.cycles.is_shadow_catcher = True
+
+    bpy.ops.object.light_add(type="SUN", location=center + Vector((span, -span * 2, span * 2)))
+    key = bpy.context.active_object
+    key.data.energy = 1.45
+    key.data.angle = math.radians(5)
+
+    obj_h = max(maxs.z - mins.z, 0.01)
+    obj_w = max(maxs.x - mins.x, 0.01)
+    ortho = max(obj_h / PREVIEW_FILL, obj_w / PREVIEW_FILL)
+
+    cam_data = bpy.data.cameras.new("FrontCam")
+    cam = bpy.data.objects.new("FrontCam", cam_data)
+    bpy.context.collection.objects.link(cam)
+    cam.data.type = "ORTHO"
+    cam.data.ortho_scale = ortho
+    dist = span * 4.0
+    cam.location = center + Vector((0.0, -dist, center.z * 0.0 + obj_h * 0.02))
+    direction = center - cam.location
+    cam.rotation_euler = direction.to_track_quat("-Z", "Y").to_euler()
+    bpy.context.scene.camera = cam
+
+    bpy.context.scene.render.engine = "BLENDER_EEVEE"
+    bpy.context.scene.render.resolution_x = 1024
+    bpy.context.scene.render.resolution_y = 1024
+    bpy.context.scene.render.filepath = str(preview)
+    bpy.context.scene.render.image_settings.file_format = "PNG"
+    bpy.ops.render.render(write_still=True)
+    return preview
+
+
 def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) -> dict:
     root.name = f"mesh_{asset_id}"
     bevel_w = 0.014 if "pc-tower" in asset_id else 0.016 if asset_id.startswith("compute-") and asset_id != "compute-monitor-set" else 0.012
     bevel_segments = 2
     bevel_object(root, width=bevel_w, segments=bevel_segments)
+    if "pc-tower" in asset_id:
+        import mesh_builders as mb
+
+        mb.snap_root_to_floor(root)
     mesh = root.data
     has_bake = mesh.color_attributes.get("BakeColor") is not None
     if not has_bake:
@@ -455,8 +516,12 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
     glb = out_dir / f"{asset_id}.glb"
     export_gltf_y_up(root, glb)
     preview = render_preview_from_glb(glb, asset_id)
+    preview_front: str | None = None
+    if asset_id == "compute-pc-tower-era1":
+        pf = render_preview_front_from_glb(glb, "compute-pc-tower-era1-front")
+        preview_front = str(pf.relative_to(REPO))
 
-    return {
+    result = {
         "id": asset_id,
         "path": f"Assets/Art/Cc0/compute-kit/{asset_id}/{asset_id}.glb",
         "textures": {
@@ -468,6 +533,9 @@ def finish_cc0_asset(asset_id: str, root: bpy.types.Object, sources: list[str]) 
         "sources": sources,
         "generator": f"tools/art/cc0/blender/{asset_id.replace('-', '_')}.py",
     }
+    if preview_front:
+        result["previewFront"] = preview_front
+    return result
 
 
 def write_compute_manifest(entries: list[dict]) -> None:
