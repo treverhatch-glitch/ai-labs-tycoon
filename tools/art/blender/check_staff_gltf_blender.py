@@ -92,15 +92,31 @@ def analyze_gltf(aid: str, glb: Path) -> tuple[bool, str]:
         if any(n == "Cube" for n in (o.name.split(".")[0] for o in meshes)):
             return False, "stray_cube_mesh"
         by = {o.name.split(".")[0]: o for o in meshes}
-        if aid == "staff-founder-idle" and by.get("KenneyFounderStock"):
+        stock_body = by.get("KenneyFounderStock") or by.get("KenneyResearcherStock")
+        if aid in HERO_IDS and stock_body:
             eyes = [n for n in by if n.startswith("FounderEye_")]
+            glasses = [n for n in by if n.startswith("ResearcherGlasses")]
+            lab = [n for n in by if n.startswith("ResearcherLabCoat")]
+            hair = [n for n in by if n.startswith("ResearcherHairCap")]
+            if len(meshes) == 5 and len(eyes) == 2 and lab and hair and not glasses:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=5 eyes=2 coat+hair"
+            if len(meshes) == 6 and len(eyes) == 2 and glasses and lab and hair:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=6 eyes=2 glasses=1 coat+hair"
+            if len(meshes) == 4 and len(eyes) == 2 and glasses:
+                return True, f"z_up sz={sz:.3f} stock_recolor meshes=4 eyes=2 glasses=1"
+            modular = by.get("LabCoat") and by.get("Glasses") and len(eyes) == 2
+            if aid == "staff-researcher-idle" and modular and not stock_body:
+                return True, (
+                    f"z_up sz={sz:.3f} quaternius meshes={len(meshes)} "
+                    "coat+glasses+eyes"
+                )
             if len(meshes) == 3 and len(eyes) == 2:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=3 eyes=2"
             if len(meshes) == 1:
                 return True, f"z_up sz={sz:.3f} stock_recolor meshes=1"
         spine_kw = (
             {"only_parts": FOUNDER_SPINE_PARTS, "max_radius": MAX_FOUNDER_SPINE_RADIUS_M}
-            if aid == "staff-founder-idle"
+            if aid == "staff-founder-idle" and not stock_body
             else {}
         )
         ok_spine, spine_msg = _spine_radius(meshes, **spine_kw)

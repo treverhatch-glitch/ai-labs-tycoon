@@ -4,10 +4,10 @@ Hero staff on `cursor/art-staff-founder-researcher` restyle these packs in Blend
 
 | Pack | URL | Use on this branch |
 | --- | --- | --- |
-| Kenney Animated Characters 3 (CC0-1.0) | https://kenney.nl/assets/animated-characters-3 | **`staff-founder-idle`** blocky baked hero (`characterMedium.fbx`) |
-| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com | `staff-researcher-idle` rigged modular base (`character.glb`) |
-| Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`); researcher hero bakes Kenney rig + lab-coat props |
-| Quaternius character (reference rig) | https://quaternius.com | Incoming reference (`character.glb`) |
+| Kenney Animated Characters 3 (CC0-1.0) | https://kenney.nl/assets/animated-characters-3 | **`staff-founder-idle`** blocky baked hero (`characterMedium.fbx`, `License.txt` in incoming); pinned kit GLB sha **`b09c59ac`** |
+| Kenney stock rig (same kit) | https://kenney.nl/assets/animated-characters-3 | **`staff-researcher-idle` v12+** — same rig bake + in-repo lab-coat recolour (`kenney_researcher_stock_recolor.py`); proof `tools/art/cc0/incoming/kenney/CC0-RESEARCHER-KENNEY-STOCK.md` |
+| Quaternius Ultimate Modular Character (CC0) | https://quaternius.com/packs/ultimatemodularcharacters.html | Incoming reference (`character.glb`); modular v9/v10 experiments only |
+| Quaternius Animated Man (mirrored GLB) | https://quaternius.com | Incoming reference (`animated_human.glb`) |
 | Poly Haven `studio_small_08` | https://polyhaven.com/a/studio_small_08 | EEVEE preview HDRI |
 
 Incoming paths and SHA-256 pins: `tools/art/cc0/manifest.json`.

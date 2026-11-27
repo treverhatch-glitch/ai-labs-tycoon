@@ -471,8 +471,16 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
     import os as _os
 
     stock_recolor = (
-        _os.environ.get("FOUNDER_STOCK_RECOLOR", "").strip() == "1"
-        and asset_id == "staff-founder-idle"
+        asset_id == "staff-founder-idle"
+        and _os.environ.get("FOUNDER_STOCK_RECOLOR", "").strip() == "1"
+    ) or (
+        asset_id == "staff-researcher-idle"
+        and _os.environ.get("RESEARCHER_STOCK_RECOLOR", "").strip() == "1"
+    )
+    stock_body_name = (
+        "KenneyResearcherStock"
+        if asset_id == "staff-researcher-idle"
+        else "KenneyFounderStock"
     )
     ground_scene_meshes()
     if not stock_recolor:
@@ -484,19 +492,28 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         import cc0_staff_lib as staff_c0
 
         if stock_recolor:
-            from kenney_founder_stock_recolor import collect_founder_stock_meshes
+            if asset_id == "staff-researcher-idle":
+                from kenney_researcher_stock_recolor import (
+                    ARM_VG_BONES,
+                    collect_researcher_stock_meshes,
+                )
 
-            mesh_obs = collect_founder_stock_meshes()
+                mesh_obs = collect_researcher_stock_meshes()
+            else:
+                from kenney_founder_stock_recolor import ARM_VG_BONES, collect_founder_stock_meshes
+
+                mesh_obs = collect_founder_stock_meshes()
             mesh_only = [o for o in mesh_obs if o.type == "MESH"]
             part_count = len(mesh_only)
-            if part_count != 3:
-                raise RuntimeError(f"FAIL {asset_id}: stock_recolor need body+2eyes got {part_count}")
-            ob = next(o for o in mesh_only if o.name.split(".")[0] == "KenneyFounderStock")
+            want_parts = 5 if asset_id == "staff-researcher-idle" else 3
+            if part_count != want_parts:
+                raise RuntimeError(
+                    f"FAIL {asset_id}: stock_recolor need {want_parts} parts got {part_count}"
+                )
+            ob = next(o for o in mesh_only if o.name.split(".")[0] == stock_body_name)
             eyes = [o for o in mesh_only if o.name.split(".")[0].startswith("FounderEye_")]
             if {e.name.split('.')[0] for e in eyes} != {"FounderEye_L", "FounderEye_R"}:
                 raise RuntimeError(f"FAIL {asset_id}: eye_objects missing")
-            from kenney_founder_stock_recolor import ARM_VG_BONES
-
             print(f"OK {asset_id} eye_objects FounderEye_L FounderEye_R arm_vg={','.join(ARM_VG_BONES)}")
             if mesh_island_count(ob) > 1:
                 raise RuntimeError(f"FAIL {asset_id}: stock_body_fragmented islands={mesh_island_count(ob)}")
@@ -550,15 +567,33 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         _sanitize_solid_gltf_materials([o for o in mesh_obs if o.type == "MESH"])
         if asset_id == "staff-founder-idle" and not stock_recolor:
             _strip_uv_layers(mesh_obs)
-        if stock_recolor and asset_id == "staff-founder-idle":
+        if stock_recolor:
+            try:
+                hero_mask = [
+                    o
+                    for o in mesh_obs
+                    if o.type == "MESH"
+                    and not o.name.startswith("FounderEye")
+                    and not o.name.startswith("ResearcherGlasses")
+                    and not o.name.startswith("ResearcherLabCoat")
+                    and not o.name.startswith("ResearcherHairCap")
+                ]
+                render_preview(mesh_obs, preview_path, asset_id=asset_id, mask_meshes=hero_mask)
+            except Exception as exc:  # noqa: BLE001
+                raise RuntimeError(f"FAIL {asset_id}: final_preview {exc}") from exc
             from founder_face_decals import freeze_eyes_for_gltf_export
 
             freeze_eyes_for_gltf_export(mesh_obs)
         export_gltf_selection(
             mesh_obs, glb_path, apply_transform=not stock_recolor
         )
+        if not stock_recolor:
+            try:
+                render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
+            except Exception as exc:  # noqa: BLE001
+                print(f"WARN preview {asset_id}: {exc}")
         log_staff_material_slots(mesh_obs, asset_id)
-        if stock_recolor and asset_id == "staff-founder-idle":
+        if stock_recolor:
             body_only = [
                 o
                 for o in mesh_obs
@@ -569,37 +604,6 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
             )
             _render_silhouette_mask(body_only, silhouette_mask, asset_id)
             print(f"OK {asset_id} silhouette_mask {silhouette_mask.name}")
-        try:
-            if stock_recolor and asset_id == "staff-founder-idle":
-                import subprocess
-
-                blender = os.environ.get("BLENDER_BIN", "blender")
-                script = REPO_ROOT / "tools/art/blender/render_staff_preview_from_glb.py"
-                proc = subprocess.run(
-                    [
-                        blender,
-                        "-b",
-                        "--python",
-                        str(script),
-                        "--",
-                        str(glb_path),
-                        str(preview_path),
-                        asset_id,
-                    ],
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                if proc.returncode != 0:
-                    raise RuntimeError(proc.stdout + proc.stderr)
-                if "OK preview_from_glb" not in proc.stdout:
-                    raise RuntimeError(proc.stdout + proc.stderr)
-            else:
-                render_preview_from_glb(glb_path, preview_path, asset_id=asset_id)
-        except Exception as exc:  # noqa: BLE001
-            if stock_recolor:
-                raise RuntimeError(f"FAIL {asset_id}: final_preview {exc}") from exc
-            print(f"WARN preview {asset_id}: {exc}")
         mesh_only = [o for o in mesh_obs if o.type == "MESH"]
         verts = sum(len(o.data.vertices) for o in mesh_only)
         tris = sum(len(p.vertices) for o in mesh_only for p in o.data.polygons)
@@ -607,9 +611,14 @@ def finish_asset(asset_id: str, category: str, license_note: str = "CC0-1.0 (Ble
         mesh_count = len(mesh_only)
         root = link_or_join(mesh_only)
         if stock_recolor:
-            from kenney_founder_stock_recolor import apply_founder_materials
+            if asset_id == "staff-researcher-idle":
+                from kenney_researcher_stock_recolor import apply_researcher_materials
 
-            apply_founder_materials(root)
+                apply_researcher_materials(root)
+            else:
+                from kenney_founder_stock_recolor import apply_founder_materials
+
+                apply_founder_materials(root)
         bpy.context.scene.render.engine = "CYCLES"
         uv_unwrap(root)
         maps = bake_pbr_set(root, tex_dir, asset_id, size=1024)
@@ -1418,13 +1427,18 @@ def render_preview_from_glb(glb_path: Path, path: Path, asset_id: str | None = N
     mesh_obs = [o for o in imported if o.type == "MESH" and o.name != "PreviewShadowFloor"]
     if not mesh_obs:
         raise RuntimeError(f"no meshes in {glb_path}")
-    if asset_id and asset_id.startswith("staff-") and asset_id != "staff-founder-idle":
+    stock_hero = asset_id in ("staff-founder-idle", "staff-researcher-idle")
+    if asset_id and asset_id.startswith("staff-") and not stock_hero:
         tint_garage_parts(mesh_obs, asset_id)
     if asset_id:
         os.environ["STAFF_PREVIEW_ASSET"] = asset_id
     mask_obs = mesh_obs
-    if asset_id == "staff-founder-idle":
-        mask_obs = [o for o in mesh_obs if not o.name.startswith("FounderEye")]
+    if stock_hero:
+        mask_obs = [
+            o
+            for o in mesh_obs
+            if not o.name.startswith("FounderEye") and not o.name.startswith("ResearcherGlasses")
+        ]
     try:
         render_preview(mesh_obs, path, asset_id=asset_id, mask_meshes=mask_obs)
     finally:
@@ -1452,6 +1466,7 @@ def render_preview(
                     prev_kind = "wisp"
                 elif asset_id.startswith("hud-") or asset_id.startswith("tex-hud-"):
                     prev_kind = "hud"
+                os.environ["STAFF_PREVIEW_ASSET"] = asset_id
             os.environ["EARLY_ART_PREVIEW_KIND"] = prev_kind
             rig.render_preview_studio(ob, path, mask_meshes=mask_meshes)
             return

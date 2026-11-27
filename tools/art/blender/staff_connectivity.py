@@ -60,7 +60,12 @@ def _parent_key(child_base: str) -> str | None:
         return child_base.replace("LowerArm_", "UpperArm_").replace("Elbow_", "UpperArm_")
     if child_base.startswith("Hand_"):
         return child_base.replace("Hand_", "LowerArm_")
-    if child_base.startswith("Eye_") or child_base.startswith("Pupil_") or child_base == "Mouth":
+    if (
+        child_base.startswith("Eye_")
+        or child_base.startswith("Pupil_")
+        or child_base.startswith("FounderEye_")
+        or child_base == "Mouth"
+    ):
         return "Head"
     if child_base.startswith("Headset") or child_base in ("Hair", "Hood", "HardHat", "HardHatEng", "Glasses"):
         return "Head"
@@ -134,6 +139,7 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         link(f"Arm_{sx}", "Torso")
         link(f"Eye_{sx}", "Head")
         link(f"Pupil_{sx}", "Head")
+        link(f"FounderEye_{'L' if sx == '-1' else 'R'}", "Head")
     link("Mouth", "Head")
 
     for ob in mesh_obs:
@@ -156,6 +162,8 @@ def parent_staff_hierarchy(mesh_obs: list[bpy.types.Object]) -> bpy.types.Object
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("LabCoatLapel_L", "LabCoat"),
+        ("LabCoatLapel_R", "LabCoat"),
         ("Hoodie", "Torso"),
         ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
@@ -318,6 +326,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("Blazer", "Torso"),
         ("BlazerRec", "Torso"),
         ("LabCoat", "Torso"),
+        ("LabCoatLapel_L", "LabCoat"),
+        ("LabCoatLapel_R", "LabCoat"),
         ("Hoodie", "Torso"),
         ("Jeans", "Hips"),
         ("HoodieTorso", "Torso"),
@@ -336,6 +346,8 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
         ("HardHat", "Head"),
         ("HardHatEng", "Head"),
         ("Glasses", "Head"),
+        ("FounderEye_L", "Head"),
+        ("FounderEye_R", "Head"),
         ("HeadsetBand", "Head"),
         ("HeadsetBandSales", "Head"),
         ("HeadsetMic", "Head"),
@@ -368,8 +380,15 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                 allow = 0.06
             elif child_key.startswith("Eye_") and parent_key == "Head":
                 allow = 0.05
+            elif child_key.startswith("FounderEye_") and parent_key == "Head":
+                allow = 0.06
             elif child_key.startswith("JeansLeg_") and parent_key.startswith("Leg_"):
                 allow = 0.024
+        elif asset_id == "staff-researcher-idle":
+            if child_key.startswith("FounderEye_") and parent_key == "Head":
+                allow = 0.18
+            elif child_key.startswith("Eye_") and parent_key == "Head":
+                allow = 0.08
         if gap > allow:
             return False, f"{child_key}->{parent_key} gap={gap:.4f}m"
     for base in names:
@@ -413,6 +432,7 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                 "Sole_",
                 "Eye_",
                 "Pupil_",
+                "FounderEye_",
                 "Shoulder_",
             )
         ):
@@ -434,6 +454,9 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
             "Shirt",
             "Trousers",
             "BadgeShield",
+            "LabCoatLapel_L",
+            "LabCoatLapel_R",
+            "Tie",
         ):
             anchor = "Torso"
         if tag in ("Jeans", "JeansHips"):
@@ -469,6 +492,11 @@ def check_prejoin_connectivity(mesh_obs: list[bpy.types.Object], asset_id: str) 
                     allow = 0.05
                 elif tag.startswith("JeansLeg_") and anchor.startswith("Leg_"):
                     allow = 0.024
+            elif asset_id == "staff-researcher-idle":
+                if tag in ("LabCoatLapel_L", "LabCoatLapel_R") and anchor == "Torso":
+                    allow = 0.12
+                elif tag == "LabCoat" and anchor == "Torso":
+                    allow = 0.08
             if gap > allow:
                 return False, f"{anchor}->{tag} gap={gap:.4f}m"
 
@@ -533,11 +561,34 @@ def check_gltf_connectivity(glb_path: str, asset_id: str) -> tuple[bool, str]:
         return False, "no_meshes"
 
     if len(meshes) > 1:
-        if asset_id == "staff-founder-idle":
+        stock_ok = {
+            "staff-founder-idle": "KenneyFounderStock",
+            "staff-researcher-idle": "KenneyResearcherStock",
+        }
+        if asset_id in stock_ok:
             bases = {o.name.split(".")[0] for o in meshes}
-            if "KenneyFounderStock" in bases and bases.issubset(
-                {"KenneyFounderStock", "FounderEye_L", "FounderEye_R"}
-            ):
+            body = stock_ok[asset_id]
+            allowed = {body, "FounderEye_L", "FounderEye_R"}
+            if asset_id == "staff-researcher-idle":
+                allowed.update(
+                    {
+                        "ResearcherGlasses",
+                        "ResearcherLabCoat",
+                        "ResearcherHairCap",
+                        "Glasses",
+                        "LabCoat",
+                        "LabCoatLapel_L",
+                        "LabCoatLapel_R",
+                        "Shirt",
+                        "Tie",
+                        "Trousers",
+                        "Hair",
+                        "Head",
+                        "Torso",
+                        "Neck",
+                    }
+                )
+            if body in bases and bases.issubset(allowed):
                 return True, f"stock+eyes parts={len(meshes)}"
         ok, msg = check_objects_connectivity(meshes, asset_id)
         if not ok:
@@ -545,9 +596,9 @@ def check_gltf_connectivity(glb_path: str, asset_id: str) -> tuple[bool, str]:
         return True, f"meshes={len(meshes)} {msg}"
 
     ob = meshes[0]
-    if (
-        asset_id == "staff-founder-idle"
-        and ob.name.split(".")[0] == "KenneyFounderStock"
+    if asset_id in ("staff-founder-idle", "staff-researcher-idle") and ob.name.split(".")[0] in (
+        "KenneyFounderStock",
+        "KenneyResearcherStock",
     ):
         islands = _mesh_islands(ob)
         return True, f"stock_recolor meshes=1 islands={len(islands)}"

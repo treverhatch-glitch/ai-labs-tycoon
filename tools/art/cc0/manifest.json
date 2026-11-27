@@ -12,9 +12,10 @@
       "bytes": 167212,
       "sha256": "18835fef534eede635b081ee7fe647d01a885550a591d2e6bf071010906167d8",
       "license": "CC0-1.0",
-      "role": "staff-founder-idle",
+      "role": "staff-founder-idle, staff-researcher-idle",
       "source": "Kenney Animated Characters 3",
-      "sourceUrl": "https://kenney.nl/assets/animated-characters-3"
+      "sourceUrl": "https://kenney.nl/assets/animated-characters-3",
+      "licenseProof": "tools/art/cc0/incoming/kenney/CC0-RESEARCHER-KENNEY-STOCK.md"
     },
     {
       "path": "tools/art/cc0/incoming/quaternius/animated_human.glb",
@@ -24,7 +25,12 @@
     {
       "path": "tools/art/cc0/incoming/quaternius/character.glb",
       "bytes": 2003540,
-      "sha256": "b3d03413bbec5218e45348179433628f0ed420f2a725f60365a9a4b1ef3c4d09"
+      "sha256": "b3d03413bbec5218e45348179433628f0ed420f2a725f60365a9a4b1ef3c4d09",
+      "license": "CC0-1.0",
+      "role": "staff-researcher-idle",
+      "source": "Quaternius Ultimate Modular Character",
+      "sourceUrl": "https://quaternius.com/packs/ultimatemodularcharacters.html",
+      "licenseProof": "tools/art/cc0/incoming/quaternius/CC0-ULTIMATE-MODULAR-CHARACTERS.md"
     },
     {
       "path": "tools/art/cc0/incoming/polyhaven/studio_small_08_2k.hdr",

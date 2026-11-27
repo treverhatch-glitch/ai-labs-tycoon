@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""CC0 Quaternius humanoid → researcher hero (lab coat + clipboard)."""
+"""CC0 Kenney character → researcher hero (recolour lab coat, shirt, glasses)."""
+import os
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import blender_common as bc  # noqa: E402
-import cc0_staff_lib as c0  # noqa: E402
+import kenney_researcher_lib as kr  # noqa: E402
 
 
 def main():
-    c0.build_researcher_cc0()
+    os.environ["RESEARCHER_STOCK_RECOLOR"] = "1"
+    kr.build_researcher_kenney()
     entry = bc.finish_asset(
         "staff-researcher-idle",
         "staff-kit",
-        license_note="CC0-1.0 (Quaternius Ultimate Modular Character + in-repo bake)",
+        license_note="CC0-1.0 (Kenney Animated Characters 3 + in-repo lab-coat recolour)",
     )
     print("OK", entry["id"], entry["triangleCount"], "tris")
     return entry

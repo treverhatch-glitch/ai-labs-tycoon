@@ -276,20 +276,6 @@ def _dup_ob(ob: bpy.types.Object, name: str) -> bpy.types.Object:
     return dup
 
 
-def _add_glasses(head: bpy.types.Object, span: float) -> bpy.types.Object:
-    import staff_connectivity as sc
-
-    lo, hi = sc._world_bbox(head)
-    center = (lo + hi) * 0.5
-    glass = bc.add_cube(
-        "Glasses",
-        (span * 0.20, span * 0.05, span * 0.045),
-        (center.x, center.y + (hi.y - lo.y) * 0.08, center.z + (hi.z - lo.z) * 0.42),
-    )
-    bc.assign_solid(glass, (0.14, 0.16, 0.18, 1.0), 0.25)
-    return glass
-
-
 def _drop_modular_cloth() -> None:
     for key in ("ClothTop", "ClothBottom"):
         ob = bpy.data.objects.get(key)
@@ -744,6 +730,32 @@ def _style_founder(
         bc.assign_solid(ob, (0.92, 0.94, 0.96, 1.0), 0.38)
 
 
+LAB_COAT_OFFWHITE = (200 / 255, 198 / 255, 192 / 255, 1.0)
+RESEARCHER_SHIRT = (0.20, 0.36, 0.68, 1.0)
+RESEARCHER_TIE = (0.08, 0.68, 0.54, 1.0)
+
+
+def _add_researcher_tie(neck: bpy.types.Object | None, torso: bpy.types.Object | None, span: float) -> None:
+    import staff_connectivity as sc
+
+    anchor = neck or torso
+    if not anchor:
+        return
+    lo, hi = sc._world_bbox(anchor)
+    center = (lo + hi) * 0.5
+    ext = hi - lo
+    tie = bc.add_cube(
+        "Tie",
+        (span * 0.045, ext.y * 0.85, span * 0.11),
+        (center.x, center.y - ext.y * 0.05, center.z - ext.z * 0.12),
+    )
+    bc.assign_solid(tie, RESEARCHER_TIE, 0.42)
+
+
+def collect_researcher_scene_meshes() -> list[bpy.types.Object]:
+    return [o for o in bpy.context.scene.objects if o.type == "MESH"]
+
+
 def _style_researcher(
     objects: dict[str, bpy.types.Object],
     skin: tuple[float, float, float, float],
@@ -752,61 +764,82 @@ def _style_researcher(
     cz: float,
     min_y: float,
 ) -> None:
-    hair = objects.get("Hair_Long")
-    eyebrows = objects.get("Eyebrows")
+    import researcher_face as rf
+
+    hair = objects.get("Hair_Long") or bpy.data.objects.get("Hair_Long")
+    eyebrows = objects.get("Eyebrows") or bpy.data.objects.get("Eyebrows")
+    cloth_top = objects.get("ClothTop") or bpy.data.objects.get("ClothTop")
+    cloth_bottom = objects.get("ClothBottom") or bpy.data.objects.get("ClothBottom")
     torso = bpy.data.objects.get("Torso")
     neck = bpy.data.objects.get("Neck")
     ua_l = bpy.data.objects.get("UpperArm_-1")
     ua_r = bpy.data.objects.get("UpperArm_1")
+    la_l = bpy.data.objects.get("LowerArm_-1")
+    la_r = bpy.data.objects.get("LowerArm_1")
     hips = bpy.data.objects.get("Hips")
     leg_l = bpy.data.objects.get("Leg_-1")
     leg_r = bpy.data.objects.get("Leg_1")
-    _fit_box_garment(
-        "Shirt",
-        [o for o in (torso, ua_l, ua_r) if o],
-        (1.02, 0.98, 0.88),
-        (0.20, 0.36, 0.68, 1.0),
-        0.48,
-    )
-    _fit_box_garment(
+    head = bpy.data.objects.get("Head")
+
+    for tag in ("Hand_-1", "Hand_1", "Head", "Neck"):
+        ob = bpy.data.objects.get(tag)
+        if ob:
+            bc.assign_solid(ob, skin, 0.52)
+            bc.smooth_shade(ob)
+
+    if cloth_top:
+        _rename_ob(cloth_top, "Shirt")
+        bc.assign_solid(cloth_top, RESEARCHER_SHIRT, 0.48)
+        bc.smooth_shade(cloth_top)
+        cloth_top.location += Vector((0.0, -span * 0.06, -span * 0.02))
+    if cloth_bottom:
+        _rename_ob(cloth_bottom, "Trousers")
+        bc.assign_solid(cloth_bottom, (0.14, 0.16, 0.24, 1.0), 0.56)
+        bc.smooth_shade(cloth_bottom)
+    _snap_modular_cloth_to_body()
+    _add_researcher_tie(neck, torso, span)
+
+    # Pack has no lab-coat mesh — simple open off-white shell over shirt.
+    coat = _fit_box_garment(
         "LabCoat",
-        [o for o in (torso, ua_l, ua_r, neck) if o],
-        (1.18, 1.14, 1.08),
-        (0.94, 0.95, 0.97, 1.0),
-        0.40,
-        y_shift=span * 0.01,
+        [o for o in (torso, ua_l, ua_r, la_l, la_r, hips, leg_l, leg_r) if o],
+        (1.18, 1.18, 0.84),
+        LAB_COAT_OFFWHITE,
+        0.44,
+        y_shift=-span * 0.22,
     )
-    _fit_box_garment(
-        "Trousers",
-        [o for o in (hips, leg_l, leg_r) if o],
-        (1.06, 1.0, 0.95),
-        (0.14, 0.16, 0.24, 1.0),
-        0.58,
-        y_shift=-span * 0.02,
-    )
+    if coat:
+        bc.smooth_shade(coat)
+
     if hair:
         _rename_ob(hair, "Hair")
-        hair.scale = (0.88, 0.62, 0.9)
-        bc.assign_solid(hair, (0.28, 0.22, 0.18, 1.0), 0.48)
+        hair.scale = (0.78, 0.34, 0.78)
+        bpy.context.view_layer.objects.active = hair
+        hair.select_set(True)
+        bpy.ops.object.transform_apply(scale=True)
+        if head:
+            import staff_connectivity as sc
+
+            hlo, hhi = sc._world_bbox(head)
+            hc = (hlo + hhi) * 0.5
+            hc_ext = hhi - hlo
+            target = Vector((hc.x, hc.y - hc_ext.y * 0.24, hc.z - hc_ext.z * 0.04))
+            hair.location += target - _mesh_centroid(hair)
+        bc.assign_solid(hair, (0.26, 0.20, 0.17, 1.0), 0.48)
+        bc.smooth_shade(hair)
     if eyebrows:
         _rename_ob(eyebrows, "Eyebrows")
         bc.assign_solid(eyebrows, (0.18, 0.12, 0.10, 1.0), 0.45)
+
     shoes = _add_shoes(span)
     for ob in shoes:
         bc.assign_solid(ob, (0.28, 0.30, 0.34, 1.0), 0.42)
-    head = bpy.data.objects.get("Head")
+
     if head:
-        _add_glasses(head, span)
-    hand_r = bpy.data.objects.get("Hand_1")
-    if hand_r:
-        hr = _mesh_centroid(hand_r)
-        tab = bc.add_cube(
-            "Tablet",
-            (span * 0.13, span * 0.17, span * 0.022),
-            (hr.x + span * 0.03, hr.y + span * 0.01, hr.z + span * 0.02),
-        )
-        bc.assign_solid(tab, (0.18, 0.50, 0.92, 1.0), 0.30)
-        bc.assign_emission(tab, (0.35, 0.72, 0.98, 1.0), strength=1.2)
+        bc.assign_solid(head, skin, 0.54)
+        bc.smooth_shade(head)
+        rf.ensure_researcher_eyes(head, span)
+        rf.add_researcher_glasses(head, span)
 
 
 def _scene_mesh_map() -> dict[str, bpy.types.Object]:
@@ -917,8 +950,8 @@ def _build_role(role: str, skin: tuple[float, float, float, float], styler) -> N
         _split_eyes(eyes)
     _rotate_scene_z_to_y()
     _scale_scene_to_height()
-    _drop_modular_cloth()
     if role == "founder":
+        _drop_modular_cloth()
         _apply_founder_chibi_proportions()
         _reset_head_neck_pitch()
     parts = _scene_mesh_map()
