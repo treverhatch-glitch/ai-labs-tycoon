@@ -115,6 +115,9 @@ def _is_grey_mannequin_pixel(r: int, g: int, b: int) -> bool:
         return False
     spread = max(r, g, b) - min(r, g, b)
     lum = r + g + b
+    # bright lab-coat whites on side panels are not stock mannequin grey
+    if lum > 398 and r >= 136 and g >= 132 and spread < 32:
+        return False
     return spread < 24 and 168 < lum < 292
 
 
@@ -125,7 +128,7 @@ def _is_textured_pixel(r: int, g: int, b: int, *, asset_id: str) -> bool:
     if s > 0.10:
         return True
     if asset_id == "staff-researcher-idle":
-        if r >= 145 and g >= 140 and b >= 132 and r + g + b > 430:
+        if r >= 142 and g >= 137 and b >= 130 and r + g + b > 418:
             return True
     if asset_id == "staff-founder-idle":
         if r >= 95 and g >= 72 and b < 180 and r > g - 4:

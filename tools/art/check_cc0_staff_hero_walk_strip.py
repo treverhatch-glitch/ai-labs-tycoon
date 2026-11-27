@@ -52,6 +52,8 @@ STALE_RESEARCHER_WALK_STRIP_SHA256 = (
     "5ed87e94464b1bcfd037aa72994bd12fcb483592183ec42acbd8d915817e736c",
     "2982a900b5cedeaf62b53a62d4d25e17cca6b59156e1b56f6e250605c9ec612d",
     "93978b27d52a97e80ee05df0a8cba8426d01129f3c86ec00c5454ff16fbf5be7",
+    "ad04c78bc97f25277863b068092d126f9e1b8031e1f8e10fed7a3d8d9ea4ace8",  # dd43016a
+    "ec298d0f892f357119ff21bc8aef768a854d1e21b0604a0468568071099134ed",
 )
 
 
@@ -801,7 +803,7 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
 
             tile = img.crop((i * tile_w, 0, (i + 1) * tile_w, h))
             tmask = _figure_mask_from_rgb(tile)
-            ok_px, msg_px = check_researcher_panel_pixels(tile, tmask)
+            ok_px, msg_px = check_researcher_panel_pixels(tile, tmask, panel_i=0)
             if not ok_px:
                 return False, f"tile{i}_pixel_gate {msg_px}"
             hem_charcoal = _researcher_below_hem_charcoal_frac(img, tile_w, h, i)

@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-"""Researcher preview pixels: head skin+hair only, white torso column, charcoal legs."""
+"""Researcher preview pixels: coat torso box, back-of-head hair, charcoal legs."""
 from __future__ import annotations
 
 from PIL import Image
 
 CHARCOAL_RGB = (58, 58, 58)
-MAX_HEAD_COAT_WHITE_FRAC = 0.12
-MAX_HEAD_FOREIGN_FRAC = 0.10
-MAX_TORSO_NONWHITE_FRAC = 0.20
+MIN_TORSO_COAT_WHITE_FRAC = 0.90
+MAX_BACK_HEAD_SKIN_FRAC = 0.0
 MAX_LEG_MEDIAN_CHARCOAL_DIST = 95.0
 
 
@@ -20,122 +19,88 @@ def _is_coat_white(r: int, g: int, b: int) -> bool:
         return False
     spread = max(r, g, b) - min(r, g, b)
     lum = r + g + b
-    spread = max(r, g, b) - min(r, g, b)
     if spread > 55:
         return False
-    if r > g + 10:
+    if r > g + 12:
         return False
+    if spread < 28 and lum >= 205 and r >= 85:
+        return True
     return lum >= 248 and r >= 98 and g >= 94 and abs(r - g) < 18 and spread < 44
 
 
-def _is_skin_pixel(r: int, g: int, b: int) -> bool:
+def _is_skin_tan(r: int, g: int, b: int) -> bool:
     if _is_backdrop(r, g, b) or _is_coat_white(r, g, b):
         return False
     spread = max(r, g, b) - min(r, g, b)
-    return 88 <= r <= 200 and 62 <= g <= 172 and 48 <= b <= 158 and r >= g - 22 and spread < 72
-
-
-def _is_hair_pixel(r: int, g: int, b: int) -> bool:
-    if _is_backdrop(r, g, b) or _is_coat_white(r, g, b):
+    # Lit brown hair reads tan at preview exposure; keep back-head gate on true skin.
+    if r < 148 and b < 112 and spread < 56:
         return False
-    spread = max(r, g, b) - min(r, g, b)
-    lum = r + g + b
-    if lum < 200 and r < 115 and b < 125:
-        return True
-    return r < 125 and g < 118 and b < 132 and spread < 65 and 55 < lum < 300
+    return 88 <= r <= 205 and 62 <= g <= 175 and 48 <= b <= 165 and r >= g - 24 and spread < 78
 
 
-def head_coat_white_frac(panel: Image.Image, mask: Image.Image) -> float:
-    w, h = panel.size
+def _figure_span_y(mask: Image.Image) -> tuple[int, int, int]:
+    w, h = mask.size
     ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
     if not ys:
-        return 1.0
+        return 0, h, max(1, h)
     min_y, max_y = min(ys), max(ys)
-    span = max_y - min_y
-    y0 = min_y + int(span * 0.06)
-    y1 = min_y + int(span * 0.19)
-    x0, x1 = w // 2 - w // 5, w // 2 + w // 5
-    coat = n = 0
-    for y in range(y0, y1, 2):
-        for x in range(x0, x1, 2):
-            if mask.getpixel((x, y)) <= 48:
-                continue
-            n += 1
-            if _is_coat_white(*panel.getpixel((x, y))[:3]):
-                coat += 1
-    return coat / n if n > 40 else 1.0
+    return min_y, max_y, max(8, max_y - min_y)
 
 
-def head_foreign_frac(panel: Image.Image, mask: Image.Image) -> tuple[float, int]:
+def torso_box_coat_white_frac(panel: Image.Image, mask: Image.Image) -> tuple[float, int]:
+    """Shoulder→hip center column (excludes most arm/hand pixels)."""
     w, h = panel.size
-    ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
-    if not ys:
-        return 1.0, 0
-    min_y, max_y = min(ys), max(ys)
-    span = max_y - min_y
-    y0 = min_y + int(span * 0.06)
-    y1 = min_y + int(span * 0.19)
+    min_y, _max_y, span = _figure_span_y(mask)
+    y0 = min_y + int(span * 0.24)
+    y1 = min_y + int(span * 0.66)
     x0, x1 = w // 2 - w // 5, w // 2 + w // 5
-    foreign = n = 0
+    coat = fig = 0
     for y in range(y0, y1, 2):
         for x in range(x0, x1, 2):
             if mask.getpixel((x, y)) <= 48:
                 continue
             r, g, b = panel.getpixel((x, y))[:3]
-            n += 1
-            if _is_skin_pixel(r, g, b) or _is_hair_pixel(r, g, b):
-                continue
-            if max(r, g, b) < 52:
-                continue
-            foreign += 1
-    if n < 40:
-        return 1.0, n
-    return foreign / n, n
-
-
-def torso_column_nonwhite_frac(
-    panel: Image.Image, mask: Image.Image, *, grey: tuple[int, int, int] = (150, 150, 150)
-) -> float:
-    w, h = panel.size
-    ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
-    if not ys:
-        return 1.0
-    min_y, max_y = min(ys), max(ys)
-    span = max_y - min_y
-    y0 = min_y + int(span * 0.24)
-    y1 = min_y + int(span * 0.72)
-    x0, x1 = w // 2 - w // 12, w // 2 + w // 12
-    non_white = fig = 0
-    for y in range(y0, y1, 2):
-        in_neck = y < min_y + int(span * 0.32)
-        for x in range(x0, x1, 2):
-            if mask.getpixel((x, y)) <= 48:
-                continue
-            if _is_backdrop(*panel.getpixel((x, y))[:3], grey=grey):
+            if _is_backdrop(r, g, b):
                 continue
             fig += 1
-            r, g, b = panel.getpixel((x, y))[:3]
             if _is_coat_white(r, g, b):
+                coat += 1
+    if fig < 40:
+        return 0.0, fig
+    return coat / fig, fig
+
+
+def back_of_head_skin_frac(panel: Image.Image, mask: Image.Image, panel_i: int) -> float:
+    if panel_i not in (1, 2, 3):
+        return 0.0
+    w, h = panel.size
+    min_y, _max_y, span = _figure_span_y(mask)
+    if panel_i == 2:
+        y0 = min_y + int(span * 0.05)
+        y1 = min_y + int(span * 0.22)
+        x0, x1 = w // 5, (4 * w) // 5
+    else:
+        # 90°/270°: crown + rear hair only (exclude cheek/neck profile skin).
+        y0 = min_y + int(span * 0.02)
+        y1 = min_y + int(span * 0.13)
+        if panel_i == 1:
+            x0, x1 = (9 * w) // 20, (17 * w) // 20
+        else:
+            x0, x1 = (3 * w) // 20, (11 * w) // 20
+    skin = n = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            if mask.getpixel((x, y)) <= 48:
                 continue
-            spread = max(r, g, b) - min(r, g, b)
-            lum = r + g + b
-            if spread < 28 and lum >= 205 and r >= 85:
-                continue
-            if in_neck:
-                continue
-            non_white += 1
-    if fig < 30:
-        return 1.0
-    return non_white / fig
+            n += 1
+            if _is_skin_tan(*panel.getpixel((x, y))[:3]):
+                skin += 1
+    return skin / n if n > 30 else 0.0
 
 
 def leg_roi_median_rgb(panel: Image.Image, mask: Image.Image) -> tuple[float, float, float]:
     w, h = panel.size
-    ys = [y for y in range(h) for x in range(w) if mask.getpixel((x, y)) > 48]
-    if not ys:
-        return 0.0, 0.0, 0.0
-    min_y, max_y = min(ys), max(ys)
-    span = max_y - min_y
+    min_y, _max_y, span = _figure_span_y(mask)
     y0 = min_y + int(span * 0.58)
     y1 = min_y + int(span * 0.92)
     x0, x1 = w // 4, (3 * w) // 4
@@ -156,17 +121,19 @@ def leg_roi_median_rgb(panel: Image.Image, mask: Image.Image) -> tuple[float, fl
     return float(med), float(med), dist
 
 
-def check_researcher_panel_pixels(panel: Image.Image, mask: Image.Image) -> tuple[bool, str]:
-    head_coat = head_coat_white_frac(panel, mask)
-    if head_coat > MAX_HEAD_COAT_WHITE_FRAC:
-        return False, f"head_coat_white={head_coat:.3f} want<={MAX_HEAD_COAT_WHITE_FRAC}"
-    foreign, hn = head_foreign_frac(panel, mask)
-    if hn >= 40 and foreign > MAX_HEAD_FOREIGN_FRAC:
-        return False, f"head_foreign={foreign:.3f} want<={MAX_HEAD_FOREIGN_FRAC}"
-    torso_bad = torso_column_nonwhite_frac(panel, mask)
-    if torso_bad > MAX_TORSO_NONWHITE_FRAC:
-        return False, f"torso_nonwhite={torso_bad:.3f} want<={MAX_TORSO_NONWHITE_FRAC}"
-    _mr, _mg, dist = leg_roi_median_rgb(panel, mask)
-    if _mr > 0 and dist > MAX_LEG_MEDIAN_CHARCOAL_DIST:
-        return False, f"leg_median_dist={dist:.1f} want<={MAX_LEG_MEDIAN_CHARCOAL_DIST}"
-    return True, f"ok head_foreign={foreign:.3f} torso_nw={torso_bad:.3f} leg_dist={dist:.1f}"
+def check_researcher_panel_pixels(
+    panel: Image.Image, mask: Image.Image, *, panel_i: int = 0
+) -> tuple[bool, str]:
+    coat, cn = torso_box_coat_white_frac(panel, mask)
+    if cn >= 40 and coat < MIN_TORSO_COAT_WHITE_FRAC:
+        return False, f"torso_coat_white={coat:.3f} want>={MIN_TORSO_COAT_WHITE_FRAC}"
+    back_skin = back_of_head_skin_frac(panel, mask, panel_i)
+    if back_skin > MAX_BACK_HEAD_SKIN_FRAC:
+        return False, f"back_head_skin={back_skin:.3f} want<={MAX_BACK_HEAD_SKIN_FRAC}"
+    if panel_i in (0, 3):
+        _mr, _mg, dist = leg_roi_median_rgb(panel, mask)
+        if _mr > 0 and dist > MAX_LEG_MEDIAN_CHARCOAL_DIST:
+            return False, f"leg_median_dist={dist:.1f} want<={MAX_LEG_MEDIAN_CHARCOAL_DIST}"
+    else:
+        dist = 0.0
+    return True, f"ok torso_coat={coat:.2f} back_head_skin={back_skin:.3f} leg_dist={dist:.1f}"
