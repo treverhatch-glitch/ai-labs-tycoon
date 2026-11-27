@@ -351,7 +351,7 @@ def frame_camera(
 
 
 def _apply_mask_material(ob: bpy.types.Object, stash: list) -> None:
-    stash.append((ob, list(ob.data.materials)))
+    stash.append((ob, [slot.material for slot in ob.material_slots]))
     mat = bpy.data.materials.new("_PreviewMask")
     mat.use_nodes = True
     nt = mat.node_tree
@@ -424,6 +424,33 @@ def frame_camera_ortho(objects: list[bpy.types.Object], fill: float = 0.70) -> b
     return cam
 
 
+def _purge_stale_preview_rig() -> None:
+    scene = bpy.context.scene
+    stale_light_names = {"Key", "Fill", "Rim", "Key.001", "Fill.001", "Rim.001"}
+    for ob in list(scene.objects):
+        if ob.type == "LIGHT" and (
+            ob.name in stale_light_names or ob.name.startswith(("Key.", "Fill.", "Rim."))
+        ):
+            try:
+                bpy.data.objects.remove(ob, do_unlink=True)
+            except ReferenceError:
+                pass
+            continue
+        if not ob.name.startswith("Preview"):
+            continue
+        if ob.type in {"CAMERA", "LIGHT"} or ob.name == "PreviewShadowFloor":
+            try:
+                bpy.data.objects.remove(ob, do_unlink=True)
+            except ReferenceError:
+                pass
+    for world in list(bpy.data.worlds):
+        if world.name.startswith("EarlyPreviewWorld"):
+            try:
+                bpy.data.worlds.remove(world)
+            except ReferenceError:
+                pass
+
+
 def render_preview_studio(
     focus: bpy.types.Object | list[bpy.types.Object],
     path: Path,
@@ -436,6 +463,7 @@ def render_preview_studio(
     mask_meshes: bpy.types.Object | list[bpy.types.Object] | None = None,
 ) -> None:
     preview_kind = os.environ.get("EARLY_ART_PREVIEW_KIND", "staff").lower()
+    _purge_stale_preview_rig()
     hero = focus if isinstance(focus, list) else [focus]
     hero_meshes = [o for o in hero if o.type == "MESH"]
     if mask_meshes is not None:
@@ -583,5 +611,11 @@ def render_preview_studio(
     scene.render.filepath = str(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.render.render(write_still=True)
-    mask_path = path.with_name(path.stem + ".mask.png")
-    render_hero_mask(mask_heroes, mask_path, resolution)
+    skip_mask = os.environ.get("STAFF_PREVIEW_SKIP_MASK", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    if not skip_mask:
+        mask_path = path.with_name(path.stem + ".mask.png")
+        render_hero_mask(mask_heroes, mask_path, resolution)

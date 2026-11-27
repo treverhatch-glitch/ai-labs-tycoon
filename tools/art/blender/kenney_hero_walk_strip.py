@@ -13,7 +13,8 @@ import kenney_founder_lib as kf
 RUN_FBX = kf.INCOMING / "kenney/animated-characters-3/Animations/run.fbx"
 KENNEY_RUN_LICENSE = "tools/art/cc0/manifest.json (Kenney Animated Characters 3)"
 ARM_BLEND_BONES = ("LeftArm", "RightArm", "LeftForeArm", "RightForeArm")
-IDLE_ARM_BLEND = 0.93
+# Legacy field retained for WalkHeroScene; apply_walk_arm_drop uses euler add on Run pose.
+IDLE_ARM_BLEND = 0.0
 
 
 @dataclass
@@ -157,7 +158,31 @@ def pick_walk_contact_frames(
     )
     if passing_2 in (contact_l, contact_r, passing_1):
         passing_2 = _pick_passing(rows, exclude={contact_l, contact_r, passing_1}, stance_max_m=0.22)
-    return [contact_l, passing_1, contact_r, passing_2]
+    frames = [contact_l, passing_1, contact_r, passing_2]
+    for i, fr in enumerate(frames):
+        if fr == frames[0] and i > 0:
+            frames[i] = _pick_passing(rows, exclude=set(frames[:i]), stance_max_m=0.22)
+    if len(set(frames)) < 4:
+        quarter = max(1, (end - start) // 4)
+        frames = [start + quarter * i for i in range(4)]
+    if max(frames) - min(frames) < 6:
+        left_sorted = sorted(rows, key=lambda t: t[1])
+        right_sorted = sorted(rows, key=lambda t: t[2])
+        contact_l = left_sorted[0][0]
+        contact_r = right_sorted[0][0]
+        if abs(contact_r - contact_l) < 4:
+            contact_l = left_sorted[min(1, len(left_sorted) - 1)][0]
+        passing_1 = _pick_passing(rows, exclude={contact_l, contact_r}, stance_max_m=0.22)
+        passing_2 = _pick_passing(
+            rows,
+            exclude={contact_l, contact_r, passing_1},
+            stance_max_m=0.14,
+        )
+        frames = [contact_l, passing_1, contact_r, passing_2]
+        if passing_2 == passing_1:
+            passing_2 = _pick_passing(rows, exclude={contact_l, contact_r, passing_1}, stance_max_m=0.22)
+            frames[3] = passing_2
+    return frames
 
 
 def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
@@ -169,22 +194,59 @@ def _capture_arm_idle(arm: bpy.types.Object) -> dict[str, Quaternion]:
     return out
 
 
-def apply_idle_arm_blend(arm: bpy.types.Object, idle: dict[str, Quaternion], blend: float = IDLE_ARM_BLEND) -> None:
+def apply_walk_arm_drop(arm: bpy.types.Object, *_args, **_kwargs) -> None:
+    """Additive Kenney Run arm euler fix — keeps run swing, drops elbows off T-pose."""
     bpy.context.view_layer.objects.active = arm
-    for name, q_idle in idle.items():
-        pb = arm.pose.bones.get(name)
-        if not pb:
+    for side in ("Left", "Right"):
+        ua = arm.pose.bones.get(f"{side}Arm")
+        fa = arm.pose.bones.get(f"{side}ForeArm")
+        if not ua or not fa:
             continue
-        pb.rotation_mode = "QUATERNION"
-        pb.rotation_quaternion = q_idle.slerp(pb.rotation_quaternion, 1.0 - blend)
+        ua.rotation_mode = "XYZ"
+        fa.rotation_mode = "XYZ"
+        if side == "Left":
+            e = ua.rotation_euler.copy()
+            e[2] += math.radians(75.0)
+            ua.rotation_euler = e
+            e = fa.rotation_euler.copy()
+            e[2] += math.radians(12.0)
+            fa.rotation_euler = e
+        else:
+            e = ua.rotation_euler.copy()
+            e[0] += math.radians(60.0)
+            ua.rotation_euler = e
+            e = fa.rotation_euler.copy()
+            e[0] += math.radians(12.0)
+            fa.rotation_euler = e
+        ua.rotation_mode = "QUATERNION"
+        fa.rotation_mode = "QUATERNION"
     bpy.context.view_layer.update()
 
 
-def _assign_run_action(arm: bpy.types.Object) -> tuple[bpy.types.Action, int, int]:
+def apply_idle_arm_blend(arm: bpy.types.Object, idle: dict[str, Quaternion] | None = None, blend: float = 0.0) -> None:
+    _ = idle, blend
+    apply_walk_arm_drop(arm)
+
+
+def _purge_fbx_import_extras(keep: set[str]) -> None:
+    _purge_dup_armature()
+    for ob in list(bpy.data.objects):
+        if ob.type not in {"MESH", "ARMATURE"}:
+            continue
+        base = ob.name.split(".")[0]
+        if base in keep or ob.name in keep:
+            continue
+        bpy.data.objects.remove(ob, do_unlink=True)
+
+
+def _assign_run_action(
+    arm: bpy.types.Object, *, keep_objects: set[str]
+) -> tuple[bpy.types.Action, int, int]:
     if not RUN_FBX.is_file():
         raise RuntimeError(f"missing Kenney run {RUN_FBX}")
     kf._import_fbx(str(RUN_FBX))
-    _purge_dup_armature()
+    keep_objects.add(arm.name.split(".")[0])
+    _purge_fbx_import_extras(keep_objects)
     act = _pick_run_action()
     arm.animation_data_create()
     arm.animation_data.action = act
@@ -205,7 +267,14 @@ def build_founder_walk_scene() -> WalkHeroScene:
     apply_founder_materials(mesh)
     mesh.name = "KenneyFounderStock"
     eyes = spawn_founder_eye_meshes(mesh)
-    act, start, end = _assign_run_action(arm)
+    keep = {
+        arm.name.split(".")[0],
+        mesh.name.split(".")[0],
+        "KenneyFounderStock",
+        "Root",
+    }
+    keep |= {o.name.split(".")[0] for o in eyes}
+    act, start, end = _assign_run_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end
@@ -243,7 +312,14 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
     extras = [coat, hair]
-    act, start, end = _assign_run_action(arm)
+    keep = {
+        arm.name.split(".")[0],
+        mesh.name.split(".")[0],
+        "KenneyResearcherStock",
+        "Root",
+    }
+    keep |= {o.name.split(".")[0] for o in [*eyes, *extras]}
+    act, start, end = _assign_run_action(arm, keep_objects=keep)
     scene = bpy.context.scene
     scene.frame_start = start
     scene.frame_end = end
@@ -263,6 +339,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
 
 def configure_preview_env(asset_id: str) -> None:
     os.environ["EARLY_ART_PREVIEW_RIG"] = "1"
+    os.environ["STAFF_PREVIEW_SKIP_MASK"] = "1"
     os.environ["STAFF_PREVIEW_ASSET"] = asset_id
     os.environ["STAFF_PREVIEW_YAW_DEG"] = "30"
     os.environ["STAFF_PREVIEW_ELEV_DEG"] = "10"

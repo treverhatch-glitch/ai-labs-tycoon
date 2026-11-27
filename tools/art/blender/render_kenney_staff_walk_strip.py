@@ -18,7 +18,11 @@ from kenney_hero_walk_strip import (  # noqa: E402
     founder_eye_preview_tweak,
     apply_idle_arm_blend,
 )
-from kenney_walk_cycle_gate import verify_walk_cycle  # noqa: E402
+from kenney_walk_cycle_gate import (  # noqa: E402
+    fingerprints_match,
+    material_fingerprint,
+    verify_walk_cycle,
+)
 
 
 def main() -> int:
@@ -57,11 +61,24 @@ def main() -> int:
     )
     if asset_id == "staff-founder-idle":
         founder_eye_preview_tweak(scene_data.render_meshes)
+    _pose_walk_frame(scene, scene_data.arm, scene_data.walk_frames[0], scene_data.idle_arm_quats)
+    mat_ref = material_fingerprint(scene_data.body)
     tiles: list[Image.Image] = []
     tmp_dir = Path(bpy.app.tempdir)
     for i, fr in enumerate(scene_data.walk_frames):
-        scene.frame_set(fr)
-        apply_idle_arm_blend(scene_data.arm, scene_data.idle_arm_quats)
+        _pose_walk_frame(scene, scene_data.arm, fr, scene_data.idle_arm_quats)
+        if asset_id == "staff-founder-idle":
+            from kenney_founder_stock_recolor import apply_founder_materials
+
+            apply_founder_materials(scene_data.body)
+        else:
+            from kenney_researcher_stock_recolor import apply_researcher_materials
+
+            apply_researcher_materials(scene_data.body)
+        ok_fp, msg_fp = fingerprints_match(mat_ref, material_fingerprint(scene_data.body))
+        if not ok_fp:
+            print(f"FAIL {asset_id} walk_strip tile={i} {msg_fp}")
+            return 1
         tile = tmp_dir / f"walk_{i}.png"
         bc.render_preview(
             scene_data.render_meshes,
@@ -85,6 +102,14 @@ def main() -> int:
     sheet.save(out)
     print(f"OK walk_strip wrote {out.relative_to(bc.REPO_ROOT)}")
     return 0
+
+
+def _pose_walk_frame(scene, arm, frame: int, idle_arm_quats) -> None:
+    scene.frame_set(frame)
+    apply_idle_arm_blend(arm, idle_arm_quats)
+    bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    dg.update()
 
 
 if __name__ == "__main__":
