@@ -390,6 +390,7 @@ def apply_researcher_materials(
     _stamp_forearm_shirt_under_coat(bm, slots, ob, lm)
     _stamp_tee_short_sleeve(bm, slots, ob, lm, ws, hc, fwd)
     _fix_researcher_collar_cuff_bleed(bm, slots, ob, lm, ws, hc, fwd)
+    _fix_researcher_chin_neck_bleed(bm, slots, ob, lm, ws, hc, fwd, y_face_fn)
     for face, slot in zip(bm.faces, slots, strict=True):
         face.material_index = slot
     bm.to_mesh(ob.data)
@@ -893,6 +894,42 @@ def _apply_arm_vertex_groups(
             slots[face.index] = SLOT_SHIRT
         elif shirt >= hand * 0.3:
             slots[face.index] = SLOT_SHIRT
+
+
+def _fix_researcher_chin_neck_bleed(
+    bm: bmesh.types.BMesh,
+    slots: list[int],
+    ob: bpy.types.Object,
+    lm: FounderLandmarks,
+    ws: list[Vector],
+    hc: Vector,
+    fwd: Vector,
+    y_face_fn,
+) -> None:
+    """Under-chin band: skin (or coat collar), not shirt blue or trousers."""
+    lo, span = lm.zmin, lm.span
+    for face in bm.faces:
+        wc = Vector()
+        for v in face.verts:
+            wc += ob.matrix_world @ v.co
+        wc /= len(face.verts)
+        h = (wc.z - lo) / span
+        lat = lateral_from_front(wc, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        idx = face.index
+        if h < lm.h_neck - 0.10 or h > lm.h_neck + 0.07:
+            continue
+        if lat > thw * 0.62:
+            continue
+        y_face = y_face_fn(wc)
+        if y_face < 0.20:
+            continue
+        if slots[idx] not in (SLOT_JEANS, SLOT_SHIRT):
+            continue
+        if y_face > 0.22 and lm.h_neck - 0.01 <= h <= lm.h_neck + 0.032 and lat < thw * 0.36:
+            slots[idx] = SLOT_COLLAR
+        else:
+            slots[idx] = SLOT_SKIN
 
 
 def _fix_researcher_collar_cuff_bleed(

@@ -17,6 +17,37 @@ LOCOMOTION_WALK_GROUND_MAX_M = 0.11
 COAT_SPINE_BONES = frozenset(
     {"Hips", "Spine", "Chest", "UpperChest", "Neck", "Head"},
 )
+COAT_TORSO_BONES = frozenset({"Hips", "Spine", "Chest", "UpperChest"})
+COAT_ARM_BONES = frozenset(
+    {
+        "LeftShoulder",
+        "RightShoulder",
+        "LeftArm",
+        "RightArm",
+        "LeftForeArm",
+        "RightForeArm",
+    }
+)
+COAT_WEIGHT_DENY = frozenset(
+    {
+        "Head",
+        "Neck",
+        "LeftUpLeg",
+        "RightUpLeg",
+        "LeftLeg",
+        "RightLeg",
+        "LeftFoot",
+        "RightFoot",
+        "LeftToes",
+        "RightToes",
+        "LeftHand",
+        "RightHand",
+        "LeftHandIndex1",
+        "RightHandIndex1",
+        "LeftHandThumb1",
+        "RightHandThumb1",
+    }
+)
 WALK_ARM_BONES = (
     "LeftShoulder",
     "LeftArm",
@@ -404,12 +435,19 @@ def _weight_mesh_to_head(hair: bpy.types.Object, arm: bpy.types.Object) -> None:
     bpy.context.view_layer.update()
 
 
-def _bind_coat_spine_armature(
+def _bind_coat_researcher_armature(
     coat: bpy.types.Object,
     body: bpy.types.Object,
     arm: bpy.types.Object,
 ) -> None:
-    """Lab coat follows torso only — no arm/leg weights (avoids cape wings)."""
+    """Lab coat: torso on spine; sleeves on upper_arm + forearm (no leg/hand weights)."""
+    from kenney_face_axis import face_shell_coord, lateral_from_front, toe_forward
+    from kenney_geometry_landmarks import compute_landmarks, torso_half_width
+    from researcher_hero_geometry import (
+        _prune_coat_wrist_shards,
+        _trim_coat_orphan_shards,
+    )
+
     if coat.type != "MESH" or not body.data.vertices:
         return
     if coat.parent:
@@ -419,37 +457,84 @@ def _bind_coat_spine_armature(
     for mod in list(coat.modifiers):
         if mod.type in {"ARMATURE", "MESH_DEFORM"}:
             coat.modifiers.remove(mod)
-    mod = coat.modifiers.new("CoatSpineArmature", "ARMATURE")
+    mod = coat.modifiers.new("CoatWalkArmature", "ARMATURE")
     mod.object = arm
-    coat.vertex_groups.clear()
-    for bone in COAT_SPINE_BONES:
-        coat.vertex_groups.new(name=bone)
+    lm = compute_landmarks(body)
+    fwd = toe_forward([body]).normalized()
+    hc, y_face_fn = face_shell_coord(body, fwd)
+    ws = [body.matrix_world @ v.co for v in body.data.vertices]
+    lo, span = lm.zmin, lm.span
     import mathutils.kdtree as kdtree
 
     kd = kdtree.KDTree(len(body.data.vertices))
     for i, v in enumerate(body.data.vertices):
         kd.insert(body.matrix_world @ v.co, i)
     kd.balance()
-    for v in coat.data.vertices:
-        co = coat.matrix_world @ v.co
-        _co, idx, _dist = kd.find(co)
-        weights: dict[str, float] = {}
+    bone_names = COAT_TORSO_BONES | COAT_ARM_BONES
+    coat.vertex_groups.clear()
+    for bone in bone_names:
+        coat.vertex_groups.new(name=bone)
+
+    def _sleeve_vert(co, raw: dict[str, float]) -> bool:
+        h = (co.z - lo) / span
+        lat = lateral_from_front(co, hc, fwd)
+        thw = torso_half_width(ws, lo, span, h, lm.cx, lm.cy)
+        arm_sum = sum(raw.get(b, 0.0) for b in COAT_ARM_BONES)
+        if arm_sum > 0.20:
+            return True
+        return (lm.h_neck - 0.28 <= h <= lm.h_waist + 0.02) and lat > thw * 0.38
+
+    def _nearest_weights(world_co) -> dict[str, float]:
+        _co, idx, dist = kd.find(world_co)
+        raw: dict[str, float] = {}
         for g in body.data.vertices[idx].groups:
             if g.weight < 1e-5 or g.group >= len(body.vertex_groups):
                 continue
             name = body.vertex_groups[g.group].name
-            if name not in COAT_SPINE_BONES:
+            raw[name] = max(raw.get(name, 0.0), g.weight)
+        for _co2, idx2, dist2 in kd.find_n(world_co, 4):
+            w_dist = 1.0 / max(dist2, 1e-4)
+            for g in body.data.vertices[idx2].groups:
+                if g.weight < 1e-5 or g.group >= len(body.vertex_groups):
+                    continue
+                name = body.vertex_groups[g.group].name
+                raw[name] = max(raw.get(name, 0.0), g.weight * w_dist * 0.35)
+        return raw
+
+    for v in coat.data.vertices:
+        co = coat.matrix_world @ v.co
+        raw = _nearest_weights(co)
+        sleeve = _sleeve_vert(co, raw)
+        picked: dict[str, float] = {}
+        for name, w in raw.items():
+            if name in COAT_WEIGHT_DENY:
                 continue
-            weights[name] = max(weights.get(name, 0.0), g.weight)
-        if not weights:
-            weights["Chest"] = 1.0
-        total = sum(weights.values())
-        for name, w in weights.items():
+            if sleeve:
+                if name in COAT_ARM_BONES:
+                    picked[name] = picked.get(name, 0.0) + w
+            elif name in COAT_TORSO_BONES:
+                picked[name] = picked.get(name, 0.0) + w
+            elif name in COAT_ARM_BONES and name.endswith("Shoulder"):
+                picked[name] = picked.get(name, 0.0) + w * 0.22
+        if sleeve and sum(picked.values()) < 0.08:
+            side = "Left" if lateral_from_front(co, hc, fwd) < 0 else "Right"
+            picked[f"{side}Shoulder"] = 0.35
+            picked[f"{side}Arm"] = 0.55
+            picked[f"{side}ForeArm"] = 0.45
+        if not picked:
+            picked["Chest"] = 1.0
+        total = sum(picked.values())
+        for name, w in picked.items():
             coat.vertex_groups[name].add([v.index], w / total, "REPLACE")
+    bpy.context.view_layer.objects.active = coat
+    coat.select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
     bpy.ops.mesh.select_all(action="SELECT")
-    bpy.ops.mesh.remove_doubles(threshold=0.001)
+    bpy.ops.mesh.remove_doubles(threshold=0.00055)
+    bpy.ops.mesh.normals_make_consistent(inside=False)
     bpy.ops.object.mode_set(mode="OBJECT")
+    _trim_coat_orphan_shards(coat, body, lm, hc, fwd, ws, y_face_fn)
+    _prune_coat_wrist_shards(coat, lm, hc, fwd, ws)
     bpy.context.view_layer.update()
 
 
@@ -673,7 +758,7 @@ def build_researcher_walk_scene() -> WalkHeroScene:
     eyes = spawn_researcher_eye_meshes(mesh)
     coat = spawn_researcher_lab_coat(mesh)
     hair = spawn_researcher_hair_cap(mesh)
-    _bind_coat_spine_armature(coat, mesh, arm)
+    _bind_coat_researcher_armature(coat, mesh, arm)
     _weight_mesh_to_head(hair, arm)
     extras = [coat, hair]
     keep = {

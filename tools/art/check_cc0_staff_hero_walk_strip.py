@@ -3,6 +3,9 @@
 
 Arm T-pose heuristic (PNG): upper-body horizontal span must stay below MAX_ARM_SPAN_FRAC
 of tile width (complements Blender gate hand Z <= shoulder_Z - 0.30*arm_length).
+
+Researcher lab-coat sleeve flare: white coat pixels must not extend laterally beyond
+torso shoulder silhouette width + COAT_FLARE_SHOULDER_PAD (15%).
 """
 from __future__ import annotations
 
@@ -23,6 +26,8 @@ LEG_FOREIGN_RGB_TOL = 36.0
 MAX_GREY_NEUTRAL = 22.0
 MAX_CAMERA_CENTROID_DRIFT_PX = 22
 MAX_ARM_SPAN_FRAC = 0.58
+COAT_FLARE_SHOULDER_PAD = 0.15
+MIN_COAT_FLARE_FAIL_PX = 14
 
 
 def _tile_stats(img: Image.Image, x0: int, x1: int, y0: int, y1: int) -> tuple[float, float, float, int]:
@@ -112,6 +117,40 @@ def _is_neutral_grey(r: int, g: int, b: int) -> bool:
     return abs(r - GREY[0]) < 14 and abs(g - GREY[1]) < 14 and abs(b - GREY[2]) < 14
 
 
+def _is_lab_coat_white(r: int, g: int, b: int) -> bool:
+    return r >= 198 and g >= 193 and b >= 186 and (r - b) < 32 and abs(r - g) < 22
+
+
+def _researcher_coat_sleeve_flare_px(
+    img: Image.Image, tile_w: int, h: int, i: int
+) -> tuple[int, float]:
+    """Count lab-coat white pixels outside shoulder silhouette + 15% margin."""
+    x0, x1 = i * tile_w + tile_w // 12, (i + 1) * tile_w - tile_w // 12
+    y_sh0, y_sh1 = h // 5, h // 3
+    xs_sh: list[int] = []
+    for y in range(y_sh0, y_sh1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if _is_neutral_grey(r, g, b):
+                continue
+            xs_sh.append(x)
+    if len(xs_sh) < 36:
+        return 0, 0.0
+    shoulder_w = float(max(xs_sh) - min(xs_sh))
+    center = (max(xs_sh) + min(xs_sh)) * 0.5
+    half_allow = shoulder_w * 0.5 * (1.0 + COAT_FLARE_SHOULDER_PAD)
+    y0, y1 = h // 7, int(h * 0.56)
+    flare = 0
+    for y in range(y0, y1, 2):
+        for x in range(x0, x1, 2):
+            r, g, b = img.getpixel((x, y))[:3]
+            if not _is_lab_coat_white(r, g, b):
+                continue
+            if abs(x - center) > half_allow:
+                flare += 1
+    return flare, shoulder_w
+
+
 def _char_centroid_x(img: Image.Image, tile_w: int, i: int, h: int) -> float | None:
     xs: list[int] = []
     x0 = i * tile_w
@@ -179,6 +218,12 @@ def check_strip(png: Path, asset_id: str) -> tuple[bool, str]:
             lr, lg, lb, ln = _tile_stats(img, legx0, legx1, legy0, legy1)
             if ln > 40 and _rgb_dist((lr, lg, lb), GREY) < MAX_GREY_NEUTRAL:
                 return False, f"tile{i}_grey_trousers mean={(round(lr,1), round(lg,1), round(lb,1))}"
+            flare_px, sh_w = _researcher_coat_sleeve_flare_px(img, tile_w, h, i)
+            if flare_px >= MIN_COAT_FLARE_FAIL_PX:
+                return (
+                    False,
+                    f"tile{i}_coat_sleeve_tpose flare_px={flare_px} shoulder_w={sh_w:.1f}",
+                )
         sh_win, hand_win = _arm_windows(tile_w, h, i)
         sh_y = _mean_non_grey_y(img, *sh_win)
         hand_y = _mean_non_grey_y(img, *hand_win)
