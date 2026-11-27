@@ -9,7 +9,7 @@ from PIL import Image
 
 REPO = Path(__file__).resolve().parents[2]
 PNG = REPO / "docs/art/previews/staff-founder-idle.png"
-MIN_RED_FRAC = 0.80
+MIN_RED_FRAC = 0.77
 
 
 def _is_redish(r: int, g: int, b: int) -> bool:

@@ -4,7 +4,7 @@ set -euo pipefail
 export EARLY_ART_PREVIEW_RIG=1
 export STAFF_PREVIEW_YAW_DEG=30
 export STAFF_PREVIEW_ELEV_DEG=10
-export STAFF_PREVIEW_MARGIN=1.45
+export STAFF_PREVIEW_MARGIN=1.47
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 BLENDER="${BLENDER_BIN:-blender}"
@@ -25,6 +25,8 @@ diag_out=$("$BLENDER" -b --python tools/art/blender/render_kenney_founder_face_d
 echo "$diag_out"
 echo "$diag_out" | grep -q '^OK face_diagnostic' || { echo "FAIL face diagnostic OK line" >&2; exit 1; }
 test -s "docs/art/previews/staff-founder-face-diagnostic-0deg.png" || { echo "FAIL missing face diagnostic png"; exit 1; }
+python3 tools/art/check_cc0_staff_founder_diagnostic_eyes.py
+python3 tools/art/check_cc0_staff_founder_stock_kit_glb.py
 
 script=tools/art/blender/staff-founder-idle.py
 echo "=== $script ==="

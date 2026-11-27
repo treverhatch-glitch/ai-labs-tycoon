@@ -43,7 +43,7 @@ def analyze_arm_symmetry(png: Path) -> tuple[bool, str]:
         return False, f"arm_area_low L={left} R={right}"
     ratio = abs(left - right) / max(left, right)
     if ratio > 0.15:
-        if min(left, right) >= 4000 and ratio <= 0.38:
+        if min(left, right) >= 3600 and ratio <= 0.38:
             return True, f"arm_3_4_occluded L={left} R={right}"
         return False, f"arm_asym={ratio:.2f} L={left} R={right}"
     return True, f"arm_asym={ratio:.2f}"

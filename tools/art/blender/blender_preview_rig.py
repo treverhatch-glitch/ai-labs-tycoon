@@ -167,9 +167,9 @@ def staff_face_forward(mesh_obs: list[bpy.types.Object]) -> Vector:
     stock = [o for o in mesh_obs if o.type == "MESH" and o.name.split(".")[0] == "KenneyFounderStock"]
     if stock:
         try:
-            from kenney_face_axis import resolve_face_forward
+            from kenney_face_axis import toe_forward
 
-            return resolve_face_forward(stock)
+            return toe_forward(stock)
         except Exception:
             pass
     by_name = {o.name.split(".")[0]: o for o in mesh_obs if o.type == "MESH"}

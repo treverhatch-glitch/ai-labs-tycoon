@@ -1,7 +1,10 @@
 """Founder hero: import canonical stock Kenney mesh; flat material slots only (no mesh edits)."""
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
+from pathlib import Path
 
 import bpy
 import bmesh
@@ -9,15 +12,23 @@ from mathutils import Vector
 
 import blender_common as bc
 import kenney_founder_lib as kf
-from kenney_face_axis import resolve_face_forward
+from kenney_face_axis import face_shell_coord, toe_forward
 
 STOCK_SOURCE = bc.REPO_ROOT / "tools" / "art" / "source" / "kenney"
 STOCK_BLEND = STOCK_SOURCE / "staff-founder-kenney-stock.blend"
+STOCK_KIT_GLB = STOCK_SOURCE / "staff-founder-kenney-stock-kit.glb"
+STOCK_KIT_SHA = STOCK_SOURCE / "staff-founder-kenney-stock-kit.glb.sha256"
 STOCK_GLB = bc.ART_ROOT / "staff-kit" / "staff-founder-kenney-stock.glb"
 STOCK_META = STOCK_BLEND.with_suffix(".stock.json")
 STOCK_OBJECT_NAME = "KenneyFounderStock"
 
 FOUNDER_BROW = (0.20, 0.16, 0.14, 1.0)
+
+H_SHOE = 0.07
+H_WAIST = 0.50
+H_SHIRT_TOP = 0.80
+H_BROW = 0.76
+H_TOP_CAP = 0.90
 
 SLOT_SOLE = 0
 SLOT_SHOE = 1
@@ -29,18 +40,34 @@ SLOT_HAIR = 6
 SLOT_EYE = 7
 SLOT_BROW = 8
 
-# horizontal band landmarks (fraction of height span)
-BAND_SHOE_TOP = 0.13
-BAND_ANKLE = 0.20
-BAND_WAIST = 0.46
-BAND_NECK = 0.54
-BAND_BROW = 0.70
-BAND_HAIRLINE = 0.735
+
+def kit_glb_sha256() -> str:
+    if STOCK_KIT_SHA.is_file():
+        first = STOCK_KIT_SHA.read_text(encoding="utf-8").strip().split()[0]
+        if len(first) == 64:
+            return first
+    if STOCK_KIT_GLB.is_file():
+        return hashlib.sha256(STOCK_KIT_GLB.read_bytes()).hexdigest()
+    raise RuntimeError("missing staff-founder-kenney-stock-kit.glb")
+
+
+def install_stock_kit_glb() -> None:
+    """Unity staff-kit GLB must match pinned Kenney kit bytes (not re-exported bake)."""
+    want = kit_glb_sha256()
+    STOCK_GLB.parent.mkdir(parents=True, exist_ok=True)
+    if not STOCK_KIT_GLB.is_file():
+        raise RuntimeError(f"FAIL missing kit glb {STOCK_KIT_GLB}")
+    got = hashlib.sha256(STOCK_KIT_GLB.read_bytes()).hexdigest()
+    if got != want:
+        raise RuntimeError(f"FAIL kit glb sha256 got={got} want={want}")
+    shutil.copyfile(STOCK_KIT_GLB, STOCK_GLB)
+    out = hashlib.sha256(STOCK_GLB.read_bytes()).hexdigest()
+    if out != want:
+        raise RuntimeError("FAIL stock glb install mismatch")
 
 
 def export_stock_glb(baked: bpy.types.Object) -> None:
     STOCK_SOURCE.mkdir(parents=True, exist_ok=True)
-    STOCK_GLB.parent.mkdir(parents=True, exist_ok=True)
     baked.name = STOCK_OBJECT_NAME
     bc.assign_solid(baked, (0.58, 0.58, 0.58, 1.0), 0.62)
     bc.smooth_shade(baked)
@@ -48,63 +75,22 @@ def export_stock_glb(baked: bpy.types.Object) -> None:
         if other != baked:
             bpy.data.objects.remove(other, do_unlink=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(STOCK_BLEND))
-    bc.export_gltf(baked, STOCK_GLB)
     meta = {
         "vertexCount": len(baked.data.vertices),
         "triangleCount": sum(len(p.vertices) for p in baked.data.polygons),
         "objectName": STOCK_OBJECT_NAME,
+        "kitGlbSha256": kit_glb_sha256(),
     }
     STOCK_META.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
-
-
-def _landmark_z(lo: float, span: float) -> dict[str, float]:
-    return {
-        "shoe_top": lo + span * BAND_SHOE_TOP,
-        "waist": lo + span * BAND_WAIST,
-        "neck": lo + span * BAND_NECK,
-        "brow": lo + span * BAND_BROW,
-        "hairline": lo + span * BAND_HAIRLINE,
-    }
-
-
-def _mesh_frame(ob: bpy.types.Object) -> tuple[float, float, float, Vector, float]:
-    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
-    zs = [p.z for p in ws]
-    lo, hi = min(zs), max(zs)
-    span = max(1e-4, hi - lo)
-    cx = sum(p.x for p in ws) / len(ws)
-    fwd = resolve_face_forward([ob])
-    head_pts = [p for p in ws if p.z > hi - span * 0.28]
-    hc = sum(head_pts, Vector()) / len(head_pts) if head_pts else sum(ws, Vector()) / len(ws)
-    face_depth = span * 0.06
-    if abs(fwd.y) > 0.6:
-        face_shell_y = hc.y + face_depth * (1.0 if fwd.y > 0 else -1.0)
-        y_face_coord = lambda p: (p.y - face_shell_y) * (1.0 if fwd.y > 0 else -1.0)
-    elif fwd.x > 0:
-        face_shell_y = hc.x + face_depth
-        y_face_coord = lambda p: p.x - face_shell_y
-    else:
-        face_shell_y = hc.x - face_depth
-        y_face_coord = lambda p: face_shell_y - p.x
-    return lo, span, cx, fwd, y_face_coord
+    install_stock_kit_glb()
+    print(f"OK stock_kit_glb sha256={meta['kitGlbSha256']}")
 
 
 def bisect_stock_landmarks(ob: bpy.types.Object) -> None:
-    """Cut mesh at horizontal garment planes (stock + founder share topology)."""
     zs = [(ob.matrix_world @ v.co).z for v in ob.data.vertices]
     lo, hi = min(zs), max(zs)
     span = max(1e-4, hi - lo)
-    _bisect_horizontal_bands(ob, lo, span)
-
-
-def _bisect_horizontal_bands(ob: bpy.types.Object, lo: float, span: float) -> None:
-    """Split faces at garment landmark planes (horizontal cuts only)."""
-    cuts = [
-        lo + span * BAND_SHOE_TOP,
-        lo + span * BAND_WAIST,
-        lo + span * BAND_NECK,
-        lo + span * BAND_HAIRLINE,
-    ]
+    cuts = [lo + span * h for h in (H_SHOE, H_WAIST, H_SHIRT_TOP, H_BROW)]
     bm = bmesh.new()
     bm.from_mesh(ob.data)
     geom = list(bm.verts) + list(bm.edges) + list(bm.faces)
@@ -143,51 +129,44 @@ def _region_for_point(
     lo: float,
     span: float,
     cx: float,
-    z: dict[str, float],
     y_face: float,
 ) -> int:
-    zf = (w.z - lo) / span
+    h = (w.z - lo) / span
     xf = abs(w.x - cx)
 
-    if zf >= BAND_HAIRLINE and xf < 0.15:
-        return SLOT_HAIR
+    if h < H_SHOE:
+        return SLOT_SOLE if xf > 0.06 else SLOT_SHOE
 
-    if y_face > 0.012 and xf < 0.13:
-        if 0.665 <= zf < 0.708 and 0.045 < xf < 0.12:
-            return SLOT_EYE
-        if 0.700 <= zf < BAND_HAIRLINE:
-            return SLOT_BROW
-
-    if zf >= BAND_NECK and zf < BAND_HAIRLINE and xf < 0.14:
-        return SLOT_SKIN
-
-    if zf >= BAND_WAIST and zf < BAND_NECK:
-        if xf >= 0.14 and zf >= BAND_NECK - 0.06:
-            return SLOT_SKIN
-        return SLOT_SHIRT
-
-    if zf >= BAND_NECK - 0.02 and zf < BAND_WAIST and xf >= 0.10:
-        return SLOT_SHIRT
-
-    if zf >= 0.56 and xf >= 0.13:
-        return SLOT_HAND
-    if BAND_NECK <= zf < 0.62 and xf >= 0.11:
-        return SLOT_SKIN
-
-    if zf < BAND_WAIST:
-        if zf < 0.06 and xf > 0.07:
-            return SLOT_SOLE
-        if zf < BAND_SHOE_TOP and xf > 0.06:
-            return SLOT_SHOE
+    if h < H_WAIST:
         return SLOT_JEANS
 
-    return SLOT_SHIRT
+    if h < H_SHIRT_TOP:
+        if xf >= 0.11:
+            if h >= 0.74:
+                return SLOT_HAND
+            return SLOT_SHIRT
+        return SLOT_SHIRT
+
+    if y_face > 0.035 and 0.775 <= h < 0.88 and 0.028 < xf < 0.14:
+        return SLOT_EYE
+    if y_face > 0.04 and 0.845 <= h < 0.94 and 0.02 < xf < 0.15:
+        return SLOT_BROW
+
+    if h >= H_BROW and y_face < 0.0:
+        return SLOT_HAIR
+    if h >= H_TOP_CAP and y_face < 0.03:
+        return SLOT_HAIR
+
+    return SLOT_SKIN
 
 
 def apply_founder_materials(ob: bpy.types.Object) -> None:
-    """Horizontal garment bands + front eye/brow decals (mesh already landmark-bisected in stock)."""
-    lo, span, cx, _fwd, y_face_fn = _mesh_frame(ob)
-    z = _landmark_z(lo, span)
+    lo, hi = _height_span(ob)
+    span = max(1e-4, hi - lo)
+    ws = [ob.matrix_world @ v.co for v in ob.data.vertices]
+    cx = sum(p.x for p in ws) / len(ws)
+    fwd = toe_forward([ob])
+    _shell, y_face_fn = face_shell_coord(ob, fwd)
 
     mats = [
         _ensure_material("FounderSole", kf.FOUNDER_SHOE_SOLE, 0.72),
@@ -213,13 +192,16 @@ def apply_founder_materials(ob: bpy.types.Object) -> None:
             wc += ob.matrix_world @ v.co
         wc /= len(face.verts)
         y_face = y_face_fn(wc)
-        face.material_index = _region_for_point(
-            wc, lo=lo, span=span, cx=cx, z=z, y_face=y_face
-        )
+        face.material_index = _region_for_point(wc, lo=lo, span=span, cx=cx, y_face=y_face)
     bm.to_mesh(ob.data)
     ob.data.update()
     bm.free()
     bc.smooth_shade(ob)
+
+
+def _height_span(ob: bpy.types.Object) -> tuple[float, float]:
+    zs = [(ob.matrix_world @ v.co).z for v in ob.data.vertices]
+    return min(zs), max(zs)
 
 
 def load_stock_and_recolor() -> bpy.types.Object:

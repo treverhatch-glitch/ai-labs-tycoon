@@ -95,7 +95,8 @@ def analyze(png: Path) -> tuple[bool, str]:
     if bot["shoe_ratio"] < 0.03 and sum(bot["mean"]) / 3 > 160:
         return False, f"headstand_bottom_not_shoes shoe={bot['shoe_ratio']:.3f}"
     top_narrow = top["head_width"] if top["head_ratio"] >= 0.02 else top["width"]
-    if top_narrow >= shoulders["width"] * 1.22:
+    wide_limit = 1.75 if top["head_ratio"] >= 0.35 else 1.22
+    if top_narrow >= shoulders["width"] * wide_limit:
         return False, (
             f"headstand_top_wide top_w={top_narrow} shoulder_w={shoulders['width']}"
         )

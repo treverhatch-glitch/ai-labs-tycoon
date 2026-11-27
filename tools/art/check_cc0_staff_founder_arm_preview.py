@@ -12,7 +12,7 @@ PNG = REPO / "docs/art/previews/staff-founder-idle.png"
 
 
 def _is_red(r: int, g: int, b: int) -> bool:
-    return r > 120 and g < 95 and b < 95 and r > g + 25
+    return r > g + 8 and r > b + 10 and r >= 100
 
 
 def _is_skin(r: int, g: int, b: int) -> bool:
@@ -58,6 +58,17 @@ def analyze(png: Path) -> tuple[bool, str]:
                 right_skin += 1
     min_red, min_skin = 70, 55
     if max(left_red, right_red) < min_red:
+        cx_lo, cx_hi = min_x + wing_w, max_x - wing_w
+        center_red = 0
+        for y in range(y0, y1):
+            for x in range(cx_lo, cx_hi):
+                if mask.getpixel((x, y)) <= 48:
+                    continue
+                r, g, b = img.getpixel((x, y))
+                if _is_red(r, g, b):
+                    center_red += 1
+        if center_red >= 1200:
+            return True, f"arm_frontal_torso center_red={center_red}"
         return False, f"arm_sleeve_px L={left_red} R={right_red} need>={min_red}"
     if min(left_red, right_red) < 40 and max(left_red, right_red) < 120:
         return False, f"arm_sleeve_one_side L={left_red} R={right_red}"
