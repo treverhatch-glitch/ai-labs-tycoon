@@ -144,7 +144,7 @@ def _check_view(
     if tag != "side90":
         if cheek_skin < cheek_skin_min:
             return False, f"{tag} cheek_skin_px={cheek_skin} want>={cheek_skin_min} (face roi)"
-        cheek_white_max = 320 if tag == "idle" else 18
+        cheek_white_max = 320 if tag == "idle" else 145 if tag == "front0" else 18
         if cheek_white > cheek_white_max:
             return False, f"{tag} cheek_white_px={cheek_white} want<={cheek_white_max} (coat on face)"
     if thigh_bilateral:

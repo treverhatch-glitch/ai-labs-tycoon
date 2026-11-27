@@ -99,16 +99,11 @@ def _parent_keep_world(ob: bpy.types.Object, parent: bpy.types.Object) -> None:
     ob.matrix_world = world
 
 
-def spawn_founder_eye_meshes(
-    body: bpy.types.Object,
-    *,
-    axis_meshes: list[bpy.types.Object] | None = None,
-) -> list[bpy.types.Object]:
+def spawn_founder_eye_meshes(body: bpy.types.Object) -> list[bpy.types.Object]:
     _purge_face_objects()
     ws = [body.matrix_world @ v.co for v in body.data.vertices]
     lm = compute_landmarks(body)
-    axis_src = axis_meshes if axis_meshes else [body]
-    fwd = toe_forward(axis_src).normalized()
+    fwd = toe_forward([body]).normalized()
     hc, _ = face_shell_coord(body, fwd)
     head_w = _head_width_at(ws, lm.zmin, lm.span, lm.h_eye)
     _, right = _fwd_basis(fwd)
@@ -116,10 +111,9 @@ def spawn_founder_eye_meshes(
     proud = head_w * 0.012
     sep = head_w * 0.17
     radius = head_w * 0.034
-    base = body.name.split(".")[0]
-    if base in ("KenneyResearcherStock", "Head"):
+    if body.name.split(".")[0] == "KenneyResearcherStock":
         sep = head_w * 0.19
-        proud = head_w * 0.024 if base == "Head" else head_w * 0.022
+        proud = head_w * 0.022
     cast_in = -fwd
     eye_mat = _make_solid_mat("FounderEyeMesh", FOUNDER_EYE_RGBA, 0.88)
     bvh = _body_bvh_evaluated(body)

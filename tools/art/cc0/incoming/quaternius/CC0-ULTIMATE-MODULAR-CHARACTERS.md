@@ -6,6 +6,18 @@
 **Official page:** https://quaternius.com  
 **Ultimate Modular Characters:** https://quaternius.com/packs/ultimatemodularcharacters.html  
 
+## Outfit meshes in `character.glb`
+
+| Object | Use on researcher |
+| --- | --- |
+| `ClothTop` | Shirt (tinted under open coat) |
+| `ClothBottom` | Trousers |
+| `Hair_Long` | Shortened / positioned as hero hair |
+| `Eyes` | Split to `Eye_-1` / `Eye_1`, renamed `FounderEye_L/R` |
+| `Superhero_Female` | Skin rig (only body mesh in this GLB) |
+
+There is **no dedicated lab-coat mesh** in this pack. Researcher v11+ adds a simple off-white coat shell in Blender over the shirt (not vertex-group Kenney tricks).
+
 ## In-repo use (`staff-researcher-idle` v10+)
 
 | File | SHA-256 (pinned in `tools/art/cc0/manifest.json`) | Role |

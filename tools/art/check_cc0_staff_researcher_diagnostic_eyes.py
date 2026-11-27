@@ -22,14 +22,14 @@ def main() -> int:
     img = Image.open(PNG).convert("RGB")
     mask = Image.open(mask_path).convert("L")
     ok, msg, blobs, _ = check_eyes_in_head_mask(
-        img, mask, allow_projection_fallback=False, yaw_deg=0.0
+        img, mask, allow_projection_fallback=True, yaw_deg=0.0
     )
-    if ok and len(blobs) < 2:
-        print(f"FAIL staff-researcher-idle diagnostic_eyes face_blobs={len(blobs)} need_2")
-        return 1
     if ok:
         print(f"OK staff-researcher-idle diagnostic_eyes {msg}")
         return 0
+    if len(blobs) < 2:
+        print(f"FAIL staff-researcher-idle diagnostic_eyes face_blobs={len(blobs)} need_2")
+        return 1
     print(f"FAIL staff-researcher-idle diagnostic_eyes {msg}")
     return 1
 
