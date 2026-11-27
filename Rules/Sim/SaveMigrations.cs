@@ -189,6 +189,9 @@ namespace AiLabs.Rules.Sim
             if (fromSchema < 174) MigrateTo174(root);
             if (fromSchema < 175) MigrateTo175(root);
             if (fromSchema < 176) MigrateTo176(root);
+            if (fromSchema < 177) MigrateTo177(root);
+            if (fromSchema < 178) MigrateTo178(root);
+            if (fromSchema < 179) MigrateTo179(root);
             root.Set("schema", JsonValue.Of(GameState.CurrentSchema));
             return root;
         }
@@ -704,6 +707,12 @@ namespace AiLabs.Rules.Sim
         static void MigrateTo175(JsonValue root) { }
 
         static void MigrateTo176(JsonValue root) { }
+
+        static void MigrateTo177(JsonValue root) { }
+
+        static void MigrateTo178(JsonValue root) { }
+
+        static void MigrateTo179(JsonValue root) { }
 
         /// <summary>Schema 137: weights closed.</summary>
         static void MigrateTo137(JsonValue root)

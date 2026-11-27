@@ -210,6 +210,9 @@ namespace AiLabs.Rules.Config
             ExitDebtEraHaircutProblems(p, c);
             TakeoffAnswerEraCooldownProblems(p, c);
             ScenarioGoalEraTrustProblems(p, c);
+            HearingShareEraDampenProblems(p, c);
+            OfficeReleaseEraGraceProblems(p, c);
+            DataSourceAcquireEraWeeksProblems(p, c);
             PulloutProblems(p, c);
             RestructureProblems(p, c);
             IncidentFloorProblems(p, c);
@@ -2339,6 +2342,33 @@ namespace AiLabs.Rules.Config
             if (k.Enabled < 0 || k.Enabled > 1) p.Add("scenarioGoalEraTrust.enabled must be 0 or 1");
             if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("scenarioGoalEraTrust.minEra must be a valid era index");
             if (k.TrustPoints < 0) p.Add("scenarioGoalEraTrust.trustPoints must not be negative");
+        }
+
+        static void HearingShareEraDampenProblems(List<string> p, GameConfig c)
+        {
+            HearingShareEraDampenConfig k = c.HearingShareEraDampen;
+            if (k == null) { p.Add("hearingShareEraDampen is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("hearingShareEraDampen.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("hearingShareEraDampen.minEra must be a valid era index");
+            if (k.DampenPermille < 0 || k.DampenPermille > MathI.Permille) p.Add("hearingShareEraDampen.dampenPermille must be 0–1000");
+        }
+
+        static void OfficeReleaseEraGraceProblems(List<string> p, GameConfig c)
+        {
+            OfficeReleaseEraGraceConfig k = c.OfficeReleaseEraGrace;
+            if (k == null) { p.Add("officeReleaseEraGrace is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("officeReleaseEraGrace.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("officeReleaseEraGrace.minEra must be a valid era index");
+            if (k.GraceWeeks < 0) p.Add("officeReleaseEraGrace.graceWeeks must not be negative");
+        }
+
+        static void DataSourceAcquireEraWeeksProblems(List<string> p, GameConfig c)
+        {
+            DataSourceAcquireEraWeeksConfig k = c.DataSourceAcquireEraWeeks;
+            if (k == null) { p.Add("dataSourceAcquireEraWeeks is missing"); return; }
+            if (k.Enabled < 0 || k.Enabled > 1) p.Add("dataSourceAcquireEraWeeks.enabled must be 0 or 1");
+            if (k.MinEra < 0 || k.MinEra >= c.Eras.Count) p.Add("dataSourceAcquireEraWeeks.minEra must be a valid era index");
+            if (k.BonusWeeks < 0) p.Add("dataSourceAcquireEraWeeks.bonusWeeks must not be negative");
         }
 
         static void BugBountyProblems(List<string> p, GameConfig c)

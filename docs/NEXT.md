@@ -467,6 +467,14 @@ and says why in the commit message.
 
 253. **Batch twenty-five news, chat and combination rules.** ~~Done (local)~~: `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests` (Q510); target 428/381.
 
+254. **Hearing share era dampen (down path).** ~~Done (local)~~: `HearingShareEraDampen`, schema **177** (Q511).
+
+255. **Office release era grace.** ~~Done (local)~~: `OfficeReleaseEraGrace`, schema **178** (Q512).
+
+256. **Data source acquire era weeks.** ~~Done (local)~~: `DataSourceAcquireEraWeeks`, schema **179** (Q513).
+
+257. **Batch twenty-six news, chat and combination rules.** ~~Done (local)~~: `BatchTwentySixNewsChatTests`, `BatchTwentySixTogetherTests` (Q514); target 431/384.
+
 ## Rules: later
 
 - ~~**Freeze permits and audit investigations (Q45 tail, Q89).**~~ Done: home Freeze blocks `QueueGpuPurchase`, `RaiseFunding`, and the rest of the site commands; `OnAuditOpen` respects `auditInvestigationPermille`; `FreezeAuditLaterTests`.

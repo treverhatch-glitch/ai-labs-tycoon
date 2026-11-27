@@ -656,7 +656,10 @@ namespace AiLabs.Rules.State
         ComputeEquipmentUpgraded,
         ExitDebtEraHaircutted,
         TakeoffAnswerEraCooldownShortened,
-        ScenarioGoalEraTrusted
+        ScenarioGoalEraTrusted,
+        HearingShareEraDampened,
+        OfficeReleaseEraGraced,
+        DataSourceAcquireEraWeeksBonused
     }
 
     /// <summary>

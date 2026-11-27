@@ -155,7 +155,10 @@ namespace AiLabs.Rules.Systems
         public static void OnRelease(GameConfig c, GameState state, LabState lab)
         {
             if (!Has(lab) || IsPending(lab)) return;
-            PoseTriggered(c, state, lab, OfficeTrigger.Release);
+            int baseWeeks = c.Office.ExpireWeeks;
+            int expire = OfficeReleaseEraGrace.AnswerWeeks(c, state);
+            PoseTriggered(c, state, lab, OfficeTrigger.Release, expire);
+            OfficeReleaseEraGrace.OnPosed(c, state, lab, expire - baseWeeks);
         }
 
         static void PoseTriggered(GameConfig c, GameState state, LabState lab, OfficeTrigger trigger, int expireWeeks = -1)

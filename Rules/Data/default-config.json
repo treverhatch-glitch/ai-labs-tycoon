@@ -12507,6 +12507,24 @@
         "text": "{lab} met a campaign goal and won trust everywhere"
       },
       {
+        "id": "hearing-share-era-dampen",
+        "kind": "HearingShareEraDampened",
+        "pick": -1,
+        "text": "{lab} softened a hearing hit to the bubble"
+      },
+      {
+        "id": "office-release-era-grace",
+        "kind": "OfficeReleaseEraGraced",
+        "pick": -1,
+        "text": "{lab} got extra time on release notes"
+      },
+      {
+        "id": "data-source-acquire-era-weeks",
+        "kind": "DataSourceAcquireEraWeeksBonused",
+        "pick": -1,
+        "text": "{lab} licensed data for extra weeks"
+      },
+      {
         "id": "rival-intent-lobby",
         "kind": "RivalIntentSurfaced",
         "pick": 1,
@@ -16983,6 +17001,39 @@
         "toYear": 0
       },
       {
+        "id": "hearing-dampen-chat",
+        "kind": "HearingShareEraDampened",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The bubble shrugged off part of the hearing slide.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "release-grace-chat",
+        "kind": "OfficeReleaseEraGraced",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "Release notes can wait a little longer.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
+        "id": "data-acquire-weeks-chat",
+        "kind": "DataSourceAcquireEraWeeksBonused",
+        "roles": [],
+        "trait": "",
+        "pick": -1,
+        "about": "lab",
+        "text": "The corpus deal runs longer than the sticker price suggested.",
+        "fromYear": 0,
+        "toYear": 0
+      },
+      {
         "id": "rival-lobby-chat",
         "kind": "RivalIntentSurfaced",
         "roles": [],
@@ -19858,5 +19909,20 @@
     "enabled": 1,
     "minEra": 2,
     "trustPoints": 25
+  },
+  "hearingShareEraDampen": {
+    "enabled": 1,
+    "minEra": 2,
+    "dampenPermille": 120
+  },
+  "officeReleaseEraGrace": {
+    "enabled": 1,
+    "minEra": 2,
+    "graceWeeks": 3
+  },
+  "dataSourceAcquireEraWeeks": {
+    "enabled": 1,
+    "minEra": 2,
+    "bonusWeeks": 6
   }
 }

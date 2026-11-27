@@ -2423,3 +2423,11 @@ Q16 to Q34 are the 19 forks decided in the systems design (D1 to D19), copied he
 ### Q509. Extra trust everywhere when a scenario goal is met in late era? DECIDED (schema 176): `scenarioGoalEraTrust`; `ScenarioGoalEraTrusted`.
 
 ### Q510. Batch twenty-five news, chat and combos. DECIDED: four headlines, four chat lines (428/381); equipment plus three era tails; `BatchTwentyFiveNewsChatTests`, `BatchTwentyFiveTogetherTests`.
+
+### Q511. Softer bubble hit on bad hearing in late era? DECIDED (schema 177): `hearingShareEraDampen`; `HearingShareEraDampened` on hearing down answers.
+
+### Q512. Extra weeks to answer release notes in late era? DECIDED (schema 178): `officeReleaseEraGrace`; `OfficeReleaseEraGraced` on `OfficeEvents.OnRelease`.
+
+### Q513. Bonus duration on data-source acquire in late era? DECIDED (schema 179): `dataSourceAcquireEraWeeks`; `DataSourceAcquireEraWeeksBonused` on `DataSources.Acquire`.
+
+### Q514. Batch twenty-six news, chat and combos. DECIDED: three headlines, three chat lines (431/384); `BatchTwentySixNewsChatTests`, `BatchTwentySixTogetherTests`.

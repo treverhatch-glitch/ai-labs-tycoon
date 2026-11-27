@@ -205,6 +205,9 @@ namespace AiLabs.Rules.Config
         public ExitDebtEraHaircutConfig ExitDebtEraHaircut = new ExitDebtEraHaircutConfig();
         public TakeoffAnswerEraCooldownConfig TakeoffAnswerEraCooldown = new TakeoffAnswerEraCooldownConfig();
         public ScenarioGoalEraTrustConfig ScenarioGoalEraTrust = new ScenarioGoalEraTrustConfig();
+        public HearingShareEraDampenConfig HearingShareEraDampen = new HearingShareEraDampenConfig();
+        public OfficeReleaseEraGraceConfig OfficeReleaseEraGrace = new OfficeReleaseEraGraceConfig();
+        public DataSourceAcquireEraWeeksConfig DataSourceAcquireEraWeeks = new DataSourceAcquireEraWeeksConfig();
         public PulloutConfig Pullout = new PulloutConfig();
         public RestructureConfig Restructure = new RestructureConfig();
         public IncidentFloorConfig IncidentFloor = new IncidentFloorConfig();
@@ -408,6 +411,9 @@ namespace AiLabs.Rules.Config
             s.Obj("exitDebtEraHaircut", ref ExitDebtEraHaircut);
             s.Obj("takeoffAnswerEraCooldown", ref TakeoffAnswerEraCooldown);
             s.Obj("scenarioGoalEraTrust", ref ScenarioGoalEraTrust);
+            s.Obj("hearingShareEraDampen", ref HearingShareEraDampen);
+            s.Obj("officeReleaseEraGrace", ref OfficeReleaseEraGrace);
+            s.Obj("dataSourceAcquireEraWeeks", ref DataSourceAcquireEraWeeks);
             s.Obj("pullout", ref Pullout);
             s.Obj("restructure", ref Restructure);
             s.Obj("incidentFloor", ref IncidentFloor);
