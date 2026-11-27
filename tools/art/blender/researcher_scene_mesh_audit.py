@@ -16,6 +16,21 @@ WRIST_CUFF_WRIST_GAP_M = 0.04
 RENDER_ISLAND_AUDIT_LOG = (
     bc.PREVIEW_ROOT / "staff-researcher-render-island-audit.log"
 )
+RENDER_SCENE_HYGIENE_LOG = (
+    bc.PREVIEW_ROOT / "staff-researcher-render-scene-hygiene.log"
+)
+RESEARCHER_RENDER_MESH_ALLOW = frozenset(
+    {
+        "KenneyResearcherStock",
+        "ResearcherCoatSkirt",
+        "ResearcherCoatSleeves",
+        "ResearcherHairCap",
+        "FounderEye_L",
+        "FounderEye_R",
+        "PreviewShadowFloor",
+        "PreviewCamera",
+    }
+)
 
 
 @dataclass
@@ -195,6 +210,64 @@ def island_audit_failures(rows: list[IslandAuditRow]) -> list[IslandAuditRow]:
     return [r for r in rows if r.fail]
 
 
+def _visible_scene_meshes() -> list[bpy.types.Object]:
+    out: list[bpy.types.Object] = []
+    for ob in bpy.context.scene.objects:
+        if ob.type != "MESH" or ob.hide_render:
+            continue
+        if not ob.data or len(ob.data.vertices) < 1:
+            continue
+        out.append(ob)
+    return out
+
+
+def prepare_researcher_render_scene(
+    hero_meshes: list[bpy.types.Object],
+    *,
+    hygiene_log: Path | None = None,
+) -> list[str]:
+    """Hide/remove non-character meshes before beauty render (mask pass already does)."""
+    hero_ids = {id(o) for o in hero_meshes}
+    hero_bases = {o.name.split(".")[0] for o in hero_meshes}
+    actions: list[str] = []
+    for ob in list(bpy.context.scene.objects):
+        if ob.type == "ARMATURE":
+            ob.hide_render = True
+            actions.append(f"hide_render armature {ob.name}")
+            continue
+        if ob.type == "MESH":
+            base = ob.name.split(".")[0]
+            if base == "PreviewShadowFloor":
+                continue
+            if id(ob) in hero_ids:
+                ob.hide_render = False
+                continue
+            if base.endswith("_WalkBake"):
+                bpy.data.objects.remove(ob, do_unlink=True)
+                actions.append(f"removed WalkBake {ob.name}")
+                continue
+            if base not in RESEARCHER_RENDER_MESH_ALLOW and base not in hero_bases:
+                me = ob.data
+                bpy.data.objects.remove(ob, do_unlink=True)
+                if me.users == 0:
+                    bpy.data.meshes.remove(me)
+                actions.append(f"removed stray mesh {ob.name}")
+                continue
+            ob.hide_render = True
+            actions.append(f"hide_render mesh {ob.name}")
+            continue
+        if ob.type in {"EMPTY", "CURVE", "SURFACE", "FONT", "META"}:
+            ob.hide_render = True
+            actions.append(f"hide_render {ob.type} {ob.name}")
+    path = hygiene_log or RENDER_SCENE_HYGIENE_LOG
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write("# render scene hygiene\n")
+        for line in actions:
+            fh.write(f"{line}\n")
+    return actions
+
+
 def assert_render_island_audit(
     body: bpy.types.Object,
     meshes: list[bpy.types.Object],
@@ -203,7 +276,17 @@ def assert_render_island_audit(
     panel: str,
     log_path: Path | None = None,
 ) -> tuple[bool, str]:
-    rows = collect_evaluated_island_rows(body, meshes, frame=frame, panel=panel)
+    prepare_researcher_render_scene(meshes)
+    audit_targets = [
+        o
+        for o in _visible_scene_meshes()
+        if o.name.split(".")[0] != "PreviewShadowFloor"
+    ]
+    if not audit_targets:
+        audit_targets = [o for o in meshes if o.type == "MESH"]
+    rows = collect_evaluated_island_rows(
+        body, audit_targets, frame=frame, panel=panel
+    )
     bad = island_audit_failures(rows)
     path = log_path or RENDER_ISLAND_AUDIT_LOG
     append_island_audit_log(path, rows, header=f"frame={frame} panel={panel}")
@@ -367,8 +450,16 @@ def prune_researcher_visual_artifacts(
     prune_scene_floating_islands(body, meshes)
     from researcher_shirt_derived_meshes import SKIRT_NAME, _cull_verts_far_from_body
 
+    from researcher_shirt_derived_meshes import (
+        SKIRT_NAME,
+        _skirt_z_band,
+        flatten_skirt_hem_mid_thigh,
+    )
+
+    _lo, _span, _top, _hip, z_mid, _knee = _skirt_z_band(body, lm)
     for ob in meshes:
         if ob.type == "MESH" and ob.name.split(".")[0] == SKIRT_NAME:
+            flatten_skirt_hem_mid_thigh(ob, z_mid)
             _cull_verts_far_from_body(
                 ob, body, max_gap_m=RENDER_ISLAND_BODY_BBOX_GAP_M
             )
@@ -560,4 +651,7 @@ def reset_render_island_audit_log() -> Path:
     path = RENDER_ISLAND_AUDIT_LOG
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("# staff-researcher-idle evaluated mesh island audit\n", encoding="utf-8")
+    RENDER_SCENE_HYGIENE_LOG.write_text(
+        "# staff-researcher-idle render scene hygiene\n", encoding="utf-8"
+    )
     return path

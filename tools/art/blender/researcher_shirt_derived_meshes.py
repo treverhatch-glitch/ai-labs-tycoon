@@ -839,6 +839,64 @@ def _neck_cut_world_z(arm: bpy.types.Object | None, lm) -> float:
     return lo + span * (lm.h_neck - 0.10)
 
 
+def flatten_skirt_hem_mid_thigh(
+    skirt: bpy.types.Object,
+    z_hem: float,
+    *,
+    tol_below_m: float = 0.014,
+    band_m: float = 0.055,
+) -> int:
+    """Straight mid-thigh hem: drop tatters below hem; flatten hem ring to one Z."""
+    mw = skirt.matrix_world
+    inv = mw.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(skirt.data)
+    bm.verts.ensure_lookup_table()
+    removed = 0
+    kill = [
+        v
+        for v in bm.verts
+        if (mw @ v.co).z < z_hem - tol_below_m
+    ]
+    if kill:
+        bmesh.ops.delete(bm, geom=kill, context="VERTS")
+        removed = len(kill)
+    for v in bm.verts:
+        w = mw @ v.co
+        if z_hem - band_m <= w.z <= z_hem + band_m * 0.35:
+            w.z = z_hem
+            v.co = inv @ w
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.0018)
+    loose = [v for v in bm.verts if not v.link_faces]
+    if loose:
+        bmesh.ops.delete(bm, geom=loose, context="VERTS")
+    bm.to_mesh(skirt.data)
+    skirt.data.update()
+    bm.free()
+    _cull_spike_edges(skirt, max_edge_m=MAX_COAT_EDGE_M * 0.85)
+    return removed
+
+
+def _offset_sleeves_from_body_shell(
+    sleeves: bpy.types.Object, body: bpy.types.Object, *, push_m: float = 0.010
+) -> None:
+    """Slight outward shell so coat white covers forearm over skin."""
+    tree = _body_bvh_world(body)
+    inv = sleeves.matrix_world.inverted()
+    bm = bmesh.new()
+    bm.from_mesh(sleeves.data)
+    for v in bm.verts:
+        co_w = sleeves.matrix_world @ v.co
+        loc, normal, _idx, dist = tree.find_nearest(co_w)
+        if loc is None or dist is None or normal.length < 1e-6:
+            continue
+        n = normal.normalized()
+        v.co = inv @ (loc + n * min(push_m, max(0.004, dist + push_m * 0.6)))
+    bm.to_mesh(sleeves.data)
+    sleeves.data.update()
+    bm.free()
+
+
 def _stretch_skirt_hem_to_mid_thigh(
     skirt: bpy.types.Object, z_hip: float, z_mid: float, *, skirt_top_z: float
 ) -> None:
@@ -943,11 +1001,12 @@ def pick_shirt_sleeve_faces(
     ws: list[Vector],
 ) -> set[int]:
     lo, span = lm.zmin, lm.span
-    wrist_lo = lm.h_shoe + 0.17
+    wrist_lo = lm.h_shoe + 0.12
     sleeve_hi = lm.h_neck + 0.12
+    skin_slot = 4
     pick: set[int] = set()
     for f in bm_src.faces:
-        mat_ok = f.material_index in (shirt_slot, hand_slot, 2)
+        mat_ok = f.material_index in (shirt_slot, hand_slot, skin_slot, 2)
         if not mat_ok:
             continue
         wc = _face_world_centroid(body, f)
@@ -963,6 +1022,8 @@ def pick_shirt_sleeve_faces(
             continue
         if f.material_index == hand_slot and lat <= thw * 0.68:
             continue
+        if f.material_index == skin_slot and lat <= thw * 0.50:
+            continue
         pick.add(f.index)
     changed = True
     while changed:
@@ -970,7 +1031,7 @@ def pick_shirt_sleeve_faces(
         for f in bm_src.faces:
             if f.index in pick:
                 continue
-            if f.material_index not in (shirt_slot, 5):
+            if f.material_index not in (shirt_slot, hand_slot, skin_slot):
                 continue
             if not any(nb.index in pick for e in f.edges for nb in e.link_faces):
                 continue
@@ -1177,6 +1238,7 @@ def spawn_shirt_derived_coat_parts(
     _normalize_vertex_groups(skirt)
     _cull_spike_edges(skirt, max_edge_m=MAX_COAT_EDGE_M)
     _cull_verts_far_from_body(skirt, body, max_gap_m=MAX_COAT_BODY_GAP_M)
+    flatten_skirt_hem_mid_thigh(skirt, z_mid_thigh)
     if len(skirt.data.vertices) < 12:
         raise RuntimeError("FAIL staff-researcher-idle skirt_post_hem_empty")
     if not want_sleeves:
@@ -1208,6 +1270,8 @@ def spawn_shirt_derived_coat_parts(
     _normalize_vertex_groups(sleeves)
     _boost_sleeve_forearm_weights(sleeves, lm, body_cx=lm.cx)
     _cull_spike_edges(sleeves, max_edge_m=MAX_COAT_EDGE_M)
+    if arm is None and shell_body == body:
+        _offset_sleeves_from_body_shell(sleeves, shell_body, push_m=0.009)
     if shell_body == body:
         _cull_verts_far_from_body(sleeves, shell_body, max_gap_m=MAX_COAT_BODY_GAP_M)
     finalize_coat_sleeve_islands(sleeves, shell_body, lm)

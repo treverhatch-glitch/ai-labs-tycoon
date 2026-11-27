@@ -118,6 +118,14 @@ def _render_tile(
             render_meshes = meshes
             cleanup = []
     try:
+        if asset_id == "staff-researcher-idle":
+            from researcher_scene_mesh_audit import prepare_researcher_render_scene
+
+            prepare_researcher_render_scene(render_meshes)
+        else:
+            for ob in meshes:
+                if ob.type == "MESH" and ob not in render_meshes:
+                    ob.hide_render = True
         bc.render_preview(render_meshes, out, asset_id=asset_id, mask_meshes=render_meshes)
     finally:
         if cleanup:

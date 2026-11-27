@@ -1078,6 +1078,18 @@ def build_researcher_walk_scene() -> WalkHeroScene:
         nudge_sleeve_cuffs_toward_wrists(sleeves_ob, arm, lm_walk)
     extras = [*coat_parts, *eyes, hair]
     keep |= {o.name.split(".")[0] for o in extras}
+    for ob in list(bpy.context.scene.objects):
+        if ob.type != "MESH":
+            continue
+        base = ob.name.split(".")[0]
+        if base in keep:
+            continue
+        if base == "PreviewShadowFloor":
+            continue
+        me = ob.data
+        bpy.data.objects.remove(ob, do_unlink=True)
+        if me.users == 0:
+            bpy.data.meshes.remove(me)
     labels = ("contact_L", "down", "contact_R", "up")
     return WalkHeroScene(
         arm=arm,

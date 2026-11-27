@@ -134,6 +134,13 @@ def main() -> int:
                 render_meshes = scene_data.render_meshes
                 cleanup = []
         try:
+            if asset_id == "staff-researcher-idle":
+                from researcher_scene_mesh_audit import prepare_researcher_render_scene
+
+                for ob in scene_data.render_meshes:
+                    if ob.type == "MESH" and ob not in render_meshes:
+                        ob.hide_render = True
+                prepare_researcher_render_scene(render_meshes)
             bc.render_preview(
                 render_meshes,
                 tile,

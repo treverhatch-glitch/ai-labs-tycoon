@@ -125,10 +125,13 @@ def _finalize_researcher_coat_slots(
             if slots[face.index] in (SLOT_JEANS, SLOT_SKIN):
                 slots[face.index] = SLOT_SHIRT
 
-        if lat > thw * 0.82 and coat_top <= h <= wrist_h:
-            if h >= wrist_h - 0.025 and slots[face.index] == SLOT_HAND:
+        if lat > thw * 0.76 and coat_top <= h <= wrist_h + 0.05:
+            if h >= wrist_h - 0.04 and slots[face.index] == SLOT_HAND:
                 continue
-            slots[face.index] = SLOT_SHIRT
+            if slots[face.index] in (SLOT_SKIN, SLOT_HAND, SLOT_JEANS):
+                slots[face.index] = SLOT_SHIRT
+            elif lat > thw * 0.82:
+                slots[face.index] = SLOT_SHIRT
 
         if h > lm.h_neck + 0.06 and lat < thw * 0.95 and abs(y_face) < 0.12:
             if slots[face.index] == SLOT_SHIRT:

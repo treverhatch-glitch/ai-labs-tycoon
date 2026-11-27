@@ -1,0 +1,57 @@
+# staff-researcher-idle render scene hygiene
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+hide_render mesh KenneyResearcherStock
+hide_render mesh ResearcherHairCap
+hide_render mesh ResearcherCoatSkirt
+hide_render mesh ResearcherCoatSleeves
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+hide_render mesh KenneyResearcherStock
+hide_render mesh ResearcherHairCap
+hide_render mesh ResearcherCoatSkirt
+hide_render mesh ResearcherCoatSleeves
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+hide_render mesh KenneyResearcherStock
+hide_render mesh ResearcherHairCap
+hide_render mesh ResearcherCoatSkirt
+hide_render mesh ResearcherCoatSleeves
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+hide_render mesh KenneyResearcherStock
+hide_render mesh ResearcherHairCap
+hide_render mesh ResearcherCoatSkirt
+hide_render mesh ResearcherCoatSleeves
+# render scene hygiene
+hide_render armature Root
+# render scene hygiene
+hide_render armature Root
+hide_render mesh KenneyResearcherStock
+hide_render mesh ResearcherHairCap
+hide_render mesh ResearcherCoatSkirt
+hide_render mesh ResearcherCoatSleeves
